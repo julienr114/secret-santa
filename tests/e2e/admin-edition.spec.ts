@@ -23,13 +23,13 @@ test('super-admin creates a group with its guardian', async ({ page }) => {
   await expect(heading(page)).toHaveText(GROUP.name);
 });
 
-test('guardian adds people, a couple, and runs an edition to the end', async ({
+test('guardian adds people, an exclusion, and runs an edition to the end', async ({
   page,
 }) => {
   await loginAsGuardian(page, GROUP.slug, GROUP.password);
 
   // People
-  await page.getByText('Personnes et couples').click();
+  await page.getByText('Personnes', { exact: true }).click();
   for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
     await page.getByRole('link', { name: 'Ajouter' }).click();
     await page.getByLabel('Prénom').fill(firstName);
@@ -38,12 +38,14 @@ test('guardian adds people, a couple, and runs an edition to the end', async ({
   }
   await expect(page.locator('main').getByRole('listitem')).toHaveCount(5); // 4 people + "Exclusions"
 
-  // Couple Léa + Tom, from Léa's screen
-  await page.getByText('Léa', { exact: true }).click();
-  await page.getByRole('combobox').click();
+  // Léa and Tom must not draw each other (both ways by default).
+  await page.getByText('Exclusions').click();
+  await page.getByRole('combobox').first().click();
+  await page.getByRole('option', { name: 'Léa' }).click();
+  await page.getByRole('combobox').nth(1).click();
   await page.getByRole('option', { name: 'Tom' }).click();
-  await page.getByRole('button', { name: 'Lier' }).click();
-  await expect(page.getByText('En couple avec Tom')).toBeVisible();
+  await page.getByRole('button', { name: "Ajouter l'exclusion" }).click();
+  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
 
   // Edition
   await page.getByRole('link', { name: 'Retour' }).click();

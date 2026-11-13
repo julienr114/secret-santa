@@ -65,7 +65,8 @@ const onAdd = () =>
   <AdminScreen v-bind="screen">
     <h1 class="font-display text-3xl font-bold">Exclusions</h1>
     <p class="text-muted">
-      En plus des couples, des paires qui ne doivent jamais se tirer.
+      Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des
+      frères et sœurs, un parent et son enfant…
     </p>
     <AdminQueryState
       :pending="people.isPending.value"

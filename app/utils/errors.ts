@@ -9,8 +9,6 @@ const MESSAGES: Record<string, string> = {
   person_not_found: 'Personne introuvable.',
   person_has_participations:
     'Cette personne a déjà participé : désactive-la plutôt.',
-  already_in_couple: "L'une de ces deux personnes est déjà en couple.",
-  couple_not_found: 'Couple introuvable.',
   exclusion_not_found: 'Exclusion introuvable.',
   edition_not_found: 'Édition introuvable.',
   edition_in_progress: "Clôture d'abord l'édition en cours.",

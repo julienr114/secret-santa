@@ -42,6 +42,12 @@ const onSubmit = (event: FormSubmitEvent<Rules>) =>
     onError: (error) =>
       toast.add({ title: errorMessage(error), color: 'error' }),
   });
+const previousYearsItems = [
+  { value: 0, label: 'Non, peu importe' },
+  { value: 1, label: "Pas la même personne que l'an dernier" },
+  { value: 2, label: 'Pas la même que les 2 dernières années' },
+  { value: 3, label: 'Pas la même que les 3 dernières années' },
+];
 const sectionTitle =
   'px-1 text-xs font-semibold tracking-wide text-muted uppercase';
 </script>
@@ -64,20 +70,15 @@ const sectionTitle =
       >
         <section class="flex flex-col gap-4">
           <h2 :class="sectionTitle">Tirage</h2>
-          <USwitch
-            v-model="state.excludeSpouse"
-            :label="RULE_LABELS.excludeSpouse"
-          />
           <UFormField
             name="excludePreviousYears"
             :label="RULE_LABELS.excludePreviousYears"
-            help="0 pour désactiver."
+            help="Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années. Plus c'est long, plus le tirage est contraint."
           >
-            <UInputNumber
+            <USelect
               v-model="state.excludePreviousYears"
-              :min="0"
-              :max="10"
-              class="w-36"
+              :items="previousYearsItems"
+              class="w-full"
             />
           </UFormField>
         </section>

@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
 import {
-  useCreateCoupleMutation,
   useDashboardQuery,
   useDeletePersonMutation,
-  useEndCoupleMutation,
   usePeopleQuery,
   useUpdatePersonMutation,
 } from '~/composables/queries/useGroup';
@@ -22,48 +20,20 @@ const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const update = useUpdatePersonMutation(slug);
 const remove = useDeletePersonMutation(slug);
-const createCouple = useCreateCoupleMutation(slug);
-const endCouple = useEndCoupleMutation(slug);
 
 const persons = computed(() => people.data.value?.persons ?? []);
 const person = computed(
   () => persons.value.find((p) => p.id === id.value) ?? null,
 );
-const couples = computed(() =>
-  (people.data.value?.couples ?? []).filter((c) => c.active),
-);
-const couple = computed(
-  () =>
-    couples.value.find(
-      (c) => c.personAId === id.value || c.personBId === id.value,
-    ) ?? null,
-);
 const nameOf = (pid: string) =>
   persons.value.find((p) => p.id === pid)?.firstName ?? '?';
-const partnerName = computed(() =>
-  couple.value
-    ? nameOf(
-        couple.value.personAId === id.value
-          ? couple.value.personBId
-          : couple.value.personAId,
-      )
-    : null,
+const exclusions = computed(() =>
+  (people.data.value?.exclusions ?? [])
+    .filter((e) => e.giverId === id.value || e.receiverId === id.value)
+    .map((e) =>
+      e.giverId === id.value ? nameOf(e.receiverId) : nameOf(e.giverId),
+    ),
 );
-const partnerOptions = computed(() =>
-  persons.value
-    .filter((p) => p.active && p.id !== id.value)
-    .filter(
-      (p) =>
-        !couples.value.some(
-          (c) => c.personAId === p.id || c.personBId === p.id,
-        ),
-    )
-    .map((p) => ({
-      label: p.firstName + (p.lastName ? ` ${p.lastName}` : ''),
-      value: p.id,
-    })),
-);
-const partner = ref<string | undefined>();
 
 const groupName = computed(
   () => dashboard.data.value?.group.name ?? slug.value,
@@ -98,17 +68,6 @@ const onSave = (value: PersonFormValue) =>
 const toggleActive = () =>
   person.value &&
   update.mutate({ id: id.value, active: !person.value.active }, { onError });
-const addCouple = () =>
-  partner.value &&
-  createCouple.mutate(
-    { personAId: id.value, personBId: partner.value },
-    {
-      onSuccess: () => {
-        partner.value = undefined;
-      },
-      onError,
-    },
-  );
 const confirmDelete = ref(false);
 const onDelete = () =>
   remove.mutate(id.value, {
@@ -138,38 +97,15 @@ const onDelete = () =>
           @submit="onSave"
         />
 
-        <MobileList title="Couple">
+        <MobileList title="Ne tire pas">
           <MobileListItem
-            v-if="couple"
-            icon="i-lucide-heart"
-            :title="`En couple avec ${partnerName}`"
-          >
-            <template #trailing>
-              <UButton
-                variant="ghost"
-                color="neutral"
-                size="sm"
-                label="Séparer"
-                :loading="endCouple.isPending.value"
-                @click.stop="endCouple.mutate(couple.id, { onError })"
-              />
-            </template>
-          </MobileListItem>
-          <li v-else class="flex items-center gap-2 px-4 py-3">
-            <USelect
-              v-model="partner"
-              :items="partnerOptions"
-              placeholder="En couple avec…"
-              class="grow"
-            />
-            <UButton
-              variant="soft"
-              :disabled="!partner"
-              :loading="createCouple.isPending.value"
-              label="Lier"
-              @click="addCouple"
-            />
-          </li>
+            :to="`/admin/${slug}/exclusions`"
+            icon="i-lucide-ban"
+            :title="
+              exclusions.length ? exclusions.join(', ') : 'Aucune exclusion'
+            "
+            subtitle="Gérer les exclusions"
+          />
         </MobileList>
 
         <MobileList

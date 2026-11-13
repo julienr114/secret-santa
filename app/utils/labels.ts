@@ -13,8 +13,7 @@ export const BADGE_LABELS: Record<string, string> = {
 };
 
 export const RULE_LABELS = {
-  excludeSpouse: 'Exclure le conjoint',
-  excludePreviousYears: "Nombre d'années précédentes à exclure",
+  excludePreviousYears: 'Éviter de retomber sur la même personne',
   budget: 'Budget (texte libre)',
   eventDate: 'Date de la fête',
   guardianMessage: 'Petit mot du gardien',

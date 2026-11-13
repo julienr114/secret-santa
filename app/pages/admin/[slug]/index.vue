@@ -63,7 +63,7 @@ const editionSubtitle = (status: string, count?: number) =>
         <MobileListItem
           :to="`/admin/${slug}/personnes`"
           icon="i-lucide-users"
-          title="Personnes et couples"
+          title="Personnes"
         />
         <MobileListItem
           :to="`/admin/${slug}/exclusions`"

@@ -20,9 +20,6 @@ const screen = computed(() => ({
 }));
 
 const persons = computed(() => people.data.value?.persons ?? []);
-const couples = computed(() =>
-  (people.data.value?.couples ?? []).filter((c) => c.active),
-);
 const label = (id: string) => {
   const p = persons.value.find((x) => x.id === id);
   if (!p) return '?';
@@ -33,14 +30,7 @@ const label = (id: string) => {
     ? `${p.firstName} ${p.lastName}`
     : p.firstName;
 };
-const partnerOf = (id: string) => {
-  const c = couples.value.find((x) => x.personAId === id || x.personBId === id);
-  return c ? label(c.personAId === id ? c.personBId : c.personAId) : null;
-};
-const subtitle = (id: string, active: boolean) =>
-  [!active && 'désactivé·e', partnerOf(id) && `en couple avec ${partnerOf(id)}`]
-    .filter(Boolean)
-    .join(' · ') || undefined;
+const subtitle = (active: boolean) => (active ? undefined : 'désactivé·e');
 const sorted = computed(() =>
   persons.value.toSorted((a, b) => Number(b.active) - Number(a.active)),
 );
@@ -65,14 +55,14 @@ const sorted = computed(() =>
       </p>
       <MobileList
         v-else
-        footer="Touche une personne pour la modifier, gérer son couple ou la désactiver."
+        footer="Touche une personne pour la modifier ou la désactiver."
       >
         <MobileListItem
           v-for="person in sorted"
           :key="person.id"
           :to="`/admin/${slug}/personnes/${person.id}`"
           :title="label(person.id)"
-          :subtitle="subtitle(person.id, person.active)"
+          :subtitle="subtitle(person.active)"
           :class="{ 'opacity-60': !person.active }"
         >
         </MobileListItem>

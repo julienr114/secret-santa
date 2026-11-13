@@ -1,7 +1,7 @@
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
 import type { Participant, PublicEdition } from '#server/database/editions';
-import type { CoupleRow, ExclusionRow } from '#server/database/schema';
+import type { ExclusionRow } from '#server/database/schema';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
 import { keys } from './keys';
@@ -18,7 +18,6 @@ export type Dashboard = {
 };
 export type PeoplePayload = {
   persons: PublicPerson[];
-  couples: CoupleRow[];
   exclusions: ExclusionRow[];
 };
 export type EditionPayload = {
@@ -79,21 +78,6 @@ export const useUpdatePersonMutation = (slug: Slug) =>
 export const useDeletePersonMutation = (slug: Slug) =>
   useApiMutation<{ ok: true }, string>(
     (id) => api(`${base(slug)}/persons/${id}`, { method: 'DELETE' }),
-    () => groupKeys(slug),
-  );
-
-export const useCreateCoupleMutation = (slug: Slug) =>
-  useApiMutation<
-    { couple: CoupleRow },
-    { personAId: string; personBId: string }
-  >(
-    (body) => api(`${base(slug)}/couples`, { method: 'POST', body }),
-    () => groupKeys(slug),
-  );
-
-export const useEndCoupleMutation = (slug: Slug) =>
-  useApiMutation<{ ok: true }, string>(
-    (id) => api(`${base(slug)}/couples/${id}`, { method: 'DELETE' }),
     () => groupKeys(slug),
   );
 

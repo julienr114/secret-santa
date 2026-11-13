@@ -2,9 +2,11 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Les étapes 1 à 4 sont déployées sur https://secret-santa.julienr114.workers.dev ; les étapes 5 et 5 bis restent à déployer. Prochaine étape : l'étape 7 (finitions), dont l'écran `/admin/[groupe]/journal`, pas encore fait.
+> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy`). Prochaine étape : l'étape 7 (finitions), dont l'écran `/admin/[groupe]/journal`, pas encore fait.
 >
-> Changements de la v6 (13 novembre 2026, à la demande de Julien) : **un nom de domaine payant**, `under-the-tree.party`, acheté chez Cloudflare Registrar (la contrainte « 0 € » devient « le prix du domaine, rien d'autre »). L'application y est servie par un Custom Domain du Worker ; l'adresse `workers.dev` reste active. Le domaine ouvre la voie à un **envoi groupé par email** (Resend, offre gratuite), en option par groupe activable par le super-admin seulement, le partage par téléphone restant le fonctionnement par défaut : à l'étude, rien n'est encore codé.
+> Changements de la v7 (13 novembre 2026, à la demande de Julien) : **trois langues**, français, anglais et allemand, pour toute l'application (section 21). Chaque personne a une **langue préférée** : sa page, ses messages, ses emails et le journal qu'elle lit suivent cette langue. L'application s'appelle désormais **Under the Tree** dans l'interface ; « Secret Santa » reste le nom du jeu dans les messages. La contrainte « interface entièrement en français » de la section 1 est levée.
+>
+> Changements de la v6 (13 novembre 2026, à la demande de Julien) : **un nom de domaine payant**, `under-the-tree.party`, acheté chez Cloudflare Registrar (la contrainte « 0 € » devient « le prix du domaine, rien d'autre »). L'application y est servie par un Custom Domain du Worker ; l'adresse `workers.dev` reste active. Le domaine ouvre la voie à un **envoi groupé par email** (Resend, offre gratuite), en option par groupe activable par le super-admin seulement, le partage par téléphone restant le fonctionnement par défaut (section 13.3).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -377,7 +379,7 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 - **Édition clôturée = résultats non secrets.** Le gardien voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
 - Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées.
-- **Accès de dernier recours au tirage en cours** (`POST /api/admin/[groupe]/editions/[id]/reveal-all`) : mot de passe du gardien redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« Le gardien a consulté les résultats du tirage »). Le gardien pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
+- **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : mot de passe du gardien redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« Le gardien a consulté les résultats du tirage »). Le gardien pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
 - Ces trois points remplacent, pour les éditions clôturées et l'accès de dernier recours, la règle « aucune route d'administration ne renvoie une attribution » de la section 8.3, qui reste vraie pour tout le reste.
 
 ---
@@ -419,6 +421,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `name` | text | |
 | `guardian_password_hash`, `guardian_password_salt` | text | |
 | `rules` | text (JSON) | Valeurs par défaut des règles du groupe |
+| `email_sending` | integer (booléen) | Envoi groupé par email, activé par le super-admin (13.3) |
 | `created_at` | text | |
 
 ### `persons`
@@ -427,6 +430,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `id` | text PK | |
 | `group_id` | text FK | |
 | `first_name` | text | Affiché partout |
+| `email` | text nullable | Facultatif, pour l'envoi groupé par email (13.3) |
 | `last_name` | text nullable | Pour départager les homonymes |
 | `active` | integer (booléen) | Désactivation plutôt que suppression |
 | `created_at` | text | |
@@ -607,6 +611,18 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 | `relance` | Manuel | « Petit rappel Léa : ton lien t'attend, pense à l'ouvrir. Ton lien : [lien] » |
 | `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
 
+### 13.3 Envoi groupé par email (v6, en option)
+
+Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnement par défaut ; l'email évite seulement au gardien de partager chaque lien à la main.
+
+- **Activation** : colonne `groups.email_sending`, modifiable par le **super-admin uniquement** (`PATCH /api/admin/groups/[id]`, interrupteur sur l'écran du groupe). Le gardien ne peut ni l'activer ni le couper.
+- **Adresses** : `persons.email`, facultative, saisie par le gardien ; le champ n'apparaît que si l'option est active. Migration `0005`.
+- **Envoi** : `POST /api/admin/[groupe]/editions/[id]/emails`, corps `type` (un message de l'étape en cours) et `audience` (`unsent` par défaut, ou `all`). Écrit aux participants qui ont une adresse, pose la pastille *envoyé* et journalise `message_sent` avec `via: email`. 50 emails au plus par appel, le reste au suivant.
+- **Fournisseur** : Resend (offre gratuite), domaine `under-the-tree.party` vérifié, un seul appel HTTPS par envoi groupé (`/emails/batch`), ce qui reste loin de la limite de 50 sous-requêtes du plan gratuit. Secret `NUXT_RESEND_API_KEY` ; sans clé, la route répond `email_not_configured` et rien d'autre ne change.
+- **Contenu** : `buildEmail` dans `server/utils/messages.ts`, même texte que le message à partager, plus un objet et un jumeau HTML sobre. Jamais de résultat.
+- **Délivrabilité, mesurée le 13 novembre 2026 sur Gmail** : SPF, DKIM et DMARC passent. Sans DMARC le premier essai est arrivé en spam ; avec, les mails arrivent dans l'onglet **Promotions**, mis en forme ou non. Le domaine venait d'être créé ; à remesurer plus tard. Seul Gmail a été testé. L'écran du gardien prévient que les emails arrivent souvent en spam (formulation demandée par Julien). Conséquence : l'email est un complément, le gardien relance par téléphone ceux qui n'ouvrent pas leur lien.
+- Les tests de bout en bout tournent sans clé (`scripts/e2e-server.sh` ignore le `.env` du poste) : aucun test n'envoie de vrai email.
+
 ---
 
 ## 14. Arborescence proposée
@@ -669,6 +685,8 @@ secret-santa/
 | `NUXT_PIN_PEPPER` | Poivre pour le hachage des mots de passe gardien (nom historique, conservé pour ne pas changer le secret en production) |
 | `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 20 000, maximum 100 000 sur Workers) |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
+| `RESEND_API_KEY` | Clé d'API Resend pour l'envoi groupé par email (facultative, une clé limitée à l'envoi suffit) |
+| `EMAIL_FROM` | Expéditeur des emails, sur un domaine vérifié chez Resend |
 
 **Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe.
 
@@ -680,9 +698,9 @@ secret-santa/
 2. Créer un compte Cloudflare gratuit.
 3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`. *(Fait : `1128fa3f-…`.)* Le sous-domaine `workers.dev` du compte se choisit dans le tableau de bord (Workers & Pages → Account details) s'il n'existe pas encore.
 4. Appliquer les migrations sur la base distante.
-5. Connecter le dépôt GitHub à Cloudflare (Workers Builds) : chaque `git push` sur la branche principale redéploie.
+5. Déployer à la main avec `pnpm deploy` (build puis `wrangler deploy`, après `wrangler login`). **Un `git push` ne déploie pas** : Workers Builds n'est pas branché sur le dépôt (constaté le 13 novembre 2026, aucun commit ne porte de déploiement Cloudflare).
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
-7. L'application est servie sur une adresse gratuite en `*.workers.dev`.
+7. L'application est servie sur `https://under-the-tree.party` (domaine personnalisé du Worker, déclaré dans `wrangler.toml`) et reste joignable sur `https://secret-santa.julienr114.workers.dev`.
 8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.
 
 Développement local : base D1 locale émulée par Miniflare (`nitro dev`), état dans `.wrangler/state/v3`.
@@ -818,3 +836,31 @@ Création des deux groupes réels, répétition générale avec une édition de 
 | Après clôture, afficher à tous le tableau complet « qui a offert à qui » ? | Non, sauf demande explicite |
 | Reprendre la liste de souhaits de l'an dernier à la création d'une édition ? | Non en V1 : liste vide à chaque édition. Un bouton « Reprendre ma liste de l'an dernier » est une évolution simple si la famille le demande |
 | Le gardien peut-il voir le contenu des listes de souhaits ? | Non, seulement le nombre d'idées (voir 6 bis.2) |
+
+---
+
+## 21. Langues (v7)
+
+Français, anglais, allemand. Le français reste la langue de référence et la langue par défaut.
+
+### 21.1 Qui voit quelle langue
+
+| Où | Langue |
+|---|---|
+| Page personnelle, liste de souhaits, journal du participant | Langue préférée de la personne (`persons.language`, migration `0006`, `fr` par défaut) |
+| Messages à partager et emails | Langue préférée du **destinataire**, pas celle du gardien |
+| Administration | Choix du visiteur, gardé dans un cookie `locale` sur l'appareil ; à défaut, langue du navigateur ; à défaut, français |
+| Lien invalide | Cookie ou langue du navigateur (on ne sait pas qui c'est) |
+
+Le gardien règle la langue d'une personne sur sa fiche. Le participant la change lui-même depuis sa page (`PUT /api/p/[token]/language`) : c'est enregistré comme sa préférence, donc ses prochains messages suivent.
+
+### 21.2 Comment c'est fait
+
+- **Dictionnaires typés** dans `shared/i18n/locales/<langue>/<domaine>.ts`, partagés par le serveur et les écrans. Le français est la référence ; les autres langues se terminent par `satisfies Dict<typeof fr>`, donc une clé manquante ou en trop ne compile pas.
+- **Pas de bibliothèque d'i18n.** `translate(locale, clé, params)` (`shared/i18n/index.ts`) tient en quelques dizaines de lignes : substitutions `{nom}`, pluriels `{ one, other }` choisis par `Intl.PluralRules`, repli sur le français puis sur la clé. Raison : le serveur a besoin des mêmes textes que les écrans (messages, emails, journal), et les clés sont vérifiées à la compilation des deux côtés. C'est un écart assumé au « standard de l'industrie » de la section 7.1.
+- **Écrans** : `const { t, tk, locale, setLocale } = useT()` (`t` pour une clé connue à la compilation, `tk` pour une clé construite à l'exécution), `useErrorMessage()` pour les erreurs d'API.
+- **Journal** : les événements stockés ne contiennent aucun texte ; la phrase est composée à l'affichage dans la langue du lecteur (`describeEvent`, ordinaux par `Intl.PluralRules`).
+- **Tests** : `shared/i18n/index.test.ts` vérifie que les trois langues ont les mêmes clés et les mêmes `{substitutions}` ; `tests/e2e/language.spec.ts` couvre le parcours.
+- **Vocabulaire** : gardien → *organizer* / *Organisator* ; tirage → *draw* / *Auslosung* ; édition → *edition* / *Ausgabe* ; Secret Santa → *Secret Santa* / *Wichteln* ; tutoiement en allemand.
+- La phrase de confirmation « JE VEUX VOIR LE TIRAGE » (8.7) reste en français dans toutes les langues : c'est le serveur qui la compare.
+

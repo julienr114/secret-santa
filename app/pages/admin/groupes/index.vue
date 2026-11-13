@@ -24,7 +24,7 @@ const groups = useGroupsQuery();
       :error="groups.error.value"
     >
       <p v-if="groups.data.value?.groups.length === 0" class="text-muted">
-        Aucun groupe pour l'instant. Crée la première famille avec « Nouveau ».
+        Aucun groupe pour l'instant. Crée le premier avec « Nouveau ».
       </p>
       <MobileList v-else>
         <MobileListItem

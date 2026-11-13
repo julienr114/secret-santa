@@ -77,7 +77,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
       class="flex flex-col gap-5"
       @submit="onSubmit"
     >
-      <UFormField name="name" label="Nom de la famille" required>
+      <UFormField name="name" label="Nom du groupe" required>
         <UInput
           v-model="state.name"
           placeholder="Famille Rabin"

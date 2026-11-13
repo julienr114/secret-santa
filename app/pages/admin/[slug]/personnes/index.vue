@@ -65,7 +65,7 @@ const sorted = computed(() =>
       :error="people.error.value"
     >
       <p v-if="persons.length === 0" class="text-muted">
-        Commence par ajouter les membres de la famille.
+        Commence par ajouter les membres du groupe.
       </p>
       <MobileList
         v-else

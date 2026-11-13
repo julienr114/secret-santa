@@ -1,0 +1,60 @@
+import { describe, it, expect } from 'vitest';
+import { DEFAULT_RULES, mergeRules, rulesSchema } from './rules.js';
+
+describe('rules', () => {
+  it('has the defaults from README section 5', () => {
+    expect(DEFAULT_RULES).toEqual({
+      excludeSpouse: true,
+      excludePreviousYears: 1,
+      registrationRequired: true,
+      budget: '',
+      eventDate: '',
+      guardianMessage: '',
+      maxPinAttempts: 5,
+      wishlist: true,
+      maxWishes: 10,
+    });
+  });
+
+  it('merges defaults, group rules and edition override in that order', () => {
+    const merged = mergeRules(
+      { budget: '20 €', excludePreviousYears: 2 },
+      { budget: '30 €' },
+    );
+    expect(merged.ok).toBe(true);
+    expect(merged.value.budget).toBe('30 €');
+    expect(merged.value.excludePreviousYears).toBe(2);
+    expect(merged.value.excludeSpouse).toBe(true);
+  });
+
+  it('ignores null and undefined overrides and unknown keys', () => {
+    const merged = mergeRules(
+      { budget: '20 €', bogus: 1 },
+      { budget: null, eventDate: undefined },
+    );
+    expect(merged.value.budget).toBe('20 €');
+    expect(merged.value.eventDate).toBe('');
+    expect('bogus' in merged.value).toBe(false);
+  });
+
+  it('accepts a missing or null override', () => {
+    expect(mergeRules({}).ok).toBe(true);
+    expect(mergeRules({}, null).value).toEqual(DEFAULT_RULES);
+  });
+
+  it('rejects invalid values and names the field', () => {
+    const merged = mergeRules({ excludePreviousYears: -1 });
+    expect(merged).toEqual({
+      ok: false,
+      reason: 'invalid_rules',
+      details: { issues: ['excludePreviousYears'] },
+    });
+    expect(rulesSchema.safeParse({ maxPinAttempts: 0 }).success).toBe(false);
+  });
+
+  it('does not mutate its inputs', () => {
+    const group = Object.freeze({ budget: 'x' });
+    const override = Object.freeze({ budget: 'y' });
+    expect(() => mergeRules(group, override)).not.toThrow();
+  });
+});

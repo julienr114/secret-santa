@@ -1,5 +1,6 @@
 import { eq, or } from 'drizzle-orm';
 import {
+  auditLog,
   couples,
   manualExclusions,
   persons,
@@ -10,7 +11,7 @@ import { notFound } from '../../../../http/errors.js';
 
 // Definitive deletion only for someone who never took part (README 6.6);
 // otherwise the guardian deactivates. Couples and exclusions naming the
-// person go with them.
+// person go with them; journal events keep their text but lose the link.
 export default defineEventHandler(async (event) => {
   const { group, db } = await requireGroupAccess(event);
   const person = await findPerson(db, group.id, getRouterParam(event, 'id'));
@@ -22,6 +23,10 @@ export default defineEventHandler(async (event) => {
     });
   }
   await db.batch([
+    db
+      .update(auditLog)
+      .set({ personId: null })
+      .where(eq(auditLog.personId, person.id)),
     db
       .delete(manualExclusions)
       .where(

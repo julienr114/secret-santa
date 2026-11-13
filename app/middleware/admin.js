@@ -14,5 +14,13 @@ export default defineNuxtRouteMiddleware((to) => {
   ) {
     return navigateTo(homeOf(user.value));
   }
+  // A guardian only ever sees their own group.
+  if (
+    user.value?.role === 'guardian' &&
+    to.params.slug &&
+    to.params.slug !== user.value.groupSlug
+  ) {
+    return navigateTo(homeOf(user.value));
+  }
   return undefined;
 });

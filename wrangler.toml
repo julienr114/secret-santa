@@ -5,6 +5,16 @@ main = ".output/server/index.mjs"
 compatibility_date = "2025-07-15"
 compatibility_flags = ["nodejs_compat"]
 
+# Custom domain (bought at Cloudflare Registrar on 2026-11-13). Cloudflare
+# creates the DNS record and the certificate. With routes declared, wrangler
+# turns the workers.dev address off unless told otherwise: it stays on so
+# the links already shared keep working.
+workers_dev = true
+
+[[routes]]
+pattern = "under-the-tree.party"
+custom_domain = true
+
 [assets]
 directory = ".output/public"
 binding = "ASSETS"
@@ -20,4 +30,4 @@ database_id = "1128fa3f-8afe-48ba-b550-f2fae582a685"
 migrations_dir = "server/database/migrations"
 
 [vars]
-NUXT_PUBLIC_BASE_URL = "https://secret-santa.julienr114.workers.dev"
+NUXT_PUBLIC_BASE_URL = "https://under-the-tree.party"

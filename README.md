@@ -4,6 +4,8 @@
 >
 > État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Les étapes 1 à 4 sont déployées sur https://secret-santa.julienr114.workers.dev ; les étapes 5 et 5 bis restent à déployer. Prochaine étape : l'étape 7 (finitions), dont l'écran `/admin/[groupe]/journal`, pas encore fait.
 >
+> Changements de la v6 (13 novembre 2026, à la demande de Julien) : **un nom de domaine payant**, `under-the-tree.party`, acheté chez Cloudflare Registrar (la contrainte « 0 € » devient « le prix du domaine, rien d'autre »). L'application y est servie par un Custom Domain du Worker ; l'adresse `workers.dev` reste active. Le domaine ouvre la voie à un **envoi groupé par email** (Resend, offre gratuite), en option par groupe activable par le super-admin seulement, le partage par téléphone restant le fonctionnement par défaut : à l'étude, rien n'est encore codé.
+>
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
 > Changements de la v3, issus de l'étape 0 : **plus aucun email**, le gardien envoie les liens par WhatsApp grâce aux liens officiels **« click to chat » (`wa.me`)** qui ouvrent la conversation avec le message prérempli (section 13) ; **Nuxt 4** au lieu de Nuxt 3 ; preset **Cloudflare Workers** ; conclusions des vérifications en section 7.2.
@@ -731,7 +733,7 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - Tests de bout en bout dans `tests/e2e/participant.spec.ts`.
 
 **Étape 5 bis — Liste de souhaits** ✅ *terminée le 13 novembre 2026*
-Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté gardien existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, **sans bouton « Enregistrer »** : l'idée est sauvegardée quand un champ perd le focus ou que le panneau se ferme (donc une ligne de journal par modification).
+Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté gardien existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
 
 **Étape 6 — Partage des liens** ✅ *fait avec l'étape 4 (v5)*
 Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation. Le plan initial (liens WhatsApp `wa.me`) est abandonné.

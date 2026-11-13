@@ -13,8 +13,8 @@ export default defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: 'v8',
-      include: ['server/utils/**/*.js', 'shared/**/*.js'],
-      exclude: ['**/*.test.js'],
+      include: ['server/utils/**/*.ts', 'shared/**/*.ts'],
+      exclude: ['**/*.test.ts'],
       reporter: ['text', 'html'],
     },
   },

@@ -21,16 +21,17 @@
     "test:coverage": "vitest run --coverage",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply secret-santa --local",
-    "db:migrate": "wrangler d1 migrations apply secret-santa --remote"
+    "db:migrate": "wrangler d1 migrations apply secret-santa --remote",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@nuxt/ui": "^4.12.0",
     "@tanstack/vue-query": "^5.107.1",
     "drizzle-orm": "^0.45.4",
     "nanoid": "^6.0.2",
     "nuxt": "^4.6.4",
     "nuxt-auth-utils": "^0.6.2",
     "vue": "^3.5.45",
-    "vue-router": "^4.6.4",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -46,7 +47,9 @@
     "prettier": "^3.10.1",
     "simple-git-hooks": "^2.14.0",
     "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.3",
     "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14",
     "wrangler": "^4.161.0"
   },
   "simple-git-hooks": {
@@ -54,7 +57,7 @@
     "pre-push": "pnpm test"
   },
   "lint-staged": {
-    "*.{js,vue}": [
+    "*.{js,ts,vue}": [
       "eslint --config eslint.config.js --fix",
       "prettier --write"
     ],

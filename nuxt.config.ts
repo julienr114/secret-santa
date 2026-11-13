@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint', 'nuxt-auth-utils'],
+  modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxt/ui'],
   // Secrets come from the environment (NUXT_* variables, Cloudflare secrets
   // in production). See README section 15.
   runtimeConfig: {
@@ -17,9 +17,9 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
-  // Plain JavaScript project: Nuxt still generates .nuxt/tsconfig.json for
-  // editor tooling, but never type-checks.
-  typescript: { typeCheck: false },
+  // Strict TypeScript; `pnpm typecheck` (vue-tsc) runs in CI rather than on
+  // every dev reload.
+  typescript: { strict: true, typeCheck: false },
   // Cloudflare Workers. In dev, Nitro emulates the bindings declared in
   // wrangler.toml through Miniflare (state in .wrangler/state/v3).
   nitro: { preset: 'cloudflare_module' },

@@ -4,6 +4,6 @@ import { defineConfig } from 'drizzle-kit';
 // D1 (local or remote) using migrations_dir from wrangler.toml.
 export default defineConfig({
   dialect: 'sqlite',
-  schema: './server/database/schema.js',
+  schema: './server/database/schema.ts',
   out: './server/database/migrations',
 });

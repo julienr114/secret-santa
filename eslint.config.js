@@ -32,7 +32,7 @@ const functionalEverywhere = {
 // syntax selectors because eslint-plugin-functional's immutable-data needs
 // TypeScript type information.
 const pureCore = {
-  files: ['server/utils/**/*.js', 'shared/**/*.js'],
+  files: ['server/utils/**/*.ts', 'shared/**/*.ts'],
   rules: {
     'functional/no-loop-statements': 'error',
     'functional/no-throw-statements': 'error',
@@ -61,7 +61,7 @@ const pureCore = {
 };
 
 const tests = {
-  files: ['**/*.test.js', 'tests/**/*.js'],
+  files: ['**/*.test.ts', 'tests/**/*.ts'],
   rules: {
     'functional/immutable-data': 'off',
     'functional/no-loop-statements': 'off',

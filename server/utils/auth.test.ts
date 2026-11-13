@@ -4,26 +4,35 @@ import {
   loginThrottle,
   slugSchema,
   sessionUserSchema,
-} from './auth.js';
+} from './auth';
 
 describe('canAccessGroup', () => {
   it('lets super admins in everywhere and guardians only in their group', () => {
-    expect(canAccessGroup({ role: 'super_admin', groupId: null }, 'g1')).toBe(
-      true,
-    );
-    expect(canAccessGroup({ role: 'guardian', groupId: 'g1' }, 'g1')).toBe(
-      true,
-    );
-    expect(canAccessGroup({ role: 'guardian', groupId: 'g1' }, 'g2')).toBe(
-      false,
-    );
+    expect(
+      canAccessGroup(
+        { role: 'super_admin', groupId: null, groupSlug: null },
+        'g1',
+      ),
+    ).toBe(true);
+    expect(
+      canAccessGroup(
+        { role: 'guardian', groupId: 'g1', groupSlug: null },
+        'g1',
+      ),
+    ).toBe(true);
+    expect(
+      canAccessGroup(
+        { role: 'guardian', groupId: 'g1', groupSlug: null },
+        'g2',
+      ),
+    ).toBe(false);
     expect(canAccessGroup(null, 'g1')).toBe(false);
   });
 });
 
 describe('loginThrottle', () => {
   const now = '2026-11-13T12:00:00.000Z';
-  const minutesAgo = (m) =>
+  const minutesAgo = (m: number) =>
     new Date(Date.parse(now) - m * 60_000).toISOString();
 
   it('allows with few recent failures', () => {

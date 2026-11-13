@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ok, fail } from './result.js';
+import { ok, fail, type Result } from './result';
 
 // Web Crypto only (README section 8): available in Node 22 and in Workers.
 // Nothing here touches the database; callers pass salts, pepper and keys in.
@@ -7,36 +7,35 @@ import { ok, fail } from './result.js';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-export const toBase64 = (bytes) =>
+export const toBase64 = (bytes: Uint8Array): string =>
   btoa(Array.from(bytes, (b) => String.fromCharCode(b)).join(''));
-export const fromBase64 = (text) =>
-  Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
-export const toBase64Url = (bytes) =>
+export const fromBase64 = (text: string): Uint8Array<ArrayBuffer> =>
+  new Uint8Array([...atob(text)].map((c) => c.charCodeAt(0)));
+export const toBase64Url = (bytes: Uint8Array): string =>
   toBase64(bytes).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
-export const toHex = (bytes) =>
+export const toHex = (bytes: Uint8Array): string =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 
-export const randomBytes = (length) =>
+export const randomBytes = (length: number): Uint8Array<ArrayBuffer> =>
   crypto.getRandomValues(new Uint8Array(length));
 
 /**
  * Uniform random integer in [0, n) from crypto.getRandomValues, with
  * rejection sampling to avoid modulo bias. Never Math.random (README 6.2).
- * @param {number} n
  */
-export const secureRandomInt = (n) => {
+export const secureRandomInt = (n: number): number => {
   const limit = Math.floor(2 ** 32 / n) * n;
-  const [value] = crypto.getRandomValues(new Uint32Array(1));
+  const value = crypto.getRandomValues(new Uint32Array(1))[0] as number;
   return value < limit ? value % n : secureRandomInt(n);
 };
 
 // --- Personal links (README 8.1) ---------------------------------------
 
 /** 32 random bytes, base64url: the part after /p/ in a personal link. */
-export const generateToken = () => toBase64Url(randomBytes(32));
+export const generateToken = (): string => toBase64Url(randomBytes(32));
 
 /** SHA-256 hex of a token, the only form stored for lookup. */
-export const hashToken = async (token) =>
+export const hashToken = async (token: string): Promise<string> =>
   toHex(
     new Uint8Array(
       await crypto.subtle.digest('SHA-256', encoder.encode(token)),
@@ -50,11 +49,11 @@ export const MAX_PBKDF2_ITERATIONS = 100_000;
 
 export const pinSchema = z.string().regex(/^\d{6}$/, 'six digits');
 
-const isStraight = (digits, step) =>
-  digits.every((d, i) => i === 0 || d - digits[i - 1] === step);
+const isStraight = (digits: number[], step: number): boolean =>
+  digits.every((d, i) => i === 0 || d - (digits[i - 1] as number) === step);
 
 /** 000000, 123456, 654321 and friends are refused (README 8.2). */
-export const isTrivialPin = (pin) => {
+export const isTrivialPin = (pin: string): boolean => {
   if (!pinSchema.safeParse(pin).success) return true;
   const digits = [...pin].map(Number);
   return (
@@ -64,16 +63,19 @@ export const isTrivialPin = (pin) => {
   );
 };
 
-export const generateSalt = () => toBase64(randomBytes(16));
+export const generateSalt = (): string => toBase64(randomBytes(16));
+
+export type HashOptions = { salt: string; pepper: string; iterations?: number };
 
 /**
  * PBKDF2-SHA256 of secret+pepper with a per-person salt. The pepper lives
  * only in the environment, so a copy of the database alone is useless.
- * @param {string} secret
- * @param {{ salt: string, pepper: string, iterations?: number }} options
- * @returns {Promise<string>} base64 hash
+ * @returns base64 hash
  */
-export const hashSecret = async (secret, { salt, pepper, iterations }) => {
+export const hashSecret = async (
+  secret: string,
+  { salt, pepper, iterations }: HashOptions,
+): Promise<string> => {
   const rounds = Math.min(
     iterations ?? DEFAULT_PBKDF2_ITERATIONS,
     MAX_PBKDF2_ITERATIONS,
@@ -99,37 +101,37 @@ export const hashSecret = async (secret, { salt, pepper, iterations }) => {
 };
 
 /** Constant-time string comparison. */
-export const timingSafeEqual = (a, b) => {
+export const timingSafeEqual = (a: string, b: string): boolean => {
   const left = encoder.encode(a);
   const right = encoder.encode(b);
   const diff = left.reduce((acc, byte, i) => acc | (byte ^ (right[i] ?? 0)), 0);
   return left.length === right.length && diff === 0;
 };
 
-/** @returns {Promise<boolean>} */
 export const verifySecret = async (
-  secret,
-  { hash, salt, pepper, iterations },
-) =>
+  secret: string,
+  { hash, salt, pepper, iterations }: HashOptions & { hash: string },
+): Promise<boolean> =>
   timingSafeEqual(await hashSecret(secret, { salt, pepper, iterations }), hash);
 
 // --- Results and tokens at rest (README 8.3) ----------------------------
 
 /** For setup docs: a fresh DATA_KEY value. */
-export const generateDataKey = () => toBase64(randomBytes(32));
+export const generateDataKey = (): string => toBase64(randomBytes(32));
 
-/**
- * @param {string} base64Key 32 bytes, base64
- * @returns {Promise<import('./result.js').Result<CryptoKey>>}
- */
-export const importDataKey = async (base64Key) => {
-  const bytes = (() => {
-    try {
-      return fromBase64(base64Key ?? '');
-    } catch {
-      return new Uint8Array();
-    }
-  })();
+const decodeKey = (base64Key: string | undefined): Uint8Array<ArrayBuffer> => {
+  try {
+    return fromBase64(base64Key ?? '');
+  } catch {
+    return new Uint8Array();
+  }
+};
+
+/** @param base64Key 32 bytes, base64 */
+export const importDataKey = async (
+  base64Key: string | undefined,
+): Promise<Result<CryptoKey>> => {
+  const bytes = decodeKey(base64Key);
   if (bytes.length !== 32)
     return fail('invalid_data_key', { length: bytes.length });
   const key = await crypto.subtle.importKey('raw', bytes, 'AES-GCM', false, [
@@ -139,13 +141,13 @@ export const importDataKey = async (base64Key) => {
   return ok(key);
 };
 
-/**
- * AES-256-GCM with a fresh 12-byte IV per value.
- * @param {string} plaintext
- * @param {CryptoKey} key
- * @returns {Promise<{ enc: string, iv: string }>}
- */
-export const encrypt = async (plaintext, key) => {
+export type Encrypted = { enc: string; iv: string };
+
+/** AES-256-GCM with a fresh 12-byte IV per value. */
+export const encrypt = async (
+  plaintext: string,
+  key: CryptoKey,
+): Promise<Encrypted> => {
   const iv = randomBytes(12);
   const cipher = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
@@ -155,12 +157,10 @@ export const encrypt = async (plaintext, key) => {
   return { enc: toBase64(new Uint8Array(cipher)), iv: toBase64(iv) };
 };
 
-/**
- * @param {{ enc: string, iv: string }} payload
- * @param {CryptoKey} key
- * @returns {Promise<import('./result.js').Result<string>>}
- */
-export const decrypt = async ({ enc, iv }, key) => {
+export const decrypt = async (
+  { enc, iv }: Encrypted,
+  key: CryptoKey,
+): Promise<Result<string>> => {
   const plain = await crypto.subtle
     .decrypt({ name: 'AES-GCM', iv: fromBase64(iv) }, key, fromBase64(enc))
     .catch(() => null);

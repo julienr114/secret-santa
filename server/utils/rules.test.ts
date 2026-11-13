@@ -4,7 +4,8 @@ import {
   mergeRules,
   rulesPatchSchema,
   rulesSchema,
-} from './rules.js';
+} from './rules';
+import { failureOf, valueOf } from '../../tests/helpers';
 
 describe('rules', () => {
   it('has the defaults from README section 5', () => {
@@ -27,9 +28,9 @@ describe('rules', () => {
       { budget: '30 €' },
     );
     expect(merged.ok).toBe(true);
-    expect(merged.value.budget).toBe('30 €');
-    expect(merged.value.excludePreviousYears).toBe(2);
-    expect(merged.value.excludeSpouse).toBe(true);
+    expect(valueOf(merged).budget).toBe('30 €');
+    expect(valueOf(merged).excludePreviousYears).toBe(2);
+    expect(valueOf(merged).excludeSpouse).toBe(true);
   });
 
   it('ignores null and undefined overrides and unknown keys', () => {
@@ -37,18 +38,18 @@ describe('rules', () => {
       { budget: '20 €', bogus: 1 },
       { budget: null, eventDate: undefined },
     );
-    expect(merged.value.budget).toBe('20 €');
-    expect(merged.value.eventDate).toBe('');
-    expect('bogus' in merged.value).toBe(false);
+    expect(valueOf(merged).budget).toBe('20 €');
+    expect(valueOf(merged).eventDate).toBe('');
+    expect('bogus' in valueOf(merged)).toBe(false);
   });
 
   it('accepts a missing or null override', () => {
     expect(mergeRules({}).ok).toBe(true);
-    expect(mergeRules({}, null).value).toEqual(DEFAULT_RULES);
+    expect(valueOf(mergeRules({}, null))).toEqual(DEFAULT_RULES);
   });
 
   it('rejects invalid values and names the field', () => {
-    const merged = mergeRules({ excludePreviousYears: -1 });
+    const merged = failureOf(mergeRules({ excludePreviousYears: -1 }));
     expect(merged).toEqual({
       ok: false,
       reason: 'invalid_rules',

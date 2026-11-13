@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ok, fail } from './result.js';
+import { ok, fail, type Result } from './result';
 
 // Draw rules (README section 5). Keys are English in code; the UI shows the
 // French labels. Group rules hold the defaults, an edition may override.
@@ -24,26 +24,17 @@ const shape = {
   maxWishes: z.number().int().min(1).max(50),
 };
 
-const DEFAULTS = {
-  excludeSpouse: true,
-  excludePreviousYears: 1,
-  registrationRequired: true,
-  budget: '',
-  eventDate: '',
-  guardianMessage: '',
-  maxPinAttempts: 5,
-  wishlist: true,
-  maxWishes: 10,
-};
-
-export const rulesSchema = z.object(
-  Object.fromEntries(
-    Object.entries(shape).map(([key, type]) => [
-      key,
-      type.default(DEFAULTS[key]),
-    ]),
-  ),
-);
+export const rulesSchema = z.object({
+  excludeSpouse: shape.excludeSpouse.default(true),
+  excludePreviousYears: shape.excludePreviousYears.default(1),
+  registrationRequired: shape.registrationRequired.default(true),
+  budget: shape.budget.default(''),
+  eventDate: shape.eventDate.default(''),
+  guardianMessage: shape.guardianMessage.default(''),
+  maxPinAttempts: shape.maxPinAttempts.default(5),
+  wishlist: shape.wishlist.default(true),
+  maxWishes: shape.maxWishes.default(10),
+});
 
 /** A partial rule set: only the keys to override. */
 export const rulesPatchSchema = z.object(shape).partial();
@@ -51,13 +42,16 @@ export const rulesPatchSchema = z.object(shape).partial();
 // Nullable variant for an edition: null means "no override".
 export const rulesOverrideSchema = rulesPatchSchema.nullable();
 
-/** @typedef {import('zod').infer<typeof rulesSchema>} Rules */
+export type Rules = z.infer<typeof rulesSchema>;
+export type RulesPatch = z.infer<typeof rulesPatchSchema>;
 
-export const DEFAULT_RULES = Object.freeze(rulesSchema.parse({}));
+export const DEFAULT_RULES: Readonly<Rules> = Object.freeze(
+  rulesSchema.parse({}),
+);
 
-const dropNullish = (object) =>
+const dropNullish = (object: unknown): Record<string, unknown> =>
   Object.fromEntries(
-    Object.entries(object ?? {}).filter(
+    Object.entries((object ?? {}) as Record<string, unknown>).filter(
       ([, value]) => value !== null && value !== undefined,
     ),
   );
@@ -65,11 +59,11 @@ const dropNullish = (object) =>
 /**
  * Effective rules for an edition: defaults, then group rules, then the
  * edition override. Unknown keys are dropped, invalid values rejected.
- * @param {unknown} groupRules
- * @param {unknown} [editionOverride]
- * @returns {import('./result.js').Result<Rules>}
  */
-export const mergeRules = (groupRules, editionOverride) => {
+export const mergeRules = (
+  groupRules: unknown,
+  editionOverride?: unknown,
+): Result<Rules> => {
   const parsed = rulesSchema.safeParse({
     ...DEFAULT_RULES,
     ...dropNullish(groupRules),

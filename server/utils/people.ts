@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { phoneSchema } from './whatsapp.js';
+import { phoneSchema } from './whatsapp';
 
 // People, couples and manual exclusions of a group (README 6.6, section 10).
 
@@ -36,14 +36,25 @@ export const exclusionInputSchema = z
   })
   .refine((e) => e.giverId !== e.receiverId, 'self exclusion is implicit');
 
+export type CoupleLike = {
+  personAId: string;
+  personBId: string;
+  active: boolean;
+};
+
 /** The active couple a person belongs to, if any. */
-export const activeCoupleOf = (couples, personId) =>
+export const activeCoupleOf = <C extends CoupleLike>(
+  couples: C[],
+  personId: string,
+): C | null =>
   couples.find(
     (c) => c.active && (c.personAId === personId || c.personBId === personId),
   ) ?? null;
 
+export type Named = { id: string; firstName: string; lastName?: string | null };
+
 /** Display name: first name, last name only to tell homonyms apart (README 20). */
-export const displayName = (person, people = []) => {
+export const displayName = (person: Named, people: Named[] = []): string => {
   const homonyms = people.filter(
     (p) => p.id !== person.id && p.firstName === person.firstName,
   );
@@ -52,11 +63,31 @@ export const displayName = (person, people = []) => {
     : person.firstName;
 };
 
+export type PersonRow = Named & {
+  phone: string | null;
+  active: boolean;
+  pinHash: string | null;
+  pinSalt?: string | null;
+  pinLockedAt: string | null;
+  createdAt: string;
+};
+
+export type PublicPerson = {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  phone: string | null;
+  active: boolean;
+  hasPin: boolean;
+  pinLocked: boolean;
+  createdAt: string;
+};
+
 /** What the admin API exposes about a person: never a PIN hash or salt. */
-export const publicPerson = (person) => ({
+export const publicPerson = (person: PersonRow): PublicPerson => ({
   id: person.id,
   firstName: person.firstName,
-  lastName: person.lastName,
+  lastName: person.lastName ?? null,
   phone: person.phone,
   active: person.active,
   hasPin: Boolean(person.pinHash),

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeWishes } from './wishes.js';
+import { normalizeWishes } from './wishes';
+import { failureOf } from '../../tests/helpers';
 
 const rules = { maxWishes: 3 };
 
@@ -24,7 +25,9 @@ describe('normalizeWishes', () => {
 
   it('accepts an empty list and rejects a non-list', () => {
     expect(normalizeWishes([], rules)).toEqual({ ok: true, value: [] });
-    expect(normalizeWishes('nope', rules).reason).toBe('invalid_wishes');
+    expect(failureOf(normalizeWishes('nope', rules)).reason).toBe(
+      'invalid_wishes',
+    );
   });
 
   it('refuses more than maxWishes non-blank items', () => {
@@ -37,6 +40,8 @@ describe('normalizeWishes', () => {
   });
 
   it('names the faulty item and field', () => {
+    const field = (items: unknown) =>
+      failureOf(normalizeWishes(items, rules)).details;
     expect(
       normalizeWishes(
         [{ label: 'ok' }, { label: '', url: 'https://a.b' }],
@@ -47,25 +52,17 @@ describe('normalizeWishes', () => {
       reason: 'invalid_wish',
       details: { index: 1, field: 'label' },
     });
-    expect(
-      normalizeWishes([{ label: 'x'.repeat(201) }], rules).details,
-    ).toEqual({
+    expect(field([{ label: 'x'.repeat(201) }])).toEqual({
       index: 0,
       field: 'label',
     });
-    expect(
-      normalizeWishes([{ label: 'ok', url: 'ftp://a.b' }], rules).details,
-    ).toEqual({
+    expect(field([{ label: 'ok', url: 'ftp://a.b' }])).toEqual({
       index: 0,
       field: 'url',
     });
-    expect(
-      normalizeWishes([{ label: 'ok', url: 'javascript:alert(1)' }], rules)
-        .details.field,
-    ).toBe('url');
-    expect(
-      normalizeWishes([{ label: 'ok', url: 'pas une url' }], rules).details
-        .field,
-    ).toBe('url');
+    expect(field([{ label: 'ok', url: 'javascript:alert(1)' }]).field).toBe(
+      'url',
+    );
+    expect(field([{ label: 'ok', url: 'pas une url' }]).field).toBe('url');
   });
 });

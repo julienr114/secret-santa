@@ -14,7 +14,8 @@ import {
   toBase64,
   fromBase64,
   verifySecret,
-} from './crypto.js';
+} from './crypto';
+import { failureOf, valueOf } from '../../tests/helpers';
 
 const FAST = { iterations: 1_000 };
 
@@ -119,7 +120,7 @@ describe('hashSecret / verifySecret', () => {
 
 describe('AES-GCM', () => {
   it('round-trips and uses a fresh IV each time', async () => {
-    const key = (await importDataKey(generateDataKey())).value;
+    const key = valueOf(await importDataKey(generateDataKey()));
     const first = await encrypt('person-42', key);
     const second = await encrypt('person-42', key);
     expect(first.iv).not.toBe(second.iv);
@@ -132,24 +133,30 @@ describe('AES-GCM', () => {
   });
 
   it('fails cleanly with another key or a tampered payload', async () => {
-    const key = (await importDataKey(generateDataKey())).value;
-    const other = (await importDataKey(generateDataKey())).value;
+    const key = valueOf(await importDataKey(generateDataKey()));
+    const other = valueOf(await importDataKey(generateDataKey()));
     const payload = await encrypt('secret', key);
-    expect((await decrypt(payload, other)).reason).toBe('decrypt_failed');
+    expect(failureOf(await decrypt(payload, other)).reason).toBe(
+      'decrypt_failed',
+    );
     const tampered = {
       ...payload,
       enc: payload.enc.replace(/^./, (c) => (c === 'A' ? 'B' : 'A')),
     };
-    expect((await decrypt(tampered, key)).reason).toBe('decrypt_failed');
+    expect(failureOf(await decrypt(tampered, key)).reason).toBe(
+      'decrypt_failed',
+    );
   });
 
   it('rejects keys of the wrong size or format', async () => {
-    expect((await importDataKey(toBase64(new Uint8Array(16)))).reason).toBe(
+    expect(
+      failureOf(await importDataKey(toBase64(new Uint8Array(16)))).reason,
+    ).toBe('invalid_data_key');
+    expect(failureOf(await importDataKey('not base64!')).reason).toBe(
       'invalid_data_key',
     );
-    expect((await importDataKey('not base64!')).reason).toBe(
+    expect(failureOf(await importDataKey(undefined)).reason).toBe(
       'invalid_data_key',
     );
-    expect((await importDataKey(undefined)).reason).toBe('invalid_data_key');
   });
 });

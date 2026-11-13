@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { MESSAGE_TYPES, buildMessage } from './messages.js';
+import { MESSAGE_TYPES, buildMessage, type MessageData } from './messages';
+import { failureOf, valueOf } from '../../tests/helpers';
 
-const data = {
+const data: MessageData = {
   firstName: 'Léa',
   groupName: 'la famille Rabin',
   editionLabel: 'Noël 2026',
@@ -11,7 +12,7 @@ const data = {
 describe('buildMessage', () => {
   it('ends with the link alone on its own line, for every type', () => {
     MESSAGE_TYPES.forEach((type) => {
-      const text = buildMessage(type, data).value;
+      const text = valueOf(buildMessage(type, data));
       const lines = text.split('\n');
       expect(lines.at(-1), type).toBe(data.link);
       expect(text.indexOf(data.link), type).toBe(text.lastIndexOf(data.link));
@@ -20,27 +21,29 @@ describe('buildMessage', () => {
   });
 
   it('writes the invitation and the drawn message with budget and date', () => {
-    expect(buildMessage('invitation', data).value).toBe(
+    expect(valueOf(buildMessage('invitation', data))).toBe(
       'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien, choisis ton code secret et note quelques idées de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
-      buildMessage('drawn', {
-        ...data,
-        budget: '20 € max',
-        eventDate: '24 décembre',
-      }).value,
+      valueOf(
+        buildMessage('drawn', {
+          ...data,
+          budget: '20 € max',
+          eventDate: '24 décembre',
+        }),
+      ),
     ).toBe(
       'Léa, le tirage est fait ! 🎁\nBudget : 20 € max.\nRendez-vous le 24 décembre.\nOuvre ton lien pour découvrir à qui tu offres un cadeau :\nhttps://secret-santa.example/p/abc123',
     );
-    expect(buildMessage('drawn', data).value).not.toContain('Budget');
+    expect(valueOf(buildMessage('drawn', data))).not.toContain('Budget');
   });
 
   it('adapts the reminder to the participant state', () => {
     expect(
-      buildMessage('reminder', { ...data, pinChosen: false }).value,
+      valueOf(buildMessage('reminder', { ...data, pinChosen: false })),
     ).toContain('choisi ton code');
     expect(
-      buildMessage('reminder', { ...data, pinChosen: true }).value,
+      valueOf(buildMessage('reminder', { ...data, pinChosen: true })),
     ).toContain('consulté ton résultat');
   });
 
@@ -50,14 +53,14 @@ describe('buildMessage', () => {
       receiverFirstName: 'Tom',
       receiverId: 'p2',
       assignments: ['Tom'],
-    };
+    } as MessageData;
     MESSAGE_TYPES.forEach((type) => {
-      expect(buildMessage(type, poisoned).value, type).not.toMatch(/Tom|p2/);
+      expect(valueOf(buildMessage(type, poisoned)), type).not.toMatch(/Tom|p2/);
     });
   });
 
   it('rejects unknown types', () => {
-    expect(buildMessage('spam', data)).toEqual({
+    expect(failureOf(buildMessage('spam', data))).toEqual({
       ok: false,
       reason: 'unknown_message_type',
       details: { type: 'spam' },

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ok, fail } from './result.js';
+import { ok, fail, type Result } from './result';
 
 // Wish lists (README section 6 bis). The whole list is replaced on save, so
 // normalization returns the rows to insert, positions included.
@@ -18,36 +18,44 @@ const wishSchema = z.object({
   url: urlSchema.nullable(),
 });
 
-const isBlank = (item) =>
-  !(item?.label ?? '').trim() && !(item?.url ?? '').trim();
+export type WishInput = { label?: string | null; url?: string | null };
+export type Wish = { position: number; label: string; url: string | null };
+
+const asInput = (item: unknown): WishInput =>
+  item && typeof item === 'object' ? (item as WishInput) : {};
+const isBlank = (item: WishInput) =>
+  !(item.label ?? '').trim() && !(item.url ?? '').trim();
 
 /**
  * Cleans a submitted list: blank rows dropped, labels trimmed, empty URLs
  * turned into null, positions renumbered from 0.
- * @param {unknown} items
- * @param {{ maxWishes: number }} rules
- * @returns {import('./result.js').Result<Array<{ position: number, label: string, url: string | null }>>}
  */
-export const normalizeWishes = (items, { maxWishes }) => {
+export const normalizeWishes = (
+  items: unknown,
+  { maxWishes }: { maxWishes: number },
+): Result<Wish[]> => {
   if (!Array.isArray(items)) return fail('invalid_wishes');
-  const kept = items.filter((item) => !isBlank(item));
-  if (kept.length > maxWishes)
+  const kept = items.map(asInput).filter((item) => !isBlank(item));
+  if (kept.length > maxWishes) {
     return fail('too_many_wishes', { max: maxWishes, count: kept.length });
+  }
   const parsed = kept.map((item, index) => ({
     index,
     result: wishSchema.safeParse({
-      label: item?.label ?? '',
-      url: (item?.url ?? '').trim() === '' ? null : item.url,
+      label: item.label ?? '',
+      url: (item.url ?? '').trim() === '' ? null : item.url,
     }),
   }));
   const firstError = parsed.find(({ result }) => !result.success);
-  if (firstError) {
+  if (firstError && !firstError.result.success) {
     return fail('invalid_wish', {
       index: firstError.index,
       field: firstError.result.error.issues[0]?.path[0] ?? 'label',
     });
   }
   return ok(
-    parsed.map(({ result }, position) => ({ position, ...result.data })),
+    parsed.flatMap(({ result }, position) =>
+      result.success ? [{ position, ...result.data }] : [],
+    ),
   );
 };

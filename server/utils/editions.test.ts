@@ -4,9 +4,9 @@ import {
   nextEditionDefaults,
   participantBadges,
   previousEdition,
-} from './editions.js';
+} from './editions';
 
-const ed = (year, status, createdAt = `${year}-11-01`) => ({
+const ed = (year: number, status: string, createdAt = `${year}-11-01`) => ({
   year,
   status,
   createdAt,
@@ -34,10 +34,10 @@ describe('currentEdition / previousEdition', () => {
     ed(2026, 'invitations'),
   ];
   it('picks the latest open edition and the one before a given year', () => {
-    expect(currentEdition(editions).year).toBe(2026);
+    expect(currentEdition(editions)?.year).toBe(2026);
     expect(currentEdition([ed(2024, 'closed')])).toBeNull();
-    expect(previousEdition(editions, 2026).year).toBe(2025);
-    expect(previousEdition(editions, 2027).year).toBe(2026);
+    expect(previousEdition(editions, 2026)?.year).toBe(2025);
+    expect(previousEdition(editions, 2027)?.year).toBe(2026);
     expect(previousEdition([], 2026)).toBeNull();
   });
 });

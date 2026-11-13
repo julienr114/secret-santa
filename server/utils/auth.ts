@@ -3,28 +3,41 @@ import { z } from 'zod';
 // Admin sessions and login throttling (README 8.4). Pure: the routes load
 // attempts from the database and pass them in.
 
-export const ROLES = ['super_admin', 'guardian'];
+export const ROLES = ['super_admin', 'guardian'] as const;
+export type Role = (typeof ROLES)[number];
 
 export const sessionUserSchema = z.object({
   role: z.enum(ROLES),
   groupId: z.string().min(1).nullable().default(null),
   groupSlug: z.string().min(1).nullable().default(null),
 });
+export type SessionUser = z.infer<typeof sessionUserSchema>;
 
 export const LOGIN_MAX_FAILURES = 10;
 export const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 /** Super-admins may act on any group, guardians only on their own. */
-export const canAccessGroup = (user, groupId) =>
-  Boolean(user) && (user.role === 'super_admin' || user.groupId === groupId);
+export const canAccessGroup = (
+  user: SessionUser | null | undefined,
+  groupId: string,
+): boolean =>
+  Boolean(user) && (user?.role === 'super_admin' || user?.groupId === groupId);
+
+export type Throttle = {
+  blocked: boolean;
+  retryAfterSeconds: number;
+  failures: number;
+};
 
 /**
  * Decides whether a login attempt is allowed given recent failures.
- * @param {string[]} failureDates ISO dates of recent failures (same scope and ip)
- * @param {string} now ISO date
- * @returns {{ blocked: boolean, retryAfterSeconds: number, failures: number }}
+ * @param failureDates ISO dates of recent failures (same scope and ip)
+ * @param now ISO date
  */
-export const loginThrottle = (failureDates, now) => {
+export const loginThrottle = (
+  failureDates: string[],
+  now: string,
+): Throttle => {
   const nowMs = Date.parse(now);
   const recent = failureDates
     .map((d) => Date.parse(d))

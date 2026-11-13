@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ok, fail } from './result.js';
+import { ok, fail, type Result } from './result';
 
 // Public journal (README section 9). Events are built here, stored by the
 // routes, and described in French for display. Absolute rule: an event
@@ -25,19 +25,28 @@ export const AUDIT_TYPES = [
   'result_viewed',
   'wishes_updated',
   'edition_closed',
-];
+] as const;
+export type AuditType = (typeof AUDIT_TYPES)[number];
 
-export const ACTORS = ['participant', 'guardian', 'super_admin', 'system'];
+export const ACTORS = [
+  'participant',
+  'guardian',
+  'super_admin',
+  'system',
+] as const;
+export type Actor = (typeof ACTORS)[number];
+
+export type Meta = Record<string, unknown>;
 
 const FORBIDDEN_META_KEY =
   /receiver|assignment|result|pin|token|hash|secret|password/i;
 
 /** Drops, at any depth, keys that could carry a result or a secret. */
-export const sanitizeMeta = (meta) => {
+export const sanitizeMeta = (meta: unknown): unknown => {
   if (Array.isArray(meta)) return meta.map(sanitizeMeta);
   if (meta === null || typeof meta !== 'object') return meta;
   return Object.fromEntries(
-    Object.entries(meta)
+    Object.entries(meta as Meta)
       .filter(([key]) => !FORBIDDEN_META_KEY.test(key))
       .map(([key, value]) => [key, sanitizeMeta(value)]),
   );
@@ -52,12 +61,24 @@ const eventSchema = z.object({
   meta: z.record(z.string(), z.unknown()).nullable().default(null),
 });
 
-/**
- * Builds an audit_log row. `id` and `now` are injected for testability.
- * @param {object} event
- * @param {{ id: () => string, now: () => string }} deps
- */
-export const auditEvent = (event, { id, now }) => {
+export type AuditEventInput = z.input<typeof eventSchema>;
+
+export type AuditRow = {
+  id: string;
+  type: AuditType;
+  groupId: string;
+  editionId: string | null;
+  personId: string | null;
+  actor: Actor;
+  meta: Meta | null;
+  createdAt: string;
+};
+
+/** Builds an audit_log row. `id` and `now` are injected for testability. */
+export const auditEvent = (
+  event: AuditEventInput,
+  { id, now }: { id: () => string; now: () => string },
+): Result<AuditRow> => {
   const parsed = eventSchema.safeParse(event);
   if (!parsed.success) {
     return fail('invalid_audit_event', {
@@ -68,68 +89,87 @@ export const auditEvent = (event, { id, now }) => {
   return ok({
     id: id(),
     ...rest,
-    meta: meta ? sanitizeMeta(meta) : null,
+    meta: meta ? (sanitizeMeta(meta) as Meta) : null,
     createdAt: now(),
   });
 };
 
 // --- French descriptions -------------------------------------------------
 
-const MESSAGE_LABELS = {
+const MESSAGE_LABELS: Record<string, string> = {
   invitation: "l'invitation",
   drawn: 'le message « tirage fait »',
   reminder: 'la relance',
   redraw: 'le message « nouveau tirage »',
 };
 
-const VIA_LABELS = {
+const VIA_LABELS: Record<string, string> = {
   whatsapp: ' sur WhatsApp',
   copy: ' (message copié)',
   share: ' (lien partagé)',
 };
 
-const ordinal = (n) => (n === 1 ? '1ʳᵉ' : `${n}ᵉ`);
-const plural = (n, word) => `${n} ${word}${n > 1 ? 's' : ''}`;
+const text = (m: Meta, key: string, fallback = '?'): string =>
+  typeof m[key] === 'string' || typeof m[key] === 'number'
+    ? String(m[key])
+    : fallback;
+const num = (m: Meta, key: string, fallback: number): number =>
+  typeof m[key] === 'number' ? (m[key] as number) : fallback;
+const ordinal = (n: number) => (n === 1 ? '1ʳᵉ' : `${n}ᵉ`);
+const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
-const DESCRIPTIONS = {
-  edition_created: (_, m) => `L'édition ${m.label ?? ''} a été créée`.trim(),
+type Describe = (name: string, meta: Meta) => string;
+
+const DESCRIPTIONS: Record<AuditType, Describe> = {
+  edition_created: (_, m) =>
+    `L'édition ${text(m, 'label', '')} a été créée`.replace('  ', ' '),
   participant_added: (name) => `${name} rejoint l'édition`,
   participant_removed: (name) => `${name} quitte l'édition`,
   couple_changed: (name, m) =>
     m.ended
-      ? `Le couple ${name} + ${m.partnerName ?? '?'} n'est plus enregistré`
-      : `Le couple ${name} + ${m.partnerName ?? '?'} a été enregistré`,
+      ? `Le couple ${name} + ${text(m, 'partnerName')} n'est plus enregistré`
+      : `Le couple ${name} + ${text(m, 'partnerName')} a été enregistré`,
   rules_changed: () => 'Le gardien a modifié les règles du tirage',
   message_sent: (name, m) =>
-    `Le gardien a envoyé ${MESSAGE_LABELS[m.messageType] ?? 'un message'} à ${name}${VIA_LABELS[m.via] ?? ''}`,
+    `Le gardien a envoyé ${MESSAGE_LABELS[text(m, 'messageType', '')] ?? 'un message'} à ${name}${
+      VIA_LABELS[text(m, 'via', '')] ?? ''
+    }`,
   link_copied: (name) => `Le gardien a copié le lien de ${name}`,
   link_shared: (name) => `Le gardien a partagé le lien de ${name}`,
   link_regenerated: (name) => `Le lien de ${name} a été régénéré`,
   pin_set: (name) => `${name} a choisi son code`,
   pin_failed: (name, m) =>
-    `Code erroné sur le lien de ${name} (${m.attempts ?? '?'}/${m.max ?? '?'})`,
+    `Code erroné sur le lien de ${name} (${text(m, 'attempts')}/${text(m, 'max')})`,
   pin_locked: (name, m) =>
-    `Le lien de ${name} est bloqué après ${m.max ?? '?'} erreurs`,
+    `Le lien de ${name} est bloqué après ${text(m, 'max')} erreurs`,
   pin_unlocked: (name) => `Le gardien a débloqué le lien de ${name}`,
   pin_reset: (name) => `Le gardien a réinitialisé le code de ${name}`,
   draw_done: (_, m) =>
-    `Le tirage a été effectué pour ${plural(m.count ?? 0, 'participant')}`,
+    `Le tirage a été effectué pour ${plural(num(m, 'count', 0), 'participant')}`,
   draw_cancelled: (_, m) =>
-    `Le tirage a été annulé. Motif : ${m.reason ?? 'non précisé'}`,
+    `Le tirage a été annulé. Motif : ${text(m, 'reason', 'non précisé')}`,
   result_viewed: (name, m) =>
-    `${name} a consulté son résultat (${ordinal(m.count ?? 1)} fois)`,
+    `${name} a consulté son résultat (${ordinal(num(m, 'count', 1))} fois)`,
   wishes_updated: (name, m) =>
-    `${name} a mis à jour sa liste de souhaits (${plural(m.count ?? 0, 'idée')})`,
-  edition_closed: (_, m) => `L'édition ${m.label ?? ''} est clôturée`.trim(),
+    `${name} a mis à jour sa liste de souhaits (${plural(num(m, 'count', 0), 'idée')})`,
+  edition_closed: (_, m) =>
+    `L'édition ${text(m, 'label', '')} est clôturée`.replace('  ', ' '),
 };
 
-/**
- * French sentence for an event. `names` maps person ids to display names.
- * @param {{ type: string, personId?: string | null, meta?: object | null }} event
- * @param {{ names?: Record<string, string> }} context
- */
-export const describeEvent = (event, { names = {} } = {}) => {
-  const describe = DESCRIPTIONS[event.type];
+export type DescribableEvent = {
+  type: string;
+  personId?: string | null;
+  meta?: Meta | null;
+};
+
+/** French sentence for an event. `names` maps person ids to display names. */
+export const describeEvent = (
+  event: DescribableEvent,
+  { names = {} }: { names?: Record<string, string> } = {},
+): string => {
+  const describe = (DESCRIPTIONS as Record<string, Describe | undefined>)[
+    event.type
+  ];
   if (!describe) return 'Événement inconnu';
   const name = (event.personId && names[event.personId]) || "Quelqu'un";
   return describe(name, event.meta ?? {});

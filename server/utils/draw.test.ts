@@ -1,11 +1,19 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { allowedReceivers, checkFeasibility, draw, shuffle } from './draw.js';
+import {
+  allowedReceivers,
+  checkFeasibility,
+  draw,
+  shuffle,
+  type Assignment,
+  type DrawInput,
+} from './draw';
+import { failureOf, valueOf } from '../../tests/helpers';
 
 // Deterministic PRNG for tests (mulberry32). Production uses Web Crypto.
-const seeded = (seed) => {
+const seeded = (seed: number) => {
   const state = { a: seed };
-  return (n) => {
+  return (n: number) => {
     state.a = (state.a + 0x6d2b79f5) | 0;
     const t1 = Math.imul(state.a ^ (state.a >>> 15), 1 | state.a);
     const t2 = (t1 + Math.imul(t1 ^ (t1 >>> 7), 61 | t1)) ^ t1;
@@ -14,7 +22,10 @@ const seeded = (seed) => {
 };
 
 const RULES = { excludeSpouse: true };
-const base = (participants, extra = {}) => ({
+const base = (
+  participants: string[],
+  extra: Partial<DrawInput> = {},
+): DrawInput => ({
   participants,
   couples: [],
   manualExclusions: [],
@@ -22,10 +33,13 @@ const base = (participants, extra = {}) => ({
   ...extra,
 });
 
-const receiverOf = (assignments, giverId) =>
-  assignments.find((a) => a.giverId === giverId).receiverId;
+const receiverOf = (assignments: Assignment[], giverId: string) =>
+  assignments.find((a) => a.giverId === giverId)?.receiverId;
 
-const expectPermutation = (assignments, participants) => {
+const expectPermutation = (
+  assignments: Assignment[],
+  participants: string[],
+) => {
   expect(assignments.map((a) => a.giverId).toSorted()).toEqual(
     participants.toSorted(),
   );
@@ -108,7 +122,7 @@ describe('shuffle', () => {
 
 describe('checkFeasibility', () => {
   it('rejects fewer than two participants', () => {
-    expect(checkFeasibility(base(['a']), RULES).reason).toBe(
+    expect(failureOf(checkFeasibility(base(['a']), RULES)).reason).toBe(
       'too_few_participants',
     );
   });
@@ -119,7 +133,10 @@ describe('checkFeasibility', () => {
       RULES,
     );
     expect(result.ok).toBe(false);
-    expect(result.details.blocked.toSorted()).toEqual(['a', 'b']);
+    expect((failureOf(result).details.blocked as string[]).toSorted()).toEqual([
+      'a',
+      'b',
+    ]);
   });
 
   it('three participants with one couple: impossible, names the constrained ones', () => {
@@ -128,24 +145,42 @@ describe('checkFeasibility', () => {
       RULES,
     );
     expect(result.ok).toBe(false);
-    expect(result.reason).toBe('no_solution');
-    expect(result.details.blocked).toEqual([]);
-    expect(result.details.constrained.toSorted()).toEqual(['a', 'b', 'c']);
-    expect(result.details.allowedCounts).toEqual({ a: 1, b: 1, c: 2 });
+    expect(failureOf(result).reason).toBe('no_solution');
+    expect(failureOf(result).details.blocked).toEqual([]);
+    expect(
+      (failureOf(result).details.constrained as string[]).toSorted(),
+    ).toEqual(['a', 'b', 'c']);
+    expect(failureOf(result).details.allowedCounts).toEqual({
+      a: 1,
+      b: 1,
+      c: 2,
+    });
   });
 
   it('two couples with two years of history blocking everything: impossible', () => {
-    const result = checkFeasibility(
-      base(['a', 'b', 'c', 'd'], {
-        couples: [
-          ['a', 'b'],
-          ['c', 'd'],
-        ],
-        history: { a: ['c', 'd'], b: ['c', 'd'], c: ['a', 'b'], d: ['a', 'b'] },
-      }),
-      RULES,
+    const result = failureOf(
+      checkFeasibility(
+        base(['a', 'b', 'c', 'd'], {
+          couples: [
+            ['a', 'b'],
+            ['c', 'd'],
+          ],
+          history: {
+            a: ['c', 'd'],
+            b: ['c', 'd'],
+            c: ['a', 'b'],
+            d: ['a', 'b'],
+          },
+        }),
+        RULES,
+      ),
     );
-    expect(result.details.blocked.toSorted()).toEqual(['a', 'b', 'c', 'd']);
+    expect((failureOf(result).details.blocked as string[]).toSorted()).toEqual([
+      'a',
+      'b',
+      'c',
+      'd',
+    ]);
   });
 
   it('two couples with one year of history: possible', () => {
@@ -173,9 +208,7 @@ describe('draw', () => {
       manualExclusions: [{ giverId: 'e', receiverId: 'f', reciprocal: true }],
       history: { a: ['c'], b: ['d'] },
     });
-    const result = draw(input, RULES, { random: seeded(42) });
-    expect(result.ok).toBe(true);
-    const { assignments } = result.value;
+    const { assignments } = valueOf(draw(input, RULES, { random: seeded(42) }));
     expectPermutation(assignments, input.participants);
     expect(['b']).not.toContain(receiverOf(assignments, 'a'));
     expect(['a']).not.toContain(receiverOf(assignments, 'b'));
@@ -186,11 +219,12 @@ describe('draw', () => {
   });
 
   it('returns the feasibility failure when no solution exists', () => {
-    const result = draw(base(['a', 'b'], { couples: [['a', 'b']] }), RULES, {
-      random: seeded(1),
-    });
-    expect(result.ok).toBe(false);
-    expect(result.reason).toBe('no_solution');
+    const result = failureOf(
+      draw(base(['a', 'b'], { couples: [['a', 'b']] }), RULES, {
+        random: seeded(1),
+      }),
+    );
+    expect(failureOf(result).reason).toBe('no_solution');
   });
 
   it('falls back to backtracking when rejection sampling is hopeless', () => {
@@ -202,12 +236,11 @@ describe('draw', () => {
         .filter((r) => r !== g && r !== ids[(i + 1) % n])
         .map((receiverId) => ({ giverId: g, receiverId, reciprocal: false })),
     );
-    const result = draw(base(ids, { manualExclusions }), RULES, {
-      random: seeded(7),
-    });
-    expect(result.ok).toBe(true);
+    const { assignments } = valueOf(
+      draw(base(ids, { manualExclusions }), RULES, { random: seeded(7) }),
+    );
     ids.forEach((g, i) =>
-      expect(receiverOf(result.value.assignments, g)).toBe(ids[(i + 1) % n]),
+      expect(receiverOf(assignments, g)).toBe(ids[(i + 1) % n]),
     );
   });
 
@@ -215,10 +248,13 @@ describe('draw', () => {
     const ids = ['a', 'b', 'c', 'd'];
     const random = seeded(2026);
     const counts = Array.from({ length: 10_000 }, () =>
-      draw(base(ids), RULES, { random })
-        .value.assignments.map((x) => x.receiverId)
+      valueOf(draw(base(ids), RULES, { random }))
+        .assignments.map((x) => x.receiverId)
         .join(''),
-    ).reduce((acc, key) => ({ ...acc, [key]: (acc[key] ?? 0) + 1 }), {});
+    ).reduce<Record<string, number>>(
+      (acc, key) => ({ ...acc, [key]: (acc[key] ?? 0) + 1 }),
+      {},
+    );
     expect(Object.keys(counts)).toHaveLength(9);
     Object.values(counts).forEach((count) => {
       expect(count).toBeGreaterThan(10_000 / 9 / 1.2);
@@ -227,7 +263,7 @@ describe('draw', () => {
   });
 
   it('property: any returned solution satisfies all constraints; failures are real', () => {
-    const permutations = (items) =>
+    const permutations = (items: string[]): string[][] =>
       items.length <= 1
         ? [items]
         : items.flatMap((x, i) =>
@@ -264,11 +300,15 @@ describe('draw', () => {
       fc.property(
         arb,
         ({ ids, couples, manualExclusions, historyPairs, seed }) => {
-          const history = historyPairs.reduce(
+          const history = historyPairs.reduce<Record<string, string[]>>(
             (acc, [g, r]) => ({ ...acc, [g]: [...(acc[g] ?? []), r] }),
             {},
           );
-          const input = base(ids, { couples, manualExclusions, history });
+          const input = base(ids, {
+            couples: couples as Array<[string, string]>,
+            manualExclusions,
+            history,
+          });
           const allowed = allowedReceivers(input, RULES);
           const result = draw(input, RULES, { random: seeded(seed) });
           if (result.ok) {
@@ -279,7 +319,7 @@ describe('draw', () => {
           } else if (ids.length <= 6) {
             const exists = permutations(ids).some((perm) =>
               perm.every((receiverId, i) =>
-                allowed[ids[i]].includes(receiverId),
+                allowed[ids[i] as string]?.includes(receiverId),
               ),
             );
             expect(exists).toBe(false);

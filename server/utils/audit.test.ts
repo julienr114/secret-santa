@@ -4,7 +4,9 @@ import {
   auditEvent,
   describeEvent,
   sanitizeMeta,
-} from './audit.js';
+  type Meta,
+} from './audit';
+import { failureOf, valueOf } from '../../tests/helpers';
 
 const deps = { id: () => 'evt-1', now: () => '2026-11-13T10:00:00.000Z' };
 
@@ -37,39 +39,48 @@ describe('auditEvent', () => {
 
   it('rejects unknown types and actors', () => {
     expect(
-      auditEvent({ type: 'nope', groupId: 'g1', actor: 'guardian' }, deps)
-        .reason,
+      failureOf(
+        auditEvent(
+          { type: 'nope' as never, groupId: 'g1', actor: 'guardian' },
+          deps,
+        ),
+      ).reason,
     ).toBe('invalid_audit_event');
     expect(
-      auditEvent({ type: 'pin_set', groupId: 'g1', actor: 'hacker' }, deps).ok,
+      auditEvent(
+        { type: 'pin_set', groupId: 'g1', actor: 'hacker' as never },
+        deps,
+      ).ok,
     ).toBe(false);
   });
 
   it('never keeps a result or a secret in meta, at any depth', () => {
-    const result = auditEvent(
-      {
-        type: 'draw_done',
-        groupId: 'g1',
-        actor: 'guardian',
-        meta: {
-          count: 3,
-          receiverId: 'p2',
-          assignments: [{ giverId: 'a', receiverId: 'b' }],
-          nested: {
-            pinHash: 'x',
-            token: 'y',
-            keep: 1,
-            deeper: { result: 'z', ok: true },
+    const row = valueOf(
+      auditEvent(
+        {
+          type: 'draw_done',
+          groupId: 'g1',
+          actor: 'guardian',
+          meta: {
+            count: 3,
+            receiverId: 'p2',
+            assignments: [{ giverId: 'a', receiverId: 'b' }],
+            nested: {
+              pinHash: 'x',
+              token: 'y',
+              keep: 1,
+              deeper: { result: 'z', ok: true },
+            },
           },
         },
-      },
-      deps,
+        deps,
+      ),
     );
-    expect(result.value.meta).toEqual({
+    expect(row.meta).toEqual({
       count: 3,
       nested: { keep: 1, deeper: { ok: true } },
     });
-    expect(JSON.stringify(result.value)).not.toMatch(/receiver|p2|assignment/);
+    expect(JSON.stringify(row)).not.toMatch(/receiver|p2|assignment/);
   });
 
   it('sanitizes arrays too', () => {
@@ -83,7 +94,11 @@ describe('auditEvent', () => {
 
 describe('describeEvent', () => {
   const names = { p1: 'Léa', p2: 'Tom' };
-  const ev = (type, meta = {}, personId = 'p1') => ({ type, personId, meta });
+  const ev = (
+    type: string,
+    meta: Meta = {},
+    personId: string | null = 'p1',
+  ) => ({ type, personId, meta });
 
   it('renders the README examples', () => {
     expect(

@@ -5,7 +5,7 @@ import {
   displayName,
   personInputSchema,
   publicPerson,
-} from './people.js';
+} from './people';
 
 describe('people schemas', () => {
   it('normalizes a person input', () => {
@@ -38,8 +38,8 @@ describe('activeCoupleOf', () => {
     { id: 'c2', personAId: 'b', personBId: 'c', active: true },
   ];
   it('finds only active couples, from either side', () => {
-    expect(activeCoupleOf(couples, 'c').id).toBe('c2');
-    expect(activeCoupleOf(couples, 'b').id).toBe('c2');
+    expect(activeCoupleOf(couples, 'c')?.id).toBe('c2');
+    expect(activeCoupleOf(couples, 'b')?.id).toBe('c2');
     expect(activeCoupleOf(couples, 'a')).toBeNull();
   });
 });
@@ -51,8 +51,8 @@ describe('displayName', () => {
     { id: '3', firstName: 'Tom', lastName: 'Martin' },
   ];
   it('adds the last name only for homonyms', () => {
-    expect(displayName(people[0], people)).toBe('Léa Martin');
-    expect(displayName(people[2], people)).toBe('Tom');
+    expect(displayName(people[0]!, people)).toBe('Léa Martin');
+    expect(displayName(people[2]!, people)).toBe('Tom');
     expect(
       displayName({ id: '4', firstName: 'Zoé', lastName: null }, people),
     ).toBe('Zoé');

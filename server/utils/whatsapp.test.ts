@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { normalizePhone, phoneSchema, whatsappUrl } from './whatsapp.js';
+import { normalizePhone, phoneSchema, whatsappUrl } from './whatsapp';
+import { valueOf } from '../../tests/helpers';
 
 describe('normalizePhone', () => {
   it('normalizes international forms to E.164', () => {
@@ -15,8 +16,8 @@ describe('normalizePhone', () => {
       ok: true,
       value: '+33612345678',
     });
-    expect(normalizePhone('+1 (415) 555-2671').value).toBe('+14155552671');
-    expect(normalizePhone('+41.79.123.45.67').value).toBe('+41791234567');
+    expect(valueOf(normalizePhone('+1 (415) 555-2671'))).toBe('+14155552671');
+    expect(valueOf(normalizePhone('+41.79.123.45.67'))).toBe('+41791234567');
   });
 
   it('refuses national numbers and garbage', () => {
@@ -54,9 +55,9 @@ describe('whatsappUrl', () => {
     expect(url).toBe(
       'https://wa.me/33612345678?text=Salut%20L%C3%A9a%20!%0ATon%20lien%20%3A%20https%3A%2F%2Fx.y%2Fp%2Fabc',
     );
-    expect(decodeURIComponent(new URL(url).searchParams.get('text'))).toContain(
-      'Léa',
-    );
+    expect(
+      decodeURIComponent(new URL(url).searchParams.get('text') ?? ''),
+    ).toContain('Léa');
   });
 
   it('falls back to the contact picker without a phone', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ok, fail, isOk, map, andThen, all } from './result.js';
+import { ok, fail, isOk, map, andThen, all } from './result';
 
 describe('result', () => {
   it('builds ok and fail values', () => {
@@ -16,7 +16,7 @@ describe('result', () => {
 
   it('maps and chains only on ok', () => {
     expect(map(ok(2), (n) => n * 2)).toEqual(ok(4));
-    expect(map(fail('x'), (n) => n * 2)).toEqual(fail('x'));
+    expect(map<number, number>(fail('x'), (n) => n * 2)).toEqual(fail('x'));
     expect(andThen(ok(2), (n) => ok(n + 1))).toEqual(ok(3));
     expect(andThen(ok(2), () => fail('y'))).toEqual(fail('y'));
     expect(andThen(fail('x'), () => ok(1))).toEqual(fail('x'));

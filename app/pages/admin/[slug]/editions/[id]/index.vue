@@ -3,6 +3,7 @@ import type { MessageType } from '#server/utils/messages';
 import {
   useDashboardQuery,
   useEditionQuery,
+  usePeopleQuery,
 } from '~/composables/queries/useGroup';
 import {
   useCheckQuery,
@@ -65,6 +66,24 @@ const messages = useMessagesQuery(slug, id, messageType);
 const sharer = useShareMessage(slug);
 
 const participants = computed(() => edition.data.value?.participants ?? []);
+// Reminder before the draw: active members of the group left out of it.
+const people = usePeopleQuery(slug);
+const missing = computed(() => {
+  const inEdition = new Set(participants.value.map((p) => p.id));
+  return (people.data.value?.persons ?? []).filter(
+    (p) => p.active && !inEdition.has(p.id),
+  );
+});
+const missingText = computed(() => {
+  const names = missing.value.map((p) => p.firstName);
+  const list =
+    names.length <= 1
+      ? (names[0] ?? '')
+      : `${names.slice(0, -1).join(', ')} et ${names.at(-1)}`;
+  return names.length === 1
+    ? `${list} est membre actif du groupe mais ne participe pas.`
+    : `${list} sont membres actifs du groupe mais ne participent pas.`;
+});
 const viewedCount = computed(
   () => participants.value.filter((p) => p.viewCount > 0).length,
 );
@@ -113,6 +132,28 @@ const sectionTitle =
         </div>
         <p v-if="subtitle" class="text-muted">{{ subtitle }}</p>
       </div>
+
+      <!-- Reminder before the draw: active members left out -->
+      <UAlert
+        v-if="canEdit && missing.length"
+        color="warning"
+        variant="subtle"
+        icon="i-lucide-user-round-plus"
+        :title="
+          missing.length === 1
+            ? 'Un membre ne participe pas'
+            : `${missing.length} membres ne participent pas`
+        "
+        :description="missingText"
+        :actions="[
+          {
+            label: 'Ajouter',
+            color: 'warning',
+            variant: 'solid',
+            to: `/admin/${slug}/editions/${id}/ajouter`,
+          },
+        ]"
+      />
 
       <!-- Action of the moment -->
       <section v-if="status === 'draft'" class="flex flex-col gap-3">

@@ -1,6 +1,14 @@
 import { defineNuxtConfig } from 'nuxt/config';
 import tailwindcss from '@tailwindcss/vite';
 
+// Personal pages and their API (README 8.1): never cached, never indexed,
+// and the token in the URL never leaks through a Referer header.
+const personalHeaders = {
+  'Referrer-Policy': 'no-referrer',
+  'Cache-Control': 'no-store',
+  'X-Robots-Tag': 'noindex',
+};
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devtools: { enabled: true },
@@ -25,6 +33,10 @@ export default defineNuxtConfig({
   // Cloudflare Workers. In dev, Nitro emulates the bindings declared in
   // wrangler.toml through Miniflare (state in .wrangler/state/v3).
   nitro: { preset: 'cloudflare_module' },
+  routeRules: {
+    '/p/**': { headers: personalHeaders },
+    '/api/p/**': { headers: personalHeaders },
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },

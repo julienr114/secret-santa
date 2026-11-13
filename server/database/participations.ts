@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { H3Event } from 'h3';
 import type { Db } from './client';
-import { editions, participations, persons } from './schema';
+import { editions, groups, participations, persons } from './schema';
 import { decrypt } from '#server/utils/crypto';
 import { secretsOf } from '#server/http/context';
 
@@ -46,3 +46,35 @@ export const personalLink = async (
   const base = secretsOf(event).baseUrl || getRequestURL(event).origin;
   return `${base.replace(/\/$/, '')}/p/${token.value}`;
 };
+
+/**
+ * The participation behind a personal link, with its edition, person and
+ * group. The group comes from the link itself: there is no session here.
+ */
+export const findParticipationByTokenHash = async (
+  db: Db,
+  tokenHash: string,
+) => {
+  const [row] = await db
+    .select({
+      participation: participations,
+      edition: editions,
+      person: persons,
+      group: groups,
+    })
+    .from(participations)
+    .innerJoin(editions, eq(editions.id, participations.editionId))
+    .innerJoin(persons, eq(persons.id, participations.personId))
+    .innerJoin(groups, eq(groups.id, editions.groupId))
+    .where(eq(participations.tokenHash, tokenHash))
+    .limit(1);
+  return row ?? null;
+};
+
+/** People taking part in an edition, each with their participation id. */
+export const listEditionPeople = (db: Db, editionId: string) =>
+  db
+    .select({ person: persons, participationId: participations.id })
+    .from(participations)
+    .innerJoin(persons, eq(persons.id, participations.personId))
+    .where(eq(participations.editionId, editionId));

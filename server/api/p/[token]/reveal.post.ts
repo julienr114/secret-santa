@@ -1,0 +1,80 @@
+import { and, eq, sql } from 'drizzle-orm';
+import { assignments, participations } from '#server/database/schema';
+import { listEditionPeople } from '#server/database/participations';
+import { listWishes } from '#server/database/wishes';
+import { recordEvent } from '#server/database/audit';
+import { requirePersonalLink } from '#server/http/personal';
+import { dataKeyOf, nowIso } from '#server/http/context';
+import { notFound, unwrap } from '#server/http/errors';
+import { avatarOf } from '#server/utils/avatars';
+import { decrypt } from '#server/utils/crypto';
+import { displayName } from '#server/utils/people';
+import { canReveal } from '#server/utils/personal';
+
+// The "Découvrir" button (README 4.3): the only place a participant's
+// result is decrypted for display. Every call is counted and journaled.
+export default defineEventHandler(async (event) => {
+  const { db, participation, edition, person, group, rules } =
+    await requirePersonalLink(event);
+  unwrap(canReveal(edition.status));
+  const [assignment] = await db
+    .select()
+    .from(assignments)
+    .where(
+      and(
+        eq(assignments.editionId, edition.id),
+        eq(assignments.giverPersonId, person.id),
+      ),
+    )
+    .limit(1);
+  if (!assignment) throw notFound('result_not_found');
+  const receiverId = await decrypt(
+    { enc: assignment.receiverEnc, iv: assignment.receiverIv },
+    await dataKeyOf(event),
+  );
+  const people = await listEditionPeople(db, edition.id);
+  const receiver = people.find(
+    (p) => receiverId.ok && p.person.id === receiverId.value,
+  );
+  if (!receiver) {
+    throw createError({ statusCode: 500, statusMessage: 'result_unreadable' });
+  }
+  const receiverWishes = rules.wishlist
+    ? await listWishes(db, receiver.participationId)
+    : null;
+
+  const now = nowIso();
+  const [updated] = await db
+    .update(participations)
+    .set({
+      viewCount: sql`${participations.viewCount} + 1`,
+      firstViewedAt: sql`coalesce(${participations.firstViewedAt}, ${now})`,
+      lastViewedAt: now,
+    })
+    .where(eq(participations.id, participation.id))
+    .returning({ viewCount: participations.viewCount });
+  const viewCount = updated?.viewCount ?? participation.viewCount + 1;
+  await recordEvent(db, {
+    type: 'result_viewed',
+    groupId: group.id,
+    editionId: edition.id,
+    personId: person.id,
+    actor: 'participant',
+    meta: { count: viewCount },
+  });
+
+  return {
+    receiver: {
+      name: displayName(
+        receiver.person,
+        people.map((p) => p.person),
+      ),
+      avatar: avatarOf(receiver.person),
+    },
+    budget: rules.budget,
+    eventDate: rules.eventDate,
+    guardianMessage: rules.guardianMessage,
+    wishes: receiverWishes,
+    viewCount,
+  };
+});

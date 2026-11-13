@@ -10,4 +10,8 @@ export const keys = {
     ['group', slug, 'edition', id] as const,
   check: (slug: string, id: string) =>
     ['group', slug, 'edition', id, 'check'] as const,
+  // Personal link: everything under the token is refetched together.
+  personal: (token: string) => ['p', token] as const,
+  wishes: (token: string) => ['p', token, 'wishes'] as const,
+  journal: (token: string) => ['p', token, 'journal'] as const,
 };

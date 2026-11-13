@@ -1,7 +1,7 @@
-import { homeOf } from '~/composables/queries/useSession.js';
+import { homeOf } from '~/composables/queries/useSession';
 
 // /admin is the login page; everything below needs a session, and
-// /admin/groupes needs the super-admin.
+// /admin/groupes needs the super-admin. A guardian only sees their group.
 export default defineNuxtRouteMiddleware((to) => {
   const { loggedIn, user } = useUserSession();
   if (to.path === '/admin' || to.path === '/admin/') {
@@ -14,11 +14,11 @@ export default defineNuxtRouteMiddleware((to) => {
   ) {
     return navigateTo(homeOf(user.value));
   }
-  // A guardian only ever sees their own group.
+  const slug = typeof to.params.slug === 'string' ? to.params.slug : null;
   if (
     user.value?.role === 'guardian' &&
-    to.params.slug &&
-    to.params.slug !== user.value.groupSlug
+    slug &&
+    slug !== user.value.groupSlug
   ) {
     return navigateTo(homeOf(user.value));
   }

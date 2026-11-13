@@ -1,29 +1,45 @@
-<script setup>
-import { useLogoutMutation } from '~/composables/queries/useSession.js';
+<script setup lang="ts">
+import { useLogoutMutation } from '~/composables/queries/useSession';
 
 const { user } = useUserSession();
 const route = useRoute();
 const logout = useLogoutMutation();
 
-const slug = computed(() => route.params.slug ?? user.value?.groupSlug ?? null);
+const slug = computed(() =>
+  typeof route.params.slug === 'string'
+    ? route.params.slug
+    : (user.value?.groupSlug ?? null),
+);
 const links = computed(() =>
   slug.value
     ? [
-        { to: `/admin/${slug.value}`, label: 'Tableau de bord' },
-        { to: `/admin/${slug.value}/personnes`, label: 'Personnes' },
-        { to: `/admin/${slug.value}/reglages`, label: 'Réglages' },
+        {
+          label: 'Tableau de bord',
+          to: `/admin/${slug.value}`,
+          icon: 'i-lucide-layout-dashboard',
+          exact: true,
+        },
+        {
+          label: 'Personnes',
+          to: `/admin/${slug.value}/personnes`,
+          icon: 'i-lucide-users',
+        },
+        {
+          label: 'Réglages',
+          to: `/admin/${slug.value}/reglages`,
+          icon: 'i-lucide-settings-2',
+        },
       ]
     : [],
 );
-
 const onLogout = () =>
   logout.mutate(undefined, { onSuccess: () => navigateTo('/admin') });
 </script>
 
 <template>
-  <div class="min-h-dvh bg-neutral-50 text-neutral-900">
+  <div class="min-h-dvh">
     <header
-      class="sticky top-0 z-10 border-b border-neutral-200 bg-white/95 backdrop-blur"
+      class="sticky top-0 z-10 border-b border-default bg-default/90 backdrop-blur"
     >
       <div
         class="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2"
@@ -34,42 +50,38 @@ const onLogout = () =>
               ? '/admin/groupes'
               : `/admin/${slug ?? ''}`
           "
-          class="font-bold"
+          class="font-display text-lg font-bold text-primary"
         >
-          🎁 Secret Santa
+          ✦ Secret Santa
         </NuxtLink>
-        <div class="flex items-center gap-2 text-sm">
-          <NuxtLink
+        <div class="flex items-center gap-1">
+          <UButton
             v-if="user?.role === 'super_admin' && slug"
             to="/admin/groupes"
-            class="text-neutral-600 underline"
-          >
-            Groupes
-          </NuxtLink>
-          <UiButton
             variant="ghost"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-arrow-left"
+            label="Groupes"
+          />
+          <UButton
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-log-out"
+            label="Déconnexion"
             :loading="logout.isPending.value"
             @click="onLogout"
-            >Déconnexion</UiButton
-          >
+          />
         </div>
       </div>
-      <nav
+      <UNavigationMenu
         v-if="links.length"
-        class="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-1"
-      >
-        <NuxtLink
-          v-for="link in links"
-          :key="link.to"
-          :to="link.to"
-          class="min-h-11 shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
-          exact-active-class="bg-red-50 text-red-800"
-        >
-          {{ link.label }}
-        </NuxtLink>
-      </nav>
+        :items="links"
+        class="mx-auto max-w-3xl px-2"
+      />
     </header>
-    <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-4">
+    <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5">
       <slot />
     </main>
   </div>

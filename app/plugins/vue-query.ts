@@ -3,6 +3,7 @@ import {
   QueryClient,
   dehydrate,
   hydrate,
+  type DehydratedState,
 } from '@tanstack/vue-query';
 
 // Server state lives in TanStack Query (README section 7). The server
@@ -10,7 +11,10 @@ import {
 // hydrates from it. hydrate() throws on a null state (pages rendered on the
 // client only), hence the guard.
 export default defineNuxtPlugin((nuxtApp) => {
-  const vueQueryState = useState('vue-query', () => null);
+  const vueQueryState = useState<DehydratedState | null>(
+    'vue-query',
+    () => null,
+  );
   const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: 5_000, retry: 1 } },
   });

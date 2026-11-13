@@ -1,19 +1,59 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-/* Mobile first: one column, large touch targets (README section 11). */
+/* Palette: brick red (primary), pine green (secondary), warm paper tones. */
+@theme static {
+  --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Fraunces', ui-serif, Georgia, serif;
+
+  --color-brick-50: #fbf3f1;
+  --color-brick-100: #f6e2dd;
+  --color-brick-200: #edc5bd;
+  --color-brick-300: #e09e92;
+  --color-brick-400: #cf6f60;
+  --color-brick-500: #b8483a;
+  --color-brick-600: #a43a2f;
+  --color-brick-700: #8a2f27;
+  --color-brick-800: #702a24;
+  --color-brick-900: #5c2621;
+  --color-brick-950: #32110e;
+
+  --color-pine-50: #f0f6f1;
+  --color-pine-100: #dbe9dd;
+  --color-pine-200: #b9d4bf;
+  --color-pine-300: #8db898;
+  --color-pine-400: #5f976e;
+  --color-pine-500: #3f7a50;
+  --color-pine-600: #2f613f;
+  --color-pine-700: #274e34;
+  --color-pine-800: #223f2d;
+  --color-pine-900: #1d3426;
+  --color-pine-950: #0e1d15;
+
+  --color-mustard-400: #e6b94a;
+  --color-mustard-500: #d9a62e;
+  --color-cream-50: #faf6ef;
+  --color-cream-100: #f3ecdf;
+}
+
+:root {
+  --ui-bg: var(--color-cream-50);
+  --ui-bg-muted: var(--color-cream-100);
+  --ui-radius: 0.75rem;
+}
+
+.dark {
+  --ui-bg: var(--color-stone-950);
+  --ui-bg-muted: var(--color-stone-900);
+}
+
 @layer base {
-  html {
-    -webkit-text-size-adjust: 100%;
-  }
   body {
-    @apply min-h-dvh bg-white text-neutral-900 antialiased;
+    @apply min-h-dvh antialiased;
   }
-  button,
-  [role='button'],
-  a.btn,
-  input,
-  select {
-    @apply min-h-11;
+  h1,
+  h2,
+  .font-display {
+    font-family: var(--font-serif);
   }
 }

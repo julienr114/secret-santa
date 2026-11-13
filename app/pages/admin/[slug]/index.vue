@@ -1,14 +1,16 @@
-<script setup>
+<script setup lang="ts">
+import { z } from 'zod';
+import type { FormSubmitEvent } from '@nuxt/ui';
 import {
   useCreateEditionMutation,
   useDashboardQuery,
-} from '~/composables/queries/useGroup.js';
-import { errorMessage } from '~/utils/errors.js';
-import { formatDate } from '~/utils/labels.js';
+} from '~/composables/queries/useGroup';
+import { errorMessage } from '~/utils/errors';
+import { formatDate, plural } from '~/utils/labels';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
-const slug = computed(() => route.params.slug);
+const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const create = useCreateEditionMutation(slug);
 useHead({
@@ -17,20 +19,21 @@ useHead({
   ),
 });
 
-const form = reactive({ label: '', year: new Date().getFullYear() });
+const schema = z.object({
+  label: z.string().trim().min(1, 'Nom requis').max(60),
+  year: z.coerce.number().int().min(2000).max(2100),
+});
+type Schema = z.output<typeof schema>;
+const state = reactive({ label: '', year: new Date().getFullYear() });
 watch(
   () => dashboard.data.value?.nextEdition,
-  (next) => {
-    if (next) {
-      form.label = next.label;
-      form.year = next.year;
-    }
-  },
+  (next) => next && Object.assign(state, next),
   { immediate: true },
 );
+
 const current = computed(() =>
   dashboard.data.value?.editions.find(
-    (e) => e.id === dashboard.data.value.currentEditionId,
+    (e) => e.id === dashboard.data.value?.currentEditionId,
   ),
 );
 const past = computed(() =>
@@ -38,103 +41,114 @@ const past = computed(() =>
     .filter((e) => e.id !== dashboard.data.value?.currentEditionId)
     .toReversed(),
 );
-const submit = () =>
-  create.mutate(
-    { label: form.label, year: Number(form.year) },
-    {
-      onSuccess: ({ edition }) =>
-        navigateTo(`/admin/${slug.value}/editions/${edition.id}`),
-    },
-  );
+const onCreate = (event: FormSubmitEvent<Schema>) =>
+  create.mutate(event.data, {
+    onSuccess: ({ edition }) =>
+      navigateTo(`/admin/${slug.value}/editions/${edition.id}`),
+  });
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
-    <UiNotice v-if="dashboard.isError.value">{{
-      errorMessage(dashboard.error.value)
-    }}</UiNotice>
-    <p v-else-if="dashboard.isPending.value" class="text-sm text-neutral-500">
-      Chargement…
-    </p>
-    <template v-else>
-      <h1 class="text-xl font-bold">{{ dashboard.data.value.group.name }}</h1>
+    <AdminQueryState
+      :pending="dashboard.isPending.value"
+      :error="dashboard.error.value"
+    >
+      <h1 class="font-display text-2xl font-bold">
+        {{ dashboard.data.value?.group.name }}
+      </h1>
 
-      <UiCard v-if="current">
-        <template #title>Édition en cours</template>
-        <div class="flex flex-wrap items-center justify-between gap-2">
+      <UCard v-if="current">
+        <template #header
+          ><h2 class="font-semibold">Édition en cours</h2></template
+        >
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p class="font-semibold">{{ current.label }}</p>
-            <p class="text-sm text-neutral-500">
-              <AdminStatusBadge :code="current.status" /> ·
-              {{ current.participantCount }} participant{{
-                current.participantCount > 1 ? 's' : ''
-              }}
+            <p class="font-display text-xl font-semibold">
+              {{ current.label }}
+            </p>
+            <p class="mt-1 flex items-center gap-2 text-sm text-muted">
+              <AdminStatusBadge :code="current.status" />
+              {{ plural(current.participantCount ?? 0, 'participant') }}
             </p>
           </div>
-          <NuxtLink
+          <UButton
             :to="`/admin/${slug}/editions/${current.id}`"
-            class="font-semibold text-red-700 underline"
-            >Piloter</NuxtLink
-          >
+            icon="i-lucide-sparkles"
+            label="Piloter"
+          />
         </div>
-      </UiCard>
+      </UCard>
 
-      <UiCard v-else>
-        <template #title>Nouvelle édition</template>
-        <p class="mb-3 text-sm text-neutral-600">
+      <UCard v-else>
+        <template #header
+          ><h2 class="font-semibold">Nouvelle édition</h2></template
+        >
+        <p class="mb-4 text-sm text-muted">
           Les participants de l'édition précédente encore actifs sont repris
           automatiquement ; tu pourras ajuster la liste ensuite.
         </p>
-        <form class="flex flex-col gap-3" @submit.prevent="submit">
-          <UiField id="label" label="Nom de l'édition">
-            <UiInput id="label" v-model="form.label" required />
-          </UiField>
-          <UiField id="year" label="Année">
-            <UiInput
-              id="year"
-              v-model="form.year"
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex flex-col gap-4"
+          @submit="onCreate"
+        >
+          <UFormField name="label" label="Nom de l'édition" required>
+            <UInput v-model="state.label" class="w-full" />
+          </UFormField>
+          <UFormField name="year" label="Année" required>
+            <UInput
+              v-model="state.year"
               type="number"
-              min="2000"
-              max="2100"
-              required
               inputmode="numeric"
+              class="w-full"
             />
-          </UiField>
-          <UiNotice v-if="create.isError.value">{{
-            errorMessage(create.error.value)
-          }}</UiNotice>
-          <UiButton type="submit" :loading="create.isPending.value"
-            >Créer l'édition</UiButton
-          >
-        </form>
-      </UiCard>
+          </UFormField>
+          <UAlert
+            v-if="create.isError.value"
+            color="error"
+            variant="subtle"
+            :description="errorMessage(create.error.value)"
+          />
+          <UButton
+            type="submit"
+            :loading="create.isPending.value"
+            label="Créer l'édition"
+          />
+        </UForm>
+      </UCard>
 
-      <UiCard v-if="past.length">
-        <template #title>Éditions passées</template>
-        <ul class="divide-y divide-neutral-100">
+      <UCard v-if="past.length">
+        <template #header
+          ><h2 class="font-semibold">Éditions passées</h2></template
+        >
+        <ul class="divide-y divide-default">
           <li
             v-for="edition in past"
             :key="edition.id"
-            class="flex items-center justify-between gap-2 py-2"
+            class="flex items-center justify-between gap-2 py-3"
           >
             <div>
               <p class="font-medium">{{ edition.label }}</p>
-              <p class="text-xs text-neutral-500">
-                {{ edition.participantCount }} participants ·
+              <p class="text-xs text-muted">
+                {{ plural(edition.participantCount ?? 0, 'participant') }} ·
                 {{ formatDate(edition.closedAt ?? edition.createdAt) }}
               </p>
             </div>
             <div class="flex items-center gap-2">
               <AdminStatusBadge :code="edition.status" />
-              <NuxtLink
+              <UButton
                 :to="`/admin/${slug}/editions/${edition.id}`"
-                class="text-sm text-red-700 underline"
-                >Voir</NuxtLink
-              >
+                variant="ghost"
+                color="neutral"
+                size="sm"
+                label="Voir"
+              />
             </div>
           </li>
         </ul>
-      </UiCard>
-    </template>
+      </UCard>
+    </AdminQueryState>
   </div>
 </template>

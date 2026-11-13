@@ -1,147 +1,141 @@
-<script setup>
+<script setup lang="ts">
+import type { FormSubmitEvent } from '@nuxt/ui';
+import { rulesSchema, type Rules } from '#server/utils/rules';
 import {
   useRulesQuery,
   useUpdateRulesMutation,
-} from '~/composables/queries/useGroup.js';
-import { errorMessage } from '~/utils/errors.js';
-import { RULE_LABELS } from '~/utils/labels.js';
+} from '~/composables/queries/useGroup';
+import { errorMessage } from '~/utils/errors';
+import { RULE_LABELS } from '~/utils/labels';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 useHead({ title: 'Réglages — Secret Santa' });
 const route = useRoute();
-const slug = computed(() => route.params.slug);
+const slug = computed(() => String(route.params.slug));
 const rules = useRulesQuery(slug);
 const update = useUpdateRulesMutation(slug);
+const toast = useToast();
 
-const form = reactive({});
+const state = reactive<Partial<Rules>>({});
 watch(
   () => rules.data.value?.rules,
-  (value) => value && Object.assign(form, value),
+  (value) => value && Object.assign(state, value),
   { immediate: true },
 );
-const saved = ref(false);
-const submit = () =>
-  update.mutate(
-    {
-      ...form,
-      excludePreviousYears: Number(form.excludePreviousYears),
-      maxPinAttempts: Number(form.maxPinAttempts),
-      maxWishes: Number(form.maxWishes),
-    },
-    {
-      onSuccess: () => {
-        saved.value = true;
-        setTimeout(() => (saved.value = false), 3000);
-      },
-    },
-  );
-const checkbox = 'flex min-h-11 items-center gap-3 text-sm';
+const onSubmit = (event: FormSubmitEvent<Rules>) =>
+  update.mutate(event.data, {
+    onSuccess: () =>
+      toast.add({ title: 'Réglages enregistrés', color: 'success' }),
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
-    <h1 class="text-xl font-bold">Réglages du groupe</h1>
-    <p class="text-sm text-neutral-600">
+    <h1 class="font-display text-2xl font-bold">Réglages du groupe</h1>
+    <p class="text-sm text-muted">
       Valeurs par défaut pour chaque édition ; une édition peut les surcharger.
     </p>
-    <UiNotice v-if="rules.isError.value">{{
-      errorMessage(rules.error.value)
-    }}</UiNotice>
-    <p v-else-if="rules.isPending.value" class="text-sm text-neutral-500">
-      Chargement…
-    </p>
-    <form v-else class="flex flex-col gap-4" @submit.prevent="submit">
-      <UiCard>
-        <template #title>Tirage</template>
-        <div class="flex flex-col gap-2">
-          <label :class="checkbox"
-            ><input
-              v-model="form.excludeSpouse"
-              type="checkbox"
-              class="size-5"
-            />
-            {{ RULE_LABELS.excludeSpouse }}</label
-          >
-          <UiField
-            id="epy"
-            :label="RULE_LABELS.excludePreviousYears"
-            hint="0 pour désactiver"
-          >
-            <UiInput
-              id="epy"
-              v-model="form.excludePreviousYears"
-              type="number"
-              min="0"
-              max="10"
-              inputmode="numeric"
-            />
-          </UiField>
-          <label :class="checkbox"
-            ><input
-              v-model="form.registrationRequired"
-              type="checkbox"
-              class="size-5"
-            />
-            {{ RULE_LABELS.registrationRequired }}</label
-          >
-        </div>
-      </UiCard>
-      <UiCard>
-        <template #title>Affiché avec le résultat</template>
-        <div class="flex flex-col gap-3">
-          <UiField id="budget" :label="RULE_LABELS.budget"
-            ><UiInput id="budget" v-model="form.budget" placeholder="20 € max"
-          /></UiField>
-          <UiField id="date" :label="RULE_LABELS.eventDate"
-            ><UiInput
-              id="date"
-              v-model="form.eventDate"
-              placeholder="24 décembre"
-          /></UiField>
-          <UiField id="msg" :label="RULE_LABELS.guardianMessage">
-            <textarea
-              id="msg"
-              v-model="form.guardianMessage"
-              rows="3"
-              class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-base outline-none focus:border-red-700 focus:ring-2 focus:ring-red-200"
-            />
-          </UiField>
-        </div>
-      </UiCard>
-      <UiCard>
-        <template #title>Sécurité et souhaits</template>
-        <div class="flex flex-col gap-3">
-          <UiField id="mpa" :label="RULE_LABELS.maxPinAttempts"
-            ><UiInput
-              id="mpa"
-              v-model="form.maxPinAttempts"
-              type="number"
-              min="1"
-              max="20"
-              inputmode="numeric"
-          /></UiField>
-          <label :class="checkbox"
-            ><input v-model="form.wishlist" type="checkbox" class="size-5" />
-            {{ RULE_LABELS.wishlist }}</label
-          >
-          <UiField id="mw" :label="RULE_LABELS.maxWishes"
-            ><UiInput
-              id="mw"
-              v-model="form.maxWishes"
-              type="number"
-              min="1"
-              max="50"
-              inputmode="numeric"
-          /></UiField>
-        </div>
-      </UiCard>
-      <UiNotice v-if="update.isError.value">{{
-        errorMessage(update.error.value)
-      }}</UiNotice>
-      <UiNotice v-if="saved" tone="success">Réglages enregistrés.</UiNotice>
-      <UiButton type="submit" :loading="update.isPending.value"
-        >Enregistrer</UiButton
+    <AdminQueryState
+      :pending="rules.isPending.value"
+      :error="rules.error.value"
+    >
+      <UForm
+        :schema="rulesSchema"
+        :state="state"
+        class="flex flex-col gap-4"
+        @submit="onSubmit"
       >
-    </form>
+        <UCard>
+          <template #header><h2 class="font-semibold">Tirage</h2></template>
+          <div class="flex flex-col gap-4">
+            <UCheckbox
+              v-model="state.excludeSpouse"
+              :label="RULE_LABELS.excludeSpouse"
+            />
+            <UFormField
+              name="excludePreviousYears"
+              :label="RULE_LABELS.excludePreviousYears"
+              hint="0 pour désactiver"
+            >
+              <UInput
+                v-model.number="state.excludePreviousYears"
+                type="number"
+                min="0"
+                max="10"
+                inputmode="numeric"
+                class="w-32"
+              />
+            </UFormField>
+            <UCheckbox
+              v-model="state.registrationRequired"
+              :label="RULE_LABELS.registrationRequired"
+            />
+          </div>
+        </UCard>
+        <UCard>
+          <template #header
+            ><h2 class="font-semibold">Affiché avec le résultat</h2></template
+          >
+          <div class="flex flex-col gap-4">
+            <UFormField name="budget" :label="RULE_LABELS.budget"
+              ><UInput
+                v-model="state.budget"
+                placeholder="20 € max"
+                class="w-full"
+            /></UFormField>
+            <UFormField name="eventDate" :label="RULE_LABELS.eventDate"
+              ><UInput
+                v-model="state.eventDate"
+                placeholder="24 décembre"
+                class="w-full"
+            /></UFormField>
+            <UFormField
+              name="guardianMessage"
+              :label="RULE_LABELS.guardianMessage"
+              ><UTextarea
+                v-model="state.guardianMessage"
+                :rows="3"
+                class="w-full"
+            /></UFormField>
+          </div>
+        </UCard>
+        <UCard>
+          <template #header
+            ><h2 class="font-semibold">Sécurité et souhaits</h2></template
+          >
+          <div class="flex flex-col gap-4">
+            <UFormField
+              name="maxPinAttempts"
+              :label="RULE_LABELS.maxPinAttempts"
+              ><UInput
+                v-model.number="state.maxPinAttempts"
+                type="number"
+                min="1"
+                max="20"
+                inputmode="numeric"
+                class="w-32"
+            /></UFormField>
+            <UCheckbox v-model="state.wishlist" :label="RULE_LABELS.wishlist" />
+            <UFormField name="maxWishes" :label="RULE_LABELS.maxWishes"
+              ><UInput
+                v-model.number="state.maxWishes"
+                type="number"
+                min="1"
+                max="50"
+                inputmode="numeric"
+                class="w-32"
+            /></UFormField>
+          </div>
+        </UCard>
+        <UButton
+          type="submit"
+          :loading="update.isPending.value"
+          label="Enregistrer"
+          class="self-start"
+        />
+      </UForm>
+    </AdminQueryState>
   </div>
 </template>

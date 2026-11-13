@@ -1,5 +1,5 @@
 // French messages for API failure reasons (statusMessage of createError).
-const MESSAGES = {
+const MESSAGES: Record<string, string> = {
   unauthorized: 'Connecte-toi pour continuer.',
   forbidden: "Tu n'as pas accès à ce groupe.",
   invalid_credentials: 'Mot de passe incorrect.',
@@ -13,18 +13,24 @@ const MESSAGES = {
   couple_not_found: 'Couple introuvable.',
   exclusion_not_found: 'Exclusion introuvable.',
   edition_not_found: 'Édition introuvable.',
-  edition_in_progress: 'Clôture d’abord l’édition en cours.',
+  edition_in_progress: "Clôture d'abord l'édition en cours.",
   edition_closed: 'Cette édition est clôturée.',
   invalid_rules: 'Règles invalides.',
   'Validation Error': 'Vérifie les champs du formulaire.',
 };
 
+type ApiError = {
+  data?: { statusMessage?: string };
+  statusMessage?: string;
+  message?: string;
+};
+
 /** Message to show for a $fetch error, or any error. */
-export const errorMessage = (error) => {
-  const reason =
-    error?.data?.statusMessage ?? error?.statusMessage ?? error?.message;
+export const errorMessage = (error: unknown): string => {
+  const e = (error ?? {}) as ApiError;
+  const reason = e.data?.statusMessage ?? e.statusMessage ?? e.message;
   return (
-    MESSAGES[reason] ??
+    MESSAGES[reason ?? ''] ??
     (reason ? `Erreur : ${reason}` : 'Une erreur est survenue.')
   );
 };

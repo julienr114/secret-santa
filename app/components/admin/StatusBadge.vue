@@ -1,17 +1,21 @@
-<script setup>
-import { BADGE_LABELS, STATUS_LABELS } from '~/utils/labels.js';
+<script setup lang="ts">
+import { BADGE_LABELS, STATUS_LABELS } from '~/utils/labels';
 
-const props = defineProps({ code: { type: String, required: true } });
-const TONES = {
-  draft: 'bg-neutral-100 text-neutral-700',
-  invitations: 'bg-amber-100 text-amber-800',
-  drawn: 'bg-green-100 text-green-800',
-  closed: 'bg-neutral-200 text-neutral-600',
-  sent: 'bg-sky-100 text-sky-800',
-  pin_set: 'bg-green-100 text-green-800',
-  wishes: 'bg-pink-100 text-pink-800',
-  viewed: 'bg-violet-100 text-violet-800',
-  locked: 'bg-red-100 text-red-800',
+const props = defineProps<{ code: string }>();
+
+const COLORS: Record<
+  string,
+  'neutral' | 'warning' | 'success' | 'info' | 'secondary' | 'error' | 'primary'
+> = {
+  draft: 'neutral',
+  invitations: 'warning',
+  drawn: 'success',
+  closed: 'neutral',
+  sent: 'info',
+  pin_set: 'success',
+  wishes: 'primary',
+  viewed: 'secondary',
+  locked: 'error',
 };
 const label = computed(
   () => STATUS_LABELS[props.code] ?? BADGE_LABELS[props.code] ?? props.code,
@@ -19,10 +23,10 @@ const label = computed(
 </script>
 
 <template>
-  <span
-    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-    :class="TONES[code] ?? 'bg-neutral-100 text-neutral-700'"
-  >
-    {{ label }}
-  </span>
+  <UBadge
+    :color="COLORS[code] ?? 'neutral'"
+    variant="subtle"
+    size="sm"
+    :label="label"
+  />
 </template>

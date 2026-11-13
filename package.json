@@ -12,8 +12,8 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && simple-git-hooks",
-    "lint": "eslint --config eslint.config.js .",
-    "lint:fix": "eslint --config eslint.config.js . --fix",
+    "lint": "eslint --config eslint.config.ts .",
+    "lint:fix": "eslint --config eslint.config.ts . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
@@ -59,7 +59,7 @@
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "eslint --config eslint.config.js --fix",
+      "eslint --config eslint.config.ts --fix",
       "prettier --write"
     ],
     "*.{json,css,yml,yaml}": [

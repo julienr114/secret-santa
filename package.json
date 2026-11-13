@@ -18,10 +18,14 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply secret-santa --local",
+    "db:migrate": "wrangler d1 migrations apply secret-santa --remote"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.107.1",
+    "drizzle-orm": "^0.45.4",
     "nuxt": "^4.6.4",
     "vue": "^3.5.45",
     "vue-router": "^4.6.4"
@@ -30,6 +34,7 @@
     "@nuxt/eslint": "^1.17.0",
     "@tailwindcss/vite": "^4.3.5",
     "@vitest/coverage-v8": "^5.1.0",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-functional": "^10.0.1",
@@ -37,7 +42,8 @@
     "prettier": "^3.10.1",
     "simple-git-hooks": "^2.14.0",
     "tailwindcss": "^4.3.5",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "^4.161.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",

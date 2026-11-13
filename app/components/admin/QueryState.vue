@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { errorMessage } from '~/utils/errors';
+const { t } = useT();
+const errorMessage = useErrorMessage();
 
 // Loading and error states shared by every admin screen. The skeleton
 // mimics a screen: a title, then a full-width list.
@@ -21,7 +22,7 @@ withDefaults(
     v-else-if="pending"
     class="flex flex-col gap-6"
     aria-busy="true"
-    aria-label="Chargement"
+    :aria-label="t('common.loading')"
   >
     <USkeleton class="h-9 w-2/3 rounded-md bg-[var(--color-kraft-200)]" />
     <div class="flex flex-col gap-1.5">

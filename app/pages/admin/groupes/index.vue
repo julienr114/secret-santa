@@ -2,8 +2,16 @@
 import { useGroupsQuery } from '~/composables/queries/useGroups';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-useHead({ title: 'Groupes — Secret Santa' });
-const screen = computed(() => ({ back: null, crumbs: [{ label: 'Groupes' }] }));
+const { t } = useT();
+useHead({
+  title: computed(
+    () => `${t('adminGroup.groups.title')} — ${t('common.appName')}`,
+  ),
+});
+const screen = computed(() => ({
+  back: null,
+  crumbs: [{ label: t('adminGroup.groups.title') }],
+}));
 
 const groups = useGroupsQuery();
 </script>
@@ -11,11 +19,13 @@ const groups = useGroupsQuery();
 <template>
   <AdminScreen v-bind="screen">
     <div class="flex items-center justify-between gap-3">
-      <h1 class="font-display text-3xl font-bold">Groupes</h1>
+      <h1 class="font-display text-3xl font-bold">
+        {{ t('adminGroup.groups.title') }}
+      </h1>
       <UButton
         to="/admin/groupes/nouveau"
         icon="i-lucide-plus"
-        label="Nouveau"
+        :label="t('adminGroup.groups.create')"
       />
     </div>
 
@@ -24,7 +34,7 @@ const groups = useGroupsQuery();
       :error="groups.error.value"
     >
       <p v-if="groups.data.value?.groups.length === 0" class="text-muted">
-        Aucun groupe pour l'instant. Crée le premier avec « Nouveau ».
+        {{ t('adminGroup.groups.empty') }}
       </p>
       <MobileList v-else>
         <MobileListItem
@@ -35,8 +45,8 @@ const groups = useGroupsQuery();
           :title="group.name"
           :subtitle="
             group.hasGuardianPassword
-              ? 'Gardien configuré'
-              : 'Gardien à configurer'
+              ? t('adminGroup.groups.guardianConfigured')
+              : t('adminGroup.groups.guardianToConfigure')
           "
         />
       </MobileList>

@@ -4,6 +4,7 @@ import type { Participant, PublicEdition } from '#server/database/editions';
 import type { ExclusionRow } from '#server/database/schema';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
+import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -57,6 +58,8 @@ export const useEditionQuery = (slug: Slug, id: Slug) =>
 export type PersonBody = {
   firstName: string;
   lastName: string | null;
+  email?: string | null;
+  language?: Locale;
   avatarEmoji?: string;
   avatarColor?: string;
 };

@@ -2,15 +2,20 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useCreateGroupMutation } from '~/composables/queries/useGroups';
-import { errorMessage } from '~/utils/errors';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-useHead({ title: 'Nouveau groupe — Secret Santa' });
+const { t } = useT();
+const errorMessage = useErrorMessage();
+useHead({
+  title: computed(
+    () => `${t('adminGroup.newGroup.title')} — ${t('common.appName')}`,
+  ),
+});
 const screen = computed(() => ({
   back: '/admin/groupes',
   crumbs: [
-    { label: 'Groupes', to: '/admin/groupes' },
-    { label: 'Nouveau groupe' },
+    { label: t('adminGroup.groups.title'), to: '/admin/groupes' },
+    { label: t('adminGroup.newGroup.title') },
   ],
 }));
 
@@ -25,19 +30,25 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-const schema = z.object({
-  name: z.string().trim().min(1, 'Nom requis').max(100),
-  slug: z
-    .string()
-    .min(2, '2 caractères minimum')
-    .max(40)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Minuscules, chiffres et tirets'),
-  guardianPassword: z
-    .string()
-    .min(10, '10 caractères minimum')
-    .or(z.literal('')),
-});
-type Schema = z.output<typeof schema>;
+const schema = computed(() =>
+  z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t('adminGroup.newGroup.nameRequired'))
+      .max(100),
+    slug: z
+      .string()
+      .min(2, t('adminGroup.newGroup.slugMin'))
+      .max(40)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, t('adminGroup.newGroup.slugFormat')),
+    guardianPassword: z
+      .string()
+      .min(10, t('adminGroup.newGroup.passwordMin'))
+      .or(z.literal('')),
+  }),
+);
+type Schema = z.output<typeof schema.value>;
 const state = reactive<Schema>({ name: '', slug: '', guardianPassword: '' });
 watch(
   () => state.name,
@@ -58,7 +69,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
     {
       onSuccess: ({ group }) => {
         toast.add({
-          title: 'Groupe créé',
+          title: t('adminGroup.newGroup.created'),
           color: 'success',
           icon: 'i-lucide-check',
         });
@@ -70,33 +81,39 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Nouveau groupe</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminGroup.newGroup.title') }}
+    </h1>
     <UForm
       :schema="schema"
       :state="state"
       class="flex flex-col gap-5"
       @submit="onSubmit"
     >
-      <UFormField name="name" label="Nom du groupe" required>
+      <UFormField
+        name="name"
+        :label="t('adminGroup.newGroup.nameLabel')"
+        required
+      >
         <UInput
           v-model="state.name"
-          placeholder="Famille Rabin"
+          :placeholder="t('adminGroup.newGroup.namePlaceholder')"
           class="w-full"
           autofocus
         />
       </UFormField>
       <UFormField
         name="slug"
-        label="Identifiant"
-        help="Le gardien s'en sert pour se connecter."
+        :label="t('adminGroup.newGroup.slugLabel')"
+        :help="t('adminGroup.newGroup.slugHelp')"
         required
       >
         <UInput v-model="state.slug" autocapitalize="none" class="w-full" />
       </UFormField>
       <UFormField
         name="guardianPassword"
-        label="Mot de passe du gardien"
-        help="Facultatif, 10 caractères minimum. Modifiable plus tard."
+        :label="t('adminGroup.newGroup.passwordLabel')"
+        :help="t('adminGroup.newGroup.passwordHelp')"
       >
         <UInput
           v-model="state.guardianPassword"
@@ -115,7 +132,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         type="submit"
         block
         :loading="create.isPending.value"
-        label="Créer le groupe"
+        :label="t('adminGroup.newGroup.submit')"
       />
     </UForm>
   </AdminScreen>

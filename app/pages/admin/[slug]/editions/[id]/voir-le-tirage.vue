@@ -6,23 +6,30 @@ import {
   useEditionQuery,
 } from '~/composables/queries/useGroup';
 import {
-  useRevealAllMutation,
+  useRevealOneMutation,
   type DrawPair,
 } from '~/composables/queries/useEdition';
-import { errorMessage } from '~/utils/errors';
 
-// Last-resort access to the current draw (decision of 2026-11-13): the
-// guardian could open the personal links anyway, so this official way is
-// guarded and, above all, written to the journal every participant reads.
+// Last-resort access to one participant's result (decisions of
+// 2026-11-13): the guardian could open the personal links anyway, so this
+// official way is guarded and, above all, written to the journal every
+// participant reads, with the name of the person whose result was seen.
+// One person at a time: a doubt about someone does not expose the draw.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
+const { t } = useT();
+const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const edition = useEditionQuery(slug, id);
 const dashboard = useDashboardQuery(slug);
-const reveal = useRevealAllMutation(slug, id);
+const reveal = useRevealOneMutation(slug, id);
 
-useHead({ title: 'Voir le tirage — Secret Santa' });
+useHead({
+  title: computed(
+    () => `${t('adminEdition.reveal.title')} — ${t('common.appName')}`,
+  ),
+});
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
   crumbs: [
@@ -31,26 +38,36 @@ const screen = computed(() => ({
       to: `/admin/${slug.value}`,
     },
     {
-      label: edition.data.value?.edition.label ?? 'Édition',
+      label:
+        edition.data.value?.edition.label ??
+        t('adminEdition.general.editionFallback'),
       to: `/admin/${slug.value}/editions/${id.value}`,
     },
-    { label: 'Voir le tirage' },
+    { label: t('adminEdition.reveal.title') },
   ],
 }));
 
+// Checked by the server as is: the sentence stays in French in every
+// language, only the texts around it are translated.
 const SENTENCE = 'JE VEUX VOIR LE TIRAGE';
-const schema = z.object({
-  password: z.string().min(1, 'Mot de passe requis'),
-  sentence: z
-    .string()
-    .refine(
-      (v) => v.trim().toUpperCase() === SENTENCE,
-      `Recopie « ${SENTENCE} »`,
-    ),
-  understood: z.boolean().refine((v) => v, 'Coche pour confirmer'),
-});
-type Schema = z.output<typeof schema>;
+const schema = computed(() =>
+  z.object({
+    personId: z.string().min(1, t('adminEdition.reveal.personRequired')),
+    password: z.string().min(1, t('adminEdition.reveal.passwordRequired')),
+    sentence: z
+      .string()
+      .refine(
+        (v) => v.trim().toUpperCase() === SENTENCE,
+        t('adminEdition.reveal.sentenceRequired', { sentence: SENTENCE }),
+      ),
+    understood: z
+      .boolean()
+      .refine((v) => v, t('adminEdition.general.tickToConfirm')),
+  }),
+);
+type Schema = z.output<typeof schema.value>;
 const state = reactive<Schema>({
+  personId: '',
   password: '',
   sentence: '',
   understood: false,
@@ -58,12 +75,24 @@ const state = reactive<Schema>({
 
 // Shown only in this component's state: gone when leaving the screen.
 const pairs = ref<DrawPair[] | null>(null);
+const participants = computed(() => edition.data.value?.participants ?? []);
+const personItems = computed(() =>
+  participants.value.map((p) => ({ label: p.firstName, value: p.id })),
+);
+const onAnother = () => {
+  pairs.value = null;
+  Object.assign(state, { personId: '', sentence: '', understood: false });
+};
 const onSubmit = (event: FormSubmitEvent<Schema>) =>
   reveal.mutate(
-    { password: event.data.password, sentence: event.data.sentence },
+    {
+      personId: event.data.personId,
+      password: event.data.password,
+      sentence: event.data.sentence,
+    },
     {
       onSuccess: (data) => {
-        pairs.value = data.pairs;
+        pairs.value = [data.pair];
         state.password = '';
       },
     },
@@ -72,32 +101,30 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Voir le tirage</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminEdition.reveal.title') }}
+    </h1>
     <template v-if="pairs">
       <UAlert
         color="warning"
         variant="subtle"
         icon="i-lucide-eye"
-        description="Ta consultation est inscrite au journal du groupe. Le résultat disparaît quand tu quittes cet écran."
+        :description="t('adminEdition.reveal.shownNotice')"
       />
-      <AdminDrawPairs
-        :pairs="pairs"
-        :people="edition.data.value?.participants ?? []"
+      <AdminDrawPairs :pairs="pairs" :people="participants" />
+      <UButton
+        variant="subtle"
+        color="neutral"
+        block
+        :label="t('adminEdition.reveal.another')"
+        @click="onAnother"
       />
     </template>
     <template v-else>
       <ul class="flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
-        <li>
-          À n'utiliser qu'en dernier recours (désaccord, doute sur un bug…).
-        </li>
-        <li>
-          Le journal du groupe affichera, pour tous les participants : « Le
-          gardien a consulté les résultats du tirage ».
-        </li>
-        <li>
-          Le résultat ne s'affiche qu'ici, et disparaît quand tu quittes
-          l'écran.
-        </li>
+        <li>{{ t('adminEdition.reveal.warningLastResort') }}</li>
+        <li>{{ t('adminEdition.reveal.warningJournal') }}</li>
+        <li>{{ t('adminEdition.reveal.warningEphemeral') }}</li>
       </ul>
       <UForm
         :schema="schema"
@@ -105,7 +132,23 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         class="flex flex-col gap-5"
         @submit="onSubmit"
       >
-        <UFormField name="password" label="Ton mot de passe" required>
+        <UFormField
+          name="personId"
+          :label="t('adminEdition.reveal.personLabel')"
+          required
+        >
+          <USelect
+            v-model="state.personId"
+            :items="personItems"
+            :placeholder="t('adminEdition.reveal.personPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+        <UFormField
+          name="password"
+          :label="t('adminEdition.reveal.passwordLabel')"
+          required
+        >
           <UInput
             v-model="state.password"
             type="password"
@@ -113,7 +156,13 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
             class="w-full"
           />
         </UFormField>
-        <UFormField name="sentence" :label="`Recopie : ${SENTENCE}`" required>
+        <UFormField
+          name="sentence"
+          :label="
+            t('adminEdition.reveal.sentenceLabel', { sentence: SENTENCE })
+          "
+          required
+        >
           <UInput
             v-model="state.sentence"
             autocomplete="off"
@@ -124,7 +173,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         <UFormField name="understood">
           <UCheckbox
             v-model="state.understood"
-            label="Je comprends que tout le groupe saura que j'ai regardé"
+            :label="t('adminEdition.reveal.understood')"
           />
         </UFormField>
         <UAlert
@@ -139,7 +188,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
           block
           icon="i-lucide-eye"
           :loading="reveal.isPending.value"
-          label="Voir le tirage"
+          :label="t('adminEdition.reveal.submit')"
         />
       </UForm>
     </template>

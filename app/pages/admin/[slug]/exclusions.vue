@@ -5,28 +5,37 @@ import {
 } from '~/composables/queries/useGroup';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
+const { t } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
-useHead({ title: 'Exclusions — Secret Santa' });
+useHead({
+  title: computed(
+    () => `${t('adminGroup.exclusions.title')} — ${t('common.appName')}`,
+  ),
+});
 const screen = computed(() => ({
   back: `/admin/${slug.value}/personnes`,
   crumbs: [
     { label: name.value, to: `/admin/${slug.value}` },
-    { label: 'Personnes', to: `/admin/${slug.value}/personnes` },
-    { label: 'Exclusions' },
+    {
+      label: t('adminGroup.people.title'),
+      to: `/admin/${slug.value}/personnes`,
+    },
+    { label: t('adminGroup.exclusions.title') },
   ],
 }));
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Exclusions</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminGroup.exclusions.title') }}
+    </h1>
     <p class="text-muted">
-      Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des
-      frères et sœurs, un parent et son enfant…
+      {{ t('adminGroup.exclusions.intro') }}
     </p>
     <AdminQueryState
       :pending="people.isPending.value"

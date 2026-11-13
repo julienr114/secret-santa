@@ -1,4 +1,5 @@
 import type { Participant } from '#server/database/editions';
+import type { Translate } from '#shared/i18n';
 
 // One-line status of a participant on the edition screen, with the icon
 // and colour that go with it. Before the draw the screen stays quiet: no
@@ -13,13 +14,14 @@ export type ParticipantStatusLine = {
 export const participantStatusLine = (
   p: Pick<Participant, 'messageSentAt' | 'viewCount'>,
   editionStatus: string,
+  t: Translate,
 ): ParticipantStatusLine | null => {
   if (p.viewCount > 0) {
     return {
       label:
         p.viewCount > 1
-          ? `Résultat consulté · ${p.viewCount}×`
-          : 'Résultat consulté',
+          ? t('common.participantStatus.viewedTimes', { count: p.viewCount })
+          : t('common.participantStatus.viewed'),
       icon: 'i-lucide-circle-check',
       tone: 'text-success',
     };
@@ -27,7 +29,7 @@ export const participantStatusLine = (
   if (editionStatus !== 'drawn') {
     return p.messageSentAt
       ? {
-          label: 'Invitation envoyée',
+          label: t('common.participantStatus.invitationSent'),
           icon: 'i-lucide-check',
           tone: 'text-dimmed',
         }
@@ -35,13 +37,13 @@ export const participantStatusLine = (
   }
   if (!p.messageSentAt) {
     return {
-      label: 'Pas encore envoyé',
+      label: t('common.participantStatus.notSent'),
       icon: 'i-lucide-circle-dashed',
       tone: 'text-dimmed',
     };
   }
   return {
-    label: 'Envoyé, pas encore consulté',
+    label: t('common.participantStatus.sentNotViewed'),
     icon: 'i-lucide-clock-3',
     tone: 'text-warning',
   };

@@ -8,6 +8,7 @@ import { AVATAR_SHADES } from '~/utils/avatars';
 
 // Emoji grid and colour swatches, with a live preview.
 const model = defineModel<Avatar>({ required: true });
+const { t, tk } = useT();
 </script>
 
 <template>
@@ -17,7 +18,7 @@ const model = defineModel<Avatar>({ required: true });
     </div>
     <div
       role="radiogroup"
-      aria-label="Emoji"
+      :aria-label="t('adminGroup.avatar.emoji')"
       class="grid grid-cols-6 gap-2 sm:grid-cols-8"
     >
       <button
@@ -40,7 +41,7 @@ const model = defineModel<Avatar>({ required: true });
     </div>
     <div
       role="radiogroup"
-      aria-label="Couleur"
+      :aria-label="t('adminGroup.avatar.color')"
       class="flex flex-wrap justify-center gap-3"
     >
       <button
@@ -49,8 +50,8 @@ const model = defineModel<Avatar>({ required: true });
         type="button"
         role="radio"
         :aria-checked="model.color === color"
-        :aria-label="AVATAR_SHADES[color].label"
-        :title="AVATAR_SHADES[color].label"
+        :aria-label="tk(`adminGroup.avatar.colors.${color}`)"
+        :title="tk(`adminGroup.avatar.colors.${color}`)"
         class="size-11 rounded-full ring-1 transition"
         :class="
           model.color === color

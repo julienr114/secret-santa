@@ -5,28 +5,39 @@ import {
   useCreateEditionMutation,
   useDashboardQuery,
 } from '~/composables/queries/useGroup';
-import { errorMessage } from '~/utils/errors';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
+const { t } = useT();
+const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const create = useCreateEditionMutation(slug);
 const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
-useHead({ title: 'Nouvelle édition — Secret Santa' });
+useHead({
+  title: computed(
+    () => `${t('adminEdition.newEdition.title')} — ${t('common.appName')}`,
+  ),
+});
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
   crumbs: [
     { label: name.value, to: `/admin/${slug.value}` },
-    { label: 'Nouvelle édition' },
+    { label: t('adminEdition.newEdition.title') },
   ],
 }));
 
-const schema = z.object({
-  label: z.string().trim().min(1, 'Nom requis').max(60),
-  year: z.coerce.number().int().min(2000).max(2100),
-});
-type Schema = z.output<typeof schema>;
+const schema = computed(() =>
+  z.object({
+    label: z
+      .string()
+      .trim()
+      .min(1, t('adminEdition.newEdition.nameRequired'))
+      .max(60),
+    year: z.coerce.number().int().min(2000).max(2100),
+  }),
+);
+type Schema = z.output<typeof schema.value>;
 await dashboard.suspense();
 const state = reactive({
   label: dashboard.data.value?.nextEdition.label ?? '',
@@ -43,21 +54,28 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Nouvelle édition</h1>
-    <p class="text-muted">
-      Les participants de l'édition précédente encore actifs sont repris ; tu
-      pourras ajuster la liste ensuite.
-    </p>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminEdition.newEdition.title') }}
+    </h1>
+    <p class="text-muted">{{ t('adminEdition.newEdition.intro') }}</p>
     <UForm
       :schema="schema"
       :state="state"
       class="flex flex-col gap-5"
       @submit="onSubmit"
     >
-      <UFormField name="label" label="Nom de l'édition" required>
+      <UFormField
+        name="label"
+        :label="t('adminEdition.newEdition.nameLabel')"
+        required
+      >
         <UInput v-model="state.label" class="w-full" />
       </UFormField>
-      <UFormField name="year" label="Année" required>
+      <UFormField
+        name="year"
+        :label="t('adminEdition.newEdition.yearLabel')"
+        required
+      >
         <UInput
           v-model="state.year"
           type="number"
@@ -75,7 +93,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         type="submit"
         block
         :loading="create.isPending.value"
-        label="Créer l'édition"
+        :label="t('adminEdition.newEdition.submit')"
       />
     </UForm>
   </AdminScreen>

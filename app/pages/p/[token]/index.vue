@@ -6,8 +6,6 @@ import {
   useSaveAvatarMutation,
   type Reveal,
 } from '~/composables/queries/usePersonal';
-import { errorMessage } from '~/utils/errors';
-import { plural } from '~/utils/labels';
 
 // Personal page (README 4.3). Opening it shows nothing secret and counts
 // nothing: the result only appears after the "Découvrir" button.
@@ -16,6 +14,8 @@ const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
 const revealMutation = useRevealMutation(token);
 const me = computed(() => personal.data.value);
+const { t } = useT();
+const errorMessage = useErrorMessage();
 
 // Only in this component's state: gone when leaving or reloading the page.
 const reveal = ref<Reveal | null>(null);
@@ -67,15 +67,16 @@ const confirmPicker = () => {
 
 const wishesSubtitle = computed(() => {
   const count = me.value?.wishesCount ?? 0;
-  if (count > 0) return plural(count, 'idée');
+  if (count > 0) return t('common.count.ideas', { count });
   return me.value?.wishesEditable
-    ? 'Aide la personne qui t’a tiré·e au sort'
-    : 'Aucune idée';
+    ? t('participant.home.wishes.help')
+    : t('participant.home.wishes.none');
 });
 </script>
 
 <template>
   <ParticipantScreen
+    :token="token"
     :pending="personal.isPending.value"
     :error="personal.error.value"
   >
@@ -85,7 +86,7 @@ const wishesSubtitle = computed(() => {
           v-if="me.avatarEditable && avatar"
           type="button"
           class="relative shrink-0 rounded-full"
-          aria-label="Changer mon icône"
+          :aria-label="t('participant.home.changeAvatar')"
           @click="openPicker"
         >
           <AdminAvatar :avatar="avatar" size="lg" />
@@ -99,7 +100,7 @@ const wishesSubtitle = computed(() => {
         <AdminAvatar v-else-if="avatar" :avatar="avatar" size="lg" />
         <div class="min-w-0">
           <h1 class="font-display text-3xl font-bold break-words">
-            Salut {{ me.firstName }} !
+            {{ t('participant.home.greeting', { firstName: me.firstName }) }}
           </h1>
           <p class="text-sm text-muted">
             {{ me.groupName }} · {{ me.editionLabel }}
@@ -112,14 +113,14 @@ const wishesSubtitle = computed(() => {
         class="flex flex-col gap-2 rounded-xl border border-default bg-default p-6 text-center"
       >
         <p class="text-4xl" aria-hidden="true">⏳</p>
-        <h2 class="text-xl font-bold">Le tirage n'a pas encore eu lieu</h2>
+        <h2 class="text-xl font-bold">
+          {{ t('participant.home.waiting.title') }}
+        </h2>
         <p class="text-sm text-muted">
-          Ton gardien te préviendra. Garde ce lien : c'est ici que tu
-          découvriras à qui tu offres un cadeau.
+          {{ t('participant.home.waiting.body') }}
         </p>
         <p v-if="me.wishesEditable" class="text-sm text-muted">
-          En attendant, note quelques idées de cadeaux pour la personne qui te
-          tirera au sort.
+          {{ t('participant.home.waiting.wishes') }}
         </p>
       </section>
 
@@ -131,7 +132,7 @@ const wishesSubtitle = computed(() => {
             color="neutral"
             block
             icon="i-lucide-eye-off"
-            label="Cacher mon résultat"
+            :label="t('participant.home.ready.hide')"
             @click="onHide"
           />
         </template>
@@ -140,10 +141,11 @@ const wishesSubtitle = computed(() => {
           class="flex flex-col gap-4 rounded-xl border border-default bg-default p-6 text-center"
         >
           <p class="text-4xl" aria-hidden="true">🎁</p>
-          <h2 class="text-xl font-bold">Le tirage est fait !</h2>
+          <h2 class="text-xl font-bold">
+            {{ t('participant.home.ready.title') }}
+          </h2>
           <p class="text-sm text-muted">
-            Assure-toi que personne ne regarde ton écran. Chaque consultation
-            est inscrite au journal du groupe.
+            {{ t('participant.home.ready.body') }}
           </p>
           <UAlert
             v-if="revealMutation.isError.value"
@@ -155,12 +157,12 @@ const wishesSubtitle = computed(() => {
             block
             icon="i-lucide-gift"
             :loading="revealMutation.isPending.value"
-            label="Découvrir à qui j'offre un cadeau"
+            :label="t('participant.home.ready.reveal')"
             @click="onReveal"
           />
         </section>
         <p v-if="me.phase === 'closed'" class="text-center text-sm text-muted">
-          Cette édition est clôturée.
+          {{ t('participant.home.closed') }}
         </p>
       </template>
 
@@ -169,26 +171,30 @@ const wishesSubtitle = computed(() => {
           v-if="me.wishlist"
           :to="`/p/${token}/souhaits`"
           icon="i-lucide-list-checks"
-          title="Ma liste de souhaits"
+          :title="t('participant.home.wishes.title')"
           :subtitle="wishesSubtitle"
         />
         <MobileListItem
           :to="`/p/${token}/journal`"
           icon="i-lucide-scroll-text"
-          title="Journal du groupe"
-          subtitle="Tout ce qui s'est passé, à la vue de tous"
+          :title="t('participant.home.journal.title')"
+          :subtitle="t('participant.home.journal.subtitle')"
         />
       </MobileList>
       <UDrawer
         v-model:open="pickerOpen"
-        title="Mon icône"
-        description="Choisis ton emoji et ta couleur."
+        :title="t('participant.home.avatar.title')"
+        :description="t('participant.home.avatar.description')"
       >
         <template #body>
           <AdminAvatarPicker v-if="draft" v-model="draft" />
         </template>
         <template #footer>
-          <UButton block label="Valider" @click="confirmPicker" />
+          <UButton
+            block
+            :label="t('common.actions.validate')"
+            @click="confirmPicker"
+          />
         </template>
       </UDrawer>
     </template>

@@ -4,8 +4,6 @@ import {
   useWishesQuery,
   type WishItem,
 } from '~/composables/queries/usePersonal';
-import { errorMessage } from '~/utils/errors';
-import { plural } from '~/utils/labels';
 
 // The participant's own wish list (README 6 bis.4), built like the other
 // lists of the app: one row per idea, and a bottom sheet to add or change
@@ -14,6 +12,8 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useWishesQuery(token);
 const save = useSaveWishesMutation(token);
+const { t } = useT();
+const errorMessage = useErrorMessage();
 
 const LABEL_MAX = 200;
 const toast = useToast();
@@ -42,7 +42,9 @@ const draft = reactive<{ index: number | null; label: string; url: string }>({
 const isNew = computed(() => draft.index === null);
 const canValidate = computed(() => draft.label.trim().length > 0);
 const sheetTitle = computed(() =>
-  isNew.value ? 'Nouvelle idée' : 'Modifier l’idée',
+  isNew.value
+    ? t('participant.wishes.sheet.new')
+    : t('participant.wishes.sheet.edit'),
 );
 
 const push = (next: WishItem[]) => {
@@ -93,30 +95,39 @@ const onRemove = () => {
 
 <template>
   <ParticipantScreen
+    :token="token"
     :back="`/p/${token}`"
     :pending="query.isPending.value"
     :error="query.error.value"
   >
-    <h1 class="font-display text-3xl font-bold">Ma liste de souhaits</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('participant.wishes.title') }}
+    </h1>
     <p class="text-sm text-muted">
-      <template v-if="editable">
-        Quelques idées pour aider la personne qui t'offre un cadeau. Elle seule
-        les verra.
-      </template>
-      <template v-else>
-        La liste n'est plus modifiable pour cette édition.
-      </template>
+      {{
+        editable
+          ? t('participant.wishes.intro')
+          : t('participant.wishes.readOnly')
+      }}
     </p>
 
     <MobileList
-      :title="wishes.length > 0 ? plural(wishes.length, 'idée') : undefined"
-      :footer="editable && !canAdd ? `${maxWishes} idées au plus.` : undefined"
+      :title="
+        wishes.length > 0
+          ? t('common.count.ideas', { count: wishes.length })
+          : undefined
+      "
+      :footer="
+        editable && !canAdd
+          ? t('participant.wishes.max', { count: maxWishes })
+          : undefined
+      "
     >
       <li v-if="wishes.length === 0" class="px-4 py-3 text-sm text-muted">
         {{
           editable
-            ? 'Aucune idée pour l’instant.'
-            : "Tu n'avais noté aucune idée."
+            ? t('participant.wishes.empty')
+            : t('participant.wishes.emptyReadOnly')
         }}
       </li>
       <MobileListItem
@@ -142,14 +153,16 @@ const onRemove = () => {
             variant="ghost"
             color="neutral"
             icon="i-lucide-external-link"
-            :aria-label="`Ouvrir le lien de « ${wish.label} »`"
+            :aria-label="
+              t('participant.wishes.openLink', { label: wish.label })
+            "
           />
         </template>
       </MobileListItem>
       <MobileListItem
         v-if="editable && canAdd"
         icon="i-lucide-plus"
-        title="Ajouter une idée"
+        :title="t('participant.wishes.add')"
         @click="openSheet(null)"
       />
     </MobileList>
@@ -157,7 +170,7 @@ const onRemove = () => {
     <UDrawer
       v-model:open="open"
       :title="sheetTitle"
-      description="Une idée courte, et un lien si tu en as un."
+      :description="t('participant.wishes.sheet.description')"
     >
       <template #body>
         <form
@@ -166,16 +179,16 @@ const onRemove = () => {
           novalidate
           @submit.prevent="onValidate"
         >
-          <UFormField label="Idée">
+          <UFormField :label="t('participant.wishes.sheet.idea')">
             <UInput
               v-model="draft.label"
               :maxlength="LABEL_MAX"
               enterkeyhint="done"
-              placeholder="Un livre, des chaussettes…"
+              :placeholder="t('participant.wishes.sheet.ideaPlaceholder')"
               class="w-full"
             />
           </UFormField>
-          <UFormField label="Lien (facultatif)">
+          <UFormField :label="t('participant.wishes.sheet.link')">
             <UInput
               v-model="draft.url"
               inputmode="url"
@@ -193,7 +206,7 @@ const onRemove = () => {
           form="wish-form"
           block
           :disabled="!canValidate"
-          label="Valider"
+          :label="t('common.actions.validate')"
         />
         <UButton
           v-if="!isNew"
@@ -201,7 +214,7 @@ const onRemove = () => {
           variant="ghost"
           color="error"
           icon="i-lucide-trash-2"
-          label="Supprimer l’idée"
+          :label="t('participant.wishes.sheet.remove')"
           @click="onRemove"
         />
       </template>

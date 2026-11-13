@@ -6,11 +6,15 @@ import {
   useRulesQuery,
   useUpdateRulesMutation,
 } from '~/composables/queries/useGroup';
-import { errorMessage } from '~/utils/errors';
-import { RULE_LABELS } from '~/utils/labels';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-useHead({ title: 'Règles — Secret Santa' });
+const { t } = useT();
+const errorMessage = useErrorMessage();
+useHead({
+  title: computed(
+    () => `${t('adminGroup.rules.shortTitle')} — ${t('common.appName')}`,
+  ),
+});
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const rules = useRulesQuery(slug);
@@ -24,7 +28,7 @@ const screen = computed(() => ({
       label: dashboard.data.value?.group.name ?? slug.value,
       to: `/admin/${slug.value}`,
     },
-    { label: 'Règles' },
+    { label: t('adminGroup.rules.shortTitle') },
   ],
 }));
 
@@ -35,28 +39,36 @@ const onSubmit = (event: FormSubmitEvent<Rules>) =>
   update.mutate(event.data, {
     onSuccess: () =>
       toast.add({
-        title: 'Règles enregistrées',
+        title: t('adminGroup.rules.saved'),
         color: 'success',
         icon: 'i-lucide-check',
       }),
     onError: (error) =>
       toast.add({ title: errorMessage(error), color: 'error' }),
   });
-const previousYearsItems = [
-  { value: 0, label: 'Non, peu importe' },
-  { value: 1, label: "Pas la même personne que l'an dernier" },
-  { value: 2, label: 'Pas la même que les 2 dernières années' },
-  { value: 3, label: 'Pas la même que les 3 dernières années' },
-];
+const previousYearsItems = computed(() => [
+  { value: 0, label: t('adminGroup.rules.previousYears.none') },
+  { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
+  {
+    value: 2,
+    label: t('adminGroup.rules.previousYears.lastYears', { count: 2 }),
+  },
+  {
+    value: 3,
+    label: t('adminGroup.rules.previousYears.lastYears', { count: 3 }),
+  },
+]);
 const sectionTitle =
   'px-1 text-xs font-semibold tracking-wide text-muted uppercase';
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Règles du tirage</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminGroup.rules.title') }}
+    </h1>
     <p class="text-muted">
-      Valeurs par défaut pour chaque édition ; une édition peut les surcharger.
+      {{ t('adminGroup.rules.intro') }}
     </p>
     <AdminQueryState
       :pending="rules.isPending.value"
@@ -69,11 +81,11 @@ const sectionTitle =
         @submit="onSubmit"
       >
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">Tirage</h2>
+          <h2 :class="sectionTitle">{{ t('adminGroup.rules.drawSection') }}</h2>
           <UFormField
             name="excludePreviousYears"
-            :label="RULE_LABELS.excludePreviousYears"
-            help="Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années. Plus c'est long, plus le tirage est contraint."
+            :label="t('adminGroup.rules.excludePreviousYears')"
+            :help="t('adminGroup.rules.excludePreviousYearsHelp')"
           >
             <USelect
               v-model="state.excludePreviousYears"
@@ -83,24 +95,26 @@ const sectionTitle =
           </UFormField>
         </section>
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">Affiché avec le résultat</h2>
-          <UFormField name="budget" :label="RULE_LABELS.budget">
+          <h2 :class="sectionTitle">
+            {{ t('adminGroup.rules.resultSection') }}
+          </h2>
+          <UFormField name="budget" :label="t('adminGroup.rules.budget')">
             <UInput
               v-model="state.budget"
-              placeholder="20 € max"
+              :placeholder="t('adminGroup.rules.budgetPlaceholder')"
               class="w-full"
             />
           </UFormField>
-          <UFormField name="eventDate" :label="RULE_LABELS.eventDate">
+          <UFormField name="eventDate" :label="t('adminGroup.rules.eventDate')">
             <UInput
               v-model="state.eventDate"
-              placeholder="24 décembre"
+              :placeholder="t('adminGroup.rules.eventDatePlaceholder')"
               class="w-full"
             />
           </UFormField>
           <UFormField
             name="guardianMessage"
-            :label="RULE_LABELS.guardianMessage"
+            :label="t('adminGroup.rules.guardianMessage')"
           >
             <UTextarea
               v-model="state.guardianMessage"
@@ -110,9 +124,14 @@ const sectionTitle =
           </UFormField>
         </section>
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">Listes de souhaits</h2>
-          <USwitch v-model="state.wishlist" :label="RULE_LABELS.wishlist" />
-          <UFormField name="maxWishes" :label="RULE_LABELS.maxWishes">
+          <h2 :class="sectionTitle">
+            {{ t('adminGroup.rules.wishlistSection') }}
+          </h2>
+          <USwitch
+            v-model="state.wishlist"
+            :label="t('adminGroup.rules.wishlist')"
+          />
+          <UFormField name="maxWishes" :label="t('adminGroup.rules.maxWishes')">
             <UInputNumber
               v-model="state.maxWishes"
               :min="1"
@@ -125,7 +144,7 @@ const sectionTitle =
           type="submit"
           block
           :loading="update.isPending.value"
-          label="Enregistrer"
+          :label="t('common.actions.save')"
         />
       </UForm>
     </AdminQueryState>

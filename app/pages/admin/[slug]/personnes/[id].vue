@@ -6,9 +6,10 @@ import {
   usePeopleQuery,
   useUpdatePersonMutation,
 } from '~/composables/queries/useGroup';
-import { errorMessage } from '~/utils/errors';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
+const { t } = useT();
+const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
@@ -40,14 +41,18 @@ const groupName = computed(
 );
 useHead({
   title: computed(
-    () => `${person.value?.firstName ?? 'Personne'} — Secret Santa`,
+    () =>
+      `${person.value?.firstName ?? t('adminGroup.person.fallbackTitle')} — ${t('common.appName')}`,
   ),
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/personnes`,
   crumbs: [
     { label: groupName.value, to: `/admin/${slug.value}` },
-    { label: 'Personnes', to: `/admin/${slug.value}/personnes` },
+    {
+      label: t('adminGroup.people.title'),
+      to: `/admin/${slug.value}/personnes`,
+    },
     { label: person.value?.firstName ?? '…' },
   ],
 }));
@@ -58,7 +63,7 @@ const onSave = (value: PersonFormValue) =>
     {
       onSuccess: () =>
         toast.add({
-          title: 'Enregistré',
+          title: t('adminGroup.person.saved'),
           color: 'success',
           icon: 'i-lucide-check',
         }),
@@ -86,7 +91,9 @@ const onDelete = () =>
       :pending="people.isPending.value"
       :error="people.error.value"
     >
-      <p v-if="!person" class="text-muted">Personne introuvable.</p>
+      <p v-if="!person" class="text-muted">
+        {{ t('adminGroup.person.notFound') }}
+      </p>
       <template v-else>
         <h1 class="font-display text-3xl font-bold">
           {{ person.firstName }}
@@ -94,57 +101,64 @@ const onDelete = () =>
         <AdminPersonForm
           :key="person.id"
           :initial="person"
+          :with-email="dashboard.data.value?.group.emailSending"
           autosave
           @submit="onSave"
         />
 
-        <MobileList title="Ne tire pas">
+        <MobileList :title="t('adminGroup.person.doesNotDraw')">
           <MobileListItem
             :to="`/admin/${slug}/exclusions`"
             icon="i-lucide-ban"
             :title="
-              exclusions.length ? exclusions.join(', ') : 'Aucune exclusion'
+              exclusions.length
+                ? exclusions.join(', ')
+                : t('adminGroup.person.noExclusion')
             "
-            subtitle="Gérer les exclusions"
+            :subtitle="t('adminGroup.person.manageExclusions')"
           />
         </MobileList>
 
         <MobileList
-          title="Participation"
+          :title="t('adminGroup.person.participation')"
           :footer="
-            person.active
-              ? 'Une personne désactivée n\'est pas reprise dans les prochaines éditions. Son historique est conservé.'
-              : undefined
+            person.active ? t('adminGroup.person.deactivateHelp') : undefined
           "
         >
           <MobileListItem
             :icon="person.active ? 'i-lucide-user-x' : 'i-lucide-user-check'"
-            :title="person.active ? 'Désactiver' : 'Réactiver'"
+            :title="
+              person.active
+                ? t('adminGroup.person.deactivate')
+                : t('adminGroup.person.reactivate')
+            "
             @click="toggleActive"
           />
           <MobileListItem
             v-if="!confirmDelete"
             icon="i-lucide-trash-2"
-            title="Supprimer définitivement"
-            subtitle="Seulement si elle n'a jamais participé"
+            :title="t('adminGroup.person.deleteForever')"
+            :subtitle="t('adminGroup.person.deleteHint')"
             tone="danger"
             @click="confirmDelete = true"
           />
           <li v-else class="flex flex-col gap-2 px-4 py-3">
             <p class="text-sm">
-              Supprimer {{ person.firstName }} pour de bon ?
+              {{
+                t('adminGroup.person.deleteConfirm', { name: person.firstName })
+              }}
             </p>
             <div class="flex gap-2">
               <UButton
                 color="error"
                 :loading="remove.isPending.value"
-                label="Supprimer"
+                :label="t('common.actions.delete')"
                 @click="onDelete"
               />
               <UButton
                 variant="ghost"
                 color="neutral"
-                label="Annuler"
+                :label="t('common.actions.cancel')"
                 @click="confirmDelete = false"
               />
             </div>

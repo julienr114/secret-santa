@@ -4,6 +4,7 @@ import type { Avatar } from '#server/utils/avatars';
 import type { JournalEntry } from '#server/utils/audit';
 import type { EditionStatus } from '#server/utils/editions';
 import type { PersonalPhase } from '#server/utils/personal';
+import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation } from './useApi';
 
@@ -13,6 +14,7 @@ type Token = MaybeRefOrGetter<string>;
 
 export type PersonalState = {
   firstName: string;
+  language: Locale;
   avatar: Avatar;
   avatarEditable: boolean;
   groupName: string;
@@ -28,6 +30,7 @@ export type WishesPayload = {
   wishes: WishItem[];
   maxWishes: number;
   editable: boolean;
+  language: Locale;
 };
 export type Reveal = {
   receiver: { name: string; avatar: Avatar };
@@ -42,6 +45,7 @@ export type JournalPayload = {
   entries: JournalEntry[];
   editions: { id: string; label: string }[];
   currentEditionId: string;
+  language: Locale;
 };
 
 const base = (token: Token) => `/api/p/${toValue(token)}`;
@@ -50,8 +54,10 @@ const base = (token: Token) => `/api/p/${toValue(token)}`;
  * A read behind a personal link. No retry: a refused link will not get
  * better, and the page must say so at once. A failure during server
  * rendering is left to the page, which shows the "invalid link" screen.
+ * Every answer carries the participant's preferred language, which the
+ * interface then follows (without touching this device's own choice).
  */
-const usePersonalRead = <T>(
+const usePersonalRead = <T extends { language: Locale }>(
   queryKey: () => QueryKey,
   path: () => string,
   enabled: () => boolean = () => true,
@@ -66,9 +72,15 @@ const usePersonalRead = <T>(
     refetchInterval: (q) =>
       refetchInterval?.(q.state.data as T | undefined) ?? false,
   });
+  const { locale } = useLocale();
+  const follow = (data: T | undefined) => {
+    if (data) locale.value = data.language;
+  };
   onServerPrefetch(async () => {
     if (enabled()) await query.suspense().catch(() => undefined);
+    follow(query.data.value);
   });
+  watch(() => query.data.value, follow, { immediate: true });
   return query;
 };
 
@@ -109,6 +121,14 @@ export const useSaveWishesMutation = (token: Token) =>
 export const useSaveAvatarMutation = (token: Token) =>
   useApiMutation<{ avatar: Avatar }, Avatar>(
     (avatar) => api(`${base(token)}/avatar`, { method: 'PUT', body: avatar }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/** The participant's preferred language; every read follows it. */
+export const useSaveLanguageMutation = (token: Token) =>
+  useApiMutation<{ language: Locale }, Locale>(
+    (language) =>
+      api(`${base(token)}/language`, { method: 'PUT', body: { language } }),
     () => [keys.personal(toValue(token))],
   );
 

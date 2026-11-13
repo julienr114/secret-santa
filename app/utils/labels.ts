@@ -1,43 +1,19 @@
-// French labels for codes used by the API.
-export const STATUS_LABELS: Record<string, string> = {
-  draft: 'Brouillon',
-  invitations: 'Invitations',
-  drawn: 'Tirée',
-  closed: 'Clôturée',
-};
+import type { Locale } from '#shared/i18n';
 
-export const BADGE_LABELS: Record<string, string> = {
-  sent: 'envoyé',
-  wishes: 'souhaits',
-  viewed: 'consulté',
-};
+// Formatting helpers. Labels themselves live in shared/i18n
+// (`common.status.*`, `common.badge.*`, `common.messageType.*`,
+// `common.count.*`).
 
-export const RULE_LABELS = {
-  excludePreviousYears: 'Éviter de retomber sur la même personne',
-  budget: 'Budget (texte libre)',
-  eventDate: 'Date de la fête',
-  guardianMessage: 'Petit mot du gardien',
-  wishlist: 'Activer les listes de souhaits',
-  maxWishes: "Nombre maximal d'idées par liste",
-} as const;
-
-export const formatDate = (iso: string | null | undefined): string =>
+export const formatDate = (
+  iso: string | null | undefined,
+  locale: Locale,
+): string =>
   iso
-    ? new Intl.DateTimeFormat('fr-FR', {
+    ? new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
         timeStyle: 'short',
       }).format(new Date(iso))
     : '';
-
-export const plural = (n: number, word: string) =>
-  `${n} ${word}${n > 1 ? 's' : ''}`;
-
-export const MESSAGE_LABELS: Record<string, string> = {
-  invitation: 'Invitation',
-  drawn: 'Tirage fait',
-  reminder: 'Relance',
-  redraw: 'Nouveau tirage',
-};
 
 /** The message that fits the edition status by default. */
 export const defaultMessageType = (status: string) =>

@@ -21,6 +21,7 @@ const EMOJIS: Record<string, string> = {
   draw_done: '🎲',
   draw_cancelled: '↩️',
   results_revealed: '👀',
+  result_revealed: '👀',
   result_viewed: '🎁',
   wishes_updated: '📝',
   edition_closed: '🎉',
@@ -32,25 +33,36 @@ const MILESTONES = new Set([
   'draw_done',
   'draw_cancelled',
   'results_revealed',
+  'result_revealed',
   'edition_closed',
 ]);
 // Milestones everyone should notice: something was undone or looked at.
-const ALERTS = new Set(['draw_cancelled', 'results_revealed']);
+const ALERTS = new Set([
+  'draw_cancelled',
+  'results_revealed',
+  'result_revealed',
+]);
 
-const dayFormat = new Intl.DateTimeFormat('fr-FR', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-});
-const timeFormat = new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short' });
-const timeOf = (iso: string) => timeFormat.format(new Date(iso));
+const { t, locale } = useT();
+const dayFormat = computed(
+  () =>
+    new Intl.DateTimeFormat(locale.value, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }),
+);
+const timeFormat = computed(
+  () => new Intl.DateTimeFormat(locale.value, { timeStyle: 'short' }),
+);
+const timeOf = (iso: string) => timeFormat.value.format(new Date(iso));
 
 // Entries arrive newest first; consecutive ones of the same day share a
 // heading.
 type Day = { label: string; entries: JournalEntry[] };
 const days = computed(() =>
   props.entries.reduce<Day[]>((acc, entry) => {
-    const label = dayFormat.format(new Date(entry.createdAt));
+    const label = dayFormat.value.format(new Date(entry.createdAt));
     const last = acc.at(-1);
     return last && last.label === label
       ? [...acc.slice(0, -1), { label, entries: [...last.entries, entry] }]
@@ -61,7 +73,7 @@ const days = computed(() =>
 
 <template>
   <p v-if="entries.length === 0" class="text-sm text-muted">
-    Rien à signaler pour l'instant.
+    {{ t('participant.journal.empty') }}
   </p>
   <div v-else class="relative" data-testid="journal">
     <!-- The thread: 2.5rem rail, line in its middle, fading at the end. -->

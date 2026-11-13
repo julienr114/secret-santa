@@ -4,7 +4,6 @@ import {
   useDeleteExclusionMutation,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
-import { errorMessage } from '~/utils/errors';
 
 // The group's exclusions as a list (remove with ×) and an "add" row that
 // opens a bottom sheet. Used on the exclusions screen and on the edition
@@ -21,6 +20,8 @@ const props = withDefaults(
   { editable: true, title: undefined, footer: undefined, archived: undefined },
 );
 
+const { t } = useT();
+const errorMessage = useErrorMessage();
 const toast = useToast();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
@@ -48,6 +49,20 @@ const options = (exclude?: string) =>
 
 // Removing asks for a second tap on the row itself.
 const confirmId = ref<string | null>(null);
+const subtitleOf = (ex: {
+  giverId: string;
+  receiverId: string;
+  reciprocal: boolean;
+}) => {
+  const names = { giver: nameOf(ex.giverId), receiver: nameOf(ex.receiverId) };
+  if (ex.reciprocal)
+    return past.value
+      ? t('adminGroup.exclusions.reciprocalPast')
+      : t('adminGroup.exclusions.reciprocal');
+  return past.value
+    ? t('adminGroup.exclusions.oneWayPast', names)
+    : t('adminGroup.exclusions.oneWay', names);
+};
 const onRemove = (exclusionId: string) =>
   remove.mutate(exclusionId, {
     onSettled: () => {
@@ -93,21 +108,13 @@ const onAdd = () =>
 <template>
   <MobileList :title="title" :footer="footer">
     <li v-if="exclusions.length === 0" class="px-4 py-3 text-sm text-muted">
-      Aucune exclusion.
+      {{ t('adminGroup.exclusions.empty') }}
     </li>
     <MobileListItem
       v-for="ex in exclusions"
       :key="ex.id"
       :title="`${nameOf(ex.giverId)} ${ex.reciprocal ? '↔' : '→'} ${nameOf(ex.receiverId)}`"
-      :subtitle="
-        ex.reciprocal
-          ? past
-            ? 'Ne se sont pas tirés, dans les deux sens'
-            : 'Ne se tirent pas, dans les deux sens'
-          : past
-            ? `${nameOf(ex.giverId)} n'a pas tiré ${nameOf(ex.receiverId)}`
-            : `${nameOf(ex.giverId)} ne tire pas ${nameOf(ex.receiverId)}`
-      "
+      :subtitle="subtitleOf(ex)"
     >
       <template #leading>
         <span class="flex shrink-0 items-center" aria-hidden="true">
@@ -133,7 +140,7 @@ const onAdd = () =>
           <UButton
             size="sm"
             color="primary"
-            label="Retirer"
+            :label="t('adminGroup.exclusions.remove')"
             :loading="
               remove.isPending.value && remove.variables.value === ex.id
             "
@@ -143,7 +150,7 @@ const onAdd = () =>
             size="sm"
             variant="ghost"
             color="neutral"
-            label="Annuler"
+            :label="t('common.actions.cancel')"
             @click.stop="confirmId = null"
           />
         </div>
@@ -152,7 +159,12 @@ const onAdd = () =>
           variant="ghost"
           color="neutral"
           icon="i-lucide-x"
-          :aria-label="`Retirer l'exclusion ${nameOf(ex.giverId)} et ${nameOf(ex.receiverId)}`"
+          :aria-label="
+            t('adminGroup.exclusions.removeLabel', {
+              giver: nameOf(ex.giverId),
+              receiver: nameOf(ex.receiverId),
+            })
+          "
           @click.stop="confirmId = ex.id"
         />
       </template>
@@ -160,35 +172,38 @@ const onAdd = () =>
     <MobileListItem
       v-if="editable"
       icon="i-lucide-plus"
-      title="Ajouter une exclusion"
+      :title="t('adminGroup.exclusions.add')"
       @click="openSheet"
     />
   </MobileList>
 
   <UDrawer
     v-model:open="open"
-    title="Nouvelle exclusion"
-    description="Deux personnes qui ne doivent pas se tirer : un couple, des frères et sœurs…"
+    :title="t('adminGroup.exclusions.sheetTitle')"
+    :description="t('adminGroup.exclusions.sheetDescription')"
   >
     <template #body>
       <div class="flex flex-col gap-5 py-2">
-        <UFormField label="Qui">
+        <UFormField :label="t('adminGroup.exclusions.giverLabel')">
           <USelect
             v-model="state.giverId"
             :items="options(state.receiverId)"
-            placeholder="Choisir…"
+            :placeholder="t('adminGroup.exclusions.choose')"
             class="w-full"
           />
         </UFormField>
-        <UFormField label="Ne tire pas">
+        <UFormField :label="t('adminGroup.exclusions.receiverLabel')">
           <USelect
             v-model="state.receiverId"
             :items="options(state.giverId)"
-            placeholder="Choisir…"
+            :placeholder="t('adminGroup.exclusions.choose')"
             class="w-full"
           />
         </UFormField>
-        <USwitch v-model="state.reciprocal" label="Dans les deux sens" />
+        <USwitch
+          v-model="state.reciprocal"
+          :label="t('adminGroup.exclusions.bothWays')"
+        />
       </div>
     </template>
     <template #footer>
@@ -196,7 +211,7 @@ const onAdd = () =>
         block
         :disabled="!state.giverId || !state.receiverId"
         :loading="create.isPending.value"
-        label="Ajouter l'exclusion"
+        :label="t('adminGroup.exclusions.submit')"
         @click="onAdd"
       />
     </template>

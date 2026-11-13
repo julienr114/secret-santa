@@ -2,22 +2,29 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { homeOf, useLoginMutation } from '~/composables/queries/useSession';
-import { errorMessage } from '~/utils/errors';
 
 definePageMeta({ middleware: 'admin' });
-useHead({ title: 'Connexion — Secret Santa' });
+const { t } = useT();
+const errorMessage = useErrorMessage();
+useHead({
+  title: computed(
+    () => `${t('adminGroup.login.title')} — ${t('common.appName')}`,
+  ),
+});
 
-const modes = [
-  { label: 'Gardien', value: 'guardian' },
-  { label: 'Super-admin', value: 'super' },
-];
+const modes = computed(() => [
+  { label: t('adminGroup.login.guardian'), value: 'guardian' },
+  { label: t('adminGroup.login.superAdmin'), value: 'super' },
+]);
 const mode = ref<'guardian' | 'super'>('guardian');
 
-const schema = z.object({
-  slug: z.string().trim().toLowerCase(),
-  password: z.string().min(1, 'Mot de passe requis'),
-});
-type Schema = z.output<typeof schema>;
+const schema = computed(() =>
+  z.object({
+    slug: z.string().trim().toLowerCase(),
+    password: z.string().min(1, t('adminGroup.login.passwordRequired')),
+  }),
+);
+type Schema = z.output<typeof schema.value>;
 const state = reactive<Schema>({ slug: '', password: '' });
 const login = useLoginMutation();
 
@@ -38,8 +45,12 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
   >
     <div class="text-center">
       <p class="text-4xl" aria-hidden="true">🎁</p>
-      <h1 class="font-display text-3xl font-bold text-primary">Secret Santa</h1>
-      <p class="mt-1 text-sm text-muted">Espace du gardien</p>
+      <h1 class="font-display text-3xl font-bold text-primary">
+        {{ t('common.appName') }}
+      </h1>
+      <p class="mt-1 text-sm text-muted">
+        {{ t('adminGroup.login.subtitle') }}
+      </p>
     </div>
     <UCard>
       <UForm
@@ -52,8 +63,8 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         <UFormField
           v-if="mode === 'guardian'"
           name="slug"
-          label="Identifiant du groupe"
-          hint="ex. famille-rabin"
+          :label="t('adminGroup.login.slugLabel')"
+          :hint="t('adminGroup.login.slugHint')"
           required
         >
           <UInput
@@ -63,7 +74,11 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
             class="w-full"
           />
         </UFormField>
-        <UFormField name="password" label="Mot de passe" required>
+        <UFormField
+          name="password"
+          :label="t('adminGroup.login.passwordLabel')"
+          required
+        >
           <UInput
             v-model="state.password"
             type="password"
@@ -81,7 +96,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
           type="submit"
           block
           :loading="login.isPending.value"
-          label="Se connecter"
+          :label="t('adminGroup.login.submit')"
         />
       </UForm>
     </UCard>

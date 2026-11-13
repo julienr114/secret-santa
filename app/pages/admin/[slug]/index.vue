@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useDashboardQuery } from '~/composables/queries/useGroup';
-import { STATUS_LABELS, plural } from '~/utils/labels';
+import { useUpdateGroupMutation } from '~/composables/queries/useGroups';
 
 // Group home: what the guardian can do, as a list of actions.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
+const { t, tk } = useT();
+const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const { user } = useUserSession();
@@ -11,11 +13,13 @@ const isSuper = computed(() => user.value?.role === 'super_admin');
 const dashboard = useDashboardQuery(slug);
 const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 
-useHead({ title: computed(() => `${name.value} — Secret Santa`) });
+useHead({ title: computed(() => `${name.value} — ${t('common.appName')}`) });
 const screen = computed(() => ({
   back: isSuper.value ? '/admin/groupes' : null,
   crumbs: [
-    ...(isSuper.value ? [{ label: 'Groupes', to: '/admin/groupes' }] : []),
+    ...(isSuper.value
+      ? [{ label: t('adminGroup.groups.title'), to: '/admin/groupes' }]
+      : []),
     { label: name.value },
   ],
 }));
@@ -30,8 +34,25 @@ const past = computed(() =>
     .filter((e) => e.id !== dashboard.data.value?.currentEditionId)
     .toReversed(),
 );
+// Bulk sending by email: the super-admin's switch, never the guardian's.
+const toast = useToast();
+const updateGroup = useUpdateGroupMutation();
+const emailSending = computed(
+  () => dashboard.data.value?.group.emailSending ?? false,
+);
+const onToggleEmail = (value: boolean) => {
+  const id = dashboard.data.value?.group.id;
+  if (!id) return;
+  updateGroup.mutate(
+    { id, emailSending: value },
+    {
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
+    },
+  );
+};
 const editionSubtitle = (status: string, count?: number) =>
-  `${STATUS_LABELS[status] ?? status} · ${plural(count ?? 0, 'participant')}`;
+  `${tk(`common.status.${status}`)} · ${t('common.count.participants', { count: count ?? 0 })}`;
 </script>
 
 <template>
@@ -42,7 +63,7 @@ const editionSubtitle = (status: string, count?: number) =>
     >
       <h1 class="font-display text-3xl font-bold">{{ name }}</h1>
 
-      <MobileList title="Édition">
+      <MobileList :title="t('adminGroup.dashboard.editionSection')">
         <MobileListItem
           v-if="current"
           :to="`/admin/${slug}/editions/${current.id}`"
@@ -54,42 +75,70 @@ const editionSubtitle = (status: string, count?: number) =>
           v-else
           :to="`/admin/${slug}/editions/nouvelle`"
           icon="i-lucide-plus"
-          title="Nouvelle édition"
-          subtitle="Reprend les participants de l'an dernier"
+          :title="t('adminGroup.dashboard.newEdition')"
+          :subtitle="t('adminGroup.dashboard.newEditionHint')"
         />
       </MobileList>
 
-      <MobileList title="Groupe">
+      <MobileList :title="t('adminGroup.dashboard.groupSection')">
         <MobileListItem
           :to="`/admin/${slug}/personnes`"
           icon="i-lucide-users"
-          title="Personnes"
+          :title="t('adminGroup.people.title')"
         />
         <MobileListItem
           :to="`/admin/${slug}/exclusions`"
           icon="i-lucide-ban"
-          title="Exclusions"
-          subtitle="Paires qui ne se tirent jamais"
+          :title="t('adminGroup.exclusions.title')"
+          :subtitle="t('adminGroup.exclusions.summary')"
         />
         <MobileListItem
           :to="`/admin/${slug}/reglages`"
           icon="i-lucide-settings-2"
-          title="Règles du tirage"
+          :title="t('adminGroup.rules.title')"
         />
         <MobileListItem
           v-if="isSuper"
           :to="`/admin/${slug}/gardien`"
           icon="i-lucide-key-round"
-          title="Mot de passe du gardien"
+          :title="t('adminGroup.guardian.title')"
           :subtitle="
             dashboard.data.value?.group.hasGuardianPassword
-              ? 'Configuré'
-              : 'À définir'
+              ? t('adminGroup.dashboard.guardianPasswordSet')
+              : t('adminGroup.dashboard.guardianPasswordMissing')
           "
         />
       </MobileList>
 
-      <MobileList v-if="past.length" title="Éditions passées">
+      <MobileList
+        v-if="isSuper"
+        :title="t('adminGroup.dashboard.superSection')"
+        :footer="t('adminGroup.dashboard.emailSendingHelp')"
+      >
+        <MobileListItem
+          icon="i-lucide-mail"
+          :title="t('adminGroup.dashboard.emailSending')"
+          :subtitle="
+            emailSending
+              ? t('adminGroup.dashboard.emailSendingOn')
+              : t('adminGroup.dashboard.emailSendingOff')
+          "
+        >
+          <template #trailing>
+            <USwitch
+              :model-value="emailSending"
+              :loading="updateGroup.isPending.value"
+              :aria-label="t('adminGroup.dashboard.emailSending')"
+              @update:model-value="onToggleEmail"
+            />
+          </template>
+        </MobileListItem>
+      </MobileList>
+
+      <MobileList
+        v-if="past.length"
+        :title="t('adminGroup.dashboard.pastEditions')"
+      >
         <MobileListItem
           v-for="edition in past"
           :key="edition.id"

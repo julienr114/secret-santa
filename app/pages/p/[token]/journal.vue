@@ -5,12 +5,13 @@ import { useJournalQuery } from '~/composables/queries/usePersonal';
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const journal = useJournalQuery(token);
+const { t } = useT();
 
 const ALL = 'all';
 const filter = ref<string | null>(null);
 const editions = computed(() => journal.data.value?.editions ?? []);
 const items = computed(() => [
-  { label: 'Toutes les éditions', value: ALL },
+  { label: t('participant.journal.allEditions'), value: ALL },
   ...editions.value.map((e) => ({ label: e.label, value: e.id })),
 ]);
 // The participant's own edition until they choose another one.
@@ -30,19 +31,22 @@ const entries = computed(() =>
 
 <template>
   <ParticipantScreen
+    :token="token"
     :back="`/p/${token}`"
     :pending="journal.isPending.value"
     :error="journal.error.value"
   >
-    <h1 class="font-display text-3xl font-bold">Journal du groupe</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('participant.journal.title') }}
+    </h1>
     <p class="text-sm text-muted">
-      Tout le monde voit ce journal. Il ne dit jamais qui offre à qui.
+      {{ t('participant.journal.intro') }}
     </p>
     <USelect
       v-if="editions.length > 1"
       v-model="selected"
       :items="items"
-      aria-label="Édition"
+      :aria-label="t('participant.journal.edition')"
       class="w-full"
     />
     <JournalList :entries="entries" />

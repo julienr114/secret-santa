@@ -5,19 +5,24 @@ import {
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
 import { useAddParticipantMutation } from '~/composables/queries/useEdition';
-import { errorMessage } from '~/utils/errors';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const toast = useToast();
+const { t } = useT();
+const errorMessage = useErrorMessage();
 const edition = useEditionQuery(slug, id);
 const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const add = useAddParticipantMutation(slug, id);
 
-useHead({ title: 'Ajouter des participants — Secret Santa' });
+useHead({
+  title: computed(
+    () => `${t('adminEdition.addParticipants.title')} — ${t('common.appName')}`,
+  ),
+});
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
   crumbs: [
@@ -26,10 +31,12 @@ const screen = computed(() => ({
       to: `/admin/${slug.value}`,
     },
     {
-      label: edition.data.value?.edition.label ?? 'Édition',
+      label:
+        edition.data.value?.edition.label ??
+        t('adminEdition.general.editionFallback'),
       to: `/admin/${slug.value}/editions/${id.value}`,
     },
-    { label: 'Ajouter' },
+    { label: t('adminEdition.addParticipants.crumb') },
   ],
 }));
 
@@ -41,11 +48,16 @@ const candidates = computed(() =>
     (p) => p.active && !inEdition.value.has(p.id),
   ),
 );
+// The sentence around the link to the people screen: the text before and
+// after the `{people}` placeholder, left unfilled on purpose.
+const everyoneIn = computed(() =>
+  t('adminEdition.addParticipants.everyoneIn').split('{people}'),
+);
 const onAdd = (personId: string, firstName: string) =>
   add.mutate(personId, {
     onSuccess: () =>
       toast.add({
-        title: `${firstName} participe`,
+        title: t('adminEdition.addParticipants.added', { name: firstName }),
         color: 'success',
         icon: 'i-lucide-check',
       }),
@@ -56,24 +68,22 @@ const onAdd = (personId: string, firstName: string) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">Ajouter des participants</h1>
+    <h1 class="font-display text-3xl font-bold">
+      {{ t('adminEdition.addParticipants.title') }}
+    </h1>
     <AdminQueryState
       :pending="people.isPending.value || edition.isPending.value"
       :error="people.error.value ?? edition.error.value"
     >
       <p v-if="candidates.length === 0" class="text-muted">
-        Tout le monde participe déjà. Pour quelqu'un de nouveau, crée-le d'abord
-        dans
-        <NuxtLink
+        {{ everyoneIn[0]
+        }}<NuxtLink
           :to="`/admin/${slug}/personnes/nouvelle`"
           class="text-primary underline"
-          >Personnes</NuxtLink
-        >.
+          >{{ t('adminEdition.addParticipants.peopleLink') }}</NuxtLink
+        >{{ everyoneIn[1] }}
       </p>
-      <MobileList
-        v-else
-        footer="Les personnes désactivées n'apparaissent pas ici."
-      >
+      <MobileList v-else :footer="t('adminEdition.addParticipants.footer')">
         <MobileListItem
           v-for="person in candidates"
           :key="person.id"

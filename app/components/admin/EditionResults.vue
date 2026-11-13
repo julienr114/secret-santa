@@ -9,6 +9,7 @@ const props = defineProps<{
   people: { id: string; firstName: string; avatar: Avatar }[];
   title?: string;
 }>();
+const { t } = useT();
 const results = useResultsQuery(
   () => props.slug,
   () => props.id,
@@ -25,8 +26,8 @@ const results = useResultsQuery(
       past
       :pairs="results.data.value?.pairs ?? []"
       :people="people"
-      :title="title ?? 'Le tirage'"
-      footer="L'édition est clôturée : ses résultats ne sont plus secrets."
+      :title="title ?? t('adminEdition.results.title')"
+      :footer="t('adminEdition.results.footer')"
     />
   </AdminQueryState>
 </template>

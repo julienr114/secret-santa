@@ -12,8 +12,7 @@ import {
   useUnsendMutation,
 } from '~/composables/queries/useEdition';
 import { useShareMessage } from '~/composables/useShareMessage';
-import { errorMessage } from '~/utils/errors';
-import { MESSAGE_LABELS, defaultMessageType, formatDate } from '~/utils/labels';
+import { defaultMessageType, formatDate } from '~/utils/labels';
 
 // One participant of an edition: share, copy, and the "replay without
 // betraying the secret" actions of README 4.4.
@@ -23,6 +22,8 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const pid = computed(() => String(route.params.pid));
 const toast = useToast();
+const { t, tk, locale } = useT();
+const errorMessage = useErrorMessage();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 
@@ -51,7 +52,7 @@ const messageType = ref<MessageType>(defaultMessageType(status.value));
 const messageItems = computed(() =>
   messageTypesFor(status.value).map((value) => ({
     value,
-    label: MESSAGE_LABELS[value] ?? value,
+    label: tk(`common.messageType.${value}`),
   })),
 );
 watch(status, (s) => {
@@ -62,7 +63,8 @@ const message = computed(() => messages.data.value?.messages[pid.value]);
 
 useHead({
   title: computed(
-    () => `${p.value?.firstName ?? 'Participant'} — Secret Santa`,
+    () =>
+      `${p.value?.firstName ?? t('adminEdition.participant.fallbackTitle')} — ${t('common.appName')}`,
   ),
 });
 const screen = computed(() => ({
@@ -73,7 +75,9 @@ const screen = computed(() => ({
       to: `/admin/${slug.value}`,
     },
     {
-      label: edition.data.value?.edition.label ?? 'Édition',
+      label:
+        edition.data.value?.edition.label ??
+        t('adminEdition.general.editionFallback'),
       to: `/admin/${slug.value}/editions/${id.value}`,
     },
     { label: p.value?.firstName ?? '…' },
@@ -84,19 +88,21 @@ const viewed = computed(() => {
   const count = p.value?.viewCount ?? 0;
   if (count === 0)
     return status.value === 'drawn'
-      ? "N'a pas encore consulté son résultat"
+      ? t('adminEdition.participant.notViewed')
       : null;
-  const last = p.value?.lastViewedAt
-    ? ` · dernière fois ${formatDate(p.value.lastViewedAt)}`
-    : '';
-  return `A consulté son résultat ${count === 1 ? 'une fois' : `${count} fois`}${last}`;
+  return p.value?.lastViewedAt
+    ? t('adminEdition.participant.viewedWithLast', {
+        count,
+        date: formatDate(p.value.lastViewedAt, locale.value),
+      })
+    : t('adminEdition.participant.viewed', { count });
 });
 
 const copyLink = async () => {
   if (!message.value) return;
   await navigator.clipboard.writeText(message.value.link);
   toast.add({
-    title: 'Lien copié',
+    title: t('adminEdition.participant.linkCopied'),
     color: 'success',
     icon: 'i-lucide-clipboard-check',
   });
@@ -108,8 +114,8 @@ const onRegenerate = () =>
     onSuccess: () => {
       confirm.value = null;
       toast.add({
-        title: "Nouveau lien créé, l'ancien ne marche plus",
-        description: 'Pense à le repartager.',
+        title: t('adminEdition.participant.linkRegenerated'),
+        description: t('adminEdition.participant.linkRegeneratedDescription'),
         color: 'success',
       });
     },
@@ -133,7 +139,9 @@ const sectionTitle =
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
-      <p v-if="!p" class="text-muted">Participant introuvable.</p>
+      <p v-if="!p" class="text-muted">
+        {{ t('adminEdition.participant.notFound') }}
+      </p>
       <template v-else>
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-4">
@@ -146,16 +154,18 @@ const sectionTitle =
               :key="badge"
               :code="badge"
             />
-            <span v-if="p.badges.length === 0" class="text-sm text-muted"
-              >en attente</span
-            >
+            <span v-if="p.badges.length === 0" class="text-sm text-muted">{{
+              t('adminEdition.participant.waiting')
+            }}</span>
           </div>
           <p v-if="viewed" class="text-sm text-muted">{{ viewed }}</p>
         </div>
 
         <template v-if="canSend">
           <section class="flex flex-col gap-2">
-            <h2 :class="sectionTitle">Message</h2>
+            <h2 :class="sectionTitle">
+              {{ t('adminEdition.participant.messageTitle') }}
+            </h2>
             <USelect
               v-model="messageType"
               :items="messageItems"
@@ -165,33 +175,40 @@ const sectionTitle =
           <MobileList>
             <MobileListItem
               icon="i-lucide-share-2"
-              title="Partager le message"
-              subtitle="WhatsApp, SMS… via le téléphone"
+              :title="t('adminEdition.participant.shareMessage')"
+              :subtitle="t('adminEdition.participant.shareMessageHint')"
               @click="
                 sharer.share(p.participationId, messageType, message?.text)
               "
             />
             <MobileListItem
               icon="i-lucide-copy"
-              title="Copier le message"
+              :title="t('adminEdition.participant.copyMessage')"
               @click="
                 sharer.copy(p.participationId, messageType, message?.text)
               "
             />
             <MobileListItem
               icon="i-lucide-link"
-              title="Copier le lien seul"
+              :title="t('adminEdition.participant.copyLink')"
               @click="copyLink"
             />
             <MobileListItem
               v-if="p.messageSentAt"
               icon="i-lucide-undo-2"
-              title="Pas envoyé finalement ?"
-              subtitle="Retire la pastille « envoyé »"
+              :title="t('adminEdition.participant.unsend')"
+              :subtitle="
+                t('adminEdition.participant.unsendHint', {
+                  badge: t('common.badge.sent'),
+                })
+              "
               @click="
                 unsend.mutate(p.participationId, {
                   onSuccess: () =>
-                    toast.add({ title: 'Pastille retirée', color: 'success' }),
+                    toast.add({
+                      title: t('adminEdition.participant.unsendDone'),
+                      color: 'success',
+                    }),
                   onError,
                 })
               "
@@ -200,31 +217,35 @@ const sectionTitle =
         </template>
 
         <MobileList
-          title="Dépannage"
-          footer="Aucune de ces actions ne révèle le résultat. Toutes sont inscrites au journal du groupe."
+          :title="t('adminEdition.participant.troubleshooting')"
+          :footer="t('adminEdition.participant.troubleshootingFooter')"
         >
           <template v-if="status !== 'closed'">
             <MobileListItem
               v-if="confirm !== 'regenerate'"
               icon="i-lucide-refresh-cw"
-              title="Régénérer le lien"
-              subtitle="Lien transféré par erreur"
+              :title="t('adminEdition.participant.regenerate')"
+              :subtitle="t('adminEdition.participant.regenerateHint')"
               @click="confirm = 'regenerate'"
             />
             <li v-else class="flex flex-col gap-2 px-4 py-3">
               <p class="text-sm">
-                L'ancien lien de {{ p.firstName }} ne marchera plus. Continuer ?
+                {{
+                  t('adminEdition.participant.regenerateConfirm', {
+                    name: p.firstName,
+                  })
+                }}
               </p>
               <div class="flex gap-2">
                 <UButton
-                  label="Régénérer"
+                  :label="t('adminEdition.participant.regenerateAction')"
                   :loading="regenerate.isPending.value"
                   @click="onRegenerate"
                 />
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  label="Annuler"
+                  :label="t('common.actions.cancel')"
                   @click="confirm = null"
                 />
               </div>
@@ -234,25 +255,29 @@ const sectionTitle =
             <MobileListItem
               v-if="confirm !== 'remove'"
               icon="i-lucide-user-minus"
-              title="Retirer de l'édition"
+              :title="t('adminEdition.participant.remove')"
               tone="danger"
               @click="confirm = 'remove'"
             />
             <li v-else class="flex flex-col gap-2 px-4 py-3">
               <p class="text-sm">
-                Retirer {{ p.firstName }} de cette édition ?
+                {{
+                  t('adminEdition.participant.removeConfirm', {
+                    name: p.firstName,
+                  })
+                }}
               </p>
               <div class="flex gap-2">
                 <UButton
                   color="error"
-                  label="Retirer"
+                  :label="t('adminEdition.participant.removeAction')"
                   :loading="remove.isPending.value"
                   @click="onRemove"
                 />
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  label="Annuler"
+                  :label="t('common.actions.cancel')"
                   @click="confirm = null"
                 />
               </div>

@@ -2,34 +2,72 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { randomAvatar, type Avatar } from '#server/utils/avatars';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '#shared/i18n';
 
 // Shared by the "new person" and "person" screens.
 export type PersonFormValue = {
   firstName: string;
   lastName: string | null;
+  /** Only present when the form shows the email field. */
+  email?: string | null;
   avatarEmoji: Avatar['emoji'];
   avatarColor: Avatar['color'];
+  /** Language of the person's page, messages and emails. */
+  language: Locale;
 };
 
 // `autosave` (person screen): no submit button, changes are saved when a
-// field loses focus or the avatar is confirmed.
+// field loses focus, the avatar is confirmed or the language changes.
 const props = defineProps<{
   autosave?: boolean;
-  initial?: { firstName?: string; lastName?: string | null; avatar?: Avatar };
+  /** Groups that send links by email also ask for an address. */
+  withEmail?: boolean;
+  initial?: {
+    firstName?: string;
+    lastName?: string | null;
+    email?: string | null;
+    avatar?: Avatar;
+    language?: Locale;
+  };
   loading?: boolean;
   submitLabel?: string;
 }>();
 const emit = defineEmits<{ submit: [value: PersonFormValue] }>();
 
-const schema = z.object({
-  firstName: z.string().trim().min(1, 'Prénom requis').max(60),
-  lastName: z.string().trim().max(60),
-});
-type Schema = z.output<typeof schema>;
+const { t, tk } = useT();
+
+const schema = computed(() =>
+  z.object({
+    firstName: z
+      .string()
+      .trim()
+      .min(1, t('adminGroup.personForm.firstNameRequired'))
+      .max(60),
+    lastName: z.string().trim().max(60),
+    email: z
+      .string()
+      .trim()
+      .max(254)
+      .refine(
+        (value) => value === '' || z.email().safeParse(value).success,
+        t('adminGroup.personForm.emailInvalid'),
+      ),
+    language: z.enum(LOCALES),
+  }),
+);
+type Schema = z.output<typeof schema.value>;
 const state = reactive<Schema>({
   firstName: props.initial?.firstName ?? '',
   lastName: props.initial?.lastName ?? '',
+  email: props.initial?.email ?? '',
+  language: props.initial?.language ?? DEFAULT_LOCALE,
 });
+const languageItems = computed(() =>
+  LOCALES.map((code) => ({
+    value: code,
+    label: tk(`common.language.${code}`),
+  })),
+);
 // A new person starts with a random Christmas avatar; Math.random is fine
 // for a cosmetic default (the draw itself never uses it).
 const avatar = ref<Avatar>(
@@ -50,8 +88,12 @@ const confirmPicker = () => {
 const valueOf = (data: Schema): PersonFormValue => ({
   firstName: data.firstName.trim(),
   lastName: data.lastName.trim() || null,
+  ...(props.withEmail
+    ? { email: data.email.trim().toLowerCase() || null }
+    : {}),
   avatarEmoji: avatar.value.emoji,
   avatarColor: avatar.value.color,
+  language: data.language,
 });
 const onSubmit = (event: FormSubmitEvent<Schema>) =>
   emit('submit', valueOf(event.data));
@@ -59,7 +101,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 // Autosave: send only valid values that differ from the last saved ones.
 const lastSaved = ref(JSON.stringify(valueOf(state)));
 const save = () => {
-  const parsed = schema.safeParse(state);
+  const parsed = schema.value.safeParse(state);
   if (!parsed.success) return;
   const value = valueOf(parsed.data);
   if (JSON.stringify(value) === lastSaved.value) return;
@@ -67,6 +109,10 @@ const save = () => {
   emit('submit', value);
 };
 const onBlur = () => {
+  if (props.autosave) save();
+};
+const onLanguage = (language: Locale) => {
+  state.language = language;
   if (props.autosave) save();
 };
 </script>
@@ -82,7 +128,7 @@ const onBlur = () => {
       <button
         type="button"
         class="relative rounded-full focus-visible:ring-2 focus-visible:ring-primary"
-        aria-label="Changer l'avatar"
+        :aria-label="t('adminGroup.personForm.changeAvatar')"
         @click="openPicker"
       >
         <AdminAvatar :avatar="avatar" size="lg" />
@@ -95,23 +141,31 @@ const onBlur = () => {
       <UButton
         variant="link"
         color="neutral"
-        label="Changer l'avatar"
+        :label="t('adminGroup.personForm.changeAvatar')"
         @click="openPicker"
       />
     </div>
     <UDrawer
       v-model:open="pickerOpen"
-      title="Avatar"
-      description="Une emoji de Noël et une couleur."
+      :title="t('adminGroup.avatar.title')"
+      :description="t('adminGroup.avatar.description')"
     >
       <template #body>
         <AdminAvatarPicker v-model="draft" />
       </template>
       <template #footer>
-        <UButton block label="Valider" @click="confirmPicker" />
+        <UButton
+          block
+          :label="t('common.actions.validate')"
+          @click="confirmPicker"
+        />
       </template>
     </UDrawer>
-    <UFormField name="firstName" label="Prénom" required>
+    <UFormField
+      name="firstName"
+      :label="t('adminGroup.personForm.firstNameLabel')"
+      required
+    >
       <UInput
         v-model="state.firstName"
         autocomplete="off"
@@ -121,14 +175,42 @@ const onBlur = () => {
     </UFormField>
     <UFormField
       name="lastName"
-      label="Nom"
-      help="Facultatif, sert seulement à départager deux prénoms identiques."
+      :label="t('adminGroup.personForm.lastNameLabel')"
+      :help="t('adminGroup.personForm.lastNameHelp')"
     >
       <UInput
         v-model="state.lastName"
         autocomplete="off"
         class="w-full"
         @blur="onBlur"
+      />
+    </UFormField>
+    <UFormField
+      v-if="withEmail"
+      name="email"
+      :label="t('adminGroup.personForm.emailLabel')"
+      :help="t('adminGroup.personForm.emailHelp')"
+    >
+      <UInput
+        v-model="state.email"
+        type="email"
+        inputmode="email"
+        autocomplete="off"
+        autocapitalize="off"
+        class="w-full"
+        @blur="onBlur"
+      />
+    </UFormField>
+    <UFormField
+      name="language"
+      :label="t('common.language.label')"
+      :help="t('adminGroup.personForm.languageHelp')"
+    >
+      <USelect
+        :model-value="state.language"
+        :items="languageItems"
+        class="w-full"
+        @update:model-value="onLanguage"
       />
     </UFormField>
     <slot />

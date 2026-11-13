@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BADGE_LABELS, STATUS_LABELS } from '~/utils/labels';
+import { hasMessage } from '#shared/i18n';
 
 const props = defineProps<{ code: string }>();
 
@@ -15,9 +15,13 @@ const COLORS: Record<
   wishes: 'primary',
   viewed: 'secondary',
 };
-const label = computed(
-  () => STATUS_LABELS[props.code] ?? BADGE_LABELS[props.code] ?? props.code,
-);
+const { tk } = useT();
+const label = computed(() => {
+  const key = ['common.status', 'common.badge']
+    .map((prefix) => `${prefix}.${props.code}`)
+    .find(hasMessage);
+  return key ? tk(key) : props.code;
+});
 </script>
 
 <template>

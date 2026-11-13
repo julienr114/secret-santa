@@ -4,6 +4,7 @@ import type { Reveal } from '~/composables/queries/usePersonal';
 // The result: who the participant gives to, the practical details, then
 // the receiver's ideas. Turns over once when it appears.
 defineProps<{ reveal: Reveal }>();
+const { t } = useT();
 </script>
 
 <template>
@@ -12,7 +13,7 @@ defineProps<{ reveal: Reveal }>();
     aria-live="polite"
   >
     <div class="flex flex-col items-center gap-2 text-center">
-      <p class="text-muted">Tu offres un cadeau à</p>
+      <p class="text-muted">{{ t('participant.reveal.youGiveTo') }}</p>
       <AdminAvatar :avatar="reveal.receiver.avatar" size="lg" />
       <p
         class="font-display text-5xl font-bold break-words text-primary"
@@ -26,11 +27,11 @@ defineProps<{ reveal: Reveal }>();
       class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm"
     >
       <template v-if="reveal.budget">
-        <dt class="text-muted">Budget</dt>
+        <dt class="text-muted">{{ t('participant.reveal.budget') }}</dt>
         <dd>{{ reveal.budget }}</dd>
       </template>
       <template v-if="reveal.eventDate">
-        <dt class="text-muted">Date</dt>
+        <dt class="text-muted">{{ t('participant.reveal.date') }}</dt>
         <dd>{{ reveal.eventDate }}</dd>
       </template>
     </dl>
@@ -41,13 +42,13 @@ defineProps<{ reveal: Reveal }>();
       {{ reveal.guardianMessage }}
     </p>
     <div v-if="reveal.wishes" class="flex flex-col gap-2">
-      <h2 class="text-lg font-bold">Ses idées de cadeaux</h2>
+      <h2 class="text-lg font-bold">{{ t('participant.reveal.ideas') }}</h2>
       <ParticipantWishList
         v-if="reveal.wishes.length > 0"
         :wishes="reveal.wishes"
       />
       <p v-else class="text-sm text-muted">
-        {{ reveal.receiver.name }} n'a pas encore donné d'idée.
+        {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}
       </p>
     </div>
   </section>

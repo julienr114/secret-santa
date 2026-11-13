@@ -121,6 +121,22 @@ export const useRegenerateMutation = (slug: Ref) =>
     () => groupKeys(slug),
   );
 
+export type EmailAudience = 'unsent' | 'all';
+
+/** Bulk sending by email, for groups where the super-admin allowed it. */
+export const useSendEmailsMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<
+    { sent: number; withoutEmail: number; left: number },
+    { type: MessageType; audience: EmailAudience }
+  >(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/emails`, {
+        method: 'POST',
+        body,
+      }),
+    () => groupKeys(slug),
+  );
+
 export type DrawPair = { giverId: string; receiverId: string | null };
 
 export const useWaiveMutation = (slug: Ref, id: Ref) =>
@@ -149,12 +165,14 @@ export const useResultsQuery = (slug: Ref, id: Ref) =>
     () => `${base(slug)}/editions/${toValue(id)}/results`,
   );
 
-/** Last-resort access to the current draw; journaled for everyone. */
-export const useRevealAllMutation = (slug: Ref, id: Ref) =>
-  useApiMutation<{ pairs: DrawPair[] }, { password: string; sentence: string }>(
-    (body) =>
-      api(`${base(slug)}/editions/${toValue(id)}/reveal-all`, {
-        method: 'POST',
-        body,
-      }),
+/** Last-resort access to one result; journaled for everyone, by name. */
+export const useRevealOneMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<
+    { pair: DrawPair },
+    { personId: string; password: string; sentence: string }
+  >((body) =>
+    api(`${base(slug)}/editions/${toValue(id)}/reveal-one`, {
+      method: 'POST',
+      body,
+    }),
   );

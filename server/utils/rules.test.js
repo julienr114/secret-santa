@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RULES, mergeRules, rulesSchema } from './rules.js';
+import {
+  DEFAULT_RULES,
+  mergeRules,
+  rulesPatchSchema,
+  rulesSchema,
+} from './rules.js';
 
 describe('rules', () => {
   it('has the defaults from README section 5', () => {
@@ -50,6 +55,13 @@ describe('rules', () => {
       details: { issues: ['excludePreviousYears'] },
     });
     expect(rulesSchema.safeParse({ maxPinAttempts: 0 }).success).toBe(false);
+  });
+
+  it('keeps only the given keys in a partial override', () => {
+    expect(rulesPatchSchema.parse({ budget: '15 €' })).toEqual({
+      budget: '15 €',
+    });
+    expect(rulesPatchSchema.safeParse({ maxWishes: 0 }).success).toBe(false);
   });
 
   it('does not mutate its inputs', () => {

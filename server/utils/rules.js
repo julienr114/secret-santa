@@ -10,20 +10,46 @@ export const manualExclusionSchema = z.object({
   reciprocal: z.boolean().default(false),
 });
 
-export const rulesSchema = z.object({
-  excludeSpouse: z.boolean().default(true),
-  excludePreviousYears: z.number().int().min(0).max(10).default(1),
-  registrationRequired: z.boolean().default(true),
-  budget: z.string().max(200).default(''),
-  eventDate: z.string().max(100).default(''),
-  guardianMessage: z.string().max(1000).default(''),
-  maxPinAttempts: z.number().int().min(1).max(20).default(5),
-  wishlist: z.boolean().default(true),
-  maxWishes: z.number().int().min(1).max(50).default(10),
-});
+// Raw shape without defaults: for partial overrides, only the given keys
+// survive. `rulesSchema` adds the defaults for a complete rule set.
+const shape = {
+  excludeSpouse: z.boolean(),
+  excludePreviousYears: z.number().int().min(0).max(10),
+  registrationRequired: z.boolean(),
+  budget: z.string().max(200),
+  eventDate: z.string().max(100),
+  guardianMessage: z.string().max(1000),
+  maxPinAttempts: z.number().int().min(1).max(20),
+  wishlist: z.boolean(),
+  maxWishes: z.number().int().min(1).max(50),
+};
 
-// A partial override: every key optional, nulls mean "no override".
-export const rulesOverrideSchema = rulesSchema.partial().nullable();
+const DEFAULTS = {
+  excludeSpouse: true,
+  excludePreviousYears: 1,
+  registrationRequired: true,
+  budget: '',
+  eventDate: '',
+  guardianMessage: '',
+  maxPinAttempts: 5,
+  wishlist: true,
+  maxWishes: 10,
+};
+
+export const rulesSchema = z.object(
+  Object.fromEntries(
+    Object.entries(shape).map(([key, type]) => [
+      key,
+      type.default(DEFAULTS[key]),
+    ]),
+  ),
+);
+
+/** A partial rule set: only the keys to override. */
+export const rulesPatchSchema = z.object(shape).partial();
+
+// Nullable variant for an edition: null means "no override".
+export const rulesOverrideSchema = rulesPatchSchema.nullable();
 
 /** @typedef {import('zod').infer<typeof rulesSchema>} Rules */
 

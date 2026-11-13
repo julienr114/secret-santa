@@ -6,8 +6,11 @@ import { requireEdition } from '#server/http/edition';
 import { dataKeyOf } from '#server/http/context';
 import { unwrap } from '#server/http/errors';
 import { validatedQuery } from '#server/http/validate';
-import { canSendLinks } from '#server/utils/editions';
-import { MESSAGE_TYPES, buildMessage } from '#server/utils/messages';
+import {
+  MESSAGE_TYPES,
+  buildMessage,
+  messageTypesFor,
+} from '#server/utils/messages';
 import { eq } from 'drizzle-orm';
 
 // Texts ready to share, one per participant, read without side effects.
@@ -17,8 +20,9 @@ const querySchema = z.object({ type: z.enum(MESSAGE_TYPES) });
 
 export default defineEventHandler(async (event) => {
   const { group, db, edition, rules } = await requireEdition(event);
-  if (!canSendLinks(edition.status)) return { messages: {} };
   const { type } = await validatedQuery(event, querySchema);
+  // Nothing to share for a message that does not fit the edition's stage.
+  if (!messageTypesFor(edition.status).includes(type)) return { messages: {} };
   const dataKey = await dataKeyOf(event);
   const [people, rows] = await Promise.all([
     listParticipants(db, edition.id),

@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { MESSAGE_TYPES, buildMessage, type MessageData } from './messages';
+import {
+  MESSAGE_TYPES,
+  buildMessage,
+  messageTypesFor,
+  type MessageData,
+} from './messages';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
 const data: MessageData = {
@@ -62,5 +67,20 @@ describe('buildMessage', () => {
       reason: 'unknown_message_type',
       details: { type: 'spam' },
     });
+  });
+});
+
+describe('messageTypesFor', () => {
+  it('offers no draw message before the draw', () => {
+    expect(messageTypesFor('invitations')).toEqual(['invitation', 'reminder']);
+  });
+
+  it('offers the draw messages once drawn, and no invitation any more', () => {
+    expect(messageTypesFor('drawn')).toEqual(['drawn', 'reminder', 'redraw']);
+  });
+
+  it('offers nothing in a draft or a closed edition', () => {
+    expect(messageTypesFor('draft')).toEqual([]);
+    expect(messageTypesFor('closed')).toEqual([]);
   });
 });

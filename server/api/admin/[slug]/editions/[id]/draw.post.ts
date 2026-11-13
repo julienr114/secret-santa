@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { assignments, editions } from '#server/database/schema';
+import { assignments, editions, participations } from '#server/database/schema';
 import { loadDrawContext } from '#server/database/draw';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -53,6 +53,12 @@ export default defineEventHandler(async (event) => {
           and(eq(editions.id, edition.id), eq(editions.status, 'invitations')),
         ),
       db.insert(assignments).values(rows),
+      // Sending is tracked from the draw on: an invitation shared earlier
+      // does not count as the "draw done" message.
+      db
+        .update(participations)
+        .set({ messageSentAt: null })
+        .where(eq(participations.editionId, edition.id)),
     ])
     .catch(() => {
       throw createError({

@@ -6,7 +6,7 @@ import { requireParticipation } from '#server/http/participation';
 import { nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import { canSendLinks } from '#server/utils/editions';
-import { MESSAGE_TYPES } from '#server/utils/messages';
+import { MESSAGE_TYPES, messageTypesFor } from '#server/utils/messages';
 
 // Called right after the guardian shared or copied a message: marks the
 // participant as "sent" and journals it (README 13).
@@ -22,6 +22,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'links_not_open' });
   }
   const { type, via } = await validatedBody(event, bodySchema);
+  if (!messageTypesFor(edition.status).includes(type)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'message_not_available',
+    });
+  }
   await db
     .update(participations)
     .set({ messageSentAt: nowIso() })

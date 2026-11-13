@@ -3,6 +3,7 @@ import {
   useDashboardQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
+import { plural } from '~/utils/labels';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
@@ -30,6 +31,9 @@ const label = (id: string) => {
     ? `${p.firstName} ${p.lastName}`
     : p.firstName;
 };
+const exclusionCount = computed(
+  () => people.data.value?.exclusions.length ?? 0,
+);
 const subtitle = (active: boolean) => (active ? undefined : 'désactivé·e');
 const sorted = computed(() =>
   persons.value.toSorted((a, b) => Number(b.active) - Number(a.active)),
@@ -74,7 +78,17 @@ const sorted = computed(() =>
           icon="i-lucide-ban"
           title="Exclusions"
           subtitle="Paires qui ne se tirent jamais"
-        />
+        >
+          <template #trailing>
+            <UBadge
+              :label="String(exclusionCount)"
+              :color="exclusionCount > 0 ? 'primary' : 'neutral'"
+              variant="subtle"
+              class="shrink-0 rounded-full tabular-nums"
+              :aria-label="plural(exclusionCount, 'exclusion')"
+            />
+          </template>
+        </MobileListItem>
       </MobileList>
     </AdminQueryState>
   </AdminScreen>

@@ -578,7 +578,6 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 | `DELETE /api/admin/[groupe]/participations/[id]/message` | Annule la pastille *envoyé* (erreur de clic), journalisé |
 | `GET /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul (journalisé `lien_copie`) |
 | `POST /api/admin/[groupe]/participations/[id]/regenerate` | Régénérer le lien |
-| `POST /api/admin/[groupe]/persons/[id]/unlock` | Débloquer |
 | `GET /api/admin/[groupe]/journal` | Journal |
 
 ---

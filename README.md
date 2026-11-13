@@ -2,9 +2,11 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan validé et mis à jour (v2), aucun code écrit.**
+> État au 13 novembre 2026 : **plan v3, étape 0 (vérifications) terminée, aucun code écrit.** Prochaine étape : l'étape 1 (socle).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
+>
+> Changements de la v3, issus de l'étape 0 : **plus aucun email**, le gardien envoie les liens par WhatsApp grâce aux liens officiels **« click to chat » (`wa.me`)** qui ouvrent la conversation avec le message prérempli (section 13) ; **Nuxt 4** au lieu de Nuxt 3 ; preset **Cloudflare Workers** ; conclusions des vérifications en section 7.2.
 
 ---
 
@@ -27,6 +29,7 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 | Mobile first | Conçu pour le téléphone d'abord, utilisable sur ordinateur ensuite |
 | Secret | Personne d'autre que le participant ne voit son résultat dans l'interface, gardien compris |
 | Anti-triche | Lien personnel + code secret + journal public |
+| Sans service d'envoi | Aucun email, aucune API WhatsApp ou SMS : le gardien envoie chaque lien depuis son propre WhatsApp, l'application lui ouvre la conversation avec le message prêt |
 | Multi-familles | Plusieurs groupes cloisonnés dans une seule application |
 | Pluriannuel | Participants et couples évoluent d'une année sur l'autre, l'historique est conservé |
 | Langue | Interface entièrement en français |
@@ -37,22 +40,22 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 
 Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander.
 
-1. **Pas d'envoi WhatsApp automatique.** L'API officielle de Meta demande un compte Business et des modèles validés, et les librairies non officielles (Baileys, whatsapp-web.js) exposent le numéro à un ban. On envoie donc par **email**, avec en complément un bouton **« copier le lien »** et un bouton **« partager »** (feuille de partage native du téléphone) pour passer par WhatsApp à la main.
-2. **Le message ne contient jamais le résultat.** Email ou WhatsApp, il ne contient qu'un lien personnel. Le résultat ne s'affiche que dans l'application, après saisie du code.
+1. **Envoi par WhatsApp, depuis le compte du gardien, via les liens « click to chat »** (décision v3). L'API officielle WhatsApp de Meta demande un compte Business et des modèles validés, et les librairies non officielles (Baileys, whatsapp-web.js) exposent le numéro à un ban. L'email gratuit a été écarté à l'étape 0 : sans nom de domaine, Resend refuse tout destinataire autre que soi-même et Brevo réécrit l'expéditeur en `@brevosend.com` avec une délivrabilité médiocre. Reste la fonction officielle, gratuite et sans API de WhatsApp : un lien `https://wa.me/<numéro>?text=<message>` ouvre WhatsApp (Desktop, Web ou l'application du téléphone) **sur la conversation du bon contact, message déjà rédigé** ; le gardien n'a qu'à appuyer sur Envoyer. Un clic par participant. En repli, sans numéro : **« Copier le message »** et, sur téléphone, **« Partager »**.
+2. **Le message ne contient jamais le résultat.** Il ne contient qu'un lien personnel. Le résultat ne s'affiche que dans l'application, après saisie du code.
 3. **Lien personnel + code à 6 chiffres** choisi par le participant. Le lien seul ne suffit pas.
 4. **Journal public par groupe** : toutes les actions sensibles y sont listées, sans jamais indiquer qui a tiré qui.
 5. **Pas de chiffrement de bout en bout.** Julien est le gardien du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
 6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre gardien** et **ses propres règles**.
 7. **Participants modifiables chaque année** : ajout, retrait, changement de couple.
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
-9. **Hébergement Cloudflare** (application + base D1) : un seul compte, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an.
-10. **Stack Nuxt 3 / JavaScript** (décision v2, remplace « TypeScript strict ») : Vue 3 et Nuxt 3 sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
+9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, sans carte bancaire, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement par Workers Builds à chaque `git push` (vérifié à l'étape 0).
+10. **Stack Nuxt 4 / JavaScript** (décision v2, remplace « TypeScript strict » ; v3 : Nuxt 4 au lieu de Nuxt 3, car c'est la version stable que ciblent aujourd'hui la documentation et les modules, et l'arborescence `app/` prévue ici est la sienne) : Vue 3 et Nuxt sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
 11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après saisie du code. La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
 12. **Programmation fonctionnelle et standards de l'industrie** (décision v2) : fonctions pures pour tout le métier, effets de bord repoussés dans les routes, ESLint + Prettier, tests Vitest sur la logique métier, Git en petits commits. Détails en section 7.1.
 
 ### Hors périmètre
 
-- Envoi automatique par WhatsApp ou SMS.
+- Tout envoi sans action du gardien : API WhatsApp, SMS et, depuis la v3, email.
 - Chiffrement de bout en bout.
 - Messagerie anonyme, paiement, application native.
 - Dans la liste de souhaits : réservation d'un cadeau (« je le prends ») et notification du donneur quand la liste change.
@@ -91,7 +94,7 @@ brouillon ──► invitations ──► tirée ──► clôturée
 | Statut | Ce qui est possible |
 |---|---|
 | `brouillon` | Le gardien compose la liste des participants et les couples, règle les paramètres. |
-| `invitations` | Les liens sont envoyés. Chacun ouvre le sien, choisit son code et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
+| `invitations` | Le gardien envoie les liens par WhatsApp. Chacun ouvre le sien, choisit son code et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
 | `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
 | `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
 
@@ -99,17 +102,17 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 1. Se connecte à l'admin de son groupe (mot de passe).
 2. Crée l'édition. L'application **reprend les participants et couples de l'édition précédente**.
-3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les couples.
-4. Passe en `invitations` : envoie les liens par email (« Envoyer à tous » ou un par un) ou copie/partage chaque lien.
+3. Coche qui participe, ajoute les nouveaux (avec leur numéro WhatsApp), désactive les absents, met à jour les couples.
+4. Passe en `invitations` : pour chaque participant, clique « Envoyer sur WhatsApp ». WhatsApp s'ouvre sur la conversation de la personne avec le message et le lien, il appuie sur Envoyer, revient, carte suivante. Sans numéro : « Copier le message » ou « Partager ».
 5. Suit les statuts : *invité*, *code choisi*, *souhaits renseignés* (nombre d'idées, jamais leur contenu), *résultat consulté*.
 6. Lance le tirage quand tout le monde a choisi son code (voir règle `inscription_obligatoire`).
-7. L'application prévient chacun par email que le tirage est fait (même lien).
+7. Prévient chacun que le tirage est fait, par le même procédé : le message « Le tirage est fait » est prêt sur chaque carte (même lien).
 8. En cas de pépin : renvoie un lien, réinitialise un code, débloque un participant.
 9. Après la fête : clôture l'édition.
 
 ### 4.3 Parcours du participant
 
-1. Reçoit son lien personnel (email ou WhatsApp).
+1. Reçoit son lien personnel sur WhatsApp, envoyé par le gardien.
 2. Première ouverture : choisit son **code à 6 chiffres** (saisi deux fois). S'il a déjà un code d'une année précédente, il le réutilise.
 3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec une invitation à remplir sa liste de souhaits.
 4. À tout moment avant la clôture : renseigne ou modifie sa **liste de souhaits** (quelques idées, avec un lien facultatif). La sauvegarde demande le code, comme toute action sensible (voir 6 bis).
@@ -121,7 +124,7 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 | Situation | Action du gardien | Effet |
 |---|---|---|
-| Email non reçu | « Renvoyer l'email » ou « Copier le lien » | Même lien, journalisé |
+| Message non reçu ou effacé | « Envoyer sur WhatsApp » à nouveau, ou « Copier le lien » | Même lien, journalisé |
 | Lien perdu | Idem | Idem |
 | Code oublié | « Réinitialiser le code » | Le participant en choisit un nouveau à la prochaine ouverture, journalisé |
 | 5 codes erronés | « Débloquer » | Compteur remis à zéro, journalisé |
@@ -194,7 +197,7 @@ Procédure réservée au gardien, avec double confirmation :
 3. Les liens et les codes des participants **restent valables**.
 4. Les compteurs de consultation sont remis à zéro.
 5. Un événement `tirage_annule` est inscrit au journal, avec le motif saisi par le gardien.
-6. Au nouveau tirage, chacun reçoit un email « Nouveau tirage, ton ancien résultat n'est plus valable ».
+6. Au nouveau tirage, le gardien renvoie à chacun le message « Nouveau tirage, ton ancien résultat n'est plus valable » (modèle fourni, voir section 13).
 
 ### 6.6 Nouveaux venus et absents
 
@@ -247,34 +250,39 @@ Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas
 | Élément | Choix |
 |---|---|
 | Langage | **JavaScript** (ES2022+, modules ESM), `"type": "module"` dans `package.json`. Pas de TypeScript. Annotations **JSDoc** sur les fonctions métier et les objets échangés avec l'API, pour l'autocomplétion et la documentation ; `checkJs` activé dans `jsconfig.json` pour que l'éditeur signale les incohérences, sans bloquer le build |
-| Framework | Nuxt 3 (`nuxt.config.js`) |
+| Framework | **Nuxt 4** (`nuxt.config.js`), structure `app/` native |
 | Back-end | **Routes serveur Nitro** (`server/api/**`), un fichier par route et méthode (`persons.get.js`, `persons.post.js`), `defineEventHandler` |
 | Appels API côté client | **TanStack Query pour Vue** (`@tanstack/vue-query`) : `useQuery` pour les lectures, `useMutation` pour les écritures, invalidation par clés après chaque mutation. Transport : `$fetch` de Nuxt. Hydratation SSR via `dehydrate`/`hydrate` dans un plugin Nuxt |
 | État client | Aucun store global. TanStack Query porte l'état serveur ; l'état d'interface (champs de formulaire, étape d'un écran) vit dans des `ref` locaux ou des composables |
-| Rendu | SSR sur Cloudflare (preset Nitro Cloudflare) |
+| Rendu | SSR sur Cloudflare Workers, preset Nitro `cloudflare_module`. Binding D1 déclaré dans `wrangler.toml`, lu dans les routes via le contexte Cloudflare de l'événement |
 | Base de données | Cloudflare D1 (SQLite) |
 | ORM et migrations | **Drizzle ORM** + drizzle-kit (`drizzle.config.js`, schéma en `server/database/schema.js`) |
 | Validation | Zod sur toutes les entrées d'API. Avec JavaScript, Zod devient aussi la **source de vérité des formes de données** : les types JSDoc sont dérivés des schémas (`@typedef {import('zod').infer<typeof schema>}`) |
 | Styles | Tailwind CSS ou UnoCSS, au choix de l'agent, approche mobile first |
 | Sessions admin | Cookie de session scellé (par exemple le module `nuxt-auth-utils`) |
 | Cryptographie | Web Crypto API (disponible dans les Workers) |
-| Email | Appel HTTP à un fournisseur gratuit (Brevo ou Resend), derrière une interface commune (un objet de fonctions, voir 7.1) |
+| Transmission des liens | Aucun service externe. Liens WhatsApp « click to chat » (`https://wa.me/<numéro>?text=…`), construits par des fonctions pures ; copie via `navigator.clipboard.writeText` et partage via `navigator.share` en repli (section 13) |
 | Qualité | **ESLint** (config plate, `@nuxt/eslint`) + **Prettier**, `eslint-config-prettier` pour éviter les conflits. Hooks Git via `simple-git-hooks` + `lint-staged` |
 | Tests | **Vitest** sur toute la logique métier (`server/utils/**`), couverture suivie. `@nuxt/test-utils` pour quelques tests de routes. Playwright facultatif (parcours mobile) |
 | Intégration continue | GitHub Actions : `lint`, `format:check`, `test` sur chaque push et pull request |
 | Gestionnaire de paquets | pnpm |
 
-### Points à vérifier avant de coder
+### 7.2 Vérifications de l'étape 0 (faites le 13 novembre 2026)
 
-Ces éléments reposent sur des souvenirs et n'ont **pas été revérifiés** pendant la phase de plan. À confirmer dans la documentation officielle :
+Les points « à vérifier » de la v2 ont été confrontés à la documentation officielle et, à défaut, à des sources récentes. Les limites gratuites changent souvent : revérifier les chiffres avant la mise en service (étape 8).
 
-- [ ] Les limites actuelles de l'offre gratuite Cloudflare (Workers/Pages, D1) et l'absence de carte bancaire exigée.
-- [ ] Le preset Nitro recommandé aujourd'hui pour Cloudflare (`cloudflare-pages` ou `cloudflare-module`) et la façon d'y déclarer le binding D1. Évaluer aussi NuxtHub, qui simplifie D1 avec Nuxt.
-- [ ] Les limites de temps CPU des Workers gratuits, qui contraignent le nombre d'itérations PBKDF2 (voir 8.2).
-- [ ] Les conditions des offres gratuites Brevo et Resend : quota quotidien, et surtout **possibilité d'envoyer sans posséder de nom de domaine** (expéditeur vérifié de type adresse Gmail). C'est le critère de choix entre les deux.
-- [ ] La compatibilité de `nuxt-auth-utils` avec l'environnement Workers.
-- [ ] La mise en place recommandée de `@tanstack/vue-query` dans Nuxt 3 (plugin, `VueQueryPlugin`, hydratation SSR avec `useState`), et le comportement de `useQuery` pendant le rendu serveur.
-- [ ] La façon propre de désactiver la génération de types TypeScript de Nuxt pour un projet 100 % JavaScript (ou de la garder seulement pour l'autocomplétion de l'éditeur), et le contenu de `jsconfig.json`.
+| Point | Conclusion | Conséquence |
+|---|---|---|
+| Offre gratuite Cloudflare | Workers Free : 100 000 requêtes/jour, **10 ms de CPU par requête**, 128 Mo. D1 Free : 10 bases, 500 Mo par base, 5 Go au total, 5 millions de lignes lues et 100 000 lignes écrites par jour. Workers Builds (déploiement Git) : 3 000 minutes/mois, 1 build à la fois. Carte bancaire : les docs ne la mentionnent pas ; toutes les sources tierces disent qu'elle n'est pas demandée sur le plan gratuit | Très largement suffisant pour deux familles un mois par an. À confirmer à la création du compte qu'aucune carte n'est demandée |
+| Preset Nitro | `cloudflare_module` (Workers) est le preset recommandé ; `cloudflare_pages` « seulement pour des fonctionnalités propres à Pages » ; `cloudflare_durable` est déprécié. Bindings dans `wrangler.toml`/`wrangler.jsonc`. Dév local : `nitro dev` émule Cloudflare via Miniflare (paquet `miniflare` à installer), état local dans `.wrangler/state/v3` | Workers, pas Pages. Adresse en `*.workers.dev` |
+| NuxtHub | L'admin NuxtHub est en cours d'arrêt (31 décembre 2025) ; la v0.10 est auto-hébergée (`@nuxthub/db` + Drizzle, SQLite libsql en local, migrations appliquées au build, déploiement par Workers Builds ou wrangler) et cible Nuxt 4 | **Non retenu** : une couche de plus pour un gain faible ici. Drizzle directement sur le binding D1 |
+| CPU et PBKDF2 | Les Workers refusent plus de **100 000 itérations** PBKDF2 (`NotSupportedError`, confirmé par un employé Cloudflare en forum et par de nombreux rapports, absent de la doc officielle). Le plan gratuit limite à 10 ms de CPU par requête ; le temps réel d'un PBKDF2 natif sur un Worker déployé n'est documenté nulle part | Itérations **configurables** (`PBKDF2_ITERATIONS`, défaut 50 000, plafond 100 000), à **mesurer sur un Worker déployé à l'étape 1**. Voir 8.2 pour la justification sécurité |
+| Email gratuit sans nom de domaine | **Impossible proprement.** Resend : 100/jour, 3 000/mois, mais sans domaine vérifié on ne peut écrire qu'à sa propre adresse (403). Brevo : 300/jour, API incluse, sans carte, mais une adresse Gmail ne peut pas être authentifiée et Brevo réécrit l'expéditeur en `@brevosend.com` (« via brevosend.com » dans Gmail, pied de page Brevo, délivrabilité dégradée) | **Email abandonné** (décision v3). Envoi par WhatsApp via `wa.me`, section 13 |
+| Liens WhatsApp « click to chat » | Fonction officielle de WhatsApp : `https://wa.me/<numéro international sans +>?text=<texte encodé>` ouvre la conversation avec le message prérempli, sur Desktop, Web et mobile. Sans numéro, `https://wa.me/?text=…` ouvre le choix du contact. Pas d'envoi automatique possible : l'utilisateur appuie sur Envoyer | Retenu comme mode d'envoi principal |
+| `nuxt-auth-utils` sur Workers | Supporté. Exige `compatibility_date` ≥ 2025-04-01 (ou le flag `nodejs_compat_populate_process_env`). Secret de scellement `NUXT_SESSION_PASSWORD` obligatoire en production. Session limitée par la taille du cookie (4 096 octets) | Retenu. Ne stocker en session que `role`, `groupId`, `expiresAt` |
+| TanStack Query dans Nuxt | Motif établi : plugin Nuxt qui crée le `QueryClient`, `useState('vue-query')` pour transporter l'état déshydraté, `dehydrate` dans le hook `app:rendered` côté serveur, `hydrate` côté client. Depuis `@tanstack/vue-query` 5.102.1, `hydrate()` lève une erreur si l'état est `null` (pages sans SSR) : garder l'appel | Retenu, plugin `app/plugins/vue-query.js` avec garde sur l'état nul |
+| Nuxt en JavaScript | `typescript.typeCheck` est désactivé par défaut, Nuxt accepte `nuxt.config.js` et des fichiers `.js` sans réglage. `checkJs` n'est pas documenté côté Nuxt : il relève de l'éditeur. Astuce connue : `"jsx": "preserve"` dans `jsconfig.json` évite un avertissement de Volar | `jsconfig.json` minimal étendant `.nuxt/tsconfig.json`, `checkJs: true` pour l'éditeur seulement. La génération de `.nuxt/tsconfig.json` est inoffensive, on la laisse |
+| Version de Nuxt | La documentation de Nuxt, Nitro et des modules cible Nuxt 4 ; la structure `app/` du plan est celle de Nuxt 4 | **Nuxt 4** (décision v3) |
 
 ### 7.1 Guidelines de code
 
@@ -282,10 +290,10 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 #### Programmation fonctionnelle
 
-- **Fonctions pures d'abord.** Tout le métier (`draw`, `rules`, `crypto` hors appels Web Crypto, construction des événements du journal, modèles d'emails, validation des souhaits) est écrit en fonctions pures : mêmes entrées, mêmes sorties, aucun accès à la base, à l'horloge ou à l'aléa à l'intérieur. L'aléa et l'horloge sont **passés en paramètre** (`draw(participants, rules, { random })`), ce qui rend les tests déterministes.
-- **Noyau pur, coque impure.** Les routes Nitro sont la seule couche qui lit la requête, interroge la base, appelle le fournisseur d'email et écrit la réponse. Elles sont courtes : valider (Zod) → charger → appeler le métier → persister → répondre. Pas de logique métier dans une route.
+- **Fonctions pures d'abord.** Tout le métier (`draw`, `rules`, `crypto` hors appels Web Crypto, construction des événements du journal, modèles de messages WhatsApp, validation des souhaits) est écrit en fonctions pures : mêmes entrées, mêmes sorties, aucun accès à la base, à l'horloge ou à l'aléa à l'intérieur. L'aléa et l'horloge sont **passés en paramètre** (`draw(participants, rules, { random })`), ce qui rend les tests déterministes.
+- **Noyau pur, coque impure.** Les routes Nitro sont la seule couche qui lit la requête, interroge la base et écrit la réponse. Elles sont courtes : valider (Zod) → charger → appeler le métier → persister → répondre. Pas de logique métier dans une route.
 - **Immutabilité.** `const` partout, jamais de mutation d'un argument ni d'un objet partagé. Nouvelles valeurs par décomposition (`{ ...rules, budget }`), `map`/`filter`/`reduce` plutôt que boucles qui mutent, `toSorted` plutôt que `sort`. Exception tolérée et localisée : le mélange Fisher-Yates sur une copie du tableau.
-- **Pas de classes, pas de `this`.** Les « interfaces » sont des objets de fonctions produits par des fabriques : `createEmailProvider(env)` renvoie `{ send }`, `createRepository(db)` renvoie des fonctions de requête. L'injection de dépendances se fait par arguments.
+- **Pas de classes, pas de `this`.** Les « interfaces » sont des objets de fonctions produits par des fabriques : `createRepository(db)` renvoie des fonctions de requête, `createClock()` renvoie `{ now }`. L'injection de dépendances se fait par arguments.
 - **Composition.** Petites fonctions nommées d'après ce qu'elles renvoient, composées plutôt qu'imbriquées. Une fonction fait une chose ; au-delà d'une vingtaine de lignes, on la découpe.
 - **Erreurs métier comme valeurs.** Le métier renvoie des résultats explicites (`{ ok: true, value }` / `{ ok: false, reason, details }`) plutôt que de lancer des exceptions. Seule la coque transforme un `ok: false` en `createError` HTTP. Le résultat de la vérification de faisabilité du tirage (section 6.2, point 4) en est l'exemple type.
 - **Côté Vue** : composition API et `<script setup>`, composables qui renvoient des valeurs réactives dérivées (`computed`) plutôt que des mutations manuelles, pas de watchers quand un `computed` suffit. Les composables TanStack Query sont regroupés par domaine dans `app/composables/queries/`, avec un fichier `keys.js` pour les clés de cache.
@@ -326,7 +334,7 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Rattaché à la **personne** : il est conservé d'une année sur l'autre.
 - Choisi par le participant à la première ouverture d'un lien, saisi deux fois.
 - Refuser les codes triviaux (`000000`, `123456`, six chiffres identiques).
-- Stocké haché : PBKDF2-SHA256 avec sel par personne et « poivre » serveur (`PIN_PEPPER`). Nombre d'itérations à caler sur les limites CPU des Workers.
+- Stocké haché : PBKDF2-SHA256 avec sel par personne et « poivre » serveur (`PIN_PEPPER`). Itérations réglées par `PBKDF2_ITERATIONS` (défaut 50 000 ; les Workers plafonnent à 100 000, voir 7.2). Mesurer à l'étape 1 que la vérification d'un code tient dans les 10 ms de CPU du plan gratuit, et baisser si besoin : pour un code à 6 chiffres, le nombre d'itérations compte peu, la sécurité repose sur le poivre (hors base) et sur le blocage. Les mots de passe des gardiens (10 caractères minimum, 8.4) profitent du même poivre et de la limitation des tentatives.
 - Un code à 6 chiffres a peu d'entropie : la vraie protection est le **blocage après 5 échecs** (compteur en base, remis à zéro après un succès). Seul le gardien débloque.
 - Le code est redemandé **à chaque consultation** du résultat. Pas de session participant.
 - Le gardien ne voit jamais un code, il peut seulement le réinitialiser.
@@ -351,11 +359,12 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Chaque requête de base filtre sur `group_id`.
 - Un gardien ne peut ni lire ni modifier un autre groupe.
 - Le journal d'un groupe n'est visible que par ses participants (lien valide) et son gardien.
+- Les numéros de téléphone sont des données personnelles : stockés en clair (il faut les lire pour construire le lien `wa.me`), visibles du seul gardien du groupe, jamais renvoyés aux participants ni dans le journal.
 
 ### 8.6 Liste de contrôle
 
 - [ ] Aucune attribution dans une réponse d'API admin
-- [ ] Aucune attribution dans les logs ou les emails
+- [ ] Aucune attribution dans les logs ou les messages WhatsApp
 - [ ] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal
 - [ ] Modification d'une liste de souhaits impossible sans le code
 - [ ] Toutes les entrées validées par Zod
@@ -378,7 +387,7 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `participant_ajoute` / `participant_retire` | « Léa a été ajoutée à l'édition » |
 | `couple_modifie` | « Le couple Léa + Tom a été enregistré » |
 | `regle_modifiee` | « Le gardien a modifié les règles du tirage » |
-| `invitation_envoyee` | « Le lien de Léa a été envoyé par email » |
+| `message_envoye` | « Le gardien a envoyé l'invitation à Léa sur WhatsApp » (type de message et canal `whatsapp`, `copie` ou `partage` dans `meta`) |
 | `lien_copie` | « Le gardien a copié le lien de Léa » |
 | `lien_regenere` | « Le lien de Léa a été régénéré » |
 | `code_choisi` | « Léa a choisi son code » |
@@ -416,7 +425,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `group_id` | text FK | |
 | `first_name` | text | Affiché partout |
 | `last_name` | text nullable | Pour départager les homonymes |
-| `email` | text nullable | Facultatif : sans email, envoi par lien copié |
+| `phone` | text nullable | Numéro WhatsApp au format E.164 (`+33612345678`), pour le lien `wa.me`. Sans numéro : copie ou partage du message |
 | `pin_hash`, `pin_salt` | text nullable | Vides tant que le code n'est pas choisi |
 | `pin_failed_attempts` | integer | |
 | `pin_locked_at` | text nullable | |
@@ -460,7 +469,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `edition_id`, `person_id` | text FK | Paire unique |
 | `token_hash` | text unique | SHA-256 du jeton |
 | `token_enc`, `token_iv` | text | Jeton chiffré, pour renvoi par le gardien |
-| `email_sent_at` | text nullable | |
+| `message_sent_at` | text nullable | Dernier envoi déclaré (WhatsApp, copie ou partage), pour la pastille *envoyé* |
 | `link_copied_at` | text nullable | |
 | `view_count` | integer | Consultations du résultat |
 | `first_viewed_at`, `last_viewed_at` | text nullable | |
@@ -511,7 +520,7 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 
 | Route | Écran |
 |---|---|
-| `/p/[token]` | Page personnelle. Selon l'état : choix du code, attente du tirage, saisie du code, résultat, lien bloqué, lien invalide. Bouton « Ma liste de souhaits » si la règle est active |
+| `/p/[token]` | Page personnelle. Selon l'état : choix du code, attente du tirage, saisie du code, résultat, lien bloqué, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : WhatsApp génère un aperçu du lien |
 | `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées, enregistrement avec le code (voir 6 bis.4) |
 | `/p/[token]/journal` | Journal du groupe |
 
@@ -528,15 +537,17 @@ Détails d'interface :
 | `/admin` | Connexion (choix du groupe + mot de passe, ou accès super-admin) |
 | `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des gardiens |
 | `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
-| `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier, désactiver, couples, exclusions manuelles |
+| `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom, numéro WhatsApp), désactiver, couples, exclusions manuelles |
 | `/admin/[groupe]/reglages` | Règles par défaut du groupe |
 | `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
 | `/admin/[groupe]/journal` | Journal du groupe |
 
 Écran de pilotage d'une édition, le plus important :
-- En-tête : nom de l'édition, statut, action principale du moment (« Envoyer les invitations », « Lancer le tirage », « Clôturer »).
-- Liste des participants, une carte par personne, avec des pastilles de statut : *invité*, *code choisi*, *souhaits (n)*, *consulté*, *bloqué*.
-- Sur chaque carte, un menu d'actions : envoyer/renvoyer l'email, copier le lien, partager (API Web Share, avec repli sur la copie), réinitialiser le code, débloquer, régénérer le lien, retirer de l'édition.
+- En-tête : nom de l'édition, statut, action principale du moment (« Ouvrir les invitations », « Lancer le tirage », « Clôturer »).
+- Liste des participants, une carte par personne, avec des pastilles de statut : *envoyé*, *code choisi*, *souhaits (n)*, *consulté*, *bloqué*.
+- Sur chaque carte, l'action principale est **« Envoyer sur WhatsApp »** : ouvre le lien `wa.me` de la personne (nouvel onglet ou application) avec le message adapté au moment (invitation, tirage fait, relance, nouveau tirage), marque la carte *envoyé* et journalise. Sans numéro, le bouton devient **« Copier le message »** (presse-papiers) et, sur téléphone, **« Partager »** (API Web Share). Un lien « Pas envoyé finalement ? » permet d'annuler la pastille.
+- Menu secondaire : copier le lien seul, réinitialiser le code, débloquer, régénérer le lien, retirer de l'édition.
+- Un sélecteur en haut de liste choisit le type de message pour toutes les cartes (par défaut : celui qui correspond au statut de l'édition). Les cartes non encore *envoyées* pour ce type remontent en premier pour enchaîner les envois.
 - Avant le tirage : un encart « Vérification » indique si le tirage est possible et, sinon, pourquoi.
 - Zone dangereuse en bas de page : « Annuler et relancer le tirage ».
 
@@ -563,7 +574,7 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 |---|---|
 | `POST /api/admin/login`, `POST /api/admin/logout` | Session |
 | `GET/POST /api/admin/groups`, `PATCH /api/admin/groups/[id]` | Super-admin uniquement |
-| `GET/POST/PATCH /api/admin/[groupe]/persons` | Personnes |
+| `GET/POST/PATCH /api/admin/[groupe]/persons` | Personnes (prénom, nom, numéro WhatsApp validé E.164) |
 | `POST/DELETE /api/admin/[groupe]/couples` | Couples |
 | `POST/DELETE /api/admin/[groupe]/exclusions` | Exclusions manuelles |
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
@@ -574,9 +585,9 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 | `GET /api/admin/[groupe]/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi |
 | `POST /api/admin/[groupe]/editions/[id]/draw` | Lancer le tirage |
 | `POST /api/admin/[groupe]/editions/[id]/redraw` | Annuler le tirage (motif obligatoire) |
-| `POST /api/admin/[groupe]/participations/[id]/send` | Envoyer ou renvoyer l'email |
-| `POST /api/admin/[groupe]/editions/[id]/send-all` | Envoyer à tous ceux qui ont un email |
-| `GET /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien pour copie ou partage (journalisé) |
+| `POST /api/admin/[groupe]/participations/[id]/message` | Corps : `type` ∈ `invitation`, `tirage`, `relance`, `nouveau_tirage` et `via` ∈ `whatsapp`, `copie`, `partage`. Renvoie le texte du message, le lien personnel et l'URL `wa.me` (nulle sans numéro). Journalise `message_envoye`, met à jour `message_sent_at` |
+| `DELETE /api/admin/[groupe]/participations/[id]/message` | Annule la pastille *envoyé* (erreur de clic), journalisé |
+| `GET /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul (journalisé `lien_copie`) |
 | `POST /api/admin/[groupe]/participations/[id]/regenerate` | Régénérer le lien |
 | `POST /api/admin/[groupe]/persons/[id]/reset-pin` | Réinitialiser le code |
 | `POST /api/admin/[groupe]/persons/[id]/unlock` | Débloquer |
@@ -584,20 +595,30 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 
 ---
 
-## 13. Emails
+## 13. Messages WhatsApp
 
-- Envoi par appel HTTP au fournisseur (pas de SMTP dans les Workers).
-- Une fabrique `createEmailProvider(env)` qui renvoie un objet `{ send }`, avec une implémentation par fournisseur choisie par la variable `EMAIL_PROVIDER`. Prévoir une implémentation `console` pour le développement local. Les modèles sont des fonctions pures `(données) → { subject, html, text }`, testables sans réseau.
-- Emails **minimalistes** pour s'afficher correctement partout (le précédent outil testé par la famille avait des emails mal rendus) : HTML simple en tableau, une colonne, largeur maximale 480 px, styles en ligne, pas d'image indispensable, un gros bouton, et le lien répété en texte brut en dessous. Toujours fournir une version texte.
-- **Aucun email ne contient un résultat.**
-- Sans nom de domaine, les emails peuvent arriver en indésirables : le texte d'aide de l'admin doit le rappeler et pousser vers « copier le lien » en secours.
+Décision v3 : l'application n'envoie rien elle-même. Elle ouvre WhatsApp au bon endroit avec le bon message, et le gardien appuie sur Envoyer.
 
-| Modèle | Déclencheur | Contenu |
+### 13.1 Mécanisme
+
+- **Lien « click to chat »** : `https://wa.me/33612345678?text=Salut%20L%C3%A9a…`. Le numéro est au format international **sans `+`, espaces ni zéros initiaux**, le texte est encodé avec `encodeURIComponent`. Sur ordinateur, WhatsApp Desktop s'ouvre s'il est installé, sinon WhatsApp Web ; sur téléphone, l'application. La conversation du contact s'affiche avec le message dans la zone de saisie.
+- Sans numéro enregistré : `https://wa.me/?text=…` ouvre WhatsApp sur le choix du contact ; l'interface propose aussi **« Copier le message »** (`navigator.clipboard.writeText`, HTTPS garanti par Cloudflare, repli sur une zone de texte sélectionnable) et, sur téléphone, **« Partager »** (`navigator.share({ text })`, qui propose WhatsApp).
+- Le bouton ouvre le lien dans un nouvel onglet (`target="_blank"`, `rel="noopener"`) pour que le gardien retrouve l'admin au retour.
+- Construction du numéro et de l'URL dans `server/utils/whatsapp.js`, fonctions pures testées : normalisation E.164 → chiffres, encodage, longueur du message.
+- Pas de confirmation d'envoi possible : la pastille *envoyé* reflète le clic du gardien, annulable.
+
+### 13.2 Modèles
+
+- Fonctions pures `(données) → texte` dans `server/utils/messages.js`, testées sans réseau. Données : prénom, nom du groupe, label de l'édition, lien personnel, et selon le modèle budget, date, message du gardien.
+- Texte **court et sans mise en forme** (on se passe du `*gras*` WhatsApp), le lien **seul sur sa ligne** pour que WhatsApp le rende cliquable et génère l'aperçu, un emoji 🎁 au plus.
+- **Aucun message ne contient un résultat.**
+
+| Modèle (`type`) | Moment | Contenu |
 |---|---|---|
-| Invitation | Passage en `invitations` ou envoi manuel | « Tu participes au Secret Santa de [groupe]. Ouvre ton lien, choisis ton code secret et note quelques idées de cadeaux. » |
-| Tirage effectué | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau. Pense à compléter ta liste de souhaits. » |
-| Relance | Manuel | Rappel pour ceux qui n'ont pas choisi leur code ou pas consulté |
-| Nouveau tirage | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. » |
+| `invitation` | Statut `invitations` | « Salut Léa ! Tu participes au Secret Santa de [groupe] ([édition]). Ouvre ton lien, choisis ton code secret et note quelques idées de cadeaux : [lien] » |
+| `tirage` | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau : [lien] » + budget et date s'ils sont renseignés |
+| `relance` | Manuel | « Petit rappel : tu n'as pas encore choisi ton code / consulté ton résultat. Ton lien : [lien] » |
+| `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
 
 ---
 
@@ -639,7 +660,8 @@ secret-santa/
 │       ├── crypto.js          ← jetons, hachage du code, AES-GCM
 │       ├── audit.js           ← construction des événements du journal
 │       ├── wishes.js          ← validation et normalisation d'une liste de souhaits
-│       ├── email/             ← createEmailProvider + fournisseurs + modèles purs
+│       ├── messages.js        ← modèles de messages WhatsApp, fonctions pures
+│       ├── whatsapp.js        ← numéro E.164 → lien wa.me, fonctions pures
 │       ├── rules.js           ← fusion règles groupe/édition
 │       ├── result.js          ← helpers ok()/fail() pour les erreurs métier
 │       └── auth.js
@@ -657,9 +679,7 @@ secret-santa/
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
 | `PIN_PEPPER` | Poivre pour le hachage des codes et mots de passe |
-| `EMAIL_PROVIDER` | `brevo`, `resend` ou `console` |
-| `EMAIL_API_KEY` | Clé d'API du fournisseur |
-| `EMAIL_FROM` | Adresse et nom d'expéditeur |
+| `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 50 000, maximum 100 000 sur Workers) |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 
 **Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe.
@@ -672,13 +692,12 @@ secret-santa/
 2. Créer un compte Cloudflare gratuit.
 3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`.
 4. Appliquer les migrations sur la base distante.
-5. Connecter le dépôt GitHub à Cloudflare : chaque `git push` sur la branche principale redéploie.
+5. Connecter le dépôt GitHub à Cloudflare (Workers Builds) : chaque `git push` sur la branche principale redéploie.
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
-7. L'application est servie sur une adresse gratuite en `*.pages.dev` ou `*.workers.dev`.
-8. Créer un compte gratuit chez le fournisseur d'email retenu et vérifier l'adresse d'expéditeur.
-9. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.
+7. L'application est servie sur une adresse gratuite en `*.workers.dev`.
+8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.
 
-Développement local : base D1 locale via wrangler, fournisseur d'email `console`.
+Développement local : base D1 locale émulée par Miniflare (`nitro dev`), état dans `.wrangler/state/v3`.
 
 ---
 
@@ -686,14 +705,14 @@ Développement local : base D1 locale via wrangler, fournisseur d'email `console
 
 Chaque étape est livrable et testable seule.
 
-**Étape 0 — Vérifications**
-Lever les points de la section 7 (« à vérifier »). Choisir le preset Cloudflare et le fournisseur d'email.
+**Étape 0 — Vérifications** ✅ *terminée le 13 novembre 2026*
+Points de la section 7 levés, conclusions en 7.2. Décisions : Workers (`cloudflare_module`), pas de NuxtHub, pas d'email mais WhatsApp `wa.me`, Nuxt 4, PBKDF2 configurable.
 
 **Étape 1 — Socle**
-Dépôt Git et dépôt GitHub privé. Projet Nuxt 3 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare pour valider la chaîne. Chaque outil = un commit.
+Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
 
 **Étape 2 — Cœur métier, sans interface**
-`draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
+`draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
 
 **Étape 3 — Administration**
 Connexion super-admin et gardien, gestion des groupes, des personnes, des couples, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
@@ -707,8 +726,8 @@ Page personnelle dans tous ses états, choix du code, révélation, blocage, jou
 **Étape 5 bis — Liste de souhaits**
 Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, affichage de la liste du receveur sur l'écran de résultat, pastille *souhaits (n)* côté gardien, règles `liste_souhaits` et `souhaits_max`, événement `souhaits_modifies`.
 
-**Étape 6 — Emails**
-Interface fournisseur, quatre modèles, envoi unitaire et groupé, gestion des erreurs d'envoi (afficher l'échec au gardien, ne pas marquer comme envoyé).
+**Étape 6 — Envoi WhatsApp**
+Quatre modèles de texte, lien `wa.me`, route `message`, boutons « Envoyer sur WhatsApp », « Copier le message » et « Partager », pastille *envoyé* annulable, sélecteur de type de message, journalisation. Test réel avec WhatsApp Desktop et depuis un téléphone.
 
 **Étape 7 — Finitions**
 Animation de révélation, états vides, messages d'erreur, accessibilité (contrastes, navigation clavier, lecteurs d'écran), revue de la liste de contrôle sécurité, test complet sur un vrai téléphone.
@@ -742,6 +761,12 @@ Création des deux groupes réels, répétition générale avec une édition de 
 - Aucune route admin ne renvoie de receveur (test qui parcourt les réponses).
 - Un gardien du groupe A reçoit un refus sur toutes les routes du groupe B.
 - Chiffrement puis déchiffrement redonnent la valeur d'origine, et une clé différente échoue.
+
+### Messages WhatsApp
+
+- Chaque modèle contient le lien et le prénom, jamais de receveur ni de contenu de souhait, quelles que soient les données passées (test qui injecte un receveur dans les données et vérifie qu'il n'apparaît pas).
+- Le lien est seul sur sa ligne.
+- `whatsapp.js` : `+33 6 12 34 56 78` devient `33612345678` ; un numéro invalide est refusé ; l'URL encode correctement accents, sauts de ligne et emoji ; sans numéro, l'URL est `https://wa.me/?text=…`.
 
 ### Liste de souhaits
 
@@ -778,7 +803,7 @@ Création des deux groupes réels, répétition générale avec une édition de 
 
 | Question | Valeur proposée par défaut |
 |---|---|
-| Fournisseur d'email : Brevo ou Resend ? | Celui qui permet d'envoyer sans nom de domaine (à vérifier) |
+| Qui saisit les numéros WhatsApp ? | Le gardien, dans l'écran Personnes, au format international. Facultatif : sans numéro, copie ou partage du message |
 | Nom du projet et de l'adresse Cloudflare ? | `secret-santa` |
 | Noms et slugs des deux familles ? | À demander au moment de la mise en service |
 | Qui est le gardien de la deuxième famille ? | Julien, tant qu'il n'a nommé personne |

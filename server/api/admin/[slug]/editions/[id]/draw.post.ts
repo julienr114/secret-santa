@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     dataKey,
   );
   const { assignments: pairs } = unwrap(
-    draw(input, rules, { random: secureRandomInt }),
+    draw(input, { random: secureRandomInt }),
   );
   const now = nowIso();
   const rows = await Promise.all(
@@ -41,7 +41,6 @@ export default defineEventHandler(async (event) => {
   );
   const snapshot = {
     rules,
-    couples: input.couples,
     manualExclusions: input.manualExclusions,
   };
   // The unique (edition, giver) index makes a concurrent second draw fail.

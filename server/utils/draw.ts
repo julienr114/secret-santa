@@ -14,14 +14,11 @@ export type ManualExclusion = {
 export type DrawInput = {
   /** person ids taking part in the edition */
   participants: string[];
-  /** active couples among them */
-  couples?: Array<[string, string]>;
   manualExclusions?: ManualExclusion[];
   /** giverId -> past receivers to exclude */
   history?: Record<string, string[]>;
 };
 
-export type DrawRules = { excludeSpouse: boolean };
 export type Assignment = { giverId: string; receiverId: string };
 export type RandomInt = (n: number) => number;
 export type Allowed = Record<string, string[]>;
@@ -29,9 +26,6 @@ export type Allowed = Record<string, string[]>;
 export const MAX_REJECTION_ATTEMPTS = 1000;
 
 const unique = <T>(items: T[]): T[] => [...new Set(items)];
-
-const spousesOf = (couples: Array<[string, string]>, id: string): string[] =>
-  couples.flatMap(([a, b]) => (a === id ? [b] : b === id ? [a] : []));
 
 const manuallyExcluded = (
   manualExclusions: ManualExclusion[],
@@ -46,15 +40,11 @@ const manuallyExcluded = (
   );
 
 /** Receivers each giver may draw, per README 6.1. */
-export const allowedReceivers = (
-  input: DrawInput,
-  rules: DrawRules,
-): Allowed => {
+export const allowedReceivers = (input: DrawInput): Allowed => {
   const participants = unique(input.participants);
   const forbiddenFor = (id: string) =>
     new Set([
       id,
-      ...(rules.excludeSpouse ? spousesOf(input.couples ?? [], id) : []),
       ...manuallyExcluded(input.manualExclusions ?? [], id),
       ...(input.history?.[id] ?? []),
     ]);
@@ -156,13 +146,12 @@ const noSolution = (allowed: Allowed) =>
 /** Is a draw possible? Explains why not with the participants to blame. */
 export const checkFeasibility = (
   input: DrawInput,
-  rules: DrawRules,
 ): Result<{ allowed: Allowed }> => {
   const participants = unique(input.participants);
   if (participants.length < 2) {
     return fail('too_few_participants', { count: participants.length });
   }
-  const allowed = allowedReceivers(input, rules);
+  const allowed = allowedReceivers(input);
   const solution = drawByBacktracking(participants, allowed, () => 0);
   return solution ? ok({ allowed }) : noSolution(allowed);
 };
@@ -173,10 +162,9 @@ export const checkFeasibility = (
  */
 export const draw = (
   input: DrawInput,
-  rules: DrawRules,
   { random }: { random: RandomInt },
 ): Result<{ assignments: Assignment[] }> => {
-  const feasibility = checkFeasibility(input, rules);
+  const feasibility = checkFeasibility(input);
   if (!feasibility.ok) return feasibility;
   const { allowed } = feasibility.value;
   const givers = Object.keys(allowed);

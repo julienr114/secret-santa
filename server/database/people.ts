@@ -1,7 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import {
-  couples,
   manualExclusions,
   persons,
   participations,
@@ -16,9 +15,6 @@ export const listPeople = (db: Db, groupId: string) =>
     .from(persons)
     .where(eq(persons.groupId, groupId))
     .orderBy(persons.firstName);
-
-export const listCouples = (db: Db, groupId: string) =>
-  db.select().from(couples).where(eq(couples.groupId, groupId));
 
 export const listExclusions = (db: Db, groupId: string) =>
   db

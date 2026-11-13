@@ -21,16 +21,23 @@ const seeded = (seed: number) => {
   };
 };
 
-const RULES = { excludeSpouse: true };
+// Couples in these tests are written as pairs and become reciprocal
+// exclusions, the generic mechanism of the app.
+type Extra = Partial<DrawInput> & { couples?: Array<[string, string]> };
 const base = (
   participants: string[],
-  extra: Partial<DrawInput> = {},
+  { couples = [], ...extra }: Extra = {},
 ): DrawInput => ({
   participants,
-  couples: [],
-  manualExclusions: [],
-  history: {},
-  ...extra,
+  manualExclusions: [
+    ...(extra.manualExclusions ?? []),
+    ...couples.map(([giverId, receiverId]) => ({
+      giverId,
+      receiverId,
+      reciprocal: true,
+    })),
+  ],
+  history: extra.history ?? {},
 });
 
 const receiverOf = (assignments: Assignment[], giverId: string) =>
@@ -50,7 +57,7 @@ const expectPermutation = (
 };
 
 describe('allowedReceivers', () => {
-  it('excludes self, spouse, manual exclusions and history', () => {
+  it('excludes self, reciprocal and one-way exclusions, and history', () => {
     const allowed = allowedReceivers(
       base(['a', 'b', 'c', 'd'], {
         couples: [['a', 'b']],
@@ -59,7 +66,6 @@ describe('allowedReceivers', () => {
         ],
         history: { d: ['a'] },
       }),
-      RULES,
     );
     expect(allowed).toEqual({
       a: ['c', 'd'],
@@ -69,22 +75,11 @@ describe('allowedReceivers', () => {
     });
   });
 
-  it('keeps spouses when excludeSpouse is off', () => {
-    const allowed = allowedReceivers(
-      base(['a', 'b', 'c'], { couples: [['a', 'b']] }),
-      {
-        excludeSpouse: false,
-      },
-    );
-    expect(allowed.a).toEqual(['b', 'c']);
-  });
-
   it('applies reciprocal manual exclusions both ways', () => {
     const allowed = allowedReceivers(
       base(['a', 'b', 'c'], {
         manualExclusions: [{ giverId: 'a', receiverId: 'b', reciprocal: true }],
       }),
-      RULES,
     );
     expect(allowed.a).toEqual(['c']);
     expect(allowed.b).toEqual(['c']);
@@ -93,7 +88,6 @@ describe('allowedReceivers', () => {
   it('gives a newcomer (no history) no history exclusion', () => {
     const allowed = allowedReceivers(
       base(['a', 'b', 'c'], { history: { a: ['b'] } }),
-      RULES,
     );
     expect(allowed.c).toEqual(['a', 'b']);
   });
@@ -104,7 +98,6 @@ describe('allowedReceivers', () => {
         couples: [['a', 'zed']],
         history: { a: ['zed'], zed: ['a'] },
       }),
-      RULES,
     );
     expect(allowed).toEqual({ a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b'] });
   });
@@ -122,7 +115,7 @@ describe('shuffle', () => {
 
 describe('checkFeasibility', () => {
   it('rejects fewer than two participants', () => {
-    expect(failureOf(checkFeasibility(base(['a']), RULES)).reason).toBe(
+    expect(failureOf(checkFeasibility(base(['a']))).reason).toBe(
       'too_few_participants',
     );
   });
@@ -130,7 +123,6 @@ describe('checkFeasibility', () => {
   it('two participants in a couple: impossible, both blocked', () => {
     const result = checkFeasibility(
       base(['a', 'b'], { couples: [['a', 'b']] }),
-      RULES,
     );
     expect(result.ok).toBe(false);
     expect((failureOf(result).details.blocked as string[]).toSorted()).toEqual([
@@ -142,7 +134,6 @@ describe('checkFeasibility', () => {
   it('three participants with one couple: impossible, names the constrained ones', () => {
     const result = checkFeasibility(
       base(['a', 'b', 'c'], { couples: [['a', 'b']] }),
-      RULES,
     );
     expect(result.ok).toBe(false);
     expect(failureOf(result).reason).toBe('no_solution');
@@ -172,7 +163,6 @@ describe('checkFeasibility', () => {
             d: ['a', 'b'],
           },
         }),
-        RULES,
       ),
     );
     expect((failureOf(result).details.blocked as string[]).toSorted()).toEqual([
@@ -192,7 +182,6 @@ describe('checkFeasibility', () => {
         ],
         history: { a: ['c'], b: ['d'], c: ['a'], d: ['b'] },
       }),
-      RULES,
     );
     expect(result.ok).toBe(true);
   });
@@ -208,7 +197,7 @@ describe('draw', () => {
       manualExclusions: [{ giverId: 'e', receiverId: 'f', reciprocal: true }],
       history: { a: ['c'], b: ['d'] },
     });
-    const { assignments } = valueOf(draw(input, RULES, { random: seeded(42) }));
+    const { assignments } = valueOf(draw(input, { random: seeded(42) }));
     expectPermutation(assignments, input.participants);
     expect(['b']).not.toContain(receiverOf(assignments, 'a'));
     expect(['a']).not.toContain(receiverOf(assignments, 'b'));
@@ -220,7 +209,7 @@ describe('draw', () => {
 
   it('returns the feasibility failure when no solution exists', () => {
     const result = failureOf(
-      draw(base(['a', 'b'], { couples: [['a', 'b']] }), RULES, {
+      draw(base(['a', 'b'], { couples: [['a', 'b']] }), {
         random: seeded(1),
       }),
     );
@@ -237,7 +226,7 @@ describe('draw', () => {
         .map((receiverId) => ({ giverId: g, receiverId, reciprocal: false })),
     );
     const { assignments } = valueOf(
-      draw(base(ids, { manualExclusions }), RULES, { random: seeded(7) }),
+      draw(base(ids, { manualExclusions }), { random: seeded(7) }),
     );
     ids.forEach((g, i) =>
       expect(receiverOf(assignments, g)).toBe(ids[(i + 1) % n]),
@@ -248,7 +237,7 @@ describe('draw', () => {
     const ids = ['a', 'b', 'c', 'd'];
     const random = seeded(2026);
     const counts = Array.from({ length: 10_000 }, () =>
-      valueOf(draw(base(ids), RULES, { random }))
+      valueOf(draw(base(ids), { random }))
         .assignments.map((x) => x.receiverId)
         .join(''),
     ).reduce<Record<string, number>>(
@@ -309,8 +298,8 @@ describe('draw', () => {
             manualExclusions,
             history,
           });
-          const allowed = allowedReceivers(input, RULES);
-          const result = draw(input, RULES, { random: seeded(seed) });
+          const allowed = allowedReceivers(input);
+          const result = draw(input, { random: seeded(seed) });
           if (result.ok) {
             expectPermutation(result.value.assignments, ids);
             result.value.assignments.forEach(({ giverId, receiverId }) =>

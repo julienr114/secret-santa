@@ -15,6 +15,13 @@
       "when": 1794594042016,
       "tag": "0001_drop_pin_and_phone",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794594850420,
+      "tag": "0002_exclusions_replace_couples",
+      "breakpoints": true
     }
   ]
 }

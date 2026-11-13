@@ -35,26 +35,6 @@ export const persons = sqliteTable(
   (t) => [index('persons_group_idx').on(t.groupId)],
 );
 
-export const couples = sqliteTable(
-  'couples',
-  {
-    id: text('id').primaryKey(),
-    groupId: text('group_id')
-      .notNull()
-      .references(() => groups.id),
-    personAId: text('person_a_id')
-      .notNull()
-      .references(() => persons.id),
-    personBId: text('person_b_id')
-      .notNull()
-      .references(() => persons.id),
-    active: integer('active', { mode: 'boolean' }).notNull().default(true),
-    createdAt: text('created_at').notNull(),
-    endedAt: text('ended_at'),
-  },
-  (t) => [index('couples_group_idx').on(t.groupId)],
-);
-
 export const manualExclusions = sqliteTable(
   'manual_exclusions',
   {
@@ -210,7 +190,6 @@ export const loginAttempts = sqliteTable(
 
 export type GroupRow = typeof groups.$inferSelect;
 export type PersonRow = typeof persons.$inferSelect;
-export type CoupleRow = typeof couples.$inferSelect;
 export type ExclusionRow = typeof manualExclusions.$inferSelect;
 export type EditionRow = typeof editions.$inferSelect;
 export type ParticipationRow = typeof participations.$inferSelect;

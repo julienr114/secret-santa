@@ -9,7 +9,6 @@ export const AUDIT_TYPES = [
   'edition_created',
   'participant_added',
   'participant_removed',
-  'couple_changed',
   'rules_changed',
   'message_sent',
   'link_copied',
@@ -119,10 +118,6 @@ const DESCRIPTIONS: Record<AuditType, Describe> = {
     `L'édition ${text(m, 'label', '')} a été créée`.replace('  ', ' '),
   participant_added: (name) => `${name} rejoint l'édition`,
   participant_removed: (name) => `${name} quitte l'édition`,
-  couple_changed: (name, m) =>
-    m.ended
-      ? `Le couple ${name} + ${text(m, 'partnerName')} n'est plus enregistré`
-      : `Le couple ${name} + ${text(m, 'partnerName')} a été enregistré`,
   rules_changed: () => 'Le gardien a modifié les règles du tirage',
   message_sent: (name, m) =>
     `Le gardien a envoyé ${MESSAGE_LABELS[text(m, 'messageType', '')] ?? 'un message'} à ${name}${

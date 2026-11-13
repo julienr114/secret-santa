@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  activeCoupleOf,
-  coupleInputSchema,
-  displayName,
-  personInputSchema,
-  publicPerson,
-} from './people';
+import { displayName, personInputSchema, publicPerson } from './people';
 
 describe('people schemas', () => {
   it('normalizes a person input', () => {
@@ -14,24 +8,6 @@ describe('people schemas', () => {
       lastName: null,
     });
     expect(personInputSchema.safeParse({ firstName: '' }).success).toBe(false);
-  });
-
-  it('refuses a couple of one person', () => {
-    expect(
-      coupleInputSchema.safeParse({ personAId: 'a', personBId: 'a' }).success,
-    ).toBe(false);
-  });
-});
-
-describe('activeCoupleOf', () => {
-  const couples = [
-    { id: 'c1', personAId: 'a', personBId: 'b', active: false },
-    { id: 'c2', personAId: 'b', personBId: 'c', active: true },
-  ];
-  it('finds only active couples, from either side', () => {
-    expect(activeCoupleOf(couples, 'c')?.id).toBe('c2');
-    expect(activeCoupleOf(couples, 'b')?.id).toBe('c2');
-    expect(activeCoupleOf(couples, 'a')).toBeNull();
   });
 });
 

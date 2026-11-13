@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// People, couples and manual exclusions of a group (README 6.6, section 10).
+// People and exclusions of a group (README 6.6, section 10).
 
 const nameSchema = z.string().trim().min(1).max(60);
 
@@ -18,13 +18,6 @@ export const personPatchSchema = z
   .partial()
   .refine((patch) => Object.keys(patch).length > 0, 'nothing to update');
 
-export const coupleInputSchema = z
-  .object({ personAId: z.string().min(1), personBId: z.string().min(1) })
-  .refine(
-    (c) => c.personAId !== c.personBId,
-    'a couple needs two different people',
-  );
-
 export const exclusionInputSchema = z
   .object({
     giverId: z.string().min(1),
@@ -32,21 +25,6 @@ export const exclusionInputSchema = z
     reciprocal: z.boolean().default(false),
   })
   .refine((e) => e.giverId !== e.receiverId, 'self exclusion is implicit');
-
-export type CoupleLike = {
-  personAId: string;
-  personBId: string;
-  active: boolean;
-};
-
-/** The active couple a person belongs to, if any. */
-export const activeCoupleOf = <C extends CoupleLike>(
-  couples: C[],
-  personId: string,
-): C | null =>
-  couples.find(
-    (c) => c.active && (c.personAId === personId || c.personBId === personId),
-  ) ?? null;
 
 export type Named = { id: string; firstName: string; lastName?: string | null };
 

@@ -108,9 +108,6 @@ describe('describeEvent', () => {
       "Léa rejoint l'édition",
     );
     expect(
-      describeEvent(ev('couple_changed', { partnerName: 'Tom' }), { names }),
-    ).toBe('Le couple Léa + Tom a été enregistré');
-    expect(
       describeEvent(
         ev('message_sent', { messageType: 'invitation', via: 'share' }),
         { names },

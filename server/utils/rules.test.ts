@@ -10,7 +10,6 @@ import { failureOf, valueOf } from '~~/tests/helpers';
 describe('rules', () => {
   it('has the defaults from README section 5', () => {
     expect(DEFAULT_RULES).toEqual({
-      excludeSpouse: true,
       excludePreviousYears: 1,
       budget: '',
       eventDate: '',
@@ -28,7 +27,6 @@ describe('rules', () => {
     expect(merged.ok).toBe(true);
     expect(valueOf(merged).budget).toBe('30 €');
     expect(valueOf(merged).excludePreviousYears).toBe(2);
-    expect(valueOf(merged).excludeSpouse).toBe(true);
   });
 
   it('ignores null and undefined overrides and unknown keys', () => {

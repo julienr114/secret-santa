@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   );
   const nameOf = (id: string) =>
     participants.find((p) => p.id === id)?.firstName ?? '?';
-  const feasibility = checkFeasibility(input, rules);
+  const feasibility = checkFeasibility(input);
   const problem = feasibility.ok
     ? null
     : {

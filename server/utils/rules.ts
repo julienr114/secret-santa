@@ -13,7 +13,6 @@ export const manualExclusionSchema = z.object({
 // Raw shape without defaults: for partial overrides, only the given keys
 // survive. `rulesSchema` adds the defaults for a complete rule set.
 const shape = {
-  excludeSpouse: z.boolean(),
   excludePreviousYears: z.number().int().min(0).max(10),
   budget: z.string().max(200),
   eventDate: z.string().max(100),
@@ -23,7 +22,6 @@ const shape = {
 };
 
 export const rulesSchema = z.object({
-  excludeSpouse: shape.excludeSpouse.default(true),
   excludePreviousYears: shape.excludePreviousYears.default(1),
   budget: shape.budget.default(''),
   eventDate: shape.eventDate.default(''),

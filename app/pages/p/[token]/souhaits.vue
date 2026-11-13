@@ -9,7 +9,7 @@ import { plural } from '~/utils/labels';
 
 // The participant's own wish list (README 6 bis.4), built like the other
 // lists of the app: one row per idea, and a bottom sheet to add or change
-// one. Every change is saved at once; the server replaces the whole list.
+// one, saved with "Valider". The server replaces the whole list each time.
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useWishesQuery(token);
@@ -40,6 +40,7 @@ const draft = reactive<{ index: number | null; label: string; url: string }>({
   url: '',
 });
 const isNew = computed(() => draft.index === null);
+const canValidate = computed(() => draft.label.trim().length > 0);
 const sheetTitle = computed(() =>
   isNew.value ? 'Nouvelle idée' : 'Modifier l’idée',
 );
@@ -50,31 +51,26 @@ const push = (next: WishItem[]) => {
   save.mutate(next, {
     onError: (error) => {
       wishes.value = previous;
-      if (draft.index !== null && draft.index >= previous.length) {
-        draft.index = null;
-      }
       toast.add({ title: errorMessage(error), color: 'error' });
     },
   });
 };
 
-// No save button: the idea is saved when a field loses focus and when the
-// sheet closes, if it has a text and something changed.
-const commit = () => {
+// "Valider" saves the idea, if it has a text and something changed;
+// closing the sheet any other way gives the change up.
+const onValidate = () => {
   const wish = { label: draft.label.trim(), url: draft.url.trim() || null };
+  const index = draft.index;
+  close();
   if (!wish.label) return;
-  if (draft.index === null) {
-    draft.index = wishes.value.length;
+  if (index === null) {
     push([...wishes.value, wish]);
     return;
   }
-  const current = wishes.value[draft.index];
+  const current = wishes.value[index];
   if (current?.label === wish.label && current.url === wish.url) return;
-  push(wishes.value.map((w, i) => (i === draft.index ? wish : w)));
+  push(wishes.value.map((w, i) => (i === index ? wish : w)));
 };
-watch(open, (isOpen) => {
-  if (!isOpen) commit();
-});
 
 const openSheet = (index: number | null) => {
   const wish = index === null ? null : wishes.value[index];
@@ -90,8 +86,6 @@ const close = () => {
 };
 const onRemove = () => {
   const index = draft.index;
-  // Emptied first, so that closing the sheet does not save it back.
-  Object.assign(draft, { index: null, label: '', url: '' });
   close();
   push(wishes.value.filter((_, i) => i !== index));
 };
@@ -163,13 +157,14 @@ const onRemove = () => {
     <UDrawer
       v-model:open="open"
       :title="sheetTitle"
-      description="Une idée courte, et un lien si tu en as un. C'est enregistré tout seul."
+      description="Une idée courte, et un lien si tu en as un."
     >
       <template #body>
         <form
+          id="wish-form"
           class="flex flex-col gap-5 py-2"
           novalidate
-          @submit.prevent="close"
+          @submit.prevent="onValidate"
         >
           <UFormField label="Idée">
             <UInput
@@ -178,7 +173,6 @@ const onRemove = () => {
               enterkeyhint="done"
               placeholder="Un livre, des chaussettes…"
               class="w-full"
-              @blur="commit"
             />
           </UFormField>
           <UFormField label="Lien (facultatif)">
@@ -189,15 +183,20 @@ const onRemove = () => {
               enterkeyhint="done"
               placeholder="https://…"
               class="w-full"
-              @blur="commit"
             />
           </UFormField>
-          <!-- Lets the keyboard's "done" key close the sheet. -->
-          <button type="submit" class="sr-only" tabindex="-1">Terminé</button>
         </form>
       </template>
-      <template v-if="!isNew" #footer>
+      <template #footer>
         <UButton
+          type="submit"
+          form="wish-form"
+          block
+          :disabled="!canValidate"
+          label="Valider"
+        />
+        <UButton
+          v-if="!isNew"
           block
           variant="ghost"
           color="error"

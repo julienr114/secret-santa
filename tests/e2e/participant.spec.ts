@@ -135,31 +135,34 @@ test('before the draw: waiting screen and wish list', async ({ page }) => {
 
   await page.getByRole('link', { name: /Ma liste de souhaits/ }).click();
   await expect(heading(page)).toHaveText('Ma liste de souhaits');
-  // Ideas are added from a bottom sheet and saved without a button: when
-  // a field loses focus, or when the sheet closes.
+  // Ideas are added from a bottom sheet and saved with "Valider"; closing
+  // the sheet any other way gives the idea up.
   const idea = page.getByLabel('Idée', { exact: true });
   const link = page.getByLabel('Lien (facultatif)');
+  const validate = page.getByRole('button', { name: 'Valider' });
+  await page.getByText('Ajouter une idée').click();
+  await idea.fill('Abandonnée');
+  await page.keyboard.press('Escape');
+  await expect(validate).toHaveCount(0);
+  await expect(page.getByText('Abandonnée')).toHaveCount(0);
   await page.getByText('Ajouter une idée').click();
   await idea.fill('Un livre de cuisine');
   await link.fill('https://example.com/livre');
-  await link.press('Enter');
+  await validate.click();
   await expect(page.getByText('https://example.com/livre')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Enregistrer' })).toHaveCount(
-    0,
-  );
   await page.getByText('Ajouter une idée').click();
   await idea.fill('Des chaussette');
-  await idea.press('Enter');
+  await validate.click();
   await expect(page.getByText('2 idées')).toBeVisible();
 
   // Tapping an idea opens it again, to change or delete it.
   await page.getByText('Des chaussette').click();
   await idea.fill('Des chaussettes');
-  await idea.press('Enter');
+  await validate.click();
   await expect(page.getByText('Des chaussettes')).toBeVisible();
   await page.getByText('Ajouter une idée').click();
   await idea.fill('À supprimer');
-  await idea.press('Enter');
+  await validate.click();
   await page.getByText('À supprimer').click();
   await page.getByRole('button', { name: 'Supprimer l’idée' }).click();
   await expect(page.getByText('À supprimer')).toHaveCount(0);

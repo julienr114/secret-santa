@@ -3,6 +3,7 @@ import {
   AUDIT_TYPES,
   auditEvent,
   describeEvent,
+  journalEntries,
   sanitizeMeta,
   type Meta,
 } from './audit';
@@ -155,5 +156,58 @@ describe('describeEvent', () => {
       );
     });
     expect(describeEvent({ type: 'mystery' })).toBe('Événement inconnu');
+  });
+});
+
+describe('journalEntries', () => {
+  const people = [
+    { id: 'p1', firstName: 'Léa', lastName: 'Rabin' },
+    { id: 'p2', firstName: 'Léa', lastName: 'Martin' },
+    { id: 'p3', firstName: 'Tom', lastName: 'Rabin' },
+  ];
+  const row = (id: string, personId: string, createdAt: string) => ({
+    id,
+    type: 'result_viewed',
+    editionId: 'e1',
+    personId,
+    actor: 'participant',
+    meta: { count: 1, receiverId: 'p3' },
+    createdAt,
+  });
+
+  it('lists the newest first, with one sentence each', () => {
+    const entries = journalEntries(
+      [
+        row('a', 'p3', '2026-12-01T10:00:00.000Z'),
+        row('b', 'p3', '2026-12-02T10:00:00.000Z'),
+      ],
+      people,
+    );
+    expect(entries.map((e) => e.id)).toEqual(['b', 'a']);
+    expect(entries[0]).toEqual({
+      id: 'b',
+      type: 'result_viewed',
+      editionId: 'e1',
+      actor: 'participant',
+      createdAt: '2026-12-02T10:00:00.000Z',
+      text: 'Tom a consulté son résultat (1ʳᵉ fois)',
+    });
+  });
+
+  it('adds the last name only for homonyms', () => {
+    const [entry] = journalEntries(
+      [row('a', 'p2', '2026-12-01T10:00:00.000Z')],
+      people,
+    );
+    expect(entry?.text).toBe('Léa Martin a consulté son résultat (1ʳᵉ fois)');
+  });
+
+  it('never passes meta on', () => {
+    const entries = journalEntries(
+      [row('a', 'p1', '2026-12-01T10:00:00.000Z')],
+      people,
+    );
+    expect(JSON.stringify(entries)).not.toContain('receiverId');
+    expect(entries[0]).not.toHaveProperty('meta');
   });
 });

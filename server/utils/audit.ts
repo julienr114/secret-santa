@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
+import { displayName } from './people';
 
 // Public journal (README section 9). Events are built here, stored by the
 // routes, and described in French for display. Absolute rule: an event
@@ -158,4 +159,50 @@ export const describeEvent = (
   if (!describe) return 'Événement inconnu';
   const name = (event.personId && names[event.personId]) || "Quelqu'un";
   return describe(name, event.meta ?? {});
+};
+
+// --- Journal as displayed -------------------------------------------------
+
+export type JournalPerson = {
+  id: string;
+  firstName: string;
+  lastName?: string | null;
+};
+export type JournalRow = DescribableEvent & {
+  id: string;
+  editionId?: string | null;
+  actor: string;
+  createdAt: string;
+};
+export type JournalEntry = {
+  id: string;
+  type: string;
+  editionId: string | null;
+  actor: string;
+  createdAt: string;
+  text: string;
+};
+
+/**
+ * Journal rows as shown to the group: one French sentence each, newest
+ * first. People appear by first name, with the last name only to tell
+ * homonyms apart (README 20). Meta is not passed on.
+ */
+export const journalEntries = (
+  rows: JournalRow[],
+  people: JournalPerson[],
+): JournalEntry[] => {
+  const names = Object.fromEntries(
+    people.map((person) => [person.id, displayName(person, people)]),
+  );
+  return rows
+    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((row) => ({
+      id: row.id,
+      type: row.type,
+      editionId: row.editionId ?? null,
+      actor: row.actor,
+      createdAt: row.createdAt,
+      text: describeEvent(row, { names }),
+    }));
 };

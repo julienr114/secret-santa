@@ -16,6 +16,7 @@ export default {
     submit: 'Ausgabe erstellen',
   },
   cockpit: {
+    closeLater: 'Du kannst nach dem Fest abschließen ({date}).',
     messageLanguage: 'Sprache der Nachrichten: {language}',
     budget: 'Budget {budget}',
     eventDate: 'am {date}',
@@ -57,22 +58,23 @@ export default {
     shareHelp:
       'Die Schaltfläche öffnet das Teilen-Menü des Handys (WhatsApp, SMS…) mit der Nachricht und dem persönlichen Link.',
     email: {
+      bulkTitle: 'An mehrere senden',
+      bulkHint: 'Per E-Mail, alle auf einmal',
       noAddress:
         'Versand per E-Mail: Kein Teilnehmer hat eine Adresse. Trage sie unter Personen ein.',
-      confirm: 'Versand an {count} bestätigen',
-      send: {
-        one: 'Per E-Mail an {count} Person senden',
-        other: 'Per E-Mail an {count} Personen senden',
+      select: 'Per E-Mail an mehrere Personen senden',
+      selected: { one: '{count} ausgewählt', other: '{count} ausgewählt' },
+      selectAll: 'Alle auswählen',
+      selectNone: 'Alle abwählen',
+      selectPerson: '{name} auswählen',
+      chooseMessage: 'Nachricht wählen',
+      sheetTitle: {
+        one: 'E-Mail an {count} Person senden',
+        other: 'E-Mail an {count} Personen senden',
       },
-      resend: {
-        one: 'Erneut per E-Mail an {count} Person senden',
-        other: 'Erneut per E-Mail an {count} Personen senden',
-      },
-      recipients: '„{message}“ geht an die Personen mit Adresse.',
-      recipientsPartial: {
-        one: '„{message}“ geht an die Personen mit Adresse; {count} hat keine und muss per Telefon erreicht werden.',
-        other:
-          '„{message}“ geht an die Personen mit Adresse; {count} haben keine und müssen per Telefon erreicht werden.',
+      sendCount: {
+        one: '{count} E-Mail senden',
+        other: '{count} E-Mails senden',
       },
       spamTip:
         'E-Mails landen oft im Spam: Hake per Telefon bei denen nach, die ihren Link nicht öffnen.',
@@ -97,12 +99,14 @@ export default {
       one: 'Die Auslosung · {count} Teilnehmer',
       other: 'Die Auslosung · {count} Teilnehmer',
     },
+    exclusionsAppliedTitle: 'Bei der Auslosung angewandte Ausschlüsse',
     exclusionsTitle: 'Ausschlüsse',
     pendingExclusions: {
       one: '+ {count} Ausschluss aus einer noch nicht abgeschlossenen Auslosung, bleibt geheim.',
       other:
         '+ {count} Ausschlüsse aus einer noch nicht abgeschlossenen Auslosung, bleiben geheim.',
     },
+    previousDrawReason: 'Frühere Auslosung: {edition}',
     previousDraws: 'Frühere Auslosungen',
     previousDrawsFooter:
       'Niemand bekommt wieder dieselbe Person. Das × hebt einen Ausschluss nur für diese Ausgabe auf.',
@@ -209,6 +213,16 @@ export default {
       'Die Ausgabe ist abgeschlossen: Ihre Ergebnisse sind nicht mehr geheim.',
   },
   share: {
+    preview: 'Vorschau der Nachricht',
+    previewFor: 'Vorschau für {name}',
+    previewEmailNote:
+      'Jede Person erhält sie mit eigenem Vornamen, Link und in ihrer Sprache. Die E-Mail ergänzt Betreff und Signatur.',
+    language: 'Sprache der Nachricht',
+    languageHint: 'Auch die persönliche Seite wechselt in diese Sprache.',
+    emailMessage: 'Per E-Mail senden',
+    noEmail: 'Keine E-Mail-Adresse im Profil',
+    emailSent: 'E-Mail an {name} gesendet',
+    sheetTitle: 'An {name} senden',
     copied: 'Nachricht kopiert',
     copiedDescription: 'Füge sie in die App deiner Wahl ein.',
   },

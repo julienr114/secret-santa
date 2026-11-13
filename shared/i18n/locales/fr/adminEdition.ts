@@ -15,6 +15,7 @@ export default {
     submit: "Créer l'édition",
   },
   cockpit: {
+    closeLater: 'Tu pourras clôturer après la fête ({date}).',
     messageLanguage: 'Langue des messages : {language}',
     budget: 'Budget {budget}',
     eventDate: 'le {date}',
@@ -56,22 +57,23 @@ export default {
     shareHelp:
       'Le bouton ouvre le partage du téléphone (WhatsApp, SMS…) avec le message et le lien personnel.',
     email: {
+      bulkTitle: 'Envoyer à plusieurs',
+      bulkHint: 'Par email, en une seule fois',
       noAddress:
         "Envoi par email : aucun participant n'a d'adresse. Ajoute-les dans Personnes.",
-      confirm: "Confirmer l'envoi à {count}",
-      send: {
-        one: 'Envoyer par email à {count} personne',
-        other: 'Envoyer par email à {count} personnes',
+      select: 'Envoyer par email à plusieurs personnes',
+      selected: { one: '{count} sélectionné', other: '{count} sélectionnés' },
+      selectAll: 'Tout sélectionner',
+      selectNone: 'Tout désélectionner',
+      selectPerson: 'Sélectionner {name}',
+      chooseMessage: 'Choisir le message',
+      sheetTitle: {
+        one: 'Envoyer un email à {count} personne',
+        other: 'Envoyer un email à {count} personnes',
       },
-      resend: {
-        one: 'Renvoyer par email à {count} personne',
-        other: 'Renvoyer par email à {count} personnes',
-      },
-      recipients: '« {message} » part aux personnes qui ont une adresse.',
-      recipientsPartial: {
-        one: '« {message} » part aux personnes qui ont une adresse ; {count} sans adresse, à joindre par téléphone.',
-        other:
-          '« {message} » part aux personnes qui ont une adresse ; {count} sans adresse, à joindre par téléphone.',
+      sendCount: {
+        one: 'Envoyer {count} email',
+        other: 'Envoyer {count} emails',
       },
       spamTip:
         "Les emails arrivent souvent en spam : relance par téléphone ceux qui n'ouvrent pas leur lien.",
@@ -96,12 +98,14 @@ export default {
       one: 'Le tirage · {count} participant',
       other: 'Le tirage · {count} participants',
     },
+    exclusionsAppliedTitle: 'Exclusions appliquées au tirage',
     exclusionsTitle: 'Exclusions',
     pendingExclusions: {
       one: "+ {count} exclusion d'un tirage pas encore clôturé, gardées secrètes.",
       other:
         "+ {count} exclusions d'un tirage pas encore clôturé, gardées secrètes.",
     },
+    previousDrawReason: 'Tirage précédent : {edition}',
     previousDraws: 'Tirages précédents',
     previousDrawsFooter:
       'Personne ne retombera sur la même personne. Le × lève une exclusion pour cette édition seulement.',
@@ -206,6 +210,16 @@ export default {
     footer: "L'édition est clôturée : ses résultats ne sont plus secrets.",
   },
   share: {
+    preview: 'Aperçu du message',
+    previewFor: 'Aperçu, pour {name}',
+    previewEmailNote:
+      'Chacun le reçoit avec son prénom, son lien et dans sa langue. L’email ajoute un objet et une signature.',
+    language: 'Langue du message',
+    languageHint: 'Sa page passera aussi dans cette langue.',
+    emailMessage: 'Envoyer par email',
+    noEmail: "Pas d'adresse email sur sa fiche",
+    emailSent: 'Email envoyé à {name}',
+    sheetTitle: 'Envoyer à {name}',
     copied: 'Message copié',
     copiedDescription: "Colle-le dans l'application de ton choix.",
   },

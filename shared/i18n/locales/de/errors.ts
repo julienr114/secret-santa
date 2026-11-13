@@ -34,7 +34,9 @@ export default {
     'Der Versand per E-Mail ist auf dem Server nicht eingerichtet. Teile die Links von deinem Handy aus.',
   email_failed:
     'Die E-Mails wurden nicht gesendet. Versuche es erneut oder teile die Links von deinem Handy aus.',
+  email_missing: 'Diese Person hat keine E-Mail-Adresse.',
   participation_not_found: 'Teilnehmer nicht gefunden.',
+  wrong_confirmation: 'Gib die Gruppenkennung genau ein.',
   wrong_sentence: 'Schreibe den verlangten Satz genau ab.',
   results_secret:
     'Die Ergebnisse bleiben geheim, bis die Ausgabe abgeschlossen ist.',

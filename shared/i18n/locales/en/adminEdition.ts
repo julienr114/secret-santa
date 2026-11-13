@@ -16,6 +16,7 @@ export default {
     submit: 'Create the edition',
   },
   cockpit: {
+    closeLater: 'You will be able to close after the party ({date}).',
     messageLanguage: 'Message language: {language}',
     budget: 'Budget {budget}',
     eventDate: 'on {date}',
@@ -56,23 +57,21 @@ export default {
     shareHelp:
       'The button opens your phone’s share sheet (WhatsApp, SMS…) with the message and the personal link.',
     email: {
+      bulkTitle: 'Send to several',
+      bulkHint: 'By email, all at once',
       noAddress:
         'Sending by email: no participant has an address. Add them in People.',
-      confirm: 'Confirm sending to {count}',
-      send: {
-        one: 'Send by email to {count} person',
-        other: 'Send by email to {count} people',
+      select: 'Send by email to several people',
+      selected: { one: '{count} selected', other: '{count} selected' },
+      selectAll: 'Select all',
+      selectNone: 'Deselect all',
+      selectPerson: 'Select {name}',
+      chooseMessage: 'Choose the message',
+      sheetTitle: {
+        one: 'Send an email to {count} person',
+        other: 'Send an email to {count} people',
       },
-      resend: {
-        one: 'Resend by email to {count} person',
-        other: 'Resend by email to {count} people',
-      },
-      recipients: '“{message}” goes to the people who have an address.',
-      recipientsPartial: {
-        one: '“{message}” goes to the people who have an address; {count} has none and must be reached by phone.',
-        other:
-          '“{message}” goes to the people who have an address; {count} have none and must be reached by phone.',
-      },
+      sendCount: { one: 'Send {count} email', other: 'Send {count} emails' },
       spamTip:
         'Emails often land in spam: follow up by phone with those who do not open their link.',
       sent: {
@@ -96,12 +95,14 @@ export default {
       one: 'The draw · {count} participant',
       other: 'The draw · {count} participants',
     },
+    exclusionsAppliedTitle: 'Exclusions applied at the draw',
     exclusionsTitle: 'Exclusions',
     pendingExclusions: {
       one: '+ {count} exclusion from a draw that is not closed yet, kept secret.',
       other:
         '+ {count} exclusions from a draw that is not closed yet, kept secret.',
     },
+    previousDrawReason: 'Previous draw: {edition}',
     previousDraws: 'Previous draws',
     previousDrawsFooter:
       'Nobody will get the same person again. The × lifts an exclusion for this edition only.',
@@ -203,6 +204,16 @@ export default {
     footer: 'The edition is closed: its results are no longer secret.',
   },
   share: {
+    preview: 'Message preview',
+    previewFor: 'Preview, for {name}',
+    previewEmailNote:
+      'Everyone gets it with their own first name, link and language. The email adds a subject and a signature.',
+    language: 'Message language',
+    languageHint: 'Their page will switch to this language too.',
+    emailMessage: 'Send by email',
+    noEmail: 'No email address on their profile',
+    emailSent: 'Email sent to {name}',
+    sheetTitle: 'Send to {name}',
     copied: 'Message copied',
     copiedDescription: 'Paste it into the app of your choice.',
   },

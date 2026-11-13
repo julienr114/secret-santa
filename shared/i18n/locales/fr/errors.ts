@@ -31,7 +31,9 @@ export default {
     "L'envoi par email n'est pas configuré sur le serveur. Partage les liens depuis ton téléphone.",
   email_failed:
     'Les emails ne sont pas partis. Réessaie, ou partage les liens depuis ton téléphone.',
+  email_missing: "Cette personne n'a pas d'adresse email.",
   participation_not_found: 'Participant introuvable.',
+  wrong_confirmation: 'Recopie exactement l’identifiant du groupe.',
   wrong_sentence: 'Recopie exactement la phrase demandée.',
   results_secret:
     "Les résultats restent secrets tant que l'édition n'est pas clôturée.",

@@ -31,7 +31,9 @@ export default {
     'Sending by email is not set up on the server. Share the links from your phone.',
   email_failed:
     'The emails were not sent. Try again, or share the links from your phone.',
+  email_missing: 'This person has no email address.',
   participation_not_found: 'Participant not found.',
+  wrong_confirmation: 'Type the group identifier exactly.',
   wrong_sentence: 'Copy the requested sentence exactly.',
   results_secret: 'Results stay secret until the edition is closed.',
   link_invalid:

@@ -12,10 +12,8 @@ const COLORS: Record<
   drawn: 'success',
   closed: 'neutral',
   sent: 'info',
-  pin_set: 'success',
   wishes: 'primary',
   viewed: 'secondary',
-  locked: 'error',
 };
 const label = computed(
   () => STATUS_LABELS[props.code] ?? BADGE_LABELS[props.code] ?? props.code,

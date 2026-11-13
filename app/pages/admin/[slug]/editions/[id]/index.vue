@@ -8,14 +8,16 @@ import {
   useCheckQuery,
   useCloseMutation,
   useDrawMutation,
+  useMessagesQuery,
   useOpenMutation,
 } from '~/composables/queries/useEdition';
-import { useSendMessage } from '~/composables/useSendMessage';
+import { useShareMessage } from '~/composables/useShareMessage';
 import { errorMessage } from '~/utils/errors';
 import { MESSAGE_LABELS, defaultMessageType, plural } from '~/utils/labels';
 
 // Edition cockpit (README section 11): the action of the moment, the
-// participants with their badges, and a WhatsApp button on every row.
+// participants with their badges ("consulté" above all), and a share
+// button on every row.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -30,7 +32,6 @@ const check = useCheckQuery(slug, id);
 const open = useOpenMutation(slug, id);
 const drawMutation = useDrawMutation(slug, id);
 const close = useCloseMutation(slug, id);
-const sender = useSendMessage(slug);
 
 const status = computed(() => edition.data.value?.edition.status ?? 'draft');
 const label = computed(() => edition.data.value?.edition.label ?? 'Édition');
@@ -56,13 +57,19 @@ const messageType = ref<MessageType>(defaultMessageType(status.value));
 watch(status, (s) => {
   messageType.value = defaultMessageType(s);
 });
-const messageItems = Object.entries(MESSAGE_LABELS).map(
-  ([value, labelText]) => ({ value, label: labelText }),
-);
+const messageItems = Object.entries(MESSAGE_LABELS).map(([value, text]) => ({
+  value,
+  label: text,
+}));
+const messages = useMessagesQuery(slug, id, messageType);
+const sharer = useShareMessage(slug);
 
 const participants = computed(() => edition.data.value?.participants ?? []);
+const viewedCount = computed(
+  () => participants.value.filter((p) => p.viewCount > 0).length,
+);
 const sentCount = computed(
-  () => participants.value.filter((p) => p.badges.includes('sent')).length,
+  () => participants.value.filter((p) => p.messageSentAt).length,
 );
 const subtitle = computed(() => {
   const rules = edition.data.value?.rules;
@@ -82,7 +89,7 @@ const runDraw = () =>
       confirmDraw.value = false;
       toast.add({
         title: 'Tirage effectué',
-        description: 'Envoie maintenant le message « Tirage fait » à chacun.',
+        description: 'Partage maintenant le message « Tirage fait » à chacun.',
         icon: 'i-lucide-sparkles',
         color: 'success',
       });
@@ -111,7 +118,7 @@ const sectionTitle =
       <section v-if="status === 'draft'" class="flex flex-col gap-3">
         <p class="text-muted">
           Vérifie la liste des participants, puis ouvre les invitations pour
-          pouvoir envoyer les liens.
+          pouvoir partager les liens.
         </p>
         <UButton
           block
@@ -133,14 +140,6 @@ const sectionTitle =
             icon="i-lucide-circle-check"
             title="Le tirage est possible"
             :description="`${plural(check.data.value.participantCount, 'participant')}, toutes les règles sont respectées.`"
-          />
-          <UAlert
-            v-if="check.data.value.missingPins.length"
-            color="warning"
-            variant="subtle"
-            icon="i-lucide-lock-keyhole"
-            title="Codes pas encore choisis"
-            :description="check.data.value.missingPins.join(', ')"
           />
           <UAlert
             v-if="check.data.value.problem"
@@ -201,7 +200,7 @@ const sectionTitle =
           variant="subtle"
           icon="i-lucide-gift"
           title="Tirage effectué"
-          description="Personne, gardien compris, ne voit les résultats ici. Chacun découvre le sien avec son code."
+          :description="`${viewedCount}/${participants.length} ont consulté leur résultat. Personne, gardien compris, ne voit les résultats ici.`"
         />
         <UButton
           v-if="!confirmClose"
@@ -244,15 +243,15 @@ const sectionTitle =
         description="Édition clôturée, en lecture seule."
       />
 
-      <!-- Message to send -->
+      <!-- Message to share -->
       <section v-if="canSend" class="flex flex-col gap-2">
-        <h2 :class="sectionTitle">Message à envoyer</h2>
+        <h2 :class="sectionTitle">Message à partager</h2>
         <USelect v-model="messageType" :items="messageItems" class="w-full" />
         <p class="px-1 text-xs text-muted">
-          {{ sentCount }}/{{ participants.length }} envoyé{{
+          {{ sentCount }}/{{ participants.length }} partagé{{
             sentCount > 1 ? 's' : ''
-          }}. Le bouton WhatsApp ouvre la conversation avec le message prêt ; il
-          ne reste qu'à appuyer sur Envoyer.
+          }}. Le bouton ouvre le partage du téléphone (WhatsApp, SMS…) avec le
+          message et le lien personnel.
         </p>
       </section>
 
@@ -280,14 +279,15 @@ const sectionTitle =
               v-if="canSend"
               color="secondary"
               variant="soft"
-              icon="i-simple-icons-whatsapp"
-              :aria-label="`Envoyer sur WhatsApp à ${p.firstName}`"
-              :loading="
-                sender.pending.value &&
-                sender.variables.value?.participationId === p.participationId
-              "
+              icon="i-lucide-share-2"
+              :aria-label="`Partager le lien de ${p.firstName}`"
+              :disabled="!messages.data.value?.messages[p.participationId]"
               @click.prevent.stop="
-                sender.run(p.participationId, messageType, 'whatsapp')
+                sharer.share(
+                  p.participationId,
+                  messageType,
+                  messages.data.value?.messages[p.participationId]?.text,
+                )
               "
             />
           </template>

@@ -1,18 +1,15 @@
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { participations } from '#server/database/schema';
-import { personalLink } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
 import { requireParticipation } from '#server/http/participation';
-import { dataKeyOf, nowIso } from '#server/http/context';
-import { unwrap } from '#server/http/errors';
+import { nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import { canSendLinks } from '#server/utils/editions';
-import { MESSAGE_TYPES, buildMessage } from '#server/utils/messages';
-import { mergeRules } from '#server/utils/rules';
+import { MESSAGE_TYPES } from '#server/utils/messages';
 
-// The guardian shares a message (README 13): we build the text with the
-// personal link, mark the participant as "sent" and journal it.
+// Called right after the guardian shared or copied a message: marks the
+// participant as "sent" and journals it (README 13).
 const bodySchema = z.object({
   type: z.enum(MESSAGE_TYPES),
   via: z.enum(['share', 'copy']),
@@ -25,18 +22,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'links_not_open' });
   }
   const { type, via } = await validatedBody(event, bodySchema);
-  const rules = unwrap(mergeRules(group.rules, edition.rulesOverride));
-  const link = await personalLink(event, participation, await dataKeyOf(event));
-  const text = unwrap(
-    buildMessage(type, {
-      firstName: person.firstName,
-      groupName: group.name,
-      editionLabel: edition.label,
-      link,
-      budget: rules.budget,
-      eventDate: rules.eventDate,
-    }),
-  );
   await db
     .update(participations)
     .set({ messageSentAt: nowIso() })
@@ -49,5 +34,5 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     meta: { messageType: type, via },
   });
-  return { text, link };
+  return { ok: true };
 });

@@ -58,7 +58,6 @@ export const useEditionQuery = (slug: Slug, id: Slug) =>
 export type PersonBody = {
   firstName: string;
   lastName: string | null;
-  phone: string | null;
 };
 export type PersonPatch = Partial<PersonBody & { active: boolean }> & {
   id: string;

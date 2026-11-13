@@ -15,7 +15,7 @@ const onLogout = () =>
 <template>
   <div>
     <header
-      class="sticky top-0 z-20 border-b border-default bg-[var(--color-kraft-200)]/90 pt-[env(safe-area-inset-top)] backdrop-blur"
+      class="sticky top-0 z-20 border-b border-default bg-[var(--color-kraft-50)]/90 pt-[env(safe-area-inset-top)] backdrop-blur"
     >
       <UContainer class="flex h-14 max-w-3xl items-center gap-1">
         <UButton

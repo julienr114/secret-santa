@@ -37,14 +37,10 @@ const partnerOf = (id: string) => {
   const c = couples.value.find((x) => x.personAId === id || x.personBId === id);
   return c ? label(c.personAId === id ? c.personBId : c.personAId) : null;
 };
-const subtitle = (id: string, phone: string | null, active: boolean) =>
-  [
-    !active && 'désactivé·e',
-    partnerOf(id) && `en couple avec ${partnerOf(id)}`,
-    phone ?? 'pas de WhatsApp',
-  ]
+const subtitle = (id: string, active: boolean) =>
+  [!active && 'désactivé·e', partnerOf(id) && `en couple avec ${partnerOf(id)}`]
     .filter(Boolean)
-    .join(' · ');
+    .join(' · ') || undefined;
 const sorted = computed(() =>
   persons.value.toSorted((a, b) => Number(b.active) - Number(a.active)),
 );
@@ -76,17 +72,9 @@ const sorted = computed(() =>
           :key="person.id"
           :to="`/admin/${slug}/personnes/${person.id}`"
           :title="label(person.id)"
-          :subtitle="subtitle(person.id, person.phone, person.active)"
+          :subtitle="subtitle(person.id, person.active)"
           :class="{ 'opacity-60': !person.active }"
         >
-          <template #trailing>
-            <UIcon
-              v-if="person.hasPin"
-              name="i-lucide-lock-keyhole"
-              class="size-4 text-muted"
-              aria-label="code choisi"
-            />
-          </template>
         </MobileListItem>
       </MobileList>
       <MobileList>

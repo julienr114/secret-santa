@@ -45,14 +45,8 @@ test('guardian adds people, a couple, and runs an edition to the end', async ({
   await page.getByRole('button', { name: 'Lier' }).click();
   await expect(page.getByText('En couple avec Tom')).toBeVisible();
 
-  // Codes are chosen on the participant page (step 5): not required here.
-  await page.goto(`/admin/${GROUP.slug}/reglages`);
-  await hydrated(page);
-  await page.getByRole('switch', { name: /Tirage possible seulement/ }).click();
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(page.getByText('Règles enregistrées').first()).toBeVisible();
-
   // Edition
+  await page.getByRole('link', { name: 'Retour' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
   await page.getByText('Nouvelle édition').click();
   await page.getByRole('button', { name: "Créer l'édition" }).click();
@@ -61,6 +55,17 @@ test('guardian adds people, a couple, and runs an edition to the end', async ({
 
   await page.getByRole('button', { name: 'Ouvrir les invitations' }).click();
   await expect(page.getByText('Le tirage est possible')).toBeVisible();
+
+  // Share Hugo's invitation by copying it: he gets the "envoyé" badge.
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.getByText('Hugo', { exact: true }).click();
+  await page.getByText('Copier le message').click();
+  await expect(page.getByText('Message copié').first()).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toMatch(/^Salut Hugo !/);
+  expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}$/);
+  await expect(page.getByText('envoyé', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Retour' }).click();
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();

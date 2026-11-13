@@ -18,7 +18,6 @@ const MESSAGES: Record<string, string> = {
   invalid_rules: 'Règles invalides.',
   invalid_transition:
     "Cette action n'est pas possible à ce stade de l'édition.",
-  missing_pins: "Tout le monde n'a pas encore choisi son code.",
   no_solution:
     'Aucun tirage possible avec ces règles : assouplis une exclusion.',
   too_few_participants: 'Il faut au moins deux participants.',

@@ -8,20 +8,37 @@ import { api, useApiMutation, useApiQuery } from './useApi';
 type Ref = MaybeRefOrGetter<string>;
 export type DrawCheck = {
   participantCount: number;
-  missingPins: string[];
   problem: { reason: string; blocked: string[]; constrained: string[] } | null;
   ready: boolean;
 };
-export type Via = 'whatsapp' | 'copy' | 'share';
-export type SentMessage = { text: string; link: string; whatsappUrl: string };
+export type Via = 'share' | 'copy';
+export type ShareableMessage = { text: string; link: string };
 
 const base = (slug: Ref) => `/api/admin/${toValue(slug)}`;
 const groupKeys = (slug: Ref) => [keys.group(toValue(slug))];
+const participation = (slug: Ref, pid: string): string =>
+  `${base(slug)}/participations/${pid}`;
 
 export const useCheckQuery = (slug: Ref, id: Ref) =>
   useApiQuery<DrawCheck>(
     () => keys.check(toValue(slug), toValue(id)),
     () => `${base(slug)}/editions/${toValue(id)}/check`,
+  );
+
+/** Texts ready to share, per participation, for the chosen message type. */
+export const useMessagesQuery = (
+  slug: Ref,
+  id: Ref,
+  type: MaybeRefOrGetter<MessageType>,
+) =>
+  useApiQuery<{ messages: Record<string, ShareableMessage> }>(
+    () => [
+      ...keys.edition(toValue(slug), toValue(id)),
+      'messages',
+      toValue(type),
+    ],
+    () =>
+      `${base(slug)}/editions/${toValue(id)}/messages?type=${toValue(type)}`,
   );
 
 const editionAction = <TBody = void>(slug: Ref, id: Ref, action: string) =>
@@ -58,17 +75,16 @@ export const useRemoveParticipantMutation = (slug: Ref, id: Ref) =>
     (participationId) =>
       api(
         `${base(slug)}/editions/${toValue(id)}/participants/${participationId}`,
-        { method: 'DELETE' },
+        {
+          method: 'DELETE',
+        },
       ),
     () => groupKeys(slug),
   );
 
-const participation = (slug: Ref, pid: string) =>
-  `${base(slug)}/participations/${pid}`;
-
-export const useSendMessageMutation = (slug: Ref) =>
+export const useMarkSentMutation = (slug: Ref) =>
   useApiMutation<
-    SentMessage,
+    { ok: true },
     { participationId: string; type: MessageType; via: Via }
   >(
     ({ participationId, ...body }) =>
@@ -85,7 +101,8 @@ export const useUnsendMutation = (slug: Ref) =>
     () => groupKeys(slug),
   );
 
-export const useLinkMutation = (slug: Ref) =>
+/** Journals a copied link (the link itself comes from the messages query). */
+export const useLinkCopiedMutation = (slug: Ref) =>
   useApiMutation<{ link: string }, string>(
     (pid) => api(`${participation(slug, pid)}/link`),
     () => groupKeys(slug),
@@ -94,19 +111,5 @@ export const useLinkMutation = (slug: Ref) =>
 export const useRegenerateMutation = (slug: Ref) =>
   useApiMutation<{ link: string }, string>(
     (pid) => api(`${participation(slug, pid)}/regenerate`, { method: 'POST' }),
-    () => groupKeys(slug),
-  );
-
-export const useResetPinMutation = (slug: Ref) =>
-  useApiMutation<{ ok: true }, string>(
-    (personId) =>
-      api(`${base(slug)}/persons/${personId}/reset-pin`, { method: 'POST' }),
-    () => groupKeys(slug),
-  );
-
-export const useUnlockMutation = (slug: Ref) =>
-  useApiMutation<{ ok: true }, string>(
-    (personId) =>
-      api(`${base(slug)}/persons/${personId}/unlock`, { method: 'POST' }),
     () => groupKeys(slug),
   );

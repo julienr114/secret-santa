@@ -100,6 +100,7 @@ export type Participant = PublicPerson & {
   messageSentAt: string | null;
   linkCopiedAt: string | null;
   viewCount: number;
+  lastViewedAt: string | null;
   wishesCount: number;
   badges: Badge[];
 };
@@ -133,6 +134,7 @@ export const listParticipants = async (
       messageSentAt: participation.messageSentAt,
       linkCopiedAt: participation.linkCopiedAt,
       viewCount: participation.viewCount,
+      lastViewedAt: participation.lastViewedAt,
       wishesCount: wishCounts[participation.id] ?? 0,
     };
     return {

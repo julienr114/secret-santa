@@ -6,7 +6,6 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 export type PersonFormValue = {
   firstName: string;
   lastName: string | null;
-  phone: string | null;
 };
 
 const props = defineProps<{
@@ -19,19 +18,16 @@ const emit = defineEmits<{ submit: [value: PersonFormValue] }>();
 const schema = z.object({
   firstName: z.string().trim().min(1, 'Prénom requis').max(60),
   lastName: z.string().trim().max(60),
-  phone: z.string().trim().max(30),
 });
 type Schema = z.output<typeof schema>;
 const state = reactive<Schema>({
   firstName: props.initial?.firstName ?? '',
   lastName: props.initial?.lastName ?? '',
-  phone: props.initial?.phone ?? '',
 });
 const onSubmit = (event: FormSubmitEvent<Schema>) =>
   emit('submit', {
     firstName: event.data.firstName,
     lastName: event.data.lastName || null,
-    phone: event.data.phone || null,
   });
 </script>
 
@@ -51,20 +47,6 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
       help="Facultatif, sert seulement à départager deux prénoms identiques."
     >
       <UInput v-model="state.lastName" autocomplete="off" class="w-full" />
-    </UFormField>
-    <UFormField
-      name="phone"
-      label="Numéro WhatsApp"
-      help="Facultatif, format international : +33 6 12 34 56 78."
-    >
-      <UInput
-        v-model="state.phone"
-        type="tel"
-        inputmode="tel"
-        autocomplete="off"
-        placeholder="+33 6 12 34 56 78"
-        class="w-full"
-      />
     </UFormField>
     <slot />
     <UButton type="submit" block :loading="loading" :label="submitLabel" />

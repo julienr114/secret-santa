@@ -5,19 +5,18 @@ import {
   useEditionQuery,
 } from '~/composables/queries/useGroup';
 import {
-  useLinkMutation,
+  useLinkCopiedMutation,
+  useMessagesQuery,
   useRegenerateMutation,
   useRemoveParticipantMutation,
-  useResetPinMutation,
-  useUnlockMutation,
   useUnsendMutation,
 } from '~/composables/queries/useEdition';
-import { useSendMessage } from '~/composables/useSendMessage';
+import { useShareMessage } from '~/composables/useShareMessage';
 import { errorMessage } from '~/utils/errors';
-import { MESSAGE_LABELS, defaultMessageType } from '~/utils/labels';
+import { MESSAGE_LABELS, defaultMessageType, formatDate } from '~/utils/labels';
 
-// One participant of an edition: send, copy, share, and the "replay
-// without betraying the secret" actions of README 4.4.
+// One participant of an edition: share, copy, and the "replay without
+// betraying the secret" actions of README 4.4.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -26,18 +25,14 @@ const pid = computed(() => String(route.params.pid));
 const toast = useToast();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
-const done = (title: string) => () =>
-  toast.add({ title, color: 'success', icon: 'i-lucide-check' });
 
 const edition = useEditionQuery(slug, id);
 const dashboard = useDashboardQuery(slug);
-const sender = useSendMessage(slug);
 const unsend = useUnsendMutation(slug);
-const link = useLinkMutation(slug);
+const linkCopied = useLinkCopiedMutation(slug);
 const regenerate = useRegenerateMutation(slug);
-const resetPin = useResetPinMutation(slug);
-const unlock = useUnlockMutation(slug);
 const remove = useRemoveParticipantMutation(slug, id);
+const sharer = useShareMessage(slug);
 
 const status = computed(() => edition.data.value?.edition.status ?? 'draft');
 const p = computed(
@@ -52,15 +47,13 @@ const canSend = computed(
 const canEdit = computed(
   () => status.value === 'draft' || status.value === 'invitations',
 );
-const canShare = ref(false);
-onMounted(() => {
-  canShare.value = typeof navigator.share === 'function';
-});
-
 const messageType = ref<MessageType>(defaultMessageType(status.value));
-const messageItems = Object.entries(MESSAGE_LABELS).map(
-  ([value, labelText]) => ({ value, label: labelText }),
-);
+const messageItems = Object.entries(MESSAGE_LABELS).map(([value, text]) => ({
+  value,
+  label: text,
+}));
+const messages = useMessagesQuery(slug, id, messageType);
+const message = computed(() => messages.data.value?.messages[pid.value]);
 
 useHead({
   title: computed(
@@ -82,18 +75,28 @@ const screen = computed(() => ({
   ],
 }));
 
-const copyLink = () =>
-  link.mutate(pid.value, {
-    onSuccess: async ({ link: url }) => {
-      await navigator.clipboard.writeText(url);
-      toast.add({
-        title: 'Lien copié',
-        color: 'success',
-        icon: 'i-lucide-clipboard-check',
-      });
-    },
-    onError,
+const viewed = computed(() => {
+  const count = p.value?.viewCount ?? 0;
+  if (count === 0)
+    return status.value === 'drawn'
+      ? "N'a pas encore consulté son résultat"
+      : null;
+  const last = p.value?.lastViewedAt
+    ? ` · dernière fois ${formatDate(p.value.lastViewedAt)}`
+    : '';
+  return `A consulté son résultat ${count === 1 ? 'une fois' : `${count} fois`}${last}`;
+});
+
+const copyLink = async () => {
+  if (!message.value) return;
+  await navigator.clipboard.writeText(message.value.link);
+  toast.add({
+    title: 'Lien copié',
+    color: 'success',
+    icon: 'i-lucide-clipboard-check',
   });
+  linkCopied.mutate(pid.value);
+};
 const confirm = ref<null | 'regenerate' | 'remove'>(null);
 const onRegenerate = () =>
   regenerate.mutate(pid.value, {
@@ -101,7 +104,7 @@ const onRegenerate = () =>
       confirm.value = null;
       toast.add({
         title: "Nouveau lien créé, l'ancien ne marche plus",
-        description: 'Pense à le renvoyer.',
+        description: 'Pense à le repartager.',
         color: 'success',
       });
     },
@@ -139,12 +142,7 @@ const sectionTitle =
               >en attente</span
             >
           </div>
-          <p class="text-sm text-muted">
-            {{
-              p.phone ??
-              'Pas de numéro WhatsApp : WhatsApp te demandera le contact.'
-            }}
-          </p>
+          <p v-if="viewed" class="text-sm text-muted">{{ viewed }}</p>
         </div>
 
         <template v-if="canSend">
@@ -158,23 +156,19 @@ const sectionTitle =
           </section>
           <MobileList>
             <MobileListItem
-              icon="i-simple-icons-whatsapp"
-              title="Envoyer sur WhatsApp"
-              subtitle="Ouvre la conversation, message prêt"
-              @click="sender.run(p.participationId, messageType, 'whatsapp')"
+              icon="i-lucide-share-2"
+              title="Partager le message"
+              subtitle="WhatsApp, SMS… via le téléphone"
+              @click="
+                sharer.share(p.participationId, messageType, message?.text)
+              "
             />
             <MobileListItem
               icon="i-lucide-copy"
               title="Copier le message"
-              subtitle="Pour WhatsApp Web ou ailleurs"
-              @click="sender.run(p.participationId, messageType, 'copy')"
-            />
-            <MobileListItem
-              v-if="canShare"
-              icon="i-lucide-share-2"
-              title="Partager…"
-              subtitle="Feuille de partage du téléphone"
-              @click="sender.run(p.participationId, messageType, 'share')"
+              @click="
+                sharer.copy(p.participationId, messageType, message?.text)
+              "
             />
             <MobileListItem
               icon="i-lucide-link"
@@ -188,7 +182,8 @@ const sectionTitle =
               subtitle="Retire la pastille « envoyé »"
               @click="
                 unsend.mutate(p.participationId, {
-                  onSuccess: done('Pastille retirée'),
+                  onSuccess: () =>
+                    toast.add({ title: 'Pastille retirée', color: 'success' }),
                   onError,
                 })
               "
@@ -200,27 +195,6 @@ const sectionTitle =
           title="Dépannage"
           footer="Aucune de ces actions ne révèle le résultat. Toutes sont inscrites au journal du groupe."
         >
-          <MobileListItem
-            v-if="p.pinLocked"
-            icon="i-lucide-lock-open"
-            title="Débloquer"
-            subtitle="Trop de codes erronés"
-            @click="
-              unlock.mutate(p.id, { onSuccess: done('Débloqué'), onError })
-            "
-          />
-          <MobileListItem
-            v-if="p.hasPin"
-            icon="i-lucide-key-round"
-            title="Réinitialiser le code"
-            subtitle="Code oublié : il en choisira un nouveau"
-            @click="
-              resetPin.mutate(p.id, {
-                onSuccess: done('Code réinitialisé'),
-                onError,
-              })
-            "
-          />
           <template v-if="status !== 'closed'">
             <MobileListItem
               v-if="confirm !== 'regenerate'"

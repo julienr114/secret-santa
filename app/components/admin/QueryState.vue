@@ -23,9 +23,9 @@ withDefaults(
     aria-busy="true"
     aria-label="Chargement"
   >
-    <USkeleton class="h-9 w-2/3 rounded-md bg-[var(--color-kraft-300)]" />
+    <USkeleton class="h-9 w-2/3 rounded-md bg-[var(--color-kraft-200)]" />
     <div class="flex flex-col gap-1.5">
-      <USkeleton class="mx-1 h-3 w-24 rounded bg-[var(--color-kraft-300)]" />
+      <USkeleton class="mx-1 h-3 w-24 rounded bg-[var(--color-kraft-200)]" />
       <ul
         class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
       >

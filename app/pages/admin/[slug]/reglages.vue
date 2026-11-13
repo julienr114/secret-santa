@@ -80,10 +80,6 @@ const sectionTitle =
               class="w-36"
             />
           </UFormField>
-          <USwitch
-            v-model="state.registrationRequired"
-            :label="RULE_LABELS.registrationRequired"
-          />
         </section>
         <section class="flex flex-col gap-4">
           <h2 :class="sectionTitle">Affiché avec le résultat</h2>
@@ -113,15 +109,7 @@ const sectionTitle =
           </UFormField>
         </section>
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">Sécurité et souhaits</h2>
-          <UFormField name="maxPinAttempts" :label="RULE_LABELS.maxPinAttempts">
-            <UInputNumber
-              v-model="state.maxPinAttempts"
-              :min="1"
-              :max="20"
-              class="w-36"
-            />
-          </UFormField>
+          <h2 :class="sectionTitle">Listes de souhaits</h2>
           <USwitch v-model="state.wishlist" :label="RULE_LABELS.wishlist" />
           <UFormField name="maxWishes" :label="RULE_LABELS.maxWishes">
             <UInputNumber

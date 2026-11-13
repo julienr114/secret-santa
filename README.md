@@ -8,7 +8,7 @@
 >
 > Changements de la v3, issus de l'étape 0 : **plus aucun email**, le gardien envoie les liens par WhatsApp grâce aux liens officiels **« click to chat » (`wa.me`)** qui ouvrent la conversation avec le message prérempli (section 13) ; **Nuxt 4** au lieu de Nuxt 3 ; preset **Cloudflare Workers** ; conclusions des vérifications en section 7.2.
 >
-> Changements de la v5 (13 novembre 2026, à la demande de Julien) : **plus de code à 6 chiffres**, le lien personnel suffit (jeton de 256 bits, impossible à deviner) ; **plus rien de WhatsApp** (ni numéros, ni `wa.me`), le gardien partage les liens avec la **feuille de partage du téléphone** ; ce qui compte est de **savoir qui a consulté** son résultat (pastille, compteur, journal). Règles `inscription_obligatoire` et `tentatives_code_max` supprimées. Fond papier plus clair.
+> Changements de la v5 (13 novembre 2026, à la demande de Julien) : **plus de code à 6 chiffres**, le lien personnel suffit (jeton de 256 bits, impossible à deviner) ; **plus rien de WhatsApp** (ni numéros, ni `wa.me`), le gardien partage les liens avec la **feuille de partage du téléphone** ; ce qui compte est de **savoir qui a consulté** son résultat (pastille, compteur, journal). Règles `inscription_obligatoire`, `tentatives_code_max` et `exclure_conjoint` supprimées ; **plus de notion de couple** : un seul mécanisme générique, les **exclusions** (réciproques par défaut), qui couvre couples, fratries, parents (migration `0002`, couples convertis). Fond papier plus clair.
 >
 > Changements de la v4 (13 novembre 2026, à la demande de Julien) : **retour à TypeScript strict** partout (aucun fichier `.js` dans le dépôt), **Nuxt UI 4** comme bibliothèque de composants, thème « carte de Noël » (rouge brique, vert sapin, papier crème, titres en Fraunces), **imports par alias** (`#server/…`, `~/…`, `~~/…`) au lieu des chemins relatifs profonds. Là où la suite du document parle de JavaScript, de JSDoc, de `jsconfig.json` ou de fichiers `.js`, lire TypeScript et `.ts`.
 
@@ -19,7 +19,7 @@
 Une petite application web pour organiser le tirage au sort du Secret Santa de plusieurs familles.
 
 - Chaque participant découvre **en privé** la personne à qui il offre un cadeau.
-- Le tirage respecte des règles : pas soi-même, pas son conjoint, pas la même personne que l'année précédente.
+- Le tirage respecte des règles : pas soi-même, pas une personne exclue (conjoint, frère ou sœur…), pas la même personne que les années précédentes.
 - Un **gardien** (admin) pilote le tout sans jamais voir les résultats, et peut « rejouer » un envoi si quelqu'un n'a pas reçu ou a perdu son résultat, **sans trahir le secret**.
 - Les participants sont, selon Julien, « tous des gros tricheurs » : l'application doit être **verrouillée et la triche visible de tous**.
 - **Coût : 0 €.** Hébergement, base de données et envois compris.
@@ -35,7 +35,7 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 | Anti-triche | Lien personnel impossible à deviner + journal public des consultations (v5 : plus de code) |
 | Sans service d'envoi | Aucun email, aucune API d'envoi : le gardien partage chaque lien avec la feuille de partage de son téléphone (WhatsApp, SMS…) |
 | Multi-familles | Plusieurs groupes cloisonnés dans une seule application |
-| Pluriannuel | Participants et couples évoluent d'une année sur l'autre, l'historique est conservé |
+| Pluriannuel | Participants et exclusions évoluent d'une année sur l'autre, l'historique est conservé |
 | Langue | Interface entièrement en français |
 
 ---
@@ -50,7 +50,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 4. **Journal public par groupe** : toutes les actions sensibles y sont listées, sans jamais indiquer qui a tiré qui.
 5. **Pas de chiffrement de bout en bout.** Julien est le gardien du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
 6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre gardien** et **ses propres règles**.
-7. **Participants modifiables chaque année** : ajout, retrait, changement de couple.
+7. **Participants modifiables chaque année** : ajout, retrait, mise à jour des exclusions.
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
 9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, sans carte bancaire, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement par Workers Builds à chaque `git push` (vérifié à l'étape 0).
 10. **Stack Nuxt 4 / TypeScript strict** (v4 : retour à TypeScript, Nuxt UI pour l'interface ; historique : décision v2, remplace « TypeScript strict » ; v3 : Nuxt 4 au lieu de Nuxt 3, car c'est la version stable que ciblent aujourd'hui la documentation et les modules, et l'arborescence `app/` prévue ici est la sienne) : Vue 3 et Nuxt sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
@@ -97,7 +97,7 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 | Statut | Ce qui est possible |
 |---|---|
-| `brouillon` | Le gardien compose la liste des participants et les couples, règle les paramètres. |
+| `brouillon` | Le gardien compose la liste des participants et les exclusions, règle les paramètres. |
 | `invitations` | Le gardien partage les liens. Chacun ouvre le sien et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
 | `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
 | `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
@@ -105,8 +105,8 @@ brouillon ──► invitations ──► tirée ──► clôturée
 ### 4.2 Parcours du gardien
 
 1. Se connecte à l'admin de son groupe (mot de passe).
-2. Crée l'édition. L'application **reprend les participants et couples de l'édition précédente**.
-3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les couples.
+2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
+3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les exclusions.
 4. Passe en `invitations` : pour chaque participant, touche « Partager » ; la feuille de partage du téléphone s'ouvre avec le message et le lien, il choisit WhatsApp (ou autre) et le contact.
 5. Suit les statuts : *envoyé*, *souhaits renseignés* (nombre d'idées, jamais leur contenu), *consulté* (combien de fois, et quand).
 6. Lance le tirage quand la vérification est verte.
@@ -143,8 +143,7 @@ Réglables par le gardien, avec une valeur par défaut au niveau du groupe et un
 
 | Règle | Défaut | Description |
 |---|---|---|
-| `exclure_conjoint` | oui | Deux membres d'un couple ne peuvent pas se tirer |
-| `exclure_annees_precedentes` | 1 | Nombre d'éditions passées à exclure (0 = désactivé) |
+| `exclure_annees_precedentes` | 1 | « Éviter de retomber sur la même personne » : non, l'an dernier, les 2 ou les 3 dernières années (0 à 3) |
 | `exclusions_manuelles` | aucune | Paires interdites supplémentaires (ex. « A ne tire jamais B »), à sens unique ou réciproques |
 | `budget` | vide | Texte libre affiché sur la page de résultat (ex. « 20 € max ») |
 | `date_evenement` | vide | Date de la fête, affichée sur la page de résultat |
@@ -162,7 +161,6 @@ Pour chaque participant *donneur*, le *receveur* doit être :
 
 - un autre participant de la même édition ;
 - différent du donneur ;
-- différent de son conjoint actif (si `exclure_conjoint`) ;
 - différent des receveurs qu'il a eus lors des N dernières éditions clôturées ou tirées du groupe (si `exclure_annees_precedentes` ≥ 1), **uniquement si le donneur participait à ces éditions** ;
 - absent de ses exclusions manuelles.
 
@@ -383,7 +381,6 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 |---|---|
 | `edition_creee` | « L'édition Noël 2026 a été créée » |
 | `participant_ajoute` / `participant_retire` | « Léa a été ajoutée à l'édition » |
-| `couple_modifie` | « Le couple Léa + Tom a été enregistré » |
 | `regle_modifiee` | « Le gardien a modifié les règles du tirage » |
 | `message_envoye` | « Le gardien a envoyé l'invitation à Léa (partagé) » (type de message et canal `share` ou `copy` dans `meta`) |
 | `lien_copie` | « Le gardien a copié le lien de Léa » |
@@ -422,14 +419,6 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `active` | integer (booléen) | Désactivation plutôt que suppression |
 | `created_at` | text | |
 
-### `couples`
-| Colonne | Type | Notes |
-|---|---|---|
-| `id` | text PK | |
-| `group_id` | text FK | |
-| `person_a_id`, `person_b_id` | text FK | Une personne ne peut être que dans un couple actif |
-| `active` | integer (booléen) | Une séparation désactive le couple |
-| `created_at`, `ended_at` | text | |
 
 ### `manual_exclusions`
 | Colonne | Type | Notes |
@@ -526,7 +515,7 @@ Détails d'interface :
 | `/admin` | Connexion (choix du groupe + mot de passe, ou accès super-admin) |
 | `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des gardiens |
 | `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
-| `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver, couples, exclusions manuelles |
+| `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver ; écran Exclusions : paires qui ne se tirent pas (couples, fratries…), réciproques par défaut |
 | `/admin/[groupe]/reglages` | Règles par défaut du groupe |
 | `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
 | `/admin/[groupe]/journal` | Journal du groupe |
@@ -563,7 +552,6 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 | `POST /api/admin/login`, `POST /api/admin/logout` | Session |
 | `GET/POST /api/admin/groups`, `PATCH /api/admin/groups/[id]` | Super-admin uniquement |
 | `GET/POST/PATCH /api/admin/[groupe]/persons` | Personnes (prénom, nom, actif) |
-| `POST/DELETE /api/admin/[groupe]/couples` | Couples |
 | `POST/DELETE /api/admin/[groupe]/exclusions` | Exclusions manuelles |
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
 | `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente) |
@@ -703,7 +691,7 @@ Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.jso
 
 **Étape 2 — Cœur métier, sans interface** ✅ *terminée le 13 novembre 2026*
 `result.js`, `rules.js`, `draw.js`, `crypto.js`, `audit.js`, `wishes.js`, `whatsapp.js`, `messages.js` dans `server/utils/`, chacun avec son `.test.js` (58 tests, 100 % des lignes couvertes), un commit par module. Points à connaître pour la suite :
-- **Clés anglaises dans le code**, libellés français dans l'interface. Règles : `excludeSpouse`, `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `wishlist`, `maxWishes` (`rules.js`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types d'événements : `edition_created`, `participant_added/removed`, `couple_changed`, `rules_changed`, `message_sent` (meta `messageType`, `via` ∈ `share`, `copy`), `link_copied/shared/regenerated`, `draw_done`, `draw_cancelled`, `result_viewed`, `wishes_updated`, `edition_closed` (`audit.js`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.js`).
+- **Clés anglaises dans le code**, libellés français dans l'interface. Règles : `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `wishlist`, `maxWishes` (`rules.js`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types d'événements : `edition_created`, `participant_added/removed`, `couple_changed`, `rules_changed`, `message_sent` (meta `messageType`, `via` ∈ `share`, `copy`), `link_copied/shared/regenerated`, `draw_done`, `draw_cancelled`, `result_viewed`, `wishes_updated`, `edition_closed` (`audit.js`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.js`).
 - `draw(input, rules, { random })` : l'appelant fournit `history` (receveurs passés par donneur, déjà filtré sur N éditions et sur la participation du donneur) et `random` (`secureRandomInt` de `crypto.js` en production). `checkFeasibility` renvoie `blocked`, `constrained` et `allowedCounts` pour l'encart « Vérification ».
 - `audit.js` purge de `meta` toute clé évoquant un résultat ou un secret (`receiver`, `assignment`, `pin`, `token`…), à n'importe quelle profondeur.
 - Le hachage mêle le poivre au secret (`${pepper}\0${secret}`), 20 000 itérations par défaut, plafonné à 100 000.
@@ -711,7 +699,7 @@ Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.jso
 Plan initial : `draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
 
 **Étape 3 — Administration**
-Connexion super-admin et gardien, gestion des groupes, des personnes, des couples, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
+Connexion super-admin et gardien, gestion des groupes, des personnes, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
 
 **Étape 4 — Pilotage d'une édition** ✅ *terminée le 13 novembre 2026*
 Écran de pilotage (action du moment, vérification nommant les personnes en cause, tirage avec confirmation, clôture), bouton « Partager » sur chaque participant (v5), fiche participant (partager, copier, lien, annuler « envoyé », dernière consultation, régénérer le lien, retirer), ajout de participants, annulation du tirage avec motif et double confirmation. Interface : écrans empilés avec retour et fil d'Ariane, listes mobiles, pas de modale. Tests de bout en bout Playwright (`pnpm test:e2e`, build Cloudflare + D1 jetable, format iPhone) en CI.
@@ -740,7 +728,7 @@ Création des deux groupes réels, répétition générale avec une édition de 
 ### Algorithme de tirage (prioritaire)
 
 - Personne ne se tire soi-même.
-- Aucun couple actif ne se tire, dans les deux sens.
+- Aucune paire exclue ne se tire ; une exclusion réciproque vaut dans les deux sens (cas des couples).
 - Aucune répétition par rapport à l'édition précédente.
 - Respect de `exclure_annees_precedentes` à 0, 1 et 2.
 - Respect des exclusions manuelles, à sens unique et réciproques.

@@ -94,8 +94,7 @@ const onDelete = () =>
         <AdminPersonForm
           :key="person.id"
           :initial="person"
-          submit-label="Enregistrer"
-          :loading="update.isPending.value"
+          autosave
           @submit="onSave"
         />
 

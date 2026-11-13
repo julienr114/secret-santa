@@ -10,9 +10,9 @@ const props = withDefaults(
   },
 );
 const SIZES = {
-  sm: 'size-8 text-base',
-  md: 'size-10 text-xl',
-  lg: 'size-20 text-4xl',
+  sm: 'size-8 text-sm',
+  md: 'size-10 text-lg',
+  lg: 'size-20 text-3xl',
 };
 const shade = computed(() => AVATAR_SHADES[props.avatar.color]);
 </script>

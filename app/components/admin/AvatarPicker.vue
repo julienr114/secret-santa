@@ -11,12 +11,15 @@ const model = defineModel<Avatar>({ required: true });
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
-    <div class="flex items-center gap-3">
+  <div class="flex flex-col gap-6 py-2">
+    <div class="flex justify-center">
       <AdminAvatar :avatar="model" size="lg" />
-      <p class="text-sm text-muted">Choisis une emoji et une couleur.</p>
     </div>
-    <div role="radiogroup" aria-label="Emoji" class="grid grid-cols-8 gap-1">
+    <div
+      role="radiogroup"
+      aria-label="Emoji"
+      class="grid grid-cols-6 gap-2 sm:grid-cols-8"
+    >
       <button
         v-for="emoji in AVATAR_EMOJIS"
         :key="emoji"
@@ -24,7 +27,7 @@ const model = defineModel<Avatar>({ required: true });
         role="radio"
         :aria-checked="model.emoji === emoji"
         :aria-label="emoji"
-        class="flex aspect-square min-h-10 items-center justify-center rounded-md text-xl transition"
+        class="flex aspect-square min-h-11 items-center justify-center rounded-md text-2xl transition"
         :class="
           model.emoji === emoji
             ? 'bg-primary/15 ring-2 ring-primary'
@@ -35,7 +38,11 @@ const model = defineModel<Avatar>({ required: true });
         {{ emoji }}
       </button>
     </div>
-    <div role="radiogroup" aria-label="Couleur" class="flex flex-wrap gap-2">
+    <div
+      role="radiogroup"
+      aria-label="Couleur"
+      class="flex flex-wrap justify-center gap-3"
+    >
       <button
         v-for="color in AVATAR_COLORS"
         :key="color"

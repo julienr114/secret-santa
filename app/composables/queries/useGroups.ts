@@ -27,6 +27,17 @@ export const useCreateGroupMutation = () =>
     () => [keys.groups()],
   );
 
+/** Super-admin only: the group and everything it owns, for good. */
+export const useDeleteGroupMutation = () =>
+  useApiMutation<{ ok: true }, { id: string; confirm: string }>(
+    ({ id, confirm }) =>
+      api(`/api/admin/groups/${id}/delete`, {
+        method: 'POST',
+        body: { confirm },
+      }),
+    () => [keys.groups()],
+  );
+
 export const useUpdateGroupMutation = () =>
   useApiMutation<{ group: PublicGroup }, UpdateGroupBody>(
     ({ id, ...body }) =>

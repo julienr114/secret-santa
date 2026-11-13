@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { formatEventDate } from '#server/utils/rules';
 import type { Reveal } from '~/composables/queries/usePersonal';
 
 // The result: who the participant gives to, the practical details, then
 // the receiver's ideas. Turns over once when it appears.
 defineProps<{ reveal: Reveal }>();
-const { t } = useT();
+const { t, locale } = useT();
 </script>
 
 <template>
@@ -32,7 +33,7 @@ const { t } = useT();
       </template>
       <template v-if="reveal.eventDate">
         <dt class="text-muted">{{ t('participant.reveal.date') }}</dt>
-        <dd>{{ reveal.eventDate }}</dd>
+        <dd>{{ formatEventDate(reveal.eventDate, locale) }}</dd>
       </template>
     </dl>
     <p

@@ -6,27 +6,6 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const journal = useJournalQuery(token);
 const { t } = useT();
-
-const ALL = 'all';
-const filter = ref<string | null>(null);
-const editions = computed(() => journal.data.value?.editions ?? []);
-const items = computed(() => [
-  { label: t('participant.journal.allEditions'), value: ALL },
-  ...editions.value.map((e) => ({ label: e.label, value: e.id })),
-]);
-// The participant's own edition until they choose another one.
-const selected = computed({
-  get: () => filter.value ?? journal.data.value?.currentEditionId ?? ALL,
-  set: (value: string) => {
-    filter.value = value;
-  },
-});
-// Events without an edition (none today) only show under "all".
-const entries = computed(() =>
-  (journal.data.value?.entries ?? []).filter(
-    (entry) => selected.value === ALL || entry.editionId === selected.value,
-  ),
-);
 </script>
 
 <template>
@@ -42,13 +21,11 @@ const entries = computed(() =>
     <p class="text-sm text-muted">
       {{ t('participant.journal.intro') }}
     </p>
-    <USelect
-      v-if="editions.length > 1"
-      v-model="selected"
-      :items="items"
-      :aria-label="t('participant.journal.edition')"
-      class="w-full"
+    <JournalView
+      v-if="journal.data.value"
+      :entries="journal.data.value.entries"
+      :editions="journal.data.value.editions"
+      :current-edition-id="journal.data.value.currentEditionId"
     />
-    <JournalList :entries="entries" />
   </ParticipantScreen>
 </template>

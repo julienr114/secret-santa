@@ -127,7 +127,7 @@ export type EmailAudience = 'unsent' | 'all';
 export const useSendEmailsMutation = (slug: Ref, id: Ref) =>
   useApiMutation<
     { sent: number; withoutEmail: number; left: number },
-    { type: MessageType; audience: EmailAudience }
+    { type: MessageType; audience: EmailAudience; participationIds?: string[] }
   >(
     (body) =>
       api(`${base(slug)}/editions/${toValue(id)}/emails`, {

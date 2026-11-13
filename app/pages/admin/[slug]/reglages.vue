@@ -46,6 +46,8 @@ const onSubmit = (event: FormSubmitEvent<Rules>) =>
     onError: (error) =>
       toast.add({ title: errorMessage(error), color: 'error' }),
   });
+// Offered in one tap while no date is set: this year's Christmas Day.
+const christmasDay = `${new Date().getFullYear()}-12-25`;
 const previousYearsItems = computed(() => [
   { value: 0, label: t('adminGroup.rules.previousYears.none') },
   { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
@@ -106,10 +108,9 @@ const sectionTitle =
             />
           </UFormField>
           <UFormField name="eventDate" :label="t('adminGroup.rules.eventDate')">
-            <UInput
+            <AdminDateField
               v-model="state.eventDate"
-              :placeholder="t('adminGroup.rules.eventDatePlaceholder')"
-              class="w-full"
+              :suggestion="christmasDay"
             />
           </UFormField>
           <UFormField

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { messageTypesFor, type MessageType } from '#server/utils/messages';
+import type { MessageType } from '#server/utils/messages';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -11,7 +11,6 @@ import {
   useRemoveParticipantMutation,
   useUnsendMutation,
 } from '~/composables/queries/useEdition';
-import { useShareMessage } from '~/composables/useShareMessage';
 import { defaultMessageType, formatDate } from '~/utils/labels';
 
 // One participant of an edition: share, copy, and the "replay without
@@ -22,7 +21,7 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const pid = computed(() => String(route.params.pid));
 const toast = useToast();
-const { t, tk, locale } = useT();
+const { t, locale } = useT();
 const errorMessage = useErrorMessage();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
@@ -33,7 +32,6 @@ const unsend = useUnsendMutation(slug);
 const linkCopied = useLinkCopiedMutation(slug);
 const regenerate = useRegenerateMutation(slug);
 const remove = useRemoveParticipantMutation(slug, id);
-const sharer = useShareMessage(slug);
 
 const status = computed(() => edition.data.value?.edition.status ?? 'draft');
 const p = computed(
@@ -49,12 +47,6 @@ const canEdit = computed(
   () => status.value === 'draft' || status.value === 'invitations',
 );
 const messageType = ref<MessageType>(defaultMessageType(status.value));
-const messageItems = computed(() =>
-  messageTypesFor(status.value).map((value) => ({
-    value,
-    label: tk(`common.messageType.${value}`),
-  })),
-);
 watch(status, (s) => {
   messageType.value = defaultMessageType(s);
 });
@@ -129,8 +121,6 @@ const onRemove = () =>
       }),
     onError,
   });
-const sectionTitle =
-  'px-1 text-xs font-semibold tracking-wide text-muted uppercase';
 </script>
 
 <template>
@@ -162,31 +152,15 @@ const sectionTitle =
         </div>
 
         <template v-if="canSend">
-          <section class="flex flex-col gap-2">
-            <h2 :class="sectionTitle">
-              {{ t('adminEdition.participant.messageTitle') }}
-            </h2>
-            <USelect
-              v-model="messageType"
-              :items="messageItems"
-              class="w-full"
-            />
-          </section>
           <MobileList>
-            <MobileListItem
-              icon="i-lucide-share-2"
-              :title="t('adminEdition.participant.shareMessage')"
-              :subtitle="t('adminEdition.participant.shareMessageHint')"
-              @click="
-                sharer.share(p.participationId, messageType, message?.text)
-              "
-            />
-            <MobileListItem
-              icon="i-lucide-copy"
-              :title="t('adminEdition.participant.copyMessage')"
-              @click="
-                sharer.copy(p.participationId, messageType, message?.text)
-              "
+            <AdminSendOptions
+              v-model:message-type="messageType"
+              :slug="slug"
+              :edition-id="id"
+              :participant="p"
+              :status="status"
+              :text="message?.text"
+              :email-enabled="dashboard.data.value?.group.emailSending ?? false"
             />
             <MobileListItem
               icon="i-lucide-link"

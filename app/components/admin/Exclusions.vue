@@ -16,6 +16,8 @@ const props = withDefaults(
     footer?: string;
     /** Archives: the exclusions applied at the draw, written in the past. */
     archived?: { giverId: string; receiverId: string; reciprocal: boolean }[];
+    /** The `extra` slot has rows: the list is then not empty. */
+    hasExtra?: boolean;
   }>(),
   { editable: true, title: undefined, footer: undefined, archived: undefined },
 );
@@ -107,7 +109,17 @@ const onAdd = () =>
 
 <template>
   <MobileList :title="title" :footer="footer">
-    <li v-if="exclusions.length === 0" class="px-4 py-3 text-sm text-muted">
+    <!-- Adding comes first, then the rules, then the extra rows. -->
+    <MobileListItem
+      v-if="editable"
+      icon="i-lucide-plus"
+      :title="t('adminGroup.exclusions.add')"
+      @click="openSheet"
+    />
+    <li
+      v-if="exclusions.length === 0 && !hasExtra"
+      class="px-4 py-3 text-sm text-muted"
+    >
       {{ t('adminGroup.exclusions.empty') }}
     </li>
     <MobileListItem
@@ -117,7 +129,9 @@ const onAdd = () =>
       :subtitle="subtitleOf(ex)"
     >
       <template #leading>
-        <span class="flex shrink-0 items-center" aria-hidden="true">
+        <!-- Two avatars for a pair excluded both ways, the giver alone
+             when it only goes one way. -->
+        <span class="flex w-[3.25rem] shrink-0 items-center" aria-hidden="true">
           <AdminAvatar
             v-if="personOf(ex.giverId)"
             :avatar="personOf(ex.giverId)!.avatar"
@@ -125,7 +139,7 @@ const onAdd = () =>
             class="outline-2 outline-white"
           />
           <AdminAvatar
-            v-if="personOf(ex.receiverId)"
+            v-if="ex.reciprocal && personOf(ex.receiverId)"
             :avatar="personOf(ex.receiverId)!.avatar"
             size="sm"
             class="-ml-3 outline-2 outline-white"
@@ -169,12 +183,8 @@ const onAdd = () =>
         />
       </template>
     </MobileListItem>
-    <MobileListItem
-      v-if="editable"
-      icon="i-lucide-plus"
-      :title="t('adminGroup.exclusions.add')"
-      @click="openSheet"
-    />
+    <!-- Other pairs that cannot draw each other, e.g. from previous draws. -->
+    <slot name="extra" />
   </MobileList>
 
   <UDrawer

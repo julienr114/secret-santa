@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useDashboardQuery } from '~/composables/queries/useGroup';
-import { useUpdateGroupMutation } from '~/composables/queries/useGroups';
+import {
+  useDeleteGroupMutation,
+  useUpdateGroupMutation,
+} from '~/composables/queries/useGroups';
 
 // Group home: what the guardian can do, as a list of actions.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -51,6 +54,34 @@ const onToggleEmail = (value: boolean) => {
     },
   );
 };
+// Deleting the group and everything in it: super-admin only, and only
+// after typing the group's identifier.
+const deleteGroup = useDeleteGroupMutation();
+const deleteOpen = ref(false);
+const deleteConfirm = ref('');
+const openDelete = () => {
+  deleteConfirm.value = '';
+  deleteGroup.reset();
+  deleteOpen.value = true;
+};
+const canDelete = computed(() => deleteConfirm.value.trim() === slug.value);
+const onDelete = () => {
+  const id = dashboard.data.value?.group.id;
+  if (!id || !canDelete.value) return;
+  deleteGroup.mutate(
+    { id, confirm: deleteConfirm.value },
+    {
+      onSuccess: () => {
+        toast.add({
+          title: t('adminGroup.dashboard.deleteDone'),
+          color: 'success',
+          icon: 'i-lucide-check',
+        });
+        navigateTo('/admin/groupes', { replace: true });
+      },
+    },
+  );
+};
 const editionSubtitle = (status: string, count?: number) =>
   `${tk(`common.status.${status}`)} · ${t('common.count.participants', { count: count ?? 0 })}`;
 </script>
@@ -98,6 +129,12 @@ const editionSubtitle = (status: string, count?: number) =>
           :title="t('adminGroup.rules.title')"
         />
         <MobileListItem
+          :to="`/admin/${slug}/journal`"
+          icon="i-lucide-scroll-text"
+          :title="t('participant.home.journal.title')"
+          :subtitle="t('participant.home.journal.subtitle')"
+        />
+        <MobileListItem
           v-if="isSuper"
           :to="`/admin/${slug}/gardien`"
           icon="i-lucide-key-round"
@@ -133,6 +170,13 @@ const editionSubtitle = (status: string, count?: number) =>
             />
           </template>
         </MobileListItem>
+        <MobileListItem
+          icon="i-lucide-trash-2"
+          tone="danger"
+          :title="t('adminGroup.dashboard.deleteGroup')"
+          :subtitle="t('adminGroup.dashboard.deleteGroupHint')"
+          @click="openDelete"
+        />
       </MobileList>
 
       <MobileList
@@ -147,6 +191,49 @@ const editionSubtitle = (status: string, count?: number) =>
           :subtitle="editionSubtitle(edition.status, edition.participantCount)"
         />
       </MobileList>
+      <UDrawer
+        v-model:open="deleteOpen"
+        :title="t('adminGroup.dashboard.deleteTitle', { name })"
+        :description="t('adminGroup.dashboard.deleteDescription')"
+      >
+        <template #body>
+          <form
+            id="delete-group-form"
+            class="flex flex-col gap-4 py-2"
+            novalidate
+            @submit.prevent="onDelete"
+          >
+            <UFormField
+              :label="t('adminGroup.dashboard.deleteConfirmLabel', { slug })"
+            >
+              <UInput
+                v-model="deleteConfirm"
+                autocomplete="off"
+                autocapitalize="off"
+                class="w-full"
+              />
+            </UFormField>
+            <UAlert
+              v-if="deleteGroup.isError.value"
+              color="error"
+              variant="subtle"
+              :description="errorMessage(deleteGroup.error.value)"
+            />
+          </form>
+        </template>
+        <template #footer>
+          <UButton
+            type="submit"
+            form="delete-group-form"
+            block
+            color="error"
+            icon="i-lucide-trash-2"
+            :disabled="!canDelete"
+            :loading="deleteGroup.isPending.value"
+            :label="t('adminGroup.dashboard.deleteAction')"
+          />
+        </template>
+      </UDrawer>
     </AdminQueryState>
   </AdminScreen>
 </template>

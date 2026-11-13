@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { messageTypesFor, type MessageType } from '#server/utils/messages';
+import { formatEventDate, partyIsOver } from '#server/utils/rules';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -15,7 +16,6 @@ import {
   useSendEmailsMutation,
   useWaiveMutation,
 } from '~/composables/queries/useEdition';
-import { useShareMessage } from '~/composables/useShareMessage';
 import { defaultMessageType } from '~/utils/labels';
 import { participantStatusLine } from '~/utils/participantStatus';
 
@@ -76,7 +76,6 @@ const messageItems = computed(() =>
   })),
 );
 const messages = useMessagesQuery(slug, id, messageType);
-const sharer = useShareMessage(slug);
 
 const participants = computed(() => edition.data.value?.participants ?? []);
 // Reminder, shown on the "add" row: active members left out of the edition.
@@ -135,34 +134,67 @@ const subtitles = computed(() =>
   ),
 );
 // Bulk sending by email, when the super-admin switched it on for the
-// group: one button for the chosen message, to people who have an address.
-// A second tap confirms, since a sent email cannot be taken back.
+// group: the guardian ticks who to write to in the list, then picks the
+// message in a sheet. Only people with an address can be ticked.
 const emailSending = computed(
   () => dashboard.data.value?.group.emailSending ?? false,
 );
 const sendEmails = useSendEmailsMutation(slug, id);
-const confirmEmail = ref(false);
 const withEmail = computed(() => participants.value.filter((p) => p.email));
-const emailPending = computed(() =>
-  withEmail.value.filter((p) => !p.messageSentAt),
+const selecting = ref(false);
+const selectedIds = ref<string[]>([]);
+const bulkSheetOpen = ref(false);
+const bulkType = ref<MessageType>(defaultMessageType(status.value));
+// Starts with those still to be reached; everyone if all were sent to.
+const startSelecting = () => {
+  const pending = withEmail.value.filter((p) => !p.messageSentAt);
+  selectedIds.value = (pending.length > 0 ? pending : withEmail.value).map(
+    (p) => p.participationId,
+  );
+  bulkType.value = messageType.value;
+  selecting.value = true;
+};
+const stopSelecting = () => {
+  selecting.value = false;
+  bulkSheetOpen.value = false;
+  selectedIds.value = [];
+};
+const isSelected = (participationId: string) =>
+  selectedIds.value.includes(participationId);
+const toggleSelected = (participationId: string) => {
+  selectedIds.value = isSelected(participationId)
+    ? selectedIds.value.filter((x) => x !== participationId)
+    : [...selectedIds.value, participationId];
+};
+const allSelected = computed(
+  () => selectedIds.value.length === withEmail.value.length,
 );
-// Everyone reachable is already marked as sent: offer to send again.
-const emailAudience = computed(() =>
-  emailPending.value.length > 0 ? 'unsent' : 'all',
-);
-const emailCount = computed(() =>
-  emailAudience.value === 'unsent'
-    ? emailPending.value.length
-    : withEmail.value.length,
-);
-const withoutEmailCount = computed(
-  () => participants.value.length - withEmail.value.length,
-);
-const onSendEmails = () =>
+const toggleAll = () => {
+  selectedIds.value = allSelected.value
+    ? []
+    : withEmail.value.map((p) => p.participationId);
+};
+// What the bulk send will say, shown for the first person ticked (each
+// one gets it with their own first name, link and language).
+const bulkMessages = useMessagesQuery(slug, id, bulkType);
+const bulkPreview = computed(() => {
+  const first = participants.value.find((p) =>
+    selectedIds.value.includes(p.participationId),
+  );
+  const text = first
+    ? bulkMessages.data.value?.messages[first.participationId]?.text
+    : undefined;
+  return first && text ? { name: first.firstName, text } : null;
+});
+const onSendBulk = () =>
   sendEmails.mutate(
-    { type: messageType.value, audience: emailAudience.value },
     {
-      onSuccess: ({ sent, left }) =>
+      type: bulkType.value,
+      audience: 'all',
+      participationIds: selectedIds.value,
+    },
+    {
+      onSuccess: ({ sent, left }) => {
         toast.add({
           title: t('adminEdition.cockpit.email.sent', { count: sent }),
           description: left
@@ -170,57 +202,75 @@ const onSendEmails = () =>
             : undefined,
           color: 'success',
           icon: 'i-lucide-mail-check',
-        }),
-      onError,
-      onSettled: () => {
-        confirmEmail.value = false;
+        });
+        stopSelecting();
+      },
+      onError: (error) => {
+        bulkSheetOpen.value = false;
+        onError(error);
       },
     },
   );
-// Who receives the email, then the usual warning about spam.
-const emailHelp = computed(() => {
-  const message = tk(`common.messageType.${messageType.value}`);
-  return [
-    withoutEmailCount.value
-      ? t('adminEdition.cockpit.email.recipientsPartial', {
-          message,
-          count: withoutEmailCount.value,
-        })
-      : t('adminEdition.cockpit.email.recipients', { message }),
-    t('adminEdition.cockpit.email.spamTip'),
-  ].join(' ');
+watch(status, stopSelecting);
+// The send button of a row opens a sheet: the language of the message,
+// then how to send it (phone share sheet, copy, email if the group has it).
+const sendTargetId = ref<string | null>(null);
+const sendTarget = computed(
+  () =>
+    participants.value.find((p) => p.participationId === sendTargetId.value) ??
+    null,
+);
+const sendSheetOpen = computed({
+  get: () => sendTarget.value !== null,
+  set: (open: boolean) => {
+    if (!open) sendTargetId.value = null;
+  },
 });
+const onSend = (participationId: string) => {
+  sendTargetId.value = participationId;
+};
+// Pairs excluded because of previous draws, while the list can change.
+const previousPairs = computed(() =>
+  canEdit.value ? (check.data.value?.previousPairs ?? []) : [],
+);
+const exclusionsFooter = computed(
+  () =>
+    [
+      previousPairs.value.length > 0 &&
+        t('adminEdition.cockpit.previousDrawsFooter'),
+      check.data.value?.historyExclusions &&
+        t('adminEdition.cockpit.pendingExclusions', {
+          count: check.data.value.historyExclusions,
+        }),
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined,
+);
 const messageLanguageOf = (language: string) =>
   t('adminEdition.cockpit.messageLanguage', {
     language: tk(`common.language.${language}`),
   });
-const sentCount = computed(
-  () => participants.value.filter((p) => p.messageSentAt).length,
+// The party date in the guardian's language. Closing is only offered once
+// it has passed; without a real date, nothing says it is too early.
+const eventDateText = computed(() =>
+  formatEventDate(edition.data.value?.rules.eventDate, locale.value),
+);
+const canClose = computed(() =>
+  partyIsOver(
+    edition.data.value?.rules.eventDate,
+    new Date().toLocaleDateString('sv-SE'),
+  ),
 );
 const subtitle = computed(() => {
   const rules = edition.data.value?.rules;
   return [
     rules?.budget && t('adminEdition.cockpit.budget', { budget: rules.budget }),
     rules?.eventDate &&
-      t('adminEdition.cockpit.eventDate', { date: rules.eventDate }),
+      t('adminEdition.cockpit.eventDate', { date: eventDateText.value }),
   ]
     .filter(Boolean)
     .join(' · ');
 });
-
-// How many messages were shared (once drawn), then what the button does.
-const shareHelp = computed(() =>
-  [
-    status.value === 'drawn' &&
-      t('adminEdition.cockpit.sharedCount', {
-        count: sentCount.value,
-        total: participants.value.length,
-      }),
-    t('adminEdition.cockpit.shareHelp'),
-  ]
-    .filter(Boolean)
-    .join(' '),
-);
 
 const confirmDraw = ref(false);
 const confirmClose = ref(false);
@@ -239,8 +289,6 @@ const runDraw = () =>
     },
     onError,
   });
-const sectionTitle =
-  'px-1 text-xs font-semibold tracking-wide text-muted uppercase';
 </script>
 
 <template>
@@ -271,29 +319,16 @@ const sectionTitle =
         />
       </section>
 
-      <section v-else-if="status === 'invitations'" class="flex flex-col gap-3">
-        <h2 :class="sectionTitle">
-          {{ t('adminEdition.cockpit.checkTitle') }}
-        </h2>
-        <USkeleton v-if="check.isPending.value" class="h-16 w-full" />
+      <template v-else-if="status === 'invitations'">
+        <USkeleton
+          v-if="check.isPending.value"
+          class="h-24 w-full rounded-2xl"
+        />
         <template v-else-if="check.data.value">
-          <UAlert
-            v-if="check.data.value.ready"
-            color="success"
-            variant="subtle"
-            icon="i-lucide-circle-check"
-            :title="t('adminEdition.cockpit.drawPossible')"
-            :description="
-              t('adminEdition.cockpit.drawPossibleDescription', {
-                count: check.data.value.participantCount,
-              })
-            "
-          />
-          <UAlert
+          <AdminStatusCard
             v-if="check.data.value.problem"
-            color="error"
-            variant="subtle"
-            icon="i-lucide-circle-alert"
+            emoji="🚧"
+            tone="problem"
             :title="
               errorMessage({ statusMessage: check.data.value.problem.reason })
             "
@@ -312,69 +347,78 @@ const sectionTitle =
                 .join(' ')
             "
           />
-        </template>
-        <template v-if="check.data.value?.ready">
-          <UButton
-            v-if="!confirmDraw"
-            block
-            icon="i-lucide-sparkles"
-            :label="t('adminEdition.cockpit.startDraw')"
-            @click="confirmDraw = true"
-          />
-          <div
-            v-else
-            class="flex flex-col gap-2 rounded-md border border-default bg-default p-4"
+          <AdminStatusCard
+            v-if="check.data.value.ready"
+            emoji="🎲"
+            :title="t('adminEdition.cockpit.drawPossible')"
+            :description="
+              t('adminEdition.cockpit.drawPossibleDescription', {
+                count: check.data.value.participantCount,
+              })
+            "
           >
-            <p
-              v-if="missing.length"
-              class="flex items-start gap-2 text-sm text-warning"
-            >
-              <UIcon
-                name="i-lucide-user-round-x"
-                class="mt-0.5 size-4 shrink-0"
-              />
-              <span>{{
-                t('adminEdition.cockpit.missingWarning', {
-                  text: missingText ?? '',
-                })
-              }}</span>
-            </p>
-            <p class="text-sm">
-              {{ t('adminEdition.cockpit.drawIsFinal') }}
-            </p>
-            <div class="flex gap-2">
-              <UButton
-                icon="i-lucide-sparkles"
-                :label="t('adminEdition.cockpit.drawNow')"
-                :loading="drawMutation.isPending.value"
-                @click="runDraw"
-              />
-              <UButton
-                variant="ghost"
-                color="neutral"
-                :label="t('adminEdition.cockpit.notYet')"
-                @click="confirmDraw = false"
-              />
+            <UButton
+              v-if="!confirmDraw"
+              block
+              icon="i-lucide-sparkles"
+              :label="t('adminEdition.cockpit.startDraw')"
+              @click="confirmDraw = true"
+            />
+            <div v-else class="flex flex-col gap-2">
+              <p
+                v-if="missing.length"
+                class="flex items-start gap-2 text-sm text-warning"
+              >
+                <UIcon
+                  name="i-lucide-user-round-x"
+                  class="mt-0.5 size-4 shrink-0"
+                />
+                <span>{{
+                  t('adminEdition.cockpit.missingWarning', {
+                    text: missingText ?? '',
+                  })
+                }}</span>
+              </p>
+              <p class="text-sm">
+                {{ t('adminEdition.cockpit.drawIsFinal') }}
+              </p>
+              <div class="flex gap-2">
+                <UButton
+                  icon="i-lucide-sparkles"
+                  :label="t('adminEdition.cockpit.drawNow')"
+                  :loading="drawMutation.isPending.value"
+                  @click="runDraw"
+                />
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  :label="t('adminEdition.cockpit.notYet')"
+                  @click="confirmDraw = false"
+                />
+              </div>
             </div>
-          </div>
+          </AdminStatusCard>
         </template>
-      </section>
+      </template>
 
-      <section v-else-if="status === 'drawn'" class="flex flex-col gap-3">
-        <UAlert
-          color="success"
-          variant="subtle"
-          icon="i-lucide-gift"
-          :title="t('adminEdition.cockpit.drawDone')"
-          :description="
-            t('adminEdition.cockpit.drawnDescription', {
-              viewed: viewedCount,
-              total: participants.length,
-            })
-          "
-        />
+      <AdminStatusCard
+        v-else-if="status === 'drawn'"
+        emoji="🎁"
+        :title="t('adminEdition.cockpit.drawDone')"
+        :description="
+          t('adminEdition.cockpit.drawnDescription', {
+            viewed: viewedCount,
+            total: participants.length,
+          })
+        "
+        :progress="{ value: viewedCount, total: participants.length }"
+      >
+        <!-- Closing only makes sense once the party is over. -->
+        <p v-if="!canClose" class="text-sm text-muted">
+          {{ t('adminEdition.cockpit.closeLater', { date: eventDateText }) }}
+        </p>
         <UButton
-          v-if="!confirmClose"
+          v-else-if="!confirmClose"
           block
           variant="outline"
           color="neutral"
@@ -382,10 +426,7 @@ const sectionTitle =
           :label="t('adminEdition.cockpit.closeAfterParty')"
           @click="confirmClose = true"
         />
-        <div
-          v-else
-          class="flex flex-col gap-2 rounded-md border border-default bg-default p-4"
-        >
+        <div v-else class="flex flex-col gap-2">
           <p class="text-sm">
             {{ t('adminEdition.cockpit.closeExplanation') }}
           </p>
@@ -403,84 +444,83 @@ const sectionTitle =
             />
           </div>
         </div>
-      </section>
+      </AdminStatusCard>
 
-      <UAlert
+      <AdminStatusCard
         v-else
-        color="neutral"
-        variant="subtle"
-        icon="i-lucide-archive"
-        :description="t('adminEdition.cockpit.closedNotice')"
+        emoji="📦"
+        tone="quiet"
+        :title="t('adminEdition.cockpit.closedNotice')"
       />
 
-      <!-- Message to share -->
+      <!-- Sending: the message is chosen in the sheets, not here. -->
       <section v-if="canSend" class="flex flex-col gap-2">
-        <h2 :class="sectionTitle">
-          {{ t('adminEdition.cockpit.messageTitle') }}
-        </h2>
-        <USelect v-model="messageType" :items="messageItems" class="w-full" />
-        <p class="px-1 text-xs text-muted">{{ shareHelp }}</p>
-        <div
-          v-if="emailSending"
-          class="flex flex-col gap-2 rounded-lg border border-default bg-default p-3"
-        >
-          <p v-if="withEmail.length === 0" class="text-sm text-muted">
+        <template v-if="emailSending && !selecting">
+          <p v-if="withEmail.length === 0" class="px-1 text-xs text-muted">
             {{ t('adminEdition.cockpit.email.noAddress') }}
           </p>
-          <template v-else>
-            <div v-if="confirmEmail" class="flex gap-2">
-              <UButton
-                class="grow justify-center"
-                icon="i-lucide-mail"
-                :loading="sendEmails.isPending.value"
-                :label="
-                  t('adminEdition.cockpit.email.confirm', { count: emailCount })
-                "
-                @click="onSendEmails"
-              />
-              <UButton
-                variant="ghost"
-                color="neutral"
-                :label="t('common.actions.cancel')"
-                @click="confirmEmail = false"
-              />
-            </div>
-            <UButton
-              v-else
-              block
-              variant="soft"
-              icon="i-lucide-mail"
-              :label="
-                emailAudience === 'unsent'
-                  ? t('adminEdition.cockpit.email.send', { count: emailCount })
-                  : t('adminEdition.cockpit.email.resend', {
-                      count: emailCount,
-                    })
-              "
-              @click="confirmEmail = true"
-            />
-            <p class="text-xs text-muted">{{ emailHelp }}</p>
-          </template>
-        </div>
+          <MobileList v-else :footer="t('adminEdition.cockpit.email.spamTip')">
+            <MobileListItem
+              icon="i-lucide-users"
+              :title="t('adminEdition.cockpit.email.bulkTitle')"
+              :subtitle="t('adminEdition.cockpit.email.bulkHint')"
+            >
+              <template #trailing>
+                <UButton
+                  size="md"
+                  class="shrink-0 rounded-full"
+                  icon="i-lucide-send"
+                  variant="soft"
+                  :aria-label="t('adminEdition.cockpit.email.select')"
+                  @click="startSelecting"
+                />
+              </template>
+            </MobileListItem>
+          </MobileList>
+        </template>
       </section>
 
       <!-- Participants -->
-      <p v-if="participants.length === 0" class="text-muted">
+      <p
+        v-if="participants.length === 0 && status === 'closed'"
+        class="text-muted"
+      >
         {{ t('adminEdition.cockpit.empty') }}
       </p>
       <MobileList
         v-else-if="status !== 'closed'"
         :title="t('common.count.participants', { count: participants.length })"
       >
+        <li
+          v-if="participants.length === 0"
+          class="px-4 py-3 text-sm text-muted"
+        >
+          {{ t('adminEdition.cockpit.empty') }}
+        </li>
         <MobileListItem
           v-for="p in participants"
           :key="p.participationId"
           :avatar="p.avatar"
-          :to="`/admin/${slug}/editions/${id}/participants/${p.participationId}`"
+          :to="
+            selecting
+              ? undefined
+              : `/admin/${slug}/editions/${id}/participants/${p.participationId}`
+          "
+          :on-click="
+            selecting && p.email
+              ? () => toggleSelected(p.participationId)
+              : undefined
+          "
+          :class="{ 'opacity-60': selecting && !p.email }"
           :title="p.firstName"
           :chevron="!canSend"
         >
-          <template v-if="subtitles[p.participationId]" #subtitle>
+          <template v-if="selecting" #subtitle>
+            <span class="truncate">{{
+              p.email ?? t('adminEdition.share.noEmail')
+            }}</span>
+          </template>
+          <template v-else-if="subtitles[p.participationId]" #subtitle>
             <UIcon
               v-if="subtitles[p.participationId]?.icon"
               :name="subtitles[p.participationId]?.icon"
@@ -502,18 +542,25 @@ const sectionTitle =
               :title="messageLanguageOf(p.language)"
               :aria-label="messageLanguageOf(p.language)"
             />
+            <UCheckbox
+              v-if="selecting"
+              :model-value="isSelected(p.participationId)"
+              :disabled="!p.email"
+              :aria-label="
+                t('adminEdition.cockpit.email.selectPerson', {
+                  name: p.firstName,
+                })
+              "
+              class="pointer-events-none shrink-0"
+              tabindex="-1"
+            />
             <UButton
-              v-if="canSend"
-              size="sm"
+              v-else-if="canSend"
+              size="md"
               class="shrink-0 rounded-full"
               icon="i-lucide-send"
               :color="p.messageSentAt ? 'neutral' : 'primary'"
               :variant="p.messageSentAt ? 'outline' : 'soft'"
-              :label="
-                p.messageSentAt
-                  ? t('adminEdition.cockpit.resend')
-                  : t('adminEdition.cockpit.send')
-              "
               :aria-label="
                 p.messageSentAt
                   ? t('adminEdition.cockpit.resendLinkOf', {
@@ -522,21 +569,13 @@ const sectionTitle =
                   : t('adminEdition.cockpit.sendLinkOf', { name: p.firstName })
               "
               :disabled="!messages.data.value?.messages[p.participationId]"
-              @click.prevent.stop="
-                sharer.share(
-                  p.participationId,
-                  messageType,
-                  messages.data.value?.messages[p.participationId]?.text,
-                )
-              "
+              @click.prevent.stop="onSend(p.participationId)"
             />
           </template>
         </MobileListItem>
-      </MobileList>
-
-      <MobileList v-if="canEdit || status === 'drawn'">
+        <!-- Adding closes the list. -->
         <MobileListItem
-          v-if="canEdit"
+          v-if="canEdit && !selecting"
           :to="`/admin/${slug}/editions/${id}/ajouter`"
           icon="i-lucide-user-plus"
           :title="t('adminEdition.cockpit.addParticipants')"
@@ -546,6 +585,9 @@ const sectionTitle =
             <span class="size-2.5 rounded-full bg-warning" aria-hidden="true" />
           </template>
         </MobileListItem>
+      </MobileList>
+
+      <MobileList v-if="status === 'drawn'">
         <MobileListItem
           v-if="status === 'drawn'"
           :to="`/admin/${slug}/editions/${id}/annuler`"
@@ -571,86 +613,86 @@ const sectionTitle =
           t('adminEdition.cockpit.resultsTitle', { count: participants.length })
         "
       />
+      <!-- One list for every pair that cannot draw each other: the
+           group's exclusions, and the pairs of previous draws, which only
+           say why and can be lifted for this edition. -->
       <AdminExclusions
         :slug="slug"
         :editable="canEdit"
         :archived="
-          status === 'closed'
+          status === 'drawn' || status === 'closed'
             ? (edition.data.value?.edition.exclusionsAtDraw ?? [])
             : undefined
         "
-        :title="t('adminEdition.cockpit.exclusionsTitle')"
-        :footer="
-          check.data.value?.historyExclusions
-            ? t('adminEdition.cockpit.pendingExclusions', {
-                count: check.data.value.historyExclusions,
-              })
-            : undefined
+        :has-extra="previousPairs.length > 0"
+        :title="
+          status === 'drawn' || status === 'closed'
+            ? t('adminEdition.cockpit.exclusionsAppliedTitle')
+            : t('adminEdition.cockpit.exclusionsTitle')
         "
-      />
-      <MobileList
-        v-if="canEdit && check.data.value?.previousPairs.length"
-        :title="t('adminEdition.cockpit.previousDraws')"
-        :footer="t('adminEdition.cockpit.previousDrawsFooter')"
+        :footer="exclusionsFooter"
       >
-        <MobileListItem
-          v-for="pair in check.data.value.previousPairs"
-          :key="`${pair.editionLabel}-${pair.giverId}`"
-          :title="`${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)}`"
-          :subtitle="pair.editionLabel"
-          :chevron="false"
-        >
-          <template #trailing>
-            <div
-              v-if="confirmWaiver === pairKey(pair)"
-              class="flex shrink-0 items-center gap-1"
-            >
+        <template #extra>
+          <MobileListItem
+            v-for="pair in previousPairs"
+            :key="`${pair.editionLabel}-${pair.giverId}`"
+            :title="`${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)}`"
+            :subtitle="
+              t('adminEdition.cockpit.previousDrawReason', {
+                edition: pair.editionLabel,
+              })
+            "
+            :chevron="false"
+          >
+            <template #trailing>
+              <div
+                v-if="confirmWaiver === pairKey(pair)"
+                class="flex shrink-0 items-center gap-1"
+              >
+                <UButton
+                  size="sm"
+                  :label="t('adminEdition.cockpit.waive')"
+                  :loading="waive.isPending.value"
+                  @click.stop="onWaive(pair)"
+                />
+                <UButton
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  :label="t('common.actions.cancel')"
+                  @click.stop="confirmWaiver = null"
+                />
+              </div>
               <UButton
-                size="sm"
-                :label="t('adminEdition.cockpit.waive')"
-                :loading="waive.isPending.value"
-                @click.stop="onWaive(pair)"
-              />
-              <UButton
-                size="sm"
+                v-else
                 variant="ghost"
                 color="neutral"
-                :label="t('common.actions.cancel')"
-                @click.stop="confirmWaiver = null"
+                icon="i-lucide-x"
+                :aria-label="
+                  t('adminEdition.cockpit.waiveLabel', {
+                    giver: firstNameOf(pair.giverId),
+                    receiver: firstNameOf(pair.receiverId),
+                  })
+                "
+                @click.stop="confirmWaiver = pairKey(pair)"
               />
-            </div>
-            <UButton
-              v-else
-              variant="ghost"
-              color="neutral"
-              icon="i-lucide-x"
-              :aria-label="
-                t('adminEdition.cockpit.waiveLabel', {
-                  giver: firstNameOf(pair.giverId),
-                  receiver: firstNameOf(pair.receiverId),
-                })
-              "
-              @click.stop="confirmWaiver = pairKey(pair)"
-            />
-          </template>
-          <template #leading>
-            <span class="flex shrink-0 items-center" aria-hidden="true">
-              <AdminAvatar
-                v-if="personOf(pair.giverId)"
-                :avatar="personOf(pair.giverId)!.avatar"
-                size="sm"
-                class="outline-2 outline-white"
-              />
-              <AdminAvatar
-                v-if="personOf(pair.receiverId)"
-                :avatar="personOf(pair.receiverId)!.avatar"
-                size="sm"
-                class="-ml-3 outline-2 outline-white"
-              />
-            </span>
-          </template>
-        </MobileListItem>
-      </MobileList>
+            </template>
+            <template #leading>
+              <span
+                class="flex w-[3.25rem] shrink-0 items-center"
+                aria-hidden="true"
+              >
+                <AdminAvatar
+                  v-if="personOf(pair.giverId)"
+                  :avatar="personOf(pair.giverId)!.avatar"
+                  size="sm"
+                  class="outline-2 outline-white"
+                />
+              </span>
+            </template>
+          </MobileListItem>
+        </template>
+      </AdminExclusions>
       <div
         v-if="canEdit && check.data.value?.waivedCount"
         class="-mt-4 flex items-center justify-between gap-2 px-1 text-xs text-muted"
@@ -671,5 +713,122 @@ const sectionTitle =
         />
       </div>
     </AdminQueryState>
+    <!-- Selection bar: stays at the bottom while ticking people. -->
+    <div
+      v-if="selecting"
+      class="fixed inset-x-0 bottom-0 z-30 border-t border-default bg-[var(--color-kraft-50)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+    >
+      <UContainer class="flex max-w-3xl items-center gap-2 py-3">
+        <div class="min-w-0 grow">
+          <p class="truncate text-sm font-medium" aria-live="polite">
+            {{
+              t('adminEdition.cockpit.email.selected', {
+                count: selectedIds.length,
+              })
+            }}
+          </p>
+          <button
+            type="button"
+            class="text-xs text-primary underline"
+            @click="toggleAll"
+          >
+            {{
+              allSelected
+                ? t('adminEdition.cockpit.email.selectNone')
+                : t('adminEdition.cockpit.email.selectAll')
+            }}
+          </button>
+        </div>
+        <UButton
+          variant="ghost"
+          color="neutral"
+          :label="t('common.actions.cancel')"
+          @click="stopSelecting"
+        />
+        <UButton
+          icon="i-lucide-mail"
+          :disabled="selectedIds.length === 0"
+          :label="t('adminEdition.cockpit.email.chooseMessage')"
+          @click="bulkSheetOpen = true"
+        />
+      </UContainer>
+    </div>
+    <div v-if="selecting" class="h-20" aria-hidden="true" />
+    <UDrawer
+      v-model:open="bulkSheetOpen"
+      :title="
+        t('adminEdition.cockpit.email.sheetTitle', {
+          count: selectedIds.length,
+        })
+      "
+      :description="t('adminEdition.cockpit.email.spamTip')"
+    >
+      <template #body>
+        <URadioGroup
+          v-model="bulkType"
+          :items="messageItems"
+          :legend="t('adminEdition.cockpit.messageTitle')"
+          class="py-2"
+        />
+        <div class="flex flex-col gap-1.5 py-2">
+          <span
+            class="text-xs font-semibold tracking-wide text-muted uppercase"
+            >{{
+              bulkPreview
+                ? t('adminEdition.share.previewFor', { name: bulkPreview.name })
+                : t('adminEdition.share.preview')
+            }}</span
+          >
+          <p
+            v-if="bulkPreview"
+            class="rounded-lg bg-muted p-3 text-sm break-words whitespace-pre-line"
+          >
+            {{ bulkPreview.text }}
+          </p>
+          <USkeleton v-else class="h-28 w-full rounded-lg" />
+          <p class="text-xs text-muted">
+            {{ t('adminEdition.share.previewEmailNote') }}
+          </p>
+        </div>
+      </template>
+      <template #footer>
+        <UButton
+          block
+          icon="i-lucide-mail"
+          :loading="sendEmails.isPending.value"
+          :label="
+            t('adminEdition.cockpit.email.sendCount', {
+              count: selectedIds.length,
+            })
+          "
+          @click="onSendBulk"
+        />
+      </template>
+    </UDrawer>
+    <UDrawer
+      v-model:open="sendSheetOpen"
+      :title="
+        t('adminEdition.share.sheetTitle', {
+          name: sendTarget?.firstName ?? '',
+        })
+      "
+    >
+      <template #body>
+        <MobileList v-if="sendTarget">
+          <AdminSendOptions
+            v-model:message-type="messageType"
+            :slug="slug"
+            :edition-id="id"
+            :participant="sendTarget"
+            :status="status"
+            :text="
+              messages.data.value?.messages[sendTarget.participationId]?.text
+            "
+            :email-enabled="emailSending"
+            @done="sendSheetOpen = false"
+          />
+        </MobileList>
+      </template>
+    </UDrawer>
   </AdminScreen>
 </template>

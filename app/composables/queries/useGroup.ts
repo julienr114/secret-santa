@@ -2,6 +2,7 @@ import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
 import type { Participant, PublicEdition } from '#server/database/editions';
 import type { ExclusionRow } from '#server/database/schema';
+import type { JournalEntry } from '#server/utils/audit';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
 import type { Locale } from '#shared/i18n';
@@ -35,6 +36,23 @@ export const useDashboardQuery = (slug: Slug) =>
   useApiQuery<Dashboard>(
     () => keys.dashboard(toValue(slug)),
     () => base(slug),
+  );
+
+export type GroupJournal = {
+  entries: JournalEntry[];
+  editions: { id: string; label: string }[];
+  currentEditionId: string | null;
+  language: Locale;
+};
+
+/** The public journal, in the language the admin is used in. */
+export const useGroupJournalQuery = (
+  slug: Slug,
+  locale: MaybeRefOrGetter<Locale>,
+) =>
+  useApiQuery<GroupJournal>(
+    () => [...keys.group(toValue(slug)), 'journal', toValue(locale)],
+    () => `${base(slug)}/journal?locale=${toValue(locale)}`,
   );
 
 export const usePeopleQuery = (slug: Slug) =>

@@ -9,6 +9,10 @@ const STATUS_BY_REASON: Record<string, number> = {
   forbidden: 403,
   conflict: 409,
   too_many_attempts: 429,
+  invalid_transition: 409,
+  no_solution: 409,
+  missing_pins: 409,
+  too_few_participants: 409,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

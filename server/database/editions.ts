@@ -43,6 +43,12 @@ export type PublicEdition = {
   closedAt: string | null;
   createdAt: string;
   participantCount?: number;
+  /** Exclusions applied at the draw, for closed editions (archives). */
+  exclusionsAtDraw?: {
+    giverId: string;
+    receiverId: string;
+    reciprocal: boolean;
+  }[];
 };
 
 export const publicEdition = (
@@ -58,7 +64,29 @@ export const publicEdition = (
   closedAt: edition.closedAt,
   createdAt: edition.createdAt,
   ...(participantCount === undefined ? {} : { participantCount }),
+  ...(edition.status === 'closed'
+    ? { exclusionsAtDraw: exclusionsOf(edition.rulesSnapshot) }
+    : {}),
 });
+
+// The draw stores the exclusions it applied in rules_snapshot.
+const exclusionsOf = (snapshot: unknown) => {
+  const list = (snapshot as { manualExclusions?: unknown } | null)
+    ?.manualExclusions;
+  return Array.isArray(list)
+    ? list.flatMap((e) =>
+        e && typeof e.giverId === 'string' && typeof e.receiverId === 'string'
+          ? [
+              {
+                giverId: e.giverId,
+                receiverId: e.receiverId,
+                reciprocal: Boolean(e.reciprocal),
+              },
+            ]
+          : [],
+      )
+    : [];
+};
 
 export const participantCounts = async (
   db: Db,

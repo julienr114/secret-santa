@@ -395,6 +395,11 @@ const sectionTitle =
       <AdminExclusions
         :slug="slug"
         :editable="canEdit"
+        :archived="
+          status === 'closed'
+            ? (edition.data.value?.edition.exclusionsAtDraw ?? [])
+            : undefined
+        "
         title="Exclusions"
         :footer="
           check.data.value?.historyExclusions

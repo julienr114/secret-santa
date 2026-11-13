@@ -15,8 +15,10 @@ const props = withDefaults(
     editable?: boolean;
     title?: string;
     footer?: string;
+    /** Archives: the exclusions applied at the draw, written in the past. */
+    archived?: { giverId: string; receiverId: string; reciprocal: boolean }[];
   }>(),
-  { editable: true, title: undefined, footer: undefined },
+  { editable: true, title: undefined, footer: undefined, archived: undefined },
 );
 
 const toast = useToast();
@@ -27,7 +29,12 @@ const create = useCreateExclusionMutation(() => props.slug);
 const remove = useDeleteExclusionMutation(() => props.slug);
 
 const persons = computed(() => people.data.value?.persons ?? []);
-const exclusions = computed(() => people.data.value?.exclusions ?? []);
+const exclusions = computed(() =>
+  props.archived
+    ? props.archived.map((e) => ({ ...e, id: `${e.giverId}>${e.receiverId}` }))
+    : (people.data.value?.exclusions ?? []),
+);
+const past = computed(() => Boolean(props.archived));
 const personOf = (id: string) => persons.value.find((p) => p.id === id);
 const nameOf = (id: string) => personOf(id)?.firstName ?? '?';
 const options = (exclude?: string) =>
@@ -94,8 +101,12 @@ const onAdd = () =>
       :title="`${nameOf(ex.giverId)} ${ex.reciprocal ? '↔' : '→'} ${nameOf(ex.receiverId)}`"
       :subtitle="
         ex.reciprocal
-          ? 'Ne se tirent pas, dans les deux sens'
-          : `${nameOf(ex.giverId)} ne tire pas ${nameOf(ex.receiverId)}`
+          ? past
+            ? 'Ne se sont pas tirés, dans les deux sens'
+            : 'Ne se tirent pas, dans les deux sens'
+          : past
+            ? `${nameOf(ex.giverId)} n'a pas tiré ${nameOf(ex.receiverId)}`
+            : `${nameOf(ex.giverId)} ne tire pas ${nameOf(ex.receiverId)}`
       "
     >
       <template #leading>

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-// One row: optional leading icon, title and subtitle, trailing slot and a
+import type { Avatar } from '#server/utils/avatars';
+
+// One row: optional leading avatar or icon, title and subtitle, trailing slot and a
 // chevron when it opens another screen.
 defineProps<{
   to?: string;
   title: string;
   subtitle?: string;
   icon?: string;
+  avatar?: Avatar;
   emoji?: string;
   tone?: 'default' | 'danger';
 }>();
@@ -24,8 +27,9 @@ const NuxtLink = resolveComponent('NuxtLink');
       class="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors active:bg-muted"
       @click="$emit('click')"
     >
+      <AdminAvatar v-if="avatar" :avatar="avatar" />
       <span
-        v-if="emoji || icon"
+        v-else-if="emoji || icon"
         class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
         aria-hidden="true"
       >

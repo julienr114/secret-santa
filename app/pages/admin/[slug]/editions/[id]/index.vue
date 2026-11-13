@@ -263,6 +263,7 @@ const sectionTitle =
         <MobileListItem
           v-for="p in participants"
           :key="p.participationId"
+          :avatar="p.avatar"
           :to="`/admin/${slug}/editions/${id}/participants/${p.participationId}`"
           :title="p.firstName"
           :subtitle="p.badges.length === 0 ? 'en attente' : undefined"

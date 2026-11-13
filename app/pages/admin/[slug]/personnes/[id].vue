@@ -88,7 +88,9 @@ const onDelete = () =>
     >
       <p v-if="!person" class="text-muted">Personne introuvable.</p>
       <template v-else>
-        <h1 class="font-display text-3xl font-bold">{{ person.firstName }}</h1>
+        <h1 class="font-display text-3xl font-bold">
+          {{ person.firstName }}
+        </h1>
         <AdminPersonForm
           :key="person.id"
           :initial="person"

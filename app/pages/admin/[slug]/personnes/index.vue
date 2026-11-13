@@ -60,6 +60,7 @@ const sorted = computed(() =>
         <MobileListItem
           v-for="person in sorted"
           :key="person.id"
+          :avatar="person.avatar"
           :to="`/admin/${slug}/personnes/${person.id}`"
           :title="label(person.id)"
           :subtitle="subtitle(person.active)"

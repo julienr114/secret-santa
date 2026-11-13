@@ -57,6 +57,8 @@ export const useEditionQuery = (slug: Slug, id: Slug) =>
 export type PersonBody = {
   firstName: string;
   lastName: string | null;
+  avatarEmoji?: string;
+  avatarColor?: string;
 };
 export type PersonPatch = Partial<PersonBody & { active: boolean }> & {
   id: string;

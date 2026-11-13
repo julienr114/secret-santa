@@ -77,6 +77,7 @@ const onAdd = (personId: string, firstName: string) =>
         <MobileListItem
           v-for="person in candidates"
           :key="person.id"
+          :avatar="person.avatar"
           :title="person.firstName"
           :subtitle="person.lastName ?? undefined"
           @click="onAdd(person.id, person.firstName)"

@@ -131,7 +131,10 @@ const sectionTitle =
       <p v-if="!p" class="text-muted">Participant introuvable.</p>
       <template v-else>
         <div class="flex flex-col gap-2">
-          <h1 class="font-display text-3xl font-bold">{{ p.firstName }}</h1>
+          <div class="flex items-center gap-4">
+            <AdminAvatar :avatar="p.avatar" size="lg" />
+            <h1 class="font-display text-3xl font-bold">{{ p.firstName }}</h1>
+          </div>
           <div class="flex flex-wrap gap-1">
             <AdminStatusBadge
               v-for="badge in p.badges"

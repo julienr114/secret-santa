@@ -1,7 +1,9 @@
 import type { Participant } from '#server/database/editions';
 
-// One-line status of a participant on the edition screen, from "not sent"
-// to "result viewed", with the icon and colour that go with it.
+// One-line status of a participant on the edition screen, with the icon
+// and colour that go with it. Before the draw the screen stays quiet: no
+// "not sent yet", only a tick once the invitation went out. Sending is
+// tracked from the draw on, from "not sent" to "result viewed".
 export type ParticipantStatusLine = {
   label: string;
   icon: string;
@@ -11,7 +13,7 @@ export type ParticipantStatusLine = {
 export const participantStatusLine = (
   p: Pick<Participant, 'messageSentAt' | 'viewCount'>,
   editionStatus: string,
-): ParticipantStatusLine => {
+): ParticipantStatusLine | null => {
   if (p.viewCount > 0) {
     return {
       label:
@@ -22,6 +24,15 @@ export const participantStatusLine = (
       tone: 'text-success',
     };
   }
+  if (editionStatus !== 'drawn') {
+    return p.messageSentAt
+      ? {
+          label: 'Invitation envoyée',
+          icon: 'i-lucide-check',
+          tone: 'text-dimmed',
+        }
+      : null;
+  }
   if (!p.messageSentAt) {
     return {
       label: 'Pas encore envoyé',
@@ -29,11 +40,9 @@ export const participantStatusLine = (
       tone: 'text-dimmed',
     };
   }
-  return editionStatus === 'drawn'
-    ? {
-        label: 'Envoyé, pas encore consulté',
-        icon: 'i-lucide-clock-3',
-        tone: 'text-warning',
-      }
-    : { label: 'Lien envoyé', icon: 'i-lucide-send', tone: 'text-info' };
+  return {
+    label: 'Envoyé, pas encore consulté',
+    icon: 'i-lucide-clock-3',
+    tone: 'text-warning',
+  };
 };

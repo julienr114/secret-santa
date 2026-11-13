@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MessageType } from '#server/utils/messages';
+import { messageTypesFor, type MessageType } from '#server/utils/messages';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -48,10 +48,15 @@ const canEdit = computed(
   () => status.value === 'draft' || status.value === 'invitations',
 );
 const messageType = ref<MessageType>(defaultMessageType(status.value));
-const messageItems = Object.entries(MESSAGE_LABELS).map(([value, text]) => ({
-  value,
-  label: text,
-}));
+const messageItems = computed(() =>
+  messageTypesFor(status.value).map((value) => ({
+    value,
+    label: MESSAGE_LABELS[value] ?? value,
+  })),
+);
+watch(status, (s) => {
+  messageType.value = defaultMessageType(s);
+});
 const messages = useMessagesQuery(slug, id, messageType);
 const message = computed(() => messages.data.value?.messages[pid.value]);
 

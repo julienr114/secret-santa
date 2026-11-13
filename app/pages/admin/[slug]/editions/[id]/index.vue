@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MessageType } from '#server/utils/messages';
+import { messageTypesFor, type MessageType } from '#server/utils/messages';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -61,10 +61,12 @@ const messageType = ref<MessageType>(defaultMessageType(status.value));
 watch(status, (s) => {
   messageType.value = defaultMessageType(s);
 });
-const messageItems = Object.entries(MESSAGE_LABELS).map(([value, text]) => ({
-  value,
-  label: text,
-}));
+const messageItems = computed(() =>
+  messageTypesFor(status.value).map((value) => ({
+    value,
+    label: MESSAGE_LABELS[value] ?? value,
+  })),
+);
 const messages = useMessagesQuery(slug, id, messageType);
 const sharer = useShareMessage(slug);
 
@@ -108,6 +110,20 @@ const personOf = (pid: string) => participants.value.find((p) => p.id === pid);
 const firstNameOf = (pid: string) => personOf(pid)?.firstName ?? '?';
 const viewedCount = computed(
   () => participants.value.filter((p) => p.viewCount > 0).length,
+);
+// Status line of each participant, with the number of ideas; nothing at
+// all for someone with neither before the draw.
+const subtitles = computed(() =>
+  Object.fromEntries(
+    participants.value.flatMap((p) => {
+      const line = participantStatusLine(p, status.value);
+      const ideas = p.wishesCount ? plural(p.wishesCount, 'idée') : '';
+      const label = [line?.label, ideas].filter(Boolean).join(' · ');
+      return label
+        ? [[p.participationId, { label, icon: line?.icon, tone: line?.tone }]]
+        : [];
+    }),
+  ),
 );
 const sentCount = computed(
   () => participants.value.filter((p) => p.messageSentAt).length,
@@ -299,9 +315,12 @@ const sectionTitle =
         <h2 :class="sectionTitle">Message à partager</h2>
         <USelect v-model="messageType" :items="messageItems" class="w-full" />
         <p class="px-1 text-xs text-muted">
-          {{ sentCount }}/{{ participants.length }} partagé{{
-            sentCount > 1 ? 's' : ''
-          }}. Le bouton ouvre le partage du téléphone (WhatsApp, SMS…) avec le
+          <template v-if="status === 'drawn'"
+            >{{ sentCount }}/{{ participants.length }} partagé{{
+              sentCount > 1 ? 's' : ''
+            }}.
+          </template>
+          Le bouton ouvre le partage du téléphone (WhatsApp, SMS…) avec le
           message et le lien personnel.
         </p>
       </section>
@@ -322,18 +341,16 @@ const sectionTitle =
           :title="p.firstName"
           :chevron="!canSend"
         >
-          <template #subtitle>
+          <template v-if="subtitles[p.participationId]" #subtitle>
             <UIcon
-              :name="participantStatusLine(p, status).icon"
+              v-if="subtitles[p.participationId]?.icon"
+              :name="subtitles[p.participationId]?.icon"
               class="size-4 shrink-0"
-              :class="participantStatusLine(p, status).tone"
+              :class="subtitles[p.participationId]?.tone"
             />
-            <span class="truncate">
-              {{ participantStatusLine(p, status).label
-              }}<template v-if="p.wishesCount">
-                · {{ plural(p.wishesCount, 'idée') }}</template
-              >
-            </span>
+            <span class="truncate">{{
+              subtitles[p.participationId]?.label
+            }}</span>
           </template>
           <template v-if="canSend" #trailing>
             <UButton

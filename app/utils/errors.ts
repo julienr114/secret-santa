@@ -22,10 +22,20 @@ const MESSAGES: Record<string, string> = {
   participants_locked: 'La liste est verrouillée après le tirage.',
   already_participating: 'Cette personne participe déjà.',
   links_not_open: "Ouvre d'abord les invitations.",
+  message_not_available: "Ce message ne correspond pas à l'étape de l'édition.",
   participation_not_found: 'Participant introuvable.',
   wrong_sentence: 'Recopie exactement la phrase demandée.',
   results_secret:
     "Les résultats restent secrets tant que l'édition n'est pas clôturée.",
+  link_invalid:
+    "Ce lien n'est plus valable, demande-en un nouveau à ton gardien.",
+  draw_not_done: "Le tirage n'a pas encore eu lieu.",
+  result_not_found:
+    "Ton résultat est introuvable, préviens ton gardien qu'il y a un souci.",
+  wishlist_disabled: "Ce groupe n'utilise pas les listes de souhaits.",
+  too_many_wishes: "Il y a trop d'idées dans ta liste.",
+  invalid_wish:
+    'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',
   'Validation Error': 'Vérifie les champs du formulaire.',
 };
 

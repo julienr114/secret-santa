@@ -15,11 +15,9 @@ export const manualExclusionSchema = z.object({
 const shape = {
   excludeSpouse: z.boolean(),
   excludePreviousYears: z.number().int().min(0).max(10),
-  registrationRequired: z.boolean(),
   budget: z.string().max(200),
   eventDate: z.string().max(100),
   guardianMessage: z.string().max(1000),
-  maxPinAttempts: z.number().int().min(1).max(20),
   wishlist: z.boolean(),
   maxWishes: z.number().int().min(1).max(50),
 };
@@ -27,11 +25,9 @@ const shape = {
 export const rulesSchema = z.object({
   excludeSpouse: shape.excludeSpouse.default(true),
   excludePreviousYears: shape.excludePreviousYears.default(1),
-  registrationRequired: shape.registrationRequired.default(true),
   budget: shape.budget.default(''),
   eventDate: shape.eventDate.default(''),
   guardianMessage: shape.guardianMessage.default(''),
-  maxPinAttempts: shape.maxPinAttempts.default(5),
   wishlist: shape.wishlist.default(true),
   maxWishes: shape.maxWishes.default(10),
 });

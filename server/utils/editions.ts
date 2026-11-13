@@ -59,34 +59,22 @@ export const previousEdition = <E extends EditionLike>(
 export type ParticipantStatus = {
   messageSentAt?: string | null;
   viewCount: number;
-  hasPin: boolean;
-  pinLocked?: boolean;
   wishesCount: number;
 };
 
-export const BADGES = [
-  'sent',
-  'pin_set',
-  'wishes',
-  'viewed',
-  'locked',
-] as const;
+export const BADGES = ['sent', 'wishes', 'viewed'] as const;
 export type Badge = (typeof BADGES)[number];
 
 /** Status badges for a participant card (README section 11). */
 export const participantBadges = ({
   messageSentAt,
   viewCount,
-  hasPin,
-  pinLocked,
   wishesCount,
 }: ParticipantStatus): Badge[] =>
   [
     messageSentAt ? 'sent' : null,
-    hasPin ? 'pin_set' : null,
     wishesCount > 0 ? 'wishes' : null,
     viewCount > 0 ? 'viewed' : null,
-    pinLocked ? 'locked' : null,
   ].filter((b): b is Badge => b !== null);
 
 // --- Lifecycle (README 4.1) ---------------------------------------------
@@ -175,8 +163,3 @@ export const buildHistory = (
       }),
       {},
     );
-
-/** Who still has to choose a code, when the rule requires it (README 5). */
-export const missingPins = <P extends { id: string; hasPin: boolean }>(
-  participants: P[],
-): P[] => participants.filter((p) => !p.hasPin);

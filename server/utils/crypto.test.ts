@@ -8,7 +8,6 @@ import {
   hashSecret,
   hashToken,
   importDataKey,
-  isTrivialPin,
   secureRandomInt,
   timingSafeEqual,
   toBase64,
@@ -48,27 +47,6 @@ describe('secureRandomInt', () => {
     values.forEach((v) => expect(v).toBeGreaterThanOrEqual(0));
     values.forEach((v) => expect(v).toBeLessThan(5));
     expect(new Set(values).size).toBe(5);
-  });
-});
-
-describe('PIN rules', () => {
-  it('refuses trivial or malformed codes', () => {
-    [
-      '000000',
-      '111111',
-      '999999',
-      '123456',
-      '654321',
-      '345678',
-      '12345',
-      'abcdef',
-      '',
-    ].forEach((pin) => expect(isTrivialPin(pin), pin).toBe(true));
-  });
-  it('accepts ordinary codes', () => {
-    ['123457', '102030', '246810', '987650', '200512'].forEach((pin) =>
-      expect(isTrivialPin(pin), pin).toBe(false),
-    );
   });
 });
 

@@ -9,20 +9,11 @@ import {
 
 describe('people schemas', () => {
   it('normalizes a person input', () => {
-    expect(
-      personInputSchema.parse({
-        firstName: ' Léa ',
-        phone: '+33 6 12 34 56 78',
-      }),
-    ).toEqual({
+    expect(personInputSchema.parse({ firstName: ' Léa ' })).toEqual({
       firstName: 'Léa',
       lastName: null,
-      phone: '+33612345678',
     });
     expect(personInputSchema.safeParse({ firstName: '' }).success).toBe(false);
-    expect(
-      personInputSchema.safeParse({ firstName: 'Léa', phone: '06' }).success,
-    ).toBe(false);
   });
 
   it('refuses a couple of one person', () => {
@@ -60,28 +51,21 @@ describe('displayName', () => {
 });
 
 describe('publicPerson', () => {
-  it('never exposes the PIN hash or salt', () => {
-    const exposed = publicPerson({
+  it('exposes only display fields', () => {
+    expect(
+      publicPerson({
+        id: 'p',
+        firstName: 'Léa',
+        lastName: null,
+        active: true,
+        createdAt: 'd',
+      }),
+    ).toEqual({
       id: 'p',
       firstName: 'Léa',
       lastName: null,
-      phone: null,
       active: true,
-      pinHash: 'h',
-      pinSalt: 's',
-      pinLockedAt: null,
       createdAt: 'd',
     });
-    expect(exposed).toEqual({
-      id: 'p',
-      firstName: 'Léa',
-      lastName: null,
-      phone: null,
-      active: true,
-      hasPin: true,
-      pinLocked: false,
-      createdAt: 'd',
-    });
-    expect(JSON.stringify(exposed)).not.toMatch(/pinHash|pinSalt|"h"|"s"/);
   });
 });

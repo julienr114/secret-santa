@@ -12,11 +12,9 @@ describe('rules', () => {
     expect(DEFAULT_RULES).toEqual({
       excludeSpouse: true,
       excludePreviousYears: 1,
-      registrationRequired: true,
       budget: '',
       eventDate: '',
       guardianMessage: '',
-      maxPinAttempts: 5,
       wishlist: true,
       maxWishes: 10,
     });
@@ -55,7 +53,7 @@ describe('rules', () => {
       reason: 'invalid_rules',
       details: { issues: ['excludePreviousYears'] },
     });
-    expect(rulesSchema.safeParse({ maxPinAttempts: 0 }).success).toBe(false);
+    expect(rulesSchema.safeParse({ maxWishes: 0 }).success).toBe(false);
   });
 
   it('keeps only the given keys in a partial override', () => {

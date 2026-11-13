@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { ok, fail, type Result } from './result';
 
 // Web Crypto only (README section 8): available in Node 22 and in Workers.
@@ -42,26 +41,10 @@ export const hashToken = async (token: string): Promise<string> =>
     ),
   );
 
-// --- PIN codes and guardian passwords (README 8.2, 8.4) -----------------
+// --- Guardian passwords (README 8.4) ----------------------------------
 
 export const DEFAULT_PBKDF2_ITERATIONS = 20_000;
 export const MAX_PBKDF2_ITERATIONS = 100_000;
-
-export const pinSchema = z.string().regex(/^\d{6}$/, 'six digits');
-
-const isStraight = (digits: number[], step: number): boolean =>
-  digits.every((d, i) => i === 0 || d - (digits[i - 1] as number) === step);
-
-/** 000000, 123456, 654321 and friends are refused (README 8.2). */
-export const isTrivialPin = (pin: string): boolean => {
-  if (!pinSchema.safeParse(pin).success) return true;
-  const digits = [...pin].map(Number);
-  return (
-    new Set(digits).size === 1 ||
-    isStraight(digits, 1) ||
-    isStraight(digits, -1)
-  );
-};
 
 export const generateSalt = (): string => toBase64(randomBytes(16));
 

@@ -15,11 +15,6 @@ export const AUDIT_TYPES = [
   'link_copied',
   'link_shared',
   'link_regenerated',
-  'pin_set',
-  'pin_failed',
-  'pin_locked',
-  'pin_unlocked',
-  'pin_reset',
   'draw_done',
   'draw_cancelled',
   'result_viewed',
@@ -104,9 +99,8 @@ const MESSAGE_LABELS: Record<string, string> = {
 };
 
 const VIA_LABELS: Record<string, string> = {
-  whatsapp: ' sur WhatsApp',
   copy: ' (message copié)',
-  share: ' (lien partagé)',
+  share: ' (partagé)',
 };
 
 const text = (m: Meta, key: string, fallback = '?'): string =>
@@ -137,13 +131,6 @@ const DESCRIPTIONS: Record<AuditType, Describe> = {
   link_copied: (name) => `Le gardien a copié le lien de ${name}`,
   link_shared: (name) => `Le gardien a partagé le lien de ${name}`,
   link_regenerated: (name) => `Le lien de ${name} a été régénéré`,
-  pin_set: (name) => `${name} a choisi son code`,
-  pin_failed: (name, m) =>
-    `Code erroné sur le lien de ${name} (${text(m, 'attempts')}/${text(m, 'max')})`,
-  pin_locked: (name, m) =>
-    `Le lien de ${name} est bloqué après ${text(m, 'max')} erreurs`,
-  pin_unlocked: (name) => `Le gardien a débloqué le lien de ${name}`,
-  pin_reset: (name) => `Le gardien a réinitialisé le code de ${name}`,
   draw_done: (_, m) =>
     `Le tirage a été effectué pour ${plural(num(m, 'count', 0), 'participant')}`,
   draw_cancelled: (_, m) =>

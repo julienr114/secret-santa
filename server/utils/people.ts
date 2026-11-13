@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { phoneSchema } from './whatsapp';
 
 // People, couples and manual exclusions of a group (README 6.6, section 10).
 
@@ -8,14 +7,12 @@ const nameSchema = z.string().trim().min(1).max(60);
 export const personInputSchema = z.object({
   firstName: nameSchema,
   lastName: nameSchema.nullable().default(null),
-  phone: phoneSchema.nullable().default(null),
 });
 
 export const personPatchSchema = z
   .object({
     firstName: nameSchema,
     lastName: nameSchema.nullable(),
-    phone: phoneSchema.nullable(),
     active: z.boolean(),
   })
   .partial()
@@ -64,11 +61,7 @@ export const displayName = (person: Named, people: Named[] = []): string => {
 };
 
 export type PersonRow = Named & {
-  phone: string | null;
   active: boolean;
-  pinHash: string | null;
-  pinSalt?: string | null;
-  pinLockedAt: string | null;
   createdAt: string;
 };
 
@@ -76,21 +69,15 @@ export type PublicPerson = {
   id: string;
   firstName: string;
   lastName: string | null;
-  phone: string | null;
   active: boolean;
-  hasPin: boolean;
-  pinLocked: boolean;
   createdAt: string;
 };
 
-/** What the admin API exposes about a person: never a PIN hash or salt. */
+/** What the admin API exposes about a person. */
 export const publicPerson = (person: PersonRow): PublicPerson => ({
   id: person.id,
   firstName: person.firstName,
   lastName: person.lastName ?? null,
-  phone: person.phone,
   active: person.active,
-  hasPin: Boolean(person.pinHash),
-  pinLocked: Boolean(person.pinLockedAt),
   createdAt: person.createdAt,
 });

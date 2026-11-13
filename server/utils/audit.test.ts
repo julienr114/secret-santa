@@ -14,7 +14,7 @@ describe('auditEvent', () => {
   it('builds a row with injected id and date', () => {
     const result = auditEvent(
       {
-        type: 'pin_set',
+        type: 'link_copied',
         groupId: 'g1',
         editionId: 'e1',
         personId: 'p1',
@@ -26,7 +26,7 @@ describe('auditEvent', () => {
       ok: true,
       value: {
         id: 'evt-1',
-        type: 'pin_set',
+        type: 'link_copied',
         groupId: 'g1',
         editionId: 'e1',
         personId: 'p1',
@@ -48,7 +48,7 @@ describe('auditEvent', () => {
     ).toBe('invalid_audit_event');
     expect(
       auditEvent(
-        { type: 'pin_set', groupId: 'g1', actor: 'hacker' as never },
+        { type: 'link_copied', groupId: 'g1', actor: 'hacker' as never },
         deps,
       ).ok,
     ).toBe(false);
@@ -112,18 +112,12 @@ describe('describeEvent', () => {
     ).toBe('Le couple Léa + Tom a été enregistré');
     expect(
       describeEvent(
-        ev('message_sent', { messageType: 'invitation', via: 'whatsapp' }),
+        ev('message_sent', { messageType: 'invitation', via: 'share' }),
         { names },
       ),
-    ).toBe("Le gardien a envoyé l'invitation à Léa sur WhatsApp");
+    ).toBe("Le gardien a envoyé l'invitation à Léa (partagé)");
     expect(describeEvent(ev('link_copied'), { names })).toBe(
       'Le gardien a copié le lien de Léa',
-    );
-    expect(
-      describeEvent(ev('pin_failed', { attempts: 2, max: 5 }), { names }),
-    ).toBe('Code erroné sur le lien de Léa (2/5)');
-    expect(describeEvent(ev('pin_locked', { max: 5 }), { names })).toBe(
-      'Le lien de Léa est bloqué après 5 erreurs',
     );
     expect(describeEvent(ev('draw_done', { count: 12 }, null), { names })).toBe(
       'Le tirage a été effectué pour 12 participants',

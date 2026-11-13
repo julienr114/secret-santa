@@ -22,7 +22,7 @@ describe('buildMessage', () => {
 
   it('writes the invitation and the drawn message with budget and date', () => {
     expect(valueOf(buildMessage('invitation', data))).toBe(
-      'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien, choisis ton code secret et note quelques idées de cadeaux :\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et note quelques idées de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
       valueOf(
@@ -38,13 +38,10 @@ describe('buildMessage', () => {
     expect(valueOf(buildMessage('drawn', data))).not.toContain('Budget');
   });
 
-  it('adapts the reminder to the participant state', () => {
-    expect(
-      valueOf(buildMessage('reminder', { ...data, pinChosen: false })),
-    ).toContain('choisi ton code');
-    expect(
-      valueOf(buildMessage('reminder', { ...data, pinChosen: true })),
-    ).toContain('consulté ton résultat');
+  it('writes a short reminder', () => {
+    expect(valueOf(buildMessage('reminder', data))).toContain(
+      "ton lien t'attend",
+    );
   });
 
   it('never leaks a result, whatever extra data is passed', () => {

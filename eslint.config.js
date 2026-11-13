@@ -66,6 +66,13 @@ const tests = {
     'functional/immutable-data': 'off',
     'functional/no-loop-statements': 'off',
     'functional/no-throw-statements': 'off',
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: 'ForInStatement',
+        message: 'Use Object.keys/entries instead.',
+      },
+    ],
   },
 };
 

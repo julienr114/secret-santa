@@ -139,7 +139,7 @@ describe('history', () => {
       b: ['a'],
     });
     expect(buildHistory(assignments, ['e2025', 'e2024'])).toEqual({
-      a: ['c', 'b'],
+      a: ['b', 'c'],
       b: ['a'],
     });
     expect(buildHistory(assignments, [])).toEqual({});

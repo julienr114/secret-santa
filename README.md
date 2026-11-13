@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v3, étape 1 (socle) terminée et déployée.** Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 2 (cœur métier).
+> État au 13 novembre 2026 : **plan v3, étapes 1 (socle) et 2 (cœur métier) terminées.** Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 3 (administration).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -717,8 +717,15 @@ Enseignements : l'horloge est gelée pendant une requête Worker (`performance.n
 
 Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
 
-**Étape 2 — Cœur métier, sans interface**
-`draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
+**Étape 2 — Cœur métier, sans interface** ✅ *terminée le 13 novembre 2026*
+`result.js`, `rules.js`, `draw.js`, `crypto.js`, `audit.js`, `wishes.js`, `whatsapp.js`, `messages.js` dans `server/utils/`, chacun avec son `.test.js` (58 tests, 100 % des lignes couvertes), un commit par module. Points à connaître pour la suite :
+- **Clés anglaises dans le code**, libellés français dans l'interface. Règles : `excludeSpouse`, `excludePreviousYears`, `registrationRequired`, `budget`, `eventDate`, `guardianMessage`, `maxPinAttempts`, `wishlist`, `maxWishes` (`rules.js`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types d'événements : `edition_created`, `participant_added/removed`, `couple_changed`, `rules_changed`, `message_sent` (meta `messageType`, `via`), `link_copied/shared/regenerated`, `pin_set/failed/locked/unlocked/reset`, `draw_done`, `draw_cancelled`, `result_viewed`, `wishes_updated`, `edition_closed` (`audit.js`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.js`).
+- `draw(input, rules, { random })` : l'appelant fournit `history` (receveurs passés par donneur, déjà filtré sur N éditions et sur la participation du donneur) et `random` (`secureRandomInt` de `crypto.js` en production). `checkFeasibility` renvoie `blocked`, `constrained` et `allowedCounts` pour l'encart « Vérification ».
+- `audit.js` purge de `meta` toute clé évoquant un résultat ou un secret (`receiver`, `assignment`, `pin`, `token`…), à n'importe quelle profondeur.
+- Le hachage mêle le poivre au secret (`${pepper}\0${secret}`), 20 000 itérations par défaut, plafonné à 100 000.
+- Les numéros sont stockés en E.164 (`+33612345678`), `whatsappUrl` retire le `+`.
+
+Plan initial : `draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
 
 **Étape 3 — Administration**
 Connexion super-admin et gardien, gestion des groupes, des personnes, des couples, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.

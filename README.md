@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy`). Prochaine étape : l'étape 7 (finitions), dont l'écran `/admin/[groupe]/journal`, pas encore fait.
+> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy`). Prochaine étape : l'étape 7 (finitions). Le journal côté gardien (`/admin/[groupe]/journal`, `GET /api/admin/[groupe]/journal`) est fait : même frise que côté participant, dans la langue de l'administration.
 >
 > Changements de la v7 (13 novembre 2026, à la demande de Julien) : **trois langues**, français, anglais et allemand, pour toute l'application (section 21). Chaque personne a une **langue préférée** : sa page, ses messages, ses emails et le journal qu'elle lit suivent cette langue. L'application s'appelle désormais **Under the Tree** dans l'interface ; « Secret Santa » reste le nom du jeu dans les messages. La contrainte « interface entièrement en français » de la section 1 est levée.
 >
@@ -621,6 +621,8 @@ Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnemen
 - **Fournisseur** : Resend (offre gratuite), domaine `under-the-tree.party` vérifié, un seul appel HTTPS par envoi groupé (`/emails/batch`), ce qui reste loin de la limite de 50 sous-requêtes du plan gratuit. Secret `NUXT_RESEND_API_KEY` ; sans clé, la route répond `email_not_configured` et rien d'autre ne change.
 - **Contenu** : `buildEmail` dans `server/utils/messages.ts`, même texte que le message à partager, plus un objet et un jumeau HTML sobre. Jamais de résultat.
 - **Délivrabilité, mesurée le 13 novembre 2026 sur Gmail** : SPF, DKIM et DMARC passent. Sans DMARC le premier essai est arrivé en spam ; avec, les mails arrivent dans l'onglet **Promotions**, mis en forme ou non. Le domaine venait d'être créé ; à remesurer plus tard. Seul Gmail a été testé. L'écran du gardien prévient que les emails arrivent souvent en spam (formulation demandée par Julien). Conséquence : l'email est un complément, le gardien relance par téléphone ceux qui n'ouvrent pas leur lien.
+- **Envoi individuel** : le bouton « Envoyer » d'un participant ouvre un panneau où le gardien choisit le message, la langue (enregistrée comme langue préférée de la personne) puis le moyen : partage du téléphone, copie, ou email si le groupe l'a et que la personne a une adresse.
+- **Envoi à plusieurs** : le gardien coche les participants dans la liste (seuls ceux qui ont une adresse), puis choisit le message dans un panneau. L'API prend `participationIds` ; `audience` reste accepté.
 - Les tests de bout en bout tournent sans clé (`scripts/e2e-server.sh` ignore le `.env` du poste) : aucun test n'envoie de vrai email.
 
 ---
@@ -853,6 +855,14 @@ Français, anglais, allemand. Le français reste la langue de référence et la 
 | Lien invalide | Cookie ou langue du navigateur (on ne sait pas qui c'est) |
 
 Le gardien règle la langue d'une personne sur sa fiche. Le participant la change lui-même depuis sa page (`PUT /api/p/[token]/language`) : c'est enregistré comme sa préférence, donc ses prochains messages suivent.
+
+### 21.3 Autres décisions du 13 novembre 2026 (soir)
+
+- **Date de la fête** : saisie avec un sélecteur de date (Nuxt UI `UInputDate` + `UCalendar`, le 25 décembre de l'année proposé en un geste), stockée en jour ISO dans `eventDate`. Elle est écrite dans la langue de chacun (messages, emails, page de résultat). Une ancienne valeur en texte libre reste affichée telle quelle. Le bouton **« Clôturer » n'apparaît qu'à partir du lendemain** de cette date ; sans vraie date, il reste disponible.
+- **Exclusions après le tirage** : l'écran d'une édition tirée ou clôturée affiche les exclusions **appliquées au tirage** (`rules_snapshot`), plus celles du groupe, qui ont pu changer depuis.
+- **Suppression d'un groupe** : super-admin uniquement, `POST /api/admin/groups/[id]/delete` avec l'identifiant du groupe à recopier. Efface le groupe, ses personnes, exclusions, éditions, tirages, listes de souhaits et journal, en une transaction. Irréversible.
+- **Barre du haut de l'administration** : logo toujours visible, un seul menu (langue, déconnexion), chemin réduit aux niveaux parents.
+- **Avatars** : douze emoji de marché de Noël ajoutés (bretzel, vin chaud, marrons…).
 
 ### 21.2 Comment c'est fait
 

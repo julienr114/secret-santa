@@ -2,11 +2,13 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v3, étapes 1 (socle) et 2 (cœur métier) terminées.** Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 3 (administration).
+> État au 13 novembre 2026 : **plan v4, étapes 1 et 2 terminées, étape 3 (administration) en cours** : routes admin et écrans groupes, personnes, réglages et édition faits ; reste le déploiement des secrets. Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 3 (administration).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
 > Changements de la v3, issus de l'étape 0 : **plus aucun email**, le gardien envoie les liens par WhatsApp grâce aux liens officiels **« click to chat » (`wa.me`)** qui ouvrent la conversation avec le message prérempli (section 13) ; **Nuxt 4** au lieu de Nuxt 3 ; preset **Cloudflare Workers** ; conclusions des vérifications en section 7.2.
+>
+> Changements de la v4 (13 novembre 2026, à la demande de Julien) : **retour à TypeScript strict** partout (aucun fichier `.js` dans le dépôt), **Nuxt UI 4** comme bibliothèque de composants, thème « carte de Noël » (rouge brique, vert sapin, papier crème, titres en Fraunces), **imports par alias** (`#server/…`, `~/…`, `~~/…`) au lieu des chemins relatifs profonds. Là où la suite du document parle de JavaScript, de JSDoc, de `jsconfig.json` ou de fichiers `.js`, lire TypeScript et `.ts`.
 
 ---
 
@@ -49,7 +51,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 7. **Participants modifiables chaque année** : ajout, retrait, changement de couple.
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
 9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, sans carte bancaire, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement par Workers Builds à chaque `git push` (vérifié à l'étape 0).
-10. **Stack Nuxt 4 / JavaScript** (décision v2, remplace « TypeScript strict » ; v3 : Nuxt 4 au lieu de Nuxt 3, car c'est la version stable que ciblent aujourd'hui la documentation et les modules, et l'arborescence `app/` prévue ici est la sienne) : Vue 3 et Nuxt sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
+10. **Stack Nuxt 4 / TypeScript strict** (v4 : retour à TypeScript, Nuxt UI pour l'interface ; historique : décision v2, remplace « TypeScript strict » ; v3 : Nuxt 4 au lieu de Nuxt 3, car c'est la version stable que ciblent aujourd'hui la documentation et les modules, et l'arborescence `app/` prévue ici est la sienne) : Vue 3 et Nuxt sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
 11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après saisie du code. La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
 12. **Programmation fonctionnelle et standards de l'industrie** (décision v2) : fonctions pures pour tout le métier, effets de bord repoussés dans les routes, ESLint + Prettier, tests Vitest sur la logique métier, Git en petits commits. Détails en section 7.1.
 

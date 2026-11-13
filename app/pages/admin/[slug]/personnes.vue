@@ -8,8 +8,8 @@ import {
   useEndCoupleMutation,
   usePeopleQuery,
   useUpdatePersonMutation,
-} from '../../../composables/queries/useGroup.js';
-import { errorMessage } from '../../../utils/errors.js';
+} from '~/composables/queries/useGroup.js';
+import { errorMessage } from '~/utils/errors.js';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 useHead({ title: 'Personnes — Secret Santa' });

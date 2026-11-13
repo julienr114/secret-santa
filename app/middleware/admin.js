@@ -1,4 +1,4 @@
-import { homeOf } from '../composables/queries/useSession.js';
+import { homeOf } from '~/composables/queries/useSession.js';
 
 // /admin is the login page; everything below needs a session, and
 // /admin/groupes needs the super-admin.

@@ -1,9 +1,6 @@
 <script setup>
-import {
-  homeOf,
-  useLoginMutation,
-} from '../../composables/queries/useSession.js';
-import { errorMessage } from '../../utils/errors.js';
+import { homeOf, useLoginMutation } from '~/composables/queries/useSession.js';
+import { errorMessage } from '~/utils/errors.js';
 
 definePageMeta({ middleware: 'admin' });
 useHead({ title: 'Connexion — Secret Santa' });

@@ -1,6 +1,6 @@
 <script setup>
-import { useEditionQuery } from '../../../../composables/queries/useGroup.js';
-import { errorMessage } from '../../../../utils/errors.js';
+import { useEditionQuery } from '~/composables/queries/useGroup.js';
+import { errorMessage } from '~/utils/errors.js';
 
 // Edition cockpit. Step 3 shows the participants; step 4 adds the actions
 // (links, draw, cancel, close).

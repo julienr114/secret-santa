@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeWishes } from './wishes';
-import { failureOf } from '../../tests/helpers';
+import { failureOf } from '~~/tests/helpers';
 
 const rules = { maxWishes: 3 };
 

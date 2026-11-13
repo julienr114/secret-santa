@@ -1,0 +1,53 @@
+import { and, eq } from 'drizzle-orm';
+import type { Db } from './client';
+import {
+  couples,
+  manualExclusions,
+  persons,
+  participations,
+  type PersonRow,
+} from './schema';
+
+// Queries about the people of one group. Every query filters on group_id.
+
+export const listPeople = (db: Db, groupId: string) =>
+  db
+    .select()
+    .from(persons)
+    .where(eq(persons.groupId, groupId))
+    .orderBy(persons.firstName);
+
+export const listCouples = (db: Db, groupId: string) =>
+  db.select().from(couples).where(eq(couples.groupId, groupId));
+
+export const listExclusions = (db: Db, groupId: string) =>
+  db
+    .select()
+    .from(manualExclusions)
+    .where(eq(manualExclusions.groupId, groupId));
+
+export const findPerson = async (
+  db: Db,
+  groupId: string,
+  personId: string | undefined,
+): Promise<PersonRow | null> => {
+  if (!personId) return null;
+  const [person] = await db
+    .select()
+    .from(persons)
+    .where(and(eq(persons.groupId, groupId), eq(persons.id, personId)))
+    .limit(1);
+  return person ?? null;
+};
+
+export const hasParticipations = async (
+  db: Db,
+  personId: string,
+): Promise<boolean> => {
+  const [row] = await db
+    .select({ id: participations.id })
+    .from(participations)
+    .where(eq(participations.personId, personId))
+    .limit(1);
+  return Boolean(row);
+};

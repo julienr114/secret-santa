@@ -1,4 +1,4 @@
-import type { Result } from '../server/utils/result';
+import type { Result } from '#server/utils/result';
 
 /** Narrows a Result in tests; a Fail is a test failure. */
 export const valueOf = <T>(result: Result<T>): T => {

@@ -3,8 +3,8 @@ import {
   useCreateGroupMutation,
   useGroupsQuery,
   useUpdateGroupMutation,
-} from '../../composables/queries/useGroups.js';
-import { errorMessage } from '../../utils/errors.js';
+} from '~/composables/queries/useGroups.js';
+import { errorMessage } from '~/utils/errors.js';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 useHead({ title: 'Groupes — Secret Santa' });

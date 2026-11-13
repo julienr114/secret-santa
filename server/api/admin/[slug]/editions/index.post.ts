@@ -1,0 +1,71 @@
+import { eq } from 'drizzle-orm';
+import { editions, participations } from '#server/database/schema';
+import {
+  listEditions,
+  newParticipation,
+  publicEdition,
+} from '#server/database/editions';
+import { listPeople } from '#server/database/people';
+import { recordEvent } from '#server/database/audit';
+import { requireGroupAccess } from '#server/http/auth';
+import { dataKeyOf, newId, nowIso } from '#server/http/context';
+import { validatedBody } from '#server/http/validate';
+import { editionInputSchema, previousEdition } from '#server/utils/editions';
+
+// Creates a draft edition. Its participants start as those of the previous
+// edition who are still active (README 4.2), or every active person for a
+// first edition. Each gets a personal link right away.
+export default defineEventHandler(async (event) => {
+  const { user, group, db } = await requireGroupAccess(event);
+  const body = await validatedBody(event, editionInputSchema);
+  const dataKey = await dataKeyOf(event);
+  const existing = await listEditions(db, group.id);
+  if (existing.some((e) => e.status !== 'closed')) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'edition_in_progress',
+    });
+  }
+  const previous = previousEdition(existing, body.year);
+  const previousIds = previous
+    ? (
+        await db
+          .select({ personId: participations.personId })
+          .from(participations)
+          .where(eq(participations.editionId, previous.id))
+      ).map((r) => r.personId)
+    : null;
+  const people = (await listPeople(db, group.id)).filter(
+    (p) => p.active && (previousIds === null || previousIds.includes(p.id)),
+  );
+  const edition: typeof editions.$inferSelect = {
+    id: newId(),
+    groupId: group.id,
+    label: body.label,
+    year: body.year,
+    status: 'draft',
+    rulesOverride: null,
+    rulesSnapshot: null,
+    drawnAt: null,
+    closedAt: null,
+    createdAt: nowIso(),
+  };
+  const rows = await Promise.all(
+    people.map((p) =>
+      newParticipation({ editionId: edition.id, personId: p.id }, dataKey),
+    ),
+  );
+  await db.batch([
+    db.insert(editions).values(edition),
+    ...(rows.length > 0 ? [db.insert(participations).values(rows)] : []),
+  ]);
+  await recordEvent(db, {
+    type: 'edition_created',
+    groupId: group.id,
+    editionId: edition.id,
+    actor: user.role,
+    meta: { label: edition.label, participants: rows.length },
+  });
+  setResponseStatus(event, 201);
+  return { edition: publicEdition(edition, rows.length) };
+});

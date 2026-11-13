@@ -1,5 +1,5 @@
 <script setup>
-import { BADGE_LABELS, STATUS_LABELS } from '../../utils/labels.js';
+import { BADGE_LABELS, STATUS_LABELS } from '~/utils/labels.js';
 
 const props = defineProps({ code: { type: String, required: true } });
 const TONES = {

@@ -2,9 +2,9 @@
 import {
   useCreateEditionMutation,
   useDashboardQuery,
-} from '../../../composables/queries/useGroup.js';
-import { errorMessage } from '../../../utils/errors.js';
-import { formatDate } from '../../../utils/labels.js';
+} from '~/composables/queries/useGroup.js';
+import { errorMessage } from '~/utils/errors.js';
+import { formatDate } from '~/utils/labels.js';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();

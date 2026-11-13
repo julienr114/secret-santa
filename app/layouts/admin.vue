@@ -1,5 +1,5 @@
 <script setup>
-import { useLogoutMutation } from '../composables/queries/useSession.js';
+import { useLogoutMutation } from '~/composables/queries/useSession.js';
 
 const { user } = useUserSession();
 const route = useRoute();

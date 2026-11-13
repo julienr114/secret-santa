@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { normalizePhone, phoneSchema, whatsappUrl } from './whatsapp';
-import { valueOf } from '../../tests/helpers';
+import { valueOf } from '~~/tests/helpers';
 
 describe('normalizePhone', () => {
   it('normalizes international forms to E.164', () => {

@@ -8,7 +8,7 @@ import {
   type Assignment,
   type DrawInput,
 } from './draw';
-import { failureOf, valueOf } from '../../tests/helpers';
+import { failureOf, valueOf } from '~~/tests/helpers';
 
 // Deterministic PRNG for tests (mulberry32). Production uses Web Crypto.
 const seeded = (seed: number) => {

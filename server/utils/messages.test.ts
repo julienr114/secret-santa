@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { MESSAGE_TYPES, buildMessage, type MessageData } from './messages';
-import { failureOf, valueOf } from '../../tests/helpers';
+import { failureOf, valueOf } from '~~/tests/helpers';
 
 const data: MessageData = {
   firstName: 'Léa',

@@ -2,9 +2,9 @@
 import {
   useRulesQuery,
   useUpdateRulesMutation,
-} from '../../../composables/queries/useGroup.js';
-import { errorMessage } from '../../../utils/errors.js';
-import { RULE_LABELS } from '../../../utils/labels.js';
+} from '~/composables/queries/useGroup.js';
+import { errorMessage } from '~/utils/errors.js';
+import { RULE_LABELS } from '~/utils/labels.js';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 useHead({ title: 'Réglages — Secret Santa' });

@@ -15,7 +15,7 @@ import {
   fromBase64,
   verifySecret,
 } from './crypto';
-import { failureOf, valueOf } from '../../tests/helpers';
+import { failureOf, valueOf } from '~~/tests/helpers';
 
 const FAST = { iterations: 1_000 };
 

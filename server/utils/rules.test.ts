@@ -5,7 +5,7 @@ import {
   rulesPatchSchema,
   rulesSchema,
 } from './rules';
-import { failureOf, valueOf } from '../../tests/helpers';
+import { failureOf, valueOf } from '~~/tests/helpers';
 
 describe('rules', () => {
   it('has the defaults from README section 5', () => {

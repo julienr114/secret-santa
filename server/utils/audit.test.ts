@@ -6,7 +6,7 @@ import {
   sanitizeMeta,
   type Meta,
 } from './audit';
-import { failureOf, valueOf } from '../../tests/helpers';
+import { failureOf, valueOf } from '~~/tests/helpers';
 
 const deps = { id: () => 'evt-1', now: () => '2026-11-13T10:00:00.000Z' };
 

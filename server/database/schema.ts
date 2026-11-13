@@ -29,6 +29,9 @@ export const persons = sqliteTable(
       .references(() => groups.id),
     firstName: text('first_name').notNull(),
     lastName: text('last_name'),
+    // Christmas emoji and palette colour, see server/utils/avatars.ts.
+    avatarEmoji: text('avatar_emoji'),
+    avatarColor: text('avatar_color'),
     active: integer('active', { mode: 'boolean' }).notNull().default(true),
     createdAt: text('created_at').notNull(),
   },

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { displayName, personInputSchema, publicPerson } from './people';
+import { avatarOf } from './avatars';
 
 describe('people schemas', () => {
   it('normalizes a person input', () => {
@@ -41,6 +42,7 @@ describe('publicPerson', () => {
       firstName: 'Léa',
       lastName: null,
       active: true,
+      avatar: avatarOf({ id: 'p' }),
       createdAt: 'd',
     });
   });

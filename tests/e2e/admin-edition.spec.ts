@@ -40,6 +40,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // Léa and Tom must not draw each other (both ways by default).
   await page.getByText('Exclusions').click();
+  await page.getByText('Ajouter une exclusion').click();
   await page.getByRole('combobox').first().click();
   await page.getByRole('option', { name: 'Léa' }).click();
   await page.getByRole('combobox').nth(1).click();

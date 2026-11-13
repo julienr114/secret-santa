@@ -85,19 +85,6 @@ const missingText = computed(() => {
     ? `${list} ne participe pas encore`
     : `${list} ne participent pas encore`;
 });
-// Reminder of the exclusions that apply to this edition's participants.
-const exclusionsText = computed(() => {
-  const ids = new Set(participants.value.map((p) => p.id));
-  const nameOf = (pid: string) =>
-    participants.value.find((p) => p.id === pid)?.firstName ?? '?';
-  const pairs = (people.data.value?.exclusions ?? [])
-    .filter((e) => ids.has(e.giverId) && ids.has(e.receiverId))
-    .map(
-      (e) =>
-        `${nameOf(e.giverId)} ${e.reciprocal ? '↔' : '→'} ${nameOf(e.receiverId)}`,
-    );
-  return pairs.length ? pairs.join(', ') : 'Aucune exclusion';
-});
 const viewedCount = computed(
   () => participants.value.filter((p) => p.viewCount > 0).length,
 );
@@ -206,6 +193,16 @@ const sectionTitle =
             v-else
             class="flex flex-col gap-2 rounded-md border border-default bg-default p-4"
           >
+            <p
+              v-if="missing.length"
+              class="flex items-start gap-2 text-sm text-warning"
+            >
+              <UIcon
+                name="i-lucide-user-round-x"
+                class="mt-0.5 size-4 shrink-0"
+              />
+              <span>Attention : {{ missingText }}.</span>
+            </p>
             <p class="text-sm">
               Le tirage est définitif : la liste sera verrouillée. On y va ?
             </p>
@@ -341,13 +338,6 @@ const sectionTitle =
           </template>
         </MobileListItem>
         <MobileListItem
-          v-if="canEdit"
-          :to="`/admin/${slug}/exclusions`"
-          icon="i-lucide-ban"
-          title="Exclusions"
-          :subtitle="exclusionsText"
-        />
-        <MobileListItem
           v-if="status === 'drawn'"
           :to="`/admin/${slug}/editions/${id}/annuler`"
           icon="i-lucide-rotate-ccw"
@@ -356,6 +346,7 @@ const sectionTitle =
           tone="danger"
         />
       </MobileList>
+      <AdminExclusions :slug="slug" :editable="canEdit" title="Exclusions" />
     </AdminQueryState>
   </AdminScreen>
 </template>

@@ -73,6 +73,9 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
   await expect(page.getByText('Tirage effectué').first()).toBeVisible();
+  // Once drawn, the screen shows the exclusions the draw applied.
+  await expect(page.getByText('Exclusions appliquées au tirage')).toBeVisible();
+  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
 
   // The cockpit never shows who drew whom.
   const body = await page.locator('main').innerText();
@@ -103,6 +106,24 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(
     page.getByText('Édition clôturée, en lecture seule.'),
   ).toBeVisible();
+
+  // The guardian reads the same journal as the participants, from the
+  // admin: what was done, never who gives to whom.
+  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('link', { name: /Journal du groupe/ }).click();
+  await expect(heading(page)).toHaveText('Journal du groupe');
+  await expect(
+    page.getByText('Le tirage a été annulé. Motif : Test de relance'),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      'Le gardien a consulté le résultat de Hugo (accès de dernier recours)',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText("L'édition Noël 2026 est clôturée"),
+  ).toBeVisible();
+  expect(await page.getByTestId('journal').innerText()).not.toMatch(/offre/);
 });
 
 test('a guardian cannot reach another group', async ({ page, request }) => {
@@ -120,5 +141,7 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
   await expect(page).toHaveURL(new RegExp(`/admin/${GROUP.slug}$`));
   const api = await page.request.get('/api/admin/autre-famille/persons');
   expect(api.status()).toBe(403);
+  const journal = await page.request.get('/api/admin/autre-famille/journal');
+  expect(journal.status()).toBe(403);
   expect((await request.get('/api/admin/groups')).status()).toBe(401);
 });

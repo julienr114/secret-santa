@@ -190,6 +190,10 @@ const emailHelp = computed(() => {
     t('adminEdition.cockpit.email.spamTip'),
   ].join(' ');
 });
+const messageLanguageOf = (language: string) =>
+  t('adminEdition.cockpit.messageLanguage', {
+    language: tk(`common.language.${language}`),
+  });
 const sentCount = computed(
   () => participants.value.filter((p) => p.messageSentAt).length,
 );
@@ -487,8 +491,19 @@ const sectionTitle =
               subtitles[p.participationId]?.label
             }}</span>
           </template>
-          <template v-if="canSend" #trailing>
+          <template #trailing>
+            <!-- The language this person's messages are written in. -->
+            <UBadge
+              color="neutral"
+              variant="subtle"
+              size="sm"
+              class="shrink-0"
+              :label="p.language.toUpperCase()"
+              :title="messageLanguageOf(p.language)"
+              :aria-label="messageLanguageOf(p.language)"
+            />
             <UButton
+              v-if="canSend"
               size="sm"
               class="shrink-0 rounded-full"
               icon="i-lucide-send"

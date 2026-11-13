@@ -16,6 +16,7 @@ export default {
     submit: 'Ausgabe erstellen',
   },
   cockpit: {
+    messageLanguage: 'Sprache der Nachrichten: {language}',
     budget: 'Budget {budget}',
     eventDate: 'am {date}',
     draftIntro:

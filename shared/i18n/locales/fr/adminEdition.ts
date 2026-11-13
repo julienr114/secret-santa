@@ -15,6 +15,7 @@ export default {
     submit: "Créer l'édition",
   },
   cockpit: {
+    messageLanguage: 'Langue des messages : {language}',
     budget: 'Budget {budget}',
     eventDate: 'le {date}',
     draftIntro:

@@ -6,6 +6,7 @@ export default defineAppConfig({
       primary: 'brick',
       secondary: 'pine',
       neutral: 'stone',
+      warning: 'orange',
     },
     button: { defaultVariants: { size: 'lg' } },
     input: { defaultVariants: { size: 'lg' } },

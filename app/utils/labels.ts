@@ -37,3 +37,14 @@ export const formatDate = (iso: string | null | undefined): string =>
 
 export const plural = (n: number, word: string) =>
   `${n} ${word}${n > 1 ? 's' : ''}`;
+
+export const MESSAGE_LABELS: Record<string, string> = {
+  invitation: 'Invitation',
+  drawn: 'Tirage fait',
+  reminder: 'Relance',
+  redraw: 'Nouveau tirage',
+};
+
+/** The message that fits the edition status by default. */
+export const defaultMessageType = (status: string) =>
+  status === 'drawn' ? 'drawn' : 'invitation';

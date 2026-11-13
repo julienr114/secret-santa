@@ -16,6 +16,16 @@ const MESSAGES: Record<string, string> = {
   edition_in_progress: "Clôture d'abord l'édition en cours.",
   edition_closed: 'Cette édition est clôturée.',
   invalid_rules: 'Règles invalides.',
+  invalid_transition:
+    "Cette action n'est pas possible à ce stade de l'édition.",
+  missing_pins: "Tout le monde n'a pas encore choisi son code.",
+  no_solution:
+    'Aucun tirage possible avec ces règles : assouplis une exclusion.',
+  too_few_participants: 'Il faut au moins deux participants.',
+  participants_locked: 'La liste est verrouillée après le tirage.',
+  already_participating: 'Cette personne participe déjà.',
+  links_not_open: "Ouvre d'abord les invitations.",
+  participation_not_found: 'Participant introuvable.',
   'Validation Error': 'Vérifie les champs du formulaire.',
 };
 

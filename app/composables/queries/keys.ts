@@ -8,4 +8,6 @@ export const keys = {
   editions: (slug: string) => ['group', slug, 'editions'] as const,
   edition: (slug: string, id: string) =>
     ['group', slug, 'edition', id] as const,
+  check: (slug: string, id: string) =>
+    ['group', slug, 'edition', id, 'check'] as const,
 };

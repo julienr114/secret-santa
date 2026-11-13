@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v3, étape 0 (vérifications) terminée, aucun code écrit.** Prochaine étape : l'étape 1 (socle).
+> État au 13 novembre 2026 : **plan v3, étape 1 (socle) réalisée en local**, en attente du premier déploiement Cloudflare (connexion `wrangler login` à faire par Julien) et de la mesure PBKDF2 sur un Worker déployé. Dépôt GitHub : `https://github.com/julienr114/secret-santa` (premier push à faire par Julien, pas d'identifiants dans la session).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -665,6 +665,8 @@ secret-santa/
 │       ├── rules.js           ← fusion règles groupe/édition
 │       ├── result.js          ← helpers ok()/fail() pour les erreurs métier
 │       └── auth.js
+│   └── database/
+│       └── client.js          ← useDb(event) : Drizzle sur le binding D1 (infrastructure, hors noyau pur)
 └── tests/
     └── api/                   ← tests de routes (refus, cloisonnement, aucune attribution en sortie)
 ```
@@ -708,8 +710,12 @@ Chaque étape est livrable et testable seule.
 **Étape 0 — Vérifications** ✅ *terminée le 13 novembre 2026*
 Points de la section 7 levés, conclusions en 7.2. Décisions : Workers (`cloudflare_module`), pas de NuxtHub, pas d'email mais WhatsApp `wa.me`, Nuxt 4, PBKDF2 configurable.
 
-**Étape 1 — Socle**
-Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
+**Étape 1 — Socle** 🔶 *réalisée en local le 13 novembre 2026, déploiement en attente*
+Fait : Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git (simple-git-hooks, lint-staged), Vitest, CI GitHub Actions, Tailwind 4, plugin TanStack Query (SSR vérifié), Drizzle + schéma complet + migration `0000_init`, preset `cloudflare_module`, `wrangler.toml` (D1 + assets), route `/api/health` testée sous Miniflare, `wrangler deploy --dry-run` OK. Reste : `wrangler login`, `wrangler d1 create secret-santa` (reporter l'id dans `wrangler.toml`), `pnpm db:migrate`, `wrangler deploy`, relevé de `/api/_bench/pbkdf2` sur le Worker. Mesure locale indicative (workerd sur Mac) : 10k → 1,5 ms, 25k → 3,3 ms, 50k → 6,5 ms, 100k → 13 ms ; si le Worker est deux fois plus lent, retenir 25 000.
+
+Enseignements : ESLint 10 cherche la config depuis chaque fichier, d'où `--config eslint.config.js` dans les scripts ; `functional/immutable-data` exige TypeScript, remplacé par des sélecteurs `no-restricted-syntax` sur le noyau pur ; `server/utils` est réservé aux fonctions pures, l'infrastructure (client Drizzle) vit dans `server/database`.
+
+Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
 
 **Étape 2 — Cœur métier, sans interface**
 `draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.

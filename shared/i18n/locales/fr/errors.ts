@@ -1,5 +1,8 @@
-// French messages for API failure reasons (statusMessage of createError).
-const MESSAGES: Record<string, string> = {
+// Messages for API failure reasons (statusMessage of createError).
+export default {
+  unknown: 'Une erreur est survenue.',
+  other: 'Erreur : {reason}',
+  validation: 'Vérifie les champs du formulaire.',
   unauthorized: 'Connecte-toi pour continuer.',
   forbidden: "Tu n'as pas accès à ce groupe.",
   invalid_credentials: 'Mot de passe incorrect.',
@@ -23,6 +26,11 @@ const MESSAGES: Record<string, string> = {
   already_participating: 'Cette personne participe déjà.',
   links_not_open: "Ouvre d'abord les invitations.",
   message_not_available: "Ce message ne correspond pas à l'étape de l'édition.",
+  email_disabled: "L'envoi par email n'est pas activé pour ce groupe.",
+  email_not_configured:
+    "L'envoi par email n'est pas configuré sur le serveur. Partage les liens depuis ton téléphone.",
+  email_failed:
+    'Les emails ne sont pas partis. Réessaie, ou partage les liens depuis ton téléphone.',
   participation_not_found: 'Participant introuvable.',
   wrong_sentence: 'Recopie exactement la phrase demandée.',
   results_secret:
@@ -36,21 +44,4 @@ const MESSAGES: Record<string, string> = {
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:
     'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',
-  'Validation Error': 'Vérifie les champs du formulaire.',
-};
-
-type ApiError = {
-  data?: { statusMessage?: string };
-  statusMessage?: string;
-  message?: string;
-};
-
-/** Message to show for a $fetch error, or any error. */
-export const errorMessage = (error: unknown): string => {
-  const e = (error ?? {}) as ApiError;
-  const reason = e.data?.statusMessage ?? e.statusMessage ?? e.message;
-  return (
-    MESSAGES[reason ?? ''] ??
-    (reason ? `Erreur : ${reason}` : 'Une erreur est survenue.')
-  );
 };

@@ -10,6 +10,9 @@ export default defineNuxtConfig({
   // Plain JavaScript project: Nuxt still generates .nuxt/tsconfig.json for
   // editor tooling, but never type-checks.
   typescript: { typeCheck: false },
+  // Cloudflare Workers. In dev, Nitro emulates the bindings declared in
+  // wrangler.toml through Miniflare (state in .wrangler/state/v3).
+  nitro: { preset: 'cloudflare_module' },
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },

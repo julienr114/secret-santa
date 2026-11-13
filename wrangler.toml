@@ -16,5 +16,5 @@ enabled = true
 [[d1_databases]]
 binding = "DB"
 database_name = "secret-santa"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "1128fa3f-8afe-48ba-b550-f2fae582a685"
 migrations_dir = "server/database/migrations"

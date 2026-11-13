@@ -69,3 +69,37 @@ export const mergeRules = (
         issues: parsed.error.issues.map((i) => i.path.join('.')),
       });
 };
+
+// --- Date of the party ----------------------------------------------------
+// Stored in `eventDate`. Entered with a date picker since plan v7, so it is
+// an ISO day ("2026-12-24"); older values are free text ("24 décembre")
+// and are shown as they are.
+
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+export const isIsoDay = (value: string | null | undefined): value is string =>
+  typeof value === 'string' &&
+  ISO_DAY.test(value) &&
+  !Number.isNaN(Date.parse(`${value}T12:00:00Z`));
+
+/** "24 décembre", "December 24", "24. Dezember"; free text is kept as is. */
+export const formatEventDate = (
+  value: string | null | undefined,
+  locale: string,
+): string =>
+  isIsoDay(value)
+    ? new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      }).format(new Date(`${value}T12:00:00Z`))
+    : (value ?? '');
+
+/**
+ * Whether the party is over on `today` (an ISO day). Unknown when there is
+ * no date or a free-text one: then nothing says it is too early.
+ */
+export const partyIsOver = (
+  eventDate: string | null | undefined,
+  today: string,
+): boolean => !isIsoDay(eventDate) || today > eventDate;

@@ -43,7 +43,10 @@ export type PublicEdition = {
   closedAt: string | null;
   createdAt: string;
   participantCount?: number;
-  /** Exclusions applied at the draw, for closed editions (archives). */
+  /**
+   * Exclusions applied at the draw, once it is done: the edition then
+   * shows these, not the group's current ones, which may have changed.
+   */
   exclusionsAtDraw?: {
     giverId: string;
     receiverId: string;
@@ -64,7 +67,7 @@ export const publicEdition = (
   closedAt: edition.closedAt,
   createdAt: edition.createdAt,
   ...(participantCount === undefined ? {} : { participantCount }),
-  ...(edition.status === 'closed'
+  ...(edition.status === 'drawn' || edition.status === 'closed'
     ? { exclusionsAtDraw: exclusionsOf(edition.rulesSnapshot) }
     : {}),
 });

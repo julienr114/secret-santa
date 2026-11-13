@@ -223,3 +223,44 @@ describe('languages', () => {
     });
   });
 });
+
+describe('emailTargets with chosen people', () => {
+  const person = (
+    participationId: string,
+    email: string | null,
+    messageSentAt: string | null = null,
+  ) => ({ participationId, email, messageSentAt });
+  const people = [
+    person('a', 'a@example.com'),
+    person('b', null),
+    person('c', 'c@example.com', '2026-11-13T10:00:00.000Z'),
+    person('d', 'd@example.com'),
+  ];
+
+  it('writes to the chosen ones, sent already or not, and nobody else', () => {
+    const result = emailTargets(people, 'unsent', ['c', 'a']);
+    expect(result.targets.map((p) => p.participationId)).toEqual(['a', 'c']);
+    expect(result.withoutEmail).toBe(0);
+  });
+
+  it('counts the chosen ones who have no address, and ignores unknown ids', () => {
+    const result = emailTargets(people, 'all', ['b', 'd', 'nobody']);
+    expect(result.targets.map((p) => p.participationId)).toEqual(['d']);
+    expect(result.withoutEmail).toBe(1);
+  });
+});
+
+describe('date of the party in a message', () => {
+  it("is written in the recipient's language when it is a real date", () => {
+    const dated = { ...data, eventDate: '2026-12-24' };
+    expect(valueOf(buildMessage('drawn', dated, 'fr'))).toContain(
+      'Rendez-vous le 24 décembre.',
+    );
+    expect(valueOf(buildMessage('drawn', dated, 'en'))).toContain(
+      'See you on December 24.',
+    );
+    expect(valueOf(buildMessage('drawn', dated, 'de'))).toContain(
+      'Wir sehen uns am 24. Dezember.',
+    );
+  });
+});

@@ -46,6 +46,8 @@ export default defineEventHandler(async (event) => {
     );
   const previousPairs = closedPairs
     .filter((a) => ids.has(a.giverId) && ids.has(a.receiverId) && !waived(a))
+    // Most recent draw first.
+    .toSorted((a, b) => b.editionYear - a.editionYear)
     .map((a) => ({
       giverId: a.giverId,
       receiverId: a.receiverId,

@@ -4,6 +4,9 @@ import {
   mergeRules,
   rulesPatchSchema,
   rulesSchema,
+  formatEventDate,
+  isIsoDay,
+  partyIsOver,
 } from './rules';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
@@ -65,5 +68,36 @@ describe('rules', () => {
     const group = Object.freeze({ budget: 'x' });
     const override = Object.freeze({ budget: 'y' });
     expect(() => mergeRules(group, override)).not.toThrow();
+  });
+});
+
+describe('date of the party', () => {
+  it('recognizes an ISO day, not free text nor an impossible date', () => {
+    expect(isIsoDay('2026-12-24')).toBe(true);
+    expect(isIsoDay('24 décembre')).toBe(false);
+    expect(isIsoDay('2026-13-45')).toBe(false);
+    expect(isIsoDay('')).toBe(false);
+    expect(isIsoDay(null)).toBe(false);
+  });
+
+  it('writes an ISO day in the language, and keeps free text as it is', () => {
+    expect(formatEventDate('2026-12-24', 'fr')).toBe('24 décembre');
+    expect(formatEventDate('2026-12-24', 'en')).toBe('December 24');
+    expect(formatEventDate('2026-12-24', 'de')).toBe('24. Dezember');
+    expect(formatEventDate('le soir du réveillon', 'en')).toBe(
+      'le soir du réveillon',
+    );
+    expect(formatEventDate('', 'fr')).toBe('');
+  });
+
+  it('says the party is over only from the day after', () => {
+    expect(partyIsOver('2026-12-24', '2026-12-23')).toBe(false);
+    expect(partyIsOver('2026-12-24', '2026-12-24')).toBe(false);
+    expect(partyIsOver('2026-12-24', '2026-12-25')).toBe(true);
+  });
+
+  it('never says it is too early without a real date', () => {
+    expect(partyIsOver('', '2026-01-01')).toBe(true);
+    expect(partyIsOver('24 décembre', '2026-01-01')).toBe(true);
   });
 });

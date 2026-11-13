@@ -12,6 +12,7 @@ import { auditEvent } from '#server/utils/audit';
 import { all } from '#server/utils/result';
 import {
   EMAIL_AUDIENCES,
+  EMAIL_BATCH_MAX,
   MESSAGE_TYPES,
   buildEmail,
   emailTargets,
@@ -21,10 +22,17 @@ import {
 // Bulk sending by email, for groups where the super-admin switched it on.
 // Sharing from the phone stays the default way; this only saves the
 // guardian from sharing every link by hand. Sent to people with an
-// address, marked "sent" and journaled like any other message.
+// address, marked "sent" and journaled like any other message. With
+// `participationIds`, to the chosen people only.
 const bodySchema = z.object({
   type: z.enum(MESSAGE_TYPES),
   audience: z.enum(EMAIL_AUDIENCES).default('unsent'),
+  // The chosen participants only, whether already marked as sent or not.
+  participationIds: z
+    .array(z.string().min(1))
+    .min(1)
+    .max(EMAIL_BATCH_MAX)
+    .optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -32,7 +40,10 @@ export default defineEventHandler(async (event) => {
   if (!group.emailSending) {
     throw createError({ statusCode: 403, statusMessage: 'email_disabled' });
   }
-  const { type, audience } = await validatedBody(event, bodySchema);
+  const { type, audience, participationIds } = await validatedBody(
+    event,
+    bodySchema,
+  );
   if (!messageTypesFor(edition.status).includes(type)) {
     throw createError({
       statusCode: 409,
@@ -52,7 +63,14 @@ export default defineEventHandler(async (event) => {
       .from(participations)
       .where(eq(participations.editionId, edition.id)),
   ]);
-  const { targets, withoutEmail, left } = emailTargets(people, audience);
+  const { targets, withoutEmail, left } = emailTargets(
+    people,
+    audience,
+    participationIds,
+  );
+  if (participationIds && targets.length === 0) {
+    throw createError({ statusCode: 409, statusMessage: 'email_missing' });
+  }
   if (targets.length === 0) return { sent: 0, withoutEmail, left };
 
   const dataKey = await dataKeyOf(event);

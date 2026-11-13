@@ -17,7 +17,10 @@ import type { Rules } from '#server/utils/rules';
 // `closedPairs`: decrypted pairs of the closed editions in the history
 // window. Closed results are no longer secret (decision of 2026-11-13);
 // pairs of a drawn but not yet closed edition never leave this module.
-export type ClosedPair = PastAssignment & { editionLabel: string };
+export type ClosedPair = PastAssignment & {
+  editionLabel: string;
+  editionYear: number;
+};
 export type DrawContext = {
   participants: Participant[];
   input: DrawInput;
@@ -73,13 +76,19 @@ export const loadDrawContext = async (
   const closed = new Map(
     editions
       .filter((e) => e.status === 'closed' && pastIds.includes(e.id))
-      .map((e) => [e.id, e.label]),
+      .map((e) => [e.id, { label: e.label, year: e.year }]),
   );
   return {
     participants,
     closedPairs: known.flatMap((a) =>
       closed.has(a.editionId)
-        ? [{ ...a, editionLabel: closed.get(a.editionId) ?? '' }]
+        ? [
+            {
+              ...a,
+              editionLabel: closed.get(a.editionId)?.label ?? '',
+              editionYear: closed.get(a.editionId)?.year ?? 0,
+            },
+          ]
         : [],
     ),
     input: {

@@ -82,7 +82,7 @@ for (const [a, b] of PAIRS) {
 await call('PATCH', `${g}/rules`, {
   excludePreviousYears: 3,
   budget: '30 € max',
-  eventDate: '25 décembre',
+  eventDate: '2026-12-25',
 });
 
 // Three closed years of history, then this year's edition, invitations open.

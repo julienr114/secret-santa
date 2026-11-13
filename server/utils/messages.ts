@@ -1,4 +1,5 @@
 import { ok, fail, type Result } from './result';
+import { formatEventDate } from './rules';
 import {
   DEFAULT_LOCALE,
   translate,
@@ -39,12 +40,12 @@ export type MessageData = {
   eventDate?: string;
 };
 
-const params = (d: MessageData): Params => ({
+const params = (d: MessageData, locale: Locale): Params => ({
   firstName: d.firstName,
   groupName: d.groupName,
   editionLabel: d.editionLabel,
   budget: d.budget ?? '',
-  eventDate: d.eventDate ?? '',
+  eventDate: formatEventDate(d.eventDate, locale),
 });
 
 const details = (d: MessageData): MessageKey[] => [
@@ -73,7 +74,9 @@ const linesOf = (
   data: MessageData,
   locale: Locale,
 ): string[] =>
-  TEMPLATES[type](data).map((key) => translate(locale, key, params(data)));
+  TEMPLATES[type](data).map((key) =>
+    translate(locale, key, params(data, locale)),
+  );
 
 const isMessageType = (type: string): type is MessageType =>
   (MESSAGE_TYPES as readonly string[]).includes(type);
@@ -119,11 +122,15 @@ export const buildEmail = (
   const lines = linesOf(type, data, locale);
   const closing = [
     translate(locale, 'messages.email.personal'),
-    translate(locale, 'messages.email.signature', params(data)),
+    translate(locale, 'messages.email.signature', params(data, locale)),
   ];
   const link = escapeHtml(data.link);
   return ok({
-    subject: translate(locale, `messages.${type}.subject`, params(data)),
+    subject: translate(
+      locale,
+      `messages.${type}.subject`,
+      params(data, locale),
+    ),
     text: [...lines, data.link, '', ...closing].join('\n'),
     html: [
       '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
@@ -148,26 +155,31 @@ export type EmailCandidate = {
 };
 
 /**
- * Who a bulk send writes to: people with an address, all of them or only
- * those not marked as sent yet, capped to one batch.
+ * Who a bulk send writes to, among people with an address: the chosen
+ * ones when `ids` is given, otherwise all of them or only those not marked
+ * as sent yet. Capped to one batch.
  */
 export const emailTargets = <P extends EmailCandidate>(
   participants: P[],
   audience: EmailAudience,
+  ids?: string[],
 ): {
   targets: (P & { email: string })[];
   withoutEmail: number;
   left: number;
 } => {
-  const reachable = participants.filter((p): p is P & { email: string } =>
+  const pool = ids
+    ? participants.filter((p) => ids.includes(p.participationId))
+    : participants;
+  const reachable = pool.filter((p): p is P & { email: string } =>
     Boolean(p.email),
   );
   const wanted = reachable.filter(
-    (p) => audience === 'all' || !p.messageSentAt,
+    (p) => Boolean(ids) || audience === 'all' || !p.messageSentAt,
   );
   return {
     targets: wanted.slice(0, EMAIL_BATCH_MAX),
-    withoutEmail: participants.length - reachable.length,
+    withoutEmail: pool.length - reachable.length,
     left: Math.max(0, wanted.length - EMAIL_BATCH_MAX),
   };
 };

@@ -15,6 +15,7 @@ import {
 import { useShareMessage } from '~/composables/useShareMessage';
 import { errorMessage } from '~/utils/errors';
 import { MESSAGE_LABELS, defaultMessageType, plural } from '~/utils/labels';
+import { participantStatusLine } from '~/utils/participantStatus';
 
 // Edition cockpit (README section 11): the action of the moment, the
 // participants with their badges ("consulté" above all), and a share
@@ -296,22 +297,30 @@ const sectionTitle =
           :avatar="p.avatar"
           :to="`/admin/${slug}/editions/${id}/participants/${p.participationId}`"
           :title="p.firstName"
-          :subtitle="p.badges.length === 0 ? 'en attente' : undefined"
+          :chevron="!canSend"
         >
-          <template #trailing>
-            <div class="flex flex-wrap justify-end gap-1">
-              <AdminStatusBadge
-                v-for="badge in p.badges"
-                :key="badge"
-                :code="badge"
-              />
-            </div>
+          <template #subtitle>
+            <UIcon
+              :name="participantStatusLine(p, status).icon"
+              class="size-4 shrink-0"
+              :class="participantStatusLine(p, status).tone"
+            />
+            <span class="truncate">
+              {{ participantStatusLine(p, status).label
+              }}<template v-if="p.wishesCount">
+                · {{ plural(p.wishesCount, 'idée') }}</template
+              >
+            </span>
+          </template>
+          <template v-if="canSend" #trailing>
             <UButton
-              v-if="canSend"
-              color="secondary"
-              variant="soft"
-              icon="i-lucide-share-2"
-              :aria-label="`Partager le lien de ${p.firstName}`"
+              size="sm"
+              class="shrink-0 rounded-full"
+              icon="i-lucide-send"
+              :color="p.messageSentAt ? 'neutral' : 'primary'"
+              :variant="p.messageSentAt ? 'outline' : 'soft'"
+              :label="p.messageSentAt ? 'Renvoyer' : 'Envoyer'"
+              :aria-label="`${p.messageSentAt ? 'Renvoyer' : 'Envoyer'} le lien de ${p.firstName}`"
               :disabled="!messages.data.value?.messages[p.participationId]"
               @click.prevent.stop="
                 sharer.share(
@@ -346,7 +355,16 @@ const sectionTitle =
           tone="danger"
         />
       </MobileList>
-      <AdminExclusions :slug="slug" :editable="canEdit" title="Exclusions" />
+      <AdminExclusions
+        :slug="slug"
+        :editable="canEdit"
+        title="Exclusions"
+        :footer="
+          check.data.value?.historyExclusions
+            ? `+ ${plural(check.data.value.historyExclusions, 'exclusion')} venant des années précédentes, gardées secrètes.`
+            : undefined
+        "
+      />
     </AdminQueryState>
   </AdminScreen>
 </template>

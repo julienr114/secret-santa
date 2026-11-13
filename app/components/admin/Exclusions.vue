@@ -10,11 +10,13 @@ import { errorMessage } from '~/utils/errors';
 // opens a bottom sheet. Used on the exclusions screen and on the edition
 // screen, so the guardian can adjust them right before the draw.
 const props = withDefaults(
-  defineProps<{ slug: string; editable?: boolean; title?: string }>(),
-  {
-    editable: true,
-    title: undefined,
-  },
+  defineProps<{
+    slug: string;
+    editable?: boolean;
+    title?: string;
+    footer?: string;
+  }>(),
+  { editable: true, title: undefined, footer: undefined },
 );
 
 const toast = useToast();
@@ -36,6 +38,16 @@ const options = (exclude?: string) =>
       value: p.id,
       disabled: p.id === exclude,
     }));
+
+// Removing asks for a second tap on the row itself.
+const confirmId = ref<string | null>(null);
+const onRemove = (exclusionId: string) =>
+  remove.mutate(exclusionId, {
+    onSettled: () => {
+      confirmId.value = null;
+    },
+    onError,
+  });
 
 const open = ref(false);
 const state = reactive<{
@@ -72,14 +84,13 @@ const onAdd = () =>
 </script>
 
 <template>
-  <MobileList :title="title">
+  <MobileList :title="title" :footer="footer">
     <li v-if="exclusions.length === 0" class="px-4 py-3 text-sm text-muted">
       Aucune exclusion.
     </li>
     <MobileListItem
       v-for="ex in exclusions"
       :key="ex.id"
-      :avatar="personOf(ex.giverId)?.avatar"
       :title="`${nameOf(ex.giverId)} ${ex.reciprocal ? '↔' : '→'} ${nameOf(ex.receiverId)}`"
       :subtitle="
         ex.reciprocal
@@ -87,14 +98,51 @@ const onAdd = () =>
           : `${nameOf(ex.giverId)} ne tire pas ${nameOf(ex.receiverId)}`
       "
     >
+      <template #leading>
+        <span class="flex shrink-0 items-center" aria-hidden="true">
+          <AdminAvatar
+            v-if="personOf(ex.giverId)"
+            :avatar="personOf(ex.giverId)!.avatar"
+            size="sm"
+            class="outline-2 outline-white"
+          />
+          <AdminAvatar
+            v-if="personOf(ex.receiverId)"
+            :avatar="personOf(ex.receiverId)!.avatar"
+            size="sm"
+            class="-ml-3 outline-2 outline-white"
+          />
+        </span>
+      </template>
       <template v-if="editable" #trailing>
+        <div
+          v-if="confirmId === ex.id"
+          class="flex shrink-0 items-center gap-1"
+        >
+          <UButton
+            size="sm"
+            color="primary"
+            label="Retirer"
+            :loading="
+              remove.isPending.value && remove.variables.value === ex.id
+            "
+            @click.stop="onRemove(ex.id)"
+          />
+          <UButton
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            label="Annuler"
+            @click.stop="confirmId = null"
+          />
+        </div>
         <UButton
+          v-else
           variant="ghost"
           color="neutral"
           icon="i-lucide-x"
           :aria-label="`Retirer l'exclusion ${nameOf(ex.giverId)} et ${nameOf(ex.receiverId)}`"
-          :loading="remove.isPending.value && remove.variables.value === ex.id"
-          @click.stop="remove.mutate(ex.id, { onError })"
+          @click.stop="confirmId = ex.id"
         />
       </template>
     </MobileListItem>

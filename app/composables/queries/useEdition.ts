@@ -8,6 +8,7 @@ import { api, useApiMutation, useApiQuery } from './useApi';
 type Ref = MaybeRefOrGetter<string>;
 export type DrawCheck = {
   participantCount: number;
+  historyExclusions: number;
   problem: { reason: string; blocked: string[]; constrained: string[] } | null;
   ready: boolean;
 };

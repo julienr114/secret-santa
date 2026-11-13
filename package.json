@@ -23,7 +23,8 @@
     "db:migrate:local": "wrangler d1 migrations apply secret-santa --local",
     "db:migrate": "wrangler d1 migrations apply secret-santa --remote",
     "typecheck": "nuxt typecheck",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed:demo": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-demo.ts"
   },
   "dependencies": {
     "@nuxt/ui": "^4.12.0",

@@ -28,8 +28,18 @@ export default defineEventHandler(async (event) => {
           (feasibility.details.constrained as string[] | undefined) ?? []
         ).map(nameOf),
       };
+  // Pairs excluded because of previous years: a count only, never names,
+  // which would reveal past results (README 8.3).
+  const ids = new Set(input.participants);
+  const historyExclusions = Object.entries(input.history ?? {})
+    .filter(([giver]) => ids.has(giver))
+    .reduce(
+      (n, [, receivers]) => n + receivers.filter((r) => ids.has(r)).length,
+      0,
+    );
   return {
     participantCount: participants.length,
+    historyExclusions,
     problem,
     ready: feasibility.ok,
   };

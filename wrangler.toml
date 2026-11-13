@@ -18,3 +18,6 @@ binding = "DB"
 database_name = "secret-santa"
 database_id = "1128fa3f-8afe-48ba-b550-f2fae582a685"
 migrations_dir = "server/database/migrations"
+
+[vars]
+NUXT_PUBLIC_BASE_URL = "https://secret-santa.julienr114.workers.dev"

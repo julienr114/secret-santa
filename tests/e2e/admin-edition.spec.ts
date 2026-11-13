@@ -79,12 +79,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   expect(body).not.toMatch(/offre|→|receiver/i);
 
   // Last-resort access to the draw: guarded, then journaled for everyone.
-  await page.getByText('Voir le tirage').click();
+  await page.getByText('Voir un résultat').click();
+  await page.getByRole('combobox').click();
+  await page.getByRole('option', { name: 'Hugo' }).click();
   await page.getByLabel('Ton mot de passe').fill(GROUP.password);
   await page.getByLabel(/Recopie/).fill('je veux voir le tirage');
   await page.getByLabel(/tout le groupe saura/).check();
-  await page.getByRole('button', { name: 'Voir le tirage' }).click();
-  await expect(page.getByText(/^offre à /)).toHaveCount(4);
+  await page.getByRole('button', { name: 'Voir ce résultat' }).click();
+  // One person at a time, never the whole draw.
+  await expect(page.getByText(/^offre à /)).toHaveCount(1);
   await page.getByRole('link', { name: 'Retour' }).click();
 
   // Cancel with a reason, draw again, close.

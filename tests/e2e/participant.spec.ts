@@ -98,7 +98,7 @@ test('before the draw: waiting screen and wish list', async ({ page }) => {
   expect(response?.headers()['referrer-policy']).toBe('no-referrer');
   expect(response?.headers()['x-robots-tag']).toContain('noindex');
   // Link previews must not show a name.
-  await expect(page).toHaveTitle('Secret Santa');
+  await expect(page).toHaveTitle('Under the Tree');
   await expect(heading(page)).toHaveText('Salut Alice !');
   await expect(
     page.getByText("Le tirage n'a pas encore eu lieu"),

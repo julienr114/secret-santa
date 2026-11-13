@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v4, étapes 1 et 2 terminées, étape 3 (administration) en cours** : routes admin et écrans groupes, personnes, réglages et édition faits ; reste le déploiement des secrets. Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 3 (administration).
+> État au 13 novembre 2026 : **plan v4, étapes 1 à 4 terminées** (socle, cœur métier, administration, pilotage d'une édition), déployées sur https://secret-santa.julienr114.workers.dev. Prochaine étape : l'étape 5 (parcours participant).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -265,7 +265,7 @@ Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas
 | Cryptographie | Web Crypto API (disponible dans les Workers) |
 | Transmission des liens | Aucun service externe. Liens WhatsApp « click to chat » (`https://wa.me/<numéro>?text=…`), construits par des fonctions pures ; copie via `navigator.clipboard.writeText` et partage via `navigator.share` en repli (section 13) |
 | Qualité | **ESLint** (config plate, `@nuxt/eslint`) + **Prettier**, `eslint-config-prettier` pour éviter les conflits. Hooks Git via `simple-git-hooks` + `lint-staged` |
-| Tests | **Vitest** sur toute la logique métier (`server/utils/**`), couverture suivie. `@nuxt/test-utils` pour quelques tests de routes. Playwright facultatif (parcours mobile) |
+| Tests | **Playwright** de bout en bout (`pnpm test:e2e`) sur un build Cloudflare servi par wrangler, D1 locale jetable, format téléphone. **Vitest** sur toute la logique métier (`server/utils/**`), couverture suivie. `@nuxt/test-utils` pour quelques tests de routes. Playwright facultatif (parcours mobile) |
 | Intégration continue | GitHub Actions : `lint`, `format:check`, `test` sur chaque push et pull request |
 | Gestionnaire de paquets | pnpm |
 
@@ -732,8 +732,10 @@ Plan initial : `draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `mes
 **Étape 3 — Administration**
 Connexion super-admin et gardien, gestion des groupes, des personnes, des couples, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
 
-**Étape 4 — Pilotage d'une édition**
-Liste des participants, génération des liens, copie et partage, vérification de faisabilité, tirage, annulation et relance, clôture.
+**Étape 4 — Pilotage d'une édition** ✅ *terminée le 13 novembre 2026*
+Écran de pilotage (action du moment, vérification nommant les personnes en cause, tirage avec confirmation, clôture), bouton WhatsApp sur chaque participant, fiche participant (copier, partager, lien, annuler « envoyé », débloquer, réinitialiser le code, régénérer le lien, retirer), ajout de participants, annulation du tirage avec motif et double confirmation. Interface : écrans empilés avec retour et fil d'Ariane, listes mobiles, pas de modale. Tests de bout en bout Playwright (`pnpm test:e2e`, build Cloudflare + D1 jetable, format iPhone) en CI.
+
+Plan initial : Liste des participants, génération des liens, copie et partage, vérification de faisabilité, tirage, annulation et relance, clôture.
 
 **Étape 5 — Parcours participant**
 Page personnelle dans tous ses états, choix du code, révélation, blocage, journal.

@@ -4,7 +4,17 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', 'nuxt-auth-utils'],
+  // Secrets come from the environment (NUXT_* variables, Cloudflare secrets
+  // in production). See README section 15.
+  runtimeConfig: {
+    superAdminPassword: '',
+    dataKey: '',
+    pinPepper: '',
+    pbkdf2Iterations: 20000,
+    session: { maxAge: 60 * 60 * 12, cookie: { sameSite: 'lax' } },
+    public: { baseUrl: '' },
+  },
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
   // Plain JavaScript project: Nuxt still generates .nuxt/tsconfig.json for

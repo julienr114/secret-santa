@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { useEditionQuery } from '~/composables/queries/useGroup';
+import {
+  useDashboardQuery,
+  useEditionQuery,
+} from '~/composables/queries/useGroup';
 import { plural } from '~/utils/labels';
 
 // Edition cockpit. Step 3 shows the participants; step 4 adds the actions
@@ -9,68 +12,71 @@ const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const edition = useEditionQuery(slug, id);
-useHead({
-  title: computed(
-    () => `${edition.data.value?.edition.label ?? 'Édition'} — Secret Santa`,
-  ),
+const dashboard = useDashboardQuery(slug);
+const label = computed(() => edition.data.value?.edition.label ?? 'Édition');
+useHead({ title: computed(() => `${label.value} — Secret Santa`) });
+const screen = computed(() => ({
+  back: `/admin/${slug.value}`,
+  crumbs: [
+    {
+      label: dashboard.data.value?.group.name ?? slug.value,
+      to: `/admin/${slug.value}`,
+    },
+    { label: label.value },
+  ],
+}));
+const subtitle = computed(() => {
+  const rules = edition.data.value?.rules;
+  return [
+    rules?.budget && `Budget ${rules.budget}`,
+    rules?.eventDate && `le ${rules.eventDate}`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 });
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
+  <AdminScreen v-bind="screen">
     <AdminQueryState
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
       <template v-if="edition.data.value">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h1 class="font-display text-2xl font-bold">
-            {{ edition.data.value.edition.label }}
-          </h1>
-          <AdminStatusBadge :code="edition.data.value.edition.status" />
+        <div class="flex flex-col gap-1">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="font-display text-3xl font-bold">{{ label }}</h1>
+            <AdminStatusBadge :code="edition.data.value.edition.status" />
+          </div>
+          <p v-if="subtitle" class="text-muted">{{ subtitle }}</p>
         </div>
-        <p class="text-sm text-muted">
-          Budget : {{ edition.data.value.rules.budget || '—' }} · Date :
-          {{ edition.data.value.rules.eventDate || '—' }}
+        <p
+          v-if="edition.data.value.participants.length === 0"
+          class="text-muted"
+        >
+          Personne pour l'instant.
         </p>
-        <UCard>
-          <template #header
-            ><h2 class="font-semibold">
-              {{
-                plural(edition.data.value.participants.length, 'participant')
-              }}
-            </h2></template
+        <MobileList
+          v-else
+          :title="plural(edition.data.value.participants.length, 'participant')"
+        >
+          <MobileListItem
+            v-for="p in edition.data.value.participants"
+            :key="p.participationId"
+            :title="p.firstName"
+            :subtitle="p.badges.length === 0 ? 'en attente' : undefined"
           >
-          <p
-            v-if="edition.data.value.participants.length === 0"
-            class="text-sm text-muted"
-          >
-            Personne pour l'instant.
-          </p>
-          <ul class="divide-y divide-default">
-            <li
-              v-for="p in edition.data.value.participants"
-              :key="p.participationId"
-              class="flex flex-wrap items-center justify-between gap-2 py-3"
-            >
-              <AdminPersonName
-                :person="p"
-                :people="edition.data.value.participants"
-                class="font-medium"
-              />
-              <div class="flex flex-wrap gap-1">
+            <template #trailing>
+              <div class="flex flex-wrap justify-end gap-1">
                 <AdminStatusBadge
                   v-for="badge in p.badges"
                   :key="badge"
                   :code="badge"
                 />
-                <span v-if="p.badges.length === 0" class="text-xs text-muted"
-                  >en attente</span
-                >
               </div>
-            </li>
-          </ul>
-        </UCard>
+            </template>
+          </MobileListItem>
+        </MobileList>
         <UAlert
           color="neutral"
           variant="subtle"
@@ -79,5 +85,5 @@ useHead({
         />
       </template>
     </AdminQueryState>
-  </div>
+  </AdminScreen>
 </template>

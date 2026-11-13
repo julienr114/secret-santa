@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
 import type { Participant, PublicEdition } from '#server/database/editions';
@@ -6,7 +5,7 @@ import type { CoupleRow, ExclusionRow } from '#server/database/schema';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
 import { keys } from './keys';
-import { api, useApiMutation } from './useApi';
+import { api, useApiMutation, useApiQuery } from './useApi';
 
 // Reads and writes scoped to one group. `slug` may be a ref or a getter.
 
@@ -33,28 +32,28 @@ const base = (slug: Slug) => `/api/admin/${toValue(slug)}`;
 const groupKeys = (slug: Slug) => [keys.group(toValue(slug))];
 
 export const useDashboardQuery = (slug: Slug) =>
-  useQuery({
-    queryKey: computed(() => keys.dashboard(toValue(slug))),
-    queryFn: () => api<Dashboard>(base(slug)),
-  });
+  useApiQuery<Dashboard>(
+    () => keys.dashboard(toValue(slug)),
+    () => base(slug),
+  );
 
 export const usePeopleQuery = (slug: Slug) =>
-  useQuery({
-    queryKey: computed(() => keys.people(toValue(slug))),
-    queryFn: () => api<PeoplePayload>(`${base(slug)}/persons`),
-  });
+  useApiQuery<PeoplePayload>(
+    () => keys.people(toValue(slug)),
+    () => `${base(slug)}/persons`,
+  );
 
 export const useRulesQuery = (slug: Slug) =>
-  useQuery({
-    queryKey: computed(() => keys.rules(toValue(slug))),
-    queryFn: () => api<{ rules: Rules }>(`${base(slug)}/rules`),
-  });
+  useApiQuery<{ rules: Rules }>(
+    () => keys.rules(toValue(slug)),
+    () => `${base(slug)}/rules`,
+  );
 
 export const useEditionQuery = (slug: Slug, id: Slug) =>
-  useQuery({
-    queryKey: computed(() => keys.edition(toValue(slug), toValue(id))),
-    queryFn: () => api<EditionPayload>(`${base(slug)}/editions/${toValue(id)}`),
-  });
+  useApiQuery<EditionPayload>(
+    () => keys.edition(toValue(slug), toValue(id)),
+    () => `${base(slug)}/editions/${toValue(id)}`,
+  );
 
 export type PersonBody = {
   firstName: string;

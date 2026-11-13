@@ -32,8 +32,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 </script>
 
 <template>
-  <main
-    class="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4 py-8"
+  <UContainer
+    as="main"
+    class="flex min-h-dvh max-w-sm flex-col justify-center gap-6 py-8 py-8"
   >
     <div class="text-center">
       <p class="text-4xl" aria-hidden="true">🎁</p>
@@ -84,5 +85,5 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         />
       </UForm>
     </UCard>
-  </main>
+  </UContainer>
 </template>

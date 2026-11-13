@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/vue-query';
 import type { PublicGroup } from '#server/database/groups';
 import { keys } from './keys';
-import { api, useApiMutation } from './useApi';
+import { api, useApiMutation, useApiQuery } from './useApi';
 
 type GroupsResponse = { groups: PublicGroup[] };
 type CreateGroupBody = {
@@ -12,10 +11,10 @@ type CreateGroupBody = {
 type UpdateGroupBody = { id: string; name?: string; guardianPassword?: string };
 
 export const useGroupsQuery = () =>
-  useQuery({
-    queryKey: keys.groups(),
-    queryFn: () => api<GroupsResponse>('/api/admin/groups'),
-  });
+  useApiQuery<GroupsResponse>(
+    () => keys.groups(),
+    () => '/api/admin/groups',
+  );
 
 export const useCreateGroupMutation = () =>
   useApiMutation<{ group: PublicGroup }, CreateGroupBody>(

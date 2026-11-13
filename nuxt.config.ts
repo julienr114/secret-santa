@@ -16,6 +16,8 @@ export default defineNuxtConfig({
     public: { baseUrl: '' },
   },
   css: ['~/assets/css/main.css'],
+  // Light theme only: the art direction is a kraft-paper Christmas card.
+  ui: { colorMode: false },
   vite: { plugins: [tailwindcss()] },
   // Strict TypeScript; `pnpm typecheck` (vue-tsc) runs in CI rather than on
   // every dev reload.

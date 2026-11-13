@@ -32,24 +32,26 @@
 
   --color-mustard-400: #e6b94a;
   --color-mustard-500: #d9a62e;
-  --color-cream-50: #faf6ef;
-  --color-cream-100: #f3ecdf;
+  --color-kraft-100: #f1e8d8;
+  --color-kraft-200: #e9dcc5;
+  --color-kraft-300: #dccbad;
 }
 
+/* Cards, inputs and menus stay white on top of the kraft page. */
 :root {
-  --ui-bg: var(--color-cream-50);
-  --ui-bg-muted: var(--color-cream-100);
-  --ui-radius: 0.75rem;
-}
-
-.dark {
-  --ui-bg: var(--color-stone-950);
-  --ui-bg-muted: var(--color-stone-900);
+  --ui-bg: #fffdf9;
+  --ui-bg-muted: var(--color-kraft-100);
+  --ui-bg-elevated: #fffdf9;
+  --ui-border: var(--color-kraft-300);
+  --ui-radius: 0.375rem;
 }
 
 @layer base {
   body {
     @apply min-h-dvh antialiased;
+    /* Kraft paper: warm beige with a faint fibre grain. */
+    background-color: var(--color-kraft-200);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.33 0 0 0 0 0.2 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   h1,
   h2,

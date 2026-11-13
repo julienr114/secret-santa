@@ -1,8 +1,10 @@
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   type QueryKey,
 } from '@tanstack/vue-query';
+import type { MaybeRefOrGetter } from 'vue';
 import type { NitroFetchOptions } from 'nitropack/types';
 
 /** JSON request helper with cookies, shared by every query and mutation. */
@@ -29,4 +31,25 @@ export const useApiMutation = <TData, TVariables = void>(
       );
     },
   });
+};
+
+/**
+ * GET query that is also fetched during server rendering, so the first
+ * paint already has the data. useRequestFetch forwards the session cookie
+ * of the incoming request on the server and is plain $fetch in the browser.
+ */
+export const useApiQuery = <T>(
+  queryKey: MaybeRefOrGetter<QueryKey>,
+  path: MaybeRefOrGetter<string>,
+) => {
+  const fetcher = useRequestFetch();
+  const query = useQuery({
+    queryKey: computed(() => toValue(queryKey)),
+    queryFn: () =>
+      fetcher<T>(toValue(path), { credentials: 'include' }) as Promise<T>,
+  });
+  onServerPrefetch(async () => {
+    await query.suspense();
+  });
+  return query;
 };

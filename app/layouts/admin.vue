@@ -1,88 +1,73 @@
 <script setup lang="ts">
-import { useLogoutMutation } from '~/composables/queries/useSession';
-
-const { user } = useUserSession();
+// Frame of the admin area: each page is an AdminScreen (top bar + content);
+// inside a group, a bottom navigation within thumb reach.
 const route = useRoute();
-const logout = useLogoutMutation();
-
 const slug = computed(() =>
-  typeof route.params.slug === 'string'
-    ? route.params.slug
-    : (user.value?.groupSlug ?? null),
+  typeof route.params.slug === 'string' ? route.params.slug : null,
 );
-const links = computed(() =>
-  slug.value
-    ? [
-        {
-          label: 'Tableau de bord',
-          to: `/admin/${slug.value}`,
-          icon: 'i-lucide-layout-dashboard',
-          exact: true,
-        },
-        {
-          label: 'Personnes',
-          to: `/admin/${slug.value}/personnes`,
-          icon: 'i-lucide-users',
-        },
-        {
-          label: 'Réglages',
-          to: `/admin/${slug.value}/reglages`,
-          icon: 'i-lucide-settings-2',
-        },
-      ]
-    : [],
-);
-const onLogout = () =>
-  logout.mutate(undefined, { onSuccess: () => navigateTo('/admin') });
+
+type NavItem = {
+  label: string;
+  icon: string;
+  to: string;
+  match: (path: string) => boolean;
+};
+const nav = computed<NavItem[]>(() => {
+  if (!slug.value) return [];
+  const base = `/admin/${slug.value}`;
+  return [
+    {
+      label: 'Accueil',
+      icon: 'i-lucide-gift',
+      to: base,
+      match: (p) =>
+        p === base ||
+        p.startsWith(`${base}/editions`) ||
+        p === `${base}/gardien`,
+    },
+    {
+      label: 'Personnes',
+      icon: 'i-lucide-users',
+      to: `${base}/personnes`,
+      match: (p) =>
+        p.startsWith(`${base}/personnes`) || p.startsWith(`${base}/exclusions`),
+    },
+    {
+      label: 'Règles',
+      icon: 'i-lucide-settings-2',
+      to: `${base}/reglages`,
+      match: (p) => p.startsWith(`${base}/reglages`),
+    },
+  ];
+});
 </script>
 
 <template>
-  <div class="min-h-dvh">
-    <header
-      class="sticky top-0 z-10 border-b border-default bg-default/90 backdrop-blur"
+  <div
+    class="min-h-dvh"
+    :class="
+      nav.length ? 'pb-[calc(4.5rem+env(safe-area-inset-bottom))]' : 'pb-8'
+    "
+  >
+    <slot />
+    <nav
+      v-if="nav.length"
+      aria-label="Navigation du groupe"
+      class="fixed inset-x-0 bottom-0 z-20 border-t border-default bg-default/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
-      <div
-        class="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2"
-      >
+      <UContainer class="flex max-w-3xl">
         <NuxtLink
-          :to="
-            user?.role === 'super_admin'
-              ? '/admin/groupes'
-              : `/admin/${slug ?? ''}`
-          "
-          class="font-display text-lg font-bold text-primary"
+          v-for="item in nav"
+          :key="item.to"
+          :to="item.to"
+          class="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors"
+          :class="item.match(route.path) ? 'text-primary' : 'text-muted'"
+          :aria-current="item.match(route.path) ? 'page' : undefined"
         >
-          ✦ Secret Santa
+          <UIcon :name="item.icon" class="size-6" />
+          {{ item.label }}
         </NuxtLink>
-        <div class="flex items-center gap-1">
-          <UButton
-            v-if="user?.role === 'super_admin' && slug"
-            to="/admin/groupes"
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            icon="i-lucide-arrow-left"
-            label="Groupes"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            icon="i-lucide-log-out"
-            label="Déconnexion"
-            :loading="logout.isPending.value"
-            @click="onLogout"
-          />
-        </div>
-      </div>
-      <UNavigationMenu
-        v-if="links.length"
-        :items="links"
-        class="mx-auto max-w-3xl px-2"
-      />
-    </header>
-    <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5">
-      <slot />
-    </main>
+      </UContainer>
+    </nav>
   </div>
 </template>

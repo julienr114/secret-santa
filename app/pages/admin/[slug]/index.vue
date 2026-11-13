@@ -1,35 +1,24 @@
 <script setup lang="ts">
-import { z } from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import {
-  useCreateEditionMutation,
-  useDashboardQuery,
-} from '~/composables/queries/useGroup';
-import { errorMessage } from '~/utils/errors';
-import { formatDate, plural } from '~/utils/labels';
+import { useDashboardQuery } from '~/composables/queries/useGroup';
+import { STATUS_LABELS, plural } from '~/utils/labels';
 
+// Group home: what the guardian can do, as a list of actions.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
+const { user } = useUserSession();
+const isSuper = computed(() => user.value?.role === 'super_admin');
 const dashboard = useDashboardQuery(slug);
-const create = useCreateEditionMutation(slug);
-useHead({
-  title: computed(
-    () => `${dashboard.data.value?.group.name ?? 'Groupe'} — Secret Santa`,
-  ),
-});
+const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 
-const schema = z.object({
-  label: z.string().trim().min(1, 'Nom requis').max(60),
-  year: z.coerce.number().int().min(2000).max(2100),
-});
-type Schema = z.output<typeof schema>;
-const state = reactive({ label: '', year: new Date().getFullYear() });
-watch(
-  () => dashboard.data.value?.nextEdition,
-  (next) => next && Object.assign(state, next),
-  { immediate: true },
-);
+useHead({ title: computed(() => `${name.value} — Secret Santa`) });
+const screen = computed(() => ({
+  back: isSuper.value ? '/admin/groupes' : null,
+  crumbs: [
+    ...(isSuper.value ? [{ label: 'Groupes', to: '/admin/groupes' }] : []),
+    { label: name.value },
+  ],
+}));
 
 const current = computed(() =>
   dashboard.data.value?.editions.find(
@@ -41,114 +30,74 @@ const past = computed(() =>
     .filter((e) => e.id !== dashboard.data.value?.currentEditionId)
     .toReversed(),
 );
-const onCreate = (event: FormSubmitEvent<Schema>) =>
-  create.mutate(event.data, {
-    onSuccess: ({ edition }) =>
-      navigateTo(`/admin/${slug.value}/editions/${edition.id}`),
-  });
+const editionSubtitle = (status: string, count?: number) =>
+  `${STATUS_LABELS[status] ?? status} · ${plural(count ?? 0, 'participant')}`;
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
+  <AdminScreen v-bind="screen">
     <AdminQueryState
       :pending="dashboard.isPending.value"
       :error="dashboard.error.value"
     >
-      <h1 class="font-display text-2xl font-bold">
-        {{ dashboard.data.value?.group.name }}
-      </h1>
+      <h1 class="font-display text-3xl font-bold">{{ name }}</h1>
 
-      <UCard v-if="current">
-        <template #header
-          ><h2 class="font-semibold">Édition en cours</h2></template
-        >
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="font-display text-xl font-semibold">
-              {{ current.label }}
-            </p>
-            <p class="mt-1 flex items-center gap-2 text-sm text-muted">
-              <AdminStatusBadge :code="current.status" />
-              {{ plural(current.participantCount ?? 0, 'participant') }}
-            </p>
-          </div>
-          <UButton
-            :to="`/admin/${slug}/editions/${current.id}`"
-            icon="i-lucide-sparkles"
-            label="Piloter"
-          />
-        </div>
-      </UCard>
+      <MobileList title="Édition">
+        <MobileListItem
+          v-if="current"
+          :to="`/admin/${slug}/editions/${current.id}`"
+          emoji="🎁"
+          :title="current.label"
+          :subtitle="editionSubtitle(current.status, current.participantCount)"
+        />
+        <MobileListItem
+          v-else
+          :to="`/admin/${slug}/editions/nouvelle`"
+          icon="i-lucide-plus"
+          title="Nouvelle édition"
+          subtitle="Reprend les participants de l'an dernier"
+        />
+      </MobileList>
 
-      <UCard v-else>
-        <template #header
-          ><h2 class="font-semibold">Nouvelle édition</h2></template
-        >
-        <p class="mb-4 text-sm text-muted">
-          Les participants de l'édition précédente encore actifs sont repris
-          automatiquement ; tu pourras ajuster la liste ensuite.
-        </p>
-        <UForm
-          :schema="schema"
-          :state="state"
-          class="flex flex-col gap-4"
-          @submit="onCreate"
-        >
-          <UFormField name="label" label="Nom de l'édition" required>
-            <UInput v-model="state.label" class="w-full" />
-          </UFormField>
-          <UFormField name="year" label="Année" required>
-            <UInput
-              v-model="state.year"
-              type="number"
-              inputmode="numeric"
-              class="w-full"
-            />
-          </UFormField>
-          <UAlert
-            v-if="create.isError.value"
-            color="error"
-            variant="subtle"
-            :description="errorMessage(create.error.value)"
-          />
-          <UButton
-            type="submit"
-            :loading="create.isPending.value"
-            label="Créer l'édition"
-          />
-        </UForm>
-      </UCard>
+      <MobileList title="Famille">
+        <MobileListItem
+          :to="`/admin/${slug}/personnes`"
+          icon="i-lucide-users"
+          title="Personnes et couples"
+        />
+        <MobileListItem
+          :to="`/admin/${slug}/exclusions`"
+          icon="i-lucide-ban"
+          title="Exclusions"
+          subtitle="Paires qui ne se tirent jamais"
+        />
+        <MobileListItem
+          :to="`/admin/${slug}/reglages`"
+          icon="i-lucide-settings-2"
+          title="Règles du tirage"
+        />
+        <MobileListItem
+          v-if="isSuper"
+          :to="`/admin/${slug}/gardien`"
+          icon="i-lucide-key-round"
+          title="Mot de passe du gardien"
+          :subtitle="
+            dashboard.data.value?.group.hasGuardianPassword
+              ? 'Configuré'
+              : 'À définir'
+          "
+        />
+      </MobileList>
 
-      <UCard v-if="past.length">
-        <template #header
-          ><h2 class="font-semibold">Éditions passées</h2></template
-        >
-        <ul class="divide-y divide-default">
-          <li
-            v-for="edition in past"
-            :key="edition.id"
-            class="flex items-center justify-between gap-2 py-3"
-          >
-            <div>
-              <p class="font-medium">{{ edition.label }}</p>
-              <p class="text-xs text-muted">
-                {{ plural(edition.participantCount ?? 0, 'participant') }} ·
-                {{ formatDate(edition.closedAt ?? edition.createdAt) }}
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <AdminStatusBadge :code="edition.status" />
-              <UButton
-                :to="`/admin/${slug}/editions/${edition.id}`"
-                variant="ghost"
-                color="neutral"
-                size="sm"
-                label="Voir"
-              />
-            </div>
-          </li>
-        </ul>
-      </UCard>
+      <MobileList v-if="past.length" title="Éditions passées">
+        <MobileListItem
+          v-for="edition in past"
+          :key="edition.id"
+          :to="`/admin/${slug}/editions/${edition.id}`"
+          :title="edition.label"
+          :subtitle="editionSubtitle(edition.status, edition.participantCount)"
+        />
+      </MobileList>
     </AdminQueryState>
-  </div>
+  </AdminScreen>
 </template>

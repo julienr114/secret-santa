@@ -22,6 +22,7 @@ export default defineConfig({
       'shared/**/*.test.ts',
       'tests/**/*.test.ts',
     ],
+    exclude: ['tests/e2e/**', 'node_modules/**'],
     coverage: {
       provider: 'v8',
       include: ['server/utils/**/*.ts', 'shared/**/*.ts'],

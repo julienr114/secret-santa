@@ -1,0 +1,104 @@
+import { expect, test } from '@playwright/test';
+import { heading, hydrated, loginAsGuardian, loginAsSuper } from './helpers';
+
+// The guardian's whole season, from an empty app to a closed edition
+// (README section 18, "Parcours").
+test.describe.configure({ mode: 'serial' });
+
+const GROUP = {
+  name: 'Famille E2E',
+  slug: 'famille-e2e',
+  password: 'gardien-e2e-1234',
+};
+
+test('super-admin creates a group with its guardian', async ({ page }) => {
+  await loginAsSuper(page);
+  await page.getByRole('link', { name: 'Nouveau' }).click();
+  await expect(heading(page)).toHaveText('Nouveau groupe');
+  await page.getByLabel('Nom du groupe').fill(GROUP.name);
+  await expect(page.getByLabel('Identifiant')).toHaveValue(GROUP.slug);
+  await page.getByLabel('Mot de passe du gardien').fill(GROUP.password);
+  await page.getByRole('button', { name: 'Créer le groupe' }).click();
+  await expect(page).toHaveURL(new RegExp(`/admin/${GROUP.slug}$`));
+  await expect(heading(page)).toHaveText(GROUP.name);
+});
+
+test('guardian adds people, a couple, and runs an edition to the end', async ({
+  page,
+}) => {
+  await loginAsGuardian(page, GROUP.slug, GROUP.password);
+
+  // People
+  await page.getByText('Personnes et couples').click();
+  for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
+    await page.getByRole('link', { name: 'Ajouter' }).click();
+    await page.getByLabel('Prénom').fill(firstName);
+    await page.getByRole('button', { name: 'Ajouter' }).click();
+    await expect(heading(page)).toHaveText('Personnes');
+  }
+  await expect(page.locator('main').getByRole('listitem')).toHaveCount(5); // 4 people + "Exclusions"
+
+  // Couple Léa + Tom, from Léa's screen
+  await page.getByText('Léa', { exact: true }).click();
+  await page.getByRole('combobox').click();
+  await page.getByRole('option', { name: 'Tom' }).click();
+  await page.getByRole('button', { name: 'Lier' }).click();
+  await expect(page.getByText('En couple avec Tom')).toBeVisible();
+
+  // Codes are chosen on the participant page (step 5): not required here.
+  await page.goto(`/admin/${GROUP.slug}/reglages`);
+  await hydrated(page);
+  await page.getByRole('switch', { name: /Tirage possible seulement/ }).click();
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(page.getByText('Règles enregistrées').first()).toBeVisible();
+
+  // Edition
+  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByText('Nouvelle édition').click();
+  await page.getByRole('button', { name: "Créer l'édition" }).click();
+  await expect(page.getByText('Brouillon')).toBeVisible();
+  await expect(page.getByText('4 participants')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Ouvrir les invitations' }).click();
+  await expect(page.getByText('Le tirage est possible')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Lancer le tirage' }).click();
+  await page.getByRole('button', { name: 'Tirer au sort' }).click();
+  await expect(page.getByText('Tirage effectué').first()).toBeVisible();
+
+  // The cockpit never shows who drew whom.
+  const body = await page.locator('main').innerText();
+  expect(body).not.toMatch(/offre|→|receiver/i);
+
+  // Cancel with a reason, draw again, close.
+  await page.getByText('Annuler et relancer le tirage').click();
+  await page.getByLabel('Motif').fill('Test de relance');
+  await page.getByLabel(/Je comprends/).check();
+  await page.getByRole('button', { name: 'Annuler le tirage' }).click();
+  await expect(page.getByText('Le tirage est possible')).toBeVisible();
+  await page.getByRole('button', { name: 'Lancer le tirage' }).click();
+  await page.getByRole('button', { name: 'Tirer au sort' }).click();
+  await page.getByRole('button', { name: 'Clôturer après la fête' }).click();
+  await page.getByRole('button', { name: 'Clôturer', exact: true }).click();
+  await expect(
+    page.getByText('Édition clôturée, en lecture seule.'),
+  ).toBeVisible();
+});
+
+test('a guardian cannot reach another group', async ({ page, request }) => {
+  await loginAsSuper(page);
+  await page.goto('/admin/groupes/nouveau');
+  await hydrated(page);
+  await page.getByLabel('Nom du groupe').fill('Autre famille');
+  await page.getByLabel('Mot de passe du gardien').fill('autre-gardien-123');
+  await page.getByRole('button', { name: 'Créer le groupe' }).click();
+  await expect(page).toHaveURL(/\/admin\/autre-famille$/);
+
+  await page.context().clearCookies();
+  await loginAsGuardian(page, GROUP.slug, GROUP.password);
+  await page.goto('/admin/autre-famille/personnes');
+  await expect(page).toHaveURL(new RegExp(`/admin/${GROUP.slug}$`));
+  const api = await page.request.get('/api/admin/autre-famille/persons');
+  expect(api.status()).toBe(403);
+  expect((await request.get('/api/admin/groups')).status()).toBe(401);
+});

@@ -66,7 +66,7 @@ const messages = useMessagesQuery(slug, id, messageType);
 const sharer = useShareMessage(slug);
 
 const participants = computed(() => edition.data.value?.participants ?? []);
-// Reminder before the draw: active members of the group left out of it.
+// Reminder, shown on the "add" row: active members left out of the edition.
 const people = usePeopleQuery(slug);
 const missing = computed(() => {
   const inEdition = new Set(participants.value.map((p) => p.id));
@@ -80,9 +80,23 @@ const missingText = computed(() => {
     names.length <= 1
       ? (names[0] ?? '')
       : `${names.slice(0, -1).join(', ')} et ${names.at(-1)}`;
+  if (names.length === 0) return undefined;
   return names.length === 1
-    ? `${list} est membre actif du groupe mais ne participe pas.`
-    : `${list} sont membres actifs du groupe mais ne participent pas.`;
+    ? `${list} ne participe pas encore`
+    : `${list} ne participent pas encore`;
+});
+// Reminder of the exclusions that apply to this edition's participants.
+const exclusionsText = computed(() => {
+  const ids = new Set(participants.value.map((p) => p.id));
+  const nameOf = (pid: string) =>
+    participants.value.find((p) => p.id === pid)?.firstName ?? '?';
+  const pairs = (people.data.value?.exclusions ?? [])
+    .filter((e) => ids.has(e.giverId) && ids.has(e.receiverId))
+    .map(
+      (e) =>
+        `${nameOf(e.giverId)} ${e.reciprocal ? '↔' : '→'} ${nameOf(e.receiverId)}`,
+    );
+  return pairs.length ? pairs.join(', ') : 'Aucune exclusion';
 });
 const viewedCount = computed(
   () => participants.value.filter((p) => p.viewCount > 0).length,
@@ -132,28 +146,6 @@ const sectionTitle =
         </div>
         <p v-if="subtitle" class="text-muted">{{ subtitle }}</p>
       </div>
-
-      <!-- Reminder before the draw: active members left out -->
-      <UAlert
-        v-if="canEdit && missing.length"
-        color="warning"
-        variant="subtle"
-        icon="i-lucide-user-round-plus"
-        :title="
-          missing.length === 1
-            ? 'Un membre ne participe pas'
-            : `${missing.length} membres ne participent pas`
-        "
-        :description="missingText"
-        :actions="[
-          {
-            label: 'Ajouter',
-            color: 'warning',
-            variant: 'solid',
-            to: `/admin/${slug}/editions/${id}/ajouter`,
-          },
-        ]"
-      />
 
       <!-- Action of the moment -->
       <section v-if="status === 'draft'" class="flex flex-col gap-3">
@@ -342,6 +334,18 @@ const sectionTitle =
           :to="`/admin/${slug}/editions/${id}/ajouter`"
           icon="i-lucide-user-plus"
           title="Ajouter des participants"
+          :subtitle="missingText"
+        >
+          <template v-if="missing.length" #trailing>
+            <span class="size-2.5 rounded-full bg-warning" aria-hidden="true" />
+          </template>
+        </MobileListItem>
+        <MobileListItem
+          v-if="canEdit"
+          :to="`/admin/${slug}/exclusions`"
+          icon="i-lucide-ban"
+          title="Exclusions"
+          :subtitle="exclusionsText"
         />
         <MobileListItem
           v-if="status === 'drawn'"

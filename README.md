@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v3, étape 1 (socle) réalisée en local**, en attente du premier déploiement Cloudflare (connexion `wrangler login` à faire par Julien) et de la mesure PBKDF2 sur un Worker déployé. Dépôt GitHub : `https://github.com/julienr114/secret-santa` (premier push à faire par Julien, pas d'identifiants dans la session).
+> État au 13 novembre 2026 : **plan v3, étape 1 (socle) terminée et déployée.** Application : https://secret-santa.julienr114.workers.dev (page d'accueil neutre pour l'instant). Dépôt : https://github.com/julienr114/secret-santa. Prochaine étape : l'étape 2 (cœur métier).
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -276,7 +276,7 @@ Les points « à vérifier » de la v2 ont été confrontés à la documentation
 | Offre gratuite Cloudflare | Workers Free : 100 000 requêtes/jour, **10 ms de CPU par requête**, 128 Mo. D1 Free : 10 bases, 500 Mo par base, 5 Go au total, 5 millions de lignes lues et 100 000 lignes écrites par jour. Workers Builds (déploiement Git) : 3 000 minutes/mois, 1 build à la fois. Carte bancaire : les docs ne la mentionnent pas ; toutes les sources tierces disent qu'elle n'est pas demandée sur le plan gratuit | Très largement suffisant pour deux familles un mois par an. À confirmer à la création du compte qu'aucune carte n'est demandée |
 | Preset Nitro | `cloudflare_module` (Workers) est le preset recommandé ; `cloudflare_pages` « seulement pour des fonctionnalités propres à Pages » ; `cloudflare_durable` est déprécié. Bindings dans `wrangler.toml`/`wrangler.jsonc`. Dév local : `nitro dev` émule Cloudflare via Miniflare (paquet `miniflare` à installer), état local dans `.wrangler/state/v3` | Workers, pas Pages. Adresse en `*.workers.dev` |
 | NuxtHub | L'admin NuxtHub est en cours d'arrêt (31 décembre 2025) ; la v0.10 est auto-hébergée (`@nuxthub/db` + Drizzle, SQLite libsql en local, migrations appliquées au build, déploiement par Workers Builds ou wrangler) et cible Nuxt 4 | **Non retenu** : une couche de plus pour un gain faible ici. Drizzle directement sur le binding D1 |
-| CPU et PBKDF2 | Les Workers refusent plus de **100 000 itérations** PBKDF2 (`NotSupportedError`, confirmé par un employé Cloudflare en forum et par de nombreux rapports, absent de la doc officielle). Le plan gratuit limite à 10 ms de CPU par requête ; le temps réel d'un PBKDF2 natif sur un Worker déployé n'est documenté nulle part | Itérations **configurables** (`PBKDF2_ITERATIONS`, défaut 50 000, plafond 100 000), à **mesurer sur un Worker déployé à l'étape 1**. Voir 8.2 pour la justification sécurité |
+| CPU et PBKDF2 | Les Workers refusent plus de **100 000 itérations** PBKDF2 (`NotSupportedError`, confirmé par un employé Cloudflare en forum et par de nombreux rapports, absent de la doc officielle). Le plan gratuit limite à 10 ms de CPU par requête ; le temps réel d'un PBKDF2 natif sur un Worker déployé n'est documenté nulle part | **Mesuré le 13 novembre 2026 sur le Worker déployé** (temps CPU des logs Cloudflare, à chaud) : 10k ≈ 2 ms, 25k ≈ 5 ms, 50k ≈ 12-25 ms, 100k ≈ 15-43 ms ; démarrage à froid ≈ +13 ms. Les dépassements ont été tolérés (`outcome: ok`) mais ne sont pas garantis. **Défaut retenu : `PBKDF2_ITERATIONS` = 20 000** (≈ 4 ms), relevable par variable. Voir 8.2 pour la justification sécurité |
 | Email gratuit sans nom de domaine | **Impossible proprement.** Resend : 100/jour, 3 000/mois, mais sans domaine vérifié on ne peut écrire qu'à sa propre adresse (403). Brevo : 300/jour, API incluse, sans carte, mais une adresse Gmail ne peut pas être authentifiée et Brevo réécrit l'expéditeur en `@brevosend.com` (« via brevosend.com » dans Gmail, pied de page Brevo, délivrabilité dégradée) | **Email abandonné** (décision v3). Envoi par WhatsApp via `wa.me`, section 13 |
 | Liens WhatsApp « click to chat » | Fonction officielle de WhatsApp : `https://wa.me/<numéro international sans +>?text=<texte encodé>` ouvre la conversation avec le message prérempli, sur Desktop, Web et mobile. Sans numéro, `https://wa.me/?text=…` ouvre le choix du contact. Pas d'envoi automatique possible : l'utilisateur appuie sur Envoyer | Retenu comme mode d'envoi principal |
 | `nuxt-auth-utils` sur Workers | Supporté. Exige `compatibility_date` ≥ 2025-04-01 (ou le flag `nodejs_compat_populate_process_env`). Secret de scellement `NUXT_SESSION_PASSWORD` obligatoire en production. Session limitée par la taille du cookie (4 096 octets) | Retenu. Ne stocker en session que `role`, `groupId`, `expiresAt` |
@@ -334,7 +334,7 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Rattaché à la **personne** : il est conservé d'une année sur l'autre.
 - Choisi par le participant à la première ouverture d'un lien, saisi deux fois.
 - Refuser les codes triviaux (`000000`, `123456`, six chiffres identiques).
-- Stocké haché : PBKDF2-SHA256 avec sel par personne et « poivre » serveur (`PIN_PEPPER`). Itérations réglées par `PBKDF2_ITERATIONS` (défaut 50 000 ; les Workers plafonnent à 100 000, voir 7.2). Mesurer à l'étape 1 que la vérification d'un code tient dans les 10 ms de CPU du plan gratuit, et baisser si besoin : pour un code à 6 chiffres, le nombre d'itérations compte peu, la sécurité repose sur le poivre (hors base) et sur le blocage. Les mots de passe des gardiens (10 caractères minimum, 8.4) profitent du même poivre et de la limitation des tentatives.
+- Stocké haché : PBKDF2-SHA256 avec sel par personne et « poivre » serveur (`PIN_PEPPER`). Itérations réglées par `PBKDF2_ITERATIONS` (défaut **20 000**, mesuré ≈ 4 ms de CPU sur le Worker ; les Workers plafonnent à 100 000, voir 7.2). C'est peu au regard des recommandations pour des mots de passe, et c'est assumé : pour un code à 6 chiffres, le nombre d'itérations compte peu, la sécurité repose sur le poivre (hors base) et sur le blocage. Les mots de passe des gardiens (10 caractères minimum, 8.4) profitent du même poivre et de la limitation des tentatives.
 - Un code à 6 chiffres a peu d'entropie : la vraie protection est le **blocage après 5 échecs** (compteur en base, remis à zéro après un succès). Seul le gardien débloque.
 - Le code est redemandé **à chaque consultation** du résultat. Pas de session participant.
 - Le gardien ne voit jamais un code, il peut seulement le réinitialiser.
@@ -681,7 +681,7 @@ secret-santa/
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
 | `PIN_PEPPER` | Poivre pour le hachage des codes et mots de passe |
-| `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 50 000, maximum 100 000 sur Workers) |
+| `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 20 000, maximum 100 000 sur Workers) |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 
 **Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe.
@@ -692,7 +692,7 @@ secret-santa/
 
 1. Créer un dépôt GitHub privé et y pousser le code.
 2. Créer un compte Cloudflare gratuit.
-3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`.
+3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`. *(Fait : `1128fa3f-…`.)* Le sous-domaine `workers.dev` du compte se choisit dans le tableau de bord (Workers & Pages → Account details) s'il n'existe pas encore.
 4. Appliquer les migrations sur la base distante.
 5. Connecter le dépôt GitHub à Cloudflare (Workers Builds) : chaque `git push` sur la branche principale redéploie.
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
@@ -710,10 +710,10 @@ Chaque étape est livrable et testable seule.
 **Étape 0 — Vérifications** ✅ *terminée le 13 novembre 2026*
 Points de la section 7 levés, conclusions en 7.2. Décisions : Workers (`cloudflare_module`), pas de NuxtHub, pas d'email mais WhatsApp `wa.me`, Nuxt 4, PBKDF2 configurable.
 
-**Étape 1 — Socle** 🔶 *réalisée en local le 13 novembre 2026, déploiement en attente*
-Fait : Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git (simple-git-hooks, lint-staged), Vitest, CI GitHub Actions, Tailwind 4, plugin TanStack Query (SSR vérifié), Drizzle + schéma complet + migration `0000_init`, preset `cloudflare_module`, `wrangler.toml` (D1 + assets), route `/api/health` testée sous Miniflare, `wrangler deploy --dry-run` OK. Reste : `wrangler login`, `wrangler d1 create secret-santa` (reporter l'id dans `wrangler.toml`), `pnpm db:migrate`, `wrangler deploy`, relevé de `/api/_bench/pbkdf2` sur le Worker. Mesure locale indicative (workerd sur Mac) : 10k → 1,5 ms, 25k → 3,3 ms, 50k → 6,5 ms, 100k → 13 ms ; si le Worker est deux fois plus lent, retenir 25 000.
+**Étape 1 — Socle** ✅ *terminée et déployée le 13 novembre 2026*
+Fait : Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git (simple-git-hooks, lint-staged), Vitest, CI GitHub Actions, Tailwind 4, plugin TanStack Query (SSR vérifié), Drizzle + schéma complet + migration `0000_init`, preset `cloudflare_module`, `wrangler.toml` (D1 + assets), route `/api/health` testée sous Miniflare, base D1 `secret-santa` créée et migrée, Worker déployé sur `secret-santa.julienr114.workers.dev`, `/api/health` répond en production, code poussé sur GitHub (CI active). PBKDF2 mesuré sur le Worker (voir 7.2), route de banc supprimée, défaut 20 000. Sous-domaine `workers.dev` du compte : `julienr114`.
 
-Enseignements : ESLint 10 cherche la config depuis chaque fichier, d'où `--config eslint.config.js` dans les scripts ; `functional/immutable-data` exige TypeScript, remplacé par des sélecteurs `no-restricted-syntax` sur le noyau pur ; `server/utils` est réservé aux fonctions pures, l'infrastructure (client Drizzle) vit dans `server/database`.
+Enseignements : l'horloge est gelée pendant une requête Worker (`performance.now()` rend 0), le temps CPU se lit dans `wrangler tail --format json` (champ `cpuTime`) ; ESLint 10 cherche la config depuis chaque fichier, d'où `--config eslint.config.js` dans les scripts ; `functional/immutable-data` exige TypeScript, remplacé par des sélecteurs `no-restricted-syntax` sur le noyau pur ; `server/utils` est réservé aux fonctions pures, l'infrastructure (client Drizzle) vit dans `server/database`.
 
 Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
 

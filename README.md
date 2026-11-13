@@ -1,0 +1,789 @@
+# Secret Santa familial — plan de réalisation
+
+> Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
+>
+> État au 13 novembre 2026 : **plan validé et mis à jour (v2), aucun code écrit.**
+>
+> Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
+
+---
+
+## 1. Le besoin en bref
+
+Une petite application web pour organiser le tirage au sort du Secret Santa de plusieurs familles.
+
+- Chaque participant découvre **en privé** la personne à qui il offre un cadeau.
+- Le tirage respecte des règles : pas soi-même, pas son conjoint, pas la même personne que l'année précédente.
+- Un **gardien** (admin) pilote le tout sans jamais voir les résultats, et peut « rejouer » un envoi si quelqu'un n'a pas reçu ou a perdu son résultat, **sans trahir le secret**.
+- Les participants sont, selon Julien, « tous des gros tricheurs » : l'application doit être **verrouillée et la triche visible de tous**.
+- **Coût : 0 €.** Hébergement, base de données et envois compris.
+- **Mobile first** : presque tout le monde l'utilisera sur téléphone.
+
+### Contraintes fermes
+
+| Contrainte | Détail |
+|---|---|
+| Gratuit | Aucun service payant, aucun nom de domaine à acheter |
+| Mobile first | Conçu pour le téléphone d'abord, utilisable sur ordinateur ensuite |
+| Secret | Personne d'autre que le participant ne voit son résultat dans l'interface, gardien compris |
+| Anti-triche | Lien personnel + code secret + journal public |
+| Multi-familles | Plusieurs groupes cloisonnés dans une seule application |
+| Pluriannuel | Participants et couples évoluent d'une année sur l'autre, l'historique est conservé |
+| Langue | Interface entièrement en français |
+
+---
+
+## 2. Décisions prises (et pourquoi)
+
+Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander.
+
+1. **Pas d'envoi WhatsApp automatique.** L'API officielle de Meta demande un compte Business et des modèles validés, et les librairies non officielles (Baileys, whatsapp-web.js) exposent le numéro à un ban. On envoie donc par **email**, avec en complément un bouton **« copier le lien »** et un bouton **« partager »** (feuille de partage native du téléphone) pour passer par WhatsApp à la main.
+2. **Le message ne contient jamais le résultat.** Email ou WhatsApp, il ne contient qu'un lien personnel. Le résultat ne s'affiche que dans l'application, après saisie du code.
+3. **Lien personnel + code à 6 chiffres** choisi par le participant. Le lien seul ne suffit pas.
+4. **Journal public par groupe** : toutes les actions sensibles y sont listées, sans jamais indiquer qui a tiré qui.
+5. **Pas de chiffrement de bout en bout.** Julien est le gardien du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
+6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre gardien** et **ses propres règles**.
+7. **Participants modifiables chaque année** : ajout, retrait, changement de couple.
+8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
+9. **Hébergement Cloudflare** (application + base D1) : un seul compte, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an.
+10. **Stack Nuxt 3 / JavaScript** (décision v2, remplace « TypeScript strict ») : Vue 3 et Nuxt 3 sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
+11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après saisie du code. La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
+12. **Programmation fonctionnelle et standards de l'industrie** (décision v2) : fonctions pures pour tout le métier, effets de bord repoussés dans les routes, ESLint + Prettier, tests Vitest sur la logique métier, Git en petits commits. Détails en section 7.1.
+
+### Hors périmètre
+
+- Envoi automatique par WhatsApp ou SMS.
+- Chiffrement de bout en bout.
+- Messagerie anonyme, paiement, application native.
+- Dans la liste de souhaits : réservation d'un cadeau (« je le prends ») et notification du donneur quand la liste change.
+- Comptes utilisateurs avec email/mot de passe pour les participants (le lien + le code suffisent).
+
+---
+
+## 3. Vocabulaire
+
+| Terme | Sens |
+|---|---|
+| **Groupe** | Une famille. Cloisonné des autres groupes. |
+| **Gardien** | L'admin d'un groupe. Gère participants, tirage et envois, ne voit pas les résultats. |
+| **Super-admin** | Julien. Crée les groupes et nomme les gardiens. |
+| **Personne** | Un membre d'un groupe. Persiste d'une année sur l'autre. |
+| **Édition** | Un Secret Santa donné (ex. « Noël 2026 ») dans un groupe. |
+| **Participation** | La présence d'une personne dans une édition. Porte le lien personnel. |
+| **Attribution** | Le résultat du tirage : « X offre à Y ». |
+| **Journal** | La liste publique des événements d'un groupe. |
+| **Souhait** | Une idée de cadeau saisie par un participant pour une édition. Visible par son donneur après le tirage. |
+
+Une personne présente dans deux familles est enregistrée **deux fois** (une personne par groupe), avec un lien et un code distincts.
+
+---
+
+## 4. Parcours
+
+### 4.1 Cycle de vie d'une édition
+
+```
+brouillon ──► invitations ──► tirée ──► clôturée
+                  ▲              │
+                  └── annulation du tirage (journalisée)
+```
+
+| Statut | Ce qui est possible |
+|---|---|
+| `brouillon` | Le gardien compose la liste des participants et les couples, règle les paramètres. |
+| `invitations` | Les liens sont envoyés. Chacun ouvre le sien, choisit son code et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
+| `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
+| `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
+
+### 4.2 Parcours du gardien
+
+1. Se connecte à l'admin de son groupe (mot de passe).
+2. Crée l'édition. L'application **reprend les participants et couples de l'édition précédente**.
+3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les couples.
+4. Passe en `invitations` : envoie les liens par email (« Envoyer à tous » ou un par un) ou copie/partage chaque lien.
+5. Suit les statuts : *invité*, *code choisi*, *souhaits renseignés* (nombre d'idées, jamais leur contenu), *résultat consulté*.
+6. Lance le tirage quand tout le monde a choisi son code (voir règle `inscription_obligatoire`).
+7. L'application prévient chacun par email que le tirage est fait (même lien).
+8. En cas de pépin : renvoie un lien, réinitialise un code, débloque un participant.
+9. Après la fête : clôture l'édition.
+
+### 4.3 Parcours du participant
+
+1. Reçoit son lien personnel (email ou WhatsApp).
+2. Première ouverture : choisit son **code à 6 chiffres** (saisi deux fois). S'il a déjà un code d'une année précédente, il le réutilise.
+3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec une invitation à remplir sa liste de souhaits.
+4. À tout moment avant la clôture : renseigne ou modifie sa **liste de souhaits** (quelques idées, avec un lien facultatif). La sauvegarde demande le code, comme toute action sensible (voir 6 bis).
+5. Après le tirage : saisit son code, voit « Tu offres un cadeau à **Prénom** », avec le budget et la date si renseignés, puis la **liste de souhaits de Prénom** (ou « Prénom n'a pas encore donné d'idée »).
+6. Peut revenir consulter son résultat autant de fois qu'il veut, **avec le code à chaque fois**. Chaque consultation est journalisée.
+7. Peut consulter le journal de son groupe.
+
+### 4.4 Cas « rejouer sans trahir le secret »
+
+| Situation | Action du gardien | Effet |
+|---|---|---|
+| Email non reçu | « Renvoyer l'email » ou « Copier le lien » | Même lien, journalisé |
+| Lien perdu | Idem | Idem |
+| Code oublié | « Réinitialiser le code » | Le participant en choisit un nouveau à la prochaine ouverture, journalisé |
+| 5 codes erronés | « Débloquer » | Compteur remis à zéro, journalisé |
+| Lien compromis (transféré par erreur) | « Régénérer le lien » | L'ancien lien ne marche plus, journalisé |
+| Désistement ou ajout après le tirage | « Annuler et relancer le tirage » | Voir 6.5 |
+
+Dans aucun de ces cas le gardien ne voit le résultat.
+
+---
+
+## 5. Règles paramétrables par groupe
+
+Réglables par le gardien, avec une valeur par défaut au niveau du groupe et une surcharge possible par édition.
+
+| Règle | Défaut | Description |
+|---|---|---|
+| `exclure_conjoint` | oui | Deux membres d'un couple ne peuvent pas se tirer |
+| `exclure_annees_precedentes` | 1 | Nombre d'éditions passées à exclure (0 = désactivé) |
+| `exclusions_manuelles` | aucune | Paires interdites supplémentaires (ex. « A ne tire jamais B »), à sens unique ou réciproques |
+| `inscription_obligatoire` | oui | Le tirage ne peut être lancé que si tous les participants ont choisi leur code |
+| `budget` | vide | Texte libre affiché sur la page de résultat (ex. « 20 € max ») |
+| `date_evenement` | vide | Date de la fête, affichée sur la page de résultat |
+| `message_gardien` | vide | Petit mot affiché sur la page de résultat |
+| `tentatives_code_max` | 5 | Nombre de codes erronés avant blocage |
+| `liste_souhaits` | oui | Active la liste de souhaits pour le groupe. Si non, l'écran et les routes correspondants sont masqués |
+| `souhaits_max` | 10 | Nombre maximal d'idées par participant et par édition |
+
+---
+
+## 6. Le tirage
+
+### 6.1 Contraintes
+
+Pour chaque participant *donneur*, le *receveur* doit être :
+
+- un autre participant de la même édition ;
+- différent du donneur ;
+- différent de son conjoint actif (si `exclure_conjoint`) ;
+- différent des receveurs qu'il a eus lors des N dernières éditions clôturées ou tirées du groupe (si `exclure_annees_precedentes` ≥ 1), **uniquement si le donneur participait à ces éditions** ;
+- absent de ses exclusions manuelles.
+
+Chaque participant reçoit exactement un cadeau et en offre exactement un (permutation sans point fixe). Les boucles courtes (A→B et B→A) sont autorisées.
+
+### 6.2 Algorithme
+
+1. Construire pour chaque donneur la liste des receveurs autorisés.
+2. **Tirage par rejet** : mélanger aléatoirement la liste des receveurs (Fisher-Yates), vérifier toutes les contraintes, recommencer en cas d'échec. Limite : 1 000 essais. Cette méthode donne un tirage uniforme parmi les solutions valides.
+3. **Repli** si la limite est atteinte : backtracking aléatoire, en traitant d'abord les donneurs qui ont le moins de receveurs possibles.
+4. Si le backtracking échoue : **aucune solution n'existe**. Renvoyer une erreur claire au gardien, en nommant les participants dont la liste de receveurs possibles est vide ou trop restreinte, pour qu'il assouplisse une règle.
+
+Aléa : `crypto.getRandomValues` exclusivement, jamais `Math.random`.
+
+### 6.3 Exécution
+
+- Le tirage s'exécute **uniquement côté serveur**.
+- La réponse renvoyée au gardien ne contient **aucune attribution**, seulement « tirage effectué » et le nombre de participants.
+- Les attributions ne sont jamais écrites dans les logs.
+- Le receveur est stocké **chiffré** (voir 8.3).
+
+### 6.4 Unicité
+
+Une édition `tirée` ne peut pas être retirée par un simple clic. Le bouton de tirage disparaît et l'API refuse un second tirage.
+
+### 6.5 Annulation et relance
+
+Procédure réservée au gardien, avec double confirmation :
+
+1. Toutes les attributions de l'édition sont supprimées.
+2. L'édition repasse en `invitations`, la liste redevient modifiable.
+3. Les liens et les codes des participants **restent valables**.
+4. Les compteurs de consultation sont remis à zéro.
+5. Un événement `tirage_annule` est inscrit au journal, avec le motif saisi par le gardien.
+6. Au nouveau tirage, chacun reçoit un email « Nouveau tirage, ton ancien résultat n'est plus valable ».
+
+### 6.6 Nouveaux venus et absents
+
+- **Nouveau venu** : pas d'historique, donc aucune exclusion liée aux années précédentes.
+- **Absent une année** : la personne est désactivée, jamais supprimée. Son historique est conservé pour son retour.
+- **Suppression définitive** d'une personne : possible uniquement si elle n'a participé à aucune édition. Sinon, désactivation.
+
+---
+
+## 6 bis. Liste de souhaits
+
+Ajoutée en v2 à la demande de Julien. L'objectif : aider le donneur à choisir, sans rien changer au secret du tirage.
+
+### 6 bis.1 Principes
+
+- Une liste **par participation** (donc par personne et par édition) : les envies changent d'une année sur l'autre. Pas de reprise automatique de l'an dernier en V1 (voir section 20).
+- Chaque souhait est une **idée courte** (texte de 200 caractères max) avec un **lien facultatif** (`http`/`https` uniquement, validé côté serveur, affiché avec `rel="noopener noreferrer nofollow"`).
+- Au plus `souhaits_max` idées par liste (défaut 10). La fonctionnalité se désactive par la règle `liste_souhaits`.
+- La liste est modifiable en statuts `invitations` et `tirée`, figée en `clôturée`.
+- Une relance du tirage (6.5) **conserve** les listes : elles appartiennent à la participation, pas à l'attribution.
+
+### 6 bis.2 Qui voit quoi
+
+| Acteur | Accès |
+|---|---|
+| Le participant | Lit et modifie sa propre liste depuis sa page personnelle |
+| Son donneur | Lit la liste de son receveur sur l'écran de résultat, après saisie du code, en même temps que le prénom |
+| Le gardien | Voit seulement le **nombre d'idées** par participant (pastille *souhaits renseignés*), jamais le contenu |
+| Le journal | Mentionne qu'une liste a été mise à jour, jamais son contenu |
+
+Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas. Ce n'est pas un secret aussi fort que l'attribution, mais afficher les listes de tout le monde permettrait de deviner par recoupement qui achète quoi pour qui. On s'en abstient.
+
+### 6 bis.3 Protection contre la triche
+
+- **Le lien seul ne suffit pas à modifier une liste** : la sauvegarde exige le code à 6 chiffres, avec le même compteur d'échecs et le même blocage que la consultation du résultat. Sans cela, un cousin qui intercepte un lien pourrait réécrire les envies de quelqu'un.
+- Lecture de sa propre liste : le lien suffit (rien à y gagner pour un tricheur).
+- La sauvegarde **remplace la liste entière** (une seule requête idempotente, pas de gestion d'items unitaires) : plus simple, et conforme à l'approche fonctionnelle.
+- Événement `souhaits_modifies` au journal : « Léa a mis à jour sa liste de souhaits (3 idées) ».
+
+### 6 bis.4 Écran
+
+- Route `/p/[token]/souhaits`, accessible depuis la page personnelle par un bouton « Ma liste de souhaits ».
+- Un champ par idée, bouton « Ajouter une idée », suppression par croix, lien facultatif sous chaque idée. Un seul bouton « Enregistrer » qui ouvre la saisie du code.
+- Sur l'écran de résultat, la liste du receveur apparaît sous le prénom, après l'animation de révélation, sous le titre « Ses idées de cadeaux ».
+
+---
+
+## 7. Stack technique
+
+| Élément | Choix |
+|---|---|
+| Langage | **JavaScript** (ES2022+, modules ESM), `"type": "module"` dans `package.json`. Pas de TypeScript. Annotations **JSDoc** sur les fonctions métier et les objets échangés avec l'API, pour l'autocomplétion et la documentation ; `checkJs` activé dans `jsconfig.json` pour que l'éditeur signale les incohérences, sans bloquer le build |
+| Framework | Nuxt 3 (`nuxt.config.js`) |
+| Back-end | **Routes serveur Nitro** (`server/api/**`), un fichier par route et méthode (`persons.get.js`, `persons.post.js`), `defineEventHandler` |
+| Appels API côté client | **TanStack Query pour Vue** (`@tanstack/vue-query`) : `useQuery` pour les lectures, `useMutation` pour les écritures, invalidation par clés après chaque mutation. Transport : `$fetch` de Nuxt. Hydratation SSR via `dehydrate`/`hydrate` dans un plugin Nuxt |
+| État client | Aucun store global. TanStack Query porte l'état serveur ; l'état d'interface (champs de formulaire, étape d'un écran) vit dans des `ref` locaux ou des composables |
+| Rendu | SSR sur Cloudflare (preset Nitro Cloudflare) |
+| Base de données | Cloudflare D1 (SQLite) |
+| ORM et migrations | **Drizzle ORM** + drizzle-kit (`drizzle.config.js`, schéma en `server/database/schema.js`) |
+| Validation | Zod sur toutes les entrées d'API. Avec JavaScript, Zod devient aussi la **source de vérité des formes de données** : les types JSDoc sont dérivés des schémas (`@typedef {import('zod').infer<typeof schema>}`) |
+| Styles | Tailwind CSS ou UnoCSS, au choix de l'agent, approche mobile first |
+| Sessions admin | Cookie de session scellé (par exemple le module `nuxt-auth-utils`) |
+| Cryptographie | Web Crypto API (disponible dans les Workers) |
+| Email | Appel HTTP à un fournisseur gratuit (Brevo ou Resend), derrière une interface commune (un objet de fonctions, voir 7.1) |
+| Qualité | **ESLint** (config plate, `@nuxt/eslint`) + **Prettier**, `eslint-config-prettier` pour éviter les conflits. Hooks Git via `simple-git-hooks` + `lint-staged` |
+| Tests | **Vitest** sur toute la logique métier (`server/utils/**`), couverture suivie. `@nuxt/test-utils` pour quelques tests de routes. Playwright facultatif (parcours mobile) |
+| Intégration continue | GitHub Actions : `lint`, `format:check`, `test` sur chaque push et pull request |
+| Gestionnaire de paquets | pnpm |
+
+### Points à vérifier avant de coder
+
+Ces éléments reposent sur des souvenirs et n'ont **pas été revérifiés** pendant la phase de plan. À confirmer dans la documentation officielle :
+
+- [ ] Les limites actuelles de l'offre gratuite Cloudflare (Workers/Pages, D1) et l'absence de carte bancaire exigée.
+- [ ] Le preset Nitro recommandé aujourd'hui pour Cloudflare (`cloudflare-pages` ou `cloudflare-module`) et la façon d'y déclarer le binding D1. Évaluer aussi NuxtHub, qui simplifie D1 avec Nuxt.
+- [ ] Les limites de temps CPU des Workers gratuits, qui contraignent le nombre d'itérations PBKDF2 (voir 8.2).
+- [ ] Les conditions des offres gratuites Brevo et Resend : quota quotidien, et surtout **possibilité d'envoyer sans posséder de nom de domaine** (expéditeur vérifié de type adresse Gmail). C'est le critère de choix entre les deux.
+- [ ] La compatibilité de `nuxt-auth-utils` avec l'environnement Workers.
+- [ ] La mise en place recommandée de `@tanstack/vue-query` dans Nuxt 3 (plugin, `VueQueryPlugin`, hydratation SSR avec `useState`), et le comportement de `useQuery` pendant le rendu serveur.
+- [ ] La façon propre de désactiver la génération de types TypeScript de Nuxt pour un projet 100 % JavaScript (ou de la garder seulement pour l'autocomplétion de l'éditeur), et le contenu de `jsconfig.json`.
+
+### 7.1 Guidelines de code
+
+Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et client.
+
+#### Programmation fonctionnelle
+
+- **Fonctions pures d'abord.** Tout le métier (`draw`, `rules`, `crypto` hors appels Web Crypto, construction des événements du journal, modèles d'emails, validation des souhaits) est écrit en fonctions pures : mêmes entrées, mêmes sorties, aucun accès à la base, à l'horloge ou à l'aléa à l'intérieur. L'aléa et l'horloge sont **passés en paramètre** (`draw(participants, rules, { random })`), ce qui rend les tests déterministes.
+- **Noyau pur, coque impure.** Les routes Nitro sont la seule couche qui lit la requête, interroge la base, appelle le fournisseur d'email et écrit la réponse. Elles sont courtes : valider (Zod) → charger → appeler le métier → persister → répondre. Pas de logique métier dans une route.
+- **Immutabilité.** `const` partout, jamais de mutation d'un argument ni d'un objet partagé. Nouvelles valeurs par décomposition (`{ ...rules, budget }`), `map`/`filter`/`reduce` plutôt que boucles qui mutent, `toSorted` plutôt que `sort`. Exception tolérée et localisée : le mélange Fisher-Yates sur une copie du tableau.
+- **Pas de classes, pas de `this`.** Les « interfaces » sont des objets de fonctions produits par des fabriques : `createEmailProvider(env)` renvoie `{ send }`, `createRepository(db)` renvoie des fonctions de requête. L'injection de dépendances se fait par arguments.
+- **Composition.** Petites fonctions nommées d'après ce qu'elles renvoient, composées plutôt qu'imbriquées. Une fonction fait une chose ; au-delà d'une vingtaine de lignes, on la découpe.
+- **Erreurs métier comme valeurs.** Le métier renvoie des résultats explicites (`{ ok: true, value }` / `{ ok: false, reason, details }`) plutôt que de lancer des exceptions. Seule la coque transforme un `ok: false` en `createError` HTTP. Le résultat de la vérification de faisabilité du tirage (section 6.2, point 4) en est l'exemple type.
+- **Côté Vue** : composition API et `<script setup>`, composables qui renvoient des valeurs réactives dérivées (`computed`) plutôt que des mutations manuelles, pas de watchers quand un `computed` suffit. Les composables TanStack Query sont regroupés par domaine dans `app/composables/queries/`, avec un fichier `keys.js` pour les clés de cache.
+- Pas de bibliothèque fonctionnelle imposée (Ramda, fp-ts…) : le JavaScript natif suffit à cette taille de projet.
+
+#### Standards de l'industrie
+
+- **ESLint** en configuration plate, basée sur `@nuxt/eslint`, complétée par des règles qui soutiennent le style fonctionnel : `no-param-reassign`, `prefer-const`, `no-var`, `prefer-arrow-callback`, `no-restricted-syntax` sur `class` et `for…in`, `eqeqeq`. `eslint-plugin-functional` évalué à l'étape 1, adopté s'il n'alourdit pas trop.
+- **Prettier** avec la configuration par défaut (deux espaces, guillemets simples, point-virgule, 80 colonnes), appliqué à tout le dépôt. Aucune règle de mise en forme dans ESLint.
+- **Tests** : Vitest. Toute fonction de `server/utils/**` a son fichier de test à côté (`draw.test.js`). Les tests décrits en section 18 sont la liste minimale. Les routes sont testées plus légèrement, sur les cas de refus (session absente, mauvais groupe, réponse admin sans attribution). Objectif de couverture sur `server/utils` : 90 % de lignes.
+- **Hooks Git** : `pre-commit` lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) ; `pre-push` lance les tests.
+- **Scripts `package.json`** : `dev`, `build`, `lint`, `lint:fix`, `format`, `format:check`, `test`, `test:watch`, `test:coverage`, `db:generate`, `db:migrate`.
+- **Conventions de nommage** : fichiers en kebab-case, fonctions et variables en camelCase, constantes de configuration en SCREAMING_SNAKE_CASE, composants Vue en PascalCase. Code et commentaires en **anglais**, interface utilisateur et documentation en **français**.
+- **Secrets** : jamais dans le dépôt, `.env` dans `.gitignore`, `.env.example` à jour.
+
+#### Versionnement Git
+
+- Un dépôt Git dès le premier fichier, branche principale `main`, dépôt GitHub privé.
+- **Petits commits** : un commit = un changement cohérent qui laisse le projet dans un état qui passe `lint` et `test`. Ordre de grandeur : une fonction métier et ses tests, une route, un composant. Jamais un commit « étape 3 terminée » qui touche quarante fichiers.
+- Messages au format **Conventional Commits** (`feat:`, `fix:`, `test:`, `refactor:`, `chore:`, `docs:`), sujet en anglais à l'impératif, portée facultative (`feat(draw): …`), corps libre quand le pourquoi n'est pas évident.
+- Chaque étape de la section 17 se réalise en une **série de commits** sur `main` (Julien travaille seul) ; une branche et une pull request quand un changement mérite une relecture, par exemple le tirage ou la cryptographie.
+- Le README est mis à jour **dans le même commit** que la décision qu'il documente.
+
+---
+
+## 8. Sécurité
+
+### 8.1 Lien personnel
+
+- Jeton de 32 octets aléatoires, encodé en base64url, dans l'URL : `/p/<jeton>`.
+- En base : l'empreinte SHA-256 du jeton (pour la recherche) **et** le jeton chiffré avec la clé serveur (pour que le gardien puisse le renvoyer ou le copier).
+- Un jeton par participation, donc un **nouveau lien à chaque édition**.
+- Régénérable par le gardien, ce qui invalide l'ancien.
+- Pages `/p/*` : en-têtes `Referrer-Policy: no-referrer`, `Cache-Control: no-store`, `X-Robots-Tag: noindex`.
+
+### 8.2 Code à 6 chiffres
+
+- Rattaché à la **personne** : il est conservé d'une année sur l'autre.
+- Choisi par le participant à la première ouverture d'un lien, saisi deux fois.
+- Refuser les codes triviaux (`000000`, `123456`, six chiffres identiques).
+- Stocké haché : PBKDF2-SHA256 avec sel par personne et « poivre » serveur (`PIN_PEPPER`). Nombre d'itérations à caler sur les limites CPU des Workers.
+- Un code à 6 chiffres a peu d'entropie : la vraie protection est le **blocage après 5 échecs** (compteur en base, remis à zéro après un succès). Seul le gardien débloque.
+- Le code est redemandé **à chaque consultation** du résultat. Pas de session participant.
+- Le gardien ne voit jamais un code, il peut seulement le réinitialiser.
+
+### 8.3 Chiffrement des résultats
+
+- Le receveur de chaque attribution est chiffré en AES-256-GCM avec la clé `DATA_KEY` (variable secrète), un vecteur d'initialisation aléatoire par ligne.
+- Le donneur est en clair, le receveur chiffré : une lecture brute de la base ne révèle pas les résultats.
+- Le déchiffrement n'a lieu que dans deux cas : la consultation par le participant après vérification du code, et le calcul des exclusions lors d'un tirage ultérieur.
+- **Aucune route d'administration ne renvoie une attribution en clair**, y compris pour le super-admin.
+
+### 8.4 Administration
+
+- **Super-admin** : mot de passe dans la variable secrète `SUPER_ADMIN_PASSWORD`. Peut créer des groupes, définir ou réinitialiser le mot de passe d'un gardien, et agir comme gardien de n'importe quel groupe.
+- **Gardien** : un mot de passe par groupe, haché en base (même schéma que les codes, avec une exigence de longueur minimale de 10 caractères).
+- Session par cookie scellé, `HttpOnly`, `Secure`, `SameSite=Lax`, durée 12 heures.
+- Limitation des tentatives de connexion admin (par exemple 10 échecs puis attente de 15 minutes).
+- Toutes les routes `/api/admin/*` vérifient la session **et** l'appartenance au groupe concerné.
+
+### 8.5 Cloisonnement
+
+- Chaque requête de base filtre sur `group_id`.
+- Un gardien ne peut ni lire ni modifier un autre groupe.
+- Le journal d'un groupe n'est visible que par ses participants (lien valide) et son gardien.
+
+### 8.6 Liste de contrôle
+
+- [ ] Aucune attribution dans une réponse d'API admin
+- [ ] Aucune attribution dans les logs ou les emails
+- [ ] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal
+- [ ] Modification d'une liste de souhaits impossible sans le code
+- [ ] Toutes les entrées validées par Zod
+- [ ] Requêtes paramétrées uniquement (Drizzle)
+- [ ] Limitation des tentatives sur le code et sur la connexion admin
+- [ ] En-têtes de sécurité sur les pages `/p/*`
+- [ ] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt
+
+---
+
+## 9. Journal public
+
+Visible par tous les participants du groupe (depuis leur page personnelle) et par le gardien. Affichage du plus récent au plus ancien, filtrable par édition.
+
+**Règle absolue : le journal ne contient jamais qui a tiré qui.**
+
+| Type d'événement | Exemple affiché |
+|---|---|
+| `edition_creee` | « L'édition Noël 2026 a été créée » |
+| `participant_ajoute` / `participant_retire` | « Léa a été ajoutée à l'édition » |
+| `couple_modifie` | « Le couple Léa + Tom a été enregistré » |
+| `regle_modifiee` | « Le gardien a modifié les règles du tirage » |
+| `invitation_envoyee` | « Le lien de Léa a été envoyé par email » |
+| `lien_copie` | « Le gardien a copié le lien de Léa » |
+| `lien_regenere` | « Le lien de Léa a été régénéré » |
+| `code_choisi` | « Léa a choisi son code » |
+| `code_errone` | « Code erroné sur le lien de Léa (2/5) » |
+| `code_bloque` / `code_debloque` | « Le lien de Léa est bloqué après 5 erreurs » |
+| `code_reinitialise` | « Le gardien a réinitialisé le code de Léa » |
+| `tirage_effectue` | « Le tirage a été effectué pour 12 participants » |
+| `tirage_annule` | « Le tirage a été annulé. Motif : désistement de Tom » |
+| `resultat_consulte` | « Léa a consulté son résultat (3ᵉ fois) » |
+| `souhaits_modifies` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
+| `edition_cloturee` | « L'édition Noël 2026 est clôturée » |
+
+Chaque événement porte la date, l'heure et l'auteur (`participant`, `gardien`, `super-admin` ou `système`).
+
+---
+
+## 10. Modèle de données
+
+Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
+
+### `groups`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `slug` | text unique | Sert dans l'URL d'admin, ex. `famille-rabin` |
+| `name` | text | |
+| `guardian_password_hash`, `guardian_password_salt` | text | |
+| `rules` | text (JSON) | Valeurs par défaut des règles du groupe |
+| `created_at` | text | |
+
+### `persons`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `group_id` | text FK | |
+| `first_name` | text | Affiché partout |
+| `last_name` | text nullable | Pour départager les homonymes |
+| `email` | text nullable | Facultatif : sans email, envoi par lien copié |
+| `pin_hash`, `pin_salt` | text nullable | Vides tant que le code n'est pas choisi |
+| `pin_failed_attempts` | integer | |
+| `pin_locked_at` | text nullable | |
+| `active` | integer (booléen) | Désactivation plutôt que suppression |
+| `created_at` | text | |
+
+### `couples`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `group_id` | text FK | |
+| `person_a_id`, `person_b_id` | text FK | Une personne ne peut être que dans un couple actif |
+| `active` | integer (booléen) | Une séparation désactive le couple |
+| `created_at`, `ended_at` | text | |
+
+### `manual_exclusions`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `group_id` | text FK | |
+| `giver_id`, `receiver_id` | text FK | « giver ne tire jamais receiver » |
+| `reciprocal` | integer (booléen) | |
+
+### `editions`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `group_id` | text FK | |
+| `label` | text | Ex. « Noël 2026 » |
+| `year` | integer | Sert à ordonner les éditions |
+| `status` | text | `draft`, `invitations`, `drawn`, `closed` |
+| `rules_override` | text (JSON) nullable | Surcharge des règles du groupe |
+| `rules_snapshot` | text (JSON) nullable | Règles et exclusions réellement appliquées au tirage, pour audit |
+| `drawn_at`, `closed_at` | text nullable | |
+| `created_at` | text | |
+
+### `participations`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `edition_id`, `person_id` | text FK | Paire unique |
+| `token_hash` | text unique | SHA-256 du jeton |
+| `token_enc`, `token_iv` | text | Jeton chiffré, pour renvoi par le gardien |
+| `email_sent_at` | text nullable | |
+| `link_copied_at` | text nullable | |
+| `view_count` | integer | Consultations du résultat |
+| `first_viewed_at`, `last_viewed_at` | text nullable | |
+
+### `assignments`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `edition_id` | text FK | |
+| `giver_person_id` | text FK | Unique par édition |
+| `receiver_enc`, `receiver_iv` | text | Identifiant du receveur, chiffré |
+| `created_at` | text | |
+
+### `wishes`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `participation_id` | text FK | La liste appartient à la participation (une par édition) |
+| `position` | integer | Ordre d'affichage, de 0 à `souhaits_max − 1` |
+| `label` | text | L'idée, 200 caractères max |
+| `url` | text nullable | Lien `http`/`https` validé |
+| `created_at` | text | |
+
+En clair en base : un souhait ne révèle pas d'attribution. La sauvegarde remplace toutes les lignes d'une participation dans une transaction (`DELETE` puis `INSERT`). Le `group_id` se retrouve via la participation et l'édition : toute requête passe par cette jointure pour respecter le cloisonnement (8.5).
+
+### `audit_log`
+| Colonne | Type | Notes |
+|---|---|---|
+| `id` | text PK | |
+| `group_id` | text FK | |
+| `edition_id` | text FK nullable | |
+| `type` | text | Voir section 9 |
+| `person_id` | text FK nullable | Personne concernée |
+| `actor` | text | `participant`, `guardian`, `super_admin`, `system` |
+| `meta` | text (JSON) nullable | Compteurs, motif. Jamais de résultat |
+| `created_at` | text | |
+
+### `login_attempts`
+Pour limiter les tentatives de connexion admin : `id`, `scope` (slug du groupe ou `super`), `ip_hash`, `created_at`.
+
+---
+
+## 11. Écrans
+
+Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zones tactiles d'au moins 44 px, une seule colonne.
+
+### Côté participant
+
+| Route | Écran |
+|---|---|
+| `/p/[token]` | Page personnelle. Selon l'état : choix du code, attente du tirage, saisie du code, résultat, lien bloqué, lien invalide. Bouton « Ma liste de souhaits » si la règle est active |
+| `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées, enregistrement avec le code (voir 6 bis.4) |
+| `/p/[token]/journal` | Journal du groupe |
+
+Détails d'interface :
+- Saisie du code : six cases, clavier numérique (`inputmode="numeric"`), `autocomplete="one-time-code"` désactivé pour éviter les suggestions.
+- Résultat : animation courte de révélation (carte qui se retourne ou paquet qui s'ouvre), prénom en très grand, puis budget, date et message du gardien, puis la liste de souhaits du receveur.
+- Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut ressaisir le code. Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache : son résultat vit dans l'état du composant et disparaît avec lui.
+- Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton gardien »).
+
+### Côté admin
+
+| Route | Écran |
+|---|---|
+| `/admin` | Connexion (choix du groupe + mot de passe, ou accès super-admin) |
+| `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des gardiens |
+| `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
+| `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier, désactiver, couples, exclusions manuelles |
+| `/admin/[groupe]/reglages` | Règles par défaut du groupe |
+| `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
+| `/admin/[groupe]/journal` | Journal du groupe |
+
+Écran de pilotage d'une édition, le plus important :
+- En-tête : nom de l'édition, statut, action principale du moment (« Envoyer les invitations », « Lancer le tirage », « Clôturer »).
+- Liste des participants, une carte par personne, avec des pastilles de statut : *invité*, *code choisi*, *souhaits (n)*, *consulté*, *bloqué*.
+- Sur chaque carte, un menu d'actions : envoyer/renvoyer l'email, copier le lien, partager (API Web Share, avec repli sur la copie), réinitialiser le code, débloquer, régénérer le lien, retirer de l'édition.
+- Avant le tirage : un encart « Vérification » indique si le tirage est possible et, sinon, pourquoi.
+- Zone dangereuse en bas de page : « Annuler et relancer le tirage ».
+
+---
+
+## 12. API
+
+Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entrées validées par Zod. Les réponses ne contiennent que le strict nécessaire. Côté client, chaque route de lecture a son composable `useQuery` et chaque route d'écriture son `useMutation`, qui invalide les clés concernées.
+
+### Participant
+
+| Méthode et route | Rôle |
+|---|---|
+| `GET /api/p/[token]` | État de la participation : prénom, groupe, édition, statut, code déjà choisi ou non, bloqué ou non, liste de souhaits active ou non. Jamais le résultat |
+| `POST /api/p/[token]/pin` | Choisir son code (seulement si aucun code n'existe) |
+| `POST /api/p/[token]/reveal` | Corps : le code. Renvoie le prénom du receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Journalise la consultation ou l'échec |
+| `GET /api/p/[token]/wishes` | Sa propre liste de souhaits (le lien suffit) |
+| `PUT /api/p/[token]/wishes` | Corps : le code et la liste complète. Remplace la liste, journalise. Refusé si l'édition est clôturée ou la règle inactive ; un code erroné compte comme un échec de code |
+| `GET /api/p/[token]/journal` | Journal du groupe |
+
+### Admin
+
+| Méthode et route | Rôle |
+|---|---|
+| `POST /api/admin/login`, `POST /api/admin/logout` | Session |
+| `GET/POST /api/admin/groups`, `PATCH /api/admin/groups/[id]` | Super-admin uniquement |
+| `GET/POST/PATCH /api/admin/[groupe]/persons` | Personnes |
+| `POST/DELETE /api/admin/[groupe]/couples` | Couples |
+| `POST/DELETE /api/admin/[groupe]/exclusions` | Exclusions manuelles |
+| `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
+| `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente) |
+| `PATCH /api/admin/[groupe]/editions/[id]` | Règles de l'édition, changement de statut |
+| `GET /api/admin/[groupe]/editions/[id]/participants` | Liste avec statuts, dont le nombre de souhaits par participant (jamais leur contenu) |
+| `POST/DELETE /api/admin/[groupe]/editions/[id]/participants` | Ajouter, retirer |
+| `GET /api/admin/[groupe]/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi |
+| `POST /api/admin/[groupe]/editions/[id]/draw` | Lancer le tirage |
+| `POST /api/admin/[groupe]/editions/[id]/redraw` | Annuler le tirage (motif obligatoire) |
+| `POST /api/admin/[groupe]/participations/[id]/send` | Envoyer ou renvoyer l'email |
+| `POST /api/admin/[groupe]/editions/[id]/send-all` | Envoyer à tous ceux qui ont un email |
+| `GET /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien pour copie ou partage (journalisé) |
+| `POST /api/admin/[groupe]/participations/[id]/regenerate` | Régénérer le lien |
+| `POST /api/admin/[groupe]/persons/[id]/reset-pin` | Réinitialiser le code |
+| `POST /api/admin/[groupe]/persons/[id]/unlock` | Débloquer |
+| `GET /api/admin/[groupe]/journal` | Journal |
+
+---
+
+## 13. Emails
+
+- Envoi par appel HTTP au fournisseur (pas de SMTP dans les Workers).
+- Une fabrique `createEmailProvider(env)` qui renvoie un objet `{ send }`, avec une implémentation par fournisseur choisie par la variable `EMAIL_PROVIDER`. Prévoir une implémentation `console` pour le développement local. Les modèles sont des fonctions pures `(données) → { subject, html, text }`, testables sans réseau.
+- Emails **minimalistes** pour s'afficher correctement partout (le précédent outil testé par la famille avait des emails mal rendus) : HTML simple en tableau, une colonne, largeur maximale 480 px, styles en ligne, pas d'image indispensable, un gros bouton, et le lien répété en texte brut en dessous. Toujours fournir une version texte.
+- **Aucun email ne contient un résultat.**
+- Sans nom de domaine, les emails peuvent arriver en indésirables : le texte d'aide de l'admin doit le rappeler et pousser vers « copier le lien » en secours.
+
+| Modèle | Déclencheur | Contenu |
+|---|---|---|
+| Invitation | Passage en `invitations` ou envoi manuel | « Tu participes au Secret Santa de [groupe]. Ouvre ton lien, choisis ton code secret et note quelques idées de cadeaux. » |
+| Tirage effectué | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau. Pense à compléter ta liste de souhaits. » |
+| Relance | Manuel | Rappel pour ceux qui n'ont pas choisi leur code ou pas consulté |
+| Nouveau tirage | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. » |
+
+---
+
+## 14. Arborescence proposée
+
+```
+secret-santa/
+├── README.md                  ← ce document
+├── nuxt.config.js
+├── jsconfig.json              ← checkJs, alias, pour l'éditeur
+├── eslint.config.js           ← config plate
+├── .prettierrc
+├── vitest.config.js
+├── wrangler.toml              ← binding D1
+├── drizzle.config.js
+├── package.json               ← "type": "module", scripts, lint-staged
+├── .env.example
+├── .github/workflows/ci.yml   ← lint, format:check, test
+├── app/
+│   ├── plugins/vue-query.js   ← VueQueryPlugin + hydratation SSR
+│   ├── pages/
+│   │   ├── index.vue          ← page d'accueil neutre
+│   │   ├── p/[token]/index.vue
+│   │   ├── p/[token]/souhaits.vue
+│   │   ├── p/[token]/journal.vue
+│   │   └── admin/…
+│   ├── components/            ← PinInput, RevealCard, WishList, WishEditor, ParticipantCard, JournalList, StatusBadge…
+│   ├── composables/
+│   │   └── queries/           ← useQuery/useMutation par domaine + keys.js
+│   └── middleware/admin.js
+├── server/
+│   ├── api/p/…                ← un fichier par route et méthode (wishes.get.js, wishes.put.js…)
+│   ├── api/admin/…
+│   ├── database/
+│   │   ├── schema.js
+│   │   └── migrations/
+│   └── utils/                 ← noyau pur, chaque fichier a son .test.js à côté
+│       ├── draw.js            ← algorithme de tirage, aléa injecté
+│       ├── crypto.js          ← jetons, hachage du code, AES-GCM
+│       ├── audit.js           ← construction des événements du journal
+│       ├── wishes.js          ← validation et normalisation d'une liste de souhaits
+│       ├── email/             ← createEmailProvider + fournisseurs + modèles purs
+│       ├── rules.js           ← fusion règles groupe/édition
+│       ├── result.js          ← helpers ok()/fail() pour les erreurs métier
+│       └── auth.js
+└── tests/
+    └── api/                   ← tests de routes (refus, cloisonnement, aucune attribution en sortie)
+```
+
+---
+
+## 15. Variables d'environnement
+
+| Variable | Rôle |
+|---|---|
+| `SUPER_ADMIN_PASSWORD` | Mot de passe du super-admin |
+| `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
+| `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
+| `PIN_PEPPER` | Poivre pour le hachage des codes et mots de passe |
+| `EMAIL_PROVIDER` | `brevo`, `resend` ou `console` |
+| `EMAIL_API_KEY` | Clé d'API du fournisseur |
+| `EMAIL_FROM` | Adresse et nom d'expéditeur |
+| `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
+
+**Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe.
+
+---
+
+## 16. Déploiement (gratuit)
+
+1. Créer un dépôt GitHub privé et y pousser le code.
+2. Créer un compte Cloudflare gratuit.
+3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`.
+4. Appliquer les migrations sur la base distante.
+5. Connecter le dépôt GitHub à Cloudflare : chaque `git push` sur la branche principale redéploie.
+6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
+7. L'application est servie sur une adresse gratuite en `*.pages.dev` ou `*.workers.dev`.
+8. Créer un compte gratuit chez le fournisseur d'email retenu et vérifier l'adresse d'expéditeur.
+9. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.
+
+Développement local : base D1 locale via wrangler, fournisseur d'email `console`.
+
+---
+
+## 17. Plan de réalisation par étapes
+
+Chaque étape est livrable et testable seule.
+
+**Étape 0 — Vérifications**
+Lever les points de la section 7 (« à vérifier »). Choisir le preset Cloudflare et le fournisseur d'email.
+
+**Étape 1 — Socle**
+Dépôt Git et dépôt GitHub privé. Projet Nuxt 3 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare pour valider la chaîne. Chaque outil = un commit.
+
+**Étape 2 — Cœur métier, sans interface**
+`draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
+
+**Étape 3 — Administration**
+Connexion super-admin et gardien, gestion des groupes, des personnes, des couples, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
+
+**Étape 4 — Pilotage d'une édition**
+Liste des participants, génération des liens, copie et partage, vérification de faisabilité, tirage, annulation et relance, clôture.
+
+**Étape 5 — Parcours participant**
+Page personnelle dans tous ses états, choix du code, révélation, blocage, journal.
+
+**Étape 5 bis — Liste de souhaits**
+Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, affichage de la liste du receveur sur l'écran de résultat, pastille *souhaits (n)* côté gardien, règles `liste_souhaits` et `souhaits_max`, événement `souhaits_modifies`.
+
+**Étape 6 — Emails**
+Interface fournisseur, quatre modèles, envoi unitaire et groupé, gestion des erreurs d'envoi (afficher l'échec au gardien, ne pas marquer comme envoyé).
+
+**Étape 7 — Finitions**
+Animation de révélation, états vides, messages d'erreur, accessibilité (contrastes, navigation clavier, lecteurs d'écran), revue de la liste de contrôle sécurité, test complet sur un vrai téléphone.
+
+**Étape 8 — Mise en service**
+Création des deux groupes réels, répétition générale avec une édition de test, puis lancement.
+
+---
+
+## 18. Tests attendus
+
+### Algorithme de tirage (prioritaire)
+
+- Personne ne se tire soi-même.
+- Aucun couple actif ne se tire, dans les deux sens.
+- Aucune répétition par rapport à l'édition précédente.
+- Respect de `exclure_annees_precedentes` à 0, 1 et 2.
+- Respect des exclusions manuelles, à sens unique et réciproques.
+- Chaque participant offre une fois et reçoit une fois.
+- Un nouveau venu n'a aucune exclusion d'historique.
+- Une personne absente l'an dernier n'a pas d'exclusion pour cette année-là.
+- Cas impossibles détectés avec un message exploitable : 2 participants en couple, 3 participants dont un couple, 4 participants en 2 couples avec exclusion de l'an dernier qui bloque tout.
+- Test statistique : sur 10 000 tirages d'un petit groupe, toutes les solutions valides apparaissent avec des fréquences proches.
+- Test par propriétés : groupes aléatoires de 3 à 30 personnes, toute solution renvoyée respecte toutes les contraintes.
+
+### Sécurité
+
+- Un code erroné incrémente le compteur, le 5ᵉ bloque, un code juste remet à zéro.
+- Un lien bloqué refuse même le bon code.
+- Un lien régénéré invalide l'ancien.
+- Aucune route admin ne renvoie de receveur (test qui parcourt les réponses).
+- Un gardien du groupe A reçoit un refus sur toutes les routes du groupe B.
+- Chiffrement puis déchiffrement redonnent la valeur d'origine, et une clé différente échoue.
+
+### Liste de souhaits
+
+- La normalisation (`wishes.js`) rejette : plus de `souhaits_max` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
+- `PUT /wishes` avec un code erroné incrémente le compteur et ne modifie rien ; avec un lien bloqué, refuse même le bon code.
+- `PUT /wishes` sur une édition clôturée ou un groupe où `liste_souhaits` est désactivée est refusé.
+- `POST /reveal` renvoie la liste du receveur et uniquement la sienne.
+- Les routes admin de participants renvoient un nombre de souhaits et jamais de libellé (test qui parcourt les réponses, comme pour les attributions).
+- Après une annulation et relance du tirage, les listes sont intactes.
+
+### Parcours
+
+- Édition complète de bout en bout : création, invitations, choix des codes, tirage, consultation, clôture.
+- Annulation et relance : anciens résultats inaccessibles, liens et codes conservés.
+- Deuxième année : reprise des participants, exclusion de l'an dernier appliquée.
+
+---
+
+## 19. Critères de réussite
+
+- [ ] Julien peut créer ses deux familles et nommer un gardien pour chacune.
+- [ ] Un gardien peut mener une édition entière depuis son téléphone.
+- [ ] Un participant découvre son résultat en moins d'une minute depuis son lien.
+- [ ] Un participant qui n'a rien reçu peut être dépanné sans que personne d'autre ne voie son résultat.
+- [ ] Toute tentative de triche laisse une trace visible de toute la famille.
+- [ ] L'année suivante, la liste se met à jour en quelques minutes et personne ne retombe sur la même personne.
+- [ ] Le tout fonctionne sans rien payer.
+
+---
+
+## 20. Questions encore ouvertes
+
+À poser à Julien si elles bloquent, sinon appliquer la valeur proposée.
+
+| Question | Valeur proposée par défaut |
+|---|---|
+| Fournisseur d'email : Brevo ou Resend ? | Celui qui permet d'envoyer sans nom de domaine (à vérifier) |
+| Nom du projet et de l'adresse Cloudflare ? | `secret-santa` |
+| Noms et slugs des deux familles ? | À demander au moment de la mise en service |
+| Qui est le gardien de la deuxième famille ? | Julien, tant qu'il n'a nommé personne |
+| Le journal affiche-t-il les noms de famille ? | Prénom seul, nom ajouté uniquement en cas d'homonymes |
+| Rappel automatique aux retardataires ? | Non, relance manuelle par le gardien |
+| Après clôture, afficher à tous le tableau complet « qui a offert à qui » ? | Non, sauf demande explicite |
+| Reprendre la liste de souhaits de l'an dernier à la création d'une édition ? | Non en V1 : liste vide à chaque édition. Un bouton « Reprendre ma liste de l'an dernier » est une évolution simple si la famille le demande |
+| Le gardien peut-il voir le contenu des listes de souhaits ? | Non, seulement le nombre d'idées (voir 6 bis.2) |

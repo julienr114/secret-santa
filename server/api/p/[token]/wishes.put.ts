@@ -6,6 +6,7 @@ import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { canEditWishes } from '#server/utils/personal';
 import { normalizeWishes } from '#server/utils/wishes';
+import { localeOf } from '#shared/i18n';
 
 // Replaces the whole list (README 6 bis.3). Journaled every time, with the
 // number of ideas and never their content.
@@ -30,5 +31,6 @@ export default defineEventHandler(async (event) => {
     wishes: list.map(({ label, url }) => ({ label, url })),
     maxWishes: rules.maxWishes,
     editable: true,
+    language: localeOf(person.language),
   };
 });

@@ -20,6 +20,10 @@ export default defineNuxtConfig({
     dataKey: '',
     pinPepper: '',
     pbkdf2Iterations: 20000,
+    // Bulk sending by email (Resend). Without a key the feature answers
+    // "not configured"; sharing from the phone never depends on it.
+    resendApiKey: '',
+    emailFrom: 'Under the Tree <gardien@under-the-tree.party>',
     session: { maxAge: 60 * 60 * 12, cookie: { sameSite: 'lax' } },
     public: { baseUrl: '' },
   },
@@ -40,7 +44,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
-      title: 'Secret Santa',
+      title: 'Under the Tree',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'robots', content: 'noindex' },

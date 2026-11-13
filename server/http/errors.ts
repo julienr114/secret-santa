@@ -16,6 +16,7 @@ const STATUS_BY_REASON: Record<string, number> = {
   edition_closed: 409,
   links_not_open: 409,
   wishlist_disabled: 403,
+  email_failed: 502,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

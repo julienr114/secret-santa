@@ -13,6 +13,8 @@ export type Secrets = {
   pinPepper: string;
   pbkdf2Iterations: number;
   baseUrl: string;
+  resendApiKey: string;
+  emailFrom: string;
 };
 
 export const secretsOf = (event: H3Event): Secrets => {
@@ -23,6 +25,8 @@ export const secretsOf = (event: H3Event): Secrets => {
     pinPepper: String(config.pinPepper ?? ''),
     pbkdf2Iterations: Number(config.pbkdf2Iterations) || 20_000,
     baseUrl: String(config.public.baseUrl ?? ''),
+    resendApiKey: String(config.resendApiKey ?? ''),
+    emailFrom: String(config.emailFrom ?? ''),
   };
 };
 

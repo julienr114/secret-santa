@@ -17,6 +17,10 @@ export const groups = sqliteTable('groups', {
   guardianPasswordHash: text('guardian_password_hash'),
   guardianPasswordSalt: text('guardian_password_salt'),
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
+  // Bulk sending by email, switched on by the super-admin only.
+  emailSending: integer('email_sending', { mode: 'boolean' })
+    .notNull()
+    .default(false),
   createdAt: text('created_at').notNull(),
 });
 
@@ -29,6 +33,12 @@ export const persons = sqliteTable(
       .references(() => groups.id),
     firstName: text('first_name').notNull(),
     lastName: text('last_name'),
+    // Optional, only used when the group sends links by email.
+    email: text('email'),
+    // Preferred language: their personal page, messages and emails.
+    language: text('language', { enum: ['fr', 'en', 'de'] })
+      .notNull()
+      .default('fr'),
     // Christmas emoji and palette colour, see server/utils/avatars.ts.
     avatarEmoji: text('avatar_emoji'),
     avatarColor: text('avatar_color'),

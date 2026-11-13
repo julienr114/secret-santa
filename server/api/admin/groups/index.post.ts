@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
     slug: body.slug,
     name: body.name,
     rules: {},
+    emailSending: false,
     createdAt: nowIso(),
     ...credentials,
   };

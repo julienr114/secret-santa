@@ -13,9 +13,14 @@ const bodySchema = z
   .object({
     name: z.string().trim().min(1).max(100).optional(),
     guardianPassword: guardianPasswordSchema.optional(),
+    // Bulk sending by email: a super-admin decision, never the guardian's.
+    emailSending: z.boolean().optional(),
   })
   .refine(
-    (b) => b.name !== undefined || b.guardianPassword !== undefined,
+    (b) =>
+      b.name !== undefined ||
+      b.guardianPassword !== undefined ||
+      b.emailSending !== undefined,
     'nothing to update',
   );
 
@@ -32,6 +37,9 @@ export default defineEventHandler(async (event) => {
   if (!group) throw notFound('group_not_found');
   const changes: Partial<typeof groups.$inferInsert> = {
     ...(body.name !== undefined ? { name: body.name } : {}),
+    ...(body.emailSending !== undefined
+      ? { emailSending: body.emailSending }
+      : {}),
     ...(body.guardianPassword
       ? await guardianCredentials(secretsOf(event), body.guardianPassword)
       : {}),

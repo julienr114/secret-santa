@@ -2,6 +2,7 @@ import { count, eq } from 'drizzle-orm';
 import { wishes } from '#server/database/schema';
 import { requirePersonalLink } from '#server/http/personal';
 import { avatarOf } from '#server/utils/avatars';
+import { localeOf } from '#shared/i18n';
 import {
   canEditAvatar,
   canEditWishes,
@@ -21,6 +22,7 @@ export default defineEventHandler(async (event) => {
     : [];
   return {
     firstName: person.firstName,
+    language: localeOf(person.language),
     avatar: avatarOf(person),
     avatarEditable: canEditAvatar(edition.status).ok,
     groupName: group.name,

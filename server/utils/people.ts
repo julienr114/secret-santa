@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LOCALES, localeOf, type Locale } from '#shared/i18n';
 import {
   avatarColorSchema,
   avatarEmojiSchema,
@@ -9,10 +10,22 @@ import {
 // People and exclusions of a group (README 6.6, section 10).
 
 const nameSchema = z.string().trim().min(1).max(60);
+/** Optional address for groups that send links by email. */
+export const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .max(254)
+  .pipe(z.email());
+
+/** Preferred language of a person (personal page, messages, emails). */
+export const languageSchema = z.enum(LOCALES);
 
 export const personInputSchema = z.object({
   firstName: nameSchema,
   lastName: nameSchema.nullable().default(null),
+  email: emailSchema.nullable().default(null),
+  language: languageSchema.default('fr'),
   avatarEmoji: avatarEmojiSchema.optional(),
   avatarColor: avatarColorSchema.optional(),
 });
@@ -21,6 +34,8 @@ export const personPatchSchema = z
   .object({
     firstName: nameSchema,
     lastName: nameSchema.nullable(),
+    email: emailSchema.nullable(),
+    language: languageSchema,
     avatarEmoji: avatarEmojiSchema,
     avatarColor: avatarColorSchema,
     active: z.boolean(),
@@ -50,6 +65,8 @@ export const displayName = (person: Named, people: Named[] = []): string => {
 
 export type PersonRow = Named & {
   active: boolean;
+  email?: string | null;
+  language?: string | null;
   avatarEmoji?: string | null;
   avatarColor?: string | null;
   createdAt: string;
@@ -59,6 +76,8 @@ export type PublicPerson = {
   id: string;
   firstName: string;
   lastName: string | null;
+  email: string | null;
+  language: Locale;
   active: boolean;
   avatar: Avatar;
   createdAt: string;
@@ -69,6 +88,8 @@ export const publicPerson = (person: PersonRow): PublicPerson => ({
   id: person.id,
   firstName: person.firstName,
   lastName: person.lastName ?? null,
+  email: person.email ?? null,
+  language: localeOf(person.language),
   active: person.active,
   avatar: avatarOf(person),
   createdAt: person.createdAt,

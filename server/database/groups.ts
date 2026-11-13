@@ -22,6 +22,7 @@ export type PublicGroup = {
   name: string;
   createdAt: string;
   hasGuardianPassword: boolean;
+  emailSending: boolean;
 };
 
 /** What the admin API exposes about a group: never a hash or a salt. */
@@ -31,4 +32,5 @@ export const publicGroup = (group: GroupRow): PublicGroup => ({
   name: group.name,
   createdAt: group.createdAt,
   hasGuardianPassword: Boolean(group.guardianPasswordHash),
+  emailSending: group.emailSending,
 });

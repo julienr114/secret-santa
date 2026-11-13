@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
+  EMAIL_BATCH_MAX,
   MESSAGE_TYPES,
+  buildEmail,
   buildMessage,
+  emailTargets,
+  escapeHtml,
   messageTypesFor,
   type MessageData,
 } from './messages';
@@ -82,5 +86,140 @@ describe('messageTypesFor', () => {
   it('offers nothing in a draft or a closed edition', () => {
     expect(messageTypesFor('draft')).toEqual([]);
     expect(messageTypesFor('closed')).toEqual([]);
+  });
+});
+
+describe('buildEmail', () => {
+  it('gives every type a subject with the first name, a text and an HTML twin', () => {
+    MESSAGE_TYPES.forEach((type) => {
+      const email = valueOf(buildEmail(type, data));
+      expect(email.subject, type).toContain('Léa');
+      expect(email.subject, type).not.toContain('\n');
+      expect(email.text, type).toContain(data.link);
+      expect(email.html, type).toContain(`href="${data.link}"`);
+      expect(email.text, type).toContain('la famille Rabin');
+    });
+  });
+
+  it('keeps the link alone on its line in the text', () => {
+    const { text } = valueOf(buildEmail('invitation', data));
+    expect(text.split('\n')).toContain(data.link);
+  });
+
+  it('escapes what comes from the guardian in the HTML', () => {
+    const { html, text } = valueOf(
+      buildEmail('drawn', {
+        ...data,
+        firstName: '<b>Léa</b>',
+        budget: '20 € & "pas plus"',
+      }),
+    );
+    expect(html).not.toContain('<b>Léa</b>');
+    expect(html).toContain('&lt;b&gt;Léa&lt;/b&gt;');
+    expect(html).toContain('20 € &amp; &quot;pas plus&quot;');
+    expect(text).toContain('20 € & "pas plus"');
+  });
+
+  it('never leaks a result, whatever extra data is passed', () => {
+    const poisoned = {
+      ...data,
+      receiverFirstName: 'Tom',
+      receiverId: 'p2',
+    } as MessageData;
+    MESSAGE_TYPES.forEach((type) => {
+      const email = valueOf(buildEmail(type, poisoned));
+      expect(JSON.stringify(email), type).not.toMatch(/Tom|p2/);
+    });
+  });
+
+  it('rejects unknown types', () => {
+    expect(failureOf(buildEmail('spam', data)).reason).toBe(
+      'unknown_message_type',
+    );
+  });
+});
+
+describe('escapeHtml', () => {
+  it('escapes the five significant characters', () => {
+    expect(escapeHtml(`<a href="x">Tom & 'Léa'</a>`)).toBe(
+      '&lt;a href=&quot;x&quot;&gt;Tom &amp; &#39;Léa&#39;&lt;/a&gt;',
+    );
+  });
+});
+
+describe('emailTargets', () => {
+  const person = (
+    participationId: string,
+    email: string | null,
+    messageSentAt: string | null = null,
+  ) => ({ participationId, email, messageSentAt });
+  const people = [
+    person('a', 'a@example.com'),
+    person('b', null),
+    person('c', 'c@example.com', '2026-11-13T10:00:00.000Z'),
+  ];
+
+  it('writes only to people with an address not marked as sent', () => {
+    const result = emailTargets(people, 'unsent');
+    expect(result.targets.map((p) => p.participationId)).toEqual(['a']);
+    expect(result.withoutEmail).toBe(1);
+    expect(result.left).toBe(0);
+  });
+
+  it('writes to everyone with an address when asked', () => {
+    expect(
+      emailTargets(people, 'all').targets.map((p) => p.participationId),
+    ).toEqual(['a', 'c']);
+  });
+
+  it('caps a request to one batch and says how many are left', () => {
+    const many = Array.from({ length: EMAIL_BATCH_MAX + 7 }, (_, i) =>
+      person(`p${i}`, `p${i}@example.com`),
+    );
+    const result = emailTargets(many, 'unsent');
+    expect(result.targets).toHaveLength(EMAIL_BATCH_MAX);
+    expect(result.left).toBe(7);
+  });
+});
+
+describe('languages', () => {
+  it("writes the message in the recipient's language, link last", () => {
+    const english = valueOf(buildMessage('invitation', data, 'en'));
+    const german = valueOf(buildMessage('invitation', data, 'de'));
+    expect(english.split('\n')[0]).toBe('Hi Léa! 🎁');
+    expect(german.split('\n')[0]).toBe('Hallo Léa! 🎁');
+    [english, german].forEach((text) => {
+      expect(text.split('\n').at(-1)).toBe(data.link);
+      expect(text).toContain('la famille Rabin');
+      expect(text).not.toContain('{');
+    });
+  });
+
+  it('translates subject, text and signature of an email', () => {
+    const email = valueOf(
+      buildEmail(
+        'drawn',
+        { ...data, budget: '20 €', eventDate: '24.12.' },
+        'de',
+      ),
+    );
+    expect(email.subject).toBe('Léa, die Wichtel-Auslosung ist erfolgt');
+    expect(email.text).toContain('Budget: 20 €.');
+    expect(email.text).toContain('Wir sehen uns am 24.12..');
+    expect(email.text).toContain('Dieser Link ist persönlich');
+    expect(email.html).not.toContain('{');
+  });
+
+  it('leaves no placeholder unfilled, in any language or type', () => {
+    (['fr', 'en', 'de'] as const).forEach((locale) => {
+      MESSAGE_TYPES.forEach((type) => {
+        const full = { ...data, budget: '20 €', eventDate: 'x' };
+        const email = valueOf(buildEmail(type, full, locale));
+        expect(
+          `${email.subject}${email.text}${valueOf(buildMessage(type, full, locale))}`,
+          `${locale} ${type}`,
+        ).not.toMatch(/\{\w+\}/);
+      });
+    });
   });
 });

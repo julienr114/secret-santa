@@ -7,8 +7,23 @@ describe('people schemas', () => {
     expect(personInputSchema.parse({ firstName: ' Léa ' })).toEqual({
       firstName: 'Léa',
       lastName: null,
+      email: null,
+      language: 'fr',
     });
     expect(personInputSchema.safeParse({ firstName: '' }).success).toBe(false);
+  });
+
+  it('accepts an optional email, trimmed and lowercased', () => {
+    expect(
+      personInputSchema.parse({ firstName: 'Léa', email: ' Lea@Example.COM ' })
+        .email,
+    ).toBe('lea@example.com');
+    expect(
+      personInputSchema.safeParse({
+        firstName: 'Léa',
+        email: 'pas-une-adresse',
+      }).success,
+    ).toBe(false);
   });
 });
 
@@ -41,6 +56,8 @@ describe('publicPerson', () => {
       id: 'p',
       firstName: 'Léa',
       lastName: null,
+      email: null,
+      language: 'fr',
       active: true,
       avatar: avatarOf({ id: 'p' }),
       createdAt: 'd',

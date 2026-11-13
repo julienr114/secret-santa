@@ -1,9 +1,15 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
 import { displayName } from './people';
+import {
+  DEFAULT_LOCALE,
+  hasMessage,
+  translateKey,
+  type Locale,
+} from '#shared/i18n';
 
 // Public journal (README section 9). Events are built here, stored by the
-// routes, and described in French for display. Absolute rule: an event
+// routes, and described in the reader's language for display. Absolute rule: an event
 // never says who drew whom, so meta is scrubbed of anything result-like.
 
 export const AUDIT_TYPES = [
@@ -18,6 +24,7 @@ export const AUDIT_TYPES = [
   'draw_done',
   'draw_cancelled',
   'results_revealed',
+  'result_revealed',
   'result_viewed',
   'wishes_updated',
   'edition_closed',
@@ -90,57 +97,24 @@ export const auditEvent = (
   });
 };
 
-// --- French descriptions -------------------------------------------------
+// --- Descriptions, in the reader's language ------------------------------
 
-const MESSAGE_LABELS: Record<string, string> = {
-  invitation: "l'invitation",
-  drawn: 'le message « tirage fait »',
-  reminder: 'la relance',
-  redraw: 'le message « nouveau tirage »',
-};
-
-const VIA_LABELS: Record<string, string> = {
-  copy: ' (message copié)',
-  share: ' (partagé)',
-};
-
-const text = (m: Meta, key: string, fallback = '?'): string =>
+const text = (m: Meta, key: string, fallback: string): string =>
   typeof m[key] === 'string' || typeof m[key] === 'number'
     ? String(m[key])
     : fallback;
 const num = (m: Meta, key: string, fallback: number): number =>
   typeof m[key] === 'number' ? (m[key] as number) : fallback;
-const ordinal = (n: number) => (n === 1 ? '1ʳᵉ' : `${n}ᵉ`);
-const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
-type Describe = (name: string, meta: Meta) => string;
-
-const DESCRIPTIONS: Record<AuditType, Describe> = {
-  edition_created: (_, m) =>
-    `L'édition ${text(m, 'label', '')} a été créée`.replace('  ', ' '),
-  participant_added: (name) => `${name} rejoint l'édition`,
-  participant_removed: (name) => `${name} quitte l'édition`,
-  rules_changed: () => 'Le gardien a modifié les règles du tirage',
-  message_sent: (name, m) =>
-    `Le gardien a envoyé ${MESSAGE_LABELS[text(m, 'messageType', '')] ?? 'un message'} à ${name}${
-      VIA_LABELS[text(m, 'via', '')] ?? ''
-    }`,
-  link_copied: (name) => `Le gardien a copié le lien de ${name}`,
-  link_shared: (name) => `Le gardien a partagé le lien de ${name}`,
-  link_regenerated: (name) => `Le lien de ${name} a été régénéré`,
-  draw_done: (_, m) =>
-    `Le tirage a été effectué pour ${plural(num(m, 'count', 0), 'participant')}`,
-  draw_cancelled: (_, m) =>
-    `Le tirage a été annulé. Motif : ${text(m, 'reason', 'non précisé')}`,
-  results_revealed: () =>
-    'Le gardien a consulté les résultats du tirage (accès de dernier recours)',
-  result_viewed: (name, m) =>
-    `${name} a consulté son résultat (${ordinal(num(m, 'count', 1))} fois)`,
-  wishes_updated: (name, m) =>
-    `${name} a mis à jour sa liste de souhaits (${plural(num(m, 'count', 0), 'idée')})`,
-  edition_closed: (_, m) =>
-    `L'édition ${text(m, 'label', '')} est clôturée`.replace('  ', ' '),
+/** "1ʳᵉ", "2nd", "3." … from the ordinal rules of the language. */
+const nth = (locale: Locale, n: number): string => {
+  const category = new Intl.PluralRules(locale, { type: 'ordinal' }).select(n);
+  const form = category === 'other' || category === 'many' ? 'rest' : category;
+  return translateKey(locale, `journal.nth.${form}`, { n });
 };
+
+const keyOrFallback = (key: string, fallback: string): string =>
+  hasMessage(key) ? key : fallback;
 
 export type DescribableEvent = {
   type: string;
@@ -148,17 +122,38 @@ export type DescribableEvent = {
   meta?: Meta | null;
 };
 
-/** French sentence for an event. `names` maps person ids to display names. */
+/**
+ * One sentence for an event, in `locale` (French by default). `names` maps
+ * person ids to display names.
+ */
 export const describeEvent = (
   event: DescribableEvent,
-  { names = {} }: { names?: Record<string, string> } = {},
+  {
+    names = {},
+    locale = DEFAULT_LOCALE,
+  }: { names?: Record<string, string>; locale?: Locale } = {},
 ): string => {
-  const describe = (DESCRIPTIONS as Record<string, Describe | undefined>)[
-    event.type
-  ];
-  if (!describe) return 'Événement inconnu';
-  const name = (event.personId && names[event.personId]) || "Quelqu'un";
-  return describe(name, event.meta ?? {});
+  const key = `journal.events.${event.type}`;
+  if (!hasMessage(key)) return translateKey(locale, 'journal.unknown');
+  const meta = event.meta ?? {};
+  const t = (k: string) => translateKey(locale, k);
+  return translateKey(locale, key, {
+    name: (event.personId && names[event.personId]) || t('journal.someone'),
+    label: text(meta, 'label', ''),
+    reason: text(meta, 'reason', t('journal.noReason')),
+    count: num(meta, 'count', 0),
+    nth: nth(locale, num(meta, 'count', 1)),
+    what: t(
+      keyOrFallback(
+        `journal.what.${text(meta, 'messageType', '')}`,
+        'journal.what.other',
+      ),
+    ),
+    via: hasMessage(`journal.via.${text(meta, 'via', '')}`)
+      ? t(`journal.via.${text(meta, 'via', '')}`)
+      : '',
+    // An edition without a label must not leave a double space.
+  }).replace('  ', ' ');
 };
 
 // --- Journal as displayed -------------------------------------------------
@@ -184,13 +179,14 @@ export type JournalEntry = {
 };
 
 /**
- * Journal rows as shown to the group: one French sentence each, newest
- * first. People appear by first name, with the last name only to tell
+ * Journal rows as shown to the group: one sentence each in `locale`,
+ * newest first. People appear by first name, with the last name only to tell
  * homonyms apart (README 20). Meta is not passed on.
  */
 export const journalEntries = (
   rows: JournalRow[],
   people: JournalPerson[],
+  locale: Locale = DEFAULT_LOCALE,
 ): JournalEntry[] => {
   const names = Object.fromEntries(
     people.map((person) => [person.id, displayName(person, people)]),
@@ -203,6 +199,6 @@ export const journalEntries = (
       editionId: row.editionId ?? null,
       actor: row.actor,
       createdAt: row.createdAt,
-      text: describeEvent(row, { names }),
+      text: describeEvent(row, { names, locale }),
     }));
 };

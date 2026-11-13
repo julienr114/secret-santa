@@ -36,14 +36,19 @@ export default defineEventHandler(async (event) => {
       const person = people.find((p) => p.participationId === row.id);
       const link = await personalLink(event, row, dataKey);
       const text = unwrap(
-        buildMessage(type, {
-          firstName: person?.firstName ?? '',
-          groupName: group.name,
-          editionLabel: edition.label,
-          link,
-          budget: rules.budget,
-          eventDate: rules.eventDate,
-        }),
+        buildMessage(
+          type,
+          {
+            firstName: person?.firstName ?? '',
+            groupName: group.name,
+            editionLabel: edition.label,
+            link,
+            budget: rules.budget,
+            eventDate: rules.eventDate,
+          },
+          // Written in the recipient's language, not the guardian's.
+          person?.language,
+        ),
       );
       return [row.id, { text, link }] as const;
     }),

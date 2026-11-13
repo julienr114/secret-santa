@@ -211,3 +211,59 @@ describe('journalEntries', () => {
     expect(entries[0]).not.toHaveProperty('meta');
   });
 });
+
+describe('describeEvent in other languages', () => {
+  const names = { p1: 'Léa' };
+  const viewed = (count: number, locale: 'en' | 'de') =>
+    describeEvent(
+      { type: 'result_viewed', personId: 'p1', meta: { count } },
+      { names, locale },
+    );
+
+  it('uses the ordinals of the language', () => {
+    expect([1, 2, 3, 4, 11, 21].map((n) => viewed(n, 'en'))).toEqual([
+      'Léa viewed their result (1st time)',
+      'Léa viewed their result (2nd time)',
+      'Léa viewed their result (3rd time)',
+      'Léa viewed their result (4th time)',
+      'Léa viewed their result (11th time)',
+      'Léa viewed their result (21st time)',
+    ]);
+    expect(viewed(2, 'de')).toBe(
+      'Léa hat das eigene Ergebnis angesehen (zum 2. Mal)',
+    );
+  });
+
+  it('translates every type without leaving a placeholder', () => {
+    (['fr', 'en', 'de'] as const).forEach((locale) => {
+      AUDIT_TYPES.forEach((type) => {
+        const text = describeEvent(
+          { type, personId: 'p1', meta: { count: 2, label: 'X' } },
+          { names, locale },
+        );
+        expect(text, `${locale} ${type}`).not.toMatch(/\{\w+\}/);
+      });
+    });
+  });
+
+  it("writes the journal in the reader's language", () => {
+    const [entry] = journalEntries(
+      [
+        {
+          id: 'a',
+          type: 'message_sent',
+          editionId: 'e1',
+          personId: 'p1',
+          actor: 'guardian',
+          meta: { messageType: 'invitation', via: 'email' },
+          createdAt: '2026-12-01T10:00:00.000Z',
+        },
+      ],
+      [{ id: 'p1', firstName: 'Léa' }],
+      'en',
+    );
+    expect(entry?.text).toBe(
+      'The organizer sent the invitation to Léa (email)',
+    );
+  });
+});

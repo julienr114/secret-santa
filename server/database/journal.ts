@@ -1,5 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import type { Db } from './client';
+import type { Locale } from '#shared/i18n';
 import { auditLog } from './schema';
 import { listPeople } from './people';
 import { listEditions } from './editions';
@@ -20,6 +21,7 @@ export type Journal = {
 export const loadJournal = async (
   db: Db,
   groupId: string,
+  locale: Locale,
 ): Promise<Journal> => {
   const [rows, people, editions] = await Promise.all([
     db
@@ -35,6 +37,7 @@ export const loadJournal = async (
     entries: journalEntries(
       rows.map((row) => ({ ...row, meta: row.meta as Meta | null })),
       people,
+      locale,
     ),
     editions: editions
       .toReversed()

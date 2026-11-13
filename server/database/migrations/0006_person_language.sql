@@ -1,0 +1,1 @@
+ALTER TABLE `persons` ADD `language` text DEFAULT 'fr' NOT NULL;

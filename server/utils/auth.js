@@ -8,6 +8,7 @@ export const ROLES = ['super_admin', 'guardian'];
 export const sessionUserSchema = z.object({
   role: z.enum(ROLES),
   groupId: z.string().min(1).nullable().default(null),
+  groupSlug: z.string().min(1).nullable().default(null),
 });
 
 export const LOGIN_MAX_FAILURES = 10;

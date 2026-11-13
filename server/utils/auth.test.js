@@ -65,6 +65,7 @@ describe('schemas', () => {
     expect(sessionUserSchema.parse({ role: 'super_admin' })).toEqual({
       role: 'super_admin',
       groupId: null,
+      groupSlug: null,
     });
     expect(sessionUserSchema.safeParse({ role: 'root' }).success).toBe(false);
   });

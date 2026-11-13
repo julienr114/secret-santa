@@ -11,7 +11,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && simple-git-hooks",
     "lint": "eslint --config eslint.config.js .",
     "lint:fix": "eslint --config eslint.config.js . --fix",
     "format": "prettier --write .",
@@ -31,7 +31,22 @@
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-functional": "^10.0.1",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.10.1",
+    "simple-git-hooks": "^2.14.0",
     "vitest": "^5.1.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "pre-push": "pnpm test"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "eslint --config eslint.config.js --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

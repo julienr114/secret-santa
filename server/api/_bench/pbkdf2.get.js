@@ -1,37 +1,12 @@
-// TEMPORARY (README step 1): measures PBKDF2-SHA256 on the deployed Worker to
-// pick the default PBKDF2_ITERATIONS. Delete before step 8.
-const ITERATIONS = [10_000, 25_000, 50_000, 100_000];
-const ROUNDS = 3;
+// TEMPORARY (README step 1): one PBKDF2-SHA256 derivation per request so the
+// CPU time can be read from Workers logs (`wrangler tail --format json`,
+// field cpuTime). Clocks are frozen inside a Worker request, so timing in
+// here would always read 0. Delete before step 8.
+const MAX_ITERATIONS = 100_000;
 
-// Runs async tasks one after the other (parallel runs would skew timings).
-const sequentially = (tasks) =>
-  tasks.reduce(
-    (acc, task) =>
-      acc.then((done) => task().then((result) => [...done, result])),
-    Promise.resolve([]),
-  );
-
-const deriveOnce = async (iterations, keyMaterial, salt) => {
-  const start = performance.now();
-  await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations },
-    keyMaterial,
-    256,
-  );
-  return Math.round((performance.now() - start) * 10) / 10;
-};
-
-const measure = async (iterations, keyMaterial, salt) => ({
-  iterations,
-  ms: await sequentially(
-    Array.from(
-      { length: ROUNDS },
-      () => () => deriveOnce(iterations, keyMaterial, salt),
-    ),
-  ),
-});
-
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const requested = Number(getQuery(event).iterations ?? 50_000);
+  const iterations = Math.min(Math.max(1, requested || 1), MAX_ITERATIONS);
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode('123456pepper'),
@@ -40,8 +15,10 @@ export default defineEventHandler(async () => {
     ['deriveBits'],
   );
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const results = await sequentially(
-    ITERATIONS.map((n) => () => measure(n, keyMaterial, salt)),
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations },
+    keyMaterial,
+    256,
   );
-  return { note: 'wall-clock ms per PBKDF2-SHA256 derivation', results };
+  return { iterations, bytes: bits.byteLength };
 });

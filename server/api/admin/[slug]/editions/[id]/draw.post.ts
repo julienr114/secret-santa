@@ -7,8 +7,7 @@ import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { unwrap } from '#server/http/errors';
 import { encrypt, secureRandomInt } from '#server/utils/crypto';
 import { draw } from '#server/utils/draw';
-import { missingPins, nextStatus } from '#server/utils/editions';
-import { fail } from '#server/utils/result';
+import { nextStatus } from '#server/utils/editions';
 
 // The draw (README 6.3): server side only, receivers stored encrypted, the
 // response never contains an assignment.
@@ -16,16 +15,13 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
   const status = unwrap(nextStatus(edition.status, 'draw'));
   const dataKey = await dataKeyOf(event);
-  const { participants, input } = await loadDrawContext(
+  const { input } = await loadDrawContext(
     db,
     group.id,
     edition,
     rules,
     dataKey,
   );
-  const missing = rules.registrationRequired ? missingPins(participants) : [];
-  if (missing.length > 0)
-    unwrap(fail('missing_pins', { names: missing.map((p) => p.firstName) }));
   const { assignments: pairs } = unwrap(
     draw(input, rules, { random: secureRandomInt }),
   );

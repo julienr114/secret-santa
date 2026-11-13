@@ -29,12 +29,6 @@ export const persons = sqliteTable(
       .references(() => groups.id),
     firstName: text('first_name').notNull(),
     lastName: text('last_name'),
-    // WhatsApp number in E.164 (+33612345678), used for wa.me links.
-    phone: text('phone'),
-    pinHash: text('pin_hash'),
-    pinSalt: text('pin_salt'),
-    pinFailedAttempts: integer('pin_failed_attempts').notNull().default(0),
-    pinLockedAt: text('pin_locked_at'),
     active: integer('active', { mode: 'boolean' }).notNull().default(true),
     createdAt: text('created_at').notNull(),
   },

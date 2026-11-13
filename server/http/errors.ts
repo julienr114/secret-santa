@@ -11,7 +11,6 @@ const STATUS_BY_REASON: Record<string, number> = {
   too_many_attempts: 429,
   invalid_transition: 409,
   no_solution: 409,
-  missing_pins: 409,
   too_few_participants: 409,
 };
 

@@ -10,13 +10,12 @@ import { validatedBody } from '#server/http/validate';
 import { canSendLinks } from '#server/utils/editions';
 import { MESSAGE_TYPES, buildMessage } from '#server/utils/messages';
 import { mergeRules } from '#server/utils/rules';
-import { whatsappUrl } from '#server/utils/whatsapp';
 
-// The guardian sends a message (README 13): we build the text and the wa.me
-// link, mark the participant as "sent" and journal it.
+// The guardian shares a message (README 13): we build the text with the
+// personal link, mark the participant as "sent" and journal it.
 const bodySchema = z.object({
   type: z.enum(MESSAGE_TYPES),
-  via: z.enum(['whatsapp', 'copy', 'share']),
+  via: z.enum(['share', 'copy']),
 });
 
 export default defineEventHandler(async (event) => {
@@ -36,7 +35,6 @@ export default defineEventHandler(async (event) => {
       link,
       budget: rules.budget,
       eventDate: rules.eventDate,
-      pinChosen: Boolean(person.pinHash),
     }),
   );
   await db
@@ -51,9 +49,5 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     meta: { messageType: type, via },
   });
-  return {
-    text,
-    link,
-    whatsappUrl: whatsappUrl({ phone: person.phone, text }),
-  };
+  return { text, link };
 });

@@ -11,10 +11,6 @@ export default defineEventHandler(async (event) => {
     id: newId(),
     groupId: group.id,
     ...body,
-    pinHash: null,
-    pinSalt: null,
-    pinFailedAttempts: 0,
-    pinLockedAt: null,
     active: true,
     createdAt: nowIso(),
   };

@@ -101,8 +101,6 @@ export type Participant = PublicPerson & {
   linkCopiedAt: string | null;
   viewCount: number;
   wishesCount: number;
-  hasPin: boolean;
-  pinLocked: boolean;
   badges: Badge[];
 };
 
@@ -136,8 +134,6 @@ export const listParticipants = async (
       linkCopiedAt: participation.linkCopiedAt,
       viewCount: participation.viewCount,
       wishesCount: wishCounts[participation.id] ?? 0,
-      hasPin: Boolean(person.pinHash),
-      pinLocked: Boolean(person.pinLockedAt),
     };
     return {
       ...publicPerson(person),

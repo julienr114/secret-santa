@@ -1,9 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devtools: { enabled: true },
   modules: ['@nuxt/eslint'],
+  css: ['~/assets/css/main.css'],
+  vite: { plugins: [tailwindcss()] },
   // Plain JavaScript project: Nuxt still generates .nuxt/tsconfig.json for
   // editor tooling, but never type-checks.
   typescript: { typeCheck: false },

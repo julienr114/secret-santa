@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+/* Mobile first: one column, large touch targets (README section 11). */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply min-h-dvh bg-white text-neutral-900 antialiased;
+  }
+  button,
+  [role='button'],
+  a.btn,
+  input,
+  select {
+    @apply min-h-11;
+  }
+}

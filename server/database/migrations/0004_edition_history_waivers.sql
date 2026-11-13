@@ -1,0 +1,1 @@
+ALTER TABLE `editions` ADD `history_waivers` text;

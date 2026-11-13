@@ -148,7 +148,8 @@ describe('describeEvent', () => {
       expect(text, type).toContain(
         type.startsWith('edition') ||
           type.startsWith('draw') ||
-          type === 'rules_changed'
+          type === 'rules_changed' ||
+          type === 'results_revealed'
           ? ''
           : "Quelqu'un",
       );

@@ -46,6 +46,7 @@ export default defineEventHandler(async (event) => {
     status: 'draft',
     rulesOverride: null,
     rulesSnapshot: null,
+    historyWaivers: null,
     drawnAt: null,
     closedAt: null,
     createdAt: nowIso(),

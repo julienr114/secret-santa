@@ -9,6 +9,12 @@ type Ref = MaybeRefOrGetter<string>;
 export type DrawCheck = {
   participantCount: number;
   historyExclusions: number;
+  waivedCount: number;
+  previousPairs: {
+    giverId: string;
+    receiverId: string;
+    editionLabel: string;
+  }[];
   problem: { reason: string; blocked: string[]; constrained: string[] } | null;
   ready: boolean;
 };
@@ -113,4 +119,42 @@ export const useRegenerateMutation = (slug: Ref) =>
   useApiMutation<{ link: string }, string>(
     (pid) => api(`${participation(slug, pid)}/regenerate`, { method: 'POST' }),
     () => groupKeys(slug),
+  );
+
+export type DrawPair = { giverId: string; receiverId: string | null };
+
+export const useWaiveMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<unknown, { giverId: string; receiverId: string }>(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/history-waivers`, {
+        method: 'POST',
+        body,
+      }),
+    () => groupKeys(slug),
+  );
+
+export const useClearWaiversMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<unknown, undefined>(
+    () =>
+      api(`${base(slug)}/editions/${toValue(id)}/history-waivers`, {
+        method: 'DELETE',
+      }),
+    () => groupKeys(slug),
+  );
+
+/** Results of a closed edition (no longer secret). */
+export const useResultsQuery = (slug: Ref, id: Ref) =>
+  useApiQuery<{ pairs: DrawPair[] }>(
+    () => [...keys.edition(toValue(slug), toValue(id)), 'results'],
+    () => `${base(slug)}/editions/${toValue(id)}/results`,
+  );
+
+/** Last-resort access to the current draw; journaled for everyone. */
+export const useRevealAllMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<{ pairs: DrawPair[] }, { password: string; sentence: string }>(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/reveal-all`, {
+        method: 'POST',
+        body,
+      }),
   );

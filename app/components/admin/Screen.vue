@@ -27,13 +27,14 @@ const onLogout = () =>
           aria-label="Retour"
           class="-ml-2"
         />
+        <!-- Top-level screens show the app name instead of a breadcrumb. -->
         <span
-          v-else
-          class="font-display text-lg font-bold text-primary"
-          aria-hidden="true"
-          >✦</span
+          v-if="!back"
+          class="grow font-display text-lg font-bold text-primary"
+          >✦ Secret Santa</span
         >
         <UBreadcrumb
+          v-else
           :items="crumbs"
           separator-icon="i-lucide-chevron-right"
           class="min-w-0 grow"

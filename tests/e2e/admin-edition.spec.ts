@@ -78,6 +78,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   const body = await page.locator('main').innerText();
   expect(body).not.toMatch(/offre|→|receiver/i);
 
+  // Last-resort access to the draw: guarded, then journaled for everyone.
+  await page.getByText('Voir le tirage').click();
+  await page.getByLabel('Ton mot de passe').fill(GROUP.password);
+  await page.getByLabel(/Recopie/).fill('je veux voir le tirage');
+  await page.getByLabel(/tout le groupe saura/).check();
+  await page.getByRole('button', { name: 'Voir le tirage' }).click();
+  await expect(page.getByText(/^offre à /)).toHaveCount(4);
+  await page.getByRole('link', { name: 'Retour' }).click();
+
   // Cancel with a reason, draw again, close.
   await page.getByText('Annuler et relancer le tirage').click();
   await page.getByLabel('Motif').fill('Test de relance');

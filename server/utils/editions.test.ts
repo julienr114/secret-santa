@@ -8,6 +8,9 @@ import {
   canEditParticipants,
   canSendLinks,
   historyEditions,
+  addWaiver,
+  applyWaivers,
+  parseWaivers,
   nextStatus,
 } from './editions';
 import { failureOf, valueOf } from '~~/tests/helpers';
@@ -134,5 +137,29 @@ describe('history', () => {
       b: ['a'],
     });
     expect(buildHistory(assignments, [])).toEqual({});
+  });
+});
+
+describe('history waivers', () => {
+  it('parses stored waivers and drops junk', () => {
+    expect(
+      parseWaivers([{ giverId: 'a', receiverId: 'b' }, { giverId: 'a' }, 'x']),
+    ).toEqual([{ giverId: 'a', receiverId: 'b' }]);
+    expect(parseWaivers(null)).toEqual([]);
+  });
+
+  it('adds a waiver only once', () => {
+    const once = addWaiver([], { giverId: 'a', receiverId: 'b' });
+    expect(addWaiver(once, { giverId: 'a', receiverId: 'b' })).toBe(once);
+    expect(addWaiver(once, { giverId: 'b', receiverId: 'a' })).toHaveLength(2);
+  });
+
+  it('removes waived pairs from the history, one way only', () => {
+    const history = { a: ['b', 'c'], b: ['a'] };
+    expect(applyWaivers(history, [{ giverId: 'a', receiverId: 'b' }])).toEqual({
+      a: ['c'],
+      b: ['a'],
+    });
+    expect(applyWaivers(history, [])).toEqual(history);
   });
 });

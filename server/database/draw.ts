@@ -6,13 +6,23 @@ import { listEditions, listParticipants, type Participant } from './editions';
 import { decrypt } from '#server/utils/crypto';
 import type { DrawInput } from '#server/utils/draw';
 import {
+  applyWaivers,
   buildHistory,
   historyEditions,
+  parseWaivers,
   type PastAssignment,
 } from '#server/utils/editions';
 import type { Rules } from '#server/utils/rules';
 
-export type DrawContext = { participants: Participant[]; input: DrawInput };
+// `closedPairs`: decrypted pairs of the closed editions in the history
+// window. Closed results are no longer secret (decision of 2026-11-13);
+// pairs of a drawn but not yet closed edition never leave this module.
+export type ClosedPair = PastAssignment & { editionLabel: string };
+export type DrawContext = {
+  participants: Participant[];
+  input: DrawInput;
+  closedPairs: ClosedPair[];
+};
 
 /**
  * Everything the pure draw needs for an edition: participants, exclusions
@@ -59,16 +69,27 @@ export const loadDrawContext = async (
         : null;
     }),
   );
+  const known = past.filter((a): a is PastAssignment => a !== null);
+  const closed = new Map(
+    editions
+      .filter((e) => e.status === 'closed' && pastIds.includes(e.id))
+      .map((e) => [e.id, e.label]),
+  );
   return {
     participants,
+    closedPairs: known.flatMap((a) =>
+      closed.has(a.editionId)
+        ? [{ ...a, editionLabel: closed.get(a.editionId) ?? '' }]
+        : [],
+    ),
     input: {
       participants: [...ids],
       manualExclusions: exclusions.filter(
         (e) => ids.has(e.giverId) && ids.has(e.receiverId),
       ),
-      history: buildHistory(
-        past.filter((a): a is PastAssignment => a !== null),
-        pastIds,
+      history: applyWaivers(
+        buildHistory(known, pastIds),
+        parseWaivers(edition.historyWaivers),
       ),
     },
   };

@@ -16,6 +16,7 @@ export const AUDIT_TYPES = [
   'link_regenerated',
   'draw_done',
   'draw_cancelled',
+  'results_revealed',
   'result_viewed',
   'wishes_updated',
   'edition_closed',
@@ -130,6 +131,8 @@ const DESCRIPTIONS: Record<AuditType, Describe> = {
     `Le tirage a été effectué pour ${plural(num(m, 'count', 0), 'participant')}`,
   draw_cancelled: (_, m) =>
     `Le tirage a été annulé. Motif : ${text(m, 'reason', 'non précisé')}`,
+  results_revealed: () =>
+    'Le gardien a consulté les résultats du tirage (accès de dernier recours)',
   result_viewed: (name, m) =>
     `${name} a consulté son résultat (${ordinal(num(m, 'count', 1))} fois)`,
   wishes_updated: (name, m) =>

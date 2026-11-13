@@ -371,6 +371,15 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 ---
 
+### 8.7 Secret et éditions passées (décisions du 13 novembre 2026)
+
+- **Édition clôturée = résultats non secrets.** Le gardien voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
+- Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées.
+- **Accès de dernier recours au tirage en cours** (`POST /api/admin/[groupe]/editions/[id]/reveal-all`) : mot de passe du gardien redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« Le gardien a consulté les résultats du tirage »). Le gardien pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
+- Ces trois points remplacent, pour les éditions clôturées et l'accès de dernier recours, la règle « aucune route d'administration ne renvoie une attribution » de la section 8.3, qui reste vraie pour tout le reste.
+
+---
+
 ## 9. Journal public
 
 Visible par tous les participants du groupe (depuis leur page personnelle) et par le gardien. Affichage du plus récent au plus ancien, filtrable par édition.
@@ -386,6 +395,7 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `lien_copie` | « Le gardien a copié le lien de Léa » |
 | `lien_regenere` | « Le lien de Léa a été régénéré » |
 | `tirage_effectue` | « Le tirage a été effectué pour 12 participants » |
+| `resultats_consultes` | « Le gardien a consulté les résultats du tirage (accès de dernier recours) » |
 | `tirage_annule` | « Le tirage a été annulé. Motif : désistement de Tom » |
 | `resultat_consulte` | « Léa a consulté son résultat (3ᵉ fois) » |
 | `souhaits_modifies` | « Léa a mis à jour sa liste de souhaits (3 idées) » |

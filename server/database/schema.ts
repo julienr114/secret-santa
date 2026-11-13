@@ -79,6 +79,8 @@ export const editions = sqliteTable(
       .default('draft'),
     rulesOverride: text('rules_override', { mode: 'json' }),
     rulesSnapshot: text('rules_snapshot', { mode: 'json' }),
+    // Previous-year pairs the guardian allowed again for this edition.
+    historyWaivers: text('history_waivers', { mode: 'json' }),
     drawnAt: text('drawn_at'),
     closedAt: text('closed_at'),
     createdAt: text('created_at').notNull(),

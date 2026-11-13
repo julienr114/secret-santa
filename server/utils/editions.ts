@@ -163,3 +163,46 @@ export const buildHistory = (
       }),
       {},
     );
+
+// --- Waived history pairs ------------------------------------------------
+
+export type Waiver = { giverId: string; receiverId: string };
+
+export const waiverSchema = z.object({
+  giverId: z.string().min(1),
+  receiverId: z.string().min(1),
+});
+
+/** Reads the stored waivers of an edition, ignoring anything malformed. */
+export const parseWaivers = (stored: unknown): Waiver[] =>
+  Array.isArray(stored)
+    ? stored.flatMap((w) => {
+        const parsed = waiverSchema.safeParse(w);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+
+/** Adds a waiver once (same pair twice is a no-op). */
+export const addWaiver = (waivers: Waiver[], waiver: Waiver): Waiver[] =>
+  waivers.some(
+    (w) => w.giverId === waiver.giverId && w.receiverId === waiver.receiverId,
+  )
+    ? waivers
+    : [...waivers, waiver];
+
+/**
+ * History without the pairs the guardian waived for this edition: those
+ * past receivers become possible again.
+ */
+export const applyWaivers = (
+  history: Record<string, string[]>,
+  waivers: Waiver[],
+): Record<string, string[]> =>
+  Object.fromEntries(
+    Object.entries(history).map(([giver, receivers]) => [
+      giver,
+      receivers.filter(
+        (r) => !waivers.some((w) => w.giverId === giver && w.receiverId === r),
+      ),
+    ]),
+  );

@@ -23,6 +23,9 @@ const MESSAGES: Record<string, string> = {
   already_participating: 'Cette personne participe déjà.',
   links_not_open: "Ouvre d'abord les invitations.",
   participation_not_found: 'Participant introuvable.',
+  wrong_sentence: 'Recopie exactement la phrase demandée.',
+  results_secret:
+    "Les résultats restent secrets tant que l'édition n'est pas clôturée.",
   'Validation Error': 'Vérifie les champs du formulaire.',
 };
 

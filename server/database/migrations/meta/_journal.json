@@ -29,6 +29,13 @@
       "when": 1794595389732,
       "tag": "0003_person_avatars",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794597029700,
+      "tag": "0004_edition_history_waivers",
+      "breakpoints": true
     }
   ]
 }

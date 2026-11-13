@@ -7,10 +7,12 @@ import {
 } from '~/composables/queries/useGroup';
 import {
   useCheckQuery,
+  useClearWaiversMutation,
   useCloseMutation,
   useDrawMutation,
   useMessagesQuery,
   useOpenMutation,
+  useWaiveMutation,
 } from '~/composables/queries/useEdition';
 import { useShareMessage } from '~/composables/useShareMessage';
 import { errorMessage } from '~/utils/errors';
@@ -86,6 +88,24 @@ const missingText = computed(() => {
     ? `${list} ne participe pas encore`
     : `${list} ne participent pas encore`;
 });
+// Previous-year pairs can be allowed again for this edition, one by one.
+const waive = useWaiveMutation(slug, id);
+const clearWaivers = useClearWaiversMutation(slug, id);
+const confirmWaiver = ref<string | null>(null);
+const pairKey = (p: { giverId: string; receiverId: string }) =>
+  `${p.giverId}>${p.receiverId}`;
+const onWaive = (pair: { giverId: string; receiverId: string }) =>
+  waive.mutate(
+    { giverId: pair.giverId, receiverId: pair.receiverId },
+    {
+      onSettled: () => {
+        confirmWaiver.value = null;
+      },
+      onError,
+    },
+  );
+const personOf = (pid: string) => participants.value.find((p) => p.id === pid);
+const firstNameOf = (pid: string) => personOf(pid)?.firstName ?? '?';
 const viewedCount = computed(
   () => participants.value.filter((p) => p.viewCount > 0).length,
 );
@@ -290,7 +310,10 @@ const sectionTitle =
       <p v-if="participants.length === 0" class="text-muted">
         Personne pour l'instant.
       </p>
-      <MobileList v-else :title="plural(participants.length, 'participant')">
+      <MobileList
+        v-else-if="status !== 'closed'"
+        :title="plural(participants.length, 'participant')"
+      >
         <MobileListItem
           v-for="p in participants"
           :key="p.participationId"
@@ -354,17 +377,106 @@ const sectionTitle =
           subtitle="Désistement, oubli… journalisé"
           tone="danger"
         />
+        <MobileListItem
+          v-if="status === 'drawn'"
+          :to="`/admin/${slug}/editions/${id}/voir-le-tirage`"
+          icon="i-lucide-eye"
+          title="Voir le tirage"
+          subtitle="Dernier recours, inscrit au journal de tous"
+        />
       </MobileList>
+      <AdminEditionResults
+        v-if="status === 'closed' && participants.length"
+        :id="id"
+        :slug="slug"
+        :people="participants"
+        :title="`Le tirage · ${plural(participants.length, 'participant')}`"
+      />
       <AdminExclusions
         :slug="slug"
         :editable="canEdit"
         title="Exclusions"
         :footer="
           check.data.value?.historyExclusions
-            ? `+ ${plural(check.data.value.historyExclusions, 'exclusion')} venant des années précédentes, gardées secrètes.`
+            ? `+ ${plural(check.data.value.historyExclusions, 'exclusion')} d'un tirage pas encore clôturé, gardées secrètes.`
             : undefined
         "
       />
+      <MobileList
+        v-if="canEdit && check.data.value?.previousPairs.length"
+        title="Tirages précédents"
+        footer="Personne ne retombera sur la même personne. Le × lève une exclusion pour cette édition seulement."
+      >
+        <MobileListItem
+          v-for="pair in check.data.value.previousPairs"
+          :key="`${pair.editionLabel}-${pair.giverId}`"
+          :title="`${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)}`"
+          :subtitle="pair.editionLabel"
+          :chevron="false"
+        >
+          <template #trailing>
+            <div
+              v-if="confirmWaiver === pairKey(pair)"
+              class="flex shrink-0 items-center gap-1"
+            >
+              <UButton
+                size="sm"
+                label="Lever"
+                :loading="waive.isPending.value"
+                @click.stop="onWaive(pair)"
+              />
+              <UButton
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                label="Annuler"
+                @click.stop="confirmWaiver = null"
+              />
+            </div>
+            <UButton
+              v-else
+              variant="ghost"
+              color="neutral"
+              icon="i-lucide-x"
+              :aria-label="`Lever l'exclusion ${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)} pour cette édition`"
+              @click.stop="confirmWaiver = pairKey(pair)"
+            />
+          </template>
+          <template #leading>
+            <span class="flex shrink-0 items-center" aria-hidden="true">
+              <AdminAvatar
+                v-if="personOf(pair.giverId)"
+                :avatar="personOf(pair.giverId)!.avatar"
+                size="sm"
+                class="outline-2 outline-white"
+              />
+              <AdminAvatar
+                v-if="personOf(pair.receiverId)"
+                :avatar="personOf(pair.receiverId)!.avatar"
+                size="sm"
+                class="-ml-3 outline-2 outline-white"
+              />
+            </span>
+          </template>
+        </MobileListItem>
+      </MobileList>
+      <div
+        v-if="canEdit && check.data.value?.waivedCount"
+        class="-mt-4 flex items-center justify-between gap-2 px-1 text-xs text-muted"
+      >
+        <span>
+          {{ plural(check.data.value.waivedCount, 'exclusion') }} des années
+          précédentes levée{{ check.data.value.waivedCount > 1 ? 's' : '' }}
+          pour cette édition.
+        </span>
+        <UButton
+          size="xs"
+          variant="link"
+          label="Tout rétablir"
+          :loading="clearWaivers.isPending.value"
+          @click="clearWaivers.mutate(undefined, { onError })"
+        />
+      </div>
     </AdminQueryState>
   </AdminScreen>
 </template>

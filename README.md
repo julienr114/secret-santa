@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v5, étapes 1 à 4 terminées** (socle, cœur métier, administration, pilotage d'une édition), déployées sur https://secret-santa.julienr114.workers.dev. Prochaine étape : l'étape 5 (parcours participant).
+> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Les étapes 1 à 4 sont déployées sur https://secret-santa.julienr114.workers.dev ; les étapes 5 et 5 bis restent à déployer. Prochaine étape : l'étape 7 (finitions), dont l'écran `/admin/[groupe]/journal`, pas encore fait.
 >
 > Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
 >
@@ -595,6 +595,8 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 - Fonctions pures `(données) → texte` dans `server/utils/messages.ts`, testées sans réseau. Données : prénom, nom du groupe, label de l'édition, lien personnel, et selon le modèle budget, date, message du gardien.
 - Texte **court et sans mise en forme**, le lien **seul sur sa ligne** pour que les messageries le rendent cliquable et génèrent l'aperçu, un emoji 🎁 au plus.
 - **Aucun message ne contient un résultat.**
+- Les messages proposés suivent l'étape (`messageTypesFor`) : `invitation` et `reminder` avant le tirage, `drawn`, `reminder` et `redraw` après. L'API refuse les autres.
+- Avant le tirage, l'écran du gardien reste discret : pas de « pas encore envoyé » ni de compteur, seulement une coche « Invitation envoyée ». Le suivi d'envoi commence au tirage, qui remet la pastille *envoyé* à zéro.
 
 | Modèle (`type`) | Moment | Contenu |
 |---|---|---|
@@ -716,11 +718,20 @@ Connexion super-admin et gardien, gestion des groupes, des personnes, des exclus
 
 Plan initial : Liste des participants, génération des liens, copie et partage, vérification de faisabilité, tirage, annulation et relance, clôture.
 
-**Étape 5 — Parcours participant**
-Page personnelle dans tous ses états (attente, bouton « Découvrir », résultat, lien invalide), révélation comptée et journalisée, liste de souhaits, journal.
+**Étape 5 — Parcours participant** ✅ *terminée le 13 novembre 2026*
+Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvrir », résultat, clôturée, lien invalide), révélation comptée et journalisée (`POST /api/p/[token]/reveal`, compteur incrémenté en base de façon atomique), journal du groupe `/p/[token]/journal` filtrable par édition. Points à connaître :
+- Garde unique `requirePersonalLink` (`server/http/personal.ts`) : jeton inconnu, mal formé ou régénéré, même réponse 404 `link_invalid`.
+- Règles pures dans `server/utils/personal.ts` (`personalPhase`, `canReveal`, `canEditWishes`). Une édition clôturée laisse consulter son résultat (toujours compté et journalisé).
+- Le résultat ne vit que dans l'état de la page (mutation TanStack Query, jamais mise en cache) : il disparaît au rechargement.
+- En-têtes `Referrer-Policy`, `Cache-Control: no-store` et `X-Robots-Tag` posés par `routeRules` sur `/p/**` et `/api/p/**`.
+- Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté gardien.
+- La page se met à jour seule : l'état est redemandé toutes les 10 s tant que l'onglet est visible (pas de SSE ni de WebSocket ; le vrai push par Durable Object a été étudié puis écarté le 13 novembre 2026, trop de mécanique pour un événement annuel).
+- Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête. Ce changement n'est pas journalisé.
+- Journal affiché en frise (`JournalList`) : fil rouge, emoji par type d'événement, étapes clés en cartes, regroupement par jour.
+- Tests de bout en bout dans `tests/e2e/participant.spec.ts`.
 
-**Étape 5 bis — Liste de souhaits**
-Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, affichage de la liste du receveur sur l'écran de résultat, pastille *souhaits (n)* côté gardien, règles `liste_souhaits` et `souhaits_max`, événement `souhaits_modifies`.
+**Étape 5 bis — Liste de souhaits** ✅ *terminée le 13 novembre 2026*
+Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté gardien existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, **sans bouton « Enregistrer »** : l'idée est sauvegardée quand un champ perd le focus ou que le panneau se ferme (donc une ligne de journal par modification).
 
 **Étape 6 — Partage des liens** ✅ *fait avec l'étape 4 (v5)*
 Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation. Le plan initial (liens WhatsApp `wa.me`) est abandonné.

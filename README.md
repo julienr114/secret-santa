@@ -361,17 +361,27 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Un gardien ne peut ni lire ni modifier un autre groupe.
 - Le journal d'un groupe n'est visible que par ses participants (lien valide) et son gardien.
 
-### 8.6 Liste de contrôle
+### 8.6 Liste de contrôle (revue du 14 novembre 2026)
 
-- [ ] Aucune attribution dans une réponse d'API admin
-- [ ] Aucune attribution dans les logs ou les messages partagés
-- [ ] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal
-- [ ] Toute modification d'une liste de souhaits est journalisée
-- [ ] Toutes les entrées validées par Zod
-- [ ] Requêtes paramétrées uniquement (Drizzle)
-- [ ] Limitation des tentatives sur la connexion admin
-- [ ] En-têtes de sécurité sur les pages `/p/*`
-- [ ] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt
+- [x] Aucune attribution dans une réponse d'API admin tant que l'édition n'est pas clôturée (hors accès de dernier recours, 8.7). Vérifié par `tests/e2e/security.spec.ts`, qui apprend les vraies paires par les liens des participants puis les cherche dans toutes les réponses admin, gardien et super-admin.
+- [x] Aucune attribution dans les logs (aucun `console.*` côté serveur) ni dans les messages et emails (tests unitaires).
+- [x] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal (même test).
+- [x] Toute modification faite avec un lien personnel est journalisée : liste de souhaits, icône (`avatar_changed`), langue (`language_changed`).
+- [x] Toutes les entrées validées par Zod ; les champs inconnus sont ignorés.
+- [x] Requêtes paramétrées uniquement (Drizzle).
+- [x] Limitation des tentatives sur la connexion admin, sur l'adresse `CF-Connecting-IP` (un `X-Forwarded-For` forgé ne la contourne plus) ; les échecs périmés sont purgés.
+- [x] En-têtes de sécurité : sur toutes les pages et réponses `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy` ; en plus sur `/p/*` `no-referrer`, `no-store`, `noindex`.
+- [x] Toutes les routes `/api/admin/*` refusent sans session (401) et hors de son groupe (403).
+- [x] Aucune lecture n'écrit : la copie d'un lien, journalisée, est un `POST`.
+- [x] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt.
+
+Limites connues et acceptées :
+- Le gardien reçoit les liens personnels pour les partager ; il peut donc en ouvrir un. C'est le journal public qui le rend visible (décision d'origine).
+- Les adresses des pages personnelles, jeton compris, apparaissent dans les journaux de requêtes Cloudflare du compte (`[observability]`), lisibles par le seul titulaire du compte.
+- Pas de limitation de débit sur les routes participant : le jeton de 256 bits ne se devine pas ; un détenteur de lien peut seulement gonfler son propre compteur et le journal.
+- Une session de gardien reste valable jusqu'à 12 h après un changement de son mot de passe.
+
+Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 paramètres, ce qui faisait échouer la création d'une édition dès 10 personnes et le tirage dès 17 (insertions groupées). Corrigé par une insertion par ligne dans la transaction ; vérifié avec 40 personnes. Une édition est donc limitée à **100 participants** (`MAX_PARTICIPANTS`, refus `too_many_participants` à la création de l'édition et à l'ajout d'un participant), plutôt que de rencontrer la limite comme une erreur de base.
 
 ---
 
@@ -580,7 +590,7 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 | `GET /api/admin/[groupe]/editions/[id]/messages?type=` | Textes prêts à partager pour chaque participant (sans effet de bord), préchargés pour que le partage s'ouvre au toucher |
 | `POST /api/admin/[groupe]/participations/[id]/message` | Corps : `type` ∈ `invitation`, `drawn`, `reminder`, `redraw` et `via` ∈ `share`, `copy`. Pose la pastille *envoyé* et journalise `message_sent` |
 | `DELETE /api/admin/[groupe]/participations/[id]/message` | Annule la pastille *envoyé* (erreur de clic), journalisé |
-| `GET /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul (journalisé `lien_copie`) |
+| `POST /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul (journalisé `lien_copie`) |
 | `POST /api/admin/[groupe]/participations/[id]/regenerate` | Régénérer le lien |
 | `GET /api/admin/[groupe]/journal` | Journal |
 

@@ -52,4 +52,17 @@ export default {
   too_many_wishes: 'Deine Liste enthält zu viele Ideen.',
   invalid_wish:
     'Eine Idee ist ungültig: höchstens 200 Zeichen und ein Link, der mit http:// oder https:// beginnt.',
+  group_quota_reached:
+    'Du kannst im Moment keine Gruppe erstellen: Frag auf der Startseite danach.',
+  group_request_pending: 'Du hast bereits eine offene Anfrage.',
+  group_request_useless: 'Du kannst bereits eine Gruppe erstellen.',
+  cannot_disable_self: 'Du kannst dein eigenes Konto nicht deaktivieren.',
+  account_not_found: 'Konto nicht gefunden.',
+  request_not_found: 'Anfrage nicht gefunden.',
+  request_decided: 'Diese Anfrage wurde bereits beantwortet.',
+  session_current:
+    'Das ist das Gerät, das du gerade nutzt: Melde dich über das Menü ab.',
+  session_not_found: 'Sitzung nicht gefunden.',
+  person_is_organizer:
+    'Diese Person organisiert die Gruppe: Entferne sie zuerst aus den Organisatoren.',
 } satisfies Dict<typeof fr>;

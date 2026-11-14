@@ -1,8 +1,4 @@
 export default {
-  groups: {
-    styleguide: 'Guide de style',
-    styleguideHint: 'Les composants de l’interface',
-  },
   newGroup: {
     organizerLabel: 'Adresse du premier organisateur',
     organizerHelp:
@@ -11,10 +7,6 @@ export default {
     nameLabel: 'Nom du groupe',
     namePlaceholder: 'Famille Rabin',
     nameRequired: 'Nom requis',
-    slugLabel: 'Identifiant',
-    slugHelp: "L'organisateur s'en sert pour se connecter.",
-    slugMin: '2 caractères minimum',
-    slugFormat: 'Minuscules, chiffres et tirets',
     submit: 'Créer le groupe',
     created: 'Groupe créé',
   },
@@ -57,7 +49,6 @@ export default {
   },
   newPerson: {
     title: 'Nouvelle personne',
-    crumb: 'Nouvelle',
     added: '{name} ajouté·e',
   },
   person: {

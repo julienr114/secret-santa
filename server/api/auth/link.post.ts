@@ -7,7 +7,7 @@ import {
   recentLinkRequests,
   replaceLoginLink,
 } from '#server/database/accounts';
-import { ipHashOf, nowIso, secretsOf } from '#server/http/context';
+import { appUrl, ipHashOf, nowIso, secretsOf } from '#server/http/context';
 import { sendEmails } from '#server/http/email';
 import { validatedBody } from '#server/http/validate';
 import {
@@ -20,11 +20,12 @@ import { buildLoginEmail } from '#server/utils/loginEmail';
 import { localeOf } from '#shared/i18n';
 
 // Asks for a login link (README 22.5). The answer is the same whether the
-// address is known or not, so that accounts cannot be listed. A link goes
-// to every known address: an existing account, an address declared in
-// NUXT_SUPER_ADMIN_EMAILS, or the address an organiser gave for a
-// participant. The last two get their account here, on their first
-// request. An unknown address gets nothing: sign-up is not open yet.
+// address had an account or not, so that accounts cannot be listed.
+// Sign-up is open: a new address gets its account here, a plain one that
+// can create no group (README 22.2). It is a super-admin when declared in
+// NUXT_SUPER_ADMIN_EMAILS, and takes the language of the participant an
+// organiser registered with that address, if any. Only a disabled account
+// gets no link.
 const bodySchema = z.object({ email: accountEmailSchema });
 
 export default defineEventHandler(async (event) => {
@@ -48,19 +49,15 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const person =
-    existing || declared ? null : await findPersonByEmail(db, email);
   const account =
     existing ??
-    (declared || person
-      ? await createAccount(db, {
-          email,
-          isSuperAdmin: declared,
-          language: localeOf(person?.language),
-          now,
-        })
-      : null);
-  if (!account || account.disabledAt) return { ok: true };
+    (await createAccount(db, {
+      email,
+      isSuperAdmin: declared,
+      language: localeOf((await findPersonByEmail(db, email))?.language),
+      now,
+    }));
+  if (account.disabledAt) return { ok: true };
 
   const token = generateToken();
   await replaceLoginLink(db, {
@@ -69,8 +66,7 @@ export default defineEventHandler(async (event) => {
     ipHash,
     now,
   });
-  const base = secrets.baseUrl || getRequestURL(event).origin;
-  const link = `${base.replace(/\/$/, '')}/login/${token}`;
+  const link = appUrl(event, `/login/${token}`);
   // A failed send changes nothing to the answer: the user asks again.
   await sendEmails(event, [
     { ...buildLoginEmail(link, account.language), to: account.email },

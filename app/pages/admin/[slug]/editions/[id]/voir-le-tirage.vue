@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
-import {
-  useDashboardQuery,
-  useEditionQuery,
-} from '~/composables/queries/useGroup';
+import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useRevealOneMutation,
   type DrawPair,
@@ -22,7 +19,6 @@ const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const reveal = useRevealOneMutation(slug, id);
 
 useHead({
@@ -32,19 +28,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    {
-      label:
-        edition.data.value?.edition.label ??
-        t('adminEdition.general.editionFallback'),
-      to: `/admin/${slug.value}/editions/${id.value}`,
-    },
-    { label: t('adminEdition.reveal.title') },
-  ],
 }));
 
 // Checked by the server as is: the sentence stays in French in every

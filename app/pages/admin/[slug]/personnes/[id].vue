@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
 import {
-  useDashboardQuery,
   useDeletePersonMutation,
   usePeopleQuery,
   useUpdatePersonMutation,
@@ -9,6 +8,8 @@ import {
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
+// Back to the list the form was opened from, not to a second copy of it.
+const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -17,7 +18,6 @@ const toast = useToast();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 
-const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const update = useUpdatePersonMutation(slug);
 const remove = useDeletePersonMutation(slug);
@@ -36,9 +36,6 @@ const exclusions = computed(() =>
     ),
 );
 
-const groupName = computed(
-  () => dashboard.data.value?.group.name ?? slug.value,
-);
 useHead({
   title: computed(
     () =>
@@ -47,14 +44,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/personnes`,
-  crumbs: [
-    { label: groupName.value, to: `/admin/${slug.value}` },
-    {
-      label: t('adminGroup.people.title'),
-      to: `/admin/${slug.value}/personnes`,
-    },
-    { label: person.value?.firstName ?? '…' },
-  ],
 }));
 
 const onSave = (value: PersonFormValue) =>
@@ -76,8 +65,7 @@ const toggleActive = () =>
 const confirmDelete = ref(false);
 const onDelete = () =>
   remove.mutate(id.value, {
-    onSuccess: () =>
-      navigateTo(`/admin/${slug.value}/personnes`, { replace: true }),
+    onSuccess: () => goBack(`/admin/${slug.value}/personnes`),
     onError: (error) => {
       confirmDelete.value = false;
       onError(error);

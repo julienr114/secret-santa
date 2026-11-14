@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
-import {
-  useDashboardQuery,
-  useEditionQuery,
-} from '~/composables/queries/useGroup';
 import { useCancelDrawMutation } from '~/composables/queries/useEdition';
 
 // Cancel and redo the draw (README 6.5), with a double confirmation.
@@ -14,9 +10,9 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const toast = useToast();
 const { t } = useT();
+// Back to the list the form was opened from, not to a second copy of it.
+const goBack = useGoBack();
 const errorMessage = useErrorMessage();
-const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const cancel = useCancelDrawMutation(slug, id);
 
 useHead({
@@ -26,19 +22,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    {
-      label:
-        edition.data.value?.edition.label ??
-        t('adminEdition.general.editionFallback'),
-      to: `/admin/${slug.value}/editions/${id.value}`,
-    },
-    { label: t('adminEdition.cancelDraw.title') },
-  ],
 }));
 
 const schema = computed(() =>
@@ -68,9 +51,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
           description: t('adminEdition.cancelDraw.doneDescription'),
           color: 'success',
         });
-        navigateTo(`/admin/${slug.value}/editions/${id.value}`, {
-          replace: true,
-        });
+        goBack(`/admin/${slug.value}/editions/${id.value}`);
       },
     },
   );

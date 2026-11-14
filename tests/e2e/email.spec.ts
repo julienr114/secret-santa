@@ -36,6 +36,17 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     data: { label: 'Noël courrier', year: 2026 },
   });
   state.editionId = (await edition.json()).edition.id;
+  // The organiser is a person of the group, with an address: this
+  // edition goes without them, so that only Ada can be emailed.
+  const { participants } = await (
+    await api.get(`${ADMIN}/editions/${state.editionId}`)
+  ).json();
+  const orga = participants.find(
+    (p: { email: string | null }) => p.email === ORGANIZER,
+  );
+  await api.delete(
+    `${ADMIN}/editions/${state.editionId}/participants/${orga.participationId}`,
+  );
   await api.post(`${ADMIN}/editions/${state.editionId}/open`);
 });
 
@@ -176,9 +187,11 @@ test('a participant logs in with their address and finds their draw', async ({
   await apiLogin(page.request, email);
   await page.goto('/');
   await hydrated(page);
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
-  await expect(page.getByTestId('home-groups')).toHaveCount(0);
+  await expect(page.getByTestId('home-groups')).toContainText(
+    'Organiser un tirage',
+  );
 
   const added = await api.post(
     `${ADMIN}/editions/${state.editionId}/participants`,
@@ -187,19 +200,49 @@ test('a participant logs in with their address and finds their draw', async ({
   expect(added.ok()).toBe(true);
   await page.reload();
   await hydrated(page);
-  const draw = page.getByTestId('home-draws').getByRole('link');
-  await expect(draw).toContainText('Noël courrier');
-  await expect(draw).toContainText('Famille Courrier · Dana');
+  // A row says where the draw stands and what to do next.
+  const draw = page.getByTestId('draw-row');
+  await expect(draw).toContainText('Famille Courrier');
+  await expect(draw).toContainText('Ajoute tes idées');
 
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
   expect((await page.request.get(`${ADMIN}/persons`)).status()).toBe(403);
   await page.goto(`/admin/${SLUG}`);
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
 
-  await page.getByTestId('home-draws').getByRole('link').click();
-  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}$/);
+  // No idea written yet: the card leads straight to the wish list.
+  await draw.getByRole('link', { name: 'Mes idées' }).click();
+  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}\/souhaits$/);
+  // Opened from home, the list says which draw it belongs to.
+  await expect(page.getByTestId('draw-name')).toHaveText(
+    'Famille Courrier · Noël courrier',
+  );
+  const personal = new URL(page.url()).pathname.replace(/\/souhaits$/, '');
+  // Back from the list leads home, where the user came from: no loop
+  // through the draw page.
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(heading(page)).toHaveText('Bonjour');
+
+  // With an idea written, the row opens the draw page itself.
+  await page.request.put(`/api${personal}/wishes`, {
+    data: { wishes: [{ label: 'Un livre' }] },
+  });
+  await page.reload();
+  await hydrated(page);
+  await expect(draw).toContainText('Tirage à venir');
+  await draw.getByRole('link', { name: /Famille Courrier/ }).click();
+  await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await expect(page.getByText('Dana')).toBeVisible();
+  // Opened from home, the draw shows the way back; opened from its link
+  // (here a reload), it does not.
+  await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();
+  await page.reload();
+  await hydrated(page);
+  await expect(page.getByRole('button', { name: 'Retour' })).toHaveCount(0);
+  // The name of the app still leads home.
+  await page.getByRole('link', { name: /Under the Tree/ }).click();
+  await expect(heading(page)).toHaveText('Bonjour');
 });
 
 test('only the super-admin can delete a group, with everything in it', async ({
@@ -230,7 +273,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   await expect(confirm).toBeDisabled();
   await page.getByLabel(/Recopie l’identifiant du groupe/).fill(SLUG);
   await confirm.click();
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText('Famille Courrier')).toHaveCount(0);
 
   // Nothing is left behind: the group, its people and its edition are gone.

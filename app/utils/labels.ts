@@ -15,6 +15,17 @@ export const formatDate = (
       }).format(new Date(iso))
     : '';
 
+/**
+ * A day, without the time: "14 novembre".
+ * @param iso - ISO date.
+ * @param locale - Language of the screen.
+ * @returns The day and month, in words.
+ */
+export const formatDay = (iso: string, locale: Locale): string =>
+  new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(
+    new Date(iso),
+  );
+
 /** The message that fits the edition status by default. */
 export const defaultMessageType = (status: string) =>
   status === 'drawn' ? 'drawn' : 'invitation';

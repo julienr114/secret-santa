@@ -109,3 +109,22 @@ export const partyIsOver = (
   eventDate: string | null | undefined,
   today: string,
 ): boolean => !isIsoDay(eventDate) || today > eventDate;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * How many days are left before the party.
+ * @param eventDate - The date of the party.
+ * @param today - ISO day.
+ * @returns 0 on the day, a positive count before it; null when the party
+ *   is over or has no ISO date.
+ */
+export const daysUntil = (
+  eventDate: string | null | undefined,
+  today: string,
+): number | null => {
+  if (!isIsoDay(eventDate) || !isIsoDay(today) || today > eventDate) {
+    return null;
+  }
+  return Math.round((Date.parse(eventDate) - Date.parse(today)) / DAY_MS);
+};

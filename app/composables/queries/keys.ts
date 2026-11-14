@@ -1,6 +1,8 @@
 // Query keys, one place so mutations invalidate the right reads.
 export const keys = {
   home: () => ['home'] as const,
+  adminAccounts: () => ['admin', 'accounts'] as const,
+  adminGroups: () => ['admin', 'groups'] as const,
   group: (slug: string) => ['group', slug] as const,
   dashboard: (slug: string) => ['group', slug, 'dashboard'] as const,
   people: (slug: string) => ['group', slug, 'people'] as const,

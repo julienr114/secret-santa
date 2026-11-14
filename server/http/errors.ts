@@ -18,6 +18,12 @@ const STATUS_BY_REASON: Record<string, number> = {
   links_not_open: 409,
   wishlist_disabled: 403,
   email_failed: 502,
+  group_quota_reached: 403,
+  group_request_pending: 409,
+  group_request_useless: 409,
+  cannot_disable_self: 409,
+  session_current: 409,
+  person_is_organizer: 409,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

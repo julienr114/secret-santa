@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { MessageType, NotePosition } from '#server/utils/messages';
-import {
-  useDashboardQuery,
-  useEditionQuery,
-} from '~/composables/queries/useGroup';
+import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useLinkCopiedMutation,
   useMessagesQuery,
@@ -22,12 +19,13 @@ const id = computed(() => String(route.params.id));
 const pid = computed(() => String(route.params.pid));
 const toast = useToast();
 const { t, locale } = useT();
+// Back to the list the form was opened from, not to a second copy of it.
+const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const unsend = useUnsendMutation(slug);
 const linkCopied = useLinkCopiedMutation(slug);
 const regenerate = useRegenerateMutation(slug);
@@ -82,19 +80,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    {
-      label:
-        edition.data.value?.edition.label ??
-        t('adminEdition.general.editionFallback'),
-      to: `/admin/${slug.value}/editions/${id.value}`,
-    },
-    { label: p.value?.firstName ?? '…' },
-  ],
 }));
 
 const viewed = computed(() => {
@@ -136,10 +121,7 @@ const onRegenerate = () =>
   });
 const onRemove = () =>
   remove.mutate(pid.value, {
-    onSuccess: () =>
-      navigateTo(`/admin/${slug.value}/editions/${id.value}`, {
-        replace: true,
-      }),
+    onSuccess: () => goBack(`/admin/${slug.value}/editions/${id.value}`),
     onError,
   });
 </script>

@@ -61,3 +61,14 @@ export const ipHashOf = async (event: H3Event): Promise<string> => {
     b.toString(16).padStart(2, '0'),
   ).join('');
 };
+
+/**
+ * An absolute address of the app, for links sent by email.
+ * @param event - The request, used when no base URL is configured.
+ * @param path - Path starting with a slash.
+ * @returns The full URL.
+ */
+export const appUrl = (event: H3Event, path: string): string => {
+  const base = secretsOf(event).baseUrl || getRequestURL(event).origin;
+  return `${base.replace(/\/$/, '')}${path}`;
+};

@@ -1,32 +1,99 @@
 import { escapeHtml, type Email } from './messages';
 import { translate, type Locale } from '#shared/i18n';
 
+// The emails of the accounts: the login link, a request for a group and
+// its answer. Short and plain, the link alone on its line.
+
 /**
- * The email carrying a login link: short, plain, the link alone on its
- * line. It says nothing about the account, so that it can be sent the
- * same way to anyone.
- * @param link - The login link.
- * @param locale - Language of the account.
+ * Lays out a plain email: lines, a link on its own line, more lines.
+ * @param parts - Subject, the lines before and after, and the link.
  * @returns Subject, text and HTML.
  */
-export const buildLoginEmail = (link: string, locale: Locale): Email => {
-  const intro = translate(locale, 'auth.email.intro');
-  const after = [
-    translate(locale, 'auth.email.validity'),
-    translate(locale, 'auth.email.ignore'),
-  ];
+const plainEmail = ({
+  subject,
+  before,
+  link,
+  after = [],
+}: {
+  subject: string;
+  before: string[];
+  link: string;
+  after?: string[];
+}): Email => {
   const href = escapeHtml(link);
   const paragraph = (line: string) =>
     `<p style="margin:0 0 12px">${escapeHtml(line)}</p>`;
   return {
-    subject: translate(locale, 'auth.email.subject'),
-    text: [intro, link, '', ...after].join('\n'),
+    subject,
+    text: [...before, link, ...(after.length > 0 ? ['', ...after] : [])].join(
+      '\n',
+    ),
     html: [
       '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
-      paragraph(intro),
+      ...before.map(paragraph),
       `<p style="margin:0 0 20px"><a href="${href}">${href}</a></p>`,
       ...after.map(paragraph),
       '</div>',
     ].join(''),
   };
+};
+
+/**
+ * The email carrying a login link. It says nothing about the account, so
+ * that it can be sent the same way to anyone.
+ * @param link - The login link.
+ * @param locale - Language of the account.
+ * @returns Subject, text and HTML.
+ */
+export const buildLoginEmail = (link: string, locale: Locale): Email =>
+  plainEmail({
+    subject: translate(locale, 'auth.email.subject'),
+    before: [translate(locale, 'auth.email.intro')],
+    link,
+    after: [
+      translate(locale, 'auth.email.validity'),
+      translate(locale, 'auth.email.ignore'),
+    ],
+  });
+
+/**
+ * Tells a super-admin that someone asks to create a group.
+ * @param request - Who asks, and why, in their words.
+ * @param link - The admin page where the request is answered.
+ * @param locale - Language of the super-admin.
+ * @returns Subject, text and HTML.
+ */
+export const buildGroupRequestEmail = (
+  request: { email: string; message: string },
+  link: string,
+  locale: Locale,
+): Email =>
+  plainEmail({
+    subject: translate(locale, 'auth.requestEmail.subject'),
+    before: [
+      translate(locale, 'auth.requestEmail.intro', { email: request.email }),
+      request.message,
+      translate(locale, 'auth.requestEmail.action'),
+    ],
+    link,
+  });
+
+/**
+ * Tells the asker what was decided about their request.
+ * @param approved - Whether the request was approved.
+ * @param link - The home page of the app.
+ * @param locale - Language of the account.
+ * @returns Subject, text and HTML.
+ */
+export const buildDecisionEmail = (
+  approved: boolean,
+  link: string,
+  locale: Locale,
+): Email => {
+  const key = approved ? ('approved' as const) : ('refused' as const);
+  return plainEmail({
+    subject: translate(locale, `auth.decisionEmail.${key}Subject`),
+    before: [translate(locale, `auth.decisionEmail.${key}`)],
+    link,
+  });
 };

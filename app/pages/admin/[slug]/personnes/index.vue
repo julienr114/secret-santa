@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import {
-  useDashboardQuery,
-  usePeopleQuery,
-} from '~/composables/queries/useGroup';
+import { usePeopleQuery } from '~/composables/queries/useGroup';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
-const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 useHead({
   title: computed(
     () => `${t('adminGroup.people.title')} — ${t('common.appName')}`,
@@ -18,10 +13,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    { label: name.value, to: `/admin/${slug.value}` },
-    { label: t('adminGroup.people.title') },
-  ],
 }));
 
 const persons = computed(() => people.data.value?.persons ?? []);

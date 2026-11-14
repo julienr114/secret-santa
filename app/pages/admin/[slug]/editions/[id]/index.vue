@@ -8,7 +8,6 @@ import {
 } from '#server/utils/messages';
 import { formatEventDate, partyIsOver } from '#server/utils/rules';
 import {
-  useDashboardQuery,
   useEditionQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
@@ -39,7 +38,6 @@ const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const check = useCheckQuery(slug, id);
 const open = useOpenMutation(slug, id);
 const drawMutation = useDrawMutation(slug, id);
@@ -56,13 +54,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    { label: label.value },
-  ],
 }));
 
 const canSend = computed(

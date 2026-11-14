@@ -5,6 +5,7 @@ import {
   rulesPatchSchema,
   rulesSchema,
   formatEventDate,
+  daysUntil,
   isIsoDay,
   partyIsOver,
 } from './rules';
@@ -101,5 +102,20 @@ describe('date of the party', () => {
   it('never says it is too early without a real date', () => {
     expect(partyIsOver('', '2026-01-01')).toBe(true);
     expect(partyIsOver('24 décembre', '2026-01-01')).toBe(true);
+  });
+});
+
+describe('daysUntil', () => {
+  it('counts the days left, 0 on the day', () => {
+    expect(daysUntil('2026-12-25', '2026-11-14')).toBe(41);
+    expect(daysUntil('2026-12-25', '2026-12-24')).toBe(1);
+    expect(daysUntil('2026-12-25', '2026-12-25')).toBe(0);
+  });
+
+  it('says nothing once the party is over or without an ISO date', () => {
+    expect(daysUntil('2026-12-25', '2026-12-26')).toBeNull();
+    expect(daysUntil('24 décembre', '2026-11-14')).toBeNull();
+    expect(daysUntil('', '2026-11-14')).toBeNull();
+    expect(daysUntil(null, '2026-11-14')).toBeNull();
   });
 });

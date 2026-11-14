@@ -2,7 +2,6 @@
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { rulesSchema, type Rules } from '#server/utils/rules';
 import {
-  useDashboardQuery,
   useRulesQuery,
   useUpdateRulesMutation,
 } from '~/composables/queries/useGroup';
@@ -18,18 +17,10 @@ useHead({
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const rules = useRulesQuery(slug);
-const dashboard = useDashboardQuery(slug);
 const update = useUpdateRulesMutation(slug);
 const toast = useToast();
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    { label: t('adminGroup.rules.shortTitle') },
-  ],
 }));
 
 // Forms start from loaded data: wait for it (also during server rendering).

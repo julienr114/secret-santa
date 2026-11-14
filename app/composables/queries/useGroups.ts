@@ -3,15 +3,27 @@ import { keys } from './keys';
 import { api, useApiMutation } from './useApi';
 
 type CreateGroupBody = {
-  slug: string;
   name: string;
   organizers?: string[];
 };
-export const useCreateGroupMutation = () =>
-  useApiMutation<{ group: PublicGroup }, CreateGroupBody>(
-    (body) => api('/api/admin/groups', { method: 'POST', body }),
-    () => [keys.home()],
+/**
+ * Creates a group. The creator may just have become an organiser: the
+ * session is read again so that the screens follow.
+ */
+export const useCreateGroupMutation = () => {
+  const { fetch } = useUserSession();
+  return useApiMutation<{ group: PublicGroup }, CreateGroupBody>(
+    async (body) => {
+      const result = await api<{ group: PublicGroup }>('/api/admin/groups', {
+        method: 'POST',
+        body,
+      });
+      await fetch();
+      return result;
+    },
+    () => [keys.home(), keys.adminGroups(), keys.adminAccounts()],
   );
+};
 
 /** Super-admin only: the group and everything it owns, for good. */
 export const useDeleteGroupMutation = () =>
@@ -21,5 +33,5 @@ export const useDeleteGroupMutation = () =>
         method: 'POST',
         body: { confirm },
       }),
-    () => [keys.home()],
+    () => [keys.home(), keys.adminGroups(), keys.adminAccounts()],
   );

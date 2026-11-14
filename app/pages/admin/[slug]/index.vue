@@ -16,7 +16,6 @@ const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 useHead({ title: computed(() => `${name.value} — ${t('common.appName')}`) });
 const screen = computed(() => ({
   back: '/',
-  crumbs: [{ label: t('auth.home.title'), to: '/' }, { label: name.value }],
 }));
 
 const current = computed(() =>

@@ -13,7 +13,6 @@ const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const create = useCreateEditionMutation(slug);
-const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 useHead({
   title: computed(
     () => `${t('adminEdition.newEdition.title')} — ${t('common.appName')}`,
@@ -21,10 +20,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    { label: name.value, to: `/admin/${slug.value}` },
-    { label: t('adminEdition.newEdition.title') },
-  ],
 }));
 
 const schema = computed(() =>

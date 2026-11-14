@@ -59,9 +59,8 @@ export default defineNuxtConfig({
     '/api/p/**': { headers: personalHeaders },
     // A login link is a credential in a URL, like a personal link.
     '/login/**': { headers: personalHeaders },
-    // Old addresses: the login page, then the list of groups.
+    // The old address of the login page.
     '/admin': { redirect: '/' },
-    '/admin/groupes': { redirect: '/' },
     '/api/auth/**': { headers: personalHeaders },
   },
   app: {

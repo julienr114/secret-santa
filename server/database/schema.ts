@@ -15,6 +15,8 @@ export const groups = sqliteTable('groups', {
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
+  // The account that created the group: it counts against its quota.
+  createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),
 });
 
@@ -194,6 +196,12 @@ export const accounts = sqliteTable('accounts', {
   id: text('id').primaryKey(),
   // Lower case, unique.
   email: text('email').notNull().unique(),
+  // The profile: defaults for the person created when the account
+  // creates a group. Changing that person never changes the profile.
+  firstName: text('first_name'),
+  lastName: text('last_name'),
+  avatarEmoji: text('avatar_emoji'),
+  avatarColor: text('avatar_color'),
   isSuperAdmin: integer('is_super_admin', { mode: 'boolean' })
     .notNull()
     .default(false),
@@ -265,6 +273,37 @@ export const groupMembers = sqliteTable(
   ],
 );
 
+export const GROUP_REQUEST_STATUSES = [
+  'pending',
+  'approved',
+  'refused',
+] as const;
+
+// An account asks for the right to create a group (README 22.2): a
+// super-admin approves it by raising the account's quota, or refuses.
+export const groupRequests = sqliteTable(
+  'group_requests',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    // What the group is for, in the asker's words.
+    message: text('message').notNull(),
+    status: text('status', { enum: GROUP_REQUEST_STATUSES })
+      .notNull()
+      .default('pending'),
+    createdAt: text('created_at').notNull(),
+    decidedAt: text('decided_at'),
+    decidedBy: text('decided_by').references(() => accounts.id),
+  },
+  (t) => [
+    index('group_requests_account_idx').on(t.accountId, t.createdAt),
+    index('group_requests_status_idx').on(t.status),
+  ],
+);
+
+export type GroupRequestRow = typeof groupRequests.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;
 export type SessionRow = typeof sessions.$inferSelect;

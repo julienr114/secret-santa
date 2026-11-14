@@ -174,7 +174,7 @@ test('before the draw: waiting screen and wish list', async ({ page }) => {
     .poll(async () => (await participantNamed('Alice')).wishesCount)
     .toBe(2);
 
-  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
   await expect(page.getByText('2 idées')).toBeVisible();
   await page.getByRole('link', { name: /Ma liste de souhaits/ }).click();
   await expect(page.getByText('Des chaussettes')).toBeVisible();

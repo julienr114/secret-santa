@@ -2,11 +2,14 @@
 import {
   useAccountQuery,
   useRevokeAllMutation,
+  useRevokeSessionMutation,
+  useSaveProfileMutation,
 } from '~/composables/queries/useAuth';
 import { HOME, LOGIN } from '~/composables/queries/useSession';
+import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
 import { formatDate } from '~/utils/labels';
 
-// "My account": the address, and the devices the account is logged in
+// "My account": the address, the profile, and the devices the account is logged in
 // on, with a way to close them all.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, locale } = useT();
@@ -17,11 +20,38 @@ const revokeAll = useRevokeAllMutation();
 useHead({ title: () => `${t('auth.account.title')} — ${t('common.appName')}` });
 const screen = computed(() => ({
   back: HOME,
-  crumbs: [
-    { label: t('common.appName'), to: HOME },
-    { label: t('auth.account.title') },
-  ],
 }));
+
+// The profile is saved field by field, like a person of a group.
+const saveProfile = useSaveProfileMutation();
+const onProfile = ({ firstName, lastName, language }: PersonFormValue) =>
+  saveProfile.mutate(
+    { firstName, lastName, language },
+    {
+      onSuccess: () =>
+        toast.add({
+          title: t('adminGroup.person.saved'),
+          color: 'success',
+          icon: 'i-lucide-check',
+        }),
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
+    },
+  );
+
+// Another device is logged out with its own discreet button.
+const revokeOne = useRevokeSessionMutation();
+const onRevokeOne = (id: string) =>
+  revokeOne.mutate(id, {
+    onSuccess: () =>
+      toast.add({
+        title: t('auth.account.revoked'),
+        color: 'success',
+        icon: 'i-lucide-check',
+      }),
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
 
 const confirming = ref(false);
 const onRevokeAll = () =>
@@ -55,6 +85,21 @@ const onRevokeAll = () =>
           </UiListItem>
         </UiList>
 
+        <section class="flex flex-col gap-3" data-testid="profile">
+          <UiSectionTitle>{{ t('auth.account.profile') }}</UiSectionTitle>
+          <AdminPersonForm
+            profile
+            autosave
+            :initial="{
+              firstName: account.data.value.firstName ?? '',
+              lastName: account.data.value.lastName,
+              avatar: account.data.value.avatar,
+              language: account.data.value.language,
+            }"
+            @submit="onProfile"
+          />
+        </section>
+
         <UiList
           :title="t('auth.account.devices')"
           :footer="t('auth.account.devicesHint')"
@@ -70,12 +115,30 @@ const onRevokeAll = () =>
               })
             "
           >
-            <template v-if="session.current" #trailing>
+            <template #trailing>
               <UBadge
+                v-if="session.current"
                 color="success"
                 variant="subtle"
                 size="sm"
                 :label="t('auth.account.current')"
+              />
+              <UButton
+                v-else
+                variant="ghost"
+                color="neutral"
+                size="sm"
+                icon="i-lucide-log-out"
+                :loading="
+                  revokeOne.isPending.value &&
+                  revokeOne.variables.value === session.id
+                "
+                :aria-label="
+                  t('auth.account.revokeOne', {
+                    device: session.device ?? t('auth.account.unknownDevice'),
+                  })
+                "
+                @click="onRevokeOne(session.id)"
               />
             </template>
           </UiListItem>

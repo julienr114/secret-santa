@@ -1,6 +1,16 @@
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
-import { accounts, groupMembers, groups, type GroupRow } from './schema';
+import {
+  accounts,
+  groupMembers,
+  groups,
+  persons,
+  type GroupRow,
+} from './schema';
+import { newId } from '#server/http/context';
+import { randomAvatar } from '#server/utils/avatars';
+import { secureRandomInt } from '#server/utils/crypto';
+import { personFromProfile } from '#server/utils/people';
 import { createAccount, findAccountByEmail } from './accounts';
 import type { SessionUser } from '#server/utils/auth';
 
@@ -97,9 +107,11 @@ export const listOrganizers = (db: Db, groupId: string): Promise<Organizer[]> =>
     .orderBy(asc(accounts.email));
 
 /**
- * Makes the owner of an address an organiser of the group. Their account
- * is created if needed: they will prove the address with their first
- * login link. Doing it twice changes nothing.
+ * Makes the owner of an address an organiser of the group, and a person
+ * of it: an organiser takes part by default. Their account is created if
+ * needed: they will prove the address with their first login link. The
+ * person is copied from their profile, unless the group already has
+ * someone with that address. Doing it twice changes nothing.
  */
 export const addOrganizer = async (
   db: Db,
@@ -112,6 +124,24 @@ export const addOrganizer = async (
     await db
       .insert(groupMembers)
       .values({ groupId, accountId: account.id, createdAt: now });
+  }
+  const [person] = await db
+    .select({ id: persons.id })
+    .from(persons)
+    .where(and(eq(persons.groupId, groupId), eq(persons.email, account.email)))
+    .limit(1);
+  if (!person) {
+    const self = personFromProfile(account);
+    const avatar = randomAvatar(secureRandomInt);
+    await db.insert(persons).values({
+      ...self,
+      id: newId(),
+      groupId,
+      avatarEmoji: self.avatarEmoji ?? avatar.emoji,
+      avatarColor: self.avatarColor ?? avatar.color,
+      active: true,
+      createdAt: now,
+    });
   }
   return { accountId: account.id, email: account.email };
 };

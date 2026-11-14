@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { displayName, personInputSchema, publicPerson } from './people';
+import {
+  canChangePerson,
+  displayName,
+  firstNameFromEmail,
+  fullName,
+  personFromProfile,
+  personInputSchema,
+  profileSchema,
+  publicPerson,
+} from './people';
 import { avatarOf } from './avatars';
 
 describe('people schemas', () => {
@@ -62,5 +71,107 @@ describe('publicPerson', () => {
       avatar: avatarOf({ id: 'p' }),
       createdAt: 'd',
     });
+  });
+});
+
+describe('profile of an account', () => {
+  const account = {
+    email: 'lea@example.com',
+    firstName: 'Léa',
+    lastName: null,
+    language: 'de',
+    avatarEmoji: null,
+    avatarColor: null,
+  };
+
+  it('asks for a first name, an avatar and a language', () => {
+    const profile = {
+      firstName: ' Léa ',
+      lastName: null,
+      language: 'fr',
+      avatarEmoji: '🎄',
+      avatarColor: 'pine',
+    };
+    expect(profileSchema.parse(profile).firstName).toBe('Léa');
+    expect(
+      profileSchema.safeParse({ ...profile, firstName: ' ' }).success,
+    ).toBe(false);
+  });
+
+  it('becomes a person with the address and the language of the account', () => {
+    expect(personFromProfile(account)).toEqual({
+      firstName: 'Léa',
+      lastName: null,
+      email: 'lea@example.com',
+      language: 'de',
+      avatarEmoji: undefined,
+      avatarColor: undefined,
+    });
+  });
+
+  it('keeps a chosen avatar and drops one that no longer exists', () => {
+    const person = personFromProfile({
+      ...account,
+      avatarEmoji: '🎄',
+      avatarColor: 'not-a-colour',
+    });
+    expect(person?.avatarEmoji).toBe('🎄');
+    expect(person?.avatarColor).toBeUndefined();
+  });
+
+  it('guesses a first name from the address without a profile', () => {
+    expect(personFromProfile({ ...account, firstName: null }).firstName).toBe(
+      'Lea',
+    );
+  });
+});
+
+describe('firstNameFromEmail', () => {
+  it('takes the first word of the address, capitalised', () => {
+    expect(firstNameFromEmail('marie.dupont@example.com')).toBe('Marie');
+    expect(firstNameFromEmail('orga-e2e@example.com')).toBe('Orga');
+    expect(firstNameFromEmail('paul+noel@example.com')).toBe('Paul');
+  });
+
+  it('keeps the address when there is no word to take', () => {
+    expect(firstNameFromEmail('2024@example.com')).toBe('2024@example.com');
+  });
+});
+
+describe('canChangePerson', () => {
+  const organizers = ['orga@example.com'];
+
+  it('leaves anyone else alone', () => {
+    expect(canChangePerson('lea@example.com', organizers, 'delete').ok).toBe(
+      true,
+    );
+    expect(canChangePerson(null, organizers, { active: false }).ok).toBe(true);
+  });
+
+  it('keeps an organiser in the group, with their address', () => {
+    const orga = 'orga@example.com';
+    expect(canChangePerson(orga, organizers, 'delete').ok).toBe(false);
+    expect(canChangePerson(orga, organizers, { active: false }).ok).toBe(false);
+    expect(canChangePerson(orga, organizers, { email: null }).ok).toBe(false);
+    expect(
+      canChangePerson(orga, organizers, { email: 'autre@example.com' }).ok,
+    ).toBe(false);
+  });
+
+  it('lets an organiser be edited otherwise', () => {
+    const orga = 'orga@example.com';
+    expect(canChangePerson(orga, organizers, { active: true }).ok).toBe(true);
+    expect(canChangePerson(orga, organizers, { email: orga }).ok).toBe(true);
+    expect(canChangePerson(orga, organizers, {}).ok).toBe(true);
+  });
+});
+
+describe('fullName', () => {
+  it('joins the names that are known', () => {
+    expect(fullName({ firstName: 'Léa', lastName: 'Martin' })).toBe(
+      'Léa Martin',
+    );
+    expect(fullName({ firstName: 'Léa', lastName: null })).toBe('Léa');
+    expect(fullName({ firstName: null, lastName: null })).toBe('');
   });
 });

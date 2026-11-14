@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  useDashboardQuery,
-  useGroupJournalQuery,
-} from '~/composables/queries/useGroup';
+import { useGroupJournalQuery } from '~/composables/queries/useGroup';
 
 // The group's journal for its guardian: exactly what every participant
 // reads from their personal page, without needing a link of one's own.
@@ -10,7 +7,6 @@ definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const { t, locale } = useT();
-const dashboard = useDashboardQuery(slug);
 const journal = useGroupJournalQuery(slug, locale);
 
 useHead({
@@ -18,13 +14,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    { label: t('participant.journal.title') },
-  ],
 }));
 </script>
 

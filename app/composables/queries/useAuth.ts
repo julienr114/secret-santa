@@ -1,7 +1,10 @@
 import type { PublicGroup } from '#server/database/groups';
+import type { EditionSummary } from '#server/database/home';
 import type { EditionStatus } from '#server/utils/editions';
+import type { DrawStep } from '#server/utils/personal';
 import type { Role, SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
+import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -17,6 +20,10 @@ export type AccountSession = {
 };
 export type AccountPayload = {
   email: string;
+  firstName: string | null;
+  lastName: string | null;
+  language: Locale;
+  avatar: Avatar;
   isSuperAdmin: boolean;
   sessions: AccountSession[];
 };
@@ -50,13 +57,33 @@ export type HomeDraw = {
   groupName: string;
   editionLabel: string;
   status: EditionStatus;
+  /** What the participant has to do next. */
+  step: DrawStep;
+  /** The date of the party: an ISO day, or older free text. */
+  eventDate: string;
   firstName: string;
   avatar: Avatar;
 };
+/** Where the account's latest request for a group stands. */
+export type HomeRequest = {
+  status: 'pending' | 'approved' | 'refused';
+  createdAt: string;
+};
 export type HomePayload = {
   role: Role;
+  /** From the profile; null until the account gives one. */
+  firstName: string | null;
+  lastName: string | null;
+  avatar: Avatar;
   draws: HomeDraw[];
-  groups: PublicGroup[];
+  /** The groups the account organises, with their current edition. */
+  groups: (PublicGroup & { current: EditionSummary | null })[];
+  canCreateGroup: boolean;
+  /** How many more groups the account may create; null without limit. */
+  groupsLeft: number | null;
+  request: HomeRequest | null;
+  /** Requests awaiting the super-admin; 0 for everyone else. */
+  pendingRequests: number;
 };
 
 /** The home of the account: its draws and the groups it manages. */
@@ -66,11 +93,43 @@ export const useHomeQuery = () =>
     () => '/api/auth/home',
   );
 
+/** Asks the super-admins for the right to create a group. */
+export const useRequestGroupMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (message) =>
+      api('/api/auth/group-requests', { method: 'POST', body: { message } }),
+    () => [keys.home()],
+  );
+
 /** "My account": the address and the devices it is logged in on. */
 export const useAccountQuery = () =>
   useApiQuery<AccountPayload>(
     () => keys.account(),
     () => '/api/auth/sessions',
+  );
+
+/** What the profile form sends. */
+/** What a profile screen sends: only the part it shows. */
+export type ProfileBody = Partial<{
+  firstName: string;
+  lastName: string | null;
+  language: Locale;
+  avatarEmoji: Avatar['emoji'];
+  avatarColor: Avatar['color'];
+}>;
+
+/** Saves the profile of the account. */
+export const useSaveProfileMutation = () =>
+  useApiMutation<{ ok: true }, ProfileBody>(
+    (body) => api('/api/auth/profile', { method: 'PUT', body }),
+    () => [keys.account(), keys.home()],
+  );
+
+/** Logs one other device of the account out. */
+export const useRevokeSessionMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (id) => api(`/api/auth/sessions/${id}/revoke`, { method: 'POST' }),
+    () => [keys.account()],
   );
 
 /** Closes every session of the account, this one included. */

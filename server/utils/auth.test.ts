@@ -2,9 +2,11 @@ import { describe, it, expect } from 'vitest';
 import {
   canAccessGroup,
   canRemoveOrganizer,
+  freeSlug,
   isAdminUser,
   roleOf,
   slugSchema,
+  slugify,
   sessionUserSchema,
 } from './auth';
 
@@ -73,5 +75,44 @@ describe('schemas', () => {
         sessionId: 's1',
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('slugify', () => {
+  it('makes a valid slug from a name', () => {
+    expect(slugify('Famille Démo')).toBe('famille-demo');
+    expect(slugify("  L'équipe de Noël 2026 !  ")).toBe(
+      'l-equipe-de-noel-2026',
+    );
+    expect(slugSchema.safeParse(slugify('Éléonore & Cie')).success).toBe(true);
+  });
+
+  it('cuts a long name without ending on a dash', () => {
+    const slug = slugify(`${'a'.repeat(39)} bcd`);
+    expect(slug).toBe('a'.repeat(39));
+    expect(slugSchema.safeParse(slug).success).toBe(true);
+  });
+
+  it('falls back when nothing usable is left', () => {
+    expect(slugify('🎄🎁')).toBe('groupe');
+    expect(slugify('é')).toBe('groupe');
+  });
+});
+
+describe('freeSlug', () => {
+  it('keeps a slug nobody uses', () => {
+    expect(freeSlug('famille', ['autre'])).toBe('famille');
+  });
+
+  it('numbers a taken slug with the first free number', () => {
+    expect(freeSlug('famille', ['famille'])).toBe('famille-2');
+    expect(freeSlug('famille', ['famille', 'famille-2'])).toBe('famille-3');
+  });
+
+  it('stays within the maximum length', () => {
+    const long = 'a'.repeat(40);
+    const slug = freeSlug(long, [long]);
+    expect(slug).toBe(`${'a'.repeat(38)}-2`);
+    expect(slugSchema.safeParse(slug).success).toBe(true);
   });
 });

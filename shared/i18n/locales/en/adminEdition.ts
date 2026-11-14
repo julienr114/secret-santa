@@ -141,7 +141,6 @@ export default {
   },
   addParticipants: {
     title: 'Add participants',
-    crumb: 'Add',
     added: '{name} is taking part',
     everyoneIn:
       'Everyone is already taking part. For someone new, create them first in {people}.',

@@ -28,10 +28,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
-  crumbs: [
-    { label: name.value, to: `/admin/${slug.value}` },
-    { label: t('adminGroup.organizers.title') },
-  ],
 }));
 
 const open = ref(false);

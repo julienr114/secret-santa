@@ -14,22 +14,13 @@ const requestLink = async (api: APIRequestContext, email: string) => {
   return { status: response.status(), body: await response.json() };
 };
 
-test('an unknown address gets the same answer, and no link', async ({
-  page,
-}) => {
+test('an address that is not one is refused', async ({ page }) => {
   await page.goto('/login');
   await hydrated(page);
-  await page.getByLabel('Adresse email').fill('inconnu@example.com');
-  await page.getByRole('button', { name: 'Recevoir un lien' }).click();
-  await expect(page.getByText('Regarde ta boîte mail')).toBeVisible();
-  await expect(page.getByText(/Mode développement/)).toHaveCount(0);
-
-  const { status, body } = await requestLink(
-    page.request,
-    'inconnu@example.com',
-  );
-  expect(status).toBe(200);
-  expect(body).toEqual({ ok: true });
+  await page.getByLabel('Adresse email').fill('pas-une-adresse');
+  await expect(
+    page.getByRole('button', { name: 'Recevoir un lien' }),
+  ).toBeDisabled();
   const invalid = await requestLink(page.request, 'pas-une-adresse');
   expect(invalid.status).toBe(400);
 });
@@ -57,7 +48,7 @@ test('a declared super-admin logs in with a link, used by a gesture and only onc
   await hydrated(page);
   await expect(heading(page)).toHaveText('Connexion');
   await page.getByRole('button', { name: 'Se connecter' }).click();
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
   expect((await page.request.get('/api/admin/groups')).status()).toBe(200);
 
   // The same link a second time is refused.
@@ -107,15 +98,28 @@ test('my account lists the devices, and logging out everywhere closes them all',
   await page.goto(link.body.devLink);
   await hydrated(page);
   await page.getByRole('button', { name: 'Se connecter' }).click();
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
 
   await page.getByRole('button', { name: 'Menu', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Mon compte' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
   await expect(page.getByText(ADMIN_EMAIL)).toBeVisible();
-  await expect(page.getByText('Cet appareil')).toHaveCount(1);
+  await expect(page.getByText('Cet appareil', { exact: true })).toHaveCount(1);
   // This device, the other one, and the two sessions of the tests above.
   await expect(page.getByText(/^Vu le /)).toHaveCount(4);
+  const sessions = await (await page.request.get('/api/auth/sessions')).json();
+  const mine = sessions.sessions.find((s: { current: boolean }) => s.current);
+  expect(
+    (await page.request.post(`/api/auth/sessions/${mine.id}/revoke`)).status(),
+  ).toBe(409);
+
+  // One other device logs out on its own; this one stays in.
+  await page
+    .getByRole('button', { name: /^Déconnecter / })
+    .first()
+    .click();
+  await expect(page.getByText('Appareil déconnecté')).toBeVisible();
+  await expect(page.getByText(/^Vu le /)).toHaveCount(3);
 
   await page.getByText('Déconnecter partout').click();
   await page.getByRole('button', { name: 'Déconnecter partout' }).click();
@@ -167,10 +171,11 @@ test('without a session, the home page is the login', async ({ page }) => {
   await hydrated(page);
   await expect(heading(page)).toHaveText('Under the Tree');
   await expect(page.getByLabel('Adresse email')).toBeVisible();
-  // The old addresses lead to the same page, and an admin page to /login.
-  await page.goto('/admin/groupes');
+  // The old address of the login leads to the same page, and an admin
+  // page to /login.
+  await page.goto('/admin');
   await expect(page.getByLabel('Adresse email')).toBeVisible();
-  await page.goto('/admin/guide-de-style');
+  await page.goto('/admin/comptes');
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByLabel('Adresse email')).toBeVisible();
 });

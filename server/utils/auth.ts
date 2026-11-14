@@ -69,3 +69,40 @@ export const slugSchema = z
   .min(2)
   .max(40)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase letters, digits and dashes');
+
+const SLUG_MAX = 40;
+const SLUG_FALLBACK = 'groupe';
+
+/**
+ * The identifier of a group, from its name: lower case, no accents,
+ * dashes between words.
+ * @param name - The name of the group.
+ * @returns A valid slug; a fallback when the name has no letter or digit.
+ */
+export const slugify = (name: string): string => {
+  const slug = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .slice(0, SLUG_MAX)
+    .replace(/^-+|-+$/g, '');
+  return slug.length >= 2 ? slug : SLUG_FALLBACK;
+};
+
+/**
+ * A slug nobody uses yet: the wanted one, or the first free "-2", "-3"…
+ * @param wanted - The slug derived from the name.
+ * @param taken - Slugs already in use.
+ * @returns The wanted slug, numbered when needed.
+ */
+export const freeSlug = (wanted: string, taken: readonly string[]): string => {
+  const used = new Set(taken);
+  const numbered = (n: number) => {
+    const suffix = `-${n}`;
+    return `${wanted.slice(0, SLUG_MAX - suffix.length)}${suffix}`;
+  };
+  const next = (n: number): string =>
+    used.has(numbered(n)) ? next(n + 1) : numbered(n);
+  return used.has(wanted) ? next(2) : wanted;
+};

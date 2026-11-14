@@ -11,10 +11,6 @@ const { t, tk } = useT();
 useHead({ title: () => `Guide de style — ${t('common.appName')}` });
 const screen = {
   back: '/',
-  crumbs: [
-    { label: t('auth.home.title'), to: '/' },
-    { label: 'Guide de style' },
-  ],
 };
 
 /** Surface tokens, by role. */

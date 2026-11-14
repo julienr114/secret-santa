@@ -21,10 +21,10 @@ const GROUP = {
 
 test('super-admin creates a group with its guardian', async ({ page }) => {
   await loginAsSuper(page, SUPER);
-  await page.getByRole('link', { name: 'Nouveau' }).click();
+  await page.getByRole('link', { name: 'Tous les groupes' }).click();
+  await page.getByRole('link', { name: 'Nouveau groupe' }).click();
   await expect(heading(page)).toHaveText('Nouveau groupe');
   await page.getByLabel('Nom du groupe').fill(GROUP.name);
-  await expect(page.getByLabel('Identifiant')).toHaveValue(GROUP.slug);
   await page
     .getByLabel('Adresse du premier organisateur')
     .fill(GROUP.organizer);
@@ -46,7 +46,8 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     await page.getByRole('button', { name: 'Ajouter' }).click();
     await expect(heading(page)).toHaveText('Personnes');
   }
-  await expect(page.locator('main').getByRole('listitem')).toHaveCount(5); // 4 people + "Exclusions"
+  // 4 people, the organiser (a person of the group by default), "Exclusions"
+  await expect(page.locator('main').getByRole('listitem')).toHaveCount(6);
 
   // Léa and Tom must not draw each other (both ways by default).
   await page.getByText('Exclusions').click();
@@ -59,12 +60,12 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
 
   // Edition
-  await page.getByRole('link', { name: 'Retour' }).click();
-  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByText('Nouvelle édition').click();
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   await expect(page.getByText('Brouillon')).toBeVisible();
-  await expect(page.getByText('4 participants')).toBeVisible();
+  await expect(page.getByText('5 participants')).toBeVisible();
 
   await page.getByRole('button', { name: 'Ouvrir les invitations' }).click();
   await expect(page.getByText('Le tirage est possible')).toBeVisible();
@@ -78,7 +79,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   expect(copied).toMatch(/^Salut Hugo !/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}$/);
   await expect(page.getByText('envoyé', { exact: true })).toBeVisible();
-  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
@@ -100,7 +101,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Voir ce résultat' }).click();
   // One person at a time, never the whole draw.
   await expect(page.getByText(/^offre à /)).toHaveCount(1);
-  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
 
   // Cancel with a reason, draw again, close.
   await page.getByText('Annuler et relancer le tirage').click();
@@ -118,7 +119,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // The guardian reads the same journal as the participants, from the
   // admin: what was done, never who gives to whom.
-  await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByRole('link', { name: /Journal du groupe/ }).click();
   await expect(heading(page)).toHaveText('Journal du groupe');
   await expect(
@@ -142,11 +143,11 @@ test('organisers decide who organises with them', async ({
 }) => {
   const coOrganizer = 'co-orga-e2e@example.com';
   const other = await playwright.request.newContext({ baseURL });
-  // Before being named, the address gets no link at all.
-  const before = await other.post('/api/auth/link', {
-    data: { email: coOrganizer },
-  });
-  expect(await before.json()).toEqual({ ok: true });
+  // Before being named, the address is a plain member: no admin.
+  await apiLogin(other, coOrganizer);
+  expect((await other.get(`/api/admin/${GROUP.slug}/persons`)).status()).toBe(
+    403,
+  );
 
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
   await page.getByRole('link', { name: /Organisateurs/ }).click();
@@ -165,8 +166,7 @@ test('organisers decide who organises with them', async ({
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(page.getByText(coOrganizer)).toBeVisible();
 
-  // The new organiser logs in with their address and manages the group.
-  await apiLogin(other, coOrganizer);
+  // Named, the same session manages the group, without logging in again.
   const groups = await (await other.get('/api/admin/groups')).json();
   expect(groups.groups.map((g: { slug: string }) => g.slug)).toEqual([
     GROUP.slug,
@@ -186,7 +186,6 @@ test('organisers decide who organises with them', async ({
     ).status(),
   ).toBe(409);
 
-  // Removed, their open session stops working at once.
   await page
     .getByRole('button', { name: `Retirer ${coOrganizer} des organisateurs` })
     .click();

@@ -147,7 +147,6 @@ export default {
   },
   addParticipants: {
     title: 'Teilnehmer hinzufügen',
-    crumb: 'Hinzufügen',
     added: '{name} nimmt teil',
     everyoneIn:
       'Alle nehmen bereits teil. Jemand Neues legst du zuerst unter {people} an.',

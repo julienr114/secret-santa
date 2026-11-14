@@ -4,7 +4,9 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 import { randomAvatar, type Avatar } from '#server/utils/avatars';
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '#shared/i18n';
 
-// Shared by the "new person" and "person" screens.
+// Shared by the "new person" and "person" screens, and by the profile
+// of an account (`profile`: no email field, the address is the account's,
+// and no avatar, chosen from the home page).
 export type PersonFormValue = {
   firstName: string;
   lastName: string | null;
@@ -19,6 +21,7 @@ export type PersonFormValue = {
 // field loses focus, the avatar is confirmed or the language changes.
 const props = defineProps<{
   autosave?: boolean;
+  profile?: boolean;
   initial?: {
     firstName?: string;
     lastName?: string | null;
@@ -85,7 +88,7 @@ const confirmPicker = () => {
 const valueOf = (data: Schema): PersonFormValue => ({
   firstName: data.firstName.trim(),
   lastName: data.lastName.trim() || null,
-  email: data.email.trim().toLowerCase() || null,
+  ...(props.profile ? {} : { email: data.email.trim().toLowerCase() || null }),
   avatarEmoji: avatar.value.emoji,
   avatarColor: avatar.value.color,
   language: data.language,
@@ -119,7 +122,7 @@ const onLanguage = (language: Locale) => {
     class="flex flex-col gap-5"
     @submit="onSubmit"
   >
-    <div class="flex items-center gap-4">
+    <div v-if="!profile" class="flex items-center gap-4">
       <button
         type="button"
         class="relative rounded-full focus-visible:ring-2 focus-visible:ring-primary"
@@ -159,6 +162,7 @@ const onLanguage = (language: Locale) => {
     <UFormField
       name="firstName"
       :label="t('adminGroup.personForm.firstNameLabel')"
+      :help="profile ? t('auth.account.firstNameHelp') : undefined"
       required
     >
       <UInput
@@ -171,7 +175,11 @@ const onLanguage = (language: Locale) => {
     <UFormField
       name="lastName"
       :label="t('adminGroup.personForm.lastNameLabel')"
-      :help="t('adminGroup.personForm.lastNameHelp')"
+      :help="
+        profile
+          ? t('auth.account.lastNameHelp')
+          : t('adminGroup.personForm.lastNameHelp')
+      "
     >
       <UInput
         v-model="state.lastName"
@@ -181,6 +189,7 @@ const onLanguage = (language: Locale) => {
       />
     </UFormField>
     <UFormField
+      v-if="!profile"
       name="email"
       :label="t('adminGroup.personForm.emailLabel')"
       :help="t('adminGroup.personForm.emailHelp')"
@@ -198,7 +207,11 @@ const onLanguage = (language: Locale) => {
     <UFormField
       name="language"
       :label="t('common.language.label')"
-      :help="t('adminGroup.personForm.languageHelp')"
+      :help="
+        profile
+          ? t('auth.account.languageHelp')
+          : t('adminGroup.personForm.languageHelp')
+      "
     >
       <USelect
         :model-value="state.language"

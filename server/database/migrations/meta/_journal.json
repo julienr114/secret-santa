@@ -78,6 +78,20 @@
       "when": 1794648248488,
       "tag": "0010_drop_email_sending",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1794649791077,
+      "tag": "0011_group_quota_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794670262106,
+      "tag": "0012_account_profile",
+      "breakpoints": true
     }
   ]
 }

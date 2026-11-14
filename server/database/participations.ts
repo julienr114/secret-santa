@@ -3,7 +3,7 @@ import type { H3Event } from 'h3';
 import type { Db } from './client';
 import { editions, groups, participations, persons } from './schema';
 import { decrypt } from '#server/utils/crypto';
-import { secretsOf } from '#server/http/context';
+import { appUrl } from '#server/http/context';
 
 /** A participation of the given group, with its edition and person. */
 export const findParticipation = async (
@@ -43,8 +43,7 @@ export const personalLink = async (
   if (!token.ok) {
     throw createError({ statusCode: 500, statusMessage: 'token_unreadable' });
   }
-  const base = secretsOf(event).baseUrl || getRequestURL(event).origin;
-  return `${base.replace(/\/$/, '')}/p/${token.value}`;
+  return appUrl(event, `/p/${token.value}`);
 };
 
 /**

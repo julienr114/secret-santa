@@ -32,7 +32,7 @@ export const loginAsSuper = async (page: Page, email: string) => {
   await apiLogin(page.request, email);
   await page.goto('/');
   await hydrated(page);
-  await expect(heading(page)).toHaveText('Accueil');
+  await expect(heading(page)).toHaveText('Bonjour');
 };
 
 /** Logs an organiser in and opens their group. */

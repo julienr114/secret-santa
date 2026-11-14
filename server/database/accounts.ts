@@ -35,6 +35,10 @@ export const createAccount = async (
   const account: typeof accounts.$inferSelect = {
     id: newId(),
     email,
+    firstName: null,
+    lastName: null,
+    avatarEmoji: null,
+    avatarColor: null,
     isSuperAdmin,
     groupQuota: 0,
     language,
@@ -46,10 +50,7 @@ export const createAccount = async (
   return account;
 };
 
-/**
- * A person some organiser registered with this address, if any: the
- * address may then log in and find its draws.
- */
+/** A person some organiser registered with this address, if any. */
 export const findPersonByEmail = async (db: Db, email: string) => {
   const [person] = await db
     .select({ language: persons.language })

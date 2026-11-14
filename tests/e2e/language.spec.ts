@@ -92,7 +92,7 @@ test('a personal page follows the preferred language, and can change it', async 
   await expect(page.getByText('Greta nimmt an der Ausgabe teil')).toHaveCount(
     0,
   );
-  await page.getByRole('link', { name: 'Zurück' }).click();
+  await page.getByRole('button', { name: 'Zurück' }).click();
 
   // She switches to English: saved as her preference, not just on screen.
   await page.getByRole('button', { name: 'Sprache ändern' }).click();
@@ -106,7 +106,7 @@ test('a personal page follows the preferred language, and can change it', async 
   await expect(
     page.getByText('Greta changed their language (English)'),
   ).toBeVisible();
-  await page.getByRole('link', { name: 'Back' }).click();
+  await page.getByRole('button', { name: 'Back' }).click();
   await expect(heading(page)).toHaveText('Hi Greta!');
 
   await page.reload();
@@ -146,6 +146,6 @@ test('the admin side follows the choice made on the device', async ({
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Zurück' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Zurück' })).toBeVisible();
   expect((await messageOf('Paul')).language).toBe('fr');
 });

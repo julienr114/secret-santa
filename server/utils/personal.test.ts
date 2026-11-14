@@ -3,6 +3,7 @@ import {
   canEditAvatar,
   canEditWishes,
   canReveal,
+  nextStep,
   personalPhase,
 } from './personal';
 import { failureOf } from '~~/tests/helpers';
@@ -59,5 +60,33 @@ describe('canEditAvatar', () => {
     expect(canEditAvatar('invitations').ok).toBe(true);
     expect(canEditAvatar('drawn').ok).toBe(true);
     expect(failureOf(canEditAvatar('closed')).reason).toBe('edition_closed');
+  });
+});
+
+describe('nextStep', () => {
+  const draw = {
+    status: 'invitations' as const,
+    revealed: false,
+    wishlist: true,
+    wishesCount: 0,
+  };
+
+  it('asks for ideas before the draw, then waits', () => {
+    expect(nextStep(draw)).toBe('addWishes');
+    expect(nextStep({ ...draw, wishesCount: 2 })).toBe('wait');
+    expect(nextStep({ ...draw, wishlist: false })).toBe('wait');
+  });
+
+  it('offers to discover the result, then to see it again', () => {
+    expect(nextStep({ ...draw, status: 'drawn' })).toBe('discover');
+    expect(nextStep({ ...draw, status: 'drawn', revealed: true })).toBe(
+      'seeAgain',
+    );
+  });
+
+  it('has nothing left to do once closed', () => {
+    expect(nextStep({ ...draw, status: 'closed', revealed: true })).toBe(
+      'closed',
+    );
   });
 });

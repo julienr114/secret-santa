@@ -50,4 +50,17 @@ export default {
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:
     'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',
+  group_quota_reached:
+    'Tu ne peux pas créer de groupe pour l’instant : fais-en la demande depuis l’accueil.',
+  group_request_pending: 'Tu as déjà une demande en attente.',
+  group_request_useless: 'Tu peux déjà créer un groupe.',
+  cannot_disable_self: 'Tu ne peux pas désactiver ton propre compte.',
+  account_not_found: 'Compte introuvable.',
+  request_not_found: 'Demande introuvable.',
+  request_decided: 'Cette demande a déjà reçu une réponse.',
+  session_current:
+    'C’est l’appareil que tu utilises : déconnecte-toi depuis le menu.',
+  session_not_found: 'Session introuvable.',
+  person_is_organizer:
+    'C’est un organisateur du groupe : retire-le d’abord des organisateurs.',
 };

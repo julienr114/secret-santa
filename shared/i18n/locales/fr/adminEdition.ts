@@ -145,7 +145,6 @@ export default {
   },
   addParticipants: {
     title: 'Ajouter des participants',
-    crumb: 'Ajouter',
     added: '{name} participe',
     // `{people}` is replaced by a link labelled with `peopleLink`.
     everyoneIn:

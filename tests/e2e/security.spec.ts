@@ -123,7 +123,8 @@ test('the draw answers with a count, never with a pair', async () => {
   const draw = await ctx('guardian').post(
     `${ADMIN}/editions/${state.editionId}/draw`,
   );
-  expect(await draw.json()).toEqual({ ok: true, count: NAMES.length });
+  // The organiser takes part too: a person of the group by default.
+  expect(await draw.json()).toEqual({ ok: true, count: NAMES.length + 1 });
 
   // The real pairs, as each participant sees their own.
   for (const giver of state.people) {
@@ -135,7 +136,7 @@ test('the draw answers with a count, never with a pair', async () => {
     if (!found) throw new Error(`unknown receiver ${receiver.name}`);
     state.pairs.push({ giver, receiver: found });
   }
-  expect(state.pairs).toHaveLength(NAMES.length);
+  expect(state.pairs).toHaveLength(NAMES.length + 1);
   // The excluded pair was not drawn, in either direction.
   expect(
     state.pairs.some(

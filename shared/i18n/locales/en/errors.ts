@@ -47,4 +47,16 @@ export default {
   too_many_wishes: 'There are too many ideas in your list.',
   invalid_wish:
     'An idea is invalid: 200 characters at most, and a link starting with http:// or https://.',
+  group_quota_reached:
+    'You cannot create a group for now: ask for one from the home page.',
+  group_request_pending: 'You already have a pending request.',
+  group_request_useless: 'You can already create a group.',
+  cannot_disable_self: 'You cannot disable your own account.',
+  account_not_found: 'Account not found.',
+  request_not_found: 'Request not found.',
+  request_decided: 'This request has already been answered.',
+  session_current: 'This is the device you are using: log out from the menu.',
+  session_not_found: 'Session not found.',
+  person_is_organizer:
+    'This is an organizer of the group: remove them from the organizers first.',
 } satisfies Dict<typeof fr>;

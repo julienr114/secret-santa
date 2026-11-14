@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
-import {
-  useCreatePersonMutation,
-  useDashboardQuery,
-} from '~/composables/queries/useGroup';
+import { useCreatePersonMutation } from '~/composables/queries/useGroup';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
+// Back to the list the form was opened from, not to a second copy of it.
+const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const dashboard = useDashboardQuery(slug);
 const create = useCreatePersonMutation(slug);
 const toast = useToast();
-const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 useHead({
   title: computed(
     () => `${t('adminGroup.newPerson.title')} — ${t('common.appName')}`,
@@ -21,14 +18,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/personnes`,
-  crumbs: [
-    { label: name.value, to: `/admin/${slug.value}` },
-    {
-      label: t('adminGroup.people.title'),
-      to: `/admin/${slug.value}/personnes`,
-    },
-    { label: t('adminGroup.newPerson.crumb') },
-  ],
 }));
 
 const onSubmit = (value: PersonFormValue) =>
@@ -39,7 +28,7 @@ const onSubmit = (value: PersonFormValue) =>
         color: 'success',
         icon: 'i-lucide-check',
       });
-      navigateTo(`/admin/${slug.value}/personnes`, { replace: true });
+      goBack(`/admin/${slug.value}/personnes`);
     },
   });
 </script>

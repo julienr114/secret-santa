@@ -2,10 +2,6 @@ import type fr from '../fr/adminGroup';
 import type { Dict } from '../../types';
 
 export default {
-  groups: {
-    styleguide: 'Styleguide',
-    styleguideHint: 'Die Komponenten der Oberfläche',
-  },
   newGroup: {
     organizerLabel: 'Adresse des ersten Organisators',
     organizerHelp: 'Optional. Weitere kannst du in der Gruppe hinzufügen.',
@@ -13,10 +9,6 @@ export default {
     nameLabel: 'Name der Gruppe',
     namePlaceholder: 'Familie Müller',
     nameRequired: 'Name erforderlich',
-    slugLabel: 'Kennung',
-    slugHelp: 'Damit meldet sich der Organisator an.',
-    slugMin: 'Mindestens 2 Zeichen',
-    slugFormat: 'Kleinbuchstaben, Ziffern und Bindestriche',
     submit: 'Gruppe erstellen',
     created: 'Gruppe erstellt',
   },
@@ -60,7 +52,6 @@ export default {
   },
   newPerson: {
     title: 'Neue Person',
-    crumb: 'Neu',
     added: '{name} hinzugefügt',
   },
   person: {

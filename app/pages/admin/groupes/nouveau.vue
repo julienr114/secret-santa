@@ -13,22 +13,14 @@ useHead({
 });
 const screen = computed(() => ({
   back: '/',
-  crumbs: [
-    { label: t('auth.home.title'), to: '/' },
-    { label: t('adminGroup.newGroup.title') },
-  ],
 }));
 
+// A super-admin creates groups for others and names their organiser; any
+// other account creates its own and organises it.
+const { user } = useUserSession();
+const isSuper = computed(() => user.value?.role === 'super_admin');
 const create = useCreateGroupMutation();
 const toast = useToast();
-
-const slugify = (text: string) =>
-  text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 
 const schema = computed(() =>
   z.object({
@@ -37,11 +29,6 @@ const schema = computed(() =>
       .trim()
       .min(1, t('adminGroup.newGroup.nameRequired'))
       .max(100),
-    slug: z
-      .string()
-      .min(2, t('adminGroup.newGroup.slugMin'))
-      .max(40)
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, t('adminGroup.newGroup.slugFormat')),
     organizer: z
       .string()
       .trim()
@@ -52,19 +39,11 @@ const schema = computed(() =>
   }),
 );
 type Schema = z.output<typeof schema.value>;
-const state = reactive<Schema>({ name: '', slug: '', organizer: '' });
-watch(
-  () => state.name,
-  (name) => {
-    state.slug = slugify(name);
-  },
-);
-
+const state = reactive<Schema>({ name: '', organizer: '' });
 const onSubmit = (event: FormSubmitEvent<Schema>) =>
   create.mutate(
     {
       name: event.data.name,
-      slug: event.data.slug,
       organizers: event.data.organizer ? [event.data.organizer] : [],
     },
     {
@@ -104,14 +83,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         />
       </UFormField>
       <UFormField
-        name="slug"
-        :label="t('adminGroup.newGroup.slugLabel')"
-        :help="t('adminGroup.newGroup.slugHelp')"
-        required
-      >
-        <UInput v-model="state.slug" autocapitalize="none" class="w-full" />
-      </UFormField>
-      <UFormField
+        v-if="isSuper"
         name="organizer"
         :label="t('adminGroup.newGroup.organizerLabel')"
         :help="t('adminGroup.newGroup.organizerHelp')"

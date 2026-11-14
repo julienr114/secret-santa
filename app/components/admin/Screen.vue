@@ -6,23 +6,19 @@ import {
   useLogoutMutation,
 } from '~/composables/queries/useSession';
 
-// One screen of a logged-in account. The top bar always shows the logo (a link back to the
-// user's home) and one menu button holding the language and the log out.
-// Screens below the home get a second, thinner line: the back button and
-// the way back up. The current page is not repeated there, its title is
-// right below; a long trail keeps only its last two levels.
-export type Crumb = { label: string; to?: string };
-const props = defineProps<{ back?: string | null; crumbs: Crumb[] }>();
+// One screen of a logged-in account. One top bar: "Retour" on the left on
+// screens below the home (back to wherever the user came from, or to
+// `back` when the page was opened directly), the logo in the middle (a
+// link to the home) and the menu on the right (language, account, log
+// out). A super-admin also gets a bottom bar
+// to their own pages.
+const props = defineProps<{ back?: string | null }>();
 
 const { t, tk, locale, setLocale } = useT();
+const { user } = useUserSession();
+const isSuper = computed(() => user.value?.role === 'super_admin');
 
-const TRAIL_MAX = 2;
-const trail = computed<Crumb[]>(() => {
-  const ancestors = props.crumbs.slice(0, -1);
-  return ancestors.length > TRAIL_MAX
-    ? [{ label: '…' }, ...ancestors.slice(-TRAIL_MAX)]
-    : ancestors;
-});
+const goBack = useGoBack();
 
 const logout = useLogoutMutation();
 const onLogout = () =>
@@ -59,10 +55,21 @@ const menu = computed(() => [
     >
       <!-- The bars span the window; only the content below sits in the
            phone-wide column. -->
-      <UContainer class="flex h-14 items-center gap-1">
+      <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
+        <div>
+          <UButton
+            v-if="back"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-chevron-left"
+            class="-ml-2"
+            :aria-label="t('common.actions.back')"
+            @click="goBack(props.back!)"
+          />
+        </div>
         <NuxtLink
           :to="HOME"
-          class="min-w-0 grow truncate font-display text-lg font-bold text-primary"
+          class="truncate font-display text-lg font-bold text-primary"
           >✦ {{ t('common.appName') }}</NuxtLink
         >
         <UDropdownMenu :items="menu" :content="{ align: 'end' }">
@@ -70,37 +77,19 @@ const menu = computed(() => [
             variant="ghost"
             color="neutral"
             icon="i-lucide-menu"
-            class="-mr-2"
+            class="-mr-2 justify-self-end"
             :aria-label="t('adminShell.menu')"
           />
         </UDropdownMenu>
       </UContainer>
-      <div v-if="back" class="border-t border-default/60">
-        <UContainer class="flex h-10 items-center gap-1">
-          <UButton
-            :to="back"
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            icon="i-lucide-chevron-left"
-            :aria-label="t('common.actions.back')"
-            class="-ml-2 shrink-0"
-          />
-          <UBreadcrumb
-            :items="trail"
-            separator-icon="i-lucide-chevron-right"
-            class="min-w-0 grow"
-            :ui="{
-              list: 'flex-nowrap',
-              item: 'min-w-0',
-              link: 'truncate text-sm',
-            }"
-          />
-        </UContainer>
-      </div>
     </header>
-    <UContainer as="main" class="flex max-w-md flex-col gap-6 py-5">
+    <UContainer
+      as="main"
+      class="flex max-w-md flex-col gap-6 py-5"
+      :class="{ 'pb-24': isSuper }"
+    >
       <slot />
     </UContainer>
+    <AdminBottomNav v-if="isSuper" />
   </div>
 </template>

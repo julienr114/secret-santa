@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  usePersonalQuery,
   useSaveWishesMutation,
   useWishesQuery,
   type WishItem,
@@ -12,6 +13,13 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useWishesQuery(token);
 const save = useSaveWishesMutation(token);
+// Which draw the list belongs to: it can be opened straight from home.
+const personal = usePersonalQuery(token);
+const drawName = computed(() =>
+  personal.data.value
+    ? `${personal.data.value.groupName} · ${personal.data.value.editionLabel}`
+    : null,
+);
 const { t } = useT();
 const errorMessage = useErrorMessage();
 
@@ -100,9 +108,14 @@ const onRemove = () => {
     :pending="query.isPending.value"
     :error="query.error.value"
   >
-    <UiPageTitle>
-      {{ t('participant.wishes.title') }}
-    </UiPageTitle>
+    <div>
+      <p v-if="drawName" class="text-sm text-muted" data-testid="draw-name">
+        {{ drawName }}
+      </p>
+      <UiPageTitle>
+        {{ t('participant.wishes.title') }}
+      </UiPageTitle>
+    </div>
     <p class="text-sm text-muted">
       {{
         editable

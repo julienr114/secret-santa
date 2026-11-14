@@ -2,10 +2,6 @@ import type fr from '../fr/adminGroup';
 import type { Dict } from '../../types';
 
 export default {
-  groups: {
-    styleguide: 'Style guide',
-    styleguideHint: 'The interface components',
-  },
   newGroup: {
     organizerLabel: 'Address of the first organizer',
     organizerHelp: 'Optional. You can add others from the group.',
@@ -13,10 +9,6 @@ export default {
     nameLabel: 'Group name',
     namePlaceholder: 'Smith family',
     nameRequired: 'Name required',
-    slugLabel: 'ID',
-    slugHelp: 'The organizer uses it to log in.',
-    slugMin: 'At least 2 characters',
-    slugFormat: 'Lowercase letters, digits and hyphens',
     submit: 'Create group',
     created: 'Group created',
   },
@@ -60,7 +52,6 @@ export default {
   },
   newPerson: {
     title: 'New person',
-    crumb: 'New',
     added: '{name} added',
   },
   person: {

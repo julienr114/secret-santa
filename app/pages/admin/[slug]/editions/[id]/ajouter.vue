@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  useDashboardQuery,
   useEditionQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
@@ -14,7 +13,6 @@ const toast = useToast();
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const add = useAddParticipantMutation(slug, id);
 
@@ -25,19 +23,6 @@ useHead({
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
-  crumbs: [
-    {
-      label: dashboard.data.value?.group.name ?? slug.value,
-      to: `/admin/${slug.value}`,
-    },
-    {
-      label:
-        edition.data.value?.edition.label ??
-        t('adminEdition.general.editionFallback'),
-      to: `/admin/${slug.value}/editions/${id.value}`,
-    },
-    { label: t('adminEdition.addParticipants.crumb') },
-  ],
 }));
 
 const inEdition = computed(

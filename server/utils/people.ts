@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ok, fail, type Result } from './result';
 import { LOCALES, localeOf, type Locale } from '#shared/i18n';
 import {
   avatarColorSchema,
@@ -9,7 +10,7 @@ import {
 
 // People and exclusions of a group (README 6.6, section 10).
 
-const nameSchema = z.string().trim().min(1).max(60);
+export const nameSchema = z.string().trim().min(1).max(60);
 /** Optional address: where the link is emailed, and what the person logs in with. */
 export const emailSchema = z
   .string()
@@ -43,6 +44,73 @@ export const personPatchSchema = z
   .partial()
   .refine((patch) => Object.keys(patch).length > 0, 'nothing to update');
 
+/** The profile of an account: who they are in the groups they create. */
+export const profileSchema = z.object({
+  firstName: nameSchema,
+  lastName: nameSchema.nullable(),
+  language: languageSchema,
+  avatarEmoji: avatarEmojiSchema,
+  avatarColor: avatarColorSchema,
+});
+
+/** What a profile needs from an account. */
+export type ProfileAccount = {
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  language: string;
+  avatarEmoji: string | null;
+  avatarColor: string | null;
+};
+
+/**
+ * A first name guessed from an address, for an organiser with no profile
+ * yet: "marie.dupont@x.fr" gives "Marie". They can change it later.
+ * @param email - The address.
+ * @returns The first word before the @, capitalised.
+ */
+export const firstNameFromEmail = (email: string): string => {
+  const word = email.split('@')[0]?.split(/[._+\-\d]/)[0] ?? '';
+  return word ? `${word[0]!.toUpperCase()}${word.slice(1, 60)}` : email;
+};
+
+/**
+ * The person an organiser is in their group: a copy of their profile,
+ * free to change afterwards.
+ * @param account - The account and its profile.
+ * @returns The person's fields; the first name is guessed from the
+ *   address when the profile has none.
+ */
+export const personFromProfile = (account: ProfileAccount) => ({
+  firstName: account.firstName ?? firstNameFromEmail(account.email),
+  lastName: account.lastName,
+  email: account.email,
+  language: localeOf(account.language),
+  avatarEmoji: avatarEmojiSchema.safeParse(account.avatarEmoji).data,
+  avatarColor: avatarColorSchema.safeParse(account.avatarColor).data,
+});
+
+/**
+ * An organiser stays a person of their group: they can be neither
+ * deleted, nor deactivated, nor given another address.
+ * @param email - The person's address.
+ * @param organizerEmails - Addresses of the group's organisers.
+ * @param change - What is asked: deletion, or the fields of an edit.
+ * @returns Ok, or `person_is_organizer`.
+ */
+export const canChangePerson = (
+  email: string | null,
+  organizerEmails: readonly string[],
+  change: 'delete' | { active?: boolean; email?: string | null },
+): Result<true> => {
+  if (!email || !organizerEmails.includes(email)) return ok(true);
+  if (change === 'delete') return fail('person_is_organizer');
+  const leaves =
+    change.active === false ||
+    (change.email !== undefined && change.email !== email);
+  return leaves ? fail('person_is_organizer') : ok(true);
+};
+
 export const exclusionInputSchema = z
   .object({
     giverId: z.string().min(1),
@@ -50,6 +118,16 @@ export const exclusionInputSchema = z
     reciprocal: z.boolean().default(false),
   })
   .refine((e) => e.giverId !== e.receiverId, 'self exclusion is implicit');
+
+/**
+ * First and last name together, as far as they are known.
+ * @param who - Names that may be missing.
+ * @returns "Léa Martin", "Léa", or an empty string.
+ */
+export const fullName = (who: {
+  firstName?: string | null;
+  lastName?: string | null;
+}): string => [who.firstName, who.lastName].filter(Boolean).join(' ');
 
 export type Named = { id: string; firstName: string; lastName?: string | null };
 

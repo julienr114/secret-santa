@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { and, eq, gt } from 'drizzle-orm';
+import { and, eq, gt, lt } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
 import { groups, loginAttempts } from '#server/database/schema';
 import { timingSafeEqual, verifySecret } from '#server/utils/crypto';
@@ -60,6 +60,8 @@ export default defineEventHandler(async (event) => {
   const now = nowIso();
 
   const since = new Date(Date.parse(now) - LOGIN_WINDOW_MS).toISOString();
+  // Failures older than the window no longer count: do not keep them.
+  await db.delete(loginAttempts).where(lt(loginAttempts.createdAt, since));
   const failures = await db
     .select({ createdAt: loginAttempts.createdAt })
     .from(loginAttempts)

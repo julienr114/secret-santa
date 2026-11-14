@@ -5,7 +5,8 @@ import { recordEvent } from '#server/database/audit';
 import { requireParticipation } from '#server/http/participation';
 import { dataKeyOf, nowIso } from '#server/http/context';
 
-// The bare link, for copying (journaled, README 9).
+// The bare link, for copying (journaled, README 9). A POST because it
+// writes to the journal: a GET could be triggered from another site.
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition, person, participation } =
     await requireParticipation(event);

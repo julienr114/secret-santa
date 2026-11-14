@@ -44,7 +44,13 @@ export const dataKeyOf = async (event: H3Event): Promise<CryptoKey> => {
 
 /** Hashed client IP, for login throttling only. */
 export const ipHashOf = async (event: H3Event): Promise<string> => {
-  const ip = getRequestIP(event, { xForwardedFor: true }) ?? 'unknown';
+  // Behind Cloudflare the client address is in CF-Connecting-IP, which the
+  // client cannot set. X-Forwarded-For can be forged, which would let an
+  // attacker dodge the throttle by changing it on every attempt.
+  const ip =
+    getRequestHeader(event, 'cf-connecting-ip') ??
+    getRequestIP(event) ??
+    'unknown';
   const digest = await crypto.subtle.digest(
     'SHA-256',
     new TextEncoder().encode(ip),

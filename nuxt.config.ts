@@ -9,6 +9,16 @@ const personalHeaders = {
   'X-Robots-Tag': 'noindex',
 };
 
+// Every page and API answer: never framed by another site, no content
+// type guessing, no path leaked to other sites, no device features.
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devtools: { enabled: true },
@@ -38,6 +48,7 @@ export default defineNuxtConfig({
   // wrangler.toml through Miniflare (state in .wrangler/state/v3).
   nitro: { preset: 'cloudflare_module' },
   routeRules: {
+    '/**': { headers: securityHeaders },
     '/p/**': { headers: personalHeaders },
     '/api/p/**': { headers: personalHeaders },
   },

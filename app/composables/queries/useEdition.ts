@@ -111,7 +111,7 @@ export const useUnsendMutation = (slug: Ref) =>
 /** Journals a copied link (the link itself comes from the messages query). */
 export const useLinkCopiedMutation = (slug: Ref) =>
   useApiMutation<{ link: string }, string>(
-    (pid) => api(`${participation(slug, pid)}/link`),
+    (pid) => api(`${participation(slug, pid)}/link`, { method: 'POST' }),
     () => groupKeys(slug),
   );
 

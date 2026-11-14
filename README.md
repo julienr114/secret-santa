@@ -353,8 +353,20 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - **Lien** : jeton de 256 bits stocké en empreinte SHA-256, **usage unique**, valable **15 minutes** ; en demander un nouveau invalide les précédents ; ouvrir la page ne le consomme pas (seul le bouton le fait) ; même réponse que l'adresse ait un compte ou non ; 5 demandes par heure et par adresse, 20 par heure et par adresse IP.
 - **Session** : une ligne en base (`sessions`), 30 jours, **révocable**. Le cookie scellé (`HttpOnly`, `Secure`, `SameSite=Lax`) ne porte que son identifiant ; elle est vérifiée à chaque requête. Se déconnecter la révoque ; « Mon compte » liste les appareils et permet de tout déconnecter.
 - **Rôle**, recalculé à chaque requête depuis le compte, jamais lu dans le cookie : **super-admin** (indicateur `accounts.is_super_admin`, plusieurs possibles), **organisateur** (au moins un groupe dans `group_members`) ou **membre** (tous les autres : un participant qui se connecte pour retrouver ses tirages). Un membre n'a aucun accès à `/api/admin/*` (403) ni aux écrans `/admin`.
-- **Qui reçoit un lien** : toute adresse connue, c'est-à-dire un compte existant, une adresse de `NUXT_SUPER_ADMIN_EMAILS`, ou l'adresse qu'un organisateur a saisie pour un participant (le compte est alors créé à la première demande, dans la langue de la personne). Une adresse inconnue ne reçoit rien : l'inscription libre n'est pas encore ouverte.
-- **Page d'accueil** (`/`, la même pour tous) : sans session, la connexion ; avec, « Mes tirages » (les participations des personnes qui portent l'adresse du compte, hors brouillons, ouvertes par leur lien personnel), puis les groupes gérés, avec des lignes en plus pour le super-admin (nouveau groupe, guide de style). Un organisateur qui met sa propre adresse sur un participant y verrait son lien : comme pour un lien copié, la première consultation du résultat reste inscrite au journal.
+- **Inscription libre** (14 novembre 2026) : toute adresse valide reçoit un lien ; son compte est créé à la première demande, simple membre, dans la langue du participant qu'un organisateur aurait saisi avec cette adresse. Seul un compte désactivé ne reçoit rien. Garde-fous : 5 demandes par heure et par adresse, 20 par adresse IP.
+- **Quota de groupes** (`accounts.group_quota`, 0 par défaut) : un compte crée un groupe s'il lui reste de la place (groupes créés et encore existants, `groups.created_by`) ; il en devient le premier organisateur. Un super-admin n'a pas de limite.
+- **Demande de groupe** (`group_requests`) : depuis l'accueil, un compte sans place écrit pour qui il veut organiser un tirage ; une seule demande en attente à la fois. Chaque super-admin reçoit un email. Accepter laisse la place pour **un** groupe de plus ; dans les deux cas le demandeur est prévenu par email.
+- **Pages du super-admin**, avec une barre du bas (Accueil, Comptes avec le nombre de demandes en pastille, Groupes) :
+  - `/admin/comptes` : tous les comptes dans une liste, ceux qui attendent une réponse en tête (« À traiter »), les désactivés repliés à la fin ; recherche par nom ou adresse.
+  - `/admin/comptes/[id]` : la page d'un compte. Prénom, nom et avatar modifiables par l'admin ; trois tuiles (groupes créés, organisés, dernière visite) ; « Création de groupes » : la demande en attente (réponse dans un panneau qui montre ce que l'acceptation change et la jauge de charge de l'application), le quota avec − / + (augmenter le quota accepte une demande en attente), les groupes organisés ; « Accès » : désactiver (avec confirmation), réactiver.
+  - `/admin/groupes` : tous les groupes, et la création d'un groupe.
+- **Charge de l'application** : au-delà d'environ 50 groupes (`APP_GROUPS_COMFORT`), le plan gratuit de Resend (3 000 emails par mois) risque de ne plus suffire ; la page d'une demande le signale en orange, puis en rouge.
+- **L'organisateur est une personne de son groupe** : le désigner (à la création ou depuis « Organisateurs ») le crée comme personne, copiée de son profil (prénom tiré de l'adresse sans profil). Tant qu'il organise, on ne peut ni le supprimer, ni le désactiver, ni changer son adresse (`person_is_organizer`).
+- **Profil d'un compte** (`accounts.first_name`, `last_name`, `avatar_emoji`, `avatar_color`, migration `0012`) : prénom, nom facultatif, avatar et langue, réglés dans « Mon compte ». Quand un compte crée son groupe, il en devient la **première personne**, copiée de son profil (avec son adresse) ; la modifier ensuite dans le groupe ne change pas le profil, et inversement. Sans prénom, l'accueil invite à compléter le profil et aucune personne n'est créée.
+- **Identifiant d'un groupe** : il n'est plus demandé. Il est déduit du nom (`slugify`), numéroté si déjà pris (`famille`, `famille-2`…).
+- **Retour à l'accueil depuis un tirage** : sur les pages `/p/...`, une personne connectée a un bouton maison et le logo cliquable.
+- **Rôle à jour côté écran** : quand l'application relit sa session, le serveur répond avec le rôle actuel du compte (`server/plugins/session.ts`), pour qu'un membre qui vient de créer un groupe voie tout de suite ses écrans d'organisateur.
+- **Page d'accueil** (`/`, la même pour tous) : sans session, la connexion ; avec, « Je participe » (une ligne par tirage en cours avec l'étape suivante et le compte à rebours jusqu'à l'échange, les tirages clôturés repliés ; les participations des personnes qui portent l'adresse du compte, hors brouillons, ouvertes par leur lien personnel), « J'organise » (chaque groupe avec l'état de son tirage en cours ; « Nouveau groupe » avec le nombre restant, ou « Organiser un tirage » qui ouvre la demande, l'application étant en bêta), et pour le super-admin une section « Administration ». Un organisateur qui met sa propre adresse sur un participant y verrait son lien : comme pour un lien copié, la première consultation du résultat reste inscrite au journal.
 - **Organisateurs d'un groupe** : désignés par leur adresse depuis l'écran « Organisateurs » du groupe, par un super-admin ou par un autre organisateur. On ne se retire pas soi-même. Retirer quelqu'un coupe ses sessions ouvertes sur ce groupe à la requête suivante.
 - **Super-admin** : crée et supprime les groupes, active l'envoi par email, gère tous les groupes. `julienr114@gmail.com` est créé par la migration `0007` ; les adresses de `NUXT_SUPER_ADMIN_EMAILS` le deviennent à leur première demande de lien (amorçage d'une installation neuve).
 - **Développement et tests** : `NUXT_DEV_LOGIN_LINKS=true` renvoie le lien à l'écran au lieu de dépendre d'un email. **Jamais en production.**
@@ -547,7 +559,10 @@ Détails d'interface :
 |---|---|
 | `/` | Accueil, le même pour tous : la connexion sans session ; sinon mes tirages, puis mes groupes et les options du super-admin |
 | `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis page du lien avec son bouton |
-| `/admin/groupes/nouveau` | Super-admin : création d'un groupe (`/admin` et `/admin/groupes` redirigent vers l'accueil) |
+| `/admin/groupes/nouveau` | Création d'un groupe, pour tout compte qui a de la place dans son quota |
+| `/admin/groupes` | Super-admin : tous les groupes |
+| `/admin/comptes`, `/admin/comptes/[id]` | Super-admin : comptes (demandes en tête), page d'un compte : profil, demande, quota, accès |
+| `/admin/guide-de-style` | Super-admin : le guide de style (section 23). Plus aucun lien n'y mène, on y va par son adresse |
 | `/compte` | Mon compte : adresse, appareils connectés, « Déconnecter partout » |
 | `/admin/[groupe]/organisateurs` | Qui peut gérer le groupe : ajouter une adresse, en retirer une |
 | `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
@@ -597,7 +612,10 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |
 | `POST /api/admin/logout`, `GET /api/admin/session` | Déconnexion (révoque la session), session courante |
 | `GET /api/admin/groups` | Les groupes du compte |
-| `POST /api/admin/groups` | Super-admin : création, avec les adresses des organisateurs |
+| `POST /api/admin/groups` | Création par un super-admin ou un compte qui a de la place dans son quota (il en devient organisateur) |
+| `POST /api/auth/group-requests` | Demande de groupe (une seule en attente), email aux super-admins |
+| `GET /api/admin/accounts`, `PATCH /api/admin/accounts/[id]` | Super-admin : comptes et demandes en attente ; quota, désactivation |
+| `POST /api/admin/group-requests/[id]/decide` | Super-admin : accepte ou refuse une demande, email au demandeur |
 | `PATCH /api/admin/groups/[id]` | Super-admin : nom |
 | `GET/POST /api/admin/[groupe]/organizers`, `DELETE …/organizers/[compte]` | Organisateurs du groupe |
 | `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
@@ -1002,14 +1020,14 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 
 - La migration `0007` crée le compte `julienr114@gmail.com` en super-admin. Il n'est rattaché à aucun groupe : un super-admin les gère tous. Les groupes existants n'ont donc aucun organisateur tant qu'on n'en désigne pas.
 - Les migrations `0008` et `0009` suppriment le mot de passe par groupe et la table des essais de connexion, et créent `group_members`. `SUPER_ADMIN_PASSWORD` et `NUXT_PIN_PEPPER` ne sont plus lus : les secrets correspondants peuvent être supprimés chez Cloudflare.
-- **Ordre de mise en production** : appliquer les migrations `0007` à `0010` (`pnpm db:migrate`) **avant** `pnpm deploy:prod`.
+- **Ordre de mise en production** : appliquer les migrations `0007` à `0012` (`pnpm db:migrate`) **avant** `pnpm deploy:prod`.
 
 **Avancement**
 
 1. ✅ Comptes, liens magiques et sessions (14 novembre 2026).
 2. ✅ Organisateurs par compte (`group_members`), **retrait de tous les mots de passe** (groupe et super-admin) : fait d'un bloc avec le pas 1, à la demande de Julien. Migrations `0007` à `0009`.
 2 bis. ✅ Connexion ouverte aux participants dont l'organisateur a saisi l'adresse, rôle « membre », page d'accueil commune avec « Mes tirages » (première ébauche, 14 novembre 2026).
-3. À faire : inscription libre, quota de groupes à 0, demande de groupe, interface d'administration des comptes, emails aux super-admins.
+3. ✅ Inscription libre, quota de groupes à 0, demande de groupe, pages d'administration des comptes et de tous les groupes, emails aux super-admins et au demandeur (14 novembre 2026, migration `0011`). Décrit en 8.4.
 4. À faire : TOTP pour les super-admins.
 5. À faire : comptes de participants, créés depuis la page de résultat.
 

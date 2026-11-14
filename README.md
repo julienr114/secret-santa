@@ -371,7 +371,7 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - **Super-admin** : crée et supprime les groupes, active l'envoi par email, gère tous les groupes. `julienr114@gmail.com` est créé par la migration `0007` ; les adresses de `NUXT_SUPER_ADMIN_EMAILS` le deviennent à leur première demande de lien (amorçage d'une installation neuve).
 - **Développement et tests** : `NUXT_DEV_LOGIN_LINKS=true` renvoie le lien à l'écran au lieu de dépendre d'un email. **Jamais en production.**
 - Toutes les routes `/api/admin/*` vérifient la session **et** le droit sur le groupe concerné.
-- Reste à faire (22.5) : inscription libre avec quota, second facteur TOTP pour les super-admins, comptes de participants.
+- Reste à faire (22.5) : comptes de participants encouragés depuis la page de résultat.
 
 ### 8.5 Cloisonnement
 
@@ -952,7 +952,7 @@ Décision du 14 novembre 2026 : l'application s'ouvre au public par **inscriptio
 - **Quota de groupes par compte, 0 par défaut.** Pour en créer un, l'utilisateur fait une **demande depuis l'application** ; le super-admin l'accepte en relevant le quota du compte, ou la refuse.
 - **Interface d'administration** pour le super-admin : comptes, quota de chacun, demandes en attente, groupes de chaque compte, suspension d'un compte.
 - **Notifications par email au super-admin** : nouvelle demande de groupe (et, à confirmer, nouveau compte). Il faut donc une **adresse email du super-admin** (variable d'environnement ou réglage).
-- **Double authentification pour le super-admin** (TOTP), puisqu'il devient la clé de tout le service.
+- ~~Double authentification pour le super-admin (TOTP)~~ : abandonnée le 14 novembre 2026, voir 22.5.
 - **Incitation à créer un groupe** : un compte sans groupe voit pourquoi il n'en a pas et comment en demander un.
 
 Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrite le 14 novembre 2026 (plus de mot de passe par groupe ni de super-admin par variable d'environnement), la contrainte « presque gratuit » (quotas Cloudflare et Resend à surveiller dès qu'il y a des inconnus), et il ajoute des obligations nouvelles : mentions légales, RGPD (adresses de tiers saisies par un organisateur), protection contre l'abus à l'inscription.
@@ -966,7 +966,7 @@ Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrit
 | **Page d'accueil indexable** | Présente l'application et mène à l'inscription. Aujourd'hui tout le site est en `noindex` | Ouverture au public |
 | **Tirage déjà fait à la main** | Mode d'édition sans tirage par l'application : chaque participant déclare à qui il offre. Il sert alors de support (listes de souhaits, rappels, historique pour l'an prochain) | Indépendant des comptes. **À trancher** : que faire si deux personnes déclarent le même receveur |
 
-**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → double authentification → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main peut se faire à tout moment.
+**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main peut se faire à tout moment.
 
 ### 22.3 V3
 
@@ -1012,7 +1012,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 - Limitation des demandes par adresse et par adresse IP (`CF-Connecting-IP`).
 - Pages de connexion en `no-store`, `no-referrer`, `noindex`.
 - Session de 30 jours, révocable ; écran « mes appareils » avec « déconnecter partout ». Désactiver un compte révoque ses sessions.
-- **Super-admin** : en plus du lien magique, un **second facteur TOTP** obligatoire. Sans lui, prendre la main sur la boîte mail suffirait à prendre tout le service. Un super-admin ne peut pas retirer le dernier super-admin.
+- **Super-admin** : pas de second facteur dans l'application (décision du 14 novembre 2026). Avec le lien magique, le compte vaut ce que vaut la boîte mail : c'est elle qu'il faut protéger, par la double authentification du fournisseur (Gmail). Un TOTP en plus ne protégerait que du cas où la boîte mail tombe, au prix d'un appareil à garder et d'une procédure de secours sans accès de secours possible (tout passe par le lien magique). Un super-admin ne peut pas retirer le dernier super-admin.
 
 **Risque connu** : la connexion dépend alors d'un email qui arrive. Au 14 novembre 2026 nos emails tombent en spam ou en Promotions sur Gmail (13.3). L'ancienne connexion par mot de passe est retirée : il faut donc vérifier, juste après la mise en production, que l'email de connexion arrive (le chercher dans les indésirables), et continuer d'améliorer la délivrabilité.
 
@@ -1028,7 +1028,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 2. ✅ Organisateurs par compte (`group_members`), **retrait de tous les mots de passe** (groupe et super-admin) : fait d'un bloc avec le pas 1, à la demande de Julien. Migrations `0007` à `0009`.
 2 bis. ✅ Connexion ouverte aux participants dont l'organisateur a saisi l'adresse, rôle « membre », page d'accueil commune avec « Mes tirages » (première ébauche, 14 novembre 2026).
 3. ✅ Inscription libre, quota de groupes à 0, demande de groupe, pages d'administration des comptes et de tous les groupes, emails aux super-admins et au demandeur (14 novembre 2026, migration `0011`). Décrit en 8.4.
-4. À faire : TOTP pour les super-admins.
+4. Abandonné : TOTP pour les super-admins (la double authentification de la boîte mail en tient lieu).
 5. À faire : comptes de participants, créés depuis la page de résultat.
 
 **Si un super-admin ne reçoit plus ses emails** : il n'y a pas d'accès de secours dans l'application. Le recours est côté Cloudflare, réservé au titulaire du compte : activer temporairement `NUXT_DEV_LOGIN_LINKS`, ou lire les journaux d'envoi de Resend.

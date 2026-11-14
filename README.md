@@ -2,7 +2,7 @@
 
 > Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy`). Prochaine étape : l'étape 7 (finitions). Le journal côté gardien (`/admin/[groupe]/journal`, `GET /api/admin/[groupe]/journal`) est fait : même frise que côté participant, dans la langue de l'administration.
+> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy:prod`). Prochaine étape : l'étape 7 (finitions). Le journal côté gardien (`/admin/[groupe]/journal`, `GET /api/admin/[groupe]/journal`) est fait : même frise que côté participant, dans la langue de l'administration.
 >
 > Changements de la v7 (13 novembre 2026, à la demande de Julien) : **trois langues**, français, anglais et allemand, pour toute l'application (section 21). Chaque personne a une **langue préférée** : sa page, ses messages, ses emails et le journal qu'elle lit suivent cette langue. L'application s'appelle désormais **Under the Tree** dans l'interface ; « Secret Santa » reste le nom du jeu dans les messages. La contrainte « interface entièrement en français » de la section 1 est levée.
 >
@@ -710,7 +710,7 @@ secret-santa/
 2. Créer un compte Cloudflare gratuit.
 3. Créer la base D1 (`wrangler d1 create secret-santa`) et reporter son identifiant dans `wrangler.toml`. *(Fait : `1128fa3f-…`.)* Le sous-domaine `workers.dev` du compte se choisit dans le tableau de bord (Workers & Pages → Account details) s'il n'existe pas encore.
 4. Appliquer les migrations sur la base distante.
-5. Déployer à la main avec `pnpm deploy` (build puis `wrangler deploy`, après `wrangler login`). **Un `git push` ne déploie pas** : Workers Builds n'est pas branché sur le dépôt (constaté le 13 novembre 2026, aucun commit ne porte de déploiement Cloudflare).
+5. Déployer à la main avec `pnpm deploy:prod` (build puis `wrangler deploy`, après `wrangler login`). **Un `git push` ne déploie pas** : Workers Builds n'est pas branché sur le dépôt (constaté le 13 novembre 2026, aucun commit ne porte de déploiement Cloudflare).
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
 7. L'application est servie sur `https://under-the-tree.party` (domaine personnalisé du Worker, déclaré dans `wrangler.toml`) et reste joignable sur `https://secret-santa.julienr114.workers.dev`.
 8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.

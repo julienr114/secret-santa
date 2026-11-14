@@ -1,17 +1,19 @@
 import { describe, it, expect } from 'vitest';
 import {
-  currentEdition,
-  nextEditionDefaults,
-  participantBadges,
-  previousEdition,
+  addWaiver,
+  applyWaivers,
   buildHistory,
   canEditParticipants,
   canSendLinks,
+  checkParticipantCount,
+  currentEdition,
   historyEditions,
-  addWaiver,
-  applyWaivers,
-  parseWaivers,
+  MAX_PARTICIPANTS,
+  nextEditionDefaults,
   nextStatus,
+  parseWaivers,
+  participantBadges,
+  previousEdition,
 } from './editions';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
@@ -161,5 +163,19 @@ describe('history waivers', () => {
       b: ['a'],
     });
     expect(applyWaivers(history, [])).toEqual(history);
+  });
+});
+
+describe('checkParticipantCount', () => {
+  it('allows up to the limit and refuses one more', () => {
+    expect(checkParticipantCount(MAX_PARTICIPANTS)).toEqual({
+      ok: true,
+      value: MAX_PARTICIPANTS,
+    });
+    expect(checkParticipantCount(MAX_PARTICIPANTS + 1)).toEqual({
+      ok: false,
+      reason: 'too_many_participants',
+      details: { max: 100, count: 101 },
+    });
   });
 });

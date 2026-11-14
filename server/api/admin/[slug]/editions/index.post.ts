@@ -10,7 +10,12 @@ import { recordEvent } from '#server/database/audit';
 import { requireGroupAccess } from '#server/http/auth';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
-import { editionInputSchema, previousEdition } from '#server/utils/editions';
+import {
+  checkParticipantCount,
+  editionInputSchema,
+  previousEdition,
+} from '#server/utils/editions';
+import { unwrap } from '#server/http/errors';
 
 // Creates a draft edition. Its participants start as those of the previous
 // edition who are still active (README 4.2), or every active person for a
@@ -38,6 +43,7 @@ export default defineEventHandler(async (event) => {
   const people = (await listPeople(db, group.id)).filter(
     (p) => p.active && (previousIds === null || previousIds.includes(p.id)),
   );
+  unwrap(checkParticipantCount(people.length));
   const edition: typeof editions.$inferSelect = {
     id: newId(),
     groupId: group.id,
@@ -56,9 +62,11 @@ export default defineEventHandler(async (event) => {
       newParticipation({ editionId: edition.id, personId: p.id }, dataKey),
     ),
   );
+  // One statement per participant: D1 caps a statement at 100 bound
+  // parameters, which a single multi-row insert passes at ten people.
   await db.batch([
     db.insert(editions).values(edition),
-    ...(rows.length > 0 ? [db.insert(participations).values(rows)] : []),
+    ...rows.map((row) => db.insert(participations).values(row)),
   ]);
   await recordEvent(db, {
     type: 'edition_created',

@@ -206,3 +206,18 @@ export const applyWaivers = (
       ),
     ]),
   );
+
+// --- Size of an edition ---------------------------------------------------
+
+/**
+ * Most participants an edition can have. D1 caps a statement at 100 bound
+ * parameters and some queries list every participation of an edition, so
+ * the limit is enforced here rather than met as a database error.
+ */
+export const MAX_PARTICIPANTS = 100;
+
+/** Whether an edition that would have `count` participants is allowed. */
+export const checkParticipantCount = (count: number): Result<number> =>
+  count > MAX_PARTICIPANTS
+    ? fail('too_many_participants', { max: MAX_PARTICIPANTS, count })
+    : ok(count);

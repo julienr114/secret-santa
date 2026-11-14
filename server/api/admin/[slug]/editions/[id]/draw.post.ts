@@ -52,7 +52,9 @@ export default defineEventHandler(async (event) => {
         .where(
           and(eq(editions.id, edition.id), eq(editions.status, 'invitations')),
         ),
-      db.insert(assignments).values(rows),
+      // One statement per assignment: D1 caps a statement at 100 bound
+      // parameters, which a single multi-row insert passes at 17 people.
+      ...rows.map((row) => db.insert(assignments).values(row)),
       // Sending is tracked from the draw on: an invitation shared earlier
       // does not count as the "draw done" message.
       db

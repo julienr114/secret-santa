@@ -1,14 +1,17 @@
 import { z } from 'zod';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { participations } from '#server/database/schema';
 import { newParticipation } from '#server/database/editions';
 import { findPerson } from '#server/database/people';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf } from '#server/http/context';
-import { notFound } from '#server/http/errors';
+import { notFound, unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { canEditParticipants } from '#server/utils/editions';
+import {
+  canEditParticipants,
+  checkParticipantCount,
+} from '#server/utils/editions';
 
 const bodySchema = z.object({ personId: z.string().min(1) });
 
@@ -38,6 +41,11 @@ export default defineEventHandler(async (event) => {
       statusCode: 409,
       statusMessage: 'already_participating',
     });
+  const [size] = await db
+    .select({ n: count() })
+    .from(participations)
+    .where(eq(participations.editionId, edition.id));
+  unwrap(checkParticipantCount((size?.n ?? 0) + 1));
   const row = await newParticipation(
     { editionId: edition.id, personId: person.id },
     await dataKeyOf(event),

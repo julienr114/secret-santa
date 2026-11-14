@@ -13,8 +13,6 @@ export const AVATAR_EMOJIS = [
   '🎁',
   '🌟',
   '❄️',
-  '🔔',
-  '🕯️',
   '🍪',
   '🥛',
   '🧦',
@@ -26,19 +24,15 @@ export const AVATAR_EMOJIS = [
   '🐧',
   '🦊',
   '🦉',
-  '🐻‍❄️',
   '🍫',
   // Christmas market
   '🥨',
   '🍷',
   '🌰',
-  '🧇',
-  '🥞',
   '🍎',
   '🍊',
   '🫕',
   '🎠',
-  '🎡',
   '⛸️',
   '🛷',
 ] as const;
@@ -46,7 +40,7 @@ export type AvatarEmoji = (typeof AVATAR_EMOJIS)[number];
 
 // The first set, used for the default avatar derived from an id: kept
 // apart so that adding emojis never changes someone's existing default.
-const DEFAULT_EMOJIS = AVATAR_EMOJIS.slice(0, 24);
+const DEFAULT_EMOJIS = AVATAR_EMOJIS.slice(0, 21);
 
 export const AVATAR_COLORS = [
   'brick',

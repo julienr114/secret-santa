@@ -27,6 +27,8 @@ export default {
       one: '{name} updated their wish list ({count} idea)',
       other: '{name} updated their wish list ({count} ideas)',
     },
+    avatar_changed: '{name} changed their icon',
+    language_changed: '{name} changed their language ({language})',
     edition_closed: 'The edition {label} is closed',
   },
   noReason: 'not given',

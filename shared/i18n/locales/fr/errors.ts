@@ -21,6 +21,7 @@ export default {
     "Cette action n'est pas possible à ce stade de l'édition.",
   no_solution:
     'Aucun tirage possible avec ces règles : assouplis une exclusion.',
+  too_many_participants: 'Une édition ne peut pas dépasser 100 participants.',
   too_few_participants: 'Il faut au moins deux participants.',
   participants_locked: 'La liste est verrouillée après le tirage.',
   already_participating: 'Cette personne participe déjà.',

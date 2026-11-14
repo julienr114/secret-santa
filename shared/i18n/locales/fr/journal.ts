@@ -26,6 +26,8 @@ export default {
       one: '{name} a mis à jour sa liste de souhaits ({count} idée)',
       other: '{name} a mis à jour sa liste de souhaits ({count} idées)',
     },
+    avatar_changed: '{name} a changé son icône',
+    language_changed: '{name} a changé sa langue ({language})',
     edition_closed: "L'édition {label} est clôturée",
   },
   noReason: 'non précisé',

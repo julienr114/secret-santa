@@ -23,6 +23,7 @@ export default {
   invalid_transition: 'Diese Aktion ist in dieser Phase nicht möglich.',
   no_solution:
     'Mit diesen Regeln ist keine Auslosung möglich: lockere einen Ausschluss.',
+  too_many_participants: 'Eine Ausgabe kann höchstens 100 Teilnehmer haben.',
   too_few_participants: 'Es braucht mindestens zwei Teilnehmer.',
   participants_locked: 'Die Liste ist nach der Auslosung gesperrt.',
   already_participating: 'Diese Person nimmt bereits teil.',

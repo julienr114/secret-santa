@@ -24,6 +24,8 @@ const EMOJIS: Record<string, string> = {
   result_revealed: '👀',
   result_viewed: '🎁',
   wishes_updated: '📝',
+  avatar_changed: '🎨',
+  language_changed: '🌍',
   edition_closed: '🎉',
 };
 const emojiOf = (type: string) => EMOJIS[type] ?? '✦';

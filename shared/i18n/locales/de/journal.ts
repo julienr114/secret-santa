@@ -27,6 +27,8 @@ export default {
       one: '{name} hat die Wunschliste aktualisiert ({count} Idee)',
       other: '{name} hat die Wunschliste aktualisiert ({count} Ideen)',
     },
+    avatar_changed: '{name} hat das eigene Symbol geändert',
+    language_changed: '{name} hat die eigene Sprache geändert ({language})',
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
   },
   noReason: 'nicht angegeben',

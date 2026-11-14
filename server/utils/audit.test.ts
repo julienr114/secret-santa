@@ -267,3 +267,24 @@ describe('describeEvent in other languages', () => {
     );
   });
 });
+
+describe('changes a participant makes to their own profile', () => {
+  const names = { p1: 'Léa' };
+  it('are told in the journal, in every language', () => {
+    expect(
+      describeEvent({ type: 'avatar_changed', personId: 'p1' }, { names }),
+    ).toBe('Léa a changé son icône');
+    expect(
+      describeEvent(
+        { type: 'language_changed', personId: 'p1', meta: { language: 'de' } },
+        { names },
+      ),
+    ).toBe('Léa a changé sa langue (Deutsch)');
+    expect(
+      describeEvent(
+        { type: 'language_changed', personId: 'p1', meta: { language: 'en' } },
+        { names, locale: 'en' },
+      ),
+    ).toBe('Léa changed their language (English)');
+  });
+});

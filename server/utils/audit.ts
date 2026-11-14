@@ -27,6 +27,8 @@ export const AUDIT_TYPES = [
   'result_revealed',
   'result_viewed',
   'wishes_updated',
+  'avatar_changed',
+  'language_changed',
   'edition_closed',
 ] as const;
 export type AuditType = (typeof AUDIT_TYPES)[number];
@@ -149,6 +151,9 @@ export const describeEvent = (
         'journal.what.other',
       ),
     ),
+    language: hasMessage(`common.language.${text(meta, 'language', '')}`)
+      ? t(`common.language.${text(meta, 'language', '')}`)
+      : '',
     via: hasMessage(`journal.via.${text(meta, 'via', '')}`)
       ? t(`journal.via.${text(meta, 'via', '')}`)
       : '',

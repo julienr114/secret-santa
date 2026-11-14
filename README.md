@@ -966,9 +966,8 @@ Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrit
 | **Notifications par email à l'organisateur**, réglables | Par exemple : tout le monde a consulté, une liste de souhaits a changé, quelqu'un s'est inscrit. Chaque notification s'active ou non | Comptes (adresse de l'organisateur) ; délivrabilité des emails (13.3) |
 | **Inscription par lien d'invitation** | L'organisateur partage un lien ; les participants s'inscrivent eux-mêmes. Date de fin, nombre de places, informations affichées sur la page d'inscription. Email obligatoire dans ce mode | Comptes ; délivrabilité. Change la création des personnes, aujourd'hui saisies par l'organisateur |
 | **Page d'accueil indexable** | Présente l'application et mène à l'inscription. Aujourd'hui tout le site est en `noindex` | Ouverture au public |
-| **Tirage déjà fait à la main** | Mode d'édition sans tirage par l'application : chaque participant déclare à qui il offre. Il sert alors de support (listes de souhaits, rappels, historique pour l'an prochain) | Indépendant des comptes. **À trancher** : que faire si deux personnes déclarent le même receveur |
 
-**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main peut se faire à tout moment.
+**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main passe en v3.
 
 ### 22.3 V3
 
@@ -976,6 +975,7 @@ Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrit
 |---|---|---|
 | **Mode prédictions** | Jeu facultatif, activé par l'organisateur : chacun parie sur qui a tiré qui ; résultats après la date de fin ; message de récompense personnalisé | Demande une vraie date de fin (déjà en place, section 21.3). Les prédictions ne doivent rien révéler avant la clôture |
 | **Listes de cadeaux pour la famille** | Un second volet, hors tirage : listes partagées avec des membres choisis, réservation des cadeaux | Presque une deuxième application. La réservation était hors périmètre (section 2) : la décision est rouverte |
+| **Tirage déjà fait à la main** | Mode d'édition sans tirage par l'application : chaque participant déclare à qui il offre. Il sert alors de support (listes de souhaits, rappels, historique pour l'an prochain) | Reporté en v3 le 14 novembre 2026. Conception validée en 22.6, prête à reprendre |
 | **API REST, serveur MCP, documentation** | Tout piloter depuis un LLM | Demande des jetons d'accès par compte, donc le socle de la v2, et une API stable et documentée |
 
 ### 22.4 Décisions du 14 novembre 2026 sur la v2
@@ -1035,7 +1035,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 
 **Si un super-admin ne reçoit plus ses emails** : il n'y a pas d'accès de secours dans l'application. Le recours est côté Cloudflare, réservé au titulaire du compte : activer temporairement `NUXT_DEV_LOGIN_LINKS`, ou lire les journaux d'envoi de Resend.
 
-### 22.6 Conception proposée : tirage fait à la main
+### 22.6 Conception proposée : tirage fait à la main (reporté en v3)
 
 - L'organisateur choisit le mode « tirage déjà fait » à la création de l'édition. Pas de tirage par l'application.
 - Chaque participant **déclare** sur sa page à qui il offre, parmi les participants, et peut corriger tant que l'édition n'est pas validée.

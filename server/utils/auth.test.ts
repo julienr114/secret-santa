@@ -1,81 +1,77 @@
 import { describe, it, expect } from 'vitest';
 import {
   canAccessGroup,
-  loginThrottle,
+  canRemoveOrganizer,
+  isAdminUser,
+  roleOf,
   slugSchema,
   sessionUserSchema,
 } from './auth';
 
-describe('canAccessGroup', () => {
-  it('lets super admins in everywhere and guardians only in their group', () => {
-    expect(
-      canAccessGroup(
-        { role: 'super_admin', groupId: null, groupSlug: null },
-        'g1',
-      ),
-    ).toBe(true);
-    expect(
-      canAccessGroup(
-        { role: 'guardian', groupId: 'g1', groupSlug: null },
-        'g1',
-      ),
-    ).toBe(true);
-    expect(
-      canAccessGroup(
-        { role: 'guardian', groupId: 'g1', groupSlug: null },
-        'g2',
-      ),
-    ).toBe(false);
-    expect(canAccessGroup(null, 'g1')).toBe(false);
+describe('roleOf', () => {
+  it('is super-admin by the flag, whatever the groups', () => {
+    expect(roleOf({ isSuperAdmin: true, groupCount: 0 })).toBe('super_admin');
+    expect(roleOf({ isSuperAdmin: true, groupCount: 3 })).toBe('super_admin');
+  });
+
+  it('is organiser with at least one group, member without', () => {
+    expect(roleOf({ isSuperAdmin: false, groupCount: 1 })).toBe('guardian');
+    expect(roleOf({ isSuperAdmin: false, groupCount: 0 })).toBe('member');
   });
 });
 
-describe('loginThrottle', () => {
-  const now = '2026-11-13T12:00:00.000Z';
-  const minutesAgo = (m: number) =>
-    new Date(Date.parse(now) - m * 60_000).toISOString();
+describe('isAdminUser', () => {
+  it('keeps members out of the admin', () => {
+    const user = { accountId: 'a', sessionId: 's' };
+    expect(isAdminUser({ ...user, role: 'super_admin' })).toBe(true);
+    expect(isAdminUser({ ...user, role: 'guardian' })).toBe(true);
+    expect(isAdminUser({ ...user, role: 'member' })).toBe(false);
+  });
+});
 
-  it('allows with few recent failures', () => {
-    expect(loginThrottle([minutesAgo(1), minutesAgo(2)], now)).toEqual({
-      blocked: false,
-      retryAfterSeconds: 0,
-      failures: 2,
-    });
+describe('canAccessGroup', () => {
+  it('lets super-admins in everywhere and organisers only in their groups', () => {
+    expect(canAccessGroup({ role: 'super_admin' }, false)).toBe(true);
+    expect(canAccessGroup({ role: 'guardian' }, true)).toBe(true);
+    expect(canAccessGroup({ role: 'guardian' }, false)).toBe(false);
+    expect(canAccessGroup(null, true)).toBe(false);
+  });
+});
+
+describe('canRemoveOrganizer', () => {
+  it('lets an organiser remove another one, never themselves', () => {
+    const me = { role: 'guardian' as const, accountId: 'a1' };
+    expect(canRemoveOrganizer(me, 'a2')).toBe(true);
+    expect(canRemoveOrganizer(me, 'a1')).toBe(false);
   });
 
-  it('blocks at ten failures within fifteen minutes and says how long', () => {
-    const dates = Array.from({ length: 10 }, (_, i) => minutesAgo(i + 1));
-    const result = loginThrottle(dates, now);
-    expect(result.blocked).toBe(true);
-    expect(result.retryAfterSeconds).toBe(5 * 60);
-  });
-
-  it('forgets failures older than the window and ignores junk dates', () => {
-    const dates = [
-      ...Array.from({ length: 9 }, () => minutesAgo(16)),
-      minutesAgo(1),
-      'junk',
-    ];
-    expect(loginThrottle(dates, now)).toEqual({
-      blocked: false,
-      retryAfterSeconds: 0,
-      failures: 1,
-    });
-    expect(loginThrottle([], now).blocked).toBe(false);
+  it('lets a super-admin remove anyone, themselves included', () => {
+    const admin = { role: 'super_admin' as const, accountId: 'a1' };
+    expect(canRemoveOrganizer(admin, 'a1')).toBe(true);
   });
 });
 
 describe('schemas', () => {
   it('validates slugs and session users', () => {
     expect(slugSchema.safeParse('famille-rabin').success).toBe(true);
-    ['Famille', 'a', '-x', 'x--y', 'é'].forEach((s) =>
-      expect(slugSchema.safeParse(s).success, s).toBe(false),
+    expect(slugSchema.safeParse('Famille Rabin').success).toBe(false);
+    expect(slugSchema.safeParse('-a').success).toBe(false);
+    expect(
+      sessionUserSchema.safeParse({
+        role: 'guardian',
+        accountId: 'a1',
+        sessionId: 's1',
+      }).success,
+    ).toBe(true);
+    expect(sessionUserSchema.safeParse({ role: 'guardian' }).success).toBe(
+      false,
     );
-    expect(sessionUserSchema.parse({ role: 'super_admin' })).toEqual({
-      role: 'super_admin',
-      groupId: null,
-      groupSlug: null,
-    });
-    expect(sessionUserSchema.safeParse({ role: 'root' }).success).toBe(false);
+    expect(
+      sessionUserSchema.safeParse({
+        role: 'root',
+        accountId: 'a1',
+        sessionId: 's1',
+      }).success,
+    ).toBe(false);
   });
 });

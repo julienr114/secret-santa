@@ -183,7 +183,6 @@ const onRemove = () =>
               :participant="p"
               :status="status"
               :text="message?.text"
-              :email-enabled="dashboard.data.value?.group.emailSending ?? false"
             />
             <UiListItem
               icon="i-lucide-link"

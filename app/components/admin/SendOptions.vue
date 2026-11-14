@@ -13,8 +13,7 @@ import { useShareMessage } from '~/composables/useShareMessage';
 
 // Everything needed to send one participant their message, as list rows:
 // which message, in which language, then how (phone share sheet, copy,
-// email when the group sends emails). Used on
-// the participant screen and in the "send" sheet of the edition screen.
+// email). Used on the participant screen and in the "send" sheet of the edition screen.
 // Sharing and copying start right on tap (Safari), hence the text given
 // ready-made. The language can still be changed at the last moment: it is
 // saved as the person's preferred language (their page follows too), and
@@ -34,7 +33,6 @@ const props = defineProps<{
   status: string;
   /** The text of the chosen message for this person, once loaded. */
   text?: string;
-  emailEnabled: boolean;
 }>();
 const emit = defineEmits<{ done: [] }>();
 const messageType = defineModel<MessageType>('messageType', {
@@ -207,28 +205,26 @@ const onEmail = () =>
     :title="t('adminEdition.participant.copyMessage')"
     :on-click="waiting ? undefined : onCopy"
   />
-  <template v-if="emailEnabled">
-    <UiListItem
-      v-if="participant.email"
-      icon="i-lucide-mail"
-      :class="{ 'opacity-50': waiting }"
-      :title="t('adminEdition.share.emailMessage')"
-      :subtitle="participant.email"
-      :on-click="waiting ? undefined : onEmail"
-    >
-      <template v-if="sendEmails.isPending.value" #trailing>
-        <UIcon
-          name="i-lucide-loader-circle"
-          class="size-5 shrink-0 animate-spin text-dimmed"
-        />
-      </template>
-    </UiListItem>
-    <UiListItem
-      v-else
-      icon="i-lucide-mail"
-      class="opacity-60"
-      :title="t('adminEdition.share.emailMessage')"
-      :subtitle="t('adminEdition.share.noEmail')"
-    />
-  </template>
+  <UiListItem
+    v-if="participant.email"
+    icon="i-lucide-mail"
+    :class="{ 'opacity-50': waiting }"
+    :title="t('adminEdition.share.emailMessage')"
+    :subtitle="participant.email"
+    :on-click="waiting ? undefined : onEmail"
+  >
+    <template v-if="sendEmails.isPending.value" #trailing>
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-5 shrink-0 animate-spin text-dimmed"
+      />
+    </template>
+  </UiListItem>
+  <UiListItem
+    v-else
+    icon="i-lucide-mail"
+    class="opacity-60"
+    :title="t('adminEdition.share.emailMessage')"
+    :subtitle="t('adminEdition.share.noEmail')"
+  />
 </template>

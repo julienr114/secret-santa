@@ -55,6 +55,32 @@ export const useGroupJournalQuery = (
     () => `${base(slug)}/journal?locale=${toValue(locale)}`,
   );
 
+/** An organiser of the group; `me` marks the logged-in account. */
+export type OrganizerRow = { accountId: string; email: string; me: boolean };
+
+/** The organisers of a group. */
+export const useOrganizersQuery = (slug: Slug) =>
+  useApiQuery<{ organizers: OrganizerRow[] }>(
+    () => [...keys.group(toValue(slug)), 'organizers'],
+    () => `${base(slug)}/organizers`,
+  );
+
+/** Makes the owner of an address an organiser of the group. */
+export const useAddOrganizerMutation = (slug: Slug) =>
+  useApiMutation<unknown, string>(
+    (email) =>
+      api(`${base(slug)}/organizers`, { method: 'POST', body: { email } }),
+    () => groupKeys(slug),
+  );
+
+/** Takes an organiser off the group, by account. */
+export const useRemoveOrganizerMutation = (slug: Slug) =>
+  useApiMutation<{ ok: true }, string>(
+    (accountId) =>
+      api(`${base(slug)}/organizers/${accountId}`, { method: 'DELETE' }),
+    () => groupKeys(slug),
+  );
+
 export const usePeopleQuery = (slug: Slug) =>
   useApiQuery<PeoplePayload>(
     () => keys.people(toValue(slug)),

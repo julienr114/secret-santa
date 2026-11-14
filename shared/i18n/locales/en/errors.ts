@@ -7,7 +7,6 @@ export default {
   validation: 'Check the fields of the form.',
   unauthorized: 'Log in to continue.',
   forbidden: 'You do not have access to this group.',
-  invalid_credentials: 'Wrong password.',
   too_many_attempts: 'Too many attempts, try again in a few minutes.',
   slug_taken: 'This group identifier is already taken.',
   group_not_found: 'Group not found.',
@@ -27,7 +26,6 @@ export default {
   already_participating: 'This person is already taking part.',
   links_not_open: 'Open the invitations first.',
   message_not_available: 'This message does not fit the stage of the edition.',
-  email_disabled: 'Sending by email is not enabled for this group.',
   email_not_configured:
     'Sending by email is not set up on the server. Share the links from your phone.',
   email_failed:
@@ -37,6 +35,9 @@ export default {
   wrong_confirmation: 'Type the group identifier exactly.',
   wrong_sentence: 'Copy the requested sentence exactly.',
   results_secret: 'Results stay secret until the edition is closed.',
+  login_link_invalid: 'This login link is no longer valid: ask for a new one.',
+  cannot_remove_self: 'You cannot remove yourself: ask another organizer.',
+  organizer_not_found: 'Organizer not found.',
   link_invalid:
     'This link is no longer valid, ask your organizer for a new one.',
   draw_not_done: 'The draw has not taken place yet.',

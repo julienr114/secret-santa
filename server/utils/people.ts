@@ -10,7 +10,7 @@ import {
 // People and exclusions of a group (README 6.6, section 10).
 
 const nameSchema = z.string().trim().min(1).max(60);
-/** Optional address for groups that send links by email. */
+/** Optional address: where the link is emailed, and what the person logs in with. */
 export const emailSchema = z
   .string()
   .trim()

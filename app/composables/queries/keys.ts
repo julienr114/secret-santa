@@ -1,6 +1,6 @@
 // Query keys, one place so mutations invalidate the right reads.
 export const keys = {
-  groups: () => ['groups'] as const,
+  home: () => ['home'] as const,
   group: (slug: string) => ['group', slug] as const,
   dashboard: (slug: string) => ['group', slug, 'dashboard'] as const,
   people: (slug: string) => ['group', slug, 'people'] as const,
@@ -10,6 +10,7 @@ export const keys = {
     ['group', slug, 'edition', id] as const,
   check: (slug: string, id: string) =>
     ['group', slug, 'edition', id, 'check'] as const,
+  account: () => ['account'] as const,
   // Personal link: everything under the token is refetched together.
   personal: (token: string) => ['p', token] as const,
   wishes: (token: string) => ['p', token, 'wishes'] as const,

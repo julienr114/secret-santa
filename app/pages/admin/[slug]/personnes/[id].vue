@@ -101,7 +101,6 @@ const onDelete = () =>
         <AdminPersonForm
           :key="person.id"
           :initial="person"
-          :with-email="dashboard.data.value?.group.emailSending"
           autosave
           @submit="onSave"
         />

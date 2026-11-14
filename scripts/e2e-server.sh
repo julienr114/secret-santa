@@ -12,9 +12,9 @@ pnpm build
 pnpm wrangler d1 migrations apply secret-santa --local --persist-to "$STATE"
 exec pnpm wrangler dev --port 3100 --persist-to "$STATE" --log-level warn \
   --var NUXT_APP_SECRET:e2e-app-secret-0123456789abcdef0123456789 \
-  --var NUXT_SUPER_ADMIN_PASSWORD:e2e-super-password \
   --var NUXT_DATA_KEY:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
-  --var NUXT_PIN_PEPPER:e2e-pepper \
-  --var NUXT_PBKDF2_ITERATIONS:1000 \
   --var NUXT_RESEND_API_KEY: \
+  --var NUXT_DEV_LOGIN_LINKS:true \
+  --var NUXT_LINK_REQUESTS_PER_IP:1000 \
+  --var NUXT_SUPER_ADMIN_EMAILS:admin@example.com,second@example.com,third@example.com,super-edition@example.com,super-email@example.com,super-language@example.com,super-participant@example.com,super-security@example.com \
   --var NUXT_PUBLIC_BASE_URL:http://localhost:3100

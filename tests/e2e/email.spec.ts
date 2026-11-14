@@ -2,19 +2,19 @@ import { expect, test, type APIRequestContext } from '@playwright/test';
 import {
   heading,
   hydrated,
-  loginAsGuardian,
+  apiLogin,
+  loginAsOrganizer,
   loginAsSuper,
-  SUPER_PASSWORD,
 } from './helpers';
 
-// Bulk sending by email is an option of the group that only the
-// super-admin can switch on. The test server has no email key, so the send
-// itself answers "not configured": what is checked here is who may do what,
-// and what each screen shows.
+// Sending by email is open to every group. The test server has no email
+// key, so the send itself answers "not configured": what is checked here
+// is who may do what, and what each screen shows.
 test.describe.configure({ mode: 'serial' });
 
 const SLUG = 'famille-courrier';
-const PASSWORD = 'gardien-courrier-1';
+const SUPER = 'super-email@example.com';
+const ORGANIZER = 'orga-courrier@example.com';
 const ADMIN = `/api/admin/${SLUG}`;
 const state: { api?: APIRequestContext; groupId: string; editionId: string } = {
   groupId: '',
@@ -24,11 +24,9 @@ const state: { api?: APIRequestContext; groupId: string; editionId: string } = {
 test.beforeAll(async ({ playwright, baseURL }) => {
   const api = await playwright.request.newContext({ baseURL });
   state.api = api;
-  await api.post('/api/admin/login', {
-    data: { scope: 'super', password: SUPER_PASSWORD },
-  });
+  await apiLogin(api, SUPER);
   const created = await api.post('/api/admin/groups', {
-    data: { slug: SLUG, name: 'Famille Courrier', guardianPassword: PASSWORD },
+    data: { slug: SLUG, name: 'Famille Courrier', organizers: [ORGANIZER] },
   });
   state.groupId = (await created.json()).group.id;
   for (const firstName of ['Ada', 'Bob', 'Cléo']) {
@@ -45,53 +43,10 @@ test.afterAll(async () => {
   await state.api?.dispose();
 });
 
-test('off by default, and the guardian cannot switch it on', async ({
-  page,
-}) => {
-  await loginAsGuardian(page, SLUG, PASSWORD);
-  await expect(page.getByText('Envoi par email')).toHaveCount(0);
-
-  const patch = await page.request.patch(`/api/admin/groups/${state.groupId}`, {
-    data: { emailSending: true },
-  });
-  expect(patch.status()).toBe(403);
-  const send = await page.request.post(
-    `${ADMIN}/editions/${state.editionId}/emails`,
-    { data: { type: 'invitation' } },
-  );
-  expect(send.status()).toBe(403);
-
-  // No address is asked for, and nothing about email on the edition.
-  await page.goto(`/admin/${SLUG}/personnes/nouvelle`);
-  await hydrated(page);
-  await expect(page.getByLabel('Prénom')).toBeVisible();
-  await expect(page.getByLabel('Email')).toHaveCount(0);
-  await page.goto(`/admin/${SLUG}/editions/${state.editionId}`);
-  await hydrated(page);
-  await expect(
-    page.getByRole('button', { name: 'Envoyer le lien de Ada' }),
-  ).toBeVisible();
-  await expect(page.getByText(/par email/)).toHaveCount(0);
-});
-
-test('the super-admin switches it on from the group screen', async ({
-  page,
-}) => {
-  await loginAsSuper(page);
-  await page.goto(`/admin/${SLUG}`);
-  await hydrated(page);
-  await expect(heading(page)).toHaveText('Famille Courrier');
-  await page.getByRole('switch', { name: 'Envoi par email' }).click();
-  await expect(page.getByText('Activé', { exact: true })).toBeVisible();
-});
-
 test('the guardian adds addresses and sends to those who have one', async ({
   page,
 }) => {
-  await loginAsGuardian(page, SLUG, PASSWORD);
-  // The switch itself stays out of the guardian's reach.
-  await expect(page.getByRole('switch')).toHaveCount(0);
-
+  await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.getByText('Personnes', { exact: true }).click();
   await page.getByText('Ada', { exact: true }).click();
   await page.getByLabel('Email').fill('Ada@Example.com');
@@ -206,10 +161,51 @@ test('the guardian adds addresses and sends to those who have one', async ({
   expect(tooMany.status()).toBe(400);
 });
 
+test('a participant logs in with their address and finds their draw', async ({
+  page,
+}) => {
+  const api = state.api!;
+  const email = 'dana-accueil@example.com';
+  const person = await api.post(`${ADMIN}/persons`, {
+    data: { firstName: 'Dana', email },
+  });
+  const personId = (await person.json()).person.id;
+
+  // The address is known through the person: it gets a link and a home,
+  // empty as long as she takes part in no edition.
+  await apiLogin(page.request, email);
+  await page.goto('/');
+  await hydrated(page);
+  await expect(heading(page)).toHaveText('Accueil');
+  await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
+  await expect(page.getByTestId('home-groups')).toHaveCount(0);
+
+  const added = await api.post(
+    `${ADMIN}/editions/${state.editionId}/participants`,
+    { data: { personId } },
+  );
+  expect(added.ok()).toBe(true);
+  await page.reload();
+  await hydrated(page);
+  const draw = page.getByTestId('home-draws').getByRole('link');
+  await expect(draw).toContainText('Noël courrier');
+  await expect(draw).toContainText('Famille Courrier · Dana');
+
+  // A member has no admin: neither the API nor the screens.
+  expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
+  expect((await page.request.get(`${ADMIN}/persons`)).status()).toBe(403);
+  await page.goto(`/admin/${SLUG}`);
+  await expect(heading(page)).toHaveText('Accueil');
+
+  await page.getByTestId('home-draws').getByRole('link').click();
+  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}$/);
+  await expect(page.getByText('Dana')).toBeVisible();
+});
+
 test('only the super-admin can delete a group, with everything in it', async ({
   page,
 }) => {
-  await loginAsGuardian(page, SLUG, PASSWORD);
+  await loginAsOrganizer(page, SLUG, ORGANIZER);
   await expect(page.getByText('Supprimer le groupe')).toHaveCount(0);
   const refused = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
@@ -218,7 +214,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   expect(refused.status()).toBe(403);
 
   await page.context().clearCookies();
-  await loginAsSuper(page);
+  await loginAsSuper(page, SUPER);
   // The identifier must be typed exactly, in the API as on screen.
   const careless = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
@@ -234,7 +230,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   await expect(confirm).toBeDisabled();
   await page.getByLabel(/Recopie l’identifiant du groupe/).fill(SLUG);
   await confirm.click();
-  await expect(page).toHaveURL(/\/admin\/groupes$/);
+  await expect(heading(page)).toHaveText('Accueil');
   await expect(page.getByText('Famille Courrier')).toHaveCount(0);
 
   // Nothing is left behind: the group, its people and its edition are gone.

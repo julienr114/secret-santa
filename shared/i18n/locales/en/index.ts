@@ -6,6 +6,7 @@ import participant from './participant';
 import adminShell from './adminShell';
 import adminEdition from './adminEdition';
 import adminGroup from './adminGroup';
+import auth from './auth';
 
 export default {
   common,
@@ -16,4 +17,5 @@ export default {
   adminShell,
   adminEdition,
   adminGroup,
+  auth,
 };

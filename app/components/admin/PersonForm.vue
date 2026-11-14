@@ -8,7 +8,6 @@ import { DEFAULT_LOCALE, LOCALES, type Locale } from '#shared/i18n';
 export type PersonFormValue = {
   firstName: string;
   lastName: string | null;
-  /** Only present when the form shows the email field. */
   email?: string | null;
   avatarEmoji: Avatar['emoji'];
   avatarColor: Avatar['color'];
@@ -20,8 +19,6 @@ export type PersonFormValue = {
 // field loses focus, the avatar is confirmed or the language changes.
 const props = defineProps<{
   autosave?: boolean;
-  /** Groups that send links by email also ask for an address. */
-  withEmail?: boolean;
   initial?: {
     firstName?: string;
     lastName?: string | null;
@@ -88,9 +85,7 @@ const confirmPicker = () => {
 const valueOf = (data: Schema): PersonFormValue => ({
   firstName: data.firstName.trim(),
   lastName: data.lastName.trim() || null,
-  ...(props.withEmail
-    ? { email: data.email.trim().toLowerCase() || null }
-    : {}),
+  email: data.email.trim().toLowerCase() || null,
   avatarEmoji: avatar.value.emoji,
   avatarColor: avatar.value.color,
   language: data.language,
@@ -186,7 +181,6 @@ const onLanguage = (language: Locale) => {
       />
     </UFormField>
     <UFormField
-      v-if="withEmail"
       name="email"
       :label="t('adminGroup.personForm.emailLabel')"
       :help="t('adminGroup.personForm.emailHelp')"

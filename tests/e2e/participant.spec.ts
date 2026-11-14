@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { heading, hydrated, SUPER_PASSWORD } from './helpers';
+import { apiLogin, heading, hydrated } from './helpers';
 
 // The participant's journey through a personal link (README 4.3 and
 // section 18): waiting screen, wish list, counted reveal, journal, and the
@@ -57,11 +57,10 @@ const open = async (page: Page, path: string) => {
 
 test.beforeAll(async ({ playwright, baseURL }) => {
   state.admin = await playwright.request.newContext({ baseURL });
-  await post('/api/admin/login', { scope: 'super', password: SUPER_PASSWORD });
+  await apiLogin(admin(), 'super-participant@example.com');
   await post('/api/admin/groups', {
     slug: SLUG,
     name: 'Famille Lutins',
-    guardianPassword: 'gardien-lutins-1',
   });
   for (const firstName of NAMES) await post(`${ADMIN}/persons`, { firstName });
   const rules = await admin().patch(`${ADMIN}/rules`, {

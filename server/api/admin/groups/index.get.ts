@@ -1,14 +1,11 @@
-import { asc } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
-import { groups } from '#server/database/schema';
-import { publicGroup } from '#server/database/groups';
-import { requireSuperAdmin } from '#server/http/auth';
+import { listManagedGroups, publicGroup } from '#server/database/groups';
+import { requireAdmin } from '#server/http/auth';
 
+// The groups of the logged-in account: all of them for a super-admin,
+// those they organise for an organiser.
 export default defineEventHandler(async (event) => {
-  await requireSuperAdmin(event);
-  const rows = await useDb(event)
-    .select()
-    .from(groups)
-    .orderBy(asc(groups.name));
+  const user = await requireAdmin(event);
+  const rows = await listManagedGroups(useDb(event), user);
   return { groups: rows.map(publicGroup) };
 });

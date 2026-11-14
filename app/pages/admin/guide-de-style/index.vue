@@ -10,9 +10,9 @@ definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk } = useT();
 useHead({ title: () => `Guide de style — ${t('common.appName')}` });
 const screen = {
-  back: '/admin/groupes',
+  back: '/',
   crumbs: [
-    { label: t('adminGroup.groups.title'), to: '/admin/groupes' },
+    { label: t('auth.home.title'), to: '/' },
     { label: 'Guide de style' },
   ],
 };

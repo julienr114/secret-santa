@@ -14,13 +14,7 @@ export const groups = sqliteTable('groups', {
   id: text('id').primaryKey(),
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
-  guardianPasswordHash: text('guardian_password_hash'),
-  guardianPasswordSalt: text('guardian_password_salt'),
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
-  // Bulk sending by email, switched on by the super-admin only.
-  emailSending: integer('email_sending', { mode: 'boolean' })
-    .notNull()
-    .default(false),
   createdAt: text('created_at').notNull(),
 });
 
@@ -33,7 +27,8 @@ export const persons = sqliteTable(
       .references(() => groups.id),
     firstName: text('first_name').notNull(),
     lastName: text('last_name'),
-    // Optional, only used when the group sends links by email.
+    // Optional: where their link is emailed, and the address they log in
+    // with to find their draws.
     email: text('email'),
     // Preferred language: their personal page, messages and emails.
     language: text('language', { enum: ['fr', 'en', 'de'] })
@@ -191,18 +186,88 @@ export const auditLog = sqliteTable(
   (t) => [index('audit_log_group_created_idx').on(t.groupId, t.createdAt)],
 );
 
-export const loginAttempts = sqliteTable(
-  'login_attempts',
+// --- Accounts (plan v2, README 22.5) ---------------------------------------
+// A person who logs in: by a magic link sent to their email, never a
+// password. A super-admin is an account like the others, with a flag.
+
+export const accounts = sqliteTable('accounts', {
+  id: text('id').primaryKey(),
+  // Lower case, unique.
+  email: text('email').notNull().unique(),
+  isSuperAdmin: integer('is_super_admin', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+  // How many groups the account may create; nobody may by default.
+  groupQuota: integer('group_quota').notNull().default(0),
+  language: text('language', { enum: ['fr', 'en', 'de'] })
+    .notNull()
+    .default('fr'),
+  createdAt: text('created_at').notNull(),
+  lastLoginAt: text('last_login_at'),
+  // A disabled account cannot log in and its sessions stop working.
+  disabledAt: text('disabled_at'),
+});
+
+export const loginLinks = sqliteTable(
+  'login_links',
   {
     id: text('id').primaryKey(),
-    // Group slug or "super".
-    scope: text('scope').notNull(),
-    ipHash: text('ip_hash').notNull(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    // SHA-256 of the token: the token itself only exists in the email.
+    tokenHash: text('token_hash').notNull().unique(),
     createdAt: text('created_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    usedAt: text('used_at'),
+    // Who asked, hashed, for throttling.
+    ipHash: text('ip_hash').notNull(),
   },
-  (t) => [index('login_attempts_scope_idx').on(t.scope, t.createdAt)],
+  (t) => [
+    index('login_links_account_idx').on(t.accountId, t.createdAt),
+    index('login_links_ip_idx').on(t.ipHash, t.createdAt),
+  ],
 );
 
+export const sessions = sqliteTable(
+  'sessions',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+    lastSeenAt: text('last_seen_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    revokedAt: text('revoked_at'),
+    // Shown on "my devices" so that the owner recognises a session.
+    userAgent: text('user_agent'),
+  },
+  (t) => [index('sessions_account_idx').on(t.accountId)],
+);
+
+// The organisers of a group: accounts that may manage it. Super-admins
+// manage every group without being listed here.
+export const groupMembers = sqliteTable(
+  'group_members',
+  {
+    groupId: text('group_id')
+      .notNull()
+      .references(() => groups.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('group_members_pair_idx').on(t.groupId, t.accountId),
+    index('group_members_account_idx').on(t.accountId),
+  ],
+);
+
+export type AccountRow = typeof accounts.$inferSelect;
+export type LoginLinkRow = typeof loginLinks.$inferSelect;
+export type SessionRow = typeof sessions.$inferSelect;
 export type GroupRow = typeof groups.$inferSelect;
 export type PersonRow = typeof persons.$inferSelect;
 export type ExclusionRow = typeof manualExclusions.$inferSelect;

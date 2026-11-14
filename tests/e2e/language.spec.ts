@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { heading, hydrated, loginAsGuardian, SUPER_PASSWORD } from './helpers';
+import { apiLogin, heading, hydrated, loginAsOrganizer } from './helpers';
 
 // Three languages (plan v7). A person has a preferred language: their
 // personal page, the messages and the journal follow it. The admin side
@@ -7,7 +7,8 @@ import { heading, hydrated, loginAsGuardian, SUPER_PASSWORD } from './helpers';
 test.describe.configure({ mode: 'serial' });
 
 const SLUG = 'famille-polyglotte';
-const PASSWORD = 'gardien-polyglotte-1';
+const SUPER = 'super-language@example.com';
+const ORGANIZER = 'orga-polyglotte@example.com';
 const ADMIN = `/api/admin/${SLUG}`;
 const state: { api?: APIRequestContext; editionId: string; link: string } = {
   editionId: '',
@@ -37,14 +38,12 @@ const messageOf = async (firstName: string, type = 'invitation') => {
 
 test.beforeAll(async ({ playwright, baseURL }) => {
   state.api = await playwright.request.newContext({ baseURL });
-  await api().post('/api/admin/login', {
-    data: { scope: 'super', password: SUPER_PASSWORD },
-  });
+  await apiLogin(api(), SUPER);
   await api().post('/api/admin/groups', {
     data: {
       slug: SLUG,
       name: 'Famille Polyglotte',
-      guardianPassword: PASSWORD,
+      organizers: [ORGANIZER],
     },
   });
   await api().post(`${ADMIN}/persons`, {
@@ -125,7 +124,7 @@ test('an unknown link speaks the language of the browser', async ({ page }) => {
 test('the admin side follows the choice made on the device', async ({
   page,
 }) => {
-  await loginAsGuardian(page, SLUG, PASSWORD);
+  await loginAsOrganizer(page, SLUG, ORGANIZER);
   await expect(heading(page)).toHaveText('Famille Polyglotte');
   // Language and log out live in one menu; the logo is always there.
   await expect(

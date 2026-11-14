@@ -51,7 +51,6 @@ const onSubmit = (value: PersonFormValue) =>
     </UiPageTitle>
     <AdminPersonForm
       :submit-label="t('common.actions.add')"
-      :with-email="dashboard.data.value?.group.emailSending"
       :loading="create.isPending.value"
       @submit="onSubmit"
     >

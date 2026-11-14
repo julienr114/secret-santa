@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import type { H3Event } from 'h3';
+import { LINK_REQUESTS_MAX_PER_IP } from '#server/utils/accounts';
 import { importDataKey } from '#server/utils/crypto';
 
 // Per-request dependencies injected into the pure core.
@@ -8,24 +9,25 @@ export const newId = (): string => nanoid();
 export const nowIso = (): string => new Date().toISOString();
 
 export type Secrets = {
-  superAdminPassword: string;
   dataKey: string;
-  pinPepper: string;
-  pbkdf2Iterations: number;
   baseUrl: string;
   resendApiKey: string;
+  superAdminEmails: string;
+  devLoginLinks: boolean;
+  linkRequestsPerIp: number;
   emailFrom: string;
 };
 
 export const secretsOf = (event: H3Event): Secrets => {
   const config = useRuntimeConfig(event);
   return {
-    superAdminPassword: String(config.superAdminPassword ?? ''),
     dataKey: String(config.dataKey ?? ''),
-    pinPepper: String(config.pinPepper ?? ''),
-    pbkdf2Iterations: Number(config.pbkdf2Iterations) || 20_000,
     baseUrl: String(config.public.baseUrl ?? ''),
     resendApiKey: String(config.resendApiKey ?? ''),
+    superAdminEmails: String(config.superAdminEmails ?? ''),
+    devLoginLinks: String(config.devLoginLinks) === 'true',
+    linkRequestsPerIp:
+      Number(config.linkRequestsPerIp) || LINK_REQUESTS_MAX_PER_IP,
     emailFrom: String(config.emailFrom ?? ''),
   };
 };

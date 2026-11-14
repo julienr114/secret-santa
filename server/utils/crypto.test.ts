@@ -3,20 +3,14 @@ import {
   decrypt,
   encrypt,
   generateDataKey,
-  generateSalt,
   generateToken,
-  hashSecret,
   hashToken,
   importDataKey,
   secureRandomInt,
-  timingSafeEqual,
   toBase64,
   fromBase64,
-  verifySecret,
 } from './crypto';
 import { failureOf, valueOf } from '~~/tests/helpers';
-
-const FAST = { iterations: 1_000 };
 
 describe('encoding', () => {
   it('round-trips base64', () => {
@@ -47,52 +41,6 @@ describe('secureRandomInt', () => {
     values.forEach((v) => expect(v).toBeGreaterThanOrEqual(0));
     values.forEach((v) => expect(v).toBeLessThan(5));
     expect(new Set(values).size).toBe(5);
-  });
-});
-
-describe('hashSecret / verifySecret', () => {
-  const salt = generateSalt();
-  const pepper = 'pepper';
-
-  it('is deterministic for the same inputs and sensitive to each of them', async () => {
-    const a = await hashSecret('123457', { salt, pepper, ...FAST });
-    expect(a).toBe(await hashSecret('123457', { salt, pepper, ...FAST }));
-    expect(a).not.toBe(await hashSecret('123458', { salt, pepper, ...FAST }));
-    expect(a).not.toBe(
-      await hashSecret('123457', { salt: generateSalt(), pepper, ...FAST }),
-    );
-    expect(a).not.toBe(
-      await hashSecret('123457', { salt, pepper: 'other', ...FAST }),
-    );
-    expect(a).not.toBe(
-      await hashSecret('123457', { salt, pepper, iterations: 1_001 }),
-    );
-  });
-
-  it('verifies the right secret and rejects a wrong one', async () => {
-    const hash = await hashSecret('s3cret-pass', { salt, pepper, ...FAST });
-    expect(
-      await verifySecret('s3cret-pass', { hash, salt, pepper, ...FAST }),
-    ).toBe(true);
-    expect(
-      await verifySecret('s3cret-pasS', { hash, salt, pepper, ...FAST }),
-    ).toBe(false);
-    expect(
-      await verifySecret('s3cret-pass', { hash, salt, pepper: 'x', ...FAST }),
-    ).toBe(false);
-  });
-
-  it('caps the iteration count at the Workers limit', async () => {
-    const capped = await hashSecret('x', { salt, pepper, iterations: 100_000 });
-    const over = await hashSecret('x', { salt, pepper, iterations: 500_000 });
-    expect(over).toBe(capped);
-  });
-
-  it('compares strings in constant time semantics', () => {
-    expect(timingSafeEqual('abc', 'abc')).toBe(true);
-    expect(timingSafeEqual('abc', 'abd')).toBe(false);
-    expect(timingSafeEqual('abc', 'abcd')).toBe(false);
-    expect(timingSafeEqual('', '')).toBe(true);
   });
 });
 

@@ -5,7 +5,6 @@ export default {
   validation: 'Vérifie les champs du formulaire.',
   unauthorized: 'Connecte-toi pour continuer.',
   forbidden: "Tu n'as pas accès à ce groupe.",
-  invalid_credentials: 'Mot de passe incorrect.',
   too_many_attempts: 'Trop de tentatives, réessaie dans quelques minutes.',
   slug_taken: 'Cet identifiant de groupe est déjà pris.',
   group_not_found: 'Groupe introuvable.',
@@ -27,7 +26,6 @@ export default {
   already_participating: 'Cette personne participe déjà.',
   links_not_open: "Ouvre d'abord les invitations.",
   message_not_available: "Ce message ne correspond pas à l'étape de l'édition.",
-  email_disabled: "L'envoi par email n'est pas activé pour ce groupe.",
   email_not_configured:
     "L'envoi par email n'est pas configuré sur le serveur. Partage les liens depuis ton téléphone.",
   email_failed:
@@ -38,6 +36,11 @@ export default {
   wrong_sentence: 'Recopie exactement la phrase demandée.',
   results_secret:
     "Les résultats restent secrets tant que l'édition n'est pas clôturée.",
+  login_link_invalid:
+    "Ce lien de connexion n'est plus valable : demande-en un nouveau.",
+  cannot_remove_self:
+    'Tu ne peux pas te retirer toi-même : demande à un autre organisateur.',
+  organizer_not_found: 'Organisateur introuvable.',
   link_invalid:
     "Ce lien n'est plus valable, demande-en un nouveau à ton organisateur.",
   draw_not_done: "Le tirage n'a pas encore eu lieu.",

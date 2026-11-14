@@ -1,60 +1,68 @@
 import { z } from 'zod';
 
-// Admin sessions and login throttling (README 8.4). Pure: the routes load
-// attempts from the database and pass them in.
+// Who a logged-in account is (README 8.4, 22.5). Pure.
 
-export const ROLES = ['super_admin', 'guardian'] as const;
+// `guardian` is the organiser of one or more groups: the word stays in
+// the code (journal actors, routes) although the screens say "organiser".
+// `member` is everyone else: someone who logs in to find their draws.
+export const ROLES = ['super_admin', 'guardian', 'member'] as const;
 export type Role = (typeof ROLES)[number];
+/** The roles that open the admin. */
+export type AdminRole = Exclude<Role, 'member'>;
 
 export const sessionUserSchema = z.object({
   role: z.enum(ROLES),
-  groupId: z.string().min(1).nullable().default(null),
-  groupSlug: z.string().min(1).nullable().default(null),
+  accountId: z.string().min(1),
+  sessionId: z.string().min(1),
 });
 export type SessionUser = z.infer<typeof sessionUserSchema>;
+/** A logged-in user who may use the admin. */
+export type AdminUser = SessionUser & { role: AdminRole };
 
-export const LOGIN_MAX_FAILURES = 10;
-export const LOGIN_WINDOW_MS = 15 * 60 * 1000;
-
-/** Super-admins may act on any group, guardians only on their own. */
-export const canAccessGroup = (
-  user: SessionUser | null | undefined,
-  groupId: string,
-): boolean =>
-  Boolean(user) && (user?.role === 'super_admin' || user?.groupId === groupId);
-
-export type Throttle = {
-  blocked: boolean;
-  retryAfterSeconds: number;
-  failures: number;
+/**
+ * The role of an account: super-admin by its flag, organiser when it
+ * manages at least one group, plain member otherwise.
+ * @param account - The account's flag and how many groups it organises.
+ * @returns The role.
+ */
+export const roleOf = (account: {
+  isSuperAdmin: boolean;
+  groupCount: number;
+}): Role => {
+  if (account.isSuperAdmin) return 'super_admin';
+  return account.groupCount > 0 ? 'guardian' : 'member';
 };
 
 /**
- * Decides whether a login attempt is allowed given recent failures.
- * @param failureDates ISO dates of recent failures (same scope and ip)
- * @param now ISO date
+ * Whether the user may use the admin: members only have their home.
+ * @param user - The logged-in user.
+ * @returns True for super-admins and organisers.
  */
-export const loginThrottle = (
-  failureDates: string[],
-  now: string,
-): Throttle => {
-  const nowMs = Date.parse(now);
-  const recent = failureDates
-    .map((d) => Date.parse(d))
-    .filter((ms) => Number.isFinite(ms) && nowMs - ms < LOGIN_WINDOW_MS);
-  const blocked = recent.length >= LOGIN_MAX_FAILURES;
-  const oldest = Math.min(...recent);
-  const retryAfterSeconds = blocked
-    ? Math.ceil((oldest + LOGIN_WINDOW_MS - nowMs) / 1000)
-    : 0;
-  return { blocked, retryAfterSeconds, failures: recent.length };
-};
+export const isAdminUser = (user: SessionUser): user is AdminUser =>
+  user.role !== 'member';
 
-export const GUARDIAN_PASSWORD_MIN = 10;
-export const guardianPasswordSchema = z
-  .string()
-  .min(GUARDIAN_PASSWORD_MIN)
-  .max(200);
+/**
+ * Super-admins may act on any group, organisers only on theirs.
+ * @param user - The logged-in user, if any.
+ * @param isMember - Whether the account organises the group.
+ * @returns True when the group is open to them.
+ */
+export const canAccessGroup = (
+  user: Pick<SessionUser, 'role'> | null | undefined,
+  isMember: boolean,
+): boolean => Boolean(user) && (user?.role === 'super_admin' || isMember);
+
+/**
+ * An organiser can be removed by a super-admin or by another organiser,
+ * never by themselves: a slip would lock them out of their own group.
+ * @param user - Who asks.
+ * @param targetAccountId - The organiser to remove.
+ * @returns True when allowed.
+ */
+export const canRemoveOrganizer = (
+  user: Pick<SessionUser, 'role' | 'accountId'>,
+  targetAccountId: string,
+): boolean => user.role === 'super_admin' || user.accountId !== targetAccountId;
 
 export const slugSchema = z
   .string()

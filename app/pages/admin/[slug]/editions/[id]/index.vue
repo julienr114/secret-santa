@@ -139,12 +139,9 @@ const subtitles = computed(() =>
     }),
   ),
 );
-// Bulk sending by email, when the super-admin switched it on for the
-// group: the guardian ticks who to write to in the list, then picks the
-// message in a sheet. Only people with an address can be ticked.
-const emailSending = computed(
-  () => dashboard.data.value?.group.emailSending ?? false,
-);
+// Bulk sending by email: the guardian ticks who to write to in the list,
+// then picks the message in a sheet. Only people with an address can be
+// ticked.
 const sendEmails = useSendEmailsMutation(slug, id);
 const withEmail = computed(() => participants.value.filter((p) => p.email));
 const selecting = ref(false);
@@ -490,7 +487,7 @@ const runDraw = () =>
 
       <!-- Sending: the message is chosen in the sheets, not here. -->
       <section v-if="canSend" class="flex flex-col gap-2">
-        <template v-if="emailSending && !selecting">
+        <template v-if="!selecting">
           <p v-if="withEmail.length === 0" class="px-1 text-xs text-muted">
             {{ t('adminEdition.cockpit.email.noAddress') }}
           </p>
@@ -878,7 +875,6 @@ const runDraw = () =>
             :text="
               messages.data.value?.messages[sendTarget.participationId]?.text
             "
-            :email-enabled="emailSending"
             @done="sendSheetOpen = false"
           />
         </UiList>

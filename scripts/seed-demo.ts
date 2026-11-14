@@ -2,11 +2,15 @@
 // and closed), an open one with a few wish lists, created through the API like a guardian
 // would. Usage: pnpm dev, then pnpm seed:demo [base URL].
 const BASE = process.argv[2] ?? 'http://localhost:3000';
-const SUPER = process.env.NUXT_SUPER_ADMIN_PASSWORD ?? 'dev-super-password';
+// A super-admin address: the one created by the migration, or one of
+// NUXT_SUPER_ADMIN_EMAILS. The dev server must run with
+// NUXT_DEV_LOGIN_LINKS=true, so that the login link comes back here
+// instead of being emailed.
+const SUPER = process.env.SEED_ADMIN_EMAIL ?? 'julienr114@gmail.com';
 const GROUP = {
   slug: 'famille-demo',
   name: 'Famille Démo',
-  password: 'demo-gardien-1',
+  organizer: 'orga-demo@example.com',
 };
 const PEOPLE = [
   'Anaïs',
@@ -48,7 +52,17 @@ const call = async <T>(
   return (await res.json()) as T;
 };
 
-await call('POST', '/api/admin/login', { scope: 'super', password: SUPER });
+const asked = await call<{ devLink?: string }>('POST', '/api/auth/link', {
+  email: SUPER,
+});
+if (!asked.devLink) {
+  throw new Error(
+    `Pas de lien de connexion pour ${SUPER} : lance le serveur avec NUXT_DEV_LOGIN_LINKS=true.`,
+  );
+}
+await call('POST', '/api/auth/confirm', {
+  token: new URL(asked.devLink).pathname.split('/').at(-1),
+});
 const groups = await call<{ groups: { slug: string }[] }>(
   'GET',
   '/api/admin/groups',
@@ -60,7 +74,7 @@ if (groups.groups.some((g) => g.slug === GROUP.slug)) {
 await call('POST', '/api/admin/groups', {
   slug: GROUP.slug,
   name: GROUP.name,
-  guardianPassword: GROUP.password,
+  organizers: [GROUP.organizer],
 });
 const g = `/api/admin/${GROUP.slug}`;
 const ids = new Map<string, string>();
@@ -133,7 +147,7 @@ for (const [firstName, wishes] of Object.entries(WISHES)) {
 }
 
 console.log(
-  `Prêt : ${BASE}/admin, groupe « ${GROUP.slug} », mot de passe « ${GROUP.password} ».`,
+  `Prêt : ${BASE}/admin. Connecte-toi avec ${SUPER} (super-admin) ou ${GROUP.organizer} (organisateur de « ${GROUP.slug} »).`,
 );
 console.log(
   `Éditions clôturées : ${PAST_YEARS.join(', ')}. En cours : ${CURRENT_YEAR} (invitations).`,

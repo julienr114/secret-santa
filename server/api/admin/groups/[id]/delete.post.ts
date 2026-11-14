@@ -6,7 +6,7 @@ import {
   auditLog,
   editions,
   groups,
-  loginAttempts,
+  groupMembers,
   manualExclusions,
   participations,
   persons,
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
     db.delete(manualExclusions).where(eq(manualExclusions.groupId, id)),
     db.delete(editions).where(eq(editions.groupId, id)),
     db.delete(persons).where(eq(persons.groupId, id)),
-    db.delete(loginAttempts).where(eq(loginAttempts.scope, group.slug)),
+    db.delete(groupMembers).where(eq(groupMembers.groupId, id)),
     db.delete(groups).where(eq(groups.id, id)),
   ]);
   return { ok: true };

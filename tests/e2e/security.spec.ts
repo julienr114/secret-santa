@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { SUPER_PASSWORD } from './helpers';
+import { apiLogin } from './helpers';
 
 // The secret of the draw, checked from the outside (README 8.6 and 18):
 // once drawn, nothing the admin API answers may say who gives to whom, nor
@@ -9,7 +9,8 @@ import { SUPER_PASSWORD } from './helpers';
 test.describe.configure({ mode: 'serial' });
 
 const SLUG = 'famille-coffre';
-const PASSWORD = 'gardien-coffre-12';
+const SUPER = 'super-security@example.com';
+const ORGANIZER = 'orga-coffre@example.com';
 const ADMIN = `/api/admin/${SLUG}`;
 const NAMES = ['Aude', 'Basile', 'Carla', 'Denis', 'Elsa'];
 const WISH = 'SOUHAIT-ULTRA-SECRET';
@@ -49,7 +50,7 @@ const leaksAPair = (body: Json) =>
     );
   });
 const FORBIDDEN =
-  /receiverEnc|receiver_enc|receiverIv|tokenHash|tokenEnc|tokenIv|guardianPasswordHash|guardianPasswordSalt|passwordHash/;
+  /receiverEnc|receiver_enc|receiverIv|tokenHash|tokenEnc|tokenIv|token_hash|passwordHash/;
 
 const adminReads = () => [
   ADMIN,
@@ -68,16 +69,11 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   state.guardian = await playwright.request.newContext({ baseURL });
   state.anonymous = await playwright.request.newContext({ baseURL });
   const api = ctx('superApi');
-  await api.post('/api/admin/login', {
-    data: { scope: 'super', password: SUPER_PASSWORD },
-  });
+  await apiLogin(api, SUPER);
   await api.post('/api/admin/groups', {
-    data: { slug: SLUG, name: 'Famille Coffre', guardianPassword: PASSWORD },
+    data: { slug: SLUG, name: 'Famille Coffre', organizers: [ORGANIZER] },
   });
-  const login = await ctx('guardian').post('/api/admin/login', {
-    data: { scope: SLUG, password: PASSWORD },
-  });
-  expect(login.ok()).toBe(true);
+  await apiLogin(ctx('guardian'), ORGANIZER);
   const guardian = ctx('guardian');
   const ids: string[] = [];
   for (const firstName of NAMES) {
@@ -236,7 +232,7 @@ test('reading never writes, and pages cannot be framed', async () => {
   expect((await ctx('guardian').get(link)).ok()).toBe(false);
   expect((await ctx('guardian').post(link)).ok()).toBe(true);
 
-  for (const path of ['/admin', `/p/${state.tokens[person.id]}`]) {
+  for (const path of ['/login', `/p/${state.tokens[person.id]}`]) {
     const headers = (await ctx('anonymous').get(path)).headers();
     expect(headers['x-frame-options'], path).toBe('DENY');
     expect(headers['content-security-policy'], path).toContain(
@@ -250,29 +246,4 @@ test('reading never writes, and pages cannot be framed', async () => {
   ).headers();
   expect(personal['referrer-policy']).toBe('no-referrer');
   expect(personal['cache-control']).toContain('no-store');
-});
-
-test('repeated wrong passwords are throttled, whatever header is forged', async ({
-  playwright,
-  baseURL,
-}) => {
-  const attacker = await playwright.request.newContext({ baseURL });
-  const attempt = async (i: number) => {
-    const response = await attacker.post('/api/admin/login', {
-      data: { scope: SLUG, password: `mauvais-mot-de-passe-${i}` },
-      // A different "client address" each time must not reset the count.
-      headers: { 'x-forwarded-for': `10.0.0.${i}` },
-    });
-    return response.status();
-  };
-  // One after the other: each attempt counts the failures before it.
-  const statuses = await Array.from({ length: 12 }, (_, i) => i).reduce<
-    Promise<number[]>
-  >(
-    async (done, i) => [...(await done), await attempt(i)],
-    Promise.resolve([]),
-  );
-  expect(statuses.slice(0, 10).every((s) => s === 401)).toBe(true);
-  expect(statuses.slice(10)).toEqual([429, 429]);
-  await attacker.dispose();
 });

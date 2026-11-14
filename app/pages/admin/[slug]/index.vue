@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useDashboardQuery } from '~/composables/queries/useGroup';
-import {
-  useDeleteGroupMutation,
-  useUpdateGroupMutation,
-} from '~/composables/queries/useGroups';
+import { useDeleteGroupMutation } from '~/composables/queries/useGroups';
 
 // Group home: what the guardian can do, as a list of actions.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -18,13 +15,8 @@ const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 
 useHead({ title: computed(() => `${name.value} — ${t('common.appName')}`) });
 const screen = computed(() => ({
-  back: isSuper.value ? '/admin/groupes' : null,
-  crumbs: [
-    ...(isSuper.value
-      ? [{ label: t('adminGroup.groups.title'), to: '/admin/groupes' }]
-      : []),
-    { label: name.value },
-  ],
+  back: '/',
+  crumbs: [{ label: t('auth.home.title'), to: '/' }, { label: name.value }],
 }));
 
 const current = computed(() =>
@@ -37,23 +29,7 @@ const past = computed(() =>
     .filter((e) => e.id !== dashboard.data.value?.currentEditionId)
     .toReversed(),
 );
-// Bulk sending by email: the super-admin's switch, never the guardian's.
 const toast = useToast();
-const updateGroup = useUpdateGroupMutation();
-const emailSending = computed(
-  () => dashboard.data.value?.group.emailSending ?? false,
-);
-const onToggleEmail = (value: boolean) => {
-  const id = dashboard.data.value?.group.id;
-  if (!id) return;
-  updateGroup.mutate(
-    { id, emailSending: value },
-    {
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
-    },
-  );
-};
 // Deleting the group and everything in it: super-admin only, and only
 // after typing the group's identifier.
 const deleteGroup = useDeleteGroupMutation();
@@ -77,7 +53,7 @@ const onDelete = () => {
           color: 'success',
           icon: 'i-lucide-check',
         });
-        navigateTo('/admin/groupes', { replace: true });
+        navigateTo('/', { replace: true });
       },
     },
   );
@@ -135,41 +111,14 @@ const editionSubtitle = (status: string, count?: number) =>
           :subtitle="t('participant.home.journal.subtitle')"
         />
         <UiListItem
-          v-if="isSuper"
-          :to="`/admin/${slug}/gardien`"
-          icon="i-lucide-key-round"
-          :title="t('adminGroup.guardian.title')"
-          :subtitle="
-            dashboard.data.value?.group.hasGuardianPassword
-              ? t('adminGroup.dashboard.guardianPasswordSet')
-              : t('adminGroup.dashboard.guardianPasswordMissing')
-          "
+          :to="`/admin/${slug}/organisateurs`"
+          icon="i-lucide-user-cog"
+          :title="t('adminGroup.organizers.title')"
+          :subtitle="t('adminGroup.organizers.summary')"
         />
       </UiList>
 
-      <UiList
-        v-if="isSuper"
-        :title="t('adminGroup.dashboard.superSection')"
-        :footer="t('adminGroup.dashboard.emailSendingHelp')"
-      >
-        <UiListItem
-          icon="i-lucide-mail"
-          :title="t('adminGroup.dashboard.emailSending')"
-          :subtitle="
-            emailSending
-              ? t('adminGroup.dashboard.emailSendingOn')
-              : t('adminGroup.dashboard.emailSendingOff')
-          "
-        >
-          <template #trailing>
-            <USwitch
-              :model-value="emailSending"
-              :loading="updateGroup.isPending.value"
-              :aria-label="t('adminGroup.dashboard.emailSending')"
-              @update:model-value="onToggleEmail"
-            />
-          </template>
-        </UiListItem>
+      <UiList v-if="isSuper" :title="t('adminGroup.dashboard.superSection')">
         <UiListItem
           icon="i-lucide-trash-2"
           tone="danger"

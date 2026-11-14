@@ -26,15 +26,21 @@ export default defineNuxtConfig({
   // Secrets come from the environment (NUXT_* variables, Cloudflare secrets
   // in production). See README section 15.
   runtimeConfig: {
-    superAdminPassword: '',
     dataKey: '',
-    pinPepper: '',
-    pbkdf2Iterations: 20000,
     // Bulk sending by email (Resend). Without a key the feature answers
     // "not configured"; sharing from the phone never depends on it.
+    // Accounts (README 22.5). Addresses that become super-admins on their
+    // first login link: how a fresh install gets its administrator.
+    superAdminEmails: '',
+    // Development and tests only: the login link is returned to the screen
+    // instead of only being emailed. Never in production.
+    devLoginLinks: false,
+    // Login links one client address may ask for per hour (0: default).
+    linkRequestsPerIp: 0,
     resendApiKey: '',
     emailFrom: 'Under the Tree <gardien@under-the-tree.party>',
-    session: { maxAge: 60 * 60 * 12, cookie: { sameSite: 'lax' } },
+    // 30 days; each session is also a row that can be revoked.
+    session: { maxAge: 60 * 60 * 24 * 30, cookie: { sameSite: 'lax' } },
     public: { baseUrl: '' },
   },
   css: ['~/assets/css/main.css'],
@@ -51,6 +57,12 @@ export default defineNuxtConfig({
     '/**': { headers: securityHeaders },
     '/p/**': { headers: personalHeaders },
     '/api/p/**': { headers: personalHeaders },
+    // A login link is a credential in a URL, like a personal link.
+    '/login/**': { headers: personalHeaders },
+    // Old addresses: the login page, then the list of groups.
+    '/admin': { redirect: '/' },
+    '/admin/groupes': { redirect: '/' },
+    '/api/auth/**': { headers: personalHeaders },
   },
   app: {
     head: {

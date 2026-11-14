@@ -173,7 +173,6 @@ export default {
   reveal: {
     title: 'Voir un résultat',
     personRequired: 'Choisis une personne',
-    passwordRequired: 'Mot de passe requis',
     sentenceRequired: 'Recopie « {sentence} »',
     shownNotice:
       'Ta consultation est inscrite au journal du groupe. Le résultat disparaît quand tu quittes cet écran.',
@@ -186,7 +185,6 @@ export default {
       "Le résultat ne s'affiche qu'ici, et disparaît quand tu quittes l'écran.",
     personLabel: 'Le résultat de qui ?',
     personPlaceholder: 'Choisir…',
-    passwordLabel: 'Ton mot de passe',
     sentenceLabel: 'Recopie : {sentence}',
     understood: "Je comprends que tout le groupe saura que j'ai regardé",
     submit: 'Voir ce résultat',

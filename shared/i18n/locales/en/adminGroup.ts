@@ -2,30 +2,13 @@ import type fr from '../fr/adminGroup';
 import type { Dict } from '../../types';
 
 export default {
-  home: {
-    tagline: 'Open the personal link you received to take part.',
-  },
-  login: {
-    title: 'Log in',
-    subtitle: 'Organizer area',
-    guardian: 'Organizer',
-    superAdmin: 'Super-admin',
-    slugLabel: 'Group ID',
-    slugHint: 'e.g. smith-family',
-    passwordLabel: 'Password',
-    passwordRequired: 'Password required',
-    submit: 'Log in',
-  },
   groups: {
     styleguide: 'Style guide',
     styleguideHint: 'The interface components',
-    title: 'Groups',
-    create: 'New',
-    empty: 'No groups yet. Create the first one with “New”.',
-    guardianConfigured: 'Organizer set up',
-    guardianToConfigure: 'Organizer not set up yet',
   },
   newGroup: {
+    organizerLabel: 'Address of the first organizer',
+    organizerHelp: 'Optional. You can add others from the group.',
     title: 'New group',
     nameLabel: 'Group name',
     namePlaceholder: 'Smith family',
@@ -34,11 +17,24 @@ export default {
     slugHelp: 'The organizer uses it to log in.',
     slugMin: 'At least 2 characters',
     slugFormat: 'Lowercase letters, digits and hyphens',
-    passwordLabel: 'Organizer password',
-    passwordHelp: 'Optional, at least 10 characters. Can be changed later.',
-    passwordMin: 'At least 10 characters',
     submit: 'Create group',
     created: 'Group created',
+  },
+  organizers: {
+    title: 'Organizers',
+    summary: 'Who can manage this group',
+    intro:
+      'The people who manage {name}. Each one logs in with a link sent to their address: no password to pass on.',
+    superNote:
+      'A super-admin can manage the group too, without being listed here.',
+    empty: 'No organizer yet.',
+    you: 'That’s you',
+    add: 'Add an organizer',
+    addTitle: 'New organizer',
+    addDescription:
+      'Their email address. They only need to ask for a login link with it.',
+    remove: 'Remove',
+    removeLabel: 'Remove {email} from the organizers',
   },
   dashboard: {
     deleteGroup: 'Delete the group',
@@ -53,14 +49,7 @@ export default {
     newEdition: 'New edition',
     newEditionHint: "Starts from last year's participants",
     groupSection: 'Group',
-    guardianPasswordSet: 'Set',
-    guardianPasswordMissing: 'Not set yet',
     superSection: 'Super-admin',
-    emailSending: 'Sending by email',
-    emailSendingHelp:
-      'The organizer will be able to email the links to people who have an address. Sharing from the phone remains available.',
-    emailSendingOn: 'On',
-    emailSendingOff: 'Off',
     pastEditions: 'Past editions',
   },
   people: {
@@ -99,7 +88,7 @@ export default {
       'Optional, only used to tell apart two people with the same first name.',
     emailLabel: 'Email',
     emailHelp:
-      'Optional. Used to email them their link; without an address, you share it from your phone.',
+      'Optional. Used to email them their link, and lets them log in to find their draws. Without an address, you share their link from your phone.',
     emailInvalid: 'Invalid email address',
     languageHelp: 'Their page, messages and emails are in this language.',
   },
@@ -168,15 +157,5 @@ export default {
       'Added as written to every message and email sent to participants, above or below the standard text. You can still change it when sending.',
     wishlist: 'Enable wish lists',
     maxWishes: 'Maximum number of ideas per list',
-  },
-  guardian: {
-    title: 'Organizer password',
-    crumb: 'Organizer',
-    intro:
-      'The organizer of {name} logs in with the ID {slug} and this password.',
-    passwordLabel: 'New password',
-    passwordHelp: 'At least 10 characters.',
-    passwordMin: 'At least 10 characters',
-    saved: 'Organizer password saved',
   },
 } satisfies Dict<typeof fr>;

@@ -1,30 +1,16 @@
 import type { PublicGroup } from '#server/database/groups';
 import { keys } from './keys';
-import { api, useApiMutation, useApiQuery } from './useApi';
+import { api, useApiMutation } from './useApi';
 
-type GroupsResponse = { groups: PublicGroup[] };
 type CreateGroupBody = {
   slug: string;
   name: string;
-  guardianPassword?: string;
+  organizers?: string[];
 };
-type UpdateGroupBody = {
-  id: string;
-  name?: string;
-  guardianPassword?: string;
-  emailSending?: boolean;
-};
-
-export const useGroupsQuery = () =>
-  useApiQuery<GroupsResponse>(
-    () => keys.groups(),
-    () => '/api/admin/groups',
-  );
-
 export const useCreateGroupMutation = () =>
   useApiMutation<{ group: PublicGroup }, CreateGroupBody>(
     (body) => api('/api/admin/groups', { method: 'POST', body }),
-    () => [keys.groups()],
+    () => [keys.home()],
   );
 
 /** Super-admin only: the group and everything it owns, for good. */
@@ -35,13 +21,5 @@ export const useDeleteGroupMutation = () =>
         method: 'POST',
         body: { confirm },
       }),
-    () => [keys.groups()],
-  );
-
-export const useUpdateGroupMutation = () =>
-  useApiMutation<{ group: PublicGroup }, UpdateGroupBody>(
-    ({ id, ...body }) =>
-      api(`/api/admin/groups/${id}`, { method: 'PATCH', body }),
-    // The group's own screens show its name and options too.
-    () => [keys.groups(), ['group']],
+    () => [keys.home()],
   );

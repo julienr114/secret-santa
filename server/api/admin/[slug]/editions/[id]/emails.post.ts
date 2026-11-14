@@ -21,8 +21,7 @@ import {
   messageTypesFor,
 } from '#server/utils/messages';
 
-// Bulk sending by email, for groups where the super-admin switched it on.
-// Sharing from the phone stays the default way; this only saves the
+// Bulk sending by email. Sharing from the phone stays the default way; this only saves the
 // guardian from sharing every link by hand. Sent to people with an
 // address, marked "sent" and journaled like any other message. With
 // `participationIds`, to the chosen people only.
@@ -42,9 +41,6 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
-  if (!group.emailSending) {
-    throw createError({ statusCode: 403, statusMessage: 'email_disabled' });
-  }
   const { type, audience, participationIds, note, notePosition } =
     await validatedBody(event, bodySchema);
   if (!messageTypesFor(edition.status).includes(type)) {

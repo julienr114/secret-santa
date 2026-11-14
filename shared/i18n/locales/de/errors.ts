@@ -7,7 +7,6 @@ export default {
   validation: 'Überprüfe die Felder des Formulars.',
   unauthorized: 'Melde dich an, um fortzufahren.',
   forbidden: 'Du hast keinen Zugriff auf diese Gruppe.',
-  invalid_credentials: 'Falsches Passwort.',
   too_many_attempts:
     'Zu viele Versuche, probiere es in ein paar Minuten erneut.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
@@ -29,8 +28,6 @@ export default {
   already_participating: 'Diese Person nimmt bereits teil.',
   links_not_open: 'Öffne zuerst die Einladungen.',
   message_not_available: 'Diese Nachricht passt nicht zur Phase der Ausgabe.',
-  email_disabled:
-    'Der Versand per E-Mail ist für diese Gruppe nicht aktiviert.',
   email_not_configured:
     'Der Versand per E-Mail ist auf dem Server nicht eingerichtet. Teile die Links von deinem Handy aus.',
   email_failed:
@@ -41,6 +38,11 @@ export default {
   wrong_sentence: 'Schreibe den verlangten Satz genau ab.',
   results_secret:
     'Die Ergebnisse bleiben geheim, bis die Ausgabe abgeschlossen ist.',
+  login_link_invalid:
+    'Dieser Anmeldelink ist nicht mehr gültig: fordere einen neuen an.',
+  cannot_remove_self:
+    'Du kannst dich nicht selbst entfernen: bitte einen anderen Organisator.',
+  organizer_not_found: 'Organisator nicht gefunden.',
   link_invalid:
     'Dieser Link ist nicht mehr gültig, bitte deinen Organisator um einen neuen.',
   draw_not_done: 'Die Auslosung hat noch nicht stattgefunden.',

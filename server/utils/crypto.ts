@@ -41,62 +41,6 @@ export const hashToken = async (token: string): Promise<string> =>
     ),
   );
 
-// --- Guardian passwords (README 8.4) ----------------------------------
-
-export const DEFAULT_PBKDF2_ITERATIONS = 20_000;
-export const MAX_PBKDF2_ITERATIONS = 100_000;
-
-export const generateSalt = (): string => toBase64(randomBytes(16));
-
-export type HashOptions = { salt: string; pepper: string; iterations?: number };
-
-/**
- * PBKDF2-SHA256 of secret+pepper with a per-person salt. The pepper lives
- * only in the environment, so a copy of the database alone is useless.
- * @returns base64 hash
- */
-export const hashSecret = async (
-  secret: string,
-  { salt, pepper, iterations }: HashOptions,
-): Promise<string> => {
-  const rounds = Math.min(
-    iterations ?? DEFAULT_PBKDF2_ITERATIONS,
-    MAX_PBKDF2_ITERATIONS,
-  );
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(`${pepper}\u0000${secret}`),
-    'PBKDF2',
-    false,
-    ['deriveBits'],
-  );
-  const bits = await crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      hash: 'SHA-256',
-      salt: fromBase64(salt),
-      iterations: rounds,
-    },
-    keyMaterial,
-    256,
-  );
-  return toBase64(new Uint8Array(bits));
-};
-
-/** Constant-time string comparison. */
-export const timingSafeEqual = (a: string, b: string): boolean => {
-  const left = encoder.encode(a);
-  const right = encoder.encode(b);
-  const diff = left.reduce((acc, byte, i) => acc | (byte ^ (right[i] ?? 0)), 0);
-  return left.length === right.length && diff === 0;
-};
-
-export const verifySecret = async (
-  secret: string,
-  { hash, salt, pepper, iterations }: HashOptions & { hash: string },
-): Promise<boolean> =>
-  timingSafeEqual(await hashSecret(secret, { salt, pepper, iterations }), hash);
-
 // --- Results and tokens at rest (README 8.3) ----------------------------
 
 /** For setup docs: a fresh DATA_KEY value. */

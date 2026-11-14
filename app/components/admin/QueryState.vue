@@ -1,12 +1,27 @@
 <script setup lang="ts">
+import { LOGIN } from '~/composables/queries/useSession';
+
 const { t } = useT();
 const errorMessage = useErrorMessage();
 
 // Loading and error states shared by every admin screen. The skeleton
 // mimics a screen: a title, then a full-width list.
-withDefaults(
+const props = withDefaults(
   defineProps<{ pending: boolean; error: unknown; rows?: number }>(),
   { rows: 4 },
+);
+
+// A session revoked elsewhere (other device, account disabled) is only
+// known when the server refuses: forget it here and go back to the login.
+const { clear } = useUserSession();
+watch(
+  () => (props.error as { statusCode?: number } | null)?.statusCode,
+  async (status) => {
+    if (status !== 401 || import.meta.server) return;
+    await clear();
+    await navigateTo(LOGIN);
+  },
+  { immediate: true },
 );
 </script>
 

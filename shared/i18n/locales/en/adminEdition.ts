@@ -167,7 +167,6 @@ export default {
   reveal: {
     title: 'View a result',
     personRequired: 'Choose a person',
-    passwordRequired: 'Password required',
     sentenceRequired: 'Type “{sentence}”',
     shownNotice:
       'Your viewing is recorded in the group journal. The result disappears when you leave this screen.',
@@ -180,7 +179,6 @@ export default {
       'The result is only shown here and disappears when you leave the screen.',
     personLabel: 'Whose result?',
     personPlaceholder: 'Choose…',
-    passwordLabel: 'Your password',
     sentenceLabel: 'Type: {sentence}',
     understood: 'I understand that the whole group will know I looked',
     submit: 'View this result',

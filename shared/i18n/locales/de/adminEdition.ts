@@ -174,7 +174,6 @@ export default {
   reveal: {
     title: 'Ein Ergebnis ansehen',
     personRequired: 'Wähle eine Person',
-    passwordRequired: 'Passwort erforderlich',
     sentenceRequired: 'Tippe „{sentence}“ ab',
     shownNotice:
       'Dein Einblick steht im Protokoll der Gruppe. Das Ergebnis verschwindet, sobald du diesen Bildschirm verlässt.',
@@ -187,7 +186,6 @@ export default {
       'Das Ergebnis wird nur hier angezeigt und verschwindet, sobald du den Bildschirm verlässt.',
     personLabel: 'Wessen Ergebnis?',
     personPlaceholder: 'Auswählen…',
-    passwordLabel: 'Dein Passwort',
     sentenceLabel: 'Tippe ab: {sentence}',
     understood:
       'Ich verstehe, dass die ganze Gruppe erfährt, dass ich nachgesehen habe',

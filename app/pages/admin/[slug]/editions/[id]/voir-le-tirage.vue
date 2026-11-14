@@ -53,7 +53,6 @@ const SENTENCE = 'JE VEUX VOIR LE TIRAGE';
 const schema = computed(() =>
   z.object({
     personId: z.string().min(1, t('adminEdition.reveal.personRequired')),
-    password: z.string().min(1, t('adminEdition.reveal.passwordRequired')),
     sentence: z
       .string()
       .refine(
@@ -68,7 +67,6 @@ const schema = computed(() =>
 type Schema = z.output<typeof schema.value>;
 const state = reactive<Schema>({
   personId: '',
-  password: '',
   sentence: '',
   understood: false,
 });
@@ -87,13 +85,11 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
   reveal.mutate(
     {
       personId: event.data.personId,
-      password: event.data.password,
       sentence: event.data.sentence,
     },
     {
       onSuccess: (data) => {
         pairs.value = [data.pair];
-        state.password = '';
       },
     },
   );
@@ -141,18 +137,6 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
             v-model="state.personId"
             :items="personItems"
             :placeholder="t('adminEdition.reveal.personPlaceholder')"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          name="password"
-          :label="t('adminEdition.reveal.passwordLabel')"
-          required
-        >
-          <UInput
-            v-model="state.password"
-            type="password"
-            autocomplete="current-password"
             class="w-full"
           />
         </UFormField>

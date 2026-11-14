@@ -12,9 +12,9 @@ useHead({
   ),
 });
 const screen = computed(() => ({
-  back: '/admin/groupes',
+  back: '/',
   crumbs: [
-    { label: t('adminGroup.groups.title'), to: '/admin/groupes' },
+    { label: t('auth.home.title'), to: '/' },
     { label: t('adminGroup.newGroup.title') },
   ],
 }));
@@ -42,14 +42,17 @@ const schema = computed(() =>
       .min(2, t('adminGroup.newGroup.slugMin'))
       .max(40)
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, t('adminGroup.newGroup.slugFormat')),
-    guardianPassword: z
+    organizer: z
       .string()
-      .min(10, t('adminGroup.newGroup.passwordMin'))
-      .or(z.literal('')),
+      .trim()
+      .refine(
+        (value) => value === '' || z.email().safeParse(value).success,
+        t('auth.login.emailInvalid'),
+      ),
   }),
 );
 type Schema = z.output<typeof schema.value>;
-const state = reactive<Schema>({ name: '', slug: '', guardianPassword: '' });
+const state = reactive<Schema>({ name: '', slug: '', organizer: '' });
 watch(
   () => state.name,
   (name) => {
@@ -62,9 +65,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
     {
       name: event.data.name,
       slug: event.data.slug,
-      ...(event.data.guardianPassword
-        ? { guardianPassword: event.data.guardianPassword }
-        : {}),
+      organizers: event.data.organizer ? [event.data.organizer] : [],
     },
     {
       onSuccess: ({ group }) => {
@@ -111,14 +112,16 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         <UInput v-model="state.slug" autocapitalize="none" class="w-full" />
       </UFormField>
       <UFormField
-        name="guardianPassword"
-        :label="t('adminGroup.newGroup.passwordLabel')"
-        :help="t('adminGroup.newGroup.passwordHelp')"
+        name="organizer"
+        :label="t('adminGroup.newGroup.organizerLabel')"
+        :help="t('adminGroup.newGroup.organizerHelp')"
       >
         <UInput
-          v-model="state.guardianPassword"
-          type="password"
-          autocomplete="new-password"
+          v-model="state.organizer"
+          type="email"
+          inputmode="email"
+          autocomplete="off"
+          autocapitalize="none"
           class="w-full"
         />
       </UFormField>

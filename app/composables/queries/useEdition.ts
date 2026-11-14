@@ -173,12 +173,10 @@ export const useResultsQuery = (slug: Ref, id: Ref) =>
 
 /** Last-resort access to one result; journaled for everyone, by name. */
 export const useRevealOneMutation = (slug: Ref, id: Ref) =>
-  useApiMutation<
-    { pair: DrawPair },
-    { personId: string; password: string; sentence: string }
-  >((body) =>
-    api(`${base(slug)}/editions/${toValue(id)}/reveal-one`, {
-      method: 'POST',
-      body,
-    }),
+  useApiMutation<{ pair: DrawPair }, { personId: string; sentence: string }>(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/reveal-one`, {
+        method: 'POST',
+        body,
+      }),
   );

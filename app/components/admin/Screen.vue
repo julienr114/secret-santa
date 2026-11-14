@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { LOCALES } from '#shared/i18n';
-import { homeOf, useLogoutMutation } from '~/composables/queries/useSession';
+import {
+  HOME,
+  LOGIN,
+  useLogoutMutation,
+} from '~/composables/queries/useSession';
 
-// One admin screen. The top bar always shows the logo (a link back to the
+// One screen of a logged-in account. The top bar always shows the logo (a link back to the
 // user's home) and one menu button holding the language and the log out.
 // Screens below the home get a second, thinner line: the back button and
 // the way back up. The current page is not repeated there, its title is
@@ -11,8 +15,6 @@ export type Crumb = { label: string; to?: string };
 const props = defineProps<{ back?: string | null; crumbs: Crumb[] }>();
 
 const { t, tk, locale, setLocale } = useT();
-const { user } = useUserSession();
-const home = computed(() => homeOf(user.value));
 
 const TRAIL_MAX = 2;
 const trail = computed<Crumb[]>(() => {
@@ -24,7 +26,7 @@ const trail = computed<Crumb[]>(() => {
 
 const logout = useLogoutMutation();
 const onLogout = () =>
-  logout.mutate(undefined, { onSuccess: () => navigateTo('/admin') });
+  logout.mutate(undefined, { onSuccess: () => navigateTo(LOGIN) });
 const menu = computed(() => [
   [
     { type: 'label' as const, label: t('common.language.label') },
@@ -36,6 +38,11 @@ const menu = computed(() => [
     })),
   ],
   [
+    {
+      label: t('auth.account.title'),
+      icon: 'i-lucide-circle-user',
+      to: '/compte',
+    },
     {
       label: t('common.actions.logout'),
       icon: 'i-lucide-log-out',
@@ -54,7 +61,7 @@ const menu = computed(() => [
            phone-wide column. -->
       <UContainer class="flex h-14 items-center gap-1">
         <NuxtLink
-          :to="home"
+          :to="HOME"
           class="min-w-0 grow truncate font-display text-lg font-bold text-primary"
           >✦ {{ t('common.appName') }}</NuxtLink
         >

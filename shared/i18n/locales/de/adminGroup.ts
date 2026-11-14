@@ -2,31 +2,13 @@ import type fr from '../fr/adminGroup';
 import type { Dict } from '../../types';
 
 export default {
-  home: {
-    tagline:
-      'Öffne den persönlichen Link, den du erhalten hast, um mitzumachen.',
-  },
-  login: {
-    title: 'Anmeldung',
-    subtitle: 'Bereich für Organisatoren',
-    guardian: 'Organisator',
-    superAdmin: 'Super-admin',
-    slugLabel: 'Kennung der Gruppe',
-    slugHint: 'z. B. familie-mueller',
-    passwordLabel: 'Passwort',
-    passwordRequired: 'Passwort erforderlich',
-    submit: 'Anmelden',
-  },
   groups: {
     styleguide: 'Styleguide',
     styleguideHint: 'Die Komponenten der Oberfläche',
-    title: 'Gruppen',
-    create: 'Neu',
-    empty: 'Noch keine Gruppe. Erstelle die erste mit „Neu“.',
-    guardianConfigured: 'Organisator eingerichtet',
-    guardianToConfigure: 'Organisator noch einzurichten',
   },
   newGroup: {
+    organizerLabel: 'Adresse des ersten Organisators',
+    organizerHelp: 'Optional. Weitere kannst du in der Gruppe hinzufügen.',
     title: 'Neue Gruppe',
     nameLabel: 'Name der Gruppe',
     namePlaceholder: 'Familie Müller',
@@ -35,11 +17,24 @@ export default {
     slugHelp: 'Damit meldet sich der Organisator an.',
     slugMin: 'Mindestens 2 Zeichen',
     slugFormat: 'Kleinbuchstaben, Ziffern und Bindestriche',
-    passwordLabel: 'Passwort des Organisators',
-    passwordHelp: 'Optional, mindestens 10 Zeichen. Später änderbar.',
-    passwordMin: 'Mindestens 10 Zeichen',
     submit: 'Gruppe erstellen',
     created: 'Gruppe erstellt',
+  },
+  organizers: {
+    title: 'Organisatoren',
+    summary: 'Wer diese Gruppe verwalten kann',
+    intro:
+      'Die Personen, die {name} verwalten. Jede meldet sich mit einem Link an, der an ihre Adresse gesendet wird: kein Passwort weiterzugeben.',
+    superNote:
+      'Ein Super-Admin kann die Gruppe ebenfalls verwalten, ohne hier zu stehen.',
+    empty: 'Noch kein Organisator.',
+    you: 'Das bist du',
+    add: 'Organisator hinzufügen',
+    addTitle: 'Neuer Organisator',
+    addDescription:
+      'Seine E-Mail-Adresse. Er muss nur mit dieser Adresse einen Anmeldelink anfordern.',
+    remove: 'Entfernen',
+    removeLabel: '{email} aus den Organisatoren entfernen',
   },
   dashboard: {
     deleteGroup: 'Gruppe löschen',
@@ -54,14 +49,7 @@ export default {
     newEdition: 'Neue Ausgabe',
     newEditionHint: 'Übernimmt die Teilnehmer vom letzten Jahr',
     groupSection: 'Gruppe',
-    guardianPasswordSet: 'Eingerichtet',
-    guardianPasswordMissing: 'Noch festzulegen',
     superSection: 'Super-admin',
-    emailSending: 'Versand per E-Mail',
-    emailSendingHelp:
-      'Der Organisator kann die Links per E-Mail an Personen mit hinterlegter Adresse senden. Das Teilen vom Handy aus bleibt möglich.',
-    emailSendingOn: 'Aktiviert',
-    emailSendingOff: 'Deaktiviert',
     pastEditions: 'Frühere Ausgaben',
   },
   people: {
@@ -100,7 +88,7 @@ export default {
       'Optional, dient nur dazu, zwei gleiche Vornamen zu unterscheiden.',
     emailLabel: 'E-Mail',
     emailHelp:
-      'Optional. Damit wird der persönliche Link per E-Mail verschickt; ohne Adresse teilst du ihn von deinem Handy aus.',
+      'Optional. Damit wird der Link per E-Mail verschickt, und die Person kann sich anmelden, um ihre Auslosungen zu finden. Ohne Adresse teilst du den Link vom Handy aus.',
     emailInvalid: 'Ungültige E-Mail-Adresse',
     languageHelp:
       'Die Seite, die Nachrichten und die E-Mails dieser Person sind in dieser Sprache.',
@@ -171,15 +159,5 @@ export default {
       'Wird unverändert zu jeder Nachricht und E-Mail an die Teilnehmer hinzugefügt, über oder unter dem Standardtext. Du kannst ihn beim Senden noch ändern.',
     wishlist: 'Wunschlisten aktivieren',
     maxWishes: 'Maximale Anzahl Ideen pro Liste',
-  },
-  guardian: {
-    title: 'Passwort des Organisators',
-    crumb: 'Organisator',
-    intro:
-      'Der Organisator von {name} meldet sich mit der Kennung {slug} und diesem Passwort an.',
-    passwordLabel: 'Neues Passwort',
-    passwordHelp: 'Mindestens 10 Zeichen.',
-    passwordMin: 'Mindestens 10 Zeichen',
-    saved: 'Passwort des Organisators gespeichert',
   },
 } satisfies Dict<typeof fr>;

@@ -1,28 +1,12 @@
 export default {
-  home: {
-    tagline: 'Ouvre le lien personnel que tu as reçu pour participer.',
-  },
-  login: {
-    title: 'Connexion',
-    subtitle: "Espace de l'organisateur",
-    guardian: 'Organisateur',
-    superAdmin: 'Super-admin',
-    slugLabel: 'Identifiant du groupe',
-    slugHint: 'ex. famille-rabin',
-    passwordLabel: 'Mot de passe',
-    passwordRequired: 'Mot de passe requis',
-    submit: 'Se connecter',
-  },
   groups: {
     styleguide: 'Guide de style',
     styleguideHint: 'Les composants de l’interface',
-    title: 'Groupes',
-    create: 'Nouveau',
-    empty: "Aucun groupe pour l'instant. Crée le premier avec « Nouveau ».",
-    guardianConfigured: 'Organisateur configuré',
-    guardianToConfigure: 'Organisateur à configurer',
   },
   newGroup: {
+    organizerLabel: 'Adresse du premier organisateur',
+    organizerHelp:
+      'Facultatif. Tu pourras en ajouter d’autres depuis le groupe.',
     title: 'Nouveau groupe',
     nameLabel: 'Nom du groupe',
     namePlaceholder: 'Famille Rabin',
@@ -31,11 +15,23 @@ export default {
     slugHelp: "L'organisateur s'en sert pour se connecter.",
     slugMin: '2 caractères minimum',
     slugFormat: 'Minuscules, chiffres et tirets',
-    passwordLabel: "Mot de passe de l'organisateur",
-    passwordHelp: 'Facultatif, 10 caractères minimum. Modifiable plus tard.',
-    passwordMin: '10 caractères minimum',
     submit: 'Créer le groupe',
     created: 'Groupe créé',
+  },
+  organizers: {
+    title: 'Organisateurs',
+    summary: 'Qui peut gérer ce groupe',
+    intro:
+      'Les personnes qui gèrent {name}. Chacune se connecte avec un lien envoyé à son adresse : aucun mot de passe à transmettre.',
+    superNote: 'Un super-admin peut aussi gérer le groupe, sans figurer ici.',
+    empty: 'Aucun organisateur pour l’instant.',
+    you: 'C’est toi',
+    add: 'Ajouter un organisateur',
+    addTitle: 'Nouvel organisateur',
+    addDescription:
+      'Son adresse email. Il lui suffira de demander un lien de connexion avec cette adresse.',
+    remove: 'Retirer',
+    removeLabel: 'Retirer {email} des organisateurs',
   },
   dashboard: {
     deleteGroup: 'Supprimer le groupe',
@@ -50,14 +46,7 @@ export default {
     newEdition: 'Nouvelle édition',
     newEditionHint: "Reprend les participants de l'an dernier",
     groupSection: 'Groupe',
-    guardianPasswordSet: 'Configuré',
-    guardianPasswordMissing: 'À définir',
     superSection: 'Super-admin',
-    emailSending: 'Envoi par email',
-    emailSendingHelp:
-      "L'organisateur pourra envoyer les liens par email aux personnes qui ont une adresse. Le partage depuis le téléphone reste disponible.",
-    emailSendingOn: 'Activé',
-    emailSendingOff: 'Désactivé',
     pastEditions: 'Éditions passées',
   },
   people: {
@@ -96,7 +85,7 @@ export default {
       'Facultatif, sert seulement à départager deux prénoms identiques.',
     emailLabel: 'Email',
     emailHelp:
-      'Facultatif. Sert à envoyer son lien par email ; sans adresse, tu le partages depuis ton téléphone.',
+      'Facultatif. Sert à lui envoyer son lien par email, et lui permet de se connecter pour retrouver ses tirages. Sans adresse, tu partages son lien depuis ton téléphone.',
     emailInvalid: 'Adresse email invalide',
     languageHelp: 'Sa page, ses messages et ses emails sont dans cette langue.',
   },
@@ -166,15 +155,5 @@ export default {
       'Ajouté tel quel à chaque message et email envoyé aux participants, au-dessus ou en dessous du texte standard. Tu peux encore le modifier au moment d’envoyer.',
     wishlist: 'Activer les listes de souhaits',
     maxWishes: "Nombre maximal d'idées par liste",
-  },
-  guardian: {
-    title: "Mot de passe de l'organisateur",
-    crumb: 'Organisateur',
-    intro:
-      "L'organisateur de {name} se connecte avec l'identifiant {slug} et ce mot de passe.",
-    passwordLabel: 'Nouveau mot de passe',
-    passwordHelp: '10 caractères minimum.',
-    passwordMin: '10 caractères minimum',
-    saved: "Mot de passe de l'organisateur enregistré",
   },
 };

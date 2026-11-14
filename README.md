@@ -1,20 +1,21 @@
-# Secret Santa familial — plan de réalisation
+# Under the Tree — Secret Santa familial
 
-> Document de passation. Il décrit **tout ce qui a été décidé** avec Julien (le porteur du projet) avant d'écrire la moindre ligne de code. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
+> Document de passation. Il décrit **ce qui a été décidé** avec Julien (le porteur du projet) et **l'état réel** de l'application. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
-> État au 13 novembre 2026 : **plan v5, étapes 1 à 5 bis terminées** (socle, cœur métier, administration, pilotage d'une édition, parcours participant, liste de souhaits). Le tout est déployé sur https://under-the-tree.party depuis le 13 novembre 2026 (déploiement manuel, `pnpm deploy:prod`). Prochaine étape : l'étape 7 (finitions). Le journal côté gardien (`/admin/[groupe]/journal`, `GET /api/admin/[groupe]/journal`) est fait : même frise que côté participant, dans la langue de l'administration.
->
-> Changements de la v7 (13 novembre 2026, à la demande de Julien) : **trois langues**, français, anglais et allemand, pour toute l'application (section 21). Chaque personne a une **langue préférée** : sa page, ses messages, ses emails et le journal qu'elle lit suivent cette langue. L'application s'appelle désormais **Under the Tree** dans l'interface ; « Secret Santa » reste le nom du jeu dans les messages. La contrainte « interface entièrement en français » de la section 1 est levée.
->
-> Changements de la v6 (13 novembre 2026, à la demande de Julien) : **un nom de domaine payant**, `under-the-tree.party`, acheté chez Cloudflare Registrar (la contrainte « 0 € » devient « le prix du domaine, rien d'autre »). L'application y est servie par un Custom Domain du Worker ; l'adresse `workers.dev` reste active. Le domaine ouvre la voie à un **envoi groupé par email** (Resend, offre gratuite), en option par groupe activable par le super-admin seulement, le partage par téléphone restant le fonctionnement par défaut (section 13.3).
->
-> Changements de la v2, demandés par Julien : ajout de la **liste de souhaits** par participant (section 6 bis), passage de TypeScript à **JavaScript**, adoption de **TanStack Query** côté client, et formalisation des **guidelines de code** (section 7.1).
->
-> Changements de la v3, issus de l'étape 0 : **plus aucun email**, le gardien envoie les liens par WhatsApp grâce aux liens officiels **« click to chat » (`wa.me`)** qui ouvrent la conversation avec le message prérempli (section 13) ; **Nuxt 4** au lieu de Nuxt 3 ; preset **Cloudflare Workers** ; conclusions des vérifications en section 7.2.
->
-> Changements de la v5 (13 novembre 2026, à la demande de Julien) : **plus de code à 6 chiffres**, le lien personnel suffit (jeton de 256 bits, impossible à deviner) ; **plus rien de WhatsApp** (ni numéros, ni `wa.me`), le gardien partage les liens avec la **feuille de partage du téléphone** ; ce qui compte est de **savoir qui a consulté** son résultat (pastille, compteur, journal). Règles `inscription_obligatoire`, `tentatives_code_max` et `exclure_conjoint` supprimées ; **plus de notion de couple** : un seul mécanisme générique, les **exclusions** (réciproques par défaut), qui couvre couples, fratries, parents (migration `0002`, couples convertis). Fond papier plus clair.
->
-> Changements de la v4 (13 novembre 2026, à la demande de Julien) : **retour à TypeScript strict** partout (aucun fichier `.js` dans le dépôt), **Nuxt UI 4** comme bibliothèque de composants, thème « carte de Noël » (rouge brique, vert sapin, papier crème, titres en Fraunces), **imports par alias** (`#server/…`, `~/…`, `~~/…`) au lieu des chemins relatifs profonds. Là où la suite du document parle de JavaScript, de JSDoc, de `jsconfig.json` ou de fichiers `.js`, lire TypeScript et `.ts`.
+> **État au 14 novembre 2026** : l'application est en production sur https://under-the-tree.party (déploiement manuel, `pnpm deploy:prod`). Les étapes 0 à 6 du plan sont terminées, la revue de sécurité de l'étape 7 est faite, le groupe réel « Famille Delacoux » est créé. Reste : accessibilité, seconde famille, première édition réelle (section 17).
+
+### Historique des versions du plan
+
+| Version | Ce qui a changé |
+|---|---|
+| v2 | Liste de souhaits par participant (section 6 bis), TanStack Query, guidelines de code (7.1) |
+| v3 | Nuxt 4, Cloudflare Workers ; l'email gratuit sans nom de domaine est écarté (7.2) |
+| v4 | TypeScript strict partout, Nuxt UI 4, thème « carte de Noël », imports par alias (`#server/…`, `#shared/…`, `~/…`) |
+| v5 | Plus de code à 6 chiffres : le lien personnel suffit. Partage par la feuille de partage du téléphone. Les « couples » deviennent des exclusions génériques |
+| v6 | Nom de domaine `under-the-tree.party` ; envoi par email en option (13.3) |
+| v7 | Trois langues, langue préférée par personne (section 21) ; l'application s'appelle Under the Tree, « Secret Santa » reste le nom du jeu |
+
+Des versions abandonnées (JavaScript sans TypeScript en v2, liens WhatsApp `wa.me` en v3, code à 6 chiffres jusqu'en v4), il ne reste que les migrations `0001` et `0002` et le nom de la variable `NUXT_PIN_PEPPER`.
 
 ---
 
@@ -26,21 +27,21 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 - Le tirage respecte des règles : pas soi-même, pas une personne exclue (conjoint, frère ou sœur…), pas la même personne que les années précédentes.
 - Un **gardien** (admin) pilote le tout sans jamais voir les résultats, et peut « rejouer » un envoi si quelqu'un n'a pas reçu ou a perdu son résultat, **sans trahir le secret**.
 - Les participants sont, selon Julien, « tous des gros tricheurs » : l'application doit être **verrouillée et la triche visible de tous**.
-- **Coût : 0 €.** Hébergement, base de données et envois compris.
+- **Coût : le prix du nom de domaine, rien d'autre.** Hébergement, base de données et envois restent sur des offres gratuites.
 - **Mobile first** : presque tout le monde l'utilisera sur téléphone.
 
 ### Contraintes fermes
 
 | Contrainte | Détail |
 |---|---|
-| Gratuit | Aucun service payant, aucun nom de domaine à acheter |
+| Presque gratuit | Seul le nom de domaine est payant (v6) ; aucun abonnement |
 | Mobile first | Conçu pour le téléphone d'abord, utilisable sur ordinateur ensuite |
 | Secret | Personne d'autre que le participant ne voit son résultat dans l'interface, gardien compris |
-| Anti-triche | Lien personnel impossible à deviner + journal public des consultations (v5 : plus de code) |
-| Sans service d'envoi | Aucun email, aucune API d'envoi : le gardien partage chaque lien avec la feuille de partage de son téléphone (WhatsApp, SMS…) |
+| Anti-triche | Lien personnel impossible à deviner + journal public des consultations |
+| Envoi par le gardien | Le gardien partage chaque lien avec la feuille de partage de son téléphone (WhatsApp, SMS…). L'envoi par email est une option par groupe (13.3) |
 | Multi-familles | Plusieurs groupes cloisonnés dans une seule application |
 | Pluriannuel | Participants et exclusions évoluent d'une année sur l'autre, l'historique est conservé |
-| Langue | Interface entièrement en français |
+| Langues | Français, anglais, allemand ; langue préférée par personne (section 21) |
 
 ---
 
@@ -48,22 +49,22 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 
 Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander.
 
-1. **Partage des liens par la feuille de partage du téléphone** (décision v5, remplace les liens WhatsApp `wa.me` de la v3). L'email gratuit a été écarté à l'étape 0 (sans nom de domaine, Resend refuse tout destinataire autre que soi-même et Brevo réécrit l'expéditeur). Le gardien touche « Partager » sur un participant : le téléphone propose WhatsApp, SMS, etc., avec le message et le lien prêts. Sur ordinateur, sans feuille de partage, le message est copié. Aucun numéro de téléphone n'est stocké.
+1. **Partage des liens par la feuille de partage du téléphone.** Le gardien touche « Envoyer » sur un participant : le téléphone propose WhatsApp, SMS, etc., avec le message et le lien prêts. Sur ordinateur, sans feuille de partage, le message est copié. Aucun numéro de téléphone n'est stocké. L'envoi par email est une option par groupe, en complément (13.3).
 2. **Le message ne contient jamais le résultat.** Il ne contient qu'un lien personnel. Le résultat ne s'affiche que dans l'application, après un geste explicite du participant (bouton « Découvrir »).
-3. **Le lien personnel suffit** (décision v5, remplace « lien + code à 6 chiffres »). Le jeton fait 32 octets aléatoires (256 bits) : impossible à deviner. La protection contre la triche repose sur le **journal public** (chaque consultation y apparaît avec son compteur) et sur la **régénération** d'un lien transféré par erreur. Ce qui compte pour le gardien : savoir qui a consulté son lien.
+3. **Le lien personnel suffit.** Le jeton fait 32 octets aléatoires (256 bits) : impossible à deviner. La protection contre la triche repose sur le **journal public** (chaque consultation y apparaît avec son compteur) et sur la **régénération** d'un lien transféré par erreur. Ce qui compte pour le gardien : savoir qui a consulté son lien.
 4. **Journal public par groupe** : toutes les actions sensibles y sont listées, sans jamais indiquer qui a tiré qui.
 5. **Pas de chiffrement de bout en bout.** Julien est le gardien du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
 6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre gardien** et **ses propres règles**.
 7. **Participants modifiables chaque année** : ajout, retrait, mise à jour des exclusions.
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
-9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, sans carte bancaire, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement par Workers Builds à chaque `git push` (vérifié à l'étape 0).
-10. **Stack Nuxt 4 / TypeScript strict** (v4 : retour à TypeScript, Nuxt UI pour l'interface ; historique : décision v2, remplace « TypeScript strict » ; v3 : Nuxt 4 au lieu de Nuxt 3, car c'est la version stable que ciblent aujourd'hui la documentation et les modules, et l'arborescence `app/` prévue ici est la sienne) : Vue 3 et Nuxt sont la stack que Julien maîtrise ; le code est écrit en **JavaScript moderne (ESM)**, typé par JSDoc là où c'est utile, sans étape de compilation TypeScript. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, appels API côté client via **TanStack Query (Vue)**. Pinia n'est plus prévu : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
-11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après saisie du code. La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
+9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement manuel (section 16).
+10. **Stack Nuxt 4 / TypeScript strict** : Vue 3 et Nuxt sont la stack que Julien maîtrise. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, interface en **Nuxt UI 4**, appels API côté client via **TanStack Query (Vue)**. Pas de store global : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
+11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après avoir touché « Découvrir ». La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
 12. **Programmation fonctionnelle et standards de l'industrie** (décision v2) : fonctions pures pour tout le métier, effets de bord repoussés dans les routes, ESLint + Prettier, tests Vitest sur la logique métier, Git en petits commits. Détails en section 7.1.
 
 ### Hors périmètre
 
-- Tout envoi sans action du gardien : API WhatsApp, SMS et, depuis la v3, email.
+- Tout envoi sans action du gardien : pas d'envoi automatique, pas d'API WhatsApp ni de SMS.
 - Chiffrement de bout en bout.
 - Messagerie anonyme, paiement, application native.
 - Dans la liste de souhaits : réservation d'un cadeau (« je le prends ») et notification du donneur quand la liste change.
@@ -198,7 +199,7 @@ Procédure réservée au gardien, avec double confirmation :
 2. L'édition repasse en `invitations`, la liste redevient modifiable.
 3. Les liens des participants **restent valables**.
 4. Les compteurs de consultation sont remis à zéro.
-5. Un événement `tirage_annule` est inscrit au journal, avec le motif saisi par le gardien.
+5. Un événement `draw_cancelled` est inscrit au journal, avec le motif saisi par le gardien.
 6. Au nouveau tirage, le gardien renvoie à chacun le message « Nouveau tirage, ton ancien résultat n'est plus valable » (modèle fourni, voir section 13).
 
 ### 6.6 Nouveaux venus et absents
@@ -237,7 +238,7 @@ Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas
 - **Le lien suffit pour modifier sa liste** (décision v5). Un lien transféré permettrait donc de réécrire les envies de quelqu'un : chaque modification est journalisée (« Léa a mis à jour sa liste »), ce qui rend l'abus visible, et le gardien peut régénérer le lien.
 - Lecture de sa propre liste : le lien suffit (rien à y gagner pour un tricheur).
 - La sauvegarde **remplace la liste entière** (une seule requête idempotente, pas de gestion d'items unitaires) : plus simple, et conforme à l'approche fonctionnelle.
-- Événement `souhaits_modifies` au journal : « Léa a mis à jour sa liste de souhaits (3 idées) ».
+- Événement `wishes_updated` au journal : « Léa a mis à jour sa liste de souhaits (3 idées) ».
 
 ### 6 bis.4 Écran
 
@@ -251,25 +252,26 @@ Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas
 
 | Élément | Choix |
 |---|---|
-| Langage | **JavaScript** (ES2022+, modules ESM), `"type": "module"` dans `package.json`. Pas de TypeScript. Annotations **JSDoc** sur les fonctions métier et les objets échangés avec l'API, pour l'autocomplétion et la documentation ; `checkJs` activé dans `jsconfig.json` pour que l'éditeur signale les incohérences, sans bloquer le build |
-| Framework | **Nuxt 4** (`nuxt.config.js`), structure `app/` native |
-| Back-end | **Routes serveur Nitro** (`server/api/**`), un fichier par route et méthode (`persons.get.js`, `persons.post.js`), `defineEventHandler` |
-| Appels API côté client | **TanStack Query pour Vue** (`@tanstack/vue-query`) : `useQuery` pour les lectures, `useMutation` pour les écritures, invalidation par clés après chaque mutation. Transport : `$fetch` de Nuxt. Hydratation SSR via `dehydrate`/`hydrate` dans un plugin Nuxt |
-| État client | Aucun store global. TanStack Query porte l'état serveur ; l'état d'interface (champs de formulaire, étape d'un écran) vit dans des `ref` locaux ou des composables |
-| Rendu | SSR sur Cloudflare Workers, preset Nitro `cloudflare_module`. Binding D1 déclaré dans `wrangler.toml`, lu dans les routes via le contexte Cloudflare de l'événement |
-| Base de données | Cloudflare D1 (SQLite) |
-| ORM et migrations | **Drizzle ORM** + drizzle-kit (`drizzle.config.js`, schéma en `server/database/schema.js`) |
-| Validation | Zod sur toutes les entrées d'API. Avec JavaScript, Zod devient aussi la **source de vérité des formes de données** : les types JSDoc sont dérivés des schémas (`@typedef {import('zod').infer<typeof schema>}`) |
-| Styles | Tailwind CSS ou UnoCSS, au choix de l'agent, approche mobile first |
-| Sessions admin | Cookie de session scellé (par exemple le module `nuxt-auth-utils`) |
-| Cryptographie | Web Crypto API (disponible dans les Workers) |
-| Transmission des liens | Aucun service externe. Feuille de partage du téléphone (`navigator.share`), avec copie (`navigator.clipboard`) en repli. Les textes sont préchargés : Safari n'ouvre le partage que s'il démarre immédiatement au toucher (section 13) |
-| Qualité | **ESLint** (config plate, `@nuxt/eslint`) + **Prettier**, `eslint-config-prettier` pour éviter les conflits. Hooks Git via `simple-git-hooks` + `lint-staged` |
-| Tests | **Playwright** de bout en bout (`pnpm test:e2e`) sur un build Cloudflare servi par wrangler, D1 locale jetable, format téléphone. **Vitest** sur toute la logique métier (`server/utils/**`), couverture suivie. `@nuxt/test-utils` pour quelques tests de routes. Playwright facultatif (parcours mobile) |
-| Intégration continue | GitHub Actions : `lint`, `format:check`, `test` sur chaque push et pull request |
+| Langage | **TypeScript strict**, modules ESM. `pnpm typecheck` (vue-tsc) tourne en CI |
+| Framework | **Nuxt 4** (`nuxt.config.ts`), structure `app/` native |
+| Interface | **Nuxt UI 4** sur Tailwind 4, thème « carte de Noël » (rouge brique, vert sapin, papier kraft, titres en Fraunces), mobile first |
+| Back-end | **Routes serveur Nitro** (`server/api/**`), un fichier par route et méthode, `defineEventHandler` |
+| Appels API côté client | **TanStack Query pour Vue** : `useQuery` pour les lectures, `useMutation` pour les écritures, invalidation par clés. Transport : `$fetch` de Nuxt. Hydratation SSR par un plugin Nuxt |
+| État client | Aucun store global. L'état d'interface vit dans des `ref` locaux ou des composables |
+| Rendu | SSR sur Cloudflare Workers, preset Nitro `cloudflare_module`. Binding D1 déclaré dans `wrangler.toml` |
+| Base de données | Cloudflare D1 (SQLite). **Une requête est limitée à 100 paramètres** : pas d'insertion multi-lignes, une instruction par ligne dans `db.batch` |
+| ORM et migrations | **Drizzle ORM** + drizzle-kit (`drizzle.config.ts`, schéma en `server/database/schema.ts`), migrations appliquées par wrangler |
+| Validation | Zod sur toutes les entrées d'API ; les types sont dérivés des schémas |
+| Traductions | Dictionnaires typés maison dans `shared/i18n`, partagés par le serveur et les écrans (section 21) |
+| Sessions admin | Cookie de session scellé (`nuxt-auth-utils`), 12 heures |
+| Cryptographie | Web Crypto API |
+| Transmission des liens | Feuille de partage du téléphone (`navigator.share`), copie en repli ; email en option par Resend (13.3) |
+| Qualité | **ESLint** (config plate, `@nuxt/eslint`, `eslint-plugin-functional`) + **Prettier**. Hooks Git via `simple-git-hooks` + `lint-staged` |
+| Tests | **Vitest** sur toute la logique pure (`server/utils/**`, `shared/**`). **Playwright** de bout en bout (`pnpm test:e2e`) sur un build Cloudflare servi par wrangler, D1 locale jetable, format téléphone |
+| Intégration continue | GitHub Actions : `lint`, `typecheck`, `format:check`, `test`, `build`, puis les tests de bout en bout |
 | Gestionnaire de paquets | pnpm |
 
-### 7.2 Vérifications de l'étape 0 (faites le 13 novembre 2026)
+### 7.2 Vérifications de l'étape 0 (faites le 13 novembre 2026, conservées pour mémoire)
 
 Les points « à vérifier » de la v2 ont été confrontés à la documentation officielle et, à défaut, à des sources récentes. Les limites gratuites changent souvent : revérifier les chiffres avant la mise en service (étape 8).
 
@@ -283,7 +285,6 @@ Les points « à vérifier » de la v2 ont été confrontés à la documentation
 | Liens WhatsApp « click to chat » | Fonction officielle (`https://wa.me/<numéro>?text=…`). Retenue en v3, **abandonnée en v5** au profit de la feuille de partage du téléphone, qui évite de stocker les numéros | — |
 | `nuxt-auth-utils` sur Workers | Supporté. Exige `compatibility_date` ≥ 2025-04-01 (ou le flag `nodejs_compat_populate_process_env`). Secret de scellement `NUXT_SESSION_PASSWORD` obligatoire en production. Session limitée par la taille du cookie (4 096 octets) | Retenu. Ne stocker en session que `role`, `groupId`, `expiresAt` |
 | TanStack Query dans Nuxt | Motif établi : plugin Nuxt qui crée le `QueryClient`, `useState('vue-query')` pour transporter l'état déshydraté, `dehydrate` dans le hook `app:rendered` côté serveur, `hydrate` côté client. Depuis `@tanstack/vue-query` 5.102.1, `hydrate()` lève une erreur si l'état est `null` (pages sans SSR) : garder l'appel | Retenu, plugin `app/plugins/vue-query.js` avec garde sur l'état nul |
-| Nuxt en JavaScript | `typescript.typeCheck` est désactivé par défaut, Nuxt accepte `nuxt.config.js` et des fichiers `.js` sans réglage. `checkJs` n'est pas documenté côté Nuxt : il relève de l'éditeur. Astuce connue : `"jsx": "preserve"` dans `jsconfig.json` évite un avertissement de Volar | `jsconfig.json` minimal étendant `.nuxt/tsconfig.json`, `checkJs: true` pour l'éditeur seulement. La génération de `.nuxt/tsconfig.json` est inoffensive, on la laisse |
 | Version de Nuxt | La documentation de Nuxt, Nitro et des modules cible Nuxt 4 ; la structure `app/` du plan est celle de Nuxt 4 | **Nuxt 4** (décision v3) |
 
 ### 7.1 Guidelines de code
@@ -292,20 +293,20 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 #### Programmation fonctionnelle
 
-- **Fonctions pures d'abord.** Tout le métier (`draw`, `rules`, `crypto` hors appels Web Crypto, construction des événements du journal, modèles de messages WhatsApp, validation des souhaits) est écrit en fonctions pures : mêmes entrées, mêmes sorties, aucun accès à la base, à l'horloge ou à l'aléa à l'intérieur. L'aléa et l'horloge sont **passés en paramètre** (`draw(participants, rules, { random })`), ce qui rend les tests déterministes.
+- **Fonctions pures d'abord.** Tout le métier (`draw`, `rules`, `crypto` hors appels Web Crypto, construction des événements du journal, modèles de messages, validation des souhaits) est écrit en fonctions pures : mêmes entrées, mêmes sorties, aucun accès à la base, à l'horloge ou à l'aléa à l'intérieur. L'aléa et l'horloge sont **passés en paramètre** (`draw(participants, rules, { random })`), ce qui rend les tests déterministes.
 - **Noyau pur, coque impure.** Les routes Nitro sont la seule couche qui lit la requête, interroge la base et écrit la réponse. Elles sont courtes : valider (Zod) → charger → appeler le métier → persister → répondre. Pas de logique métier dans une route.
 - **Immutabilité.** `const` partout, jamais de mutation d'un argument ni d'un objet partagé. Nouvelles valeurs par décomposition (`{ ...rules, budget }`), `map`/`filter`/`reduce` plutôt que boucles qui mutent, `toSorted` plutôt que `sort`. Exception tolérée et localisée : le mélange Fisher-Yates sur une copie du tableau.
 - **Pas de classes, pas de `this`.** Les « interfaces » sont des objets de fonctions produits par des fabriques : `createRepository(db)` renvoie des fonctions de requête, `createClock()` renvoie `{ now }`. L'injection de dépendances se fait par arguments.
 - **Composition.** Petites fonctions nommées d'après ce qu'elles renvoient, composées plutôt qu'imbriquées. Une fonction fait une chose ; au-delà d'une vingtaine de lignes, on la découpe.
 - **Erreurs métier comme valeurs.** Le métier renvoie des résultats explicites (`{ ok: true, value }` / `{ ok: false, reason, details }`) plutôt que de lancer des exceptions. Seule la coque transforme un `ok: false` en `createError` HTTP. Le résultat de la vérification de faisabilité du tirage (section 6.2, point 4) en est l'exemple type.
-- **Côté Vue** : composition API et `<script setup>`, composables qui renvoient des valeurs réactives dérivées (`computed`) plutôt que des mutations manuelles, pas de watchers quand un `computed` suffit. Les composables TanStack Query sont regroupés par domaine dans `app/composables/queries/`, avec un fichier `keys.js` pour les clés de cache.
-- Pas de bibliothèque fonctionnelle imposée (Ramda, fp-ts…) : le JavaScript natif suffit à cette taille de projet.
+- **Côté Vue** : composition API et `<script setup>`, composables qui renvoient des valeurs réactives dérivées (`computed`) plutôt que des mutations manuelles, pas de watchers quand un `computed` suffit. Les composables TanStack Query sont regroupés par domaine dans `app/composables/queries/`, avec un fichier `keys.ts` pour les clés de cache.
+- Pas de bibliothèque fonctionnelle imposée (Ramda, fp-ts…) : le TypeScript natif suffit à cette taille de projet.
 
 #### Standards de l'industrie
 
 - **ESLint** en configuration plate, basée sur `@nuxt/eslint`, complétée par des règles qui soutiennent le style fonctionnel : `no-param-reassign`, `prefer-const`, `no-var`, `prefer-arrow-callback`, `no-restricted-syntax` sur `class` et `for…in`, `eqeqeq`. `eslint-plugin-functional` évalué à l'étape 1, adopté s'il n'alourdit pas trop.
 - **Prettier** avec la configuration par défaut (deux espaces, guillemets simples, point-virgule, 80 colonnes), appliqué à tout le dépôt. Aucune règle de mise en forme dans ESLint.
-- **Tests** : Vitest. Toute fonction de `server/utils/**` a son fichier de test à côté (`draw.test.js`). Les tests décrits en section 18 sont la liste minimale. Les routes sont testées plus légèrement, sur les cas de refus (session absente, mauvais groupe, réponse admin sans attribution). Objectif de couverture sur `server/utils` : 90 % de lignes.
+- **Tests** : Vitest. Toute fonction de `server/utils/**` a son fichier de test à côté (`draw.test.ts`). Les tests décrits en section 18 sont la liste minimale. Les routes sont testées plus légèrement, sur les cas de refus (session absente, mauvais groupe, réponse admin sans attribution). Objectif de couverture sur `server/utils` : 90 % de lignes.
 - **Hooks Git** : `pre-commit` lance `lint-staged` (ESLint + Prettier sur les fichiers modifiés) ; `pre-push` lance les tests.
 - **Scripts `package.json`** : `dev`, `build`, `lint`, `lint:fix`, `format`, `format:check`, `test`, `test:watch`, `test:coverage`, `db:generate`, `db:migrate`.
 - **Conventions de nommage** : fichiers en kebab-case, fonctions et variables en camelCase, constantes de configuration en SCREAMING_SNAKE_CASE, composants Vue en PascalCase. Code et commentaires en **anglais**, interface utilisateur et documentation en **français**.
@@ -331,14 +332,11 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Régénérable par le gardien, ce qui invalide l'ancien.
 - Pages `/p/*` : en-têtes `Referrer-Policy: no-referrer`, `Cache-Control: no-store`, `X-Robots-Tag: noindex`.
 
-### 8.2 Lien seul, sans code (v5)
+### 8.2 Lien seul, sans code
 
-- Rattaché à la **personne** : il est conservé d'une année sur l'autre.
-- Choisi par le participant à la première ouverture d'un lien, saisi deux fois.
 - Le jeton du lien fait 32 octets aléatoires (256 bits) : le deviner est hors de portée, même avec des milliards d'essais par seconde. Le stockage reste : empreinte SHA-256 pour la recherche, copie chiffrée pour le repartage.
 - Le risque n'est pas le hasard mais la **fuite** d'un lien (message transféré, téléphone emprunté). Contre-mesures : journal public de chaque consultation avec son compteur, pastille *consulté* côté gardien, régénération du lien.
 - Le résultat ne s'affiche qu'après un geste du participant (bouton), jamais au simple chargement de la page : les robots d'aperçu de liens ne le voient pas et ne faussent pas le compteur.
-- Historique : la v1 à v4 prévoyait un code à 6 chiffres (PBKDF2, blocage après 5 échecs). Supprimé en v5 à la demande de Julien, colonnes retirées par la migration `0001`.
 
 ### 8.3 Chiffrement des résultats
 
@@ -400,20 +398,23 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 
 **Règle absolue : le journal ne contient jamais qui a tiré qui.**
 
-| Type d'événement | Exemple affiché |
+| Type d'événement | Exemple affiché (en français) |
 |---|---|
-| `edition_creee` | « L'édition Noël 2026 a été créée » |
-| `participant_ajoute` / `participant_retire` | « Léa a été ajoutée à l'édition » |
-| `regle_modifiee` | « Le gardien a modifié les règles du tirage » |
-| `message_envoye` | « Le gardien a envoyé l'invitation à Léa (partagé) » (type de message et canal `share` ou `copy` dans `meta`) |
-| `lien_copie` | « Le gardien a copié le lien de Léa » |
-| `lien_regenere` | « Le lien de Léa a été régénéré » |
-| `tirage_effectue` | « Le tirage a été effectué pour 12 participants » |
-| `resultats_consultes` | « Le gardien a consulté les résultats du tirage (accès de dernier recours) » |
-| `tirage_annule` | « Le tirage a été annulé. Motif : désistement de Tom » |
-| `resultat_consulte` | « Léa a consulté son résultat (3ᵉ fois) » |
-| `souhaits_modifies` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
-| `edition_cloturee` | « L'édition Noël 2026 est clôturée » |
+| `edition_created` | « L'édition Noël 2026 a été créée » |
+| `participant_added` / `participant_removed` | « Léa rejoint l'édition » / « Léa quitte l'édition » |
+| `rules_changed` | « Le gardien a modifié les règles du tirage » (règles, exclusions, exclusions levées) |
+| `message_sent` | « Le gardien a envoyé l'invitation à Léa (partagé) » ; type de message et canal `share`, `copy` ou `email` dans `meta` |
+| `link_copied` | « Le gardien a copié le lien de Léa » |
+| `link_regenerated` | « Le lien de Léa a été régénéré » |
+| `draw_done` | « Le tirage a été effectué pour 12 participants » |
+| `draw_cancelled` | « Le tirage a été annulé. Motif : désistement de Tom » |
+| `result_revealed` | « Le gardien a consulté le résultat de Léa (accès de dernier recours) » |
+| `result_viewed` | « Léa a consulté son résultat (3ᵉ fois) » |
+| `wishes_updated` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
+| `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
+| `edition_closed` | « L'édition Noël 2026 est clôturée » |
+
+Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` et `results_revealed` (tirage entier) ne sont plus émis ; ils restent décrits pour d'anciennes lignes.
 
 Chaque événement porte la date, l'heure et l'auteur (`participant`, `gardien`, `super-admin` ou `système`).
 
@@ -563,36 +564,48 @@ Routes serveur Nitro (`server/api/**`, un fichier par méthode). Toutes les entr
 
 ### Participant
 
+Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, il reçoit le même 404 `link_invalid`.
+
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, groupe, édition, statut, liste de souhaits active ou non. Jamais le résultat. N'est pas compté comme une consultation |
-| `POST /api/p/[token]/reveal` | Déclenché par le bouton « Découvrir ». Renvoie le prénom du receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Compte et journalise la consultation |
-| `GET /api/p/[token]/wishes` | Sa propre liste de souhaits (le lien suffit) |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, liste de souhaits active ou non. Jamais le résultat. N'est pas compté comme une consultation |
+| `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Compte et journalise la consultation |
+| `GET /api/p/[token]/wishes` | Sa propre liste de souhaits |
 | `PUT /api/p/[token]/wishes` | Corps : la liste complète. Remplace la liste, journalise. Refusé si l'édition est clôturée ou la règle inactive |
-| `GET /api/p/[token]/journal` | Journal du groupe |
+| `PUT /api/p/[token]/avatar` | Son icône (emoji et couleur), journalisé. Refusé si l'édition est clôturée |
+| `PUT /api/p/[token]/language` | Sa langue préférée, journalisé |
+| `GET /api/p/[token]/journal` | Journal du groupe, dans sa langue |
 
 ### Admin
 
+Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être le gardien ou d'être super-admin.
+
 | Méthode et route | Rôle |
 |---|---|
-| `POST /api/admin/login`, `POST /api/admin/logout` | Session |
-| `GET/POST /api/admin/groups`, `PATCH /api/admin/groups/[id]` | Super-admin uniquement |
-| `GET/POST/PATCH /api/admin/[groupe]/persons` | Personnes (prénom, nom, actif) |
-| `POST/DELETE /api/admin/[groupe]/exclusions` | Exclusions manuelles |
+| `POST /api/admin/login`, `POST /api/admin/logout`, `GET /api/admin/session` | Session |
+| `GET/POST /api/admin/groups` | Super-admin : liste, création |
+| `PATCH /api/admin/groups/[id]` | Super-admin : nom, mot de passe du gardien, envoi par email |
+| `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
+| `GET /api/admin/[groupe]` | Accueil du groupe : éditions, édition en cours, règles |
+| `GET/POST /api/admin/[groupe]/persons`, `PATCH/DELETE …/persons/[id]` | Personnes : prénom, nom, email, langue, icône, actif. Suppression seulement si la personne n'a jamais participé |
+| `POST /api/admin/[groupe]/exclusions`, `DELETE …/exclusions/[id]` | Exclusions |
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
-| `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente) |
-| `PATCH /api/admin/[groupe]/editions/[id]` | Règles de l'édition, changement de statut |
-| `GET /api/admin/[groupe]/editions/[id]/participants` | Liste avec statuts, dont le nombre de souhaits par participant (jamais leur contenu) |
-| `POST/DELETE /api/admin/[groupe]/editions/[id]/participants` | Ajouter, retirer |
-| `GET /api/admin/[groupe]/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi |
-| `POST /api/admin/[groupe]/editions/[id]/draw` | Lancer le tirage |
-| `POST /api/admin/[groupe]/editions/[id]/redraw` | Annuler le tirage (motif obligatoire) |
-| `GET /api/admin/[groupe]/editions/[id]/messages?type=` | Textes prêts à partager pour chaque participant (sans effet de bord), préchargés pour que le partage s'ouvre au toucher |
-| `POST /api/admin/[groupe]/participations/[id]/message` | Corps : `type` ∈ `invitation`, `drawn`, `reminder`, `redraw` et `via` ∈ `share`, `copy`. Pose la pastille *envoyé* et journalise `message_sent` |
-| `DELETE /api/admin/[groupe]/participations/[id]/message` | Annule la pastille *envoyé* (erreur de clic), journalisé |
-| `POST /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul (journalisé `lien_copie`) |
+| `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration |
+| `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente, 100 participants au plus) |
+| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (nombre de souhaits, jamais leur contenu) ; libellé et règles propres |
+| `POST …/editions/[id]/open`, `/draw`, `/redraw`, `/close` | Cycle de vie : ouvrir les invitations, tirer, annuler le tirage (motif obligatoire), clôturer |
+| `GET …/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi. Liste aussi les paires des éditions clôturées qui excluent |
+| `POST/DELETE …/editions/[id]/history-waivers` | Lever une exclusion d'un tirage précédent pour cette édition ; tout rétablir |
+| `POST …/editions/[id]/participants`, `DELETE …/participants/[participationId]` | Ajouter, retirer (avant le tirage) |
+| `GET …/editions/[id]/messages?type=` | Textes prêts à partager pour chaque participant, dans sa langue, sans effet de bord |
+| `POST …/editions/[id]/emails` | Envoi par email (13.3) : `type`, puis `participationIds` ou `audience` |
+| `GET …/editions/[id]/results` | Qui a offert à qui, pour une édition **clôturée** uniquement |
+| `POST …/editions/[id]/reveal-one` | Accès de dernier recours à un résultat (8.7) |
+| `POST/DELETE /api/admin/[groupe]/participations/[id]/message` | Pose ou retire la pastille *envoyé* ; corps `type` et `via` ∈ `share`, `copy` |
+| `POST /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul, journalisé |
 | `POST /api/admin/[groupe]/participations/[id]/regenerate` | Régénérer le lien |
-| `GET /api/admin/[groupe]/journal` | Journal |
+
+`GET /api/health` : vérification de déploiement, publique.
 
 ---
 
@@ -637,52 +650,45 @@ Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnemen
 
 ---
 
-## 14. Arborescence proposée
+## 14. Arborescence
 
 ```
 secret-santa/
-├── README.md                  ← ce document
-├── nuxt.config.js
-├── jsconfig.json              ← checkJs, alias, pour l'éditeur
-├── eslint.config.js           ← config plate
-├── .prettierrc
-├── vitest.config.js
-├── wrangler.toml              ← binding D1
-├── drizzle.config.js
-├── package.json               ← "type": "module", scripts, lint-staged
+├── README.md                    ← ce document
+├── nuxt.config.ts               ← modules, secrets attendus, en-têtes de sécurité
+├── wrangler.toml                ← Worker, binding D1, domaine personnalisé
+├── drizzle.config.ts
+├── eslint.config.ts · vitest.config.ts · playwright.config.ts
 ├── .env.example
-├── .github/workflows/ci.yml   ← lint, format:check, test
+├── .github/workflows/ci.yml
 ├── app/
-│   ├── plugins/vue-query.js   ← VueQueryPlugin + hydratation SSR
+│   ├── app.vue · app.config.ts  ← thème Nuxt UI, langue de l'interface
 │   ├── pages/
-│   │   ├── index.vue          ← page d'accueil neutre
-│   │   ├── p/[token]/index.vue
-│   │   ├── p/[token]/souhaits.vue
-│   │   ├── p/[token]/journal.vue
-│   │   └── admin/…
-│   ├── components/            ← PinInput, RevealCard, WishList, WishEditor, ParticipantCard, JournalList, StatusBadge…
+│   │   ├── index.vue            ← page d'accueil neutre
+│   │   ├── p/[token]/           ← participant : index, souhaits, journal
+│   │   └── admin/               ← connexion, groupes, puis [slug]/ : accueil, personnes,
+│   │                              exclusions, réglages, gardien, journal, éditions/[id]/…
+│   ├── components/
+│   │   ├── admin/               ← Screen, StatusCard, SendOptions, Exclusions, PersonForm, DateField…
+│   │   ├── participant/         ← Screen, RevealCard, WishList
+│   │   ├── mobile/              ← List, ListItem (listes pleine largeur)
+│   │   └── JournalList · JournalView · LanguageSwitch
 │   ├── composables/
-│   │   └── queries/           ← useQuery/useMutation par domaine + keys.js
-│   └── middleware/admin.js
+│   │   ├── useT.ts · useErrorMessage.ts · useShareMessage.ts
+│   │   └── queries/             ← useQuery/useMutation par domaine + keys.ts
+│   ├── middleware/admin.ts
+│   └── utils/                   ← formatage, statut d'un participant
 ├── server/
-│   ├── api/p/…                ← un fichier par route et méthode (wishes.get.js, wishes.put.js…)
-│   ├── api/admin/…
-│   ├── database/
-│   │   ├── schema.js
-│   │   └── migrations/
-│   └── utils/                 ← noyau pur, chaque fichier a son .test.js à côté
-│       ├── draw.js            ← algorithme de tirage, aléa injecté
-│       ├── crypto.ts          ← jetons, hachage des mots de passe gardien, AES-GCM
-│       ├── audit.js           ← construction des événements du journal
-│       ├── wishes.js          ← validation et normalisation d'une liste de souhaits
-│       ├── messages.ts        ← modèles de messages à partager, fonctions pures
-│       ├── rules.js           ← fusion règles groupe/édition
-│       ├── result.js          ← helpers ok()/fail() pour les erreurs métier
-│       └── auth.js
-│   └── database/
-│       └── client.js          ← useDb(event) : Drizzle sur le binding D1 (infrastructure, hors noyau pur)
-└── tests/
-    └── api/                   ← tests de routes (refus, cloisonnement, aucune attribution en sortie)
+│   ├── api/p/[token]/           ← état, reveal, wishes, avatar, language, journal
+│   ├── api/admin/               ← login, groups, [slug]/…
+│   ├── http/                    ← gardes (session, groupe, édition, lien), validation, email
+│   ├── database/                ← schéma, migrations, requêtes (hors noyau pur)
+│   └── utils/                   ← noyau pur, chaque fichier a son .test.ts à côté :
+│                                  draw, rules, crypto, audit, messages, wishes,
+│                                  editions, people, personal, avatars, auth, result
+├── shared/i18n/                 ← dictionnaires fr/en/de typés, translate()
+├── scripts/                     ← seed-demo.ts, e2e-server.sh
+└── tests/e2e/                   ← admin-edition, email, language, participant, security
 ```
 
 ---
@@ -704,7 +710,7 @@ secret-santa/
 
 ---
 
-## 16. Déploiement (gratuit)
+## 16. Déploiement
 
 1. Créer un dépôt GitHub privé et y pousser le code.
 2. Créer un compte Cloudflare gratuit.
@@ -721,36 +727,30 @@ Développement local : base D1 locale émulée par Miniflare (`nitro dev`), éta
 
 ## 17. Plan de réalisation par étapes
 
-Chaque étape est livrable et testable seule.
+Chaque étape est livrable et testable seule. État : étapes 0 à 6 terminées, 7 en partie, 8 commencée.
 
-**Étape 0 — Vérifications** ✅ *terminée le 13 novembre 2026*
-Points de la section 7 levés, conclusions en 7.2. Décisions : Workers (`cloudflare_module`), pas de NuxtHub, pas d'email mais WhatsApp `wa.me`, Nuxt 4, PBKDF2 configurable.
+**Étape 0 — Vérifications** ✅
+Points techniques levés, conclusions en 7.2 : Workers (`cloudflare_module`), pas de NuxtHub, PBKDF2 configurable.
 
-**Étape 1 — Socle** ✅ *terminée et déployée le 13 novembre 2026*
-Fait : Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git (simple-git-hooks, lint-staged), Vitest, CI GitHub Actions, Tailwind 4, plugin TanStack Query (SSR vérifié), Drizzle + schéma complet + migration `0000_init`, preset `cloudflare_module`, `wrangler.toml` (D1 + assets), route `/api/health` testée sous Miniflare, base D1 `secret-santa` créée et migrée, Worker déployé sur `secret-santa.julienr114.workers.dev`, `/api/health` répond en production, code poussé sur GitHub (CI active). PBKDF2 mesuré sur le Worker (voir 7.2), route de banc supprimée, défaut 20 000. Sous-domaine `workers.dev` du compte : `julienr114`.
+**Étape 1 — Socle** ✅
+Nuxt 4, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, Tailwind 4, plugin TanStack Query, Drizzle + schéma + migration `0000_init`, base D1 `secret-santa`, Worker déployé.
 
-Enseignements : l'horloge est gelée pendant une requête Worker (`performance.now()` rend 0), le temps CPU se lit dans `wrangler tail --format json` (champ `cpuTime`) ; ESLint 10 cherche la config depuis chaque fichier, d'où `--config eslint.config.js` dans les scripts ; `functional/immutable-data` exige TypeScript, remplacé par des sélecteurs `no-restricted-syntax` sur le noyau pur ; `server/utils` est réservé aux fonctions pures, l'infrastructure (client Drizzle) vit dans `server/database`.
+Enseignements : l'horloge est gelée pendant une requête Worker (`performance.now()` rend 0), le temps CPU se lit dans `wrangler tail --format json` (champ `cpuTime`) ; ESLint 10 cherche la config depuis chaque fichier, d'où `--config eslint.config.ts` dans les scripts ; `server/utils` est réservé aux fonctions pures, l'infrastructure vit dans `server/database` et `server/http`.
 
-Plan initial : Dépôt GitHub privé. Projet Nuxt 4 en JavaScript, `jsconfig.json`, ESLint + Prettier + hooks Git, Vitest, CI GitHub Actions, styles, plugin TanStack Query, Drizzle + D1, schéma complet (table `wishes` comprise) et première migration, déploiement d'une page vide sur Cloudflare Workers pour valider la chaîne. **Mesure du temps CPU d'un PBKDF2 à 50 000 itérations sur le Worker déployé** (route temporaire), pour fixer la valeur par défaut. Chaque outil = un commit.
-
-**Étape 2 — Cœur métier, sans interface** ✅ *terminée le 13 novembre 2026*
-`result.js`, `rules.js`, `draw.js`, `crypto.js`, `audit.js`, `wishes.js`, `whatsapp.js`, `messages.js` dans `server/utils/`, chacun avec son `.test.js` (58 tests, 100 % des lignes couvertes), un commit par module. Points à connaître pour la suite :
-- **Clés anglaises dans le code**, libellés français dans l'interface. Règles : `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `wishlist`, `maxWishes` (`rules.js`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types d'événements : `edition_created`, `participant_added/removed`, `couple_changed`, `rules_changed`, `message_sent` (meta `messageType`, `via` ∈ `share`, `copy`), `link_copied/shared/regenerated`, `draw_done`, `draw_cancelled`, `result_viewed`, `wishes_updated`, `edition_closed` (`audit.js`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.js`).
-- `draw(input, rules, { random })` : l'appelant fournit `history` (receveurs passés par donneur, déjà filtré sur N éditions et sur la participation du donneur) et `random` (`secureRandomInt` de `crypto.js` en production). `checkFeasibility` renvoie `blocked`, `constrained` et `allowedCounts` pour l'encart « Vérification ».
-- `audit.js` purge de `meta` toute clé évoquant un résultat ou un secret (`receiver`, `assignment`, `pin`, `token`…), à n'importe quelle profondeur.
+**Étape 2 — Cœur métier, sans interface** ✅
+Modules purs de `server/utils/`, chacun avec son fichier de test. Points à connaître :
+- **Clés anglaises dans le code**, textes dans les dictionnaires. Règles : `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `wishlist`, `maxWishes` (`rules.ts`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.ts`).
+- `draw(input, { random })` : l'appelant fournit `history` (receveurs passés par donneur, déjà filtré sur N éditions et sur la participation du donneur) et `random` (`secureRandomInt` en production). `checkFeasibility` renvoie `blocked` et `constrained` pour la carte de statut.
+- `audit.ts` purge de `meta` toute clé évoquant un résultat ou un secret (`receiver`, `assignment`, `token`…), à n'importe quelle profondeur.
 - Le hachage mêle le poivre au secret (`${pepper}\0${secret}`), 20 000 itérations par défaut, plafonné à 100 000.
 
-Plan initial : `draw.js`, `crypto.js`, `rules.js`, `audit.js`, `wishes.js`, `messages.js`, `whatsapp.js`, `result.js`, avec leurs tests unitaires. C'est la partie la plus critique : la terminer et la tester avant toute interface. Un commit par fonction métier avec ses tests.
-
-**Étape 3 — Administration**
+**Étape 3 — Administration** ✅
 Connexion super-admin et gardien, gestion des groupes, des personnes, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
 
-**Étape 4 — Pilotage d'une édition** ✅ *terminée le 13 novembre 2026*
+**Étape 4 — Pilotage d'une édition** ✅
 Écran de pilotage (action du moment, vérification nommant les personnes en cause, tirage avec confirmation, clôture), bouton « Partager » sur chaque participant (v5), fiche participant (partager, copier, lien, annuler « envoyé », dernière consultation, régénérer le lien, retirer), ajout de participants, annulation du tirage avec motif et double confirmation. Interface : écrans empilés avec retour et fil d'Ariane, listes mobiles, pas de modale. Tests de bout en bout Playwright (`pnpm test:e2e`, build Cloudflare + D1 jetable, format iPhone) en CI.
 
-Plan initial : Liste des participants, génération des liens, copie et partage, vérification de faisabilité, tirage, annulation et relance, clôture.
-
-**Étape 5 — Parcours participant** ✅ *terminée le 13 novembre 2026*
+**Étape 5 — Parcours participant** ✅
 Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvrir », résultat, clôturée, lien invalide), révélation comptée et journalisée (`POST /api/p/[token]/reveal`, compteur incrémenté en base de façon atomique), journal du groupe `/p/[token]/journal` filtrable par édition. Points à connaître :
 - Garde unique `requirePersonalLink` (`server/http/personal.ts`) : jeton inconnu, mal formé ou régénéré, même réponse 404 `link_invalid`.
 - Règles pures dans `server/utils/personal.ts` (`personalPhase`, `canReveal`, `canEditWishes`). Une édition clôturée laisse consulter son résultat (toujours compté et journalisé).
@@ -758,21 +758,27 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - En-têtes `Referrer-Policy`, `Cache-Control: no-store` et `X-Robots-Tag` posés par `routeRules` sur `/p/**` et `/api/p/**`.
 - Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté gardien.
 - La page se met à jour seule : l'état est redemandé toutes les 10 s tant que l'onglet est visible (pas de SSE ni de WebSocket ; le vrai push par Durable Object a été étudié puis écarté le 13 novembre 2026, trop de mécanique pour un événement annuel).
-- Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête. Ce changement n'est pas journalisé.
+- Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête ; le changement est journalisé.
 - Journal affiché en frise (`JournalList`) : fil rouge, emoji par type d'événement, étapes clés en cartes, regroupement par jour.
 - Tests de bout en bout dans `tests/e2e/participant.spec.ts`.
 
-**Étape 5 bis — Liste de souhaits** ✅ *terminée le 13 novembre 2026*
+**Étape 5 bis — Liste de souhaits** ✅
 Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté gardien existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
 
-**Étape 6 — Partage des liens** ✅ *fait avec l'étape 4 (v5)*
-Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation. Le plan initial (liens WhatsApp `wa.me`) est abandonné.
+**Étape 6 — Partage des liens** ✅ *fait avec l'étape 4*
+Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation.
 
-**Étape 7 — Finitions**
-Animation de révélation, états vides, messages d'erreur, accessibilité (contrastes, navigation clavier, lecteurs d'écran), revue de la liste de contrôle sécurité, test complet sur un vrai téléphone.
+**Étape 7 — Finitions** (en partie)
+- ✅ Animation de révélation, états vides, messages d'erreur.
+- ✅ Revue de la liste de contrôle sécurité (8.6), le 14 novembre 2026.
+- ✅ Test sur un vrai téléphone en production, fait par Julien.
+- À faire : accessibilité (contrastes, navigation clavier, lecteurs d'écran).
 
-**Étape 8 — Mise en service**
-Création des deux groupes réels, répétition générale avec une édition de test, puis lancement.
+**Étape 8 — Mise en service** (commencée)
+- ✅ Groupe réel « Famille Delacoux » créé en production (9 personnes, envoi par email activé).
+- À faire : mot de passe de son gardien, exclusions, première édition ; seconde famille.
+
+Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'anglais et l'allemand par un locuteur, test automatique du parcours « deuxième année ».
 
 ---
 
@@ -807,7 +813,7 @@ Création des deux groupes réels, répétition générale avec une édition de 
 
 ### Liste de souhaits
 
-- La normalisation (`wishes.js`) rejette : plus de `souhaits_max` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
+- La normalisation (`wishes.ts`) rejette : plus de `souhaits_max` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
 - `PUT /wishes` est journalisé à chaque modification.
 - `PUT /wishes` sur une édition clôturée ou un groupe où `liste_souhaits` est désactivée est refusé.
 - `POST /reveal` renvoie la liste du receveur et uniquement la sienne.

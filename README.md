@@ -77,7 +77,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 | Terme | Sens |
 |---|---|
 | **Groupe** | Une famille. Cloisonné des autres groupes. |
-| **Organisateur** | L'admin d'un groupe (appelé « gardien » jusqu'au 14 novembre 2026 ; le code dit toujours `guardian`, et l'écran de son mot de passe reste à l'adresse `/admin/[groupe]/gardien`). Gère participants, tirage et envois, ne voit pas les résultats. |
+| **Organisateur** | L'admin d'un groupe (appelé « gardien » jusqu'au 14 novembre 2026 ; le code dit toujours `guardian`). Gère participants, tirage et envois, ne voit pas les résultats. |
 | **Super-admin** | Julien. Crée les groupes et nomme les organisateurs. |
 | **Personne** | Un membre d'un groupe. Persiste d'une année sur l'autre. |
 | **Édition** | Un Secret Santa donné (ex. « Noël 2026 ») dans un groupe. |
@@ -109,7 +109,7 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 ### 4.2 Parcours de l'organisateur
 
-1. Se connecte à l'admin de son groupe (mot de passe).
+1. Se connecte avec son adresse email (lien magique) et ouvre son groupe.
 2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
 3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les exclusions.
 4. Passe en `invitations` : pour chaque participant, touche « Partager » ; la feuille de partage du téléphone s'ouvre avec le message et le lien, il choisit WhatsApp (ou autre) et le contact.
@@ -263,7 +263,7 @@ Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas
 | ORM et migrations | **Drizzle ORM** + drizzle-kit (`drizzle.config.ts`, schéma en `server/database/schema.ts`), migrations appliquées par wrangler |
 | Validation | Zod sur toutes les entrées d'API ; les types sont dérivés des schémas |
 | Traductions | Dictionnaires typés maison dans `shared/i18n`, partagés par le serveur et les écrans (section 21) |
-| Sessions admin | Cookie de session scellé (`nuxt-auth-utils`), 12 heures |
+| Sessions admin | Session en base, révocable, 30 jours ; cookie scellé (`nuxt-auth-utils`) qui ne porte que son identifiant |
 | Cryptographie | Web Crypto API |
 | Transmission des liens | Feuille de partage du téléphone (`navigator.share`), copie en repli ; email en option par Resend (13.3) |
 | Qualité | **ESLint** (config plate, `@nuxt/eslint`, `eslint-plugin-functional`) + **Prettier**. Hooks Git via `simple-git-hooks` + `lint-staged` |
@@ -345,13 +345,21 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Le déchiffrement n'a lieu que dans deux cas : la consultation par le participant, et le calcul des exclusions lors d'un tirage ultérieur.
 - **Aucune route d'administration ne renvoie une attribution en clair**, y compris pour le super-admin.
 
-### 8.4 Administration
+### 8.4 Administration (comptes, depuis le 14 novembre 2026)
 
-- **Super-admin** : mot de passe dans la variable secrète `SUPER_ADMIN_PASSWORD`. Peut créer des groupes, définir ou réinitialiser le mot de passe d'un organisateur, et agir comme organisateur de n'importe quel groupe.
-- **Organisateur** : un mot de passe par groupe, haché en base (PBKDF2-SHA256, sel par groupe, poivre `NUXT_PIN_PEPPER`, longueur minimale de 10 caractères).
-- Session par cookie scellé, `HttpOnly`, `Secure`, `SameSite=Lax`, durée 12 heures.
-- Limitation des tentatives de connexion admin (par exemple 10 échecs puis attente de 15 minutes).
-- Toutes les routes `/api/admin/*` vérifient la session **et** l'appartenance au groupe concerné.
+Plus aucun mot de passe. Détail de la conception en 22.5.
+
+- **Compte** : une adresse email. La connexion se fait par **lien magique** : `/login` demande l'adresse, un email apporte un lien `/login/<jeton>`, et un bouton sur cette page ouvre la session.
+- **Lien** : jeton de 256 bits stocké en empreinte SHA-256, **usage unique**, valable **15 minutes** ; en demander un nouveau invalide les précédents ; ouvrir la page ne le consomme pas (seul le bouton le fait) ; même réponse que l'adresse ait un compte ou non ; 5 demandes par heure et par adresse, 20 par heure et par adresse IP.
+- **Session** : une ligne en base (`sessions`), 30 jours, **révocable**. Le cookie scellé (`HttpOnly`, `Secure`, `SameSite=Lax`) ne porte que son identifiant ; elle est vérifiée à chaque requête. Se déconnecter la révoque ; « Mon compte » liste les appareils et permet de tout déconnecter.
+- **Rôle**, recalculé à chaque requête depuis le compte, jamais lu dans le cookie : **super-admin** (indicateur `accounts.is_super_admin`, plusieurs possibles), **organisateur** (au moins un groupe dans `group_members`) ou **membre** (tous les autres : un participant qui se connecte pour retrouver ses tirages). Un membre n'a aucun accès à `/api/admin/*` (403) ni aux écrans `/admin`.
+- **Qui reçoit un lien** : toute adresse connue, c'est-à-dire un compte existant, une adresse de `NUXT_SUPER_ADMIN_EMAILS`, ou l'adresse qu'un organisateur a saisie pour un participant (le compte est alors créé à la première demande, dans la langue de la personne). Une adresse inconnue ne reçoit rien : l'inscription libre n'est pas encore ouverte.
+- **Page d'accueil** (`/`, la même pour tous) : sans session, la connexion ; avec, « Mes tirages » (les participations des personnes qui portent l'adresse du compte, hors brouillons, ouvertes par leur lien personnel), puis les groupes gérés, avec des lignes en plus pour le super-admin (nouveau groupe, guide de style). Un organisateur qui met sa propre adresse sur un participant y verrait son lien : comme pour un lien copié, la première consultation du résultat reste inscrite au journal.
+- **Organisateurs d'un groupe** : désignés par leur adresse depuis l'écran « Organisateurs » du groupe, par un super-admin ou par un autre organisateur. On ne se retire pas soi-même. Retirer quelqu'un coupe ses sessions ouvertes sur ce groupe à la requête suivante.
+- **Super-admin** : crée et supprime les groupes, active l'envoi par email, gère tous les groupes. `julienr114@gmail.com` est créé par la migration `0007` ; les adresses de `NUXT_SUPER_ADMIN_EMAILS` le deviennent à leur première demande de lien (amorçage d'une installation neuve).
+- **Développement et tests** : `NUXT_DEV_LOGIN_LINKS=true` renvoie le lien à l'écran au lieu de dépendre d'un email. **Jamais en production.**
+- Toutes les routes `/api/admin/*` vérifient la session **et** le droit sur le groupe concerné.
+- Reste à faire (22.5) : inscription libre avec quota, second facteur TOTP pour les super-admins, comptes de participants.
 
 ### 8.5 Cloisonnement
 
@@ -377,7 +385,6 @@ Limites connues et acceptées :
 - L'organisateur reçoit les liens personnels pour les partager ; il peut donc en ouvrir un. C'est le journal public qui le rend visible (décision d'origine).
 - Les adresses des pages personnelles, jeton compris, apparaissent dans les journaux de requêtes Cloudflare du compte (`[observability]`), lisibles par le seul titulaire du compte.
 - Pas de limitation de débit sur les routes participant : le jeton de 256 bits ne se devine pas ; un détenteur de lien peut seulement gonfler son propre compteur et le journal.
-- Une session de organisateur reste valable jusqu'à 12 h après un changement de son mot de passe.
 
 Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 paramètres, ce qui faisait échouer la création d'une édition dès 10 personnes et le tirage dès 17 (insertions groupées). Corrigé par une insertion par ligne dans la transaction ; vérifié avec 40 personnes. Une édition est donc limitée à **100 participants** (`MAX_PARTICIPANTS`, refus `too_many_participants` à la création de l'édition et à l'ajout d'un participant), plutôt que de rencontrer la limite comme une erreur de base.
 
@@ -387,7 +394,7 @@ Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 param�
 
 - **Édition clôturée = résultats non secrets.** L'organisateur voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
 - Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées.
-- **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : mot de passe de l'organisateur redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« L'organisateur a consulté les résultats du tirage »). L'organisateur pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
+- **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« L'organisateur a consulté les résultats du tirage »). L'organisateur pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
 - Ces trois points remplacent, pour les éditions clôturées et l'accès de dernier recours, la règle « aucune route d'administration ne renvoie une attribution » de la section 8.3, qui reste vraie pour tout le reste.
 
 ---
@@ -432,7 +439,6 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `name` | text | |
 | `guardian_password_hash`, `guardian_password_salt` | text | |
 | `rules` | text (JSON) | Valeurs par défaut des règles du groupe |
-| `email_sending` | integer (booléen) | Envoi groupé par email, activé par le super-admin (13.3) |
 | `created_at` | text | |
 
 ### `persons`
@@ -539,8 +545,11 @@ Détails d'interface :
 
 | Route | Écran |
 |---|---|
-| `/admin` | Connexion (choix du groupe + mot de passe, ou accès super-admin) |
-| `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des organisateurs |
+| `/` | Accueil, le même pour tous : la connexion sans session ; sinon mes tirages, puis mes groupes et les options du super-admin |
+| `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis page du lien avec son bouton |
+| `/admin/groupes/nouveau` | Super-admin : création d'un groupe (`/admin` et `/admin/groupes` redirigent vers l'accueil) |
+| `/compte` | Mon compte : adresse, appareils connectés, « Déconnecter partout » |
+| `/admin/[groupe]/organisateurs` | Qui peut gérer le groupe : ajouter une adresse, en retirer une |
 | `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
 | `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver ; écran Exclusions : paires qui ne se tirent pas (couples, fratries…), réciproques par défaut |
 | `/admin/[groupe]/reglages` | Règles par défaut du groupe |
@@ -582,9 +591,15 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 
 | Méthode et route | Rôle |
 |---|---|
-| `POST /api/admin/login`, `POST /api/admin/logout`, `GET /api/admin/session` | Session |
-| `GET/POST /api/admin/groups` | Super-admin : liste, création |
-| `PATCH /api/admin/groups/[id]` | Super-admin : nom, mot de passe de l'organisateur, envoi par email |
+| `POST /api/auth/link` | Demande un lien de connexion (réponse identique dans tous les cas) |
+| `POST /api/auth/confirm` | Consomme le lien, ouvre la session |
+| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel), les groupes qu'il gère, son rôle |
+| `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |
+| `POST /api/admin/logout`, `GET /api/admin/session` | Déconnexion (révoque la session), session courante |
+| `GET /api/admin/groups` | Les groupes du compte |
+| `POST /api/admin/groups` | Super-admin : création, avec les adresses des organisateurs |
+| `PATCH /api/admin/groups/[id]` | Super-admin : nom |
+| `GET/POST /api/admin/[groupe]/organizers`, `DELETE …/organizers/[compte]` | Organisateurs du groupe |
 | `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
 | `GET /api/admin/[groupe]` | Accueil du groupe : éditions, édition en cours, règles |
 | `GET/POST /api/admin/[groupe]/persons`, `PATCH/DELETE …/persons/[id]` | Personnes : prénom, nom, email, langue, icône, actif. Suppression seulement si la personne n'a jamais participé |
@@ -634,12 +649,12 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 | `relance` | Manuel | « Petit rappel Léa : ton lien t'attend, pense à l'ouvrir. Ton lien : [lien] » |
 | `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
 
-### 13.3 Envoi groupé par email (v6, en option)
+### 13.3 Envoi groupé par email (v6)
 
 Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnement par défaut ; l'email évite seulement à l'organisateur de partager chaque lien à la main.
 
-- **Activation** : colonne `groups.email_sending`, modifiable par le **super-admin uniquement** (`PATCH /api/admin/groups/[id]`, interrupteur sur l'écran du groupe). L'organisateur ne peut ni l'activer ni le couper.
-- **Adresses** : `persons.email`, facultative, saisie par l'organisateur ; le champ n'apparaît que si l'option est active. Migration `0005`.
+- **Activation** : plus d'option. D'abord réservé aux groupes où le super-admin l'activait (colonne `groups.email_sending`, migration `0005`), l'envoi par email est ouvert à **tous les groupes** depuis le 14 novembre 2026 ; la colonne est supprimée par la migration `0010`. Raison : l'adresse d'un participant sert aussi à sa connexion, elle doit donc pouvoir être saisie partout.
+- **Adresses** : `persons.email`, facultative, saisie par l'organisateur dans tous les groupes. Elle sert à l'envoi par email et permet à la personne de se connecter pour retrouver ses tirages (8.4).
 - **Envoi** : `POST /api/admin/[groupe]/editions/[id]/emails`, corps `type` (un message de l'étape en cours) et `audience` (`unsent` par défaut, ou `all`). Écrit aux participants qui ont une adresse, pose la pastille *envoyé* et journalise `message_sent` avec `via: email`. 50 emails au plus par appel, le reste au suivant.
 - **Fournisseur** : Resend (offre gratuite), domaine `under-the-tree.party` vérifié, un seul appel HTTPS par envoi groupé (`/emails/batch`), ce qui reste loin de la limite de 50 sous-requêtes du plan gratuit. Secret `NUXT_RESEND_API_KEY` ; sans clé, la route répond `email_not_configured` et rien d'autre ne change.
 - **Contenu** : `buildEmail` dans `server/utils/messages.ts`, même texte que le message à partager, plus un objet et un jumeau HTML sobre. Jamais de résultat.
@@ -697,11 +712,11 @@ secret-santa/
 
 | Variable | Rôle |
 |---|---|
-| `SUPER_ADMIN_PASSWORD` | Mot de passe du super-admin |
+| `SUPER_ADMIN_EMAILS` | Adresses qui deviennent super-admins à leur première demande de lien (séparées par des virgules) |
+| `DEV_LOGIN_LINKS` | `true` en développement seulement : le lien de connexion est affiché à l'écran |
+| `LINK_REQUESTS_PER_IP` | Limite horaire de demandes de lien par adresse IP (20 par défaut ; relevée pour les tests) |
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
-| `NUXT_PIN_PEPPER` | Poivre pour le hachage des mots de passe organisateur (nom historique, conservé pour ne pas changer le secret en production) |
-| `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 20 000, maximum 100 000 sur Workers) |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 | `RESEND_API_KEY` | Clé d'API Resend pour l'envoi groupé par email (facultative, une clé limitée à l'envoi suffit) |
 | `EMAIL_FROM` | Expéditeur des emails, sur un domaine vérifié chez Resend |
@@ -776,7 +791,7 @@ Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de
 
 **Étape 8 — Mise en service** (commencée)
 - ✅ Groupe réel « Famille Delacoux » créé en production (9 personnes, envoi par email activé).
-- À faire : mot de passe de son organisateur, exclusions, première édition ; seconde famille.
+- À faire : y désigner un organisateur si ce n'est pas Julien, exclusions, première édition ; seconde famille.
 
 Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'anglais et l'allemand par un locuteur, test automatique du parcours « deuxième année ».
 
@@ -922,7 +937,7 @@ Décision du 14 novembre 2026 : l'application s'ouvre au public par **inscriptio
 - **Double authentification pour le super-admin** (TOTP), puisqu'il devient la clé de tout le service.
 - **Incitation à créer un groupe** : un compte sans groupe voit pourquoi il n'en a pas et comment en demander un.
 
-Ce socle remet en cause des décisions actuelles, à réécrire au moment de le coder : la section 8.4 (mot de passe par groupe, super-admin par variable d'environnement), la contrainte « presque gratuit » (quotas Cloudflare et Resend à surveiller dès qu'il y a des inconnus), et il ajoute des obligations nouvelles : mentions légales, RGPD (adresses de tiers saisies par un organisateur), protection contre l'abus à l'inscription.
+Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrite le 14 novembre 2026 (plus de mot de passe par groupe ni de super-admin par variable d'environnement), la contrainte « presque gratuit » (quotas Cloudflare et Resend à surveiller dès qu'il y a des inconnus), et il ajoute des obligations nouvelles : mentions légales, RGPD (adresses de tiers saisies par un organisateur), protection contre l'abus à l'inscription.
 
 **Fonctions qui s'appuient sur le socle**
 
@@ -981,20 +996,24 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 - Session de 30 jours, révocable ; écran « mes appareils » avec « déconnecter partout ». Désactiver un compte révoque ses sessions.
 - **Super-admin** : en plus du lien magique, un **second facteur TOTP** obligatoire. Sans lui, prendre la main sur la boîte mail suffirait à prendre tout le service. Un super-admin ne peut pas retirer le dernier super-admin.
 
-**Risque connu** : la connexion dépend alors d'un email qui arrive. Au 14 novembre 2026 nos emails tombent en spam ou en Promotions sur Gmail (13.3). À remesurer avant de retirer l'ancienne connexion ; tant que ce n'est pas fiable, garder un secours.
+**Risque connu** : la connexion dépend alors d'un email qui arrive. Au 14 novembre 2026 nos emails tombent en spam ou en Promotions sur Gmail (13.3). L'ancienne connexion par mot de passe est retirée : il faut donc vérifier, juste après la mise en production, que l'email de connexion arrive (le chercher dans les indésirables), et continuer d'améliorer la délivrabilité.
 
-**Transition depuis l'existant**
+**Transition depuis l'existant (faite)**
 
-- La migration crée le compte `julienr114@gmail.com` en super-admin et le rattache comme organisateur aux groupes existants.
-- Le mot de passe par groupe (`guardian_password_hash`) et `SUPER_ADMIN_PASSWORD` restent utilisables pendant la transition, puis sont retirés. À trancher : garder `SUPER_ADMIN_PASSWORD` comme accès de secours hors ligne.
+- La migration `0007` crée le compte `julienr114@gmail.com` en super-admin. Il n'est rattaché à aucun groupe : un super-admin les gère tous. Les groupes existants n'ont donc aucun organisateur tant qu'on n'en désigne pas.
+- Les migrations `0008` et `0009` suppriment le mot de passe par groupe et la table des essais de connexion, et créent `group_members`. `SUPER_ADMIN_PASSWORD` et `NUXT_PIN_PEPPER` ne sont plus lus : les secrets correspondants peuvent être supprimés chez Cloudflare.
+- **Ordre de mise en production** : appliquer les migrations `0007` à `0010` (`pnpm db:migrate`) **avant** `pnpm deploy:prod`.
 
-**Ordre proposé, chaque pas livrable seul**
+**Avancement**
 
-1. Comptes, liens magiques et sessions, pour le **super-admin seulement**, à côté de la connexion actuelle : c'est aussi le test en vrai de la délivrabilité.
-2. Organisateurs par compte (`group_members`), invitation d'un co-organisateur par email, retrait du mot de passe par groupe.
-3. Inscription libre, quota de groupes à 0, demande de groupe, interface d'administration des comptes, emails aux super-admins.
-4. TOTP pour les super-admins.
-5. Comptes de participants : création depuis la page de résultat, rattachement à la personne, vue de ses participations.
+1. ✅ Comptes, liens magiques et sessions (14 novembre 2026).
+2. ✅ Organisateurs par compte (`group_members`), **retrait de tous les mots de passe** (groupe et super-admin) : fait d'un bloc avec le pas 1, à la demande de Julien. Migrations `0007` à `0009`.
+2 bis. ✅ Connexion ouverte aux participants dont l'organisateur a saisi l'adresse, rôle « membre », page d'accueil commune avec « Mes tirages » (première ébauche, 14 novembre 2026).
+3. À faire : inscription libre, quota de groupes à 0, demande de groupe, interface d'administration des comptes, emails aux super-admins.
+4. À faire : TOTP pour les super-admins.
+5. À faire : comptes de participants, créés depuis la page de résultat.
+
+**Si un super-admin ne reçoit plus ses emails** : il n'y a pas d'accès de secours dans l'application. Le recours est côté Cloudflare, réservé au titulaire du compte : activer temporairement `NUXT_DEV_LOGIN_LINKS`, ou lire les journaux d'envoi de Resend.
 
 ### 22.6 Conception proposée : tirage fait à la main
 
@@ -1008,7 +1027,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 
 ### 22.7 Réponses de Julien du 14 novembre 2026 (conception validée)
 
-- **Tout passe par le lien magique** : pas de `SUPER_ADMIN_PASSWORD` de secours à terme. Il est gardé seulement pendant la transition (pas 1 à 4), puis retiré avec le mot de passe par groupe.
+- **Tout passe par le lien magique** : pas de `SUPER_ADMIN_PASSWORD` de secours. Il a été retiré en même temps que le mot de passe par groupe (un seul moyen de connexion, demande du 14 novembre).
 - **Installation à zéro et développement local** doivent fonctionner sans boîte mail :
   - `NUXT_SUPER_ADMIN_EMAILS` (liste séparée par des virgules) : une adresse de cette liste obtient un compte super-admin à sa première demande de lien. C'est l'amorçage d'une installation neuve. La migration crée en plus `julienr114@gmail.com`.
   - `NUXT_DEV_LOGIN_LINKS=true` : le lien de connexion est renvoyé à l'écran au lieu d'être seulement envoyé par email. **Jamais en production.** Utilisé en local et par les tests de bout en bout.

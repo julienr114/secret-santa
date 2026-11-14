@@ -29,13 +29,20 @@ export const createAccount = async (
     email,
     isSuperAdmin,
     language = 'fr',
+    firstName = null,
     now,
-  }: { email: string; isSuperAdmin: boolean; language?: Locale; now: string },
+  }: {
+    email: string;
+    isSuperAdmin: boolean;
+    language?: Locale;
+    firstName?: string | null;
+    now: string;
+  },
 ) => {
   const account: typeof accounts.$inferSelect = {
     id: newId(),
     email,
-    firstName: null,
+    firstName,
     lastName: null,
     avatarEmoji: null,
     avatarColor: null,

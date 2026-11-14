@@ -209,4 +209,33 @@ export default {
     copied: 'Message copied',
     copiedDescription: 'Paste it into the app of your choice.',
   },
+  invite: {
+    title: 'Invitation link',
+    off: 'Off',
+    description:
+      'Share it: everyone logs in with their email address and joins the group, and its draw in progress until it takes place.',
+    share: 'Share',
+    copied: 'Link copied',
+    until: 'Deadline',
+    untilHelp: 'Optional. The link stops working after this day.',
+    places: 'Places',
+    placesHelp:
+      'How many people can still join by this link. By default, the places left in the group.',
+    placesLeft: { one: '{count} place left', other: '{count} places left' },
+    untilShort: 'until {date}',
+    messageLabel: 'Your words on the invitation page',
+    messageHelp: 'Optional. What the guests read when they open the link.',
+    create: 'Create the link',
+    save: 'Save',
+    close: 'Turn the link off',
+    saved: 'Link saved',
+    shareTitle: 'Message to share',
+    copyMessage: 'Copy the message',
+    message: {
+      intro: 'Hi! You are invited to the Secret Santa “{group}” 🎁',
+      how: 'Sign up with your email address by opening this link:',
+      until: 'You have until {date}.',
+    },
+    renew: 'New link (the old one will stop working)',
+  },
 } satisfies Dict<typeof fr>;

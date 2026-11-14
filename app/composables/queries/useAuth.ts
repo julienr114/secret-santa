@@ -33,8 +33,18 @@ export type AccountPayload = {
  * an account; `devLink` only exists in development mode.
  */
 export const useRequestLinkMutation = () =>
-  useApiMutation<{ ok: true; devLink?: string }, string>((email) =>
-    api('/api/auth/link', { method: 'POST', body: { email } }),
+  useApiMutation<
+    { ok: true; devLink?: string },
+    { email: string; next?: string | null; firstName?: string }
+  >(({ email, next, firstName }) =>
+    api('/api/auth/link', {
+      method: 'POST',
+      body: {
+        email,
+        ...(next ? { next } : {}),
+        ...(firstName ? { firstName } : {}),
+      },
+    }),
   );
 
 /** Consumes a login link and loads the new session. */
@@ -143,3 +153,43 @@ export const useRevokeAllMutation = () => {
     return result;
   });
 };
+
+/** What an invitation link shows. */
+export type InvitePayload = {
+  groupName: string;
+  /** The organiser's words, if any. */
+  message: string | null;
+  /** The draw in progress of the group, if any. */
+  edition: { label: string; eventDate: string; participants: number } | null;
+  /** Why the link no longer lets anyone in, or null. */
+  closed: 'invite_expired' | 'invite_full' | null;
+  /** For a logged-in account: its first name, and whether it is in. */
+  account: {
+    email: string;
+    firstName: string | null;
+    member: boolean;
+    path: string | null;
+  } | null;
+};
+
+/** The group an invitation link leads to. */
+export const useInviteQuery = (code: MaybeRefOrGetter<string>) =>
+  useApiQuery<InvitePayload>(
+    () => ['invite', toValue(code)],
+    () => `/api/invite/${toValue(code)}`,
+  );
+
+/** Joins the group of an invitation link. */
+export const useJoinMutation = (code: MaybeRefOrGetter<string>) =>
+  useApiMutation<{ ok: true }, { firstName: string }>(
+    (body) =>
+      api(`/api/invite/${toValue(code)}/join`, { method: 'POST', body }),
+    () => [keys.home()],
+  );
+
+/** Adds a draw opened by its personal link to the logged-in account. */
+export const useClaimMutation = (token: MaybeRefOrGetter<string>) =>
+  useApiMutation<{ ok: true }, undefined>(
+    () => api(`/api/p/${toValue(token)}/claim`, { method: 'POST' }),
+    () => [keys.personal(toValue(token)), keys.home()],
+  );

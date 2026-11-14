@@ -190,7 +190,7 @@ test('a participant logs in with their address and finds their draw', async ({
   await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
   await expect(page.getByTestId('home-groups')).toContainText(
-    'Organiser un tirage',
+    'Demander à organiser un tirage',
   );
 
   const added = await api.post(

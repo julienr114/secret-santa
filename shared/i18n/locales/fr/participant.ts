@@ -70,4 +70,15 @@ export default {
     empty: "Rien à signaler pour l'instant.",
   },
   invalid: { title: 'Oups' },
+  account: {
+    title: 'Garde tes tirages au même endroit',
+    body: 'Crée un compte avec ton adresse email : tu retrouveras ce tirage, et les suivants, sans chercher le lien.',
+    bodyClaim:
+      'Ajoute ce tirage à ton compte pour le retrouver depuis ton accueil.',
+    create: 'Créer mon compte',
+    claim: 'Ajouter à mon compte',
+    added: 'Tirage ajouté à ton compte',
+    sendTo: 'Recevoir mon lien à {email}',
+    sent: 'Lien envoyé à {email} : ouvre-le pour créer ton compte. Pense à regarder dans les indésirables.',
+  },
 };

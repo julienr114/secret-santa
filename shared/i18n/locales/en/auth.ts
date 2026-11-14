@@ -11,6 +11,9 @@ export default {
     spamHint: 'Remember to look in your spam folder.',
     again: 'Use another address',
     devLink: 'Development mode: open the login link',
+    tabLogin: 'Log in',
+    tabSignup: 'Create an account',
+    signupSubmit: 'Create my account',
   },
   landing: {
     tagline: 'Log in to find your draws or organize one.',
@@ -19,7 +22,7 @@ export default {
   },
   home: {
     hello: 'Hello {name}',
-    organize: 'Organize a draw',
+    organize: 'Ask to organize a draw',
     partyToday: 'Exchange today!',
     partyIn: { one: 'exchange tomorrow', other: 'exchange in {count} days' },
     step: {
@@ -180,5 +183,23 @@ export default {
     refusedSubject: 'Your group request on Under the Tree',
     refused:
       'Your group request was refused. You can make another one from the app.',
+  },
+  invite: {
+    intro: 'You are invited to the Secret Santa',
+    party: 'exchange on {date}',
+    count: {
+      one: '{count} person signed up',
+      other: '{count} people signed up',
+    },
+    already: 'You already take part in this draw.',
+    open: 'Open my draw',
+    nameHelp: 'The first name the others will see.',
+    loginFirst:
+      'Log in with your email address to join. No account yet? It is created on the way.',
+    joinGroup: 'Join the group',
+    member:
+      'You are in the group. The organizer will add you to the draw; you will find it on your home page.',
+    signedAs: 'Logged in as {email}',
+    notMe: 'Not me',
   },
 } satisfies Dict<typeof fr>;

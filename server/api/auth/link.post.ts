@@ -17,7 +17,11 @@ import {
 } from '#server/utils/accounts';
 import { generateToken, hashToken } from '#server/utils/crypto';
 import { buildLoginEmail } from '#server/utils/loginEmail';
+import { safeNext } from '#server/utils/invite';
 import { localeOf } from '#shared/i18n';
+import { eq } from 'drizzle-orm';
+import { accounts } from '#server/database/schema';
+import { nameSchema } from '#server/utils/people';
 
 // Asks for a login link (README 22.5). The answer is the same whether the
 // address had an account or not, so that accounts cannot be listed.
@@ -26,10 +30,16 @@ import { localeOf } from '#shared/i18n';
 // NUXT_SUPER_ADMIN_EMAILS, and takes the language of the participant an
 // organiser registered with that address, if any. Only a disabled account
 // gets no link.
-const bodySchema = z.object({ email: accountEmailSchema });
+const bodySchema = z.object({
+  email: accountEmailSchema,
+  // Where to go back after logging in: an invitation or a personal page.
+  next: z.string().max(100).optional(),
+  // Given when signing up: the first name of the new account.
+  firstName: nameSchema.optional(),
+});
 
 export default defineEventHandler(async (event) => {
-  const { email } = await validatedBody(event, bodySchema);
+  const { email, next, firstName } = await validatedBody(event, bodySchema);
   const db = useDb(event);
   const secrets = secretsOf(event);
   const now = nowIso();
@@ -55,9 +65,18 @@ export default defineEventHandler(async (event) => {
       email,
       isSuperAdmin: declared,
       language: localeOf((await findPersonByEmail(db, email))?.language),
+      firstName: firstName ?? null,
       now,
     }));
   if (account.disabledAt) return { ok: true };
+  // Signing up again with an address already known only fills a missing
+  // first name: the answer stays the same, accounts are not revealed.
+  if (firstName && !account.firstName) {
+    await db
+      .update(accounts)
+      .set({ firstName })
+      .where(eq(accounts.id, account.id));
+  }
 
   const token = generateToken();
   await replaceLoginLink(db, {
@@ -66,7 +85,11 @@ export default defineEventHandler(async (event) => {
     ipHash,
     now,
   });
-  const link = appUrl(event, `/login/${token}`);
+  const back = safeNext(next);
+  const link = appUrl(
+    event,
+    `/login/${token}${back ? `?next=${encodeURIComponent(back)}` : ''}`,
+  );
   // A failed send changes nothing to the answer: the user asks again.
   await sendEmails(event, [
     { ...buildLoginEmail(link, account.language), to: account.email },

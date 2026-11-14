@@ -65,4 +65,12 @@ export default {
   session_not_found: 'Sitzung nicht gefunden.',
   person_is_organizer:
     'Diese Person organisiert die Gruppe: Entferne sie zuerst aus den Organisatoren.',
+  invite_invalid:
+    'Dieser Einladungslink ist nicht mehr gültig: Bitte den Organisator um einen neuen.',
+  person_has_other_email:
+    'Diese Auslosung ist bereits mit einer anderen Adresse verknüpft.',
+  invite_expired:
+    'Dieser Einladungslink ist abgelaufen: Bitte den Organisator um einen neuen.',
+  invite_full:
+    'Über diesen Link ist kein Platz mehr frei: Sag dem Organisator Bescheid.',
 } satisfies Dict<typeof fr>;

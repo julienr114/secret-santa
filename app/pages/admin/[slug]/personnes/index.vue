@@ -1,11 +1,32 @@
 <script setup lang="ts">
-import { usePeopleQuery } from '~/composables/queries/useGroup';
+import { formatEventDate } from '#server/utils/rules';
+import {
+  useDashboardQuery,
+  usePeopleQuery,
+} from '~/composables/queries/useGroup';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const people = usePeopleQuery(slug);
+// The invitation link belongs to the group: its state on the row.
+const dashboard = useDashboardQuery(slug);
+const { locale } = useT();
+const inviteSummary = computed(() => {
+  const g = dashboard.data.value?.group;
+  if (!g?.inviteCode) return t('adminEdition.invite.off');
+  return [
+    t('adminEdition.invite.placesLeft', { count: g.invitePlaces ?? 0 }),
+    ...(g.inviteUntil
+      ? [
+          t('adminEdition.invite.untilShort', {
+            date: formatEventDate(g.inviteUntil, locale.value),
+          }),
+        ]
+      : []),
+  ].join(' · ');
+});
 useHead({
   title: computed(
     () => `${t('adminGroup.people.title')} — ${t('common.appName')}`,
@@ -66,6 +87,15 @@ const sorted = computed(() =>
           :class="{ 'opacity-60': !person.active }"
         >
         </UiListItem>
+      </UiList>
+      <UiList>
+        <UiListItem
+          :to="`/admin/${slug}/invitation`"
+          icon="i-lucide-link"
+          :title="t('adminEdition.invite.title')"
+          :subtitle="inviteSummary"
+          data-testid="invite-row"
+        />
       </UiList>
       <UiList>
         <UiListItem

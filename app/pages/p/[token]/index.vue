@@ -6,6 +6,10 @@ import {
   useSaveAvatarMutation,
   type Reveal,
 } from '~/composables/queries/usePersonal';
+import {
+  useClaimMutation,
+  useRequestLinkMutation,
+} from '~/composables/queries/useAuth';
 
 // Personal page (README 4.3). Opening it shows nothing secret and counts
 // nothing: the result only appears after the "Découvrir" button.
@@ -63,6 +67,37 @@ const confirmPicker = () => {
       toast.add({ title: errorMessage(error), color: 'error' });
     },
   });
+};
+
+// Keeping the draw in an account: sign up from here and come back, then
+// add the draw to the account (only if nobody else's address is on it).
+const claim = useClaimMutation(token);
+const onClaim = () =>
+  claim.mutate(undefined, {
+    onSuccess: () =>
+      toast.add({
+        title: t('participant.account.added'),
+        color: 'success',
+        icon: 'i-lucide-check',
+      }),
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
+
+// With an address given by the organiser, one tap sends the login link:
+// the account is created with this first name, and the draw is in it.
+// Without one, the account form opens with the first name filled in.
+const signup = useRequestLinkMutation();
+const onSignup = () =>
+  me.value?.email &&
+  signup.mutate({
+    email: me.value.email,
+    firstName: me.value.firstName,
+    next: `/p/${token.value}`,
+  });
+const prefill = useSignupPrefill();
+const onCreate = () => {
+  prefill.value = { firstName: me.value?.firstName ?? '', email: '' };
 };
 
 const wishesSubtitle = computed(() => {
@@ -193,6 +228,68 @@ const wishesSubtitle = computed(() => {
           :subtitle="t('participant.home.journal.subtitle')"
         />
       </UiList>
+
+      <UiCard
+        v-if="me.linked === null || me.linked === 'free'"
+        padding="lg"
+        class="flex flex-col gap-3"
+        data-testid="account-invite"
+      >
+        <p class="font-display text-lg font-bold">
+          {{ t('participant.account.title') }}
+        </p>
+        <p class="text-sm text-muted">
+          {{
+            me.linked === null
+              ? t('participant.account.body')
+              : t('participant.account.bodyClaim')
+          }}
+        </p>
+        <template v-if="me.linked === null && me.email">
+          <p
+            v-if="signup.isSuccess.value"
+            class="text-sm font-medium"
+            role="status"
+          >
+            {{ t('participant.account.sent', { email: me.email }) }}
+          </p>
+          <UButton
+            v-if="signup.data.value?.devLink"
+            :to="signup.data.value.devLink"
+            external
+            block
+            variant="soft"
+            :label="t('auth.login.devLink')"
+          />
+          <UButton
+            v-if="!signup.isSuccess.value"
+            block
+            variant="soft"
+            icon="i-lucide-mail"
+            :loading="signup.isPending.value"
+            :label="t('participant.account.sendTo', { email: me.email })"
+            @click="onSignup"
+          />
+        </template>
+        <UButton
+          v-else-if="me.linked === null"
+          :to="`/login?mode=signup&next=/p/${token}`"
+          block
+          variant="soft"
+          icon="i-lucide-user-plus"
+          :label="t('participant.account.create')"
+          @click="onCreate"
+        />
+        <UButton
+          v-else
+          block
+          variant="soft"
+          icon="i-lucide-link"
+          :loading="claim.isPending.value"
+          :label="t('participant.account.claim')"
+          @click="onClaim"
+        />
+      </UiCard>
       <UDrawer
         v-model:open="pickerOpen"
         :title="t('participant.home.avatar.title')"

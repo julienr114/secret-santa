@@ -45,6 +45,13 @@ export const requireAccount = async (event: H3Event): Promise<SessionUser> => {
   return { role, accountId: row.account.id, sessionId: row.session.id };
 };
 
+/**
+ * The logged-in user, or null: for pages open to everyone that show more
+ * to an account.
+ */
+export const optionalAccount = (event: H3Event): Promise<SessionUser | null> =>
+  requireAccount(event).catch(() => null);
+
 /** A logged-in organiser or super-admin; a plain member gets 403. */
 export const requireAdmin = async (event: H3Event): Promise<AdminUser> => {
   const user = await requireAccount(event);

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useConfirmLinkMutation } from '~/composables/queries/useAuth';
+import { safeNext } from '#server/utils/invite';
 import { HOME, LOGIN } from '~/composables/queries/useSession';
 
 // Where a login link lands. Opening the page does nothing: the link is
 // only consumed by the button, so that a mail scanner or a link preview
-// cannot use it up.
+// cannot use it up. It leads home, or back to the page the login was
+// asked from (`?next=`).
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const { t } = useT();
@@ -14,7 +16,8 @@ useHead({ title: () => `${t('auth.confirm.title')} — ${t('common.appName')}` }
 
 const onConfirm = () =>
   confirm.mutate(token.value, {
-    onSuccess: () => navigateTo(HOME, { replace: true }),
+    onSuccess: () =>
+      navigateTo(safeNext(route.query.next) ?? HOME, { replace: true }),
   });
 </script>
 

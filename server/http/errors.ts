@@ -24,6 +24,9 @@ const STATUS_BY_REASON: Record<string, number> = {
   cannot_disable_self: 409,
   session_current: 409,
   person_is_organizer: 409,
+  invite_expired: 410,
+  invite_full: 409,
+  person_has_other_email: 409,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

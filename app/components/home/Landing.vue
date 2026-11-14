@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import type { SignupPrefill } from '~/composables/useSignupPrefill';
 // What someone who is not logged in sees, on the home page and on
 // /login: the name of the app and the one way in, for everyone.
+defineProps<{
+  next?: string | null;
+  mode?: 'login' | 'signup';
+  initial?: SignupPrefill | null;
+}>();
 const { t, setLocale } = useT();
 </script>
 
@@ -21,7 +27,7 @@ const { t, setLocale } = useT();
         <p class="text-muted">{{ t('auth.landing.tagline') }}</p>
       </div>
       <UiCard padding="lg">
-        <AuthEmailLogin />
+        <AuthEmailLogin :next="next" :mode="mode" :initial="initial" />
       </UiCard>
       <p class="text-center text-sm text-muted">
         {{ t('auth.landing.personalLink') }}

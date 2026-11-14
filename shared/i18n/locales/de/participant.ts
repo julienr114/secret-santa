@@ -72,4 +72,15 @@ export default {
     empty: 'Noch nichts zu berichten.',
   },
   invalid: { title: 'Hoppla' },
+  account: {
+    title: 'Behalte deine Auslosungen an einem Ort',
+    body: 'Erstelle ein Konto mit deiner E-Mail-Adresse: Du findest diese Auslosung und die nächsten, ohne den Link zu suchen.',
+    bodyClaim:
+      'Füge diese Auslosung deinem Konto hinzu, um sie auf deiner Startseite zu finden.',
+    create: 'Mein Konto erstellen',
+    claim: 'Zu meinem Konto hinzufügen',
+    added: 'Auslosung zu deinem Konto hinzugefügt',
+    sendTo: 'Meinen Link an {email} senden',
+    sent: 'Link an {email} gesendet: Öffne ihn, um dein Konto zu erstellen. Schau auch im Spam-Ordner nach.',
+  },
 } satisfies Dict<typeof fr>;

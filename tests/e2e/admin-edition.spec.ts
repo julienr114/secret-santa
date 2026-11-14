@@ -46,8 +46,9 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     await page.getByRole('button', { name: 'Ajouter' }).click();
     await expect(heading(page)).toHaveText('Personnes');
   }
-  // 4 people, the organiser (a person of the group by default), "Exclusions"
-  await expect(page.locator('main').getByRole('listitem')).toHaveCount(6);
+  // 4 people, the organiser (a person of the group by default), the
+  // invitation link and "Exclusions"
+  await expect(page.locator('main').getByRole('listitem')).toHaveCount(7);
 
   // Léa and Tom must not draw each other (both ways by default).
   await page.getByText('Exclusions').click();

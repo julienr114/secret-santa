@@ -25,6 +25,20 @@ test('an address that is not one is refused', async ({ page }) => {
   expect(invalid.status).toBe(400);
 });
 
+test('creating an account asks for a first name', async ({ page }) => {
+  await page.goto('/login');
+  await hydrated(page);
+  await page.getByRole('tab', { name: 'Créer un compte' }).click();
+  const submit = page.getByRole('button', { name: 'Créer mon compte' });
+  await page.getByLabel('Adresse email').fill('mila@example.com');
+  await expect(submit).toBeDisabled();
+  await page.getByLabel('Prénom').fill('Mila');
+  await submit.click();
+  await page.getByRole('link', { name: /Mode développement/ }).click();
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(heading(page)).toHaveText('Bonjour Mila');
+});
+
 test('a declared super-admin logs in with a link, used by a gesture and only once', async ({
   page,
 }) => {

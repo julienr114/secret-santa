@@ -50,6 +50,10 @@ export default defineEventHandler(async (event) => {
     slug,
     name: body.name,
     rules: {},
+    inviteCode: null,
+    inviteUntil: null,
+    invitePlaces: null,
+    inviteMessage: null,
     createdBy: account.id,
     createdAt: now,
   };

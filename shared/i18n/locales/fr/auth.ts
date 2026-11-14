@@ -9,6 +9,9 @@ export default {
     spamHint: 'Pense à regarder dans les indésirables.',
     again: 'Utiliser une autre adresse',
     devLink: 'Mode développement : ouvrir le lien de connexion',
+    tabLogin: 'Se connecter',
+    tabSignup: 'Créer un compte',
+    signupSubmit: 'Créer mon compte',
   },
   landing: {
     tagline: 'Connecte-toi pour retrouver tes tirages ou en organiser un.',
@@ -16,7 +19,7 @@ export default {
   },
   home: {
     hello: 'Bonjour {name}',
-    organize: 'Organiser un tirage',
+    organize: 'Demander à organiser un tirage',
     partyToday: 'Échange aujourd’hui !',
     partyIn: { one: 'échange demain', other: 'échange dans {count} jours' },
     step: {
@@ -179,5 +182,23 @@ export default {
     refusedSubject: 'Ta demande de groupe sur Under the Tree',
     refused:
       'Ta demande de groupe a été refusée. Tu peux en faire une autre depuis l’application.',
+  },
+  invite: {
+    intro: 'Tu es invité au Secret Santa',
+    party: 'échange le {date}',
+    count: {
+      one: '{count} personne inscrite',
+      other: '{count} personnes inscrites',
+    },
+    already: 'Tu participes déjà à ce tirage.',
+    open: 'Ouvrir mon tirage',
+    nameHelp: 'Le prénom que verront les autres.',
+    loginFirst:
+      'Connecte-toi avec ton adresse email pour le rejoindre. Pas encore de compte ? Il se crée tout seul.',
+    joinGroup: 'Rejoindre le groupe',
+    member:
+      'Tu fais partie du groupe. L’organisateur t’ajoutera au tirage ; tu le retrouveras sur ton accueil.',
+    signedAs: 'Connecté avec {email}',
+    notMe: 'Ce n’est pas moi',
   },
 };

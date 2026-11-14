@@ -215,4 +215,36 @@ export default {
     copied: 'Message copié',
     copiedDescription: "Colle-le dans l'application de ton choix.",
   },
+  invite: {
+    title: 'Lien d’invitation',
+    off: 'Désactivé',
+    description:
+      'Partage-le : chacun se connecte avec son adresse email et rejoint le groupe, et son tirage en cours tant qu’il n’a pas eu lieu.',
+    share: 'Partager',
+    copied: 'Lien copié',
+    until: 'Date limite',
+    untilHelp: 'Facultatif. Le lien ne marche plus après ce jour.',
+    places: 'Places',
+    placesHelp:
+      'Combien de personnes peuvent encore rejoindre par ce lien. Par défaut, les places qui restent dans le groupe.',
+    placesLeft: {
+      one: '{count} place restante',
+      other: '{count} places restantes',
+    },
+    untilShort: 'jusqu’au {date}',
+    messageLabel: 'Ton mot sur la page d’invitation',
+    messageHelp: 'Facultatif. Ce que les invités liront en ouvrant le lien.',
+    create: 'Créer le lien',
+    save: 'Enregistrer',
+    close: 'Désactiver le lien',
+    saved: 'Lien enregistré',
+    shareTitle: 'Message à partager',
+    copyMessage: 'Copier le message',
+    message: {
+      intro: 'Salut ! Tu es invité au Secret Santa « {group} » 🎁',
+      how: 'Inscris-toi avec ton adresse email en ouvrant ce lien :',
+      until: 'Tu as jusqu’au {date}.',
+    },
+    renew: 'Nouveau lien (l’ancien ne marchera plus)',
+  },
 };

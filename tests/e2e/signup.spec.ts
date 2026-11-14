@@ -28,7 +28,7 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByTestId('home-groups')).toContainText(
-    'Organiser un tirage',
+    'Demander à organiser un tirage',
   );
   await expect(page.getByTestId('admin-nav')).toHaveCount(0);
 
@@ -43,12 +43,14 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await apiLogin(page.request, NEWCOMER);
   await page.goto('/');
   await hydrated(page);
-  await page.getByRole('button', { name: /Organiser un tirage/ }).click();
+  await page
+    .getByRole('button', { name: /Demander à organiser un tirage/ })
+    .click();
   await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(page.getByText(/^Demande envoyée le /)).toBeVisible();
   await expect(
-    page.getByRole('button', { name: /Organiser un tirage/ }),
+    page.getByRole('button', { name: /Demander à organiser un tirage/ }),
   ).toHaveCount(0);
 
   const again = await page.request.post('/api/auth/group-requests', {

@@ -3,6 +3,8 @@ import { wishes } from '#server/database/schema';
 import { findReceiverParticipationId } from '#server/database/draw';
 import { dataKeyOf } from '#server/http/context';
 import { requirePersonalLink } from '#server/http/personal';
+import { optionalAccount } from '#server/http/auth';
+import { findAccountById } from '#server/database/accounts';
 import { avatarOf } from '#server/utils/avatars';
 import { localeOf } from '#shared/i18n';
 import {
@@ -42,7 +44,23 @@ export default defineEventHandler(async (event) => {
         .from(wishes)
         .where(eq(wishes.participationId, receiverParticipationId))
     : [];
+  // For the invitation to keep the draw in an account: is this draw
+  // already in the logged-in account, can it be added, or is it someone
+  // else's? Null without an account.
+  const user = await optionalAccount(event);
+  const account = user ? await findAccountById(db, user.accountId) : null;
+  const linked = !account
+    ? null
+    : person.email === account.email
+      ? 'mine'
+      : person.email
+        ? 'other'
+        : 'free';
   return {
+    linked,
+    // Their own address, if the organiser gave one: to create an account
+    // without typing it.
+    email: linked === null ? (person.email ?? null) : null,
     firstName: person.firstName,
     language: localeOf(person.language),
     avatar: avatarOf(person),

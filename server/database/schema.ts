@@ -15,6 +15,14 @@ export const groups = sqliteTable('groups', {
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
+  // Invitation link to join the group: its code (null when closed), the
+  // last day it works (optional), how many may still join by it, and the
+  // organiser's words on its page.
+  inviteCode: text('invite_code').unique(),
+  inviteUntil: text('invite_until'),
+  invitePlaces: integer('invite_places'),
+  // Words of the organiser, shown on the invitation page.
+  inviteMessage: text('invite_message'),
   // The account that created the group: it counts against its quota.
   createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),

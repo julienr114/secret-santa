@@ -72,4 +72,14 @@ export default {
     empty: 'Nothing to report yet.',
   },
   invalid: { title: 'Oops' },
+  account: {
+    title: 'Keep your draws in one place',
+    body: 'Create an account with your email address: you will find this draw, and the next ones, without looking for the link.',
+    bodyClaim: 'Add this draw to your account to find it from your home page.',
+    create: 'Create my account',
+    claim: 'Add to my account',
+    added: 'Draw added to your account',
+    sendTo: 'Get my link at {email}',
+    sent: 'Link sent to {email}: open it to create your account. Remember to look in your spam folder.',
+  },
 } satisfies Dict<typeof fr>;

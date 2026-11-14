@@ -219,4 +219,33 @@ export default {
     copied: 'Nachricht kopiert',
     copiedDescription: 'Füge sie in die App deiner Wahl ein.',
   },
+  invite: {
+    title: 'Einladungslink',
+    off: 'Inaktiv',
+    description:
+      'Teile ihn: Jeder meldet sich mit seiner E-Mail-Adresse an und tritt der Gruppe bei, und ihrer laufenden Auslosung, solange sie nicht stattgefunden hat.',
+    share: 'Teilen',
+    copied: 'Link kopiert',
+    until: 'Frist',
+    untilHelp: 'Optional. Nach diesem Tag funktioniert der Link nicht mehr.',
+    places: 'Plätze',
+    placesHelp:
+      'Wie viele Personen über diesen Link noch beitreten können. Standardmäßig die freien Plätze der Gruppe.',
+    placesLeft: { one: '{count} Platz frei', other: '{count} Plätze frei' },
+    untilShort: 'bis {date}',
+    messageLabel: 'Deine Worte auf der Einladungsseite',
+    messageHelp: 'Optional. Was die Gäste beim Öffnen des Links lesen.',
+    create: 'Link erstellen',
+    save: 'Speichern',
+    close: 'Link deaktivieren',
+    saved: 'Link gespeichert',
+    shareTitle: 'Nachricht zum Teilen',
+    copyMessage: 'Nachricht kopieren',
+    message: {
+      intro: 'Hallo! Du bist zum Wichteln „{group}“ eingeladen 🎁',
+      how: 'Melde dich mit deiner E-Mail-Adresse über diesen Link an:',
+      until: 'Du hast Zeit bis zum {date}.',
+    },
+    renew: 'Neuer Link (der alte funktioniert dann nicht mehr)',
+  },
 } satisfies Dict<typeof fr>;

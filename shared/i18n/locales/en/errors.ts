@@ -59,4 +59,11 @@ export default {
   session_not_found: 'Session not found.',
   person_is_organizer:
     'This is an organizer of the group: remove them from the organizers first.',
+  invite_invalid:
+    'This invitation link is no longer valid: ask the organizer for a new one.',
+  person_has_other_email: 'This draw is already linked to another address.',
+  invite_expired:
+    'This invitation link has expired: ask the organizer for a new one.',
+  invite_full:
+    'There is no place left through this link: let the organizer know.',
 } satisfies Dict<typeof fr>;

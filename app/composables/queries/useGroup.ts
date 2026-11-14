@@ -169,3 +169,19 @@ export const useUpdateEditionMutation = (slug: Slug) =>
       api(`${base(slug)}/editions/${id}`, { method: 'PATCH', body }),
     () => groupKeys(slug),
   );
+
+/** Opens, renews or closes the invitation link of a group. */
+export const useInviteLinkMutation = (slug: Slug) =>
+  useApiMutation<
+    { inviteCode: string | null },
+    {
+      open: boolean;
+      renew?: boolean;
+      until?: string | null;
+      places?: number;
+      message?: string | null;
+    }
+  >(
+    (body) => api(`${base(slug)}/invite`, { method: 'POST', body }),
+    () => groupKeys(slug),
+  );

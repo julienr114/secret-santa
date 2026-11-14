@@ -7,11 +7,8 @@ import {
   persons,
   type GroupRow,
 } from './schema';
-import { newId } from '#server/http/context';
-import { randomAvatar } from '#server/utils/avatars';
-import { secureRandomInt } from '#server/utils/crypto';
-import { personFromProfile } from '#server/utils/people';
 import { createAccount, findAccountByEmail } from './accounts';
+import { insertPersonFromAccount } from './people';
 import type { SessionUser } from '#server/utils/auth';
 
 export type PublicGroup = {
@@ -19,6 +16,14 @@ export type PublicGroup = {
   slug: string;
   name: string;
   createdAt: string;
+  /** Code of the invitation link to the group, null when closed. */
+  inviteCode: string | null;
+  /** Last day the link works, if any. */
+  inviteUntil: string | null;
+  /** How many may still join by the link. */
+  invitePlaces: number | null;
+  /** The organiser's words on the invitation page. */
+  inviteMessage: string | null;
 };
 
 /** What the admin API exposes about a group. */
@@ -27,6 +32,10 @@ export const publicGroup = (group: GroupRow): PublicGroup => ({
   slug: group.slug,
   name: group.name,
   createdAt: group.createdAt,
+  inviteCode: group.inviteCode,
+  inviteUntil: group.inviteUntil,
+  invitePlaces: group.invitePlaces,
+  inviteMessage: group.inviteMessage,
 });
 
 // --- Organisers (README 22.5) ---------------------------------------------
@@ -130,19 +139,7 @@ export const addOrganizer = async (
     .from(persons)
     .where(and(eq(persons.groupId, groupId), eq(persons.email, account.email)))
     .limit(1);
-  if (!person) {
-    const self = personFromProfile(account);
-    const avatar = randomAvatar(secureRandomInt);
-    await db.insert(persons).values({
-      ...self,
-      id: newId(),
-      groupId,
-      avatarEmoji: self.avatarEmoji ?? avatar.emoji,
-      avatarColor: self.avatarColor ?? avatar.color,
-      active: true,
-      createdAt: now,
-    });
-  }
+  if (!person) await insertPersonFromAccount(db, { groupId, account, now });
   return { accountId: account.id, email: account.email };
 };
 

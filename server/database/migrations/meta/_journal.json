@@ -92,6 +92,13 @@
       "when": 1794670262106,
       "tag": "0012_account_profile",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1794693252903,
+      "tag": "0013_group_invite",
+      "breakpoints": true
     }
   ]
 }

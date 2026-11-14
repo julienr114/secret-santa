@@ -11,6 +11,9 @@ export default {
     spamHint: 'Schau auch im Spam-Ordner nach.',
     again: 'Andere Adresse verwenden',
     devLink: 'Entwicklungsmodus: Anmeldelink öffnen',
+    tabLogin: 'Anmelden',
+    tabSignup: 'Konto erstellen',
+    signupSubmit: 'Mein Konto erstellen',
   },
   landing: {
     tagline:
@@ -20,7 +23,7 @@ export default {
   },
   home: {
     hello: 'Hallo {name}',
-    organize: 'Eine Auslosung organisieren',
+    organize: 'Darum bitten, eine Auslosung zu organisieren',
     partyToday: 'Bescherung heute!',
     partyIn: { one: 'Bescherung morgen', other: 'Bescherung in {count} Tagen' },
     step: {
@@ -188,5 +191,23 @@ export default {
     refusedSubject: 'Deine Gruppenanfrage auf Under the Tree',
     refused:
       'Deine Gruppenanfrage wurde abgelehnt. Du kannst in der App eine neue stellen.',
+  },
+  invite: {
+    intro: 'Du bist zum Wichteln eingeladen',
+    party: 'Bescherung am {date}',
+    count: {
+      one: '{count} Person angemeldet',
+      other: '{count} Personen angemeldet',
+    },
+    already: 'Du machst bei dieser Auslosung schon mit.',
+    open: 'Meine Auslosung öffnen',
+    nameHelp: 'Der Vorname, den die anderen sehen.',
+    loginFirst:
+      'Melde dich mit deiner E-Mail-Adresse an, um beizutreten. Noch kein Konto? Es wird dabei erstellt.',
+    joinGroup: 'Der Gruppe beitreten',
+    member:
+      'Du bist in der Gruppe. Der Organisator fügt dich der Auslosung hinzu; du findest sie auf deiner Startseite.',
+    signedAs: 'Angemeldet als {email}',
+    notMe: 'Das bin nicht ich',
   },
 } satisfies Dict<typeof fr>;

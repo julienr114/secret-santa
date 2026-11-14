@@ -1,5 +1,9 @@
 import { and, eq } from 'drizzle-orm';
 import type { Db } from './client';
+import { newId } from '#server/http/context';
+import { randomAvatar } from '#server/utils/avatars';
+import { secureRandomInt } from '#server/utils/crypto';
+import { personFromProfile, type ProfileAccount } from '#server/utils/people';
 import {
   manualExclusions,
   persons,
@@ -46,4 +50,31 @@ export const hasParticipations = async (
     .where(eq(participations.personId, personId))
     .limit(1);
   return Boolean(row);
+};
+
+/**
+ * Adds an account to a group as a person, copied from its profile, with
+ * a random avatar when the profile has none.
+ * @param db - Database.
+ * @param input - Group, account (with the first name to use) and date.
+ */
+export const insertPersonFromAccount = (
+  db: Db,
+  {
+    groupId,
+    account,
+    now,
+  }: { groupId: string; account: ProfileAccount; now: string },
+) => {
+  const self = personFromProfile(account);
+  const avatar = randomAvatar(secureRandomInt);
+  return db.insert(persons).values({
+    ...self,
+    id: newId(),
+    groupId,
+    avatarEmoji: self.avatarEmoji ?? avatar.emoji,
+    avatarColor: self.avatarColor ?? avatar.color,
+    active: true,
+    createdAt: now,
+  });
 };

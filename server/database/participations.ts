@@ -30,9 +30,11 @@ export const findParticipation = async (
   return row ?? null;
 };
 
-/** The personal link, rebuilt from the encrypted token (README 8.1). */
-export const personalLink = async (
-  event: H3Event,
+/**
+ * The path of a personal page, rebuilt from the encrypted token.
+ * @returns "/p/<token>".
+ */
+export const personalPath = async (
   participation: { tokenEnc: string; tokenIv: string },
   dataKey: CryptoKey,
 ): Promise<string> => {
@@ -43,8 +45,15 @@ export const personalLink = async (
   if (!token.ok) {
     throw createError({ statusCode: 500, statusMessage: 'token_unreadable' });
   }
-  return appUrl(event, `/p/${token.value}`);
+  return `/p/${token.value}`;
 };
+
+/** The personal link, rebuilt from the encrypted token (README 8.1). */
+export const personalLink = async (
+  event: H3Event,
+  participation: { tokenEnc: string; tokenIv: string },
+  dataKey: CryptoKey,
+): Promise<string> => appUrl(event, await personalPath(participation, dataKey));
 
 /**
  * The participation behind a personal link, with its edition, person and

@@ -13,6 +13,13 @@ import { api, useApiMutation } from './useApi';
 type Token = MaybeRefOrGetter<string>;
 
 export type PersonalState = {
+  /**
+   * Is this draw in the logged-in account (`mine`), can it be added
+   * (`free`), or is it someone else's (`other`)? Null without an account.
+   */
+  linked: 'mine' | 'free' | 'other' | null;
+  /** Their own address, offered for an account while logged out. */
+  email: string | null;
   firstName: string;
   language: Locale;
   avatar: Avatar;

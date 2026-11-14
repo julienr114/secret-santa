@@ -25,7 +25,7 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 
 - Chaque participant découvre **en privé** la personne à qui il offre un cadeau.
 - Le tirage respecte des règles : pas soi-même, pas une personne exclue (conjoint, frère ou sœur…), pas la même personne que les années précédentes.
-- Un **gardien** (admin) pilote le tout sans jamais voir les résultats, et peut « rejouer » un envoi si quelqu'un n'a pas reçu ou a perdu son résultat, **sans trahir le secret**.
+- Un **organisateur** (admin) pilote le tout sans jamais voir les résultats, et peut « rejouer » un envoi si quelqu'un n'a pas reçu ou a perdu son résultat, **sans trahir le secret**.
 - Les participants sont, selon Julien, « tous des gros tricheurs » : l'application doit être **verrouillée et la triche visible de tous**.
 - **Coût : le prix du nom de domaine, rien d'autre.** Hébergement, base de données et envois restent sur des offres gratuites.
 - **Mobile first** : presque tout le monde l'utilisera sur téléphone.
@@ -36,9 +36,9 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 |---|---|
 | Presque gratuit | Seul le nom de domaine est payant (v6) ; aucun abonnement |
 | Mobile first | Conçu pour le téléphone d'abord, utilisable sur ordinateur ensuite |
-| Secret | Personne d'autre que le participant ne voit son résultat dans l'interface, gardien compris |
+| Secret | Personne d'autre que le participant ne voit son résultat dans l'interface, organisateur compris |
 | Anti-triche | Lien personnel impossible à deviner + journal public des consultations |
-| Envoi par le gardien | Le gardien partage chaque lien avec la feuille de partage de son téléphone (WhatsApp, SMS…). L'envoi par email est une option par groupe (13.3) |
+| Envoi par l'organisateur | L'organisateur partage chaque lien avec la feuille de partage de son téléphone (WhatsApp, SMS…). L'envoi par email est une option par groupe (13.3) |
 | Multi-familles | Plusieurs groupes cloisonnés dans une seule application |
 | Pluriannuel | Participants et exclusions évoluent d'une année sur l'autre, l'historique est conservé |
 | Langues | Français, anglais, allemand ; langue préférée par personne (section 21) |
@@ -49,12 +49,12 @@ Une petite application web pour organiser le tirage au sort du Secret Santa de p
 
 Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander.
 
-1. **Partage des liens par la feuille de partage du téléphone.** Le gardien touche « Envoyer » sur un participant : le téléphone propose WhatsApp, SMS, etc., avec le message et le lien prêts. Sur ordinateur, sans feuille de partage, le message est copié. Aucun numéro de téléphone n'est stocké. L'envoi par email est une option par groupe, en complément (13.3).
+1. **Partage des liens par la feuille de partage du téléphone.** L'organisateur touche « Envoyer » sur un participant : le téléphone propose WhatsApp, SMS, etc., avec le message et le lien prêts. Sur ordinateur, sans feuille de partage, le message est copié. Aucun numéro de téléphone n'est stocké. L'envoi par email est une option par groupe, en complément (13.3).
 2. **Le message ne contient jamais le résultat.** Il ne contient qu'un lien personnel. Le résultat ne s'affiche que dans l'application, après un geste explicite du participant (bouton « Découvrir »).
-3. **Le lien personnel suffit.** Le jeton fait 32 octets aléatoires (256 bits) : impossible à deviner. La protection contre la triche repose sur le **journal public** (chaque consultation y apparaît avec son compteur) et sur la **régénération** d'un lien transféré par erreur. Ce qui compte pour le gardien : savoir qui a consulté son lien.
+3. **Le lien personnel suffit.** Le jeton fait 32 octets aléatoires (256 bits) : impossible à deviner. La protection contre la triche repose sur le **journal public** (chaque consultation y apparaît avec son compteur) et sur la **régénération** d'un lien transféré par erreur. Ce qui compte pour l'organisateur : savoir qui a consulté son lien.
 4. **Journal public par groupe** : toutes les actions sensibles y sont listées, sans jamais indiquer qui a tiré qui.
-5. **Pas de chiffrement de bout en bout.** Julien est le gardien du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
-6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre gardien** et **ses propres règles**.
+5. **Pas de chiffrement de bout en bout.** Julien est l'organisateur du secret et assume ce rôle. Les résultats sont chiffrés en base avec une clé détenue par le serveur. L'hébergeur de l'application peut donc techniquement les lire : c'est accepté.
+6. **Plusieurs groupes** (Julien a deux familles), chacun avec **son propre organisateur** et **ses propres règles**.
 7. **Participants modifiables chaque année** : ajout, retrait, mise à jour des exclusions.
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
 9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement manuel (section 16).
@@ -64,7 +64,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 
 ### Hors périmètre
 
-- Tout envoi sans action du gardien : pas d'envoi automatique, pas d'API WhatsApp ni de SMS.
+- Tout envoi sans action de l'organisateur : pas d'envoi automatique, pas d'API WhatsApp ni de SMS.
 - Chiffrement de bout en bout.
 - Messagerie anonyme, paiement, application native.
 - Dans la liste de souhaits : réservation d'un cadeau (« je le prends ») et notification du donneur quand la liste change.
@@ -77,8 +77,8 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 | Terme | Sens |
 |---|---|
 | **Groupe** | Une famille. Cloisonné des autres groupes. |
-| **Gardien** | L'admin d'un groupe. Gère participants, tirage et envois, ne voit pas les résultats. |
-| **Super-admin** | Julien. Crée les groupes et nomme les gardiens. |
+| **Organisateur** | L'admin d'un groupe (appelé « gardien » jusqu'au 14 novembre 2026 ; le code dit toujours `guardian`, et l'écran de son mot de passe reste à l'adresse `/admin/[groupe]/gardien`). Gère participants, tirage et envois, ne voit pas les résultats. |
+| **Super-admin** | Julien. Crée les groupes et nomme les organisateurs. |
 | **Personne** | Un membre d'un groupe. Persiste d'une année sur l'autre. |
 | **Édition** | Un Secret Santa donné (ex. « Noël 2026 ») dans un groupe. |
 | **Participation** | La présence d'une personne dans une édition. Porte le lien personnel. |
@@ -102,12 +102,12 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 | Statut | Ce qui est possible |
 |---|---|
-| `brouillon` | Le gardien compose la liste des participants et les exclusions, règle les paramètres. |
-| `invitations` | Le gardien partage les liens. Chacun ouvre le sien et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
+| `brouillon` | L'organisateur compose la liste des participants et les exclusions, règle les paramètres. |
+| `invitations` | L'organisateur partage les liens. Chacun ouvre le sien et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
 | `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
 | `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
 
-### 4.2 Parcours du gardien
+### 4.2 Parcours de l'organisateur
 
 1. Se connecte à l'admin de son groupe (mot de passe).
 2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
@@ -121,7 +121,7 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 ### 4.3 Parcours du participant
 
-1. Reçoit son lien personnel (WhatsApp, SMS…), partagé par le gardien.
+1. Reçoit son lien personnel (WhatsApp, SMS…), partagé par l'organisateur.
 2. Ouvre son lien : pas de code, pas de compte.
 3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec une invitation à remplir sa liste de souhaits.
 4. À tout moment avant la clôture : renseigne ou modifie sa **liste de souhaits** (quelques idées, avec un lien facultatif). Le lien suffit (v5).
@@ -131,20 +131,20 @@ brouillon ──► invitations ──► tirée ──► clôturée
 
 ### 4.4 Cas « rejouer sans trahir le secret »
 
-| Situation | Action du gardien | Effet |
+| Situation | Action de l'organisateur | Effet |
 |---|---|---|
 | Message non reçu ou effacé | « Partager » à nouveau, ou « Copier le lien » | Même lien, journalisé |
 | Lien perdu | Idem | Idem |
 | Lien compromis (transféré par erreur) | « Régénérer le lien » | L'ancien lien ne marche plus, journalisé |
 | Désistement ou ajout après le tirage | « Annuler et relancer le tirage » | Voir 6.5 |
 
-Dans aucun de ces cas le gardien ne voit le résultat.
+Dans aucun de ces cas l'organisateur ne voit le résultat.
 
 ---
 
 ## 5. Règles paramétrables par groupe
 
-Réglables par le gardien, avec une valeur par défaut au niveau du groupe et une surcharge possible par édition.
+Réglables par l'organisateur, avec une valeur par défaut au niveau du groupe et une surcharge possible par édition.
 
 | Règle | Défaut | Description |
 |---|---|---|
@@ -176,14 +176,14 @@ Chaque participant reçoit exactement un cadeau et en offre exactement un (permu
 1. Construire pour chaque donneur la liste des receveurs autorisés.
 2. **Tirage par rejet** : mélanger aléatoirement la liste des receveurs (Fisher-Yates), vérifier toutes les contraintes, recommencer en cas d'échec. Limite : 1 000 essais. Cette méthode donne un tirage uniforme parmi les solutions valides.
 3. **Repli** si la limite est atteinte : backtracking aléatoire, en traitant d'abord les donneurs qui ont le moins de receveurs possibles.
-4. Si le backtracking échoue : **aucune solution n'existe**. Renvoyer une erreur claire au gardien, en nommant les participants dont la liste de receveurs possibles est vide ou trop restreinte, pour qu'il assouplisse une règle.
+4. Si le backtracking échoue : **aucune solution n'existe**. Renvoyer une erreur claire à l'organisateur, en nommant les participants dont la liste de receveurs possibles est vide ou trop restreinte, pour qu'il assouplisse une règle.
 
 Aléa : `crypto.getRandomValues` exclusivement, jamais `Math.random`.
 
 ### 6.3 Exécution
 
 - Le tirage s'exécute **uniquement côté serveur**.
-- La réponse renvoyée au gardien ne contient **aucune attribution**, seulement « tirage effectué » et le nombre de participants.
+- La réponse renvoyée à l'organisateur ne contient **aucune attribution**, seulement « tirage effectué » et le nombre de participants.
 - Les attributions ne sont jamais écrites dans les logs.
 - Le receveur est stocké **chiffré** (voir 8.3).
 
@@ -193,14 +193,14 @@ Une édition `tirée` ne peut pas être retirée par un simple clic. Le bouton d
 
 ### 6.5 Annulation et relance
 
-Procédure réservée au gardien, avec double confirmation :
+Procédure réservée à l'organisateur, avec double confirmation :
 
 1. Toutes les attributions de l'édition sont supprimées.
 2. L'édition repasse en `invitations`, la liste redevient modifiable.
 3. Les liens des participants **restent valables**.
 4. Les compteurs de consultation sont remis à zéro.
-5. Un événement `draw_cancelled` est inscrit au journal, avec le motif saisi par le gardien.
-6. Au nouveau tirage, le gardien renvoie à chacun le message « Nouveau tirage, ton ancien résultat n'est plus valable » (modèle fourni, voir section 13).
+5. Un événement `draw_cancelled` est inscrit au journal, avec le motif saisi par l'organisateur.
+6. Au nouveau tirage, l'organisateur renvoie à chacun le message « Nouveau tirage, ton ancien résultat n'est plus valable » (modèle fourni, voir section 13).
 
 ### 6.6 Nouveaux venus et absents
 
@@ -228,14 +228,14 @@ Ajoutée en v2 à la demande de Julien. L'objectif : aider le donneur à choisir
 |---|---|
 | Le participant | Lit et modifie sa propre liste depuis sa page personnelle |
 | Son donneur | Lit la liste de son receveur sur l'écran de résultat, en même temps que le prénom |
-| Le gardien | Voit seulement le **nombre d'idées** par participant (pastille *souhaits renseignés*), jamais le contenu |
+| L'organisateur | Voit seulement le **nombre d'idées** par participant (pastille *souhaits renseignés*), jamais le contenu |
 | Le journal | Mentionne qu'une liste a été mise à jour, jamais son contenu |
 
 Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas. Ce n'est pas un secret aussi fort que l'attribution, mais afficher les listes de tout le monde permettrait de deviner par recoupement qui achète quoi pour qui. On s'en abstient.
 
 ### 6 bis.3 Protection contre la triche
 
-- **Le lien suffit pour modifier sa liste** (décision v5). Un lien transféré permettrait donc de réécrire les envies de quelqu'un : chaque modification est journalisée (« Léa a mis à jour sa liste »), ce qui rend l'abus visible, et le gardien peut régénérer le lien.
+- **Le lien suffit pour modifier sa liste** (décision v5). Un lien transféré permettrait donc de réécrire les envies de quelqu'un : chaque modification est journalisée (« Léa a mis à jour sa liste »), ce qui rend l'abus visible, et l'organisateur peut régénérer le lien.
 - Lecture de sa propre liste : le lien suffit (rien à y gagner pour un tricheur).
 - La sauvegarde **remplace la liste entière** (une seule requête idempotente, pas de gestion d'items unitaires) : plus simple, et conforme à l'approche fonctionnelle.
 - Événement `wishes_updated` au journal : « Léa a mis à jour sa liste de souhaits (3 idées) ».
@@ -327,15 +327,15 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 ### 8.1 Lien personnel
 
 - Jeton de 32 octets aléatoires, encodé en base64url, dans l'URL : `/p/<jeton>`.
-- En base : l'empreinte SHA-256 du jeton (pour la recherche) **et** le jeton chiffré avec la clé serveur (pour que le gardien puisse le renvoyer ou le copier).
+- En base : l'empreinte SHA-256 du jeton (pour la recherche) **et** le jeton chiffré avec la clé serveur (pour que l'organisateur puisse le renvoyer ou le copier).
 - Un jeton par participation, donc un **nouveau lien à chaque édition**.
-- Régénérable par le gardien, ce qui invalide l'ancien.
+- Régénérable par l'organisateur, ce qui invalide l'ancien.
 - Pages `/p/*` : en-têtes `Referrer-Policy: no-referrer`, `Cache-Control: no-store`, `X-Robots-Tag: noindex`.
 
 ### 8.2 Lien seul, sans code
 
 - Le jeton du lien fait 32 octets aléatoires (256 bits) : le deviner est hors de portée, même avec des milliards d'essais par seconde. Le stockage reste : empreinte SHA-256 pour la recherche, copie chiffrée pour le repartage.
-- Le risque n'est pas le hasard mais la **fuite** d'un lien (message transféré, téléphone emprunté). Contre-mesures : journal public de chaque consultation avec son compteur, pastille *consulté* côté gardien, régénération du lien.
+- Le risque n'est pas le hasard mais la **fuite** d'un lien (message transféré, téléphone emprunté). Contre-mesures : journal public de chaque consultation avec son compteur, pastille *consulté* côté organisateur, régénération du lien.
 - Le résultat ne s'affiche qu'après un geste du participant (bouton), jamais au simple chargement de la page : les robots d'aperçu de liens ne le voient pas et ne faussent pas le compteur.
 
 ### 8.3 Chiffrement des résultats
@@ -347,8 +347,8 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 ### 8.4 Administration
 
-- **Super-admin** : mot de passe dans la variable secrète `SUPER_ADMIN_PASSWORD`. Peut créer des groupes, définir ou réinitialiser le mot de passe d'un gardien, et agir comme gardien de n'importe quel groupe.
-- **Gardien** : un mot de passe par groupe, haché en base (PBKDF2-SHA256, sel par groupe, poivre `NUXT_PIN_PEPPER`, longueur minimale de 10 caractères).
+- **Super-admin** : mot de passe dans la variable secrète `SUPER_ADMIN_PASSWORD`. Peut créer des groupes, définir ou réinitialiser le mot de passe d'un organisateur, et agir comme organisateur de n'importe quel groupe.
+- **Organisateur** : un mot de passe par groupe, haché en base (PBKDF2-SHA256, sel par groupe, poivre `NUXT_PIN_PEPPER`, longueur minimale de 10 caractères).
 - Session par cookie scellé, `HttpOnly`, `Secure`, `SameSite=Lax`, durée 12 heures.
 - Limitation des tentatives de connexion admin (par exemple 10 échecs puis attente de 15 minutes).
 - Toutes les routes `/api/admin/*` vérifient la session **et** l'appartenance au groupe concerné.
@@ -356,12 +356,12 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 ### 8.5 Cloisonnement
 
 - Chaque requête de base filtre sur `group_id`.
-- Un gardien ne peut ni lire ni modifier un autre groupe.
-- Le journal d'un groupe n'est visible que par ses participants (lien valide) et son gardien.
+- Un organisateur ne peut ni lire ni modifier un autre groupe.
+- Le journal d'un groupe n'est visible que par ses participants (lien valide) et son organisateur.
 
 ### 8.6 Liste de contrôle (revue du 14 novembre 2026)
 
-- [x] Aucune attribution dans une réponse d'API admin tant que l'édition n'est pas clôturée (hors accès de dernier recours, 8.7). Vérifié par `tests/e2e/security.spec.ts`, qui apprend les vraies paires par les liens des participants puis les cherche dans toutes les réponses admin, gardien et super-admin.
+- [x] Aucune attribution dans une réponse d'API admin tant que l'édition n'est pas clôturée (hors accès de dernier recours, 8.7). Vérifié par `tests/e2e/security.spec.ts`, qui apprend les vraies paires par les liens des participants puis les cherche dans toutes les réponses admin, organisateur et super-admin.
 - [x] Aucune attribution dans les logs (aucun `console.*` côté serveur) ni dans les messages et emails (tests unitaires).
 - [x] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal (même test).
 - [x] Toute modification faite avec un lien personnel est journalisée : liste de souhaits, icône (`avatar_changed`), langue (`language_changed`).
@@ -374,10 +374,10 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - [x] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt.
 
 Limites connues et acceptées :
-- Le gardien reçoit les liens personnels pour les partager ; il peut donc en ouvrir un. C'est le journal public qui le rend visible (décision d'origine).
+- L'organisateur reçoit les liens personnels pour les partager ; il peut donc en ouvrir un. C'est le journal public qui le rend visible (décision d'origine).
 - Les adresses des pages personnelles, jeton compris, apparaissent dans les journaux de requêtes Cloudflare du compte (`[observability]`), lisibles par le seul titulaire du compte.
 - Pas de limitation de débit sur les routes participant : le jeton de 256 bits ne se devine pas ; un détenteur de lien peut seulement gonfler son propre compteur et le journal.
-- Une session de gardien reste valable jusqu'à 12 h après un changement de son mot de passe.
+- Une session de organisateur reste valable jusqu'à 12 h après un changement de son mot de passe.
 
 Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 paramètres, ce qui faisait échouer la création d'une édition dès 10 personnes et le tirage dès 17 (insertions groupées). Corrigé par une insertion par ligne dans la transaction ; vérifié avec 40 personnes. Une édition est donc limitée à **100 participants** (`MAX_PARTICIPANTS`, refus `too_many_participants` à la création de l'édition et à l'ajout d'un participant), plutôt que de rencontrer la limite comme une erreur de base.
 
@@ -385,16 +385,16 @@ Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 param�
 
 ### 8.7 Secret et éditions passées (décisions du 13 novembre 2026)
 
-- **Édition clôturée = résultats non secrets.** Le gardien voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
+- **Édition clôturée = résultats non secrets.** L'organisateur voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
 - Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées.
-- **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : mot de passe du gardien redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« Le gardien a consulté les résultats du tirage »). Le gardien pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
+- **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : mot de passe de l'organisateur redemandé, phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« L'organisateur a consulté les résultats du tirage »). L'organisateur pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
 - Ces trois points remplacent, pour les éditions clôturées et l'accès de dernier recours, la règle « aucune route d'administration ne renvoie une attribution » de la section 8.3, qui reste vraie pour tout le reste.
 
 ---
 
 ## 9. Journal public
 
-Visible par tous les participants du groupe (depuis leur page personnelle) et par le gardien. Affichage du plus récent au plus ancien, filtrable par édition.
+Visible par tous les participants du groupe (depuis leur page personnelle) et par l'organisateur. Affichage du plus récent au plus ancien, filtrable par édition.
 
 **Règle absolue : le journal ne contient jamais qui a tiré qui.**
 
@@ -402,21 +402,21 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 |---|---|
 | `edition_created` | « L'édition Noël 2026 a été créée » |
 | `participant_added` / `participant_removed` | « Léa rejoint l'édition » / « Léa quitte l'édition » |
-| `rules_changed` | « Le gardien a modifié les règles du tirage » (règles, exclusions, exclusions levées) |
-| `message_sent` | « Le gardien a envoyé l'invitation à Léa (partagé) » ; type de message et canal `share`, `copy` ou `email` dans `meta` |
-| `link_copied` | « Le gardien a copié le lien de Léa » |
+| `rules_changed` | « L'organisateur a modifié les règles du tirage » (règles, exclusions, exclusions levées) |
+| `message_sent` | « L'organisateur a envoyé l'invitation à Léa (partagé) » ; type de message et canal `share`, `copy` ou `email` dans `meta` |
+| `link_copied` | « L'organisateur a copié le lien de Léa » |
 | `link_regenerated` | « Le lien de Léa a été régénéré » |
 | `draw_done` | « Le tirage a été effectué pour 12 participants » |
 | `draw_cancelled` | « Le tirage a été annulé. Motif : désistement de Tom » |
-| `result_revealed` | « Le gardien a consulté le résultat de Léa (accès de dernier recours) » |
-| `result_viewed` | « Léa a consulté son résultat (3ᵉ fois) » |
+| `result_revealed` | « L'organisateur a consulté le résultat de Léa (accès de dernier recours) » |
+| `result_viewed` | « Léa a découvert son résultat » : **seule la première consultation** de chacun est inscrite (décision du 14 novembre 2026). Les suivantes restent comptées pour l'organisateur, mais les journaliser permettrait de rapprocher « Léa a mis à jour sa liste » et « Tom a consulté son résultat » et de deviner qui offre à qui |
 | `wishes_updated` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
 | `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
 | `edition_closed` | « L'édition Noël 2026 est clôturée » |
 
 Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` et `results_revealed` (tirage entier) ne sont plus émis ; ils restent décrits pour d'anciennes lignes.
 
-Chaque événement porte la date, l'heure et l'auteur (`participant`, `gardien`, `super-admin` ou `système`).
+Chaque événement porte la date, l'heure et l'auteur (`participant`, `organisateur`, `super-admin` ou `système`).
 
 ---
 
@@ -474,7 +474,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `id` | text PK | |
 | `edition_id`, `person_id` | text FK | Paire unique |
 | `token_hash` | text unique | SHA-256 du jeton |
-| `token_enc`, `token_iv` | text | Jeton chiffré, pour renvoi par le gardien |
+| `token_enc`, `token_iv` | text | Jeton chiffré, pour renvoi par l'organisateur |
 | `message_sent_at` | text nullable | Dernier partage ou copie déclaré, pour la pastille *envoyé* |
 | `link_copied_at` | text nullable | |
 | `view_count` | integer | Consultations du résultat |
@@ -531,16 +531,16 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 | `/p/[token]/journal` | Journal du groupe |
 
 Détails d'interface :
-- Résultat : animation courte de révélation (carte qui se retourne ou paquet qui s'ouvre), prénom en très grand, puis budget, date et message du gardien, puis la liste de souhaits du receveur.
+- Résultat : animation courte de révélation (carte qui se retourne ou paquet qui s'ouvre), prénom en très grand, puis budget, date et message de l'organisateur, puis la liste de souhaits du receveur.
 - Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut retoucher « Découvrir ». Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache.
-- Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton gardien »).
+- Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton organisateur »).
 
 ### Côté admin
 
 | Route | Écran |
 |---|---|
 | `/admin` | Connexion (choix du groupe + mot de passe, ou accès super-admin) |
-| `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des gardiens |
+| `/admin/groupes` | Super-admin : liste et création des groupes, mot de passe des organisateurs |
 | `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
 | `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver ; écran Exclusions : paires qui ne se tirent pas (couples, fratries…), réciproques par défaut |
 | `/admin/[groupe]/reglages` | Règles par défaut du groupe |
@@ -578,13 +578,13 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 ### Admin
 
-Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être le gardien ou d'être super-admin.
+Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'organisateur ou d'être super-admin.
 
 | Méthode et route | Rôle |
 |---|---|
 | `POST /api/admin/login`, `POST /api/admin/logout`, `GET /api/admin/session` | Session |
 | `GET/POST /api/admin/groups` | Super-admin : liste, création |
-| `PATCH /api/admin/groups/[id]` | Super-admin : nom, mot de passe du gardien, envoi par email |
+| `PATCH /api/admin/groups/[id]` | Super-admin : nom, mot de passe de l'organisateur, envoi par email |
 | `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
 | `GET /api/admin/[groupe]` | Accueil du groupe : éditions, édition en cours, règles |
 | `GET/POST /api/admin/[groupe]/persons`, `PATCH/DELETE …/persons/[id]` | Personnes : prénom, nom, email, langue, icône, actif. Suppression seulement si la personne n'a jamais participé |
@@ -611,7 +611,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être le
 
 ## 13. Messages à partager
 
-Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro. Le gardien partage chaque message depuis la feuille de partage de son téléphone.
+Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro. L'organisateur partage chaque message depuis la feuille de partage de son téléphone.
 
 ### 13.1 Mécanisme
 
@@ -621,11 +621,11 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 
 ### 13.2 Modèles
 
-- Fonctions pures `(données) → texte` dans `server/utils/messages.ts`, testées sans réseau. Données : prénom, nom du groupe, label de l'édition, lien personnel, et selon le modèle budget, date, message du gardien.
+- Fonctions pures `(données) → texte` dans `server/utils/messages.ts`, testées sans réseau. Données : prénom, nom du groupe, label de l'édition, lien personnel, et selon le modèle budget, date, message de l'organisateur.
 - Texte **court et sans mise en forme**, le lien **seul sur sa ligne** pour que les messageries le rendent cliquable et génèrent l'aperçu, un emoji 🎁 au plus.
 - **Aucun message ne contient un résultat.**
 - Les messages proposés suivent l'étape (`messageTypesFor`) : `invitation` et `reminder` avant le tirage, `drawn`, `reminder` et `redraw` après. L'API refuse les autres.
-- Avant le tirage, l'écran du gardien reste discret : pas de « pas encore envoyé » ni de compteur, seulement une coche « Invitation envoyée ». Le suivi d'envoi commence au tirage, qui remet la pastille *envoyé* à zéro.
+- Avant le tirage, l'écran de l'organisateur reste discret : pas de « pas encore envoyé » ni de compteur, seulement une coche « Invitation envoyée ». Le suivi d'envoi commence au tirage, qui remet la pastille *envoyé* à zéro.
 
 | Modèle (`type`) | Moment | Contenu |
 |---|---|---|
@@ -636,16 +636,16 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 
 ### 13.3 Envoi groupé par email (v6, en option)
 
-Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnement par défaut ; l'email évite seulement au gardien de partager chaque lien à la main.
+Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnement par défaut ; l'email évite seulement à l'organisateur de partager chaque lien à la main.
 
-- **Activation** : colonne `groups.email_sending`, modifiable par le **super-admin uniquement** (`PATCH /api/admin/groups/[id]`, interrupteur sur l'écran du groupe). Le gardien ne peut ni l'activer ni le couper.
-- **Adresses** : `persons.email`, facultative, saisie par le gardien ; le champ n'apparaît que si l'option est active. Migration `0005`.
+- **Activation** : colonne `groups.email_sending`, modifiable par le **super-admin uniquement** (`PATCH /api/admin/groups/[id]`, interrupteur sur l'écran du groupe). L'organisateur ne peut ni l'activer ni le couper.
+- **Adresses** : `persons.email`, facultative, saisie par l'organisateur ; le champ n'apparaît que si l'option est active. Migration `0005`.
 - **Envoi** : `POST /api/admin/[groupe]/editions/[id]/emails`, corps `type` (un message de l'étape en cours) et `audience` (`unsent` par défaut, ou `all`). Écrit aux participants qui ont une adresse, pose la pastille *envoyé* et journalise `message_sent` avec `via: email`. 50 emails au plus par appel, le reste au suivant.
 - **Fournisseur** : Resend (offre gratuite), domaine `under-the-tree.party` vérifié, un seul appel HTTPS par envoi groupé (`/emails/batch`), ce qui reste loin de la limite de 50 sous-requêtes du plan gratuit. Secret `NUXT_RESEND_API_KEY` ; sans clé, la route répond `email_not_configured` et rien d'autre ne change.
 - **Contenu** : `buildEmail` dans `server/utils/messages.ts`, même texte que le message à partager, plus un objet et un jumeau HTML sobre. Jamais de résultat.
-- **Délivrabilité, mesurée le 13 novembre 2026 sur Gmail** : SPF, DKIM et DMARC passent. Sans DMARC le premier essai est arrivé en spam ; avec, les mails arrivent dans l'onglet **Promotions**, mis en forme ou non. Le domaine venait d'être créé ; à remesurer plus tard. Seul Gmail a été testé. L'écran du gardien prévient que les emails arrivent souvent en spam (formulation demandée par Julien). Conséquence : l'email est un complément, le gardien relance par téléphone ceux qui n'ouvrent pas leur lien.
-- **Envoi individuel** : le bouton « Envoyer » d'un participant ouvre un panneau où le gardien choisit le message, la langue (enregistrée comme langue préférée de la personne) puis le moyen : partage du téléphone, copie, ou email si le groupe l'a et que la personne a une adresse.
-- **Envoi à plusieurs** : le gardien coche les participants dans la liste (seuls ceux qui ont une adresse), puis choisit le message dans un panneau. L'API prend `participationIds` ; `audience` reste accepté.
+- **Délivrabilité, mesurée le 13 novembre 2026 sur Gmail** : SPF, DKIM et DMARC passent. Sans DMARC le premier essai est arrivé en spam ; avec, les mails arrivent dans l'onglet **Promotions**, mis en forme ou non. Le domaine venait d'être créé ; à remesurer plus tard. Seul Gmail a été testé. L'écran de l'organisateur prévient que les emails arrivent souvent en spam (formulation demandée par Julien). Conséquence : l'email est un complément, l'organisateur relance par téléphone ceux qui n'ouvrent pas leur lien.
+- **Envoi individuel** : le bouton « Envoyer » d'un participant ouvre un panneau où l'organisateur choisit le message, la langue (enregistrée comme langue préférée de la personne) puis le moyen : partage du téléphone, copie, ou email si le groupe l'a et que la personne a une adresse.
+- **Envoi à plusieurs** : l'organisateur coche les participants dans la liste (seuls ceux qui ont une adresse), puis choisit le message dans un panneau. L'API prend `participationIds` ; `audience` reste accepté.
 - Les tests de bout en bout tournent sans clé (`scripts/e2e-server.sh` ignore le `.env` du poste) : aucun test n'envoie de vrai email.
 
 ---
@@ -667,7 +667,7 @@ secret-santa/
 │   │   ├── index.vue            ← page d'accueil neutre
 │   │   ├── p/[token]/           ← participant : index, souhaits, journal
 │   │   └── admin/               ← connexion, groupes, puis [slug]/ : accueil, personnes,
-│   │                              exclusions, réglages, gardien, journal, éditions/[id]/…
+│   │                              exclusions, réglages, organisateur, journal, éditions/[id]/…
 │   ├── components/
 │   │   ├── admin/               ← Screen, StatusCard, SendOptions, Exclusions, PersonForm, DateField…
 │   │   ├── participant/         ← Screen, RevealCard, WishList
@@ -700,7 +700,7 @@ secret-santa/
 | `SUPER_ADMIN_PASSWORD` | Mot de passe du super-admin |
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
-| `NUXT_PIN_PEPPER` | Poivre pour le hachage des mots de passe gardien (nom historique, conservé pour ne pas changer le secret en production) |
+| `NUXT_PIN_PEPPER` | Poivre pour le hachage des mots de passe organisateur (nom historique, conservé pour ne pas changer le secret en production) |
 | `PBKDF2_ITERATIONS` | Itérations PBKDF2 (défaut 20 000, maximum 100 000 sur Workers) |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 | `RESEND_API_KEY` | Clé d'API Resend pour l'envoi groupé par email (facultative, une clé limitée à l'envoi suffit) |
@@ -719,7 +719,7 @@ secret-santa/
 5. Déployer à la main avec `pnpm deploy:prod` (build puis `wrangler deploy`, après `wrangler login`). **Un `git push` ne déploie pas** : Workers Builds n'est pas branché sur le dépôt (constaté le 13 novembre 2026, aucun commit ne porte de déploiement Cloudflare).
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
 7. L'application est servie sur `https://under-the-tree.party` (domaine personnalisé du Worker, déclaré dans `wrangler.toml`) et reste joignable sur `https://secret-santa.julienr114.workers.dev`.
-8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des gardiens.
+8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des organisateurs.
 
 Développement local : base D1 locale émulée par Miniflare (`nitro dev`), état dans `.wrangler/state/v3`.
 
@@ -745,7 +745,7 @@ Modules purs de `server/utils/`, chacun avec son fichier de test. Points à conn
 - Le hachage mêle le poivre au secret (`${pepper}\0${secret}`), 20 000 itérations par défaut, plafonné à 100 000.
 
 **Étape 3 — Administration** ✅
-Connexion super-admin et gardien, gestion des groupes, des personnes, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
+Connexion super-admin et organisateur, gestion des groupes, des personnes, des exclusions, des règles. Création d'édition avec reprise de l'année précédente.
 
 **Étape 4 — Pilotage d'une édition** ✅
 Écran de pilotage (action du moment, vérification nommant les personnes en cause, tirage avec confirmation, clôture), bouton « Partager » sur chaque participant (v5), fiche participant (partager, copier, lien, annuler « envoyé », dernière consultation, régénérer le lien, retirer), ajout de participants, annulation du tirage avec motif et double confirmation. Interface : écrans empilés avec retour et fil d'Ariane, listes mobiles, pas de modale. Tests de bout en bout Playwright (`pnpm test:e2e`, build Cloudflare + D1 jetable, format iPhone) en CI.
@@ -756,14 +756,14 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - Règles pures dans `server/utils/personal.ts` (`personalPhase`, `canReveal`, `canEditWishes`). Une édition clôturée laisse consulter son résultat (toujours compté et journalisé).
 - Le résultat ne vit que dans l'état de la page (mutation TanStack Query, jamais mise en cache) : il disparaît au rechargement.
 - En-têtes `Referrer-Policy`, `Cache-Control: no-store` et `X-Robots-Tag` posés par `routeRules` sur `/p/**` et `/api/p/**`.
-- Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté gardien.
+- Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté organisateur.
 - La page se met à jour seule : l'état est redemandé toutes les 10 s tant que l'onglet est visible (pas de SSE ni de WebSocket ; le vrai push par Durable Object a été étudié puis écarté le 13 novembre 2026, trop de mécanique pour un événement annuel).
 - Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête ; le changement est journalisé.
 - Journal affiché en frise (`JournalList`) : fil rouge, emoji par type d'événement, étapes clés en cartes, regroupement par jour.
 - Tests de bout en bout dans `tests/e2e/participant.spec.ts`.
 
 **Étape 5 bis — Liste de souhaits** ✅
-Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté gardien existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
+Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté organisateur existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
 
 **Étape 6 — Partage des liens** ✅ *fait avec l'étape 4*
 Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation.
@@ -776,7 +776,7 @@ Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de
 
 **Étape 8 — Mise en service** (commencée)
 - ✅ Groupe réel « Famille Delacoux » créé en production (9 personnes, envoi par email activé).
-- À faire : mot de passe de son gardien, exclusions, première édition ; seconde famille.
+- À faire : mot de passe de son organisateur, exclusions, première édition ; seconde famille.
 
 Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'anglais et l'allemand par un locuteur, test automatique du parcours « deuxième année ».
 
@@ -803,7 +803,7 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 - Ouvrir la page d'un lien ne compte pas comme consultation ; seul `POST /reveal` incrémente le compteur et journalise.
 - Un lien régénéré invalide l'ancien.
 - Aucune route admin ne renvoie de receveur (test qui parcourt les réponses).
-- Un gardien du groupe A reçoit un refus sur toutes les routes du groupe B.
+- Un organisateur du groupe A reçoit un refus sur toutes les routes du groupe B.
 - Chiffrement puis déchiffrement redonnent la valeur d'origine, et une clé différente échoue.
 
 ### Messages
@@ -830,8 +830,8 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 
 ## 19. Critères de réussite
 
-- [ ] Julien peut créer ses deux familles et nommer un gardien pour chacune.
-- [ ] Un gardien peut mener une édition entière depuis son téléphone.
+- [ ] Julien peut créer ses deux familles et nommer un organisateur pour chacune.
+- [ ] Un organisateur peut mener une édition entière depuis son téléphone.
 - [ ] Un participant découvre son résultat en moins d'une minute depuis son lien.
 - [ ] Un participant qui n'a rien reçu peut être dépanné sans que personne d'autre ne voie son résultat.
 - [ ] Toute tentative de triche laisse une trace visible de toute la famille.
@@ -848,12 +848,12 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 |---|---|
 | Nom du projet et de l'adresse Cloudflare ? | `secret-santa` |
 | Noms et slugs des deux familles ? | À demander au moment de la mise en service |
-| Qui est le gardien de la deuxième famille ? | Julien, tant qu'il n'a nommé personne |
+| Qui est l'organisateur de la deuxième famille ? | Julien, tant qu'il n'a nommé personne |
 | Le journal affiche-t-il les noms de famille ? | Prénom seul, nom ajouté uniquement en cas d'homonymes |
-| Rappel automatique aux retardataires ? | Non, relance manuelle par le gardien |
+| Rappel automatique aux retardataires ? | Non, relance manuelle par l'organisateur |
 | Après clôture, afficher à tous le tableau complet « qui a offert à qui » ? | Non, sauf demande explicite |
 | Reprendre la liste de souhaits de l'an dernier à la création d'une édition ? | Non en V1 : liste vide à chaque édition. Un bouton « Reprendre ma liste de l'an dernier » est une évolution simple si la famille le demande |
-| Le gardien peut-il voir le contenu des listes de souhaits ? | Non, seulement le nombre d'idées (voir 6 bis.2) |
+| L'organisateur peut-il voir le contenu des listes de souhaits ? | Non, seulement le nombre d'idées (voir 6 bis.2) |
 
 ---
 
@@ -866,11 +866,11 @@ Français, anglais, allemand. Le français reste la langue de référence et la 
 | Où | Langue |
 |---|---|
 | Page personnelle, liste de souhaits, journal du participant | Langue préférée de la personne (`persons.language`, migration `0006`, `fr` par défaut) |
-| Messages à partager et emails | Langue préférée du **destinataire**, pas celle du gardien |
+| Messages à partager et emails | Langue préférée du **destinataire**, pas celle de l'organisateur |
 | Administration | Choix du visiteur, gardé dans un cookie `locale` sur l'appareil ; à défaut, langue du navigateur ; à défaut, français |
 | Lien invalide | Cookie ou langue du navigateur (on ne sait pas qui c'est) |
 
-Le gardien règle la langue d'une personne sur sa fiche. Le participant la change lui-même depuis sa page (`PUT /api/p/[token]/language`) : c'est enregistré comme sa préférence, donc ses prochains messages suivent.
+L'organisateur règle la langue d'une personne sur sa fiche. Le participant la change lui-même depuis sa page (`PUT /api/p/[token]/language`) : c'est enregistré comme sa préférence, donc ses prochains messages suivent.
 
 ### 21.3 Autres décisions du 13 novembre 2026 (soir)
 
@@ -887,6 +887,81 @@ Le gardien règle la langue d'une personne sur sa fiche. Le participant la chang
 - **Écrans** : `const { t, tk, locale, setLocale } = useT()` (`t` pour une clé connue à la compilation, `tk` pour une clé construite à l'exécution), `useErrorMessage()` pour les erreurs d'API.
 - **Journal** : les événements stockés ne contiennent aucun texte ; la phrase est composée à l'affichage dans la langue du lecteur (`describeEvent`, ordinaux par `Intl.PluralRules`).
 - **Tests** : `shared/i18n/index.test.ts` vérifie que les trois langues ont les mêmes clés et les mêmes `{substitutions}` ; `tests/e2e/language.spec.ts` couvre le parcours.
-- **Vocabulaire** : gardien → *organizer* / *Organisator* ; tirage → *draw* / *Auslosung* ; édition → *edition* / *Ausgabe* ; Secret Santa → *Secret Santa* / *Wichteln* ; tutoiement en allemand.
+- **Vocabulaire** : organisateur → *organizer* / *Organisator* ; tirage → *draw* / *Auslosung* ; édition → *edition* / *Ausgabe* ; Secret Santa → *Secret Santa* / *Wichteln* ; tutoiement en allemand.
 - La phrase de confirmation « JE VEUX VOIR LE TIRAGE » (8.7) reste en français dans toutes les langues : c'est le serveur qui la compare.
 
+
+---
+
+## 22. Feuille de route (idées du 14 novembre 2026)
+
+Onze idées apportées par Julien le 14 novembre 2026, triées en trois lots. Rien de cette section n'est codé. Les points marqués **à trancher** attendent une réponse de Julien (22.5) ; tant qu'ils ne sont pas tranchés, ne pas les coder.
+
+### 22.1 Lot « tout de suite » — fait le 14 novembre 2026
+
+| Idée | Ce qui a été fait |
+|---|---|
+| **« Organisateur » au lieu de « gardien »** | Dans tous les textes français (interface, messages, emails, journal). L'anglais et l'allemand disaient déjà *organizer* / *Organisator*. Le code garde `guardian` (rôle de session, colonnes, routes, adresse `/admin/[groupe]/gardien`) |
+| **Fuite par le journal** | Le journal public n'inscrit plus que la **première** consultation de chacun (« Léa a découvert son résultat »). Les suivantes restent comptées pour l'organisateur. La page du participant ne parle plus du journal ; une fois le résultat déjà vu, le bouton devient « Revoir à qui j'offre un cadeau » et la page indique combien d'idées contient la liste du receveur, sans le nommer. Un écran séparé pour relire les idées sans trace a été essayé puis retiré le jour même : trop compliqué |
+| **Messages personnalisables** | Forme retenue : **un mot ajouté**. Règle `messageNote` (500 caractères, réglages du groupe), reprise et modifiable dans les panneaux d'envoi individuel et à plusieurs. Le mot part tel quel, quelle que soit la langue du message, séparé du texte standard par une ligne vide : en dessous (après le lien, par défaut) ou au-dessus, selon `messageNotePosition`, modifiable aussi à l'envoi (`addNote`). Il figure dans l'aperçu |
+| **Colonne étroite sur grand écran** | Le contenu et les panneaux du bas restent dans une colonne de la largeur d'un téléphone (`max-w-md`) ; les barres du haut prennent toute la largeur |
+| **Icône d'onglet** | `public/favicon.svg` (sapin sous son étoile), avec ses variantes PNG pour les navigateurs sans SVG et l'écran d'accueil des téléphones |
+
+### 22.2 V2 — ouverture à d'autres organisateurs
+
+Décision du 14 novembre 2026 : l'application s'ouvre au public par **inscription libre, avec un garde-fou** : un compte ne peut créer aucun groupe par défaut.
+
+**Étape préalable : un design system léger**
+
+À faire avant les comptes, parce que la v2 ajoute beaucoup d'écrans. Nuxt UI et le thème (rouge brique, vert sapin, kraft, Fraunces) sont déjà la base ; il manque la discipline au-dessus.
+
+- **Jetons nommés** pour ce qui est recopié à la main aujourd'hui : fond de page kraft, carte arrondie, petit titre de section en capitales, rayons, ombres.
+- **Composants d'interface indépendants du métier**, dans un dossier à eux, avec des variantes claires : liste et ligne de liste (aujourd'hui `mobile/`), carte, panneau du bas, icône de personne (aujourd'hui `AdminAvatar`, pourtant utilisée côté participant), pastille, bouton d'action. Les composants métier (`admin/`, `participant/`) sont construits dessus.
+- **Page « guide de style »** dans l'application, réservée au super-admin : chaque composant dans ses variantes et dans les trois langues. Elle sert de documentation et de contrôle visuel.
+- **Règles écrites** dans ce document : quand utiliser un panneau du bas plutôt qu'une page, taille minimale d'une cible tactile, ton d'une action dangereuse, place d'une ligne « ajouter » dans une liste.
+- **Pas de paquet séparé ni de Storybook** : une seule application et un seul développeur. À extraire seulement si une deuxième application apparaît (les listes de cadeaux de la v3).
+
+Les tests de bout en bout s'appuient sur les textes et les rôles, pas sur les classes : la réorganisation des composants peut se faire sans les réécrire.
+
+**Socle : comptes et quotas**
+
+- **Compte utilisateur** pour les organisateurs, qui remplace le mot de passe partagé par groupe. Un compte peut organiser plusieurs groupes ; un groupe peut avoir plusieurs organisateurs (à confirmer).
+- **Quota de groupes par compte, 0 par défaut.** Pour en créer un, l'utilisateur fait une **demande depuis l'application** ; le super-admin l'accepte en relevant le quota du compte, ou la refuse.
+- **Interface d'administration** pour le super-admin : comptes, quota de chacun, demandes en attente, groupes de chaque compte, suspension d'un compte.
+- **Notifications par email au super-admin** : nouvelle demande de groupe (et, à confirmer, nouveau compte). Il faut donc une **adresse email du super-admin** (variable d'environnement ou réglage).
+- **Double authentification pour le super-admin** (TOTP), puisqu'il devient la clé de tout le service.
+- **Incitation à créer un groupe** : un compte sans groupe voit pourquoi il n'en a pas et comment en demander un.
+
+Ce socle remet en cause des décisions actuelles, à réécrire au moment de le coder : la section 8.4 (mot de passe par groupe, super-admin par variable d'environnement), la contrainte « presque gratuit » (quotas Cloudflare et Resend à surveiller dès qu'il y a des inconnus), et il ajoute des obligations nouvelles : mentions légales, RGPD (adresses de tiers saisies par un organisateur), protection contre l'abus à l'inscription.
+
+**Fonctions qui s'appuient sur le socle**
+
+| Idée | Contenu | Dépend de |
+|---|---|---|
+| **Notifications par email à l'organisateur**, réglables | Par exemple : tout le monde a consulté, une liste de souhaits a changé, quelqu'un s'est inscrit. Chaque notification s'active ou non | Comptes (adresse de l'organisateur) ; délivrabilité des emails (13.3) |
+| **Inscription par lien d'invitation** | L'organisateur partage un lien ; les participants s'inscrivent eux-mêmes. Date de fin, nombre de places, informations affichées sur la page d'inscription. Email obligatoire dans ce mode | Comptes ; délivrabilité. Change la création des personnes, aujourd'hui saisies par l'organisateur |
+| **Page d'accueil indexable** | Présente l'application et mène à l'inscription. Aujourd'hui tout le site est en `noindex` | Ouverture au public |
+| **Tirage déjà fait à la main** | Mode d'édition sans tirage par l'application : chaque participant déclare à qui il offre. Il sert alors de support (listes de souhaits, rappels, historique pour l'an prochain) | Indépendant des comptes. **À trancher** : que faire si deux personnes déclarent le même receveur |
+
+**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → double authentification → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main peut se faire à tout moment.
+
+### 22.3 V3
+
+| Idée | Contenu | Remarques |
+|---|---|---|
+| **Mode prédictions** | Jeu facultatif, activé par l'organisateur : chacun parie sur qui a tiré qui ; résultats après la date de fin ; message de récompense personnalisé | Demande une vraie date de fin (déjà en place, section 21.3). Les prédictions ne doivent rien révéler avant la clôture |
+| **Listes de cadeaux pour la famille** | Un second volet, hors tirage : listes partagées avec des membres choisis, réservation des cadeaux | Presque une deuxième application. La réservation était hors périmètre (section 2) : la décision est rouverte |
+| **API REST, serveur MCP, documentation** | Tout piloter depuis un LLM | Demande des jetons d'accès par compte, donc le socle de la v2, et une API stable et documentée |
+
+### 22.4 Ce qui n'est pas compris ou pas décidé
+
+- « Visibilité participant doit pouvoir toujours avec participants sans groupe » : phrase à reformuler par Julien. Hypothèse : un participant garde un compte et ce qui lui appartient même sans faire partie d'un groupe.
+- Les participants ont-ils eux aussi un compte en v2, ou gardent-ils leur lien personnel sans compte (décision v5) ?
+
+### 22.5 Questions posées à Julien le 14 novembre 2026
+
+3. Tirage à la main : dans quel lot, et que faire en cas de receveur déclaré deux fois ?
+4. Comptes : connexion par mot de passe ou par lien magique envoyé par email ? Les participants ont-ils un compte ?
+5. Inscription par lien : l'organisateur valide-t-il chaque inscription ?
+6. Emails au super-admin : quelle adresse, et pour quels événements ?
+7. Que voulait dire la phrase sur la visibilité des participants sans groupe ?

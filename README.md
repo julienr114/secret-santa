@@ -371,7 +371,9 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - **Super-admin** : crée et supprime les groupes, active l'envoi par email, gère tous les groupes. `julienr114@gmail.com` est créé par la migration `0007` ; les adresses de `NUXT_SUPER_ADMIN_EMAILS` le deviennent à leur première demande de lien (amorçage d'une installation neuve).
 - **Développement et tests** : `NUXT_DEV_LOGIN_LINKS=true` renvoie le lien à l'écran au lieu de dépendre d'un email. **Jamais en production.**
 - Toutes les routes `/api/admin/*` vérifient la session **et** le droit sur le groupe concerné.
-- Reste à faire (22.5) : comptes de participants encouragés depuis la page de résultat.
+- **Lien d'invitation d'un groupe** (`groups.invite_code`, `invite_until`, `invite_places`, `invite_message`, migration `0013`) : désactivé par défaut ; l'organisateur le règle sur la page `/admin/[groupe]/invitation`, ouverte depuis « Personnes » : date limite facultative, nombre de places (par défaut, ce qu'un tirage peut encore accueillir : 100 moins les personnes actives), son mot affiché sur la page d'invitation. Une fois créé : le message à copier ou partager (comme ceux d'un tirage), un nouveau lien (l'ancien cesse de marcher), la désactivation. Page `/rejoindre/[code]` : le groupe, son tirage en cours et le mot de l'organisateur ; sans session, connexion ou inscription par lien magique qui ramène ici (`?next=`, limité aux pages `/rejoindre/…` et `/p/…`) ; puis un prénom si le profil n'en a pas, et « Rejoindre le groupe » : le compte devient une personne du groupe (la sienne si l'organisateur avait déjà saisi cette adresse) et prend une place. **On rejoint le groupe, pas le tirage** : l'organisateur l'ajoute au tirage en cours, et les éditions suivantes le reprennent. Refus après la date limite (`invite_expired`) ou sans place (`invite_full`).
+- **Connexion et création de compte** : deux onglets sur le même formulaire. « Se connecter » demande l'adresse ; « Créer un compte » demande le prénom et l'adresse (le prénom va dans le profil du nouveau compte, ou complète un compte qui n'en avait pas ; la réponse reste la même dans tous les cas). `/login?mode=signup` ouvre sur la création.
+- **Garder un tirage dans son compte** : sur la page d'un tirage ouverte par le lien personnel, sans session, une carte invite à créer un compte. Si l'organisateur a saisi l'adresse de la personne, un bouton envoie directement le lien de connexion à cette adresse, avec son prénom : le compte est créé et le tirage y est d'office. Sinon, « Créer mon compte » ouvre le formulaire de création avec le prénom déjà rempli, et la connexion ramène sur le tirage. Connecté, « Ajouter à mon compte » donne l'adresse du compte à la personne, si elle n'en avait pas (`person_has_other_email` sinon) ; le tirage apparaît alors dans « Je participe ».
 
 ### 8.5 Cloisonnement
 
@@ -1020,7 +1022,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 
 - La migration `0007` crée le compte `julienr114@gmail.com` en super-admin. Il n'est rattaché à aucun groupe : un super-admin les gère tous. Les groupes existants n'ont donc aucun organisateur tant qu'on n'en désigne pas.
 - Les migrations `0008` et `0009` suppriment le mot de passe par groupe et la table des essais de connexion, et créent `group_members`. `SUPER_ADMIN_PASSWORD` et `NUXT_PIN_PEPPER` ne sont plus lus : les secrets correspondants peuvent être supprimés chez Cloudflare.
-- **Ordre de mise en production** : appliquer les migrations `0007` à `0012` (`pnpm db:migrate`) **avant** `pnpm deploy:prod`.
+- **Ordre de mise en production** : appliquer les migrations `0007` à `0013` (`pnpm db:migrate`) **avant** `pnpm deploy:prod`.
 
 **Avancement**
 
@@ -1029,7 +1031,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 2 bis. ✅ Connexion ouverte aux participants dont l'organisateur a saisi l'adresse, rôle « membre », page d'accueil commune avec « Mes tirages » (première ébauche, 14 novembre 2026).
 3. ✅ Inscription libre, quota de groupes à 0, demande de groupe, pages d'administration des comptes et de tous les groupes, emails aux super-admins et au demandeur (14 novembre 2026, migration `0011`). Décrit en 8.4.
 4. Abandonné : TOTP pour les super-admins (la double authentification de la boîte mail en tient lieu).
-5. À faire : comptes de participants, créés depuis la page de résultat.
+5. ✅ Comptes de participants : incitation sur la page d'un tirage et rattachement ; inscription au groupe par lien d'invitation (14 novembre 2026, migration `0013`).
 
 **Si un super-admin ne reçoit plus ses emails** : il n'y a pas d'accès de secours dans l'application. Le recours est côté Cloudflare, réservé au titulaire du compte : activer temporairement `NUXT_DEV_LOGIN_LINKS`, ou lire les journaux d'envoi de Resend.
 

@@ -943,20 +943,78 @@ Ce socle remet en cause des décisions actuelles, à réécrire au moment de le 
 | **Listes de cadeaux pour la famille** | Un second volet, hors tirage : listes partagées avec des membres choisis, réservation des cadeaux | Presque une deuxième application. La réservation était hors périmètre (section 2) : la décision est rouverte |
 | **API REST, serveur MCP, documentation** | Tout piloter depuis un LLM | Demande des jetons d'accès par compte, donc le socle de la v2, et une API stable et documentée |
 
-### 22.4 Ce qui n'est pas compris ou pas décidé
+### 22.4 Décisions du 14 novembre 2026 sur la v2
 
-- « Visibilité participant doit pouvoir toujours avec participants sans groupe » : phrase à reformuler par Julien. Hypothèse : un participant garde un compte et ce qui lui appartient même sans faire partie d'un groupe.
-- Les participants ont-ils eux aussi un compte en v2, ou gardent-ils leur lien personnel sans compte (décision v5) ?
+Réponses de Julien aux questions posées ; elles complètent 22.2.
 
-### 22.5 Questions posées à Julien le 14 novembre 2026
+| Sujet | Décision |
+|---|---|
+| **Connexion** | Par **lien magique** reçu par email, pas de mot de passe. Les liens doivent être bien sécurisés et invalidables (conception en 22.5) |
+| **Super-admin** | Un compte comme les autres, avec un indicateur (`is_super_admin`). Il peut y en avoir plusieurs. Par défaut `julienr114@gmail.com`, créé par une migration. Doit être particulièrement protégé |
+| **Emails au super-admin** | Envoyés aux adresses des comptes super-admin |
+| **Inscription par lien d'invitation** | L'organisateur ne valide pas chaque inscription : elle est acceptée d'office dans la limite des places et de la date. Il peut retirer quelqu'un après coup |
+| **Participants sans compte** | Un organisateur doit toujours pouvoir ajouter des participants qui n'ont pas de compte ; ils gardent leur lien personnel, comme aujourd'hui. La **page de résultat les incite à créer un compte** |
+| **Tirage fait à la main** | L'organisateur est informé d'une incohérence et contacte les personnes ; tant qu'elle existe, le tirage reste **bloqué**. Les déclarations ne doivent pas servir à deviner qui offre à qui (proposition en 22.6) |
 
-3. Tirage à la main : dans quel lot, et que faire en cas de receveur déclaré deux fois ?
-4. Comptes : connexion par mot de passe ou par lien magique envoyé par email ? Les participants ont-ils un compte ?
-5. Inscription par lien : l'organisateur valide-t-il chaque inscription ?
-6. Emails au super-admin : quelle adresse, et pour quels événements ?
-7. Que voulait dire la phrase sur la visibilité des participants sans groupe ?
+### 22.5 Conception proposée : comptes et lien magique
 
----
+À valider par Julien avant de coder.
+
+**Modèle**
+
+- `accounts` : `id`, `email` (unique, en minuscules), `is_super_admin`, `group_quota` (0 par défaut), `language`, `created_at`, `last_login_at`, `disabled_at`.
+- `group_members` : un compte organise un groupe (plusieurs organisateurs possibles par groupe).
+- `persons.account_id` (facultatif) : relie une personne d'un groupe à un compte, quand le participant en crée un.
+- `login_links` : `token_hash`, `account_id`, `created_at`, `expires_at`, `used_at`, `ip_hash`.
+- `sessions` : `id`, `account_id`, `created_at`, `last_seen_at`, `expires_at`, `revoked_at`. Le cookie scellé ne porte que l'identifiant de session, ce qui permet de **révoquer** une session côté serveur.
+- `group_requests` : demande de création de groupe (compte, message, état, date de décision).
+
+**Lien magique : règles de sécurité**
+
+- Jeton de 256 bits, stocké seulement sous forme d'empreinte SHA-256, comme les liens personnels.
+- **Usage unique** : consommé à la première utilisation. **Durée de vie de 15 minutes.**
+- **Demander un nouveau lien invalide les précédents** du même compte encore inutilisés.
+- Le lien ouvre une page avec un bouton « Se connecter » ; c'est ce geste (un `POST`) qui consomme le jeton. Les robots d'aperçu et les antivirus de messagerie qui ouvrent les liens ne le brûlent donc pas, comme pour « Découvrir ».
+- La réponse à une demande de lien est la même que l'adresse ait un compte ou non : pas d'énumération des comptes.
+- Limitation des demandes par adresse et par adresse IP (`CF-Connecting-IP`).
+- Pages de connexion en `no-store`, `no-referrer`, `noindex`.
+- Session de 30 jours, révocable ; écran « mes appareils » avec « déconnecter partout ». Désactiver un compte révoque ses sessions.
+- **Super-admin** : en plus du lien magique, un **second facteur TOTP** obligatoire. Sans lui, prendre la main sur la boîte mail suffirait à prendre tout le service. Un super-admin ne peut pas retirer le dernier super-admin.
+
+**Risque connu** : la connexion dépend alors d'un email qui arrive. Au 14 novembre 2026 nos emails tombent en spam ou en Promotions sur Gmail (13.3). À remesurer avant de retirer l'ancienne connexion ; tant que ce n'est pas fiable, garder un secours.
+
+**Transition depuis l'existant**
+
+- La migration crée le compte `julienr114@gmail.com` en super-admin et le rattache comme organisateur aux groupes existants.
+- Le mot de passe par groupe (`guardian_password_hash`) et `SUPER_ADMIN_PASSWORD` restent utilisables pendant la transition, puis sont retirés. À trancher : garder `SUPER_ADMIN_PASSWORD` comme accès de secours hors ligne.
+
+**Ordre proposé, chaque pas livrable seul**
+
+1. Comptes, liens magiques et sessions, pour le **super-admin seulement**, à côté de la connexion actuelle : c'est aussi le test en vrai de la délivrabilité.
+2. Organisateurs par compte (`group_members`), invitation d'un co-organisateur par email, retrait du mot de passe par groupe.
+3. Inscription libre, quota de groupes à 0, demande de groupe, interface d'administration des comptes, emails aux super-admins.
+4. TOTP pour les super-admins.
+5. Comptes de participants : création depuis la page de résultat, rattachement à la personne, vue de ses participations.
+
+### 22.6 Conception proposée : tirage fait à la main
+
+- L'organisateur choisit le mode « tirage déjà fait » à la création de l'édition. Pas de tirage par l'application.
+- Chaque participant **déclare** sur sa page à qui il offre, parmi les participants, et peut corriger tant que l'édition n'est pas validée.
+- **Le participant ne reçoit aucun retour sur une incohérence.** Sinon, déclarer une personne après l'autre et lire « déjà pris » permettrait de deviner qui offre à qui.
+- L'organisateur voit qui a déclaré et qui manque. Une fois toutes les déclarations faites, soit elles forment un tirage valide (chacun offre une fois et reçoit une fois), soit l'écran indique une **incohérence et les personnes à contacter** : les donneurs dont les déclarations se contredisent, sans dire qui ils ont déclaré.
+- Tant qu'il y a une incohérence ou une déclaration manquante, l'édition reste **bloquée** avant l'étape « tirée ».
+- À la validation, les déclarations sont enregistrées comme un tirage normal (receveur chiffré) : page de résultat, listes de souhaits, historique pour l'an prochain fonctionnent à l'identique.
+- Les exclusions ne sont pas imposées (le tirage a eu lieu ailleurs) ; elles peuvent être signalées à l'organisateur à titre d'information.
+
+### 22.7 Réponses de Julien du 14 novembre 2026 (conception validée)
+
+- **Tout passe par le lien magique** : pas de `SUPER_ADMIN_PASSWORD` de secours à terme. Il est gardé seulement pendant la transition (pas 1 à 4), puis retiré avec le mot de passe par groupe.
+- **Installation à zéro et développement local** doivent fonctionner sans boîte mail :
+  - `NUXT_SUPER_ADMIN_EMAILS` (liste séparée par des virgules) : une adresse de cette liste obtient un compte super-admin à sa première demande de lien. C'est l'amorçage d'une installation neuve. La migration crée en plus `julienr114@gmail.com`.
+  - `NUXT_DEV_LOGIN_LINKS=true` : le lien de connexion est renvoyé à l'écran au lieu d'être seulement envoyé par email. **Jamais en production.** Utilisé en local et par les tests de bout en bout.
+- **Emails aux super-admins** : à chaque demande de groupe.
+- **Tirage à la main** : la conception 22.6 est validée, y compris l'affichage à l'organisateur des noms des donneurs en conflit.
+- **Session** : 30 jours.
 
 ## 23. Design system
 

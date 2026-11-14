@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { messageTypesFor, type MessageType } from '#server/utils/messages';
+import {
+  NOTE_MAX,
+  addNote,
+  messageTypesFor,
+  type MessageType,
+  type NotePosition,
+} from '#server/utils/messages';
 import { formatEventDate, partyIsOver } from '#server/utils/rules';
 import {
   useDashboardQuery,
@@ -174,6 +180,31 @@ const toggleAll = () => {
     ? []
     : withEmail.value.map((p) => p.participationId);
 };
+// The organiser's own words, added to what is sent. They follow the rule
+// of the edition (set in the group's rules) until the organiser types
+// something else here, which then serves for every participant until the
+// page is left.
+const noteOverride = ref<string | null>(null);
+const note = computed({
+  get: () => noteOverride.value ?? edition.data.value?.rules.messageNote ?? '',
+  set: (value: string) => {
+    noteOverride.value = value;
+  },
+});
+const notePositionOverride = ref<NotePosition | null>(null);
+const notePosition = computed({
+  get: () =>
+    notePositionOverride.value ??
+    edition.data.value?.rules.messageNotePosition ??
+    'after',
+  set: (value: NotePosition) => {
+    notePositionOverride.value = value;
+  },
+});
+const notePositionItems = computed(() => [
+  { value: 'after' as const, label: t('adminEdition.share.noteAfter') },
+  { value: 'before' as const, label: t('adminEdition.share.noteBefore') },
+]);
 // What the bulk send will say, shown for the first person ticked (each
 // one gets it with their own first name, link and language).
 const bulkMessages = useMessagesQuery(slug, id, bulkType);
@@ -184,7 +215,12 @@ const bulkPreview = computed(() => {
   const text = first
     ? bulkMessages.data.value?.messages[first.participationId]?.text
     : undefined;
-  return first && text ? { name: first.firstName, text } : null;
+  return first && text
+    ? {
+        name: first.firstName,
+        text: addNote(text, note.value, notePosition.value),
+      }
+    : null;
 });
 const onSendBulk = () =>
   sendEmails.mutate(
@@ -192,6 +228,8 @@ const onSendBulk = () =>
       type: bulkType.value,
       audience: 'all',
       participationIds: selectedIds.value,
+      note: note.value,
+      notePosition: notePosition.value,
     },
     {
       onSuccess: ({ sent, left }) => {
@@ -718,7 +756,7 @@ const runDraw = () =>
       v-if="selecting"
       class="fixed inset-x-0 bottom-0 z-30 border-t border-default bg-[var(--color-kraft-50)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
-      <UContainer class="flex max-w-3xl items-center gap-2 py-3">
+      <UContainer class="flex items-center gap-2 py-3">
         <div class="min-w-0 grow">
           <p class="truncate text-sm font-medium" aria-live="polite">
             {{
@@ -770,6 +808,26 @@ const runDraw = () =>
           :legend="t('adminEdition.cockpit.messageTitle')"
           class="py-2"
         />
+        <UFormField
+          :label="t('adminEdition.share.note')"
+          :help="t('adminEdition.share.noteHint')"
+          class="py-2"
+        >
+          <UTextarea
+            v-model="note"
+            :rows="2"
+            :maxlength="NOTE_MAX"
+            autoresize
+            class="w-full"
+          />
+        </UFormField>
+        <URadioGroup
+          v-if="note.trim()"
+          v-model="notePosition"
+          :items="notePositionItems"
+          :legend="t('adminEdition.share.notePlace')"
+          orientation="horizontal"
+        />
         <div class="flex flex-col gap-1.5 py-2">
           <span
             class="text-xs font-semibold tracking-wide text-muted uppercase"
@@ -817,6 +875,8 @@ const runDraw = () =>
         <MobileList v-if="sendTarget">
           <AdminSendOptions
             v-model:message-type="messageType"
+            v-model:note="note"
+            v-model:note-position="notePosition"
             :slug="slug"
             :edition-id="id"
             :participant="sendTarget"

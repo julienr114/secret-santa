@@ -48,6 +48,10 @@ const onSubmit = (event: FormSubmitEvent<Rules>) =>
   });
 // Offered in one tap while no date is set: this year's Christmas Day.
 const christmasDay = `${new Date().getFullYear()}-12-25`;
+const notePositionItems = computed(() => [
+  { value: 'after', label: t('adminEdition.share.noteAfter') },
+  { value: 'before', label: t('adminEdition.share.noteBefore') },
+]);
 const previousYearsItems = computed(() => [
   { value: 0, label: t('adminGroup.rules.previousYears.none') },
   { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
@@ -123,6 +127,23 @@ const sectionTitle =
               class="w-full"
             />
           </UFormField>
+          <UFormField
+            name="messageNote"
+            :label="t('adminGroup.rules.messageNote')"
+            :help="t('adminGroup.rules.messageNoteHelp')"
+          >
+            <UTextarea
+              v-model="state.messageNote"
+              :rows="3"
+              :maxlength="500"
+              class="w-full"
+            />
+          </UFormField>
+          <URadioGroup
+            v-model="state.messageNotePosition"
+            :items="notePositionItems"
+            :legend="t('adminEdition.share.notePlace')"
+          />
         </section>
         <section class="flex flex-col gap-4">
           <h2 :class="sectionTitle">

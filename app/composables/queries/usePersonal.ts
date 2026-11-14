@@ -24,6 +24,10 @@ export type PersonalState = {
   wishlist: boolean;
   wishesEditable: boolean;
   wishesCount: number;
+  /** Has already discovered their result at least once. */
+  revealed: boolean;
+  /** Ideas in the receiver's list; 0 until the first reveal. */
+  receiverWishesCount: number;
 };
 export type WishItem = { label: string; url: string | null };
 export type WishesPayload = {
@@ -135,10 +139,11 @@ export const useSaveLanguageMutation = (token: Token) =>
 /**
  * The "Découvrir" button. A mutation on purpose: the result is never
  * cached, it lives in the page's state and is gone on leave or reload
- * (README section 11). The journal is refetched: it gained an entry.
+ * (README section 11). The rest is refetched: the journal may have gained
+ * an entry, and the page now offers to see the result again.
  */
 export const useRevealMutation = (token: Token) =>
   useApiMutation<Reveal, undefined>(
     () => api(`${base(token)}/reveal`, { method: 'POST' }),
-    () => [keys.journal(toValue(token))],
+    () => [keys.personal(toValue(token))],
   );

@@ -12,5 +12,10 @@ export default defineAppConfig({
     input: { defaultVariants: { size: 'lg' } },
     select: { defaultVariants: { size: 'lg' } },
     textarea: { defaultVariants: { size: 'lg' } },
+    // Mobile first, and kept that way on larger screens: pages sit in a
+    // phone-wide column (max-w-md), and so do the bottom sheets.
+    drawer: {
+      slots: { content: 'sm:mx-auto sm:max-w-md sm:rounded-t-2xl' },
+    },
   },
 });

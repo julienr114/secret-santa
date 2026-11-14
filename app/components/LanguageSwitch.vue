@@ -21,7 +21,6 @@ const items = computed(() =>
     <UButton
       variant="ghost"
       color="neutral"
-      icon="i-lucide-languages"
       :label="locale.toUpperCase()"
       :aria-label="t('adminShell.changeLanguage')"
     />

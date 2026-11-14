@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MessageType } from '#server/utils/messages';
+import type { MessageType, NotePosition } from '#server/utils/messages';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -51,6 +51,27 @@ watch(status, (s) => {
   messageType.value = defaultMessageType(s);
 });
 const messages = useMessagesQuery(slug, id, messageType);
+// The organiser's own words, added to what is sent. They follow the rule
+// of the edition (set in the group's rules) until the organiser types
+// something else here, which then serves for every participant until the
+// page is left.
+const noteOverride = ref<string | null>(null);
+const note = computed({
+  get: () => noteOverride.value ?? edition.data.value?.rules.messageNote ?? '',
+  set: (value: string) => {
+    noteOverride.value = value;
+  },
+});
+const notePositionOverride = ref<NotePosition | null>(null);
+const notePosition = computed({
+  get: () =>
+    notePositionOverride.value ??
+    edition.data.value?.rules.messageNotePosition ??
+    'after',
+  set: (value: NotePosition) => {
+    notePositionOverride.value = value;
+  },
+});
 const message = computed(() => messages.data.value?.messages[pid.value]);
 
 useHead({
@@ -155,6 +176,8 @@ const onRemove = () =>
           <MobileList>
             <AdminSendOptions
               v-model:message-type="messageType"
+              v-model:note="note"
+              v-model:note-position="notePosition"
               :slug="slug"
               :edition-id="id"
               :participant="p"

@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { messageTypesFor, type MessageType } from '#server/utils/messages';
+import {
+  NOTE_MAX,
+  addNote,
+  messageTypesFor,
+  type MessageType,
+  type NotePosition,
+} from '#server/utils/messages';
 import { LOCALES, type Locale } from '#shared/i18n';
 import { useSendEmailsMutation } from '~/composables/queries/useEdition';
 import { useUpdatePersonMutation } from '~/composables/queries/useGroup';
@@ -34,6 +40,12 @@ const emit = defineEmits<{ done: [] }>();
 const messageType = defineModel<MessageType>('messageType', {
   required: true,
 });
+// The organiser's own words, added before the link (kept by the parent
+// so that it is typed once for several participants).
+const note = defineModel<string>('note', { default: '' });
+const notePosition = defineModel<NotePosition>('notePosition', {
+  default: 'after',
+});
 
 const { t, tk } = useT();
 const toast = useToast();
@@ -45,6 +57,10 @@ const sendEmails = useSendEmailsMutation(
 );
 
 const updatePerson = useUpdatePersonMutation(() => props.slug);
+const notePositionItems = computed(() => [
+  { value: 'after' as const, label: t('adminEdition.share.noteAfter') },
+  { value: 'before' as const, label: t('adminEdition.share.noteBefore') },
+]);
 const messageItems = computed(() =>
   messageTypesFor(props.status).map((value) => ({
     value,
@@ -55,6 +71,10 @@ const messageItems = computed(() =>
 // group) or while the text of a newly chosen message is loading.
 const switching = computed(() => updatePerson.isPending.value);
 const waiting = computed(() => switching.value || !props.text);
+// Exactly what will be shared, copied or emailed.
+const fullText = computed(() =>
+  props.text ? addNote(props.text, note.value, notePosition.value) : undefined,
+);
 const onLanguage = (language: Locale) => {
   if (language === props.participant.language || switching.value) return;
   updatePerson.mutate(
@@ -70,12 +90,16 @@ const onShare = () => {
   sharer.share(
     props.participant.participationId,
     messageType.value,
-    props.text,
+    fullText.value,
   );
   emit('done');
 };
 const onCopy = () => {
-  sharer.copy(props.participant.participationId, messageType.value, props.text);
+  sharer.copy(
+    props.participant.participationId,
+    messageType.value,
+    fullText.value,
+  );
   emit('done');
 };
 const onEmail = () =>
@@ -84,6 +108,8 @@ const onEmail = () =>
       type: messageType.value,
       audience: 'all',
       participationIds: [props.participant.participationId],
+      note: note.value,
+      notePosition: notePosition.value,
     },
     {
       onSuccess: () =>
@@ -139,6 +165,28 @@ const onEmail = () =>
       />
     </span>
   </li>
+  <li class="flex flex-col gap-1.5 px-4 py-3">
+    <UFormField
+      :label="t('adminEdition.share.note')"
+      :help="t('adminEdition.share.noteHint')"
+    >
+      <UTextarea
+        v-model="note"
+        :rows="2"
+        :maxlength="NOTE_MAX"
+        autoresize
+        class="w-full"
+      />
+    </UFormField>
+    <URadioGroup
+      v-if="note.trim()"
+      v-model="notePosition"
+      :items="notePositionItems"
+      :legend="t('adminEdition.share.notePlace')"
+      orientation="horizontal"
+      class="pt-1"
+    />
+  </li>
   <!-- What will be sent, word for word, in the chosen language. -->
   <li class="flex flex-col gap-1.5 px-4 py-3">
     <span class="text-xs font-semibold tracking-wide text-muted uppercase">{{
@@ -150,7 +198,7 @@ const onEmail = () =>
       class="rounded-lg bg-muted p-3 text-sm break-words whitespace-pre-line"
       data-testid="message-preview"
     >
-      {{ text }}
+      {{ fullText }}
     </p>
   </li>
   <MobileListItem

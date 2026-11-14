@@ -147,6 +147,16 @@ const wishesSubtitle = computed(() => {
           <p class="text-sm text-muted">
             {{ t('participant.home.ready.body') }}
           </p>
+          <p
+            v-if="me.revealed && me.receiverWishesCount > 0"
+            class="text-sm text-muted"
+          >
+            {{
+              t('participant.home.ready.ideasWaiting', {
+                count: me.receiverWishesCount,
+              })
+            }}
+          </p>
           <UAlert
             v-if="revealMutation.isError.value"
             color="error"
@@ -157,7 +167,11 @@ const wishesSubtitle = computed(() => {
             block
             icon="i-lucide-gift"
             :loading="revealMutation.isPending.value"
-            :label="t('participant.home.ready.reveal')"
+            :label="
+              me.revealed
+                ? t('participant.home.ready.revealAgain')
+                : t('participant.home.ready.reveal')
+            "
             @click="onReveal"
           />
         </section>

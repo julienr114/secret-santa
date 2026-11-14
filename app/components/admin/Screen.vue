@@ -50,7 +50,9 @@ const menu = computed(() => [
     <header
       class="sticky top-0 z-20 border-b border-default bg-[var(--color-kraft-50)]/90 pt-[env(safe-area-inset-top)] backdrop-blur"
     >
-      <UContainer class="flex h-14 max-w-3xl items-center gap-1">
+      <!-- The bars span the window; only the content below sits in the
+           phone-wide column. -->
+      <UContainer class="flex h-14 items-center gap-1">
         <NuxtLink
           :to="home"
           class="min-w-0 grow truncate font-display text-lg font-bold text-primary"
@@ -66,32 +68,31 @@ const menu = computed(() => [
           />
         </UDropdownMenu>
       </UContainer>
-      <UContainer
-        v-if="back"
-        class="flex h-10 max-w-3xl items-center gap-1 border-t border-default/60"
-      >
-        <UButton
-          :to="back"
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          icon="i-lucide-chevron-left"
-          :aria-label="t('common.actions.back')"
-          class="-ml-2 shrink-0"
-        />
-        <UBreadcrumb
-          :items="trail"
-          separator-icon="i-lucide-chevron-right"
-          class="min-w-0 grow"
-          :ui="{
-            list: 'flex-nowrap',
-            item: 'min-w-0',
-            link: 'truncate text-sm',
-          }"
-        />
-      </UContainer>
+      <div v-if="back" class="border-t border-default/60">
+        <UContainer class="flex h-10 items-center gap-1">
+          <UButton
+            :to="back"
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-chevron-left"
+            :aria-label="t('common.actions.back')"
+            class="-ml-2 shrink-0"
+          />
+          <UBreadcrumb
+            :items="trail"
+            separator-icon="i-lucide-chevron-right"
+            class="min-w-0 grow"
+            :ui="{
+              list: 'flex-nowrap',
+              item: 'min-w-0',
+              link: 'truncate text-sm',
+            }"
+          />
+        </UContainer>
+      </div>
     </header>
-    <UContainer as="main" class="flex max-w-3xl flex-col gap-6 py-5">
+    <UContainer as="main" class="flex max-w-md flex-col gap-6 py-5">
       <slot />
     </UContainer>
   </div>

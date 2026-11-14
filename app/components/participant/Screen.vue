@@ -29,7 +29,7 @@ const onLanguage = (locale: Locale) => {
 <template>
   <div class="min-h-dvh pb-[calc(2rem+env(safe-area-inset-bottom))]">
     <header class="pt-[env(safe-area-inset-top)]">
-      <UContainer class="flex h-14 max-w-md items-center gap-1">
+      <UContainer class="flex h-14 items-center gap-1">
         <UButton
           v-if="back && !error"
           :to="back"

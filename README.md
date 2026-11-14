@@ -669,9 +669,9 @@ secret-santa/
 │   │   └── admin/               ← connexion, groupes, puis [slug]/ : accueil, personnes,
 │   │                              exclusions, réglages, organisateur, journal, éditions/[id]/…
 │   ├── components/
+│   │   ├── ui/                  ← design system : PageTitle, SectionTitle, Card, List, ListItem, Avatar, TextPreview
 │   │   ├── admin/               ← Screen, StatusCard, SendOptions, Exclusions, PersonForm, DateField…
 │   │   ├── participant/         ← Screen, RevealCard, WishList
-│   │   ├── mobile/              ← List, ListItem (listes pleine largeur)
 │   │   └── JournalList · JournalView · LanguageSwitch
 │   ├── composables/
 │   │   ├── useT.ts · useErrorMessage.ts · useShareMessage.ts
@@ -878,7 +878,7 @@ L'organisateur règle la langue d'une personne sur sa fiche. Le participant la c
 - **Exclusions après le tirage** : l'écran d'une édition tirée ou clôturée affiche les exclusions **appliquées au tirage** (`rules_snapshot`), plus celles du groupe, qui ont pu changer depuis.
 - **Suppression d'un groupe** : super-admin uniquement, `POST /api/admin/groups/[id]/delete` avec l'identifiant du groupe à recopier. Efface le groupe, ses personnes, exclusions, éditions, tirages, listes de souhaits et journal, en une transaction. Irréversible.
 - **Barre du haut de l'administration** : logo toujours visible, un seul menu (langue, déconnexion), chemin réduit aux niveaux parents.
-- **Avatars** : douze emoji de marché de Noël ajoutés (bretzel, vin chaud, marrons…).
+- **Avatars** : emoji de marché de Noël ajoutés (bretzel, vin chaud, marrons…), puis six emoji retirés le 14 novembre 2026 ; il en reste 30. Une icône enregistrée avec un emoji retiré est remplacée par une icône par défaut, la couleur étant gardée.
 
 ### 21.2 Comment c'est fait
 
@@ -911,17 +911,7 @@ Onze idées apportées par Julien le 14 novembre 2026, triées en trois lots. Ri
 
 Décision du 14 novembre 2026 : l'application s'ouvre au public par **inscription libre, avec un garde-fou** : un compte ne peut créer aucun groupe par défaut.
 
-**Étape préalable : un design system léger**
-
-À faire avant les comptes, parce que la v2 ajoute beaucoup d'écrans. Nuxt UI et le thème (rouge brique, vert sapin, kraft, Fraunces) sont déjà la base ; il manque la discipline au-dessus.
-
-- **Jetons nommés** pour ce qui est recopié à la main aujourd'hui : fond de page kraft, carte arrondie, petit titre de section en capitales, rayons, ombres.
-- **Composants d'interface indépendants du métier**, dans un dossier à eux, avec des variantes claires : liste et ligne de liste (aujourd'hui `mobile/`), carte, panneau du bas, icône de personne (aujourd'hui `AdminAvatar`, pourtant utilisée côté participant), pastille, bouton d'action. Les composants métier (`admin/`, `participant/`) sont construits dessus.
-- **Page « guide de style »** dans l'application, réservée au super-admin : chaque composant dans ses variantes et dans les trois langues. Elle sert de documentation et de contrôle visuel.
-- **Règles écrites** dans ce document : quand utiliser un panneau du bas plutôt qu'une page, taille minimale d'une cible tactile, ton d'une action dangereuse, place d'une ligne « ajouter » dans une liste.
-- **Pas de paquet séparé ni de Storybook** : une seule application et un seul développeur. À extraire seulement si une deuxième application apparaît (les listes de cadeaux de la v3).
-
-Les tests de bout en bout s'appuient sur les textes et les rôles, pas sur les classes : la réorganisation des composants peut se faire sans les réécrire.
+**Étape préalable : un design system léger** ✅ *fait le 14 novembre 2026, voir la section 23.*
 
 **Socle : comptes et quotas**
 
@@ -965,3 +955,57 @@ Ce socle remet en cause des décisions actuelles, à réécrire au moment de le 
 5. Inscription par lien : l'organisateur valide-t-il chaque inscription ?
 6. Emails au super-admin : quelle adresse, et pour quels événements ?
 7. Que voulait dire la phrase sur la visibilité des participants sans groupe ?
+
+---
+
+## 23. Design system
+
+Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. La page **Guide de style** (`/admin/guide-de-style`, super-admin, lien depuis l'écran des groupes) montre tout ce qui est décrit ici, dans la langue choisie dans le menu.
+
+### 23.1 Jetons
+
+Définis dans `app/assets/css/main.css`. Les écrans nomment un **rôle**, jamais une teinte.
+
+| Jeton | Rôle |
+|---|---|
+| `bg-page` | Fond de page (kraft clair) |
+| `bg-default` | Carte, ligne de liste (blanc cassé, jeton Nuxt UI) |
+| `bg-muted` | Texte cité, aperçu d'un message |
+| `bg-skeleton`, `bg-skeleton-soft` | Chargement, sur la page et sur une ligne blanche |
+| `bg-track` | Partie vide d'une barre de progression |
+| `primary` (rouge brique), `secondary` (vert sapin), `warning`, `error` | Action, réussite, attention, danger (`app/app.config.ts`) |
+
+Les teintes brutes (`--color-kraft-*`, `--color-brick-*`, `--color-pine-*`) ne servent qu'à définir ces jetons, et aux couleurs des icônes de personne (`app/utils/avatars.ts`).
+
+### 23.2 Composants d'interface (`app/components/ui`)
+
+Sans aucun texte ni logique métier ; les composants de `admin/` et `participant/` sont construits dessus.
+
+| Composant | Rôle |
+|---|---|
+| `UiPageTitle` | Le titre d'un écran, un seul par page (`h1`) |
+| `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe |
+| `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
+| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` |
+| `UiAvatar` | L'icône d'une personne, en trois tailles |
+| `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
+
+Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une édition), `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
+
+### 23.3 Règles
+
+- Une colonne de la largeur d'un téléphone (`max-w-md`) sur tous les écrans ; les barres du haut et du bas prennent toute la largeur ; les panneaux du bas restent dans la colonne.
+- Une action courte sur un élément s'ouvre dans un **panneau du bas** (`UDrawer`) ; un formulaire long a son propre écran.
+- Un panneau enregistre avec un bouton « Valider » ; le fermer autrement abandonne.
+- Une cible tactile fait au moins 40 px.
+- Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
+- La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
+- Le bouton d'action d'une ligne est rond, avec une icône seule : plein et clair quand l'action reste à faire, en contour gris quand elle est faite.
+- Aucun texte en dur dans un écran du produit : tout passe par les dictionnaires (section 21). Seule exception, la page Guide de style, outil du développeur.
+
+### 23.4 Reste à faire
+
+- Les couleurs `warning` et `error` sont celles de Nuxt UI par défaut (orange et rouge vifs) : à accorder à la palette.
+- Un composant `UiSheet` autour de `UDrawer` si les panneaux continuent de se multiplier.
+- Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
+

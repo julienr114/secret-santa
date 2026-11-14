@@ -30,8 +30,31 @@
   --color-pine-900: #1d3426;
   --color-pine-950: #0e1d15;
 
+  /* Warning: the mustard of the star and the ribbons. */
+  --color-mustard-50: #fdf8ea;
+  --color-mustard-100: #f9eecb;
+  --color-mustard-200: #f3dd98;
+  --color-mustard-300: #ebc762;
   --color-mustard-400: #e6b94a;
   --color-mustard-500: #d9a62e;
+  --color-mustard-600: #b98420;
+  --color-mustard-700: #94651c;
+  --color-mustard-800: #79511d;
+  --color-mustard-900: #66431d;
+  --color-mustard-950: #3a240c;
+
+  /* Danger: a cranberry red, cooler than the brick of the actions. */
+  --color-cranberry-50: #fdf2f4;
+  --color-cranberry-100: #fbe1e5;
+  --color-cranberry-200: #f6c3cc;
+  --color-cranberry-300: #ee96a5;
+  --color-cranberry-400: #e16078;
+  --color-cranberry-500: #cf3653;
+  --color-cranberry-600: #b3243f;
+  --color-cranberry-700: #961d35;
+  --color-cranberry-800: #7d1c31;
+  --color-cranberry-900: #6b1c2e;
+  --color-cranberry-950: #3b0a15;
   --color-kraft-50: #f7f2e9;
   --color-kraft-100: #f1e8d8;
   --color-kraft-200: #e9dcc5;
@@ -51,6 +74,9 @@
   --ui-bg-elevated: #fffdf9;
   --ui-border: var(--color-kraft-300);
   --ui-radius: 0.375rem;
+  /* Darker than Nuxt UI's default shade 500: readable as text on white. */
+  --ui-warning: var(--color-mustard-700);
+  --ui-error: var(--color-cranberry-600);
 }
 
 @layer base {

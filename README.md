@@ -973,7 +973,7 @@ Définis dans `app/assets/css/main.css`. Les écrans nomment un **rôle**, jamai
 | `bg-muted` | Texte cité, aperçu d'un message |
 | `bg-skeleton`, `bg-skeleton-soft` | Chargement, sur la page et sur une ligne blanche |
 | `bg-track` | Partie vide d'une barre de progression |
-| `primary` (rouge brique), `secondary` (vert sapin), `warning`, `error` | Action, réussite, attention, danger (`app/app.config.ts`) |
+| `primary` (rouge brique), `secondary` et `success` (vert sapin), `warning` (moutarde), `error` (canneberge) | Action, réussite, attention, danger (`app/app.config.ts`). Attention et danger utilisent une teinte assez sombre pour rester lisibles en texte sur blanc |
 
 Les teintes brutes (`--color-kraft-*`, `--color-brick-*`, `--color-pine-*`) ne servent qu'à définir ces jetons, et aux couleurs des icônes de personne (`app/utils/avatars.ts`).
 
@@ -1005,7 +1005,6 @@ Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une é
 
 ### 23.4 Reste à faire
 
-- Les couleurs `warning` et `error` sont celles de Nuxt UI par défaut (orange et rouge vifs) : à accorder à la palette.
 - Un composant `UiSheet` autour de `UDrawer` si les panneaux continuent de se multiplier.
 - Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
 

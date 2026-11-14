@@ -29,8 +29,8 @@ const SURFACES = [
 const COLORS = [
   { name: 'primary', hint: 'Rouge brique : action', class: 'bg-primary' },
   { name: 'secondary', hint: 'Vert sapin : réussi', class: 'bg-secondary' },
-  { name: 'warning', hint: 'Attention', class: 'bg-warning' },
-  { name: 'error', hint: 'Danger', class: 'bg-error' },
+  { name: 'warning', hint: 'Moutarde : attention', class: 'bg-warning' },
+  { name: 'error', hint: 'Canneberge : danger', class: 'bg-error' },
 ];
 /** Codes shown by AdminStatusBadge: edition statuses, then participant badges. */
 const STATUSES = ['draft', 'invitations', 'drawn', 'closed'];

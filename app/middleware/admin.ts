@@ -9,7 +9,8 @@ export default defineNuxtRouteMiddleware((to) => {
   }
   if (!loggedIn.value) return navigateTo('/admin');
   if (
-    to.path.startsWith('/admin/groupes') &&
+    (to.path.startsWith('/admin/groupes') ||
+      to.path.startsWith('/admin/guide-de-style')) &&
     user.value?.role !== 'super_admin'
   ) {
     return navigateTo(homeOf(user.value));

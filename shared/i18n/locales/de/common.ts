@@ -20,8 +20,6 @@ export default {
   count: {
     participants: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },
     ideas: { one: '{count} Idee', other: '{count} Ideen' },
-    people: { one: '{count} Person', other: '{count} Personen' },
-    emails: { one: '{count} E-Mail', other: '{count} E-Mails' },
     exclusions: { one: '{count} Ausschluss', other: '{count} Ausschlüsse' },
   },
   actions: {

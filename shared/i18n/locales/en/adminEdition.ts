@@ -23,7 +23,6 @@ export default {
     draftIntro:
       'Check the list of participants, then open the invitations to be able to share the links.',
     openInvitations: 'Open the invitations',
-    checkTitle: 'Check',
     drawPossible: 'The draw is possible',
     drawPossibleDescription: {
       one: '{count} participant, all the rules are met.',
@@ -50,12 +49,6 @@ export default {
     close: 'Close',
     closedNotice: 'Edition closed, read-only.',
     messageTitle: 'Message to share',
-    sharedCount: {
-      one: '{count}/{total} shared.',
-      other: '{count}/{total} shared.',
-    },
-    shareHelp:
-      'The button opens your phone’s share sheet (WhatsApp, SMS…) with the message and the personal link.',
     email: {
       bulkTitle: 'Send to several',
       bulkHint: 'By email, all at once',
@@ -81,8 +74,6 @@ export default {
       left: '{count} still to send: run the sending again.',
     },
     empty: 'Nobody yet.',
-    send: 'Send',
-    resend: 'Resend',
     sendLinkOf: 'Send {name}’s link',
     resendLinkOf: 'Resend {name}’s link',
     addParticipants: 'Add participants',
@@ -103,7 +94,6 @@ export default {
         '+ {count} exclusions from a draw that is not closed yet, kept secret.',
     },
     previousDrawReason: 'Previous draw: {edition}',
-    previousDraws: 'Previous draws',
     previousDrawsFooter:
       'Nobody will get the same person again. The × lifts an exclusion for this edition only.',
     waive: 'Lift',

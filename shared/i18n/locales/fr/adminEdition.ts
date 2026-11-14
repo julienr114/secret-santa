@@ -22,7 +22,6 @@ export default {
     draftIntro:
       'Vérifie la liste des participants, puis ouvre les invitations pour pouvoir partager les liens.',
     openInvitations: 'Ouvrir les invitations',
-    checkTitle: 'Vérification',
     drawPossible: 'Le tirage est possible',
     drawPossibleDescription: {
       one: '{count} participant, toutes les règles sont respectées.',
@@ -50,12 +49,6 @@ export default {
     close: 'Clôturer',
     closedNotice: 'Édition clôturée, en lecture seule.',
     messageTitle: 'Message à partager',
-    sharedCount: {
-      one: '{count}/{total} partagé.',
-      other: '{count}/{total} partagés.',
-    },
-    shareHelp:
-      'Le bouton ouvre le partage du téléphone (WhatsApp, SMS…) avec le message et le lien personnel.',
     email: {
       bulkTitle: 'Envoyer à plusieurs',
       bulkHint: 'Par email, en une seule fois',
@@ -84,8 +77,6 @@ export default {
       left: "Encore {count} à envoyer : relance l'envoi.",
     },
     empty: "Personne pour l'instant.",
-    send: 'Envoyer',
-    resend: 'Renvoyer',
     sendLinkOf: 'Envoyer le lien de {name}',
     resendLinkOf: 'Renvoyer le lien de {name}',
     addParticipants: 'Ajouter des participants',
@@ -106,7 +97,6 @@ export default {
         "+ {count} exclusions d'un tirage pas encore clôturé, gardées secrètes.",
     },
     previousDrawReason: 'Tirage précédent : {edition}',
-    previousDraws: 'Tirages précédents',
     previousDrawsFooter:
       'Personne ne retombera sur la même personne. Le × lève une exclusion pour cette édition seulement.',
     waive: 'Lever',

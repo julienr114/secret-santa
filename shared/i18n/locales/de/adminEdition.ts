@@ -23,7 +23,6 @@ export default {
     draftIntro:
       'Prüfe die Teilnehmerliste und öffne dann die Einladungen, um die Links teilen zu können.',
     openInvitations: 'Einladungen öffnen',
-    checkTitle: 'Prüfung',
     drawPossible: 'Die Auslosung ist möglich',
     drawPossibleDescription: {
       one: '{count} Teilnehmer, alle Regeln sind erfüllt.',
@@ -51,12 +50,6 @@ export default {
     close: 'Abschließen',
     closedNotice: 'Ausgabe abgeschlossen, nur lesbar.',
     messageTitle: 'Nachricht zum Teilen',
-    sharedCount: {
-      one: '{count}/{total} geteilt.',
-      other: '{count}/{total} geteilt.',
-    },
-    shareHelp:
-      'Die Schaltfläche öffnet das Teilen-Menü des Handys (WhatsApp, SMS…) mit der Nachricht und dem persönlichen Link.',
     email: {
       bulkTitle: 'An mehrere senden',
       bulkHint: 'Per E-Mail, alle auf einmal',
@@ -85,8 +78,6 @@ export default {
       left: 'Noch {count} zu senden: Starte den Versand erneut.',
     },
     empty: 'Noch niemand.',
-    send: 'Senden',
-    resend: 'Erneut senden',
     sendLinkOf: 'Link von {name} senden',
     resendLinkOf: 'Link von {name} erneut senden',
     addParticipants: 'Teilnehmer hinzufügen',
@@ -107,7 +98,6 @@ export default {
         '+ {count} Ausschlüsse aus einer noch nicht abgeschlossenen Auslosung, bleiben geheim.',
     },
     previousDrawReason: 'Frühere Auslosung: {edition}',
-    previousDraws: 'Frühere Auslosungen',
     previousDrawsFooter:
       'Niemand bekommt wieder dieselbe Person. Das × hebt einen Ausschluss nur für diese Ausgabe auf.',
     waive: 'Aufheben',

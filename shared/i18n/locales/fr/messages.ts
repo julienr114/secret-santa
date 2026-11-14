@@ -28,6 +28,6 @@ export default {
   eventDate: 'Rendez-vous le {eventDate}.',
   email: {
     personal: 'Ce lien est personnel, ne le transfère pas.',
-    signature: 'Le gardien du Secret Santa de {groupName}',
+    signature: "L'organisateur du Secret Santa de {groupName}",
   },
 };

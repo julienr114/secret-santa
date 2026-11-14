@@ -43,7 +43,7 @@ export default {
     drawDone: 'Tirage effectué',
     drawDoneToast: 'Partage maintenant le message « {message} » à chacun.',
     drawnDescription:
-      '{viewed}/{total} ont consulté leur résultat. Personne, gardien compris, ne voit les résultats ici.',
+      '{viewed}/{total} ont consulté leur résultat. Personne, organisateur compris, ne voit les résultats ici.',
     closeAfterParty: 'Clôturer après la fête',
     closeExplanation:
       "Clôturer rend l'édition non modifiable ; elle servira d'historique l'an prochain.",
@@ -191,7 +191,7 @@ export default {
     warningLastResort:
       "À n'utiliser qu'en dernier recours (désaccord, doute sur un bug…). Tu ne vois qu'un résultat à la fois.",
     warningJournal:
-      'Le journal du groupe affichera, pour tous les participants : « Le gardien a consulté le résultat de Léa », avec le prénom de la personne.',
+      "Le journal du groupe affichera, pour tous les participants : « L'organisateur a consulté le résultat de Léa », avec le prénom de la personne.",
     warningEphemeral:
       "Le résultat ne s'affiche qu'ici, et disparaît quand tu quittes l'écran.",
     personLabel: 'Le résultat de qui ?',
@@ -210,6 +210,11 @@ export default {
     footer: "L'édition est clôturée : ses résultats ne sont plus secrets.",
   },
   share: {
+    notePlace: 'Placement du mot',
+    noteBefore: 'Au-dessus du message',
+    noteAfter: 'En dessous du message',
+    note: 'Ajouter un mot (facultatif)',
+    noteHint: 'Envoyé tel quel, quelle que soit la langue du message.',
     preview: 'Aperçu du message',
     previewFor: 'Aperçu, pour {name}',
     previewEmailNote:

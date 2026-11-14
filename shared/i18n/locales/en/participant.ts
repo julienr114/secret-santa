@@ -13,7 +13,12 @@ export default {
     },
     ready: {
       title: 'The draw is done!',
-      body: 'Make sure nobody is looking at your screen. Every viewing is recorded in the group journal.',
+      body: 'Make sure nobody is looking at your screen.',
+      revealAgain: 'See who I am giving to again',
+      ideasWaiting: {
+        one: 'Their list has {count} gift idea.',
+        other: 'Their list has {count} gift ideas.',
+      },
       reveal: 'Find out who I am giving a gift to',
       hide: 'Hide my result',
     },

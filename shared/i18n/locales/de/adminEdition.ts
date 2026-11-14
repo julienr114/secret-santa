@@ -213,6 +213,12 @@ export default {
       'Die Ausgabe ist abgeschlossen: Ihre Ergebnisse sind nicht mehr geheim.',
   },
   share: {
+    notePlace: 'Platz des Zusatzes',
+    noteBefore: 'Über der Nachricht',
+    noteAfter: 'Unter der Nachricht',
+    note: 'Zusatz hinzufügen (optional)',
+    noteHint:
+      'Wird unverändert gesendet, unabhängig von der Sprache der Nachricht.',
     preview: 'Vorschau der Nachricht',
     previewFor: 'Vorschau für {name}',
     previewEmailNote:

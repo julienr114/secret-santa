@@ -22,7 +22,7 @@ export default {
       'Der Organisator hat die Ergebnisse der Auslosung eingesehen (Notzugriff)',
     result_revealed:
       'Der Organisator hat das Ergebnis von {name} eingesehen (Notzugriff)',
-    result_viewed: '{name} hat das eigene Ergebnis angesehen (zum {nth} Mal)',
+    result_viewed: '{name} hat das eigene Ergebnis entdeckt',
     wishes_updated: {
       one: '{name} hat die Wunschliste aktualisiert ({count} Idee)',
       other: '{name} hat die Wunschliste aktualisiert ({count} Ideen)',
@@ -44,5 +44,4 @@ export default {
     share: ' (geteilt)',
     email: ' (E-Mail)',
   },
-  nth: { one: '{n}.', two: '{n}.', few: '{n}.', rest: '{n}.' },
 } satisfies Dict<typeof fr>;

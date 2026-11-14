@@ -39,10 +39,10 @@ export default {
   results_secret:
     "Les résultats restent secrets tant que l'édition n'est pas clôturée.",
   link_invalid:
-    "Ce lien n'est plus valable, demande-en un nouveau à ton gardien.",
+    "Ce lien n'est plus valable, demande-en un nouveau à ton organisateur.",
   draw_not_done: "Le tirage n'a pas encore eu lieu.",
   result_not_found:
-    "Ton résultat est introuvable, préviens ton gardien qu'il y a un souci.",
+    "Ton résultat est introuvable, préviens ton organisateur qu'il y a un souci.",
   wishlist_disabled: "Ce groupe n'utilise pas les listes de souhaits.",
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:

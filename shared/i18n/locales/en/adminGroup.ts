@@ -161,6 +161,9 @@ export default {
     eventDateSuggest: 'Suggest {date}',
     eventDateClear: 'Clear the date',
     guardianMessage: 'A word from the organizer',
+    messageNote: 'Note added to messages',
+    messageNoteHelp:
+      'Added as written to every message and email sent to participants, above or below the standard text. You can still change it when sending.',
     wishlist: 'Enable wish lists',
     maxWishes: 'Maximum number of ideas per list',
   },

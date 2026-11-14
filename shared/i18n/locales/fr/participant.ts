@@ -5,13 +5,18 @@ export default {
     changeAvatar: 'Changer mon icône',
     waiting: {
       title: "Le tirage n'a pas encore eu lieu",
-      body: "Ton gardien te préviendra. Garde ce lien : c'est ici que tu découvriras à qui tu offres un cadeau.",
+      body: "Ton organisateur te préviendra. Garde ce lien : c'est ici que tu découvriras à qui tu offres un cadeau.",
       wishes:
         'En attendant, note quelques idées de cadeaux pour la personne qui te tirera au sort.',
     },
     ready: {
       title: 'Le tirage est fait !',
-      body: 'Assure-toi que personne ne regarde ton écran. Chaque consultation est inscrite au journal du groupe.',
+      body: 'Assure-toi que personne ne regarde ton écran.',
+      revealAgain: "Revoir à qui j'offre un cadeau",
+      ideasWaiting: {
+        one: 'Sa liste contient {count} idée de cadeau.',
+        other: 'Sa liste contient {count} idées de cadeaux.',
+      },
       reveal: "Découvrir à qui j'offre un cadeau",
       hide: 'Cacher mon résultat',
     },

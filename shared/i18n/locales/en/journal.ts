@@ -22,7 +22,7 @@ export default {
       'The organizer looked at the results of the draw (last-resort access)',
     result_revealed:
       "The organizer looked at {name}'s result (last-resort access)",
-    result_viewed: '{name} viewed their result ({nth} time)',
+    result_viewed: '{name} discovered their result',
     wishes_updated: {
       one: '{name} updated their wish list ({count} idea)',
       other: '{name} updated their wish list ({count} ideas)',
@@ -40,5 +40,4 @@ export default {
     other: 'a message',
   },
   via: { copy: ' (message copied)', share: ' (shared)', email: ' (email)' },
-  nth: { one: '{n}st', two: '{n}nd', few: '{n}rd', rest: '{n}th' },
 } satisfies Dict<typeof fr>;

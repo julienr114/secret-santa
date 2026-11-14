@@ -13,7 +13,12 @@ export default {
     },
     ready: {
       title: 'Die Auslosung ist erfolgt!',
-      body: 'Achte darauf, dass niemand auf deinen Bildschirm schaut. Jeder Aufruf wird im Protokoll der Gruppe festgehalten.',
+      body: 'Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      revealAgain: 'Noch einmal sehen, wen ich beschenke',
+      ideasWaiting: {
+        one: 'Die Liste enthält {count} Geschenkidee.',
+        other: 'Die Liste enthält {count} Geschenkideen.',
+      },
       reveal: 'Erfahren, wen ich beschenke',
       hide: 'Mein Ergebnis verbergen',
     },

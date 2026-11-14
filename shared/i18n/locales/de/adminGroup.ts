@@ -18,6 +18,8 @@ export default {
     submit: 'Anmelden',
   },
   groups: {
+    styleguide: 'Styleguide',
+    styleguideHint: 'Die Komponenten der Oberfläche',
     title: 'Gruppen',
     create: 'Neu',
     empty: 'Noch keine Gruppe. Erstelle die erste mit „Neu“.',

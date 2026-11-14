@@ -46,9 +46,9 @@ const onSubmit = (value: PersonFormValue) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminGroup.newPerson.title') }}
-    </h1>
+    </UiPageTitle>
     <AdminPersonForm
       :submit-label="t('common.actions.add')"
       :with-email="dashboard.data.value?.group.emailSending"

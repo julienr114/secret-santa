@@ -44,7 +44,7 @@ const NuxtLink = resolveComponent('NuxtLink');
       @click="props.onClick?.()"
     >
       <slot v-if="$slots.leading" name="leading" />
-      <AdminAvatar v-else-if="avatar" :avatar="avatar" />
+      <UiAvatar v-else-if="avatar" :avatar="avatar" />
       <span
         v-else-if="emoji || icon"
         class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"

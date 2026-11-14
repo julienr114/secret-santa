@@ -81,9 +81,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminGroup.newGroup.title') }}
-    </h1>
+    </UiPageTitle>
     <UForm
       :schema="schema"
       :state="state"

@@ -201,10 +201,7 @@ const notePosition = computed({
     notePositionOverride.value = value;
   },
 });
-const notePositionItems = computed(() => [
-  { value: 'after' as const, label: t('adminEdition.share.noteAfter') },
-  { value: 'before' as const, label: t('adminEdition.share.noteBefore') },
-]);
+const notePositionItems = useNotePositionItems();
 // What the bulk send will say, shown for the first person ticked (each
 // one gets it with their own first name, link and language).
 const bulkMessages = useMessagesQuery(slug, id, bulkType);
@@ -337,7 +334,7 @@ const runDraw = () =>
     >
       <div class="flex flex-col gap-1">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h1 class="font-display text-3xl font-bold">{{ label }}</h1>
+          <UiPageTitle>{{ label }}</UiPageTitle>
           <AdminStatusBadge :code="status" />
         </div>
         <p v-if="subtitle" class="text-muted">{{ subtitle }}</p>
@@ -497,8 +494,8 @@ const runDraw = () =>
           <p v-if="withEmail.length === 0" class="px-1 text-xs text-muted">
             {{ t('adminEdition.cockpit.email.noAddress') }}
           </p>
-          <MobileList v-else :footer="t('adminEdition.cockpit.email.spamTip')">
-            <MobileListItem
+          <UiList v-else :footer="t('adminEdition.cockpit.email.spamTip')">
+            <UiListItem
               icon="i-lucide-users"
               :title="t('adminEdition.cockpit.email.bulkTitle')"
               :subtitle="t('adminEdition.cockpit.email.bulkHint')"
@@ -513,8 +510,8 @@ const runDraw = () =>
                   @click="startSelecting"
                 />
               </template>
-            </MobileListItem>
-          </MobileList>
+            </UiListItem>
+          </UiList>
         </template>
       </section>
 
@@ -525,7 +522,7 @@ const runDraw = () =>
       >
         {{ t('adminEdition.cockpit.empty') }}
       </p>
-      <MobileList
+      <UiList
         v-else-if="status !== 'closed'"
         :title="t('common.count.participants', { count: participants.length })"
       >
@@ -535,7 +532,7 @@ const runDraw = () =>
         >
           {{ t('adminEdition.cockpit.empty') }}
         </li>
-        <MobileListItem
+        <UiListItem
           v-for="p in participants"
           :key="p.participationId"
           :avatar="p.avatar"
@@ -610,9 +607,9 @@ const runDraw = () =>
               @click.prevent.stop="onSend(p.participationId)"
             />
           </template>
-        </MobileListItem>
+        </UiListItem>
         <!-- Adding closes the list. -->
-        <MobileListItem
+        <UiListItem
           v-if="canEdit && !selecting"
           :to="`/admin/${slug}/editions/${id}/ajouter`"
           icon="i-lucide-user-plus"
@@ -622,11 +619,11 @@ const runDraw = () =>
           <template v-if="missing.length" #trailing>
             <span class="size-2.5 rounded-full bg-warning" aria-hidden="true" />
           </template>
-        </MobileListItem>
-      </MobileList>
+        </UiListItem>
+      </UiList>
 
-      <MobileList v-if="status === 'drawn'">
-        <MobileListItem
+      <UiList v-if="status === 'drawn'">
+        <UiListItem
           v-if="status === 'drawn'"
           :to="`/admin/${slug}/editions/${id}/annuler`"
           icon="i-lucide-rotate-ccw"
@@ -634,14 +631,14 @@ const runDraw = () =>
           :subtitle="t('adminEdition.cockpit.cancelAndRedrawHint')"
           tone="danger"
         />
-        <MobileListItem
+        <UiListItem
           v-if="status === 'drawn'"
           :to="`/admin/${slug}/editions/${id}/voir-le-tirage`"
           icon="i-lucide-eye"
           :title="t('adminEdition.cockpit.revealOne')"
           :subtitle="t('adminEdition.cockpit.revealOneHint')"
         />
-      </MobileList>
+      </UiList>
       <AdminEditionResults
         v-if="status === 'closed' && participants.length"
         :id="id"
@@ -671,7 +668,7 @@ const runDraw = () =>
         :footer="exclusionsFooter"
       >
         <template #extra>
-          <MobileListItem
+          <UiListItem
             v-for="pair in previousPairs"
             :key="`${pair.editionLabel}-${pair.giverId}`"
             :title="`${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)}`"
@@ -720,7 +717,7 @@ const runDraw = () =>
                 class="flex w-[3.25rem] shrink-0 items-center"
                 aria-hidden="true"
               >
-                <AdminAvatar
+                <UiAvatar
                   v-if="personOf(pair.giverId)"
                   :avatar="personOf(pair.giverId)!.avatar"
                   size="sm"
@@ -728,7 +725,7 @@ const runDraw = () =>
                 />
               </span>
             </template>
-          </MobileListItem>
+          </UiListItem>
         </template>
       </AdminExclusions>
       <div
@@ -754,7 +751,7 @@ const runDraw = () =>
     <!-- Selection bar: stays at the bottom while ticking people. -->
     <div
       v-if="selecting"
-      class="fixed inset-x-0 bottom-0 z-30 border-t border-default bg-[var(--color-kraft-50)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      class="fixed inset-x-0 bottom-0 z-30 border-t border-default bg-page/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
       <UContainer class="flex items-center gap-2 py-3">
         <div class="min-w-0 grow">
@@ -837,12 +834,9 @@ const runDraw = () =>
                 : t('adminEdition.share.preview')
             }}</span
           >
-          <p
-            v-if="bulkPreview"
-            class="rounded-lg bg-muted p-3 text-sm break-words whitespace-pre-line"
-          >
+          <UiTextPreview v-if="bulkPreview">
             {{ bulkPreview.text }}
-          </p>
+          </UiTextPreview>
           <USkeleton v-else class="h-28 w-full rounded-lg" />
           <p class="text-xs text-muted">
             {{ t('adminEdition.share.previewEmailNote') }}
@@ -872,7 +866,7 @@ const runDraw = () =>
       "
     >
       <template #body>
-        <MobileList v-if="sendTarget">
+        <UiList v-if="sendTarget">
           <AdminSendOptions
             v-model:message-type="messageType"
             v-model:note="note"
@@ -887,7 +881,7 @@ const runDraw = () =>
             :email-enabled="emailSending"
             @done="sendSheetOpen = false"
           />
-        </MobileList>
+        </UiList>
       </template>
     </UDrawer>
   </AdminScreen>

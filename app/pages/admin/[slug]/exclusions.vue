@@ -31,9 +31,9 @@ const screen = computed(() => ({
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminGroup.exclusions.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-muted">
       {{ t('adminGroup.exclusions.intro') }}
     </p>

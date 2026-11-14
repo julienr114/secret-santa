@@ -95,9 +95,9 @@ const onDelete = () =>
         {{ t('adminGroup.person.notFound') }}
       </p>
       <template v-else>
-        <h1 class="font-display text-3xl font-bold">
+        <UiPageTitle>
           {{ person.firstName }}
-        </h1>
+        </UiPageTitle>
         <AdminPersonForm
           :key="person.id"
           :initial="person"
@@ -106,8 +106,8 @@ const onDelete = () =>
           @submit="onSave"
         />
 
-        <MobileList :title="t('adminGroup.person.doesNotDraw')">
-          <MobileListItem
+        <UiList :title="t('adminGroup.person.doesNotDraw')">
+          <UiListItem
             :to="`/admin/${slug}/exclusions`"
             icon="i-lucide-ban"
             :title="
@@ -117,15 +117,15 @@ const onDelete = () =>
             "
             :subtitle="t('adminGroup.person.manageExclusions')"
           />
-        </MobileList>
+        </UiList>
 
-        <MobileList
+        <UiList
           :title="t('adminGroup.person.participation')"
           :footer="
             person.active ? t('adminGroup.person.deactivateHelp') : undefined
           "
         >
-          <MobileListItem
+          <UiListItem
             :icon="person.active ? 'i-lucide-user-x' : 'i-lucide-user-check'"
             :title="
               person.active
@@ -134,7 +134,7 @@ const onDelete = () =>
             "
             @click="toggleActive"
           />
-          <MobileListItem
+          <UiListItem
             v-if="!confirmDelete"
             icon="i-lucide-trash-2"
             :title="t('adminGroup.person.deleteForever')"
@@ -163,7 +163,7 @@ const onDelete = () =>
               />
             </div>
           </li>
-        </MobileList>
+        </UiList>
       </template>
     </AdminQueryState>
   </AdminScreen>

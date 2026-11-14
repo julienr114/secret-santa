@@ -48,10 +48,7 @@ const onSubmit = (event: FormSubmitEvent<Rules>) =>
   });
 // Offered in one tap while no date is set: this year's Christmas Day.
 const christmasDay = `${new Date().getFullYear()}-12-25`;
-const notePositionItems = computed(() => [
-  { value: 'after', label: t('adminEdition.share.noteAfter') },
-  { value: 'before', label: t('adminEdition.share.noteBefore') },
-]);
+const notePositionItems = useNotePositionItems();
 const previousYearsItems = computed(() => [
   { value: 0, label: t('adminGroup.rules.previousYears.none') },
   { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
@@ -64,15 +61,13 @@ const previousYearsItems = computed(() => [
     label: t('adminGroup.rules.previousYears.lastYears', { count: 3 }),
   },
 ]);
-const sectionTitle =
-  'px-1 text-xs font-semibold tracking-wide text-muted uppercase';
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminGroup.rules.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-muted">
       {{ t('adminGroup.rules.intro') }}
     </p>
@@ -87,7 +82,9 @@ const sectionTitle =
         @submit="onSubmit"
       >
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">{{ t('adminGroup.rules.drawSection') }}</h2>
+          <UiSectionTitle>{{
+            t('adminGroup.rules.drawSection')
+          }}</UiSectionTitle>
           <UFormField
             name="excludePreviousYears"
             :label="t('adminGroup.rules.excludePreviousYears')"
@@ -101,9 +98,9 @@ const sectionTitle =
           </UFormField>
         </section>
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">
+          <UiSectionTitle>
             {{ t('adminGroup.rules.resultSection') }}
-          </h2>
+          </UiSectionTitle>
           <UFormField name="budget" :label="t('adminGroup.rules.budget')">
             <UInput
               v-model="state.budget"
@@ -146,9 +143,9 @@ const sectionTitle =
           />
         </section>
         <section class="flex flex-col gap-4">
-          <h2 :class="sectionTitle">
+          <UiSectionTitle>
             {{ t('adminGroup.rules.wishlistSection') }}
-          </h2>
+          </UiSectionTitle>
           <USwitch
             v-model="state.wishlist"
             :label="t('adminGroup.rules.wishlist')"

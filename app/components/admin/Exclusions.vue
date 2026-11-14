@@ -108,9 +108,9 @@ const onAdd = () =>
 </script>
 
 <template>
-  <MobileList :title="title" :footer="footer">
+  <UiList :title="title" :footer="footer">
     <!-- Adding comes first, then the rules, then the extra rows. -->
-    <MobileListItem
+    <UiListItem
       v-if="editable"
       icon="i-lucide-plus"
       :title="t('adminGroup.exclusions.add')"
@@ -122,7 +122,7 @@ const onAdd = () =>
     >
       {{ t('adminGroup.exclusions.empty') }}
     </li>
-    <MobileListItem
+    <UiListItem
       v-for="ex in exclusions"
       :key="ex.id"
       :title="`${nameOf(ex.giverId)} ${ex.reciprocal ? '↔' : '→'} ${nameOf(ex.receiverId)}`"
@@ -132,13 +132,13 @@ const onAdd = () =>
         <!-- Two avatars for a pair excluded both ways, the giver alone
              when it only goes one way. -->
         <span class="flex w-[3.25rem] shrink-0 items-center" aria-hidden="true">
-          <AdminAvatar
+          <UiAvatar
             v-if="personOf(ex.giverId)"
             :avatar="personOf(ex.giverId)!.avatar"
             size="sm"
             class="outline-2 outline-white"
           />
-          <AdminAvatar
+          <UiAvatar
             v-if="ex.reciprocal && personOf(ex.receiverId)"
             :avatar="personOf(ex.receiverId)!.avatar"
             size="sm"
@@ -182,10 +182,10 @@ const onAdd = () =>
           @click.stop="confirmId = ex.id"
         />
       </template>
-    </MobileListItem>
+    </UiListItem>
     <!-- Other pairs that cannot draw each other, e.g. from previous draws. -->
     <slot name="extra" />
-  </MobileList>
+  </UiList>
 
   <UDrawer
     v-model:open="open"

@@ -89,7 +89,7 @@ const wishesSubtitle = computed(() => {
           :aria-label="t('participant.home.changeAvatar')"
           @click="openPicker"
         >
-          <AdminAvatar :avatar="avatar" size="lg" />
+          <UiAvatar :avatar="avatar" size="lg" />
           <span
             class="absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border border-default bg-default text-muted"
             aria-hidden="true"
@@ -97,20 +97,21 @@ const wishesSubtitle = computed(() => {
             <UIcon name="i-lucide-pencil" class="size-3.5" />
           </span>
         </button>
-        <AdminAvatar v-else-if="avatar" :avatar="avatar" size="lg" />
+        <UiAvatar v-else-if="avatar" :avatar="avatar" size="lg" />
         <div class="min-w-0">
-          <h1 class="font-display text-3xl font-bold break-words">
+          <UiPageTitle>
             {{ t('participant.home.greeting', { firstName: me.firstName }) }}
-          </h1>
+          </UiPageTitle>
           <p class="text-sm text-muted">
             {{ me.groupName }} · {{ me.editionLabel }}
           </p>
         </div>
       </div>
 
-      <section
+      <UiCard
         v-if="me.phase === 'waiting'"
-        class="flex flex-col gap-2 rounded-xl border border-default bg-default p-6 text-center"
+        padding="lg"
+        class="flex flex-col gap-2 text-center"
       >
         <p class="text-4xl" aria-hidden="true">⏳</p>
         <h2 class="text-xl font-bold">
@@ -122,7 +123,7 @@ const wishesSubtitle = computed(() => {
         <p v-if="me.wishesEditable" class="text-sm text-muted">
           {{ t('participant.home.waiting.wishes') }}
         </p>
-      </section>
+      </UiCard>
 
       <template v-else>
         <template v-if="reveal">
@@ -136,10 +137,7 @@ const wishesSubtitle = computed(() => {
             @click="onHide"
           />
         </template>
-        <section
-          v-else
-          class="flex flex-col gap-4 rounded-xl border border-default bg-default p-6 text-center"
-        >
+        <UiCard v-else padding="lg" class="flex flex-col gap-4 text-center">
           <p class="text-4xl" aria-hidden="true">🎁</p>
           <h2 class="text-xl font-bold">
             {{ t('participant.home.ready.title') }}
@@ -174,27 +172,27 @@ const wishesSubtitle = computed(() => {
             "
             @click="onReveal"
           />
-        </section>
+        </UiCard>
         <p v-if="me.phase === 'closed'" class="text-center text-sm text-muted">
           {{ t('participant.home.closed') }}
         </p>
       </template>
 
-      <MobileList>
-        <MobileListItem
+      <UiList>
+        <UiListItem
           v-if="me.wishlist"
           :to="`/p/${token}/souhaits`"
           icon="i-lucide-list-checks"
           :title="t('participant.home.wishes.title')"
           :subtitle="wishesSubtitle"
         />
-        <MobileListItem
+        <UiListItem
           :to="`/p/${token}/journal`"
           icon="i-lucide-scroll-text"
           :title="t('participant.home.journal.title')"
           :subtitle="t('participant.home.journal.subtitle')"
         />
-      </MobileList>
+      </UiList>
       <UDrawer
         v-model:open="pickerOpen"
         :title="t('participant.home.avatar.title')"

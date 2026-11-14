@@ -6,12 +6,7 @@ defineProps<{ title?: string; footer?: string }>();
 
 <template>
   <section class="flex flex-col gap-1.5">
-    <h2
-      v-if="title"
-      class="px-1 text-xs font-semibold tracking-wide text-muted uppercase"
-    >
-      {{ title }}
-    </h2>
+    <UiSectionTitle v-if="title">{{ title }}</UiSectionTitle>
     <ul
       class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
     >

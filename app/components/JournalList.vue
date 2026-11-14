@@ -117,9 +117,11 @@ const days = computed(() =>
             >
           </span>
 
-          <div
+          <UiCard
             v-if="MILESTONES.has(entry.type)"
-            class="min-w-0 grow rounded-2xl bg-default px-4 py-3 shadow-sm ring-1 ring-black/5"
+            as="div"
+            padding="none"
+            class="min-w-0 grow px-4 py-3"
           >
             <p class="font-display text-lg leading-snug font-semibold">
               {{ entry.text }}
@@ -129,7 +131,7 @@ const days = computed(() =>
               class="mt-0.5 block text-xs text-muted"
               >{{ timeOf(entry.createdAt) }}</time
             >
-          </div>
+          </UiCard>
           <div v-else class="flex min-w-0 grow items-baseline gap-3 pt-1">
             <p class="min-w-0 grow leading-snug break-words">
               {{ entry.text }}
@@ -151,7 +153,7 @@ const days = computed(() =>
    just before it and to start again after. */
 .knot {
   box-shadow:
-    0 0 0 4px var(--color-kraft-50),
+    0 0 0 4px var(--color-page),
     0 2px 6px 3px rgb(60 30 10 / 0.06);
 }
 </style>

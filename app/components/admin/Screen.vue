@@ -48,7 +48,7 @@ const menu = computed(() => [
 <template>
   <div>
     <header
-      class="sticky top-0 z-20 border-b border-default bg-[var(--color-kraft-50)]/90 pt-[env(safe-area-inset-top)] backdrop-blur"
+      class="sticky top-0 z-20 border-b border-default bg-page/90 pt-[env(safe-area-inset-top)] backdrop-blur"
     >
       <!-- The bars span the window; only the content below sits in the
            phone-wide column. -->

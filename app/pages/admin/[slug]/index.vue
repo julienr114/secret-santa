@@ -92,49 +92,49 @@ const editionSubtitle = (status: string, count?: number) =>
       :pending="dashboard.isPending.value"
       :error="dashboard.error.value"
     >
-      <h1 class="font-display text-3xl font-bold">{{ name }}</h1>
+      <UiPageTitle>{{ name }}</UiPageTitle>
 
-      <MobileList :title="t('adminGroup.dashboard.editionSection')">
-        <MobileListItem
+      <UiList :title="t('adminGroup.dashboard.editionSection')">
+        <UiListItem
           v-if="current"
           :to="`/admin/${slug}/editions/${current.id}`"
           emoji="🎁"
           :title="current.label"
           :subtitle="editionSubtitle(current.status, current.participantCount)"
         />
-        <MobileListItem
+        <UiListItem
           v-else
           :to="`/admin/${slug}/editions/nouvelle`"
           icon="i-lucide-plus"
           :title="t('adminGroup.dashboard.newEdition')"
           :subtitle="t('adminGroup.dashboard.newEditionHint')"
         />
-      </MobileList>
+      </UiList>
 
-      <MobileList :title="t('adminGroup.dashboard.groupSection')">
-        <MobileListItem
+      <UiList :title="t('adminGroup.dashboard.groupSection')">
+        <UiListItem
           :to="`/admin/${slug}/personnes`"
           icon="i-lucide-users"
           :title="t('adminGroup.people.title')"
         />
-        <MobileListItem
+        <UiListItem
           :to="`/admin/${slug}/exclusions`"
           icon="i-lucide-ban"
           :title="t('adminGroup.exclusions.title')"
           :subtitle="t('adminGroup.exclusions.summary')"
         />
-        <MobileListItem
+        <UiListItem
           :to="`/admin/${slug}/reglages`"
           icon="i-lucide-settings-2"
           :title="t('adminGroup.rules.title')"
         />
-        <MobileListItem
+        <UiListItem
           :to="`/admin/${slug}/journal`"
           icon="i-lucide-scroll-text"
           :title="t('participant.home.journal.title')"
           :subtitle="t('participant.home.journal.subtitle')"
         />
-        <MobileListItem
+        <UiListItem
           v-if="isSuper"
           :to="`/admin/${slug}/gardien`"
           icon="i-lucide-key-round"
@@ -145,14 +145,14 @@ const editionSubtitle = (status: string, count?: number) =>
               : t('adminGroup.dashboard.guardianPasswordMissing')
           "
         />
-      </MobileList>
+      </UiList>
 
-      <MobileList
+      <UiList
         v-if="isSuper"
         :title="t('adminGroup.dashboard.superSection')"
         :footer="t('adminGroup.dashboard.emailSendingHelp')"
       >
-        <MobileListItem
+        <UiListItem
           icon="i-lucide-mail"
           :title="t('adminGroup.dashboard.emailSending')"
           :subtitle="
@@ -169,28 +169,28 @@ const editionSubtitle = (status: string, count?: number) =>
               @update:model-value="onToggleEmail"
             />
           </template>
-        </MobileListItem>
-        <MobileListItem
+        </UiListItem>
+        <UiListItem
           icon="i-lucide-trash-2"
           tone="danger"
           :title="t('adminGroup.dashboard.deleteGroup')"
           :subtitle="t('adminGroup.dashboard.deleteGroupHint')"
           @click="openDelete"
         />
-      </MobileList>
+      </UiList>
 
-      <MobileList
+      <UiList
         v-if="past.length"
         :title="t('adminGroup.dashboard.pastEditions')"
       >
-        <MobileListItem
+        <UiListItem
           v-for="edition in past"
           :key="edition.id"
           :to="`/admin/${slug}/editions/${edition.id}`"
           :title="edition.label"
           :subtitle="editionSubtitle(edition.status, edition.participantCount)"
         />
-      </MobileList>
+      </UiList>
       <UDrawer
         v-model:open="deleteOpen"
         :title="t('adminGroup.dashboard.deleteTitle', { name })"

@@ -57,10 +57,7 @@ const sendEmails = useSendEmailsMutation(
 );
 
 const updatePerson = useUpdatePersonMutation(() => props.slug);
-const notePositionItems = computed(() => [
-  { value: 'after' as const, label: t('adminEdition.share.noteAfter') },
-  { value: 'before' as const, label: t('adminEdition.share.noteBefore') },
-]);
+const notePositionItems = useNotePositionItems();
 const messageItems = computed(() =>
   messageTypesFor(props.status).map((value) => ({
     value,
@@ -193,29 +190,25 @@ const onEmail = () =>
       t('adminEdition.share.preview')
     }}</span>
     <USkeleton v-if="waiting" class="h-28 w-full rounded-lg" />
-    <p
-      v-else
-      class="rounded-lg bg-muted p-3 text-sm break-words whitespace-pre-line"
-      data-testid="message-preview"
-    >
+    <UiTextPreview v-else data-testid="message-preview">
       {{ fullText }}
-    </p>
+    </UiTextPreview>
   </li>
-  <MobileListItem
+  <UiListItem
     icon="i-lucide-share-2"
     :class="{ 'opacity-50': waiting }"
     :title="t('adminEdition.participant.shareMessage')"
     :subtitle="t('adminEdition.participant.shareMessageHint')"
     :on-click="waiting ? undefined : onShare"
   />
-  <MobileListItem
+  <UiListItem
     icon="i-lucide-copy"
     :class="{ 'opacity-50': waiting }"
     :title="t('adminEdition.participant.copyMessage')"
     :on-click="waiting ? undefined : onCopy"
   />
   <template v-if="emailEnabled">
-    <MobileListItem
+    <UiListItem
       v-if="participant.email"
       icon="i-lucide-mail"
       :class="{ 'opacity-50': waiting }"
@@ -229,8 +222,8 @@ const onEmail = () =>
           class="size-5 shrink-0 animate-spin text-dimmed"
         />
       </template>
-    </MobileListItem>
-    <MobileListItem
+    </UiListItem>
+    <UiListItem
       v-else
       icon="i-lucide-mail"
       class="opacity-60"

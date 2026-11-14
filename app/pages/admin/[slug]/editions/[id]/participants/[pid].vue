@@ -156,8 +156,8 @@ const onRemove = () =>
       <template v-else>
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-4">
-            <AdminAvatar :avatar="p.avatar" size="lg" />
-            <h1 class="font-display text-3xl font-bold">{{ p.firstName }}</h1>
+            <UiAvatar :avatar="p.avatar" size="lg" />
+            <UiPageTitle>{{ p.firstName }}</UiPageTitle>
           </div>
           <div class="flex flex-wrap gap-1">
             <AdminStatusBadge
@@ -173,7 +173,7 @@ const onRemove = () =>
         </div>
 
         <template v-if="canSend">
-          <MobileList>
+          <UiList>
             <AdminSendOptions
               v-model:message-type="messageType"
               v-model:note="note"
@@ -185,12 +185,12 @@ const onRemove = () =>
               :text="message?.text"
               :email-enabled="dashboard.data.value?.group.emailSending ?? false"
             />
-            <MobileListItem
+            <UiListItem
               icon="i-lucide-link"
               :title="t('adminEdition.participant.copyLink')"
               @click="copyLink"
             />
-            <MobileListItem
+            <UiListItem
               v-if="p.messageSentAt"
               icon="i-lucide-undo-2"
               :title="t('adminEdition.participant.unsend')"
@@ -210,15 +210,15 @@ const onRemove = () =>
                 })
               "
             />
-          </MobileList>
+          </UiList>
         </template>
 
-        <MobileList
+        <UiList
           :title="t('adminEdition.participant.troubleshooting')"
           :footer="t('adminEdition.participant.troubleshootingFooter')"
         >
           <template v-if="status !== 'closed'">
-            <MobileListItem
+            <UiListItem
               v-if="confirm !== 'regenerate'"
               icon="i-lucide-refresh-cw"
               :title="t('adminEdition.participant.regenerate')"
@@ -249,7 +249,7 @@ const onRemove = () =>
             </li>
           </template>
           <template v-if="canEdit">
-            <MobileListItem
+            <UiListItem
               v-if="confirm !== 'remove'"
               icon="i-lucide-user-minus"
               :title="t('adminEdition.participant.remove')"
@@ -280,7 +280,7 @@ const onRemove = () =>
               </div>
             </li>
           </template>
-        </MobileList>
+        </UiList>
       </template>
     </AdminQueryState>
   </AdminScreen>

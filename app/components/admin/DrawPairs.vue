@@ -23,13 +23,13 @@ const subtitleOf = (pair: DrawPair) =>
 </script>
 
 <template>
-  <MobileList :title="title" :footer="footer">
-    <MobileListItem
+  <UiList :title="title" :footer="footer">
+    <UiListItem
       v-for="pair in pairs"
       :key="pair.giverId"
       :avatar="personOf(pair.giverId)?.avatar"
       :title="personOf(pair.giverId)?.firstName ?? '?'"
       :subtitle="subtitleOf(pair)"
     />
-  </MobileList>
+  </UiList>
 </template>

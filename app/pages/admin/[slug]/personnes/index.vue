@@ -48,9 +48,9 @@ const sorted = computed(() =>
 <template>
   <AdminScreen v-bind="screen">
     <div class="flex items-center justify-between gap-3">
-      <h1 class="font-display text-3xl font-bold">
+      <UiPageTitle>
         {{ t('adminGroup.people.title') }}
-      </h1>
+      </UiPageTitle>
       <UButton
         :to="`/admin/${slug}/personnes/nouvelle`"
         icon="i-lucide-plus"
@@ -64,8 +64,8 @@ const sorted = computed(() =>
       <p v-if="persons.length === 0" class="text-muted">
         {{ t('adminGroup.people.empty') }}
       </p>
-      <MobileList v-else :footer="t('adminGroup.people.hint')">
-        <MobileListItem
+      <UiList v-else :footer="t('adminGroup.people.hint')">
+        <UiListItem
           v-for="person in sorted"
           :key="person.id"
           :avatar="person.avatar"
@@ -74,10 +74,10 @@ const sorted = computed(() =>
           :subtitle="subtitle(person.active)"
           :class="{ 'opacity-60': !person.active }"
         >
-        </MobileListItem>
-      </MobileList>
-      <MobileList>
-        <MobileListItem
+        </UiListItem>
+      </UiList>
+      <UiList>
+        <UiListItem
           :to="`/admin/${slug}/exclusions`"
           icon="i-lucide-ban"
           :title="t('adminGroup.exclusions.title')"
@@ -94,8 +94,8 @@ const sorted = computed(() =>
               "
             />
           </template>
-        </MobileListItem>
-      </MobileList>
+        </UiListItem>
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

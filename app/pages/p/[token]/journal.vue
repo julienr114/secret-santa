@@ -15,9 +15,9 @@ const { t } = useT();
     :pending="journal.isPending.value"
     :error="journal.error.value"
   >
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('participant.journal.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-sm text-muted">
       {{ t('participant.journal.intro') }}
     </p>

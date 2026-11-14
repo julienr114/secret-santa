@@ -68,9 +68,9 @@ const onAdd = (personId: string, firstName: string) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminEdition.addParticipants.title') }}
-    </h1>
+    </UiPageTitle>
     <AdminQueryState
       :pending="people.isPending.value || edition.isPending.value"
       :error="people.error.value ?? edition.error.value"
@@ -83,8 +83,8 @@ const onAdd = (personId: string, firstName: string) =>
           >{{ t('adminEdition.addParticipants.peopleLink') }}</NuxtLink
         >{{ everyoneIn[1] }}
       </p>
-      <MobileList v-else :footer="t('adminEdition.addParticipants.footer')">
-        <MobileListItem
+      <UiList v-else :footer="t('adminEdition.addParticipants.footer')">
+        <UiListItem
           v-for="person in candidates"
           :key="person.id"
           :avatar="person.avatar"
@@ -95,8 +95,8 @@ const onAdd = (personId: string, firstName: string) =>
           <template #trailing>
             <UIcon name="i-lucide-plus-circle" class="size-6 text-primary" />
           </template>
-        </MobileListItem>
-      </MobileList>
+        </UiListItem>
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

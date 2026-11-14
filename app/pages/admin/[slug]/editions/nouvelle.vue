@@ -54,9 +54,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminEdition.newEdition.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-muted">{{ t('adminEdition.newEdition.intro') }}</p>
     <UForm
       :schema="schema"

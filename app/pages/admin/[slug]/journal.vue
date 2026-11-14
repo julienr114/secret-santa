@@ -30,9 +30,9 @@ const screen = computed(() => ({
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('participant.journal.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-sm text-muted">
       {{ t('participant.journal.intro') }}
     </p>

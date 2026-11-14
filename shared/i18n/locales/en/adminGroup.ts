@@ -17,6 +17,8 @@ export default {
     submit: 'Log in',
   },
   groups: {
+    styleguide: 'Style guide',
+    styleguideHint: 'The interface components',
     title: 'Groups',
     create: 'New',
     empty: 'No groups yet. Create the first one with “New”.',

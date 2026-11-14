@@ -14,7 +14,7 @@ const { t, tk } = useT();
 <template>
   <div class="flex flex-col gap-6 py-2">
     <div class="flex justify-center">
-      <AdminAvatar :avatar="model" size="lg" />
+      <UiAvatar :avatar="model" size="lg" />
     </div>
     <div
       role="radiogroup"

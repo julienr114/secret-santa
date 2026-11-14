@@ -16,14 +16,12 @@ withDefaults(
 const BADGES = {
   ready: 'bg-secondary/15',
   problem: 'bg-error/10',
-  quiet: 'bg-[var(--color-kraft-100)]',
+  quiet: 'bg-muted',
 };
 </script>
 
 <template>
-  <section
-    class="flex flex-col gap-4 rounded-2xl bg-default p-4 shadow-sm ring-1 ring-black/5"
-  >
+  <UiCard class="flex flex-col gap-4">
     <div class="flex items-start gap-3">
       <span
         class="flex size-11 shrink-0 items-center justify-center rounded-full text-xl"
@@ -40,7 +38,7 @@ const BADGES = {
     </div>
     <div
       v-if="progress && progress.total > 0"
-      class="h-2 overflow-hidden rounded-full bg-[var(--color-kraft-200)]"
+      class="h-2 overflow-hidden rounded-full bg-track"
       role="progressbar"
       :aria-valuenow="progress.value"
       aria-valuemin="0"
@@ -52,5 +50,5 @@ const BADGES = {
       />
     </div>
     <slot />
-  </section>
+  </UiCard>
 </template>

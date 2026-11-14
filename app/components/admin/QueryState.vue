@@ -24,9 +24,9 @@ withDefaults(
     aria-busy="true"
     :aria-label="t('common.loading')"
   >
-    <USkeleton class="h-9 w-2/3 rounded-md bg-[var(--color-kraft-200)]" />
+    <USkeleton class="h-9 w-2/3 rounded-md bg-skeleton" />
     <div class="flex flex-col gap-1.5">
-      <USkeleton class="mx-1 h-3 w-24 rounded bg-[var(--color-kraft-200)]" />
+      <USkeleton class="mx-1 h-3 w-24 rounded bg-skeleton" />
       <ul
         class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
       >
@@ -35,15 +35,13 @@ withDefaults(
           :key="i"
           class="flex min-h-14 items-center gap-3 px-4 py-2.5"
         >
-          <USkeleton
-            class="size-9 shrink-0 rounded-full bg-[var(--color-kraft-100)]"
-          />
+          <USkeleton class="size-9 shrink-0 rounded-full bg-skeleton-soft" />
           <div class="flex grow flex-col gap-1.5">
             <USkeleton
-              class="h-4 rounded bg-[var(--color-kraft-100)]"
+              class="h-4 rounded bg-skeleton-soft"
               :style="{ width: `${70 - i * 9}%` }"
             />
-            <USkeleton class="h-3 w-2/5 rounded bg-[var(--color-kraft-100)]" />
+            <USkeleton class="h-3 w-2/5 rounded bg-skeleton-soft" />
           </div>
         </li>
       </ul>

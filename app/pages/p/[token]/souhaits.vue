@@ -100,9 +100,9 @@ const onRemove = () => {
     :pending="query.isPending.value"
     :error="query.error.value"
   >
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('participant.wishes.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-sm text-muted">
       {{
         editable
@@ -111,7 +111,7 @@ const onRemove = () => {
       }}
     </p>
 
-    <MobileList
+    <UiList
       :title="
         wishes.length > 0
           ? t('common.count.ideas', { count: wishes.length })
@@ -130,7 +130,7 @@ const onRemove = () => {
             : t('participant.wishes.emptyReadOnly')
         }}
       </li>
-      <MobileListItem
+      <UiListItem
         v-for="(wish, index) in wishes"
         :key="index"
         emoji="🎁"
@@ -158,14 +158,14 @@ const onRemove = () => {
             "
           />
         </template>
-      </MobileListItem>
-      <MobileListItem
+      </UiListItem>
+      <UiListItem
         v-if="editable && canAdd"
         icon="i-lucide-plus"
         :title="t('participant.wishes.add')"
         @click="openSheet(null)"
       />
-    </MobileList>
+    </UiList>
 
     <UDrawer
       v-model:open="open"

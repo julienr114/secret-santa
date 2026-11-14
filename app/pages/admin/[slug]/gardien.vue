@@ -71,9 +71,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) => {
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminGroup.guardian.title') }}
-    </h1>
+    </UiPageTitle>
     <p class="text-muted">
       {{ intro.before }}<code>{{ slug }}</code
       >{{ intro.after }}

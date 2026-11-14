@@ -101,9 +101,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminEdition.reveal.title') }}
-    </h1>
+    </UiPageTitle>
     <template v-if="pairs">
       <UAlert
         color="warning"

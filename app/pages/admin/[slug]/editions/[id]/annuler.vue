@@ -78,9 +78,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <h1 class="font-display text-3xl font-bold">
+    <UiPageTitle>
       {{ t('adminEdition.cancelDraw.title') }}
-    </h1>
+    </UiPageTitle>
     <ul class="flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
       <li>{{ t('adminEdition.cancelDraw.effectResults') }}</li>
       <li>{{ t('adminEdition.cancelDraw.effectLinks') }}</li>

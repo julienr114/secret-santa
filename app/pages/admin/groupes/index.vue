@@ -19,9 +19,9 @@ const groups = useGroupsQuery();
 <template>
   <AdminScreen v-bind="screen">
     <div class="flex items-center justify-between gap-3">
-      <h1 class="font-display text-3xl font-bold">
+      <UiPageTitle>
         {{ t('adminGroup.groups.title') }}
-      </h1>
+      </UiPageTitle>
       <UButton
         to="/admin/groupes/nouveau"
         icon="i-lucide-plus"
@@ -36,8 +36,8 @@ const groups = useGroupsQuery();
       <p v-if="groups.data.value?.groups.length === 0" class="text-muted">
         {{ t('adminGroup.groups.empty') }}
       </p>
-      <MobileList v-else>
-        <MobileListItem
+      <UiList v-else>
+        <UiListItem
           v-for="group in groups.data.value?.groups ?? []"
           :key="group.id"
           :to="`/admin/${group.slug}`"
@@ -49,7 +49,15 @@ const groups = useGroupsQuery();
               : t('adminGroup.groups.guardianToConfigure')
           "
         />
-      </MobileList>
+      </UiList>
     </AdminQueryState>
+    <UiList>
+      <UiListItem
+        to="/admin/guide-de-style"
+        icon="i-lucide-palette"
+        :title="t('adminGroup.groups.styleguide')"
+        :subtitle="t('adminGroup.groups.styleguideHint')"
+      />
+    </UiList>
   </AdminScreen>
 </template>

@@ -9,13 +9,14 @@ const { t, locale } = useT();
 </script>
 
 <template>
-  <section
-    class="reveal-card flex flex-col gap-5 rounded-xl border border-default bg-default p-6 shadow-sm"
+  <UiCard
+    padding="lg"
+    class="reveal-card flex flex-col gap-5"
     aria-live="polite"
   >
     <div class="flex flex-col items-center gap-2 text-center">
       <p class="text-muted">{{ t('participant.reveal.youGiveTo') }}</p>
-      <AdminAvatar :avatar="reveal.receiver.avatar" size="lg" />
+      <UiAvatar :avatar="reveal.receiver.avatar" size="lg" />
       <p
         class="font-display text-5xl font-bold break-words text-primary"
         data-testid="receiver"
@@ -36,12 +37,9 @@ const { t, locale } = useT();
         <dd>{{ formatEventDate(reveal.eventDate, locale) }}</dd>
       </template>
     </dl>
-    <p
-      v-if="reveal.guardianMessage"
-      class="rounded-md bg-muted p-3 text-sm whitespace-pre-line"
-    >
+    <UiTextPreview v-if="reveal.guardianMessage">
       {{ reveal.guardianMessage }}
-    </p>
+    </UiTextPreview>
     <div v-if="reveal.wishes" class="flex flex-col gap-2">
       <h2 class="text-lg font-bold">{{ t('participant.reveal.ideas') }}</h2>
       <ParticipantWishList
@@ -52,7 +50,7 @@ const { t, locale } = useT();
         {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}
       </p>
     </div>
-  </section>
+  </UiCard>
 </template>
 
 <style scoped>

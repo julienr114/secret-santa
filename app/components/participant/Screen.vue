@@ -62,8 +62,8 @@ const onLanguage = (locale: Locale) => {
         aria-busy="true"
         :aria-label="t('common.loading')"
       >
-        <USkeleton class="h-9 w-2/3 rounded-md bg-[var(--color-kraft-200)]" />
-        <USkeleton class="h-40 rounded-lg bg-[var(--color-kraft-200)]" />
+        <USkeleton class="h-9 w-2/3 rounded-md bg-skeleton" />
+        <USkeleton class="h-40 rounded-lg bg-skeleton" />
       </div>
       <slot v-else />
     </UContainer>

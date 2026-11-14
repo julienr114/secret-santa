@@ -14,6 +14,8 @@ export default {
     submit: 'Se connecter',
   },
   groups: {
+    styleguide: 'Guide de style',
+    styleguideHint: 'Les composants de l’interface',
     title: 'Groupes',
     create: 'Nouveau',
     empty: "Aucun groupe pour l'instant. Crée le premier avec « Nouveau ».",

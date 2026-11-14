@@ -17,7 +17,7 @@ test('super-admin creates a group with its guardian', async ({ page }) => {
   await expect(heading(page)).toHaveText('Nouveau groupe');
   await page.getByLabel('Nom du groupe').fill(GROUP.name);
   await expect(page.getByLabel('Identifiant')).toHaveValue(GROUP.slug);
-  await page.getByLabel('Mot de passe du gardien').fill(GROUP.password);
+  await page.getByLabel("Mot de passe de l'organisateur").fill(GROUP.password);
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
   await expect(page).toHaveURL(new RegExp(`/admin/${GROUP.slug}$`));
   await expect(heading(page)).toHaveText(GROUP.name);
@@ -117,7 +117,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   ).toBeVisible();
   await expect(
     page.getByText(
-      'Le gardien a consulté le résultat de Hugo (accès de dernier recours)',
+      "L'organisateur a consulté le résultat de Hugo (accès de dernier recours)",
     ),
   ).toBeVisible();
   await expect(
@@ -131,7 +131,9 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
   await page.goto('/admin/groupes/nouveau');
   await hydrated(page);
   await page.getByLabel('Nom du groupe').fill('Autre famille');
-  await page.getByLabel('Mot de passe du gardien').fill('autre-gardien-123');
+  await page
+    .getByLabel("Mot de passe de l'organisateur")
+    .fill('autre-gardien-123');
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
   await expect(page).toHaveURL(/\/admin\/autre-famille$/);
 

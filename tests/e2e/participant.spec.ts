@@ -234,8 +234,14 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   // The result does not survive a reload: the button is back.
   await open(page, state.links.Alice ?? '');
   await expect(page.getByTestId('receiver')).toHaveCount(0);
+  // She has already seen it: the page offers to see it again and mentions
+  // the ideas waiting, without any name.
+  await expect(
+    page.getByText('Sa liste contient 1 idée de cadeau.'),
+  ).toBeVisible();
+  await expect(page.locator('main')).not.toContainText(receiver);
   await page
-    .getByRole('button', { name: "Découvrir à qui j'offre un cadeau" })
+    .getByRole('button', { name: "Revoir à qui j'offre un cadeau" })
     .click();
   await expect(page.getByTestId('receiver')).toHaveText(receiver);
   await page.getByRole('button', { name: 'Cacher mon résultat' }).click();
@@ -244,9 +250,10 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   // Everyone can read it in the journal, which never says who gives to whom.
   await page.getByRole('link', { name: /Journal du groupe/ }).click();
   await expect(heading(page)).toHaveText('Journal du groupe');
-  await expect(
-    page.getByText('Alice a consulté son résultat (2ᵉ fois)'),
-  ).toBeVisible();
+  // Only the first of her two consultations is there: later ones would
+  // let the group match them with a list that just changed.
+  await expect(page.getByText('Alice a découvert son résultat')).toHaveCount(1);
+  expect((await participantNamed('Alice')).viewCount).toBe(2);
   await expect(
     page.getByText('Alice a mis à jour sa liste de souhaits (2 idées)').first(),
   ).toBeVisible();

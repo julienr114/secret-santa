@@ -165,6 +165,18 @@ test('the guardian adds addresses and sends to those who have one', async ({
     'A quick reminder, Ada',
   );
   await page.getByRole('radio', { name: 'Invitation' }).click();
+  // The organiser's own words go into the message: below it by default,
+  // above it on demand.
+  await page
+    .getByLabel('Ajouter un mot (facultatif)')
+    .fill('Rendez-vous chez Mamie');
+  await expect(page.getByTestId('message-preview')).toContainText(
+    /http\S+\s+Rendez-vous chez Mamie$/,
+  );
+  await page.getByRole('radio', { name: 'Au-dessus du message' }).click();
+  await expect(page.getByTestId('message-preview')).toContainText(
+    /^\s*Rendez-vous chez Mamie\s+Hi Ada!/,
+  );
   const afterSwitch = await (await page.request.get(`${ADMIN}/persons`)).json();
   expect(
     afterSwitch.persons.find(

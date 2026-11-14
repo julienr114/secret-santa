@@ -113,9 +113,9 @@ describe('describeEvent', () => {
         ev('message_sent', { messageType: 'invitation', via: 'share' }),
         { names },
       ),
-    ).toBe("Le gardien a envoyé l'invitation à Léa (partagé)");
+    ).toBe("L'organisateur a envoyé l'invitation à Léa (partagé)");
     expect(describeEvent(ev('link_copied'), { names })).toBe(
-      'Le gardien a copié le lien de Léa',
+      "L'organisateur a copié le lien de Léa",
     );
     expect(describeEvent(ev('draw_done', { count: 12 }, null), { names })).toBe(
       'Le tirage a été effectué pour 12 participants',
@@ -126,11 +126,9 @@ describe('describeEvent', () => {
         { names },
       ),
     ).toBe('Le tirage a été annulé. Motif : désistement de Tom');
+    // Only the first consultation is journaled: no count in the sentence.
     expect(describeEvent(ev('result_viewed', { count: 3 }), { names })).toBe(
-      'Léa a consulté son résultat (3ᵉ fois)',
-    );
-    expect(describeEvent(ev('result_viewed', { count: 1 }), { names })).toBe(
-      'Léa a consulté son résultat (1ʳᵉ fois)',
+      'Léa a découvert son résultat',
     );
     expect(describeEvent(ev('wishes_updated', { count: 1 }), { names })).toBe(
       'Léa a mis à jour sa liste de souhaits (1 idée)',
@@ -190,7 +188,7 @@ describe('journalEntries', () => {
       editionId: 'e1',
       actor: 'participant',
       createdAt: '2026-12-02T10:00:00.000Z',
-      text: 'Tom a consulté son résultat (1ʳᵉ fois)',
+      text: 'Tom a découvert son résultat',
     });
   });
 
@@ -199,7 +197,7 @@ describe('journalEntries', () => {
       [row('a', 'p2', '2026-12-01T10:00:00.000Z')],
       people,
     );
-    expect(entry?.text).toBe('Léa Martin a consulté son résultat (1ʳᵉ fois)');
+    expect(entry?.text).toBe('Léa Martin a découvert son résultat');
   });
 
   it('never passes meta on', () => {
@@ -220,18 +218,9 @@ describe('describeEvent in other languages', () => {
       { names, locale },
     );
 
-  it('uses the ordinals of the language', () => {
-    expect([1, 2, 3, 4, 11, 21].map((n) => viewed(n, 'en'))).toEqual([
-      'Léa viewed their result (1st time)',
-      'Léa viewed their result (2nd time)',
-      'Léa viewed their result (3rd time)',
-      'Léa viewed their result (4th time)',
-      'Léa viewed their result (11th time)',
-      'Léa viewed their result (21st time)',
-    ]);
-    expect(viewed(2, 'de')).toBe(
-      'Léa hat das eigene Ergebnis angesehen (zum 2. Mal)',
-    );
+  it('tells a discovered result in each language', () => {
+    expect(viewed(1, 'en')).toBe('Léa discovered their result');
+    expect(viewed(1, 'de')).toBe('Léa hat das eigene Ergebnis entdeckt');
   });
 
   it('translates every type without leaving a placeholder', () => {

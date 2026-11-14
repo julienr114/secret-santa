@@ -81,14 +81,53 @@ const linesOf = (
 const isMessageType = (type: string): type is MessageType =>
   (MESSAGE_TYPES as readonly string[]).includes(type);
 
+export const NOTE_MAX = 500;
+
+/** The organiser's own words, as lines; nothing when there are none. */
+const noteLines = (note: string | null | undefined): string[] =>
+  (note ?? '')
+    .slice(0, NOTE_MAX)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+
+export const NOTE_POSITIONS = ['before', 'after'] as const;
+export type NotePosition = (typeof NOTE_POSITIONS)[number];
+
+/**
+ * Adds the organiser's note to a message already built, set apart by an
+ * empty line: above the standard text, or below it (after the link, so
+ * that the sentence leading to the link is not cut). The note is sent as
+ * written, in whatever language it was typed.
+ */
+export const addNote = (
+  text: string,
+  note: string | null | undefined,
+  position: NotePosition = 'after',
+) => {
+  const extra = noteLines(note);
+  if (extra.length === 0) return text;
+  return (
+    position === 'before' ? [...extra, '', text] : [text, '', ...extra]
+  ).join('\n');
+};
+
 /** The message to share, in the recipient's language (French by default). */
 export const buildMessage = (
   type: string,
   data: MessageData,
   locale: Locale = DEFAULT_LOCALE,
+  note?: string | null,
+  position: NotePosition = 'after',
 ): Result<string> => {
   if (!isMessageType(type)) return fail('unknown_message_type', { type });
-  return ok([...linesOf(type, data, locale), data.link].join('\n'));
+  return ok(
+    addNote(
+      [...linesOf(type, data, locale), data.link].join('\n'),
+      note,
+      position,
+    ),
+  );
 };
 
 // --- Emails (bulk sending, optional per group) ---------------------------
@@ -107,6 +146,11 @@ export const escapeHtml = (value: string): string =>
 
 const paragraph = (line: string) =>
   `<p style="margin:0 0 12px">${escapeHtml(line)}</p>`;
+// The organiser's own words stand a little apart from the standard text.
+const noteBlock = (lines: string[]) =>
+  lines.length === 0
+    ? []
+    : [`<div style="margin:20px 0">${lines.map(paragraph).join('')}</div>`];
 
 /**
  * The same message as an email: a subject, the text, and a plain HTML
@@ -117,9 +161,14 @@ export const buildEmail = (
   type: string,
   data: MessageData,
   locale: Locale = DEFAULT_LOCALE,
+  note?: string | null,
+  position: NotePosition = 'after',
 ): Result<Email> => {
   if (!isMessageType(type)) return fail('unknown_message_type', { type });
   const lines = linesOf(type, data, locale);
+  const extra = noteLines(note);
+  const above = position === 'before' ? extra : [];
+  const below = position === 'after' ? extra : [];
   const closing = [
     translate(locale, 'messages.email.personal'),
     translate(locale, 'messages.email.signature', params(data, locale)),
@@ -131,11 +180,20 @@ export const buildEmail = (
       `messages.${type}.subject`,
       params(data, locale),
     ),
-    text: [...lines, data.link, '', ...closing].join('\n'),
+    text: [
+      ...(above.length > 0 ? [...above, ''] : []),
+      ...lines,
+      data.link,
+      '',
+      ...(below.length > 0 ? [...below, ''] : []),
+      ...closing,
+    ].join('\n'),
     html: [
       '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
+      ...noteBlock(above),
       ...lines.map(paragraph),
       `<p style="margin:0 0 20px"><a href="${link}">${link}</a></p>`,
+      ...noteBlock(below),
       ...closing.map(paragraph),
       '</div>',
     ].join(''),

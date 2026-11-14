@@ -17,6 +17,10 @@ const shape = {
   budget: z.string().max(200),
   eventDate: z.string().max(100),
   guardianMessage: z.string().max(1000),
+  // Words the organiser adds to the messages sent to participants.
+  messageNote: z.string().max(500),
+  // Above or below the standard message.
+  messageNotePosition: z.enum(['before', 'after']),
   wishlist: z.boolean(),
   maxWishes: z.number().int().min(1).max(50),
 };
@@ -26,6 +30,8 @@ export const rulesSchema = z.object({
   budget: shape.budget.default(''),
   eventDate: shape.eventDate.default(''),
   guardianMessage: shape.guardianMessage.default(''),
+  messageNote: shape.messageNote.default(''),
+  messageNotePosition: shape.messageNotePosition.default('after'),
   wishlist: shape.wishlist.default(true),
   maxWishes: shape.maxWishes.default(10),
 });

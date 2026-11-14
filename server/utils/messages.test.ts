@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   EMAIL_BATCH_MAX,
   MESSAGE_TYPES,
+  NOTE_MAX,
+  addNote,
   buildEmail,
   buildMessage,
   emailTargets,
@@ -262,5 +264,69 @@ describe('date of the party in a message', () => {
     expect(valueOf(buildMessage('drawn', dated, 'de'))).toContain(
       'Wir sehen uns am 24. Dezember.',
     );
+  });
+});
+
+describe("the organiser's note", () => {
+  const plain = valueOf(buildMessage('invitation', data));
+
+  it('goes below the message by default, set apart by an empty line', () => {
+    const text = valueOf(
+      buildMessage(
+        'invitation',
+        data,
+        'fr',
+        'Rendez-vous chez Mamie.\n\nÀ 19 h !',
+      ),
+    );
+    expect(text).toBe(`${plain}\n\nRendez-vous chez Mamie.\nÀ 19 h !`);
+    // The standard text is untouched: the link still follows its sentence.
+    expect(text.split('\n')[3]).toBe(data.link);
+    expect(addNote(plain, ' Rendez-vous chez Mamie.\n\nÀ 19 h ! ')).toBe(text);
+  });
+
+  it('goes above the message when asked', () => {
+    const text = addNote(plain, 'Rendez-vous chez Mamie.', 'before');
+    expect(text).toBe(`Rendez-vous chez Mamie.\n\n${plain}`);
+    expect(text.split('\n').at(-1)).toBe(data.link);
+    expect(
+      valueOf(
+        buildMessage(
+          'invitation',
+          data,
+          'fr',
+          'Rendez-vous chez Mamie.',
+          'before',
+        ),
+      ),
+    ).toBe(text);
+  });
+
+  it('changes nothing when empty', () => {
+    expect(addNote(plain, '')).toBe(plain);
+    expect(addNote(plain, '  \n ', 'before')).toBe(plain);
+    expect(valueOf(buildMessage('invitation', data, 'fr', null))).toBe(plain);
+  });
+
+  it('is sent as written in an email, escaped in the HTML, at the chosen place', () => {
+    const note = 'Apporte un <dessert> & ta bonne humeur';
+    const below = valueOf(buildEmail('invitation', data, 'de', note));
+    expect(below.text).toContain(`${data.link}\n\n${note}\n\n`);
+    expect(below.html).toContain(
+      'Apporte un &lt;dessert&gt; &amp; ta bonne humeur',
+    );
+    expect(below.html.indexOf('Apporte')).toBeGreaterThan(
+      below.html.indexOf('href='),
+    );
+    const above = valueOf(buildEmail('invitation', data, 'de', note, 'before'));
+    expect(above.text.startsWith(`${note}\n\nHallo Léa!`)).toBe(true);
+    expect(above.html.indexOf('Apporte')).toBeLessThan(
+      above.html.indexOf('Hallo'),
+    );
+  });
+
+  it('is cut at its maximum length', () => {
+    const text = addNote('a\nlink', 'x'.repeat(NOTE_MAX + 50));
+    expect(text.split('\n').at(-1)).toHaveLength(NOTE_MAX);
   });
 });

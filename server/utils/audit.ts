@@ -108,13 +108,6 @@ const text = (m: Meta, key: string, fallback: string): string =>
 const num = (m: Meta, key: string, fallback: number): number =>
   typeof m[key] === 'number' ? (m[key] as number) : fallback;
 
-/** "1ʳᵉ", "2nd", "3." … from the ordinal rules of the language. */
-const nth = (locale: Locale, n: number): string => {
-  const category = new Intl.PluralRules(locale, { type: 'ordinal' }).select(n);
-  const form = category === 'other' || category === 'many' ? 'rest' : category;
-  return translateKey(locale, `journal.nth.${form}`, { n });
-};
-
 const keyOrFallback = (key: string, fallback: string): string =>
   hasMessage(key) ? key : fallback;
 
@@ -144,7 +137,6 @@ export const describeEvent = (
     label: text(meta, 'label', ''),
     reason: text(meta, 'reason', t('journal.noReason')),
     count: num(meta, 'count', 0),
-    nth: nth(locale, num(meta, 'count', 1)),
     what: t(
       keyOrFallback(
         `journal.what.${text(meta, 'messageType', '')}`,

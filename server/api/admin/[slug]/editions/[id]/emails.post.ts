@@ -14,6 +14,8 @@ import {
   EMAIL_AUDIENCES,
   EMAIL_BATCH_MAX,
   MESSAGE_TYPES,
+  NOTE_MAX,
+  NOTE_POSITIONS,
   buildEmail,
   emailTargets,
   messageTypesFor,
@@ -33,6 +35,9 @@ const bodySchema = z.object({
     .min(1)
     .max(EMAIL_BATCH_MAX)
     .optional(),
+  // The organiser's own words, added to every email of this send.
+  note: z.string().max(NOTE_MAX).default(''),
+  notePosition: z.enum(NOTE_POSITIONS).default('after'),
 });
 
 export default defineEventHandler(async (event) => {
@@ -40,10 +45,8 @@ export default defineEventHandler(async (event) => {
   if (!group.emailSending) {
     throw createError({ statusCode: 403, statusMessage: 'email_disabled' });
   }
-  const { type, audience, participationIds } = await validatedBody(
-    event,
-    bodySchema,
-  );
+  const { type, audience, participationIds, note, notePosition } =
+    await validatedBody(event, bodySchema);
   if (!messageTypesFor(edition.status).includes(type)) {
     throw createError({
       statusCode: 409,
@@ -90,6 +93,8 @@ export default defineEventHandler(async (event) => {
             eventDate: rules.eventDate,
           },
           person.language,
+          note,
+          notePosition,
         ),
       );
       return { ...email, to: person.email };

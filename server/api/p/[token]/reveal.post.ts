@@ -12,7 +12,8 @@ import { displayName } from '#server/utils/people';
 import { canReveal } from '#server/utils/personal';
 
 // The "Découvrir" button (README 4.3): the only place a participant's
-// result is decrypted for display. Every call is counted and journaled.
+// result is decrypted for display. Every call is counted; the first one is
+// journaled.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
     await requirePersonalLink(event);
@@ -54,14 +55,19 @@ export default defineEventHandler(async (event) => {
     .where(eq(participations.id, participation.id))
     .returning({ viewCount: participations.viewCount });
   const viewCount = updated?.viewCount ?? participation.viewCount + 1;
-  await recordEvent(db, {
-    type: 'result_viewed',
-    groupId: group.id,
-    editionId: edition.id,
-    personId: person.id,
-    actor: 'participant',
-    meta: { count: viewCount },
-  });
+  // Only the first consultation goes to the public journal. Later ones are
+  // still counted for the organiser, but journaling them would let the
+  // group match "Léa updated her list" with "Tom viewed his result" and
+  // guess who gives to whom.
+  if (viewCount === 1) {
+    await recordEvent(db, {
+      type: 'result_viewed',
+      groupId: group.id,
+      editionId: edition.id,
+      personId: person.id,
+      actor: 'participant',
+    });
+  }
 
   return {
     receiver: {

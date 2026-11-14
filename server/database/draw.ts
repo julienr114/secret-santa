@@ -1,6 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
-import { assignments, type EditionRow } from './schema';
+import { assignments, participations, type EditionRow } from './schema';
 import { listExclusions } from './people';
 import { listEditions, listParticipants, type Participant } from './editions';
 import { decrypt } from '#server/utils/crypto';
@@ -106,3 +106,43 @@ export const loadDrawContext = async (
 
 export const deleteAssignments = (db: Db, editionId: string) =>
   db.delete(assignments).where(and(eq(assignments.editionId, editionId)));
+
+/**
+ * The participation of the person `giverPersonId` gives to in an edition,
+ * or null when there is no draw (or it cannot be read). Decrypted here and
+ * only for the giver's own requests.
+ */
+export const findReceiverParticipationId = async (
+  db: Db,
+  editionId: string,
+  giverPersonId: string,
+  dataKey: CryptoKey,
+): Promise<string | null> => {
+  const [assignment] = await db
+    .select()
+    .from(assignments)
+    .where(
+      and(
+        eq(assignments.editionId, editionId),
+        eq(assignments.giverPersonId, giverPersonId),
+      ),
+    )
+    .limit(1);
+  if (!assignment) return null;
+  const receiverId = await decrypt(
+    { enc: assignment.receiverEnc, iv: assignment.receiverIv },
+    dataKey,
+  );
+  if (!receiverId.ok) return null;
+  const [row] = await db
+    .select({ id: participations.id })
+    .from(participations)
+    .where(
+      and(
+        eq(participations.editionId, editionId),
+        eq(participations.personId, receiverId.value),
+      ),
+    )
+    .limit(1);
+  return row?.id ?? null;
+};

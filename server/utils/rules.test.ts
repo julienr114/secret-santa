@@ -17,6 +17,8 @@ describe('rules', () => {
       budget: '',
       eventDate: '',
       guardianMessage: '',
+      messageNote: '',
+      messageNotePosition: 'after',
       wishlist: true,
       maxWishes: 10,
     });

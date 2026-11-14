@@ -102,6 +102,14 @@ test('a personal page follows the preferred language, and can change it', async 
   await expect.poll(async () => (await messageOf('Greta')).language).toBe('en');
   expect((await messageOf('Greta')).text).toMatch(/^Hi Greta! 🎁/);
 
+  // Like every change made with a link, it is written to the journal.
+  await page.getByRole('link', { name: /Group journal/ }).click();
+  await expect(
+    page.getByText('Greta changed their language (English)'),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Back' }).click();
+  await expect(heading(page)).toHaveText('Hi Greta!');
+
   await page.reload();
   await hydrated(page);
   await expect(heading(page)).toHaveText('Hi Greta!');

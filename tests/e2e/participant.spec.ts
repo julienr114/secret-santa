@@ -120,6 +120,11 @@ test('before the draw: waiting screen and wish list', async ({ page }) => {
     .poll(async () => (await participantNamed('Alice')).avatar)
     .toEqual({ emoji: '🦊', color: 'frost' });
 
+  const afterAvatar = await page.request.get(
+    `/api/p/${tokenOf('Alice')}/journal`,
+  );
+  expect(await afterAvatar.text()).toContain('Alice a changé son icône');
+
   // The avatar API only trusts the link: the person is never taken from
   // the request, an unknown link gets nothing, and values are checked.
   const fox = { emoji: '🦊', color: 'frost' };

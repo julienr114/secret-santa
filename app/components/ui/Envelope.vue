@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { EnvelopeState } from '#server/utils/personal';
+
 // The envelope of a draw, drawn in SVG: waiting (dashed outline and a
 // clock), sealed (kraft, a brick seal with a star), opened (flap up, a
 // card with a star sticking out) or locked (a padlock instead of the
 // seal). Decorative: the words around it say the same.
 
-/** Where the envelope stands. */
-export type EnvelopeState = 'pending' | 'sealed' | 'opened' | 'locked';
 defineProps<{ state: EnvelopeState }>();
 /** A five-pointed star of radius 7 around the origin. */
 const STAR =

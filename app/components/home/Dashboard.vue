@@ -49,7 +49,7 @@ const summaryOf = (current: EditionSummary | null) => {
   if (!current) return t('auth.home.groupIdle');
   const counts = {
     count: current.participants,
-    sent: current.sent,
+    sent: current.participants - current.toNotify,
     viewed: current.viewed,
   };
   return `${current.label} · ${t(`auth.home.groupState.${current.status}`, counts)}`;

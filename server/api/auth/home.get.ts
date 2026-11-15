@@ -12,12 +12,21 @@ import {
   listParticipationsByEmail,
   wishesCounts,
 } from '#server/database/home';
+import { loadDrawContext } from '#server/database/draw';
 import { requireAccount } from '#server/http/auth';
 import { dataKeyOf } from '#server/http/context';
 import { avatarOf } from '#server/utils/avatars';
 import { decrypt } from '#server/utils/crypto';
+import { checkFeasibility } from '#server/utils/draw';
 import { nextStep } from '#server/utils/personal';
 import { mergeRules } from '#server/utils/rules';
+
+/**
+ * How many editions to prepare get their draw checked on the home: the
+ * check reads the history of the group, and D1 caps the queries of one
+ * request (README 22.10).
+ */
+const CHECKED_EDITIONS_MAX = 3;
 
 // The home of a logged-in account, the same for everyone: the draws the
 // address takes part in, the groups it organises, and whether it may
@@ -53,6 +62,7 @@ export default defineEventHandler(async (event) => {
         return {
           id: participation.id,
           path: token?.ok ? `/p/${token.value}` : null,
+          groupId: edition.groupId,
           groupName,
           editionLabel: edition.label,
           status: edition.status,
@@ -62,6 +72,9 @@ export default defineEventHandler(async (event) => {
             wishlist: rules.wishlist,
             wishesCount: ideas[participation.id] ?? 0,
           }),
+          revealed: participation.viewCount > 0,
+          wishlist: rules.wishlist,
+          wishesCount: ideas[participation.id] ?? 0,
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),
@@ -70,10 +83,29 @@ export default defineEventHandler(async (event) => {
     ),
   );
   const managed = await listOrganizedGroups(db, user.accountId);
-  const summaries = await currentEditionSummaries(
-    db,
-    managed.map((group) => group.id),
-  );
+  const summaries = await currentEditionSummaries(db, managed);
+  // Can the draw be made? Checked for the first editions to prepare only.
+  const toCheck = managed
+    .filter((group) => summaries[group.id]?.edition.status === 'preparing')
+    .slice(0, CHECKED_EDITIONS_MAX);
+  const checkKey = toCheck.length > 0 ? await dataKeyOf(event) : null;
+  const drawPossible = Object.fromEntries(
+    await Promise.all(
+      toCheck.map(async (group) => {
+        const { edition } = summaries[group.id]!;
+        const rules = mergeRules(group.rules, edition.rulesOverride);
+        if (!rules.ok || !checkKey) return [group.id, null];
+        const { input } = await loadDrawContext(
+          db,
+          group.id,
+          edition,
+          rules.value,
+          checkKey,
+        );
+        return [group.id, checkFeasibility(input).ok];
+      }),
+    ),
+  ) as Record<string, boolean | null>;
   const request = account ? await latestRequest(db, account.id) : null;
   const quota = account ? await quotaAccountOf(db, account) : null;
   return {
@@ -86,7 +118,12 @@ export default defineEventHandler(async (event) => {
     ),
     groups: managed.map((group) => ({
       ...publicGroup(group),
-      current: summaries[group.id] ?? null,
+      current: summaries[group.id]
+        ? {
+            ...summaries[group.id]!.summary,
+            drawPossible: drawPossible[group.id] ?? null,
+          }
+        : null,
     })),
     ...(() => {
       const left = quota ? remainingGroups(quota) : 0;

@@ -1,5 +1,5 @@
 import type { PublicGroup } from '#server/database/groups';
-import type { EditionSummary } from '#server/database/home';
+import type { HomeEditionState } from '#server/utils/home';
 import type { EditionStatus } from '#server/utils/editions';
 import type { DrawStep } from '#server/utils/personal';
 import type { Role, SessionUser } from '#server/utils/auth';
@@ -64,11 +64,17 @@ export const useConfirmLinkMutation = () => {
 export type HomeDraw = {
   id: string;
   path: string;
+  groupId: string;
   groupName: string;
   editionLabel: string;
   status: EditionStatus;
   /** What the participant has to do next. */
   step: DrawStep;
+  /** The result was seen at least once. */
+  revealed: boolean;
+  /** The group uses wish lists. */
+  wishlist: boolean;
+  wishesCount: number;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;
   firstName: string;
@@ -87,7 +93,7 @@ export type HomePayload = {
   avatar: Avatar;
   draws: HomeDraw[];
   /** The groups the account organises, with their current edition. */
-  groups: (PublicGroup & { current: EditionSummary | null })[];
+  groups: (PublicGroup & { current: HomeEditionState | null })[];
   canCreateGroup: boolean;
   /** How many more groups the account may create; null without limit. */
   groupsLeft: number | null;

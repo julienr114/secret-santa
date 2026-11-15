@@ -71,9 +71,22 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: /^Proposer le 25 décembre/ }).click();
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   // Ready to prepare at once: links work, the draw can be checked.
-  await expect(page.getByText('En préparation')).toBeVisible();
-  await expect(page.getByText('5 participants').first()).toBeVisible();
-  await expect(page.getByText('Le tirage est possible')).toBeVisible();
+  await expect(
+    page.getByText('5 participants, toutes les règles sont respectées.'),
+  ).toBeVisible();
+  const editionUrl = new URL(page.url()).pathname;
+  // The party date stays in the header, and changes in a sheet.
+  await expect(page.getByTestId('party-date')).toContainText('25 décembre');
+  await page.getByTestId('party-date').click();
+  await expect(page.getByTestId('date-sheet')).toContainText(
+    'Le changement est inscrit au journal du groupe.',
+  );
+  await page.getByRole('button', { name: 'Annuler', exact: true }).click();
+  await expect(page.getByTestId('date-sheet')).toHaveCount(0);
+  // The exclusions of the group apply to the edition.
+  await page.getByText('1 exclusion').click();
+  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
+  await page.getByRole('button', { name: 'Retour' }).click();
 
   // Share Hugo's invitation by copying it: he gets the "envoyé" badge.
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -89,16 +102,32 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
   await expect(page.getByText('Tirage effectué').first()).toBeVisible();
-  // Once drawn, the screen shows the exclusions the draw applied.
-  await expect(page.getByText('Exclusions appliquées au tirage')).toBeVisible();
-  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
-
+  await expect(
+    page.getByText('Préviens chacun que le tirage est fait'),
+  ).toBeVisible();
   // The cockpit never shows who drew whom.
   const body = await page.locator('main').innerText();
   expect(body).not.toMatch(/offre|→|receiver/i);
+  // Each one is sent their link in a sheet, which then moves on to the
+  // next one still to notify. Nobody here has an address: share or copy.
+  await page.getByRole('button', { name: 'Envoyer le lien de Léa' }).click();
+  await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
+  await expect(page.getByTestId('send-preview')).toContainText('Léa');
+  await expect(
+    page.getByText('Une fois envoyé, le panneau passe à Orga.'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Copier', exact: true }).click();
+  await expect(page.getByText('Envoyer à Orga').first()).toBeVisible();
+  await page.keyboard.press('Escape');
+  // Once drawn, the exclusions the draw applied are kept.
+  await page.goto(`${editionUrl}/exclusions`);
+  await hydrated(page);
+  await expect(page.getByText('Exclusions appliquées au tirage')).toBeVisible();
+  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
+  await page.getByRole('button', { name: 'Retour' }).click();
 
   // Last-resort access to the draw: guarded, then journaled for everyone.
-  await page.getByText('Voir un résultat').click();
+  await page.getByText('Voir un seul résultat').click();
   await page.getByRole('combobox').click();
   await page.getByRole('option', { name: 'Hugo' }).click();
   await page.getByLabel(/Recopie/).fill('je veux voir le tirage');
@@ -113,7 +142,9 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByLabel('Motif').fill('Test de relance');
   await page.getByLabel(/Je comprends/).check();
   await page.getByRole('button', { name: 'Annuler le tirage' }).click();
-  await expect(page.getByText('Le tirage est possible')).toBeVisible();
+  await expect(
+    page.getByText('5 participants, toutes les règles sont respectées.'),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
   // Closing waits for the day after the party: the party is moved to the
@@ -128,15 +159,18 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   expect(moved.ok()).toBe(true);
   await page.reload();
   await hydrated(page);
-  await page.getByRole('button', { name: 'Clôturer après la fête' }).click();
-  await page.getByRole('button', { name: 'Clôturer', exact: true }).click();
+  // The party is over: closing is the action of the moment.
   await expect(
-    page.getByText('Édition clôturée, en lecture seule.'),
+    page.getByText("La fête est passée : clôture l'édition"),
   ).toBeVisible();
+  await page.getByRole('button', { name: "Clôturer l'édition" }).click();
+  await page.getByRole('button', { name: "Clôturer l'édition" }).click();
+  await expect(page.getByText(/^Édition clôturée : elle sert/)).toBeVisible();
 
   // The guardian reads the same journal as the participants, from the
   // admin: what was done, never who gives to whom.
-  await page.getByRole('button', { name: 'Retour' }).click();
+  await page.goto(`/admin/${GROUP.slug}`);
+  await hydrated(page);
   await page.getByRole('link', { name: /Journal du groupe/ }).click();
   await expect(heading(page)).toHaveText('Journal du groupe');
   await expect(

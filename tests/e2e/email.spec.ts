@@ -69,31 +69,35 @@ test('the guardian adds addresses and sends to those who have one', async ({
 
   await page.goto(`/admin/${SLUG}/editions/${state.editionId}`);
   await hydrated(page);
-  // Bulk sending: tick who to write to, then choose the message. Ada, the
-  // only one with an address, is ticked from the start; the others cannot.
-  await page
-    .getByRole('button', { name: 'Envoyer par email à plusieurs personnes' })
-    .click();
-  await expect(page.getByText('1 sélectionné')).toBeVisible();
+  // Sending by email to several people: one screen. Ada, the only one
+  // with an address, is ticked from the start; the others can only get
+  // one.
+  await page.getByText('Prévenir avant le tirage').click();
+  await expect(heading(page)).toHaveText('Envoyer par email');
+  const count = page.getByTestId('email-count');
+  await expect(count).toHaveText('1 sélectionné sur 3');
+  const ada = page.getByRole('checkbox', { name: 'Sélectionner Ada' });
+  await expect(ada).toBeChecked();
   await expect(
-    page.getByRole('checkbox', { name: 'Sélectionner Ada' }),
-  ).toBeChecked();
-  await expect(
-    page.getByRole('checkbox', { name: 'Sélectionner Bob' }),
-  ).toBeDisabled();
-  await page.getByText('Ada', { exact: true }).click();
-  await expect(page.getByText('0 sélectionné')).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: 'Choisir le message' }),
-  ).toBeDisabled();
-  await page.getByRole('button', { name: 'Tout sélectionner' }).click();
-  await expect(page.getByText('1 sélectionné')).toBeVisible();
-  await page.getByRole('button', { name: 'Choisir le message' }).click();
-  await expect(page.getByText('Envoyer un email à 1 personne')).toBeVisible();
-  await expect(page.getByRole('radio', { name: 'Invitation' })).toBeChecked();
-  await expect(page.getByRole('radio', { name: 'Tirage fait' })).toHaveCount(0);
+    page.getByRole('link', { name: "Ajouter l'adresse de Bob" }),
+  ).toBeVisible();
+  // Before the draw, only the messages of the preparation.
+  await expect(page.getByRole('tab', { name: 'Invitation' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByRole('tab', { name: 'Tirage fait' })).toHaveCount(0);
+  // The message word for word, with the organiser's own words below it.
+  const preview = page.getByTestId('email-preview');
   await expect(page.getByText('Aperçu, pour Ada')).toBeVisible();
-  await expect(page.getByText(/Salut Ada ! 🎁/)).toBeVisible();
+  await expect(preview).toContainText('Salut Ada !');
+  await page.getByRole('button', { name: 'Ajouter un mot' }).click();
+  await page.getByLabel('Ajouter un mot').fill('Rendez-vous chez Mamie');
+  await expect(preview).toContainText(/http\S+\s+Rendez-vous chez Mamie$/);
+  await ada.click();
+  await expect(count).toHaveText('0 sélectionné sur 3');
+  await page.getByRole('button', { name: 'Tout sélectionner' }).click();
+  await expect(count).toHaveText('1 sélectionné sur 3');
   await page.getByRole('button', { name: 'Envoyer 1 email' }).click();
   // No key on the test server: a clear refusal, and nobody marked as sent.
   await expect(
@@ -107,56 +111,6 @@ test('the guardian adds addresses and sends to those who have one', async ({
       (p: { messageSentAt: string | null }) => p.messageSentAt === null,
     ),
   ).toBe(true);
-  await page.getByRole('button', { name: 'Annuler', exact: true }).click();
-  await expect(page.getByText('1 sélectionné')).toHaveCount(0);
-
-  // The send button of a row now asks how: phone, copy, or email to that
-  // one person. Someone without an address cannot be emailed.
-  await page.getByRole('button', { name: 'Envoyer le lien de Ada' }).click();
-  await expect(page.getByText('Envoyer à Ada')).toBeVisible();
-  await expect(page.getByText('Partager le message')).toBeVisible();
-  await expect(page.getByText('Copier le message')).toBeVisible();
-  await expect(page.getByText('ada@example.com')).toBeVisible();
-  // The message and its language are chosen here, at the last moment.
-  await expect(page.getByRole('radio', { name: 'Invitation' })).toBeChecked();
-  await expect(page.getByRole('radio', { name: 'Relance' })).toBeVisible();
-  await expect(page.getByRole('radio', { name: 'Français' })).toBeChecked();
-  await page.getByRole('radio', { name: 'English' }).click();
-  await expect(page.getByRole('radio', { name: 'English' })).toBeChecked();
-  // The sheet shows the message word for word, in the chosen language.
-  await expect(page.getByTestId('message-preview')).toContainText('Hi Ada!');
-  await page.getByRole('radio', { name: 'Relance' }).click();
-  await expect(page.getByTestId('message-preview')).toContainText(
-    'A quick reminder, Ada',
-  );
-  await page.getByRole('radio', { name: 'Invitation' }).click();
-  // The organiser's own words go into the message: below it by default,
-  // above it on demand.
-  await page
-    .getByLabel('Ajouter un mot (facultatif)')
-    .fill('Rendez-vous chez Mamie');
-  await expect(page.getByTestId('message-preview')).toContainText(
-    /http\S+\s+Rendez-vous chez Mamie$/,
-  );
-  await page.getByRole('radio', { name: 'Au-dessus du message' }).click();
-  await expect(page.getByTestId('message-preview')).toContainText(
-    /^\s*Rendez-vous chez Mamie\s+Hi Ada!/,
-  );
-  const afterSwitch = await (await page.request.get(`${ADMIN}/persons`)).json();
-  expect(
-    afterSwitch.persons.find(
-      (p: { firstName: string }) => p.firstName === 'Ada',
-    ).language,
-  ).toBe('en');
-  await page.keyboard.press('Escape');
-  // The list shows the language her messages will be written in.
-  await expect(page.getByText('EN', { exact: true })).toHaveCount(1);
-  await page.getByRole('button', { name: 'Envoyer le lien de Bob' }).click();
-  await expect(page.getByText('Envoyer à Bob')).toBeVisible();
-  await expect(
-    page.getByText("Pas d'adresse email sur sa fiche"),
-  ).toBeVisible();
-  await page.keyboard.press('Escape');
 
   // Only the messages of the current stage can be sent.
   const drawn = await page.request.post(

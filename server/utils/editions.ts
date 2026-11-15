@@ -269,6 +269,17 @@ export const followState = (participant: FollowedParticipant): FollowState => {
 };
 
 /**
+ * Whether the email screen ticks this participant at first: someone with
+ * an address who has not been sent anything yet.
+ * @param participant - A participant, with their address.
+ * @returns True when they start ticked.
+ */
+export const preselectedForEmail = (
+  participant: FollowedParticipant & { email: string | null },
+): boolean =>
+  Boolean(participant.email) && followState(participant) === 'toNotify';
+
+/**
  * How many participants are in each state.
  * @param participants - The participants of the edition.
  * @returns The three counts.

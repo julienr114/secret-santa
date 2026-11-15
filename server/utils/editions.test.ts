@@ -16,6 +16,7 @@ import {
   previousEdition,
   editionStep,
   followState,
+  preselectedForEmail,
   participantCounters,
   sortParticipants,
 } from './editions';
@@ -219,6 +220,23 @@ describe('follow-up of the participants', () => {
       'toNotify',
       'viewed',
     ]);
+  });
+
+  it('ticks at first those with an address still to notify', () => {
+    const withEmail = (email: string | null, sent: boolean, views: number) => ({
+      ...person('Rose', sent, views),
+      email,
+    });
+    expect(preselectedForEmail(withEmail('rose@example.com', false, 0))).toBe(
+      true,
+    );
+    expect(preselectedForEmail(withEmail(null, false, 0))).toBe(false);
+    expect(preselectedForEmail(withEmail('rose@example.com', true, 0))).toBe(
+      false,
+    );
+    expect(preselectedForEmail(withEmail('rose@example.com', false, 1))).toBe(
+      false,
+    );
   });
 
   it('counts each state', () => {

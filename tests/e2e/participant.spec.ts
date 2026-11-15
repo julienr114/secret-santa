@@ -102,6 +102,16 @@ test('before the draw: waiting screen and wish list', async ({ page }) => {
   await expect(
     page.getByText("Le tirage n'a pas encore eu lieu"),
   ).toBeVisible();
+  // Where the draw stands: invited, the draw soon, then the party.
+  const steps = page.getByRole('list', { name: 'Étapes du tirage' });
+  await expect(steps).toContainText('Invitation');
+  await expect(steps.locator('[aria-current="step"]')).toHaveText(
+    'Tirage · bientôt',
+  );
+  await expect(steps).toContainText(/Fête/);
+  await expect(
+    page.getByRole('link', { name: 'Noter mes idées de cadeaux' }),
+  ).toBeVisible();
 
   // Alice picks her own avatar. Closing the sheet gives the choice up;
   // only "Valider" saves it.
@@ -212,7 +222,8 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
 
   // Opening the page is not a consultation.
   await open(page, state.links.Alice ?? '');
-  await expect(page.getByText('Le tirage est fait !')).toBeVisible();
+  await expect(page.getByText("Ton enveloppe t'attend")).toBeVisible();
+  await expect(page.locator('[aria-current="step"]')).toHaveText('Tirage fait');
   await expect(page.getByTestId('receiver')).toHaveCount(0);
   expect((await participantNamed('Alice')).viewCount).toBe(0);
 
@@ -235,6 +246,7 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   await expect(page.getByTestId('receiver')).toHaveCount(0);
   // She has already seen it: the page offers to see it again and mentions
   // the ideas waiting, without any name.
+  await expect(page.getByText('Tu sais déjà à qui tu offres')).toBeVisible();
   await expect(
     page.getByText('Sa liste contient 1 idée de cadeau.'),
   ).toBeVisible();
@@ -280,6 +292,7 @@ test('a cancelled draw keeps the wish lists and resets the counters', async ({
 
 test('unknown and regenerated links are refused', async ({ page }) => {
   await open(page, `/p/${'x'.repeat(43)}`);
+  await expect(heading(page)).toHaveText('Oups, ce lien ne marche plus');
   await expect(page.getByText("Ce lien n'est plus valable")).toBeVisible();
 
   const old = state.links.Bruno ?? '';
@@ -314,4 +327,17 @@ test('a closed edition is read only', async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByText('Idée de Chloé')).toBeVisible();
   await expect(page.getByText('Ajouter une idée')).toHaveCount(0);
+
+  // The page of the draw: the party is over, and Chloé, who never looked,
+  // can still find out. Her icon and her list no longer change.
+  await open(page, `/p/${token}`);
+  await expect(page.getByText('La fête est passée')).toBeVisible();
+  await expect(page.getByText('Fête passée')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: "Découvrir à qui j'offre un cadeau" }),
+  ).toBeVisible();
+  await expect(page.getByText('1 idée · plus modifiable')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Changer mon icône' }),
+  ).toHaveCount(0);
 });

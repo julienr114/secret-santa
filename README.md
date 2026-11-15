@@ -563,7 +563,8 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 
 | Route | Écran |
 |---|---|
-| `/` | Accueil, le même pour tous : la connexion sans session ; sinon mes tirages, puis mes groupes et les options du super-admin |
+| `/` | Accueil, le même pour tous (refait le 15 novembre 2026). Sans session : le logo, une phrase, un encadré pour qui a reçu un lien personnel, puis la connexion. Connecté : « Bonjour » et l'avatar, la carte « À faire maintenant » (22.10), puis selon `homeLayout` : compte vide (d'où viendront les tirages, organiser un Secret Santa), un seul tirage (sa carte avec l'enveloppe, sa liste, les tirages passés), plusieurs tirages (une ligne chacun), ou au moins un groupe organisé (une carte par groupe, `groupCards` : « Mon tirage » et « Gérer le tirage ») |
+| `/tirages-passes` | Les éditions clôturées du compte, par année ; chaque ligne ouvre la page du tirage |
 | `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis page du lien avec son bouton |
 | `/admin/groupes/nouveau` | Création d'un groupe, pour tout compte qui a de la place dans son quota |
 | `/admin/groupes` | Super-admin : tous les groupes |
@@ -617,7 +618,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 |---|---|
 | `POST /api/auth/link` | Demande un lien de connexion (réponse identique dans tous les cas) |
 | `POST /api/auth/confirm` | Consomme le lien, ouvre la session |
-| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel), les groupes qu'il gère, son rôle |
+| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, le nombre d'idées), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et ses demandes. Jamais un résultat |
 | `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |
 | `POST /api/admin/logout`, `GET /api/admin/session` | Déconnexion (révoque la session), session courante |
 | `GET /api/admin/groups` | Les groupes du compte |
@@ -1120,6 +1121,58 @@ Proposé dans les maquettes, à confirmer par Julien avant de coder :
 
 À vérifier avant de concevoir plus loin : la section 8.7 (secret et éditions passées) et ce que la clôture rend visible aujourd'hui (`AdminEditionResults`, « ses résultats ne sont plus secrets »).
 
+### 22.10 Carte « À faire maintenant » de l'accueil : règles d'affichage (15 novembre 2026)
+
+Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée « Page d'accueil »). **Codé le 15 novembre 2026** (`pickHomeAction` dans `server/utils/home.ts`, un test par rang).
+
+**Principe** : l'accueil affiche **une seule carte** en tête, choisie par un classement fixe. On calcule tous les candidats, pour tous les groupes et tous les rôles du compte, et on affiche le premier de la liste.
+
+| Rang | Rôle | Condition | Titre de la carte | Bouton → destination |
+|---|---|---|---|---|
+| 1 | Organisateur | Tirage fait, au moins une personne pas prévenue | Préviens chacun que le tirage est fait | « Prévenir par email » → sélection par email |
+| 2 | Super-admin | Au moins une demande de groupe en attente | N demandes de groupe à traiter | « Voir les demandes » → comptes |
+| 3 | Participant | Tirage fait, résultat jamais découvert | Le tirage est fait ! | « Découvrir à qui j'offre un cadeau » → page du tirage |
+| 4 | Organisateur | Tout le monde prévenu, fête dans 7 jours ou moins, au moins une personne n'a pas consulté | N personnes n'ont pas encore ouvert leur lien | « Relancer » → édition |
+| 5 | Organisateur | Édition à préparer, tirage impossible | Le tirage est impossible pour l'instant | « Corriger » → édition |
+| 6 | Organisateur | Édition à préparer, tirage possible | Vérifie la liste, puis lance le tirage | « Ouvrir l'édition » → édition |
+| 7 | Participant | Listes de souhaits actives, zéro idée, édition non clôturée | Note quelques idées de cadeaux | « Mes idées » → liste de souhaits |
+| 8 | Organisateur | Fête passée, édition non clôturée | La fête est passée : clôture l'édition | « Ouvrir l'édition » → édition |
+| 9 | Organisateur | Groupe sans édition en cours | Prépare le tirage de cette année | « Créer l'édition » → nouvelle édition |
+| 10 | Compte | Peut créer un groupe et n'en a aucun | Ta demande est acceptée : crée ton groupe | « Créer mon groupe » → nouveau groupe |
+| 11 | Compte | Prénom manquant | Dis-nous comment tu t'appelles | « Compléter mon profil » → compte |
+
+**Logique de l'ordre** : d'abord ce qui bloque d'autres personnes (1, 2), puis ce qui me bloque (3), puis ce qui presse à cause de la date (4), puis l'étape normale suivante (5, 6), puis le facultatif (7 à 11).
+
+**Règles autour**
+
+- Une carte au plus. Sans candidat, pas de carte.
+- Exception : avec un seul tirage en cours et aucun candidat, l'accueil montre quand même ce tirage en carte calme (enveloppe, bouton en contour « Revoir » ou simple état d'attente).
+- Départage à rang égal entre deux groupes : la fête la plus proche, puis le plus de personnes concernées, puis le nom du groupe par ordre alphabétique.
+- Le groupe est nommé dans l'étiquette de la carte dès que le compte a plus d'un groupe.
+- Rien ne se perd : un candidat non retenu reste écrit sur sa ligne (statut, plus la pastille d'action pour un participant).
+- La carte ne se ferme pas à la main pour les rangs 1 à 6 : elle disparaît quand la condition n'est plus vraie.
+- Aucun indice sur le secret : jamais de prénom de receveur, de score ou de réservation dans la carte.
+
+**Fonctionnalités futures**
+
+| Fonctionnalité | Où elle s'insère |
+|---|---|
+| Dévoiler les résultats (22.9) | Remplace le rang 8 : « La fête est passée : dévoile les résultats » |
+| Paris à faire (22.3) | Entre 6 et 7 : paris ouverts et incomplets |
+| Résultats des paris | Juste après le rang 3, tant qu'ils n'ont pas été vus une fois |
+| Listes partagées (22.3) | Aucune carte : elles vivent dans leur propre section |
+
+**Tranché par Julien le 15 novembre 2026**
+
+- Rangs facultatifs (7 à 11) : un lien « Plus tard » les met de côté, mémorisé par édition (ou par groupe et par année pour le rang 9), dans le navigateur seulement (`useHomeDismissed`). La carte suivante du classement prend la place.
+- Rang 9 : seulement du 1er octobre au 31 décembre (`PREPARE_FROM_MONTH`).
+- Rang 4 : à 7 jours de la fête ou moins (`REMIND_DAYS`), avant le rappel automatique de 3 jours.
+- Rangs 5 et 6 : la vérification du tirage (celle de l'écran de l'édition) ne tourne que pour 3 éditions à préparer au plus par chargement de l'accueil (`CHECKED_EDITIONS_MAX`) : elle lit l'historique du groupe, et D1 plafonne les requêtes d'un appel. Au-delà, la carte est celle du rang 6.
+
+**Côté code** : une seule fonction pure, `pickHomeAction(home, today, dismissed)` dans `server/utils/home.ts`, qui prend l'état de l'accueil, la date du jour et les cartes mises de côté, et renvoie la carte à afficher (ou rien). Ce tableau est son jeu de tests. La route `GET /api/auth/home` fournit ce qu'il lui faut : par édition organisée, la date de la fête, les nombres « à prévenir », « pas encore ouvert » et « a découvert », et si le tirage est possible ; par tirage, si le résultat a été vu, la liste de souhaits et le nombre d'idées.
+
+Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient lieu de carte du haut : les rangs 3 et 7 (qui le concernent) n'en ajoutent pas une seconde. Tout le haut de cette carte ouvre la page du tirage, même avant le tirage, quand elle n'a pas de bouton.
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. La page **Guide de style** (`/admin/guide-de-style`, super-admin, lien depuis l'écran des groupes) montre tout ce qui est décrit ici, dans la langue choisie dans le menu.
@@ -1169,6 +1222,8 @@ Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`),
 Composants construits dessus et réutilisés : `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
 
 Écran d'une édition (section 11), construit sur ces composants : `AdminEditionHeader`, `AdminEditionPrepare`, `AdminEditionFollow`, `AdminDrawSheet`, `AdminSendSheet`, `AdminDateSheet`, `AdminPartyDateCard`.
+
+Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` sans nouveau composant d'interface : `HomeTopCard` (la carte « À faire maintenant »), `HomeDrawCard` (le tirage unique), `HomeDrawRow`, `HomeGroupCard`, `HomeRequestSheet`. Plus aucun emoji comme icône : enveloppe fermée (à découvrir), horloge (pas encore tiré), enveloppe ouverte (déjà vu), archive (clôturé).
 
 ### 23.3 Règles
 

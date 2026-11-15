@@ -2,55 +2,71 @@
 import { formatEventDate } from '#server/utils/rules';
 import type { Reveal } from '~/composables/queries/usePersonal';
 
-// The result: who the participant gives to, the practical details, then
-// the receiver's ideas. Turns over once when it appears.
-defineProps<{ reveal: Reveal }>();
+// The result, on a gift tag: who the participant gives to, the budget
+// and the date, the organiser's note, then the receiver's ideas. Turns
+// over once when it appears.
+const props = defineProps<{ reveal: Reveal }>();
 const { t, locale } = useT();
+/** Budget and date, each only when the organiser gave it. */
+const tiles = computed(() =>
+  [
+    { label: t('participant.reveal.budget'), value: props.reveal.budget },
+    {
+      label: t('participant.reveal.date'),
+      value: formatEventDate(props.reveal.eventDate, locale.value),
+    },
+  ].filter((tile) => tile.value),
+);
 </script>
 
 <template>
-  <UiCard
-    padding="lg"
-    class="reveal-card flex flex-col gap-5"
-    aria-live="polite"
-  >
+  <UiGiftTag class="reveal-card" aria-live="polite">
     <div class="flex flex-col items-center gap-2 text-center">
       <p class="text-muted">{{ t('participant.reveal.youGiveTo') }}</p>
-      <UiAvatar :avatar="reveal.receiver.avatar" size="lg" />
+      <UiAvatar :avatar="reveal.receiver.avatar" size="lg" class="text-4xl!" />
       <p
-        class="font-display text-5xl font-bold break-words text-primary"
+        class="font-display text-[52px] leading-tight font-bold break-words text-primary"
         data-testid="receiver"
       >
         {{ reveal.receiver.name }}
       </p>
     </div>
     <dl
-      v-if="reveal.budget || reveal.eventDate"
-      class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm"
+      v-if="tiles.length"
+      class="grid gap-2"
+      :class="tiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'"
     >
-      <template v-if="reveal.budget">
-        <dt class="text-muted">{{ t('participant.reveal.budget') }}</dt>
-        <dd>{{ reveal.budget }}</dd>
-      </template>
-      <template v-if="reveal.eventDate">
-        <dt class="text-muted">{{ t('participant.reveal.date') }}</dt>
-        <dd>{{ formatEventDate(reveal.eventDate, locale) }}</dd>
-      </template>
+      <div
+        v-for="tile in tiles"
+        :key="tile.label"
+        class="flex flex-col rounded-lg bg-muted px-3 py-2 text-center"
+      >
+        <dt class="text-xs font-semibold text-muted">{{ tile.label }}</dt>
+        <dd class="font-semibold">{{ tile.value }}</dd>
+      </div>
     </dl>
-    <UiTextPreview v-if="reveal.guardianMessage">
-      {{ reveal.guardianMessage }}
-    </UiTextPreview>
-    <div v-if="reveal.wishes" class="flex flex-col gap-2">
-      <h2 class="text-lg font-bold">{{ t('participant.reveal.ideas') }}</h2>
-      <ParticipantWishList
-        v-if="reveal.wishes.length > 0"
-        :wishes="reveal.wishes"
-      />
-      <p v-else class="text-sm text-muted">
-        {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}
+    <div v-if="reveal.guardianMessage" class="flex flex-col gap-1.5">
+      <p class="text-xs font-bold tracking-wide text-muted uppercase">
+        {{ t('participant.reveal.guardianMessage') }}
       </p>
+      <UiTextPreview>{{ reveal.guardianMessage }}</UiTextPreview>
     </div>
-  </UiCard>
+    <template v-if="reveal.wishes">
+      <hr class="border-t-2 border-dashed border-default" />
+      <div class="flex flex-col gap-3">
+        <h2 class="font-display text-lg font-bold">
+          {{ t('participant.reveal.ideas') }}
+        </h2>
+        <ParticipantWishList
+          v-if="reveal.wishes.length > 0"
+          :wishes="reveal.wishes"
+        />
+        <p v-else class="text-sm text-muted">
+          {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}
+        </p>
+      </div>
+    </template>
+  </UiGiftTag>
 </template>
 
 <style scoped>

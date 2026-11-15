@@ -19,15 +19,6 @@ export default {
     submit: 'Ausgabe erstellen',
   },
   cockpit: {
-    closeLater: 'Du kannst nach dem Fest abschließen ({date}).',
-    messageLanguage: 'Sprache der Nachrichten: {language}',
-    budget: 'Budget {budget}',
-    eventDate: 'am {date}',
-    drawPossible: 'Die Auslosung ist möglich',
-    drawPossibleDescription: {
-      one: '{count} Teilnehmer, alle Regeln sind erfüllt.',
-      other: '{count} Teilnehmer, alle Regeln sind erfüllt.',
-    },
     blocked: 'Niemand kann zugelost werden für: {names}.',
     constrained: 'Sehr wenig Auswahl für: {names}.',
     startDraw: 'Auslosung starten',
@@ -35,57 +26,15 @@ export default {
       one: '{names} nimmt noch nicht teil',
       other: '{names} nehmen noch nicht teil',
     },
-    missingWarning: 'Achtung: {text}.',
-    drawIsFinal:
-      'Die Auslosung ist endgültig: Die Liste wird gesperrt. Los geht’s?',
-    drawNow: 'Jetzt auslosen',
-    notYet: 'Noch nicht',
     drawDone: 'Auslosung durchgeführt',
-    drawDoneToast: 'Teile jetzt die Nachricht „{message}“ mit allen.',
-    drawnDescription:
-      '{viewed}/{total} haben ihr Ergebnis angesehen. Niemand, auch der Organisator nicht, sieht die Ergebnisse hier.',
-    closeAfterParty: 'Nach dem Fest abschließen',
-    closeExplanation:
-      'Nach dem Abschließen lässt sich die Ausgabe nicht mehr ändern; sie dient nächstes Jahr als Verlauf.',
-    close: 'Abschließen',
-    closedNotice: 'Ausgabe abgeschlossen, nur lesbar.',
-    messageTitle: 'Nachricht zum Teilen',
     email: {
-      bulkTitle: 'An mehrere senden',
-      bulkHint: 'Per E-Mail, alle auf einmal',
-      noAddress:
-        'Versand per E-Mail: Kein Teilnehmer hat eine Adresse. Trage sie unter Personen ein.',
-      select: 'Per E-Mail an mehrere Personen senden',
-      selected: { one: '{count} ausgewählt', other: '{count} ausgewählt' },
-      selectAll: 'Alle auswählen',
-      selectNone: 'Alle abwählen',
-      selectPerson: '{name} auswählen',
-      chooseMessage: 'Nachricht wählen',
-      sheetTitle: {
-        one: 'E-Mail an {count} Person senden',
-        other: 'E-Mail an {count} Personen senden',
-      },
-      sendCount: {
-        one: '{count} E-Mail senden',
-        other: '{count} E-Mails senden',
-      },
-      spamTip:
-        'E-Mails landen oft im Spam: Hake per Telefon bei denen nach, die ihren Link nicht öffnen.',
       sent: {
         one: '{count} E-Mail gesendet',
         other: '{count} E-Mails gesendet',
       },
-      left: 'Noch {count} zu senden: Starte den Versand erneut.',
     },
-    empty: 'Noch niemand.',
     sendLinkOf: 'Link von {name} senden',
     resendLinkOf: 'Link von {name} erneut senden',
-    addParticipants: 'Teilnehmer hinzufügen',
-    cancelAndRedraw: 'Auslosung aufheben und wiederholen',
-    cancelAndRedrawHint: 'Absage, jemand vergessen… wird protokolliert',
-    revealOne: 'Ein Ergebnis ansehen',
-    revealOneHint:
-      'Letzter Ausweg, eine Person nach der anderen, steht im Protokoll',
     resultsTitle: {
       one: 'Die Auslosung · {count} Teilnehmer',
       other: 'Die Auslosung · {count} Teilnehmer',
@@ -207,15 +156,11 @@ export default {
     noteHint:
       'Wird unverändert gesendet, unabhängig von der Sprache der Nachricht.',
     preview: 'Vorschau der Nachricht',
-    previewFor: 'Vorschau für {name}',
-    previewEmailNote:
-      'Jede Person erhält sie mit eigenem Vornamen, Link und in ihrer Sprache. Die E-Mail ergänzt Betreff und Signatur.',
     language: 'Sprache der Nachricht',
     languageHint: 'Auch die persönliche Seite wechselt in diese Sprache.',
     emailMessage: 'Per E-Mail senden',
     noEmail: 'Keine E-Mail-Adresse im Profil',
     emailSent: 'E-Mail an {name} gesendet',
-    sheetTitle: 'An {name} senden',
     copied: 'Nachricht kopiert',
     copiedDescription: 'Füge sie in die App deiner Wahl ein.',
   },

@@ -27,13 +27,6 @@ export default {
     save: 'Enregistrer',
     logout: 'Se déconnecter',
   },
-  participantStatus: {
-    viewed: 'Résultat consulté',
-    viewedTimes: 'Résultat consulté · {count}×',
-    invitationSent: 'Invitation envoyée',
-    notSent: 'Pas encore envoyé',
-    sentNotViewed: 'Envoyé, pas encore consulté',
-  },
   language: {
     label: 'Langue',
     fr: 'Français',

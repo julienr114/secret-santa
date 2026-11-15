@@ -30,13 +30,6 @@ export default {
     save: 'Save',
     logout: 'Log out',
   },
-  participantStatus: {
-    viewed: 'Result viewed',
-    viewedTimes: 'Result viewed · {count}×',
-    invitationSent: 'Invitation sent',
-    notSent: 'Not sent yet',
-    sentNotViewed: 'Sent, not viewed yet',
-  },
   language: {
     label: 'Language',
     fr: 'Français',

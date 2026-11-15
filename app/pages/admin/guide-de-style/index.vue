@@ -275,37 +275,6 @@ const entries = computed(() => [
       <UiCard padding="lg" class="text-center">
         UiCard <code>lg</code> : pour un message centré.
       </UiCard>
-      <AdminStatusCard
-        emoji="🎲"
-        :title="t('adminEdition.cockpit.drawPossible')"
-        :description="
-          t('adminEdition.cockpit.drawPossibleDescription', { count: 9 })
-        "
-      >
-        <UButton
-          block
-          icon="i-lucide-sparkles"
-          :label="t('adminEdition.cockpit.startDraw')"
-        />
-      </AdminStatusCard>
-      <AdminStatusCard
-        emoji="🎁"
-        :title="t('adminEdition.cockpit.drawDone')"
-        :description="
-          t('adminEdition.cockpit.drawnDescription', { viewed: 3, total: 9 })
-        "
-        :progress="{ value: 3, total: 9 }"
-      />
-      <AdminStatusCard
-        emoji="🚧"
-        tone="problem"
-        :title="t('errors.no_solution')"
-      />
-      <AdminStatusCard
-        emoji="📦"
-        tone="quiet"
-        :title="t('adminEdition.cockpit.closedNotice')"
-      />
     </section>
 
     <section class="flex flex-col gap-3">
@@ -416,7 +385,7 @@ const entries = computed(() => [
       <UiListItem
         :avatar="sample"
         title="Ligne avec une personne"
-        :subtitle="t('common.participantStatus.invitationSent')"
+        :subtitle="t('adminEdition.screen.follow.state.notOpened')"
       >
         <template #trailing>
           <UBadge color="neutral" variant="subtle" size="sm" label="FR" />

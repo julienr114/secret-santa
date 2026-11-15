@@ -30,13 +30,6 @@ export default {
     save: 'Speichern',
     logout: 'Abmelden',
   },
-  participantStatus: {
-    viewed: 'Ergebnis angesehen',
-    viewedTimes: 'Ergebnis angesehen · {count}×',
-    invitationSent: 'Einladung gesendet',
-    notSent: 'Noch nicht gesendet',
-    sentNotViewed: 'Gesendet, noch nicht angesehen',
-  },
   language: {
     label: 'Sprache',
     fr: 'Français',

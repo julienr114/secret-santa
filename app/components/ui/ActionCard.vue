@@ -22,6 +22,6 @@ defineProps<{
     </div>
     <slot />
     <slot name="action" />
-    <p v-if="help" class="text-center text-[13px] text-muted">{{ help }}</p>
+    <p v-if="help" class="text-center text-sm text-toned">{{ help }}</p>
   </UiCard>
 </template>

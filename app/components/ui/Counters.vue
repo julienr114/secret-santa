@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Three figures side by side, each a number over its label, tinted by
-// what it means: to act on (primary), waiting (warning), done (success).
+// Three figures side by side, each a big number over its label, both
+// aligned left, tinted by what it means: to act on (primary), waiting (warning), done (success).
 
 /** One figure. */
 export type Counter = {
@@ -22,11 +22,11 @@ const TONES = {
     <div
       v-for="item in items"
       :key="item.label"
-      class="flex flex-col-reverse items-center gap-0.5 rounded-[10px] p-2.5 text-center"
+      class="flex flex-col-reverse justify-end gap-1 rounded-xl p-3"
       :class="[TONES[item.tone].tile, TONES[item.tone].text]"
     >
-      <dt class="text-xs leading-tight font-semibold">{{ item.label }}</dt>
-      <dd class="font-display text-[26px] leading-none font-bold">
+      <dt class="text-[13px] leading-snug font-semibold">{{ item.label }}</dt>
+      <dd class="font-display text-[30px] leading-none font-bold">
         {{ item.value }}
       </dd>
     </div>

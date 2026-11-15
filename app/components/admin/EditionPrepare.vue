@@ -94,6 +94,8 @@ const missingText = computed(() =>
     <template #action>
       <UButton
         block
+        size="xl"
+        class="min-h-14 justify-center font-bold"
         icon="i-lucide-sparkle"
         :disabled="!check?.ready"
         :label="t('adminEdition.screen.prepare.action')"

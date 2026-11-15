@@ -88,6 +88,8 @@ const confirmingRow = ref(false);
       <UButton
         v-if="!confirming"
         block
+        size="xl"
+        class="min-h-14 justify-center font-bold"
         icon="i-lucide-archive"
         :label="t('adminEdition.screen.follow.closeRow')"
         @click="confirming = true"
@@ -129,6 +131,8 @@ const confirmingRow = ref(false);
     <template #action>
       <UButton
         block
+        size="xl"
+        class="min-h-14 justify-center font-bold"
         icon="i-lucide-mail"
         :to="`${base}/emails?type=${allNotified ? 'reminder' : 'drawn'}`"
         :label="

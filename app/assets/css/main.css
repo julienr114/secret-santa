@@ -65,6 +65,24 @@
   --color-skeleton: var(--color-kraft-200);
   --color-skeleton-soft: var(--color-kraft-100);
   --color-track: var(--color-kraft-200);
+  /* Thin lines between rows, and between the steps of a stepper. */
+  --color-divider: var(--color-kraft-200);
+
+  /* Tints of the meaning colours, for tiles, notices and soft buttons:
+     `tint` is the lightest fill, `soft` a step deeper (a halo, a round
+     button still to press), `ink` the text and icons that sit on them. */
+  --color-primary-tint: var(--color-brick-50);
+  --color-primary-soft: var(--color-brick-100);
+  --color-primary-ink: var(--color-brick-700);
+  --color-success-tint: var(--color-pine-50);
+  --color-success-soft: var(--color-pine-100);
+  --color-success-ink: var(--color-pine-700);
+  --color-warning-tint: var(--color-mustard-50);
+  --color-warning-soft: var(--color-mustard-100);
+  --color-warning-ring: var(--color-mustard-300);
+  --color-warning-ink: var(--color-mustard-800);
+  --color-error-soft: var(--color-cranberry-100);
+  --color-error-ink: var(--color-cranberry-700);
 }
 
 /* Cards, inputs and menus stay white on top of the kraft page. */

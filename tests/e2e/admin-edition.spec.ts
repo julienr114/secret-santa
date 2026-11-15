@@ -64,11 +64,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByText('Nouvelle édition').click();
+  // The party date is required: Christmas Day is offered in one tap.
   await page.getByRole('button', { name: "Créer l'édition" }).click();
-  await expect(page.getByText('Brouillon')).toBeVisible();
-  await expect(page.getByText('5 participants')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Ouvrir les invitations' }).click();
+  await expect(page.getByText('Choisis la date de la fête')).toBeVisible();
+  await page.getByRole('button', { name: 'Choisir une date' }).click();
+  await page.getByRole('button', { name: /^Proposer le 25 décembre/ }).click();
+  await page.getByRole('button', { name: "Créer l'édition" }).click();
+  // Ready to prepare at once: links work, the draw can be checked.
+  await expect(page.getByText('En préparation')).toBeVisible();
+  await expect(page.getByText('5 participants').first()).toBeVisible();
   await expect(page.getByText('Le tirage est possible')).toBeVisible();
 
   // Share Hugo's invitation by copying it: he gets the "envoyé" badge.
@@ -112,6 +116,18 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Le tirage est possible')).toBeVisible();
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
+  // Closing waits for the day after the party: the party is moved to the
+  // past, through the same route as the date sheet.
+  const editionPath = new URL(page.url()).pathname.replace(
+    '/admin/',
+    '/api/admin/',
+  );
+  const moved = await page.request.patch(editionPath, {
+    data: { eventDate: '2020-12-25' },
+  });
+  expect(moved.ok()).toBe(true);
+  await page.reload();
+  await hydrated(page);
   await page.getByRole('button', { name: 'Clôturer après la fête' }).click();
   await page.getByRole('button', { name: 'Clôturer', exact: true }).click();
   await expect(

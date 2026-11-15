@@ -124,9 +124,8 @@ const seedFamily = async () => {
     const { edition } = await call<{ edition: { id: string } }>(
       'POST',
       `${g}/editions`,
-      { label: `Noël ${year}`, year },
+      { label: `Noël ${year}`, year, eventDate: `${year}-12-24` },
     );
-    await call('POST', `${g}/editions/${edition.id}/open`);
     return edition.id;
   };
   for (const year of PAST_YEARS) {
@@ -260,9 +259,12 @@ const seedOwnGroup = async (
   const { edition } = await as<{ edition: { id: string } }>(
     'POST',
     `${base}/editions`,
-    { label: `Noël ${CURRENT_YEAR}`, year: CURRENT_YEAR },
+    {
+      label: `Noël ${CURRENT_YEAR}`,
+      year: CURRENT_YEAR,
+      eventDate: `${CURRENT_YEAR}-12-25`,
+    },
   );
-  await as('POST', `${base}/editions/${edition.id}/open`);
   if (drawn) await as('POST', `${base}/editions/${edition.id}/draw`);
 };
 

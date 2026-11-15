@@ -33,7 +33,7 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     await api.post(`${ADMIN}/persons`, { data: { firstName } });
   }
   const edition = await api.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël courrier', year: 2026 },
+    data: { label: 'Noël courrier', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await edition.json()).edition.id;
   // The organiser is a person of the group, with an address: this
@@ -47,7 +47,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   await api.delete(
     `${ADMIN}/editions/${state.editionId}/participants/${orga.participationId}`,
   );
-  await api.post(`${ADMIN}/editions/${state.editionId}/open`);
 });
 
 test.afterAll(async () => {

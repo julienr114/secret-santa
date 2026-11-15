@@ -39,10 +39,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     await api.post(`${ADMIN}/persons`, { data: { firstName } });
   }
   const edition = await api.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël invite', year: 2026 },
+    data: { label: 'Noël invite', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await edition.json()).edition.id;
-  await api.post(`${ADMIN}/editions/${state.editionId}/open`);
 });
 
 test.afterAll(async () => {

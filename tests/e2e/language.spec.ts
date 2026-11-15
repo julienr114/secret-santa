@@ -55,10 +55,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   });
   expect(refused.status()).toBe(400);
   const edition = await api().post(`${ADMIN}/editions`, {
-    data: { label: 'Noël 2026', year: 2026 },
+    data: { label: 'Noël 2026', year: 2026, eventDate: '2026-12-24' },
   });
   state.editionId = (await edition.json()).edition.id;
-  await api().post(`${ADMIN}/editions/${state.editionId}/open`);
   state.link = new URL((await messageOf('Greta')).link).pathname;
 });
 

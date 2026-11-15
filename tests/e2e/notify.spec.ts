@@ -33,10 +33,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   }
   await api.patch(`${ADMIN}/rules`, { data: { eventDate: inDays(2) } });
   const edition = await api.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël notif', year: 2026 },
+    data: { label: 'Noël notif', year: 2026, eventDate: inDays(2) },
   });
   state.editionId = (await edition.json()).edition.id;
-  await api.post(`${ADMIN}/editions/${state.editionId}/open`);
   await api.post(`${ADMIN}/editions/${state.editionId}/draw`);
 });
 

@@ -70,9 +70,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   const created = await post(`${ADMIN}/editions`, {
     label: 'Noël des lutins',
     year: 2026,
+    eventDate: '2026-12-24',
   });
   state.editionId = created.edition.id;
-  await post(`${ADMIN}/editions/${state.editionId}/open`);
   const { participants } = await (await edition()).json();
   const { messages } = await (
     await admin().get(

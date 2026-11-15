@@ -88,10 +88,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     data: { giverId: ids[0], receiverId: ids[1], reciprocal: true },
   });
   const edition = await guardian.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël du coffre', year: 2026 },
+    data: { label: 'Noël du coffre', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await edition.json()).edition.id;
-  await guardian.post(`${ADMIN}/editions/${state.editionId}/open`);
   const { participants } = await (
     await guardian.get(`${ADMIN}/editions/${state.editionId}`)
   ).json();

@@ -36,7 +36,7 @@ describe('isReminderDue', () => {
 
   it('waits for the draw, and goes only once', () => {
     expect(
-      isReminderDue({ ...edition, status: 'invitations' }, '2026-12-23'),
+      isReminderDue({ ...edition, status: 'preparing' }, '2026-12-23'),
     ).toBe(false);
     expect(
       isReminderDue(

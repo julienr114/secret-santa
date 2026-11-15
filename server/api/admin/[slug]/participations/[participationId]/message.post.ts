@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition, person, participation } =
     await requireParticipation(event);
   if (!canSendLinks(edition.status)) {
-    throw createError({ statusCode: 409, statusMessage: 'links_not_open' });
+    throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
   }
   const { type, via } = await validatedBody(event, bodySchema);
   if (!messageTypesFor(edition.status).includes(type)) {

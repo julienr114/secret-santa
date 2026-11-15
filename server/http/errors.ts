@@ -15,7 +15,6 @@ const STATUS_BY_REASON: Record<string, number> = {
   too_many_participants: 409,
   draw_not_done: 409,
   edition_closed: 409,
-  links_not_open: 409,
   wishlist_disabled: 403,
   email_failed: 502,
   group_quota_reached: 403,

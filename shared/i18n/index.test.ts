@@ -105,7 +105,7 @@ describe('translate', () => {
     expect(translateKey('en', 'no.such.key')).toBe('no.such.key');
     expect(translateKey('en', 'common')).toBe('common');
     expect(hasMessage('no.such.key')).toBe(false);
-    expect(hasMessage('common.status.draft')).toBe(true);
+    expect(hasMessage('common.status.preparing')).toBe(true);
     expect(hasMessage('common.count.ideas')).toBe(true);
   });
 

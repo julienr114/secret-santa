@@ -17,7 +17,7 @@ import {
 } from '#server/utils/editions';
 import { unwrap } from '#server/http/errors';
 
-// Creates a draft edition. Its participants start as those of the previous
+// Creates an edition, ready to prepare: links work at once. Its participants start as those of the previous
 // edition who are still active (README 4.2), or every active person for a
 // first edition. Each gets a personal link right away.
 export default defineEventHandler(async (event) => {
@@ -49,8 +49,9 @@ export default defineEventHandler(async (event) => {
     groupId: group.id,
     label: body.label,
     year: body.year,
-    status: 'draft',
-    rulesOverride: null,
+    status: 'preparing',
+    // The day of the party belongs to the edition (README 22.9).
+    rulesOverride: { eventDate: body.eventDate },
     rulesSnapshot: null,
     historyWaivers: null,
     reminderSentAt: null,

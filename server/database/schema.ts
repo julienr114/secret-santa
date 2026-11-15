@@ -73,12 +73,7 @@ export const manualExclusions = sqliteTable(
   (t) => [index('manual_exclusions_group_idx').on(t.groupId)],
 );
 
-export const EDITION_STATUSES = [
-  'draft',
-  'invitations',
-  'drawn',
-  'closed',
-] as const;
+export const EDITION_STATUSES = ['preparing', 'drawn', 'closed'] as const;
 
 export const editions = sqliteTable(
   'editions',
@@ -91,7 +86,7 @@ export const editions = sqliteTable(
     year: integer('year').notNull(),
     status: text('status', { enum: EDITION_STATUSES })
       .notNull()
-      .default('draft'),
+      .default('preparing'),
     rulesOverride: text('rules_override', { mode: 'json' }),
     rulesSnapshot: text('rules_snapshot', { mode: 'json' }),
     // Previous-year pairs the guardian allowed again for this edition.

@@ -14,7 +14,12 @@ import {
   parseWaivers,
   participantBadges,
   previousEdition,
+  editionStep,
+  followState,
+  participantCounters,
+  sortParticipants,
 } from './editions';
+import fc from 'fast-check';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
 const ed = (year: number, status: string, createdAt = `${year}-11-01`) => ({
@@ -42,7 +47,7 @@ describe('currentEdition / previousEdition', () => {
   const editions = [
     ed(2024, 'closed'),
     ed(2025, 'closed'),
-    ed(2026, 'invitations'),
+    ed(2026, 'preparing'),
   ];
   it('picks the latest open edition and the one before a given year', () => {
     expect(currentEdition(editions)?.year).toBe(2026);
@@ -64,9 +69,8 @@ describe('participantBadges', () => {
 
 describe('nextStatus', () => {
   it('follows the README lifecycle', () => {
-    expect(valueOf(nextStatus('draft', 'open'))).toBe('invitations');
-    expect(valueOf(nextStatus('invitations', 'draw'))).toBe('drawn');
-    expect(valueOf(nextStatus('drawn', 'cancel_draw'))).toBe('invitations');
+    expect(valueOf(nextStatus('preparing', 'draw'))).toBe('drawn');
+    expect(valueOf(nextStatus('drawn', 'cancel_draw'))).toBe('preparing');
     expect(valueOf(nextStatus('drawn', 'close'))).toBe('closed');
   });
 
@@ -74,28 +78,24 @@ describe('nextStatus', () => {
     expect(failureOf(nextStatus('drawn', 'draw'))).toEqual({
       ok: false,
       reason: 'invalid_transition',
-      details: { status: 'drawn', action: 'draw', expected: 'invitations' },
+      details: { status: 'drawn', action: 'draw', expected: 'preparing' },
     });
-    expect(nextStatus('draft', 'draw').ok).toBe(false);
+    expect(nextStatus('closed', 'draw').ok).toBe(false);
     expect(nextStatus('closed', 'cancel_draw').ok).toBe(false);
-    expect(nextStatus('invitations', 'close').ok).toBe(false);
+    expect(nextStatus('preparing', 'close').ok).toBe(false);
   });
 
   it('says when participants and links can change', () => {
-    expect([
-      canEditParticipants('draft'),
-      canEditParticipants('invitations'),
-    ]).toEqual([true, true]);
+    expect(canEditParticipants('preparing')).toBe(true);
     expect([
       canEditParticipants('drawn'),
       canEditParticipants('closed'),
     ]).toEqual([false, false]);
     expect([
-      canSendLinks('draft'),
-      canSendLinks('invitations'),
+      canSendLinks('preparing'),
       canSendLinks('drawn'),
       canSendLinks('closed'),
-    ]).toEqual([false, true, true, false]);
+    ]).toEqual([true, true, false]);
   });
 });
 
@@ -104,8 +104,8 @@ describe('history', () => {
     { id: 'e2023', year: 2023, status: 'closed', createdAt: '2023-11-01' },
     { id: 'e2024', year: 2024, status: 'closed', createdAt: '2024-11-01' },
     { id: 'e2025', year: 2025, status: 'closed', createdAt: '2025-11-01' },
-    { id: 'e2026', year: 2026, status: 'invitations', createdAt: '2026-11-01' },
-    { id: 'eDraft', year: 2022, status: 'draft', createdAt: '2022-11-01' },
+    { id: 'e2026', year: 2026, status: 'preparing', createdAt: '2026-11-01' },
+    { id: 'eOpen', year: 2022, status: 'preparing', createdAt: '2022-11-01' },
   ];
   const assignments = [
     { editionId: 'e2024', giverId: 'a', receiverId: 'b' },
@@ -177,5 +177,106 @@ describe('checkParticipantCount', () => {
       reason: 'too_many_participants',
       details: { max: 100, count: 101 },
     });
+  });
+});
+
+describe('editionStep', () => {
+  it('prepares until the draw, follows it until the party', () => {
+    expect(editionStep('preparing', '2026-12-25', '2026-12-30')).toBe(
+      'prepare',
+    );
+    expect(editionStep('drawn', '2026-12-25', '2026-12-24')).toBe('drawn');
+    expect(editionStep('drawn', '2026-12-25', '2026-12-25')).toBe('party');
+    expect(editionStep('closed', '2026-12-25', '2026-12-01')).toBe('party');
+  });
+
+  it('stays on the follow-up without a real date', () => {
+    expect(editionStep('drawn', '', '2027-01-01')).toBe('drawn');
+    expect(editionStep('drawn', '25 décembre', '2027-01-01')).toBe('drawn');
+    expect(editionStep('drawn', null, '2027-01-01')).toBe('drawn');
+  });
+});
+
+describe('follow-up of the participants', () => {
+  const person = (firstName: string, sent: boolean, views: number) => ({
+    firstName,
+    messageSentAt: sent ? '2026-12-01T10:00:00Z' : null,
+    viewCount: views,
+  });
+  const people = [
+    person('Rose', false, 0),
+    person('Camille', true, 2),
+    person('Hugo', true, 0),
+    person('Inès', false, 0),
+    person('Zoé', false, 1),
+  ];
+
+  it('tells where each one stands, having looked first', () => {
+    expect(people.map(followState)).toEqual([
+      'toNotify',
+      'viewed',
+      'notOpened',
+      'toNotify',
+      'viewed',
+    ]);
+  });
+
+  it('counts each state', () => {
+    expect(participantCounters(people)).toEqual({
+      toNotify: 2,
+      notOpened: 1,
+      viewed: 2,
+    });
+    expect(participantCounters([])).toEqual({
+      toNotify: 0,
+      notOpened: 0,
+      viewed: 0,
+    });
+  });
+
+  it('lists the ones to notify first after the draw, by name in each', () => {
+    expect(sortParticipants(people, 'drawn').map((p) => p.firstName)).toEqual([
+      'Inès',
+      'Rose',
+      'Hugo',
+      'Camille',
+      'Zoé',
+    ]);
+  });
+
+  it('lists by name while preparing, without touching the list', () => {
+    const copy = [...people];
+    expect(
+      sortParticipants(people, 'preparing').map((p) => p.firstName),
+    ).toEqual(['Camille', 'Hugo', 'Inès', 'Rose', 'Zoé']);
+    expect(people).toEqual(copy);
+  });
+
+  it('keeps everyone, and the counts add up', () => {
+    const arbitrary = fc.array(
+      fc.record({
+        firstName: fc.string(),
+        messageSentAt: fc.option(fc.constant('2026-12-01'), { nil: null }),
+        viewCount: fc.nat(3),
+      }),
+    );
+    fc.assert(
+      fc.property(arbitrary, (list) => {
+        const sorted = sortParticipants(list, 'drawn');
+        expect(sorted).toHaveLength(list.length);
+        const counts = participantCounters(list);
+        expect(counts.toNotify + counts.notOpened + counts.viewed).toBe(
+          list.length,
+        );
+        const states = sorted.map(followState);
+        expect(states).toEqual(
+          states.toSorted(
+            (a, b) =>
+              ['toNotify', 'notOpened', 'viewed'].indexOf(a) -
+              ['toNotify', 'notOpened', 'viewed'].indexOf(b),
+          ),
+        );
+      }),
+    );
   });
 });

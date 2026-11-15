@@ -78,7 +78,7 @@ describe('buildMessage', () => {
 
 describe('messageTypesFor', () => {
   it('offers no draw message before the draw', () => {
-    expect(messageTypesFor('invitations')).toEqual(['invitation', 'reminder']);
+    expect(messageTypesFor('preparing')).toEqual(['invitation', 'reminder']);
   });
 
   it('offers the draw messages once drawn, and no invitation any more', () => {
@@ -86,7 +86,6 @@ describe('messageTypesFor', () => {
   });
 
   it('offers nothing in a draft or a closed edition', () => {
-    expect(messageTypesFor('draft')).toEqual([]);
     expect(messageTypesFor('closed')).toEqual([]);
   });
 });

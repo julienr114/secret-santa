@@ -26,7 +26,7 @@ export type MessageType = (typeof MESSAGE_TYPES)[number];
  * invitation and its reminder; "draw done" and "new draw" need a draw.
  */
 export const messageTypesFor = (status: string): MessageType[] => {
-  if (status === 'invitations') return ['invitation', 'reminder'];
+  if (status === 'preparing') return ['invitation', 'reminder'];
   if (status === 'drawn') return ['drawn', 'reminder', 'redraw'];
   return [];
 };

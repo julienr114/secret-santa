@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
         .update(editions)
         .set({ status, drawnAt: now, rulesSnapshot: snapshot })
         .where(
-          and(eq(editions.id, edition.id), eq(editions.status, 'invitations')),
+          and(eq(editions.id, edition.id), eq(editions.status, 'preparing')),
         ),
       // One statement per assignment: D1 caps a statement at 100 bound
       // parameters, which a single multi-row insert passes at 17 people.

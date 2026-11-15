@@ -4,23 +4,26 @@ import { rulesOverrideSchema } from './rules';
 
 // Editions of a group (README 4.1). Pure helpers; the routes do the I/O.
 
-export const EDITION_STATUSES = [
-  'draft',
-  'invitations',
-  'drawn',
-  'closed',
-] as const;
+// preparing ──► drawn ──► closed, and a cancelled draw goes back to
+// preparing (README 4.1, simplified on 15 November 2026: one step before
+// the draw instead of draft then invitations).
+export const EDITION_STATUSES = ['preparing', 'drawn', 'closed'] as const;
 export type EditionStatus = (typeof EDITION_STATUSES)[number];
+
+/** The day of the party: a real date, required since 15 November 2026. */
+export const eventDateSchema = z.iso.date();
 
 export const editionInputSchema = z.object({
   label: z.string().trim().min(1).max(60),
   year: z.number().int().min(2000).max(2100),
+  eventDate: eventDateSchema,
 });
 
 export const editionPatchSchema = z
   .object({
     label: z.string().trim().min(1).max(60),
     rulesOverride: rulesOverrideSchema,
+    eventDate: eventDateSchema,
   })
   .partial()
   .refine((patch) => Object.keys(patch).length > 0, 'nothing to update');
@@ -79,21 +82,15 @@ export const participantBadges = ({
 
 // --- Lifecycle (README 4.1) ---------------------------------------------
 
-export const EDITION_ACTIONS = [
-  'open',
-  'draw',
-  'cancel_draw',
-  'close',
-] as const;
+export const EDITION_ACTIONS = ['draw', 'cancel_draw', 'close'] as const;
 export type EditionAction = (typeof EDITION_ACTIONS)[number];
 
 const TRANSITIONS: Record<
   EditionAction,
   { from: EditionStatus; to: EditionStatus }
 > = {
-  open: { from: 'draft', to: 'invitations' },
-  draw: { from: 'invitations', to: 'drawn' },
-  cancel_draw: { from: 'drawn', to: 'invitations' },
+  draw: { from: 'preparing', to: 'drawn' },
+  cancel_draw: { from: 'drawn', to: 'preparing' },
   close: { from: 'drawn', to: 'closed' },
 };
 
@@ -110,11 +107,11 @@ export const nextStatus = (
 
 /** The participant list can change until the draw (README 4.1). */
 export const canEditParticipants = (status: EditionStatus): boolean =>
-  status === 'draft' || status === 'invitations';
+  status === 'preparing';
 
-/** Links are sent once invitations are open, and until the edition is closed. */
+/** Links can be sent from the creation of the edition until it is closed. */
 export const canSendLinks = (status: EditionStatus): boolean =>
-  status === 'invitations' || status === 'drawn';
+  status !== 'closed';
 
 // --- History for the "previous years" exclusion (README 6.1) ------------
 
@@ -221,3 +218,91 @@ export const checkParticipantCount = (count: number): Result<number> =>
   count > MAX_PARTICIPANTS
     ? fail('too_many_participants', { max: MAX_PARTICIPANTS, count })
     : ok(count);
+
+// --- The edition screen (README 11, redesign of 15 November 2026) --------
+
+/** The steps of the edition screen, in order. */
+export const EDITION_STEPS = ['prepare', 'drawn', 'party'] as const;
+export type EditionStep = (typeof EDITION_STEPS)[number];
+
+/**
+ * Which step of the edition screen is current: preparing until the draw,
+ * then following the draw until the day of the party, then the party.
+ * @param status - Status of the edition.
+ * @param eventDate - Day of the party (ISO), or anything else when unknown.
+ * @param today - ISO day.
+ * @returns The current step.
+ */
+export const editionStep = (
+  status: EditionStatus,
+  eventDate: string | null | undefined,
+  today: string,
+): EditionStep => {
+  if (status === 'preparing') return 'prepare';
+  if (status === 'closed') return 'party';
+  const isDay = typeof eventDate === 'string' && ISO_DAY.test(eventDate);
+  return isDay && today >= eventDate ? 'party' : 'drawn';
+};
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/** What the follow-up of a participant needs. */
+export type FollowedParticipant = {
+  firstName: string;
+  messageSentAt?: string | null;
+  viewCount: number;
+};
+
+/** Where a participant stands after the draw, from the least done. */
+export const FOLLOW_STATES = ['toNotify', 'notOpened', 'viewed'] as const;
+export type FollowState = (typeof FOLLOW_STATES)[number];
+
+/**
+ * Where a participant stands: discovered their result, sent their link
+ * but not opened yet, or still to notify. Having looked wins over
+ * everything: a link may have been passed on by hand.
+ * @param participant - Their sending and viewing.
+ * @returns The state.
+ */
+export const followState = (participant: FollowedParticipant): FollowState => {
+  if (participant.viewCount > 0) return 'viewed';
+  return participant.messageSentAt ? 'notOpened' : 'toNotify';
+};
+
+/**
+ * How many participants are in each state.
+ * @param participants - The participants of the edition.
+ * @returns The three counts.
+ */
+export const participantCounters = (
+  participants: readonly FollowedParticipant[],
+): Record<FollowState, number> =>
+  participants.reduce(
+    (counts, participant) => {
+      const state = followState(participant);
+      return { ...counts, [state]: counts[state] + 1 };
+    },
+    { toNotify: 0, notOpened: 0, viewed: 0 },
+  );
+
+const byFirstName = (a: FollowedParticipant, b: FollowedParticipant) =>
+  a.firstName.localeCompare(b.firstName);
+
+/**
+ * The participants in the order of the list: by first name while
+ * preparing; after the draw, those to notify first, then those who have
+ * not opened, then those who have looked, by first name in each.
+ * @param participants - The participants.
+ * @param status - Status of the edition.
+ * @returns A new, sorted list.
+ */
+export const sortParticipants = <P extends FollowedParticipant>(
+  participants: readonly P[],
+  status: EditionStatus,
+): P[] =>
+  status === 'preparing'
+    ? participants.toSorted(byFirstName)
+    : participants.toSorted(
+        (a, b) =>
+          FOLLOW_STATES.indexOf(followState(a)) -
+            FOLLOW_STATES.indexOf(followState(b)) || byFirstName(a, b),
+      );

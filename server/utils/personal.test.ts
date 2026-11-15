@@ -10,8 +10,7 @@ import { failureOf } from '~~/tests/helpers';
 
 describe('personalPhase', () => {
   it('waits until the draw, then offers the result', () => {
-    expect(personalPhase('draft')).toBe('waiting');
-    expect(personalPhase('invitations')).toBe('waiting');
+    expect(personalPhase('preparing')).toBe('waiting');
     expect(personalPhase('drawn')).toBe('ready');
     expect(personalPhase('closed')).toBe('closed');
   });
@@ -19,8 +18,7 @@ describe('personalPhase', () => {
 
 describe('canReveal', () => {
   it('refuses before the draw', () => {
-    expect(failureOf(canReveal('draft')).reason).toBe('draw_not_done');
-    expect(failureOf(canReveal('invitations')).reason).toBe('draw_not_done');
+    expect(failureOf(canReveal('preparing')).reason).toBe('draw_not_done');
   });
 
   it('allows once drawn, and still after closing', () => {
@@ -32,21 +30,20 @@ describe('canReveal', () => {
 describe('canEditWishes', () => {
   const on = { wishlist: true };
 
-  it('allows from the invitations until the edition is closed', () => {
-    expect(canEditWishes('invitations', on).ok).toBe(true);
+  it('allows from the creation of the edition until it is closed', () => {
+    expect(canEditWishes('preparing', on).ok).toBe(true);
     expect(canEditWishes('drawn', on).ok).toBe(true);
   });
 
-  it('refuses a closed edition and a draft', () => {
+  it('refuses a closed edition', () => {
     expect(failureOf(canEditWishes('closed', on)).reason).toBe(
       'edition_closed',
     );
-    expect(failureOf(canEditWishes('draft', on)).reason).toBe('links_not_open');
   });
 
   it('refuses when the group does not use wish lists, whatever the status', () => {
     expect(
-      failureOf(canEditWishes('invitations', { wishlist: false })).reason,
+      failureOf(canEditWishes('preparing', { wishlist: false })).reason,
     ).toBe('wishlist_disabled');
     expect(failureOf(canEditWishes('closed', { wishlist: false })).reason).toBe(
       'wishlist_disabled',
@@ -56,8 +53,7 @@ describe('canEditWishes', () => {
 
 describe('canEditAvatar', () => {
   it('allows until the edition is closed', () => {
-    expect(canEditAvatar('draft').ok).toBe(true);
-    expect(canEditAvatar('invitations').ok).toBe(true);
+    expect(canEditAvatar('preparing').ok).toBe(true);
     expect(canEditAvatar('drawn').ok).toBe(true);
     expect(failureOf(canEditAvatar('closed')).reason).toBe('edition_closed');
   });
@@ -65,7 +61,7 @@ describe('canEditAvatar', () => {
 
 describe('nextStep', () => {
   const draw = {
-    status: 'invitations' as const,
+    status: 'preparing' as const,
     revealed: false,
     wishlist: true,
     wishesCount: 0,

@@ -8,7 +8,8 @@ import { validatedBody } from '#server/http/validate';
 import { editionPatchSchema } from '#server/utils/editions';
 import { mergeRules } from '#server/utils/rules';
 
-// Label and rule overrides. Status changes have their own routes (step 4).
+// Label, rule overrides and the day of the party. Status changes have
+// their own routes.
 export default defineEventHandler(async (event) => {
   const { user, group, db } = await requireGroupAccess(event);
   const edition = await findEdition(db, group.id, getRouterParam(event, 'id'));
@@ -16,7 +17,18 @@ export default defineEventHandler(async (event) => {
   if (edition.status === 'closed') {
     throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
   }
-  const patch = await validatedBody(event, editionPatchSchema);
+  const { eventDate, ...body } = await validatedBody(event, editionPatchSchema);
+  // The day of the party is kept with the edition's own rules.
+  const patch =
+    eventDate === undefined
+      ? body
+      : {
+          ...body,
+          rulesOverride: {
+            ...((body.rulesOverride ?? edition.rulesOverride ?? {}) as object),
+            eventDate,
+          },
+        };
   unwrap(mergeRules(group.rules, patch.rulesOverride));
   await db.update(editions).set(patch).where(eq(editions.id, edition.id));
   if (patch.rulesOverride !== undefined) {

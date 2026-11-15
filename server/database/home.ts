@@ -1,12 +1,11 @@
-import { and, count, desc, eq, inArray, ne } from 'drizzle-orm';
+import { count, desc, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import { currentEdition, type EditionStatus } from '#server/utils/editions';
 import { editions, groups, participations, persons, wishes } from './schema';
 
 /**
  * The participations of the people registered with an address, in every
- * group, most recent edition first. Drafts are left out: their links are
- * not open yet.
+ * group, most recent edition first.
  */
 export const listParticipationsByEmail = (db: Db, email: string) =>
   db
@@ -21,7 +20,7 @@ export const listParticipationsByEmail = (db: Db, email: string) =>
     .innerJoin(persons, eq(persons.id, participations.personId))
     .innerJoin(editions, eq(editions.id, participations.editionId))
     .innerJoin(groups, eq(groups.id, editions.groupId))
-    .where(and(eq(persons.email, email), ne(editions.status, 'draft')))
+    .where(eq(persons.email, email))
     .orderBy(desc(editions.year), desc(editions.createdAt));
 
 /** How many ideas each participation wrote, by participation id. */

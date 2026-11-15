@@ -54,7 +54,7 @@ const sheet = ref(false);
 /** Examples of the edition components. */
 const steps = [
   { label: 'Préparer', state: 'done' as const },
-  { label: 'Tirage fait', state: 'current' as const, icon: 'i-lucide-sparkle' },
+  { label: 'Tirer', state: 'current' as const, icon: 'i-lucide-sparkle' },
   { label: 'Fêter', state: 'todo' as const },
 ];
 const counters = [

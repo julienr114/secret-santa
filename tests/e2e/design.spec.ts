@@ -15,7 +15,7 @@ test('the style guide shows the edition components', async ({ page }) => {
   await expect(
     page.getByRole('list', { name: "Étapes de l'édition" }),
   ).toBeVisible();
-  await expect(page.locator('[aria-current="step"]')).toHaveText(/Tirage fait/);
+  await expect(page.locator('[aria-current="step"]')).toHaveText(/Tirer/);
   await expect(page.getByText('pas encore ouvert').first()).toBeVisible();
   await expect(
     page.getByRole('img', { name: '12 participants' }).first(),

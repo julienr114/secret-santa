@@ -72,7 +72,7 @@ const onLanguage = (locale: Locale) => {
         v-if="error"
         class="flex flex-col items-center gap-3 py-12 text-center"
       >
-        <p class="text-4xl" aria-hidden="true">🔒</p>
+        <UiEnvelope state="locked" />
         <h1 class="font-display text-2xl font-bold">
           {{ t('participant.invalid.title') }}
         </h1>

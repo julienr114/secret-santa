@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { Avatar } from '#server/utils/avatars';
 import {
+  envelopeState,
+  participantSteps,
+  type ParticipantStep,
+} from '#server/utils/personal';
+import type { Step } from '~/components/ui/Stepper.vue';
+import {
   usePersonalQuery,
   useRevealMutation,
   useSaveAvatarMutation,
@@ -102,10 +108,103 @@ const onCreate = () => {
 
 const wishesSubtitle = computed(() => {
   const count = me.value?.wishesCount ?? 0;
-  if (count > 0) return t('common.count.ideas', { count });
-  return me.value?.wishesEditable
+  const editable = me.value?.wishesEditable ?? false;
+  if (count > 0) {
+    return editable
+      ? t('participant.home.wishes.editable', { count })
+      : t('participant.home.wishes.locked', { count });
+  }
+  return editable
     ? t('participant.home.wishes.help')
     : t('participant.home.wishes.none');
+});
+
+const today = new Date().toLocaleDateString('sv-SE');
+/**
+ * The words of a step of the timeline.
+ * @param step - The step and where it stands.
+ * @returns Its label, with what it adds (soon, done, in some days…).
+ */
+const stepLabel = (step: ParticipantStep): string => {
+  if (step.key === 'invitation') return t('participant.home.steps.invitation');
+  if (step.key === 'draw') {
+    return step.note === 'soon'
+      ? t('participant.home.steps.drawSoon')
+      : t('participant.home.steps.drawDone');
+  }
+  if (step.note === 'inDays') {
+    return t('participant.home.steps.partyIn', { count: step.days ?? 0 });
+  }
+  if (step.note === 'today') return t('participant.home.steps.partyToday');
+  if (step.note === 'over') return t('participant.home.steps.partyOver');
+  return t('participant.home.steps.party');
+};
+/** Icon of the current step: a clock before the draw, a star after. */
+const STEP_ICONS: Partial<
+  Record<NonNullable<ParticipantStep['note']>, string>
+> = { soon: 'i-lucide-clock', done: 'i-lucide-star' };
+const steps = computed<Step[]>(() =>
+  me.value
+    ? participantSteps(me.value.phase, me.value.eventDate, today).map(
+        (step) => ({
+          label: stepLabel(step),
+          state: step.state,
+          icon: step.note ? STEP_ICONS[step.note] : undefined,
+        }),
+      )
+    : [],
+);
+
+/** Which card the middle of the page shows. */
+const view = computed(() => {
+  const state = me.value;
+  if (!state || state.phase === 'waiting') return 'waiting';
+  if (reveal.value) return 'shown';
+  if (state.phase === 'closed') return 'closed';
+  return state.revealed ? 'seen' : 'ready';
+});
+const envelope = computed(() =>
+  envelopeState(
+    me.value?.phase ?? 'waiting',
+    me.value?.revealed ?? false,
+    false,
+  ),
+);
+/** Title, text and line under the button of the middle card. */
+const card = computed(() => {
+  const state = me.value;
+  const ideas = state?.receiverWishesCount ?? 0;
+  switch (view.value) {
+    case 'waiting':
+      return {
+        title: t('participant.home.waiting.title'),
+        body: t('participant.home.waiting.body'),
+        hint: state?.wishesEditable ? t('participant.home.waiting.hint') : '',
+      };
+    case 'ready':
+      return {
+        title: t('participant.home.ready.title'),
+        body: t('participant.home.ready.body'),
+        hint: t('participant.home.ready.hint'),
+      };
+    case 'seen':
+      return {
+        title: t('participant.home.seen.title'),
+        body: t('participant.home.seen.body'),
+        hint:
+          ideas > 0
+            ? t('participant.home.seen.ideasWaiting', { count: ideas })
+            : '',
+      };
+    default:
+      return {
+        title: t('participant.home.closed.title'),
+        body: state?.revealed
+          ? t('participant.home.closed.body')
+          : t('participant.home.closed.bodyNotSeen'),
+        hint: '',
+      };
+  }
 });
 </script>
 
@@ -124,7 +223,7 @@ const wishesSubtitle = computed(() => {
           :aria-label="t('participant.home.changeAvatar')"
           @click="openPicker"
         >
-          <UiAvatar :avatar="avatar" size="lg" />
+          <UiAvatar :avatar="avatar" class="size-14! text-2xl!" />
           <span
             class="absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border border-default bg-default text-muted"
             aria-hidden="true"
@@ -132,7 +231,11 @@ const wishesSubtitle = computed(() => {
             <UIcon name="i-lucide-pencil" class="size-3.5" />
           </span>
         </button>
-        <UiAvatar v-else-if="avatar" :avatar="avatar" size="lg" />
+        <UiAvatar
+          v-else-if="avatar"
+          :avatar="avatar"
+          class="size-14! text-2xl!"
+        />
         <div class="min-w-0">
           <UiPageTitle>
             {{ t('participant.home.greeting', { firstName: me.firstName }) }}
@@ -143,75 +246,65 @@ const wishesSubtitle = computed(() => {
         </div>
       </div>
 
-      <UiCard
-        v-if="me.phase === 'waiting'"
-        padding="lg"
-        class="flex flex-col gap-2 text-center"
-      >
-        <p class="text-4xl" aria-hidden="true">⏳</p>
-        <h2 class="text-xl font-bold">
-          {{ t('participant.home.waiting.title') }}
-        </h2>
-        <p class="text-sm text-muted">
-          {{ t('participant.home.waiting.body') }}
-        </p>
-        <p v-if="me.wishesEditable" class="text-sm text-muted">
-          {{ t('participant.home.waiting.wishes') }}
-        </p>
-      </UiCard>
+      <UiStepper :steps="steps" :label="t('participant.home.steps.label')" />
 
-      <template v-else>
-        <template v-if="reveal">
-          <ParticipantRevealCard :reveal="reveal" />
+      <template v-if="view === 'shown' && reveal">
+        <ParticipantRevealCard :reveal="reveal" />
+        <div class="flex flex-col items-center gap-2">
           <UButton
-            variant="subtle"
+            variant="ghost"
             color="neutral"
-            block
+            size="lg"
             icon="i-lucide-eye-off"
-            :label="t('participant.home.ready.hide')"
+            :label="t('participant.home.shown.hide')"
             @click="onHide"
           />
-        </template>
-        <UiCard v-else padding="lg" class="flex flex-col gap-4 text-center">
-          <p class="text-4xl" aria-hidden="true">🎁</p>
-          <h2 class="text-xl font-bold">
-            {{ t('participant.home.ready.title') }}
-          </h2>
-          <p class="text-sm text-muted">
-            {{ t('participant.home.ready.body') }}
+          <p class="text-center text-[13px] text-muted">
+            {{ t('participant.home.shown.hint') }}
           </p>
-          <p
-            v-if="me.revealed && me.receiverWishesCount > 0"
-            class="text-sm text-muted"
-          >
-            {{
-              t('participant.home.ready.ideasWaiting', {
-                count: me.receiverWishesCount,
-              })
-            }}
-          </p>
-          <UAlert
-            v-if="revealMutation.isError.value"
-            color="error"
-            variant="subtle"
-            :description="errorMessage(revealMutation.error.value)"
-          />
-          <UButton
-            block
-            icon="i-lucide-gift"
-            :loading="revealMutation.isPending.value"
-            :label="
-              me.revealed
-                ? t('participant.home.ready.revealAgain')
-                : t('participant.home.ready.reveal')
-            "
-            @click="onReveal"
-          />
-        </UiCard>
-        <p v-if="me.phase === 'closed'" class="text-center text-sm text-muted">
-          {{ t('participant.home.closed') }}
-        </p>
+        </div>
       </template>
+      <UiCard
+        v-else
+        padding="lg"
+        class="flex flex-col items-center gap-3 text-center"
+        data-testid="draw-card"
+      >
+        <UiEnvelope :state="envelope" />
+        <h2 class="font-display text-[22px] leading-snug font-bold">
+          {{ card.title }}
+        </h2>
+        <p class="text-sm text-muted">{{ card.body }}</p>
+        <UAlert
+          v-if="revealMutation.isError.value"
+          color="error"
+          variant="subtle"
+          :description="errorMessage(revealMutation.error.value)"
+        />
+        <UButton
+          v-if="view === 'waiting' && me.wishesEditable"
+          :to="`/p/${token}/souhaits`"
+          block
+          size="xl"
+          icon="i-lucide-pencil"
+          :label="t('participant.home.waiting.action')"
+        />
+        <UButton
+          v-else-if="view !== 'waiting'"
+          block
+          size="xl"
+          icon="i-lucide-gift"
+          :variant="me.revealed ? 'outline' : 'solid'"
+          :loading="revealMutation.isPending.value"
+          :label="
+            me.revealed
+              ? t('participant.home.seen.revealAgain')
+              : t('participant.home.ready.reveal')
+          "
+          @click="onReveal"
+        />
+        <p v-if="card.hint" class="text-[13px] text-muted">{{ card.hint }}</p>
+      </UiCard>
 
       <UiList>
         <UiListItem

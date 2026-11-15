@@ -5,28 +5,62 @@ export default {
   home: {
     greeting: 'Hi {firstName}!',
     changeAvatar: 'Change my icon',
+    steps: {
+      label: 'Steps of the draw',
+      invitation: 'Invitation',
+      drawSoon: 'Draw · soon',
+      drawDone: 'Draw done',
+      party: 'Party',
+      partyIn: {
+        one: 'Party · in {count} day',
+        other: 'Party · in {count} days',
+      },
+      partyToday: 'Party · today',
+      partyOver: 'Party over',
+    },
     waiting: {
       title: 'The draw has not taken place yet',
       body: 'Your organizer will let you know. Keep this link: this is where you will find out who you are giving a gift to.',
-      wishes:
-        'In the meantime, write down a few gift ideas for the person who will draw your name.',
+      action: 'Write down my gift ideas',
+      hint: 'In the meantime, help the person who will draw your name.',
     },
     ready: {
-      title: 'The draw is done!',
-      body: 'Make sure nobody is looking at your screen.',
+      title: 'Your envelope is waiting',
+      body: 'The draw is done. Make sure nobody is looking at your screen before you open it.',
+      reveal: 'Find out who I am giving a gift to',
+      hint: 'Your result closes as soon as you leave the page.',
+    },
+    shown: {
+      hide: 'Hide my result',
+      hint: 'It closes by itself when you leave the page.',
+    },
+    seen: {
+      title: 'You already know who you are giving to',
+      body: 'A memory lapse? Make sure nobody is looking at your screen.',
       revealAgain: 'See who I am giving to again',
       ideasWaiting: {
         one: 'Their list has {count} gift idea.',
         other: 'Their list has {count} gift ideas.',
       },
-      reveal: 'Find out who I am giving a gift to',
-      hide: 'Hide my result',
     },
-    closed: 'This edition is closed.',
+    closed: {
+      title: 'The party is over',
+      body: 'This edition is closed. You can still see who you gave a gift to.',
+      bodyNotSeen:
+        'This edition is closed. You can still find out who you were giving a gift to.',
+    },
     wishes: {
       title: 'My wish list',
       help: 'Help the person who drew your name',
       none: 'No ideas',
+      editable: {
+        one: '{count} idea · can be changed until the party',
+        other: '{count} ideas · can be changed until the party',
+      },
+      locked: {
+        one: '{count} idea · can no longer be changed',
+        other: '{count} ideas · can no longer be changed',
+      },
     },
     journal: {
       title: 'Group journal',
@@ -41,8 +75,10 @@ export default {
     youGiveTo: 'You are giving a gift to',
     budget: 'Budget',
     date: 'Date',
+    guardianMessage: "The organizer's note",
     ideas: 'Their gift ideas',
     noIdeas: '{name} has not given any ideas yet.',
+    seeLink: 'See the link',
   },
   wishes: {
     title: 'My wish list',
@@ -71,7 +107,7 @@ export default {
     edition: 'Edition',
     empty: 'Nothing to report yet.',
   },
-  invalid: { title: 'Oops' },
+  invalid: { title: 'Oops, this link no longer works' },
   account: {
     title: 'Keep your draws in one place',
     body: 'Create an account with your email address: you will find this draw, and the next ones, without looking for the link.',

@@ -552,8 +552,10 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 | `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées et enregistrement (voir 6 bis.4) |
 | `/p/[token]/journal` | Journal du groupe |
 
-Détails d'interface :
-- Résultat : animation courte de révélation (carte qui se retourne ou paquet qui s'ouvre), prénom en très grand, puis budget, date et message de l'organisateur, puis la liste de souhaits du receveur.
+Détails d'interface (page du tirage refaite le 15 novembre 2026) :
+- De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Ma liste de souhaits » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
+- Les états : avant le tirage (enveloppe en pointillés, « Noter mes idées de cadeaux ») ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, nombre d'idées qui attendent) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
+- Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, les pavés Budget et Date, le mot de l'organisateur, puis ses idées, chaque lien affiché « Voir le lien ».
 - Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut retoucher « Découvrir ». Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache.
 - Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton organisateur »).
 
@@ -599,7 +601,7 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, liste de souhaits active ou non. Jamais le résultat. N'est pas compté comme une consultation |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, liste de souhaits active ou non. Jamais le résultat. N'est pas compté comme une consultation |
 | `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Compte et journalise la consultation |
 | `GET /api/p/[token]/wishes` | Sa propre liste de souhaits |
 | `PUT /api/p/[token]/wishes` | Corps : la liste complète. Remplace la liste, journalise. Refusé si l'édition est clôturée ou la règle inactive |
@@ -797,6 +799,7 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - Le résultat ne vit que dans l'état de la page (mutation TanStack Query, jamais mise en cache) : il disparaît au rechargement.
 - En-têtes `Referrer-Policy`, `Cache-Control: no-store` et `X-Robots-Tag` posés par `routeRules` sur `/p/**` et `/api/p/**`.
 - Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté organisateur.
+- Depuis le 15 novembre 2026, l'état renvoie aussi la date de la fête (rien de secret : les messages la donnent à tous), pour le compte à rebours de la frise.
 - La page se met à jour seule : l'état est redemandé toutes les 10 s tant que l'onglet est visible (pas de SSE ni de WebSocket ; le vrai push par Durable Object a été étudié puis écarté le 13 novembre 2026, trop de mécanique pour un événement annuel).
 - Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête ; le changement est journalisé.
 - Journal affiché en frise (`JournalList`) : fil rouge, emoji par type d'événement, étapes clés en cartes, regroupement par jour.
@@ -1133,6 +1136,7 @@ Définis dans `app/assets/css/main.css`. Les écrans nomment un **rôle**, jamai
 | `bg-skeleton`, `bg-skeleton-soft` | Chargement, sur la page et sur une ligne blanche |
 | `bg-track` | Partie vide d'une barre de progression |
 | `bg-divider` | Trait entre deux lignes, entre deux étapes |
+| `envelope`, `envelope-fold`, `star` | Papier kraft de l'enveloppe, son pli, l'étoile moutarde (puces des idées, carte de l'enveloppe ouverte) |
 | `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond le plus clair (pavé, encadré), `soft` un cran plus soutenu (halo, bouton rond à presser, rond d'état, surlignage), `ink` le texte et les icônes posés dessus |
 | `primary` (rouge brique), `secondary` et `success` (vert sapin), `warning` (moutarde), `error` (canneberge) | Action, réussite, attention, danger (`app/app.config.ts`). Attention et danger utilisent une teinte assez sombre pour rester lisibles en texte sur blanc |
 
@@ -1156,9 +1160,11 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
 | `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable |
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
+| `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
+| `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
 | `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
 
-Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`).
+Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`), `participantSteps` et `envelopeState` (`server/utils/personal.ts`).
 
 Composants construits dessus et réutilisés : `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
 

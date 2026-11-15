@@ -95,15 +95,16 @@ Une personne présente dans deux familles est enregistrée **deux fois** (une pe
 ### 4.1 Cycle de vie d'une édition
 
 ```
-brouillon ──► invitations ──► tirée ──► clôturée
-                  ▲              │
-                  └── annulation du tirage (journalisée)
+en préparation ──► tirée ──► clôturée
+       ▲             │
+       └── annulation du tirage (journalisée)
 ```
+
+Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec une date de fête obligatoire : il n'y a plus d'étape « brouillon » ni d'étape « invitations » à ouvrir. L'écran de l'organisateur montre une frise en trois étapes, Préparer, Tirer, Fêter ; « Fêter » est la même édition tirée, à partir du jour de la fête.
 
 | Statut | Ce qui est possible |
 |---|---|
-| `brouillon` | L'organisateur compose la liste des participants et les exclusions, règle les paramètres. |
-| `invitations` | L'organisateur partage les liens. Chacun ouvre le sien et peut commencer sa liste de souhaits. La liste des participants reste modifiable. |
+| `preparing` | L'organisateur compose la liste des participants et les exclusions, règle les paramètres. Les liens marchent déjà : il peut, s'il le veut, prévenir avant le tirage pour que chacun note ses idées. |
 | `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
 | `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
 
@@ -112,11 +113,11 @@ brouillon ──► invitations ──► tirée ──► clôturée
 1. Se connecte avec son adresse email (lien magique) et ouvre son groupe.
 2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
 3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les exclusions.
-4. Passe en `invitations` : pour chaque participant, touche « Partager » ; la feuille de partage du téléphone s'ouvre avec le message et le lien, il choisit WhatsApp (ou autre) et le contact.
-5. Suit les statuts : *envoyé*, *souhaits renseignés* (nombre d'idées, jamais leur contenu), *consulté* (combien de fois, et quand).
-6. Lance le tirage quand la vérification est verte.
-7. Prévient chacun que le tirage est fait, par le même procédé : le message « Le tirage est fait » est prêt sur chaque carte (même lien).
-8. En cas de pépin : repartage un lien, régénère un lien transféré par erreur.
+4. Facultatif : prévient avant le tirage (« Prévenir avant le tirage »), pour que chacun note ses idées.
+5. Lance le tirage quand la vérification est verte, après un récapitulatif dans un panneau du bas.
+6. Prévient chacun que le tirage est fait : par email à plusieurs d'un coup (action principale), ou une personne à la fois depuis sa ligne (email, partage du téléphone, copie).
+7. Suit chaque personne : *à prévenir*, *pas encore ouvert*, *a découvert* (combien de fois), et le nombre d'idées (jamais leur contenu).
+8. En cas de pépin : renvoie un lien, régénère un lien transféré par erreur, annule et relance le tirage.
 9. Après la fête : clôture l'édition.
 
 ### 4.3 Parcours du participant
@@ -196,7 +197,7 @@ Une édition `tirée` ne peut pas être retirée par un simple clic. Le bouton d
 Procédure réservée à l'organisateur, avec double confirmation :
 
 1. Toutes les attributions de l'édition sont supprimées.
-2. L'édition repasse en `invitations`, la liste redevient modifiable.
+2. L'édition repasse en préparation (`preparing`), la liste redevient modifiable.
 3. Les liens des participants **restent valables**.
 4. Les compteurs de consultation sont remis à zéro.
 5. Un événement `draw_cancelled` est inscrit au journal, avec le motif saisi par l'organisateur.
@@ -219,7 +220,7 @@ Ajoutée en v2 à la demande de Julien. L'objectif : aider le donneur à choisir
 - Une liste **par participation** (donc par personne et par édition) : les envies changent d'une année sur l'autre. Pas de reprise automatique de l'an dernier en V1 (voir section 20).
 - Chaque souhait est une **idée courte** (texte de 200 caractères max) avec un **lien facultatif** (`http`/`https` uniquement, validé côté serveur, affiché avec `rel="noopener noreferrer nofollow"`).
 - Au plus `souhaits_max` idées par liste (défaut 10). La fonctionnalité se désactive par la règle `liste_souhaits`.
-- La liste est modifiable en statuts `invitations` et `tirée`, figée en `clôturée`.
+- La liste est modifiable en préparation et une fois tirée, figée en `clôturée`.
 - Une relance du tirage (6.5) **conserve** les listes : elles appartiennent à la participation, pas à l'attribution.
 
 ### 6 bis.2 Qui voit quoi
@@ -483,7 +484,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `group_id` | text FK | |
 | `label` | text | Ex. « Noël 2026 » |
 | `year` | integer | Sert à ordonner les éditions |
-| `status` | text | `draft`, `invitations`, `drawn`, `closed` |
+| `status` | text | `preparing`, `drawn`, `closed` (`draft` et `invitations` fusionnés par la migration `0015`) |
 | `rules_override` | text (JSON) nullable | Surcharge des règles du groupe |
 | `rules_snapshot` | text (JSON) nullable | Règles et exclusions réellement appliquées au tirage, pour audit |
 | `drawn_at`, `closed_at` | text nullable | |
@@ -572,16 +573,19 @@ Détails d'interface :
 | `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver ; écran Exclusions : paires qui ne se tirent pas (couples, fratries…), réciproques par défaut |
 | `/admin/[groupe]/reglages` | Règles par défaut du groupe |
 | `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
+| `/admin/[groupe]/editions/[id]/emails` | Envoi par email à plusieurs participants (13.3) |
+| `/admin/[groupe]/editions/[id]/exclusions` | Exclusions qui s'appliquent à l'édition : celles du groupe et les paires des tirages précédents, levables ; une fois tirée, celles appliquées |
 | `/admin/[groupe]/journal` | Journal du groupe |
 
-Écran de pilotage d'une édition, le plus important :
-- En-tête : nom de l'édition, statut, action principale du moment (« Ouvrir les invitations », « Lancer le tirage », « Clôturer »).
-- Liste des participants, une ligne par personne, avec des pastilles : *envoyé*, *souhaits*, *consulté* ; l'en-tête indique combien ont consulté leur résultat.
-- Sur chaque ligne, un bouton **« Partager »** ouvre la feuille de partage du téléphone avec le message du type choisi (invitation, tirage fait, relance, nouveau tirage) ; la pastille *envoyé* est posée si le partage n'est pas annulé.
-- Fiche participant : partager, copier le message, copier le lien seul, « pas envoyé finalement ? », régénérer le lien, retirer de l'édition, et la date de dernière consultation.
-- Un sélecteur en haut de liste choisit le type de message pour toutes les cartes (par défaut : celui qui correspond au statut de l'édition). Les cartes non encore *envoyées* pour ce type remontent en premier pour enchaîner les envois.
-- Avant le tirage : un encart « Vérification » indique si le tirage est possible et, sinon, pourquoi.
-- Zone dangereuse en bas de page : « Annuler et relancer le tirage ».
+Écran de pilotage d'une édition, le plus important (refait le 15 novembre 2026). De haut en bas : où en est l'édition, ce qu'il faut faire maintenant, les participants, puis ce qui peut attendre.
+- **En-tête** : nom de l'édition, groupe et budget, pastille « Fête le … » qui ouvre le panneau de la date. Une édition ancienne sans date montre une carte « Quand a lieu la fête ? ».
+- **Frise** Préparer, Tirer, Fêter (`editionStep`).
+- **Préparer** : carte « À faire maintenant » avec la vérification (le tirage est possible, sinon pourquoi) et « Lancer le tirage », qui ouvre un panneau de confirmation (participants, règles, personnes du groupe absentes de l'édition). Puis la liste des participants (nombre d'idées, langue des messages), « Ajouter des participants », et une section « Si tu veux » : prévenir avant le tirage, exclusions.
+- **Tirée** : carte « Préviens chacun que le tirage est fait » avec trois compteurs (à prévenir, pas encore ouvert, a découvert) et « Prévenir par email » (puis « Relancer par email ») vers l'écran d'envoi groupé. La liste met en tête ceux qui restent à prévenir (`sortParticipants`) ; le bouton rond de chaque ligne ouvre le panneau d'envoi, qui passe ensuite à la personne suivante.
+- **Panneau d'envoi** : le message (onglets), son texte exact, un mot à ajouter, la langue (enregistrée sur la personne), puis l'email en premier s'il y a une adresse, sinon le partage du téléphone ; pour un renvoi, corriger l'adresse ou passer par un autre chemin (partager, copier le message, copier le lien seul).
+- **Fêter** : à partir du lendemain de la fête, la carte devient « La fête est passée : clôture l'édition ».
+- **Plus tard, ou en cas de pépin** : clôturer (possible après la fête), voir un seul résultat (dernier recours, journalisé), annuler et relancer le tirage.
+- Fiche participant : inchangée (partager, copier, lien seul, régénérer, retirer, dernière consultation).
 
 ---
 
@@ -629,7 +633,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration |
 | `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente, 100 participants au plus) |
 | `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (nombre de souhaits, jamais leur contenu) ; libellé et règles propres |
-| `POST …/editions/[id]/open`, `/draw`, `/redraw`, `/close` | Cycle de vie : ouvrir les invitations, tirer, annuler le tirage (motif obligatoire), clôturer |
+| `POST …/editions/[id]/draw`, `/redraw`, `/close` | Cycle de vie : tirer, annuler le tirage (motif obligatoire), clôturer |
 | `GET …/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi. Liste aussi les paires des éditions clôturées qui excluent |
 | `POST/DELETE …/editions/[id]/history-waivers` | Lever une exclusion d'un tirage précédent pour cette édition ; tout rétablir |
 | `POST …/editions/[id]/participants`, `DELETE …/participants/[participationId]` | Ajouter, retirer (avant le tirage) |
@@ -661,11 +665,11 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 - Texte **court et sans mise en forme**, le lien **seul sur sa ligne** pour que les messageries le rendent cliquable et génèrent l'aperçu, un emoji 🎁 au plus.
 - **Aucun message ne contient un résultat.**
 - Les messages proposés suivent l'étape (`messageTypesFor`) : `invitation` et `reminder` avant le tirage, `drawn`, `reminder` et `redraw` après. L'API refuse les autres.
-- Avant le tirage, l'écran de l'organisateur reste discret : pas de « pas encore envoyé » ni de compteur, seulement une coche « Invitation envoyée ». Le suivi d'envoi commence au tirage, qui remet la pastille *envoyé* à zéro.
+- Avant le tirage, l'écran de l'organisateur reste discret : aucun suivi d'envoi ni compteur. Le suivi commence au tirage, qui remet la pastille *envoyé* à zéro : une seule tournée de messages suffit pour jouer.
 
 | Modèle (`type`) | Moment | Contenu |
 |---|---|---|
-| `invitation` | Statut `invitations` | « Salut Léa ! 🎁 Tu participes au Secret Santa de [groupe] ([édition]). Ouvre ton lien et note quelques idées de cadeaux : [lien] » |
+| `invitation` | Avant le tirage, facultatif | « Salut Léa ! 🎁 Tu participes au Secret Santa de [groupe] ([édition]). Ouvre ton lien et note quelques idées de cadeaux : [lien] » |
 | `tirage` | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau : [lien] » + budget et date s'ils sont renseignés |
 | `relance` | Manuel | « Petit rappel Léa : ton lien t'attend, pense à l'ouvrir. Ton lien : [lien] » |
 | `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
@@ -680,8 +684,8 @@ Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnemen
 - **Fournisseur** : Resend (offre gratuite), domaine `under-the-tree.party` vérifié, un seul appel HTTPS par envoi groupé (`/emails/batch`), ce qui reste loin de la limite de 50 sous-requêtes du plan gratuit. Secret `NUXT_RESEND_API_KEY` ; sans clé, la route répond `email_not_configured` et rien d'autre ne change.
 - **Contenu** : `buildEmail` dans `server/utils/messages.ts`, même texte que le message à partager, plus un objet et un jumeau HTML sobre. Jamais de résultat.
 - **Délivrabilité, mesurée le 13 novembre 2026 sur Gmail** : SPF, DKIM et DMARC passent. Sans DMARC le premier essai est arrivé en spam ; avec, les mails arrivent dans l'onglet **Promotions**, mis en forme ou non. Le domaine venait d'être créé ; à remesurer plus tard. Seul Gmail a été testé. L'écran de l'organisateur prévient que les emails arrivent souvent en spam (formulation demandée par Julien). Conséquence : l'email est un complément, l'organisateur relance par téléphone ceux qui n'ouvrent pas leur lien.
-- **Envoi individuel** : le bouton « Envoyer » d'un participant ouvre un panneau où l'organisateur choisit le message, la langue (enregistrée comme langue préférée de la personne) puis le moyen : partage du téléphone, copie, ou email si le groupe l'a et que la personne a une adresse.
-- **Envoi à plusieurs** : l'organisateur coche les participants dans la liste (seuls ceux qui ont une adresse), puis choisit le message dans un panneau. L'API prend `participationIds` ; `audience` reste accepté.
+- **Envoi individuel** : le bouton rond d'un participant ouvre le panneau d'envoi (section 11) : message, langue (enregistrée comme langue préférée de la personne), puis l'email s'il a une adresse, le partage du téléphone ou la copie.
+- **Envoi à plusieurs** : un écran à part (`…/editions/[id]/emails`) : le message en onglets, la liste où ceux qui ont une adresse et restent à prévenir sont cochés d'avance (`preselectedForEmail`), un lien « Ajouter » pour ceux sans adresse, l'aperçu pour le premier coché, un mot à ajouter, puis « Envoyer N emails ». L'API prend `participationIds` ; `audience` reste accepté.
 - Les tests de bout en bout tournent sans clé (`scripts/e2e-server.sh` ignore le `.env` du poste) : aucun test n'envoie de vrai email.
 
 ---
@@ -799,7 +803,7 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - Tests de bout en bout dans `tests/e2e/participant.spec.ts`.
 
 **Étape 5 bis — Liste de souhaits** ✅
-Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté organisateur existait depuis l'étape 4. Modifiable en `invitations` et `tirée`, refusée en brouillon, en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
+Routes `GET/PUT /api/p/[token]/wishes`, écran `/p/[token]/souhaits`, liste du receveur sur l'écran de résultat, événement `wishes_updated`. La pastille *souhaits* côté organisateur existait depuis l'étape 4. Modifiable en préparation et une fois tirée, refusée en clôturée ou si la règle `wishlist` est inactive. Une insertion par souhait dans la transaction : D1 limite une requête à 100 paramètres. Écran en liste, ajout et modification dans un panneau du bas, avec un bouton **« Valider »** par idée (pas d'enregistrement global) : fermer le panneau autrement abandonne la saisie. Chaque validation écrit une ligne au journal.
 
 **Étape 6 — Partage des liens** ✅ *fait avec l'étape 4*
 Quatre modèles de texte, textes préchargés, bouton « Partager » (feuille de partage du téléphone) et copie en repli, pastille *envoyé* annulable, journalisation.
@@ -1066,9 +1070,9 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 - **Tirage à la main** : la conception 22.6 est validée, y compris l'affichage à l'organisateur des noms des donneurs en conflit.
 - **Session** : 30 jours.
 
-### 22.8 À faire : supprimer l'étape « Invitations » (décision du 15 novembre 2026)
+### 22.8 Fait : supprimer l'étape « Invitations » (décision du 15 novembre 2026)
 
-Décidé avec Julien pour simplifier le pilotage d'une édition. **Rien n'est codé.** Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns (rangée « Gestion d'un tirage par l'organisateur »).
+Décidé avec Julien pour simplifier le pilotage d'une édition. **Codé le 15 novembre 2026** (statut `preparing`, migration `0015`, écran refait : sections 4.1, 11, 13). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns (rangée « Gestion d'un tirage par l'organisateur »).
 
 **Pourquoi** : l'étape obligatoire ne sert qu'à débloquer les envois (« Ouvrir les invitations ») et impose deux tournées de messages par personne, alors qu'une seule suffit pour jouer. Brouillon et invitations permettent presque les mêmes choses.
 
@@ -1080,12 +1084,12 @@ préparer ──► tirée ──► clôturée
     └── annulation du tirage (journalisée)
 ```
 
-- [ ] **Fusionner `draft` et `invitations`** en une seule étape « Préparer ». Piste la plus simple : supprimer `draft`, l'édition est créée directement ouverte (liens valables, messages `invitation` et `reminder` disponibles, lien d'invitation au groupe inchangé). À vérifier avant de coder : tout ce qui dépend de `draft` (`server/utils/editions.ts` transition `open`, `server/utils/personal.ts` `links_not_open`, `server/database/home.ts`, `server/api/admin/[slug]/editions/index.post.ts`, schéma et migration des éditions existantes, tests de `editions`, `personal`, `messages`).
-- [ ] **Écran d'édition à préparer** : frise en trois étapes (Préparer, Tirer, Fêter) ; action principale « Lancer le tirage » avec la vérification des règles ; plus de bouton « Ouvrir les invitations ».
-- [ ] **Invitation facultative** : une ligne secondaire « Prévenir avant le tirage » (récolter les souhaits, confirmer les présences). Pas de compteur ni de suivi d'envoi avant le tirage (13.2 inchangé).
-- [ ] **Confirmation du tirage dans un panneau du bas** (au lieu de la confirmation en ligne), avec le récapitulatif : participants, règles, personnes du groupe absentes de l'édition.
-- [ ] **Après le tirage, une seule tournée** : « Prévenir par email » est l'action principale ; le partage à la main reste sur chaque ligne. Liste groupée : à prévenir, pas encore ouvert, ont découvert.
-- [ ] **Mettre à jour** les sections 4.1, 4.2, 11, 13.2 et l'étape 5 bis (souhaits « modifiable en `invitations` et `tirée` »), les dictionnaires (`adminEdition.cockpit.draftIntro`, `openInvitations`, libellés de statut), le guide de style et les tests de bout en bout.
+- [x] **Fusionner `draft` et `invitations`** en une seule étape « Préparer ». Piste la plus simple : supprimer `draft`, l'édition est créée directement ouverte (liens valables, messages `invitation` et `reminder` disponibles, lien d'invitation au groupe inchangé). À vérifier avant de coder : tout ce qui dépend de `draft` (`server/utils/editions.ts` transition `open`, `server/utils/personal.ts` `links_not_open`, `server/database/home.ts`, `server/api/admin/[slug]/editions/index.post.ts`, schéma et migration des éditions existantes, tests de `editions`, `personal`, `messages`).
+- [x] **Écran d'édition à préparer** : frise en trois étapes (Préparer, Tirer, Fêter) ; action principale « Lancer le tirage » avec la vérification des règles ; plus de bouton « Ouvrir les invitations ».
+- [x] **Invitation facultative** : une ligne secondaire « Prévenir avant le tirage » (récolter les souhaits, confirmer les présences). Pas de compteur ni de suivi d'envoi avant le tirage (13.2 inchangé).
+- [x] **Confirmation du tirage dans un panneau du bas** (au lieu de la confirmation en ligne), avec le récapitulatif : participants, règles, personnes du groupe absentes de l'édition.
+- [x] **Après le tirage, une seule tournée** : « Prévenir par email » est l'action principale ; le partage à la main reste sur chaque ligne. Liste groupée : à prévenir, pas encore ouvert, ont découvert.
+- [x] **Mettre à jour** les sections 4.1, 4.2, 11, 13.2 et l'étape 5 bis (souhaits « modifiable en `invitations` et `tirée` »), les dictionnaires (`adminEdition.cockpit.draftIntro`, `openInvitations`, libellés de statut), le guide de style et les tests de bout en bout.
 
 ### 22.9 Idée : « Dévoiler les résultats » à l'étape Fêter (15 novembre 2026)
 
@@ -1156,7 +1160,9 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 
 Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`).
 
-Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une édition, remplacé par `UiActionCard` dans la refonte de l'édition), `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
+Composants construits dessus et réutilisés : `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
+
+Écran d'une édition (section 11), construit sur ces composants : `AdminEditionHeader`, `AdminEditionPrepare`, `AdminEditionFollow`, `AdminDrawSheet`, `AdminSendSheet`, `AdminDateSheet`, `AdminPartyDateCard`.
 
 ### 23.3 Règles
 

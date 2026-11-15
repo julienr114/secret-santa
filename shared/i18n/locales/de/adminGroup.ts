@@ -11,6 +11,11 @@ export default {
     nameRequired: 'Name erforderlich',
     submit: 'Gruppe erstellen',
     created: 'Gruppe erstellt',
+    note: 'Du wirst sie organisieren. Die Mitglieder fügst du gleich danach hinzu, oder du schickst ihnen einen Link.',
+    groupsLeft: {
+      one: 'Du kannst noch {count} Gruppe anlegen',
+      other: 'Du kannst noch {count} Gruppen anlegen',
+    },
   },
   organizers: {
     title: 'Organisatoren',

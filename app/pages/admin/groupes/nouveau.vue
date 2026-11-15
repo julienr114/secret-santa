@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useCreateGroupMutation } from '~/composables/queries/useGroups';
+import { useHomeQuery } from '~/composables/queries/useAuth';
 
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
@@ -20,6 +21,9 @@ const screen = computed(() => ({
 const { user } = useUserSession();
 const isSuper = computed(() => user.value?.role === 'super_admin');
 const create = useCreateGroupMutation();
+// How many more groups the account may create; nothing without a limit.
+const home = useHomeQuery();
+const groupsLeft = computed(() => home.data.value?.groupsLeft ?? null);
 const toast = useToast();
 
 const schema = computed(() =>
@@ -97,6 +101,9 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
           class="w-full"
         />
       </UFormField>
+      <UiNotice v-if="!isSuper" variant="info" icon="i-lucide-info">
+        {{ t('adminGroup.newGroup.note') }}
+      </UiNotice>
       <UAlert
         v-if="create.isError.value"
         color="error"
@@ -109,6 +116,13 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
         :loading="create.isPending.value"
         :label="t('adminGroup.newGroup.submit')"
       />
+      <p
+        v-if="!isSuper && groupsLeft !== null"
+        class="text-center text-sm text-muted"
+        data-testid="groups-left"
+      >
+        {{ t('adminGroup.newGroup.groupsLeft', { count: groupsLeft }) }}
+      </p>
     </UForm>
   </AdminScreen>
 </template>

@@ -9,6 +9,11 @@ export default {
     nameRequired: 'Nom requis',
     submit: 'Créer le groupe',
     created: 'Groupe créé',
+    note: 'Tu en seras l’organisateur. Tu ajoutes les membres juste après, ou tu leur envoies un lien.',
+    groupsLeft: {
+      one: 'Tu peux encore créer {count} groupe',
+      other: 'Tu peux encore créer {count} groupes',
+    },
   },
   organizers: {
     title: 'Organisateurs',

@@ -53,7 +53,11 @@ const onAgain = () => {
 
 <template>
   <div v-if="sent" class="flex flex-col gap-3 text-center" role="status">
-    <p class="text-4xl" aria-hidden="true">📬</p>
+    <UIcon
+      name="i-lucide-mail-check"
+      class="size-10 self-center text-primary"
+      aria-hidden="true"
+    />
     <p class="font-display text-xl font-semibold">
       {{ t('auth.login.sentTitle') }}
     </p>
@@ -106,7 +110,11 @@ const onAgain = () => {
     >
       <UInput v-model="firstName" autocomplete="given-name" class="w-full" />
     </UFormField>
-    <UFormField :label="t('auth.login.emailLabel')" required>
+    <UFormField
+      :label="t('auth.login.emailLabel')"
+      :help="t('auth.login.emailHelp')"
+      required
+    >
       <UInput
         v-model="email"
         type="email"

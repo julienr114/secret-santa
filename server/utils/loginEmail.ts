@@ -1,42 +1,8 @@
-import { escapeHtml, type Email } from './messages';
+import { plainEmail, type Email } from './messages';
 import { translate, type Locale } from '#shared/i18n';
 
 // The emails of the accounts: the login link, a request for a group and
 // its answer. Short and plain, the link alone on its line.
-
-/**
- * Lays out a plain email: lines, a link on its own line, more lines.
- * @param parts - Subject, the lines before and after, and the link.
- * @returns Subject, text and HTML.
- */
-const plainEmail = ({
-  subject,
-  before,
-  link,
-  after = [],
-}: {
-  subject: string;
-  before: string[];
-  link: string;
-  after?: string[];
-}): Email => {
-  const href = escapeHtml(link);
-  const paragraph = (line: string) =>
-    `<p style="margin:0 0 12px">${escapeHtml(line)}</p>`;
-  return {
-    subject,
-    text: [...before, link, ...(after.length > 0 ? ['', ...after] : [])].join(
-      '\n',
-    ),
-    html: [
-      '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
-      ...before.map(paragraph),
-      `<p style="margin:0 0 20px"><a href="${href}">${href}</a></p>`,
-      ...after.map(paragraph),
-      '</div>',
-    ].join(''),
-  };
-};
 
 /**
  * The email carrying a login link. It says nothing about the account, so

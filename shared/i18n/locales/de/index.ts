@@ -7,6 +7,7 @@ import adminShell from './adminShell';
 import adminEdition from './adminEdition';
 import adminGroup from './adminGroup';
 import auth from './auth';
+import notify from './notify';
 
 export default {
   common,
@@ -18,4 +19,5 @@ export default {
   adminEdition,
   adminGroup,
   auth,
+  notify,
 };

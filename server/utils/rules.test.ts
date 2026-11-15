@@ -22,6 +22,9 @@ describe('rules', () => {
       messageNotePosition: 'after',
       wishlist: true,
       maxWishes: 10,
+      notifyJoined: true,
+      notifyAllViewed: true,
+      notifyReminder: true,
     });
   });
 

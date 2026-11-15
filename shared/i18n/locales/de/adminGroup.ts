@@ -150,5 +150,12 @@ export default {
       'Wird unverändert zu jeder Nachricht und E-Mail an die Teilnehmer hinzugefügt, über oder unter dem Standardtext. Du kannst ihn beim Senden noch ändern.',
     wishlist: 'Wunschlisten aktivieren',
     maxWishes: 'Maximale Anzahl Ideen pro Liste',
+    notifySection: 'E-Mails an die Organisatoren',
+    notifyHelp: 'An jeden Organisator der Gruppe gesendet, in seiner Sprache.',
+    notifyJoined: 'Wenn jemand der Gruppe über den Link beitritt',
+    notifyAllViewed: 'Wenn alle ihre Auslosung entdeckt haben',
+    notifyReminder: 'Erinnerung vor der Bescherung',
+    notifyReminderHelp:
+      '3 Tage vor dem Datum die Liste derer, die ihre Auslosung noch nicht entdeckt haben.',
   },
 } satisfies Dict<typeof fr>;

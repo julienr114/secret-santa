@@ -43,6 +43,8 @@ export type PublicEdition = {
   closedAt: string | null;
   createdAt: string;
   participantCount?: number;
+  /** When the organisers were reminded that the exchange is near. */
+  reminderSentAt: string | null;
   /**
    * Exclusions applied at the draw, once it is done: the edition then
    * shows these, not the group's current ones, which may have changed.
@@ -66,6 +68,7 @@ export const publicEdition = (
   drawnAt: edition.drawnAt,
   closedAt: edition.closedAt,
   createdAt: edition.createdAt,
+  reminderSentAt: edition.reminderSentAt,
   ...(participantCount === undefined ? {} : { participantCount }),
   ...(edition.status === 'drawn' || edition.status === 'closed'
     ? { exclusionsAtDraw: exclusionsOf(edition.rulesSnapshot) }

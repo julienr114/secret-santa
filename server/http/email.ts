@@ -16,7 +16,7 @@ export const emailConfigured = (event: H3Event): boolean =>
 
 /** Sends the emails, all or none. Never logs a recipient or a link. */
 export const sendEmails = async (
-  event: H3Event,
+  event: H3Event | undefined,
   emails: OutgoingEmail[],
 ): Promise<Result<{ count: number }>> => {
   const { resendApiKey, emailFrom } = secretsOf(event);

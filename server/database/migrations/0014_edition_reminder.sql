@@ -1,0 +1,1 @@
+ALTER TABLE `editions` ADD `reminder_sent_at` text;

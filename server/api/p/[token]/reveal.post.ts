@@ -4,7 +4,13 @@ import { listEditionPeople } from '#server/database/participations';
 import { listWishes } from '#server/database/wishes';
 import { recordEvent } from '#server/database/audit';
 import { requirePersonalLink } from '#server/http/personal';
-import { dataKeyOf, nowIso } from '#server/http/context';
+import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
+import { notifyOrganizers } from '#server/http/notify';
+import { viewCounts } from '#server/database/notify';
+import {
+  buildAllViewedEmail,
+  isEveryoneViewed,
+} from '#server/utils/notifications';
 import { notFound, unwrap } from '#server/http/errors';
 import { avatarOf } from '#server/utils/avatars';
 import { decrypt } from '#server/utils/crypto';
@@ -60,6 +66,22 @@ export default defineEventHandler(async (event) => {
   // group match "Léa updated her list" with "Tom viewed his result" and
   // guess who gives to whom.
   if (viewCount === 1) {
+    // The last one to look completes the edition: the organisers are told.
+    if (
+      rules.notifyAllViewed &&
+      isEveryoneViewed(await viewCounts(db, edition.id))
+    ) {
+      await notifyOrganizers({ db, event }, group.id, (locale) =>
+        buildAllViewedEmail(
+          {
+            groupName: group.name,
+            editionLabel: edition.label,
+            link: appUrl(event, `/admin/${group.slug}/editions/${edition.id}`),
+          },
+          locale,
+        ),
+      );
+    }
     await recordEvent(db, {
       type: 'result_viewed',
       groupId: group.id,

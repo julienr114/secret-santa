@@ -241,3 +241,35 @@ export const emailTargets = <P extends EmailCandidate>(
     left: Math.max(0, wanted.length - EMAIL_BATCH_MAX),
   };
 };
+
+/**
+ * Lays out a plain email: lines, a link on its own line, more lines.
+ * @param parts - Subject, the lines before and after, and the link.
+ * @returns Subject, text and HTML.
+ */
+export const plainEmail = ({
+  subject,
+  before,
+  link,
+  after = [],
+}: {
+  subject: string;
+  before: string[];
+  link: string;
+  after?: string[];
+}): Email => {
+  const href = escapeHtml(link);
+  return {
+    subject,
+    text: [...before, link, ...(after.length > 0 ? ['', ...after] : [])].join(
+      '\n',
+    ),
+    html: [
+      '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
+      ...before.map(paragraph),
+      `<p style="margin:0 0 20px"><a href="${href}">${href}</a></p>`,
+      ...after.map(paragraph),
+      '</div>',
+    ].join(''),
+  };
+};

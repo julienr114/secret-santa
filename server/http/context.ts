@@ -18,7 +18,11 @@ export type Secrets = {
   emailFrom: string;
 };
 
-export const secretsOf = (event: H3Event): Secrets => {
+/**
+ * The settings of the app, for a request or, without one (a scheduled
+ * task), from the environment.
+ */
+export const secretsOf = (event?: H3Event): Secrets => {
   const config = useRuntimeConfig(event);
   return {
     dataKey: String(config.dataKey ?? ''),
@@ -68,7 +72,8 @@ export const ipHashOf = async (event: H3Event): Promise<string> => {
  * @param path - Path starting with a slash.
  * @returns The full URL.
  */
-export const appUrl = (event: H3Event, path: string): string => {
-  const base = secretsOf(event).baseUrl || getRequestURL(event).origin;
+export const appUrl = (event: H3Event | undefined, path: string): string => {
+  const base =
+    secretsOf(event).baseUrl || (event ? getRequestURL(event).origin : '');
   return `${base.replace(/\/$/, '')}${path}`;
 };

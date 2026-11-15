@@ -31,3 +31,8 @@ migrations_dir = "server/database/migrations"
 
 [vars]
 NUXT_PUBLIC_BASE_URL = "https://under-the-tree.party"
+
+# Every morning at 8:00 UTC: reminders to the organisers before an
+# exchange (server/plugins/reminders.ts). Free plan: up to 5 crons.
+[triggers]
+crons = ["0 8 * * *"]

@@ -148,5 +148,12 @@ export default {
       'Added as written to every message and email sent to participants, above or below the standard text. You can still change it when sending.',
     wishlist: 'Enable wish lists',
     maxWishes: 'Maximum number of ideas per list',
+    notifySection: 'Emails to the organizers',
+    notifyHelp: 'Sent to every organizer of the group, in their language.',
+    notifyJoined: 'When someone joins the group by the link',
+    notifyAllViewed: 'When everyone has discovered their draw',
+    notifyReminder: 'Reminder before the exchange',
+    notifyReminderHelp:
+      '3 days before the date, the list of those who have not discovered their draw yet.',
   },
 } satisfies Dict<typeof fr>;

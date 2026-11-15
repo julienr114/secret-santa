@@ -150,6 +150,27 @@ const previousYearsItems = computed(() => [
             />
           </UFormField>
         </section>
+        <section class="flex flex-col gap-4" data-testid="notifications">
+          <UiSectionTitle>
+            {{ t('adminGroup.rules.notifySection') }}
+          </UiSectionTitle>
+          <p class="text-sm text-muted">
+            {{ t('adminGroup.rules.notifyHelp') }}
+          </p>
+          <USwitch
+            v-model="state.notifyJoined"
+            :label="t('adminGroup.rules.notifyJoined')"
+          />
+          <USwitch
+            v-model="state.notifyAllViewed"
+            :label="t('adminGroup.rules.notifyAllViewed')"
+          />
+          <USwitch
+            v-model="state.notifyReminder"
+            :label="t('adminGroup.rules.notifyReminder')"
+            :description="t('adminGroup.rules.notifyReminderHelp')"
+          />
+        </section>
         <UButton
           type="submit"
           block

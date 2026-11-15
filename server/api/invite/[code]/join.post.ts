@@ -6,7 +6,10 @@ import { insertPersonFromAccount } from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
 import { accounts, groups, persons } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
-import { nowIso } from '#server/http/context';
+import { appUrl, nowIso } from '#server/http/context';
+import { notifyOrganizers } from '#server/http/notify';
+import { buildJoinedEmail } from '#server/utils/notifications';
+import { mergeRules } from '#server/utils/rules';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { canJoinGroup } from '#server/utils/invite';
@@ -18,7 +21,8 @@ import { nameSchema } from '#server/utils/people';
 // draw: the organiser adds it to the draw, and new draws take it in. The
 // first name given here names the person, and completes the profile when
 // it has none. Each newcomer takes
-// one place of the link; joining twice changes nothing.
+// one place of the link; joining twice changes nothing. The organisers
+// are told by email, unless the group turned it off.
 const bodySchema = z.object({ firstName: nameSchema });
 
 export default defineEventHandler(async (event) => {
@@ -60,6 +64,19 @@ export default defineEventHandler(async (event) => {
     .update(groups)
     .set({ invitePlaces: (group.invitePlaces ?? 1) - 1 })
     .where(eq(groups.id, group.id));
+  const rules = mergeRules(group.rules);
+  if (rules.ok && rules.value.notifyJoined) {
+    await notifyOrganizers({ db, event }, group.id, (locale) =>
+      buildJoinedEmail(
+        {
+          groupName: group.name,
+          firstName,
+          link: appUrl(event, `/admin/${group.slug}/personnes`),
+        },
+        locale,
+      ),
+    );
+  }
   setResponseStatus(event, 201);
   return { ok: true };
 });

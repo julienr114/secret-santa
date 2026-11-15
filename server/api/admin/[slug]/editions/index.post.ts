@@ -53,6 +53,7 @@ export default defineEventHandler(async (event) => {
     rulesOverride: null,
     rulesSnapshot: null,
     historyWaivers: null,
+    reminderSentAt: null,
     drawnAt: null,
     closedAt: null,
     createdAt: nowIso(),

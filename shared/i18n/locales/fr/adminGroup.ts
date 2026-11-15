@@ -146,5 +146,12 @@ export default {
       'Ajouté tel quel à chaque message et email envoyé aux participants, au-dessus ou en dessous du texte standard. Tu peux encore le modifier au moment d’envoyer.',
     wishlist: 'Activer les listes de souhaits',
     maxWishes: "Nombre maximal d'idées par liste",
+    notifySection: 'Emails aux organisateurs',
+    notifyHelp: 'Envoyés à chaque organisateur du groupe, dans sa langue.',
+    notifyJoined: 'Quand quelqu’un rejoint le groupe par le lien',
+    notifyAllViewed: 'Quand tout le monde a découvert son tirage',
+    notifyReminder: 'Rappel avant l’échange',
+    notifyReminderHelp:
+      '3 jours avant la date, la liste de ceux qui n’ont pas encore découvert leur tirage.',
   },
 };

@@ -96,6 +96,8 @@ export const editions = sqliteTable(
     rulesSnapshot: text('rules_snapshot', { mode: 'json' }),
     // Previous-year pairs the guardian allowed again for this edition.
     historyWaivers: text('history_waivers', { mode: 'json' }),
+    // When the organisers were reminded that the exchange is near.
+    reminderSentAt: text('reminder_sent_at'),
     drawnAt: text('drawn_at'),
     closedAt: text('closed_at'),
     createdAt: text('created_at').notNull(),

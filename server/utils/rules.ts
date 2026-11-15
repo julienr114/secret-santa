@@ -23,6 +23,10 @@ const shape = {
   messageNotePosition: z.enum(['before', 'after']),
   wishlist: z.boolean(),
   maxWishes: z.number().int().min(1).max(50),
+  // Emails to the organisers (README 22.2), each one on or off.
+  notifyJoined: z.boolean(),
+  notifyAllViewed: z.boolean(),
+  notifyReminder: z.boolean(),
 };
 
 export const rulesSchema = z.object({
@@ -34,6 +38,9 @@ export const rulesSchema = z.object({
   messageNotePosition: shape.messageNotePosition.default('after'),
   wishlist: shape.wishlist.default(true),
   maxWishes: shape.maxWishes.default(10),
+  notifyJoined: shape.notifyJoined.default(true),
+  notifyAllViewed: shape.notifyAllViewed.default(true),
+  notifyReminder: shape.notifyReminder.default(true),
 });
 
 /** A partial rule set: only the keys to override. */

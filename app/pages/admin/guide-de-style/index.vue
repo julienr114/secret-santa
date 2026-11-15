@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AVATAR_COLORS } from '#server/utils/avatars';
+import { AVATAR_COLORS, type Avatar } from '#server/utils/avatars';
 import type { JournalEntry } from '#server/utils/audit';
 import type { NotePosition } from '#server/utils/messages';
 
@@ -20,6 +20,7 @@ const SURFACES = [
   { name: 'bg-muted', hint: 'Texte cité, aperçu', class: 'bg-muted' },
   { name: 'bg-skeleton', hint: 'Chargement', class: 'bg-skeleton' },
   { name: 'bg-track', hint: 'Fond de barre', class: 'bg-track' },
+  { name: 'bg-divider', hint: 'Trait entre deux lignes', class: 'bg-divider' },
 ];
 /** Meaning colours of the theme. */
 const COLORS = [
@@ -27,6 +28,17 @@ const COLORS = [
   { name: 'secondary', hint: 'Vert sapin : réussi', class: 'bg-secondary' },
   { name: 'warning', hint: 'Moutarde : attention', class: 'bg-warning' },
   { name: 'error', hint: 'Canneberge : danger', class: 'bg-error' },
+  { name: 'primary-tint', hint: 'Pavé à faire', class: 'bg-primary-tint' },
+  { name: 'primary-soft', hint: 'Halo, bouton rond', class: 'bg-primary-soft' },
+  { name: 'success-tint', hint: 'Pavé réussi', class: 'bg-success-tint' },
+  { name: 'success-soft', hint: 'Rond validé', class: 'bg-success-soft' },
+  { name: 'warning-tint', hint: 'Encadré attention', class: 'bg-warning-tint' },
+  {
+    name: 'warning-soft',
+    hint: 'Rond attention, surlignage',
+    class: 'bg-warning-soft',
+  },
+  { name: 'error-soft', hint: 'Fond danger', class: 'bg-error-soft' },
 ];
 /** Codes shown by AdminStatusBadge: edition statuses, then participant badges. */
 const STATUSES = ['draft', 'invitations', 'drawn', 'closed'];
@@ -39,6 +51,65 @@ const choice = ref<NotePosition>('after');
 const toggle = ref(true);
 const date = ref('');
 const sheet = ref(false);
+/** Examples of the edition components. */
+const steps = [
+  { label: 'Préparer', state: 'done' as const },
+  { label: 'Tirage fait', state: 'current' as const, icon: 'i-lucide-sparkle' },
+  { label: 'Fêter', state: 'todo' as const },
+];
+const counters = [
+  { value: 3, label: 'à prévenir', tone: 'primary' as const },
+  { value: 1, label: 'pas encore ouvert', tone: 'warning' as const },
+  { value: 1, label: 'a découvert', tone: 'success' as const },
+];
+const crowd: Avatar[] = AVATAR_COLORS.flatMap((color) => [
+  { emoji: '🦌', color },
+  { emoji: '🍷', color },
+]);
+const checklist = [
+  { key: 'people', state: 'ok' as const, title: '12 participants' },
+  {
+    key: 'rules',
+    state: 'ok' as const,
+    title: 'Toutes les règles sont respectées',
+    detail: '2 exclusions · personne ne se tire soi-même',
+  },
+  {
+    key: 'missing',
+    state: 'warning' as const,
+    title: 'Léa ne participe pas encore',
+    detail: 'Elle est dans le groupe mais pas dans cette édition.',
+  },
+];
+const sheetDemo = ref(false);
+const picker = ref(false);
+const pickerBig = ref(false);
+const picked = ref<string | null>(null);
+const FIRST_NAMES = [
+  'Camille',
+  'Hugo',
+  'Inès',
+  'Louis',
+  'Rose',
+  'Lola',
+  'Chloé',
+  'Élodie',
+  'Tom',
+  'Zoé',
+  'Yanis',
+  'Lou',
+];
+/**
+ * Sample people for the person picker.
+ * @param count - How many.
+ * @returns People with a name and an icon.
+ */
+const pickable = (count: number) =>
+  FIRST_NAMES.slice(0, count).map((name, index) => ({
+    id: name,
+    name,
+    avatar: crowd[index % crowd.length]!,
+  }));
 const christmasDay = `${new Date().getFullYear()}-12-25`;
 const choices = useNotePositionItems();
 
@@ -237,6 +308,101 @@ const entries = computed(() => [
       />
     </section>
 
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Pilotage d'une édition</UiSectionTitle>
+      <UiStepper :steps="steps" label="Étapes de l'édition" />
+      <UiActionCard
+        eyebrow="UiActionCard"
+        title="Préviens chacun que le tirage est fait"
+        help="Une ligne d'aide sous l'action."
+      >
+        <UiCounters :items="counters" />
+        <template #action>
+          <UButton block icon="i-lucide-mail" label="Action principale" />
+        </template>
+      </UiActionCard>
+      <div class="flex items-center gap-3">
+        <UiAvatarStack :avatars="crowd" label="12 participants" />
+        <span class="text-sm text-muted"
+          >UiAvatarStack : 4 au plus, puis +N</span
+        >
+      </div>
+      <UiNotice variant="checklist" :items="checklist">
+        <template #trailing="{ item }">
+          <UiAvatarStack
+            v-if="item.key === 'people'"
+            :avatars="crowd"
+            label="12 participants"
+          />
+        </template>
+      </UiNotice>
+      <UiNotice variant="info" icon="i-lucide-lock">
+        UiNotice info : une ligne discrète, avec son icône.
+      </UiNotice>
+      <UiNotice variant="positive" icon="i-lucide-arrow-right">
+        UiNotice positive : une bonne nouvelle, ou la suite.
+      </UiNotice>
+      <UiNotice variant="warning" title="UiNotice warning">
+        <p class="text-sm">Un encadré qui demande une action.</p>
+      </UiNotice>
+      <UButton
+        block
+        variant="soft"
+        label="UiSheet : ouvrir"
+        @click="sheetDemo = true"
+      />
+      <UiSheet
+        v-model:open="sheetDemo"
+        title="Titre du panneau"
+        description="UiSheet : corps, puis le pied avec l'action et la sortie."
+      >
+        <p class="py-2 text-sm">Le corps du panneau.</p>
+        <template #footer>
+          <UButton block label="Action" @click="sheetDemo = false" />
+          <UButton
+            block
+            variant="ghost"
+            color="neutral"
+            label="Sortie"
+            @click="sheetDemo = false"
+          />
+        </template>
+      </UiSheet>
+      <div class="grid grid-cols-2 gap-2">
+        <UButton
+          block
+          variant="soft"
+          label="UiPersonPicker (5)"
+          @click="picker = true"
+        />
+        <UButton
+          block
+          variant="soft"
+          label="Avec recherche (12)"
+          @click="pickerBig = true"
+        />
+      </div>
+      <UiPersonPicker
+        v-model:open="picker"
+        v-model:selected="picked"
+        title="Le résultat de qui ?"
+        :people="pickable(5)"
+        search-label="Chercher un prénom"
+        clear-label="Effacer la recherche"
+        :results-text="(shown, total) => `${shown} prénoms sur ${total}`"
+      />
+      <UiPersonPicker
+        v-model:open="pickerBig"
+        v-model:selected="picked"
+        title="Le résultat de qui ?"
+        :people="pickable(12)"
+        search-label="Chercher un prénom"
+        clear-label="Effacer la recherche"
+        :results-text="(shown, total) => `${shown} prénoms sur ${total}`"
+        footnote="La recherche ignore les accents et les majuscules."
+      />
+    </section>
+
     <UiList
       title="Liste"
       footer="UiList et UiListItem : bord à bord sur téléphone, encadrée au-delà."
@@ -355,7 +521,7 @@ const entries = computed(() => [
           Un panneau enregistre avec un bouton « Valider » ; le fermer autrement
           abandonne.
         </li>
-        <li>Une cible tactile fait au moins 40 px.</li>
+        <li>Une cible tactile fait au moins 44 px.</li>
         <li>
           Une action dangereuse est rouge, en bas de liste, et demande une
           confirmation.

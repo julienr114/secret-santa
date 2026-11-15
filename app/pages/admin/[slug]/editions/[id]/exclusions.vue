@@ -16,6 +16,11 @@ const id = computed(() => String(route.params.id));
 const { t } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
+/**
+ * Shows an error in a toast.
+ * @param error - The error of a mutation.
+ * @returns Nothing.
+ */
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 useHead({
@@ -33,7 +38,17 @@ const status = computed(
 );
 const canEdit = computed(() => status.value === 'preparing');
 const participants = computed(() => edition.data.value?.participants ?? []);
+/**
+ * The participant who is this person.
+ * @param pid - The person.
+ * @returns The participant, if they take part.
+ */
 const personOf = (pid: string) => participants.value.find((p) => p.id === pid);
+/**
+ * The first name of a person of the edition.
+ * @param pid - The person.
+ * @returns Their first name, or "?".
+ */
 const firstNameOf = (pid: string) => personOf(pid)?.firstName ?? '?';
 
 const previousPairs = computed(() =>
@@ -53,11 +68,22 @@ const footer = computed(
       .join(' ') || undefined,
 );
 
+/** A giver and the receiver they cannot draw. */
 type Pair = { giverId: string; receiverId: string };
 const waive = useWaiveMutation(slug, id);
 const clearWaivers = useClearWaiversMutation(slug, id);
 const confirmWaiver = ref<string | null>(null);
+/**
+ * A key that names a pair.
+ * @param p - The pair.
+ * @returns The key.
+ */
 const pairKey = (p: Pair) => `${p.giverId}>${p.receiverId}`;
+/**
+ * Lifts a pair of a previous draw for this edition.
+ * @param pair - The pair.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onWaive = (pair: Pair) =>
   waive.mutate(
     { giverId: pair.giverId, receiverId: pair.receiverId },

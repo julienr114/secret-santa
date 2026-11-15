@@ -17,7 +17,7 @@ import {
   useDrawMutation,
 } from '~/composables/queries/useEdition';
 
-// The edition screen (README 11, redesigned on 15 November 2026): where
+// The edition screen (README 11): where
 // the edition stands in three steps, what to do now, the participants,
 // then what can be done later. Each step has its own component; the
 // sheets (draw, send, date) are opened from here.
@@ -28,6 +28,11 @@ const id = computed(() => String(route.params.id));
 const toast = useToast();
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();
+/**
+ * Shows an error in a toast.
+ * @param error - The error of a mutation.
+ * @returns Nothing.
+ */
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 
@@ -92,11 +97,16 @@ const missing = computed(() => {
     .filter((p) => p.active && !inEdition.has(p.id))
     .map((p) => p.firstName);
 });
+const avatars = computed(() => participants.value.map((p) => p.avatar));
 const exclusionCount = computed(
   () => people.data.value?.exclusions.length ?? 0,
 );
 
 const drawOpen = ref(false);
+/**
+ * Draws, then closes the sheet with a toast.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const runDraw = () =>
   drawMutation.mutate(undefined, {
     onSuccess: () => {
@@ -109,6 +119,10 @@ const runDraw = () =>
     },
     onError,
   });
+/**
+ * Closes the edition.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onClose = () => close.mutate(undefined, { onError });
 
 // The send sheet follows one participant; once done, it moves on to the
@@ -129,7 +143,11 @@ const toNotify = computed(() =>
     (p) => followState(p) === 'toNotify',
   ),
 );
-// The one below in the list, or back to the top.
+/**
+ * The next one to notify: the one below in the list, or back to the top.
+ * @param participationId - The participation just handled.
+ * @returns The next participant, or null when nobody is left.
+ */
 const nextAfter = (participationId: string) => {
   const at = toNotify.value.findIndex(
     (p) => p.participationId === participationId,
@@ -143,6 +161,10 @@ const next = computed(() =>
     ? nextAfter(sendTarget.value.participationId)
     : null,
 );
+/**
+ * Moves the send sheet on to the next one, or closes it.
+ * @returns Nothing.
+ */
 const onSent = () => {
   sendId.value = next.value?.participationId ?? null;
 };
@@ -212,7 +234,7 @@ const dateOpen = ref(false);
       v-model:open="drawOpen"
       :slug="slug"
       :edition-id="id"
-      :avatars="participants.map((p) => p.avatar)"
+      :avatars="avatars"
       :exclusion-count="exclusionCount"
       :missing="missing"
       :loading="drawMutation.isPending.value"

@@ -54,6 +54,11 @@ const STATES: Record<FollowState, { icon: string; tone: string }> = {
   notOpened: { icon: 'i-lucide-clock', tone: 'text-warning-ink' },
   viewed: { icon: 'i-lucide-check', tone: 'text-success' },
 };
+/**
+ * Where a participant stands, as an icon, a colour and words.
+ * @param p - The participant.
+ * @returns The icon, its tone class and the text of the state.
+ */
 const stateOf = (p: Participant) => {
   const state = followState(p);
   return {

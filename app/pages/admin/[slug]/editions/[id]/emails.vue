@@ -67,7 +67,18 @@ watch(
   },
   { immediate: true },
 );
+/**
+ * Whether a participation is ticked.
+ * @param pid - The participation.
+ * @returns True when ticked.
+ */
 const isSelected = (pid: string) => selected.value.includes(pid);
+/**
+ * Ticks or unticks a participation.
+ * @param pid - The participation.
+ * @param on - True to tick it.
+ * @returns Nothing.
+ */
 const toggle = (pid: string, on: boolean) => {
   selected.value = on
     ? [...selected.value, pid]
@@ -76,6 +87,10 @@ const toggle = (pid: string, on: boolean) => {
 const allSelected = computed(
   () => selected.value.length === withEmail.value.length,
 );
+/**
+ * Ticks everyone with an address, or nobody when all are ticked.
+ * @returns Nothing.
+ */
 const toggleAll = () => {
   selected.value = allSelected.value
     ? []
@@ -96,6 +111,10 @@ const preview = computed(() => {
 });
 
 const sendEmails = useSendEmailsMutation(slug, id);
+/**
+ * Sends the message to those ticked, then goes back to the edition.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onSend = () =>
   sendEmails.mutate(
     {

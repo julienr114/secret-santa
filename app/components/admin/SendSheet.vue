@@ -40,6 +40,11 @@ const toast = useToast();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
 const types = computed(() => messageTypesFor(props.status));
+/**
+ * The message offered first: the reminder for someone already reached,
+ * otherwise the first message of the step.
+ * @returns The message type.
+ */
 const defaultType = (): MessageType =>
   resend.value && types.value.includes('reminder')
     ? 'reminder'
@@ -77,23 +82,45 @@ const updatePerson = useUpdatePersonMutation(() => props.slug);
 const languages = computed(() =>
   LOCALES.map((value) => ({ value, label: tk(`common.language.${value}`) })),
 );
+/**
+ * Saves the language picked as the person's preferred one.
+ * @param language - The language picked.
+ * @returns Nothing, or false when it did not change.
+ */
 const onLanguage = (language: Locale) =>
   language !== props.participant.language &&
   updatePerson.mutate({ id: props.participant.id, language });
 const waiting = computed(() => !text.value || updatePerson.isPending.value);
 
+/**
+ * Shows an error in a toast.
+ * @param error - The error of a mutation.
+ * @returns Nothing.
+ */
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 const sharer = useShareMessage(() => props.slug);
+/**
+ * Opens the phone's share sheet with the message, then moves on.
+ * @returns Nothing.
+ */
 const onShare = () => {
   sharer.share(props.participant.participationId, type.value, text.value);
   emit('sent');
 };
+/**
+ * Copies the message, then moves on.
+ * @returns Nothing.
+ */
 const onCopy = () => {
   sharer.copy(props.participant.participationId, type.value, text.value);
   emit('sent');
 };
 const linkCopied = useLinkCopiedMutation(() => props.slug);
+/**
+ * Copies the personal link alone and journals it.
+ * @returns Once the link is copied.
+ */
 const onCopyLink = async () => {
   if (!message.value) return;
   await navigator.clipboard.writeText(message.value.link);
@@ -108,6 +135,10 @@ const sendEmails = useSendEmailsMutation(
   () => props.slug,
   () => props.editionId,
 );
+/**
+ * Emails the message to this participant, then moves on.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onEmail = () =>
   sendEmails.mutate(
     {

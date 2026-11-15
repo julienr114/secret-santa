@@ -9,6 +9,10 @@ const errorMessage = useErrorMessage();
 const update = useUpdateEditionMutation(() => props.slug);
 const date = ref('');
 const suggestion = computed(() => `${new Date().getFullYear()}-12-25`);
+/**
+ * Saves the day given for the party.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onValidate = () =>
   update.mutate({ id: props.editionId, eventDate: date.value });
 </script>

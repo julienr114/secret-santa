@@ -24,8 +24,12 @@ const base = computed(() => `/admin/${props.slug}/editions/${props.editionId}`);
 const sorted = computed(() =>
   sortParticipants(props.participants, 'preparing'),
 );
-// The number of ideas, and the language of the messages when it is not
-// the organiser's: nothing else before the draw.
+/**
+ * The line under a participant before the draw: their number of ideas,
+ * and the language of their messages when it is not the organiser's.
+ * @param p - The participant.
+ * @returns The line, or undefined when there is nothing to say.
+ */
 const subtitleOf = (p: Participant) =>
   [
     p.wishesCount > 0 && t('common.count.ideas', { count: p.wishesCount }),

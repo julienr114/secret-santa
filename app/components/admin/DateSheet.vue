@@ -44,6 +44,10 @@ const helper = computed(() => {
     .filter(Boolean)
     .join(' · ');
 });
+/**
+ * Saves the day chosen, then closes the sheet with a toast.
+ * @returns Nothing: the mutation reports by itself.
+ */
 const onValidate = () =>
   update.mutate(
     { id: props.editionId, eventDate: draft.value },

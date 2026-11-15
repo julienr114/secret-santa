@@ -51,6 +51,8 @@ const choice = ref<NotePosition>('after');
 const toggle = ref(true);
 const date = ref('');
 const sheet = ref(false);
+/** The four states of the envelope of a draw. */
+const ENVELOPES = ['pending', 'sealed', 'opened', 'locked'] as const;
 /** Examples of the edition components. */
 const steps = [
   { label: 'Préparer', state: 'done' as const },
@@ -412,6 +414,25 @@ const entries = computed(() => [
         :on-click="() => undefined"
       />
     </UiList>
+
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Page d'un tirage</UiSectionTitle>
+      <ul class="grid grid-cols-2 gap-3">
+        <li
+          v-for="state in ENVELOPES"
+          :key="state"
+          class="flex flex-col items-center gap-1"
+        >
+          <UiEnvelope :state="state" />
+          <code class="text-xs">UiEnvelope {{ state }}</code>
+        </li>
+      </ul>
+      <UiGiftTag>
+        <p class="text-center text-muted">
+          UiGiftTag : une étiquette cadeau, son contenu dans le slot.
+        </p>
+      </UiGiftTag>
+    </section>
 
     <section class="flex flex-col gap-4">
       <UiSectionTitle>Champs</UiSectionTitle>

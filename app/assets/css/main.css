@@ -83,6 +83,12 @@
   --color-warning-ink: var(--color-mustard-800);
   --color-error-soft: var(--color-cranberry-100);
   --color-error-ink: var(--color-cranberry-700);
+
+  /* The envelope of a draw: kraft paper, a darker fold, and the mustard
+     star of the ribbons. */
+  --color-envelope: var(--color-kraft-200);
+  --color-envelope-fold: var(--color-kraft-300);
+  --color-star: var(--color-mustard-400);
 }
 
 /* Cards, inputs and menus stay white on top of the kraft page. */

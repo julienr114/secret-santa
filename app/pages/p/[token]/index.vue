@@ -223,7 +223,7 @@ const card = computed(() => {
           :aria-label="t('participant.home.changeAvatar')"
           @click="openPicker"
         >
-          <UiAvatar :avatar="avatar" class="size-14! text-2xl!" />
+          <UiAvatar :avatar="avatar" size="lg" />
           <span
             class="absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border border-default bg-default text-muted"
             aria-hidden="true"
@@ -231,11 +231,7 @@ const card = computed(() => {
             <UIcon name="i-lucide-pencil" class="size-3.5" />
           </span>
         </button>
-        <UiAvatar
-          v-else-if="avatar"
-          :avatar="avatar"
-          class="size-14! text-2xl!"
-        />
+        <UiAvatar v-else-if="avatar" :avatar="avatar" size="lg" />
         <div class="min-w-0">
           <UiPageTitle>
             {{ t('participant.home.greeting', { firstName: me.firstName }) }}

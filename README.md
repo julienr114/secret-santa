@@ -1152,7 +1152,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe |
 | `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
 | `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` |
-| `UiAvatar` | L'icône d'une personne, en trois tailles |
+| `UiAvatar` | L'icône d'une personne, en quatre tailles : `sm` 32 px, `md` 40 px, `lg` 56 px (en-tête d'une page), `xl` 80 px (résultat, fiche, choix de l'icône) |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
 | `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond brique, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
 | `UiActionCard` | « À faire maintenant » : étiquette en capitales, titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |

@@ -261,6 +261,7 @@ const entries = computed(() => [
         <UiAvatar :avatar="sample" size="sm" />
         <UiAvatar :avatar="sample" size="md" />
         <UiAvatar :avatar="sample" size="lg" />
+        <UiAvatar :avatar="sample" size="xl" />
       </div>
       <div class="flex flex-wrap gap-2">
         <UiAvatar

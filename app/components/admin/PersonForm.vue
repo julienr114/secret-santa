@@ -129,7 +129,7 @@ const onLanguage = (language: Locale) => {
         :aria-label="t('adminGroup.personForm.changeAvatar')"
         @click="openPicker"
       >
-        <UiAvatar :avatar="avatar" size="lg" />
+        <UiAvatar :avatar="avatar" size="xl" />
         <span
           class="absolute -right-1 -bottom-1 flex size-8 items-center justify-center rounded-full bg-default shadow ring-1 ring-default"
         >

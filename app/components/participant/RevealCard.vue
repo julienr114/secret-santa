@@ -23,7 +23,7 @@ const tiles = computed(() =>
   <UiGiftTag class="reveal-card" aria-live="polite">
     <div class="flex flex-col items-center gap-2 text-center">
       <p class="text-muted">{{ t('participant.reveal.youGiveTo') }}</p>
-      <UiAvatar :avatar="reveal.receiver.avatar" size="lg" class="text-4xl!" />
+      <UiAvatar :avatar="reveal.receiver.avatar" size="xl" />
       <p
         class="font-display text-[52px] leading-tight font-bold break-words text-primary"
         data-testid="receiver"

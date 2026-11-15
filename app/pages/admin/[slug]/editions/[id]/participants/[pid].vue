@@ -136,7 +136,7 @@ const onRemove = () =>
       <template v-else>
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-4">
-            <UiAvatar :avatar="p.avatar" size="lg" />
+            <UiAvatar :avatar="p.avatar" size="xl" />
             <UiPageTitle>{{ p.firstName }}</UiPageTitle>
           </div>
           <div class="flex flex-wrap gap-1">

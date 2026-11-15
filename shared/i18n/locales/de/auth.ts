@@ -4,6 +4,8 @@ import type { Dict } from '../../types';
 export default {
   login: {
     emailLabel: 'E-Mail-Adresse',
+    emailHelp:
+      'Kein Passwort: Du erhältst einen Link, der 15 Minuten gültig ist.',
     emailInvalid: 'Ungültige E-Mail-Adresse',
     submit: 'Anmeldelink erhalten',
     sentTitle: 'Schau in dein Postfach',
@@ -17,70 +19,174 @@ export default {
   },
   landing: {
     tagline:
-      'Melde dich an, um deine Auslosungen zu finden oder eine zu organisieren.',
+      'Das Familienwichteln: Alle erfahren heimlich, wen sie beschenken.',
     personalLink:
-      'Du hast einen persönlichen Link erhalten? Er funktioniert ohne Konto.',
+      'Du hast einen persönlichen Link erhalten? Öffne ihn direkt: Er funktioniert ohne Konto.',
   },
   home: {
+    title: 'Startseite',
     hello: 'Hallo {name}',
-    organize: 'Darum bitten, eine Auslosung zu organisieren',
-    partyToday: 'Bescherung heute!',
-    partyIn: { one: 'Bescherung morgen', other: 'Bescherung in {count} Tagen' },
+    helloNobody: 'Hallo',
+    editAvatar: 'Meinen Avatar ändern',
+    now: 'Jetzt zu tun',
+    nowIn: 'Jetzt zu tun · {group}',
+    later: 'Später',
+    action: {
+      notify: {
+        title: 'Sag allen, dass die Auslosung erfolgt ist',
+        body: {
+          one: '{count} Person hat ihren Link noch nicht erhalten.',
+          other: '{count} Personen haben ihren Link noch nicht erhalten.',
+        },
+        button: 'Per E-Mail benachrichtigen',
+      },
+      requests: {
+        title: {
+          one: '{count} Gruppenanfrage zu bearbeiten',
+          other: '{count} Gruppenanfragen zu bearbeiten',
+        },
+        body: 'Einige Konten warten auf deine Antwort, um ihre Auslosung zu organisieren.',
+        button: 'Anfragen ansehen',
+      },
+      discover: {
+        title: 'Die Auslosung ist erfolgt!',
+        body: 'Dein Umschlag wartet. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+        button: 'Erfahren, wen ich beschenke',
+      },
+      remind: {
+        title: {
+          one: '{count} Person hat ihren Link noch nicht geöffnet',
+          other: '{count} Personen haben ihren Link noch nicht geöffnet',
+        },
+        body: 'Das Fest rückt näher: Erinnere sie.',
+        button: 'Erinnern',
+      },
+      fixDraw: {
+        title: 'Die Auslosung ist im Moment nicht möglich',
+        body: 'Die Liste oder die Ausschlüsse verhindern die Auslosung.',
+        button: 'Beheben',
+      },
+      startDraw: {
+        title: 'Prüfe die Liste, dann starte die Auslosung',
+        body: {
+          one: 'Bisher {count} Teilnehmer.',
+          other: 'Bisher {count} Teilnehmer.',
+        },
+        button: 'Ausgabe öffnen',
+      },
+      addWishes: {
+        title: 'Notiere ein paar Geschenkideen',
+        body: 'Sie helfen der Person, die dich gezogen hat.',
+        button: 'Meine Ideen',
+      },
+      close: {
+        title: 'Das Fest ist vorbei: Schließe die Ausgabe ab',
+        body: 'Die Wunschlisten werden schreibgeschützt; die Auslosung dient den Ausschlüssen der folgenden Jahre.',
+        button: 'Ausgabe öffnen',
+      },
+      prepare: {
+        title: 'Bereite die Auslosung dieses Jahres vor',
+        body: 'Lege die Ausgabe an und wähle das Datum des Festes.',
+        button: 'Ausgabe anlegen',
+      },
+      createGroup: {
+        title: 'Deine Anfrage wurde angenommen: Lege deine Gruppe an',
+        body: 'Du wirst sie organisieren.',
+        button: 'Meine Gruppe anlegen',
+      },
+      completeProfile: {
+        title: 'Sag uns, wie du heißt',
+        body: 'Dein Vorname wird den Organisatoren deiner Gruppen angezeigt.',
+        button: 'Mein Profil ergänzen',
+      },
+    },
+    party: {
+      today: 'Fest heute',
+      in: { one: 'Fest morgen', other: 'Fest in {count} Tagen' },
+      on: 'Fest am {date}',
+    },
+    drawCard: {
+      partyOn: 'Fest am {date}',
+      partyOnIn: {
+        one: 'Fest am {date}, morgen',
+        other: 'Fest am {date}, in {count} Tagen',
+      },
+      partyToday: 'Fest heute',
+      waiting: 'Die Auslosung hat noch nicht stattgefunden',
+      addWishes: 'Notiere ein paar Geschenkideen',
+      discover: 'Dein Umschlag wartet auf dich',
+      seeAgain: 'Du weißt schon, wen du beschenkst',
+      reveal: 'Erfahren, wen ich beschenke',
+      revealAgain: 'Noch einmal sehen, wen ich beschenke',
+      wishes: 'Meine Ideen',
+    },
     step: {
       addWishes: { state: 'Füge deine Ideen hinzu', action: 'Meine Ideen' },
-      wait: { state: 'Auslosung folgt', action: 'Öffnen' },
+      wait: { state: 'Auslosung steht bevor' },
       discover: {
         state: 'Die Auslosung hat stattgefunden',
         action: 'Entdecken',
       },
-      seeAgain: { state: 'Du weißt, wen du beschenkst', action: 'Nochmal' },
-      closed: { state: 'Bescherung vorbei', action: 'Öffnen' },
+      seeAgain: { state: 'Du weißt, wen du beschenkst' },
+      closed: { state: 'Bescherung vorbei' },
     },
-    helloNobody: 'Hallo',
-    drawsNoneCurrent: 'Keine laufende Auslosung.',
-    drawsPast: {
-      one: '{count} vergangene Auslosung ansehen',
-      other: 'Die {count} vergangenen Auslosungen ansehen',
+    myWishes: 'Meine Wunschliste',
+    pastDraws: 'Vergangene Auslosungen',
+    organizeOwn: 'Meine eigene Auslosung organisieren',
+    organizeOwnHint: 'Auf Anfrage, während der Beta',
+    myDraws: 'Meine Auslosungen',
+    myGroups: 'Meine Gruppen',
+    organizer: 'Organisator',
+    myDraw: 'Meine Auslosung',
+    manage: 'Auslosung verwalten',
+    editionState: {
+      idle: 'Keine laufende Auslosung',
+      preparing: {
+        one: 'Vorzubereiten · {count} Teilnehmer',
+        other: 'Vorzubereiten · {count} Teilnehmer',
+      },
+      toNotify: {
+        one: 'Ausgelost · {count} zu benachrichtigen',
+        other: 'Ausgelost · {count} zu benachrichtigen',
+      },
+      drawn: 'Ausgelost · {viewed} von {count} haben nachgesehen',
+      closed: 'Abgeschlossen',
     },
-    drawsPastHide: 'Vergangene Auslosungen ausblenden',
-    profileMissing: 'Vervollständige dein Profil',
-    editProfile: 'Mein Profil bearbeiten',
-    editAvatar: 'Meinen Avatar ändern',
-    title: 'Startseite',
-    draws: 'Ich mache mit',
-    drawsEmpty:
-      'Noch keine Auslosung. Auslosungen, zu denen man dich mit dieser Adresse hinzufügt, erscheinen hier.',
-    groups: 'Ich organisiere',
     newGroup: 'Neue Gruppe',
-    requestHint: 'Ein Administrator wird dir per E-Mail antworten',
-    requestWhy:
-      'Under the Tree ist in der Beta: Gruppen werden auf Anfrage erstellt, solange wir prüfen, dass alles gut funktioniert.',
+    createGroup: 'Eine Gruppe anlegen',
     groupsLeft: {
-      one: 'Du kannst noch {count} erstellen',
-      other: 'Du kannst noch {count} erstellen',
+      one: 'Du kannst noch {count} anlegen',
+      other: 'Du kannst noch {count} anlegen',
     },
-    requestAction: 'Gruppe anfragen',
-    requestDescription:
-      'Für wen möchtest du eine Auslosung organisieren? Die App ist in der Beta: Ein Administrator liest jede Anfrage.',
+    empty: {
+      title: 'Noch keine Auslosung',
+      body: 'Sobald dich ein Organisator mit dieser E-Mail-Adresse hinzufügt, erscheint deine Auslosung hier.',
+      link: 'Du hast einen persönlichen Link erhalten? Öffne ihn: Du kannst ihn deinem Konto hinzufügen.',
+    },
+    organize: {
+      title: 'Ein Wichteln organisieren',
+      button: 'Eine Gruppe anfragen',
+    },
+    requestWhy:
+      'Under the Tree ist in der Beta: Gruppen werden auf Anfrage angelegt, solange wir prüfen, dass alles gut funktioniert.',
+    requestAction: 'Eine Auslosung organisieren',
+    requestDescription: 'Für wen möchtest du eine Auslosung organisieren?',
+    requestWhyTitle: 'Warum eine Anfrage?',
+    requestReply: 'Ein Administrator antwortet dir per E-Mail.',
     requestLabel: 'Deine Anfrage',
-    requestPlaceholder:
-      'Das Weihnachtsfest meiner Familie, etwa zwölf Personen.',
+    requestPlaceholder: 'Das Weihnachten meiner Familie, etwa zwölf Personen.',
+    requestSend: 'Meine Anfrage senden',
     requestSent: 'Anfrage gesendet',
     requestPending:
-      'Anfrage gesendet am {date}. Du bekommst die Antwort per E-Mail.',
+      'Anfrage gesendet am {date}. Du erhältst die Antwort per E-Mail.',
     requestRefused:
       'Deine Anfrage vom {date} wurde abgelehnt. Du kannst eine neue stellen.',
+    past: {
+      title: 'Vergangene Auslosungen',
+      empty: 'Noch keine vergangene Auslosung.',
+    },
     adminAccounts: 'Konten und Anfragen',
     adminGroups: 'Alle Gruppen',
-    groupIdle: 'Keine laufende Auslosung',
-    groupState: {
-      preparing: {
-        one: 'in Vorbereitung, {count} Teilnehmer',
-        other: 'in Vorbereitung, {count} Teilnehmende',
-      },
-      drawn: 'ausgelost, entdeckt von {viewed} von {count}',
-      closed: 'abgeschlossen',
-    },
   },
   nav: {
     label: 'Verwaltung',

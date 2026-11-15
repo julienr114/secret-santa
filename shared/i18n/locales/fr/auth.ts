@@ -2,6 +2,7 @@
 export default {
   login: {
     emailLabel: 'Adresse email',
+    emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
     emailInvalid: 'Adresse email invalide',
     submit: 'Recevoir un lien de connexion',
     sentTitle: 'Regarde ta boîte mail',
@@ -14,65 +15,172 @@ export default {
     signupSubmit: 'Créer mon compte',
   },
   landing: {
-    tagline: 'Connecte-toi pour retrouver tes tirages ou en organiser un.',
-    personalLink: 'Tu as reçu un lien personnel ? Il fonctionne sans compte.',
+    tagline:
+      'Le Secret Santa de la famille : chacun découvre en secret à qui il offre un cadeau.',
+    personalLink:
+      'Tu as reçu un lien personnel ? Ouvre-le directement : il fonctionne sans compte.',
   },
   home: {
+    title: 'Accueil',
     hello: 'Bonjour {name}',
-    organize: 'Demander à organiser un tirage',
-    partyToday: 'Échange aujourd’hui !',
-    partyIn: { one: 'échange demain', other: 'échange dans {count} jours' },
+    helloNobody: 'Bonjour',
+    editAvatar: 'Changer mon avatar',
+    now: 'À faire maintenant',
+    nowIn: 'À faire maintenant · {group}',
+    later: 'Plus tard',
+    action: {
+      notify: {
+        title: 'Préviens chacun que le tirage est fait',
+        body: {
+          one: '{count} personne n’a pas encore reçu son lien.',
+          other: '{count} personnes n’ont pas encore reçu leur lien.',
+        },
+        button: 'Prévenir par email',
+      },
+      requests: {
+        title: {
+          one: '{count} demande de groupe à traiter',
+          other: '{count} demandes de groupe à traiter',
+        },
+        body: 'Des comptes attendent ta réponse pour organiser leur tirage.',
+        button: 'Voir les demandes',
+      },
+      discover: {
+        title: 'Le tirage est fait !',
+        body: 'Ton enveloppe t’attend. Assure-toi que personne ne regarde ton écran.',
+        button: 'Découvrir à qui j’offre un cadeau',
+      },
+      remind: {
+        title: {
+          one: '{count} personne n’a pas encore ouvert son lien',
+          other: '{count} personnes n’ont pas encore ouvert leur lien',
+        },
+        body: 'La fête approche : relance-les.',
+        button: 'Relancer',
+      },
+      fixDraw: {
+        title: 'Le tirage est impossible pour l’instant',
+        body: 'La liste ou les exclusions empêchent le tirage.',
+        button: 'Corriger',
+      },
+      startDraw: {
+        title: 'Vérifie la liste, puis lance le tirage',
+        body: {
+          one: '{count} participant pour l’instant.',
+          other: '{count} participants pour l’instant.',
+        },
+        button: 'Ouvrir l’édition',
+      },
+      addWishes: {
+        title: 'Note quelques idées de cadeaux',
+        body: 'Elles aideront la personne qui t’a tiré·e au sort.',
+        button: 'Mes idées',
+      },
+      close: {
+        title: 'La fête est passée : clôture l’édition',
+        body: 'Les listes passent en lecture seule ; le tirage servira aux exclusions des années suivantes.',
+        button: 'Ouvrir l’édition',
+      },
+      prepare: {
+        title: 'Prépare le tirage de cette année',
+        body: 'Crée l’édition et choisis la date de la fête.',
+        button: 'Créer l’édition',
+      },
+      createGroup: {
+        title: 'Ta demande est acceptée : crée ton groupe',
+        body: 'Tu en seras l’organisateur.',
+        button: 'Créer mon groupe',
+      },
+      completeProfile: {
+        title: 'Dis-nous comment tu t’appelles',
+        body: 'Ton prénom s’affiche pour les organisateurs de tes groupes.',
+        button: 'Compléter mon profil',
+      },
+    },
+    party: {
+      today: 'fête aujourd’hui',
+      in: { one: 'fête demain', other: 'fête dans {count} jours' },
+      on: 'fête le {date}',
+    },
+    drawCard: {
+      partyOn: 'Fête le {date}',
+      partyOnIn: {
+        one: 'Fête le {date}, demain',
+        other: 'Fête le {date}, dans {count} jours',
+      },
+      partyToday: 'Fête aujourd’hui',
+      waiting: 'Le tirage n’a pas encore eu lieu',
+      addWishes: 'Note quelques idées de cadeaux',
+      discover: 'Ton enveloppe t’attend',
+      seeAgain: 'Tu sais déjà à qui tu offres',
+      reveal: 'Découvrir à qui j’offre un cadeau',
+      revealAgain: 'Revoir à qui j’offre un cadeau',
+      wishes: 'Mes idées',
+    },
     step: {
       addWishes: { state: 'Ajoute tes idées', action: 'Mes idées' },
-      wait: { state: 'Tirage à venir', action: 'Ouvrir' },
+      wait: { state: 'Tirage à venir' },
       discover: { state: 'Le tirage a eu lieu', action: 'Découvrir' },
-      seeAgain: { state: 'Tu sais à qui tu offres', action: 'Revoir' },
-      closed: { state: 'Échange passé', action: 'Ouvrir' },
+      seeAgain: { state: 'Tu sais à qui tu offres' },
+      closed: { state: 'Échange passé' },
     },
-    helloNobody: 'Bonjour',
-    drawsNoneCurrent: 'Aucun tirage en cours.',
-    drawsPast: {
-      one: 'Voir {count} tirage passé',
-      other: 'Voir les {count} tirages passés',
+    myWishes: 'Ma liste de souhaits',
+    pastDraws: 'Tirages passés',
+    organizeOwn: 'Organiser mon propre tirage',
+    organizeOwnHint: 'Sur demande, le temps de la bêta',
+    myDraws: 'Mes tirages',
+    myGroups: 'Mes groupes',
+    organizer: 'Organisateur',
+    myDraw: 'Mon tirage',
+    manage: 'Gérer le tirage',
+    editionState: {
+      idle: 'Pas de tirage en cours',
+      preparing: {
+        one: 'À préparer · {count} participant',
+        other: 'À préparer · {count} participants',
+      },
+      toNotify: {
+        one: 'Tirage fait · {count} à prévenir',
+        other: 'Tirage fait · {count} à prévenir',
+      },
+      drawn: 'Tirage fait · {viewed} sur {count} ont découvert',
+      closed: 'Clôturé',
     },
-    drawsPastHide: 'Masquer les tirages passés',
-    profileMissing: 'Complète ton profil',
-    editProfile: 'Modifier mon profil',
-    editAvatar: 'Changer mon avatar',
-    title: 'Accueil',
-    draws: 'Je participe',
-    drawsEmpty:
-      'Aucun tirage pour l’instant. Ceux auxquels on t’ajoute avec cette adresse apparaîtront ici.',
-    groups: 'J’organise',
     newGroup: 'Nouveau groupe',
-    requestHint: 'Un administrateur te répondra par email',
-    requestWhy:
-      'Under the Tree est en bêta : la création de groupes se fait sur demande, le temps de vérifier que tout fonctionne bien.',
+    createGroup: 'Créer un groupe',
     groupsLeft: {
       one: 'Tu peux encore en créer {count}',
       other: 'Tu peux encore en créer {count}',
     },
-    requestAction: 'Demander un groupe',
-    requestDescription:
-      'Pour qui veux-tu organiser un tirage ? L’application est en bêta : un administrateur lit chaque demande.',
+    empty: {
+      title: 'Aucun tirage pour l’instant',
+      body: 'Dès qu’un organisateur t’ajoute avec cette adresse email, ton tirage apparaît ici.',
+      link: 'Tu as reçu un lien personnel ? Ouvre-le : tu pourras l’ajouter à ton compte.',
+    },
+    organize: {
+      title: 'Organiser un Secret Santa',
+      button: 'Demander à créer un groupe',
+    },
+    requestWhy:
+      'Under the Tree est en bêta : la création de groupes se fait sur demande, le temps de vérifier que tout fonctionne bien.',
+    requestAction: 'Organiser un tirage',
+    requestDescription: 'Pour qui veux-tu organiser un tirage ?',
+    requestWhyTitle: 'Pourquoi une demande ?',
+    requestReply: 'Un administrateur te répond par email.',
     requestLabel: 'Ta demande',
     requestPlaceholder: 'Le Noël de ma famille, une douzaine de personnes.',
+    requestSend: 'Envoyer ma demande',
     requestSent: 'Demande envoyée',
     requestPending:
       'Demande envoyée le {date}. Tu recevras la réponse par email.',
     requestRefused:
       'Ta demande du {date} a été refusée. Tu peux en faire une autre.',
+    past: {
+      title: 'Tirages passés',
+      empty: 'Aucun tirage passé pour l’instant.',
+    },
     adminAccounts: 'Comptes et demandes',
     adminGroups: 'Tous les groupes',
-    groupIdle: 'Pas de tirage en cours',
-    groupState: {
-      preparing: {
-        one: 'en préparation, {count} participant',
-        other: 'en préparation, {count} participants',
-      },
-      drawn: 'tirage fait, découvert par {viewed} sur {count}',
-      closed: 'clôturé',
-    },
   },
   nav: {
     label: 'Administration',

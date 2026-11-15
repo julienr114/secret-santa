@@ -1,64 +1,89 @@
 <script setup lang="ts">
 import {
-  useHomeQuery,
-  useRequestGroupMutation,
-} from '~/composables/queries/useAuth';
-import type { EditionSummary } from '#server/database/home';
+  currentDraws,
+  groupCards,
+  homeLayout,
+  pickHomeAction,
+  type HomeActionKind,
+} from '#server/utils/home';
+import { useHomeQuery } from '~/composables/queries/useAuth';
 import { formatDay } from '~/utils/labels';
 
-// The home of a logged-in account, the same for everyone: a greeting,
-// their draws, then the groups they organise, with the way to create or
-// ask for one.
-const REQUEST_MAX = 500;
+// The home of a logged-in account, the same for everyone (README 11): a
+// greeting, the one card of what to do now (README 22.10), then the draws
+// or the groups, laid out by what the account has.
 const { t, locale } = useT();
-const errorMessage = useErrorMessage();
-const toast = useToast();
 const home = useHomeQuery();
 useHead({
   title: () => `${t('auth.home.title')} — ${t('common.appName')}`,
 });
-const draws = computed(() => home.data.value?.draws ?? []);
-// Closed editions stay within reach, folded under the current ones.
-// Several draws at once: the one waiting for an action comes first.
-const STEP_ORDER = ['discover', 'addWishes', 'seeAgain', 'wait', 'closed'];
-const currentDraws = computed(() =>
-  draws.value
-    .filter((draw) => draw.status !== 'closed')
-    .toSorted(
-      (a, b) => STEP_ORDER.indexOf(a.step) - STEP_ORDER.indexOf(b.step),
-    ),
+const data = computed(() => home.data.value);
+const draws = computed(() => data.value?.draws ?? []);
+const groups = computed(() => data.value?.groups ?? []);
+const layout = computed(() =>
+  homeLayout({ draws: draws.value, groups: groups.value }),
 );
-const pastDraws = computed(() =>
-  draws.value.filter((draw) => draw.status === 'closed'),
+const going = computed(() => currentDraws(draws.value));
+const hasPast = computed(() =>
+  draws.value.some((draw) => draw.status === 'closed'),
 );
-const showPast = ref(false);
+const cards = computed(() =>
+  groupCards({ draws: draws.value, groups: groups.value }),
+);
 const fromHome = useDrawFromHome();
-const groups = computed(() => home.data.value?.groups ?? []);
-const firstName = computed(() => home.data.value?.firstName ?? null);
-const avatar = computed(() => home.data.value?.avatar);
-// The avatar opens its picker; the names are on "Mon compte", which the
-// link under the greeting leads to.
+/**
+ * Remembers that a draw was opened from the home, for its back button.
+ * @param path - The personal page of the draw.
+ * @returns Nothing.
+ */
+const onOpen = (path: string) => {
+  fromHome.value = { path };
+};
+
+// The card on top, without those put off with "Plus tard".
+const { dismissed, dismiss } = useHomeDismissed();
+const today = new Date().toLocaleDateString('sv-SE');
+const action = computed(() =>
+  data.value ? pickHomeAction(data.value, today, dismissed.value) : null,
+);
+/** Cards about the one draw, which its own card already shows. */
+const ABOUT_THE_DRAW: readonly HomeActionKind[] = ['discover', 'addWishes'];
+const topCard = computed(() =>
+  layout.value === 'singleDraw' &&
+  action.value &&
+  ABOUT_THE_DRAW.includes(action.value.kind)
+    ? null
+    : action.value,
+);
+/** The account has several groups: the top card names its own. */
+const named = computed(
+  () =>
+    new Set([
+      ...groups.value.map((group) => group.id),
+      ...going.value.map((draw) => draw.groupId),
+    ]).size > 1,
+);
+/** Draws going on, the one waiting for an action first. */
+const STEP_ORDER = ['discover', 'addWishes', 'seeAgain', 'wait', 'closed'];
+const sortedDraws = computed(() =>
+  going.value.toSorted(
+    (a, b) => STEP_ORDER.indexOf(a.step) - STEP_ORDER.indexOf(b.step),
+  ),
+);
+const single = computed(() => going.value[0] ?? null);
+
+const avatar = computed(() => data.value?.avatar);
 const avatarOpen = ref(false);
 const greeting = computed(() =>
-  firstName.value
-    ? t('auth.home.hello', { name: firstName.value })
+  data.value?.firstName
+    ? t('auth.home.hello', { name: data.value.firstName })
     : t('auth.home.helloNobody'),
 );
-// What an organiser wants to know at a glance about each group.
-const summaryOf = (current: EditionSummary | null) => {
-  if (!current) return t('auth.home.groupIdle');
-  const counts = {
-    count: current.participants,
-    sent: current.participants - current.toNotify,
-    viewed: current.viewed,
-  };
-  return `${current.label} · ${t(`auth.home.groupState.${current.status}`, counts)}`;
-};
-const groupsLeft = computed(() => home.data.value?.groupsLeft ?? null);
-const canCreate = computed(() => home.data.value?.canCreateGroup ?? false);
 
-// Without room for a group, the account may ask for one, once at a time.
-const request = computed(() => home.data.value?.request ?? null);
+// Creating a group, or asking for one while the app is in beta.
+const canCreate = computed(() => data.value?.canCreateGroup ?? false);
+const groupsLeft = computed(() => data.value?.groupsLeft ?? null);
+const request = computed(() => data.value?.request ?? null);
 const isPending = computed(() => request.value?.status === 'pending');
 const requestNote = computed(() => {
   if (!request.value || request.value.status === 'approved') return null;
@@ -67,28 +92,7 @@ const requestNote = computed(() => {
     ? t('auth.home.requestPending', { date })
     : t('auth.home.requestRefused', { date });
 });
-const ask = useRequestGroupMutation();
-const open = ref(false);
-const message = ref('');
-const canValidate = computed(() => message.value.trim().length > 0);
-const openSheet = () => {
-  message.value = '';
-  ask.reset();
-  open.value = true;
-};
-const onValidate = () => {
-  if (!canValidate.value) return;
-  ask.mutate(message.value.trim(), {
-    onSuccess: () => {
-      open.value = false;
-      toast.add({
-        title: t('auth.home.requestSent'),
-        color: 'success',
-        icon: 'i-lucide-check',
-      });
-    },
-  });
-};
+const requestOpen = ref(false);
 </script>
 
 <template>
@@ -102,7 +106,7 @@ const onValidate = () => {
           :aria-label="t('auth.home.editAvatar')"
           @click="avatarOpen = true"
         >
-          <UiAvatar :avatar="avatar" class="size-14 text-2xl" />
+          <UiAvatar :avatar="avatar" size="lg" />
           <span
             class="absolute -right-1 -bottom-1 flex size-6 items-center justify-center rounded-full bg-default shadow ring-1 ring-default"
             aria-hidden="true"
@@ -110,91 +114,161 @@ const onValidate = () => {
             <UIcon name="i-lucide-pencil" class="size-3 text-muted" />
           </span>
         </button>
-        <div class="flex min-w-0 flex-col items-start">
-          <UiPageTitle>{{ greeting }}</UiPageTitle>
-          <UButton
-            to="/compte"
-            variant="link"
-            size="sm"
-            class="-ml-2.5"
-            :color="firstName ? 'neutral' : 'primary'"
-            :label="
-              firstName
-                ? t('auth.home.editProfile')
-                : t('auth.home.profileMissing')
-            "
-          />
-        </div>
+        <UiPageTitle class="min-w-0 truncate">{{ greeting }}</UiPageTitle>
       </div>
-      <section class="flex flex-col gap-2" data-testid="home-draws">
-        <UiList :title="t('auth.home.draws')" title-size="lg">
-          <li
-            v-if="currentDraws.length === 0"
-            class="px-4 py-3 text-sm text-muted"
-          >
-            {{
-              pastDraws.length > 0
-                ? t('auth.home.drawsNoneCurrent')
-                : t('auth.home.drawsEmpty')
-            }}
-          </li>
-          <HomeDrawRow
-            v-for="draw in currentDraws"
-            :key="draw.id"
-            :draw="draw"
-            @open="fromHome = { path: draw.path }"
+
+      <HomeTopCard
+        v-if="topCard"
+        :action="topCard"
+        :named="named"
+        @later="dismiss"
+      />
+
+      <!-- One draw going on, nothing organised: the draw is the card. -->
+      <template v-if="layout === 'singleDraw' && single">
+        <HomeDrawCard :draw="single" @open="onOpen(single.path)" />
+        <UiList v-if="single.wishlist || hasPast">
+          <UiListItem
+            v-if="single.wishlist"
+            :to="`${single.path}/souhaits`"
+            icon="i-lucide-list-checks"
+            :title="t('auth.home.myWishes')"
+            @click="onOpen(single.path)"
+          />
+          <UiListItem
+            v-if="hasPast"
+            to="/tirages-passes"
+            icon="i-lucide-archive"
+            :title="t('auth.home.pastDraws')"
           />
         </UiList>
-        <template v-if="pastDraws.length > 0">
-          <UButton
-            variant="link"
-            color="neutral"
-            size="sm"
-            class="self-start px-1"
-            :trailing-icon="
-              showPast ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
-            "
-            :aria-expanded="showPast"
-            :label="
-              showPast
-                ? t('auth.home.drawsPastHide')
-                : t('auth.home.drawsPast', { count: pastDraws.length })
-            "
-            @click="showPast = !showPast"
-          />
-          <UiList v-if="showPast" class="opacity-80">
-            <UiListItem
-              v-for="draw in pastDraws"
-              :key="draw.id"
-              :to="draw.path"
-              icon="i-lucide-archive"
-              :title="draw.groupName"
-              :subtitle="draw.editionLabel"
-              @click="fromHome = { path: draw.path }"
-            />
-          </UiList>
-        </template>
-      </section>
+      </template>
 
-      <UiList
-        :title="t('auth.home.groups')"
-        title-size="lg"
-        :footer="canCreate || isPending ? undefined : t('auth.home.requestWhy')"
-        data-testid="home-groups"
-      >
-        <UiListItem
-          v-for="group in groups"
-          :key="group.id"
-          :to="`/admin/${group.slug}`"
-          emoji="🎄"
-          :title="group.name"
-          :subtitle="summaryOf(group.current)"
-        />
+      <!-- Several draws, nothing organised: one row per draw. -->
+      <template v-else-if="layout === 'draws'">
+        <UiList
+          :title="t('auth.home.myDraws')"
+          title-size="lg"
+          data-testid="home-draws"
+        >
+          <HomeDrawRow
+            v-for="draw in sortedDraws"
+            :key="draw.id"
+            :draw="draw"
+            @open="onOpen(draw.path)"
+          />
+        </UiList>
+        <UiList v-if="hasPast">
+          <UiListItem
+            to="/tirages-passes"
+            icon="i-lucide-archive"
+            :title="t('auth.home.pastDraws')"
+          />
+        </UiList>
+      </template>
+
+      <!-- At least one group organised: one card per group. -->
+      <template v-else-if="layout === 'groups'">
+        <section class="flex flex-col gap-3" data-testid="home-groups">
+          <UiSectionTitle>{{ t('auth.home.myGroups') }}</UiSectionTitle>
+          <HomeGroupCard
+            v-for="card in cards"
+            :key="card.groupId"
+            :card="card"
+            @open="onOpen"
+          />
+        </section>
+        <UiList>
+          <UiListItem
+            v-if="canCreate"
+            to="/admin/groupes/nouveau"
+            icon="i-lucide-plus"
+            :title="t('auth.home.createGroup')"
+            :subtitle="
+              groupsLeft === null
+                ? undefined
+                : t('auth.home.groupsLeft', { count: groupsLeft })
+            "
+          />
+          <li v-else-if="requestNote" class="px-4 py-3 text-sm" role="status">
+            {{ requestNote }}
+          </li>
+          <UiListItem
+            v-if="!canCreate && !isPending"
+            icon="i-lucide-send"
+            :title="t('auth.home.organizeOwn')"
+            :subtitle="t('auth.home.organizeOwnHint')"
+            :on-click="() => (requestOpen = true)"
+          />
+          <UiListItem
+            v-if="hasPast"
+            to="/tirages-passes"
+            icon="i-lucide-archive"
+            :title="t('auth.home.pastDraws')"
+          />
+        </UiList>
+      </template>
+
+      <!-- Nothing yet: where draws will come from, and how to organise. -->
+      <template v-else>
+        <UiCard
+          padding="lg"
+          class="flex flex-col gap-2"
+          data-testid="home-empty"
+        >
+          <h2 class="font-display text-xl font-bold">
+            {{ t('auth.home.empty.title') }}
+          </h2>
+          <p class="text-sm text-muted">{{ t('auth.home.empty.body') }}</p>
+          <p class="text-sm text-muted">{{ t('auth.home.empty.link') }}</p>
+        </UiCard>
+        <UiList v-if="hasPast">
+          <UiListItem
+            to="/tirages-passes"
+            icon="i-lucide-archive"
+            :title="t('auth.home.pastDraws')"
+          />
+        </UiList>
+        <UiCard
+          padding="lg"
+          class="flex flex-col gap-3"
+          data-testid="home-organize"
+        >
+          <h2 class="font-display text-xl font-bold">
+            {{ t('auth.home.organize.title') }}
+          </h2>
+          <p class="text-sm text-muted">{{ t('auth.home.requestWhy') }}</p>
+          <p v-if="requestNote" class="text-sm font-medium" role="status">
+            {{ requestNote }}
+          </p>
+          <UButton
+            v-if="canCreate"
+            to="/admin/groupes/nouveau"
+            block
+            variant="outline"
+            icon="i-lucide-plus"
+            class="min-h-11 justify-center"
+            :label="t('auth.home.createGroup')"
+          />
+          <UButton
+            v-else-if="!isPending"
+            block
+            variant="outline"
+            icon="i-lucide-send"
+            class="min-h-11 justify-center"
+            :label="t('auth.home.organize.button')"
+            @click="requestOpen = true"
+          />
+        </UiCard>
+      </template>
+
+      <!-- Organising one's own draw, under the draws of a participant. -->
+      <UiList v-if="layout === 'singleDraw' || layout === 'draws'">
         <UiListItem
           v-if="canCreate"
           to="/admin/groupes/nouveau"
           icon="i-lucide-plus"
-          :title="t('auth.home.newGroup')"
+          :title="t('auth.home.createGroup')"
           :subtitle="
             groupsLeft === null
               ? undefined
@@ -207,13 +281,9 @@ const onValidate = () => {
         <UiListItem
           v-if="!canCreate && !isPending"
           icon="i-lucide-send"
-          :title="
-            groups.length > 0
-              ? t('auth.home.requestAction')
-              : t('auth.home.organize')
-          "
-          :subtitle="t('auth.home.requestHint')"
-          :on-click="openSheet"
+          :title="t('auth.home.organizeOwn')"
+          :subtitle="t('auth.home.organizeOwnHint')"
+          :on-click="() => (requestOpen = true)"
         />
       </UiList>
     </AdminQueryState>
@@ -223,46 +293,6 @@ const onValidate = () => {
       v-model:open="avatarOpen"
       :initial="avatar"
     />
-    <UDrawer
-      v-model:open="open"
-      :title="t('auth.home.requestAction')"
-      :description="t('auth.home.requestDescription')"
-    >
-      <template #body>
-        <form
-          id="group-request-form"
-          class="flex flex-col gap-4 py-2"
-          novalidate
-          @submit.prevent="onValidate"
-        >
-          <UFormField :label="t('auth.home.requestLabel')">
-            <UTextarea
-              v-model="message"
-              :maxlength="REQUEST_MAX"
-              :rows="4"
-              autoresize
-              :placeholder="t('auth.home.requestPlaceholder')"
-              class="w-full"
-            />
-          </UFormField>
-          <UAlert
-            v-if="ask.isError.value"
-            color="error"
-            variant="subtle"
-            :description="errorMessage(ask.error.value)"
-          />
-        </form>
-      </template>
-      <template #footer>
-        <UButton
-          type="submit"
-          form="group-request-form"
-          block
-          :disabled="!canValidate"
-          :loading="ask.isPending.value"
-          :label="t('common.actions.validate')"
-        />
-      </template>
-    </UDrawer>
+    <HomeRequestSheet v-model:open="requestOpen" />
   </AdminScreen>
 </template>

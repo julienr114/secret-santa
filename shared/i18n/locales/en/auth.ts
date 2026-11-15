@@ -4,6 +4,7 @@ import type { Dict } from '../../types';
 export default {
   login: {
     emailLabel: 'Email address',
+    emailHelp: 'No password: you get a link valid for 15 minutes.',
     emailInvalid: 'Invalid email address',
     submit: 'Get a login link',
     sentTitle: 'Check your inbox',
@@ -16,65 +17,171 @@ export default {
     signupSubmit: 'Create my account',
   },
   landing: {
-    tagline: 'Log in to find your draws or organize one.',
+    tagline:
+      'The family Secret Santa: everyone finds out in secret who they are giving a gift to.',
     personalLink:
-      'Did you receive a personal link? It works without an account.',
+      'Did you receive a personal link? Open it directly: it works without an account.',
   },
   home: {
+    title: 'Home',
     hello: 'Hello {name}',
-    organize: 'Ask to organize a draw',
-    partyToday: 'Exchange today!',
-    partyIn: { one: 'exchange tomorrow', other: 'exchange in {count} days' },
+    helloNobody: 'Hello',
+    editAvatar: 'Change my avatar',
+    now: 'To do now',
+    nowIn: 'To do now · {group}',
+    later: 'Later',
+    action: {
+      notify: {
+        title: 'Let everyone know the draw is done',
+        body: {
+          one: '{count} person has not received their link yet.',
+          other: '{count} people have not received their link yet.',
+        },
+        button: 'Notify by email',
+      },
+      requests: {
+        title: {
+          one: '{count} group request to handle',
+          other: '{count} group requests to handle',
+        },
+        body: 'Some accounts are waiting for your answer to organize their draw.',
+        button: 'See the requests',
+      },
+      discover: {
+        title: 'The draw is done!',
+        body: 'Your envelope is waiting. Make sure nobody is looking at your screen.',
+        button: 'Find out who I am giving a gift to',
+      },
+      remind: {
+        title: {
+          one: '{count} person has not opened their link yet',
+          other: '{count} people have not opened their link yet',
+        },
+        body: 'The party is getting close: remind them.',
+        button: 'Remind',
+      },
+      fixDraw: {
+        title: 'The draw is not possible for now',
+        body: 'The list or the exclusions prevent the draw.',
+        button: 'Fix it',
+      },
+      startDraw: {
+        title: 'Check the list, then start the draw',
+        body: {
+          one: '{count} participant for now.',
+          other: '{count} participants for now.',
+        },
+        button: 'Open the edition',
+      },
+      addWishes: {
+        title: 'Write down a few gift ideas',
+        body: 'They will help the person who drew your name.',
+        button: 'My ideas',
+      },
+      close: {
+        title: 'The party is over: close the edition',
+        body: 'Wish lists become read only; the draw will be used for the exclusions of the following years.',
+        button: 'Open the edition',
+      },
+      prepare: {
+        title: 'Prepare this year’s draw',
+        body: 'Create the edition and choose the date of the party.',
+        button: 'Create the edition',
+      },
+      createGroup: {
+        title: 'Your request was accepted: create your group',
+        body: 'You will be its organizer.',
+        button: 'Create my group',
+      },
+      completeProfile: {
+        title: 'Tell us your name',
+        body: 'Your first name is shown to the organizers of your groups.',
+        button: 'Complete my profile',
+      },
+    },
+    party: {
+      today: 'party today',
+      in: { one: 'party tomorrow', other: 'party in {count} days' },
+      on: 'party on {date}',
+    },
+    drawCard: {
+      partyOn: 'Party on {date}',
+      partyOnIn: {
+        one: 'Party on {date}, tomorrow',
+        other: 'Party on {date}, in {count} days',
+      },
+      partyToday: 'Party today',
+      waiting: 'The draw has not taken place yet',
+      addWishes: 'Write down a few gift ideas',
+      discover: 'Your envelope is waiting',
+      seeAgain: 'You already know who you are giving to',
+      reveal: 'Find out who I am giving a gift to',
+      revealAgain: 'See who I am giving to again',
+      wishes: 'My ideas',
+    },
     step: {
       addWishes: { state: 'Add your ideas', action: 'My ideas' },
-      wait: { state: 'Draw to come', action: 'Open' },
-      discover: { state: 'The draw has taken place', action: 'Discover' },
-      seeAgain: { state: 'You know who you give to', action: 'See again' },
-      closed: { state: 'Exchange over', action: 'Open' },
+      wait: { state: 'Draw to come' },
+      discover: { state: 'The draw took place', action: 'Discover' },
+      seeAgain: { state: 'You know who you are giving to' },
+      closed: { state: 'Exchange over' },
     },
-    helloNobody: 'Hello',
-    drawsNoneCurrent: 'No draw in progress.',
-    drawsPast: {
-      one: 'See {count} past draw',
-      other: 'See the {count} past draws',
+    myWishes: 'My wish list',
+    pastDraws: 'Past draws',
+    organizeOwn: 'Organize my own draw',
+    organizeOwnHint: 'On request, during the beta',
+    myDraws: 'My draws',
+    myGroups: 'My groups',
+    organizer: 'Organizer',
+    myDraw: 'My draw',
+    manage: 'Manage the draw',
+    editionState: {
+      idle: 'No draw in progress',
+      preparing: {
+        one: 'To prepare · {count} participant',
+        other: 'To prepare · {count} participants',
+      },
+      toNotify: {
+        one: 'Draw done · {count} to notify',
+        other: 'Draw done · {count} to notify',
+      },
+      drawn: 'Draw done · {viewed} of {count} found out',
+      closed: 'Closed',
     },
-    drawsPastHide: 'Hide past draws',
-    profileMissing: 'Complete your profile',
-    editProfile: 'Edit my profile',
-    editAvatar: 'Change my avatar',
-    title: 'Home',
-    draws: 'I take part',
-    drawsEmpty:
-      'No draw yet. Draws you are added to with this address will show up here.',
-    groups: 'I organize',
     newGroup: 'New group',
-    requestHint: 'An administrator will answer by email',
-    requestWhy:
-      'Under the Tree is in beta: groups are created on request while we make sure everything works well.',
+    createGroup: 'Create a group',
     groupsLeft: {
       one: 'You can create {count} more',
       other: 'You can create {count} more',
     },
-    requestAction: 'Ask for a group',
-    requestDescription:
-      'Who do you want to organize a draw for? The app is in beta: an administrator reads each request.',
+    empty: {
+      title: 'No draw yet',
+      body: 'As soon as an organizer adds you with this email address, your draw shows up here.',
+      link: 'Did you receive a personal link? Open it: you can add it to your account.',
+    },
+    organize: {
+      title: 'Organize a Secret Santa',
+      button: 'Ask to create a group',
+    },
+    requestWhy:
+      'Under the Tree is in beta: groups are created on request while we make sure everything works well.',
+    requestAction: 'Organize a draw',
+    requestDescription: 'Who do you want to organize a draw for?',
+    requestWhyTitle: 'Why a request?',
+    requestReply: 'An administrator answers you by email.',
     requestLabel: 'Your request',
     requestPlaceholder: 'My family’s Christmas, about twelve people.',
+    requestSend: 'Send my request',
     requestSent: 'Request sent',
     requestPending: 'Request sent on {date}. You will get the answer by email.',
     requestRefused:
       'Your request of {date} was refused. You can make another one.',
+    past: {
+      title: 'Past draws',
+      empty: 'No past draw yet.',
+    },
     adminAccounts: 'Accounts and requests',
     adminGroups: 'All groups',
-    groupIdle: 'No draw in progress',
-    groupState: {
-      preparing: {
-        one: 'preparing, {count} participant',
-        other: 'preparing, {count} participants',
-      },
-      drawn: 'drawn, discovered by {viewed} of {count}',
-      closed: 'closed',
-    },
   },
   nav: {
     label: 'Administration',

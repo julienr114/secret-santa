@@ -67,6 +67,7 @@ export type HomeDraw = {
   groupId: string;
   groupName: string;
   editionLabel: string;
+  year: number;
   status: EditionStatus;
   /** What the participant has to do next. */
   step: DrawStep;

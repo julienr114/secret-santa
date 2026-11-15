@@ -65,6 +65,7 @@ export default defineEventHandler(async (event) => {
           groupId: edition.groupId,
           groupName,
           editionLabel: edition.label,
+          year: edition.year,
           status: edition.status,
           step: nextStep({
             status: edition.status,

@@ -285,9 +285,9 @@ export type HomeLayout = 'empty' | 'singleDraw' | 'draws' | 'groups';
  * @param draws - The draws of the account.
  * @returns Those still going on.
  */
-export const currentDraws = (
-  draws: readonly HomeDrawState[],
-): HomeDrawState[] => draws.filter((draw) => draw.status !== 'closed');
+export const currentDraws = <D extends HomeDrawState>(
+  draws: readonly D[],
+): D[] => draws.filter((draw) => draw.status !== 'closed');
 
 /**
  * How the home is laid out: by group as soon as the account organises
@@ -305,13 +305,13 @@ export const homeLayout = (
 };
 
 /** One group on the home, whatever the account's part in it. */
-export type GroupCard = {
+export type GroupCard<D extends HomeDrawState = HomeDrawState> = {
   groupId: string;
   name: string;
   /** Set when the account organises the group. */
   slug: string | null;
   /** The account's own draw in the group, if it takes part. */
-  draw: HomeDrawState | null;
+  draw: D | null;
   /** The edition going on, if the account organises the group. */
   edition: HomeEditionState | null;
   eventDate: string;
@@ -324,13 +324,14 @@ export type GroupCard = {
  * @param home - The home of the account.
  * @returns The cards.
  */
-export const groupCards = (
-  home: Pick<HomeState, 'draws' | 'groups'>,
-): GroupCard[] => {
+export const groupCards = <D extends HomeDrawState>(home: {
+  draws: readonly D[];
+  groups: readonly HomeGroupState[];
+}): GroupCard<D>[] => {
   const draws = currentDraws(home.draws);
   const drawOf = (groupId: string) =>
     draws.find((draw) => draw.groupId === groupId) ?? null;
-  const organized = home.groups.map((group): GroupCard => {
+  const organized = home.groups.map((group): GroupCard<D> => {
     const draw = drawOf(group.id);
     return {
       groupId: group.id,
@@ -348,7 +349,7 @@ export const groupCards = (
       (draw, index, list) =>
         list.findIndex((d) => d.groupId === draw.groupId) === index,
     )
-    .map((draw): GroupCard => ({
+    .map((draw): GroupCard<D> => ({
       groupId: draw.groupId,
       name: draw.groupName,
       slug: null,
@@ -359,4 +360,29 @@ export const groupCards = (
   return [...organized, ...joined].toSorted((a, b) =>
     a.name.localeCompare(b.name),
   );
+};
+
+/** The closed draws of one year. */
+export type PastYear<T> = { year: number; draws: T[] };
+
+/**
+ * The closed draws, grouped by year, the latest year first; within a
+ * year, by group name.
+ * @param draws - The draws of the account, with their year.
+ * @returns One entry per year that has some.
+ */
+export const pastDrawsByYear = <
+  T extends { status: string; year: number; groupName: string },
+>(
+  draws: readonly T[],
+): PastYear<T>[] => {
+  const past = draws.filter((draw) => draw.status === 'closed');
+  return [...new Set(past.map((draw) => draw.year))]
+    .toSorted((a, b) => b - a)
+    .map((year) => ({
+      year,
+      draws: past
+        .filter((draw) => draw.year === year)
+        .toSorted((a, b) => a.groupName.localeCompare(b.groupName)),
+    }));
 };

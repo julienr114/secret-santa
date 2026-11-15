@@ -1128,6 +1128,8 @@ Définis dans `app/assets/css/main.css`. Les écrans nomment un **rôle**, jamai
 | `bg-muted` | Texte cité, aperçu d'un message |
 | `bg-skeleton`, `bg-skeleton-soft` | Chargement, sur la page et sur une ligne blanche |
 | `bg-track` | Partie vide d'une barre de progression |
+| `bg-divider` | Trait entre deux lignes, entre deux étapes |
+| `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond le plus clair (pavé, encadré), `soft` un cran plus soutenu (halo, bouton rond à presser, rond d'état, surlignage), `ink` le texte et les icônes posés dessus |
 | `primary` (rouge brique), `secondary` et `success` (vert sapin), `warning` (moutarde), `error` (canneberge) | Action, réussite, attention, danger (`app/app.config.ts`). Attention et danger utilisent une teinte assez sombre pour rester lisibles en texte sur blanc |
 
 Les teintes brutes (`--color-kraft-*`, `--color-brick-*`, `--color-pine-*`) ne servent qu'à définir ces jetons, et aux couleurs des icônes de personne (`app/utils/avatars.ts`).
@@ -1144,15 +1146,24 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` |
 | `UiAvatar` | L'icône d'une personne, en trois tailles |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
+| `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond brique, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
+| `UiActionCard` | « À faire maintenant » : étiquette en capitales, titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |
+| `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
+| `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
+| `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable |
+| `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
+| `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
 
-Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une édition), `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
+Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`).
+
+Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une édition, remplacé par `UiActionCard` dans la refonte de l'édition), `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
 
 ### 23.3 Règles
 
 - Une colonne de la largeur d'un téléphone (`max-w-md`) sur tous les écrans ; les barres du haut et du bas prennent toute la largeur ; les panneaux du bas restent dans la colonne.
 - Une action courte sur un élément s'ouvre dans un **panneau du bas** (`UDrawer`) ; un formulaire long a son propre écran.
 - Un panneau enregistre avec un bouton « Valider » ; le fermer autrement abandonne.
-- Une cible tactile fait au moins 40 px.
+- Une cible tactile fait au moins 44 px.
 - Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
 - Le bouton d'action d'une ligne est rond, avec une icône seule : plein et clair quand l'action reste à faire, en contour gris quand elle est faite.
@@ -1160,6 +1171,5 @@ Composants construits dessus et réutilisés : `AdminStatusCard` (état d'une é
 
 ### 23.4 Reste à faire
 
-- Un composant `UiSheet` autour de `UDrawer` si les panneaux continuent de se multiplier.
 - Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
 

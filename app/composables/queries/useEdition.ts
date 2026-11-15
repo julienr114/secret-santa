@@ -58,8 +58,6 @@ const editionAction = <TBody = void>(slug: Ref, id: Ref, action: string) =>
     () => groupKeys(slug),
   );
 
-export const useOpenMutation = (slug: Ref, id: Ref) =>
-  editionAction(slug, id, 'open');
 export const useDrawMutation = (slug: Ref, id: Ref) =>
   editionAction(slug, id, 'draw');
 export const useCloseMutation = (slug: Ref, id: Ref) =>

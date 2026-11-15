@@ -26,7 +26,6 @@ export default {
   too_few_participants: 'Es braucht mindestens zwei Teilnehmer.',
   participants_locked: 'Die Liste ist nach der Auslosung gesperrt.',
   already_participating: 'Diese Person nimmt bereits teil.',
-  links_not_open: 'Öffne zuerst die Einladungen.',
   message_not_available: 'Diese Nachricht passt nicht zur Phase der Ausgabe.',
   email_not_configured:
     'Der Versand per E-Mail ist auf dem Server nicht eingerichtet. Teile die Links von deinem Handy aus.',

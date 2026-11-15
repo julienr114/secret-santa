@@ -7,6 +7,9 @@ export default {
     tickToConfirm: 'Tick the box to confirm',
   },
   newEdition: {
+    dateLabel: 'Date of the party',
+    dateHelp: 'The day you exchange the gifts. You can change it later.',
+    dateRequired: 'Pick the date of the party',
     title: 'New edition',
     intro:
       'Participants of the previous edition who are still active are carried over; you can adjust the list afterwards.',
@@ -20,9 +23,6 @@ export default {
     messageLanguage: 'Message language: {language}',
     budget: 'Budget {budget}',
     eventDate: 'on {date}',
-    draftIntro:
-      'Check the list of participants, then open the invitations to be able to share the links.',
-    openInvitations: 'Open the invitations',
     drawPossible: 'The draw is possible',
     drawPossibleDescription: {
       one: '{count} participant, all the rules are met.',

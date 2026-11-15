@@ -5,8 +5,7 @@ export default {
   appName: 'Under the Tree',
   loading: 'Wird geladen',
   status: {
-    draft: 'Entwurf',
-    invitations: 'Einladungen',
+    preparing: 'In Vorbereitung',
     drawn: 'Ausgelost',
     closed: 'Abgeschlossen',
   },

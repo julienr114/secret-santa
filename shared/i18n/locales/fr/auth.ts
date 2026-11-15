@@ -66,11 +66,10 @@ export default {
     adminGroups: 'Tous les groupes',
     groupIdle: 'Pas de tirage en cours',
     groupState: {
-      draft: {
-        one: 'brouillon, {count} participant',
-        other: 'brouillon, {count} participants',
+      preparing: {
+        one: 'en préparation, {count} participant',
+        other: 'en préparation, {count} participants',
       },
-      invitations: 'invitations envoyées à {sent} sur {count}',
       drawn: 'tirage fait, découvert par {viewed} sur {count}',
       closed: 'clôturé',
     },

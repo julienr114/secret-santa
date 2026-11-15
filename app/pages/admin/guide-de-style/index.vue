@@ -41,7 +41,7 @@ const COLORS = [
   { name: 'error-soft', hint: 'Fond danger', class: 'bg-error-soft' },
 ];
 /** Codes shown by AdminStatusBadge: edition statuses, then participant badges. */
-const STATUSES = ['draft', 'invitations', 'drawn', 'closed'];
+const STATUSES = ['preparing', 'drawn', 'closed'];
 const BADGES = ['sent', 'wishes', 'viewed'];
 
 /** A person's icon used throughout the examples. */

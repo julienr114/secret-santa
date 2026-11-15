@@ -24,7 +24,6 @@ export default {
   too_few_participants: 'At least two participants are needed.',
   participants_locked: 'The list is locked after the draw.',
   already_participating: 'This person is already taking part.',
-  links_not_open: 'Open the invitations first.',
   message_not_available: 'This message does not fit the stage of the edition.',
   email_not_configured:
     'Sending by email is not set up on the server. Share the links from your phone.',

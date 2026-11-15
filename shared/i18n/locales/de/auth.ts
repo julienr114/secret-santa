@@ -74,11 +74,10 @@ export default {
     adminGroups: 'Alle Gruppen',
     groupIdle: 'Keine laufende Auslosung',
     groupState: {
-      draft: {
-        one: 'Entwurf, {count} Teilnehmer',
-        other: 'Entwurf, {count} Teilnehmende',
+      preparing: {
+        one: 'in Vorbereitung, {count} Teilnehmer',
+        other: 'in Vorbereitung, {count} Teilnehmende',
       },
-      invitations: 'Einladungen an {sent} von {count} gesendet',
       drawn: 'ausgelost, entdeckt von {viewed} von {count}',
       closed: 'abgeschlossen',
     },

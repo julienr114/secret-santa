@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod';
+import { isIsoDay } from '#server/utils/rules';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import {
   useCreateEditionMutation,
@@ -30,14 +31,20 @@ const schema = computed(() =>
       .min(1, t('adminEdition.newEdition.nameRequired'))
       .max(60),
     year: z.coerce.number().int().min(2000).max(2100),
+    eventDate: z.iso.date(t('adminEdition.newEdition.dateRequired')),
   }),
 );
 type Schema = z.output<typeof schema.value>;
 await dashboard.suspense();
+// The party date is required: the group's usual one if it is a real
+// date, otherwise picked here, with Christmas Day offered in one tap.
+const groupDate = dashboard.data.value?.rules.eventDate ?? '';
 const state = reactive({
   label: dashboard.data.value?.nextEdition.label ?? '',
   year: dashboard.data.value?.nextEdition.year ?? new Date().getFullYear(),
+  eventDate: isIsoDay(groupDate) ? groupDate : '',
 });
+const christmasDay = computed(() => `${state.year}-12-25`);
 const onSubmit = (event: FormSubmitEvent<Schema>) =>
   create.mutate(event.data, {
     onSuccess: ({ edition }) =>
@@ -77,6 +84,14 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
           inputmode="numeric"
           class="w-full"
         />
+      </UFormField>
+      <UFormField
+        name="eventDate"
+        :label="t('adminEdition.newEdition.dateLabel')"
+        :help="t('adminEdition.newEdition.dateHelp')"
+        required
+      >
+        <AdminDateField v-model="state.eventDate" :suggestion="christmasDay" />
       </UFormField>
       <UAlert
         v-if="create.isError.value"

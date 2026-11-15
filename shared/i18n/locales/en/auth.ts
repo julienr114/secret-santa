@@ -68,11 +68,10 @@ export default {
     adminGroups: 'All groups',
     groupIdle: 'No draw in progress',
     groupState: {
-      draft: {
-        one: 'draft, {count} participant',
-        other: 'draft, {count} participants',
+      preparing: {
+        one: 'preparing, {count} participant',
+        other: 'preparing, {count} participants',
       },
-      invitations: 'invitations sent to {sent} of {count}',
       drawn: 'drawn, discovered by {viewed} of {count}',
       closed: 'closed',
     },

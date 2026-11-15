@@ -7,6 +7,9 @@ export default {
     tickToConfirm: 'Zum Bestätigen ankreuzen',
   },
   newEdition: {
+    dateLabel: 'Datum der Bescherung',
+    dateHelp: 'Der Tag, an dem ihr die Geschenke austauscht. Später änderbar.',
+    dateRequired: 'Wähle das Datum der Bescherung',
     title: 'Neue Ausgabe',
     intro:
       'Die noch aktiven Teilnehmer der letzten Ausgabe werden übernommen; die Liste kannst du danach anpassen.',
@@ -20,9 +23,6 @@ export default {
     messageLanguage: 'Sprache der Nachrichten: {language}',
     budget: 'Budget {budget}',
     eventDate: 'am {date}',
-    draftIntro:
-      'Prüfe die Teilnehmerliste und öffne dann die Einladungen, um die Links teilen zu können.',
-    openInvitations: 'Einladungen öffnen',
     drawPossible: 'Die Auslosung ist möglich',
     drawPossibleDescription: {
       one: '{count} Teilnehmer, alle Regeln sind erfüllt.',

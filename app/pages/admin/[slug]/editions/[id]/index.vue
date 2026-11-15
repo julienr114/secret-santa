@@ -17,7 +17,6 @@ import {
   useCloseMutation,
   useDrawMutation,
   useMessagesQuery,
-  useOpenMutation,
   useSendEmailsMutation,
   useWaiveMutation,
 } from '~/composables/queries/useEdition';
@@ -39,11 +38,12 @@ const onError = (error: unknown) =>
 
 const edition = useEditionQuery(slug, id);
 const check = useCheckQuery(slug, id);
-const open = useOpenMutation(slug, id);
 const drawMutation = useDrawMutation(slug, id);
 const close = useCloseMutation(slug, id);
 
-const status = computed(() => edition.data.value?.edition.status ?? 'draft');
+const status = computed(
+  () => edition.data.value?.edition.status ?? 'preparing',
+);
 const label = computed(
   () =>
     edition.data.value?.edition.label ??
@@ -56,12 +56,8 @@ const screen = computed(() => ({
   back: `/admin/${slug.value}`,
 }));
 
-const canSend = computed(
-  () => status.value === 'invitations' || status.value === 'drawn',
-);
-const canEdit = computed(
-  () => status.value === 'draft' || status.value === 'invitations',
-);
+const canSend = computed(() => status.value !== 'closed');
+const canEdit = computed(() => status.value === 'preparing');
 const messageType = ref<MessageType>(defaultMessageType(status.value));
 watch(status, (s) => {
   messageType.value = defaultMessageType(s);
@@ -329,20 +325,7 @@ const runDraw = () =>
       </div>
 
       <!-- Action of the moment -->
-      <section v-if="status === 'draft'" class="flex flex-col gap-3">
-        <p class="text-muted">
-          {{ t('adminEdition.cockpit.draftIntro') }}
-        </p>
-        <UButton
-          block
-          icon="i-lucide-mail-open"
-          :label="t('adminEdition.cockpit.openInvitations')"
-          :loading="open.isPending.value"
-          @click="open.mutate(undefined, { onError })"
-        />
-      </section>
-
-      <template v-else-if="status === 'invitations'">
+      <template v-if="status === 'preparing'">
         <USkeleton
           v-if="check.isPending.value"
           class="h-24 w-full rounded-2xl"

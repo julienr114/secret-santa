@@ -2,8 +2,7 @@ export default {
   appName: 'Under the Tree',
   loading: 'Chargement',
   status: {
-    draft: 'Brouillon',
-    invitations: 'Invitations',
+    preparing: 'En préparation',
     drawn: 'Tirée',
     closed: 'Clôturée',
   },

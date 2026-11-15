@@ -24,7 +24,6 @@ export default {
   too_few_participants: 'Il faut au moins deux participants.',
   participants_locked: 'La liste est verrouillée après le tirage.',
   already_participating: 'Cette personne participe déjà.',
-  links_not_open: "Ouvre d'abord les invitations.",
   message_not_available: "Ce message ne correspond pas à l'étape de l'édition.",
   email_not_configured:
     "L'envoi par email n'est pas configuré sur le serveur. Partage les liens depuis ton téléphone.",

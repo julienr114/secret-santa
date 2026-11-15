@@ -6,6 +6,9 @@ export default {
     tickToConfirm: 'Coche pour confirmer',
   },
   newEdition: {
+    dateLabel: 'Date de la fête',
+    dateHelp: 'Le jour où vous échangez les cadeaux. Modifiable ensuite.',
+    dateRequired: 'Choisis la date de la fête',
     title: 'Nouvelle édition',
     intro:
       "Les participants de l'édition précédente encore actifs sont repris ; tu pourras ajuster la liste ensuite.",
@@ -19,9 +22,6 @@ export default {
     messageLanguage: 'Langue des messages : {language}',
     budget: 'Budget {budget}',
     eventDate: 'le {date}',
-    draftIntro:
-      'Vérifie la liste des participants, puis ouvre les invitations pour pouvoir partager les liens.',
-    openInvitations: 'Ouvrir les invitations',
     drawPossible: 'Le tirage est possible',
     drawPossibleDescription: {
       one: '{count} participant, toutes les règles sont respectées.',

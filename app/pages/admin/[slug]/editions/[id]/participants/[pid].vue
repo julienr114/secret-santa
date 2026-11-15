@@ -31,19 +31,17 @@ const linkCopied = useLinkCopiedMutation(slug);
 const regenerate = useRegenerateMutation(slug);
 const remove = useRemoveParticipantMutation(slug, id);
 
-const status = computed(() => edition.data.value?.edition.status ?? 'draft');
+const status = computed(
+  () => edition.data.value?.edition.status ?? 'preparing',
+);
 const p = computed(
   () =>
     edition.data.value?.participants.find(
       (x) => x.participationId === pid.value,
     ) ?? null,
 );
-const canSend = computed(
-  () => status.value === 'invitations' || status.value === 'drawn',
-);
-const canEdit = computed(
-  () => status.value === 'draft' || status.value === 'invitations',
-);
+const canSend = computed(() => status.value !== 'closed');
+const canEdit = computed(() => status.value === 'preparing');
 const messageType = ref<MessageType>(defaultMessageType(status.value));
 watch(status, (s) => {
   messageType.value = defaultMessageType(s);

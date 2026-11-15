@@ -4,6 +4,7 @@ import {
   envelopeState,
   participantSteps,
   type ParticipantStep,
+  type StepNote,
 } from '#server/utils/personal';
 import type { Step } from '~/components/ui/Stepper.vue';
 import {
@@ -140,9 +141,10 @@ const stepLabel = (step: ParticipantStep): string => {
   return t('participant.home.steps.party');
 };
 /** Icon of the current step: a clock before the draw, a star after. */
-const STEP_ICONS: Partial<
-  Record<NonNullable<ParticipantStep['note']>, string>
-> = { soon: 'i-lucide-clock', done: 'i-lucide-star' };
+const STEP_ICONS: Partial<Record<NonNullable<StepNote>, string>> = {
+  soon: 'i-lucide-clock',
+  done: 'i-lucide-star',
+};
 const steps = computed<Step[]>(() =>
   me.value
     ? participantSteps(me.value.phase, me.value.eventDate, today).map(
@@ -251,6 +253,7 @@ const card = computed(() => {
             variant="ghost"
             color="neutral"
             size="lg"
+            class="min-h-11"
             icon="i-lucide-eye-off"
             :label="t('participant.home.shown.hide')"
             @click="onHide"

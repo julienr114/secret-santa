@@ -372,6 +372,7 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - **Développement et tests** : `NUXT_DEV_LOGIN_LINKS=true` renvoie le lien à l'écran au lieu de dépendre d'un email. **Jamais en production.**
 - Toutes les routes `/api/admin/*` vérifient la session **et** le droit sur le groupe concerné.
 - **Lien d'invitation d'un groupe** (`groups.invite_code`, `invite_until`, `invite_places`, `invite_message`, migration `0013`) : désactivé par défaut ; l'organisateur le règle sur la page `/admin/[groupe]/invitation`, ouverte depuis « Personnes » : date limite facultative, nombre de places (par défaut, ce qu'un tirage peut encore accueillir : 100 moins les personnes actives), son mot affiché sur la page d'invitation. Une fois créé : le message à copier ou partager (comme ceux d'un tirage), un nouveau lien (l'ancien cesse de marcher), la désactivation. Page `/rejoindre/[code]` : le groupe, son tirage en cours et le mot de l'organisateur ; sans session, connexion ou inscription par lien magique qui ramène ici (`?next=`, limité aux pages `/rejoindre/…` et `/p/…`) ; puis un prénom si le profil n'en a pas, et « Rejoindre le groupe » : le compte devient une personne du groupe (la sienne si l'organisateur avait déjà saisi cette adresse) et prend une place. **On rejoint le groupe, pas le tirage** : l'organisateur l'ajoute au tirage en cours, et les éditions suivantes le reprennent. Refus après la date limite (`invite_expired`) ou sans place (`invite_full`).
+- **Emails aux organisateurs** (règles du groupe `notifyJoined`, `notifyAllViewed`, `notifyReminder`, activées par défaut, réglables dans « Réglages ») : à chaque organisateur du groupe, dans sa langue. Quelqu'un rejoint le groupe par le lien (avec un rappel : l'ajouter au tirage et à ses exclusions) ; le dernier participant découvre son tirage ; **rappel 3 jours avant l'échange** avec les prénoms de ceux qui n'ont pas encore découvert leur tirage. Le rappel part d'une **tâche planifiée** : cron Cloudflare chaque jour à 8 h UTC (`[triggers]` dans `wrangler.toml`, `server/plugins/reminders.ts`), une seule fois par édition (`editions.reminder_sent_at`, migration `0014`), rien n'est envoyé si tout le monde a vu. En test, `wrangler dev --test-scheduled` permet de la lancer par `GET /__scheduled`.
 - **Connexion et création de compte** : deux onglets sur le même formulaire. « Se connecter » demande l'adresse ; « Créer un compte » demande le prénom et l'adresse (le prénom va dans le profil du nouveau compte, ou complète un compte qui n'en avait pas ; la réponse reste la même dans tous les cas). `/login?mode=signup` ouvre sur la création.
 - **Garder un tirage dans son compte** : sur la page d'un tirage ouverte par le lien personnel, sans session, une carte invite à créer un compte. Si l'organisateur a saisi l'adresse de la personne, un bouton envoie directement le lien de connexion à cette adresse, avec son prénom : le compte est créé et le tirage y est d'office. Sinon, « Créer mon compte » ouvre le formulaire de création avec le prénom déjà rempli, et la connexion ramène sur le tirage. Connecté, « Ajouter à mon compte » donne l'adresse du compte à la personne, si elle n'en avait pas (`person_has_other_email` sinon) ; le tirage apparaît alors dans « Je participe ».
 
@@ -967,7 +968,7 @@ Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrit
 | **Inscription par lien d'invitation** | L'organisateur partage un lien ; les participants s'inscrivent eux-mêmes. Date de fin, nombre de places, informations affichées sur la page d'inscription. Email obligatoire dans ce mode | Comptes ; délivrabilité. Change la création des personnes, aujourd'hui saisies par l'organisateur |
 | **Page d'accueil indexable** | Présente l'application et mène à l'inscription. Aujourd'hui tout le site est en `noindex` | Ouverture au public |
 
-**Ordre de réalisation proposé** : design system léger → comptes et connexion → interface d'administration et quotas → demandes de groupe et emails au super-admin → page d'accueil → notifications à l'organisateur → inscription par lien. Le tirage à la main passe en v3.
+**Ordre de réalisation** : design system léger ✅ → comptes et connexion ✅ → interface d'administration et quotas ✅ → demandes de groupe et emails au super-admin ✅ → inscription par lien ✅ → notifications à l'organisateur ✅ → page d'accueil indexable → en dernier, avant de faire connaître le site : mentions légales, RGPD (page de confidentialité, suppression de compte, durée de conservation) et protection contre l'abus à l'inscription (Cloudflare Turnstile). Décision du 15 novembre 2026 : personne ne connaît encore le site, ces obligations passent en dernier. Le tirage à la main passe en v3.
 
 ### 22.3 V3
 
@@ -977,6 +978,16 @@ Ce socle remet en cause des décisions actuelles, dont la section 8.4, réécrit
 | **Listes de cadeaux pour la famille** | Un second volet, hors tirage : listes partagées avec des membres choisis, réservation des cadeaux | Presque une deuxième application. La réservation était hors périmètre (section 2) : la décision est rouverte |
 | **Tirage déjà fait à la main** | Mode d'édition sans tirage par l'application : chaque participant déclare à qui il offre. Il sert alors de support (listes de souhaits, rappels, historique pour l'an prochain) | Reporté en v3 le 14 novembre 2026. Conception validée en 22.6, prête à reprendre |
 | **API REST, serveur MCP, documentation** | Tout piloter depuis un LLM | Demande des jetons d'accès par compte, donc le socle de la v2, et une API stable et documentée |
+
+### 22.3 bis Idées à reprendre plus tard : actions automatiques
+
+Notées le 15 novembre 2026, sans décision. Elles reposent sur la tâche planifiée du matin déjà en place (cron Cloudflare, `server/plugins/reminders.ts`), gratuite jusqu'à 5 crons par compte.
+
+| Idée | Contenu | Points à trancher |
+|---|---|---|
+| **Clôture automatique** | L'édition se clôture seule quelques jours après la date d'échange | Combien de jours ; prévenir l'organisateur avant |
+| **Tirage automatique** | L'organisateur choisit une date ; le tirage se fait seul ce jour-là | Que faire si le tirage est impossible (exclusions) : prévenir l'organisateur |
+| **Relance des participants** | Un email au participant qui n'a pas ouvert son lien, et plus seulement à l'organisateur | Seulement pour ceux qui ont une adresse ; une seule relance ; activable dans les réglages |
 
 ### 22.4 Décisions du 14 novembre 2026 sur la v2
 
@@ -1054,6 +1065,53 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 - **Emails aux super-admins** : à chaque demande de groupe.
 - **Tirage à la main** : la conception 22.6 est validée, y compris l'affichage à l'organisateur des noms des donneurs en conflit.
 - **Session** : 30 jours.
+
+### 22.8 À faire : supprimer l'étape « Invitations » (décision du 15 novembre 2026)
+
+Décidé avec Julien pour simplifier le pilotage d'une édition. **Rien n'est codé.** Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns (rangée « Gestion d'un tirage par l'organisateur »).
+
+**Pourquoi** : l'étape obligatoire ne sert qu'à débloquer les envois (« Ouvrir les invitations ») et impose deux tournées de messages par personne, alors qu'une seule suffit pour jouer. Brouillon et invitations permettent presque les mêmes choses.
+
+**Cycle de vie visé** (remplace celui de 4.1) :
+
+```
+préparer ──► tirée ──► clôturée
+    ▲           │
+    └── annulation du tirage (journalisée)
+```
+
+- [ ] **Fusionner `draft` et `invitations`** en une seule étape « Préparer ». Piste la plus simple : supprimer `draft`, l'édition est créée directement ouverte (liens valables, messages `invitation` et `reminder` disponibles, lien d'invitation au groupe inchangé). À vérifier avant de coder : tout ce qui dépend de `draft` (`server/utils/editions.ts` transition `open`, `server/utils/personal.ts` `links_not_open`, `server/database/home.ts`, `server/api/admin/[slug]/editions/index.post.ts`, schéma et migration des éditions existantes, tests de `editions`, `personal`, `messages`).
+- [ ] **Écran d'édition à préparer** : frise en trois étapes (Préparer, Tirer, Fêter) ; action principale « Lancer le tirage » avec la vérification des règles ; plus de bouton « Ouvrir les invitations ».
+- [ ] **Invitation facultative** : une ligne secondaire « Prévenir avant le tirage » (récolter les souhaits, confirmer les présences). Pas de compteur ni de suivi d'envoi avant le tirage (13.2 inchangé).
+- [ ] **Confirmation du tirage dans un panneau du bas** (au lieu de la confirmation en ligne), avec le récapitulatif : participants, règles, personnes du groupe absentes de l'édition.
+- [ ] **Après le tirage, une seule tournée** : « Prévenir par email » est l'action principale ; le partage à la main reste sur chaque ligne. Liste groupée : à prévenir, pas encore ouvert, ont découvert.
+- [ ] **Mettre à jour** les sections 4.1, 4.2, 11, 13.2 et l'étape 5 bis (souhaits « modifiable en `invitations` et `tirée` »), les dictionnaires (`adminEdition.cockpit.draftIntro`, `openInvitations`, libellés de statut), le guide de style et les tests de bout en bout.
+
+### 22.9 Idée : « Dévoiler les résultats » à l'étape Fêter (15 novembre 2026)
+
+Idée de Julien, cadrée le 15 novembre 2026. **Rien n'est codé**, et ce n'est pas encore planifié. Maquettes : même canevas qu'en 22.8 (écrans « Étape 2 · Dévoiler avant la fête », « Étape 3 · Fêter, à dévoiler », « Confirmation du dévoilement », « Résultats dévoilés »).
+
+**Principe** : à l'étape « Fêter », l'action principale de l'organisateur devient « Dévoiler les résultats » (qui a offert à qui) ; « Clôturer sans dévoiler » reste possible en action secondaire. La frise garde trois étapes.
+
+Décisions de Julien :
+
+| Sujet | Décision |
+|---|---|
+| **Facultatif** | Oui : on peut clôturer sans jamais dévoiler |
+| **Qui déclenche** | L'organisateur, jamais automatique |
+| **Quand** | Normalement à partir de la date de la fête. Peut être **forcé avant**, avec un gros avertissement (maquette : encadré rouge, phrase à recopier, bouton sûr « Attendre la fête » mis en avant) |
+| **Irréversible** | Oui. Confirmation dans un panneau du bas |
+| **Listes de souhaits** | **Pas de gel** : dévoiler ne clôture pas l'édition. Les listes restent modifiables jusqu'à la clôture, qui reste une action à part |
+| **Date de la fête** | **Obligatoire** (une vraie date) à la création d'une édition, décidé le 15 novembre 2026 : pas de parcours « sans date ». Pour les éditions existantes sans date : une carte « Quand a lieu la fête ? » sur l'écran de suivi, et le dévoilement indisponible tant qu'elle n'est pas renseignée (maquette « Étape 2 · Édition existante sans date de fête ») |
+| **Qui voit** | Pour le moment, **l'organisateur seul**. Plus tard : sert de base au mode prédictions (22.3) ; sans prédictions, la liste sera visible depuis la page personnelle d'un tirage |
+
+Proposé dans les maquettes, à confirmer par Julien avant de coder :
+
+- Un événement au journal du groupe (« Les résultats ont été dévoilés »), sans jamais y écrire qui a offert à qui.
+- « Voir un résultat » (dernier recours, une personne à la fois) existe déjà et ne change pas ; les maquettes proposent seulement de le libeller « Voir un seul résultat » pour ne pas le confondre avec le dévoilement.
+- Écran « clôturée » (avec ou sans dévoilement) : pas encore redessiné.
+
+À vérifier avant de concevoir plus loin : la section 8.7 (secret et éditions passées) et ce que la clôture rend visible aujourd'hui (`AdminEditionResults`, « ses résultats ne sont plus secrets »).
 
 ## 23. Design system
 

@@ -69,6 +69,8 @@ export default defineEventHandler(async (event) => {
     editionLabel: edition.label,
     status: edition.status,
     phase: personalPhase(edition.status),
+    // The day of the party is no secret: the messages give it to all.
+    eventDate: rules.eventDate,
     wishlist: rules.wishlist,
     wishesEditable: canEditWishes(edition.status, rules).ok,
     wishesCount: row?.n ?? 0,

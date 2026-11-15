@@ -28,6 +28,8 @@ export type PersonalState = {
   editionLabel: string;
   status: EditionStatus;
   phase: PersonalPhase;
+  /** The day of the party (ISO), or empty. */
+  eventDate: string;
   wishlist: boolean;
   wishesEditable: boolean;
   wishesCount: number;

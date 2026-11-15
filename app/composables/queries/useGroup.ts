@@ -163,7 +163,12 @@ export const useCreateEditionMutation = (slug: Slug) =>
 export const useUpdateEditionMutation = (slug: Slug) =>
   useApiMutation<
     { edition: PublicEdition },
-    { id: string; label?: string; rulesOverride?: RulesPatch | null }
+    {
+      id: string;
+      label?: string;
+      rulesOverride?: RulesPatch | null;
+      eventDate?: string;
+    }
   >(
     ({ id, ...body }) =>
       api(`${base(slug)}/editions/${id}`, { method: 'PATCH', body }),

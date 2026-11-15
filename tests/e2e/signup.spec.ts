@@ -27,8 +27,8 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
   await page.getByRole('link', { name: /Mode développement/ }).click();
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
-  await expect(page.getByTestId('home-groups')).toContainText(
-    'Demander à organiser un tirage',
+  await expect(page.getByTestId('home-organize')).toContainText(
+    'Demander à créer un groupe',
   );
   await expect(page.getByTestId('admin-nav')).toHaveCount(0);
 
@@ -44,13 +44,17 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await page.goto('/');
   await hydrated(page);
   await page
-    .getByRole('button', { name: /Demander à organiser un tirage/ })
+    .getByRole('button', { name: 'Demander à créer un groupe' })
     .click();
+  // Why a request, before saying for whom.
+  await expect(page.getByTestId('request-sheet')).toContainText(
+    'Pourquoi une demande ?',
+  );
   await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
-  await page.getByRole('button', { name: 'Valider' }).click();
+  await page.getByRole('button', { name: 'Envoyer ma demande' }).click();
   await expect(page.getByText(/^Demande envoyée le /)).toBeVisible();
   await expect(
-    page.getByRole('button', { name: /Demander à organiser un tirage/ }),
+    page.getByRole('button', { name: 'Demander à créer un groupe' }),
   ).toHaveCount(0);
 
   const again = await page.request.post('/api/auth/group-requests', {
@@ -97,8 +101,14 @@ test('they create their group, organise it, and the quota is used up', async ({
   await apiLogin(page.request, NEWCOMER);
   await page.goto('/');
   await hydrated(page);
-  // Their profile first: it is who they will be in the group.
-  await page.getByRole('link', { name: 'Complète ton profil' }).click();
+  // The card on top says the request was accepted. Put off with "Plus
+  // tard", it gives way to the next one: their profile, who they will be
+  // in the group.
+  const top = page.getByTestId('top-card');
+  await expect(top).toContainText('Ta demande est acceptée');
+  await top.getByRole('button', { name: 'Plus tard' }).click();
+  await expect(top).toContainText('Dis-nous comment tu t’appelles');
+  await top.getByRole('link', { name: 'Compléter mon profil' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
   await page.getByLabel('Prénom', { exact: true }).fill('Nina');
   await page.getByLabel('Prénom', { exact: true }).blur();
@@ -106,10 +116,13 @@ test('they create their group, organise it, and the quota is used up', async ({
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour Nina');
-  await expect(
-    page.getByRole('link', { name: 'Modifier mon profil' }),
-  ).toBeVisible();
-  await page.getByRole('link', { name: 'Nouveau groupe' }).click();
+  await expect(top).toHaveCount(0);
+  await page.getByRole('link', { name: 'Créer un groupe' }).click();
+  // Only the name: they organise it, and see how many they may create.
+  await expect(page.getByText('Tu en seras l’organisateur.')).toBeVisible();
+  await expect(page.getByTestId('groups-left')).toHaveText(
+    'Tu peux encore créer 1 groupe',
+  );
   await page.getByLabel('Nom du groupe').fill(GROUP.name);
   await expect(page.getByLabel('Adresse du premier organisateur')).toHaveCount(
     0,
@@ -140,11 +153,11 @@ test('they create their group, organise it, and the quota is used up', async ({
   await page.goto('/');
   await hydrated(page);
   await expect(page.getByTestId('home-groups')).toContainText(GROUP.name);
-  await expect(page.getByRole('link', { name: 'Nouveau groupe' })).toHaveCount(
+  await expect(page.getByRole('link', { name: 'Créer un groupe' })).toHaveCount(
     0,
   );
   await expect(
-    page.getByRole('button', { name: 'Demander un groupe' }),
+    page.getByRole('button', { name: /Organiser mon propre tirage/ }),
   ).toBeVisible();
 });
 

@@ -142,8 +142,8 @@ test('a participant logs in with their address and finds their draw', async ({
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
-  await expect(page.getByTestId('home-groups')).toContainText(
-    'Demander à organiser un tirage',
+  await expect(page.getByTestId('home-organize')).toContainText(
+    'Demander à créer un groupe',
   );
 
   const added = await api.post(
@@ -153,10 +153,10 @@ test('a participant logs in with their address and finds their draw', async ({
   expect(added.ok()).toBe(true);
   await page.reload();
   await hydrated(page);
-  // A row says where the draw stands and what to do next.
-  const draw = page.getByTestId('draw-row');
-  await expect(draw).toContainText('Famille Courrier');
-  await expect(draw).toContainText('Ajoute tes idées');
+  // Her only draw is the card of the home: where it stands, what to do.
+  const draw = page.getByTestId('draw-card');
+  await expect(draw).toContainText('Famille Courrier · Noël courrier');
+  await expect(draw).toContainText('Note quelques idées de cadeaux');
 
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
@@ -177,13 +177,13 @@ test('a participant logs in with their address and finds their draw', async ({
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
 
-  // With an idea written, the row opens the draw page itself.
+  // With an idea written, the card waits for the draw, and opens it.
   await page.request.put(`/api${personal}/wishes`, {
     data: { wishes: [{ label: 'Un livre' }] },
   });
   await page.reload();
   await hydrated(page);
-  await expect(draw).toContainText('Tirage à venir');
+  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
   await draw.getByRole('link', { name: /Famille Courrier/ }).click();
   await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await expect(page.getByText('Dana')).toBeVisible();

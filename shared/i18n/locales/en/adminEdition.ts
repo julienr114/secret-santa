@@ -56,7 +56,7 @@ export default {
     previousDrawsFooter:
       'Nobody will get the same person again. The × lifts an exclusion for this edition only.',
     waive: 'Lift',
-    waiveLabel: 'Lift the exclusion {giver} → {receiver} for this edition',
+    waiveLabel: 'Let {giver} draw {receiver} for this edition',
     waived: {
       one: '{count} exclusion from previous years lifted for this edition.',
       other: '{count} exclusions from previous years lifted for this edition.',

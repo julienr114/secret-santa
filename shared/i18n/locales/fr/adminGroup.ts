@@ -197,6 +197,7 @@ export default {
     reciprocalPast: 'Ne se sont pas tirés, dans les deux sens',
     oneWay: '{giver} ne tire pas {receiver}',
     oneWayPast: "{giver} n'a pas tiré {receiver}",
+    oneWayOnly: 'Dans ce sens seulement',
     remove: 'Retirer',
     removeLabel: "Retirer l'exclusion {giver} et {receiver}",
     add: 'Ajouter une exclusion',

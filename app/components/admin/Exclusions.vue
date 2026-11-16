@@ -45,19 +45,16 @@ const nameOf = (id: string) => {
 
 // Removing asks for a second tap on the row itself.
 const confirmId = ref<string | null>(null);
-const subtitleOf = (ex: {
-  giverId: string;
-  receiverId: string;
-  reciprocal: boolean;
-}) => {
-  const names = { giver: nameOf(ex.giverId), receiver: nameOf(ex.receiverId) };
-  if (ex.reciprocal)
-    return past.value
-      ? t('adminGroup.exclusions.reciprocalPast')
-      : t('adminGroup.exclusions.reciprocal');
+/**
+ * The line under a row: both ways, or this way only.
+ * @param ex - The exclusion.
+ * @returns The line.
+ */
+const subtitleOf = (ex: { reciprocal: boolean }) => {
+  if (!ex.reciprocal) return t('adminGroup.exclusions.oneWayOnly');
   return past.value
-    ? t('adminGroup.exclusions.oneWayPast', names)
-    : t('adminGroup.exclusions.oneWay', names);
+    ? t('adminGroup.exclusions.reciprocalPast')
+    : t('adminGroup.exclusions.reciprocal');
 };
 const onRemove = (exclusionId: string) =>
   remove.mutate(exclusionId, {
@@ -69,7 +66,8 @@ const onRemove = (exclusionId: string) =>
 
 const open = ref(false);
 /**
- * The title of a row: « Camille et Hugo » both ways, an arrow one way.
+ * The title of a row: « Camille et Hugo » both ways, « Inès ne tire pas
+ * Louis » one way, in full words (decided on 17 November 2026).
  * @param ex - The exclusion.
  * @returns The title.
  */
@@ -77,13 +75,13 @@ const titleOf = (ex: {
   giverId: string;
   receiverId: string;
   reciprocal: boolean;
-}) =>
-  ex.reciprocal
-    ? t('adminGroup.exclusions.pair', {
-        giver: nameOf(ex.giverId),
-        receiver: nameOf(ex.receiverId),
-      })
-    : `${nameOf(ex.giverId)} → ${nameOf(ex.receiverId)}`;
+}) => {
+  const names = { giver: nameOf(ex.giverId), receiver: nameOf(ex.receiverId) };
+  if (ex.reciprocal) return t('adminGroup.exclusions.pair', names);
+  return past.value
+    ? t('adminGroup.exclusions.oneWayPast', names)
+    : t('adminGroup.exclusions.oneWay', names);
+};
 </script>
 
 <template>

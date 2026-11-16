@@ -55,7 +55,7 @@ export default {
     previousDrawsFooter:
       'Personne ne retombera sur la même personne. Le × lève une exclusion pour cette édition seulement.',
     waive: 'Lever',
-    waiveLabel: "Lever l'exclusion {giver} → {receiver} pour cette édition",
+    waiveLabel: 'Laisser {giver} tirer {receiver} pour cette édition',
     waived: {
       one: '{count} exclusion des années précédentes levée pour cette édition.',
       other:

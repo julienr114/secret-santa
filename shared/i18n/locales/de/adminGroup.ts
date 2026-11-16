@@ -204,6 +204,7 @@ export default {
     reciprocalPast: 'Haben sich nicht gezogen, in beide Richtungen',
     oneWay: '{giver} zieht {receiver} nicht',
     oneWayPast: '{giver} hat {receiver} nicht gezogen',
+    oneWayOnly: 'Nur in diese Richtung',
     remove: 'Entfernen',
     removeLabel: 'Ausschluss zwischen {giver} und {receiver} entfernen',
     add: 'Ausschluss hinzufügen',

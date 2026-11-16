@@ -56,7 +56,7 @@ export default {
     previousDrawsFooter:
       'Niemand bekommt wieder dieselbe Person. Das × hebt einen Ausschluss nur für diese Ausgabe auf.',
     waive: 'Aufheben',
-    waiveLabel: 'Ausschluss {giver} → {receiver} für diese Ausgabe aufheben',
+    waiveLabel: '{giver} darf {receiver} in dieser Ausgabe ziehen',
     waived: {
       one: '{count} Ausschluss aus den Vorjahren für diese Ausgabe aufgehoben.',
       other:

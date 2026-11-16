@@ -135,7 +135,12 @@ const onWaive = (pair: Pair) =>
           <UiListItem
             v-for="pair in previousPairs"
             :key="pairKey(pair)"
-            :title="`${firstNameOf(pair.giverId)} → ${firstNameOf(pair.receiverId)}`"
+            :title="
+              t('adminGroup.exclusions.oneWay', {
+                giver: firstNameOf(pair.giverId),
+                receiver: firstNameOf(pair.receiverId),
+              })
+            "
             :subtitle="
               t('adminEdition.cockpit.previousDrawReason', {
                 edition: pair.editionLabel,

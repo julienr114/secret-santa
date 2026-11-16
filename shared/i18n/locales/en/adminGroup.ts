@@ -196,6 +196,7 @@ export default {
     reciprocalPast: 'Did not draw each other, either way',
     oneWay: '{giver} does not draw {receiver}',
     oneWayPast: '{giver} did not draw {receiver}',
+    oneWayOnly: 'This way only',
     remove: 'Remove',
     removeLabel: 'Remove the exclusion between {giver} and {receiver}',
     add: 'Add an exclusion',

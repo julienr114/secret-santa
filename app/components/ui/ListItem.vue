@@ -3,7 +3,9 @@ import type { Avatar } from '#server/utils/avatars';
 
 // One row: optional leading avatar or icon, title and subtitle (or a
 // subtitle slot), trailing slot and a chevron when it opens another screen
-// (`chevron: false` hides it when the row carries its own action).
+// (`chevron: false` hides it when the row carries its own action). A
+// settings row shows its current `value` on the right, or a switch when
+// it is bound with `v-model:checked`.
 const props = withDefaults(
   defineProps<{
     to?: string;
@@ -14,6 +16,8 @@ const props = withDefaults(
     avatar?: Avatar;
     emoji?: string;
     tone?: 'default' | 'danger';
+    /** The current value of a setting, shown on the right. */
+    value?: string;
     /** Makes the row a button (otherwise a link with `to`, or plain). */
     onClick?: () => void;
   }>(),
@@ -25,9 +29,14 @@ const props = withDefaults(
     avatar: undefined,
     emoji: undefined,
     tone: 'default',
+    value: undefined,
     onClick: undefined,
   },
 );
+/** A setting turned on or off; no switch when left unbound. */
+const checked = defineModel<boolean | undefined>('checked', {
+  default: undefined,
+});
 
 // A string in <component :is> does not resolve global components.
 const NuxtLink = resolveComponent('NuxtLink');
@@ -70,9 +79,22 @@ const NuxtLink = resolveComponent('NuxtLink');
           subtitle
         }}</span>
       </span>
+      <span
+        v-if="value"
+        class="max-w-[150px] shrink-0 truncate text-right text-[15px] text-muted"
+        >{{ value }}</span
+      >
+      <USwitch
+        v-if="checked !== undefined"
+        v-model="checked"
+        size="lg"
+        color="success"
+        :aria-label="title"
+        class="flex min-h-11 shrink-0 items-center"
+      />
       <slot name="trailing" />
       <UIcon
-        v-if="to && chevron"
+        v-if="(to || value) && chevron"
         name="i-lucide-chevron-right"
         class="size-5 shrink-0 text-dimmed"
       />

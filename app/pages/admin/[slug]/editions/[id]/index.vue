@@ -58,8 +58,11 @@ const screen = computed(() => ({ back: `/admin/${slug.value}` }));
 const subtitle = computed(() =>
   [
     dashboard.data.value?.group.name,
-    rules.value?.budget &&
-      t('adminEdition.screen.budget', { budget: rules.value.budget }),
+    status.value === 'closed'
+      ? dateText.value &&
+        t('adminEdition.screen.closed.partedOn', { date: dateText.value })
+      : rules.value?.budget &&
+        t('adminEdition.screen.budget', { budget: rules.value.budget }),
   ]
     .filter(Boolean)
     .join(' · '),
@@ -76,7 +79,10 @@ const steps = computed<Step[]>(() => {
   const at = { prepare: 0, drawn: 1, party: 2 }[step.value];
   const done = status.value === 'closed';
   return (['prepare', 'draw', 'party'] as const).map((key, index) => ({
-    label: t(`adminEdition.screen.steps.${key}`),
+    label:
+      done && key === 'party'
+        ? t('adminEdition.screen.closed.partyDone')
+        : t(`adminEdition.screen.steps.${key}`),
     state: done || index < at ? 'done' : index === at ? 'current' : 'todo',
     icon: index === 0 ? undefined : 'i-lucide-sparkle',
   }));
@@ -98,6 +104,10 @@ const missing = computed(() => {
     .map((p) => p.firstName);
 });
 const avatars = computed(() => participants.value.map((p) => p.avatar));
+/** How many exclusions the draw applied, for a closed edition. */
+const appliedExclusions = computed(
+  () => edition.data.value?.edition.exclusionsAtDraw?.length ?? 0,
+);
 const exclusionCount = computed(
   () => people.data.value?.exclusions.length ?? 0,
 );
@@ -180,7 +190,7 @@ const dateOpen = ref(false);
       <AdminEditionHeader
         :title="label"
         :subtitle="subtitle"
-        :date-text="dateText"
+        :date-text="status === 'closed' ? null : dateText"
         @edit-date="dateOpen = true"
       />
       <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
@@ -213,9 +223,26 @@ const dateOpen = ref(false);
         @close="onClose"
       />
       <template v-else>
-        <UiNotice variant="info" icon="i-lucide-archive">
-          {{ t('adminEdition.screen.follow.closed') }}
-        </UiNotice>
+        <UiCard
+          padding="lg"
+          class="flex items-start gap-3.5"
+          data-testid="closed-notice"
+        >
+          <span
+            class="flex size-11 shrink-0 items-center justify-center rounded-full bg-success-soft text-success-ink"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-archive" class="size-5.5" />
+          </span>
+          <div class="flex flex-col gap-1">
+            <h2 class="font-display text-xl font-bold">
+              {{ t('adminEdition.screen.closed.title') }}
+            </h2>
+            <p class="text-sm text-muted">
+              {{ t('adminEdition.screen.closed.body') }}
+            </p>
+          </div>
+        </UiCard>
         <AdminEditionResults
           v-if="participants.length"
           :id="id"
@@ -226,6 +253,35 @@ const dateOpen = ref(false);
               count: participants.length,
             })
           "
+        />
+        <UiList>
+          <UiListItem
+            :to="`/admin/${slug}/editions/${id}/exclusions`"
+            icon="i-lucide-ban"
+            :title="t('adminEdition.screen.closed.exclusions')"
+            :subtitle="
+              appliedExclusions > 0
+                ? t('adminEdition.screen.prepare.exclusionsCount', {
+                    count: appliedExclusions,
+                  })
+                : t('adminEdition.screen.closed.exclusionsNone')
+            "
+          />
+          <UiListItem
+            :to="`/admin/${slug}/journal`"
+            icon="i-lucide-scroll-text"
+            :title="t('adminEdition.screen.closed.journal')"
+            :subtitle="t('adminEdition.screen.closed.journalHint')"
+          />
+        </UiList>
+        <UButton
+          :to="`/admin/${slug}/editions/nouvelle`"
+          block
+          size="xl"
+          variant="outline"
+          icon="i-lucide-plus"
+          class="min-h-12 justify-center font-bold"
+          :label="t('adminEdition.screen.closed.next')"
         />
       </template>
     </AdminQueryState>

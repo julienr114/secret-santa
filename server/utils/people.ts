@@ -129,6 +129,20 @@ export const fullName = (who: {
   lastName?: string | null;
 }): string => [who.firstName, who.lastName].filter(Boolean).join(' ');
 
+/**
+ * Orders people by first name, then by last name: two Adèle follow each
+ * other, Bernard before Martin.
+ * @param a - A person.
+ * @param b - Another one.
+ * @returns A comparison for `toSorted`.
+ */
+export const byName = (
+  a: { firstName: string; lastName?: string | null },
+  b: { firstName: string; lastName?: string | null },
+): number =>
+  a.firstName.localeCompare(b.firstName) ||
+  (a.lastName ?? '').localeCompare(b.lastName ?? '');
+
 export type Named = { id: string; firstName: string; lastName?: string | null };
 
 /** Display name: first name, last name only to tell homonyms apart (README 20). */

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
 import { rulesOverrideSchema } from './rules';
+import { byName } from './people';
 
 // Editions of a group (README 4.1). Pure helpers; the routes do the I/O.
 
@@ -248,6 +249,7 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 /** What the follow-up of a participant needs. */
 export type FollowedParticipant = {
   firstName: string;
+  lastName?: string | null;
   messageSentAt?: string | null;
   viewCount: number;
 };
@@ -295,9 +297,6 @@ export const participantCounters = (
     { toNotify: 0, notOpened: 0, viewed: 0 },
   );
 
-const byFirstName = (a: FollowedParticipant, b: FollowedParticipant) =>
-  a.firstName.localeCompare(b.firstName);
-
 /**
  * The participants in the order of the list: by first name while
  * preparing; after the draw, those to notify first, then those who have
@@ -311,11 +310,11 @@ export const sortParticipants = <P extends FollowedParticipant>(
   status: EditionStatus,
 ): P[] =>
   status === 'preparing'
-    ? participants.toSorted(byFirstName)
+    ? participants.toSorted(byName)
     : participants.toSorted(
         (a, b) =>
           FOLLOW_STATES.indexOf(followState(a)) -
-            FOLLOW_STATES.indexOf(followState(b)) || byFirstName(a, b),
+            FOLLOW_STATES.indexOf(followState(b)) || byName(a, b),
       );
 
 /** The participants who stand at the same place after the draw. */

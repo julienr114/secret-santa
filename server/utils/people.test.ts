@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  byName,
   canChangePerson,
   displayName,
   firstNameFromEmail,
@@ -173,5 +174,22 @@ describe('fullName', () => {
     );
     expect(fullName({ firstName: 'Léa', lastName: null })).toBe('Léa');
     expect(fullName({ firstName: null, lastName: null })).toBe('');
+  });
+});
+
+describe('byName', () => {
+  it('orders by first name, then last name, a missing one first', () => {
+    const people = [
+      { firstName: 'Adèle', lastName: 'Martin' },
+      { firstName: 'Zoé', lastName: null },
+      { firstName: 'Adèle', lastName: 'Bernard' },
+      { firstName: 'Adèle' },
+    ];
+    expect(people.toSorted(byName)).toEqual([
+      { firstName: 'Adèle' },
+      { firstName: 'Adèle', lastName: 'Bernard' },
+      { firstName: 'Adèle', lastName: 'Martin' },
+      { firstName: 'Zoé', lastName: null },
+    ]);
   });
 });

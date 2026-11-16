@@ -1,4 +1,4 @@
-// Finding a first name by a few letters, the way people type them:
+// Finding a name (a first name, or a first and last name) by a few letters, the way people type them:
 // accents and capitals do not matter. Pure.
 
 /**

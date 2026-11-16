@@ -70,3 +70,15 @@ describe('highlightName', () => {
     );
   });
 });
+
+describe('a full name', () => {
+  it('matches on the last name too, and marks the letters there', () => {
+    expect(matchesName('mart', 'Adèle Martin')).toBe(true);
+    expect(matchesName('adele ma', 'Adèle Martin')).toBe(true);
+    expect(highlightName('MAR', 'Adèle Martin')).toEqual([
+      { text: 'Adèle ', match: false },
+      { text: 'Mar', match: true },
+      { text: 'tin', match: false },
+    ]);
+  });
+});

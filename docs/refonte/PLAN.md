@@ -302,7 +302,7 @@ Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 
 - [ ] De haut en bas : « Quel message » (trois segments) ; l'aperçu dans sa bulle, entier ; « Un mot en plus (facultatif) », un champ de texte **toujours visible**, qui grandit avec le texte et le montre toujours en entier, avec son compteur sur 500 ; « Langue du message » en ligne de réglage (envoi à une personne seulement ; à plusieurs, une phrase dit que chacun le reçoit dans sa langue) ; bouton collant « Valider ».
 - [ ] La bulle reflète chaque changement tout de suite, mot compris, à l'endroit où il partira (réglage du groupe « au-dessus ou en dessous du message »).
 - [ ] « Valider » ramène d'où l'on vient avec les choix conservés : le panneau se rouvre sur la même personne, ou l'écran d'envoi à plusieurs retrouve sa sélection. Le retour arrière sans valider abandonne. Les choix vivent le temps de l'envoi (état de la page ou paramètres d'adresse), pas en base ; seule la langue d'une personne s'enregistre, comme aujourd'hui.
-- [ ] Au retour, si la langue n'est pas celle de l'organisateur ou si un mot a été ajouté, la bulle le montre : rien n'est caché.
+- [ ] **Au retour** (maquette `EnvoiPersonnalise`) : le panneau se rouvre sur la même personne, la bulle montre le message tel qu'il partira (message choisi, mot ajouté, langue), et le lien devient « Modifier le message ». Rien n'est envoyé par « Valider » : il reste à toucher le bouton d'envoi. Même chose sur l'écran d'envoi à plusieurs, où l'aperçu est mis à jour et la sélection intacte.
 
 **L'écran d'envoi par email à plusieurs** : une seule page
 
@@ -401,4 +401,3 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 5. **« Nouvelle personne » sans nom de famille**, comme la maquette : il s'ajoute ensuite sur sa fiche.
 6. **Une exclusion dans un seul sens** s'écrit « Inès → Louis » dans la liste ; la maquette ne montre que des paires dans les deux sens.
 7. **`AdminPersonForm`** ne sert plus qu'au profil d'un compte : à simplifier au lot 8, avec l'écran du compte.
-

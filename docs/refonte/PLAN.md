@@ -157,13 +157,57 @@ Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le
 - [x] **Fermer** : bouton rond de 44 px sur fond `bg-muted`.
 - [x] Contrôler de la même façon `Renvoi`, et l'écran `SelectionEmail` (mêmes onglets, même bulle pour l'aperçu).
 
+### Les états de chargement — règles pour tous les lots
+
+Demandé par Julien le 16 novembre 2026, révisé le même jour. Maquettes de référence : `ChargementBouton`, `ChargementPanneau`, `ChargementEnvoi`, `ChargementReglage`.
+
+**Ce qui compte : les actions.** Un tirage, un envoi d'emails, un enregistrement prennent un temps visible. C'est là qu'on montre que ça travaille.
+
+| Cas | Ce qu'on montre | Maquette |
+|---|---|---|
+| Une action lancée par un bouton | La roue remplace l'icône du bouton, le libellé dit ce qui se passe (« Tirage en cours… »), le bouton garde sa taille et se désactive, la sortie du panneau aussi | `ChargementBouton` |
+| Un envoi à plusieurs | Même règle sur le bouton (« Envoi des N emails… ») ; la liste au-dessus est atténuée et ne répond plus | `ChargementEnvoi` |
+| Un réglage qui s'enregistre | La roue à la place du chevron de la ligne, ou dans l'interrupteur ; la nouvelle valeur est affichée tout de suite et revient en arrière si l'enregistrement échoue | `ChargementReglage` |
+| Contenu d'un panneau qui arrive | Le panneau s'ouvre tout de suite ; seule la zone attendue est en squelette, les boutons qui en dépendent sont grisés | `ChargementPanneau` |
+
+**Les squelettes d'écran : on garde le système du lot 0, et chaque écran lui donne sa forme.** `AdminQueryState` compose déjà un squelette à partir de pièces (`title`, `stepper`, `card`, `list`) choisies par l'écran. Il s'affiche réellement en passant d'un écran à l'autre, donc il doit ressembler à l'écran qu'il remplace, sinon la page saute à l'arrivée des données. Les maquettes `EtatChargement` (édition), `ChargementListe`, `ChargementAccueil`, `ChargementTirage` et `ChargementJournal` montrent la composition attendue pour ces écrans. Ce sont des exemples de composition, pas des dessins à reproduire au pixel : ce qui compte, c'est que chaque bloc du squelette soit à la place et à la taille du bloc qu'il annonce. Ajouter une pièce quand il en manque une (en-tête avec avatar, frise verticale du journal, carte de groupe), sans faire un squelette sur mesure par écran.
+
+Règles :
+
+- Un indicateur n'apparaît qu'après 200 ms d'attente, pour ne pas clignoter.
+- Un rechargement en arrière-plan (TanStack Query) garde l'écran tel quel.
+- Dépliage d'une liste, recherche, changement d'onglet : immédiats, aucun indicateur.
+- Accessibilité : `aria-busy="true"` sur la zone en attente, un texte pour les lecteurs d'écran, la roue ne tourne pas si `prefers-reduced-motion`.
+- Une roue reste petite (20 px), dans un bouton ou une ligne, jamais seule au centre d'un écran.
+
+### Correction 4 — les actions en cours, sur les écrans déjà faits
+
+Demandé par Julien le 16 novembre 2026, à faire avec la reprise du lot 1, avant le lot 2. Applique les règles de la section précédente aux écrans déjà refaits.
+
+- [ ] **La brique** : la petite roue de bouton et de ligne comme élément du design system, dans le guide de style, avec `prefers-reduced-motion`. Vérifier d'abord ce que `UButton` (`loading`) fait déjà et s'en servir.
+- [ ] **Lancer le tirage** (`ChargementBouton`) : roue dans le bouton, « Tirage en cours… », « Pas encore » grisé, panneau non refermable pendant l'appel.
+- [ ] **Panneau d'envoi** (`ChargementPanneau`) : la bulle du message en squelette tant que le texte n'est pas là, boutons d'envoi grisés. Pendant l'envoi : roue dans le bouton, « Envoi en cours… ».
+- [ ] **Envoi par email à plusieurs** (`ChargementEnvoi`) : « Envoi des N emails… », liste atténuée et inactive.
+- [ ] **« Découvrir »** côté participant, **date de la fête**, **clôturer**, **changer la langue d'une personne** : même règle du bouton ou de la ligne (`ChargementReglage`).
+- [ ] **Squelettes** : vérifier que l'édition, l'accueil et la page d'un tirage passent à `AdminQueryState` (ou à son équivalent côté participant) les pièces qui correspondent à leur maquette, et ajouter la pièce « en-tête avec avatar » si elle manque. Le contenu ne doit pas sauter quand les données arrivent.
+- [ ] Dans les parcours de bout en bout, vérifier au moins un bouton occupé.
+
 ### Lot 2 — Édition : sous-écrans
 
-- [ ] `AjouterParticipants` (`ajouter.vue`) : membres absents à cocher, « Créer une personne », « Inviter par lien », bouton collant « Ajouter N personnes ».
+- [ ] `AjouterParticipants` (`ajouter.vue`), devenu **« Choisir les participants »** (validé par Julien le 16 novembre 2026) : un seul écran pour ajouter et retirer. Tous les membres actifs du groupe, une case par personne, cochée si elle participe ; « Tout cocher » ; recherche et repli des longues listes ; puis « Créer une personne » et « Inviter par lien » ; bouton collant « Enregistrer · N participants ». Les lignes « Ajouter des participants » de l'édition y mènent et prennent ce nom. Avant le tirage seulement.
 - [x] ~~`FicheParticipant`~~ : supprimée par Julien le 16 novembre 2026, elle doublait le panneau d'envoi. Toucher une personne ouvre `AdminSendSheet`, dont le bas porte le « Dépannage » (pas envoyé finalement, régénérer le lien, retirer de l'édition). L'ancienne route redirige vers l'édition, panneau ouvert.
 - [x] ~~`PanneauRegenerer`~~ : la régénération se confirme par un second appui dans le « Dépannage » du panneau d'envoi, sans second panneau par-dessus.
 - [ ] `AnnulerTirage` (`annuler.vue`) : conséquences en liste, motif, aperçu de la ligne du journal, case à cocher, bouton sûr « Garder ce tirage » mis en avant.
 - [ ] `VoirResultat`, `ChoisirPersonne`, `ChoisirPersonneRecherche`, `VoirResultatAffiche` (`voir-le-tirage.vue`) : avertissement, choix de la personne par `UiPersonPicker` (qui existe et n'est pas encore branché), aperçu du journal, phrase à recopier ; puis le résultat avec « Cacher et revenir à l'édition ». Libellé « Voir un seul résultat ».
+
+- [ ] **Retouches du panneau d'envoi après la suppression de la fiche** (validées par Julien le 16 novembre 2026, maquettes `Renvoi` et `RenvoiPepin`) :
+  - Le « Dépannage » est **replié par défaut** derrière une ligne « Dépannage » en bas du panneau (chevron, pleine largeur, trait au-dessus) ; un appui le déplie sur place. Le panneau est déjà haut : ouvert en permanence, il oblige à défiler pour atteindre les boutons d'envoi.
+  - Il n'apparaît qu'**une fois un message envoyé** à la personne. Il contient « Pas envoyé finalement ? » et « Régénérer son lien » (second appui pour confirmer, comme aujourd'hui).
+  - **« Retirer de l'édition » en sort** : retirer quelqu'un passe par « Choisir les participants ». Supprimer aussi la ligne grisée « impossible après le tirage ».
+  - **Avant le tirage, toucher une personne ouvre sa fiche dans le groupe** (`personnes/[id]`), pas le panneau d'envoi : à cette étape on corrige un prénom, une adresse ou une exclusion. Le panneau d'envoi reste accessible par « Prévenir avant le tirage ».
+  - La date et le moyen du dernier envoi restent sous le nom, dans l'en-tête du panneau.
+  - **Ajouter ou corriger l'adresse email sans quitter le panneau** (demandé par Julien le 16 novembre 2026, maquette `EnvoiAjouterEmail`) : « Ajouter », dans la ligne « {Prénom} n'a pas d'adresse email », remplace cette ligne par un champ et un bouton « Enregistrer », sur place. Une fois l'adresse enregistrée (mutation existante de la personne), le panneau repasse dans son état « avec adresse » : « Envoyer par email » devient l'action principale. Même comportement pour « Ce n'est pas la bonne adresse ? La corriger » du renvoi, champ prérempli. Une adresse invalide ou déjà prise s'affiche en rouge sous le champ, le panneau reste ouvert. Plus aucun lien du panneau ne mène à la fiche du groupe.
+- [ ] **Actions en cours** conformes aux règles : roue dans « Enregistrer » de « Choisir les participants », « Annuler le tirage », « Voir le résultat », « Enregistrer » de l'adresse email.
 
 **Fini quand** : les parcours de `tests/e2e/admin-edition.spec.ts` passent sur les nouveaux écrans.
 
@@ -172,6 +216,7 @@ Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le
 - [ ] `Groupe` (`admin/[slug]/index.vue`) : carte de l'édition en cours avec `UiStepper` et une phrase d'état, bouton « Ouvrir l'édition » ; section « Le groupe » en quatre lignes : Membres, **Exclusions** (ligne à part, avec le nombre de paires), Journal (dernier événement), Réglages ; puis les éditions passées.
 - [ ] `GroupeSansEdition` : `UiActionCard` « Prépare le tirage de cette année ».
 - [ ] `EditionNouvelle` (`editions/nouvelle.vue`) : voir « Partiel ».
+- [ ] **Actions en cours** conformes : roue dans « Créer l'édition ».
 
 ### Lot 4 — Groupe : membres et exclusions
 
@@ -179,6 +224,7 @@ Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le
 - [ ] `GroupePersonne`, `PersonneNouvelle` (`personnes/[id].vue`, `nouvelle.vue`, `AdminPersonForm.vue`) : formulaire, section « Ne tire pas », « Retirer du groupe » en bas ; « Ajouter, puis en créer une autre ».
 - [ ] `GroupeExclusions`, `PanneauExclusion` (`exclusions.vue`, `AdminExclusions.vue`) : « Ajouter une exclusion » en haut, paires avec deux icônes, règles automatiques en lecture seule ; ajout dans un `UiSheet` avec `UiPersonPicker`.
 - [ ] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
+- [ ] **Actions en cours** conformes : roue dans les boutons des formulaires et des panneaux.
 
 ### Lot 5 — Groupe : réglages
 
@@ -187,6 +233,7 @@ Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le
 - [ ] `PanneauSupprimerGroupe` : suppression (super-admin) dans un panneau, identifiant à recopier, « Garder le groupe » mis en avant.
 
 - [ ] **Pas de bouton « Enregistrer » en bas de page** (validé par Julien le 16 novembre 2026) : chaque réglage s'enregistre quand on valide son panneau, un interrupteur s'enregistre dès qu'on le bascule. Une mutation par réglage, avec mise à jour optimiste et retour à l'ancienne valeur en cas d'erreur (toast). Retirer l'état « modifié, non enregistré » de la page. Même règle pour les réglages du lien d'invitation (lot 4). Ajouter la règle au README 23.3, qui dit aujourd'hui qu'un panneau enregistre avec « Valider ».
+- [ ] **Actions en cours** conformes : `ChargementReglage` pour chaque ligne et chaque interrupteur.
 
 ### Lot 6 — Journal
 
@@ -196,6 +243,7 @@ Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/
 - [ ] `JournalPersonne` : filtre « Moi », seulement si les événements portent déjà la personne concernée ; sinon section 6.
 - [ ] `JournalDetail` : « Qu'est-ce que ça veut dire ? » ouvre un panneau qui explique l'alerte.
 - [ ] `JournalAide` : panneau « À quoi sert le journal ? ».
+- [ ] **Squelette** du journal : une pièce « frise verticale » (`ChargementJournal`).
 
 ### Lot 7 — supprimé
 
@@ -207,6 +255,7 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 - [ ] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
 - [ ] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
 - [ ] `AccueilMenu`, `AccueilDemandeAttente`, `AccueilDemandeRefusee` : voir « Partiel ».
+- [ ] **Actions en cours** conformes : roue dans « Recevoir mon lien », « Se connecter », « Rejoindre le groupe ».
 
 ### Lot 9 — Administration (super-admin)
 
@@ -216,6 +265,7 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 - [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`).
 
 - [ ] Validé par Julien le 16 novembre 2026 : le super-admin ne modifie plus le profil d'un compte (prénom, icône, langue), il le lit seulement ; « Accepter » et « Refuser » ont le même poids visuel. Retirer du client le formulaire de profil de `admin/comptes/[id].vue` ; la route d'API reste en place.
+- [ ] **Actions en cours** conformes : roue dans « Accepter » et « Refuser ».
 
 ### Lot 10 — Finitions
 

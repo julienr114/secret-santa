@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Édition — ajouter des participants</title>
+<title>Édition — choisir les participants</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,7 +14,7 @@ body{margin:0}
 a{color:#a43a2f}a:hover{color:#8a2f27}
 </style>
 </helmet>
-<div style="width: 390px; height: 900px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="width: 390px; height: 1180px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
   <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #dccbad; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
     <div>
       <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0">
@@ -32,13 +32,37 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
 
   <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px; flex-grow: 1">
     <div style="display: flex; flex-direction: column; gap: 4px">
-      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Ajouter des participants</h1>
-      <p style="margin: 0; font-size: 15px; color: #57534e">Noël 2026 · 5 participants pour l’instant</p>
+      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Choisir les participants</h1>
+      <p style="margin: 0; font-size: 15px; color: #57534e">Noël 2026 · coche ceux qui participent</p>
     </div>
     <section style="display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Membres du groupe qui ne participent pas</h2>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px">
+        <h2 style="margin: 0; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">8 membres du groupe</h2>
+        <button style="min-height: 44px; padding: 0; border: 0; background: transparent; color: #8a2f27; font-family: inherit; font-size: 14px; font-weight: 700">Tout cocher</button>
+      </div>
       <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
         <li>
+          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ead2e2; box-shadow: 0 0 0 1px #c493b4; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🦌</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Camille</span><span style="font-size: 13px; color: #57534e">camille-demo@example.com</span></span>
+            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
+          </label>
+        </li>
+        <li style="border-top: 1px solid #e9dcc5">
+          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🐧</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Hugo</span><span style="font-size: 13px; color: #57534e">hugo-demo@example.com</span></span>
+            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
+          </label>
+        </li>
+        <li style="border-top: 1px solid #e9dcc5">
+          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🍭</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Inès</span><span style="font-size: 13px; color: #57534e">ines-demo@example.com</span></span>
+            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
+          </label>
+        </li>
+        <li style="border-top: 1px solid #e9dcc5">
           <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
             <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #d6e6ef; box-shadow: 0 0 0 1px #94bbd0; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🧣</span>
             <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Léa</span><span style="font-size: 13px; color: #57534e">lea-demo@example.com</span></span>
@@ -47,8 +71,8 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
         </li>
         <li style="border-top: 1px solid #e9dcc5">
           <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ecdfc6; box-shadow: 0 0 0 1px #cdb48a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🍪</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Zoé</span><span style="font-size: 13px; color: #57534e">Pas d’adresse email</span></span>
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🎄</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Louis</span><span style="font-size: 13px; color: #57534e">louis-demo@example.com</span></span>
             <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
           </label>
         </li>
@@ -56,6 +80,20 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
           <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
             <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #cfe2d3; box-shadow: 0 0 0 1px #8db898; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🕯️</span>
             <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Mamie Jo</span><span style="font-size: 13px; color: #57534e">A participé à Noël 2025</span></span>
+            <input type="checkbox" style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
+          </label>
+        </li>
+        <li style="border-top: 1px solid #e9dcc5">
+          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ead2e2; box-shadow: 0 0 0 1px #c493b4; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🐧</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Rose</span><span style="font-size: 13px; color: #57534e">Pas d’adresse email</span></span>
+            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
+          </label>
+        </li>
+        <li style="border-top: 1px solid #e9dcc5">
+          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ecdfc6; box-shadow: 0 0 0 1px #cdb48a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🍪</span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Zoé</span><span style="font-size: 13px; color: #57534e">Pas d’adresse email</span></span>
             <input type="checkbox" style="width: 24px; height: 24px; margin: 0; accent-color: #b8483a; flex-shrink: 0">
           </label>
         </li>
@@ -88,11 +126,11 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
     </section>
   </main>
   <footer style="flex-shrink: 0; background: #fffdf9; border-top: 1px solid #dccbad; padding: 14px 16px 20px">
-    <button style="width: 100%; height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Ajouter 2 personnes</button>
+    <button style="width: 100%; height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Enregistrer · 6 participants</button>
   </footer>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
 class Component extends DCLogic {
 renderVals() {
 return {};

@@ -1315,6 +1315,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiPointList` | Quelques points, chacun après un petit rond ou son icône ; `tone` colore les marques (rouge pour ce qui se perd, vert pour ce qui reste) |
 | `UiJournalPreview` | « Ce que le groupe lira dans le journal » : la ligne dans une carte blanche, avant l'action qui l'écrit |
 | `UiConfirmBox` | La case « Je comprends que… » à cocher avant une action qui ne se rattrape pas |
+| `UiPageContext` | Où se trouve un écran, en une ligne grise au-dessus du titre : « {Groupe} · {Édition} », chaque morceau un lien de 44 px vers l'accueil du groupe ou l'édition (`useScreenContext`, qui donne aussi le titre de l'onglet, `pageTitle`) |
 | `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `caution` (bandeau moutarde encadré, à savoir), `warning` (encadré avec titre), `danger` (encadré rouge épais, titre avec icône, pour ce qui ne se rattrape pas), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
 | `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
@@ -1346,6 +1347,7 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
 - Le bouton d'action d'une ligne est rond, avec une icône seule : plein et clair quand l'action reste à faire, en contour gris quand elle est faite.
 - **Une action en cours** (décidé le 16 novembre 2026) : la roue remplace l'icône du bouton, le libellé dit ce qui se passe (« Tirage en cours… »), le bouton garde sa taille et se désactive, le panneau ne se referme pas ; un réglage qui s'enregistre met la roue à la place du chevron. L'indicateur n'apparaît qu'après 200 ms (`useBusy`) ; un rechargement en arrière-plan ne change rien à l'écran.
+- **Le contexte d'un écran** (décidé par Julien le 16 novembre 2026) : un écran rattaché à un groupe ou à une édition porte au-dessus de son titre la ligne « {Groupe} · {Édition} » (`UiPageContext`), et son onglet « {Écran} — {Groupe} · {Édition} ». Exceptions : l'écran de l'édition et l'accueil du groupe (leur titre les nomme), les panneaux, le compte et l'administration, le lien invalide. L'envoi par email à plusieurs, à barre de titre, la porte sous son titre, sans lien.
 - Aucun texte en dur dans un écran du produit : tout passe par les dictionnaires (section 21). Seule exception, la page Guide de style, outil du développeur.
 
 ### 23.4 Reste à faire

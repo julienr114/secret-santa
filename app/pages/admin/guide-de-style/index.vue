@@ -248,7 +248,16 @@ const entries = computed(() => [
 
     <section class="flex flex-col gap-3">
       <UiSectionTitle>Textes</UiSectionTitle>
-      <UiPageTitle>UiPageTitle : le titre de l'écran</UiPageTitle>
+      <div class="flex flex-col gap-1">
+        <UiPageContext
+          label="UiPageContext"
+          :parts="[
+            { label: 'Famille Camille', to: '/admin/guide-de-style' },
+            { label: 'Noël 2026', to: '/admin/guide-de-style' },
+          ]"
+        />
+        <UiPageTitle>UiPageTitle : le titre de l'écran</UiPageTitle>
+      </div>
       <UiSectionTitle>UiSectionTitle : au-dessus d'un groupe</UiSectionTitle>
       <p>Texte courant, en Nunito.</p>
       <p class="text-sm text-muted">Explication ou aide, en plus discret.</p>

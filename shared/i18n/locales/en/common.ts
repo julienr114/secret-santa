@@ -27,6 +27,7 @@ export default {
     ideas: { one: '{count} idea', other: '{count} ideas' },
     exclusions: { one: '{count} exclusion', other: '{count} exclusions' },
   },
+  context: 'You are here',
   actions: {
     back: 'Back',
     cancel: 'Cancel',

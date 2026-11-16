@@ -9,6 +9,8 @@ defineProps<{
   description?: string;
   /** An action runs: the sheet cannot be closed until it ends. */
   busy?: boolean;
+  /** Opened from another sheet, over it. */
+  nested?: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 </script>
@@ -19,6 +21,7 @@ const open = defineModel<boolean>('open', { required: true });
     :title="title"
     :description="description"
     :dismissible="!busy"
+    :nested="nested"
     :ui="{
       title: 'font-display text-[22px] leading-[1.15] font-bold',
       description: 'text-sm text-toned',

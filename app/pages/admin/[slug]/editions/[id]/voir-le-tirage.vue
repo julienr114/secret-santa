@@ -187,34 +187,14 @@ const onReveal = () =>
           <UiPointList :points="points" loose />
         </UiNotice>
 
-        <div class="flex flex-col gap-1.5">
-          <label for="reveal-person" class="text-[15px] font-semibold">{{
-            t('adminEdition.reveal.personLabel')
-          }}</label>
-          <button
-            id="reveal-person"
-            type="button"
-            aria-haspopup="listbox"
-            class="flex min-h-14 items-center gap-3 rounded-md bg-default px-3 py-1.5 text-left font-semibold ring-1 ring-accented focus-visible:ring-2 focus-visible:ring-primary"
-            @click="pickerOpen = true"
-          >
-            <UiAvatar v-if="person" :avatar="person.avatar" />
-            <span
-              class="grow"
-              :class="{ 'font-normal text-dimmed': !person }"
-              >{{
-                person
-                  ? fullName(person)
-                  : t('adminEdition.reveal.personPlaceholder')
-              }}</span
-            >
-            <UIcon
-              name="i-lucide-chevron-down"
-              class="size-5 shrink-0 text-toned"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
+        <UiPersonField
+          :label="t('adminEdition.reveal.personLabel')"
+          :person="
+            person ? { name: fullName(person), avatar: person.avatar } : null
+          "
+          :placeholder="t('adminEdition.reveal.personPlaceholder')"
+          @open="pickerOpen = true"
+        />
 
         <UiJournalPreview
           :label="t('adminEdition.general.journalPreview')"

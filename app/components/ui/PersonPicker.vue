@@ -19,6 +19,8 @@ const props = withDefaults(
     resultsText: (shown: number, total: number) => string;
     footnote?: string;
     searchFrom?: number;
+    /** Opened from another sheet, over it. */
+    nested?: boolean;
   }>(),
   { description: undefined, footnote: undefined, searchFrom: 10 },
 );
@@ -35,7 +37,12 @@ const shown = computed(() =>
 </script>
 
 <template>
-  <UiSheet v-model:open="open" :title="title" :description="description">
+  <UiSheet
+    v-model:open="open"
+    :title="title"
+    :description="description"
+    :nested="nested"
+  >
     <div class="flex flex-col gap-3.5 py-2">
       <template v-if="searchable">
         <UiSearchField

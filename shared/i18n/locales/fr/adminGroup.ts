@@ -180,6 +180,7 @@ export default {
     budgetPlaceholder: '20 € max',
     eventDate: 'Date de la fête',
     eventDatePick: 'Choisir une date',
+    eventDatePlaceholder: 'jj/mm/aaaa',
     eventDateHelp: 'Clôturer n’est proposé qu’après cette date.',
     eventDateSuggest: 'Proposer le {date}',
     eventDateClear: 'Effacer la date',

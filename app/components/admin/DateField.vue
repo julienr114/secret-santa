@@ -4,8 +4,9 @@ import { formatEventDate, isIsoDay } from '#server/utils/rules';
 
 // A day, picked in a calendar that opens as a bottom sheet (easier than a
 // popover or a typed field on a phone). The model is an ISO day
-// ("2026-12-25") or an empty string. `suggestion` is a day offered in one
-// tap; the calendar opens on it when nothing is set.
+// ("2026-12-25") or an empty string, shown as a field with its figures.
+// `suggestion` is a day offered in one tap, below the field while it is
+// empty and in the calendar, which opens on it when nothing is set.
 const props = defineProps<{ suggestion?: string }>();
 const model = defineModel<string>({ default: '' });
 const { t, locale } = useT();
@@ -18,13 +19,35 @@ const suggested = computed(() => toDate(props.suggestion));
 const legacy = computed(() =>
   model.value && !isIsoDay(model.value) ? model.value : '',
 );
+/**
+ * A day written out in the interface's language.
+ * @param iso - An ISO day.
+ * @param style - `numeric` (25/12/2026) or `long` (25 décembre 2026).
+ * @returns The day as words or figures.
+ */
+const dayOf = (iso: string, style: 'numeric' | 'long') =>
+  new Intl.DateTimeFormat(locale.value, {
+    ...(style === 'long'
+      ? { dateStyle: 'long' as const }
+      : {
+          day: '2-digit' as const,
+          month: '2-digit' as const,
+          year: 'numeric' as const,
+        }),
+    timeZone: 'UTC',
+  }).format(new Date(`${iso}T12:00:00Z`));
 const label = computed(() =>
   value.value
-    ? new Intl.DateTimeFormat(locale.value, {
-        dateStyle: 'long',
-        timeZone: 'UTC',
-      }).format(new Date(`${model.value}T12:00:00Z`))
-    : legacy.value || t('adminGroup.rules.eventDatePick'),
+    ? dayOf(model.value, 'numeric')
+    : legacy.value || t('adminGroup.rules.eventDatePlaceholder'),
+);
+/** Offered below the field while it is empty. */
+const offer = computed(() =>
+  !model.value && props.suggestion && isIsoDay(props.suggestion)
+    ? t('adminGroup.rules.eventDateSuggest', {
+        date: dayOf(props.suggestion, 'long'),
+      })
+    : null,
 );
 
 const open = ref(false);
@@ -42,16 +65,31 @@ const onPick = (next: unknown) => {
 </script>
 
 <template>
-  <UButton
-    block
-    variant="outline"
-    color="neutral"
-    icon="i-lucide-calendar"
-    class="justify-start font-normal"
-    :class="{ 'text-dimmed': !model }"
-    :label="label"
-    @click="open = true"
-  />
+  <div class="flex flex-col gap-1.5">
+    <button
+      type="button"
+      class="flex h-12 w-full items-center rounded-md bg-default pl-3 text-left text-base ring-1 ring-accented focus-visible:ring-2 focus-visible:ring-primary"
+      :aria-label="model ? undefined : t('adminGroup.rules.eventDatePick')"
+      @click="open = true"
+    >
+      <span class="grow truncate" :class="{ 'text-dimmed': !model }">{{
+        label
+      }}</span>
+      <UIcon
+        name="i-lucide-calendar"
+        class="mx-3 size-5 shrink-0 text-toned"
+        aria-hidden="true"
+      />
+    </button>
+    <button
+      v-if="offer && suggestion"
+      type="button"
+      class="min-h-11 self-start rounded-full bg-default px-3 text-sm font-semibold ring-1 ring-default"
+      @click="model = suggestion"
+    >
+      {{ offer }}
+    </button>
+  </div>
   <UDrawer
     v-model:open="open"
     :title="t('adminGroup.rules.eventDate')"

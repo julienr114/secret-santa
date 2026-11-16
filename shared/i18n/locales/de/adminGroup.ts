@@ -187,6 +187,7 @@ export default {
     budgetPlaceholder: 'max. 20 €',
     eventDate: 'Datum der Feier',
     eventDatePick: 'Datum wählen',
+    eventDatePlaceholder: 'TT.MM.JJJJ',
     eventDateHelp: 'Das Abschließen wird erst nach diesem Datum angeboten.',
     eventDateSuggest: '{date} vorschlagen',
     eventDateClear: 'Datum löschen',

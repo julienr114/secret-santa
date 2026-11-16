@@ -181,6 +181,7 @@ export default {
     budgetPlaceholder: '€20 max',
     eventDate: 'Date of the celebration',
     eventDatePick: 'Choose a date',
+    eventDatePlaceholder: 'dd/mm/yyyy',
     eventDateHelp: 'Closing is only offered after this date.',
     eventDateSuggest: 'Suggest {date}',
     eventDateClear: 'Clear the date',

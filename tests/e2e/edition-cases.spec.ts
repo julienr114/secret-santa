@@ -1,4 +1,9 @@
-import { expect, test, type APIRequestContext } from '@playwright/test';
+import {
+  devices,
+  expect,
+  test,
+  type APIRequestContext,
+} from '@playwright/test';
 import { apiLogin, hydrated } from './helpers';
 
 // The edition screen in its edge cases (docs/refonte, lot 1): no
@@ -197,4 +202,28 @@ test('a screen reached by its address says where it belongs, and leads back', as
     .getByRole('link', { name: 'cas-contexte' })
     .click();
   await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
+});
+
+test.describe('on an iPhone', () => {
+  // A recent iPhone, in the browser of the tests, held low as when the
+  // keyboard or the toolbar takes room.
+  const { defaultBrowserType: _browser, ...iphone } = devices['iPhone 15'];
+  test.use({ ...iphone, viewport: { width: 393, height: 440 } });
+
+  test('the last button of a sheet stays in sight and works', async ({
+    page,
+  }) => {
+    const { id } = await setUp('cas-iphone', ['Ada', 'Bob', 'Cléo', 'Dan']);
+    await page.context().addCookies((await state.api!.storageState()).cookies);
+    await page.goto(`/admin/cas-iphone/editions/${id}`);
+    await hydrated(page);
+    await page.getByRole('button', { name: 'Lancer le tirage' }).click();
+    const last = page.getByRole('button', { name: 'Pas encore' });
+    await expect(last).toBeInViewport({ ratio: 1 });
+    await expect(
+      page.getByRole('button', { name: 'Tirer au sort' }),
+    ).toBeInViewport({ ratio: 1 });
+    await last.click();
+    await expect(page.getByTestId('draw-sheet')).toHaveCount(0);
+  });
 });

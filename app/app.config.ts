@@ -16,8 +16,26 @@ export default defineAppConfig({
     textarea: { defaultVariants: { size: 'lg' } },
     // Mobile first, and kept that way on larger screens: pages sit in a
     // phone-wide column (max-w-md), and so do the bottom sheets.
+    // A sheet never grows past the visible height: its body scrolls, its
+    // head and foot stay, and its content keeps clear of the iPhone's
+    // corners and home bar while its ground reaches the edge (README 23.3).
     drawer: {
-      slots: { content: 'sm:mx-auto sm:max-w-md sm:rounded-t-2xl' },
+      slots: {
+        content:
+          'max-h-[calc(100dvh-env(safe-area-inset-top)-0.5rem)] rounded-t-[20px] sm:mx-auto sm:max-w-md sm:rounded-t-2xl',
+        container:
+          'min-h-0 gap-4 overflow-hidden px-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]',
+        header: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
+        body: 'min-h-0 overflow-y-auto overscroll-contain px-[max(1rem,env(safe-area-inset-left))]',
+        footer: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
+      },
+    },
+    // Toasts stay clear of the iPhone's notch and home bar.
+    toaster: {
+      slots: {
+        viewport:
+          'mb-[env(safe-area-inset-bottom)] mt-[env(safe-area-inset-top)]',
+      },
     },
   },
 });

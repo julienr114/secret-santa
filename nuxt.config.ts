@@ -72,7 +72,12 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'fr' },
       title: 'Under the Tree',
       meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        // The page runs under the iPhone's rounded corners and home bar; each
+        // bar, sheet and footer keeps its content out of them (README 23.3).
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1, viewport-fit=cover',
+        },
         { name: 'robots', content: 'noindex' },
         { name: 'theme-color', content: '#f7f2e9' },
       ],

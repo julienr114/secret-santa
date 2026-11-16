@@ -49,6 +49,18 @@ const BADGES = ['sent', 'wishes', 'viewed'];
 const sample = { emoji: '🥨', color: 'mustard' } as const;
 const text = ref('');
 const choice = ref<NotePosition>('after');
+/** The link of the message bubble example. */
+const BUBBLE_LINK = 'https://under-the-tree.party/p/aIFR42';
+/** The message bubble example. */
+const BUBBLE = `UiMessageBubble : un message tel qu'il partira, son lien seul sur sa ligne.\n${BUBBLE_LINK}`;
+/** The message picked in the segmented control example. */
+const segment = ref('drawn');
+/** The choices of the segmented control example. */
+const SEGMENTS = [
+  { value: 'drawn', label: 'Tirage fait' },
+  { value: 'reminder', label: 'Relance' },
+  { value: 'redraw', label: 'Nouveau tirage' },
+];
 const toggle = ref(true);
 const date = ref('');
 const sheet = ref(false);
@@ -240,6 +252,8 @@ const entries = computed(() => [
         UiTextPreview : un texte tel qu'il a été écrit. Les retours à la ligne
         sont gardés.
       </UiTextPreview>
+      <UiMessageBubble :text="BUBBLE" :link="BUBBLE_LINK" />
+      <UiSegmented v-model="segment" :items="SEGMENTS" label="UiSegmented" />
     </section>
 
     <section class="flex flex-col gap-3">

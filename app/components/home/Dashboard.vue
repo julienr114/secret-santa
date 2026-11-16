@@ -124,7 +124,6 @@ const requestOpen = ref(false);
         @later="dismiss"
       />
 
-      <!-- One draw going on, nothing organised: the draw is the card. -->
       <template v-if="layout === 'singleDraw' && single">
         <HomeDrawCard :draw="single" @open="onOpen(single.path)" />
         <UiList v-if="single.wishlist || hasPast">
@@ -144,7 +143,6 @@ const requestOpen = ref(false);
         </UiList>
       </template>
 
-      <!-- Several draws, nothing organised: one row per draw. -->
       <template v-else-if="layout === 'draws'">
         <UiList
           :title="t('auth.home.myDraws')"
@@ -167,7 +165,6 @@ const requestOpen = ref(false);
         </UiList>
       </template>
 
-      <!-- At least one group organised: one card per group. -->
       <template v-else-if="layout === 'groups'">
         <section class="flex flex-col gap-3" data-testid="home-groups">
           <UiSectionTitle>{{ t('auth.home.myGroups') }}</UiSectionTitle>
@@ -209,7 +206,6 @@ const requestOpen = ref(false);
         </UiList>
       </template>
 
-      <!-- Nothing yet: where draws will come from, and how to organise. -->
       <template v-else>
         <UiCard
           padding="lg"
@@ -262,7 +258,6 @@ const requestOpen = ref(false);
         </UiCard>
       </template>
 
-      <!-- Organising one's own draw, under the draws of a participant. -->
       <UiList v-if="layout === 'singleDraw' || layout === 'draws'">
         <UiListItem
           v-if="canCreate"

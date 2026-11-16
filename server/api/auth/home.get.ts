@@ -85,7 +85,6 @@ export default defineEventHandler(async (event) => {
   );
   const managed = await listOrganizedGroups(db, user.accountId);
   const summaries = await currentEditionSummaries(db, managed);
-  // Can the draw be made? Checked for the first editions to prepare only.
   const toCheck = managed
     .filter((group) => summaries[group.id]?.edition.status === 'preparing')
     .slice(0, CHECKED_EDITIONS_MAX);

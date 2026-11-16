@@ -109,6 +109,18 @@ describe('translate', () => {
     expect(hasMessage('common.count.ideas')).toBe(true);
   });
 
+  it('elides « de » before a name in French only', () => {
+    const key = 'adminEdition.cockpit.sendLinkOf';
+    expect(translateKey('fr', key, { name: 'Inès' })).toBe(
+      "Envoyer le lien d'Inès",
+    );
+    expect(translateKey('fr', key, { name: 'Louis' })).toBe(
+      'Envoyer le lien de Louis',
+    );
+    expect(translateKey('en', key, { name: 'Inès' })).not.toContain("d'");
+    expect(translateKey('de', key, { name: 'Inès' })).not.toContain("d'");
+  });
+
   it('binds a language with translator()', () => {
     expect(translator('de')('common.actions.back')).toBe('Zurück');
   });

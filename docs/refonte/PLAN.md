@@ -355,7 +355,7 @@ Réponses de Julien du 17 novembre 2026 aux questions de la section 6. À faire 
 
 - [x] **Trois participants au moins** (lot 1, question 2) : la règle du tirage passe de deux à trois, avec son test et les textes dans les trois langues.
 - [x] **La date du dernier envoi** (lot 2, question 2) : l'en-tête du panneau d'envoi dit « Envoyé le 14 nov., pas encore consulté ». Pas le moyen d'envoi.
-- [ ] **L'élision en français** (lot 2, question 5) : « de » devient « d' » devant une voyelle ou un h (« d'Agathe », « d'Inès », « d'Hugo »). Une fonction pure testée, utilisée partout où un texte écrit « de {prénom} ». Rien en anglais ni en allemand.
+- [x] **L'élision en français** (lot 2, question 5) : « de » devient « d' » devant une voyelle ou un h (« d'Agathe », « d'Inès », « d'Hugo »). Une fonction pure testée, utilisée partout où un texte écrit « de {prénom} ». Rien en anglais ni en allemand.
 - [ ] **Créer une édition avec son budget et son mot** (lot 3, question 3) : la route de création les accepte ; plus de « L'organisateur a modifié les règles » au journal juste après une création.
 - [ ] **Un seul nombre de membres** (lot 3, question 6) : celui des membres actifs, partout ; la ligne « Membres » dit en plus combien ne participent plus, quand il y en a.
 - [ ] **Taper le nombre de places** du lien d'invitation (lot 4, question 3), en gardant « moins » et « plus ».

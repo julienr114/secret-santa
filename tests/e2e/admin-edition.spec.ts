@@ -197,12 +197,12 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // The group will read this line, with his name.
   await expect(
     page.getByText(
-      "L'organisateur a consulté le résultat de Hugo (accès de dernier recours)",
+      "L'organisateur a consulté le résultat d'Hugo (accès de dernier recours)",
     ),
   ).toBeVisible();
   await page.getByLabel(/Recopie/).fill('je veux voir le tirage');
   await page.getByLabel(/tout le groupe saura/).check();
-  await page.getByRole('button', { name: 'Voir le résultat de Hugo' }).click();
+  await page.getByRole('button', { name: "Voir le résultat d'Hugo" }).click();
   // One person at a time, never the whole draw.
   await expect(page.getByTestId('revealed')).toContainText(
     'Hugo offre un cadeau à',
@@ -259,7 +259,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   ).toBeVisible();
   await expect(
     page.getByText(
-      "L'organisateur a consulté le résultat de Hugo (accès de dernier recours)",
+      "L'organisateur a consulté le résultat d'Hugo (accès de dernier recours)",
     ),
   ).toBeVisible();
   await expect(

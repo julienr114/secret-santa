@@ -1,6 +1,7 @@
 import fr from './locales/fr';
 import en from './locales/en';
 import de from './locales/de';
+import { elideTemplate } from './elision';
 import {
   DEFAULT_LOCALE,
   LOCALES,
@@ -70,20 +71,21 @@ export const hasMessage = (key: string): boolean =>
  * The text of `key` in `locale`, with `{name}` placeholders filled from
  * `params`. A plural text is chosen from `params.count`. A missing key
  * falls back to French, then to the key itself: never an exception.
+ * In French, « de {name} » becomes « d'Inès » when the name asks for it.
  */
 export const translateKey = (
   locale: Locale,
   key: string,
   params: Params = {},
 ): string => {
-  const template =
-    templateOf(locale, key, params.count) ??
-    templateOf(DEFAULT_LOCALE, key, params.count);
-  return template === null
-    ? key
-    : template.replace(/\{(\w+)\}/g, (match, name: string) =>
-        name in params ? String(params[name]) : match,
-      );
+  const own = templateOf(locale, key, params.count);
+  const template = own ?? templateOf(DEFAULT_LOCALE, key, params.count);
+  if (template === null) return key;
+  const french = own === null || locale === 'fr';
+  return (french ? elideTemplate(template, params) : template).replace(
+    /\{(\w+)\}/g,
+    (match, name: string) => (name in params ? String(params[name]) : match),
+  );
 };
 
 /** Same as translateKey, for keys known at compile time. */

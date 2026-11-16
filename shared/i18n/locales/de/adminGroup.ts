@@ -150,6 +150,18 @@ export default {
     },
   },
   exclusions: {
+    pair: '{giver} und {receiver}',
+    previewBoth: '{names} ziehen sich nie gegenseitig.',
+    previewOne: '{giver} zieht nie {receiver}.',
+    automatic: 'Automatisch angewendet',
+    lastYear: {
+      one: 'Nicht dieselbe Person wie letztes Jahr',
+      other: 'Nicht dieselbe Person wie in den letzten {count} Jahren',
+    },
+    previousOff: 'Frühere Jahre zählen nicht',
+    inSettings: 'Wird in den Einstellungen der Gruppe festgelegt',
+    untilDraw:
+      'Ausschlüsse lassen sich bis zur Auslosung ändern. Danach behält die Ausgabe die verwendeten.',
     title: 'Ausschlüsse',
     summary: 'Paare, die sich nie gegenseitig ziehen',
     intro:

@@ -84,7 +84,7 @@ const NuxtLink = resolveComponent('NuxtLink');
       </span>
       <span class="min-w-0 grow">
         <span
-          class="block truncate font-semibold"
+          class="line-clamp-2 font-semibold"
           :class="tone === 'danger' ? 'text-error-ink' : ''"
         >
           {{ title }}

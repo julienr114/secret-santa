@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
 import {
-  useCreateExclusionMutation,
   useDeleteExclusionMutation,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
 
-// The group's exclusions as a list (remove with ×) and an "add" row that
-// opens a bottom sheet. Used on the exclusions screen and on the edition
+// The group's exclusions as a list (remove with ×, then a second tap) and
+// an "add" row that opens « Nouvelle exclusion ». Used on the exclusions screen and on the edition
 // screen, so the guardian can adjust them right before the draw.
 const props = withDefaults(
   defineProps<{
@@ -29,7 +28,6 @@ const toast = useToast();
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
 const people = usePeopleQuery(() => props.slug);
-const create = useCreateExclusionMutation(() => props.slug);
 const remove = useDeleteExclusionMutation(() => props.slug);
 
 const persons = computed(() => people.data.value?.persons ?? []);
@@ -44,14 +42,6 @@ const nameOf = (id: string) => {
   const person = personOf(id);
   return person ? fullName(person) : '?';
 };
-const options = (exclude?: string) =>
-  persons.value
-    .filter((p) => p.active)
-    .map((p) => ({
-      label: fullName(p),
-      value: p.id,
-      disabled: p.id === exclude,
-    }));
 
 // Removing asks for a second tap on the row itself.
 const confirmId = ref<string | null>(null);
@@ -78,37 +68,22 @@ const onRemove = (exclusionId: string) =>
   });
 
 const open = ref(false);
-const state = reactive<{
-  giverId?: string;
-  receiverId?: string;
+/**
+ * The title of a row: « Camille et Hugo » both ways, an arrow one way.
+ * @param ex - The exclusion.
+ * @returns The title.
+ */
+const titleOf = (ex: {
+  giverId: string;
+  receiverId: string;
   reciprocal: boolean;
-}>({
-  reciprocal: true,
-});
-const openSheet = () => {
-  Object.assign(state, {
-    giverId: undefined,
-    receiverId: undefined,
-    reciprocal: true,
-  });
-  open.value = true;
-};
-const onAdd = () =>
-  state.giverId &&
-  state.receiverId &&
-  create.mutate(
-    {
-      giverId: state.giverId,
-      receiverId: state.receiverId,
-      reciprocal: state.reciprocal,
-    },
-    {
-      onSuccess: () => {
-        open.value = false;
-      },
-      onError,
-    },
-  );
+}) =>
+  ex.reciprocal
+    ? t('adminGroup.exclusions.pair', {
+        giver: nameOf(ex.giverId),
+        receiver: nameOf(ex.receiverId),
+      })
+    : `${nameOf(ex.giverId)} → ${nameOf(ex.receiverId)}`;
 </script>
 
 <template>
@@ -118,7 +93,7 @@ const onAdd = () =>
       v-if="editable"
       icon="i-lucide-plus"
       :title="t('adminGroup.exclusions.add')"
-      @click="openSheet"
+      :on-click="() => (open = true)"
     />
     <li
       v-if="exclusions.length === 0 && !hasExtra"
@@ -129,7 +104,7 @@ const onAdd = () =>
     <UiListItem
       v-for="ex in exclusions"
       :key="ex.id"
-      :title="`${nameOf(ex.giverId)} ${ex.reciprocal ? '↔' : '→'} ${nameOf(ex.receiverId)}`"
+      :title="titleOf(ex)"
       :subtitle="subtitleOf(ex)"
     >
       <template #leading>
@@ -191,43 +166,5 @@ const onAdd = () =>
     <slot name="extra" />
   </UiList>
 
-  <UDrawer
-    v-model:open="open"
-    :title="t('adminGroup.exclusions.sheetTitle')"
-    :description="t('adminGroup.exclusions.sheetDescription')"
-  >
-    <template #body>
-      <div class="flex flex-col gap-5 py-2">
-        <UFormField :label="t('adminGroup.exclusions.giverLabel')">
-          <USelect
-            v-model="state.giverId"
-            :items="options(state.receiverId)"
-            :placeholder="t('adminGroup.exclusions.choose')"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField :label="t('adminGroup.exclusions.receiverLabel')">
-          <USelect
-            v-model="state.receiverId"
-            :items="options(state.giverId)"
-            :placeholder="t('adminGroup.exclusions.choose')"
-            class="w-full"
-          />
-        </UFormField>
-        <USwitch
-          v-model="state.reciprocal"
-          :label="t('adminGroup.exclusions.bothWays')"
-        />
-      </div>
-    </template>
-    <template #footer>
-      <UButton
-        block
-        :disabled="!state.giverId || !state.receiverId"
-        :loading="create.isPending.value"
-        :label="t('adminGroup.exclusions.submit')"
-        @click="onAdd"
-      />
-    </template>
-  </UDrawer>
+  <AdminExclusionSheet v-model:open="open" :slug="slug" />
 </template>

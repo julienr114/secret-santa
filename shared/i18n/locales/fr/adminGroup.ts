@@ -142,6 +142,18 @@ export default {
     },
   },
   exclusions: {
+    pair: '{giver} et {receiver}',
+    previewBoth: '{names} ne se tireront jamais l’un l’autre.',
+    previewOne: '{giver} ne tirera jamais {receiver}.',
+    automatic: 'Appliqué automatiquement',
+    lastYear: {
+      one: 'Pas la même personne que l’an dernier',
+      other: 'Pas la même personne que ces {count} dernières années',
+    },
+    previousOff: 'Les années précédentes ne comptent pas',
+    inSettings: 'Se règle dans les réglages du groupe',
+    untilDraw:
+      'Les exclusions se modifient jusqu’au tirage. Ensuite, l’édition garde celles qui ont servi.',
     title: 'Exclusions',
     summary: 'Paires qui ne se tirent jamais',
     intro:

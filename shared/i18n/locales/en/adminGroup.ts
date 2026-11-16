@@ -144,6 +144,18 @@ export default {
     },
   },
   exclusions: {
+    pair: '{giver} and {receiver}',
+    previewBoth: '{names} will never draw each other.',
+    previewOne: '{giver} will never draw {receiver}.',
+    automatic: 'Applied automatically',
+    lastYear: {
+      one: 'Not the same person as last year',
+      other: 'Not the same person as in the last {count} years',
+    },
+    previousOff: 'Previous years do not count',
+    inSettings: 'Set in the group settings',
+    untilDraw:
+      'Exclusions can change until the draw. After that, the edition keeps those it used.',
     title: 'Exclusions',
     summary: 'Pairs that never draw each other',
     intro:

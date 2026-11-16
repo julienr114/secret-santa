@@ -365,8 +365,6 @@ export default {
       other: 'Die E-Mail kommt nicht an? Nimm einen anderen Weg',
       copyMessage: 'Nachricht kopieren',
       copyLink: 'Nur den Link kopieren',
-      otherHint:
-        'Teilen öffnet WhatsApp, SMS… Der Link von {name} ändert sich nicht: Nichts davon verrät das Ergebnis.',
       emailSent: 'E-Mail an {name} gesendet',
     },
   },

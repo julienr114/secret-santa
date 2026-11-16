@@ -360,8 +360,6 @@ export default {
       other: "L'email n'arrive pas ? Passe par un autre chemin",
       copyMessage: 'Copier le message',
       copyLink: 'Copier le lien seul',
-      otherHint:
-        'Partager ouvre WhatsApp, SMS… Le lien de {name} ne change pas : rien de tout ça ne révèle son résultat.',
       emailSent: 'Email envoyé à {name}',
     },
   },

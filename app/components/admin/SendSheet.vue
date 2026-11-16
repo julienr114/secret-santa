@@ -279,7 +279,7 @@ const personPath = computed(
         />
       </div>
 
-      <div class="flex flex-col" :class="resend ? 'gap-3.5' : 'gap-2.5'">
+      <div class="mt-2 flex flex-col" :class="resend ? 'gap-3.5' : 'gap-2.5'">
         <div v-if="participant.email" class="flex flex-col gap-0.5">
           <UButton
             block
@@ -351,9 +351,6 @@ const personPath = computed(
               @click="onCopyLink"
             />
           </div>
-          <p class="text-[13px] leading-[1.4] text-toned">
-            {{ t('adminEdition.screen.sheet.otherHint', { name }) }}
-          </p>
         </section>
         <div v-else-if="participant.email" class="grid grid-cols-2 gap-2.5">
           <UButton

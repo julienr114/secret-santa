@@ -354,8 +354,6 @@ export default {
       other: 'The email does not arrive? Take another way',
       copyMessage: 'Copy the message',
       copyLink: 'Copy the link only',
-      otherHint:
-        "Share opens WhatsApp, SMS… {name}'s link does not change: none of this reveals their result.",
       emailSent: 'Email sent to {name}',
     },
   },

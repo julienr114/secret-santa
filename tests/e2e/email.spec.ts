@@ -90,9 +90,7 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await expect(preview).toContainText('Salut Ada !');
   await page.getByRole('button', { name: 'Ajouter un mot' }).click();
   await page.getByLabel('Ajouter un mot').fill('Rendez-vous chez Mamie');
-  await expect(preview.locator('p').last()).toHaveText(
-    'Rendez-vous chez Mamie',
-  );
+  await expect(preview).toContainText(/Rendez-vous chez Mamie$/);
   await ada.click();
   await expect(count).toHaveText('0 sélectionné sur 3');
   await page.getByRole('button', { name: 'Tout sélectionner' }).click();

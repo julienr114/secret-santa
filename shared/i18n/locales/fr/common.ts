@@ -35,6 +35,7 @@ export default {
     saving: 'Enregistrement…',
     logout: 'Se déconnecter',
   },
+  languageIn: { fr: 'en français', en: 'en anglais', de: 'en allemand' },
   language: {
     label: 'Langue',
     fr: 'Français',

@@ -38,6 +38,7 @@ export default {
     saving: 'Wird gespeichert…',
     logout: 'Abmelden',
   },
+  languageIn: { fr: 'auf Französisch', en: 'auf Englisch', de: 'auf Deutsch' },
   language: {
     label: 'Sprache',
     fr: 'Français',

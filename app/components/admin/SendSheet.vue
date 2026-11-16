@@ -4,6 +4,7 @@ import type { Participant } from '#server/database/editions';
 import {
   NOTE_MAX,
   addNote,
+  defaultMessageType,
   messageTypesFor,
   type MessageType,
 } from '#server/utils/messages';
@@ -16,45 +17,47 @@ import {
 import { useUpdatePersonMutation } from '~/composables/queries/useGroup';
 import { useShareMessage } from '~/composables/useShareMessage';
 
-// Sending one participant their message, or sending it again: the
-// message, its text as it will go, a word to add and its language, then
-// how. With an address, email comes first; without one, the phone's
-// share sheet. Someone already reached gets the reminder, and other ways
-// if the email does not arrive. The repairs stay folded at the bottom.
-// Sharing and copying start in the gesture (Safari, README 13.1): the
-// text is loaded before.
+// Sending one participant their message, or sending it again (decided
+// on 16 November 2026: only what it takes to send, at first). Two lines
+// of the message chosen for them, « Personnaliser » to pick another
+// message, read it whole, add a word or change its language, then how to
+// send: email first with an address, the phone's share sheet without.
+// « Autre moyen, ou un souci ? » turns the sheet into a list of other
+// ways and repairs. Once sent, the sheet closes. Sharing and copying start
+// in the gesture (Safari, README 13.1): the text is loaded before.
 const props = defineProps<{
   slug: string;
   editionId: string;
   status: string;
   participant: Participant;
-  /** The next one to notify, once this one is done. */
-  next: Participant | null;
-  /** How many are still to notify, this one included. */
-  left: number;
 }>();
 const open = defineModel<boolean>('open', { required: true });
-const emit = defineEmits<{ sent: []; skip: [] }>();
-const { t, tk } = useT();
+const emit = defineEmits<{ sent: [] }>();
+const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
 const toast = useToast();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
 const types = computed(() => messageTypesFor(props.status));
-/**
- * The message offered first: the reminder for someone already reached,
- * otherwise the first message of the step.
- * @returns The message type.
- */
+// The message chosen for them; whether the draw was run again is not
+// known to the screen yet (PLAN, section 6), so never.
 const defaultType = (): MessageType =>
-  resend.value && types.value.includes('reminder')
-    ? 'reminder'
-    : (types.value[0] ?? 'invitation');
+  defaultMessageType(props.status, resend.value, false) ??
+  types.value[0] ??
+  'invitation';
 const type = ref<MessageType>(defaultType());
+// What the sheet shows: what it takes to send, with or without the rest
+// of « Personnaliser », or the list of other ways and repairs.
+const customizing = ref(false);
+const view = ref<'send' | 'other'>('send');
+const fixingEmail = ref(false);
 watch(
   () => props.participant.participationId,
   () => {
     type.value = defaultType();
+    customizing.value = false;
+    view.value = 'send';
+    fixingEmail.value = false;
   },
 );
 const tabs = computed(() =>
@@ -178,17 +181,23 @@ const title = computed(() =>
   ),
 );
 const { lookOf } = useFollowLook();
-/** Where the participant stands, under the title once reached. */
-const look = computed(() =>
-  resend.value || props.left === 0 ? lookOf(props.participant) : null,
+/** Where the participant stands, under the title. */
+const look = computed(() => lookOf(props.participant));
+/** The message's language, said next to « Personnaliser » when not ours. */
+const otherLanguage = computed(() =>
+  props.participant.language === locale.value
+    ? null
+    : tk(`common.languageIn.${props.participant.language}`),
 );
-/** Stands in for the name, to set it in bold within the sentence. */
-const NAME_SLOT = '\u0000';
-/** "Une fois envoyé, le panneau passe à", the next name, then "." */
-const nextWords = computed(() =>
-  t('adminEdition.screen.sheet.next', { name: NAME_SLOT }).split(NAME_SLOT),
+/** What « Autre moyen, ou un souci ? » holds, in a few words. */
+const otherHint = computed(() =>
+  resend.value
+    ? t('adminEdition.screen.sheet.otherResend')
+    : props.participant.email
+      ? t('adminEdition.screen.sheet.otherFirst')
+      : t('adminEdition.screen.sheet.otherNoEmail'),
 );
-// The address is added, or corrected, in place.
+// The address is added in place on the sheet, or corrected from the list.
 const editingEmail = ref(false);
 watch(
   () => props.participant.participationId,
@@ -197,7 +206,6 @@ watch(
   },
 );
 </script>
-
 <template>
   <UiSheet
     v-model:open="open"
@@ -213,20 +221,13 @@ watch(
           >
             {{ title }}
           </h2>
-          <p
-            v-if="look"
-            class="flex items-center gap-1.25 text-sm"
-            :class="look.tone"
-          >
+          <p class="flex items-center gap-1.25 text-sm" :class="look.tone">
             <UIcon
               :name="look.icon"
               class="size-3.5 shrink-0"
               :class="look.iconTone"
             />
             {{ look.text }}
-          </p>
-          <p v-else class="text-sm text-toned">
-            {{ t('adminEdition.screen.sheet.left', { count: left }) }}
           </p>
         </div>
         <button
@@ -239,102 +240,153 @@ watch(
         </button>
       </div>
     </template>
-    <div class="flex flex-col gap-[18px]" data-testid="send-sheet">
-      <UiSegmented
-        v-if="tabs.length > 1"
-        v-model="type"
-        :items="tabs"
-        :label="t('adminEdition.screen.emails.message')"
-      />
-      <div class="flex flex-col gap-2">
-        <UiMessageBubble
-          :text="text"
-          :link="message?.link"
-          :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
-          data-testid="send-preview"
-        />
-        <div class="flex flex-wrap items-center gap-2">
-          <UButton
-            variant="outline"
-            color="neutral"
-            icon="i-lucide-pencil"
-            class="h-10 gap-1.5 rounded-full px-3 text-sm font-semibold"
-            :ui="{ leadingIcon: 'size-4' }"
-            :label="t('adminEdition.screen.sheet.addNote')"
-            @click="writing = !writing"
-          />
-          <USelect
-            :model-value="participant.language"
-            :items="languages"
-            :loading="savingLanguage"
-            icon="i-lucide-globe"
-            class="h-10 gap-1.5 rounded-full px-3 text-sm font-semibold"
-            :ui="{
-              leadingIcon: 'size-4',
-              trailingIcon: 'size-3.5',
-              value: 'text-sm',
-            }"
-            :aria-label="
-              t('adminEdition.screen.sheet.language', {
-                language: tk(`common.language.${participant.language}`),
-              })
-            "
-            @update:model-value="onLanguage"
-          />
-        </div>
-        <UTextarea
-          v-if="writing"
-          v-model="note"
-          :rows="2"
-          :maxlength="NOTE_MAX"
-          autoresize
-          :aria-label="t('adminEdition.screen.sheet.addNote')"
-          class="w-full"
-        />
-      </div>
 
-      <div class="mt-6 flex flex-col" :class="resend ? 'gap-3.5' : 'gap-2.5'">
-        <div v-if="participant.email" class="flex flex-col gap-0.5">
-          <UButton
-            block
-            icon="i-lucide-mail"
-            :disabled="waiting"
-            :loading="sending"
-            class="min-h-14 gap-2.5 px-3 py-1.5"
-            @click="onEmail"
-          >
-            <span class="flex min-w-0 flex-col items-start leading-[1.2]">
-              <span class="text-[17px] font-bold">{{
-                sending
-                  ? t('adminEdition.screen.sheet.sending')
-                  : resend
-                    ? t('adminEdition.screen.sheet.resendByEmail')
-                    : t('adminEdition.screen.sheet.byEmail')
-              }}</span>
-              <span class="max-w-full truncate text-[13px] font-medium">{{
-                participant.email
-              }}</span>
-            </span>
-          </UButton>
-          <AdminEmailInline
-            v-if="resend && editingEmail"
-            class="mt-2"
-            :slug="slug"
-            :person-id="participant.id"
-            :initial="participant.email"
-            :label="t('adminEdition.screen.sheet.emailLabel', { name })"
-            :help="t('adminEdition.screen.sheet.emailHelp', { name })"
-            @saved="editingEmail = false"
+    <div
+      v-if="view === 'send'"
+      class="flex flex-col gap-4"
+      data-testid="send-sheet"
+    >
+      <UiMessageBubble
+        v-if="!customizing"
+        :text="text"
+        :link="message?.link"
+        :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+        data-testid="send-preview"
+      />
+      <button
+        type="button"
+        class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+        :class="{ '-mt-3': !customizing }"
+        :aria-expanded="customizing"
+        @click="customizing = !customizing"
+      >
+        {{ t('adminEdition.screen.sheet.customize') }}
+        <span v-if="otherLanguage" class="font-semibold text-toned"
+          >· {{ otherLanguage }}</span
+        >
+        <UIcon
+          :name="customizing ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+          class="size-4"
+          aria-hidden="true"
+        />
+      </button>
+      <template v-if="customizing">
+        <UiSegmented
+          v-if="tabs.length > 1"
+          v-model="type"
+          :items="tabs"
+          :label="t('adminEdition.screen.emails.message')"
+        />
+        <div class="flex flex-col gap-2">
+          <UiMessageBubble
+            :text="text"
+            :link="message?.link"
+            :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+            data-testid="send-preview"
           />
-          <button
-            v-else-if="resend"
-            type="button"
-            class="flex min-h-11 items-center self-center text-sm font-bold text-primary-ink underline"
-            @click="editingEmail = true"
-          >
-            {{ t('adminEdition.screen.sheet.wrongAddress') }}
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              class="flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold ring-1"
+              :class="
+                writing
+                  ? 'bg-primary-tint font-bold text-primary-ink ring-primary-soft'
+                  : 'ring-default'
+              "
+              :aria-expanded="writing"
+              @click="writing = !writing"
+            >
+              <UIcon name="i-lucide-pencil" class="size-4" aria-hidden="true" />
+              {{
+                writing
+                  ? t('adminEdition.screen.sheet.yourWord')
+                  : note.trim()
+                    ? t('adminEdition.screen.sheet.editWord')
+                    : t('adminEdition.screen.sheet.addNote')
+              }}
+              <UIcon
+                :name="
+                  writing ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+                "
+                class="size-3.5"
+                aria-hidden="true"
+              />
+            </button>
+            <USelect
+              :model-value="participant.language"
+              :items="languages"
+              :loading="savingLanguage"
+              icon="i-lucide-globe"
+              class="h-10 gap-1.5 rounded-full px-3 text-sm font-semibold"
+              :ui="{
+                leadingIcon: 'size-4',
+                trailingIcon: 'size-3.5',
+                value: 'text-sm',
+              }"
+              :aria-label="
+                t('adminEdition.screen.sheet.language', {
+                  language: tk(`common.language.${participant.language}`),
+                })
+              "
+              @update:model-value="onLanguage"
+            />
+          </div>
+          <div v-if="writing" class="flex flex-col gap-1">
+            <UTextarea
+              v-model="note"
+              :rows="2"
+              :maxlength="NOTE_MAX"
+              autoresize
+              :maxrows="0"
+              autofocus
+              :aria-label="t('adminEdition.screen.sheet.yourWord')"
+              class="w-full"
+              :ui="{ base: 'text-base leading-[1.45]' }"
+            />
+            <div class="flex items-center justify-between">
+              <button
+                type="button"
+                class="min-h-11 text-sm font-bold text-primary-ink"
+                @click="
+                  () => {
+                    note = '';
+                    writing = false;
+                  }
+                "
+              >
+                {{ t('adminEdition.screen.sheet.removeWord') }}
+              </button>
+              <span class="text-[13px] text-toned tabular-nums"
+                >{{ note.length }} / {{ NOTE_MAX }}</span
+              >
+            </div>
+          </div>
         </div>
+      </template>
+
+      <div class="mt-4 flex flex-col gap-2.5">
+        <UButton
+          v-if="participant.email"
+          block
+          icon="i-lucide-mail"
+          :disabled="waiting"
+          :loading="sending"
+          class="min-h-14 gap-2.5 px-3 py-1.5"
+          @click="onEmail"
+        >
+          <span class="flex min-w-0 flex-col items-start leading-[1.2]">
+            <span class="text-[17px] font-bold">{{
+              sending
+                ? t('adminEdition.screen.sheet.sending')
+                : resend
+                  ? t('adminEdition.screen.sheet.resendByEmail')
+                  : t('adminEdition.screen.sheet.byEmail')
+            }}</span>
+            <span class="max-w-full truncate text-[13px] font-medium">{{
+              participant.email
+            }}</span>
+          </span>
+        </UButton>
         <UButton
           v-else
           block
@@ -344,43 +396,10 @@ watch(
           :label="t('adminEdition.screen.sheet.shareWide')"
           @click="onShare"
         />
-
-        <section v-if="resend" class="flex flex-col gap-2">
-          <h3 class="text-xs font-bold tracking-[0.04em] text-toned uppercase">
-            {{ t('adminEdition.screen.sheet.other') }}
-          </h3>
-          <div class="grid grid-cols-3 gap-2">
-            <UButton
-              v-if="participant.email"
-              variant="outline"
-              color="neutral"
-              icon="i-lucide-share-2"
-              class="min-h-17 flex-col justify-center gap-1.5 rounded-lg px-1 py-2 text-[13px] leading-[1.2] font-semibold"
-              :disabled="waiting"
-              :label="t('adminEdition.screen.sheet.share')"
-              @click="onShare"
-            />
-            <UButton
-              variant="outline"
-              color="neutral"
-              icon="i-lucide-copy"
-              class="min-h-17 flex-col justify-center gap-1.5 rounded-lg px-1 py-2 text-[13px] leading-[1.2] font-semibold"
-              :disabled="waiting"
-              :label="t('adminEdition.screen.sheet.copyMessage')"
-              @click="onCopy"
-            />
-            <UButton
-              variant="outline"
-              color="neutral"
-              icon="i-lucide-link"
-              class="min-h-17 flex-col justify-center gap-1.5 rounded-lg px-1 py-2 text-[13px] leading-[1.2] font-semibold"
-              :disabled="!message"
-              :label="t('adminEdition.screen.sheet.copyLink')"
-              @click="onCopyLink"
-            />
-          </div>
-        </section>
-        <div v-else-if="participant.email" class="grid grid-cols-2 gap-2.5">
+        <div
+          v-if="participant.email && !resend"
+          class="grid grid-cols-2 gap-2.5"
+        >
           <UButton
             block
             variant="outline"
@@ -403,7 +422,7 @@ watch(
           />
         </div>
         <UButton
-          v-else
+          v-else-if="!participant.email"
           block
           variant="outline"
           color="neutral"
@@ -413,7 +432,6 @@ watch(
           :label="t('adminEdition.screen.sheet.copyMessage')"
           @click="onCopy"
         />
-
         <AdminEmailInline
           v-if="!participant.email && editingEmail"
           :slug="slug"
@@ -446,33 +464,84 @@ watch(
             {{ t('adminEdition.screen.emails.addEmail') }}
           </button>
         </div>
-        <div
-          v-if="next && !resend"
-          class="flex items-center gap-2.5 rounded-[10px] bg-success-tint px-3 py-2.5"
-          data-testid="send-next"
-        >
-          <UiAvatar :avatar="next.avatar" class="size-8 text-[15px]" />
-          <p class="grow text-sm leading-[1.35] text-success-ink">
-            {{ nextWords[0] }}<strong>{{ fullName(next) }}</strong
-            >{{ nextWords[1] }}
-          </p>
-          <button
-            type="button"
-            class="h-11 shrink-0 px-2 text-sm font-bold text-success-ink underline"
-            @click="emit('skip')"
-          >
-            {{ t('adminEdition.screen.sheet.skip') }}
-          </button>
-        </div>
       </div>
 
-      <AdminParticipantTroubleshoot
-        v-if="participant.messageSentAt && status !== 'closed'"
-        class="-mb-2"
-        :slug="slug"
-        :status="status"
-        :participant="participant"
-      />
+      <button
+        type="button"
+        class="-mx-4 -mb-2 flex min-h-15 items-center gap-3 border-t border-divider px-4 py-2 text-left"
+        @click="view = 'other'"
+      >
+        <span class="flex min-w-0 grow flex-col">
+          <span class="text-[15px] font-semibold">{{
+            t('adminEdition.screen.sheet.other')
+          }}</span>
+          <span class="truncate text-[13px] text-toned">{{ otherHint }}</span>
+        </span>
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="size-5 shrink-0 text-dimmed"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+
+    <div v-else class="flex flex-col gap-3" data-testid="send-other">
+      <button
+        type="button"
+        class="-ml-1 flex min-h-11 items-center gap-1 self-start px-1 text-sm font-bold text-primary-ink"
+        @click="view = 'send'"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-4" aria-hidden="true" />
+        {{ t('common.actions.back') }}
+      </button>
+      <UiList
+        :title="resend ? t('adminEdition.screen.sheet.emailFails') : undefined"
+      >
+        <template v-if="resend && participant.email">
+          <UiListItem
+            :title="t('adminEdition.screen.sheet.shareWhatsApp')"
+            :on-click="onShare"
+          />
+          <UiListItem
+            :title="t('adminEdition.screen.sheet.copyMessage')"
+            :on-click="onCopy"
+          />
+        </template>
+        <UiListItem
+          :title="t('adminEdition.screen.sheet.copyLink')"
+          :on-click="onCopyLink"
+        />
+        <template v-if="participant.email">
+          <li v-if="fixingEmail" class="px-4 py-3">
+            <AdminEmailInline
+              :slug="slug"
+              :person-id="participant.id"
+              :initial="participant.email"
+              :label="t('adminEdition.screen.sheet.emailLabel', { name })"
+              :help="t('adminEdition.screen.sheet.emailHelp', { name })"
+              @saved="fixingEmail = false"
+            />
+          </li>
+          <UiListItem
+            v-else
+            :title="t('adminEdition.screen.sheet.fixEmail')"
+            :subtitle="participant.email"
+            :on-click="() => (fixingEmail = true)"
+          />
+        </template>
+        <AdminParticipantTroubleshoot
+          v-if="!resend"
+          :slug="slug"
+          :participant="participant"
+        />
+      </UiList>
+      <UiList
+        v-if="resend"
+        :title="t('adminEdition.participant.troubleshooting')"
+        data-testid="troubleshoot"
+      >
+        <AdminParticipantTroubleshoot :slug="slug" :participant="participant" />
+      </UiList>
     </div>
   </UiSheet>
 </template>

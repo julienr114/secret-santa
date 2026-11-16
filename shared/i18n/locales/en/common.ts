@@ -38,6 +38,7 @@ export default {
     saving: 'Saving…',
     logout: 'Log out',
   },
+  languageIn: { fr: 'in French', en: 'in English', de: 'in German' },
   language: {
     label: 'Language',
     fr: 'Français',

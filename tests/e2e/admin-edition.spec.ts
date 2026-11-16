@@ -130,23 +130,29 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Envoyer le lien de Léa' }).click();
   await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
   await expect(page.getByTestId('send-preview')).toContainText('Léa');
-  await expect(
-    page.getByText('Une fois envoyé, le panneau passe à Orga.'),
-  ).toBeVisible();
+  // At first, only what it takes to send; « Personnaliser » shows the rest.
+  await expect(page.getByRole('radio', { name: 'Relance' })).toHaveCount(0);
+  await page.getByRole('button', { name: /^Personnaliser/ }).click();
+  await expect(page.getByRole('radio', { name: 'Tirage fait' })).toBeChecked();
   await page.getByRole('button', { name: 'Copier le message' }).click();
-  await expect(page.getByText('Envoyer à Orga').first()).toBeVisible();
+  // Once sent, the sheet closes.
+  await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Léa, le tirage est fait/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}/);
-  await page.keyboard.press('Escape');
-  // Sent: her sheet offers to send again, and the repairs, folded.
+  // Sent: her sheet offers the reminder, and the other ways and repairs
+  // behind « Autre moyen, ou un souci ? ».
   await page.getByRole('button', { name: 'Renvoyer le lien de Léa' }).click();
   await expect(page.getByText('Renvoyer à Léa').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Dépannage' }).click();
+  await page.getByRole('button', { name: /^Autre moyen, ou un souci/ }).click();
   const repairs = page.getByTestId('troubleshoot');
   await expect(repairs).toContainText('Pas envoyé finalement ?');
   await expect(repairs).toContainText('Régénérer son lien');
-  await expect(repairs).not.toContainText('Retirer');
+  await expect(page.getByTestId('send-other')).not.toContainText('Retirer');
+  await page
+    .getByRole('button', { name: 'Retour', exact: true })
+    .last()
+    .click();
   // Her address is added in place: a wrong one is refused, then the sheet
   // offers email first.
   await page.getByRole('button', { name: "Ajouter l'adresse de Léa" }).click();

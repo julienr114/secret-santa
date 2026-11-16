@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
-import { followState, sortParticipants } from '#server/utils/editions';
 import { formatEventDate, isIsoDay, partyIsOver } from '#server/utils/rules';
 import {
   useDashboardQuery,
@@ -135,35 +134,12 @@ const sendOpen = computed({
     if (!open) sendId.value = null;
   },
 });
-const toNotify = computed(() =>
-  sortParticipants(participants.value, status.value).filter(
-    (p) => followState(p) === 'toNotify',
-  ),
-);
 /**
- * The next one to notify: the one below in the list, or back to the top.
- * @param participationId - The participation just handled.
- * @returns The next participant, or null when nobody is left.
- */
-const nextAfter = (participationId: string) => {
-  const at = toNotify.value.findIndex(
-    (p) => p.participationId === participationId,
-  );
-  return (
-    [...toNotify.value.slice(at + 1), ...toNotify.value.slice(0, at)][0] ?? null
-  );
-};
-const next = computed(() =>
-  sendTarget.value && !sendTarget.value.messageSentAt
-    ? nextAfter(sendTarget.value.participationId)
-    : null,
-);
-/**
- * Moves the send sheet on to the next one, or closes it.
+ * Closes the send sheet once the message is on its way.
  * @returns Nothing.
  */
 const onSent = () => {
-  sendId.value = next.value?.participationId ?? null;
+  sendId.value = null;
 };
 const dateOpen = ref(false);
 </script>
@@ -293,10 +269,7 @@ const dateOpen = ref(false);
       :edition-id="id"
       :status="status"
       :participant="sendTarget"
-      :next="next"
-      :left="toNotify.length"
       @sent="onSent"
-      @skip="onSent"
     />
     <AdminPartyDateSheet
       v-model:open="dateOpen"

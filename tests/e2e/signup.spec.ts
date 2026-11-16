@@ -186,8 +186,8 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   await expect(page.getByTestId('quota')).toHaveText('2');
   await page.getByRole('button', { name: 'Un groupe de plus' }).click();
   await expect(page.getByTestId('quota')).toHaveText('3');
-  await page.getByLabel('Nom', { exact: true }).fill('Martin');
-  await page.getByLabel('Nom', { exact: true }).blur();
+  await page.getByLabel('Nom de famille', { exact: true }).fill('Martin');
+  await page.getByLabel('Nom de famille', { exact: true }).blur();
   await expect(heading(page)).toHaveText('Nina Martin');
 
   // A super-admin cannot lock themselves out.

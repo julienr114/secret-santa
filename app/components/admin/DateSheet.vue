@@ -1,27 +1,32 @@
 <script setup lang="ts">
-import { daysUntil, formatEventDate, isIsoDay } from '#server/utils/rules';
-import { useUpdateEditionMutation } from '~/composables/queries/useGroup';
+import { daysUntil, isIsoDay } from '#server/utils/rules';
 
-// "Date de la fête", changed from the edition: a calendar, the day and
-// how far it is, what it changes, then "Valider" or "Annuler". The change
-// is written in the group journal by the server.
+// A day in a settings sheet: the field with its calendar, the day in
+// words and how far it is, whatever else the setting says (the slot),
+// then "Valider" and "Annuler". With `clearLabel`, the day is optional
+// and a link takes it away. The day is only kept with "Valider".
 const props = defineProps<{
-  slug: string;
-  editionId: string;
-  /** The current day of the party (ISO), or empty. */
+  title: string;
+  description?: string;
+  /** The name of the field. */
+  label: string;
+  /** The day saved now (ISO), or empty. */
   value: string;
+  /** A day offered in one tap in the calendar. */
+  suggestion?: string;
+  /** "Pas de date limite": the day may be left out. */
+  clearLabel?: string;
+  error?: string | null;
+  loading?: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
+const emit = defineEmits<{ validate: [value: string] }>();
 const { t, locale } = useT();
-const errorMessage = useErrorMessage();
-const toast = useToast();
-const update = useUpdateEditionMutation(() => props.slug);
 
 const draft = ref('');
 watch(open, (isOpen) => {
   if (isOpen) draft.value = isIsoDay(props.value) ? props.value : '';
 });
-const suggestion = computed(() => `${new Date().getFullYear()}-12-25`);
 // "Vendredi 25 décembre 2026 · dans 40 jours".
 const helper = computed(() => {
   if (!isIsoDay(draft.value)) return '';
@@ -44,66 +49,30 @@ const helper = computed(() => {
     .filter(Boolean)
     .join(' · ');
 });
-/**
- * Saves the day chosen, then closes the sheet with a toast.
- * @returns Nothing: the mutation reports by itself.
- */
-const onValidate = () =>
-  update.mutate(
-    { id: props.editionId, eventDate: draft.value },
-    {
-      onSuccess: () => {
-        open.value = false;
-        toast.add({
-          title: t('adminEdition.screen.dateSheet.saved'),
-          description: formatEventDate(draft.value, locale.value),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
-      },
-    },
-  );
 </script>
 
 <template>
-  <UiSheet
+  <UiSettingSheet
     v-model:open="open"
-    :title="t('adminEdition.screen.dateSheet.title')"
-    :description="t('adminEdition.screen.dateSheet.description')"
+    :title="title"
+    :description="description"
+    :validate-label="t('common.actions.validate')"
+    :cancel-label="t('common.actions.cancel')"
+    :error="error"
+    :loading="loading"
+    :disabled="!draft && !clearLabel"
+    @validate="emit('validate', draft)"
   >
-    <div class="flex flex-col gap-4 py-2" data-testid="date-sheet">
-      <UFormField
-        :label="t('adminEdition.newEdition.dateLabel')"
-        :help="helper || undefined"
-      >
-        <AdminDateField v-model="draft" :suggestion="suggestion" />
-      </UFormField>
-      <ul class="flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
-        <li>{{ t('adminEdition.screen.dateSheet.seen') }}</li>
-        <li>{{ t('adminEdition.screen.dateSheet.journal') }}</li>
-      </ul>
-      <UAlert
-        v-if="update.isError.value"
-        color="error"
-        variant="subtle"
-        :description="errorMessage(update.error.value)"
-      />
-    </div>
-    <template #footer>
-      <UButton
-        block
-        :disabled="!draft"
-        :loading="update.isPending.value"
-        :label="t('adminEdition.screen.dateSheet.validate')"
-        @click="onValidate"
-      />
-      <UButton
-        block
-        variant="ghost"
-        color="neutral"
-        :label="t('adminEdition.screen.dateSheet.cancel')"
-        @click="open = false"
-      />
-    </template>
-  </UiSheet>
+    <UFormField :label="label" :help="helper || undefined">
+      <AdminDateField v-model="draft" :suggestion="suggestion" />
+    </UFormField>
+    <UButton
+      v-if="clearLabel && draft"
+      variant="link"
+      class="min-h-11 self-start px-0"
+      :label="clearLabel"
+      @click="draft = ''"
+    />
+    <slot />
+  </UiSettingSheet>
 </template>

@@ -252,7 +252,7 @@ const dateOpen = ref(false);
       @sent="onSent"
       @skip="onSent"
     />
-    <AdminDateSheet
+    <AdminPartyDateSheet
       v-model:open="dateOpen"
       :slug="slug"
       :edition-id="id"

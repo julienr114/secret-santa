@@ -288,8 +288,6 @@ export default {
       description: 'The day you exchange the gifts.',
       seen: 'Participants see it on their page, with the countdown.',
       journal: 'The change is written in the group journal.',
-      validate: 'Confirm',
-      cancel: 'Cancel',
       saved: 'Party date saved',
     },
     emails: {

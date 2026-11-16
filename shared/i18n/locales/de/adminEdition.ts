@@ -297,8 +297,6 @@ export default {
       description: 'Der Tag, an dem ihr die Geschenke austauscht.',
       seen: 'Die Teilnehmenden sehen es auf ihrer Seite, mit dem Countdown.',
       journal: 'Die Änderung wird im Journal der Gruppe vermerkt.',
-      validate: 'Bestätigen',
-      cancel: 'Abbrechen',
       saved: 'Datum der Bescherung gespeichert',
     },
     emails: {

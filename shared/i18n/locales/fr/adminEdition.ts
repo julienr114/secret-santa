@@ -295,8 +295,6 @@ export default {
       description: 'Le jour où vous échangez les cadeaux.',
       seen: 'Les participants la voient sur leur page, avec le compte à rebours.',
       journal: 'Le changement est inscrit au journal du groupe.',
-      validate: 'Valider',
-      cancel: 'Annuler',
       saved: 'Date de la fête enregistrée',
     },
     emails: {

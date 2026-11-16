@@ -615,6 +615,27 @@ const entries = computed(() => [
       <AdminQueryState :pending="false" :error="refusal" />
     </section>
 
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Actions en cours</UiSectionTitle>
+      <UButton
+        block
+        loading
+        disabled
+        class="h-13 justify-center text-[17px] font-bold"
+        label="UButton loading : « Tirage en cours… »"
+      />
+      <UiList footer="useBusy : l'indicateur n'apparaît qu'après 200 ms.">
+        <UiListItem
+          title="UiListItem busy"
+          value="Que les 2 dernières années"
+          busy
+          busy-label="Enregistrement"
+          :on-click="() => {}"
+        />
+      </UiList>
+      <UiSpinner label="UiSpinner" />
+    </section>
+
     <section class="flex flex-col gap-4">
       <UiSectionTitle>Champs</UiSectionTitle>
       <UFormField label="Texte court" help="Aide sous le champ.">

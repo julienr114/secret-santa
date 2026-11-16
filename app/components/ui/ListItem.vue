@@ -22,6 +22,9 @@ const props = withDefaults(
     value?: string;
     /** The name of the row, when its texts do not say what a tap does. */
     label?: string;
+    /** Saving: a wheel replaces the chevron, read out as `busyLabel`. */
+    busy?: boolean;
+    busyLabel?: string;
     /** Makes the row a button (otherwise a link with `to`, or plain). */
     onClick?: () => void;
   }>(),
@@ -36,6 +39,8 @@ const props = withDefaults(
     iconTone: 'primary',
     value: undefined,
     label: undefined,
+    busy: false,
+    busyLabel: undefined,
     onClick: undefined,
   },
 );
@@ -61,6 +66,7 @@ const NuxtLink = resolveComponent('NuxtLink');
       :to="to"
       :type="!to && props.onClick ? 'button' : undefined"
       :aria-label="label"
+      :aria-busy="busy || undefined"
       class="flex min-h-15 w-full items-center gap-3 px-4 py-2 text-left"
       :class="to || props.onClick ? 'transition-colors active:bg-muted' : ''"
       @click="props.onClick?.()"
@@ -109,8 +115,9 @@ const NuxtLink = resolveComponent('NuxtLink');
         class="flex min-h-11 shrink-0 items-center"
       />
       <slot name="trailing" />
+      <UiSpinner v-if="busy" :label="busyLabel ?? title" />
       <UIcon
-        v-if="(to || value) && chevron"
+        v-else-if="(to || value) && chevron"
         name="i-lucide-chevron-right"
         class="size-5 shrink-0 text-dimmed"
       />

@@ -1304,7 +1304,8 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiActionCard` | « À faire maintenant » : étiquette en capitales (moutarde avec `tone="warning"`, quand il faut d'abord corriger), titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |
 | `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
-| `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable |
+| `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable ; `busy` l'empêche de se refermer pendant une action |
+| `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
 | `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
 | `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
@@ -1334,6 +1335,7 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
 - Le bouton d'action d'une ligne est rond, avec une icône seule : plein et clair quand l'action reste à faire, en contour gris quand elle est faite.
+- **Une action en cours** (décidé le 16 novembre 2026) : la roue remplace l'icône du bouton, le libellé dit ce qui se passe (« Tirage en cours… »), le bouton garde sa taille et se désactive, le panneau ne se referme pas ; un réglage qui s'enregistre met la roue à la place du chevron. L'indicateur n'apparaît qu'après 200 ms (`useBusy`) ; un rechargement en arrière-plan ne change rien à l'écran.
 - Aucun texte en dur dans un écran du produit : tout passe par les dictionnaires (section 21). Seule exception, la page Guide de style, outil du développeur.
 
 ### 23.4 Reste à faire

@@ -116,3 +116,10 @@
     font-family: var(--font-serif);
   }
 }
+
+/* A busy wheel stands still for those who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+  }
+}

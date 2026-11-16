@@ -277,21 +277,40 @@ Demandé par Julien le 16 novembre 2026 : sur iPhone, le bas des panneaux est ro
 - [x] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
 - [x] **Actions en cours** conformes : roue dans les boutons des formulaires et des panneaux.
 
-### Correction 7 — le panneau d'envoi allégé
+### Correction 7 — l'envoi allégé : un panneau court, un écran pour personnaliser
 
-Décidé par Julien le 16 novembre 2026 : le panneau « Envoyer à {prénom} » était trop chargé, surtout au renvoi. À faire après le lot 4, avant le lot 5. Maquettes redessinées : `Envoi`, `EnvoiPersonnaliser` (nouvelle), `EnvoiSansEmail`, `EnvoiAjouterEmail`, `Renvoi`, `RenvoiPepin` (devenue la liste « Autre moyen, ou un souci ? »). Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 2 disaient de la disposition du panneau ; leurs autres points restent (bulle, boutons de 56 et 52 px, adresse ajoutée sur place, fermeture ronde).
+Décidé par Julien le 16 novembre 2026 : le panneau « Envoyer à {prénom} » était trop chargé, surtout au renvoi, et l'écran d'envoi à plusieurs empilait un second bloc par-dessus sa liste. À faire après le lot 4, avant le lot 5.
 
-**Le principe** : à l'ouverture, seulement de quoi envoyer. Le panneau a trois états, un seul visible à la fois.
+Maquettes : `Envoi`, `EnvoiSansEmail`, `EnvoiAjouterEmail`, `Renvoi`, `RenvoiPepin` (la liste « Autre moyen, ou un souci ? »), `PersonnaliserMessage`, `PersonnaliserMessageMot`, `PersonnaliserMessagePlusieurs` (nouvelles), `SelectionEmail`, `SelectionEmail100`. **Ne plus utiliser** `EnvoiPersonnaliser`, `EnvoiMotOuvert` et `EnvoiMotAjoute` s'ils traînent dans le dossier : ils décrivaient une version abandonnée.
 
-- [ ] **État de départ** : l'en-tête ; le message réduit à **deux lignes** dans sa bulle ; le lien « Personnaliser » ; les boutons d'envoi ; une ligne en bas, « Autre moyen, ou un souci ? ».
-- [ ] **« Personnaliser »** déplie sur place : le choix du message en trois segments, le message entier, « Ajouter un mot », la langue. Le même lien, chevron vers le haut, replie. Les boutons d'envoi ne bougent pas de place dans le panneau.
+Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 2 disaient de la disposition du panneau ; leurs autres points restent (bulle, boutons de 56 et 52 px, adresse ajoutée sur place, fermeture ronde).
+
+**Le principe** (README 23.3 : une action courte dans un panneau, un formulaire dans son écran) : envoyer est une action courte, personnaliser un message est un formulaire.
+
+**Le panneau d'envoi à une personne** : court, et de hauteur fixe
+
+- [ ] De haut en bas : l'en-tête ; le message **entier** dans sa bulle, lien compris ; le lien « Personnaliser le message » ; les boutons d'envoi ; une ligne en bas, « Autre moyen, ou un souci ? ». Plus d'onglets, plus de « Ajouter un mot », plus de langue dans le panneau.
 - [ ] **Le message est choisi tout seul** à l'ouverture : jamais envoyé, « Tirage fait » (ou l'invitation avant le tirage) ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage ». Fonction pure avec ses tests, à partir de l'état de l'édition et de la personne ; vérifier avec le README 13.2.
-- [ ] **« Autre moyen, ou un souci ? »** remplace le contenu du panneau par une liste, avec « Retour » en haut. Au renvoi : « L'email n'arrive pas » (partager, copier le message, copier le lien seul, corriger son adresse email) puis « Dépannage » (pas envoyé finalement, régénérer son lien). Au premier envoi : copier le lien seul, corriger ou ajouter l'adresse, régénérer son lien ; pas de « pas envoyé finalement ». La ligne « Dépannage » repliée du lot 2 disparaît : son contenu est dans cette liste.
-- [ ] **Boutons de l'état de départ** : premier envoi avec adresse, « Envoyer par email » puis « Partager » et « Copier » ; sans adresse, « Partager (WhatsApp, SMS…) », « Copier le message » et la ligne « {Prénom} n'a pas d'adresse email · Ajouter » ; au renvoi, « Renvoyer par email » seul, le reste est dans la liste.
+- [ ] **Boutons** : premier envoi avec adresse, « Envoyer par email » puis « Partager » et « Copier » ; sans adresse, « Partager (WhatsApp, SMS…) », « Copier le message » et la ligne « {Prénom} n'a pas d'adresse email · Ajouter » ; au renvoi, « Renvoyer par email » seul.
+- [ ] **« Autre moyen, ou un souci ? »** remplace le contenu du panneau par une liste, avec « Retour » en haut. Au renvoi : « L'email n'arrive pas » (partager, copier le message, copier le lien seul, corriger son adresse email) puis « Dépannage » (pas envoyé finalement, régénérer son lien). Au premier envoi : copier le lien seul, corriger ou ajouter l'adresse, régénérer son lien. La ligne « Dépannage » repliée du lot 2 disparaît.
 - [ ] **Plus d'enchaînement** : le bandeau « le panneau passe à… », « Passer » et le passage automatique à la personne suivante sont supprimés. Après un envoi, le panneau se referme. Retirer le code et les textes correspondants.
 - [ ] Sous-titre de l'en-tête : l'état de la personne (« Pas encore envoyé », « Envoyé par email, pas encore consulté »), plus le nombre de personnes restantes.
-- [ ] **La langue cachée ne doit pas piéger** : si la langue du message n'est pas celle de l'organisateur, la rappeler à côté de « Personnaliser » (par exemple « Personnaliser · en anglais »).
-- [ ] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau mis à jour.
+
+**L'écran « Personnaliser le message »** : un seul, pour l'envoi à une personne et pour l'envoi à plusieurs
+
+- [ ] Une route dédiée sous l'édition, ouverte par le lien du panneau ou de l'écran d'envoi à plusieurs. Ligne de contexte, titre, « Pour {prénom} » ou « Pour les N personnes sélectionnées ».
+- [ ] De haut en bas : « Quel message » (trois segments) ; l'aperçu dans sa bulle, entier ; « Un mot en plus (facultatif) », un champ de texte **toujours visible**, qui grandit avec le texte et le montre toujours en entier, avec son compteur sur 500 ; « Langue du message » en ligne de réglage (envoi à une personne seulement ; à plusieurs, une phrase dit que chacun le reçoit dans sa langue) ; bouton collant « Valider ».
+- [ ] La bulle reflète chaque changement tout de suite, mot compris, à l'endroit où il partira (réglage du groupe « au-dessus ou en dessous du message »).
+- [ ] « Valider » ramène d'où l'on vient avec les choix conservés : le panneau se rouvre sur la même personne, ou l'écran d'envoi à plusieurs retrouve sa sélection. Le retour arrière sans valider abandonne. Les choix vivent le temps de l'envoi (état de la page ou paramètres d'adresse), pas en base ; seule la langue d'une personne s'enregistre, comme aujourd'hui.
+- [ ] Au retour, si la langue n'est pas celle de l'organisateur ou si un mot a été ajouté, la bulle le montre : rien n'est caché.
+
+**L'écran d'envoi par email à plusieurs** : une seule page
+
+- [ ] Plus de bloc d'aperçu dans le pied. De haut en bas, dans la page : « Aperçu, pour {premier coché} » avec la bulle entière, la phrase « Chacun le reçoit avec son prénom, son lien et dans sa langue », le lien « Personnaliser le message » ; puis le compteur de sélection et la liste ; puis la phrase sur le spam.
+- [ ] Le pied collant ne contient plus que le bouton « Envoyer N emails ».
+- [ ] Les trois segments de message quittent cet écran : ils sont dans « Personnaliser le message ».
+
+- [ ] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau, de l'écran de personnalisation et de l'envoi à plusieurs.
 
 ### Lot 5 — Groupe : réglages
 

@@ -213,10 +213,10 @@ Demandé par Julien le 16 novembre 2026, à faire avec la reprise du lot 1, avan
 
 ### Lot 3 — Groupe : accueil et nouvelle édition
 
-- [ ] `Groupe` (`admin/[slug]/index.vue`) : carte de l'édition en cours avec `UiStepper` et une phrase d'état, bouton « Ouvrir l'édition » ; section « Le groupe » en quatre lignes : Membres, **Exclusions** (ligne à part, avec le nombre de paires), Journal (dernier événement), Réglages ; puis les éditions passées.
-- [ ] `GroupeSansEdition` : `UiActionCard` « Prépare le tirage de cette année ».
-- [ ] `EditionNouvelle` (`editions/nouvelle.vue`) : voir « Partiel ».
-- [ ] **Actions en cours** conformes : roue dans « Créer l'édition ».
+- [x] `Groupe` (`admin/[slug]/index.vue`) : carte de l'édition en cours avec `UiStepper` et une phrase d'état, bouton « Ouvrir l'édition » ; section « Le groupe » en quatre lignes : Membres, **Exclusions** (ligne à part, avec le nombre de paires), Journal (dernier événement), Réglages ; puis les éditions passées.
+- [x] `GroupeSansEdition` : `UiActionCard` « Prépare le tirage de cette année ».
+- [x] `EditionNouvelle` (`editions/nouvelle.vue`) : voir « Partiel ».
+- [x] **Actions en cours** conformes : roue dans « Créer l'édition ».
 
 ### Lot 4 — Groupe : membres et exclusions
 
@@ -295,4 +295,14 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 4. **`Renvoi`, `RenvoiPepin` : la phrase « Partager ouvre WhatsApp, SMS… ».** Retirée à ta demande ; les maquettes la montrent encore.
 5. **« de Agathe ».** Les textes écrivent « de {name} » partout (« Adresse email de Agathe », « le lien de Ines »), sans élision devant une voyelle. Faut-il une règle d'élision pour le français ?
 6. **`EnvoiSansEmail` et `EnvoiAjouterEmail` : le bandeau de la personne suivante.** Les maquettes ne le montrent pas sans adresse ; il reste affiché, pour passer à la suivante.
+
+### Lot 3
+
+1. **Les organisateurs.** La maquette `Groupe` n'a plus de ligne « Organisateurs » ; sa ligne « Réglages » dit « Règles du tirage, organisateurs ». L'écran des réglages (lot 5) ne menait pas aux organisateurs : une ligne « Organisateurs » y est ajoutée en bas, pour ne pas perdre l'accès. Le lot 5 la mettra à sa place.
+2. **Supprimer le groupe (super-admin).** Absent de `Groupe` ; la maquette `GroupeReglages` le place dans les réglages. Il reste en bas de l'accueil du groupe jusqu'au lot 5.
+3. **Budget et petit mot d'une nouvelle édition.** La route de création ne les prend pas : ils sont enregistrés juste après, par la route qui modifie l'édition, quand ils diffèrent de ceux du groupe. Le journal note alors aussitôt « L'organisateur a modifié les règles du tirage ». Faut-il que la création accepte ces deux règles (changement de route) ?
+4. **L'année d'une nouvelle édition.** Le champ « Année » disparaît comme dans la maquette ; l'année est celle que l'app propose (`nextEdition`). Une date de fête choisie dans une autre année ne la change pas.
+5. **`GroupeSansEdition` : qui est repris.** La maquette dit « Les 5 membres du groupe sont repris ». Le serveur reprend les participants de la dernière édition encore actifs (README 4.2) : la carte dit donc « Les 4 participants de Noël 2025 sont repris », et « membres du groupe » seulement pour une première édition.
+6. **Membres.** Sous le titre, « 5 membres » compte les personnes actives ; la ligne « Membres » dit combien de personnes compte le groupe, désactivées comprises, comme la maquette (« 5 membres », « 6 personnes »).
+7. **Date libre d'un ancien réglage.** Un groupe dont la date de fête est un texte libre (« 25 décembre ») n'a pas de ligne de date sur la carte de l'édition.
 

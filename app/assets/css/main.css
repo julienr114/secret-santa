@@ -81,6 +81,7 @@
   --color-warning-soft: var(--color-mustard-100);
   --color-warning-ring: var(--color-mustard-300);
   --color-warning-ink: var(--color-mustard-800);
+  --color-error-tint: var(--color-cranberry-50);
   --color-error-soft: var(--color-cranberry-100);
   --color-error-ink: var(--color-cranberry-700);
 

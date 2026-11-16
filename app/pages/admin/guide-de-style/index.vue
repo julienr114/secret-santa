@@ -64,6 +64,8 @@ const SEGMENTS = [
 const toggle = ref(true);
 /** The box of the UiCheckRow example. */
 const ticked = ref(true);
+/** The box of the UiConfirmBox example. */
+const confirmed = ref(false);
 const date = ref('');
 const sheet = ref(false);
 /** The four states of the envelope of a draw. */
@@ -371,6 +373,36 @@ const entries = computed(() => [
       <UiNotice variant="warning" title="UiNotice warning">
         <p class="text-sm">Un encadré qui demande une action.</p>
       </UiNotice>
+      <UiNotice variant="caution" icon="i-lucide-eye">
+        UiNotice caution : à savoir, sans action à faire.
+      </UiNotice>
+      <UiNotice
+        variant="danger"
+        icon="i-lucide-triangle-alert"
+        title="UiNotice danger"
+      >
+        <UiPointList
+          :points="[
+            { text: 'UiPointList tone error : ce qui sera perdu.' },
+            { text: 'Un point par conséquence.' },
+          ]"
+          tone="error"
+        />
+      </UiNotice>
+      <UiPointList
+        :points="[
+          { icon: 'i-lucide-check', text: 'UiPointList tone success' },
+          { icon: 'i-lucide-check', text: 'Ce qui reste comme avant.' },
+        ]"
+        tone="success"
+        class="text-toned"
+      />
+      <UiJournalPreview
+        label="UiJournalPreview"
+        icon="i-lucide-eye"
+        text="La ligne que tout le groupe lira dans le journal."
+      />
+      <UiConfirmBox v-model="confirmed" label="UiConfirmBox : je comprends" />
       <UButton
         block
         variant="soft"

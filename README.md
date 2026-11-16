@@ -1309,8 +1309,11 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiSkeleton` | Un écran qui arrive, en pièces grises à la place et à la taille de ce qu'elles annoncent ; `AdminQueryState` et `ParticipantScreen` s'en servent |
 | `UiCheckRow` | Une personne à cocher : icône, nom, une ligne dessous (ou l'emplacement `subtitle`, pour une icône), case native de 24 px ; toute la ligne coche |
 | `UiStickyFooter` | La bande blanche collée en bas d'un long écran, avec son action principale ; elle descend jusqu'au bas de la page |
+| `UiPointList` | Quelques points, chacun après un petit rond ou son icône ; `tone` colore les marques (rouge pour ce qui se perd, vert pour ce qui reste) |
+| `UiJournalPreview` | « Ce que le groupe lira dans le journal » : la ligne dans une carte blanche, avant l'action qui l'écrit |
+| `UiConfirmBox` | La case « Je comprends que… » à cocher avant une action qui ne se rattrape pas |
 | `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
-| `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
+| `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `caution` (bandeau moutarde encadré, à savoir), `warning` (encadré avec titre), `danger` (encadré rouge épais, titre avec icône, pour ce qui ne se rattrape pas), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
 | `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
 | `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
 | `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche (`UiSearchField`) sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |

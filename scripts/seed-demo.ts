@@ -312,6 +312,65 @@ const seedCamille = async () => {
   });
 };
 
+/** Ninety-nine first names: with the organiser, a hundred people. */
+const HUNDRED =
+  `Adèle Agathe Albane Alexis Ambre Anatole Anna Antoine Apolline Arthur
+Augustin Basile Baptiste Bastien Benoît Blanche Capucine Céleste Charles Charlotte
+Clara Clément Colette Constance Côme Daniel Diane Edgar Élise Émile Emma Ernest
+Esther Étienne Eugénie Félix Fleur Gabriel Gaspard Grégoire Héloïse Henri Hortense
+Inès Irène Isaac Jade Jeanne Joseph Jules Julia Juliette Laure Léa Léon Léonie
+Lila Lisa Lou Louis Louise Luc Lucie Lucien Madeleine Maël Margaux Marius Martin
+Mathilde Maxime Mila Nina Noé Noémie Octave Olivia Oscar Pauline Pierre Quentin
+Raphaël Romane Rose Sacha Salomé Samuel Simon Sophie Suzanne Théo Thomas Valentin
+Victor Victoire Yanis Yves Zélie Zoé`.split(/\s+/);
+
+/**
+ * A group of a hundred people and its edition: to see how the long lists
+ * fold (README 23, FOLD_FROM).
+ * @param slug - The group's identifier.
+ * @param name - The group's name.
+ * @param drawn - Draw it, send a third of the links, and reveal a few.
+ */
+const seedHundred = async (slug: string, name: string, drawn: boolean) => {
+  const at = `/api/admin/${slug}`;
+  await call('POST', '/api/admin/groups', {
+    slug,
+    name,
+    organizers: [GROUP.organizer],
+  });
+  for (const firstName of HUNDRED) {
+    await call('POST', `${at}/persons`, { firstName });
+  }
+  const { edition } = await call<{ edition: { id: string } }>(
+    'POST',
+    `${at}/editions`,
+    {
+      label: `Noël ${CURRENT_YEAR}`,
+      year: CURRENT_YEAR,
+      eventDate: `${CURRENT_YEAR}-12-19`,
+    },
+  );
+  if (!drawn) return;
+  await call('POST', `${at}/editions/${edition.id}/draw`);
+  const { participants } = await call<{
+    participants: { firstName: string; participationId: string }[];
+  }>('GET', `${at}/editions/${edition.id}`);
+  const { messages } = await call<{
+    messages: Record<string, { link: string }>;
+  }>('GET', `${at}/editions/${edition.id}/messages?type=drawn`);
+  const sent = participants.filter((_, index) => index % 3 === 0);
+  for (const [index, p] of sent.entries()) {
+    await call('POST', `${at}/participations/${p.participationId}/message`, {
+      type: 'drawn',
+      via: 'copy',
+    });
+    if (index % 2 === 0) {
+      const path = new URL(messages[p.participationId]?.link ?? '').pathname;
+      await call('POST', `/api${path}/reveal`);
+    }
+  }
+};
+
 const existing = await call<{ groups: { slug: string }[] }>(
   'GET',
   '/api/admin/groups',
@@ -337,6 +396,18 @@ if (known.accounts.some((account) => account.email === ACCOUNTS.pending)) {
   await seedAccounts();
 }
 
+const BIG = [
+  { slug: 'comite-demo', name: 'Comité d’entreprise', drawn: false },
+  { slug: 'grand-tirage-demo', name: 'Grand tirage', drawn: true },
+];
+for (const big of BIG) {
+  if (existing.groups.some((group) => group.slug === big.slug)) {
+    console.log(`Le groupe ${big.slug} existe déjà.`);
+  } else {
+    await seedHundred(big.slug, big.name, big.drawn);
+  }
+}
+
 if (
   known.accounts.some(
     (account) => account.email === CAMILLE && account.groups.length > 0,
@@ -358,6 +429,9 @@ console.log(
 console.log(`  ${ACCOUNTS.refused} : demande refusée`);
 console.log(`  ${ACCOUNTS.owner} : organise son groupe « amis-demo »`);
 console.log(`  ${ACCOUNTS.disabled} : compte désactivé`);
+console.log(
+  `  ${GROUP.organizer} organise aussi « comite-demo » (100 personnes, à préparer) et « grand-tirage-demo » (100 personnes, tirage fait)`,
+);
 console.log(
   `  ${CAMILLE} : organise « Famille Camille » (tirage fait) et « Amis de Camille » (invitations), participe aux deux et à « Famille Démo »`,
 );

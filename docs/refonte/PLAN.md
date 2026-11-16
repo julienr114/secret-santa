@@ -184,13 +184,13 @@ Règles :
 
 Demandé par Julien le 16 novembre 2026, à faire avec la reprise du lot 1, avant le lot 2. Applique les règles de la section précédente aux écrans déjà refaits.
 
-- [ ] **La brique** : la petite roue de bouton et de ligne comme élément du design system, dans le guide de style, avec `prefers-reduced-motion`. Vérifier d'abord ce que `UButton` (`loading`) fait déjà et s'en servir.
-- [ ] **Lancer le tirage** (`ChargementBouton`) : roue dans le bouton, « Tirage en cours… », « Pas encore » grisé, panneau non refermable pendant l'appel.
-- [ ] **Panneau d'envoi** (`ChargementPanneau`) : la bulle du message en squelette tant que le texte n'est pas là, boutons d'envoi grisés. Pendant l'envoi : roue dans le bouton, « Envoi en cours… ».
-- [ ] **Envoi par email à plusieurs** (`ChargementEnvoi`) : « Envoi des N emails… », liste atténuée et inactive.
-- [ ] **« Découvrir »** côté participant, **date de la fête**, **clôturer**, **changer la langue d'une personne** : même règle du bouton ou de la ligne (`ChargementReglage`).
-- [ ] **Squelettes** : vérifier que l'édition, l'accueil et la page d'un tirage passent à `AdminQueryState` (ou à son équivalent côté participant) les pièces qui correspondent à leur maquette, et ajouter la pièce « en-tête avec avatar » si elle manque. Le contenu ne doit pas sauter quand les données arrivent.
-- [ ] Dans les parcours de bout en bout, vérifier au moins un bouton occupé.
+- [x] **La brique** : la petite roue de bouton et de ligne comme élément du design system, dans le guide de style, avec `prefers-reduced-motion`. Vérifier d'abord ce que `UButton` (`loading`) fait déjà et s'en servir.
+- [x] **Lancer le tirage** (`ChargementBouton`) : roue dans le bouton, « Tirage en cours… », « Pas encore » grisé, panneau non refermable pendant l'appel.
+- [x] **Panneau d'envoi** (`ChargementPanneau`) : la bulle du message en squelette tant que le texte n'est pas là, boutons d'envoi grisés. Pendant l'envoi : roue dans le bouton, « Envoi en cours… ».
+- [x] **Envoi par email à plusieurs** (`ChargementEnvoi`) : « Envoi des N emails… », liste atténuée et inactive.
+- [x] **« Découvrir »** côté participant, **date de la fête**, **clôturer**, **changer la langue d'une personne** : même règle du bouton ou de la ligne (`ChargementReglage`).
+- [x] **Squelettes** : vérifier que l'édition, l'accueil et la page d'un tirage passent à `AdminQueryState` (ou à son équivalent côté participant) les pièces qui correspondent à leur maquette, et ajouter la pièce « en-tête avec avatar » si elle manque. Le contenu ne doit pas sauter quand les données arrivent.
+- [x] Dans les parcours de bout en bout, vérifier au moins un bouton occupé.
 
 ### Lot 2 — Édition : sous-écrans
 

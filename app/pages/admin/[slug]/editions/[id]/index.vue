@@ -192,6 +192,7 @@ const dateOpen = ref(false);
     <AdminQueryState
       :pending="edition.isPending.value"
       :error="edition.error.value"
+      :skeleton="['title', 'stepper', 'card', 'list']"
     >
       <AdminEditionHeader
         :title="label"

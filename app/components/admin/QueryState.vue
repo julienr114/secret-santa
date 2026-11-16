@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useQueryClient } from '@tanstack/vue-query';
 import { HOME, LOGIN } from '~/composables/queries/useSession';
+import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 
 const { t } = useT();
 const errorMessage = useErrorMessage();
-
-/** A piece of the loading skeleton, drawn like the screen it stands for. */
-export type SkeletonPart = 'title' | 'stepper' | 'card' | 'list';
 
 // Loading and error states shared by every admin screen. While loading,
 // a skeleton shaped like the screen (its parts are chosen by the screen).
@@ -121,50 +119,11 @@ const onRetry = async () => {
       :label="failure.back"
     />
   </section>
-  <div
+  <UiSkeleton
     v-else-if="pending"
-    class="flex flex-col gap-6"
-    aria-busy="true"
-    :aria-label="t('common.loading')"
-  >
-    <template v-for="part in skeleton" :key="part">
-      <div v-if="part === 'title'" class="flex flex-col gap-2">
-        <USkeleton class="h-8.5 w-3/5 rounded-md bg-skeleton" />
-        <USkeleton class="h-4 w-2/5 rounded bg-skeleton" />
-      </div>
-      <div v-else-if="part === 'stepper'" class="grid grid-cols-3 gap-6 px-6">
-        <USkeleton v-for="i in 3" :key="i" class="h-6 rounded bg-skeleton" />
-      </div>
-      <div
-        v-else-if="part === 'card'"
-        class="flex flex-col gap-3.5 rounded-2xl bg-default p-5 ring-1 ring-default"
-      >
-        <USkeleton class="h-3 w-1/3 rounded bg-skeleton-soft" />
-        <USkeleton class="h-6 w-4/5 rounded bg-skeleton-soft" />
-        <USkeleton class="h-12 rounded-md bg-skeleton-soft" />
-      </div>
-      <div v-else class="flex flex-col gap-1.5">
-        <USkeleton class="mx-1 h-3 w-24 rounded bg-skeleton" />
-        <ul
-          class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
-        >
-          <li
-            v-for="i in rows"
-            :key="i"
-            class="flex min-h-14 items-center gap-3 px-4 py-2.5"
-          >
-            <USkeleton class="size-9 shrink-0 rounded-full bg-skeleton-soft" />
-            <div class="flex grow flex-col gap-1.5">
-              <USkeleton
-                class="h-4 rounded bg-skeleton-soft"
-                :style="{ width: `${70 - i * 9}%` }"
-              />
-              <USkeleton class="h-3 w-2/5 rounded bg-skeleton-soft" />
-            </div>
-          </li>
-        </ul>
-      </div>
-    </template>
-  </div>
+    :parts="skeleton"
+    :rows="rows"
+    :label="t('common.loading')"
+  />
   <slot v-else />
 </template>

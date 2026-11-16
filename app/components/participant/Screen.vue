@@ -2,6 +2,7 @@
 import type { Locale } from '#shared/i18n';
 import { useSaveLanguageMutation } from '~/composables/queries/usePersonal';
 import { HOME } from '~/composables/queries/useSession';
+import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 
 // One participant screen: a light top bar (back on the left, the name of
 // the app in the middle, language on the right), then the content, or the loading
@@ -13,6 +14,8 @@ const props = defineProps<{
   back?: string;
   pending: boolean;
   error: unknown;
+  /** The shape of the screen while it loads. */
+  skeleton?: SkeletonPart[];
 }>();
 const { t, setLocale } = useT();
 const { loggedIn } = useUserSession();
@@ -78,15 +81,12 @@ const onLanguage = (locale: Locale) => {
         </h1>
         <p class="text-muted" role="alert">{{ errorMessage(error) }}</p>
       </div>
-      <div
+      <UiSkeleton
         v-else-if="pending"
-        class="flex flex-col gap-4"
-        aria-busy="true"
-        :aria-label="t('common.loading')"
-      >
-        <USkeleton class="h-9 w-2/3 rounded-md bg-skeleton" />
-        <USkeleton class="h-40 rounded-lg bg-skeleton" />
-      </div>
+        :parts="skeleton ?? ['title', 'card']"
+        :rows="2"
+        :label="t('common.loading')"
+      />
       <slot v-else />
     </UContainer>
   </div>

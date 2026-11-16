@@ -613,6 +613,10 @@ const entries = computed(() => [
         back-label="Revenir au groupe"
       />
       <AdminQueryState :pending="false" :error="refusal" />
+      <UiSkeleton
+        :parts="['header', 'steps', 'envelope', 'groups']"
+        label="UiSkeleton"
+      />
     </section>
 
     <section class="flex flex-col gap-3">

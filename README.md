@@ -1305,6 +1305,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
 | `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable ; `busy` l'empêche de se refermer pendant une action |
+| `UiSkeleton` | Un écran qui arrive, en pièces grises à la place et à la taille de ce qu'elles annoncent ; `AdminQueryState` et `ParticipantScreen` s'en servent |
 | `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
 | `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
@@ -1320,7 +1321,7 @@ Fonctions pures qui les servent, testées : `stackOf`, `foldList` et `listView` 
 
 Composants construits dessus et réutilisés : `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
 
-Panneaux et états communs de l'administration : `AdminDateSheet`, un jour dans un panneau de réglage (calendrier, jour en toutes lettres et compte à rebours, facultatif avec `clear-label`), dont `AdminPartyDateSheet` (date de la fête d'une édition) est un usage ; `AdminQueryState`, le chargement (squelette composé de `title`, `stepper`, `card`, `list`, à la forme de l'écran) et l'erreur (carte avec « Réessayer », qui relance les requêtes de l'écran, et un retour ; accès refusé ou page introuvable : la phrase et le retour à l'accueil).
+Panneaux et états communs de l'administration : `AdminDateSheet`, un jour dans un panneau de réglage (calendrier, jour en toutes lettres et compte à rebours, facultatif avec `clear-label`), dont `AdminPartyDateSheet` (date de la fête d'une édition) est un usage ; `AdminQueryState`, le chargement (`UiSkeleton`, composé par l'écran de `title`, `header`, `stepper`, `steps`, `card`, `envelope`, `groups`, `list` : l'édition, l'accueil et la page d'un tirage ont chacun le leur ; il n'apparaît qu'après 200 ms) et l'erreur (carte avec « Réessayer », qui relance les requêtes de l'écran, et un retour ; accès refusé ou page introuvable : la phrase et le retour à l'accueil).
 
 Écran d'une édition (section 11), construit sur ces composants : `AdminEditionHeader`, `AdminEditionPrepare`, `AdminEditionFollow`, `AdminDrawSheet`, `AdminSendSheet`, `AdminDateSheet`, `AdminPartyDateCard`.
 

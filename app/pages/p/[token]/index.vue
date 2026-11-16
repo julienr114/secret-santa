@@ -24,6 +24,7 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
 const revealMutation = useRevealMutation(token);
+const revealing = useBusy(() => revealMutation.isPending.value);
 const me = computed(() => personal.data.value);
 const { t } = useT();
 const errorMessage = useErrorMessage();
@@ -215,6 +216,7 @@ const card = computed(() => {
     :token="token"
     :pending="personal.isPending.value"
     :error="personal.error.value"
+    :skeleton="['header', 'steps', 'envelope', 'list']"
   >
     <template v-if="me">
       <div class="flex items-center gap-3">
@@ -294,11 +296,14 @@ const card = computed(() => {
           size="xl"
           icon="i-lucide-gift"
           :variant="me.revealed ? 'outline' : 'solid'"
-          :loading="revealMutation.isPending.value"
+          :disabled="revealMutation.isPending.value"
+          :loading="revealing"
           :label="
-            me.revealed
-              ? t('participant.home.seen.revealAgain')
-              : t('participant.home.ready.reveal')
+            revealing
+              ? t('participant.home.ready.revealing')
+              : me.revealed
+                ? t('participant.home.seen.revealAgain')
+                : t('participant.home.ready.reveal')
           "
           @click="onReveal"
         />

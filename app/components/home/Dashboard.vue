@@ -97,7 +97,11 @@ const requestOpen = ref(false);
 
 <template>
   <AdminScreen>
-    <AdminQueryState :pending="home.isPending.value" :error="home.error.value">
+    <AdminQueryState
+      :pending="home.isPending.value"
+      :error="home.error.value"
+      :skeleton="['header', 'card', 'groups']"
+    >
       <div class="flex items-center gap-4">
         <button
           v-if="avatar"

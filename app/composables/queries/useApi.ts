@@ -37,19 +37,22 @@ export const useApiMutation = <TData, TVariables = void>(
  * GET query that is also fetched during server rendering, so the first
  * paint already has the data. useRequestFetch forwards the session cookie
  * of the incoming request on the server and is plain $fetch in the browser.
+ * `enabled` holds it back until what it needs is known.
  */
 export const useApiQuery = <T>(
   queryKey: MaybeRefOrGetter<QueryKey>,
   path: MaybeRefOrGetter<string>,
+  enabled: MaybeRefOrGetter<boolean> = true,
 ) => {
   const fetcher = useRequestFetch();
   const query = useQuery({
     queryKey: computed(() => toValue(queryKey)),
     queryFn: () =>
       fetcher<T>(toValue(path), { credentials: 'include' }) as Promise<T>,
+    enabled: computed(() => toValue(enabled)),
   });
   onServerPrefetch(async () => {
-    await query.suspense();
+    if (toValue(enabled)) await query.suspense();
   });
   return query;
 };

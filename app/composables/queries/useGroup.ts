@@ -93,10 +93,15 @@ export const useRulesQuery = (slug: Slug) =>
     () => `${base(slug)}/rules`,
   );
 
-export const useEditionQuery = (slug: Slug, id: Slug) =>
+export const useEditionQuery = (
+  slug: Slug,
+  id: Slug,
+  enabled: MaybeRefOrGetter<boolean> = true,
+) =>
   useApiQuery<EditionPayload>(
     () => keys.edition(toValue(slug), toValue(id)),
     () => `${base(slug)}/editions/${toValue(id)}`,
+    enabled,
   );
 
 export type PersonBody = {

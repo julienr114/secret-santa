@@ -245,7 +245,7 @@ const missingText = computed(() =>
         v-if="!empty"
         :to="`${base}/ajouter`"
         icon="i-lucide-user-plus"
-        :title="t('adminEdition.screen.prepare.add')"
+        :title="t('adminEdition.addParticipants.title')"
         :subtitle="missingText"
       />
     </UiList>

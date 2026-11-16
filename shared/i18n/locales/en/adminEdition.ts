@@ -76,11 +76,27 @@ export default {
     removeAction: 'Remove',
   },
   addParticipants: {
-    title: 'Add participants',
-    added: '{name} is taking part',
-    everyoneIn:
-      'Everyone is already taking part. For someone new, create them first in {people}.',
-    peopleLink: 'People',
+    title: 'Choose the participants',
+    subtitle: '{edition} · tick those taking part',
+    members: {
+      one: '{count} member of the group',
+      other: '{count} members of the group',
+    },
+    allChosen: 'Tick all',
+    noneChosen: 'Untick all',
+    choose: 'Include {name}',
+    someoneNew: 'Someone new',
+    create: 'Create a person',
+    createHint: 'They join the group and this edition',
+    inviteHint: 'Everyone signs up on their own',
+    save: {
+      one: 'Save · {count} participant',
+      other: 'Save · {count} participants',
+    },
+    saved: {
+      one: 'List saved · {count} participant',
+      other: 'List saved · {count} participants',
+    },
   },
   cancelDraw: {
     title: 'Cancel the draw',

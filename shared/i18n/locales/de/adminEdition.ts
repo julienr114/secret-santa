@@ -79,11 +79,27 @@ export default {
     removeAction: 'Entfernen',
   },
   addParticipants: {
-    title: 'Teilnehmer hinzufügen',
-    added: '{name} nimmt teil',
-    everyoneIn:
-      'Alle nehmen bereits teil. Jemand Neues legst du zuerst unter {people} an.',
-    peopleLink: 'Personen',
+    title: 'Teilnehmer auswählen',
+    subtitle: '{edition} · hake an, wer mitmacht',
+    members: {
+      one: '{count} Mitglied der Gruppe',
+      other: '{count} Mitglieder der Gruppe',
+    },
+    allChosen: 'Alle anhaken',
+    noneChosen: 'Alle abwählen',
+    choose: '{name} teilnehmen lassen',
+    someoneNew: 'Jemand Neues',
+    create: 'Person anlegen',
+    createHint: 'Sie tritt der Gruppe und dieser Ausgabe bei',
+    inviteHint: 'Jeder meldet sich selbst an',
+    save: {
+      one: 'Speichern · {count} Teilnehmer',
+      other: 'Speichern · {count} Teilnehmer',
+    },
+    saved: {
+      one: 'Liste gespeichert · {count} Teilnehmer',
+      other: 'Liste gespeichert · {count} Teilnehmer',
+    },
   },
   cancelDraw: {
     title: 'Auslosung aufheben',

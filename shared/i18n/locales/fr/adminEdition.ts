@@ -76,12 +76,27 @@ export default {
     removeAction: 'Retirer',
   },
   addParticipants: {
-    title: 'Ajouter des participants',
-    added: '{name} participe',
-    // `{people}` is replaced by a link labelled with `peopleLink`.
-    everyoneIn:
-      "Tout le monde participe déjà. Pour quelqu'un de nouveau, crée-le d'abord dans {people}.",
-    peopleLink: 'Personnes',
+    title: 'Choisir les participants',
+    subtitle: '{edition} · coche ceux qui participent',
+    members: {
+      one: '{count} membre du groupe',
+      other: '{count} membres du groupe',
+    },
+    allChosen: 'Tout cocher',
+    noneChosen: 'Tout décocher',
+    choose: 'Faire participer {name}',
+    someoneNew: 'Quelqu’un de nouveau',
+    create: 'Créer une personne',
+    createHint: 'Elle rejoint le groupe et cette édition',
+    inviteHint: 'Chacun s’inscrit lui-même',
+    save: {
+      one: 'Enregistrer · {count} participant',
+      other: 'Enregistrer · {count} participants',
+    },
+    saved: {
+      one: 'Liste enregistrée · {count} participant',
+      other: 'Liste enregistrée · {count} participants',
+    },
   },
   cancelDraw: {
     title: 'Annuler le tirage',

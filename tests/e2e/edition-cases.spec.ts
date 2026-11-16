@@ -52,6 +52,35 @@ test('an edition without participants says to add them', async ({ page }) => {
   await expect(page.getByText('Personne pour l’instant.')).toBeVisible();
 });
 
+test('choosing the participants adds and removes them at once', async ({
+  page,
+}) => {
+  const { id } = await setUp('cas-choix', ['Ada', 'Bob', 'Cléo']);
+  await apiLogin(page.request, SUPER);
+  await page.goto(`/admin/cas-choix/editions/${id}`);
+  await hydrated(page);
+  await page.getByRole('link', { name: 'Choisir les participants' }).click();
+  await expect(page.getByText('3 membres du groupe')).toBeVisible();
+  await page.getByRole('checkbox', { name: 'Faire participer Bob' }).uncheck();
+  // Someone new joins the group and comes back ticked, Bob still unticked.
+  await page.getByRole('link', { name: /^Créer une personne/ }).click();
+  await page.getByLabel('Prénom').fill('Dan');
+  await page.getByRole('button', { name: 'Ajouter' }).click();
+  await expect(
+    page.getByRole('checkbox', { name: 'Faire participer Dan' }),
+  ).toBeChecked();
+  await expect(
+    page.getByRole('checkbox', { name: 'Faire participer Bob' }),
+  ).not.toBeChecked();
+  await page
+    .getByRole('button', { name: 'Enregistrer · 3 participants' })
+    .click();
+  const list = page.getByTestId('participants');
+  await expect(list).toContainText('3 participants');
+  await expect(list.getByText('Dan', { exact: true })).toBeVisible();
+  await expect(list.getByText('Bob', { exact: true })).toHaveCount(0);
+});
+
 test('an impossible draw names who blocks it, and how to fix it', async ({
   page,
 }) => {

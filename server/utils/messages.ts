@@ -31,6 +31,26 @@ export const messageTypesFor = (status: string): MessageType[] => {
   return [];
 };
 
+/**
+ * The message offered first when a sheet opens for someone (README 13.2):
+ * before the draw, the invitation, then its reminder; after the draw, the
+ * draw done, its reminder once sent, and the new draw after a redraw.
+ * @param status - Status of the edition.
+ * @param sent - Whether this person was already sent a message of this draw.
+ * @param redrawn - Whether the draw was cancelled and run again.
+ * @returns The message, or null when the stage has none.
+ */
+export const defaultMessageType = (
+  status: string,
+  sent: boolean,
+  redrawn: boolean,
+): MessageType | null => {
+  if (status === 'preparing') return sent ? 'reminder' : 'invitation';
+  if (status !== 'drawn') return null;
+  if (sent) return 'reminder';
+  return redrawn ? 'redraw' : 'drawn';
+};
+
 export type MessageData = {
   firstName: string;
   groupName: string;

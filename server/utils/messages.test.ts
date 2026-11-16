@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   EMAIL_BATCH_MAX,
+  defaultMessageType,
   MESSAGE_TYPES,
   NOTE_MAX,
   addNote,
@@ -327,5 +328,35 @@ describe("the organiser's note", () => {
   it('is cut at its maximum length', () => {
     const text = addNote('a\nlink', 'x'.repeat(NOTE_MAX + 50));
     expect(text.split('\n').at(-1)).toHaveLength(NOTE_MAX);
+  });
+});
+
+describe('defaultMessageType', () => {
+  it('invites before the draw, then reminds', () => {
+    expect(defaultMessageType('preparing', false, false)).toBe('invitation');
+    expect(defaultMessageType('preparing', true, false)).toBe('reminder');
+  });
+
+  it('says the draw is done, then reminds', () => {
+    expect(defaultMessageType('drawn', false, false)).toBe('drawn');
+    expect(defaultMessageType('drawn', true, false)).toBe('reminder');
+  });
+
+  it('announces a new draw after a redraw', () => {
+    expect(defaultMessageType('drawn', false, true)).toBe('redraw');
+    expect(defaultMessageType('drawn', true, true)).toBe('reminder');
+  });
+
+  it('offers nothing once closed', () => {
+    expect(defaultMessageType('closed', false, false)).toBeNull();
+  });
+
+  it('always offers a message the stage allows', () => {
+    for (const status of ['preparing', 'drawn'])
+      for (const sent of [true, false])
+        for (const redrawn of [true, false])
+          expect(messageTypesFor(status)).toContain(
+            defaultMessageType(status, sent, redrawn),
+          );
   });
 });

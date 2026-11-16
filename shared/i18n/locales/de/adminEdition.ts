@@ -357,6 +357,8 @@ export default {
       resendByEmail: 'Erneut per E-Mail senden',
       share: 'Teilen',
       copy: 'Kopieren',
+      shareWide: 'Teilen (WhatsApp, SMS…)',
+      noAddress: '{name} hat keine E-Mail-Adresse.',
       next: 'Nach dem Senden geht es weiter mit {name}.',
       skip: 'Überspringen',
       wrongAddress: 'Nicht die richtige Adresse? Korrigieren',

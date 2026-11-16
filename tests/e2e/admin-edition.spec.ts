@@ -93,15 +93,16 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByText('Hugo', { exact: true }).click();
   const sheet = page.getByTestId('send-sheet');
   await expect(sheet).toBeVisible();
-  await page.getByRole('button', { name: 'Copier', exact: true }).click();
+  await page.getByRole('button', { name: 'Copier le message' }).click();
   await expect(page.getByText('Message copié').first()).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Salut Hugo !/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}$/);
   await page.keyboard.press('Escape');
-  // Sent: his sheet now offers to send again, and the repairs.
+  // Sent: his sheet now offers to send again, and the repairs, folded.
   await page.getByText('Hugo', { exact: true }).click();
   await expect(page.getByText('Renvoyer à Hugo').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Dépannage' }).click();
   await expect(page.getByTestId('troubleshoot')).toContainText(
     'Pas envoyé finalement ?',
   );
@@ -127,7 +128,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(
     page.getByText('Une fois envoyé, le panneau passe à Orga.'),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Copier', exact: true }).click();
+  await page.getByRole('button', { name: 'Copier le message' }).click();
   await expect(page.getByText('Envoyer à Orga').first()).toBeVisible();
   await page.keyboard.press('Escape');
   // Once drawn, the exclusions the draw applied are kept.

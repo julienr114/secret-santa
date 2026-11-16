@@ -3,7 +3,6 @@ import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import {
   followSeries,
-  followState,
   participantCounters,
   sortParticipants,
   type FollowState,
@@ -51,27 +50,7 @@ const counters = computed(() => [
     tone: 'success' as const,
   },
 ]);
-/** Icon and colour of each state, then its words. */
-const STATES: Record<FollowState, { icon: string; tone: string }> = {
-  toNotify: { icon: 'i-lucide-circle-dashed', tone: 'text-muted' },
-  notOpened: { icon: 'i-lucide-clock', tone: 'text-warning-ink' },
-  viewed: { icon: 'i-lucide-check', tone: 'text-success' },
-};
-/**
- * Where a participant stands, as an icon, a colour and words.
- * @param p - The participant.
- * @returns The icon, its tone class and the text of the state.
- */
-const stateOf = (p: Participant) => {
-  const state = followState(p);
-  return {
-    ...STATES[state],
-    text:
-      state === 'viewed'
-        ? t('adminEdition.screen.follow.state.viewed', { count: p.viewCount })
-        : t(`adminEdition.screen.follow.state.${state}`),
-  };
-};
+const { lookOf: stateOf } = useFollowLook();
 // Past ten people, a search; past twelve, each series shows three rows,
 // then a row that unfolds the rest of it and says where they stand.
 const SEARCH_FROM = 10;

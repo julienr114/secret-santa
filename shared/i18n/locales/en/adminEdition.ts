@@ -346,6 +346,8 @@ export default {
       resendByEmail: 'Send again by email',
       share: 'Share',
       copy: 'Copy',
+      shareWide: 'Share (WhatsApp, SMS…)',
+      noAddress: '{name} has no email address.',
       next: 'Once sent, the panel moves on to {name}.',
       skip: 'Skip',
       wrongAddress: 'Not the right address? Correct it',

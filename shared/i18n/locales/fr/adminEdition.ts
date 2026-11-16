@@ -352,6 +352,8 @@ export default {
       resendByEmail: 'Renvoyer par email',
       share: 'Partager',
       copy: 'Copier',
+      shareWide: 'Partager (WhatsApp, SMS…)',
+      noAddress: '{name} n’a pas d’adresse email.',
       next: 'Une fois envoyé, le panneau passe à {name}.',
       skip: 'Passer',
       wrongAddress: "Ce n'est pas la bonne adresse ? La corriger",

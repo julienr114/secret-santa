@@ -7,7 +7,7 @@ import {
   useUnsendMutation,
 } from '~/composables/queries/useEdition';
 
-// The repairs of one participant, at the bottom of the send sheet: say
+// The repairs of one participant, folded at the bottom of the send sheet: say
 // the link was not sent after all, give a new link if it was passed on,
 // take them out of the edition before the draw. The last two ask for a
 // second tap. None of them reveals a result; all go to the journal.
@@ -31,10 +31,12 @@ const remove = useRemoveParticipantMutation(
   () => props.editionId,
 );
 const name = computed(() => fullName(props.participant));
+const open = ref(false);
 const confirm = ref<null | 'regenerate' | 'remove'>(null);
 watch(
   () => props.participant.participationId,
   () => {
+    open.value = false;
     confirm.value = null;
   },
 );
@@ -79,82 +81,97 @@ const onRemove = () =>
 </script>
 
 <template>
-  <UiList
-    :title="t('adminEdition.participant.troubleshooting')"
-    :footer="t('adminEdition.participant.troubleshootingFooter')"
-    data-testid="troubleshoot"
-  >
-    <UiListItem
-      v-if="participant.messageSentAt && status !== 'closed'"
-      icon="i-lucide-undo-2"
-      :title="t('adminEdition.participant.unsend')"
-      :subtitle="t('adminEdition.participant.unsendHint', { name })"
-      :on-click="onUnsend"
-    />
-    <template v-if="status !== 'closed'">
-      <UiListItem
-        v-if="confirm !== 'regenerate'"
-        icon="i-lucide-refresh-cw"
-        :title="t('adminEdition.participant.regenerate')"
-        :subtitle="t('adminEdition.participant.regenerateHint')"
-        :on-click="() => (confirm = 'regenerate')"
+  <section class="-mx-4 border-t border-divider" data-testid="troubleshoot">
+    <button
+      type="button"
+      :aria-expanded="open"
+      class="flex min-h-13 w-full items-center justify-between px-4 text-left text-[15px] font-bold text-toned"
+      @click="open = !open"
+    >
+      {{ t('adminEdition.participant.troubleshooting') }}
+      <UIcon
+        :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+        class="size-[18px]"
+        aria-hidden="true"
       />
-      <li v-else class="flex flex-col gap-2 px-4 py-3">
-        <p class="text-sm">
-          {{ t('adminEdition.participant.regenerateConfirm', { name }) }}
-        </p>
-        <div class="flex gap-2">
-          <UButton
-            class="min-h-11"
-            :label="t('adminEdition.participant.regenerateAction')"
-            :loading="regenerate.isPending.value"
-            @click="onRegenerate"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            class="min-h-11"
-            :label="t('common.actions.cancel')"
-            @click="confirm = null"
-          />
-        </div>
-      </li>
-    </template>
-    <template v-if="status === 'preparing'">
+    </button>
+    <UiList
+      v-if="open"
+      class="px-4 pb-2"
+      :footer="t('adminEdition.participant.troubleshootingFooter')"
+    >
       <UiListItem
-        v-if="confirm !== 'remove'"
+        v-if="participant.messageSentAt && status !== 'closed'"
+        icon="i-lucide-undo-2"
+        :title="t('adminEdition.participant.unsend')"
+        :subtitle="t('adminEdition.participant.unsendHint', { name })"
+        :on-click="onUnsend"
+      />
+      <template v-if="status !== 'closed'">
+        <UiListItem
+          v-if="confirm !== 'regenerate'"
+          icon="i-lucide-refresh-cw"
+          :title="t('adminEdition.participant.regenerate')"
+          :subtitle="t('adminEdition.participant.regenerateHint')"
+          :on-click="() => (confirm = 'regenerate')"
+        />
+        <li v-else class="flex flex-col gap-2 px-4 py-3">
+          <p class="text-sm">
+            {{ t('adminEdition.participant.regenerateConfirm', { name }) }}
+          </p>
+          <div class="flex gap-2">
+            <UButton
+              class="min-h-11"
+              :label="t('adminEdition.participant.regenerateAction')"
+              :loading="regenerate.isPending.value"
+              @click="onRegenerate"
+            />
+            <UButton
+              variant="ghost"
+              color="neutral"
+              class="min-h-11"
+              :label="t('common.actions.cancel')"
+              @click="confirm = null"
+            />
+          </div>
+        </li>
+      </template>
+      <template v-if="status === 'preparing'">
+        <UiListItem
+          v-if="confirm !== 'remove'"
+          icon="i-lucide-user-minus"
+          tone="danger"
+          :title="t('adminEdition.participant.remove')"
+          :on-click="() => (confirm = 'remove')"
+        />
+        <li v-else class="flex flex-col gap-2 px-4 py-3">
+          <p class="text-sm">
+            {{ t('adminEdition.participant.removeConfirm', { name }) }}
+          </p>
+          <div class="flex gap-2">
+            <UButton
+              color="error"
+              class="min-h-11"
+              :label="t('adminEdition.participant.removeAction')"
+              :loading="remove.isPending.value"
+              @click="onRemove"
+            />
+            <UButton
+              variant="ghost"
+              color="neutral"
+              class="min-h-11"
+              :label="t('common.actions.cancel')"
+              @click="confirm = null"
+            />
+          </div>
+        </li>
+      </template>
+      <UiListItem
+        v-else-if="status === 'drawn'"
         icon="i-lucide-user-minus"
-        tone="danger"
         :title="t('adminEdition.participant.remove')"
-        :on-click="() => (confirm = 'remove')"
+        :subtitle="t('adminEdition.participant.removeLocked')"
       />
-      <li v-else class="flex flex-col gap-2 px-4 py-3">
-        <p class="text-sm">
-          {{ t('adminEdition.participant.removeConfirm', { name }) }}
-        </p>
-        <div class="flex gap-2">
-          <UButton
-            color="error"
-            class="min-h-11"
-            :label="t('adminEdition.participant.removeAction')"
-            :loading="remove.isPending.value"
-            @click="onRemove"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            class="min-h-11"
-            :label="t('common.actions.cancel')"
-            @click="confirm = null"
-          />
-        </div>
-      </li>
-    </template>
-    <UiListItem
-      v-else-if="status === 'drawn'"
-      icon="i-lucide-user-minus"
-      :title="t('adminEdition.participant.remove')"
-      :subtitle="t('adminEdition.participant.removeLocked')"
-    />
-  </UiList>
+    </UiList>
+  </section>
 </template>

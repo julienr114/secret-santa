@@ -89,13 +89,15 @@ test('choosing the participants adds and removes them at once', async ({
 test('an impossible draw names who blocks it, and how to fix it', async ({
   page,
 }) => {
-  const { at, id } = await setUp('cas-bloque', ['Lou', 'Sacha']);
+  const { at, id } = await setUp('cas-bloque', ['Lou', 'Sacha', 'Noé']);
   const { persons } = await (await state.api!.get(`${at}/persons`)).json();
   const idOf = (name: string) =>
     persons.find((p: { firstName: string }) => p.firstName === name).id;
-  await state.api!.post(`${at}/exclusions`, {
-    data: { giverId: idOf('Lou'), receiverId: idOf('Sacha'), reciprocal: true },
-  });
+  for (const other of ['Sacha', 'Noé']) {
+    await state.api!.post(`${at}/exclusions`, {
+      data: { giverId: idOf('Lou'), receiverId: idOf(other), reciprocal: true },
+    });
+  }
   await apiLogin(page.request, SUPER);
   await page.goto(`/admin/cas-bloque/editions/${id}`);
   await hydrated(page);

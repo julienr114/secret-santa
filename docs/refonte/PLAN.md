@@ -353,7 +353,7 @@ Le budget, la date de la fête et le petit mot se règlent **par édition**, plu
 
 Réponses de Julien du 17 novembre 2026 aux questions de la section 6. À faire avant de poursuivre les lots. Trois points touchent au serveur, par exception voulue à « interface seulement » : le minimum de trois, la création avec budget et mot, l'information « tirée de nouveau ». Pas de migration sans en parler d'abord ; chaque changement de route a son test.
 
-- [ ] **Trois participants au moins** (lot 1, question 2) : la règle du tirage passe de deux à trois, avec son test et les textes dans les trois langues.
+- [x] **Trois participants au moins** (lot 1, question 2) : la règle du tirage passe de deux à trois, avec son test et les textes dans les trois langues.
 - [ ] **La date du dernier envoi** (lot 2, question 2) : l'en-tête du panneau d'envoi dit « Envoyé le 14 nov., pas encore consulté ». Pas le moyen d'envoi.
 - [ ] **L'élision en français** (lot 2, question 5) : « de » devient « d' » devant une voyelle ou un h (« d'Agathe », « d'Inès », « d'Hugo »). Une fonction pure testée, utilisée partout où un texte écrit « de {prénom} ». Rien en anglais ni en allemand.
 - [ ] **Créer une édition avec son budget et son mot** (lot 3, question 3) : la route de création les accepte ; plus de « L'organisateur a modifié les règles » au journal juste après une création.

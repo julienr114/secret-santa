@@ -245,7 +245,7 @@ export default {
     },
     empty: {
       title: 'Add the participants',
-      body: 'A draw needs at least two. Pick them among the members of the group, or send a link so they sign up.',
+      body: 'A draw needs at least three. Pick them among the members of the group, or send a link so they sign up.',
       invite: 'Invite by link',
       list: 'No participant',
       none: 'Nobody yet.',

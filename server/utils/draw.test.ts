@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 import {
+  MIN_PARTICIPANTS,
   allowedReceivers,
   checkFeasibility,
   draw,
@@ -114,21 +115,16 @@ describe('shuffle', () => {
 });
 
 describe('checkFeasibility', () => {
-  it('rejects fewer than two participants', () => {
+  it('rejects fewer than three participants', () => {
     expect(failureOf(checkFeasibility(base(['a']))).reason).toBe(
       'too_few_participants',
     );
   });
 
-  it('two participants in a couple: impossible, both blocked', () => {
-    const result = checkFeasibility(
-      base(['a', 'b'], { couples: [['a', 'b']] }),
-    );
-    expect(result.ok).toBe(false);
-    expect((failureOf(result).details.blocked as string[]).toSorted()).toEqual([
-      'a',
-      'b',
-    ]);
+  it('rejects two participants: each would know who the other gives to', () => {
+    const failure = failureOf(checkFeasibility(base(['a', 'b'])));
+    expect(failure.reason).toBe('too_few_participants');
+    expect(failure.details.count).toBe(MIN_PARTICIPANTS - 1);
   });
 
   it('three participants with one couple: impossible, names the constrained ones', () => {
@@ -209,7 +205,7 @@ describe('draw', () => {
 
   it('returns the feasibility failure when no solution exists', () => {
     const result = failureOf(
-      draw(base(['a', 'b'], { couples: [['a', 'b']] }), {
+      draw(base(['a', 'b', 'c'], { couples: [['a', 'b']] }), {
         random: seeded(1),
       }),
     );

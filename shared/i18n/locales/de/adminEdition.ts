@@ -254,7 +254,7 @@ export default {
     },
     empty: {
       title: 'Füge die Teilnehmer hinzu',
-      body: 'Für eine Auslosung braucht es mindestens zwei. Wähle sie unter den Mitgliedern der Gruppe aus oder schicke einen Link, damit sie sich eintragen.',
+      body: 'Für eine Auslosung braucht es mindestens drei. Wähle sie unter den Mitgliedern der Gruppe aus oder schicke einen Link, damit sie sich eintragen.',
       invite: 'Per Link einladen',
       list: 'Kein Teilnehmer',
       none: 'Noch niemand.',

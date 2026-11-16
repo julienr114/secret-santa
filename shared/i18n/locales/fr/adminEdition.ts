@@ -246,7 +246,7 @@ export default {
     },
     empty: {
       title: 'Ajoute les participants',
-      body: 'Il en faut au moins deux pour un tirage. Choisis-les parmi les membres du groupe, ou envoie un lien pour qu’ils s’inscrivent.',
+      body: 'Il en faut au moins trois pour un tirage. Choisis-les parmi les membres du groupe, ou envoie un lien pour qu’ils s’inscrivent.',
       invite: 'Inviter par lien',
       list: 'Aucun participant',
       none: 'Personne pour l’instant.',

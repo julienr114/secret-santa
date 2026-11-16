@@ -143,12 +143,18 @@ const noSolution = (allowed: Allowed) =>
     ),
   } satisfies NoSolutionDetails);
 
+/**
+ * The fewest people a draw takes (decided on 17 November 2026): with two,
+ * each one knows who the other gives to.
+ */
+export const MIN_PARTICIPANTS = 3;
+
 /** Is a draw possible? Explains why not with the participants to blame. */
 export const checkFeasibility = (
   input: DrawInput,
 ): Result<{ allowed: Allowed }> => {
   const participants = unique(input.participants);
-  if (participants.length < 2) {
+  if (participants.length < MIN_PARTICIPANTS) {
     return fail('too_few_participants', { count: participants.length });
   }
   const allowed = allowedReceivers(input);

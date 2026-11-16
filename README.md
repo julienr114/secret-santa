@@ -172,6 +172,8 @@ Pour chaque participant *donneur*, le *receveur* doit être :
 
 Chaque participant reçoit exactement un cadeau et en offre exactement un (permutation sans point fixe). Les boucles courtes (A→B et B→A) sont autorisées.
 
+Il faut **au moins trois participants** (`MIN_PARTICIPANTS`, décidé par Julien le 17 novembre 2026) : à deux, chacun sait à qui l'autre offre.
+
 ### 6.2 Algorithme
 
 1. Construire pour chaque donneur la liste des receveurs autorisés.
@@ -848,7 +850,7 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 - Chaque participant offre une fois et reçoit une fois.
 - Un nouveau venu n'a aucune exclusion d'historique.
 - Une personne absente l'an dernier n'a pas d'exclusion pour cette année-là.
-- Cas impossibles détectés avec un message exploitable : 2 participants en couple, 3 participants dont un couple, 4 participants en 2 couples avec exclusion de l'an dernier qui bloque tout.
+- Cas impossibles détectés avec un message exploitable : moins de 3 participants, 3 participants dont un couple, 4 participants en 2 couples avec exclusion de l'an dernier qui bloque tout.
 - Test statistique : sur 10 000 tirages d'un petit groupe, toutes les solutions valides apparaissent avec des fréquences proches.
 - Test par propriétés : groupes aléatoires de 3 à 30 personnes, toute solution renvoyée respecte toutes les contraintes.
 

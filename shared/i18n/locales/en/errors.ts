@@ -21,7 +21,7 @@ export default {
   invalid_transition: 'This action is not possible at this stage.',
   no_solution: 'No draw is possible with these rules: relax an exclusion.',
   too_many_participants: 'An edition cannot have more than 100 participants.',
-  too_few_participants: 'At least two participants are needed.',
+  too_few_participants: 'At least three participants are needed.',
   participants_locked: 'The list is locked after the draw.',
   already_participating: 'This person is already taking part.',
   message_not_available: 'This message does not fit the stage of the edition.',

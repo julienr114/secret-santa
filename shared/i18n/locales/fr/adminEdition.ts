@@ -222,6 +222,7 @@ export default {
       label: "Étapes de l'édition",
       prepare: 'Préparer',
       draw: 'Tirer',
+      drawDone: 'Tirage fait',
       party: 'Fêter',
     },
     partyOn: 'Fête le {date}',
@@ -286,7 +287,6 @@ export default {
       viewed: { one: 'a découvert', other: 'ont découvert' },
       actionReminder: 'Relancer par email',
       help: 'Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.',
-      firstFootnote: 'Ceux qui restent à prévenir sont en premier.',
       state: {
         toNotify: 'Pas encore envoyé',
         notOpened: 'Envoyé, pas encore consulté',

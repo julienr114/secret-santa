@@ -6,7 +6,8 @@ import type { Fold } from '#shared/utils/lists';
 // "Voir les N autres" while folded, or every other row and, last of all,
 // "Replier la liste" once unfolded. Folding again brings
 // the end of the folded list back on screen. Each row is drawn by the
-// `row` slot; the texts come from the parent.
+// `row` slot, the detail of both fold rows by the `detail` slot; the texts
+// come from the parent.
 defineProps<{
   fold: Fold<T>;
   /** The key of a row. */
@@ -51,12 +52,16 @@ const onCollapse = async () => {
     :label="moreLabel(fold.rest.length)"
     :detail="detail"
     @expand="emit('more')"
-  />
+  >
+    <template v-if="$slots.detail" #detail><slot name="detail" /></template>
+  </UiFoldRow>
   <UiFoldRow
     v-if="fold.unfolded.length"
     expanded
     :label="collapseLabel"
     :detail="detail"
     @collapse="onCollapse"
-  />
+  >
+    <template v-if="$slots.detail" #detail><slot name="detail" /></template>
+  </UiFoldRow>
 </template>

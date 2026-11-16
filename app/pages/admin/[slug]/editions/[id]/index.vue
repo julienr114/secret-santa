@@ -83,7 +83,9 @@ const steps = computed<Step[]>(() => {
     label:
       done && key === 'party'
         ? t('adminEdition.screen.closed.partyDone')
-        : t(`adminEdition.screen.steps.${key}`),
+        : key === 'draw' && status.value !== 'preparing'
+          ? t('adminEdition.screen.steps.drawDone')
+          : t(`adminEdition.screen.steps.${key}`),
     state: done || index < at ? 'done' : index === at ? 'current' : 'todo',
     icon: index === 0 ? undefined : 'i-lucide-sparkle',
   }));
@@ -263,6 +265,7 @@ const dateOpen = ref(false);
           <UiListItem
             :to="`/admin/${slug}/editions/${id}/exclusions`"
             icon="i-lucide-ban"
+            icon-tone="neutral"
             :title="t('adminEdition.screen.closed.exclusions')"
             :subtitle="
               appliedExclusions > 0
@@ -275,6 +278,7 @@ const dateOpen = ref(false);
           <UiListItem
             :to="`/admin/${slug}/journal`"
             icon="i-lucide-scroll-text"
+            icon-tone="neutral"
             :title="t('adminEdition.screen.closed.journal')"
             :subtitle="t('adminEdition.screen.closed.journalHint')"
           />

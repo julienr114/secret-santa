@@ -226,6 +226,7 @@ export default {
       label: 'Schritte der Ausgabe',
       prepare: 'Vorbereiten',
       draw: 'Auslosen',
+      drawDone: 'Ausgelost',
       party: 'Feiern',
     },
     partyOn: 'Bescherung am {date}',
@@ -290,7 +291,6 @@ export default {
       viewed: { one: 'hat entdeckt', other: 'haben entdeckt' },
       actionReminder: 'Per E-Mail erinnern',
       help: 'Keine E-Mail-Adresse? Der Knopf jeder Zeile teilt den Link per WhatsApp oder SMS.',
-      firstFootnote: 'Wer noch zu benachrichtigen ist, steht oben.',
       state: {
         toNotify: 'Noch nicht gesendet',
         notOpened: 'Gesendet, noch nicht angesehen',

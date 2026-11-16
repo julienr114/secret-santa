@@ -204,7 +204,11 @@ const personPath = computed(
             class="flex items-center gap-1.25 text-sm"
             :class="look.tone"
           >
-            <UIcon :name="look.icon" class="size-3.5 shrink-0" />
+            <UIcon
+              :name="look.icon"
+              class="size-3.5 shrink-0"
+              :class="look.iconTone"
+            />
             {{ look.text }}
           </p>
           <p v-else class="text-sm text-toned">

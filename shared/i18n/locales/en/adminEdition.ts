@@ -217,6 +217,7 @@ export default {
       label: 'Steps of the edition',
       prepare: 'Prepare',
       draw: 'Draw',
+      drawDone: 'Drawn',
       party: 'Celebrate',
     },
     partyOn: 'Party on {date}',
@@ -280,7 +281,6 @@ export default {
       viewed: { one: 'has discovered', other: 'have discovered' },
       actionReminder: 'Remind by email',
       help: 'No email address? The button of each row shares the link by WhatsApp or SMS.',
-      firstFootnote: 'Those still to notify come first.',
       state: {
         toNotify: 'Not sent yet',
         notOpened: 'Sent, not viewed yet',

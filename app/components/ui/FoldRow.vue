@@ -3,7 +3,8 @@ import type { Avatar } from '#server/utils/avatars';
 
 // The row that stands for the rest of a long list: three people's icons
 // overlapping, "Voir les N autres" (and, if given, what the series is),
-// a chevron, then a small gap before what follows. The same row, without
+// a chevron, then a small gap before what follows. The `detail` slot
+// replaces the plain detail, to give it an icon. The same row, without
 // the icons and with its chevron up, folds an unfolded list again. The
 // texts come from the parent.
 const props = withDefaults(
@@ -50,9 +51,12 @@ defineExpose({ row });
         <span class="truncate text-[15px] font-bold text-primary-ink">{{
           label
         }}</span>
-        <span v-if="detail" class="truncate text-sm text-muted">{{
-          detail
-        }}</span>
+        <span
+          v-if="$slots.detail || detail"
+          class="flex min-w-0 items-center gap-1.25 truncate text-[13px] text-toned"
+        >
+          <slot name="detail">{{ detail }}</slot>
+        </span>
       </span>
       <UIcon
         :name="expanded ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"

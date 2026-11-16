@@ -50,7 +50,7 @@ const counters = computed(() => [
     tone: 'success' as const,
   },
 ]);
-const { lookOf: stateOf } = useFollowLook();
+const { lookOf: stateOf, seriesLook } = useFollowLook();
 // Past ten people, a search; past twelve, each series shows three rows,
 // then a row that unfolds the rest of it and says where they stand.
 const SEARCH_FROM = 10;
@@ -122,7 +122,8 @@ const confirmingRow = ref(false);
         v-if="!confirming"
         block
         size="xl"
-        class="min-h-14 justify-center font-bold"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
         icon="i-lucide-archive"
         :label="t('adminEdition.screen.follow.closeRow')"
         @click="confirming = true"
@@ -165,7 +166,8 @@ const confirmingRow = ref(false);
       <UButton
         block
         size="xl"
-        class="min-h-14 justify-center font-bold"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
         icon="i-lucide-mail"
         :to="`${base}/emails?type=${allNotified ? 'reminder' : 'drawn'}`"
         :label="
@@ -188,7 +190,7 @@ const confirmingRow = ref(false);
       :label="t('adminEdition.screen.lists.search')"
       :clear-label="t('adminEdition.screen.lists.clear')"
     />
-    <UiList :footer="t('adminEdition.screen.follow.firstFootnote')">
+    <UiList>
       <li v-if="empty" class="px-4 py-3 text-sm text-muted">
         {{ t('adminEdition.screen.lists.noMatch') }}
       </li>
@@ -200,14 +202,19 @@ const confirmingRow = ref(false);
         :avatar-of="(p) => p.avatar"
         :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
         :collapse-label="t('adminEdition.screen.lists.collapse')"
-        :detail="
-          part.state
-            ? t(`adminEdition.screen.lists.series.${part.state}`)
-            : undefined
-        "
         @more="part.state && unfold(part.state, true)"
         @collapse="part.state && unfold(part.state, false)"
       >
+        <template v-if="part.state" #detail>
+          <UIcon
+            :name="seriesLook(part.state).icon"
+            class="size-3.5 shrink-0"
+            :class="seriesLook(part.state).iconTone"
+          />
+          <span class="truncate" :class="seriesLook(part.state).tone">{{
+            seriesLook(part.state).text
+          }}</span>
+        </template>
         <template #row="{ item: p }">
           <UiListItem
             :avatar="p.avatar"
@@ -224,7 +231,7 @@ const confirmingRow = ref(false);
               <UIcon
                 :name="stateOf(p).icon"
                 class="size-3.5 shrink-0"
-                :class="stateOf(p).tone"
+                :class="stateOf(p).iconTone"
               />
               <span class="truncate" :class="stateOf(p).tone">{{
                 stateOf(p).text
@@ -256,6 +263,7 @@ const confirmingRow = ref(false);
     <UiListItem
       v-if="!canClose && dateText"
       icon="i-lucide-archive"
+      icon-tone="neutral"
       :title="t('adminEdition.screen.follow.closeRow')"
       :subtitle="
         t('adminEdition.screen.follow.closeRowLater', { date: dateText })
@@ -266,6 +274,7 @@ const confirmingRow = ref(false);
     <UiListItem
       v-else-if="!dateText && !confirmingRow"
       icon="i-lucide-archive"
+      icon-tone="neutral"
       :title="t('adminEdition.screen.follow.closeRow')"
       :subtitle="t('adminEdition.screen.follow.closeRowHint')"
       :on-click="() => (confirmingRow = true)"
@@ -289,6 +298,7 @@ const confirmingRow = ref(false);
     <UiListItem
       :to="`${base}/voir-le-tirage`"
       icon="i-lucide-eye"
+      icon-tone="neutral"
       :title="t('adminEdition.screen.follow.revealOne')"
       :subtitle="t('adminEdition.screen.follow.revealOneHint')"
     />

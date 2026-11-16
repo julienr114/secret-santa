@@ -1059,6 +1059,8 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 
 ### 22.6 Conception proposée : tirage fait à la main (reporté en v3)
 
+> **Remplacée le 16 novembre 2026 par la section 22.12.** Ce qui suit est gardé pour mémoire.
+
 - L'organisateur choisit le mode « tirage déjà fait » à la création de l'édition. Pas de tirage par l'application.
 - Chaque participant **déclare** sur sa page à qui il offre, parmi les participants, et peut corriger tant que l'édition n'est pas validée.
 - **Le participant ne reçoit aucun retour sur une incohérence.** Sinon, déclarer une personne après l'autre et lire « déjà pris » permettrait de deviner qui offre à qui.
@@ -1175,6 +1177,90 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 **Côté code** : une seule fonction pure, `pickHomeAction(home, today, dismissed)` dans `server/utils/home.ts`, qui prend l'état de l'accueil, la date du jour et les cartes mises de côté, et renvoie la carte à afficher (ou rien). Ce tableau est son jeu de tests. La route `GET /api/auth/home` fournit ce qu'il lui faut : par édition organisée, la date de la fête, les nombres « à prévenir », « pas encore ouvert » et « a découvert », et si le tirage est possible ; par tirage, si le résultat a été vu, la liste de souhaits et le nombre d'idées.
 
 Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient lieu de carte du haut : les rangs 3 et 7 (qui le concernent) n'en ajoutent pas une seconde. Tout le haut de cette carte ouvre la page du tirage, même avant le tirage, quand elle n'a pas de bouton.
+
+### 22.11 À faire en premier : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
+
+Conception validée par Julien le 16 novembre 2026. **Rien n'est codé.** C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
+
+**Pourquoi** : une liste de souhaits fait « offrez-moi ça ». Celui qui offre a surtout besoin de savoir qui est la personne.
+
+**La page « Mes pistes de cadeaux »** remplace « Ma liste de souhaits ». Tout est facultatif. De haut en bas :
+
+| Bloc | Contenu |
+|---|---|
+| Moi et les cadeaux | Six questions à deux choix, plus « Les deux me vont », une par écran, un appui pour répondre |
+| En ce moment | Texte libre, 300 caractères : ce qui occupe la personne ces temps-ci |
+| Ce qui me servirait | Texte libre, 300 caractères |
+| J'évite, ou j'ai déjà | Texte libre, 300 caractères |
+| Une idée précise, si tu sèches | La liste actuelle (un texte, un lien facultatif), avec la phrase « Une idée précise ne gâche rien » |
+
+Les six questions : utile ou surprenant ; un objet ou un moment ; à garder ou à consommer ; pour moi ou à partager ; d'occasion ou fait main, ça me va ou non ; surprends-moi ou je préfère savoir.
+
+Pourquoi cette forme (recherches lues en résumé le 16 novembre 2026) : celui qui reçoit apprécie davantage un cadeau qu'il a demandé (Gino et Flynn, 2011) ; celui qui offre vise l'effet du moment alors que l'autre regarde l'usage dans la durée (Galak, Givi et Williams, 2016) ; partir de ce que la personne *est* plutôt que de ce qu'elle *voudrait* donne des cadeaux trop typés (Steffel, Williams et LeBoeuf) ; un cadeau d'expérience rapproche plus qu'un objet (Chan et Mogilner, 2017). D'où « En ce moment » plutôt que « J'aime », pas de test de personnalité, et des questions sur le rapport au cadeau plutôt que sur les goûts.
+
+- **Pour plus tard, des statistiques** (rien à coder maintenant, décidé le 16 novembre 2026) : les six réponses sont enregistrées comme des valeurs fixes par question, jamais comme du texte, pour pouvoir un jour les compter (part de « Les deux me vont », questions abandonnées, répartition des réponses). Règles posées avec Julien : en toute transparence (l'utilisateur est informé, et on peut lui montrer « Comme 62 % des gens »), des compteurs sans lien avec un compte, jamais d'analyse des textes libres (ils peuvent contenir des données de santé), rien par groupe en dessous d'un seuil.
+- Par édition, comme aujourd'hui, avec « Reprendre mes pistes de {édition précédente} » quand la page est vide.
+- Seule la personne qui offre les voit, après le tirage (6 bis.2 inchangé). Sur son résultat : les six réponses en étiquettes, puis « En ce moment », « Ce qui lui servirait », « À éviter », « Si tu sèches ». Pas de pronom genré : l'application ne connaît pas le genre.
+- **Réglage du groupe à trois valeurs**, à la place de l'interrupteur : portrait et idées précises, portrait seulement (sans idée d'objet), aucune piste.
+- **Plus rien au journal** : l'événement `wishes_updated` disparaît (il servait à rendre visible une réécriture par quelqu'un qui aurait récupéré le lien, 6 bis.3 ; risque accepté, la parade reste de régénérer le lien). L'organisateur ne voit plus qu'un état (« a laissé des pistes » ou non), à définir en codant.
+
+**Demander des pistes**
+
+- Sur son résultat, quand la personne n'a rien rempli, ni question ni rubrique : « Lui demander des pistes ».
+- **Une seule demande par tirage**, sans relance, pour ne pas spammer. Le bouton disparaît ensuite pour de bon.
+- **Anonyme** : ni l'email, ni le journal, ni l'écran de l'organisateur ne disent qui demande, ni même qu'une demande a eu lieu.
+- **Envoyée tout de suite**, par email si la personne a une adresse, et dans tous les cas par un bandeau en haut de sa page de pistes.
+- Quand des pistes arrivent, celui qui a demandé reçoit un email.
+- Les emails passent par `buildEmail` (13.3) : texte simple, un lien, pas de mise en forme.
+- Limite connue et acceptée : si la demande part juste après une découverte visible au journal, la personne peut faire le lien par l'heure.
+
+**À faire en même temps** : le vocabulaire (« liste de souhaits », « idées de cadeaux ») sur l'accueil, la page du tirage, le suivi de l'organisateur, les messages et la carte « À faire maintenant » (22.10, rang 7) ; les sections 6 bis, 9 et 11 de ce document. Le lot 7 du plan de refonte (`docs/refonte/PLAN.md`) a été supprimé pour cette raison.
+
+### 22.12 À faire ensuite : tirage déjà fait ailleurs (16 novembre 2026)
+
+Conception validée par Julien le 16 novembre 2026, **remplace 22.6**. Rien n'est codé. À faire après 22.11. Maquettes : même canevas, page « Tirage déjà fait » (12 écrans).
+
+**Principe** : le tirage a eu lieu sur papier ou dans une autre application. Chacun dit à qui il offre ; quand tout concorde, l'organisateur valide et l'édition devient une édition tirée ordinaire.
+
+| Sujet | Décision |
+|---|---|
+| Choix du mode | À l'étape « Préparer », par le lien « Le tirage a déjà été fait ailleurs ? » sous « Lancer le tirage ». Pas de champ à la création |
+| Frise de l'organisateur | Préparer, Réponses, Fêter |
+| Qui saisit | Chaque participant, sur sa page. Jamais l'organisateur |
+| Choix de la personne | Tous les participants sauf soi ; recherche au-delà de 10. Puis un panneau de confirmation |
+| Correction | Le participant corrige seul sa réponse jusqu'à la validation |
+| Blocage | Personne ne voit de pistes de cadeaux avant la validation |
+| Conflit | Deux personnes ont nommé la même : l'organisateur voit leurs prénoms dès que le conflit existe, jamais ce qu'elles ont répondu. Le participant n'a aucun message d'erreur |
+| Validation | Par un bouton de l'organisateur, quand tout le monde a répondu et que tout concorde. Les réponses deviennent un tirage normal (receveur chiffré) |
+| Une réponse manquante | S'il n'en manque qu'une, elle se déduit des autres (une seule personne n'a été nommée par aucun) : l'organisateur peut valider sans attendre, sans voir le résultat |
+| Messages | Trois modèles : Demande, Relance, À vérifier (pour les personnes en conflit) |
+| Exclusions | Ni appliquées, ni vérifiées, ni signalées, y compris « pas la même personne que l'an dernier ». Le panneau de démarrage le dit une fois. Elles restent enregistrées pour les prochaines éditions |
+| Participants | Ajout et retrait possibles jusqu'à la validation |
+| Revenir en arrière | « Abandonner et tirer avec l'application » efface les réponses, tant que rien n'est validé |
+| Page du participant en attente | « Réponse enregistrée », avec l'avancement (« 3 réponses sur 5 ») |
+| Historique | Les paires validées comptent pour l'an prochain, comme après un tirage normal |
+
+Garde-fou : chaque changement de réponse est inscrit au journal, sans son contenu, parce qu'un organisateur qui participe pourrait sonder en changeant sa propre réponse et en regardant avec qui le conflit apparaît.
+
+Vocabulaire : « réponse » partout, pas « déclaration ».
+
+### 22.13 Idée : les questions d'après-fête (16 novembre 2026)
+
+Idée de Julien, notée le 16 novembre 2026. **Rien n'est conçu ni planifié.** À reprendre après 22.11, dont elle dépend.
+
+**Principe** : une fois la fête passée, la page du tirage pose une ou deux questions, en un appui chacune.
+
+| À qui | Question | À quoi ça sert |
+|---|---|---|
+| Celui qui a offert | « Ses pistes t'ont aidé ? » | Savoir quelles rubriques des pistes servent vraiment (22.11) |
+| Celui qui a reçu | « Ton cadeau t'a plu ? » | Le retour le plus parlant, et un moment sympa à l'étape « Fêter » |
+
+Points à trancher avant de dessiner :
+
+- **Qui voit la réponse de celui qui a reçu ?** Montrée telle quelle à celui qui a offert, une réponse tiède blesse. Pistes : ne la garder que pour des statistiques ; ou ne transmettre que le positif ; ou la remplacer par un « mot de merci » facultatif, transmis sans dire de qui il vient tant que les résultats ne sont pas dévoilés (22.9).
+- **Quand la poser** : à partir du lendemain de la fête, sur la page du tirage et dans la carte « À faire maintenant » (22.10), sans email dédié pour ne pas spammer.
+- **Cette donnée ne se rattrape pas** : on ne peut pas la demander après coup pour les fêtes passées.
+- Mêmes règles que pour les statistiques de 22.11 : transparence, compteurs sans lien avec un compte, rien par groupe en dessous d'un seuil.
 
 ## 23. Design system
 

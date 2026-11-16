@@ -17,6 +17,7 @@ Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 | Dévoiler les résultats (README 22.9) | `DevoilerAvant`, `Feter`, `Devoiler`, `Cloturee`, et la ligne « Dévoiler les résultats » de `Suivi100` | Nouvelle fonctionnalité, côté serveur compris |
 | Idées futures | `FuturAccueil`, `FuturListes` | Non planifié |
 | Mot de l'administrateur sur un refus | bloc « Le mot de l'administrateur » de `AccueilDemandeRefusee`, champ « Un mot pour elle » de `AdminDemande` | Demande un champ en base et un email |
+| Liste de souhaits | `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` | Remplacée par « Pistes de cadeaux » (README 22.11), codée à part |
 | Alerte du journal sur la page du participant | `TirageAlerteJournal` | Demande de mémoriser la dernière visite ; pas encore décidé |
 
 **Règle générale** : si une maquette affiche une donnée que l'API ne fournit pas, ne pas l'inventer et ne pas toucher au schéma. Laisser l'élément de côté et l'ajouter à la section 6 « Questions pour Julien » de ce fichier.
@@ -49,13 +50,13 @@ Les maquettes sont la référence pour la structure, la hiérarchie et les texte
 | | Codé | Partiel | À coder | Hors périmètre |
 |---|---|---|---|---|
 | Accueil et connexion (18) | 11 | 3 | 4 | 0 |
-| Participant (16) | 7 | 0 | 8 | 1 |
+| Participant (16) | 7 | 0 | 4 | 5 |
 | Organisateur · édition (30) | 9 | 3 | 14 | 4 |
 | Organisateur · groupe (16) | 0 | 1 | 15 | 0 |
 | Journal (5) | 0 | 0 | 5 | 0 |
 | Administration (8) | 0 | 0 | 8 | 0 |
 | États et idées (4) | 0 | 0 | 2 | 2 |
-| **Total** | **27** | **7** | **56** | **7** |
+| **Total** | **27** | **7** | **52** | **11** |
 
 ### Codé (27)
 
@@ -75,7 +76,7 @@ Les maquettes sont la référence pour la structure, la hiérarchie et les texte
 | `AccueilDemandeAttente` | Une ligne de texte | La carte « Ta demande est partie » avec le texte de la demande | 8 |
 | `AccueilDemandeRefusee` | Une ligne de texte | La carte « refusée » et « Faire une autre demande » (sans le mot de l'administrateur) | 8 |
 
-### À coder (56)
+### À coder (52)
 
 Détaillé par lot en section 5.
 
@@ -111,6 +112,17 @@ Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante no
 
 **Fini quand** : un groupe de 5 s'affiche comme aujourd'hui ; un groupe de 100 (à ajouter au script `seed:demo`) tient en moins de trois écrans de défilement.
 
+### Correction du lot 0 — replier une liste, déplier par paquets
+
+Demandé par Julien le 16 novembre 2026, à faire avant de poursuivre (le composant sert dans tous les lots suivants). Référence : `GroupeMembres100Deplie`.
+
+- [ ] **Replier.** Une fois la liste dépliée, la ligne de repli reste à sa place, juste après les premières lignes, et devient « Replier la liste » (chevron vers le haut, fond `primary-tint`, `aria-expanded="true"`, sans les petites icônes). Un appui referme et ramène la ligne à l'écran si elle n'y est plus.
+- [ ] **Par paquets.** Déplier ajoute 50 lignes à la fois (constante nommée), pas tout d'un coup. S'il en reste, une seconde ligne « Voir les N autres » apparaît en bas de ce qui est affiché. Faire évoluer `foldList` (fonction pure, testée) pour prendre le nombre de lignes déjà dépliées.
+- [ ] La recherche montre toujours tous les résultats, sans repli.
+- [ ] Appliquer aux écrans déjà faits (édition à préparer, suivi après tirage, envoi par email) et mettre à jour le guide de style et leurs tests.
+
+Pas de virtualisation : avec le repli par paquets, jamais plus de quelques dizaines de lignes ne sont ajoutées d'un coup, même pour un groupe de 300.
+
 ### Lot 2 — Édition : sous-écrans
 
 - [ ] `AjouterParticipants` (`ajouter.vue`) : membres absents à cocher, « Créer une personne », « Inviter par lien », bouton collant « Ajouter N personnes ».
@@ -129,7 +141,7 @@ Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante no
 
 ### Lot 4 — Groupe : membres et exclusions
 
-- [ ] `GroupeMembres`, `GroupeMembres100` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.
+- [ ] `GroupeMembres`, `GroupeMembres100`, `GroupeMembres100Deplie` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.
 - [ ] `GroupePersonne`, `PersonneNouvelle` (`personnes/[id].vue`, `nouvelle.vue`, `AdminPersonForm.vue`) : formulaire, section « Ne tire pas », « Retirer du groupe » en bas ; « Ajouter, puis en créer une autre ».
 - [ ] `GroupeExclusions`, `PanneauExclusion` (`exclusions.vue`, `AdminExclusions.vue`) : « Ajouter une exclusion » en haut, paires avec deux icônes, règles automatiques en lecture seule ; ajout dans un `UiSheet` avec `UiPersonPicker`.
 - [ ] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
@@ -151,13 +163,13 @@ Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/
 - [ ] `JournalDetail` : « Qu'est-ce que ça veut dire ? » ouvre un panneau qui explique l'alerte.
 - [ ] `JournalAide` : panneau « À quoi sert le journal ? ».
 
-### Lot 7 — Participant : souhaits et invitation
+### Lot 7 — supprimé
 
-- [ ] `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` (`p/[token]/souhaits.vue`) : liste d'idées, ajout et modification dans un `UiSheet`, pistes pour démarrer quand la liste est vide, lecture seule une fois l'édition clôturée.
+Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee`) sont remplacés par la fonctionnalité « Pistes de cadeaux » (README 22.11), qui sera codée à part : ne pas les refaire ici, et ne pas se servir de ces quatre maquettes. Les écrans « Rejoindre » passent au lot 8.
+
+### Lot 8 — Connexion, compte, demandes, invitation
+
 - [ ] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états. `RejoindreFerme` montre le cas « plus de place » ; même écran, autre phrase, pour un lien expiré (« Ce lien d'invitation n'est plus valable depuis le 10 décembre. ») et pour un lien désactivé ou inconnu (« Ce lien d'invitation ne marche plus. »). Si le tirage est déjà fait, la personne rejoint le groupe, pas le tirage en cours : le dire sur `RejoindreFait`.
-
-### Lot 8 — Connexion, compte, demandes
-
 - [ ] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
 - [ ] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
 - [ ] `AccueilMenu`, `AccueilDemandeAttente`, `AccueilDemandeRefusee` : voir « Partiel ».

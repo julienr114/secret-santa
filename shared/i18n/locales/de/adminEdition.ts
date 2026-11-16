@@ -19,8 +19,6 @@ export default {
     submit: 'Ausgabe erstellen',
   },
   cockpit: {
-    blocked: 'Niemand kann zugelost werden für: {names}.',
-    constrained: 'Sehr wenig Auswahl für: {names}.',
     startDraw: 'Auslosung starten',
     missing: {
       one: '{names} nimmt noch nicht teil',
@@ -194,6 +192,59 @@ export default {
     renew: 'Neuer Link (der alte funktioniert dann nicht mehr)',
   },
   screen: {
+    lists: {
+      series: {
+        toNotify: 'Noch nicht gesendet',
+        notOpened: 'Gesendet, noch nicht angesehen',
+        viewed: 'Ergebnis angesehen',
+      },
+      search: 'Einen Vornamen suchen',
+      clear: 'Suche leeren',
+      more: {
+        one: 'Die andere Person ansehen',
+        other: 'Die {count} anderen ansehen',
+      },
+      noMatch: 'Kein Vorname passt.',
+      sorted: 'Nach Vornamen sortiert. Die Suche erscheint ab 10 Teilnehmern.',
+    },
+    empty: {
+      title: 'Füge die Teilnehmer hinzu',
+      body: 'Für eine Auslosung braucht es mindestens zwei. Wähle sie unter den Mitgliedern der Gruppe aus oder schicke einen Link, damit sie sich eintragen.',
+      invite: 'Per Link einladen',
+      list: 'Kein Teilnehmer',
+      none: 'Noch niemand.',
+    },
+    impossible: {
+      eyebrow: 'Vor der Auslosung zu beheben',
+      title: 'Die Auslosung ist im Moment nicht möglich',
+      blocked: 'niemand zum Beschenken.',
+      constrained: 'sehr wenig Auswahl.',
+      help: {
+        one: 'Es gibt zu viele Ausschlüsse für {count} Teilnehmer. Entferne einen oder füge jemanden hinzu.',
+        other:
+          'Es gibt zu viele Ausschlüsse für {count} Teilnehmer. Entferne einen oder füge jemanden hinzu.',
+      },
+      exclusions: 'Ausschlüsse ansehen',
+    },
+    notifyCount: {
+      one: 'Per E-Mail benachrichtigen',
+      other: 'Die {count} per E-Mail benachrichtigen',
+    },
+    sentTo: {
+      one: '{names} ist benachrichtigt.',
+      other: '{names} sind benachrichtigt.',
+    },
+    closed: {
+      partyDone: 'Gefeiert',
+      partedOn: 'gefeiert am {date}',
+      title: 'Ausgabe abgeschlossen',
+      body: 'Schreibgeschützt. Die Auslosung dient dazu, dieselben Paare in den folgenden Jahren zu vermeiden.',
+      exclusions: 'Bei der Auslosung angewandte Ausschlüsse',
+      exclusionsNone: 'Keine',
+      journal: 'Protokoll der Gruppe',
+      journalHint: 'Alles, was passiert ist, für alle sichtbar',
+      next: 'Die nächste Ausgabe vorbereiten',
+    },
     steps: {
       label: 'Schritte der Ausgabe',
       prepare: 'Vorbereiten',
@@ -260,7 +311,6 @@ export default {
       toNotify: 'zu benachrichtigen',
       notOpened: { one: 'noch nicht geöffnet', other: 'noch nicht geöffnet' },
       viewed: { one: 'hat entdeckt', other: 'haben entdeckt' },
-      action: 'Per E-Mail benachrichtigen',
       actionReminder: 'Per E-Mail erinnern',
       help: 'Keine E-Mail-Adresse? Der Knopf jeder Zeile teilt den Link per WhatsApp oder SMS.',
       firstFootnote: 'Wer noch zu benachrichtigen ist, steht oben.',
@@ -284,8 +334,6 @@ export default {
       partyTitle: 'Die Bescherung ist vorbei: Schließe die Ausgabe ab',
       partyHelp:
         'Wunschlisten sind dann nur noch lesbar; die Auslosung dient den Ausschlüssen der nächsten Jahre.',
-      closed:
-        'Ausgabe abgeschlossen: Sie dient als Verlauf für die nächsten Auslosungen.',
     },
     missingDate: {
       title: 'Wann ist die Bescherung?',

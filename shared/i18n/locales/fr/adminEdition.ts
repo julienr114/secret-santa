@@ -18,8 +18,6 @@ export default {
     submit: "Créer l'édition",
   },
   cockpit: {
-    blocked: 'Personne ne peut être tiré pour : {names}.',
-    constrained: 'Très peu de choix pour : {names}.',
     startDraw: 'Lancer le tirage',
     missing: {
       one: '{names} ne participe pas encore',
@@ -193,6 +191,57 @@ export default {
     renew: 'Nouveau lien (l’ancien ne marchera plus)',
   },
   screen: {
+    lists: {
+      series: {
+        toNotify: 'Pas encore envoyé',
+        notOpened: 'Envoyé, pas encore consulté',
+        viewed: 'Résultat consulté',
+      },
+      search: 'Chercher un prénom',
+      clear: 'Effacer la recherche',
+      more: { one: 'Voir l’autre', other: 'Voir les {count} autres' },
+      noMatch: 'Aucun prénom ne correspond.',
+      sorted:
+        'Triés par prénom. La recherche apparaît au-delà de 10 participants.',
+    },
+    empty: {
+      title: 'Ajoute les participants',
+      body: 'Il en faut au moins deux pour un tirage. Choisis-les parmi les membres du groupe, ou envoie un lien pour qu’ils s’inscrivent.',
+      invite: 'Inviter par lien',
+      list: 'Aucun participant',
+      none: 'Personne pour l’instant.',
+    },
+    impossible: {
+      eyebrow: 'À corriger avant le tirage',
+      title: 'Le tirage est impossible pour l’instant',
+      blocked: 'personne à qui offrir.',
+      constrained: 'très peu de choix.',
+      help: {
+        one: 'Il y a trop d’exclusions pour {count} participant. Retire-en une, ou ajoute quelqu’un.',
+        other:
+          'Il y a trop d’exclusions pour {count} participants. Retire-en une, ou ajoute quelqu’un.',
+      },
+      exclusions: 'Voir les exclusions',
+    },
+    notifyCount: {
+      one: 'Prévenir par email',
+      other: 'Prévenir les {count} par email',
+    },
+    sentTo: {
+      one: '{names} est prévenu.',
+      other: '{names} sont prévenus.',
+    },
+    closed: {
+      partyDone: 'Fêté',
+      partedOn: 'fêté le {date}',
+      title: 'Édition clôturée',
+      body: 'En lecture seule. Le tirage sert à éviter les mêmes paires les années suivantes.',
+      exclusions: 'Exclusions appliquées au tirage',
+      exclusionsNone: 'Aucune',
+      journal: 'Journal du groupe',
+      journalHint: 'Tout ce qui s’est passé, à la vue de tous',
+      next: 'Préparer l’édition suivante',
+    },
     steps: {
       label: "Étapes de l'édition",
       prepare: 'Préparer',
@@ -259,7 +308,6 @@ export default {
       toNotify: 'à prévenir',
       notOpened: { one: 'pas encore ouvert', other: 'pas encore ouverts' },
       viewed: { one: 'a découvert', other: 'ont découvert' },
-      action: 'Prévenir par email',
       actionReminder: 'Relancer par email',
       help: 'Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.',
       firstFootnote: 'Ceux qui restent à prévenir sont en premier.',
@@ -282,8 +330,6 @@ export default {
       partyTitle: "La fête est passée : clôture l'édition",
       partyHelp:
         'Les listes de souhaits passent en lecture seule ; le tirage sert aux exclusions des années suivantes.',
-      closed:
-        "Édition clôturée : elle sert d'historique pour les prochains tirages.",
     },
     missingDate: {
       title: 'Quand a lieu la fête ?',

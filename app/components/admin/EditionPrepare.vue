@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Participant } from '#server/database/editions';
 import { sortParticipants } from '#server/utils/editions';
+import { listView } from '#shared/utils/lists';
 import type { DrawCheck } from '~/composables/queries/useEdition';
 
 // Step 1 of an edition, "Préparer": what to do now (check the list, then
@@ -38,21 +39,49 @@ const subtitleOf = (p: Participant) =>
   ]
     .filter(Boolean)
     .join(' · ') || undefined;
-const problemText = computed(() => {
-  const problem = props.check?.problem;
-  if (!problem) return '';
+const empty = computed(() => props.participants.length === 0);
+const problem = computed(() =>
+  props.check && !props.check.ready ? props.check.problem : null,
+);
+/** The people the draw cannot place, each with why, and their icon. */
+const blockedPeople = computed(() => {
+  const avatarOf = (name: string) =>
+    props.participants.find((p) => p.firstName === name)?.avatar;
   return [
-    errorMessage({ statusMessage: problem.reason }),
-    problem.blocked.length > 0 &&
-      t('adminEdition.cockpit.blocked', { names: problem.blocked.join(', ') }),
-    problem.constrained.length > 0 &&
-      t('adminEdition.cockpit.constrained', {
-        names: problem.constrained.join(', '),
-      }),
-  ]
-    .filter(Boolean)
-    .join(' ');
+    ...(problem.value?.blocked ?? []).map((name) => ({
+      name,
+      avatar: avatarOf(name),
+      why: t('adminEdition.screen.impossible.blocked'),
+    })),
+    ...(problem.value?.constrained ?? []).map((name) => ({
+      name,
+      avatar: avatarOf(name),
+      why: t('adminEdition.screen.impossible.constrained'),
+    })),
+  ];
 });
+const problemHelp = computed(() =>
+  problem.value?.reason === 'no_solution'
+    ? t('adminEdition.screen.impossible.help', {
+        count: props.participants.length,
+      })
+    : errorMessage({ statusMessage: problem.value?.reason }),
+);
+
+// Past ten people, a search; past twelve, the list folds after six rows.
+const SEARCH_FROM = 10;
+const SHOWN = 6;
+const query = ref('');
+const expanded = ref(false);
+const searchable = computed(() => props.participants.length > SEARCH_FROM);
+const view = computed(() =>
+  listView(sorted.value, {
+    query: query.value,
+    expanded: expanded.value,
+    shown: SHOWN,
+    nameOf: (p) => p.firstName,
+  }),
+);
 const missingText = computed(() =>
   props.missing.length === 0
     ? undefined
@@ -67,16 +96,77 @@ const missingText = computed(() =>
 
 <template>
   <UiActionCard
+    v-if="empty"
+    :eyebrow="t('adminEdition.screen.now')"
+    :title="t('adminEdition.screen.empty.title')"
+    data-testid="action-card"
+  >
+    <p class="text-sm text-muted">{{ t('adminEdition.screen.empty.body') }}</p>
+    <template #action>
+      <UButton
+        :to="`${base}/ajouter`"
+        block
+        size="xl"
+        icon="i-lucide-user-plus"
+        class="min-h-14 justify-center font-bold"
+        :label="t('adminEdition.screen.prepare.add')"
+      />
+      <UButton
+        :to="`/admin/${slug}/invitation`"
+        block
+        variant="ghost"
+        class="min-h-11 justify-center font-semibold"
+        :label="t('adminEdition.screen.empty.invite')"
+      />
+    </template>
+  </UiActionCard>
+  <UiActionCard
+    v-else-if="problem"
+    :eyebrow="t('adminEdition.screen.impossible.eyebrow')"
+    :title="t('adminEdition.screen.impossible.title')"
+    data-testid="action-card"
+  >
+    <ul v-if="blockedPeople.length" class="flex flex-col gap-2">
+      <li
+        v-for="person in blockedPeople"
+        :key="person.name"
+        class="flex items-center gap-2.5 text-sm"
+      >
+        <UiAvatar v-if="person.avatar" :avatar="person.avatar" size="sm" />
+        <span
+          ><strong>{{ person.name }}</strong> : {{ person.why }}</span
+        >
+      </li>
+    </ul>
+    <p class="text-sm text-muted" role="alert">{{ problemHelp }}</p>
+    <template #action>
+      <UButton
+        :to="`${base}/exclusions`"
+        block
+        size="xl"
+        icon="i-lucide-ban"
+        class="min-h-14 justify-center font-bold"
+        :label="t('adminEdition.screen.impossible.exclusions')"
+      />
+      <UButton
+        :to="`${base}/ajouter`"
+        block
+        variant="outline"
+        icon="i-lucide-user-plus"
+        class="min-h-11 justify-center"
+        :label="t('adminEdition.screen.prepare.add')"
+      />
+    </template>
+  </UiActionCard>
+  <UiActionCard
+    v-else
     :eyebrow="t('adminEdition.screen.now')"
     :title="t('adminEdition.screen.prepare.title')"
     :help="t('adminEdition.screen.prepare.help')"
     data-testid="action-card"
   >
     <USkeleton v-if="!check" class="h-5 w-3/4 rounded bg-skeleton" />
-    <p
-      v-else-if="check.ready"
-      class="flex items-start gap-2 text-sm text-muted"
-    >
+    <p v-else class="flex items-start gap-2 text-sm text-muted">
       <UIcon
         name="i-lucide-check"
         class="mt-0.5 size-4 shrink-0 text-success"
@@ -86,10 +176,6 @@ const missingText = computed(() =>
           count: check.participantCount,
         })
       }}
-    </p>
-    <p v-else class="flex items-start gap-2 text-sm text-error" role="alert">
-      <UIcon name="i-lucide-triangle-alert" class="mt-0.5 size-4 shrink-0" />
-      {{ problemText }}
     </p>
     <template #action>
       <UButton
@@ -104,25 +190,56 @@ const missingText = computed(() =>
     </template>
   </UiActionCard>
 
-  <UiList
-    :title="t('common.count.participants', { count: participants.length })"
-    data-testid="participants"
-  >
-    <UiListItem
-      v-for="p in sorted"
-      :key="p.participationId"
-      :avatar="p.avatar"
-      :to="`${base}/participants/${p.participationId}`"
-      :title="p.firstName"
-      :subtitle="subtitleOf(p)"
+  <section class="flex flex-col gap-1.5" data-testid="participants">
+    <UiSectionTitle>{{
+      empty
+        ? t('adminEdition.screen.empty.list')
+        : t('common.count.participants', { count: participants.length })
+    }}</UiSectionTitle>
+    <UiSearchField
+      v-if="searchable"
+      v-model="query"
+      class="mb-1.5"
+      :label="t('adminEdition.screen.lists.search')"
+      :clear-label="t('adminEdition.screen.lists.clear')"
     />
-    <UiListItem
-      :to="`${base}/ajouter`"
-      icon="i-lucide-user-plus"
-      :title="t('adminEdition.screen.prepare.add')"
-      :subtitle="missingText"
-    />
-  </UiList>
+    <UiList
+      :footer="searchable ? t('adminEdition.screen.lists.sorted') : undefined"
+    >
+      <li v-if="empty" class="px-4 py-3 text-sm text-muted">
+        {{ t('adminEdition.screen.empty.none') }}
+      </li>
+      <li
+        v-else-if="view.shown.length === 0"
+        class="px-4 py-3 text-sm text-muted"
+      >
+        {{ t('adminEdition.screen.lists.noMatch') }}
+      </li>
+      <UiListItem
+        v-for="p in view.shown"
+        :key="p.participationId"
+        :avatar="p.avatar"
+        :to="`${base}/participants/${p.participationId}`"
+        :title="p.firstName"
+        :subtitle="subtitleOf(p)"
+      />
+      <UiFoldRow
+        v-if="view.rest.length"
+        :avatars="view.rest.map((p) => p.avatar)"
+        :label="
+          t('adminEdition.screen.lists.more', { count: view.rest.length })
+        "
+        @expand="expanded = true"
+      />
+      <UiListItem
+        v-if="!empty"
+        :to="`${base}/ajouter`"
+        icon="i-lucide-user-plus"
+        :title="t('adminEdition.screen.prepare.add')"
+        :subtitle="missingText"
+      />
+    </UiList>
+  </section>
 
   <UiList :title="t('adminEdition.screen.prepare.optional')">
     <UiListItem

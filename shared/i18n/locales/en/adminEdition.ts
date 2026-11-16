@@ -19,8 +19,6 @@ export default {
     submit: 'Create the edition',
   },
   cockpit: {
-    blocked: 'Nobody can be drawn for: {names}.',
-    constrained: 'Very few options for: {names}.',
     startDraw: 'Start the draw',
     missing: {
       one: '{names} is not taking part yet',
@@ -188,6 +186,56 @@ export default {
     renew: 'New link (the old one will stop working)',
   },
   screen: {
+    lists: {
+      series: {
+        toNotify: 'Not sent yet',
+        notOpened: 'Sent, not looked at yet',
+        viewed: 'Result looked at',
+      },
+      search: 'Search a first name',
+      clear: 'Clear the search',
+      more: { one: 'See the other one', other: 'See the {count} others' },
+      noMatch: 'No first name matches.',
+      sorted: 'Sorted by first name. The search shows past 10 participants.',
+    },
+    empty: {
+      title: 'Add the participants',
+      body: 'A draw needs at least two. Pick them among the members of the group, or send a link so they sign up.',
+      invite: 'Invite by link',
+      list: 'No participant',
+      none: 'Nobody yet.',
+    },
+    impossible: {
+      eyebrow: 'To fix before the draw',
+      title: 'The draw is not possible for now',
+      blocked: 'nobody to give to.',
+      constrained: 'very little choice.',
+      help: {
+        one: 'There are too many exclusions for {count} participant. Remove one, or add someone.',
+        other:
+          'There are too many exclusions for {count} participants. Remove one, or add someone.',
+      },
+      exclusions: 'See the exclusions',
+    },
+    notifyCount: {
+      one: 'Notify by email',
+      other: 'Notify the {count} by email',
+    },
+    sentTo: {
+      one: '{names} has been notified.',
+      other: '{names} have been notified.',
+    },
+    closed: {
+      partyDone: 'Celebrated',
+      partedOn: 'celebrated on {date}',
+      title: 'Edition closed',
+      body: 'Read only. The draw is used to avoid the same pairs in the following years.',
+      exclusions: 'Exclusions applied to the draw',
+      exclusionsNone: 'None',
+      journal: 'Group journal',
+      journalHint: 'Everything that happened, for all to see',
+      next: 'Prepare the next edition',
+    },
     steps: {
       label: 'Steps of the edition',
       prepare: 'Prepare',
@@ -253,7 +301,6 @@ export default {
       toNotify: 'to notify',
       notOpened: { one: 'not opened yet', other: 'not opened yet' },
       viewed: { one: 'has discovered', other: 'have discovered' },
-      action: 'Notify by email',
       actionReminder: 'Remind by email',
       help: 'No email address? The button of each row shares the link by WhatsApp or SMS.',
       firstFootnote: 'Those still to notify come first.',
@@ -276,7 +323,6 @@ export default {
       partyTitle: 'The party is over: close the edition',
       partyHelp:
         'Wish lists become read only; the draw serves the exclusions of the next years.',
-      closed: 'Edition closed: it serves as history for the next draws.',
     },
     missingDate: {
       title: 'When is the party?',

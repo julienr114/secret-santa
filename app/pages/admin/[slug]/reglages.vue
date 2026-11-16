@@ -178,6 +178,14 @@ const previousYearsItems = computed(() => [
           :label="t('common.actions.save')"
         />
       </UForm>
+      <UiList>
+        <UiListItem
+          :to="`/admin/${slug}/organisateurs`"
+          icon="i-lucide-user-cog"
+          icon-tone="neutral"
+          :title="t('adminGroup.organizers.title')"
+        />
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

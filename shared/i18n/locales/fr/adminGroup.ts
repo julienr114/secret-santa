@@ -17,7 +17,6 @@ export default {
   },
   organizers: {
     title: 'Organisateurs',
-    summary: 'Qui peut gérer ce groupe',
     intro:
       'Les personnes qui gèrent {name}. Chacune se connecte avec un lien envoyé à son adresse : aucun mot de passe à transmettre.',
     superNote: 'Un super-admin peut aussi gérer le groupe, sans figurer ici.',
@@ -31,6 +30,49 @@ export default {
     removeLabel: 'Retirer {email} des organisateurs',
   },
   dashboard: {
+    current: 'Édition en cours',
+    partyOn: 'Fête le {date}',
+    partyOnIn: {
+      one: 'Fête le {date} · demain',
+      other: 'Fête le {date} · dans {count} jours',
+    },
+    viewedOf: {
+      one: '{count} sur {total} a consulté son résultat',
+      other: '{count} sur {total} ont consulté leur résultat',
+    },
+    viewedLabel: 'Résultats consultés',
+    toNotify: { one: '{count} à prévenir', other: '{count} à prévenir' },
+    preparing: {
+      one: '{count} participant · le tirage reste à lancer',
+      other: '{count} participants · le tirage reste à lancer',
+    },
+    open: "Ouvrir l'édition",
+    prepareTitle: 'Prépare le tirage de cette année',
+    takenAll: {
+      one: 'Le seul membre du groupe est repris.',
+      other: 'Les {count} membres du groupe sont repris.',
+    },
+    takenFrom: {
+      one: '{count} participant de {label} est repris.',
+      other: 'Les {count} participants de {label} sont repris.',
+    },
+    noRepeat: {
+      one: "Personne ne retombera sur la même personne que l'an dernier.",
+      other:
+        'Personne ne retombera sur une personne tirée ces {count} dernières années.',
+    },
+    members: { one: '{count} membre', other: '{count} membres' },
+    youOrganize: 'tu es organisateur',
+    membersRow: 'Membres',
+    persons: { one: '{count} personne', other: '{count} personnes' },
+    pairs: {
+      one: '{count} paire qui ne se tire jamais',
+      other: '{count} paires qui ne se tirent jamais',
+    },
+    journal: 'Journal',
+    journalEmpty: "Rien pour l'instant",
+    settings: 'Réglages',
+    settingsHint: 'Règles du tirage, organisateurs',
     deleteGroup: 'Supprimer le groupe',
     deleteGroupHint: 'Avec ses personnes, ses éditions et ses tirages',
     deleteTitle: 'Supprimer {name} ?',
@@ -39,10 +81,7 @@ export default {
     deleteConfirmLabel: 'Recopie l’identifiant du groupe : {slug}',
     deleteAction: 'Supprimer définitivement',
     deleteDone: 'Groupe supprimé',
-    editionSection: 'Édition',
-    newEdition: 'Nouvelle édition',
-    newEditionHint: "Reprend les participants de l'an dernier",
-    groupSection: 'Groupe',
+    groupSection: 'Le groupe',
     superSection: 'Super-admin',
     pastEditions: 'Éditions passées',
   },

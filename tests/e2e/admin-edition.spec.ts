@@ -39,7 +39,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
 
   // People
-  await page.getByText('Personnes', { exact: true }).click();
+  await page.getByRole('link', { name: /^Membres/ }).click();
   for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
     await page.getByRole('link', { name: 'Ajouter' }).click();
     await page.getByLabel('Prénom').fill(firstName);
@@ -63,7 +63,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // Edition
   await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByRole('button', { name: 'Retour' }).click();
-  await page.getByText('Nouvelle édition').click();
+  await page.getByRole('link', { name: "Créer l'édition" }).click();
   // The party date is required: Christmas Day is offered in one tap.
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   await expect(page.getByText('Choisis la date de la fête')).toBeVisible();
@@ -222,7 +222,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // admin: what was done, never who gives to whom.
   await page.goto(`/admin/${GROUP.slug}`);
   await hydrated(page);
-  await page.getByRole('link', { name: /Journal du groupe/ }).click();
+  await page.getByRole('link', { name: /^Journal/ }).click();
   await expect(heading(page)).toHaveText('Journal du groupe');
   await expect(
     page.getByText('Le tirage a été annulé. Motif : Test de relance'),
@@ -252,6 +252,7 @@ test('organisers decide who organises with them', async ({
   );
 
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
+  await page.getByRole('link', { name: /^Réglages/ }).click();
   await page.getByRole('link', { name: /Organisateurs/ }).click();
   await expect(heading(page)).toHaveText('Organisateurs');
   await expect(page.getByText(GROUP.organizer)).toBeVisible();

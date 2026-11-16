@@ -57,7 +57,7 @@ test('the guardian adds addresses and sends to those who have one', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.getByText('Personnes', { exact: true }).click();
+  await page.getByRole('link', { name: /^Membres/ }).click();
   await page.getByText('Ada', { exact: true }).click();
   await page.getByLabel('Email').fill('Ada@Example.com');
   await page.getByLabel('Email').blur();

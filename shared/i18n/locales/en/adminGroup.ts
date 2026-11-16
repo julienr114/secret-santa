@@ -19,7 +19,6 @@ export default {
   },
   organizers: {
     title: 'Organizers',
-    summary: 'Who can manage this group',
     intro:
       'The people who manage {name}. Each one logs in with a link sent to their address: no password to pass on.',
     superNote:
@@ -34,6 +33,48 @@ export default {
     removeLabel: 'Remove {email} from the organizers',
   },
   dashboard: {
+    current: 'Edition in progress',
+    partyOn: 'Party on {date}',
+    partyOnIn: {
+      one: 'Party on {date} · tomorrow',
+      other: 'Party on {date} · in {count} days',
+    },
+    viewedOf: {
+      one: '{count} of {total} has seen their result',
+      other: '{count} of {total} have seen their result',
+    },
+    viewedLabel: 'Results seen',
+    toNotify: { one: '{count} to notify', other: '{count} to notify' },
+    preparing: {
+      one: '{count} participant · the draw is still to run',
+      other: '{count} participants · the draw is still to run',
+    },
+    open: 'Open the edition',
+    prepareTitle: "Prepare this year's draw",
+    takenAll: {
+      one: 'The only member of the group is taken over.',
+      other: 'The {count} members of the group are taken over.',
+    },
+    takenFrom: {
+      one: '{count} participant of {label} is taken over.',
+      other: 'The {count} participants of {label} are taken over.',
+    },
+    noRepeat: {
+      one: 'Nobody will draw the same person as last year.',
+      other: 'Nobody will draw someone they drew in the last {count} years.',
+    },
+    members: { one: '{count} member', other: '{count} members' },
+    youOrganize: 'you organise it',
+    membersRow: 'Members',
+    persons: { one: '{count} person', other: '{count} people' },
+    pairs: {
+      one: '{count} pair who never draw each other',
+      other: '{count} pairs who never draw each other',
+    },
+    journal: 'Journal',
+    journalEmpty: 'Nothing yet',
+    settings: 'Settings',
+    settingsHint: 'Draw rules, organisers',
     deleteGroup: 'Delete the group',
     deleteGroupHint: 'With its people, editions and draws',
     deleteTitle: 'Delete {name}?',
@@ -42,10 +83,7 @@ export default {
     deleteConfirmLabel: 'Type the group identifier: {slug}',
     deleteAction: 'Delete for good',
     deleteDone: 'Group deleted',
-    editionSection: 'Edition',
-    newEdition: 'New edition',
-    newEditionHint: "Starts from last year's participants",
-    groupSection: 'Group',
+    groupSection: 'The group',
     superSection: 'Super-admin',
     pastEditions: 'Past editions',
   },

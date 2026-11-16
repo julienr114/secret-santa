@@ -572,9 +572,9 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 | `/admin/guide-de-style` | Super-admin : le guide de style (section 23). Plus aucun lien n'y mène, on y va par son adresse |
 | `/compte` | Mon compte : adresse, appareils connectés, « Déconnecter partout » |
 | `/admin/[groupe]/organisateurs` | Qui peut gérer le groupe : ajouter une adresse, en retirer une |
-| `/admin/[groupe]` | Tableau de bord du groupe : édition en cours, éditions passées |
+| `/admin/[groupe]` | Accueil du groupe (refait le 16 novembre 2026) : nombre de membres et « tu es organisateur » ; la carte de l'édition en cours (date et compte à rebours, frise `editionSteps`, résultats consultés et personnes à prévenir, « Ouvrir l'édition »), ou, sans édition, « Prépare le tirage de cette année » (qui sera repris, `carriedOver`, et « Créer l'édition ») ; « Le groupe » en quatre lignes : Membres, Exclusions (nombre de paires), Journal (dernier événement), Réglages ; puis les éditions passées. La suppression du groupe (super-admin) reste en bas |
 | `/admin/[groupe]/personnes` | Personnes du groupe : ajouter, modifier (prénom, nom), désactiver ; écran Exclusions : paires qui ne se tirent pas (couples, fratries…), réciproques par défaut |
-| `/admin/[groupe]/reglages` | Règles par défaut du groupe |
+| `/admin/[groupe]/reglages` | Règles par défaut du groupe, et le lien vers les organisateurs |
 | `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
 | `/admin/[groupe]/editions/[id]/emails` | Envoi par email à plusieurs participants (13.3) |
 | `/admin/[groupe]/editions/[id]/exclusions` | Exclusions qui s'appliquent à l'édition : celles du groupe et les paires des tirages précédents, levables ; une fois tirée, celles appliquées |

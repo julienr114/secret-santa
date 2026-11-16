@@ -19,7 +19,6 @@ export default {
   },
   organizers: {
     title: 'Organisatoren',
-    summary: 'Wer diese Gruppe verwalten kann',
     intro:
       'Die Personen, die {name} verwalten. Jede meldet sich mit einem Link an, der an ihre Adresse gesendet wird: kein Passwort weiterzugeben.',
     superNote:
@@ -34,6 +33,52 @@ export default {
     removeLabel: '{email} aus den Organisatoren entfernen',
   },
   dashboard: {
+    current: 'Laufende Ausgabe',
+    partyOn: 'Feier am {date}',
+    partyOnIn: {
+      one: 'Feier am {date} · morgen',
+      other: 'Feier am {date} · in {count} Tagen',
+    },
+    viewedOf: {
+      one: '{count} von {total} hat das Ergebnis angesehen',
+      other: '{count} von {total} haben das Ergebnis angesehen',
+    },
+    viewedLabel: 'Angesehene Ergebnisse',
+    toNotify: {
+      one: '{count} zu benachrichtigen',
+      other: '{count} zu benachrichtigen',
+    },
+    preparing: {
+      one: '{count} Teilnehmer · die Auslosung steht noch aus',
+      other: '{count} Teilnehmer · die Auslosung steht noch aus',
+    },
+    open: 'Ausgabe öffnen',
+    prepareTitle: 'Bereite die Auslosung dieses Jahres vor',
+    takenAll: {
+      one: 'Das einzige Mitglied der Gruppe wird übernommen.',
+      other: 'Die {count} Mitglieder der Gruppe werden übernommen.',
+    },
+    takenFrom: {
+      one: '{count} Teilnehmer von {label} wird übernommen.',
+      other: 'Die {count} Teilnehmer von {label} werden übernommen.',
+    },
+    noRepeat: {
+      one: 'Niemand zieht dieselbe Person wie letztes Jahr.',
+      other:
+        'Niemand zieht jemanden, den er in den letzten {count} Jahren gezogen hat.',
+    },
+    members: { one: '{count} Mitglied', other: '{count} Mitglieder' },
+    youOrganize: 'du organisierst',
+    membersRow: 'Mitglieder',
+    persons: { one: '{count} Person', other: '{count} Personen' },
+    pairs: {
+      one: '{count} Paar, das sich nie zieht',
+      other: '{count} Paare, die sich nie ziehen',
+    },
+    journal: 'Protokoll',
+    journalEmpty: 'Noch nichts',
+    settings: 'Einstellungen',
+    settingsHint: 'Regeln der Auslosung, Organisatoren',
     deleteGroup: 'Gruppe löschen',
     deleteGroupHint: 'Mit ihren Personen, Ausgaben und Auslosungen',
     deleteTitle: '{name} löschen?',
@@ -42,10 +87,7 @@ export default {
     deleteConfirmLabel: 'Gib die Gruppenkennung ein: {slug}',
     deleteAction: 'Endgültig löschen',
     deleteDone: 'Gruppe gelöscht',
-    editionSection: 'Ausgabe',
-    newEdition: 'Neue Ausgabe',
-    newEditionHint: 'Übernimmt die Teilnehmer vom letzten Jahr',
-    groupSection: 'Gruppe',
+    groupSection: 'Die Gruppe',
     superSection: 'Super-admin',
     pastEditions: 'Frühere Ausgaben',
   },

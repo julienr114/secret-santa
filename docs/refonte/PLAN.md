@@ -245,6 +245,30 @@ Demandé par Julien le 16 novembre 2026, après un audit des maquettes. Plusieur
 
 Pour les lots suivants, les maquettes portent déjà la ligne : `GroupeMembres`, `GroupeMembres100`, `GroupeExclusions`, `GroupeInvitation` (aucun groupe n'y était nommé), `GroupeReglages`, `Journal`, `JournalTout`, `JournalPersonne`.
 
+### Les bords de l'écran (iPhone) — règle pour tous les lots, et Correction 6
+
+Demandé par Julien le 16 novembre 2026 : sur iPhone, le bas des panneaux est rogné par les coins arrondis et la barre du bas. Maquette de référence : `PanneauIphone`. À faire avant le lot 4.
+
+**Constat dans le code** : la balise `viewport` de `nuxt.config.ts` n'a pas `viewport-fit=cover`, et `UiSheet` n'a aucune marge de sécurité en bas. Plusieurs écrans utilisent déjà `env(safe-area-inset-*)` (barres du haut et du bas, `UiStickyFooter`). À vérifier sur un vrai iPhone avant de corriger : ce que valent ces marges aujourd'hui, dans Safari et en application ajoutée à l'écran d'accueil.
+
+**La règle**
+
+- Rien d'actionnable ni de lisible dans les zones réservées : le dernier élément d'un écran, d'un panneau ou d'un pied collant est suivi de sa marge habituelle **plus** `env(safe-area-inset-bottom)`.
+- Idem en haut (`safe-area-inset-top`) pour les barres, et sur les côtés (`left`, `right`) pour le téléphone tourné.
+- Le fond d'un panneau ou d'une barre va jusqu'au bord de l'écran ; c'est son contenu qui s'arrête avant.
+- Un panneau ne dépasse jamais la hauteur visible (`100dvh` moins la marge du haut) : son corps défile, son en-tête et son pied restent en place.
+- Le clavier ouvert ne doit pas cacher le champ en cours ni le bouton de validation d'un panneau.
+- Les messages (toasts) apparaissent au-dessus de la zone réservée du bas.
+
+**Correction 6**
+
+- [ ] Mesurer d'abord sur un iPhone à encoche (ou le simulateur) : panneau d'envoi, confirmation du tirage, choix d'une personne, date de la fête, pied collant de l'envoi par email et de « Choisir les participants ». Noter ce qui est rogné.
+- [ ] `viewport-fit=cover` si la mesure le confirme, puis vérifier que rien d'autre ne bouge (barre du haut, accueil, page du participant).
+- [ ] `UiSheet` : marge du bas, hauteur maximale, corps qui défile, pied fixe. Corrigé une fois dans le composant, pas panneau par panneau.
+- [ ] `UiStickyFooter`, barre du haut, toasts : même contrôle.
+- [ ] Un test Playwright avec un profil d'iPhone récent : le dernier bouton d'un panneau est entièrement visible et cliquable.
+- [ ] Ajouter la règle au README 23.3.
+
 ### Lot 4 — Groupe : membres et exclusions
 
 - [ ] `GroupeMembres`, `GroupeMembres100`, `GroupeMembres100Deplie` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.

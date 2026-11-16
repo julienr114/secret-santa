@@ -1268,6 +1268,28 @@ Points à trancher avant de dessiner :
 - **Cette donnée ne se rattrape pas** : on ne peut pas la demander après coup pour les fêtes passées.
 - Mêmes règles que pour les statistiques de 22.11 : transparence, compteurs sans lien avec un compte, rien par groupe en dessous d'un seuil.
 
+### 22.14 Idée : alléger le panneau d'envoi (16 novembre 2026)
+
+Remarque de Julien du 16 novembre 2026 : le panneau « Envoyer à {prénom} » est très chargé. **Pour plus tard** : ni les maquettes ni le plan de refonte ne changent pour l'instant, la refonte en cours le code tel qu'il est dessiné.
+
+Aujourd'hui, le panneau montre d'un coup : l'en-tête, trois onglets de message, le message entier, « Ajouter un mot », la langue, le bouton principal, un ou deux boutons secondaires, la ligne « pas d'adresse email », le bandeau « le panneau passe à… » et le dépannage.
+
+Trois pistes dessinées dans le canevas (page « États et idées », rangée « Idées futures »), plus le renvoi :
+
+| Piste | Principe | Pour | Contre |
+|---|---|---|---|
+| **A, « Personnaliser »** | Deux lignes d'aperçu du message, un lien « Personnaliser » qui déplie onglets, mot et langue ; puis les boutons | On voit encore ce qui part | Un panneau qui change de hauteur |
+| **B, les boutons d'abord** | L'en-tête, puis tout de suite les boutons d'envoi ; une seule ligne en bas, « Message "Tirage fait", en français », ouvre le reste | Le plus court ; rien à lire pour le cas courant | On envoie sans avoir le texte sous les yeux |
+| **C, un écran entier** | Plus de panneau : un écran avec le message, trois lignes de réglage (message, langue, un mot en plus) et les boutons en pied collant | De la place, et le motif des lignes de réglage déjà utilisé ailleurs | On quitte la liste, donc on perd l'enchaînement d'une personne à la suivante |
+
+Dans les trois : le message est choisi tout seul selon l'état (jamais envoyé, « Tirage fait » ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage »), et le bandeau « le panneau passe à… » devient un lien « Passer » dans l'en-tête.
+
+**Le renvoi**, encore plus chargé aujourd'hui (correction d'adresse, trois autres chemins, dépannage), dessiné selon la piste B : « Renvoyer par email », puis deux lignes. La seconde, « Autre moyen, ou un souci ? », ouvre une liste unique : partager, copier le message, copier le lien seul, corriger l'adresse, pas envoyé finalement, régénérer le lien.
+
+Autre piste, non dessinée : pour quelqu'un qui a une adresse, le bouton rond de la ligne envoie l'email directement, avec un message « Envoyé à Inès · Annuler » pendant quelques secondes ; le panneau ne s'ouvre que par un appui sur la ligne. Le plus rapide, mais un email parti ne se rattrape pas.
+
+À vérifier avant de dessiner : que le choix automatique du message tombe juste dans tous les cas (13.2), et que cacher la langue ne fait pas envoyer un message dans la mauvaise langue sans qu'on le voie (piste : rappeler la langue dans l'aperçu quand elle n'est pas celle de l'organisateur).
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. La page **Guide de style** (`/admin/guide-de-style`, super-admin, lien depuis l'écran des groupes) montre tout ce qui est décrit ici, dans la langue choisie dans le menu.

@@ -44,6 +44,7 @@ const status = computed(
 );
 const rules = computed(() => edition.data.value?.rules);
 const participants = computed(() => edition.data.value?.participants ?? []);
+const redrawn = computed(() => edition.data.value?.redrawn ?? false);
 const label = computed(
   () =>
     edition.data.value?.edition.label ??
@@ -193,6 +194,7 @@ const dateOpen = ref(false);
         :slug="slug"
         :edition-id="id"
         :participants="participants"
+        :redrawn="redrawn"
         :can-close="canClose"
         :date-text="dateText"
         :closing="close.isPending.value"
@@ -281,6 +283,7 @@ const dateOpen = ref(false);
       :slug="slug"
       :edition-id="id"
       :status="status"
+      :redrawn="redrawn"
       :participant="sendTarget"
       :note-position="rules?.messageNotePosition ?? 'after'"
       @sent="onSent"

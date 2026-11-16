@@ -76,7 +76,7 @@ const startType = (): MessageType => {
     defaultMessageType(
       status.value,
       Boolean(person.value?.messageSentAt),
-      false,
+      edition.data.value?.redrawn ?? false,
     ) ??
     types.value[0] ??
     'invitation'

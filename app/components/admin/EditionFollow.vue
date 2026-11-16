@@ -16,6 +16,8 @@ const props = defineProps<{
   slug: string;
   editionId: string;
   participants: Participant[];
+  /** Drawn again after a cancelled draw: « Nouveau tirage » is sent. */
+  redrawn: boolean;
   /** The party is over: closing becomes the action of the moment. */
   canClose: boolean;
   /** The day of the party, written out; null when unknown. */
@@ -29,6 +31,11 @@ const base = computed(() => `/admin/${props.slug}/editions/${props.editionId}`);
 const sorted = computed(() => sortParticipants(props.participants, 'drawn'));
 const counts = computed(() => participantCounters(props.participants));
 const allNotified = computed(() => counts.value.toNotify === 0);
+/** The message the email screen opens on. */
+const emailType = computed(() => {
+  if (allNotified.value) return 'reminder';
+  return props.redrawn ? 'redraw' : 'drawn';
+});
 const counters = computed(() => [
   {
     value: counts.value.toNotify,
@@ -177,7 +184,7 @@ const confirmingRow = ref(false);
         class="h-12 justify-center font-bold"
         :ui="{ leadingIcon: 'size-5' }"
         icon="i-lucide-mail"
-        :to="`${base}/emails?type=${allNotified ? 'reminder' : 'drawn'}`"
+        :to="`${base}/emails?type=${emailType}`"
         :label="
           allNotified
             ? t('adminEdition.screen.follow.actionReminder')

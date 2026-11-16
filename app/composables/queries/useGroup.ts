@@ -26,6 +26,8 @@ export type EditionPayload = {
   edition: PublicEdition;
   rules: Rules;
   participants: Participant[];
+  /** Drawn again after a cancelled draw. */
+  redrawn: boolean;
 };
 
 type Slug = MaybeRefOrGetter<string>;

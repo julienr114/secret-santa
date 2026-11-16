@@ -647,7 +647,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
 | `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration |
 | `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente, 100 participants au plus ; le budget et le mot aux participants, s'ils sont donnés, sont les règles propres de l'édition dès sa création, sans ligne « règles modifiées » au journal) |
-| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (nombre de souhaits, jamais leur contenu) ; libellé et règles propres |
+| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (nombre de souhaits, jamais leur contenu), et `redrawn` : tirée de nouveau après une annulation (lu dans le journal, `draw_cancelled`), pour que le panneau d'envoi, « Personnaliser le message » et « Prévenir par email » proposent « Nouveau tirage » tout seuls (décidé par Julien le 17 novembre 2026) ; libellé et règles propres |
 | `POST …/editions/[id]/draw`, `/redraw`, `/close` | Cycle de vie : tirer, annuler le tirage (motif obligatoire), clôturer |
 | `GET …/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi. Liste aussi les paires des éditions clôturées qui excluent |
 | `POST/DELETE …/editions/[id]/history-waivers` | Lever une exclusion d'un tirage précédent pour cette édition ; tout rétablir |

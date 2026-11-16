@@ -360,7 +360,7 @@ Réponses de Julien du 17 novembre 2026 aux questions de la section 6. À faire 
 - [x] **Un seul nombre de membres** (lot 3, question 6) : celui des membres actifs, partout ; la ligne « Membres » dit en plus combien ne participent plus, quand il y en a.
 - [x] **Taper le nombre de places** du lien d'invitation (lot 4, question 3), en gardant « moins » et « plus ».
 - [x] **Une exclusion dans un seul sens en toutes lettres** (lot 4, question 6) : « Inès ne tire pas Louis », sans flèche.
-- [ ] **« Tirée de nouveau »** (Correction 7, question 1) : la réponse de l'édition dit si le tirage a été relancé, et le panneau propose alors « Nouveau tirage » tout seul.
+- [x] **« Tirée de nouveau »** (Correction 7, question 1) : la réponse de l'édition dit si le tirage a été relancé, et le panneau propose alors « Nouveau tirage » tout seul.
 
 ### Lot 6 — Journal
 

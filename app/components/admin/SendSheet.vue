@@ -30,6 +30,8 @@ const props = defineProps<{
   slug: string;
   editionId: string;
   status: string;
+  /** Drawn again after a cancelled draw. */
+  redrawn: boolean;
   participant: Participant;
   /** Where a word added goes: above or below the message (group rule). */
   notePosition: NotePosition;
@@ -43,8 +45,7 @@ const toast = useToast();
 const resend = computed(() => Boolean(props.participant.messageSentAt));
 const types = computed(() => messageTypesFor(props.status));
 // The message chosen on « Personnaliser le message » for this person, or
-// the one for them; whether the draw was run again is not known to the
-// screen yet (PLAN, section 6), so never.
+// the one for them (« Nouveau tirage » once the draw was run again).
 const choice = useMessageChoice(() => props.editionId);
 const chosen = computed(() =>
   choice.value?.who === props.participant.participationId ? choice.value : null,
@@ -52,7 +53,7 @@ const chosen = computed(() =>
 const type = computed<MessageType>(
   () =>
     chosen.value?.type ??
-    defaultMessageType(props.status, resend.value, false) ??
+    defaultMessageType(props.status, resend.value, props.redrawn) ??
     types.value[0] ??
     'invitation',
 );

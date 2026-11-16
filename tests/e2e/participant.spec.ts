@@ -279,15 +279,30 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
 test('a cancelled draw keeps the wish lists and resets the counters', async ({
   page,
 }) => {
+  // The edition says whether it was drawn again: not yet.
+  expect((await (await edition()).json()).redrawn).toBe(false);
   await post(`${ADMIN}/editions/${state.editionId}/redraw`, {
     reason: 'Test de relance',
   });
+  // Cancelled, not drawn yet: there is no new draw to announce.
+  expect((await (await edition()).json()).redrawn).toBe(false);
   const alice = await participantNamed('Alice');
   expect(alice.viewCount).toBe(0);
   expect(alice.wishesCount).toBe(2);
   const early = await page.request.post(`/api/p/${tokenOf('Alice')}/reveal`);
   expect(early.status()).toBe(409);
   await post(`${ADMIN}/editions/${state.editionId}/draw`);
+  // Drawn again: « Nouveau tirage » is the message to send, chosen alone.
+  expect((await (await edition()).json()).redrawn).toBe(true);
+  await page.context().addCookies((await admin().storageState()).cookies);
+  const { participationId } = await participantNamed('Alice');
+  await open(
+    page,
+    `/admin/${SLUG}/editions/${state.editionId}?envoyer=${participationId}`,
+  );
+  await expect(page.getByTestId('send-preview')).toContainText(
+    'un nouveau tirage a eu lieu',
+  );
 });
 
 test('unknown and regenerated links are refused', async ({ page }) => {

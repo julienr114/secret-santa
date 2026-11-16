@@ -160,7 +160,10 @@ export const useUpdateRulesMutation = (slug: Slug) =>
   );
 
 export const useCreateEditionMutation = (slug: Slug) =>
-  useApiMutation<{ edition: PublicEdition }, { label: string; year: number }>(
+  useApiMutation<
+    { edition: PublicEdition },
+    { label: string; year: number; eventDate: string }
+  >(
     (body) => api(`${base(slug)}/editions`, { method: 'POST', body }),
     () => groupKeys(slug),
   );

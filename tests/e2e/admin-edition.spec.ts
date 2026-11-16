@@ -67,9 +67,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // The party date is required: Christmas Day is offered in one tap.
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   await expect(page.getByText('Choisis la date de la fête')).toBeVisible();
-  await page.getByRole('button', { name: 'Choisir une date' }).click();
+  // Five people taken over, as this is the group's first edition.
+  await expect(page.getByTestId('taken-over')).toContainText(
+    '5 participants repris.',
+  );
   await page.getByRole('button', { name: /^Proposer le 25 décembre/ }).click();
+  // A budget of its own, shown in the edition's header.
+  await page.getByLabel(/^Budget/).fill('20 €');
   await page.getByRole('button', { name: "Créer l'édition" }).click();
+  await expect(page.getByText('Budget 20 €')).toBeVisible();
   // Ready to prepare at once: links work, the draw can be checked.
   await expect(
     page.getByText('5 participants, toutes les règles sont respectées.'),

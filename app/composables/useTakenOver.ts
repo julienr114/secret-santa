@@ -11,8 +11,8 @@ import {
  * them: those of the previous edition still active, or every active
  * member for a first one.
  * @param slug - The group.
- * @returns The previous edition (null for a first one), the members taken
- * over, and whether it is still loading.
+ * @returns The previous edition (null for a first one) and its rules, the
+ * members taken over, and whether it is still loading.
  */
 export const useTakenOver = (slug: MaybeRefOrGetter<string>) => {
   const dashboard = useDashboardQuery(slug);
@@ -40,5 +40,8 @@ export const useTakenOver = (slug: MaybeRefOrGetter<string>) => {
         : null,
     ),
   );
-  return { previous, members, pending };
+  const previousRules = computed(
+    () => previousEditionQuery.data.value?.rules ?? null,
+  );
+  return { previous, previousRules, members, pending };
 };

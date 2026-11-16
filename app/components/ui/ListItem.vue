@@ -109,13 +109,17 @@ const NuxtLink = resolveComponent('NuxtLink');
       <USwitch
         v-if="checked !== undefined"
         v-model="checked"
+        :loading="busy"
         size="lg"
         color="success"
         :aria-label="title"
         class="flex min-h-11 shrink-0 items-center"
       />
       <slot name="trailing" />
-      <UiSpinner v-if="busy" :label="busyLabel ?? title" />
+      <UiSpinner
+        v-if="busy && checked === undefined"
+        :label="busyLabel ?? title"
+      />
       <UIcon
         v-else-if="(to || value) && chevron"
         name="i-lucide-chevron-right"

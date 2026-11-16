@@ -36,21 +36,23 @@ watch(open, (isOpen) => {
     :loading="loading"
     @validate="emit('validate', draft.trim())"
   >
-    <UFormField :label="label" :help="hint">
+    <UFormField :label="label" :ui="{ label: 'text-[15px] font-semibold' }">
       <UTextarea
         v-model="draft"
         :maxlength="maxlength"
         :placeholder="placeholder"
         :rows="3"
         autoresize
+        size="xl"
         class="w-full"
       />
-      <template #hint>
-        <span class="tabular-nums" aria-hidden="true"
-          >{{ draft.length }} / {{ maxlength }}</span
-        >
-      </template>
     </UFormField>
+    <div class="-mt-2 flex justify-between gap-3 text-[13px] text-toned">
+      <span>{{ hint }}</span>
+      <span class="shrink-0 tabular-nums" aria-hidden="true"
+        >{{ draft.length }} / {{ maxlength }}</span
+      >
+    </div>
     <slot />
   </UiSettingSheet>
 </template>

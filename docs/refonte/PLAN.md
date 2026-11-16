@@ -312,6 +312,19 @@ Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 
 
 - [x] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau, de l'écran de personnalisation et de l'envoi à plusieurs.
 
+### Correction 8 — le sélecteur d'icône, moins haut
+
+Demandé par Julien le 16 novembre 2026 : sur son iPhone, le panneau « Mon icône » est trop haut. À faire avant le lot 6 (le lot 5 était déjà terminé quand cette section a été écrite). Maquette redessinée : `PanneauAvatar`. Fichiers : `AdminAvatarPicker.vue`, `HomeProfileSheet.vue`, et les autres écrans qui utilisent le sélecteur.
+
+Objectif : passer d'environ 690 px à environ 380 px de haut, sans descendre sous 44 px par cible.
+
+- [ ] **En-tête sur une ligne** : l'icône en cours (44 px), qui change à chaque choix, et le titre « Mon icône ». La phrase « Choisis ton emoji et ta couleur » disparaît.
+- [ ] **Les emojis sur trois rangées qui défilent de côté** (grille en colonnes, cellules de 44 px), au lieu de cinq rangées. La dernière colonne visible est coupée par le bord pour qu'on comprenne qu'il y en a d'autres. À l'ouverture, la grille défile jusqu'à l'emoji choisi.
+- [ ] **Les couleurs sur une ligne**, ronds de 32 px dans des cibles de 44 px.
+- [ ] **Plus d'intitulés « Emoji » et « Couleur »** à l'écran : des noms accessibles sur les deux groupes suffisent.
+- [ ] **« Annuler » et « Valider » côte à côte**, 48 px, « Valider » deux fois plus large.
+- [ ] Même sélecteur partout où une icône se choisit (accueil, page du participant, fiche d'une personne). Tests mis à jour.
+
 ### Lot 5 — Groupe : réglages
 
 - [x] `GroupeReglages` (`reglages.vue`) : lignes de réglage par section (Tirage, Participants, M'écrire par email, Organisateurs), chaque valeur modifiée dans son panneau (`PanneauChoix`, `PanneauTexte`).
@@ -320,6 +333,21 @@ Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 
 
 - [x] **Pas de bouton « Enregistrer » en bas de page** (validé par Julien le 16 novembre 2026) : chaque réglage s'enregistre quand on valide son panneau, un interrupteur s'enregistre dès qu'on le bascule. Une mutation par réglage, avec mise à jour optimiste et retour à l'ancienne valeur en cas d'erreur (toast). Retirer l'état « modifié, non enregistré » de la page. Même règle pour les réglages du lien d'invitation (lot 4). Ajouter la règle au README 23.3, qui dit aujourd'hui qu'un panneau enregistre avec « Valider ».
 - [x] **Actions en cours** conformes : `ChargementReglage` pour chaque ligne et chaque interrupteur.
+
+### Correction 9 — le budget et le petit mot, modifiables sur l'édition
+
+Validé par Julien le 16 novembre 2026, en réponse à la question 1 du lot 5. À faire avant le lot 6. Maquettes mises à jour : `Main`, `Suivi`.
+
+Le budget, la date de la fête et le petit mot se règlent **par édition**, plus par groupe : « Nouvelle édition » les demande et reprend ceux de l'édition précédente (lot 3). Il manquait de pouvoir corriger le budget et le mot une fois l'édition créée.
+
+- [ ] **À préparer** : dans la section « Si tu veux », après « Exclusions », deux lignes : « Budget » et « Petit mot pour les participants », chacune avec sa valeur en sous-titre (« Aucun pour l'instant » si vide).
+- [ ] **Tirage fait** : les deux mêmes lignes en tête de la section « Plus tard, ou en cas de pépin ».
+- [ ] Chaque ligne ouvre `UiTextSheet` (lot 0) et s'enregistre à la validation, par la route qui modifie déjà les règles d'une édition (celle que « Nouvelle édition » appelle). Rien à ajouter côté serveur.
+- [ ] Modifiables tant que l'édition n'est pas clôturée ; en lecture seule ensuite.
+- [ ] Le budget sous le titre de l'édition et la carte du résultat côté participant se mettent à jour aussitôt.
+- [ ] S'applique à tous les états de l'écran (aucun participant, tirage impossible, grands groupes), même si seules `Main` et `Suivi` sont redessinées.
+- [ ] **Le nombre d'idées par liste** n'est plus réglable et garde sa valeur : c'est voulu, la liste de souhaits sera remplacée par les pistes de cadeaux (README 22.11).
+- [ ] Mettre à jour le README 5 (règles par groupe) : ces trois règles sont désormais celles de l'édition.
 
 ### Lot 6 — Journal
 
@@ -411,7 +439,7 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 
 ### Lot 5
 
-1. **Réglages absents de la maquette.** `GroupeReglages` ne montre plus le budget, la date de la fête, le petit mot de l'organisateur ni le nombre d'idées par liste, qui étaient des règles du groupe. L'écran suit la maquette : ces valeurs restent en base et servent toujours (le budget repris par « Nouvelle édition », 10 idées par liste), mais ne se changent plus au niveau du groupe. Le budget, la date et le mot se règlent désormais par édition. Faut-il garder une ligne pour le nombre d'idées par liste ?
+1. **Réglages absents de la maquette.** `GroupeReglages` ne montre plus le budget, la date de la fête, le petit mot de l'organisateur ni le nombre d'idées par liste, qui étaient des règles du groupe. L'écran suit la maquette : ces valeurs restent en base et servent toujours (le budget repris par « Nouvelle édition », 10 idées par liste), mais ne se changent plus au niveau du groupe. Le budget, la date et le mot se règlent désormais par édition. Faut-il garder une ligne pour le nombre d'idées par liste ? **Réponse de Julien, 16 novembre 2026 :** voulu pour le budget, la date et le mot, qui se règlent par édition (voir « Correction 9 ») ; le nombre d'idées reste figé en attendant les pistes de cadeaux.
 2. **`PanneauNombre` du lien d'invitation et `PanneauTexte`** : les réglages du lien s'enregistrent maintenant comme ceux du groupe, dès la validation du panneau (règle de ce lot).
 3. **« Réservé au super-admin »** sous « Supprimer le groupe » n'est montré qu'au super-admin, seul à voir la ligne.
 

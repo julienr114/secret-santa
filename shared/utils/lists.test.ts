@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { FOLD_FROM, foldList, stackOf } from './lists';
+import { FOLD_FROM, foldList, listView, stackOf } from './lists';
 
 describe('stackOf', () => {
   it('shows four items by default and counts the rest', () => {
@@ -70,5 +70,39 @@ describe('foldList', () => {
         },
       ),
     );
+  });
+});
+
+describe('listView', () => {
+  const names = Array.from({ length: 20 }, (_, i) => `Personne ${i}`);
+  const look = {
+    query: '',
+    expanded: false,
+    shown: 6,
+    nameOf: (n: string) => n,
+  };
+
+  it('folds a long list', () => {
+    const view = listView(names, look);
+    expect(view.shown).toHaveLength(6);
+    expect(view.rest).toHaveLength(14);
+  });
+
+  it('shows everything once unfolded', () => {
+    expect(listView(names, { ...look, expanded: true })).toEqual({
+      shown: names,
+      rest: [],
+    });
+  });
+
+  it('shows every match while searching, never folded', () => {
+    const view = listView(['Élodie', 'Lola', 'Hugo', 'Lou'], {
+      ...look,
+      shown: 1,
+      from: 0,
+      query: 'lo',
+    });
+    expect(view).toEqual({ shown: ['Élodie', 'Lola', 'Lou'], rest: [] });
+    expect(listView(names, { ...look, query: '   ' }).shown).toHaveLength(6);
   });
 });

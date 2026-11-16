@@ -317,3 +317,22 @@ export const sortParticipants = <P extends FollowedParticipant>(
           FOLLOW_STATES.indexOf(followState(a)) -
             FOLLOW_STATES.indexOf(followState(b)) || byFirstName(a, b),
       );
+
+/** The participants who stand at the same place after the draw. */
+export type FollowSeries<P> = { state: FollowState; items: P[] };
+
+/**
+ * The list after the draw, cut into its series: to notify, not opened,
+ * looked. Each keeps the order of the list; an empty series is left out.
+ * @param participants - The participants.
+ * @returns The series, from the least done.
+ */
+export const followSeries = <P extends FollowedParticipant>(
+  participants: readonly P[],
+): FollowSeries<P>[] => {
+  const sorted = sortParticipants(participants, 'drawn');
+  return FOLLOW_STATES.map((state) => ({
+    state,
+    items: sorted.filter((p) => followState(p) === state),
+  })).filter((series) => series.items.length > 0);
+};

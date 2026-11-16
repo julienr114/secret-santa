@@ -1,3 +1,5 @@
+import { matchesName } from './names';
+
 // Small helpers to show a list in little space. Pure.
 
 /** The first items of a list, and how many are left out. */
@@ -42,4 +44,40 @@ export const foldList = <T>(
   if (items.length <= from) return { shown: [...items], rest: [] };
   const limit = Math.max(0, Math.floor(shown));
   return { shown: items.slice(0, limit), rest: items.slice(limit) };
+};
+
+/** How a long list of people is looked at right now. */
+export type ListLook<T> = {
+  /** What is typed in the search field. */
+  query: string;
+  /** The list was unfolded with "Voir les N autres". */
+  expanded: boolean;
+  /** How many rows show when it folds. */
+  shown: number;
+  /** The first name searched in each item. */
+  nameOf: (item: T) => string;
+  /** The size from which it folds; `FOLD_FROM` by default. */
+  from?: number;
+};
+
+/**
+ * The rows a long list of people shows: every match while searching
+ * (never folded), the whole list once unfolded, otherwise the folded list.
+ * @param items - The whole list, in its order.
+ * @param look - The search, whether it was unfolded, and how it folds.
+ * @returns The rows shown and those behind the fold row.
+ */
+export const listView = <T>(
+  items: readonly T[],
+  look: ListLook<T>,
+): Fold<T> => {
+  if (look.query.trim()) {
+    return {
+      shown: items.filter((item) => matchesName(look.query, look.nameOf(item))),
+      rest: [],
+    };
+  }
+  return look.expanded
+    ? { shown: [...items], rest: [] }
+    : foldList(items, look.shown, look.from);
 };

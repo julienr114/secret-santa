@@ -15,6 +15,7 @@ import {
   participantBadges,
   previousEdition,
   editionStep,
+  followSeries,
   followState,
   preselectedForEmail,
   participantCounters,
@@ -237,6 +238,24 @@ describe('follow-up of the participants', () => {
     expect(preselectedForEmail(withEmail('rose@example.com', false, 1))).toBe(
       false,
     );
+  });
+
+  it('cuts the list into its series, in the order of the list', () => {
+    const series = followSeries(people);
+    expect(series.map((s) => s.state)).toEqual([
+      'toNotify',
+      'notOpened',
+      'viewed',
+    ]);
+    expect(series[0]?.items.map((p) => p.firstName)).toEqual(['Inès', 'Rose']);
+    expect(series[2]?.items.map((p) => p.firstName)).toEqual([
+      'Camille',
+      'Zoé',
+    ]);
+    expect(
+      followSeries(people.filter((p) => p.viewCount > 0)).map((s) => s.state),
+    ).toEqual(['viewed']);
+    expect(followSeries([])).toEqual([]);
   });
 
   it('counts each state', () => {

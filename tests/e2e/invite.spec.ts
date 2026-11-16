@@ -57,18 +57,31 @@ test('the organiser creates the group link from the people page', async ({
   const row = page.getByTestId('invite-row');
   await expect(row).toContainText('Désactivé');
   await row.click();
-  // Places default to what the group can still take; two are enough here.
-  await page.getByLabel('Places').fill('2');
-  await page
-    .getByLabel('Ton mot sur la page d’invitation')
-    .fill('Bienvenue dans la famille !');
   await page.getByRole('button', { name: 'Créer le lien' }).click();
-  // The message to share, like the messages of a draw.
+  // The message to share, as the guests will read it.
   const message = page.getByTestId('invite-message');
   await expect(message).toContainText('Famille Invite');
   const text = (await message.textContent()) ?? '';
   state.code = text.trim().split('/').at(-1)!;
   expect(state.code).toMatch(/^[A-Za-z0-9_-]{16}$/);
+  // Each setting is saved from its own sheet: the words on the page here.
+  await page.getByRole('button', { name: /^Ton mot sur la page/ }).click();
+  await page.getByRole('textbox').fill('Bienvenue dans la famille !');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(
+    page.getByRole('button', { name: /^Ton mot sur la page/ }),
+  ).toContainText('« Bienvenue dans la famille ! »');
+  // Two places are enough here: set through the same route as the sheet,
+  // which only steps one by one.
+  const placed = await page.request.post(`${ADMIN}/invite`, {
+    data: { open: true, places: 2, message: 'Bienvenue dans la famille !' },
+  });
+  expect(placed.ok()).toBe(true);
+  await page.reload();
+  await hydrated(page);
+  await expect(
+    page.getByRole('button', { name: /^Places restantes/ }),
+  ).toContainText('2');
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(row).toContainText('2 places restantes');
 });

@@ -1,28 +1,42 @@
 <script setup lang="ts">
 import { INVITE_MESSAGE_MAX, buildInviteMessage } from '#server/utils/invite';
 import { MAX_PARTICIPANTS } from '#server/utils/editions';
+import { formatEventDate } from '#server/utils/rules';
 import {
   useDashboardQuery,
   useInviteLinkMutation,
+  usePeopleQuery,
 } from '~/composables/queries/useGroup';
 
-// The invitation link of a group, closed by default: its settings (an
-// optional last day, places, the organiser's words on its page), and once
-// open, the message to copy or share, like the messages of a draw.
-// Whoever opens the link logs in and joins the group.
+// The invitation link of a group, closed by default. Once open: the
+// message to share, as the guests will read it, then the link's settings,
+// each saved from its own sheet (places left, last day, the organiser's
+// words on its page), then a new link or none. Whoever opens the link
+// logs in and joins the group.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const group = computed(() => dashboard.data.value?.group);
+const people = usePeopleQuery(slug);
+/** What a draw can still take: by default, the link's places. */
+const room = computed(() =>
+  Math.max(
+    1,
+    MAX_PARTICIPANTS -
+      (people.data.value?.persons ?? []).filter((p) => p.active).length,
+  ),
+);
 const { t, locale } = useT();
+const context = useScreenContext(slug);
 useHead({
-  title: () => `${t('adminEdition.invite.title')} — ${t('common.appName')}`,
+  title: () => context.titleOf(t('adminEdition.screen.empty.invite')),
 });
 const screen = computed(() => ({ back: `/admin/${slug.value}/personnes` }));
 const errorMessage = useErrorMessage();
 const toast = useToast();
 const mutation = useInviteLinkMutation(slug);
+const opening = useBusy(() => mutation.isPending.value);
 
 const code = computed(() => group.value?.inviteCode ?? null);
 const url = computed(() =>
@@ -43,47 +57,85 @@ const message = computed(() =>
     : '',
 );
 
-// The settings edit a draft; places left empty take the default.
-const draft = reactive<{
-  until: string;
-  places: number | undefined;
-  message: string;
-}>({ until: '', places: undefined, message: '' });
-watch(
-  group,
-  (g) => {
-    if (!g) return;
-    Object.assign(draft, {
-      until: g.inviteUntil ?? '',
-      places: g.invitePlaces ?? undefined,
-      message: g.inviteMessage ?? '',
-    });
-  },
-  { immediate: true },
-);
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
-const onSave = () =>
+/** The settings as saved, sent again with the one that changes. */
+const settings = computed(() => ({
+  until: group.value?.inviteUntil ?? null,
+  places: group.value?.invitePlaces ?? null,
+  message: group.value?.inviteMessage ?? null,
+}));
+const editing = ref<null | 'places' | 'until' | 'message'>(null);
+const sheetOpen = (which: 'places' | 'until' | 'message') =>
+  computed({
+    get: () => editing.value === which,
+    set: (value) => {
+      editing.value = value ? which : null;
+    },
+  });
+const placesOpen = sheetOpen('places');
+const untilOpen = sheetOpen('until');
+const messageOpen = sheetOpen('message');
+const error = ref<string | null>(null);
+watch(editing, () => {
+  error.value = null;
+});
+/**
+ * Saves one setting of the link, then closes its sheet.
+ * @param change - The setting that changes.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const save = (change: Partial<typeof settings.value>) => {
+  const next = { ...settings.value, ...change };
   mutation.mutate(
     {
       open: true,
-      until: draft.until || null,
-      ...(draft.places ? { places: draft.places } : {}),
-      message: draft.message.trim() || null,
+      until: next.until,
+      ...(next.places ? { places: next.places } : {}),
+      message: next.message?.trim() || null,
     },
     {
-      onSuccess: () =>
-        toast.add({
-          title: t('adminEdition.invite.saved'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        }),
+      onSuccess: () => {
+        editing.value = null;
+      },
+      onError: (failure) => {
+        error.value = errorMessage(failure);
+      },
+    },
+  );
+};
+/**
+ * Shows an error in a toast.
+ * @param failure - The error of a mutation.
+ * @returns Nothing.
+ */
+const onError = (failure: unknown) =>
+  toast.add({ title: errorMessage(failure), color: 'error' });
+const onOpen = () => mutation.mutate({ open: true }, { onError });
+const confirming = ref<null | 'renew' | 'close'>(null);
+const onRenew = () =>
+  mutation.mutate(
+    { open: true, renew: true },
+    {
+      onSuccess: () => {
+        confirming.value = null;
+      },
       onError,
     },
   );
-const onRenew = () => mutation.mutate({ open: true, renew: true }, { onError });
-const onClose = () => mutation.mutate({ open: false }, { onError });
+const onClose = () =>
+  mutation.mutate(
+    { open: false },
+    {
+      onSuccess: () => {
+        confirming.value = null;
+      },
+      onError,
+    },
+  );
 
+/**
+ * Copies the message to share.
+ * @returns Once copied.
+ */
 const copy = async () => {
   await navigator.clipboard.writeText(message.value);
   toast.add({
@@ -92,114 +144,207 @@ const copy = async () => {
     icon: 'i-lucide-clipboard-check',
   });
 };
+/**
+ * Opens the phone's share sheet, or copies where there is none.
+ * @returns Once shared or copied.
+ */
 const share = () =>
   typeof navigator.share === 'function'
     ? navigator.share({ text: message.value }).catch(() => null)
     : copy();
+const untilValue = computed(() =>
+  settings.value.until
+    ? formatEventDate(settings.value.until, locale.value)
+    : t('adminEdition.invite.none'),
+);
+const messageValue = computed(() =>
+  settings.value.message
+    ? `« ${settings.value.message} »`
+    : t('adminEdition.invite.noWords'),
+);
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <UiPageTitle>{{ t('adminEdition.invite.title') }}</UiPageTitle>
-    <p class="text-sm text-muted">{{ t('adminEdition.invite.description') }}</p>
+    <div class="flex flex-col gap-1">
+      <UiPageContext
+        :parts="context.parts.value"
+        :label="t('common.context')"
+      />
+      <UiPageTitle>{{ t('adminEdition.screen.empty.invite') }}</UiPageTitle>
+      <p class="text-[15px] text-toned">
+        {{ t('adminEdition.invite.description') }}
+      </p>
+    </div>
     <AdminQueryState
       :pending="dashboard.isPending.value"
       :error="dashboard.error.value"
+      :skeleton="['card', 'list']"
+      :rows="3"
     >
-      <div class="flex flex-col gap-6">
-        <section v-if="code" class="flex flex-col gap-2">
-          <UiSectionTitle>{{
-            t('adminEdition.invite.shareTitle')
-          }}</UiSectionTitle>
-          <UiTextPreview data-testid="invite-message">{{
-            message
-          }}</UiTextPreview>
-          <div class="grid grid-cols-2 gap-2">
-            <UButton
-              block
-              variant="soft"
-              color="neutral"
-              icon="i-lucide-copy"
-              :label="t('adminEdition.invite.copyMessage')"
-              @click="copy"
-            />
-            <UButton
-              block
-              icon="i-lucide-share-2"
-              :label="t('adminEdition.invite.share')"
-              @click="share"
-            />
-          </div>
-        </section>
-
-        <form
-          id="invite-form"
-          class="flex flex-col gap-4"
-          novalidate
-          @submit.prevent="onSave"
-        >
-          <UFormField
-            :label="t('adminEdition.invite.until')"
-            :help="t('adminEdition.invite.untilHelp')"
-          >
-            <UInput v-model="draft.until" type="date" class="w-full" />
-          </UFormField>
-          <UFormField
-            :label="t('adminEdition.invite.places')"
-            :help="t('adminEdition.invite.placesHelp')"
-          >
-            <UInputNumber
-              v-model="draft.places"
-              :min="1"
-              :max="MAX_PARTICIPANTS"
-              class="w-full"
-            />
-          </UFormField>
-          <UFormField
-            :label="t('adminEdition.invite.messageLabel')"
-            :help="t('adminEdition.invite.messageHelp')"
-          >
-            <UTextarea
-              v-model="draft.message"
-              :maxlength="INVITE_MESSAGE_MAX"
-              :rows="3"
-              autoresize
-              class="w-full"
-            />
-          </UFormField>
-        </form>
-
-        <div v-if="code" class="flex flex-col items-start">
-          <UButton
-            variant="link"
-            color="neutral"
-            size="sm"
-            class="-ml-2.5"
-            icon="i-lucide-refresh-cw"
-            :loading="mutation.isPending.value"
-            :label="t('adminEdition.invite.renew')"
-            @click="onRenew"
+      <UiCard
+        padding="md"
+        class="flex flex-col gap-3"
+        data-testid="invite-card"
+      >
+        <template v-if="code">
+          <UiMessageBubble
+            :text="message"
+            :link="url"
+            class="max-w-[96%]"
+            data-testid="invite-message"
           />
           <UButton
-            variant="link"
-            color="error"
-            size="sm"
-            class="-ml-2.5"
-            icon="i-lucide-link-2-off"
-            :label="t('adminEdition.invite.close')"
-            @click="onClose"
+            block
+            size="xl"
+            icon="i-lucide-share-2"
+            class="h-12 justify-center font-bold"
+            :ui="{ leadingIcon: 'size-5' }"
+            :label="t('adminEdition.invite.shareLink')"
+            @click="share"
           />
-        </div>
-      </div>
-      <UButton
-        type="submit"
-        form="invite-form"
-        block
-        :loading="mutation.isPending.value"
-        :label="
-          code ? t('adminEdition.invite.save') : t('adminEdition.invite.create')
-        "
-      />
+          <UButton
+            block
+            variant="ghost"
+            icon="i-lucide-copy"
+            class="h-11 justify-center text-[15px] font-semibold text-primary-ink"
+            :label="t('adminEdition.invite.copyMessage')"
+            @click="copy"
+          />
+        </template>
+        <template v-else>
+          <p class="text-sm text-toned">
+            {{ t('adminEdition.invite.closed') }}
+          </p>
+          <UButton
+            block
+            size="xl"
+            icon="i-lucide-link"
+            class="h-12 justify-center font-bold"
+            :disabled="mutation.isPending.value"
+            :loading="opening"
+            :label="t('adminEdition.invite.create')"
+            @click="onOpen"
+          />
+        </template>
+      </UiCard>
+
+      <template v-if="code">
+        <UiList :title="t('adminEdition.invite.settings')">
+          <UiListItem
+            :title="t('adminEdition.invite.places')"
+            :value="String(settings.places ?? room)"
+            :on-click="() => (editing = 'places')"
+          />
+          <UiListItem
+            :title="t('adminEdition.invite.until')"
+            :value="untilValue"
+            :on-click="() => (editing = 'until')"
+          />
+          <UiListItem
+            :title="t('adminEdition.invite.messageRow')"
+            :value="messageValue"
+            :on-click="() => (editing = 'message')"
+          />
+        </UiList>
+
+        <UiList>
+          <UiListItem
+            v-if="confirming !== 'renew'"
+            icon="i-lucide-rotate-ccw"
+            icon-tone="neutral"
+            :title="t('adminEdition.invite.renew')"
+            :subtitle="t('adminEdition.invite.renewHint')"
+            :on-click="() => (confirming = 'renew')"
+          />
+          <li v-else class="flex flex-col gap-2 px-4 py-3">
+            <p class="text-sm">{{ t('adminEdition.invite.renewConfirm') }}</p>
+            <div class="flex gap-2">
+              <UButton
+                class="min-h-11"
+                :loading="mutation.isPending.value"
+                :label="t('adminEdition.invite.renew')"
+                @click="onRenew"
+              />
+              <UButton
+                variant="ghost"
+                color="neutral"
+                class="min-h-11"
+                :label="t('common.actions.cancel')"
+                @click="confirming = null"
+              />
+            </div>
+          </li>
+          <UiListItem
+            v-if="confirming !== 'close'"
+            icon="i-lucide-x"
+            tone="danger"
+            :title="t('adminEdition.invite.close')"
+            :subtitle="t('adminEdition.invite.closeHint')"
+            :on-click="() => (confirming = 'close')"
+          />
+          <li v-else class="flex flex-col gap-2 px-4 py-3">
+            <p class="text-sm">{{ t('adminEdition.invite.closeConfirm') }}</p>
+            <div class="flex gap-2">
+              <UButton
+                color="error"
+                class="min-h-11"
+                :loading="mutation.isPending.value"
+                :label="t('adminEdition.invite.close')"
+                @click="onClose"
+              />
+              <UButton
+                variant="ghost"
+                color="neutral"
+                class="min-h-11"
+                :label="t('common.actions.cancel')"
+                @click="confirming = null"
+              />
+            </div>
+          </li>
+        </UiList>
+      </template>
     </AdminQueryState>
+
+    <UiNumberSheet
+      v-model:open="placesOpen"
+      :title="t('adminEdition.invite.places')"
+      :description="t('adminEdition.invite.placesHelp')"
+      :value="settings.places ?? room"
+      :hint="t('adminEdition.invite.capacity', { count: room })"
+      :min="1"
+      :max="MAX_PARTICIPANTS"
+      :decrease-label="t('adminEdition.invite.fewer')"
+      :increase-label="t('adminEdition.invite.more')"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      :error="error"
+      :loading="mutation.isPending.value"
+      @validate="(places) => save({ places })"
+    />
+    <AdminDateSheet
+      v-model:open="untilOpen"
+      :title="t('adminEdition.invite.until')"
+      :description="t('adminEdition.invite.untilHelp')"
+      :label="t('adminEdition.invite.dateLabel')"
+      :value="settings.until ?? ''"
+      :clear-label="t('adminEdition.invite.noUntil')"
+      :error="error"
+      :loading="mutation.isPending.value"
+      @validate="(until) => save({ until: until || null })"
+    />
+    <UiTextSheet
+      v-model:open="messageOpen"
+      :title="t('adminEdition.invite.messageRow')"
+      :description="t('adminEdition.invite.messageHelp')"
+      :label="t('adminEdition.invite.messageRow')"
+      :value="settings.message ?? ''"
+      :maxlength="INVITE_MESSAGE_MAX"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      :error="error"
+      :loading="mutation.isPending.value"
+      @validate="(text) => save({ message: text })"
+    />
   </AdminScreen>
 </template>

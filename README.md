@@ -1269,27 +1269,13 @@ Points à trancher avant de dessiner :
 - **Cette donnée ne se rattrape pas** : on ne peut pas la demander après coup pour les fêtes passées.
 - Mêmes règles que pour les statistiques de 22.11 : transparence, compteurs sans lien avec un compte, rien par groupe en dessous d'un seuil.
 
-### 22.14 Idée : alléger le panneau d'envoi (16 novembre 2026)
+### 22.14 Décidé : le panneau d'envoi allégé (16 novembre 2026)
 
-Remarque de Julien du 16 novembre 2026 : le panneau « Envoyer à {prénom} » est très chargé. **Pour plus tard** : ni les maquettes ni le plan de refonte ne changent pour l'instant, la refonte en cours le code tel qu'il est dessiné.
+Remarque de Julien du 16 novembre 2026 : le panneau « Envoyer à {prénom} » était très chargé, plus encore au renvoi. Trois pistes ont été dessinées (A, deux lignes d'aperçu et « Personnaliser » ; B, les boutons d'abord ; C, un écran entier) ; **la piste A est retenue, pour l'envoi comme pour le renvoi**. Elle est décrite dans `docs/refonte/PLAN.md`, « Correction 7 », et dans les maquettes `Envoi`, `EnvoiPersonnaliser`, `EnvoiSansEmail`, `EnvoiAjouterEmail`, `Renvoi`, `RenvoiPepin`.
 
-Aujourd'hui, le panneau montre d'un coup : l'en-tête, trois onglets de message, le message entier, « Ajouter un mot », la langue, le bouton principal, un ou deux boutons secondaires, la ligne « pas d'adresse email », le bandeau « le panneau passe à… » et le dépannage.
+En bref : à l'ouverture, l'en-tête, deux lignes du message, « Personnaliser », les boutons d'envoi et une ligne « Autre moyen, ou un souci ? ». Le message est choisi tout seul selon la situation. Tout ce qui est rare (autres chemins, correction d'adresse, dépannage) est dans la liste qu'ouvre cette ligne. L'enchaînement d'une personne à la suivante est supprimé : les groupes où l'on prévient beaucoup de monde à la main seront rares, et l'envoi par email à plusieurs couvre ce cas.
 
-Trois pistes dessinées dans le canevas (page « États et idées », rangée « Idées futures »), plus le renvoi :
-
-| Piste | Principe | Pour | Contre |
-|---|---|---|---|
-| **A, « Personnaliser »** | Deux lignes d'aperçu du message, un lien « Personnaliser » qui déplie onglets, mot et langue ; puis les boutons | On voit encore ce qui part | Un panneau qui change de hauteur |
-| **B, les boutons d'abord** | L'en-tête, puis tout de suite les boutons d'envoi ; une seule ligne en bas, « Message "Tirage fait", en français », ouvre le reste | Le plus court ; rien à lire pour le cas courant | On envoie sans avoir le texte sous les yeux |
-| **C, un écran entier** | Plus de panneau : un écran avec le message, trois lignes de réglage (message, langue, un mot en plus) et les boutons en pied collant | De la place, et le motif des lignes de réglage déjà utilisé ailleurs | On quitte la liste, donc on perd l'enchaînement d'une personne à la suivante |
-
-Dans les trois : le message est choisi tout seul selon l'état (jamais envoyé, « Tirage fait » ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage »), et le bandeau « le panneau passe à… » devient un lien « Passer » dans l'en-tête.
-
-**Le renvoi**, encore plus chargé aujourd'hui (correction d'adresse, trois autres chemins, dépannage), dessiné selon la piste B : « Renvoyer par email », puis deux lignes. La seconde, « Autre moyen, ou un souci ? », ouvre une liste unique : partager, copier le message, copier le lien seul, corriger l'adresse, pas envoyé finalement, régénérer le lien.
-
-Autre piste, non dessinée : pour quelqu'un qui a une adresse, le bouton rond de la ligne envoie l'email directement, avec un message « Envoyé à Inès · Annuler » pendant quelques secondes ; le panneau ne s'ouvre que par un appui sur la ligne. Le plus rapide, mais un email parti ne se rattrape pas.
-
-À vérifier avant de dessiner : que le choix automatique du message tombe juste dans tous les cas (13.2), et que cacher la langue ne fait pas envoyer un message dans la mauvaise langue sans qu'on le voie (piste : rappeler la langue dans l'aperçu quand elle n'est pas celle de l'organisateur).
+Écartées : B (on envoie sans avoir le texte sous les yeux) et C (un écran entier fait quitter la liste). Non retenue non plus : l'envoi direct par le bouton rond avec « Annuler », parce qu'un email parti ne se rattrape pas.
 
 ## 23. Design system
 

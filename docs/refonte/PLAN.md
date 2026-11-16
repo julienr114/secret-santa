@@ -277,6 +277,22 @@ Demandé par Julien le 16 novembre 2026 : sur iPhone, le bas des panneaux est ro
 - [ ] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
 - [ ] **Actions en cours** conformes : roue dans les boutons des formulaires et des panneaux.
 
+### Correction 7 — le panneau d'envoi allégé
+
+Décidé par Julien le 16 novembre 2026 : le panneau « Envoyer à {prénom} » était trop chargé, surtout au renvoi. À faire après le lot 4, avant le lot 5. Maquettes redessinées : `Envoi`, `EnvoiPersonnaliser` (nouvelle), `EnvoiSansEmail`, `EnvoiAjouterEmail`, `Renvoi`, `RenvoiPepin` (devenue la liste « Autre moyen, ou un souci ? »). Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 2 disaient de la disposition du panneau ; leurs autres points restent (bulle, boutons de 56 et 52 px, adresse ajoutée sur place, fermeture ronde).
+
+**Le principe** : à l'ouverture, seulement de quoi envoyer. Le panneau a trois états, un seul visible à la fois.
+
+- [ ] **État de départ** : l'en-tête ; le message réduit à **deux lignes** dans sa bulle ; le lien « Personnaliser » ; les boutons d'envoi ; une ligne en bas, « Autre moyen, ou un souci ? ».
+- [ ] **« Personnaliser »** déplie sur place : le choix du message en trois segments, le message entier, « Ajouter un mot », la langue. Le même lien, chevron vers le haut, replie. Les boutons d'envoi ne bougent pas de place dans le panneau.
+- [ ] **Le message est choisi tout seul** à l'ouverture : jamais envoyé, « Tirage fait » (ou l'invitation avant le tirage) ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage ». Fonction pure avec ses tests, à partir de l'état de l'édition et de la personne ; vérifier avec le README 13.2.
+- [ ] **« Autre moyen, ou un souci ? »** remplace le contenu du panneau par une liste, avec « Retour » en haut. Au renvoi : « L'email n'arrive pas » (partager, copier le message, copier le lien seul, corriger son adresse email) puis « Dépannage » (pas envoyé finalement, régénérer son lien). Au premier envoi : copier le lien seul, corriger ou ajouter l'adresse, régénérer son lien ; pas de « pas envoyé finalement ». La ligne « Dépannage » repliée du lot 2 disparaît : son contenu est dans cette liste.
+- [ ] **Boutons de l'état de départ** : premier envoi avec adresse, « Envoyer par email » puis « Partager » et « Copier » ; sans adresse, « Partager (WhatsApp, SMS…) », « Copier le message » et la ligne « {Prénom} n'a pas d'adresse email · Ajouter » ; au renvoi, « Renvoyer par email » seul, le reste est dans la liste.
+- [ ] **Plus d'enchaînement** : le bandeau « le panneau passe à… », « Passer » et le passage automatique à la personne suivante sont supprimés. Après un envoi, le panneau se referme. Retirer le code et les textes correspondants.
+- [ ] Sous-titre de l'en-tête : l'état de la personne (« Pas encore envoyé », « Envoyé par email, pas encore consulté »), plus le nombre de personnes restantes.
+- [ ] **La langue cachée ne doit pas piéger** : si la langue du message n'est pas celle de l'organisateur, la rappeler à côté de « Personnaliser » (par exemple « Personnaliser · en anglais »).
+- [ ] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau mis à jour.
+
 ### Lot 5 — Groupe : réglages
 
 - [ ] `GroupeReglages` (`reglages.vue`) : lignes de réglage par section (Tirage, Participants, M'écrire par email, Organisateurs), chaque valeur modifiée dans son panneau (`PanneauChoix`, `PanneauTexte`).

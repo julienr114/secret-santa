@@ -84,12 +84,12 @@ Détaillé par lot en section 5.
 
 Rien de visible pour l'utilisateur, tout le reste en dépend.
 
-- [ ] **Repli des longues listes.** Fonction pure `foldList(items, shown)` dans `shared/utils/lists.ts` (renvoie les éléments montrés et le reste), testée. Composant `UiFoldRow` : trois petites icônes de personne qui se chevauchent, « Voir les N autres » et chevron en brique, un petit espace sous la ligne avant la suite ; un appui déplie sur place. Référence : `Preparer100`, `Suivi100`.
-- [ ] **Recherche dans une liste.** Composant `UiSearchField` au-dessus d'une liste de plus de 10 personnes, sur `matchesName` et `highlightName` qui existent. La recherche montre tous les résultats, sans repli. Référence : `GroupeMembres100`, `ChoisirPersonneRecherche`.
-- [ ] **Panneaux de réglage.** Quatre panneaux génériques sur `UiSheet`, avec « Valider » et « Annuler » : `UiChoiceSheet` (une valeur parmi plusieurs, avec aide par option), `UiTextSheet` (texte et compteur), `UiNumberSheet` (moins, nombre, plus), et une date facultative en généralisant `AdminDateSheet`. Référence : `PanneauChoix`, `PanneauTexte`, `PanneauNombre`, `PanneauDate`.
-- [ ] **Ligne de réglage.** `UiListItem` avec la valeur courante à droite, et variante avec interrupteur. Référence : `GroupeReglages`.
-- [ ] **Chargement et erreur.** `AdminQueryState` : squelette à la forme de l'écran (`EtatChargement`) ; erreur avec titre, phrase, « Réessayer » (`refetch`) et un retour (`EtatErreur`). Dans un panneau : ligne rouge au-dessus du bouton, panneau ouvert, saisie gardée. Accès refusé : phrase claire et retour à l'accueil.
-- [ ] Guide de style et README 23.2 à jour.
+- [x] **Repli des longues listes.** Fonction pure `foldList(items, shown)` dans `shared/utils/lists.ts` (renvoie les éléments montrés et le reste), testée. Composant `UiFoldRow` : trois petites icônes de personne qui se chevauchent, « Voir les N autres » et chevron en brique, un petit espace sous la ligne avant la suite ; un appui déplie sur place. Référence : `Preparer100`, `Suivi100`.
+- [x] **Recherche dans une liste.** Composant `UiSearchField` au-dessus d'une liste de plus de 10 personnes, sur `matchesName` et `highlightName` qui existent. La recherche montre tous les résultats, sans repli. Référence : `GroupeMembres100`, `ChoisirPersonneRecherche`.
+- [x] **Panneaux de réglage.** Quatre panneaux génériques sur `UiSheet`, avec « Valider » et « Annuler » : `UiChoiceSheet` (une valeur parmi plusieurs, avec aide par option), `UiTextSheet` (texte et compteur), `UiNumberSheet` (moins, nombre, plus), et une date facultative en généralisant `AdminDateSheet`. Référence : `PanneauChoix`, `PanneauTexte`, `PanneauNombre`, `PanneauDate`.
+- [x] **Ligne de réglage.** `UiListItem` avec la valeur courante à droite, et variante avec interrupteur. Référence : `GroupeReglages`.
+- [x] **Chargement et erreur.** `AdminQueryState` : squelette à la forme de l'écran (`EtatChargement`) ; erreur avec titre, phrase, « Réessayer » (`refetch`) et un retour (`EtatErreur`). Dans un panneau : ligne rouge au-dessus du bouton, panneau ouvert, saisie gardée. Accès refusé : phrase claire et retour à l'accueil.
+- [x] Guide de style et README 23.2 à jour.
 
 **Fini quand** : chaque composant est dans le guide de style, les fonctions pures sont testées, aucun écran n'a changé.
 

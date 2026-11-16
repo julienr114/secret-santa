@@ -25,7 +25,9 @@ test('the style guide shows the edition components', async ({ page }) => {
   await page.getByRole('button', { name: 'UiPersonPicker (5)' }).click();
   const list = page.getByRole('listbox', { name: 'Le résultat de qui ?' });
   await expect(list.getByRole('option')).toHaveCount(5);
-  await expect(page.getByPlaceholder('Chercher un prénom')).toHaveCount(0);
+  await expect(
+    page.getByRole('dialog').getByPlaceholder('Chercher un prénom'),
+  ).toHaveCount(0);
   await list.getByRole('option', { name: 'Hugo' }).click();
   await expect(list.getByRole('option', { name: 'Hugo' })).toHaveAttribute(
     'aria-selected',
@@ -35,11 +37,31 @@ test('the style guide shows the edition components', async ({ page }) => {
 
   // More than ten: a search that ignores accents and capitals.
   await page.getByRole('button', { name: 'Avec recherche (12)' }).click();
-  const search = page.getByPlaceholder('Chercher un prénom');
+  const search = page
+    .getByRole('dialog')
+    .getByPlaceholder('Chercher un prénom');
   await search.fill('LO');
   await expect(page.getByText('5 prénoms sur 12')).toBeVisible();
   const big = page.getByRole('listbox', { name: 'Le résultat de qui ?' });
   await expect(big.getByRole('option')).toHaveCount(5);
   await expect(big.locator('mark').first()).toHaveText('Lo');
   await expect(big.getByRole('option', { name: 'Élodie' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  // A long list folds behind one row, which unfolds it in place.
+  await page.getByRole('button', { name: /^Voir les 9 autres/ }).click();
+  await expect(page.getByRole('button', { name: /^Voir les/ })).toHaveCount(0);
+  await expect(page.getByText('Lou', { exact: true })).toBeVisible();
+
+  // A setting is only kept with "Valider".
+  const row = page.getByRole('button', { name: /^Éviter la même personne/ });
+  await expect(row).toContainText('Pas la même que l’an dernier');
+  await row.click();
+  await page.getByRole('radio', { name: 'Non, peu importe' }).check();
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(row).toContainText('Pas la même que l’an dernier');
+  await row.click();
+  await page.getByRole('radio', { name: 'Non, peu importe' }).check();
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(row).toContainText('Non, peu importe');
 });

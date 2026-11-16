@@ -218,6 +218,33 @@ Demandé par Julien le 16 novembre 2026, à faire avec la reprise du lot 1, avan
 - [x] `EditionNouvelle` (`editions/nouvelle.vue`) : voir « Partiel ».
 - [x] **Actions en cours** conformes : roue dans « Créer l'édition ».
 
+### Le contexte d'un écran — règle pour tous les lots, et Correction 5
+
+Demandé par Julien le 16 novembre 2026, après un audit des maquettes. Plusieurs écrans s'atteignent directement (carte « À faire maintenant » de l'accueil, email, favori) sans passer par l'édition : on doit toujours y lire dans quel groupe et quelle édition on se trouve, sans que ce soit voyant.
+
+**La règle**
+
+- **Une ligne de contexte au-dessus du titre** de chaque écran rattaché à un groupe ou à une édition : petite, grise (14 px, graisse 600, `text-muted`), toujours dans le même ordre, « {Groupe} · {Édition} », ou « {Groupe} » seul pour un écran du groupe.
+- **Chaque morceau est un lien** : le groupe mène à l'accueil du groupe, l'édition à l'écran de l'édition. Cible tactile de 44 px sans agrandir la ligne à l'œil. Balise `nav` avec un nom accessible.
+- **Un seul composant**, sans texte ni métier, dans `ui/*` et dans le guide de style : soit une prop `context` sur `UiPageTitle`, soit un `UiPageContext` posé juste au-dessus. Aucun écran ne compose cette ligne à la main.
+- **Elle remplace** le nom du groupe ou de l'édition écrit sous le titre. Une vraie phrase d'explication sous le titre reste.
+- **Exceptions** : l'écran de l'édition (son titre est l'édition, le groupe reste dessous) ; l'accueil du groupe (son titre est le groupe) ; les panneaux du bas (on voit l'écran derrière) ; les écrans du compte et de l'administration, qui n'ont pas de groupe ; « lien invalide », qui ne doit rien révéler.
+- **Écran à barre de titre** (envoi par email à plusieurs) : le contexte est sous le titre, dans la barre, en 12 px, sans lien.
+- **Le bouton retour** mène toujours à l'écran parent, même quand on est arrivé directement et qu'il n'y a pas d'historique.
+- **Le titre de l'onglet** (`useHead`) porte aussi le contexte : « Envoyer par email — Famille Camille · Noël 2026 ».
+- Côté participant, la ligne existe déjà (« Famille Camille · Noël 2026 ») : même composant, le lien ramène à la page du tirage.
+
+**Correction 5 — les écrans déjà faits** (lots 1 à 3). À faire avant le lot 4. Maquettes mises à jour : `SelectionEmail`, `SelectionEmail100`, `AjouterParticipants`, `AnnulerTirage`, `VoirResultat`, `VoirResultatAffiche`, `EditionNouvelle`.
+
+- [ ] Le composant, dans le guide de style, avec ses tests.
+- [ ] **Envoi par email à plusieurs** : aujourd'hui aucun contexte, alors que la carte de l'accueil y mène tout droit. Le plus urgent.
+- [ ] **Choisir les participants** : le groupe manquait.
+- [ ] **Annuler le tirage**, **voir un seul résultat**, **exclusions de l'édition**, **nouvelle édition** : le contexte passe au-dessus du titre, dans l'ordre commun.
+- [ ] Vérifier le bouton retour et le titre d'onglet de ces écrans en y arrivant par leur adresse.
+- [ ] Un test de bout en bout : ouvrir l'envoi par email par son adresse, lire le groupe et l'édition, revenir à l'édition par le lien.
+
+Pour les lots suivants, les maquettes portent déjà la ligne : `GroupeMembres`, `GroupeMembres100`, `GroupeExclusions`, `GroupeInvitation` (aucun groupe n'y était nommé), `GroupeReglages`, `Journal`, `JournalTout`, `JournalPersonne`.
+
 ### Lot 4 — Groupe : membres et exclusions
 
 - [ ] `GroupeMembres`, `GroupeMembres100`, `GroupeMembres100Deplie` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.

@@ -289,28 +289,28 @@ Cette section **remplace** ce que la « Correction 3 » et les retouches du lot 
 
 **Le panneau d'envoi à une personne** : court, et de hauteur fixe
 
-- [ ] De haut en bas : l'en-tête ; le message **entier** dans sa bulle, lien compris ; le lien « Personnaliser le message » ; les boutons d'envoi ; une ligne en bas, « Autre moyen, ou un souci ? ». Plus d'onglets, plus de « Ajouter un mot », plus de langue dans le panneau.
-- [ ] **Le message est choisi tout seul** à l'ouverture : jamais envoyé, « Tirage fait » (ou l'invitation avant le tirage) ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage ». Fonction pure avec ses tests, à partir de l'état de l'édition et de la personne ; vérifier avec le README 13.2.
-- [ ] **Boutons** : premier envoi avec adresse, « Envoyer par email » puis « Partager » et « Copier » ; sans adresse, « Partager (WhatsApp, SMS…) », « Copier le message » et la ligne « {Prénom} n'a pas d'adresse email · Ajouter » ; au renvoi, « Renvoyer par email » seul.
-- [ ] **« Autre moyen, ou un souci ? »** remplace le contenu du panneau par une liste, avec « Retour » en haut. Au renvoi : « L'email n'arrive pas » (partager, copier le message, copier le lien seul, corriger son adresse email) puis « Dépannage » (pas envoyé finalement, régénérer son lien). Au premier envoi : copier le lien seul, corriger ou ajouter l'adresse, régénérer son lien. La ligne « Dépannage » repliée du lot 2 disparaît.
-- [ ] **Plus d'enchaînement** : le bandeau « le panneau passe à… », « Passer » et le passage automatique à la personne suivante sont supprimés. Après un envoi, le panneau se referme. Retirer le code et les textes correspondants.
-- [ ] Sous-titre de l'en-tête : l'état de la personne (« Pas encore envoyé », « Envoyé par email, pas encore consulté »), plus le nombre de personnes restantes.
+- [x] De haut en bas : l'en-tête ; le message **entier** dans sa bulle, lien compris ; le lien « Personnaliser le message » ; les boutons d'envoi ; une ligne en bas, « Autre moyen, ou un souci ? ». Plus d'onglets, plus de « Ajouter un mot », plus de langue dans le panneau.
+- [x] **Le message est choisi tout seul** à l'ouverture : jamais envoyé, « Tirage fait » (ou l'invitation avant le tirage) ; déjà envoyé, « Relance » ; après un nouveau tirage, « Nouveau tirage ». Fonction pure avec ses tests, à partir de l'état de l'édition et de la personne ; vérifier avec le README 13.2.
+- [x] **Boutons** : premier envoi avec adresse, « Envoyer par email » puis « Partager » et « Copier » ; sans adresse, « Partager (WhatsApp, SMS…) », « Copier le message » et la ligne « {Prénom} n'a pas d'adresse email · Ajouter » ; au renvoi, « Renvoyer par email » seul.
+- [x] **« Autre moyen, ou un souci ? »** remplace le contenu du panneau par une liste, avec « Retour » en haut. Au renvoi : « L'email n'arrive pas » (partager, copier le message, copier le lien seul, corriger son adresse email) puis « Dépannage » (pas envoyé finalement, régénérer son lien). Au premier envoi : copier le lien seul, corriger ou ajouter l'adresse, régénérer son lien. La ligne « Dépannage » repliée du lot 2 disparaît.
+- [x] **Plus d'enchaînement** : le bandeau « le panneau passe à… », « Passer » et le passage automatique à la personne suivante sont supprimés. Après un envoi, le panneau se referme. Retirer le code et les textes correspondants.
+- [x] Sous-titre de l'en-tête : l'état de la personne (« Pas encore envoyé », « Envoyé par email, pas encore consulté »), plus le nombre de personnes restantes.
 
 **L'écran « Personnaliser le message »** : un seul, pour l'envoi à une personne et pour l'envoi à plusieurs
 
-- [ ] Une route dédiée sous l'édition, ouverte par le lien du panneau ou de l'écran d'envoi à plusieurs. Ligne de contexte, titre, « Pour {prénom} » ou « Pour les N personnes sélectionnées ».
-- [ ] De haut en bas : « Quel message » (trois segments) ; l'aperçu dans sa bulle, entier ; « Un mot en plus (facultatif) », un champ de texte **toujours visible**, qui grandit avec le texte et le montre toujours en entier, avec son compteur sur 500 ; « Langue du message » en ligne de réglage (envoi à une personne seulement ; à plusieurs, une phrase dit que chacun le reçoit dans sa langue) ; bouton collant « Valider ».
-- [ ] La bulle reflète chaque changement tout de suite, mot compris, à l'endroit où il partira (réglage du groupe « au-dessus ou en dessous du message »).
-- [ ] « Valider » ramène d'où l'on vient avec les choix conservés : le panneau se rouvre sur la même personne, ou l'écran d'envoi à plusieurs retrouve sa sélection. Le retour arrière sans valider abandonne. Les choix vivent le temps de l'envoi (état de la page ou paramètres d'adresse), pas en base ; seule la langue d'une personne s'enregistre, comme aujourd'hui.
-- [ ] **Au retour** (maquette `EnvoiPersonnalise`) : le panneau se rouvre sur la même personne, la bulle montre le message tel qu'il partira (message choisi, mot ajouté, langue), et le lien devient « Modifier le message ». Rien n'est envoyé par « Valider » : il reste à toucher le bouton d'envoi. Même chose sur l'écran d'envoi à plusieurs, où l'aperçu est mis à jour et la sélection intacte.
+- [x] Une route dédiée sous l'édition, ouverte par le lien du panneau ou de l'écran d'envoi à plusieurs. Ligne de contexte, titre, « Pour {prénom} » ou « Pour les N personnes sélectionnées ».
+- [x] De haut en bas : « Quel message » (trois segments) ; l'aperçu dans sa bulle, entier ; « Un mot en plus (facultatif) », un champ de texte **toujours visible**, qui grandit avec le texte et le montre toujours en entier, avec son compteur sur 500 ; « Langue du message » en ligne de réglage (envoi à une personne seulement ; à plusieurs, une phrase dit que chacun le reçoit dans sa langue) ; bouton collant « Valider ».
+- [x] La bulle reflète chaque changement tout de suite, mot compris, à l'endroit où il partira (réglage du groupe « au-dessus ou en dessous du message »).
+- [x] « Valider » ramène d'où l'on vient avec les choix conservés : le panneau se rouvre sur la même personne, ou l'écran d'envoi à plusieurs retrouve sa sélection. Le retour arrière sans valider abandonne. Les choix vivent le temps de l'envoi (état de la page ou paramètres d'adresse), pas en base ; seule la langue d'une personne s'enregistre, comme aujourd'hui.
+- [x] **Au retour** (maquette `EnvoiPersonnalise`) : le panneau se rouvre sur la même personne, la bulle montre le message tel qu'il partira (message choisi, mot ajouté, langue), et le lien devient « Modifier le message ». Rien n'est envoyé par « Valider » : il reste à toucher le bouton d'envoi. Même chose sur l'écran d'envoi à plusieurs, où l'aperçu est mis à jour et la sélection intacte.
 
 **L'écran d'envoi par email à plusieurs** : une seule page
 
-- [ ] Plus de bloc d'aperçu dans le pied. De haut en bas, dans la page : « Aperçu, pour {premier coché} » avec la bulle entière, la phrase « Chacun le reçoit avec son prénom, son lien et dans sa langue », le lien « Personnaliser le message » ; puis le compteur de sélection et la liste ; puis la phrase sur le spam.
-- [ ] Le pied collant ne contient plus que le bouton « Envoyer N emails ».
-- [ ] Les trois segments de message quittent cet écran : ils sont dans « Personnaliser le message ».
+- [x] Plus de bloc d'aperçu dans le pied. De haut en bas, dans la page : « Aperçu, pour {premier coché} » avec la bulle entière, la phrase « Chacun le reçoit avec son prénom, son lien et dans sa langue », le lien « Personnaliser le message » ; puis le compteur de sélection et la liste ; puis la phrase sur le spam.
+- [x] Le pied collant ne contient plus que le bouton « Envoyer N emails ».
+- [x] Les trois segments de message quittent cet écran : ils sont dans « Personnaliser le message ».
 
-- [ ] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau, de l'écran de personnalisation et de l'envoi à plusieurs.
+- [x] Mêmes états de chargement et mêmes marges d'iPhone que définis plus haut. Tests de bout en bout du panneau, de l'écran de personnalisation et de l'envoi à plusieurs.
 
 ### Lot 5 — Groupe : réglages
 
@@ -401,3 +401,11 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 5. **« Nouvelle personne » sans nom de famille**, comme la maquette : il s'ajoute ensuite sur sa fiche.
 6. **Une exclusion dans un seul sens** s'écrit « Inès → Louis » dans la liste ; la maquette ne montre que des paires dans les deux sens.
 7. **`AdminPersonForm`** ne sert plus qu'au profil d'un compte : à simplifier au lot 8, avec l'écran du compte.
+
+### Correction 7
+
+1. **« Nouveau tirage » choisi tout seul.** Le tirage remet la pastille « envoyé » à zéro, et rien dans les données de l'édition ne dit qu'elle a été tirée une deuxième fois. `defaultMessageType` sait choisir « Nouveau tirage », mais le panneau lui dit toujours « pas de nouveau tirage » : après une relance du tirage, il propose « Tirage fait », et l'organisateur choisit « Nouveau tirage » dans « Personnaliser le message ». Faut-il ajouter à la réponse de l'édition qu'elle a été tirée de nouveau (changement de route) ?
+2. **Sous-titre de l'en-tête du panneau.** Le plan dit « l'état de la personne, plus le nombre de personnes restantes » ; les maquettes `Envoi`, `Renvoi` et `EnvoiPersonnalise` ne montrent que l'état (« Pas encore envoyé »). Le panneau suit les maquettes.
+3. **« Ce qu'elle recevra »** (`PersonnaliserMessage`) : le genre de la personne n'est pas connu ; l'écran dit « Ce que {prénom} recevra ».
+4. **« Envoyé par email »** reste écrit « Envoyé, pas encore consulté » : le moyen d'envoi n'est pas dans les données (lot 2, question 2). **« Un second appui confirme. »** n'est toujours pas écrit (note de conception, lot 2, question 3).
+

@@ -4,6 +4,12 @@ import type { Dict } from '../../types';
 export default {
   appName: 'Under the Tree',
   loading: 'Wird geladen',
+  loadError: {
+    title: 'Diese Seite lässt sich nicht laden',
+    body: 'Prüfe deine Verbindung und versuche es dann erneut. Nichts ist verloren.',
+    retry: 'Erneut versuchen',
+    home: 'Zurück zur Startseite',
+  },
   status: {
     preparing: 'In Vorbereitung',
     drawn: 'Ausgelost',

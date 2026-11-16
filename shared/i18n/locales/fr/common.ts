@@ -1,6 +1,12 @@
 export default {
   appName: 'Under the Tree',
   loading: 'Chargement',
+  loadError: {
+    title: 'On n’arrive pas à charger cette page',
+    body: 'Vérifie ta connexion, puis réessaie. Rien n’a été perdu.',
+    retry: 'Réessayer',
+    home: 'Revenir à l’accueil',
+  },
   status: {
     preparing: 'En préparation',
     drawn: 'Tirée',

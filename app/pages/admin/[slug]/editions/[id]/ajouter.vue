@@ -68,7 +68,7 @@ const onAdd = (personId: string, firstName: string) =>
           >{{ t('adminEdition.addParticipants.peopleLink') }}</NuxtLink
         >{{ everyoneIn[1] }}
       </p>
-      <UiList v-else :footer="t('adminEdition.addParticipants.footer')">
+      <UiList v-else>
         <UiListItem
           v-for="person in candidates"
           :key="person.id"

@@ -403,7 +403,6 @@ const entries = computed(() => [
         search-label="Chercher un prénom"
         clear-label="Effacer la recherche"
         :results-text="(shown, total) => `${shown} prénoms sur ${total}`"
-        footnote="La recherche ignore les accents et les majuscules."
       />
     </section>
 

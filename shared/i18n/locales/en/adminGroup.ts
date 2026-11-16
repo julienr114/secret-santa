@@ -52,7 +52,6 @@ export default {
   people: {
     title: 'People',
     empty: 'Start by adding the members of the group.',
-    hint: 'Tap a person to edit or deactivate them.',
     inactive: 'deactivated',
   },
   newPerson: {

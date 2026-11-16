@@ -76,7 +76,7 @@ const sorted = computed(() =>
       <p v-if="persons.length === 0" class="text-muted">
         {{ t('adminGroup.people.empty') }}
       </p>
-      <UiList v-else :footer="t('adminGroup.people.hint')">
+      <UiList v-else>
         <UiListItem
           v-for="person in sorted"
           :key="person.id"

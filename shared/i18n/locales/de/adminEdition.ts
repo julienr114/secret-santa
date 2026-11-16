@@ -98,7 +98,6 @@ export default {
     everyoneIn:
       'Alle nehmen bereits teil. Jemand Neues legst du zuerst unter {people} an.',
     peopleLink: 'Personen',
-    footer: 'Deaktivierte Personen erscheinen hier nicht.',
   },
   cancelDraw: {
     title: 'Auslosung aufheben',
@@ -205,7 +204,6 @@ export default {
         other: 'Die {count} anderen ansehen',
       },
       noMatch: 'Kein Vorname passt.',
-      sorted: 'Nach Vornamen sortiert. Die Suche erscheint ab 10 Teilnehmern.',
     },
     empty: {
       title: 'Füge die Teilnehmer hinzu',

@@ -96,7 +96,6 @@ export default {
     everyoneIn:
       'Everyone is already taking part. For someone new, create them first in {people}.',
     peopleLink: 'People',
-    footer: 'Deactivated people do not appear here.',
   },
   cancelDraw: {
     title: 'Cancel the draw',
@@ -196,7 +195,6 @@ export default {
       clear: 'Clear the search',
       more: { one: 'See the other one', other: 'See the {count} others' },
       noMatch: 'No first name matches.',
-      sorted: 'Sorted by first name. The search shows past 10 participants.',
     },
     empty: {
       title: 'Add the participants',

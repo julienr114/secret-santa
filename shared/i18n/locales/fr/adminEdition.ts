@@ -97,7 +97,6 @@ export default {
     everyoneIn:
       "Tout le monde participe déjà. Pour quelqu'un de nouveau, crée-le d'abord dans {people}.",
     peopleLink: 'Personnes',
-    footer: "Les personnes désactivées n'apparaissent pas ici.",
   },
   cancelDraw: {
     title: 'Annuler le tirage',
@@ -201,8 +200,6 @@ export default {
       clear: 'Effacer la recherche',
       more: { one: 'Voir l’autre', other: 'Voir les {count} autres' },
       noMatch: 'Aucun prénom ne correspond.',
-      sorted:
-        'Triés par prénom. La recherche apparaît au-delà de 10 participants.',
     },
     empty: {
       title: 'Ajoute les participants',

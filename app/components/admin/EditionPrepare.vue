@@ -203,9 +203,7 @@ const missingText = computed(() =>
       :label="t('adminEdition.screen.lists.search')"
       :clear-label="t('adminEdition.screen.lists.clear')"
     />
-    <UiList
-      :footer="searchable ? t('adminEdition.screen.lists.sorted') : undefined"
-    >
+    <UiList>
       <li v-if="empty" class="px-4 py-3 text-sm text-muted">
         {{ t('adminEdition.screen.empty.none') }}
       </li>

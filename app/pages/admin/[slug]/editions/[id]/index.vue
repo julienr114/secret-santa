@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
-import {
-  editionStep,
-  followState,
-  sortParticipants,
-} from '#server/utils/editions';
+import { followState, sortParticipants } from '#server/utils/editions';
 import { formatEventDate, isIsoDay, partyIsOver } from '#server/utils/rules';
-import type { Step } from '~/components/ui/Stepper.vue';
 import {
   useDashboardQuery,
   useEditionQuery,
@@ -75,21 +70,7 @@ const hasDate = computed(() => isIsoDay(eventDate.value));
 const dateText = computed(() =>
   hasDate.value ? formatEventDate(eventDate.value, locale.value) : null,
 );
-const step = computed(() => editionStep(status.value, eventDate.value, today));
-const steps = computed<Step[]>(() => {
-  const at = { prepare: 0, drawn: 1, party: 2 }[step.value];
-  const done = status.value === 'closed';
-  return (['prepare', 'draw', 'party'] as const).map((key, index) => ({
-    label:
-      done && key === 'party'
-        ? t('adminEdition.screen.closed.partyDone')
-        : key === 'draw' && status.value !== 'preparing'
-          ? t('adminEdition.screen.steps.drawDone')
-          : t(`adminEdition.screen.steps.${key}`),
-    state: done || index < at ? 'done' : index === at ? 'current' : 'todo',
-    icon: index === 0 ? undefined : 'i-lucide-sparkle',
-  }));
-});
+const steps = useEditionSteps(status, eventDate);
 // Closing waits for the day after the party (README 21.3).
 const canClose = computed(
   () =>

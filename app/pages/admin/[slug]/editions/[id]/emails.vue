@@ -279,65 +279,54 @@ const onSend = () =>
             @collapse="expanded = false"
           >
             <template #row="{ item: p }">
-              <li>
-                <component
-                  :is="p.email ? 'label' : 'div'"
-                  class="flex min-h-15 items-center gap-3 px-4 py-2"
-                  :class="{ 'cursor-pointer': p.email }"
-                >
-                  <UiAvatar :avatar="p.avatar" />
-                  <span class="flex min-w-0 grow flex-col">
-                    <span class="truncate font-semibold">{{
-                      fullName(p)
-                    }}</span>
-                    <span
-                      v-if="p.email && followState(p) === 'toNotify'"
-                      class="truncate text-[13px] text-toned"
-                      >{{ t('adminEdition.screen.lists.series.toNotify') }} ·
-                      {{ p.email }}</span
-                    >
-                    <span
-                      v-else
-                      class="flex min-w-0 items-center gap-1.25 text-[13px]"
-                      :class="rowLook(p).tone"
-                    >
-                      <UIcon
-                        :name="rowLook(p).icon"
-                        class="size-3.5 shrink-0"
-                        :class="rowLook(p).iconTone"
-                      />
-                      <span class="truncate">{{ rowLook(p).text }}</span>
-                    </span>
-                  </span>
-                  <input
-                    v-if="p.email"
-                    type="checkbox"
-                    class="size-6 shrink-0 accent-primary"
-                    :checked="isSelected(p.participationId)"
-                    :aria-label="
-                      t('adminEdition.screen.emails.select', {
-                        name: fullName(p),
-                      })
-                    "
-                    @change="
-                      toggle(
-                        p.participationId,
-                        ($event.target as HTMLInputElement).checked,
-                      )
-                    "
-                  />
-                  <NuxtLink
-                    v-else
-                    :to="`/admin/${slug}/personnes/${p.id}`"
-                    class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
-                    :aria-label="
-                      t('adminEdition.screen.emails.addEmailLabel', {
-                        name: fullName(p),
-                      })
-                    "
-                    >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+              <UiCheckRow
+                v-if="p.email"
+                :avatar="p.avatar"
+                :title="fullName(p)"
+                :label="
+                  t('adminEdition.screen.emails.select', { name: fullName(p) })
+                "
+                :checked="isSelected(p.participationId)"
+                @update:checked="(on) => toggle(p.participationId, on)"
+              >
+                <template #subtitle>
+                  <span v-if="followState(p) === 'toNotify'" class="truncate"
+                    >{{ t('adminEdition.screen.lists.series.toNotify') }} ·
+                    {{ p.email }}</span
                   >
-                </component>
+                  <template v-else>
+                    <UIcon
+                      :name="rowLook(p).icon"
+                      class="size-3.5 shrink-0"
+                      :class="rowLook(p).iconTone"
+                    />
+                    <span class="truncate" :class="rowLook(p).tone">{{
+                      rowLook(p).text
+                    }}</span>
+                  </template>
+                </template>
+              </UiCheckRow>
+              <li v-else class="flex min-h-15 items-center gap-3 px-4 py-2">
+                <UiAvatar :avatar="p.avatar" />
+                <span class="flex min-w-0 grow flex-col">
+                  <span class="truncate font-semibold">{{ fullName(p) }}</span>
+                  <span
+                    class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
+                  >
+                    <UIcon :name="rowLook(p).icon" class="size-3.5 shrink-0" />
+                    <span class="truncate">{{ rowLook(p).text }}</span>
+                  </span>
+                </span>
+                <NuxtLink
+                  :to="`/admin/${slug}/personnes/${p.id}`"
+                  class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
+                  :aria-label="
+                    t('adminEdition.screen.emails.addEmailLabel', {
+                      name: fullName(p),
+                    })
+                  "
+                  >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+                >
               </li>
             </template>
           </UiFoldedRows>
@@ -377,9 +366,7 @@ const onSend = () =>
         </p>
       </section>
 
-      <div
-        class="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-divider bg-page/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur"
-      >
+      <UiStickyFooter>
         <UButton
           block
           size="xl"
@@ -399,7 +386,7 @@ const onSend = () =>
         <p class="text-center text-xs text-muted">
           {{ t('adminEdition.screen.emails.spam') }}
         </p>
-      </div>
+      </UiStickyFooter>
     </AdminQueryState>
   </AdminScreen>
 </template>

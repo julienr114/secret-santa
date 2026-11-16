@@ -49,7 +49,11 @@ const menu = computed(() => [
 </script>
 
 <template>
-  <div>
+  <!-- At least the window's height (less the layout's bottom padding), so a
+       sticky footer rests at the bottom of a short screen. -->
+  <div
+    class="flex min-h-[calc(100dvh-2rem-env(safe-area-inset-bottom))] flex-col"
+  >
     <header
       class="sticky top-0 z-20 border-b border-default bg-page/90 pt-[env(safe-area-inset-top)] backdrop-blur"
     >
@@ -85,7 +89,7 @@ const menu = computed(() => [
     </header>
     <UContainer
       as="main"
-      class="flex max-w-md flex-col gap-6 py-5"
+      class="flex w-full max-w-md grow flex-col gap-6 py-5"
       :class="{ 'pb-24': isSuper }"
     >
       <slot />

@@ -194,20 +194,20 @@ Demandé par Julien le 16 novembre 2026, à faire avec la reprise du lot 1, avan
 
 ### Lot 2 — Édition : sous-écrans
 
-- [ ] `AjouterParticipants` (`ajouter.vue`), devenu **« Choisir les participants »** (validé par Julien le 16 novembre 2026) : un seul écran pour ajouter et retirer. Tous les membres actifs du groupe, une case par personne, cochée si elle participe ; « Tout cocher » ; recherche et repli des longues listes ; puis « Créer une personne » et « Inviter par lien » ; bouton collant « Enregistrer · N participants ». Les lignes « Ajouter des participants » de l'édition y mènent et prennent ce nom. Avant le tirage seulement.
+- [x] `AjouterParticipants` (`ajouter.vue`), devenu **« Choisir les participants »** (validé par Julien le 16 novembre 2026) : un seul écran pour ajouter et retirer. Tous les membres actifs du groupe, une case par personne, cochée si elle participe ; « Tout cocher » ; recherche et repli des longues listes ; puis « Créer une personne » et « Inviter par lien » ; bouton collant « Enregistrer · N participants ». Les lignes « Ajouter des participants » de l'édition y mènent et prennent ce nom. Avant le tirage seulement.
 - [x] ~~`FicheParticipant`~~ : supprimée par Julien le 16 novembre 2026, elle doublait le panneau d'envoi. Toucher une personne ouvre `AdminSendSheet`, dont le bas porte le « Dépannage » (pas envoyé finalement, régénérer le lien, retirer de l'édition). L'ancienne route redirige vers l'édition, panneau ouvert.
 - [x] ~~`PanneauRegenerer`~~ : la régénération se confirme par un second appui dans le « Dépannage » du panneau d'envoi, sans second panneau par-dessus.
-- [ ] `AnnulerTirage` (`annuler.vue`) : conséquences en liste, motif, aperçu de la ligne du journal, case à cocher, bouton sûr « Garder ce tirage » mis en avant.
-- [ ] `VoirResultat`, `ChoisirPersonne`, `ChoisirPersonneRecherche`, `VoirResultatAffiche` (`voir-le-tirage.vue`) : avertissement, choix de la personne par `UiPersonPicker` (qui existe et n'est pas encore branché), aperçu du journal, phrase à recopier ; puis le résultat avec « Cacher et revenir à l'édition ». Libellé « Voir un seul résultat ».
+- [x] `AnnulerTirage` (`annuler.vue`) : conséquences en liste, motif, aperçu de la ligne du journal, case à cocher, bouton sûr « Garder ce tirage » mis en avant.
+- [x] `VoirResultat`, `ChoisirPersonne`, `ChoisirPersonneRecherche`, `VoirResultatAffiche` (`voir-le-tirage.vue`) : avertissement, choix de la personne par `UiPersonPicker` (qui existe et n'est pas encore branché), aperçu du journal, phrase à recopier ; puis le résultat avec « Cacher et revenir à l'édition ». Libellé « Voir un seul résultat ».
 
-- [ ] **Retouches du panneau d'envoi après la suppression de la fiche** (validées par Julien le 16 novembre 2026, maquettes `Renvoi` et `RenvoiPepin`) :
+- [x] **Retouches du panneau d'envoi après la suppression de la fiche** (validées par Julien le 16 novembre 2026, maquettes `Renvoi` et `RenvoiPepin`) :
   - Le « Dépannage » est **replié par défaut** derrière une ligne « Dépannage » en bas du panneau (chevron, pleine largeur, trait au-dessus) ; un appui le déplie sur place. Le panneau est déjà haut : ouvert en permanence, il oblige à défiler pour atteindre les boutons d'envoi.
   - Il n'apparaît qu'**une fois un message envoyé** à la personne. Il contient « Pas envoyé finalement ? » et « Régénérer son lien » (second appui pour confirmer, comme aujourd'hui).
   - **« Retirer de l'édition » en sort** : retirer quelqu'un passe par « Choisir les participants ». Supprimer aussi la ligne grisée « impossible après le tirage ».
   - **Avant le tirage, toucher une personne ouvre sa fiche dans le groupe** (`personnes/[id]`), pas le panneau d'envoi : à cette étape on corrige un prénom, une adresse ou une exclusion. Le panneau d'envoi reste accessible par « Prévenir avant le tirage ».
   - La date et le moyen du dernier envoi restent sous le nom, dans l'en-tête du panneau.
   - **Ajouter ou corriger l'adresse email sans quitter le panneau** (demandé par Julien le 16 novembre 2026, maquette `EnvoiAjouterEmail`) : « Ajouter », dans la ligne « {Prénom} n'a pas d'adresse email », remplace cette ligne par un champ et un bouton « Enregistrer », sur place. Une fois l'adresse enregistrée (mutation existante de la personne), le panneau repasse dans son état « avec adresse » : « Envoyer par email » devient l'action principale. Même comportement pour « Ce n'est pas la bonne adresse ? La corriger » du renvoi, champ prérempli. Une adresse invalide ou déjà prise s'affiche en rouge sous le champ, le panneau reste ouvert. Plus aucun lien du panneau ne mène à la fiche du groupe.
-- [ ] **Actions en cours** conformes aux règles : roue dans « Enregistrer » de « Choisir les participants », « Annuler le tirage », « Voir le résultat », « Enregistrer » de l'adresse email.
+- [x] **Actions en cours** conformes aux règles : roue dans « Enregistrer » de « Choisir les participants », « Annuler le tirage », « Voir le résultat », « Enregistrer » de l'adresse email.
 
 **Fini quand** : les parcours de `tests/e2e/admin-edition.spec.ts` passent sur les nouveaux écrans.
 
@@ -286,3 +286,13 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 2. **`PreparerVide` : « au moins trois ».** La maquette dit qu'il faut au moins trois participants ; le tirage en accepte deux (`too_few_participants`). Le texte dit « deux ». Faut-il relever le minimum à trois ?
 3. **`EtatConfirmation` : les prénoms.** L'API d'envoi renvoie le nombre d'emails partis, pas les prénoms. Le message nomme les personnes cochées seulement quand tout est parti en un appel (50 au plus) ; au-delà, il donne le nombre seul. Le test de bout en bout ne peut pas le vérifier : le serveur de test n'a pas de clé d'envoi.
 4. **Démo à 100.** `seed:demo` crée « comite-demo » (à préparer) et « grand-tirage-demo » (tirage fait) avec 99 prénoms : l'organisatrice, personne du groupe, fait la centième. Une édition ne peut pas dépasser 100 participants.
+
+### Lot 2
+
+1. **`AjouterParticipants` : « A participé à Noël 2025 ».** La route des personnes ne dit pas qui a participé aux éditions passées. La ligne d'un membre affiche son adresse, ou « Pas d'adresse email ». Faut-il ajouter cette donnée à la route des personnes ?
+2. **Panneau d'envoi : le moyen du dernier envoi.** La maquette dit « Envoyé par email, pas encore consulté ». Les participants d'une édition portent la date du dernier envoi (`messageSentAt`), pas son moyen ; le journal, lui, le connaît. L'en-tête garde « Envoyé, pas encore consulté », sans la date ni le moyen. Faut-il ajouter le moyen (et afficher la date) à la réponse de l'édition ?
+3. **`RenvoiPepin` : « Un second appui confirme. »** La maquette l'écrit sous « Régénérer son lien ». C'est une note de conception (section 3) : elle n'est pas écrite, le second appui reste.
+4. **`Renvoi`, `RenvoiPepin` : la phrase « Partager ouvre WhatsApp, SMS… ».** Retirée à ta demande ; les maquettes la montrent encore.
+5. **« de Agathe ».** Les textes écrivent « de {name} » partout (« Adresse email de Agathe », « le lien de Ines »), sans élision devant une voyelle. Faut-il une règle d'élision pour le français ?
+6. **`EnvoiSansEmail` et `EnvoiAjouterEmail` : le bandeau de la personne suivante.** Les maquettes ne le montrent pas sans adresse ; il reste affiché, pour passer à la suivante.
+

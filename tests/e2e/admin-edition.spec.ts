@@ -165,7 +165,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   ).toBeVisible();
   await page.getByRole('button', { name: "Clôturer l'édition" }).click();
   await page.getByRole('button', { name: "Clôturer l'édition" }).click();
-  await expect(page.getByText(/^Édition clôturée : elle sert/)).toBeVisible();
+  // Closed: every step done, read only, and the way to the next edition.
+  await expect(page.getByTestId('closed-notice')).toContainText(
+    'Édition clôturée',
+  );
+  await expect(page.locator('[aria-current="step"]')).toHaveCount(0);
+  await expect(page.getByText('Fêté', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Préparer l’édition suivante' }),
+  ).toBeVisible();
 
   // The guardian reads the same journal as the participants, from the
   // admin: what was done, never who gives to whom.

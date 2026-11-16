@@ -38,6 +38,7 @@ Les maquettes sont la référence pour la structure, la hiérarchie et les texte
 - **Aucun texte en dur** : chaque libellé dans `shared/i18n/locales` en français, anglais et allemand. Supprimer les clés qui ne servent plus.
 - **Mobile seulement** : colonne `max-w-md`, cibles de 44 px, panneaux du bas (`UiSheet`). Pas de version grand écran.
 - **Accessibilité** : un seul `h1`, `aria-label` sur les boutons à icône seule, `prefers-reduced-motion` respecté.
+- **Pas de note de conception à l'écran** : une phrase qui explique comment l'interface marche (« La recherche apparaît au-delà de 10 participants », « Triés par prénom », « Le bouton s'active une fois la case cochée ») ne va ni dans un écran ni dans un dictionnaire. Un texte d'aide parle à la personne de ce qu'elle peut faire ou de ce qui va se passer. Ces notes ont été retirées des maquettes le 16 novembre 2026 ; si une ancienne en a laissé une dans le code, la supprimer avec sa clé.
 - **Emoji** : uniquement dans les icônes de personne. Partout ailleurs, icônes Lucide.
 - **Tests** : Vitest pour chaque fonction pure ; Playwright (`tests/e2e`) pour le parcours principal de chaque lot ; garder les `data-testid` existants ou adapter les tests dans le même commit.
 - **Commits** : petits, Conventional Commits en anglais, chacun passe `pnpm lint`, `pnpm typecheck` et `pnpm test`. README mis à jour dans le commit de la décision. Ne pas pousser, ne pas déployer.
@@ -97,12 +98,14 @@ Rien de visible pour l'utilisateur, tout le reste en dépend.
 
 Fichiers : `AdminEditionPrepare.vue`, `AdminEditionFollow.vue`, `AdminDrawSheet.vue`, `emails.vue`, `editions/[id]/index.vue`.
 
-- [ ] `PreparerVide` : sans participant, la carte dit « Ajoute les participants » avec « Ajouter des participants » et « Inviter par lien ».
-- [ ] `PreparerImpossible`, `ConfirmerTirageGrand`, `EtatConfirmation` : voir « Partiel ».
-- [ ] `Preparer100` : recherche au-delà de 10, 6 lignes puis `UiFoldRow`.
-- [ ] `Suivi100` : une seule liste dans l'ordre de `sortParticipants`. Chaque série (pas encore envoyé, pas encore consulté, résultat consulté) montre 3 lignes puis sa ligne de repli, qui rappelle l'état de la série. Pas de sections, pas de compteurs qui filtrent. Le bouton de la carte dit « Prévenir les N par email ».
-- [ ] `SelectionEmail100` : recherche, repli, compteur « N sélectionnés sur M ». La sélection porte sur toute la liste, pas seulement sur les lignes visibles.
-- [ ] `ClotureeSecrete` : édition clôturée en lecture seule : frise entièrement faite, encadré « Édition clôturée », participants, exclusions appliquées. Contrôler d'abord ce que `AdminEditionResults` affiche aujourd'hui (README 8.7) ; s'il montre les paires, ne rien retirer et poser la question en section 6.
+- [x] `PreparerVide` : sans participant, la carte dit « Ajoute les participants » avec « Ajouter des participants » et « Inviter par lien ».
+- [x] `PreparerImpossible`, `ConfirmerTirageGrand`, `EtatConfirmation` : voir « Partiel ».
+- [x] `Preparer100` : recherche au-delà de 10, 6 lignes puis `UiFoldRow`.
+- [x] `Suivi100` : une seule liste dans l'ordre de `sortParticipants`. Chaque série (pas encore envoyé, pas encore consulté, résultat consulté) montre 3 lignes puis sa ligne de repli, qui rappelle l'état de la série. Pas de sections, pas de compteurs qui filtrent. Le bouton de la carte dit « Prévenir les N par email ».
+- [x] `SelectionEmail100` : recherche, repli, compteur « N sélectionnés sur M ». La sélection porte sur toute la liste, pas seulement sur les lignes visibles.
+- [x] `ClotureeSecrete` : édition clôturée en lecture seule : frise entièrement faite, encadré « Édition clôturée », participants, exclusions appliquées. Contrôler d'abord ce que `AdminEditionResults` affiche aujourd'hui (README 8.7) ; s'il montre les paires, ne rien retirer et poser la question en section 6.
+
+À retirer si déjà codé : la note « Triés par prénom. La recherche apparaît au-delà de 10 participants. » sous la liste (clé dans `shared/i18n/locales/*/adminEdition.ts`), dans les trois langues.
 
 Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante nommée, par exemple `FOLD_FROM`, validée par Julien le 16 novembre 2026).
 
@@ -151,7 +154,7 @@ Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/
 ### Lot 7 — Participant : souhaits et invitation
 
 - [ ] `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` (`p/[token]/souhaits.vue`) : liste d'idées, ajout et modification dans un `UiSheet`, pistes pour démarrer quand la liste est vide, lecture seule une fois l'édition clôturée.
-- [ ] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états.
+- [ ] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états. `RejoindreFerme` montre le cas « plus de place » ; même écran, autre phrase, pour un lien expiré (« Ce lien d'invitation n'est plus valable depuis le 10 décembre. ») et pour un lien désactivé ou inconnu (« Ce lien d'invitation ne marche plus. »). Si le tirage est déjà fait, la personne rejoint le groupe, pas le tirage en cours : le dire sur `RejoindreFait`.
 
 ### Lot 8 — Connexion, compte, demandes
 
@@ -180,3 +183,10 @@ Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
+
+### Lot 1
+
+1. **`ClotureeSecrete` et les paires du tirage.** La maquette dit « Le tirage reste secret, même pour toi » et liste les participants avec « A participé ». Aujourd'hui, une édition clôturée montre à l'organisateur qui a offert à qui (`AdminEditionResults`, README 8.7). Comme le plan le demande, rien n'est retiré : l'écran garde les paires, et la phrase « secret » n'est pas écrite (elle serait fausse). L'encadré dit « En lecture seule. Le tirage sert à éviter les mêmes paires les années suivantes. » Faut-il cacher les paires d'une édition clôturée, comme la maquette le suppose ?
+2. **`PreparerVide` : « au moins trois ».** La maquette dit qu'il faut au moins trois participants ; le tirage en accepte deux (`too_few_participants`). Le texte dit « deux ». Faut-il relever le minimum à trois ?
+3. **`EtatConfirmation` : les prénoms.** L'API d'envoi renvoie le nombre d'emails partis, pas les prénoms. Le message nomme les personnes cochées seulement quand tout est parti en un appel (50 au plus) ; au-delà, il donne le nombre seul. Le test de bout en bout ne peut pas le vérifier : le serveur de test n'a pas de clé d'envoi.
+4. **Démo à 100.** `seed:demo` crée « comite-demo » (à préparer) et « grand-tirage-demo » (tirage fait) avec 99 prénoms : l'organisatrice, personne du groupe, fait la centième. Une édition ne peut pas dépasser 100 participants.

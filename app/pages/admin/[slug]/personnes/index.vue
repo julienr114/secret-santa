@@ -39,6 +39,7 @@ const inviteSummary = computed(() => {
 });
 
 const persons = computed(() => people.data.value?.persons ?? []);
+const { membersLine } = useMembersLine();
 const exclusions = computed(() => people.data.value?.exclusions ?? []);
 /** Those who take part first, then the others, by name in each. */
 const sorted = computed(() =>
@@ -105,7 +106,7 @@ const view = computed(() =>
     >
       <section class="flex flex-col gap-1.5" data-testid="members">
         <UiSectionTitle v-if="searchable">{{
-          t('adminGroup.dashboard.persons', { count: persons.length })
+          membersLine(persons)
         }}</UiSectionTitle>
         <UiSearchField
           v-if="searchable"

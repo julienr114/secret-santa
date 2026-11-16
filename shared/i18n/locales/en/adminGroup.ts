@@ -80,7 +80,10 @@ export default {
     members: { one: '{count} member', other: '{count} members' },
     youOrganize: 'you organise it',
     membersRow: 'Members',
-    persons: { one: '{count} person', other: '{count} people' },
+    inactive: {
+      one: '{count} no longer takes part',
+      other: '{count} no longer take part',
+    },
     pairs: {
       one: '{count} pair who never draw each other',
       other: '{count} pairs who never draw each other',

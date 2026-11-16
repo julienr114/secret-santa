@@ -25,6 +25,7 @@ const people = usePeopleQuery(slug);
 const organizers = useOrganizersQuery(slug);
 const journal = useGroupJournalQuery(slug, locale);
 const persons = computed(() => people.data.value?.persons ?? []);
+const { membersLine } = useMembersLine();
 const activeCount = computed(
   () => persons.value.filter((p) => p.active).length,
 );
@@ -93,9 +94,7 @@ const editionSubtitle = (status: string, count?: number) =>
           :to="`/admin/${slug}/personnes`"
           icon="i-lucide-users"
           :title="t('adminGroup.dashboard.membersRow')"
-          :subtitle="
-            t('adminGroup.dashboard.persons', { count: persons.length })
-          "
+          :subtitle="membersLine(persons)"
         />
         <UiListItem
           :to="`/admin/${slug}/exclusions`"

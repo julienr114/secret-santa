@@ -81,7 +81,10 @@ export default {
     members: { one: '{count} membre', other: '{count} membres' },
     youOrganize: 'tu es organisateur',
     membersRow: 'Membres',
-    persons: { one: '{count} personne', other: '{count} personnes' },
+    inactive: {
+      one: '{count} ne participe plus',
+      other: '{count} ne participent plus',
+    },
     pairs: {
       one: '{count} paire qui ne se tire jamais',
       other: '{count} paires qui ne se tirent jamais',

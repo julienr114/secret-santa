@@ -13,7 +13,7 @@ withDefaults(defineProps<{ size?: 'sm' | 'lg' }>(), { size: 'sm' });
   </h2>
   <h2
     v-else
-    class="px-1 text-xs font-semibold tracking-wide text-muted uppercase"
+    class="px-1 font-sans text-xs font-bold tracking-[0.04em] text-toned uppercase"
   >
     <slot />
   </h2>

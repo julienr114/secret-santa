@@ -196,9 +196,9 @@ const onSend = () =>
     >
       <UiPageTitle>{{ t('adminEdition.screen.emails.title') }}</UiPageTitle>
       <section class="flex flex-col gap-2">
-        <h2 class="text-xs font-bold tracking-wide text-muted uppercase">
-          {{ t('adminEdition.screen.emails.message') }}
-        </h2>
+        <UiSectionTitle>{{
+          t('adminEdition.screen.emails.message')
+        }}</UiSectionTitle>
         <UiSegmented
           v-model="type"
           :items="tabs"
@@ -301,13 +301,9 @@ const onSend = () =>
       </section>
 
       <section v-if="first" class="flex flex-col gap-2">
-        <h2 class="text-xs font-bold tracking-wide text-muted uppercase">
-          {{
-            t('adminEdition.screen.emails.previewFor', {
-              name: fullName(first),
-            })
-          }}
-        </h2>
+        <UiSectionTitle>{{
+          t('adminEdition.screen.emails.previewFor', { name: fullName(first) })
+        }}</UiSectionTitle>
         <UiMessageBubble
           v-if="preview"
           :text="preview"

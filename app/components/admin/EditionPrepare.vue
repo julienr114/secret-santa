@@ -109,7 +109,8 @@ const missingText = computed(() =>
         block
         size="xl"
         icon="i-lucide-user-plus"
-        class="min-h-14 justify-center font-bold"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
         :label="t('adminEdition.screen.prepare.add')"
       />
       <UButton
@@ -146,7 +147,8 @@ const missingText = computed(() =>
         block
         size="xl"
         icon="i-lucide-ban"
-        class="min-h-14 justify-center font-bold"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
         :label="t('adminEdition.screen.impossible.exclusions')"
       />
       <UButton
@@ -182,7 +184,8 @@ const missingText = computed(() =>
       <UButton
         block
         size="xl"
-        class="min-h-14 justify-center font-bold"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
         icon="i-lucide-sparkle"
         :disabled="!check?.ready"
         :label="t('adminEdition.screen.prepare.action')"
@@ -246,12 +249,14 @@ const missingText = computed(() =>
     <UiListItem
       :to="`${base}/emails?type=invitation`"
       icon="i-lucide-mail"
+      icon-tone="neutral"
       :title="t('adminEdition.screen.prepare.notifyBefore')"
       :subtitle="t('adminEdition.screen.prepare.notifyBeforeHint')"
     />
     <UiListItem
       :to="`${base}/exclusions`"
       icon="i-lucide-ban"
+      icon-tone="neutral"
       :title="t('adminEdition.screen.prepare.exclusions')"
       :subtitle="
         exclusionCount > 0

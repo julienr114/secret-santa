@@ -19,6 +19,11 @@ const query = defineModel<string>({ default: '' });
     :placeholder="label"
     :aria-label="label"
     class="w-full"
+    :ui="{
+      base: 'h-12 ps-[42px] text-base ring-accented placeholder:text-dimmed',
+      leading: 'ps-3.5',
+      leadingIcon: 'size-[18px] text-toned',
+    }"
   >
     <template v-if="query" #trailing>
       <UButton

@@ -16,6 +16,8 @@ const props = withDefaults(
     avatar?: Avatar;
     emoji?: string;
     tone?: 'default' | 'danger';
+    /** The colour of the round icon: brick for what to do, grey otherwise. */
+    iconTone?: 'primary' | 'neutral';
     /** The current value of a setting, shown on the right. */
     value?: string;
     /** The name of the row, when its texts do not say what a tap does. */
@@ -31,6 +33,7 @@ const props = withDefaults(
     avatar: undefined,
     emoji: undefined,
     tone: 'default',
+    iconTone: 'primary',
     value: undefined,
     label: undefined,
     onClick: undefined,
@@ -41,6 +44,12 @@ const checked = defineModel<boolean | undefined>('checked', {
   default: undefined,
 });
 
+/** Background and colour of the round icon, by tone. */
+const ICON_TONES = {
+  primary: 'bg-primary-soft text-primary',
+  neutral: 'bg-muted text-toned',
+  danger: 'bg-error-soft text-error-ink',
+};
 // A string in <component :is> does not resolve global components.
 const NuxtLink = resolveComponent('NuxtLink');
 </script>
@@ -52,7 +61,7 @@ const NuxtLink = resolveComponent('NuxtLink');
       :to="to"
       :type="!to && props.onClick ? 'button' : undefined"
       :aria-label="label"
-      class="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left"
+      class="flex min-h-15 w-full items-center gap-3 px-4 py-2 text-left"
       :class="to || props.onClick ? 'transition-colors active:bg-muted' : ''"
       @click="props.onClick?.()"
     >
@@ -60,7 +69,8 @@ const NuxtLink = resolveComponent('NuxtLink');
       <UiAvatar v-else-if="avatar" :avatar="avatar" />
       <span
         v-else-if="emoji || icon"
-        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+        class="flex size-10 shrink-0 items-center justify-center rounded-full"
+        :class="ICON_TONES[tone === 'danger' ? 'danger' : iconTone]"
         aria-hidden="true"
       >
         <span v-if="emoji" class="text-lg">{{ emoji }}</span>
@@ -68,20 +78,22 @@ const NuxtLink = resolveComponent('NuxtLink');
       </span>
       <span class="min-w-0 grow">
         <span
-          class="block truncate font-medium"
-          :class="tone === 'danger' ? 'text-error' : ''"
+          class="block truncate font-semibold"
+          :class="tone === 'danger' ? 'text-error-ink' : ''"
         >
           {{ title }}
         </span>
         <span
           v-if="$slots.subtitle"
-          class="flex min-w-0 items-center gap-1.5 text-sm text-muted"
+          class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
         >
           <slot name="subtitle" />
         </span>
-        <span v-else-if="subtitle" class="block truncate text-sm text-muted">{{
-          subtitle
-        }}</span>
+        <span
+          v-else-if="subtitle"
+          class="block truncate text-[13px] text-toned"
+          >{{ subtitle }}</span
+        >
       </span>
       <span
         v-if="value"

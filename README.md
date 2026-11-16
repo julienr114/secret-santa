@@ -1293,9 +1293,9 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | Composant | Rôle |
 |---|---|
 | `UiPageTitle` | Le titre d'un écran, un seul par page (`h1`) |
-| `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe |
+| `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe, en Nunito même quand c'est un `h2` |
 | `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
-| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
+| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône ronde de 40 px (brique pour ce qui est à faire, grise sinon : `icon-tone="neutral"`, rouge pour `tone="danger"`), emoji ou icône de personne, et un emplacement `trailing` ; 60 px de haut, titre en semi-gras, sous-titre en 13 px ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
 | `UiAvatar` | L'icône d'une personne, en quatre tailles : `sm` 32 px, `md` 40 px, `lg` 56 px (en-tête d'une page), `xl` 80 px (résultat, fiche, choix de l'icône) |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
 | `UiMessageBubble` | Un message tel que la personne le lira, dans une bulle (92 % de large au plus, coin bas gauche resserré) : ses mots, puis son lien seul sur sa ligne, en gras, sans `https://`, coupé s'il est trop long (`aroundLink`) |

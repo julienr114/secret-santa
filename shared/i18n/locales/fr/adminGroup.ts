@@ -147,7 +147,7 @@ export default {
     emailHelpNew:
       'Pour lui envoyer son lien. Sans adresse, tu le partageras toi-même par WhatsApp ou SMS.',
     emailPlaceholder: 'prenom@exemple.fr',
-    changeAvatar: "Changer l'avatar",
+    changeAvatar: 'Changer son icône',
     firstNameLabel: 'Prénom',
     firstNameRequired: 'Prénom requis',
     lastNameLabel: 'Nom de famille',
@@ -159,8 +159,8 @@ export default {
     languageHelp: 'Sa page, ses messages et ses emails sont dans cette langue.',
   },
   avatar: {
-    title: 'Avatar',
-    description: 'Une emoji de Noël et une couleur.',
+    title: 'Mon icône',
+    theirs: 'Son icône',
     emoji: 'Emoji',
     color: 'Couleur',
     colors: {

@@ -15,16 +15,13 @@ const props = defineProps<{
 const avatar = defineModel<Avatar>('avatar', { required: true });
 const { t } = useT();
 const open = ref(false);
-const draft = ref<Avatar>(avatar.value);
-watch(open, (opened) => {
-  if (opened) draft.value = avatar.value;
-});
 /**
  * Keeps the icon picked, then closes the sheet.
+ * @param next - The icon.
  * @returns Nothing.
  */
-const onValidate = () => {
-  avatar.value = draft.value;
+const onValidate = (next: Avatar) => {
+  avatar.value = next;
   open.value = false;
 };
 const big = computed(() => props.size !== 'md');
@@ -56,29 +53,11 @@ const big = computed(() => props.size !== 'md');
       <UiPageTitle>{{ title }}</UiPageTitle>
       <p v-if="subtitle" class="text-[15px] text-toned">{{ subtitle }}</p>
     </div>
-    <UiSheet
+    <AdminAvatarSheet
       v-model:open="open"
-      :title="t('adminGroup.avatar.title')"
-      :description="t('adminGroup.avatar.description')"
-    >
-      <AdminAvatarPicker v-model="draft" />
-      <template #footer>
-        <UButton
-          block
-          size="xl"
-          class="h-12 justify-center font-bold"
-          :label="t('common.actions.validate')"
-          @click="onValidate"
-        />
-        <UButton
-          block
-          variant="ghost"
-          color="neutral"
-          class="h-11 justify-center"
-          :label="t('common.actions.cancel')"
-          @click="open = false"
-        />
-      </template>
-    </UiSheet>
+      :initial="avatar"
+      :title="t('adminGroup.avatar.theirs')"
+      @validate="onValidate"
+    />
   </div>
 </template>

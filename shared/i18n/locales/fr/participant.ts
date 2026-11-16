@@ -65,10 +65,6 @@ export default {
       title: 'Journal du groupe',
       subtitle: "Tout ce qui s'est passé, à la vue de tous",
     },
-    avatar: {
-      title: 'Mon icône',
-      description: 'Choisis ton emoji et ta couleur.',
-    },
   },
   reveal: {
     youGiveTo: 'Tu offres un cadeau à',

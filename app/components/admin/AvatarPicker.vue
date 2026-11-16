@@ -6,20 +6,28 @@ import {
 } from '#server/utils/avatars';
 import { AVATAR_SHADES } from '~/utils/avatars';
 
-// Emoji grid and colour swatches, with a live preview.
+// The emojis on three rows that scroll sideways (the last column cut by
+// the edge, so more can be guessed), opened on the one chosen; then the
+// colours on one line. Each target is 44 px; each group has a name for
+// screen readers, none on screen.
 const model = defineModel<Avatar>({ required: true });
 const { t, tk } = useT();
+const grid = ref<HTMLElement | null>(null);
+onMounted(() => {
+  const chosen = grid.value?.querySelector<HTMLElement>(
+    '[aria-checked="true"]',
+  );
+  chosen?.scrollIntoView({ block: 'nearest', inline: 'center' });
+});
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 py-2">
-    <div class="flex justify-center">
-      <UiAvatar :avatar="model" size="xl" />
-    </div>
+  <div class="flex flex-col gap-3.5">
     <div
+      ref="grid"
       role="radiogroup"
       :aria-label="t('adminGroup.avatar.emoji')"
-      class="grid grid-cols-6 gap-2 sm:grid-cols-8"
+      class="-mx-4 grid auto-cols-[44px] grid-flow-col grid-rows-[repeat(3,44px)] gap-x-[7px] gap-y-1.5 overflow-x-auto px-4 py-1"
     >
       <button
         v-for="emoji in AVATAR_EMOJIS"
@@ -28,11 +36,16 @@ const { t, tk } = useT();
         role="radio"
         :aria-checked="model.emoji === emoji"
         :aria-label="emoji"
-        class="flex aspect-square min-h-11 items-center justify-center rounded-md text-2xl transition"
+        class="flex size-11 items-center justify-center rounded-full text-[21px] focus-visible:outline-2 focus-visible:outline-primary"
         :class="
           model.emoji === emoji
-            ? 'bg-primary/15 ring-2 ring-primary'
-            : 'hover:bg-muted'
+            ? 'ring-2 ring-primary ring-offset-2 ring-offset-default'
+            : 'bg-muted'
+        "
+        :style="
+          model.emoji === emoji
+            ? { backgroundColor: AVATAR_SHADES[model.color].bg }
+            : undefined
         "
         @click="model = { ...model, emoji }"
       >
@@ -42,7 +55,7 @@ const { t, tk } = useT();
     <div
       role="radiogroup"
       :aria-label="t('adminGroup.avatar.color')"
-      class="flex flex-wrap justify-center gap-3"
+      class="flex justify-between"
     >
       <button
         v-for="color in AVATAR_COLORS"
@@ -51,22 +64,25 @@ const { t, tk } = useT();
         role="radio"
         :aria-checked="model.color === color"
         :aria-label="tk(`adminGroup.avatar.colors.${color}`)"
-        :title="tk(`adminGroup.avatar.colors.${color}`)"
-        class="size-11 rounded-full ring-1 transition"
-        :class="
-          model.color === color
-            ? 'ring-3 ring-offset-2 ring-offset-default'
-            : ''
-        "
-        :style="{
-          backgroundColor: AVATAR_SHADES[color].bg,
-          '--tw-ring-color':
-            model.color === color
-              ? 'var(--ui-primary)'
-              : AVATAR_SHADES[color].ring,
-        }"
+        class="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-primary"
         @click="model = { ...model, color }"
-      />
+      >
+        <span
+          class="size-8 rounded-full"
+          :class="
+            model.color === color
+              ? 'ring-2 ring-primary ring-offset-2 ring-offset-default'
+              : 'ring-1'
+          "
+          :style="{
+            backgroundColor: AVATAR_SHADES[color].bg,
+            '--tw-ring-color':
+              model.color === color
+                ? 'var(--ui-primary)'
+                : AVATAR_SHADES[color].ring,
+          }"
+        />
+      </button>
     </div>
   </div>
 </template>

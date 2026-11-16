@@ -26,7 +26,7 @@ export default {
     title: 'Home',
     hello: 'Hello {name}',
     helloNobody: 'Hello',
-    editAvatar: 'Change my avatar',
+    editAvatar: 'Change my icon',
     now: 'To do now',
     nowIn: 'To do now · {group}',
     later: 'Later',

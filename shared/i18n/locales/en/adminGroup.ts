@@ -146,7 +146,7 @@ export default {
     emailHelpNew:
       'To send them their link. Without an address, you will share it yourself by WhatsApp or SMS.',
     emailPlaceholder: 'name@example.com',
-    changeAvatar: 'Change avatar',
+    changeAvatar: 'Change their icon',
     firstNameLabel: 'First name',
     firstNameRequired: 'First name required',
     lastNameLabel: 'Last name',
@@ -158,8 +158,8 @@ export default {
     languageHelp: 'Their page, messages and emails are in this language.',
   },
   avatar: {
-    title: 'Avatar',
-    description: 'A Christmas emoji and a colour.',
+    title: 'My icon',
+    theirs: 'Their icon',
     emoji: 'Emoji',
     color: 'Colour',
     colors: {

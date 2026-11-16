@@ -57,16 +57,22 @@ const saveAvatar = useSaveAvatarMutation(token);
 const pickerOpen = ref(false);
 const chosen = ref<Avatar | null>(null);
 const avatar = computed(() => chosen.value ?? me.value?.avatar ?? null);
-const draft = ref<Avatar | null>(null);
+/**
+ * Opens the icon sheet.
+ * @returns Nothing.
+ */
 const openPicker = () => {
-  draft.value = avatar.value;
   pickerOpen.value = true;
 };
-const confirmPicker = () => {
-  const next = draft.value;
+/**
+ * Saves the icon picked, shown at once and put back on error.
+ * @param next - The icon.
+ * @returns Nothing.
+ */
+const confirmPicker = (next: Avatar) => {
   const current = avatar.value;
   pickerOpen.value = false;
-  if (!next || !current) return;
+  if (!current) return;
   if (next.emoji === current.emoji && next.color === current.color) return;
   chosen.value = next;
   saveAvatar.mutate(next, {
@@ -387,22 +393,13 @@ const card = computed(() => {
           @click="onClaim"
         />
       </UiCard>
-      <UDrawer
+      <AdminAvatarSheet
+        v-if="avatar"
         v-model:open="pickerOpen"
-        :title="t('participant.home.avatar.title')"
-        :description="t('participant.home.avatar.description')"
-      >
-        <template #body>
-          <AdminAvatarPicker v-if="draft" v-model="draft" />
-        </template>
-        <template #footer>
-          <UButton
-            block
-            :label="t('common.actions.validate')"
-            @click="confirmPicker"
-          />
-        </template>
-      </UDrawer>
+        :initial="avatar"
+        :title="t('adminGroup.avatar.title')"
+        @validate="confirmPicker"
+      />
     </template>
   </ParticipantScreen>
 </template>

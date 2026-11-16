@@ -67,10 +67,6 @@ export default {
       title: 'Group journal',
       subtitle: 'Everything that happened, for all to see',
     },
-    avatar: {
-      title: 'My icon',
-      description: 'Choose your emoji and your colour.',
-    },
   },
   reveal: {
     youGiveTo: 'You are giving a gift to',

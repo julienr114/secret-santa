@@ -27,7 +27,7 @@ export default {
     title: 'Startseite',
     hello: 'Hallo {name}',
     helloNobody: 'Hallo',
-    editAvatar: 'Meinen Avatar ändern',
+    editAvatar: 'Mein Symbol ändern',
     now: 'Jetzt zu tun',
     nowIn: 'Jetzt zu tun · {group}',
     later: 'Später',

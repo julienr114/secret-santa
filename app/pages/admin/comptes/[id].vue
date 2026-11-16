@@ -106,17 +106,21 @@ const onNames = () => {
 
 // Avatar: picked in a sheet, saved with "Valider".
 const avatarOpen = ref(false);
-const avatarDraft = ref<Avatar | null>(null);
+/**
+ * Opens the icon sheet.
+ * @returns Nothing.
+ */
 const openAvatar = () => {
-  avatarDraft.value = account.value?.avatar ?? null;
   avatarOpen.value = true;
 };
-const onAvatar = () => {
-  const avatar = avatarDraft.value;
+/**
+ * Saves the icon picked.
+ * @param avatar - The icon.
+ * @returns Nothing.
+ */
+const onAvatar = (avatar: Avatar) => {
   avatarOpen.value = false;
-  if (avatar) {
-    save({ avatarEmoji: avatar.emoji, avatarColor: avatar.color });
-  }
+  save({ avatarEmoji: avatar.emoji, avatarColor: avatar.color });
 };
 
 const requestOpen = ref(false);
@@ -330,22 +334,13 @@ const setDisabled = (disabled: boolean) => {
           :request="request"
           :stats="stats"
         />
-        <UDrawer
+        <AdminAvatarSheet
+          v-if="account?.avatar"
           v-model:open="avatarOpen"
+          :initial="account.avatar"
           :title="t('adminGroup.avatar.title')"
-          :description="t('adminGroup.avatar.description')"
-        >
-          <template #body>
-            <AdminAvatarPicker v-if="avatarDraft" v-model="avatarDraft" />
-          </template>
-          <template #footer>
-            <UButton
-              block
-              :label="t('common.actions.validate')"
-              @click="onAvatar"
-            />
-          </template>
-        </UDrawer>
+          @validate="onAvatar"
+        />
       </template>
     </AdminQueryState>
   </AdminScreen>

@@ -24,7 +24,7 @@ export default {
     title: 'Accueil',
     hello: 'Bonjour {name}',
     helloNobody: 'Bonjour',
-    editAvatar: 'Changer mon avatar',
+    editAvatar: 'Changer mon icône',
     now: 'À faire maintenant',
     nowIn: 'À faire maintenant · {group}',
     later: 'Plus tard',

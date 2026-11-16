@@ -67,10 +67,6 @@ export default {
       title: 'Protokoll der Gruppe',
       subtitle: 'Alles, was passiert ist, für alle sichtbar',
     },
-    avatar: {
-      title: 'Mein Symbol',
-      description: 'Wähle dein Emoji und deine Farbe.',
-    },
   },
   reveal: {
     youGiveTo: 'Du beschenkst',

@@ -153,7 +153,7 @@ export default {
     emailHelpNew:
       'Um den Link zu senden. Ohne Adresse teilst du ihn selbst per WhatsApp oder SMS.',
     emailPlaceholder: 'name@beispiel.de',
-    changeAvatar: 'Avatar ändern',
+    changeAvatar: 'Sein Symbol ändern',
     firstNameLabel: 'Vorname',
     firstNameRequired: 'Vorname erforderlich',
     lastNameLabel: 'Nachname',
@@ -166,8 +166,8 @@ export default {
       'Die Seite, die Nachrichten und die E-Mails dieser Person sind in dieser Sprache.',
   },
   avatar: {
-    title: 'Avatar',
-    description: 'Ein Weihnachts-Emoji und eine Farbe.',
+    title: 'Mein Symbol',
+    theirs: 'Sein Symbol',
     emoji: 'Emoji',
     color: 'Farbe',
     colors: {

@@ -73,15 +73,13 @@ const languageItems = computed(() =>
 const avatar = ref<Avatar>(
   props.initial?.avatar ?? randomAvatar((n) => Math.floor(Math.random() * n)),
 );
-// The picker opens in a bottom sheet and edits a draft until "Valider".
+// The picker opens in the icon sheet; the icon is kept with "Valider".
 const pickerOpen = ref(false);
-const draft = ref<Avatar>(avatar.value);
 const openPicker = () => {
-  draft.value = avatar.value;
   pickerOpen.value = true;
 };
-const confirmPicker = () => {
-  avatar.value = draft.value;
+const confirmPicker = (next: Avatar) => {
+  avatar.value = next;
   pickerOpen.value = false;
   if (props.autosave) save();
 };
@@ -143,22 +141,12 @@ const onLanguage = (language: Locale) => {
         @click="openPicker"
       />
     </div>
-    <UDrawer
+    <AdminAvatarSheet
       v-model:open="pickerOpen"
-      :title="t('adminGroup.avatar.title')"
-      :description="t('adminGroup.avatar.description')"
-    >
-      <template #body>
-        <AdminAvatarPicker v-model="draft" />
-      </template>
-      <template #footer>
-        <UButton
-          block
-          :label="t('common.actions.validate')"
-          @click="confirmPicker"
-        />
-      </template>
-    </UDrawer>
+      :initial="avatar"
+      :title="t('adminGroup.avatar.theirs')"
+      @validate="confirmPicker"
+    />
     <UFormField
       name="firstName"
       :label="t('adminGroup.personForm.firstNameLabel')"

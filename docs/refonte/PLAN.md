@@ -271,11 +271,11 @@ Demandé par Julien le 16 novembre 2026 : sur iPhone, le bas des panneaux est ro
 
 ### Lot 4 — Groupe : membres et exclusions
 
-- [ ] `GroupeMembres`, `GroupeMembres100`, `GroupeMembres100Deplie` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.
-- [ ] `GroupePersonne`, `PersonneNouvelle` (`personnes/[id].vue`, `nouvelle.vue`, `AdminPersonForm.vue`) : formulaire, section « Ne tire pas », « Retirer du groupe » en bas ; « Ajouter, puis en créer une autre ».
-- [ ] `GroupeExclusions`, `PanneauExclusion` (`exclusions.vue`, `AdminExclusions.vue`) : « Ajouter une exclusion » en haut, paires avec deux icônes, règles automatiques en lecture seule ; ajout dans un `UiSheet` avec `UiPersonPicker`.
-- [ ] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
-- [ ] **Actions en cours** conformes : roue dans les boutons des formulaires et des panneaux.
+- [x] `GroupeMembres`, `GroupeMembres100`, `GroupeMembres100Deplie` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.
+- [x] `GroupePersonne`, `PersonneNouvelle` (`personnes/[id].vue`, `nouvelle.vue`, `AdminPersonForm.vue`) : formulaire, section « Ne tire pas », « Retirer du groupe » en bas ; « Ajouter, puis en créer une autre ».
+- [x] `GroupeExclusions`, `PanneauExclusion` (`exclusions.vue`, `AdminExclusions.vue`) : « Ajouter une exclusion » en haut, paires avec deux icônes, règles automatiques en lecture seule ; ajout dans un `UiSheet` avec `UiPersonPicker`.
+- [x] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
+- [x] **Actions en cours** conformes : roue dans les boutons des formulaires et des panneaux.
 
 ### Correction 7 — le panneau d'envoi allégé
 
@@ -372,4 +372,14 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 5. **`GroupeSansEdition` : qui est repris.** La maquette dit « Les 5 membres du groupe sont repris ». Le serveur reprend les participants de la dernière édition encore actifs (README 4.2) : la carte dit donc « Les 4 participants de Noël 2025 sont repris », et « membres du groupe » seulement pour une première édition.
 6. **Membres.** Sous le titre, « 5 membres » compte les personnes actives ; la ligne « Membres » dit combien de personnes compte le groupe, désactivées comprises, comme la maquette (« 5 membres », « 6 personnes »).
 7. **Date libre d'un ancien réglage.** Un groupe dont la date de fête est un texte libre (« 25 décembre ») n'a pas de ligne de date sur la carte de l'édition.
+
+### Lot 4
+
+1. **`GroupePersonne`, `PersonneNouvelle` : le groupe sous le titre.** Ces deux maquettes écrivent « Famille Camille » sous le titre. La règle du contexte (Correction 5) l'emporte : la ligne « Famille Camille » est au-dessus du titre ; sous le titre reste « participe à Noël 2026 ».
+2. **`GroupeInvitation` : « Chaque réglage s'enregistre dès qu'il est validé. »** C'est une note de conception (section 3) : elle n'est pas écrite.
+3. **Places du lien : un pas à la fois.** Le panneau `PanneauNombre` n'a que « moins » et « plus ». La valeur par défaut est ce que le groupe peut encore accueillir (jusqu'à 99) : descendre à 5 demande beaucoup d'appuis. Faut-il pouvoir taper le nombre ?
+4. **Fiche d'une personne retirée du groupe.** La maquette ne montre que « Retirer du groupe ». Une fois retirée, la fiche propose « Remettre dans le groupe » et « Supprimer définitivement » (seulement si elle n'a jamais participé), qui existaient déjà.
+5. **« Nouvelle personne » sans nom de famille**, comme la maquette : il s'ajoute ensuite sur sa fiche.
+6. **Une exclusion dans un seul sens** s'écrit « Inès → Louis » dans la liste ; la maquette ne montre que des paires dans les deux sens.
+7. **`AdminPersonForm`** ne sert plus qu'au profil d'un compte : à simplifier au lot 8, avec l'écran du compte.
 

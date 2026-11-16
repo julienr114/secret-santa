@@ -407,6 +407,7 @@ export default {
       spam: "Les emails arrivent souvent en spam : relance par téléphone ceux qui n'ouvrent pas leur lien.",
     },
     sheet: {
+      sentOn: 'Envoyé le {date}, pas encore consulté',
       customize: 'Personnaliser le message',
       editMessage: 'Modifier le message',
       other: 'Autre moyen, ou un souci ?',

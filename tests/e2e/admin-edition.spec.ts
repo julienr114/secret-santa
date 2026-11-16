@@ -154,6 +154,10 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // behind « Autre moyen, ou un souci ? ».
   await page.getByRole('button', { name: 'Renvoyer le lien de Léa' }).click();
   await expect(page.getByText('Renvoyer à Léa').first()).toBeVisible();
+  // The header says when the link went, not how.
+  await expect(
+    page.getByText(/Envoyé le \d{1,2} \S+, pas encore consulté/),
+  ).toBeVisible();
   await page.getByRole('button', { name: /^Autre moyen, ou un souci/ }).click();
   const repairs = page.getByTestId('troubleshoot');
   await expect(repairs).toContainText('Pas envoyé finalement ?');

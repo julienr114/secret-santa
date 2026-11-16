@@ -416,6 +416,7 @@ export default {
       spam: 'E-Mails landen oft im Spam: Erinnere per Telefon, wer seinen Link nicht öffnet.',
     },
     sheet: {
+      sentOn: 'Gesendet am {date}, noch nicht angesehen',
       customize: 'Nachricht anpassen',
       editMessage: 'Nachricht ändern',
       other: 'Ein anderer Weg, oder ein Problem?',

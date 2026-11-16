@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
+import { followState } from '#server/utils/editions';
+import { shortDay } from '#shared/utils/dates';
 import type { Participant } from '#server/database/editions';
 import {
   addNote,
@@ -173,6 +175,15 @@ const title = computed(() =>
 const { lookOf } = useFollowLook();
 /** Where the participant stands, under the title. */
 const look = computed(() => lookOf(props.participant));
+/** The state's words, with the day of the last send while not opened. */
+const lookText = computed(() =>
+  followState(props.participant) === 'notOpened' &&
+  props.participant.messageSentAt
+    ? t('adminEdition.screen.sheet.sentOn', {
+        date: shortDay(props.participant.messageSentAt, locale.value),
+      })
+    : look.value.text,
+);
 /** The message's language, said next to « Personnaliser » when not ours. */
 const otherLanguage = computed(() =>
   props.participant.language === locale.value
@@ -217,7 +228,7 @@ watch(
               class="size-3.5 shrink-0"
               :class="look.iconTone"
             />
-            {{ look.text }}
+            {{ lookText }}
           </p>
         </div>
         <button

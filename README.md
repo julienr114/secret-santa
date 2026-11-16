@@ -1280,6 +1280,8 @@ En bref, version hybride : le panneau reste court (l'en-tête, le message entier
 
 Écartées : B (on envoie sans avoir le texte sous les yeux) et C (un écran entier fait quitter la liste). Non retenue non plus : l'envoi direct par le bouton rond avec « Annuler », parce qu'un email parti ne se rattrape pas.
 
+Sous le titre, l'en-tête dit où en est la personne ; une fois le lien parti et pas encore ouvert, avec le jour du dernier envoi : « Envoyé le 14 nov., pas encore consulté » (décidé par Julien le 17 novembre 2026). Pas le moyen d'envoi, que l'application ne connaît pas toujours.
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. La page **Guide de style** (`/admin/guide-de-style`, super-admin, lien depuis l'écran des groupes) montre tout ce qui est décrit ici, dans la langue choisie dans le menu.

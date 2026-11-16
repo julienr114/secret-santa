@@ -405,6 +405,7 @@ export default {
       spam: 'Emails often land in spam: remind by phone those who do not open their link.',
     },
     sheet: {
+      sentOn: 'Sent on {date}, not viewed yet',
       customize: 'Customise the message',
       editMessage: 'Edit the message',
       other: 'Another way, or a problem?',

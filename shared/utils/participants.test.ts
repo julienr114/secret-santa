@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { participantChanges, toggleChosen } from './participants';
+import { carriedOver, participantChanges, toggleChosen } from './participants';
 
 describe('participantChanges', () => {
   it('adds the newly ticked and removes the unticked', () => {
@@ -55,5 +55,25 @@ describe('toggleChosen', () => {
   it('unticks someone', () => {
     expect(toggleChosen(['a', 'b'], 'a', false)).toEqual(['b']);
     expect(toggleChosen(['a'], 'z', false)).toEqual(['a']);
+  });
+});
+
+describe('carriedOver', () => {
+  const members = [
+    { id: 'a', active: true },
+    { id: 'b', active: false },
+    { id: 'c', active: true },
+  ];
+
+  it('takes every active member for a first edition', () => {
+    expect(carriedOver(members, null).map((m) => m.id)).toEqual(['a', 'c']);
+  });
+
+  it('takes those of the previous edition still active', () => {
+    expect(carriedOver(members, ['b', 'c']).map((m) => m.id)).toEqual(['c']);
+  });
+
+  it('takes nobody when nobody took part', () => {
+    expect(carriedOver(members, [])).toEqual([]);
   });
 });

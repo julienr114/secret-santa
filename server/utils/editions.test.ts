@@ -15,6 +15,7 @@ import {
   participantBadges,
   previousEdition,
   editionStep,
+  editionSteps,
   followSeries,
   followState,
   preselectedForEmail,
@@ -315,5 +316,39 @@ describe('follow-up of the participants', () => {
         );
       }),
     );
+  });
+});
+
+describe('editionSteps', () => {
+  const states = (status: 'preparing' | 'drawn' | 'closed', today: string) =>
+    editionSteps(status, '2026-12-25', today).map((s) => [s.label, s.state]);
+
+  it('prepares first', () => {
+    expect(states('preparing', '2026-12-01')).toEqual([
+      ['prepare', 'current'],
+      ['draw', 'todo'],
+      ['party', 'todo'],
+    ]);
+  });
+
+  it('says the draw is done, then the party comes', () => {
+    expect(states('drawn', '2026-12-01')).toEqual([
+      ['prepare', 'done'],
+      ['drawDone', 'current'],
+      ['party', 'todo'],
+    ]);
+    expect(states('drawn', '2026-12-25')).toEqual([
+      ['prepare', 'done'],
+      ['drawDone', 'done'],
+      ['party', 'current'],
+    ]);
+  });
+
+  it('has every step done once closed', () => {
+    expect(states('closed', '2026-12-01')).toEqual([
+      ['prepare', 'done'],
+      ['drawDone', 'done'],
+      ['partyDone', 'done'],
+    ]);
   });
 });

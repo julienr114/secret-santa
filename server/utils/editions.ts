@@ -246,6 +246,40 @@ export const editionStep = (
 };
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
+/** How a step of the stepper reads, and where it stands. */
+export type EditionStepView = {
+  /** The words of the step: « Préparer », « Tirage fait », « Fêté »… */
+  label: 'prepare' | 'draw' | 'drawDone' | 'party' | 'partyDone';
+  state: 'done' | 'current' | 'todo';
+};
+
+/**
+ * The three steps of an edition as the stepper shows them: done before
+ * the current one, all done once closed; the draw reads « Tirage fait »
+ * once drawn, the party « Fêté » once closed.
+ * @param status - Status of the edition.
+ * @param eventDate - Day of the party (ISO), or anything else when unknown.
+ * @param today - ISO day.
+ * @returns The steps, in order.
+ */
+export const editionSteps = (
+  status: EditionStatus,
+  eventDate: string | null | undefined,
+  today: string,
+): EditionStepView[] => {
+  const at = EDITION_STEPS.indexOf(editionStep(status, eventDate, today));
+  const closed = status === 'closed';
+  const labels = [
+    'prepare',
+    status === 'preparing' ? 'draw' : 'drawDone',
+    closed ? 'partyDone' : 'party',
+  ] as const;
+  return labels.map((label, index) => ({
+    label,
+    state: closed || index < at ? 'done' : index === at ? 'current' : 'todo',
+  }));
+};
+
 /** What the follow-up of a participant needs. */
 export type FollowedParticipant = {
   firstName: string;

@@ -33,3 +33,21 @@ export const toggleChosen = (
   on: boolean,
 ): string[] =>
   on ? [...chosen.filter((v) => v !== id), id] : chosen.filter((v) => v !== id);
+
+/** Someone of the group, as far as a new edition is concerned. */
+type Member = { id: string; active: boolean };
+
+/**
+ * Who a new edition starts with (README 4.2): those of the previous
+ * edition still active, or every active member for a first edition.
+ * @param members - The members of the group.
+ * @param previousIds - Who took part in the previous edition; null if none.
+ * @returns The members taken over, in the order given.
+ */
+export const carriedOver = <M extends Member>(
+  members: readonly M[],
+  previousIds: readonly string[] | null,
+): M[] =>
+  members.filter(
+    (m) => m.active && (previousIds === null || previousIds.includes(m.id)),
+  );

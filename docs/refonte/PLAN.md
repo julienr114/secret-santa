@@ -1,0 +1,182 @@
+# Plan de refonte des interfaces — ce qui reste à coder
+
+Écrit le 16 novembre 2026, à partir du canevas de maquettes (97 écrans) et du code à `5f50067`.
+Ce plan est fait pour être exécuté par Claude Code, lot par lot.
+
+- Maquettes : `docs/refonte/maquettes/<Nom>.html` (une par écran, 390 px de large, styles en ligne). Le canevas complet : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns
+- Le statut de chaque écran vient d'une lecture du code et de l'historique Git, pas d'une comparaison visuelle. Les écrans notés « partiel » sont à contrôler en premier dans leur lot.
+
+## 1. Périmètre
+
+**Dans le périmètre** : refaire l'interface d'écrans qui existent déjà, avec les routes d'API, les mutations et les données qui existent déjà.
+
+**Hors périmètre** (ne pas coder, même si une maquette le montre) :
+
+| Sujet | Maquettes concernées | Pourquoi |
+|---|---|---|
+| Dévoiler les résultats (README 22.9) | `DevoilerAvant`, `Feter`, `Devoiler`, `Cloturee`, et la ligne « Dévoiler les résultats » de `Suivi100` | Nouvelle fonctionnalité, côté serveur compris |
+| Idées futures | `FuturAccueil`, `FuturListes` | Non planifié |
+| Mot de l'administrateur sur un refus | bloc « Le mot de l'administrateur » de `AccueilDemandeRefusee`, champ « Un mot pour elle » de `AdminDemande` | Demande un champ en base et un email |
+| Alerte du journal sur la page du participant | `TirageAlerteJournal` | Demande de mémoriser la dernière visite ; pas encore décidé |
+
+**Règle générale** : si une maquette affiche une donnée que l'API ne fournit pas, ne pas l'inventer et ne pas toucher au schéma. Laisser l'élément de côté et l'ajouter à la section 6 « Questions pour Julien » de ce fichier.
+
+## 2. Avant de coder
+
+1. Lire dans `README.md` : 7.1 (règles de code), 11 (écrans), 21 (langues), 23 (design system).
+2. Ouvrir `/admin/guide-de-style` et lire `app/components/ui/*` : tout ce qui existe se réutilise.
+3. Lire un écran déjà refait comme modèle : `app/pages/admin/[slug]/editions/[id]/index.vue` et ses composants `AdminEdition*`, `AdminSendSheet`, `AdminDateSheet`.
+4. Pour chaque lot, lire les maquettes citées **et** l'écran actuel avant d'écrire une ligne.
+
+Les maquettes sont la référence pour la structure, la hiérarchie et les textes. Leurs prénoms, dates et chiffres sont des exemples. En cas d'écart entre une maquette et une règle du README 23.3, la règle gagne ; le noter en section 6.
+
+## 3. Règles de travail
+
+- **Design system d'abord.** Un motif qui revient dans deux écrans devient un composant `app/components/ui/*`, sans texte ni métier, montré dans le guide de style. Les écrans nomment un rôle (`bg-page`, `primary-tint`…), jamais une teinte.
+- **Programmation fonctionnelle** (README 7.1) : la logique d'affichage (tri, regroupement, repli, filtre) est une fonction pure dans `shared/utils` ou `server/utils`, avec son fichier de test à côté. Pas de mutation, `computed` plutôt que `watch`, pas de classe.
+- **Standards** : `<script setup lang="ts">`, TypeScript strict, composants Nuxt UI 4, TanStack Query par les composables de `app/composables/queries/`, validation Zod inchangée.
+- **Aucun texte en dur** : chaque libellé dans `shared/i18n/locales` en français, anglais et allemand. Supprimer les clés qui ne servent plus.
+- **Mobile seulement** : colonne `max-w-md`, cibles de 44 px, panneaux du bas (`UiSheet`). Pas de version grand écran.
+- **Accessibilité** : un seul `h1`, `aria-label` sur les boutons à icône seule, `prefers-reduced-motion` respecté.
+- **Emoji** : uniquement dans les icônes de personne. Partout ailleurs, icônes Lucide.
+- **Tests** : Vitest pour chaque fonction pure ; Playwright (`tests/e2e`) pour le parcours principal de chaque lot ; garder les `data-testid` existants ou adapter les tests dans le même commit.
+- **Commits** : petits, Conventional Commits en anglais, chacun passe `pnpm lint`, `pnpm typecheck` et `pnpm test`. README mis à jour dans le commit de la décision. Ne pas pousser, ne pas déployer.
+- **Un lot à la fois**, dans l'ordre. À la fin d'un lot : lancer `pnpm test:e2e`, cocher le lot ici, s'arrêter et résumer.
+
+## 4. État des 97 maquettes
+
+| | Codé | Partiel | À coder | Hors périmètre |
+|---|---|---|---|---|
+| Accueil et connexion (18) | 11 | 3 | 4 | 0 |
+| Participant (16) | 7 | 0 | 8 | 1 |
+| Organisateur · édition (30) | 9 | 3 | 14 | 4 |
+| Organisateur · groupe (16) | 0 | 1 | 15 | 0 |
+| Journal (5) | 0 | 0 | 5 | 0 |
+| Administration (8) | 0 | 0 | 8 | 0 |
+| États et idées (4) | 0 | 0 | 2 | 2 |
+| **Total** | **27** | **7** | **56** | **7** |
+
+### Codé (27)
+
+- **Accueil** (commits du 15 novembre) : `Connexion`, `ConnexionCreer`, `AccueilVide`, `Accueil`, `AccueilPlusieurs`, `AccueilOrganisateur`, `PanneauAvatar`, `TiragesPasses`, `PanneauDemandeGroupe`, `AccueilDemandeAcceptee`, `GroupeNouveau`.
+- **Participant** : `TirageAttente`, `TirageDecouvrir`, `TirageResultat`, `TirageRevoir`, `TirageCloture`, `TirageLienInvalide`, `CarteCompte`.
+- **Édition** : `Main`, `DateFete`, `ConfirmerTirage`, `Suivi`, `SuiviSansDate`, `SelectionEmail`, `Envoi`, `EnvoiSansEmail`, `Renvoi`.
+
+### Partiel (7)
+
+| Maquette | Ce qui existe | Ce qui manque | Lot |
+|---|---|---|---|
+| `PreparerImpossible` | Une phrase d'erreur dans la carte, bouton désactivé | Étiquette « À corriger avant le tirage », une ligne par personne bloquée, deux boutons « Voir les exclusions » et « Ajouter des participants » à la place de « Lancer le tirage » | 1 |
+| `ConfirmerTirageGrand` | Pile d'icônes « +N », noms des absents abrégés | Lien « Voir et ajouter » sur la ligne des absents | 1 |
+| `EtatConfirmation` | Un toast après l'envoi | Le texte de la maquette (nombre d'emails, prénoms) | 1 |
+| `EditionNouvelle` | Date obligatoire | Mise en page de la maquette : date proposée, pile des participants repris | 3 |
+| `AccueilMenu` | Menu déroulant dans `AdminScreen` | Ordre et contenu de la maquette (langue, Mon compte, Se déconnecter) | 8 |
+| `AccueilDemandeAttente` | Une ligne de texte | La carte « Ta demande est partie » avec le texte de la demande | 8 |
+| `AccueilDemandeRefusee` | Une ligne de texte | La carte « refusée » et « Faire une autre demande » (sans le mot de l'administrateur) | 8 |
+
+### À coder (56)
+
+Détaillé par lot en section 5.
+
+## 5. Les lots
+
+### Lot 0 — Fondations du design system
+
+Rien de visible pour l'utilisateur, tout le reste en dépend.
+
+- [ ] **Repli des longues listes.** Fonction pure `foldList(items, shown)` dans `shared/utils/lists.ts` (renvoie les éléments montrés et le reste), testée. Composant `UiFoldRow` : trois petites icônes de personne qui se chevauchent, « Voir les N autres » et chevron en brique, un petit espace sous la ligne avant la suite ; un appui déplie sur place. Référence : `Preparer100`, `Suivi100`.
+- [ ] **Recherche dans une liste.** Composant `UiSearchField` au-dessus d'une liste de plus de 10 personnes, sur `matchesName` et `highlightName` qui existent. La recherche montre tous les résultats, sans repli. Référence : `GroupeMembres100`, `ChoisirPersonneRecherche`.
+- [ ] **Panneaux de réglage.** Quatre panneaux génériques sur `UiSheet`, avec « Valider » et « Annuler » : `UiChoiceSheet` (une valeur parmi plusieurs, avec aide par option), `UiTextSheet` (texte et compteur), `UiNumberSheet` (moins, nombre, plus), et une date facultative en généralisant `AdminDateSheet`. Référence : `PanneauChoix`, `PanneauTexte`, `PanneauNombre`, `PanneauDate`.
+- [ ] **Ligne de réglage.** `UiListItem` avec la valeur courante à droite, et variante avec interrupteur. Référence : `GroupeReglages`.
+- [ ] **Chargement et erreur.** `AdminQueryState` : squelette à la forme de l'écran (`EtatChargement`) ; erreur avec titre, phrase, « Réessayer » (`refetch`) et un retour (`EtatErreur`). Dans un panneau : ligne rouge au-dessus du bouton, panneau ouvert, saisie gardée. Accès refusé : phrase claire et retour à l'accueil.
+- [ ] Guide de style et README 23.2 à jour.
+
+**Fini quand** : chaque composant est dans le guide de style, les fonctions pures sont testées, aucun écran n'a changé.
+
+### Lot 1 — Édition : cas limites et grands groupes
+
+Fichiers : `AdminEditionPrepare.vue`, `AdminEditionFollow.vue`, `AdminDrawSheet.vue`, `emails.vue`, `editions/[id]/index.vue`.
+
+- [ ] `PreparerVide` : sans participant, la carte dit « Ajoute les participants » avec « Ajouter des participants » et « Inviter par lien ».
+- [ ] `PreparerImpossible`, `ConfirmerTirageGrand`, `EtatConfirmation` : voir « Partiel ».
+- [ ] `Preparer100` : recherche au-delà de 10, 6 lignes puis `UiFoldRow`.
+- [ ] `Suivi100` : une seule liste dans l'ordre de `sortParticipants`. Chaque série (pas encore envoyé, pas encore consulté, résultat consulté) montre 3 lignes puis sa ligne de repli, qui rappelle l'état de la série. Pas de sections, pas de compteurs qui filtrent. Le bouton de la carte dit « Prévenir les N par email ».
+- [ ] `SelectionEmail100` : recherche, repli, compteur « N sélectionnés sur M ». La sélection porte sur toute la liste, pas seulement sur les lignes visibles.
+- [ ] `ClotureeSecrete` : édition clôturée en lecture seule : frise entièrement faite, encadré « Édition clôturée », participants, exclusions appliquées. Contrôler d'abord ce que `AdminEditionResults` affiche aujourd'hui (README 8.7) ; s'il montre les paires, ne rien retirer et poser la question en section 6.
+
+Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante nommée, par exemple `FOLD_FROM`, validée par Julien le 16 novembre 2026).
+
+**Fini quand** : un groupe de 5 s'affiche comme aujourd'hui ; un groupe de 100 (à ajouter au script `seed:demo`) tient en moins de trois écrans de défilement.
+
+### Lot 2 — Édition : sous-écrans
+
+- [ ] `AjouterParticipants` (`ajouter.vue`) : membres absents à cocher, « Créer une personne », « Inviter par lien », bouton collant « Ajouter N personnes ».
+- [ ] `FicheParticipant` (`participants/[pid].vue`) : état en tête, action principale « Renvoyer son lien » (ouvre `AdminSendSheet`), informations, puis « Dépannage ».
+- [ ] `PanneauRegenerer` : la confirmation de la régénération passe dans un `UiSheet`.
+- [ ] `AnnulerTirage` (`annuler.vue`) : conséquences en liste, motif, aperçu de la ligne du journal, case à cocher, bouton sûr « Garder ce tirage » mis en avant.
+- [ ] `VoirResultat`, `ChoisirPersonne`, `ChoisirPersonneRecherche`, `VoirResultatAffiche` (`voir-le-tirage.vue`) : avertissement, choix de la personne par `UiPersonPicker` (qui existe et n'est pas encore branché), aperçu du journal, phrase à recopier ; puis le résultat avec « Cacher et revenir à l'édition ». Libellé « Voir un seul résultat ».
+
+**Fini quand** : les parcours de `tests/e2e/admin-edition.spec.ts` passent sur les nouveaux écrans.
+
+### Lot 3 — Groupe : accueil et nouvelle édition
+
+- [ ] `Groupe` (`admin/[slug]/index.vue`) : carte de l'édition en cours avec `UiStepper` et une phrase d'état, bouton « Ouvrir l'édition » ; section « Le groupe » en quatre lignes : Membres, **Exclusions** (ligne à part, avec le nombre de paires), Journal (dernier événement), Réglages ; puis les éditions passées.
+- [ ] `GroupeSansEdition` : `UiActionCard` « Prépare le tirage de cette année ».
+- [ ] `EditionNouvelle` (`editions/nouvelle.vue`) : voir « Partiel ».
+
+### Lot 4 — Groupe : membres et exclusions
+
+- [ ] `GroupeMembres`, `GroupeMembres100` (`personnes/index.vue`) : une liste, exclusions rappelées sous le prénom, « Ajouter une personne » en bas, pied « L'historique de ceux qui ne participent plus est conservé », puis « Inviter par lien ». Recherche et repli du lot 0.
+- [ ] `GroupePersonne`, `PersonneNouvelle` (`personnes/[id].vue`, `nouvelle.vue`, `AdminPersonForm.vue`) : formulaire, section « Ne tire pas », « Retirer du groupe » en bas ; « Ajouter, puis en créer une autre ».
+- [ ] `GroupeExclusions`, `PanneauExclusion` (`exclusions.vue`, `AdminExclusions.vue`) : « Ajouter une exclusion » en haut, paires avec deux icônes, règles automatiques en lecture seule ; ajout dans un `UiSheet` avec `UiPersonPicker`.
+- [ ] `GroupeInvitation` (`invitation.vue`) : message et lien, « Partager le lien », réglages du lien par les panneaux du lot 0 (`PanneauNombre`, `PanneauDate`, `PanneauTexte`).
+
+### Lot 5 — Groupe : réglages
+
+- [ ] `GroupeReglages` (`reglages.vue`) : lignes de réglage par section (Tirage, Participants, M'écrire par email, Organisateurs), chaque valeur modifiée dans son panneau (`PanneauChoix`, `PanneauTexte`).
+- [ ] `PanneauOrganisateur` : la page `organisateurs.vue` devient une section des réglages ; garder la route en redirection.
+- [ ] `PanneauSupprimerGroupe` : suppression (super-admin) dans un panneau, identifiant à recopier, « Garder le groupe » mis en avant.
+
+- [ ] **Pas de bouton « Enregistrer » en bas de page** (validé par Julien le 16 novembre 2026) : chaque réglage s'enregistre quand on valide son panneau, un interrupteur s'enregistre dès qu'on le bascule. Une mutation par réglage, avec mise à jour optimiste et retour à l'ancienne valeur en cas d'erreur (toast). Retirer l'état « modifié, non enregistré » de la page. Même règle pour les réglages du lien d'invitation (lot 4). Ajouter la règle au README 23.3, qui dit aujourd'hui qu'un panneau enregistre avec « Valider ».
+
+### Lot 6 — Journal
+
+Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/[token]/journal.vue`.
+
+- [ ] `Journal`, `JournalTout` : deux vues, « L'essentiel » et « Tout » ; par jour ; les événements répétés d'un même type regroupés en une ligne dépliable (« 5 personnes ont découvert leur résultat »). Fonctions pures `essentialEvents` et `groupEvents`, testées.
+- [ ] `JournalPersonne` : filtre « Moi », seulement si les événements portent déjà la personne concernée ; sinon section 6.
+- [ ] `JournalDetail` : « Qu'est-ce que ça veut dire ? » ouvre un panneau qui explique l'alerte.
+- [ ] `JournalAide` : panneau « À quoi sert le journal ? ».
+
+### Lot 7 — Participant : souhaits et invitation
+
+- [ ] `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` (`p/[token]/souhaits.vue`) : liste d'idées, ajout et modification dans un `UiSheet`, pistes pour démarrer quand la liste est vide, lecture seule une fois l'édition clôturée.
+- [ ] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états.
+
+### Lot 8 — Connexion, compte, demandes
+
+- [ ] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
+- [ ] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
+- [ ] `AccueilMenu`, `AccueilDemandeAttente`, `AccueilDemandeRefusee` : voir « Partiel ».
+
+### Lot 9 — Administration (super-admin)
+
+- [ ] `AdminAcces`, `AdminAccesMenu` : la barre du bas (`AdminBottomNav`) disparaît ; l'accès se fait par une ligne « Administration » en bas de l'accueil et par le menu, avec le nombre de demandes en attente.
+- [ ] `Admin`, `AdminPlusieursDemandes` : accueil de l'administration ; la demande la plus ancienne dans la carte, les suivantes en lignes.
+- [ ] `AdminDemande` : réponse dans un panneau, avec l'effet sur le quota (sans le champ « Un mot pour elle »).
+- [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`).
+
+- [ ] Validé par Julien le 16 novembre 2026 : le super-admin ne modifie plus le profil d'un compte (prénom, icône, langue), il le lit seulement ; « Accepter » et « Refuser » ont le même poids visuel. Retirer du client le formulaire de profil de `admin/comptes/[id].vue` ; la route d'API reste en place.
+
+### Lot 10 — Finitions
+
+- [ ] Supprimer les composants et les clés de dictionnaire devenus inutiles.
+- [ ] `tests/e2e/design.spec.ts` et guide de style à jour.
+- [ ] README 11 et 23 réécrits pour les écrans refaits.
+- [ ] Cocher les lots ici, et lister ce qui reste en section 6.
+
+## 6. Questions pour Julien
+
+À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
+
+Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.

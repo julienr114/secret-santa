@@ -1238,5 +1238,6 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 
 ### 23.4 Reste à faire
 
+- **Refonte des interfaces en cours** : le plan, lot par lot, est dans [`docs/refonte/PLAN.md`](docs/refonte/PLAN.md), avec l'état de chaque maquette (codée, partielle, à coder) et les maquettes en HTML dans `docs/refonte/maquettes/`. Chaque lot terminé y est coché.
 - Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
 

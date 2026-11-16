@@ -76,4 +76,13 @@ const tests = {
   },
 };
 
-export default withNuxt(functionalEverywhere, pureCore, tests, prettier);
+// Reference mockups of the redesign: never linted nor reformatted.
+const mockups = { ignores: ['docs/refonte/maquettes/**'] };
+
+export default withNuxt(
+  mockups,
+  functionalEverywhere,
+  pureCore,
+  tests,
+  prettier,
+);

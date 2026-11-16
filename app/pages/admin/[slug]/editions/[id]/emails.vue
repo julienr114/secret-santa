@@ -126,11 +126,15 @@ const first = computed(() =>
 );
 const note = ref('');
 const writing = ref(false);
-const preview = computed(() => {
-  const message =
-    first.value && messages.data.value?.messages[first.value.participationId];
-  return message ? addNote(message.text, note.value, 'after') : undefined;
-});
+const firstMessage = computed(
+  () =>
+    first.value && messages.data.value?.messages[first.value.participationId],
+);
+const preview = computed(() =>
+  firstMessage.value
+    ? addNote(firstMessage.value.text, note.value, 'after')
+    : undefined,
+);
 
 const sendEmails = useSendEmailsMutation(slug, id);
 /**
@@ -195,7 +199,11 @@ const onSend = () =>
         <h2 class="text-xs font-bold tracking-wide text-muted uppercase">
           {{ t('adminEdition.screen.emails.message') }}
         </h2>
-        <UTabs v-model="type" :items="tabs" :content="false" class="w-full" />
+        <UiSegmented
+          v-model="type"
+          :items="tabs"
+          :label="t('adminEdition.screen.emails.message')"
+        />
       </section>
 
       <section class="flex flex-col gap-2" data-testid="email-people">
@@ -300,10 +308,13 @@ const onSend = () =>
             })
           }}
         </h2>
-        <UiTextPreview v-if="preview" data-testid="email-preview">{{
-          preview
-        }}</UiTextPreview>
-        <USkeleton v-else class="h-28 w-full rounded-lg bg-skeleton" />
+        <UiMessageBubble
+          v-if="preview"
+          :text="preview"
+          :link="firstMessage?.link"
+          data-testid="email-preview"
+        />
+        <USkeleton v-else class="h-28 w-[92%] rounded-2xl bg-skeleton" />
         <UButton
           variant="outline"
           color="neutral"

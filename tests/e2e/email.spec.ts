@@ -82,18 +82,18 @@ test('the guardian adds addresses and sends to those who have one', async ({
     page.getByRole('link', { name: "Ajouter l'adresse de Bob" }),
   ).toBeVisible();
   // Before the draw, only the messages of the preparation.
-  await expect(page.getByRole('tab', { name: 'Invitation' })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(page.getByRole('tab', { name: 'Tirage fait' })).toHaveCount(0);
+  await expect(page.getByRole('radio', { name: 'Invitation' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Tirage fait' })).toHaveCount(0);
   // The message word for word, with the organiser's own words below it.
   const preview = page.getByTestId('email-preview');
   await expect(page.getByText('Aperçu, pour Ada')).toBeVisible();
   await expect(preview).toContainText('Salut Ada !');
   await page.getByRole('button', { name: 'Ajouter un mot' }).click();
   await page.getByLabel('Ajouter un mot').fill('Rendez-vous chez Mamie');
-  await expect(preview).toContainText(/http\S+\s+Rendez-vous chez Mamie$/);
+  await expect(preview.locator('p').last()).toHaveText(
+    'Rendez-vous chez Mamie',
+  );
+  await expect(preview.locator('p').nth(1)).toContainText('/p/');
   await ada.click();
   await expect(count).toHaveText('0 sélectionné sur 3');
   await page.getByRole('button', { name: 'Tout sélectionner' }).click();

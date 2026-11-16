@@ -2,6 +2,7 @@
 import { AVATAR_COLORS, type Avatar } from '#server/utils/avatars';
 import type { JournalEntry } from '#server/utils/audit';
 import type { NotePosition } from '#server/utils/messages';
+import { matchesName } from '#shared/utils/names';
 
 // Every interface component in its variants, in the language chosen in
 // the menu. Its own headings are in French only: a developer's tool, the
@@ -113,6 +114,37 @@ const pickable = (count: number) =>
     avatar: crowd[index % crowd.length]!,
   }));
 const christmasDay = `${new Date().getFullYear()}-12-25`;
+/** Examples of the long lists and the settings rows and sheets. */
+const longList = pickable(12);
+const folded = ref(true);
+const search = ref('');
+const searchedList = computed(() =>
+  longList.filter((person) => matchesName(search.value, person.name)),
+);
+const wishlistOn = ref(true);
+const sheetOpen = reactive({
+  choice: false,
+  text: false,
+  number: false,
+  date: false,
+});
+const settings = reactive({ years: 1, note: '', places: 10, until: '' });
+const YEAR_CHOICES = [
+  { value: 0, label: 'Non, peu importe' },
+  { value: 1, label: 'Pas la même que l’an dernier' },
+  { value: 2, label: 'Pas la même que les 2 dernières années' },
+  {
+    value: 3,
+    label: 'Pas la même que les 3 dernières années',
+    hint: 'Le tirage devient très contraint dans un petit groupe',
+  },
+];
+const yearLabel = computed(
+  () => YEAR_CHOICES.find((c) => c.value === settings.years)?.label ?? '',
+);
+/** Fake failures, to show the error states. */
+const loadFailure = { statusCode: 500 };
+const refusal = { statusCode: 403, statusMessage: 'forbidden' };
 const choices = useNotePositionItems();
 
 const now = new Date();
@@ -433,6 +465,138 @@ const entries = computed(() => [
           UiGiftTag : une étiquette cadeau, son contenu dans le slot.
         </p>
       </UiGiftTag>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Longues listes</UiSectionTitle>
+      <UiSearchField
+        v-model="search"
+        label="Chercher un prénom"
+        clear-label="Effacer la recherche"
+      />
+      <UiList
+        footer="UiSearchField au-dessus d'une liste de plus de 10 personnes ; la recherche montre tous les résultats, sans repli."
+      >
+        <UiListItem
+          v-for="person in search
+            ? searchedList
+            : folded
+              ? longList.slice(0, 3)
+              : longList"
+          :key="person.id"
+          :avatar="person.avatar"
+          :title="person.name"
+        />
+        <UiFoldRow
+          v-if="folded && !search"
+          :avatars="longList.slice(3).map((p) => p.avatar)"
+          :label="`Voir les ${longList.length - 3} autres`"
+          detail="UiFoldRow : foldList, au-delà de FOLD_FROM (12)"
+          @expand="folded = false"
+        />
+      </UiList>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Réglages</UiSectionTitle>
+      <UiList
+        title="Lignes de réglage"
+        footer="UiListItem avec value (ouvre un panneau) ou v-model:checked (interrupteur)."
+      >
+        <UiListItem
+          title="Éviter la même personne"
+          :value="yearLabel"
+          :on-click="() => (sheetOpen.choice = true)"
+        />
+        <UiListItem
+          v-model:checked="wishlistOn"
+          title="Listes de souhaits"
+          subtitle="Chacun note des idées pour celui qui lui offre"
+        />
+        <UiListItem
+          title="Mot ajouté aux messages"
+          :value="settings.note || 'Aucun'"
+          :on-click="() => (sheetOpen.text = true)"
+        />
+        <UiListItem
+          title="Places restantes"
+          :value="String(settings.places)"
+          :on-click="() => (sheetOpen.number = true)"
+        />
+        <UiListItem
+          title="Date limite"
+          :value="settings.until || 'Aucune'"
+          :on-click="() => (sheetOpen.date = true)"
+        />
+      </UiList>
+      <p class="px-1 text-xs text-muted">
+        Panneaux : UiChoiceSheet, UiTextSheet, UiNumberSheet et AdminDateSheet,
+        tous sur UiSettingSheet (Valider, Annuler, ligne d'erreur).
+      </p>
+      <UiChoiceSheet
+        v-model:open="sheetOpen.choice"
+        title="Éviter la même personne"
+        description="Personne n’offre à quelqu’un qu’il a déjà eu ces dernières années."
+        :choices="YEAR_CHOICES"
+        :value="settings.years"
+        :validate-label="t('common.actions.validate')"
+        :cancel-label="t('common.actions.cancel')"
+        @validate="(v) => ((settings.years = v), (sheetOpen.choice = false))"
+      />
+      <UiTextSheet
+        v-model:open="sheetOpen.text"
+        title="Mot ajouté aux messages"
+        description="Ajouté tel quel à chaque message envoyé aux participants."
+        label="Ton mot"
+        :value="settings.note"
+        :maxlength="500"
+        hint="Envoyé tel quel, quelle que soit la langue."
+        :validate-label="t('common.actions.validate')"
+        :cancel-label="t('common.actions.cancel')"
+        error="Exemple de ligne d'erreur : le panneau reste ouvert."
+        @validate="(v) => ((settings.note = v), (sheetOpen.text = false))"
+      />
+      <UiNumberSheet
+        v-model:open="sheetOpen.number"
+        title="Places restantes"
+        description="Combien de personnes peuvent encore rejoindre le groupe par ce lien."
+        :value="settings.places"
+        :min="1"
+        :max="50"
+        hint="Le groupe peut encore accueillir 50 personnes au plus."
+        decrease-label="Une place de moins"
+        increase-label="Une place de plus"
+        :validate-label="t('common.actions.validate')"
+        :cancel-label="t('common.actions.cancel')"
+        @validate="(v) => ((settings.places = v), (sheetOpen.number = false))"
+      />
+      <AdminDateSheet
+        v-model:open="sheetOpen.date"
+        title="Date limite"
+        description="Facultatif. Le lien ne marche plus après ce jour."
+        label="Date"
+        :value="settings.until"
+        clear-label="Pas de date limite"
+        @validate="(v) => ((settings.until = v), (sheetOpen.date = false))"
+      />
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Chargement et erreur</UiSectionTitle>
+      <AdminQueryState
+        :pending="true"
+        :error="null"
+        :rows="2"
+        :skeleton="['title', 'stepper', 'card', 'list']"
+      />
+      <AdminQueryState
+        :pending="false"
+        :error="loadFailure"
+        error-title="On n’arrive pas à charger l’édition"
+        back-to="/admin/guide-de-style"
+        back-label="Revenir au groupe"
+      />
+      <AdminQueryState :pending="false" :error="refusal" />
     </section>
 
     <section class="flex flex-col gap-4">

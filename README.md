@@ -1204,7 +1204,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiPageTitle` | Le titre d'un écran, un seul par page (`h1`) |
 | `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe |
 | `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
-| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` |
+| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône, emoji ou icône de personne, et un emplacement `trailing` ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
 | `UiAvatar` | L'icône d'une personne, en quatre tailles : `sm` 32 px, `md` 40 px, `lg` 56 px (en-tête d'une page), `xl` 80 px (résultat, fiche, choix de l'icône) |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
 | `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond brique, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
@@ -1215,11 +1215,17 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `warning` (encadré avec titre), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
 | `UiEnvelope` | L'enveloppe d'un tirage en SVG : `pending` (pointillés, horloge), `sealed` (kraft, cachet brique à l'étoile), `opened` (rabat levé, carte à l'étoile), `locked` (cadenas). Décorative |
 | `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
-| `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
+| `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche (`UiSearchField`) sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
+| `UiSearchField` | Champ de recherche au-dessus d'une liste de plus de 10 personnes : loupe, libellé, croix pour vider. La recherche montre tous les résultats, sans repli |
+| `UiFoldRow` | La ligne qui remplace la suite d'une longue liste : trois icônes de personne, « Voir les N autres » et, si besoin, l'état de la série ; un appui déplie sur place. Puis une petite bande avant la suite (`foldList`, au-delà de `FOLD_FROM` = 12 personnes) |
+| `UiSettingSheet` | Cadre de tout panneau de réglage : titre, aide, contenu, « Valider » et « Annuler » ; un enregistrement refusé s'affiche en ligne rouge au-dessus du bouton, le panneau reste ouvert et la saisie est gardée |
+| `UiChoiceSheet`, `UiTextSheet`, `UiNumberSheet` | Sur `UiSettingSheet` : une valeur parmi plusieurs (aide par choix), un texte avec son compteur, un nombre entre bornes (moins, nombre, plus). La valeur n'est gardée qu'avec « Valider » |
 
-Fonctions pures qui les servent, testées : `stackOf` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`), `participantSteps` et `envelopeState` (`server/utils/personal.ts`).
+Fonctions pures qui les servent, testées : `stackOf` et `foldList` (`shared/utils/lists.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`), `participantSteps` et `envelopeState` (`server/utils/personal.ts`).
 
 Composants construits dessus et réutilisés : `AdminStatusBadge`, `AdminSendOptions`, `AdminDateField`, `JournalList`, `LanguageSwitch`.
+
+Panneaux et états communs de l'administration : `AdminDateSheet`, un jour dans un panneau de réglage (calendrier, jour en toutes lettres et compte à rebours, facultatif avec `clear-label`), dont `AdminPartyDateSheet` (date de la fête d'une édition) est un usage ; `AdminQueryState`, le chargement (squelette composé de `title`, `stepper`, `card`, `list`, à la forme de l'écran) et l'erreur (carte avec « Réessayer », qui relance les requêtes de l'écran, et un retour ; accès refusé ou page introuvable : la phrase et le retour à l'accueil).
 
 Écran d'une édition (section 11), construit sur ces composants : `AdminEditionHeader`, `AdminEditionPrepare`, `AdminEditionFollow`, `AdminDrawSheet`, `AdminSendSheet`, `AdminDateSheet`, `AdminPartyDateCard`.
 

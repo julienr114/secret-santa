@@ -2,7 +2,7 @@
 import { AVATAR_COLORS, type Avatar } from '#server/utils/avatars';
 import type { JournalEntry } from '#server/utils/audit';
 import type { NotePosition } from '#server/utils/messages';
-import { matchesName } from '#shared/utils/names';
+import { listView } from '#shared/utils/lists';
 
 // Every interface component in its variants, in the language chosen in
 // the menu. Its own headings are in French only: a developer's tool, the
@@ -116,10 +116,16 @@ const pickable = (count: number) =>
 const christmasDay = `${new Date().getFullYear()}-12-25`;
 /** Examples of the long lists and the settings rows and sheets. */
 const longList = pickable(12);
-const folded = ref(true);
+const opened = ref(0);
 const search = ref('');
-const searchedList = computed(() =>
-  longList.filter((person) => matchesName(search.value, person.name)),
+const longView = computed(() =>
+  listView(longList, {
+    query: search.value,
+    opened: opened.value,
+    shown: 3,
+    nameOf: (person) => person.name,
+    from: 3,
+  }),
 );
 const wishlistOn = ref(true);
 const sheetOpen = reactive({
@@ -476,23 +482,20 @@ const entries = computed(() => [
       <UiList
         footer="UiSearchField au-dessus d'une liste de plus de 10 personnes ; la recherche montre tous les résultats, sans repli."
       >
-        <UiListItem
-          v-for="person in search
-            ? searchedList
-            : folded
-              ? longList.slice(0, 3)
-              : longList"
-          :key="person.id"
-          :avatar="person.avatar"
-          :title="person.name"
-        />
-        <UiFoldRow
-          v-if="folded && !search"
-          :avatars="longList.slice(3).map((p) => p.avatar)"
-          :label="`Voir les ${longList.length - 3} autres`"
-          detail="UiFoldRow : foldList, au-delà de FOLD_FROM (12)"
-          @expand="folded = false"
-        />
+        <UiFoldedRows
+          :fold="longView"
+          :key-of="(person) => person.id"
+          :avatar-of="(person) => person.avatar"
+          :more-label="(count) => `Voir les ${count} autres`"
+          collapse-label="Replier la liste"
+          detail="UiFoldedRows et UiFoldRow : listView, par paquets de FOLD_STEP (50)"
+          @more="opened += 50"
+          @collapse="opened = 0"
+        >
+          <template #row="{ item: person }">
+            <UiListItem :avatar="person.avatar" :title="person.name" />
+          </template>
+        </UiFoldedRows>
       </UiList>
     </section>
 

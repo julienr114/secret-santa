@@ -114,12 +114,13 @@ Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante no
 
 ### Correction du lot 0 — replier une liste, déplier par paquets
 
-Demandé par Julien le 16 novembre 2026, à faire avant de poursuivre (le composant sert dans tous les lots suivants). Référence : `GroupeMembres100Deplie`.
+Demandé par Julien le 16 novembre 2026, à faire avant de poursuivre (le composant sert dans tous les lots suivants). Références : `GroupeMembres100Deplie`, `Preparer100Deplie`, `Suivi100Deplie`.
 
-- [ ] **Replier.** Une fois la liste dépliée, la ligne de repli reste à sa place, juste après les premières lignes, et devient « Replier la liste » (chevron vers le haut, fond `primary-tint`, `aria-expanded="true"`, sans les petites icônes). Un appui referme et ramène la ligne à l'écran si elle n'y est plus.
-- [ ] **Par paquets.** Déplier ajoute 50 lignes à la fois (constante nommée), pas tout d'un coup. S'il en reste, une seconde ligne « Voir les N autres » apparaît en bas de ce qui est affiché. Faire évoluer `foldList` (fonction pure, testée) pour prendre le nombre de lignes déjà dépliées.
-- [ ] La recherche montre toujours tous les résultats, sans repli.
-- [ ] Appliquer aux écrans déjà faits (édition à préparer, suivi après tirage, envoi par email) et mettre à jour le guide de style et leurs tests.
+- [x] **Replier.** Une fois la liste dépliée, la ligne de repli reste à sa place, juste après les premières lignes, et devient « Replier la liste » (chevron vers le haut, fond `primary-tint`, `aria-expanded="true"`, sans les petites icônes). Un appui referme et ramène la ligne à l'écran si elle n'y est plus.
+- [ ] **Dans le suivi après tirage** (ajouté après coup, voir `Suivi100Deplie`), où chaque série a son repli : chaque série se replie à part, et sa ligne dit laquelle (« Replier ceux qui restent à prévenir », et de même pour les deux autres séries).
+- [x] **Par paquets.** Déplier ajoute 50 lignes à la fois (constante nommée), pas tout d'un coup. S'il en reste, une seconde ligne « Voir les N autres » apparaît en bas de ce qui est affiché. Faire évoluer `foldList` (fonction pure, testée) pour prendre le nombre de lignes déjà dépliées.
+- [x] La recherche montre toujours tous les résultats, sans repli.
+- [x] Appliquer aux écrans déjà faits (édition à préparer, suivi après tirage, envoi par email) et mettre à jour le guide de style et leurs tests.
 
 Pas de virtualisation : avec le repli par paquets, jamais plus de quelques dizaines de lignes ne sont ajoutées d'un coup, même pour un groupe de 300.
 

@@ -186,6 +186,7 @@ export default {
   },
   screen: {
     lists: {
+      collapse: 'Fold the list',
       series: {
         toNotify: 'Not sent yet',
         notOpened: 'Sent, not looked at yet',

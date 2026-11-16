@@ -7,7 +7,13 @@ import {
   sortParticipants,
   type FollowState,
 } from '#server/utils/editions';
-import { FOLD_FROM, foldList, listView } from '#shared/utils/lists';
+import {
+  FOLD_FROM,
+  FOLD_STEP,
+  foldList,
+  listView,
+  type Fold,
+} from '#shared/utils/lists';
 
 // After the draw: what to do now (let everyone know, or close once the
 // party is over), the participants in one list from the least done, each
@@ -77,42 +83,51 @@ const SEARCH_FROM = 10;
 const SERIES_SHOWN = 3;
 const query = ref('');
 const searchable = computed(() => props.participants.length > SEARCH_FROM);
-const unfolded = ref<FollowState[]>([]);
-/** One row of the list: a participant, or the fold of a series. */
-type Row =
-  | { kind: 'person'; person: Participant }
-  | { kind: 'fold'; state: FollowState; rest: Participant[] };
-const rows = computed<Row[]>(() => {
-  const person = (p: Participant): Row => ({ kind: 'person', person: p });
+/** How many rows of each series were unfolded. */
+const opened = ref<Partial<Record<FollowState, number>>>({});
+/** One part of the list: a series (or the search results) and its fold. */
+type Part = { state: FollowState | null; fold: Fold<Participant> };
+const parts = computed<Part[]>(() => {
   if (query.value.trim()) {
-    return listView(sorted.value, {
-      query: query.value,
-      expanded: true,
-      shown: 0,
-      nameOf: (p) => p.firstName,
-    }).shown.map(person);
+    return [
+      {
+        state: null,
+        fold: listView(sorted.value, {
+          query: query.value,
+          opened: 0,
+          shown: 0,
+          nameOf: (p) => p.firstName,
+        }),
+      },
+    ];
   }
   const folds = props.participants.length > FOLD_FROM;
-  return followSeries(props.participants).flatMap((series) => {
-    const fold =
-      folds && !unfolded.value.includes(series.state)
-        ? foldList(series.items, SERIES_SHOWN, SERIES_SHOWN)
-        : { shown: series.items, rest: [] };
-    return [
-      ...fold.shown.map(person),
-      ...(fold.rest.length
-        ? [{ kind: 'fold' as const, state: series.state, rest: fold.rest }]
-        : []),
-    ];
-  });
+  return followSeries(props.participants).map((series) => ({
+    state: series.state,
+    fold: folds
+      ? foldList(
+          series.items,
+          SERIES_SHOWN,
+          opened.value[series.state] ?? 0,
+          SERIES_SHOWN,
+        )
+      : { shown: series.items, unfolded: [], rest: [] },
+  }));
 });
+const empty = computed(() =>
+  parts.value.every((part) => !part.fold.shown.length),
+);
 /**
- * Unfolds one series of the list.
+ * Unfolds one more batch of a series, or folds it again.
  * @param state - The series.
+ * @param more - True to unfold a batch, false to fold it all.
  * @returns Nothing.
  */
-const unfold = (state: FollowState) => {
-  unfolded.value = [...unfolded.value, state];
+const unfold = (state: FollowState, more: boolean) => {
+  opened.value = {
+    ...opened.value,
+    [state]: more ? (opened.value[state] ?? 0) + FOLD_STEP : 0,
+  };
 };
 // Closing asks for a second tap. Without a real date nothing says it is
 // too early: the row of the list closes too (README 21.3).
@@ -201,60 +216,64 @@ const confirmingRow = ref(false);
       :clear-label="t('adminEdition.screen.lists.clear')"
     />
     <UiList :footer="t('adminEdition.screen.follow.firstFootnote')">
-      <li v-if="rows.length === 0" class="px-4 py-3 text-sm text-muted">
+      <li v-if="empty" class="px-4 py-3 text-sm text-muted">
         {{ t('adminEdition.screen.lists.noMatch') }}
       </li>
-      <template
-        v-for="row in rows"
-        :key="row.kind === 'person' ? row.person.participationId : row.state"
+      <UiFoldedRows
+        v-for="part in parts"
+        :key="part.state ?? 'search'"
+        :fold="part.fold"
+        :key-of="(p) => p.participationId"
+        :avatar-of="(p) => p.avatar"
+        :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
+        :collapse-label="t('adminEdition.screen.lists.collapse')"
+        :detail="
+          part.state
+            ? t(`adminEdition.screen.lists.series.${part.state}`)
+            : undefined
+        "
+        @more="part.state && unfold(part.state, true)"
+        @collapse="part.state && unfold(part.state, false)"
       >
-        <UiFoldRow
-          v-if="row.kind === 'fold'"
-          :avatars="row.rest.map((p) => p.avatar)"
-          :label="
-            t('adminEdition.screen.lists.more', { count: row.rest.length })
-          "
-          :detail="t(`adminEdition.screen.lists.series.${row.state}`)"
-          @expand="unfold(row.state)"
-        />
-        <UiListItem
-          v-else
-          :avatar="row.person.avatar"
-          :to="`${base}/participants/${row.person.participationId}`"
-          :title="row.person.firstName"
-          :chevron="false"
-        >
-          <template #subtitle>
-            <UIcon
-              :name="stateOf(row.person).icon"
-              class="size-3.5 shrink-0"
-              :class="stateOf(row.person).tone"
-            />
-            <span class="truncate" :class="stateOf(row.person).tone">{{
-              stateOf(row.person).text
-            }}</span>
-          </template>
-          <template #trailing>
-            <UButton
-              size="lg"
-              class="size-11 shrink-0 justify-center rounded-full"
-              icon="i-lucide-send"
-              :color="row.person.messageSentAt ? 'neutral' : 'primary'"
-              :variant="row.person.messageSentAt ? 'outline' : 'soft'"
-              :aria-label="
-                row.person.messageSentAt
-                  ? t('adminEdition.cockpit.resendLinkOf', {
-                      name: row.person.firstName,
-                    })
-                  : t('adminEdition.cockpit.sendLinkOf', {
-                      name: row.person.firstName,
-                    })
-              "
-              @click.prevent.stop="emit('send', row.person.participationId)"
-            />
-          </template>
-        </UiListItem>
-      </template>
+        <template #row="{ item: p }">
+          <UiListItem
+            :avatar="p.avatar"
+            :to="`${base}/participants/${p.participationId}`"
+            :title="p.firstName"
+            :chevron="false"
+          >
+            <template #subtitle>
+              <UIcon
+                :name="stateOf(p).icon"
+                class="size-3.5 shrink-0"
+                :class="stateOf(p).tone"
+              />
+              <span class="truncate" :class="stateOf(p).tone">{{
+                stateOf(p).text
+              }}</span>
+            </template>
+            <template #trailing>
+              <UButton
+                size="lg"
+                class="size-11 shrink-0 justify-center rounded-full"
+                icon="i-lucide-send"
+                :color="p.messageSentAt ? 'neutral' : 'primary'"
+                :variant="p.messageSentAt ? 'outline' : 'soft'"
+                :aria-label="
+                  p.messageSentAt
+                    ? t('adminEdition.cockpit.resendLinkOf', {
+                        name: p.firstName,
+                      })
+                    : t('adminEdition.cockpit.sendLinkOf', {
+                        name: p.firstName,
+                      })
+                "
+                @click.prevent.stop="emit('send', p.participationId)"
+              />
+            </template>
+          </UiListItem>
+        </template>
+      </UiFoldedRows>
     </UiList>
   </section>
 

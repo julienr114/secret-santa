@@ -81,7 +81,7 @@ test('a large group folds its lists, before and after the draw', async ({
   page,
 }) => {
   const names = Array.from(
-    { length: 20 },
+    { length: 60 },
     (_, i) => `Grand${String(i).padStart(2, '0')}`,
   );
   const { at, id } = await setUp('cas-grand', names);
@@ -94,11 +94,22 @@ test('a large group folds its lists, before and after the draw', async ({
   // Six rows, then the rest behind one row that unfolds in place.
   const list = page.getByTestId('participants');
   await expect(list.getByPlaceholder('Chercher un prénom')).toBeVisible();
+  // Unfolded by batches of fifty, then folded again in place.
   await list
     .getByRole('button', { name: `Voir les ${total - 6} autres` })
     .click();
+  await expect(list.getByText('Grand55', { exact: true })).toBeVisible();
+  const second = list.getByRole('button', {
+    name: `Voir les ${total - 56} autres`,
+  });
+  await second.click();
+  await expect(list.getByText('Grand59', { exact: true })).toBeVisible();
   await expect(list.getByRole('button', { name: /^Voir les/ })).toHaveCount(0);
-  await expect(list.getByText('Grand19', { exact: true })).toBeVisible();
+  await list.getByRole('button', { name: 'Replier la liste' }).click();
+  await expect(list.getByText('Grand59', { exact: true })).toHaveCount(0);
+  await expect(
+    list.getByRole('button', { name: `Voir les ${total - 6} autres` }),
+  ).toBeVisible();
   // The search shows every match, and says when there is none.
   await list.getByPlaceholder('Chercher un prénom').fill('zz');
   await expect(list.getByText('Aucun prénom ne correspond.')).toBeVisible();

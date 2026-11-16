@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Participant } from '#server/database/editions';
 import { sortParticipants } from '#server/utils/editions';
-import { listView } from '#shared/utils/lists';
+import { FOLD_STEP, listView } from '#shared/utils/lists';
 import type { DrawCheck } from '~/composables/queries/useEdition';
 
 // Step 1 of an edition, "Préparer": what to do now (check the list, then
@@ -72,12 +72,12 @@ const problemHelp = computed(() =>
 const SEARCH_FROM = 10;
 const SHOWN = 6;
 const query = ref('');
-const expanded = ref(false);
+const opened = ref(0);
 const searchable = computed(() => props.participants.length > SEARCH_FROM);
 const view = computed(() =>
   listView(sorted.value, {
     query: query.value,
-    expanded: expanded.value,
+    opened: opened.value,
     shown: SHOWN,
     nameOf: (p) => p.firstName,
   }),
@@ -213,22 +213,24 @@ const missingText = computed(() =>
       >
         {{ t('adminEdition.screen.lists.noMatch') }}
       </li>
-      <UiListItem
-        v-for="p in view.shown"
-        :key="p.participationId"
-        :avatar="p.avatar"
-        :to="`${base}/participants/${p.participationId}`"
-        :title="p.firstName"
-        :subtitle="subtitleOf(p)"
-      />
-      <UiFoldRow
-        v-if="view.rest.length"
-        :avatars="view.rest.map((p) => p.avatar)"
-        :label="
-          t('adminEdition.screen.lists.more', { count: view.rest.length })
-        "
-        @expand="expanded = true"
-      />
+      <UiFoldedRows
+        :fold="view"
+        :key-of="(p) => p.participationId"
+        :avatar-of="(p) => p.avatar"
+        :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
+        :collapse-label="t('adminEdition.screen.lists.collapse')"
+        @more="opened += FOLD_STEP"
+        @collapse="opened = 0"
+      >
+        <template #row="{ item: p }">
+          <UiListItem
+            :avatar="p.avatar"
+            :to="`${base}/participants/${p.participationId}`"
+            :title="p.firstName"
+            :subtitle="subtitleOf(p)"
+          />
+        </template>
+      </UiFoldedRows>
       <UiListItem
         v-if="!empty"
         :to="`${base}/ajouter`"

@@ -191,6 +191,7 @@ export default {
   },
   screen: {
     lists: {
+      collapse: 'Replier la liste',
       series: {
         toNotify: 'Pas encore envoyé',
         notOpened: 'Envoyé, pas encore consulté',

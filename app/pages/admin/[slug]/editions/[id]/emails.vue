@@ -4,7 +4,7 @@ import {
   preselectedForEmail,
   sortParticipants,
 } from '#server/utils/editions';
-import { listView, stackOf } from '#shared/utils/lists';
+import { FOLD_STEP, listView, stackOf } from '#shared/utils/lists';
 import {
   NOTE_MAX,
   addNote,
@@ -107,12 +107,12 @@ const toggleAll = () => {
 const SEARCH_FROM = 10;
 const SHOWN = 5;
 const query = ref('');
-const expanded = ref(false);
+const opened = ref(0);
 const searchable = computed(() => participants.value.length > SEARCH_FROM);
 const view = computed(() =>
   listView(participants.value, {
     query: query.value,
-    expanded: expanded.value,
+    opened: opened.value,
     shown: SHOWN,
     nameOf: (p) => p.firstName,
   }),
@@ -234,53 +234,60 @@ const onSend = () =>
           >
             {{ t('adminEdition.screen.lists.noMatch') }}
           </li>
-          <li
-            v-for="p in view.shown"
-            :key="p.participationId"
-            class="flex min-h-14 items-center gap-3 px-4 py-2"
-          >
-            <UiAvatar :avatar="p.avatar" size="sm" />
-            <div class="min-w-0 grow">
-              <p class="truncate font-semibold">{{ p.firstName }}</p>
-              <p class="truncate text-xs text-muted">
-                {{ t(`adminEdition.screen.lists.series.${followState(p)}`) }} ·
-                {{ p.email ?? t('adminEdition.screen.emails.noEmail') }}
-              </p>
-            </div>
-            <UCheckbox
-              v-if="p.email"
-              :model-value="isSelected(p.participationId)"
-              size="xl"
-              :aria-label="
-                t('adminEdition.screen.emails.select', { name: p.firstName })
-              "
-              class="flex size-11 items-center justify-center"
-              @update:model-value="
-                (on) => toggle(p.participationId, on === true)
-              "
-            />
-            <UButton
-              v-else
-              variant="soft"
-              size="sm"
-              class="min-h-11"
-              :to="`/admin/${slug}/personnes/${p.id}`"
-              :label="t('adminEdition.screen.emails.addEmail')"
-              :aria-label="
-                t('adminEdition.screen.emails.addEmailLabel', {
-                  name: p.firstName,
-                })
-              "
-            />
-          </li>
-          <UiFoldRow
-            v-if="view.rest.length"
-            :avatars="view.rest.map((p) => p.avatar)"
-            :label="
-              t('adminEdition.screen.lists.more', { count: view.rest.length })
+          <UiFoldedRows
+            :fold="view"
+            :key-of="(p) => p.participationId"
+            :avatar-of="(p) => p.avatar"
+            :more-label="
+              (count) => t('adminEdition.screen.lists.more', { count })
             "
-            @expand="expanded = true"
-          />
+            :collapse-label="t('adminEdition.screen.lists.collapse')"
+            @more="opened += FOLD_STEP"
+            @collapse="opened = 0"
+          >
+            <template #row="{ item: p }">
+              <li class="flex min-h-14 items-center gap-3 px-4 py-2">
+                <UiAvatar :avatar="p.avatar" size="sm" />
+                <div class="min-w-0 grow">
+                  <p class="truncate font-semibold">{{ p.firstName }}</p>
+                  <p class="truncate text-xs text-muted">
+                    {{
+                      t(`adminEdition.screen.lists.series.${followState(p)}`)
+                    }}
+                    ·
+                    {{ p.email ?? t('adminEdition.screen.emails.noEmail') }}
+                  </p>
+                </div>
+                <UCheckbox
+                  v-if="p.email"
+                  :model-value="isSelected(p.participationId)"
+                  size="xl"
+                  :aria-label="
+                    t('adminEdition.screen.emails.select', {
+                      name: p.firstName,
+                    })
+                  "
+                  class="flex size-11 items-center justify-center"
+                  @update:model-value="
+                    (on) => toggle(p.participationId, on === true)
+                  "
+                />
+                <UButton
+                  v-else
+                  variant="soft"
+                  size="sm"
+                  class="min-h-11"
+                  :to="`/admin/${slug}/personnes/${p.id}`"
+                  :label="t('adminEdition.screen.emails.addEmail')"
+                  :aria-label="
+                    t('adminEdition.screen.emails.addEmailLabel', {
+                      name: p.firstName,
+                    })
+                  "
+                />
+              </li>
+            </template>
+          </UiFoldedRows>
         </ul>
       </section>
 

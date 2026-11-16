@@ -192,6 +192,7 @@ export default {
   },
   screen: {
     lists: {
+      collapse: 'Liste einklappen',
       series: {
         toNotify: 'Noch nicht gesendet',
         notOpened: 'Gesendet, noch nicht angesehen',

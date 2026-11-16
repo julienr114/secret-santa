@@ -32,11 +32,18 @@ const { t, tk, locale } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
+const context = useScreenContext(slug, id);
 useHead({
-  title: () =>
-    `${t('adminEdition.screen.emails.title')} — ${t('common.appName')}`,
+  title: () => context.titleOf(t('adminEdition.screen.emails.title')),
 });
-const screen = computed(() => ({ back: editionPath.value }));
+const screen = computed(() => ({
+  back: editionPath.value,
+  bar: {
+    title: t('adminEdition.screen.emails.title'),
+    context: context.parts.value.map((part) => part.label).join(' · '),
+    cancel: t('common.actions.cancel'),
+  },
+}));
 
 const edition = useEditionQuery(slug, id);
 const status = computed(
@@ -212,7 +219,6 @@ const onSend = () =>
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
-      <UiPageTitle>{{ t('adminEdition.screen.emails.title') }}</UiPageTitle>
       <section class="flex flex-col gap-2">
         <UiSectionTitle>{{
           t('adminEdition.screen.emails.message')
@@ -333,40 +339,42 @@ const onSend = () =>
         </UiList>
       </section>
 
-      <section v-if="first" class="flex flex-col gap-2">
-        <UiSectionTitle>{{
-          t('adminEdition.screen.emails.previewFor', { name: fullName(first) })
-        }}</UiSectionTitle>
-        <UiMessageBubble
-          v-if="preview"
-          :text="preview"
-          :link="firstMessage?.link"
-          data-testid="email-preview"
-        />
-        <USkeleton v-else class="h-28 w-[92%] rounded-2xl bg-skeleton" />
-        <UButton
-          variant="outline"
-          color="neutral"
-          icon="i-lucide-pencil"
-          class="min-h-11 self-start rounded-full"
-          :label="t('adminEdition.screen.emails.addNote')"
-          @click="writing = !writing"
-        />
-        <UTextarea
-          v-if="writing"
-          v-model="note"
-          :rows="2"
-          :maxlength="NOTE_MAX"
-          autoresize
-          :aria-label="t('adminEdition.screen.emails.addNote')"
-          class="w-full"
-        />
-        <p class="text-[13px] text-muted">
-          {{ t('adminEdition.screen.emails.each') }}
-        </p>
-      </section>
-
       <UiStickyFooter>
+        <section v-if="first" class="flex flex-col gap-2 pb-1">
+          <div class="flex items-center justify-between gap-2">
+            <UiSectionTitle>{{
+              t('adminEdition.screen.emails.previewFor', {
+                name: fullName(first),
+              })
+            }}</UiSectionTitle>
+            <button
+              type="button"
+              class="min-h-11 px-1 text-sm font-bold text-primary-ink underline"
+              :aria-expanded="writing"
+              @click="writing = !writing"
+            >
+              {{ t('adminEdition.screen.emails.addNote') }}
+            </button>
+          </div>
+          <UiMessageBubble
+            :text="preview"
+            :link="firstMessage?.link"
+            short
+            data-testid="email-preview"
+          />
+          <UTextarea
+            v-if="writing"
+            v-model="note"
+            :rows="2"
+            :maxlength="NOTE_MAX"
+            autoresize
+            :aria-label="t('adminEdition.screen.emails.addNote')"
+            class="w-full"
+          />
+          <p class="text-[13px] text-toned">
+            {{ t('adminEdition.screen.emails.each') }}
+          </p>
+        </section>
         <UButton
           block
           size="xl"

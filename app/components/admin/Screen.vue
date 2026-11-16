@@ -10,9 +10,18 @@ import {
 // screens below the home (back to wherever the user came from, or to
 // `back` when the page was opened directly), the logo in the middle (a
 // link to the home) and the menu on the right (language, account, log
-// out). A super-admin also gets a bottom bar
+// out); a screen with a `bar` has « Annuler », its title and where it
+// belongs instead. A super-admin also gets a bottom bar
 // to their own pages.
-const props = defineProps<{ back?: string | null }>();
+const props = defineProps<{
+  back?: string | null;
+  /**
+   * A screen of its own, like a form over the edition: the bar shows
+   * « Annuler » on the left, the title and where it belongs in the middle,
+   * instead of the logo and the menu.
+   */
+  bar?: { title: string; context: string; cancel: string };
+}>();
 
 const { t, tk, locale, setLocale } = useT();
 const { user } = useUserSession();
@@ -59,7 +68,31 @@ const menu = computed(() => [
     >
       <!-- The bars span the window; only the content below sits in the
            phone-wide column. -->
-      <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
+      <UContainer
+        v-if="bar"
+        class="grid h-14 grid-cols-[1fr_auto_1fr] items-center"
+      >
+        <button
+          type="button"
+          class="-ml-2 h-11 justify-self-start px-2 text-[15px] font-semibold"
+          @click="goBack(props.back ?? HOME)"
+        >
+          {{ bar.cancel }}
+        </button>
+        <div class="flex min-w-0 flex-col items-center gap-px text-center">
+          <h1 class="truncate font-display text-lg leading-[1.15] font-bold">
+            {{ bar.title }}
+          </h1>
+          <p class="truncate text-xs leading-[1.2] font-semibold text-toned">
+            {{ bar.context }}
+          </p>
+        </div>
+        <div />
+      </UContainer>
+      <UContainer
+        v-else
+        class="grid h-14 grid-cols-[1fr_auto_1fr] items-center"
+      >
         <div>
           <UButton
             v-if="back"

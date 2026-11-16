@@ -49,5 +49,8 @@ const shown = computed(() => props.avatars.slice(0, 3));
       />
     </button>
   </li>
-  <li class="-mb-px h-2.5 border-y border-default bg-page" aria-hidden="true" />
+  <li
+    class="-mb-px h-2.5 border-y border-default bg-page last:hidden"
+    aria-hidden="true"
+  />
 </template>

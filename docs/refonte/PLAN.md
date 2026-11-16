@@ -318,12 +318,12 @@ Demandé par Julien le 16 novembre 2026 : sur son iPhone, le panneau « Mon icô
 
 Objectif : passer d'environ 690 px à environ 380 px de haut, sans descendre sous 44 px par cible.
 
-- [ ] **En-tête sur une ligne** : l'icône en cours (44 px), qui change à chaque choix, et le titre « Mon icône ». La phrase « Choisis ton emoji et ta couleur » disparaît.
-- [ ] **Les emojis sur trois rangées qui défilent de côté** (grille en colonnes, cellules de 44 px), au lieu de cinq rangées. La dernière colonne visible est coupée par le bord pour qu'on comprenne qu'il y en a d'autres. À l'ouverture, la grille défile jusqu'à l'emoji choisi.
-- [ ] **Les couleurs sur une ligne**, ronds de 32 px dans des cibles de 44 px.
-- [ ] **Plus d'intitulés « Emoji » et « Couleur »** à l'écran : des noms accessibles sur les deux groupes suffisent.
-- [ ] **« Annuler » et « Valider » côte à côte**, 48 px, « Valider » deux fois plus large.
-- [ ] Même sélecteur partout où une icône se choisit (accueil, page du participant, fiche d'une personne). Tests mis à jour.
+- [x] **En-tête sur une ligne** : l'icône en cours (44 px), qui change à chaque choix, et le titre « Mon icône ». La phrase « Choisis ton emoji et ta couleur » disparaît.
+- [x] **Les emojis sur trois rangées qui défilent de côté** (grille en colonnes, cellules de 44 px), au lieu de cinq rangées. La dernière colonne visible est coupée par le bord pour qu'on comprenne qu'il y en a d'autres. À l'ouverture, la grille défile jusqu'à l'emoji choisi.
+- [x] **Les couleurs sur une ligne**, ronds de 32 px dans des cibles de 44 px.
+- [x] **Plus d'intitulés « Emoji » et « Couleur »** à l'écran : des noms accessibles sur les deux groupes suffisent.
+- [x] **« Annuler » et « Valider » côte à côte**, 48 px, « Valider » deux fois plus large.
+- [x] Même sélecteur partout où une icône se choisit (accueil, page du participant, fiche d'une personne). Tests mis à jour.
 
 ### Lot 5 — Groupe : réglages
 

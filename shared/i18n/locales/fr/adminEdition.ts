@@ -79,7 +79,7 @@ export default {
   },
   addParticipants: {
     title: 'Choisir les participants',
-    subtitle: '{edition} · coche ceux qui participent',
+    subtitle: 'Coche ceux qui participent.',
     members: {
       one: '{count} membre du groupe',
       other: '{count} membres du groupe',

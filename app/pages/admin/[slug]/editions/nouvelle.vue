@@ -21,10 +21,9 @@ const dashboard = useDashboardQuery(slug);
 const create = useCreateEditionMutation(slug);
 const update = useUpdateEditionMutation(slug);
 const { previous, previousRules, members } = useTakenOver(slug);
+const context = useScreenContext(slug);
 useHead({
-  title: computed(
-    () => `${t('adminEdition.newEdition.title')} — ${t('common.appName')}`,
-  ),
+  title: () => context.titleOf(t('adminEdition.newEdition.title')),
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}`,
@@ -104,10 +103,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 <template>
   <AdminScreen v-bind="screen">
     <div class="flex flex-col gap-1">
+      <UiPageContext
+        :parts="context.parts.value"
+        :label="t('common.context')"
+      />
       <UiPageTitle>{{ t('adminEdition.newEdition.title') }}</UiPageTitle>
-      <p class="text-[15px] text-toned">
-        {{ dashboard.data.value?.group.name }}
-      </p>
     </div>
     <UForm
       :schema="schema"

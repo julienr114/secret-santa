@@ -167,3 +167,34 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(page).toHaveURL(/\/editions\/[^/]+\?envoyer=/);
   await expect(page.getByTestId('send-sheet')).toBeVisible();
 });
+
+test('a screen reached by its address says where it belongs, and leads back', async ({
+  page,
+}) => {
+  const { id } = await setUp('cas-contexte', ['Ada', 'Bob', 'Cléo']);
+  // The session opened above: a sixth login link would hit the limit.
+  await page.context().addCookies((await state.api!.storageState()).cookies);
+  // The email screen, straight from its address: its bar names the group
+  // and the edition, and « Annuler » leads to the edition.
+  await page.goto(`/admin/cas-contexte/editions/${id}/emails`);
+  await hydrated(page);
+  await expect(page.locator('header')).toContainText('cas-contexte · Noël cas');
+  await expect(page).toHaveTitle('Envoyer par email — cas-contexte · Noël cas');
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(page).toHaveURL(new RegExp(`/editions/${id}$`));
+  // Another screen of the edition: its context line leads to the edition
+  // and to the group.
+  await page.goto(`/admin/cas-contexte/editions/${id}/ajouter`);
+  await hydrated(page);
+  const context = page.getByRole('navigation', { name: 'Tu es ici' });
+  await expect(context).toHaveText(/cas-contexte\s*·\s*Noël cas/);
+  await context.getByRole('link', { name: 'Noël cas' }).click();
+  await expect(page).toHaveURL(new RegExp(`/editions/${id}$`));
+  await page.goto(`/admin/cas-contexte/editions/${id}/ajouter`);
+  await hydrated(page);
+  await page
+    .getByRole('navigation', { name: 'Tu es ici' })
+    .getByRole('link', { name: 'cas-contexte' })
+    .click();
+  await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
+});

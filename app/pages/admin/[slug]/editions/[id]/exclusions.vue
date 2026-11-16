@@ -24,9 +24,9 @@ const errorMessage = useErrorMessage();
  */
 const onError = (error: unknown) =>
   toast.add({ title: errorMessage(error), color: 'error' });
+const context = useScreenContext(slug, id);
 useHead({
-  title: () =>
-    `${t('adminEdition.screen.prepare.exclusions')} — ${t('common.appName')}`,
+  title: () => context.titleOf(t('adminEdition.screen.prepare.exclusions')),
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
@@ -106,6 +106,15 @@ const onWaive = (pair: Pair) =>
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
+      <div class="flex flex-col gap-1">
+        <UiPageContext
+          :parts="context.parts.value"
+          :label="t('common.context')"
+        />
+        <UiPageTitle>{{
+          t('adminEdition.screen.prepare.exclusions')
+        }}</UiPageTitle>
+      </div>
       <AdminExclusions
         :slug="slug"
         :editable="canEdit"

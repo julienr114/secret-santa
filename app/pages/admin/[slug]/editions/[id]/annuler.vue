@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  useDashboardQuery,
-  useEditionQuery,
-} from '~/composables/queries/useGroup';
+import { useEditionQuery } from '~/composables/queries/useGroup';
 import { useCancelDrawMutation } from '~/composables/queries/useEdition';
 
 // Cancel and redo the draw (README 6.5): what it changes, in red, then
@@ -18,21 +15,14 @@ const { t, tk } = useT();
 const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const cancel = useCancelDrawMutation(slug, id);
 const busy = useBusy(() => cancel.isPending.value);
 
+const context = useScreenContext(slug, id);
 useHead({
-  title: computed(
-    () => `${t('adminEdition.cancelDraw.title')} — ${t('common.appName')}`,
-  ),
+  title: () => context.titleOf(t('adminEdition.cancelDraw.title')),
 });
 const screen = computed(() => ({ back: editionPath.value }));
-const subtitle = computed(() =>
-  [edition.data.value?.edition.label, dashboard.data.value?.group.name]
-    .filter(Boolean)
-    .join(' · '),
-);
 
 const participants = computed(() => edition.data.value?.participants ?? []);
 const viewed = computed(
@@ -104,8 +94,11 @@ const onCancel = () =>
       :skeleton="['title', 'card']"
     >
       <div class="flex flex-col gap-1">
+        <UiPageContext
+          :parts="context.parts.value"
+          :label="t('common.context')"
+        />
         <UiPageTitle>{{ t('adminEdition.cancelDraw.title') }}</UiPageTitle>
-        <p class="text-[15px] text-toned">{{ subtitle }}</p>
       </div>
       <UiNotice
         variant="danger"

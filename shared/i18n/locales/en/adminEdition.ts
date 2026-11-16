@@ -79,7 +79,7 @@ export default {
   },
   addParticipants: {
     title: 'Choose the participants',
-    subtitle: '{edition} · tick those taking part',
+    subtitle: 'Tick those taking part.',
     members: {
       one: '{count} member of the group',
       other: '{count} members of the group',

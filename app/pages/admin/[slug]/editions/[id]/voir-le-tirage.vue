@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { byName, displayName, fullName } from '#server/utils/people';
-import {
-  useDashboardQuery,
-  useEditionQuery,
-} from '~/composables/queries/useGroup';
+import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useRevealOneMutation,
   type DrawPair,
@@ -23,21 +20,14 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 const edition = useEditionQuery(slug, id);
-const dashboard = useDashboardQuery(slug);
 const reveal = useRevealOneMutation(slug, id);
 const busy = useBusy(() => reveal.isPending.value);
 
+const context = useScreenContext(slug, id);
 useHead({
-  title: computed(
-    () => `${t('adminEdition.reveal.title')} — ${t('common.appName')}`,
-  ),
+  title: () => context.titleOf(t('adminEdition.reveal.title')),
 });
 const screen = computed(() => ({ back: editionPath.value }));
-const subtitle = computed(() =>
-  [dashboard.data.value?.group.name, edition.data.value?.edition.label]
-    .filter(Boolean)
-    .join(' · '),
-);
 
 // Checked by the server as is: the sentence stays in French in every
 // language, only the texts around it are translated.
@@ -122,8 +112,11 @@ const onReveal = () =>
       :skeleton="['title', 'card']"
     >
       <div class="flex flex-col gap-1">
+        <UiPageContext
+          :parts="context.parts.value"
+          :label="t('common.context')"
+        />
         <UiPageTitle>{{ t('adminEdition.reveal.title') }}</UiPageTitle>
-        <p class="text-[15px] text-toned">{{ subtitle }}</p>
       </div>
 
       <template v-if="pair">

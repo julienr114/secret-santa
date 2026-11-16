@@ -81,7 +81,7 @@ export default {
   },
   addParticipants: {
     title: 'Teilnehmer auswählen',
-    subtitle: '{edition} · hake an, wer mitmacht',
+    subtitle: 'Hake an, wer mitmacht.',
     members: {
       one: '{count} Mitglied der Gruppe',
       other: '{count} Mitglieder der Gruppe',

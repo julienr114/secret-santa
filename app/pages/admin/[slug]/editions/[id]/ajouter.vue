@@ -29,10 +29,9 @@ const people = usePeopleQuery(slug);
 const add = useAddParticipantMutation(slug, id);
 const remove = useRemoveParticipantMutation(slug, id);
 
+const context = useScreenContext(slug, id);
 useHead({
-  title: computed(
-    () => `${t('adminEdition.addParticipants.title')} — ${t('common.appName')}`,
-  ),
+  title: () => context.titleOf(t('adminEdition.addParticipants.title')),
 });
 const screen = computed(() => ({ back: editionPath.value }));
 
@@ -144,13 +143,13 @@ const onSave = async () => {
       :rows="6"
     >
       <div class="flex flex-col gap-1">
+        <UiPageContext
+          :parts="context.parts.value"
+          :label="t('common.context')"
+        />
         <UiPageTitle>{{ t('adminEdition.addParticipants.title') }}</UiPageTitle>
         <p class="text-[15px] text-toned">
-          {{
-            t('adminEdition.addParticipants.subtitle', {
-              edition: edition.data.value?.edition.label ?? '',
-            })
-          }}
+          {{ t('adminEdition.addParticipants.subtitle') }}
         </p>
       </div>
 

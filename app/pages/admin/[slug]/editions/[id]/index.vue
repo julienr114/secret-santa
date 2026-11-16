@@ -277,7 +277,7 @@ const dateOpen = ref(false);
           />
           <UiListItem
             :to="`/admin/${slug}/journal`"
-            icon="i-lucide-scroll-text"
+            icon="i-lucide-file-text"
             icon-tone="neutral"
             :title="t('adminEdition.screen.closed.journal')"
             :subtitle="t('adminEdition.screen.closed.journalHint')"

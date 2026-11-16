@@ -1301,7 +1301,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiMessageBubble` | Un message tel que la personne le lira, dans une bulle (92 % de large au plus, coin bas gauche resserré) : ses mots, puis son lien seul sur sa ligne, en gras, sans `https://`, coupé s'il est trop long (`aroundLink`) |
 | `UiSegmented` | Un choix parmi quelques-uns, côte à côte sur une piste grise ; le choix fait est blanc et en gras. Des boutons radio natifs dessous : les flèches changent le choix |
 | `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond brique, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
-| `UiActionCard` | « À faire maintenant » : étiquette en capitales, titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |
+| `UiActionCard` | « À faire maintenant » : étiquette en capitales (moutarde avec `tone="warning"`, quand il faut d'abord corriger), titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |
 | `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
 | `UiSheet` | Panneau du bas autour de `UDrawer` : titre, description, corps, pied (action et sortie), en-tête remplaçable |

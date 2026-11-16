@@ -7,13 +7,18 @@ defineProps<{
   eyebrow: string;
   title: string;
   help?: string;
+  /** `warning` when something must be fixed first: the label turns mustard. */
+  tone?: 'primary' | 'warning';
 }>();
 </script>
 
 <template>
   <UiCard padding="none" class="flex flex-col gap-4 p-5">
     <div class="flex flex-col gap-1">
-      <p class="text-xs font-bold tracking-[0.04em] text-primary-ink uppercase">
+      <p
+        class="text-xs font-bold tracking-[0.04em] uppercase"
+        :class="tone === 'warning' ? 'text-warning-ink' : 'text-primary-ink'"
+      >
         {{ eyebrow }}
       </p>
       <h2 class="font-display text-[22px] leading-[1.2] font-semibold">

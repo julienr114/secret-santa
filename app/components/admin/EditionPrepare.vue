@@ -102,7 +102,9 @@ const missingText = computed(() =>
     :title="t('adminEdition.screen.empty.title')"
     data-testid="action-card"
   >
-    <p class="text-sm text-muted">{{ t('adminEdition.screen.empty.body') }}</p>
+    <p class="text-sm leading-[1.45] text-toned">
+      {{ t('adminEdition.screen.empty.body') }}
+    </p>
     <template #action>
       <UButton
         :to="`${base}/ajouter`"
@@ -117,7 +119,7 @@ const missingText = computed(() =>
         :to="`/admin/${slug}/invitation`"
         block
         variant="ghost"
-        class="min-h-11 justify-center font-semibold"
+        class="h-11 justify-center text-[15px] font-semibold text-primary-ink"
         :label="t('adminEdition.screen.empty.invite')"
       />
     </template>
@@ -125,38 +127,42 @@ const missingText = computed(() =>
   <UiActionCard
     v-else-if="problem"
     :eyebrow="t('adminEdition.screen.impossible.eyebrow')"
+    tone="warning"
     :title="t('adminEdition.screen.impossible.title')"
     data-testid="action-card"
   >
-    <ul v-if="blockedPeople.length" class="flex flex-col gap-2">
+    <ul
+      v-if="blockedPeople.length"
+      class="divide-y divide-warning-ring rounded-xl bg-warning-tint text-sm leading-[1.45] text-mustard-900 ring-1 ring-warning-ring"
+    >
       <li
         v-for="person in blockedPeople"
         :key="person.name"
-        class="flex items-center gap-2.5 text-sm"
+        class="flex items-center gap-2.5 px-3 py-2.5"
       >
         <UiAvatar v-if="person.avatar" :avatar="person.avatar" size="sm" />
         <span
-          ><strong>{{ person.name }}</strong> : {{ person.why }}</span
+          ><strong class="text-mustard-950">{{ person.name }}</strong> :
+          {{ person.why }}</span
         >
       </li>
     </ul>
-    <p class="text-sm text-muted" role="alert">{{ problemHelp }}</p>
+    <p class="text-sm leading-[1.45] text-toned" role="alert">
+      {{ problemHelp }}
+    </p>
     <template #action>
       <UButton
         :to="`${base}/exclusions`"
         block
         size="xl"
-        icon="i-lucide-ban"
         class="h-12 justify-center font-bold"
-        :ui="{ leadingIcon: 'size-5' }"
         :label="t('adminEdition.screen.impossible.exclusions')"
       />
       <UButton
         :to="`${base}/ajouter`"
         block
-        variant="outline"
-        icon="i-lucide-user-plus"
-        class="min-h-11 justify-center"
+        variant="ghost"
+        class="h-11 justify-center text-[15px] font-semibold text-primary-ink"
         :label="t('adminEdition.screen.prepare.add')"
       />
     </template>

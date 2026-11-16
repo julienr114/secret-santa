@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import { sortParticipants } from '#server/utils/editions';
 import { FOLD_STEP, listView } from '#shared/utils/lists';
@@ -79,7 +80,7 @@ const view = computed(() =>
     query: query.value,
     opened: opened.value,
     shown: SHOWN,
-    nameOf: (p) => p.firstName,
+    nameOf: fullName,
   }),
 );
 const missingText = computed(() =>
@@ -226,7 +227,7 @@ const missingText = computed(() =>
           <UiListItem
             :avatar="p.avatar"
             :to="`${base}/participants/${p.participationId}`"
-            :title="p.firstName"
+            :title="fullName(p)"
             :subtitle="subtitleOf(p)"
           />
         </template>

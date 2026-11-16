@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import {
   followSeries,
@@ -96,7 +97,7 @@ const parts = computed<Part[]>(() => {
           query: query.value,
           opened: 0,
           shown: 0,
-          nameOf: (p) => p.firstName,
+          nameOf: fullName,
         }),
       },
     ];
@@ -226,7 +227,11 @@ const confirmingRow = ref(false);
         :key-of="(p) => p.participationId"
         :avatar-of="(p) => p.avatar"
         :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
-        :collapse-label="t('adminEdition.screen.lists.collapse')"
+        :collapse-label="
+          part.state
+            ? t(`adminEdition.screen.lists.collapseSeries.${part.state}`)
+            : t('adminEdition.screen.lists.collapse')
+        "
         :detail="
           part.state
             ? t(`adminEdition.screen.lists.series.${part.state}`)
@@ -239,7 +244,7 @@ const confirmingRow = ref(false);
           <UiListItem
             :avatar="p.avatar"
             :to="`${base}/participants/${p.participationId}`"
-            :title="p.firstName"
+            :title="fullName(p)"
             :chevron="false"
           >
             <template #subtitle>

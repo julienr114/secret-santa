@@ -125,4 +125,8 @@ test('a large group folds its lists, before and after the draw', async ({
     name: `Voir les ${total - 3} autres`,
   });
   await expect(fold).toContainText('Pas encore envoyé');
+  await fold.click();
+  await expect(
+    page.getByRole('button', { name: 'Replier ceux qui restent à prévenir' }),
+  ).toBeVisible();
 });

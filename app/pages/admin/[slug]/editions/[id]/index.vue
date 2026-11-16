@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import {
   editionStep,
   followState,
@@ -101,7 +102,7 @@ const missing = computed(() => {
   const inEdition = new Set(participants.value.map((p) => p.id));
   return (people.data.value?.persons ?? [])
     .filter((p) => p.active && !inEdition.has(p.id))
-    .map((p) => p.firstName);
+    .map(fullName);
 });
 const avatars = computed(() => participants.value.map((p) => p.avatar));
 /** How many exclusions the draw applied, for a closed edition. */

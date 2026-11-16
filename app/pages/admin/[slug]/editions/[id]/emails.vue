@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import {
   followState,
   preselectedForEmail,
@@ -114,7 +115,7 @@ const view = computed(() =>
     query: query.value,
     opened: opened.value,
     shown: SHOWN,
-    nameOf: (p) => p.firstName,
+    nameOf: fullName,
   }),
 );
 
@@ -249,7 +250,7 @@ const onSend = () =>
               <li class="flex min-h-14 items-center gap-3 px-4 py-2">
                 <UiAvatar :avatar="p.avatar" size="sm" />
                 <div class="min-w-0 grow">
-                  <p class="truncate font-semibold">{{ p.firstName }}</p>
+                  <p class="truncate font-semibold">{{ fullName(p) }}</p>
                   <p class="truncate text-xs text-muted">
                     {{
                       t(`adminEdition.screen.lists.series.${followState(p)}`)

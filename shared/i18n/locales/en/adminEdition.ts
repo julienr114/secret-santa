@@ -186,6 +186,11 @@ export default {
   },
   screen: {
     lists: {
+      collapseSeries: {
+        toNotify: 'Fold those still to notify',
+        notOpened: 'Fold those who have not opened yet',
+        viewed: 'Fold those who found out',
+      },
       collapse: 'Fold the list',
       series: {
         toNotify: 'Not sent yet',

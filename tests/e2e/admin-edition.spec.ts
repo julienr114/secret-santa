@@ -88,16 +88,27 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
   await page.getByRole('button', { name: 'Retour' }).click();
 
-  // Share Hugo's invitation by copying it: he gets the "envoyé" badge.
+  // A tap on Hugo opens his send sheet: copy his invitation.
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.getByText('Hugo', { exact: true }).click();
-  await page.getByText('Copier le message').click();
+  const sheet = page.getByTestId('send-sheet');
+  await expect(sheet).toBeVisible();
+  await page.getByRole('button', { name: 'Copier', exact: true }).click();
   await expect(page.getByText('Message copié').first()).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Salut Hugo !/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}$/);
-  await expect(page.getByText('envoyé', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Retour' }).click();
+  await page.keyboard.press('Escape');
+  // Sent: his sheet now offers to send again, and the repairs.
+  await page.getByText('Hugo', { exact: true }).click();
+  await expect(page.getByText('Renvoyer à Hugo').first()).toBeVisible();
+  await expect(page.getByTestId('troubleshoot')).toContainText(
+    'Pas envoyé finalement ?',
+  );
+  await expect(page.getByTestId('troubleshoot')).toContainText(
+    "Retirer de l'édition",
+  );
+  await page.keyboard.press('Escape');
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   await page.getByRole('button', { name: 'Tirer au sort' }).click();

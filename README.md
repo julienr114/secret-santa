@@ -592,7 +592,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 - **Fêter** : à partir du lendemain de la fête, la carte devient « La fête est passée : clôture l'édition ».
 - **Clôturée** : la frise entièrement faite (« Fêté »), « fêté le … » sous le titre, l'encadré « Édition clôturée », les paires du tirage (README 8.7), les lignes « Exclusions appliquées au tirage » et « Journal du groupe », puis « Préparer l'édition suivante ».
 - **Plus tard, ou en cas de pépin** : clôturer (possible après la fête), voir un seul résultat (dernier recours, journalisé), annuler et relancer le tirage.
-- Fiche participant : inchangée (partager, copier, lien seul, régénérer, retirer, dernière consultation).
+- **Plus de fiche participant** (décidé par Julien le 16 novembre 2026 : elle doublait le panneau d'envoi). Toucher une personne, avant comme après le tirage, ouvre le panneau d'envoi ; son bas porte le « Dépannage » (`AdminParticipantTroubleshoot`) : « Pas envoyé finalement ? », « Régénérer son lien » et « Retirer de l'édition » (avant le tirage), les deux derniers avec un second appui. L'ancienne adresse `…/participants/[id]` mène à l'édition, panneau ouvert sur la personne (`?envoyer=`).
 
 ---
 

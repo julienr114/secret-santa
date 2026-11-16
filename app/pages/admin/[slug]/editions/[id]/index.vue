@@ -138,7 +138,10 @@ const onClose = () => close.mutate(undefined, { onError });
 
 // The send sheet follows one participant; once done, it moves on to the
 // next one still to notify.
-const sendId = ref<string | null>(null);
+// Opened from a link to a participant (the former participant page).
+const sendId = ref<string | null>(
+  typeof route.query.envoyer === 'string' ? route.query.envoyer : null,
+);
 const sendTarget = computed(
   () =>
     participants.value.find((p) => p.participationId === sendId.value) ?? null,
@@ -211,6 +214,7 @@ const dateOpen = ref(false);
         :missing="missing"
         :exclusion-count="exclusionCount"
         @draw="drawOpen = true"
+        @send="(pid) => (sendId = pid)"
       />
       <AdminEditionFollow
         v-else-if="status === 'drawn'"
@@ -308,6 +312,7 @@ const dateOpen = ref(false);
       :left="toNotify.length"
       @sent="onSent"
       @skip="onSent"
+      @removed="sendId = null"
     />
     <AdminPartyDateSheet
       v-model:open="dateOpen"

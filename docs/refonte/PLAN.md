@@ -160,8 +160,8 @@ Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le
 ### Lot 2 — Édition : sous-écrans
 
 - [ ] `AjouterParticipants` (`ajouter.vue`) : membres absents à cocher, « Créer une personne », « Inviter par lien », bouton collant « Ajouter N personnes ».
-- [ ] `FicheParticipant` (`participants/[pid].vue`) : état en tête, action principale « Renvoyer son lien » (ouvre `AdminSendSheet`), informations, puis « Dépannage ».
-- [ ] `PanneauRegenerer` : la confirmation de la régénération passe dans un `UiSheet`.
+- [x] ~~`FicheParticipant`~~ : supprimée par Julien le 16 novembre 2026, elle doublait le panneau d'envoi. Toucher une personne ouvre `AdminSendSheet`, dont le bas porte le « Dépannage » (pas envoyé finalement, régénérer le lien, retirer de l'édition). L'ancienne route redirige vers l'édition, panneau ouvert.
+- [x] ~~`PanneauRegenerer`~~ : la régénération se confirme par un second appui dans le « Dépannage » du panneau d'envoi, sans second panneau par-dessus.
 - [ ] `AnnulerTirage` (`annuler.vue`) : conséquences en liste, motif, aperçu de la ligne du journal, case à cocher, bouton sûr « Garder ce tirage » mis en avant.
 - [ ] `VoirResultat`, `ChoisirPersonne`, `ChoisirPersonneRecherche`, `VoirResultatAffiche` (`voir-le-tirage.vue`) : avertissement, choix de la personne par `UiPersonPicker` (qui existe et n'est pas encore branché), aperçu du journal, phrase à recopier ; puis le résultat avec « Cacher et revenir à l'édition ». Libellé « Voir un seul résultat ».
 

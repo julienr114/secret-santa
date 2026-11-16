@@ -232,7 +232,12 @@ const confirmingRow = ref(false);
         <template #row="{ item: p }">
           <UiListItem
             :avatar="p.avatar"
-            :to="`${base}/participants/${p.participationId}`"
+            :on-click="() => emit('send', p.participationId)"
+            :label="
+              p.messageSentAt
+                ? t('adminEdition.cockpit.resendLinkOf', { name: fullName(p) })
+                : t('adminEdition.cockpit.sendLinkOf', { name: fullName(p) })
+            "
             :title="fullName(p)"
             :chevron="false"
           >
@@ -247,23 +252,17 @@ const confirmingRow = ref(false);
               }}</span>
             </template>
             <template #trailing>
-              <UButton
-                size="lg"
-                class="size-11 shrink-0 justify-center rounded-full"
-                icon="i-lucide-send"
-                :color="p.messageSentAt ? 'neutral' : 'primary'"
-                :variant="p.messageSentAt ? 'outline' : 'soft'"
-                :aria-label="
+              <span
+                class="flex size-11 shrink-0 items-center justify-center rounded-full"
+                :class="
                   p.messageSentAt
-                    ? t('adminEdition.cockpit.resendLinkOf', {
-                        name: fullName(p),
-                      })
-                    : t('adminEdition.cockpit.sendLinkOf', {
-                        name: fullName(p),
-                      })
+                    ? 'text-muted ring-1 ring-default'
+                    : 'bg-primary-soft text-primary'
                 "
-                @click.prevent.stop="emit('send', p.participationId)"
-              />
+                aria-hidden="true"
+              >
+                <UIcon name="i-lucide-send" class="size-5" />
+              </span>
             </template>
           </UiListItem>
         </template>

@@ -34,7 +34,7 @@ const props = defineProps<{
   left: number;
 }>();
 const open = defineModel<boolean>('open', { required: true });
-const emit = defineEmits<{ sent: []; skip: [] }>();
+const emit = defineEmits<{ sent: []; skip: []; removed: [] }>();
 const { t, tk } = useT();
 const errorMessage = useErrorMessage();
 const toast = useToast();
@@ -259,6 +259,14 @@ const statusLine = computed(() => {
         autoresize
         :aria-label="t('adminEdition.screen.sheet.addNote')"
         class="w-full"
+      />
+      <AdminParticipantTroubleshoot
+        class="mt-2"
+        :slug="slug"
+        :edition-id="editionId"
+        :status="status"
+        :participant="participant"
+        @removed="emit('removed')"
       />
     </div>
     <template #footer>

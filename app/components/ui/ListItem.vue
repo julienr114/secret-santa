@@ -18,6 +18,8 @@ const props = withDefaults(
     tone?: 'default' | 'danger';
     /** The current value of a setting, shown on the right. */
     value?: string;
+    /** The name of the row, when its texts do not say what a tap does. */
+    label?: string;
     /** Makes the row a button (otherwise a link with `to`, or plain). */
     onClick?: () => void;
   }>(),
@@ -30,6 +32,7 @@ const props = withDefaults(
     emoji: undefined,
     tone: 'default',
     value: undefined,
+    label: undefined,
     onClick: undefined,
   },
 );
@@ -48,6 +51,7 @@ const NuxtLink = resolveComponent('NuxtLink');
       :is="to ? NuxtLink : props.onClick ? 'button' : 'div'"
       :to="to"
       :type="!to && props.onClick ? 'button' : undefined"
+      :aria-label="label"
       class="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left"
       :class="to || props.onClick ? 'transition-colors active:bg-muted' : ''"
       @click="props.onClick?.()"

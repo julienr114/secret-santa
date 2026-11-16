@@ -126,4 +126,15 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(back).toContainText('Pas encore envoyé');
   await back.click();
   await expect(fold).toBeVisible();
+
+  // The former page of a participant opens their send sheet instead.
+  const { participants } = await (
+    await state.api!.get(`${at}/editions/${id}`)
+  ).json();
+  await page.goto(
+    `/admin/cas-grand/editions/${id}/participants/${participants[0].participationId}`,
+  );
+  await hydrated(page);
+  await expect(page).toHaveURL(/\/editions\/[^/]+\?envoyer=/);
+  await expect(page.getByTestId('send-sheet')).toBeVisible();
 });

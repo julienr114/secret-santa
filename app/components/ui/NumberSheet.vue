@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // A number in a settings sheet: minus, the number in large, plus, within
-// bounds, and a word of help under it. The number is only kept with
-// "Valider".
+// bounds, and a word of help under it. The number can be typed too
+// (decided on 17 November 2026); it is brought back within bounds when the
+// field is left, and only kept with "Valider".
 const props = defineProps<{
   title: string;
   description?: string;
@@ -24,12 +25,29 @@ watch(open, (isOpen) => {
   if (isOpen) draft.value = props.value;
 });
 /**
+ * A number brought within the bounds, as a whole number; the lowest bound
+ * for what is not a number.
+ * @param value - The number typed or reached.
+ * @returns The number to keep.
+ */
+const bounded = (value: number) =>
+  Number.isFinite(value)
+    ? Math.min(props.max, Math.max(props.min, Math.round(value)))
+    : props.min;
+/**
  * Moves the number by one step, within its bounds.
  * @param step - +1 or -1.
  * @returns Nothing.
  */
 const move = (step: number) => {
-  draft.value = Math.min(props.max, Math.max(props.min, draft.value + step));
+  draft.value = bounded(Number(draft.value) + step);
+};
+/**
+ * Keeps what was typed, within the bounds.
+ * @returns Nothing.
+ */
+const settle = () => {
+  draft.value = bounded(draft.value);
 };
 </script>
 
@@ -42,7 +60,7 @@ const move = (step: number) => {
     :cancel-label="cancelLabel"
     :error="error"
     :loading="loading"
-    @validate="emit('validate', draft)"
+    @validate="emit('validate', bounded(draft))"
   >
     <div class="flex items-center justify-center gap-6">
       <UButton
@@ -54,11 +72,17 @@ const move = (step: number) => {
         :aria-label="decreaseLabel"
         @click="move(-1)"
       />
-      <output
-        class="w-20 text-center font-display text-5xl font-bold tabular-nums"
-        aria-live="polite"
-        >{{ draft }}</output
-      >
+      <input
+        v-model.number="draft"
+        type="number"
+        inputmode="numeric"
+        :min="min"
+        :max="max"
+        :aria-label="title"
+        class="w-24 [appearance:textfield] rounded-lg bg-transparent text-center font-display text-5xl font-bold tabular-nums focus:ring-2 focus:ring-primary focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        @blur="settle"
+        @keydown.enter.prevent="settle"
+      />
       <UButton
         variant="outline"
         color="neutral"

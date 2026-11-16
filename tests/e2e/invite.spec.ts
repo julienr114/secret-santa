@@ -71,14 +71,15 @@ test('the organiser creates the group link from the people page', async ({
   await expect(
     page.getByRole('button', { name: /^Ton mot sur la page/ }),
   ).toContainText('« Bienvenue dans la famille ! »');
-  // Two places are enough here: set through the same route as the sheet,
-  // which only steps one by one.
-  const placed = await page.request.post(`${ADMIN}/invite`, {
-    data: { open: true, places: 2, message: 'Bienvenue dans la famille !' },
-  });
-  expect(placed.ok()).toBe(true);
-  await page.reload();
-  await hydrated(page);
+  // Two places are enough here: typed, then one more and one less.
+  await page.getByRole('button', { name: /^Places restantes/ }).click();
+  const places = page.getByRole('spinbutton', { name: 'Places restantes' });
+  await places.fill('2');
+  await page.getByRole('button', { name: 'Une place de plus' }).click();
+  await expect(places).toHaveValue('3');
+  await page.getByRole('button', { name: 'Une place de moins' }).click();
+  await expect(places).toHaveValue('2');
+  await page.getByRole('button', { name: 'Valider' }).click();
   await expect(
     page.getByRole('button', { name: /^Places restantes/ }),
   ).toContainText('2');

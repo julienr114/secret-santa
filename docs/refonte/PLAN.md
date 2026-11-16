@@ -358,7 +358,7 @@ Réponses de Julien du 17 novembre 2026 aux questions de la section 6. À faire 
 - [x] **L'élision en français** (lot 2, question 5) : « de » devient « d' » devant une voyelle ou un h (« d'Agathe », « d'Inès », « d'Hugo »). Une fonction pure testée, utilisée partout où un texte écrit « de {prénom} ». Rien en anglais ni en allemand.
 - [x] **Créer une édition avec son budget et son mot** (lot 3, question 3) : la route de création les accepte ; plus de « L'organisateur a modifié les règles » au journal juste après une création.
 - [x] **Un seul nombre de membres** (lot 3, question 6) : celui des membres actifs, partout ; la ligne « Membres » dit en plus combien ne participent plus, quand il y en a.
-- [ ] **Taper le nombre de places** du lien d'invitation (lot 4, question 3), en gardant « moins » et « plus ».
+- [x] **Taper le nombre de places** du lien d'invitation (lot 4, question 3), en gardant « moins » et « plus ».
 - [ ] **Une exclusion dans un seul sens en toutes lettres** (lot 4, question 6) : « Inès ne tire pas Louis », sans flèche.
 - [ ] **« Tirée de nouveau »** (Correction 7, question 1) : la réponse de l'édition dit si le tirage a été relancé, et le panneau propose alors « Nouveau tirage » tout seul.
 

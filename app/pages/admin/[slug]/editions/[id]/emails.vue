@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
+import type { Participant } from '#server/database/editions';
 import {
   followState,
   preselectedForEmail,
@@ -19,8 +20,9 @@ import {
 } from '~/composables/queries/useEdition';
 
 // Sending one message by email to several participants: the message,
-// who gets it (those still to notify start ticked; people without an
-// address can only get one), what it will look like, then send.
+// who gets it (those still to notify start ticked; a whole row ticks;
+// people without an address can only get one), what it will look like,
+// then send.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -62,6 +64,21 @@ const tabs = computed(() =>
 );
 
 const withEmail = computed(() => participants.value.filter((p) => p.email));
+const { lookOf } = useFollowLook();
+/**
+ * What a row says under the name: no address, or where the person stands.
+ * @param p - The participant.
+ * @returns The icon, the tone classes of the icon and the words, the words.
+ */
+const rowLook = (p: Participant) =>
+  p.email
+    ? lookOf(p)
+    : {
+        icon: 'i-lucide-circle-dashed',
+        iconTone: 'text-toned',
+        tone: 'text-toned',
+        text: t('adminEdition.screen.emails.noEmail'),
+      };
 const selected = ref<string[]>([]);
 watch(
   () => edition.data.value !== undefined,
@@ -206,37 +223,35 @@ const onSend = () =>
         />
       </section>
 
-      <section class="flex flex-col gap-2" data-testid="email-people">
+      <section class="flex flex-col gap-1.5" data-testid="email-people">
         <div class="flex items-center justify-between gap-2">
-          <p class="text-sm font-bold" data-testid="email-count">
-            {{
-              t('adminEdition.screen.emails.selected', {
-                count: selected.length,
-                total: participants.length,
-              })
-            }}
-          </p>
-          <UButton
-            variant="link"
-            class="min-h-11"
+          <UiSectionTitle aria-live="polite" data-testid="email-count">{{
+            t('adminEdition.screen.emails.selected', {
+              count: selected.length,
+              total: participants.length,
+            })
+          }}</UiSectionTitle>
+          <button
+            type="button"
+            class="h-11 px-1 text-sm font-bold text-primary-ink underline disabled:opacity-50"
             :disabled="!withEmail.length"
-            :label="
+            @click="toggleAll"
+          >
+            {{
               allSelected
                 ? t('adminEdition.screen.emails.selectNone')
                 : t('adminEdition.screen.emails.selectAll')
-            "
-            @click="toggleAll"
-          />
+            }}
+          </button>
         </div>
         <UiSearchField
           v-if="searchable"
           v-model="query"
+          class="mb-1.5"
           :label="t('adminEdition.screen.lists.search')"
           :clear-label="t('adminEdition.screen.lists.clear')"
         />
-        <ul
-          class="divide-y divide-divider overflow-hidden rounded-lg bg-default ring-1 ring-default"
-        >
+        <UiList>
           <li
             v-if="view.shown.length === 0"
             class="px-4 py-3 text-sm text-muted"
@@ -255,49 +270,69 @@ const onSend = () =>
             @collapse="expanded = false"
           >
             <template #row="{ item: p }">
-              <li class="flex min-h-14 items-center gap-3 px-4 py-2">
-                <UiAvatar :avatar="p.avatar" size="sm" />
-                <div class="min-w-0 grow">
-                  <p class="truncate font-semibold">{{ fullName(p) }}</p>
-                  <p class="truncate text-xs text-muted">
-                    {{
-                      t(`adminEdition.screen.lists.series.${followState(p)}`)
-                    }}
-                    ·
-                    {{ p.email ?? t('adminEdition.screen.emails.noEmail') }}
-                  </p>
-                </div>
-                <UCheckbox
-                  v-if="p.email"
-                  :model-value="isSelected(p.participationId)"
-                  size="xl"
-                  :aria-label="
-                    t('adminEdition.screen.emails.select', {
-                      name: fullName(p),
-                    })
-                  "
-                  class="flex size-11 items-center justify-center"
-                  @update:model-value="
-                    (on) => toggle(p.participationId, on === true)
-                  "
-                />
-                <UButton
-                  v-else
-                  variant="soft"
-                  size="sm"
-                  class="min-h-11"
-                  :to="`/admin/${slug}/personnes/${p.id}`"
-                  :label="t('adminEdition.screen.emails.addEmail')"
-                  :aria-label="
-                    t('adminEdition.screen.emails.addEmailLabel', {
-                      name: fullName(p),
-                    })
-                  "
-                />
+              <li>
+                <component
+                  :is="p.email ? 'label' : 'div'"
+                  class="flex min-h-15 items-center gap-3 px-4 py-2"
+                  :class="{ 'cursor-pointer': p.email }"
+                >
+                  <UiAvatar :avatar="p.avatar" />
+                  <span class="flex min-w-0 grow flex-col">
+                    <span class="truncate font-semibold">{{
+                      fullName(p)
+                    }}</span>
+                    <span
+                      v-if="p.email && followState(p) === 'toNotify'"
+                      class="truncate text-[13px] text-toned"
+                      >{{ t('adminEdition.screen.lists.series.toNotify') }} ·
+                      {{ p.email }}</span
+                    >
+                    <span
+                      v-else
+                      class="flex min-w-0 items-center gap-1.25 text-[13px]"
+                      :class="rowLook(p).tone"
+                    >
+                      <UIcon
+                        :name="rowLook(p).icon"
+                        class="size-3.5 shrink-0"
+                        :class="rowLook(p).iconTone"
+                      />
+                      <span class="truncate">{{ rowLook(p).text }}</span>
+                    </span>
+                  </span>
+                  <input
+                    v-if="p.email"
+                    type="checkbox"
+                    class="size-6 shrink-0 accent-primary"
+                    :checked="isSelected(p.participationId)"
+                    :aria-label="
+                      t('adminEdition.screen.emails.select', {
+                        name: fullName(p),
+                      })
+                    "
+                    @change="
+                      toggle(
+                        p.participationId,
+                        ($event.target as HTMLInputElement).checked,
+                      )
+                    "
+                  />
+                  <NuxtLink
+                    v-else
+                    :to="`/admin/${slug}/personnes/${p.id}`"
+                    class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
+                    :aria-label="
+                      t('adminEdition.screen.emails.addEmailLabel', {
+                        name: fullName(p),
+                      })
+                    "
+                    >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+                  >
+                </component>
               </li>
             </template>
           </UiFoldedRows>
-        </ul>
+        </UiList>
       </section>
 
       <section v-if="first" class="flex flex-col gap-2">

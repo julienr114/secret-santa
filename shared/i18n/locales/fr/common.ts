@@ -31,6 +31,7 @@ export default {
     validate: 'Valider',
     add: 'Ajouter',
     save: 'Enregistrer',
+    saving: 'Enregistrement…',
     logout: 'Se déconnecter',
   },
   language: {

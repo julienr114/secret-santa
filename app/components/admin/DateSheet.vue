@@ -60,6 +60,7 @@ const helper = computed(() => {
     :cancel-label="t('common.actions.cancel')"
     :error="error"
     :loading="loading"
+    :busy-label="t('common.actions.saving')"
     :disabled="!draft && !clearLabel"
     @validate="emit('validate', draft)"
   >

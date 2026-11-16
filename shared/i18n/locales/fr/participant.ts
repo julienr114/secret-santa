@@ -26,6 +26,7 @@ export default {
       title: "Ton enveloppe t'attend",
       body: "Le tirage est fait. Assure-toi que personne ne regarde ton écran avant de l'ouvrir.",
       reveal: "Découvrir à qui j'offre un cadeau",
+      revealing: 'Ouverture de l’enveloppe…',
       hint: 'Ton résultat se referme dès que tu quittes la page.',
     },
     shown: {

@@ -112,8 +112,18 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.keyboard.press('Escape');
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
+  // A slow draw says it is working and keeps the sheet open.
+  await page.route('**/draw', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    await route.continue();
+  });
   await page.getByRole('button', { name: 'Tirer au sort' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Tirage en cours…' }),
+  ).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Pas encore' })).toBeDisabled();
   await expect(page.getByText('Tirage effectué').first()).toBeVisible();
+  await page.unroute('**/draw');
   await expect(
     page.getByText('Préviens chacun que le tirage est fait'),
   ).toBeVisible();

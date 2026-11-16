@@ -254,6 +254,7 @@ export default {
       },
     },
     drawSheet: {
+      drawing: 'Tirage en cours…',
       title: 'Lancer le tirage ?',
       description: "Un dernier coup d'œil avant de tirer au sort.",
       people: { one: '{count} participant', other: '{count} participants' },
@@ -294,6 +295,7 @@ export default {
       },
       later: 'Plus tard, ou en cas de pépin',
       closeRow: "Clôturer l'édition",
+      closing: 'Clôture en cours…',
       closeRowLater: 'Possible après la fête, le {date}',
       closeRowHint: "L'édition passe en lecture seule",
       closeConfirm:
@@ -336,9 +338,15 @@ export default {
       addNote: 'Ajouter un mot',
       each: 'Chacun le reçoit avec son prénom, son lien et dans sa langue.',
       send: { one: 'Envoyer {count} email', other: 'Envoyer {count} emails' },
+      sending: {
+        one: 'Envoi de {count} email…',
+        other: 'Envoi des {count} emails…',
+      },
       spam: "Les emails arrivent souvent en spam : relance par téléphone ceux qui n'ouvrent pas leur lien.",
     },
     sheet: {
+      loadingMessage: 'Chargement du message',
+      sending: 'Envoi en cours…',
       sendTo: 'Envoyer à {name}',
       resendTo: 'Renvoyer à {name}',
       left: {

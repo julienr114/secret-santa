@@ -28,6 +28,7 @@ export default {
       title: 'Your envelope is waiting',
       body: 'The draw is done. Make sure nobody is looking at your screen before you open it.',
       reveal: 'Find out who I am giving a gift to',
+      revealing: 'Opening the envelope…',
       hint: 'Your result closes as soon as you leave the page.',
     },
     shown: {

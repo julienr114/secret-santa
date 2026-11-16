@@ -154,6 +154,7 @@ const preview = computed(() =>
 );
 
 const sendEmails = useSendEmailsMutation(slug, id);
+const sending = useBusy(() => sendEmails.isPending.value);
 /**
  * Says who was just sent the message: up to three first names, then how
  * many others.
@@ -223,7 +224,15 @@ const onSend = () =>
         />
       </section>
 
-      <section class="flex flex-col gap-1.5" data-testid="email-people">
+      <section
+        class="flex flex-col gap-1.5 transition-opacity"
+        :class="{
+          'pointer-events-none opacity-50': sendEmails.isPending.value,
+        }"
+        :inert="sendEmails.isPending.value || undefined"
+        :aria-busy="sendEmails.isPending.value || undefined"
+        data-testid="email-people"
+      >
         <div class="flex items-center justify-between gap-2">
           <UiSectionTitle aria-live="polite" data-testid="email-count">{{
             t('adminEdition.screen.emails.selected', {
@@ -375,10 +384,15 @@ const onSend = () =>
           block
           size="xl"
           icon="i-lucide-mail"
-          :disabled="!selected.length || !preview"
-          :loading="sendEmails.isPending.value"
+          class="h-13 justify-center text-[17px] font-bold"
+          :disabled="!selected.length || !preview || sendEmails.isPending.value"
+          :loading="sending"
           :label="
-            t('adminEdition.screen.emails.send', { count: selected.length })
+            sending
+              ? t('adminEdition.screen.emails.sending', {
+                  count: selected.length,
+                })
+              : t('adminEdition.screen.emails.send', { count: selected.length })
           "
           @click="onSend"
         />

@@ -258,6 +258,7 @@ export default {
       },
     },
     drawSheet: {
+      drawing: 'Auslosung läuft…',
       title: 'Auslosung starten?',
       description: 'Ein letzter Blick vor der Auslosung.',
       people: { one: '{count} Teilnehmer', other: '{count} Teilnehmende' },
@@ -298,6 +299,7 @@ export default {
       },
       later: 'Später, oder wenn etwas schiefgeht',
       closeRow: 'Ausgabe abschließen',
+      closing: 'Wird abgeschlossen…',
       closeRowLater: 'Möglich nach der Bescherung, am {date}',
       closeRowHint: 'Die Ausgabe ist dann nur noch lesbar',
       closeConfirm:
@@ -341,9 +343,15 @@ export default {
       addNote: 'Ein paar Worte hinzufügen',
       each: 'Jede Person bekommt sie mit ihrem Vornamen, ihrem Link und in ihrer Sprache.',
       send: { one: '{count} E-Mail senden', other: '{count} E-Mails senden' },
+      sending: {
+        one: '{count} E-Mail wird gesendet…',
+        other: '{count} E-Mails werden gesendet…',
+      },
       spam: 'E-Mails landen oft im Spam: Erinnere per Telefon, wer seinen Link nicht öffnet.',
     },
     sheet: {
+      loadingMessage: 'Nachricht wird geladen',
+      sending: 'Wird gesendet…',
       sendTo: 'An {name} senden',
       resendTo: 'Erneut an {name} senden',
       left: {

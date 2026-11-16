@@ -34,6 +34,7 @@ export default {
     validate: 'Confirm',
     add: 'Add',
     save: 'Save',
+    saving: 'Saving…',
     logout: 'Log out',
   },
   language: {

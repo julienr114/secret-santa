@@ -28,6 +28,7 @@ export default {
       title: 'Dein Umschlag wartet auf dich',
       body: 'Die Auslosung ist erfolgt. Achte darauf, dass niemand auf deinen Bildschirm schaut, bevor du ihn öffnest.',
       reveal: 'Erfahren, wen ich beschenke',
+      revealing: 'Umschlag wird geöffnet…',
       hint: 'Dein Ergebnis schließt sich, sobald du die Seite verlässt.',
     },
     shown: {

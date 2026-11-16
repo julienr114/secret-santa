@@ -18,6 +18,7 @@ const props = defineProps<{
 const open = defineModel<boolean>('open', { required: true });
 const emit = defineEmits<{ confirm: [] }>();
 const { t, locale } = useT();
+const busy = useBusy(() => props.loading);
 
 const missingNames = computed(() => {
   const { shown, more } = stackOf(props.missing, 3);
@@ -79,6 +80,7 @@ const items = computed<NoticeItem[]>(() => [
     v-model:open="open"
     :title="t('adminEdition.screen.drawSheet.title')"
     :description="t('adminEdition.screen.drawSheet.description')"
+    :busy="loading"
   >
     <div class="flex flex-col gap-4 py-2" data-testid="draw-sheet">
       <UiNotice variant="checklist" :items="items">
@@ -107,14 +109,22 @@ const items = computed<NoticeItem[]>(() => [
       <UButton
         block
         icon="i-lucide-sparkle"
-        :loading="loading"
-        :label="t('adminEdition.screen.drawSheet.confirm')"
+        class="h-13 justify-center text-[17px] font-bold"
+        :disabled="loading"
+        :loading="busy"
+        :label="
+          busy
+            ? t('adminEdition.screen.drawSheet.drawing')
+            : t('adminEdition.screen.drawSheet.confirm')
+        "
         @click="emit('confirm')"
       />
       <UButton
         block
         variant="ghost"
         color="neutral"
+        class="h-[46px] justify-center font-semibold"
+        :disabled="loading"
         :label="t('adminEdition.screen.drawSheet.notYet')"
         @click="open = false"
       />

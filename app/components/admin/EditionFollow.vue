@@ -51,6 +51,12 @@ const counters = computed(() => [
   },
 ]);
 const { lookOf: stateOf, seriesLook } = useFollowLook();
+const closingShown = useBusy(() => props.closing);
+const closeLabel = computed(() =>
+  closingShown.value
+    ? t('adminEdition.screen.follow.closing')
+    : t('adminEdition.screen.follow.closeRow'),
+);
 // Past ten people, a search; past twelve, each series shows three rows,
 // then a row that unfolds the rest of it and says where they stand.
 const SEARCH_FROM = 10;
@@ -137,13 +143,15 @@ const confirmingRow = ref(false);
             block
             variant="soft"
             color="neutral"
+            :disabled="closing"
             :label="t('common.actions.cancel')"
             @click="confirming = false"
           />
           <UButton
             block
-            :loading="closing"
-            :label="t('adminEdition.screen.follow.closeRow')"
+            :disabled="closing"
+            :loading="closingShown"
+            :label="closeLabel"
             @click="emit('close')"
           />
         </div>
@@ -283,13 +291,15 @@ const confirmingRow = ref(false);
       <p class="text-sm">{{ t('adminEdition.screen.follow.closeConfirm') }}</p>
       <div class="flex gap-2">
         <UButton
-          :loading="closing"
-          :label="t('adminEdition.screen.follow.closeRow')"
+          :disabled="closing"
+          :loading="closingShown"
+          :label="closeLabel"
           @click="emit('close')"
         />
         <UButton
           variant="ghost"
           color="neutral"
+          :disabled="closing"
           :label="t('common.actions.cancel')"
           @click="confirmingRow = false"
         />

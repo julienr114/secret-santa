@@ -91,7 +91,16 @@ const languages = computed(() =>
 const onLanguage = (language: Locale) =>
   language !== props.participant.language &&
   updatePerson.mutate({ id: props.participant.id, language });
-const waiting = computed(() => !text.value || updatePerson.isPending.value);
+const sendEmails = useSendEmailsMutation(
+  () => props.slug,
+  () => props.editionId,
+);
+const waiting = computed(
+  () =>
+    !text.value || updatePerson.isPending.value || sendEmails.isPending.value,
+);
+const sending = useBusy(() => sendEmails.isPending.value);
+const savingLanguage = useBusy(() => updatePerson.isPending.value);
 
 /**
  * Shows an error in a toast.
@@ -132,10 +141,6 @@ const onCopyLink = async () => {
   });
   linkCopied.mutate(props.participant.participationId);
 };
-const sendEmails = useSendEmailsMutation(
-  () => props.slug,
-  () => props.editionId,
-);
 /**
  * Emails the message to this participant, then moves on.
  * @returns Nothing: the mutation reports by itself.
@@ -189,7 +194,11 @@ const personPath = computed(
 </script>
 
 <template>
-  <UiSheet v-model:open="open" :title="title">
+  <UiSheet
+    v-model:open="open"
+    :title="title"
+    :busy="sendEmails.isPending.value"
+  >
     <template #header>
       <div class="flex w-full items-center gap-3">
         <UiAvatar :avatar="participant.avatar" class="size-12 text-[22px]" />
@@ -234,12 +243,11 @@ const personPath = computed(
       />
       <div class="flex flex-col gap-2">
         <UiMessageBubble
-          v-if="text"
           :text="text"
           :link="message?.link"
+          :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
           data-testid="send-preview"
         />
-        <USkeleton v-else class="h-28 w-[92%] rounded-2xl bg-skeleton" />
         <div class="flex flex-wrap items-center gap-2">
           <UButton
             variant="outline"
@@ -253,6 +261,7 @@ const personPath = computed(
           <USelect
             :model-value="participant.language"
             :items="languages"
+            :loading="savingLanguage"
             icon="i-lucide-globe"
             class="h-10 gap-1.5 rounded-full px-3 text-sm font-semibold"
             :ui="{
@@ -285,15 +294,17 @@ const personPath = computed(
             block
             icon="i-lucide-mail"
             :disabled="waiting"
-            :loading="sendEmails.isPending.value"
+            :loading="sending"
             class="min-h-14 gap-2.5 px-3 py-1.5"
             @click="onEmail"
           >
             <span class="flex min-w-0 flex-col items-start leading-[1.2]">
               <span class="text-[17px] font-bold">{{
-                resend
-                  ? t('adminEdition.screen.sheet.resendByEmail')
-                  : t('adminEdition.screen.sheet.byEmail')
+                sending
+                  ? t('adminEdition.screen.sheet.sending')
+                  : resend
+                    ? t('adminEdition.screen.sheet.resendByEmail')
+                    : t('adminEdition.screen.sheet.byEmail')
               }}</span>
               <span class="max-w-full truncate text-[13px] font-medium">{{
                 participant.email

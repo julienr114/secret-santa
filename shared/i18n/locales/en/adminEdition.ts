@@ -249,6 +249,7 @@ export default {
       },
     },
     drawSheet: {
+      drawing: 'Drawing…',
       title: 'Start the draw?',
       description: 'One last look before drawing.',
       people: { one: '{count} participant', other: '{count} participants' },
@@ -288,6 +289,7 @@ export default {
       },
       later: 'Later, or if something goes wrong',
       closeRow: 'Close the edition',
+      closing: 'Closing…',
       closeRowLater: 'Possible after the party, on {date}',
       closeRowHint: 'The edition becomes read only',
       closeConfirm:
@@ -330,9 +332,15 @@ export default {
       addNote: 'Add a word',
       each: 'Everyone gets it with their first name, their link and in their language.',
       send: { one: 'Send {count} email', other: 'Send {count} emails' },
+      sending: {
+        one: 'Sending {count} email…',
+        other: 'Sending {count} emails…',
+      },
       spam: 'Emails often land in spam: remind by phone those who do not open their link.',
     },
     sheet: {
+      loadingMessage: 'Loading the message',
+      sending: 'Sending…',
       sendTo: 'Send to {name}',
       resendTo: 'Send again to {name}',
       left: {

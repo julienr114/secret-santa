@@ -34,6 +34,7 @@ export default {
     validate: 'Bestätigen',
     add: 'Hinzufügen',
     save: 'Speichern',
+    saving: 'Wird gespeichert…',
     logout: 'Abmelden',
   },
   language: {

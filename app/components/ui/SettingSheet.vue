@@ -3,7 +3,7 @@
 // field in the slot, then "Valider" and "Annuler". A failed save shows as
 // a red line above the button; the sheet stays open and keeps what was
 // typed. The texts come from the parent.
-defineProps<{
+const props = defineProps<{
   title: string;
   description?: string;
   validateLabel: string;
@@ -11,15 +11,23 @@ defineProps<{
   /** Why the last save failed, if it did. */
   error?: string | null;
   loading?: boolean;
+  /** "Enregistrement…", in place of the validate label while saving. */
+  busyLabel?: string;
   /** The value cannot be saved as it is. */
   disabled?: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const emit = defineEmits<{ validate: [] }>();
+const busy = useBusy(() => props.loading);
 </script>
 
 <template>
-  <UiSheet v-model:open="open" :title="title" :description="description">
+  <UiSheet
+    v-model:open="open"
+    :title="title"
+    :description="description"
+    :busy="loading"
+  >
     <div class="flex flex-col gap-4 py-2">
       <slot />
     </div>
@@ -40,9 +48,9 @@ const emit = defineEmits<{ validate: [] }>();
         block
         size="xl"
         class="min-h-12 justify-center font-bold"
-        :disabled="disabled"
-        :loading="loading"
-        :label="validateLabel"
+        :disabled="disabled || loading"
+        :loading="busy"
+        :label="busy && busyLabel ? busyLabel : validateLabel"
         @click="emit('validate')"
       />
       <UButton
@@ -50,6 +58,7 @@ const emit = defineEmits<{ validate: [] }>();
         variant="ghost"
         color="neutral"
         class="min-h-11 justify-center"
+        :disabled="loading"
         :label="cancelLabel"
         @click="open = false"
       />

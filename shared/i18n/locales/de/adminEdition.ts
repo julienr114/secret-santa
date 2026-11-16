@@ -65,18 +65,11 @@ export default {
     unsendHint: 'Setzt {name} zurück auf „zu benachrichtigen“',
     unsendDone: 'Zurück auf „zu benachrichtigen“',
     troubleshooting: 'Hilfe bei Problemen',
-    troubleshootingFooter:
-      'Keine dieser Aktionen verrät das Ergebnis. Alle werden im Protokoll der Gruppe festgehalten.',
     regenerate: 'Link neu erzeugen',
     regenerateHint: 'Falls er versehentlich weitergegeben wurde',
     regenerateConfirm:
       'Der alte Link von {name} funktioniert dann nicht mehr. Fortfahren?',
     regenerateAction: 'Neu erzeugen',
-    remove: 'Aus der Ausgabe entfernen',
-    removeLocked:
-      'Nach der Auslosung nicht möglich: zuerst die Auslosung absagen',
-    removeConfirm: '{name} aus dieser Ausgabe entfernen?',
-    removeAction: 'Entfernen',
   },
   addParticipants: {
     title: 'Teilnehmer auswählen',
@@ -383,6 +376,9 @@ export default {
       spam: 'E-Mails landen oft im Spam: Erinnere per Telefon, wer seinen Link nicht öffnet.',
     },
     sheet: {
+      emailLabel: 'E-Mail-Adresse von {name}',
+      emailHelp:
+        'Du kannst den Link dann per E-Mail senden. {name} findet damit auch die eigenen Auslosungen wieder.',
       loadingMessage: 'Nachricht wird geladen',
       sending: 'Wird gesendet…',
       sendTo: 'An {name} senden',

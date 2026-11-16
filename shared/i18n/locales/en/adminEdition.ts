@@ -64,16 +64,10 @@ export default {
     unsendHint: 'Puts {name} back in “to notify”',
     unsendDone: 'Back in “to notify”',
     troubleshooting: 'Troubleshooting',
-    troubleshootingFooter:
-      'None of these actions reveals the result. All of them are recorded in the group journal.',
     regenerate: 'Regenerate their link',
     regenerateHint: 'If it was passed on by mistake',
     regenerateConfirm: '{name}’s old link will stop working. Continue?',
     regenerateAction: 'Regenerate',
-    remove: 'Remove from the edition',
-    removeLocked: 'Not possible after the draw: cancel it first',
-    removeConfirm: 'Remove {name} from this edition?',
-    removeAction: 'Remove',
   },
   addParticipants: {
     title: 'Choose the participants',
@@ -373,6 +367,9 @@ export default {
       spam: 'Emails often land in spam: remind by phone those who do not open their link.',
     },
     sheet: {
+      emailLabel: "{name}'s email address",
+      emailHelp:
+        'You can then email them their link. {name} will also use it to find their draws.',
       loadingMessage: 'Loading the message',
       sending: 'Sending…',
       sendTo: 'Send to {name}',

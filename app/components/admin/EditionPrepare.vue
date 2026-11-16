@@ -18,7 +18,7 @@ const props = defineProps<{
   missing: string[];
   exclusionCount: number;
 }>();
-const emit = defineEmits<{ draw: []; send: [participationId: string] }>();
+const emit = defineEmits<{ draw: [] }>();
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
 
@@ -235,7 +235,7 @@ const missingText = computed(() =>
         <template #row="{ item: p }">
           <UiListItem
             :avatar="p.avatar"
-            :on-click="() => emit('send', p.participationId)"
+            :to="`/admin/${slug}/personnes/${p.id}`"
             :title="fullName(p)"
             :subtitle="subtitleOf(p)"
           />

@@ -64,16 +64,10 @@ export default {
     unsendHint: 'Remet {name} dans « à prévenir »',
     unsendDone: 'Remis dans « à prévenir »',
     troubleshooting: 'Dépannage',
-    troubleshootingFooter:
-      'Aucune de ces actions ne révèle son résultat. Toutes sont inscrites au journal du groupe.',
     regenerate: 'Régénérer son lien',
     regenerateHint: 'S’il a été transféré par erreur',
     regenerateConfirm: "L'ancien lien de {name} ne marchera plus. Continuer ?",
     regenerateAction: 'Régénérer',
-    remove: "Retirer de l'édition",
-    removeLocked: 'Impossible après le tirage : il faut d’abord l’annuler',
-    removeConfirm: 'Retirer {name} de cette édition ?',
-    removeAction: 'Retirer',
   },
   addParticipants: {
     title: 'Choisir les participants',
@@ -377,6 +371,9 @@ export default {
       spam: "Les emails arrivent souvent en spam : relance par téléphone ceux qui n'ouvrent pas leur lien.",
     },
     sheet: {
+      emailLabel: 'Adresse email de {name}',
+      emailHelp:
+        'Tu pourras ensuite lui envoyer son lien par email. Elle servira aussi à {name} pour retrouver ses tirages.',
       loadingMessage: 'Chargement du message',
       sending: 'Envoi en cours…',
       sendTo: 'Envoyer à {name}',

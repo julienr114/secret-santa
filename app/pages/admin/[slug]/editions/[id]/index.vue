@@ -217,7 +217,6 @@ const dateOpen = ref(false);
         :missing="missing"
         :exclusion-count="exclusionCount"
         @draw="drawOpen = true"
-        @send="(pid) => (sendId = pid)"
       />
       <AdminEditionFollow
         v-else-if="status === 'drawn'"
@@ -317,7 +316,6 @@ const dateOpen = ref(false);
       :left="toNotify.length"
       @sent="onSent"
       @skip="onSent"
-      @removed="sendId = null"
     />
     <AdminPartyDateSheet
       v-model:open="dateOpen"

@@ -90,26 +90,11 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // A tap on Hugo opens his send sheet: copy his invitation.
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  // Before the draw, a tap on Hugo opens his page in the group.
   await page.getByText('Hugo', { exact: true }).click();
-  const sheet = page.getByTestId('send-sheet');
-  await expect(sheet).toBeVisible();
-  await page.getByRole('button', { name: 'Copier le message' }).click();
-  await expect(page.getByText('Message copié').first()).toBeVisible();
-  const copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toMatch(/^Salut Hugo !/);
-  expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}$/);
-  await page.keyboard.press('Escape');
-  // Sent: his sheet now offers to send again, and the repairs, folded.
-  await page.getByText('Hugo', { exact: true }).click();
-  await expect(page.getByText('Renvoyer à Hugo').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Dépannage' }).click();
-  await expect(page.getByTestId('troubleshoot')).toContainText(
-    'Pas envoyé finalement ?',
-  );
-  await expect(page.getByTestId('troubleshoot')).toContainText(
-    "Retirer de l'édition",
-  );
-  await page.keyboard.press('Escape');
+  await expect(page).toHaveURL(/\/personnes\//);
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await hydrated(page);
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();
   // A slow draw says it is working and keeps the sheet open.
@@ -140,6 +125,33 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   ).toBeVisible();
   await page.getByRole('button', { name: 'Copier le message' }).click();
   await expect(page.getByText('Envoyer à Orga').first()).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toMatch(/^Léa, le tirage est fait/);
+  expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}/);
+  await page.keyboard.press('Escape');
+  // Sent: her sheet offers to send again, and the repairs, folded.
+  await page.getByRole('button', { name: 'Renvoyer le lien de Léa' }).click();
+  await expect(page.getByText('Renvoyer à Léa').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Dépannage' }).click();
+  const repairs = page.getByTestId('troubleshoot');
+  await expect(repairs).toContainText('Pas envoyé finalement ?');
+  await expect(repairs).toContainText('Régénérer son lien');
+  await expect(repairs).not.toContainText('Retirer');
+  // Her address is added in place: a wrong one is refused, then the sheet
+  // offers email first.
+  await page.getByRole('button', { name: "Ajouter l'adresse de Léa" }).click();
+  const field = page.getByLabel('Adresse email de Léa');
+  await field.fill('lea@');
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(
+    page.getByTestId('email-inline').getByRole('alert'),
+  ).toBeVisible();
+  await field.fill('lea-cases@example.com');
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(
+    page.getByRole('button', { name: /^Renvoyer par email/ }),
+  ).toBeVisible();
+  await expect(page.getByText('lea-cases@example.com')).toBeVisible();
   await page.keyboard.press('Escape');
   // Once drawn, the exclusions the draw applied are kept.
   await page.goto(`${editionUrl}/exclusions`);

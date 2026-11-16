@@ -34,7 +34,7 @@ const props = defineProps<{
   left: number;
 }>();
 const open = defineModel<boolean>('open', { required: true });
-const emit = defineEmits<{ sent: []; skip: []; removed: [] }>();
+const emit = defineEmits<{ sent: []; skip: [] }>();
 const { t, tk } = useT();
 const errorMessage = useErrorMessage();
 const toast = useToast();
@@ -188,8 +188,13 @@ const NAME_SLOT = '\u0000';
 const nextWords = computed(() =>
   t('adminEdition.screen.sheet.next', { name: NAME_SLOT }).split(NAME_SLOT),
 );
-const personPath = computed(
-  () => `/admin/${props.slug}/personnes/${props.participant.id}`,
+// The address is added, or corrected, in place.
+const editingEmail = ref(false);
+watch(
+  () => props.participant.participationId,
+  () => {
+    editingEmail.value = false;
+  },
 );
 </script>
 
@@ -311,12 +316,24 @@ const personPath = computed(
               }}</span>
             </span>
           </UButton>
-          <NuxtLink
-            v-if="resend"
-            :to="personPath"
+          <AdminEmailInline
+            v-if="resend && editingEmail"
+            class="mt-2"
+            :slug="slug"
+            :person-id="participant.id"
+            :initial="participant.email"
+            :label="t('adminEdition.screen.sheet.emailLabel', { name })"
+            :help="t('adminEdition.screen.sheet.emailHelp', { name })"
+            @saved="editingEmail = false"
+          />
+          <button
+            v-else-if="resend"
+            type="button"
             class="flex min-h-11 items-center self-center text-sm font-bold text-primary-ink underline"
-            >{{ t('adminEdition.screen.sheet.wrongAddress') }}</NuxtLink
+            @click="editingEmail = true"
           >
+            {{ t('adminEdition.screen.sheet.wrongAddress') }}
+          </button>
         </div>
         <UButton
           v-else
@@ -397,8 +414,16 @@ const personPath = computed(
           @click="onCopy"
         />
 
+        <AdminEmailInline
+          v-if="!participant.email && editingEmail"
+          :slug="slug"
+          :person-id="participant.id"
+          :label="t('adminEdition.screen.sheet.emailLabel', { name })"
+          :help="t('adminEdition.screen.sheet.emailHelp', { name })"
+          @saved="editingEmail = false"
+        />
         <div
-          v-if="!participant.email"
+          v-else-if="!participant.email"
           class="flex items-center gap-2.5 rounded-[10px] bg-muted px-3 py-2.5"
           data-testid="no-address"
         >
@@ -410,14 +435,16 @@ const personPath = computed(
           <p class="grow text-sm leading-[1.35]">
             {{ t('adminEdition.screen.sheet.noAddress', { name }) }}
           </p>
-          <NuxtLink
-            :to="personPath"
+          <button
+            type="button"
             class="flex min-h-11 items-center px-1 text-sm font-bold text-primary-ink underline"
             :aria-label="
               t('adminEdition.screen.emails.addEmailLabel', { name })
             "
-            >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+            @click="editingEmail = true"
           >
+            {{ t('adminEdition.screen.emails.addEmail') }}
+          </button>
         </div>
         <div
           v-if="next && !resend"
@@ -440,12 +467,11 @@ const personPath = computed(
       </div>
 
       <AdminParticipantTroubleshoot
+        v-if="participant.messageSentAt && status !== 'closed'"
         class="-mb-2"
         :slug="slug"
-        :edition-id="editionId"
         :status="status"
         :participant="participant"
-        @removed="emit('removed')"
       />
     </div>
   </UiSheet>

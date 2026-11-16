@@ -262,12 +262,12 @@ Demandé par Julien le 16 novembre 2026 : sur iPhone, le bas des panneaux est ro
 
 **Correction 6**
 
-- [ ] Mesurer d'abord sur un iPhone à encoche (ou le simulateur) : panneau d'envoi, confirmation du tirage, choix d'une personne, date de la fête, pied collant de l'envoi par email et de « Choisir les participants ». Noter ce qui est rogné.
-- [ ] `viewport-fit=cover` si la mesure le confirme, puis vérifier que rien d'autre ne bouge (barre du haut, accueil, page du participant).
-- [ ] `UiSheet` : marge du bas, hauteur maximale, corps qui défile, pied fixe. Corrigé une fois dans le composant, pas panneau par panneau.
-- [ ] `UiStickyFooter`, barre du haut, toasts : même contrôle.
-- [ ] Un test Playwright avec un profil d'iPhone récent : le dernier bouton d'un panneau est entièrement visible et cliquable.
-- [ ] Ajouter la règle au README 23.3.
+- [x] Mesurer d'abord sur un iPhone à encoche (ou le simulateur) : panneau d'envoi, confirmation du tirage, choix d'une personne, date de la fête, pied collant de l'envoi par email et de « Choisir les participants ». Noter ce qui est rogné. *Fait en partie le 16 novembre 2026 : dans le simulateur (iPhone 17, iOS 26), la page d'un participant, avant et après `viewport-fit=cover` ; les panneaux n'ont pas pu y être ouverts (pas de clic possible par script). Dans le code, le pied d'un panneau défilait avec son corps et rien ne gardait la barre du bas : corrigé pour tous les panneaux. À confirmer sur un vrai iPhone.*
+- [x] `viewport-fit=cover` si la mesure le confirme, puis vérifier que rien d'autre ne bouge (barre du haut, accueil, page du participant).
+- [x] `UiSheet` : marge du bas, hauteur maximale, corps qui défile, pied fixe. Corrigé une fois dans le composant, pas panneau par panneau.
+- [x] `UiStickyFooter`, barre du haut, toasts : même contrôle.
+- [x] Un test Playwright avec un profil d'iPhone récent : le dernier bouton d'un panneau est entièrement visible et cliquable.
+- [x] Ajouter la règle au README 23.3.
 
 ### Lot 4 — Groupe : membres et exclusions
 

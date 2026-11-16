@@ -70,7 +70,7 @@ test('choosing the participants adds and removes them at once', async ({
   // Someone new joins the group and comes back ticked, Bob still unticked.
   await page.getByRole('link', { name: /^Créer une personne/ }).click();
   await page.getByLabel('Prénom').fill('Dan');
-  await page.getByRole('button', { name: 'Ajouter' }).click();
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
   await expect(
     page.getByRole('checkbox', { name: 'Faire participer Dan' }),
   ).toBeChecked();

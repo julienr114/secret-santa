@@ -97,10 +97,23 @@ export default {
     orInvite: 'Or let them sign up',
   },
   newPerson: {
+    takesPart: 'Takes part in {label}',
+    notDrawnYet: 'The draw has not taken place yet',
+    addAnother: 'Add, then create another',
+    randomIcon: 'They get an icon at random; they can change it.',
     title: 'New person',
     added: '{name} added',
   },
   person: {
+    takesPart: 'takes part in {label}',
+    notTakingPart: 'does not take part in {label}',
+    oneWay: 'This way only',
+    removeExclusion: 'Remove the exclusion with {name}',
+    leave: 'Remove from the group',
+    leaveHint:
+      '{name} will not be taken over in the next editions. Their history is kept.',
+    leaveConfirm: 'Remove {name} from the group?',
+    comeBack: 'Bring back into the group',
     fallbackTitle: 'Person',
     notFound: 'Person not found.',
     saved: 'Saved',
@@ -117,12 +130,17 @@ export default {
     deleteConfirm: 'Delete {name} for good?',
   },
   personForm: {
+    languageRow: 'Language of their messages',
+    emailHelpPerson:
+      'To send them their link, and so they find their draws by logging in.',
+    emailHelpNew:
+      'To send them their link. Without an address, you will share it yourself by WhatsApp or SMS.',
+    emailPlaceholder: 'name@example.com',
     changeAvatar: 'Change avatar',
     firstNameLabel: 'First name',
     firstNameRequired: 'First name required',
     lastNameLabel: 'Last name',
-    lastNameHelp:
-      'Optional, only used to tell apart two people with the same first name.',
+    lastNameHelp: 'Only useful if two people share a first name',
     emailLabel: 'Email',
     emailHelp:
       'Optional. Used to email them their link, and lets them log in to find their draws. Without an address, you share their link from your phone.',

@@ -95,10 +95,23 @@ export default {
     orInvite: "Ou laisse-les s'inscrire",
   },
   newPerson: {
+    takesPart: 'Participe à {label}',
+    notDrawnYet: "Le tirage n'a pas encore eu lieu",
+    addAnother: 'Ajouter, puis en créer une autre',
+    randomIcon: 'Une icône lui est donnée au hasard ; elle pourra la changer.',
     title: 'Nouvelle personne',
     added: '{name} ajouté·e',
   },
   person: {
+    takesPart: 'participe à {label}',
+    notTakingPart: 'ne participe pas à {label}',
+    oneWay: 'Dans ce sens seulement',
+    removeExclusion: "Retirer l'exclusion avec {name}",
+    leave: 'Retirer du groupe',
+    leaveHint:
+      '{name} ne sera plus repris dans les prochaines éditions. Son historique est conservé.',
+    leaveConfirm: 'Retirer {name} du groupe ?',
+    comeBack: 'Remettre dans le groupe',
     fallbackTitle: 'Personne',
     notFound: 'Personne introuvable.',
     saved: 'Enregistré',
@@ -115,13 +128,18 @@ export default {
     deleteConfirm: 'Supprimer {name} pour de bon ?',
   },
   personForm: {
+    languageRow: 'Langue de ses messages',
+    emailHelpPerson:
+      "Pour lui envoyer son lien, et pour qu'il retrouve ses tirages en se connectant.",
+    emailHelpNew:
+      'Pour lui envoyer son lien. Sans adresse, tu le partageras toi-même par WhatsApp ou SMS.',
+    emailPlaceholder: 'prenom@exemple.fr',
     changeAvatar: "Changer l'avatar",
     firstNameLabel: 'Prénom',
     firstNameRequired: 'Prénom requis',
-    lastNameLabel: 'Nom',
-    lastNameHelp:
-      'Facultatif, sert seulement à départager deux prénoms identiques.',
-    emailLabel: 'Email',
+    lastNameLabel: 'Nom de famille',
+    lastNameHelp: 'Utile seulement si deux personnes ont le même prénom',
+    emailLabel: 'Adresse email',
     emailHelp:
       'Facultatif. Sert à lui envoyer son lien par email, et lui permet de se connecter pour retrouver ses tirages. Sans adresse, tu partages son lien depuis ton téléphone.',
     emailInvalid: 'Adresse email invalide',

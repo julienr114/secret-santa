@@ -41,27 +41,31 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // People
   await page.getByRole('link', { name: /^Membres/ }).click();
   for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
-    await page.getByRole('link', { name: 'Ajouter' }).click();
+    await page.getByRole('link', { name: /^Ajouter une personne/ }).click();
     await page.getByLabel('Prénom').fill(firstName);
-    await page.getByRole('button', { name: 'Ajouter' }).click();
-    await expect(heading(page)).toHaveText('Personnes');
+    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+    await expect(heading(page)).toHaveText('Membres');
   }
-  // 4 people, the organiser (a person of the group by default), the
-  // invitation link and "Exclusions"
+  // 4 people, the organiser (a person of the group by default), « Ajouter
+  // une personne » and the invitation link
   await expect(page.locator('main').getByRole('listitem')).toHaveCount(7);
 
-  // Léa and Tom must not draw each other (both ways by default).
-  await page.getByText('Exclusions').click();
-  await page.getByText('Ajouter une exclusion').click();
-  await page.getByRole('combobox').first().click();
+  // Léa and Tom must not draw each other (both ways by default), each
+  // picked in a sheet over « Nouvelle exclusion ».
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await page.getByRole('link', { name: /^Exclusions/ }).click();
+  await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
+  await page.getByRole('button', { name: /^Qui/ }).click();
   await page.getByRole('option', { name: 'Léa' }).click();
-  await page.getByRole('combobox').nth(1).click();
+  await page.getByRole('button', { name: /^Ne tire pas/ }).click();
   await page.getByRole('option', { name: 'Tom' }).click();
+  await expect(page.getByTestId('exclusion-sheet')).toContainText(
+    'Léa et Tom ne se tireront jamais l’un l’autre.',
+  );
   await page.getByRole('button', { name: "Ajouter l'exclusion" }).click();
-  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
+  await expect(page.getByText('Léa et Tom')).toBeVisible();
 
   // Edition
-  await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByRole('button', { name: 'Retour' }).click();
   await page.getByRole('link', { name: "Créer l'édition" }).click();
   // The party date is required: Christmas Day is offered in one tap.
@@ -91,7 +95,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByTestId('date-sheet')).toHaveCount(0);
   // The exclusions of the group apply to the edition.
   await page.getByText('1 exclusion').click();
-  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
+  await expect(page.getByText('Léa et Tom')).toBeVisible();
   await page.getByRole('button', { name: 'Retour' }).click();
 
   // A tap on Hugo opens his send sheet: copy his invitation.
@@ -163,7 +167,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.goto(`${editionUrl}/exclusions`);
   await hydrated(page);
   await expect(page.getByText('Exclusions appliquées au tirage')).toBeVisible();
-  await expect(page.getByText('Léa ↔ Tom')).toBeVisible();
+  await expect(page.getByText('Léa et Tom')).toBeVisible();
   await page.getByRole('button', { name: 'Retour' }).click();
 
   // Last-resort access to the draw: guarded, then journaled for everyone.

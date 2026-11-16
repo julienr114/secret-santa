@@ -102,10 +102,23 @@ export default {
     orInvite: 'Oder lass sie sich selbst anmelden',
   },
   newPerson: {
+    takesPart: 'Macht bei {label} mit',
+    notDrawnYet: 'Die Auslosung hat noch nicht stattgefunden',
+    addAnother: 'Hinzufügen und eine weitere anlegen',
+    randomIcon: 'Sie bekommt ein zufälliges Symbol und kann es ändern.',
     title: 'Neue Person',
     added: '{name} hinzugefügt',
   },
   person: {
+    takesPart: 'macht bei {label} mit',
+    notTakingPart: 'macht bei {label} nicht mit',
+    oneWay: 'Nur in diese Richtung',
+    removeExclusion: 'Ausschluss mit {name} entfernen',
+    leave: 'Aus der Gruppe entfernen',
+    leaveHint:
+      '{name} wird in den nächsten Ausgaben nicht mehr übernommen. Der Verlauf bleibt erhalten.',
+    leaveConfirm: '{name} aus der Gruppe entfernen?',
+    comeBack: 'Wieder in die Gruppe aufnehmen',
     fallbackTitle: 'Person',
     notFound: 'Person nicht gefunden.',
     saved: 'Gespeichert',
@@ -122,12 +135,17 @@ export default {
     deleteConfirm: '{name} endgültig löschen?',
   },
   personForm: {
+    languageRow: 'Sprache der Nachrichten',
+    emailHelpPerson:
+      'Um den Link zu senden, und damit die Person ihre Auslosungen beim Anmelden findet.',
+    emailHelpNew:
+      'Um den Link zu senden. Ohne Adresse teilst du ihn selbst per WhatsApp oder SMS.',
+    emailPlaceholder: 'name@beispiel.de',
     changeAvatar: 'Avatar ändern',
     firstNameLabel: 'Vorname',
     firstNameRequired: 'Vorname erforderlich',
     lastNameLabel: 'Nachname',
-    lastNameHelp:
-      'Optional, dient nur dazu, zwei gleiche Vornamen zu unterscheiden.',
+    lastNameHelp: 'Nur nützlich, wenn zwei Personen denselben Vornamen haben',
     emailLabel: 'E-Mail',
     emailHelp:
       'Optional. Damit wird der Link per E-Mail verschickt, und die Person kann sich anmelden, um ihre Auslosungen zu finden. Ohne Adresse teilst du den Link vom Handy aus.',

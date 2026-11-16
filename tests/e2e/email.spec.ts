@@ -59,8 +59,8 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.getByRole('link', { name: /^Membres/ }).click();
   await page.getByText('Ada', { exact: true }).click();
-  await page.getByLabel('Email').fill('Ada@Example.com');
-  await page.getByLabel('Email').blur();
+  await page.getByLabel(/^Adresse email/).fill('Ada@Example.com');
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(page.getByText('Enregistré').first()).toBeVisible();
   const { persons } = await (await page.request.get(`${ADMIN}/persons`)).json();
   expect(

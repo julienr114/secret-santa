@@ -397,49 +397,80 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 ### Lot 1
 
 1. **`ClotureeSecrete` et les paires du tirage.** La maquette dit « Le tirage reste secret, même pour toi » et liste les participants avec « A participé ». Aujourd'hui, une édition clôturée montre à l'organisateur qui a offert à qui (`AdminEditionResults`, README 8.7). Comme le plan le demande, rien n'est retiré : l'écran garde les paires, et la phrase « secret » n'est pas écrite (elle serait fausse). L'encadré dit « En lecture seule. Le tirage sert à éviter les mêmes paires les années suivantes. » Faut-il cacher les paires d'une édition clôturée, comme la maquette le suppose ?
+   **Réponse de Julien, 17 novembre 2026 :** on garde le comportement actuel, l'organisateur voit qui a offert à qui (README 8.7). La maquette supposait la future fonctionnalité « Dévoiler les résultats » : on y reviendra avec elle. Rien à coder.
 2. **`PreparerVide` : « au moins trois ».** La maquette dit qu'il faut au moins trois participants ; le tirage en accepte deux (`too_few_participants`). Le texte dit « deux ». Faut-il relever le minimum à trois ?
+   **Réponse de Julien, 17 novembre 2026 :** trois, pas deux : à deux, chacun sait à qui il offre. Changer la règle du tirage, son test et les textes dans les trois langues (Correction 10).
 3. **`EtatConfirmation` : les prénoms.** L'API d'envoi renvoie le nombre d'emails partis, pas les prénoms. Le message nomme les personnes cochées seulement quand tout est parti en un appel (50 au plus) ; au-delà, il donne le nombre seul. Le test de bout en bout ne peut pas le vérifier : le serveur de test n'a pas de clé d'envoi.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, rien à changer.
 4. **Démo à 100.** `seed:demo` crée « comite-demo » (à préparer) et « grand-tirage-demo » (tirage fait) avec 99 prénoms : l'organisatrice, personne du groupe, fait la centième. Une édition ne peut pas dépasser 100 participants.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, rien à changer.
 
 ### Lot 2
 
 1. **`AjouterParticipants` : « A participé à Noël 2025 ».** La route des personnes ne dit pas qui a participé aux éditions passées. La ligne d'un membre affiche son adresse, ou « Pas d'adresse email ». Faut-il ajouter cette donnée à la route des personnes ?
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, pas de « A participé à Noël 2025 ».
 2. **Panneau d'envoi : le moyen du dernier envoi.** La maquette dit « Envoyé par email, pas encore consulté ». Les participants d'une édition portent la date du dernier envoi (`messageSentAt`), pas son moyen ; le journal, lui, le connaît. L'en-tête garde « Envoyé, pas encore consulté », sans la date ni le moyen. Faut-il ajouter le moyen (et afficher la date) à la réponse de l'édition ?
+   **Réponse de Julien, 17 novembre 2026 :** afficher la date, déjà dans les données (« Envoyé le 14 nov., pas encore consulté »). Pas le moyen d'envoi : on ne touche pas au serveur pour ça (Correction 10).
 3. **`RenvoiPepin` : « Un second appui confirme. »** La maquette l'écrit sous « Régénérer son lien ». C'est une note de conception (section 3) : elle n'est pas écrite, le second appui reste.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, rien à changer.
 4. **`Renvoi`, `RenvoiPepin` : la phrase « Partager ouvre WhatsApp, SMS… ».** Retirée à ta demande ; les maquettes la montrent encore.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, rien à changer.
 5. **« de Agathe ».** Les textes écrivent « de {name} » partout (« Adresse email de Agathe », « le lien de Ines »), sans élision devant une voyelle. Faut-il une règle d'élision pour le français ?
+   **Réponse de Julien, 17 novembre 2026 :** oui. En français, « de » devient « d' » devant une voyelle ou un h : « d'Agathe », « d'Inès », « d'Hugo ». Une fonction pure testée, utilisée partout où un texte écrit « de {prénom} ». Rien à changer en anglais ni en allemand (Correction 10).
 6. **`EnvoiSansEmail` et `EnvoiAjouterEmail` : le bandeau de la personne suivante.** Les maquettes ne le montrent pas sans adresse ; il reste affiché, pour passer à la suivante.
+   **Réponse de Julien, 17 novembre 2026 :** sans objet : l'enchaînement vers la personne suivante n'existe plus.
 
 ### Lot 3
 
 1. **Les organisateurs.** La maquette `Groupe` n'a plus de ligne « Organisateurs » ; sa ligne « Réglages » dit « Règles du tirage, organisateurs ». L'écran des réglages (lot 5) ne menait pas aux organisateurs : une ligne « Organisateurs » y est ajoutée en bas, pour ne pas perdre l'accès. Le lot 5 la mettra à sa place.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 2. **Supprimer le groupe (super-admin).** Absent de `Groupe` ; la maquette `GroupeReglages` le place dans les réglages. Il reste en bas de l'accueil du groupe jusqu'au lot 5.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 3. **Budget et petit mot d'une nouvelle édition.** La route de création ne les prend pas : ils sont enregistrés juste après, par la route qui modifie l'édition, quand ils diffèrent de ceux du groupe. Le journal note alors aussitôt « L'organisateur a modifié les règles du tirage ». Faut-il que la création accepte ces deux règles (changement de route) ?
+   **Réponse de Julien, 17 novembre 2026 :** la route de création accepte le budget et le petit mot, pour ne plus écrire « L'organisateur a modifié les règles » au journal juste après chaque création (Correction 10).
 4. **L'année d'une nouvelle édition.** Le champ « Année » disparaît comme dans la maquette ; l'année est celle que l'app propose (`nextEdition`). Une date de fête choisie dans une autre année ne la change pas.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, l'année reste déduite.
 5. **`GroupeSansEdition` : qui est repris.** La maquette dit « Les 5 membres du groupe sont repris ». Le serveur reprend les participants de la dernière édition encore actifs (README 4.2) : la carte dit donc « Les 4 participants de Noël 2025 sont repris », et « membres du groupe » seulement pour une première édition.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 6. **Membres.** Sous le titre, « 5 membres » compte les personnes actives ; la ligne « Membres » dit combien de personnes compte le groupe, désactivées comprises, comme la maquette (« 5 membres », « 6 personnes »).
+   **Réponse de Julien, 17 novembre 2026 :** un seul chiffre partout, celui des membres actifs. La ligne « Membres » précise « dont 1 ne participe plus » quand c'est le cas (Correction 10).
 7. **Date libre d'un ancien réglage.** Un groupe dont la date de fête est un texte libre (« 25 décembre ») n'a pas de ligne de date sur la carte de l'édition.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 
 ### Lot 4
 
 1. **`GroupePersonne`, `PersonneNouvelle` : le groupe sous le titre.** Ces deux maquettes écrivent « Famille Camille » sous le titre. La règle du contexte (Correction 5) l'emporte : la ligne « Famille Camille » est au-dessus du titre ; sous le titre reste « participe à Noël 2026 ».
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 2. **`GroupeInvitation` : « Chaque réglage s'enregistre dès qu'il est validé. »** C'est une note de conception (section 3) : elle n'est pas écrite.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 3. **Places du lien : un pas à la fois.** Le panneau `PanneauNombre` n'a que « moins » et « plus ». La valeur par défaut est ce que le groupe peut encore accueillir (jusqu'à 99) : descendre à 5 demande beaucoup d'appuis. Faut-il pouvoir taper le nombre ?
+   **Réponse de Julien, 17 novembre 2026 :** on peut taper le nombre, en gardant les boutons « moins » et « plus » (Correction 10).
 4. **Fiche d'une personne retirée du groupe.** La maquette ne montre que « Retirer du groupe ». Une fois retirée, la fiche propose « Remettre dans le groupe » et « Supprimer définitivement » (seulement si elle n'a jamais participé), qui existaient déjà.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 5. **« Nouvelle personne » sans nom de famille**, comme la maquette : il s'ajoute ensuite sur sa fiche.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 6. **Une exclusion dans un seul sens** s'écrit « Inès → Louis » dans la liste ; la maquette ne montre que des paires dans les deux sens.
+   **Réponse de Julien, 17 novembre 2026 :** en toutes lettres, « Inès ne tire pas Louis ». Pas de flèche (Correction 10).
 7. **`AdminPersonForm`** ne sert plus qu'au profil d'un compte : à simplifier au lot 8, avec l'écran du compte.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, à simplifier au lot 8.
 
 ### Correction 7
 
 1. **« Nouveau tirage » choisi tout seul.** Le tirage remet la pastille « envoyé » à zéro, et rien dans les données de l'édition ne dit qu'elle a été tirée une deuxième fois. `defaultMessageType` sait choisir « Nouveau tirage », mais le panneau lui dit toujours « pas de nouveau tirage » : après une relance du tirage, il propose « Tirage fait », et l'organisateur choisit « Nouveau tirage » dans « Personnaliser le message ». Faut-il ajouter à la réponse de l'édition qu'elle a été tirée de nouveau (changement de route) ?
+   **Réponse de Julien, 17 novembre 2026 :** ajouter à la réponse de l'édition le fait qu'elle a été tirée de nouveau, pour que ce message se choisisse tout seul après une relance du tirage (Correction 10).
 2. **Sous-titre de l'en-tête du panneau.** Le plan dit « l'état de la personne, plus le nombre de personnes restantes » ; les maquettes `Envoi`, `Renvoi` et `EnvoiPersonnalise` ne montrent que l'état (« Pas encore envoyé »). Le panneau suit les maquettes.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 3. **« Ce qu'elle recevra »** (`PersonnaliserMessage`) : le genre de la personne n'est pas connu ; l'écran dit « Ce que {prénom} recevra ».
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 4. **« Envoyé par email »** reste écrit « Envoyé, pas encore consulté » : le moyen d'envoi n'est pas dans les données (lot 2, question 2). **« Un second appui confirme. »** n'est toujours pas écrit (note de conception, lot 2, question 3).
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, déjà traité.
 
 ### Lot 5
 
 1. **Réglages absents de la maquette.** `GroupeReglages` ne montre plus le budget, la date de la fête, le petit mot de l'organisateur ni le nombre d'idées par liste, qui étaient des règles du groupe. L'écran suit la maquette : ces valeurs restent en base et servent toujours (le budget repris par « Nouvelle édition », 10 idées par liste), mais ne se changent plus au niveau du groupe. Le budget, la date et le mot se règlent désormais par édition. Faut-il garder une ligne pour le nombre d'idées par liste ? **Réponse de Julien, 16 novembre 2026 :** voulu pour le budget, la date et le mot, qui se règlent par édition (voir « Correction 9 ») ; le nombre d'idées reste figé en attendant les pistes de cadeaux.
+   **Réponse de Julien, 17 novembre 2026 :** déjà répondu, voir « Correction 9 ».
 2. **`PanneauNombre` du lien d'invitation et `PanneauTexte`** : les réglages du lien s'enregistrent maintenant comme ceux du groupe, dès la validation du panneau (règle de ce lot).
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 3. **« Réservé au super-admin »** sous « Supprimer le groupe » n'est montré qu'au super-admin, seul à voir la ligne.
+   **Réponse de Julien, 17 novembre 2026 :** ça me va.
 

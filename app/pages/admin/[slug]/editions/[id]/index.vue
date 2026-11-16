@@ -18,6 +18,7 @@ import {
 // sheets (draw, send, date) are opened from here.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
+const router = useRouter();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const toast = useToast();
@@ -134,6 +135,18 @@ const sendOpen = computed({
     if (!open) sendId.value = null;
   },
 });
+/**
+ * Opens « Personnaliser le message » for one person; the edition's address
+ * keeps their sheet, which opens again on the way back.
+ * @param participationId - The person's participation.
+ * @returns Once on the screen.
+ */
+const onCustomize = async (participationId: string) => {
+  await router.replace({ query: { envoyer: participationId } });
+  await navigateTo(
+    `/admin/${slug.value}/editions/${id.value}/message?pour=${participationId}`,
+  );
+};
 /**
  * Closes the send sheet once the message is on its way.
  * @returns Nothing.
@@ -269,7 +282,9 @@ const dateOpen = ref(false);
       :edition-id="id"
       :status="status"
       :participant="sendTarget"
+      :note-position="rules?.messageNotePosition ?? 'after'"
       @sent="onSent"
+      @customize="onCustomize(sendTarget.participationId)"
     />
     <AdminPartyDateSheet
       v-model:open="dateOpen"

@@ -8,7 +8,6 @@ import {
 } from '#server/utils/editions';
 import { listView, stackOf } from '#shared/utils/lists';
 import {
-  NOTE_MAX,
   addNote,
   messageTypesFor,
   type MessageType,
@@ -19,16 +18,17 @@ import {
   useSendEmailsMutation,
 } from '~/composables/queries/useEdition';
 
-// Sending one message by email to several participants: the message,
-// who gets it (those still to notify start ticked; a whole row ticks;
-// people without an address can only get one), what it will look like,
-// then send.
+// Sending one message by email to several participants: what it will
+// look like, with « Personnaliser le message » to pick another or add a
+// word, then who gets it (those still to notify start ticked; a whole row
+// ticks; people without an address can only get one), then send. The
+// choice and the ticks hold while customising.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
-const { t, tk, locale } = useT();
+const { t, locale } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
@@ -55,19 +55,23 @@ const participants = computed(() =>
 
 const types = computed(() => messageTypesFor(status.value));
 const asked = computed(() => String(route.query.type ?? ''));
-const type = ref<MessageType>('invitation');
-watch(
-  types,
-  (list) => {
-    type.value = list.find((v) => v === asked.value) ?? list[0] ?? type.value;
-  },
-  { immediate: true },
+const choice = useMessageChoice(id);
+const chosen = computed(() =>
+  choice.value?.who === 'plusieurs' ? choice.value : null,
 );
-const tabs = computed(() =>
-  types.value.map((value) => ({
-    value,
-    label: tk(`common.messageType.${value}`),
-  })),
+const type = computed<MessageType>(
+  () =>
+    chosen.value?.type ??
+    types.value.find((v) => v === asked.value) ??
+    types.value[0] ??
+    'invitation',
+);
+const note = computed(() => chosen.value?.note ?? '');
+const position = computed(
+  () => edition.data.value?.rules.messageNotePosition ?? 'after',
+);
+const customizePath = computed(
+  () => `${editionPath.value}/message?pour=plusieurs&type=${type.value}`,
 );
 
 const withEmail = computed(() => participants.value.filter((p) => p.email));
@@ -86,17 +90,18 @@ const rowLook = (p: Participant) =>
         tone: 'text-toned',
         text: t('adminEdition.screen.emails.noEmail'),
       };
-const selected = ref<string[]>([]);
-watch(
-  () => edition.data.value !== undefined,
-  (loaded) => {
-    if (!loaded) return;
-    selected.value = participants.value
-      .filter(preselectedForEmail)
-      .map((p) => p.participationId);
-  },
-  { immediate: true },
+// The ticks: those still to notify at first, then as changed here; kept
+// when going to « Personnaliser le message », which previews for them.
+const ticks = useEmailSelection(id);
+const preselected = computed(() =>
+  participants.value.filter(preselectedForEmail).map((p) => p.participationId),
 );
+const selected = computed({
+  get: () => ticks.value ?? preselected.value,
+  set: (pids: string[]) => {
+    ticks.value = pids;
+  },
+});
 /**
  * Whether a participation is ticked.
  * @param pid - The participation.
@@ -148,15 +153,13 @@ const messages = useMessagesQuery(slug, id, type);
 const first = computed(() =>
   participants.value.find((p) => isSelected(p.participationId)),
 );
-const note = ref('');
-const writing = ref(false);
 const firstMessage = computed(
   () =>
     first.value && messages.data.value?.messages[first.value.participationId],
 );
 const preview = computed(() =>
   firstMessage.value
-    ? addNote(firstMessage.value.text, note.value, 'after')
+    ? addNote(firstMessage.value.text, note.value, position.value)
     : undefined,
 );
 
@@ -192,7 +195,7 @@ const onSend = () =>
       audience: 'all',
       participationIds: selected.value,
       note: note.value,
-      notePosition: 'after',
+      notePosition: position.value,
     },
     {
       onSuccess: ({ sent, left }) => {
@@ -205,6 +208,8 @@ const onSend = () =>
           color: 'success',
           icon: 'i-lucide-mail-check',
         });
+        choice.value = null;
+        ticks.value = null;
         goBack(editionPath.value);
       },
       onError: (error: unknown) =>
@@ -219,15 +224,38 @@ const onSend = () =>
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
-      <section class="flex flex-col gap-2">
+      <section class="flex flex-col gap-1.5" data-testid="email-message">
         <UiSectionTitle>{{
-          t('adminEdition.screen.emails.message')
+          t('adminEdition.screen.emails.previewFor', {
+            name: first ? fullName(first) : '',
+          })
         }}</UiSectionTitle>
-        <UiSegmented
-          v-model="type"
-          :items="tabs"
-          :label="t('adminEdition.screen.emails.message')"
+        <UiMessageBubble
+          :text="first ? preview : undefined"
+          :link="firstMessage?.link"
+          class="max-w-full"
+          :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+          data-testid="email-preview"
         />
+        <p class="text-[13px] leading-[1.4] text-toned">
+          {{ t('adminEdition.screen.emails.each') }}
+        </p>
+        <NuxtLink
+          :to="customizePath"
+          class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+          @click="ticks = selected"
+        >
+          {{
+            chosen
+              ? t('adminEdition.screen.sheet.editMessage')
+              : t('adminEdition.screen.sheet.customize')
+          }}
+          <UIcon
+            name="i-lucide-chevron-right"
+            class="size-4"
+            aria-hidden="true"
+          />
+        </NuxtLink>
       </section>
 
       <section
@@ -339,42 +367,11 @@ const onSend = () =>
         </UiList>
       </section>
 
+      <p class="text-sm leading-[1.45] text-toned">
+        {{ t('adminEdition.screen.emails.spam') }}
+      </p>
+
       <UiStickyFooter>
-        <section v-if="first" class="flex flex-col gap-2 pb-1">
-          <div class="flex items-center justify-between gap-2">
-            <UiSectionTitle>{{
-              t('adminEdition.screen.emails.previewFor', {
-                name: fullName(first),
-              })
-            }}</UiSectionTitle>
-            <button
-              type="button"
-              class="min-h-11 px-1 text-sm font-bold text-primary-ink underline"
-              :aria-expanded="writing"
-              @click="writing = !writing"
-            >
-              {{ t('adminEdition.screen.emails.addNote') }}
-            </button>
-          </div>
-          <UiMessageBubble
-            :text="preview"
-            :link="firstMessage?.link"
-            short
-            data-testid="email-preview"
-          />
-          <UTextarea
-            v-if="writing"
-            v-model="note"
-            :rows="2"
-            :maxlength="NOTE_MAX"
-            autoresize
-            :aria-label="t('adminEdition.screen.emails.addNote')"
-            class="w-full"
-          />
-          <p class="text-[13px] text-toned">
-            {{ t('adminEdition.screen.emails.each') }}
-          </p>
-        </section>
         <UButton
           block
           size="xl"
@@ -391,9 +388,6 @@ const onSend = () =>
           "
           @click="onSend"
         />
-        <p class="text-center text-xs text-muted">
-          {{ t('adminEdition.screen.emails.spam') }}
-        </p>
       </UiStickyFooter>
     </AdminQueryState>
   </AdminScreen>

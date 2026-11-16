@@ -100,6 +100,23 @@ export default {
       other: 'Liste enregistrée · {count} participants',
     },
   },
+  customize: {
+    title: 'Personnaliser le message',
+    forOne: 'Pour {name}',
+    forMany: {
+      one: 'Pour la personne sélectionnée',
+      other: 'Pour les {count} personnes sélectionnées',
+    },
+    which: 'Quel message',
+    receives: 'Ce que {name} recevra',
+    word: 'Un mot en plus',
+    wordPlaceholder: 'Par exemple : on ouvre les cadeaux après le dessert !',
+    after: 'Ajouté sous le message.',
+    before: 'Ajouté au-dessus du message.',
+    language: 'Langue du message',
+    eachLanguage:
+      'Chacun reçoit le message dans sa langue. Ton mot part tel quel.',
+  },
   cancelDraw: {
     title: 'Annuler le tirage ?',
     dangerTitle: 'Tout le monde devra redécouvrir',
@@ -370,7 +387,6 @@ export default {
     },
     emails: {
       title: 'Envoyer par email',
-      message: 'Message',
       selected: {
         one: '{count} sélectionné sur {total}',
         other: '{count} sélectionnés sur {total}',
@@ -382,7 +398,6 @@ export default {
       addEmailLabel: "Ajouter l'adresse de {name}",
       select: 'Sélectionner {name}',
       previewFor: 'Aperçu, pour {name}',
-      addNote: 'Ajouter un mot',
       each: 'Chacun le reçoit avec son prénom, son lien et dans sa langue.',
       send: { one: 'Envoyer {count} email', other: 'Envoyer {count} emails' },
       sending: {
@@ -393,9 +408,7 @@ export default {
     },
     sheet: {
       customize: 'Personnaliser le message',
-      yourWord: 'Ton mot',
-      editWord: 'Modifier le mot',
-      removeWord: 'Retirer le mot',
+      editMessage: 'Modifier le message',
       other: 'Autre moyen, ou un souci ?',
       otherFirst: 'Copier le lien seul, corriger l’adresse, régénérer le lien',
       otherNoEmail: 'Copier le lien seul, régénérer le lien',
@@ -411,8 +424,6 @@ export default {
       sendTo: 'Envoyer à {name}',
       resendTo: 'Renvoyer à {name}',
       close: 'Fermer',
-      addNote: 'Ajouter un mot',
-      language: 'Langue du message : {language}. Changer',
       byEmail: 'Envoyer par email',
       resendByEmail: 'Renvoyer par email',
       share: 'Partager',

@@ -81,16 +81,24 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await expect(
     page.getByRole('link', { name: "Ajouter l'adresse de Bob" }),
   ).toBeVisible();
-  // Before the draw, only the messages of the preparation.
-  await expect(page.getByRole('radio', { name: 'Invitation' })).toBeChecked();
-  await expect(page.getByRole('radio', { name: 'Tirage fait' })).toHaveCount(0);
-  // The message word for word, with the organiser's own words below it.
+  // The message word for word, then « Personnaliser le message »: only the
+  // messages of the preparation, and a word that comes back with it.
   const preview = page.getByTestId('email-preview');
   await expect(page.getByText('Aperçu, pour Ada')).toBeVisible();
   await expect(preview).toContainText('Salut Ada !');
-  await page.getByRole('button', { name: 'Ajouter un mot' }).click();
-  await page.getByLabel('Ajouter un mot').fill('Rendez-vous chez Mamie');
+  await page.getByRole('link', { name: /^Personnaliser le message/ }).click();
+  await expect(heading(page)).toHaveText('Personnaliser le message');
+  await expect(page.getByText('Pour la personne sélectionnée')).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Invitation' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Tirage fait' })).toHaveCount(0);
+  await page.getByLabel(/^Un mot en plus/).fill('Rendez-vous chez Mamie');
+  await expect(page.getByTestId('customize-preview')).toContainText(
+    /Rendez-vous chez Mamie$/,
+  );
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(heading(page)).toHaveText('Envoyer par email');
   await expect(preview).toContainText(/Rendez-vous chez Mamie$/);
+  await expect(count).toHaveText('1 sélectionné sur 3');
   await ada.click();
   await expect(count).toHaveText('0 sélectionné sur 3');
   await page.getByRole('button', { name: 'Tout sélectionner' }).click();

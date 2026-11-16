@@ -102,6 +102,23 @@ export default {
       other: 'Liste gespeichert · {count} Teilnehmer',
     },
   },
+  customize: {
+    title: 'Nachricht anpassen',
+    forOne: 'Für {name}',
+    forMany: {
+      one: 'Für die ausgewählte Person',
+      other: 'Für die {count} ausgewählten Personen',
+    },
+    which: 'Welche Nachricht',
+    receives: 'Was {name} erhält',
+    word: 'Ein Wort mehr',
+    wordPlaceholder: 'Zum Beispiel: Die Geschenke öffnen wir nach dem Dessert!',
+    after: 'Unter der Nachricht hinzugefügt.',
+    before: 'Über der Nachricht hinzugefügt.',
+    language: 'Sprache der Nachricht',
+    eachLanguage:
+      'Jeder erhält die Nachricht in seiner Sprache. Dein Wort geht so, wie es ist.',
+  },
   cancelDraw: {
     title: 'Auslosung aufheben?',
     dangerTitle: 'Alle müssen es neu erfahren',
@@ -379,7 +396,6 @@ export default {
     },
     emails: {
       title: 'Per E-Mail senden',
-      message: 'Nachricht',
       selected: {
         one: '{count} von {total} ausgewählt',
         other: '{count} von {total} ausgewählt',
@@ -391,7 +407,6 @@ export default {
       addEmailLabel: 'Adresse von {name} hinzufügen',
       select: '{name} auswählen',
       previewFor: 'Vorschau, für {name}',
-      addNote: 'Ein paar Worte hinzufügen',
       each: 'Jede Person bekommt sie mit ihrem Vornamen, ihrem Link und in ihrer Sprache.',
       send: { one: '{count} E-Mail senden', other: '{count} E-Mails senden' },
       sending: {
@@ -402,9 +417,7 @@ export default {
     },
     sheet: {
       customize: 'Nachricht anpassen',
-      yourWord: 'Dein Wort',
-      editWord: 'Wort ändern',
-      removeWord: 'Wort entfernen',
+      editMessage: 'Nachricht ändern',
       other: 'Ein anderer Weg, oder ein Problem?',
       otherFirst: 'Nur den Link kopieren, Adresse korrigieren, Link erneuern',
       otherNoEmail: 'Nur den Link kopieren, Link erneuern',
@@ -420,8 +433,6 @@ export default {
       sendTo: 'An {name} senden',
       resendTo: 'Erneut an {name} senden',
       close: 'Schließen',
-      addNote: 'Ein paar Worte hinzufügen',
-      language: 'Sprache der Nachricht: {language}. Ändern',
       byEmail: 'Per E-Mail senden',
       resendByEmail: 'Erneut per E-Mail senden',
       share: 'Teilen',

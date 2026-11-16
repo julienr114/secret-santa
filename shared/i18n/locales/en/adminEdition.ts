@@ -100,6 +100,23 @@ export default {
       other: 'List saved · {count} participants',
     },
   },
+  customize: {
+    title: 'Customise the message',
+    forOne: 'For {name}',
+    forMany: {
+      one: 'For the person selected',
+      other: 'For the {count} people selected',
+    },
+    which: 'Which message',
+    receives: 'What {name} will receive',
+    word: 'A word more',
+    wordPlaceholder: 'For example: we open the presents after dessert!',
+    after: 'Added below the message.',
+    before: 'Added above the message.',
+    language: 'Language of the message',
+    eachLanguage:
+      'Everyone gets the message in their language. Your word goes as it is.',
+  },
   cancelDraw: {
     title: 'Cancel the draw?',
     dangerTitle: 'Everyone will have to find out again',
@@ -368,7 +385,6 @@ export default {
     },
     emails: {
       title: 'Send by email',
-      message: 'Message',
       selected: {
         one: '{count} selected of {total}',
         other: '{count} selected of {total}',
@@ -380,7 +396,6 @@ export default {
       addEmailLabel: "Add {name}'s address",
       select: 'Select {name}',
       previewFor: 'Preview, for {name}',
-      addNote: 'Add a word',
       each: 'Everyone gets it with their first name, their link and in their language.',
       send: { one: 'Send {count} email', other: 'Send {count} emails' },
       sending: {
@@ -391,9 +406,7 @@ export default {
     },
     sheet: {
       customize: 'Customise the message',
-      yourWord: 'Your word',
-      editWord: 'Edit the word',
-      removeWord: 'Remove the word',
+      editMessage: 'Edit the message',
       other: 'Another way, or a problem?',
       otherFirst: 'Copy the link alone, fix the address, renew the link',
       otherNoEmail: 'Copy the link alone, renew the link',
@@ -409,8 +422,6 @@ export default {
       sendTo: 'Send to {name}',
       resendTo: 'Send again to {name}',
       close: 'Close',
-      addNote: 'Add a word',
-      language: 'Language of the message: {language}. Change',
       byEmail: 'Send by email',
       resendByEmail: 'Send again by email',
       share: 'Share',

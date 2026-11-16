@@ -130,16 +130,26 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Envoyer le lien de Léa' }).click();
   await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
   await expect(page.getByTestId('send-preview')).toContainText('Léa');
-  // At first, only what it takes to send; « Personnaliser » shows the rest.
+  // Only what it takes to send; « Personnaliser le message » is a screen
+  // of its own, which brings the sheet back with the message chosen.
   await expect(page.getByRole('radio', { name: 'Relance' })).toHaveCount(0);
-  await page.getByRole('button', { name: /^Personnaliser/ }).click();
+  await page.getByRole('button', { name: /^Personnaliser le message/ }).click();
+  await expect(heading(page)).toHaveText('Personnaliser le message');
   await expect(page.getByRole('radio', { name: 'Tirage fait' })).toBeChecked();
+  await page.getByLabel(/^Un mot en plus/).fill('À bientôt !');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
+  await expect(page.getByTestId('send-preview')).toContainText('À bientôt !');
+  await expect(
+    page.getByRole('button', { name: /^Modifier le message/ }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Copier le message' }).click();
   // Once sent, the sheet closes.
   await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Léa, le tirage est fait/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}/);
+  expect(copied).toMatch(/À bientôt !$/);
   // Sent: her sheet offers the reminder, and the other ways and repairs
   // behind « Autre moyen, ou un souci ? ».
   await page.getByRole('button', { name: 'Renvoyer le lien de Léa' }).click();

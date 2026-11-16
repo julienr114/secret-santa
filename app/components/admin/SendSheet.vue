@@ -2,26 +2,25 @@
 import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import {
-  NOTE_MAX,
   addNote,
   defaultMessageType,
   messageTypesFor,
   type MessageType,
+  type NotePosition,
 } from '#server/utils/messages';
-import { LOCALES, type Locale } from '#shared/i18n';
 import {
   useLinkCopiedMutation,
   useMessagesQuery,
   useSendEmailsMutation,
 } from '~/composables/queries/useEdition';
-import { useUpdatePersonMutation } from '~/composables/queries/useGroup';
 import { useShareMessage } from '~/composables/useShareMessage';
 
 // Sending one participant their message, or sending it again (decided
-// on 16 November 2026: only what it takes to send, at first). Two lines
-// of the message chosen for them, « Personnaliser » to pick another
-// message, read it whole, add a word or change its language, then how to
-// send: email first with an address, the phone's share sheet without.
+// on 16 November 2026: only what it takes to send). The message chosen
+// for them, whole, and « Personnaliser le message », a screen of its own
+// to pick another, add a word or change its language (« Modifier le
+// message » once done); then how to send: email first with an address,
+// the phone's share sheet without.
 // « Autre moyen, ou un souci ? » turns the sheet into a list of other
 // ways and repairs. Once sent, the sheet closes. Sharing and copying start
 // in the gesture (Safari, README 13.1): the text is loaded before.
@@ -30,41 +29,42 @@ const props = defineProps<{
   editionId: string;
   status: string;
   participant: Participant;
+  /** Where a word added goes: above or below the message (group rule). */
+  notePosition: NotePosition;
 }>();
 const open = defineModel<boolean>('open', { required: true });
-const emit = defineEmits<{ sent: [] }>();
+const emit = defineEmits<{ sent: []; customize: [] }>();
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
 const toast = useToast();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
 const types = computed(() => messageTypesFor(props.status));
-// The message chosen for them; whether the draw was run again is not
-// known to the screen yet (PLAN, section 6), so never.
-const defaultType = (): MessageType =>
-  defaultMessageType(props.status, resend.value, false) ??
-  types.value[0] ??
-  'invitation';
-const type = ref<MessageType>(defaultType());
-// What the sheet shows: what it takes to send, with or without the rest
-// of « Personnaliser », or the list of other ways and repairs.
-const customizing = ref(false);
+// The message chosen on « Personnaliser le message » for this person, or
+// the one for them; whether the draw was run again is not known to the
+// screen yet (PLAN, section 6), so never.
+const choice = useMessageChoice(() => props.editionId);
+const chosen = computed(() =>
+  choice.value?.who === props.participant.participationId ? choice.value : null,
+);
+const type = computed<MessageType>(
+  () =>
+    chosen.value?.type ??
+    defaultMessageType(props.status, resend.value, false) ??
+    types.value[0] ??
+    'invitation',
+);
+const note = computed(() => chosen.value?.note ?? '');
+// What the sheet shows: what it takes to send, or the list of other ways
+// and repairs.
 const view = ref<'send' | 'other'>('send');
 const fixingEmail = ref(false);
 watch(
   () => props.participant.participationId,
   () => {
-    type.value = defaultType();
-    customizing.value = false;
     view.value = 'send';
     fixingEmail.value = false;
   },
-);
-const tabs = computed(() =>
-  types.value.map((value) => ({
-    value,
-    label: tk(`common.messageType.${value}`),
-  })),
 );
 
 const messages = useMessagesQuery(
@@ -75,35 +75,25 @@ const messages = useMessagesQuery(
 const message = computed(
   () => messages.data.value?.messages[props.participant.participationId],
 );
-const note = ref('');
-const writing = ref(false);
 const text = computed(() =>
-  message.value ? addNote(message.value.text, note.value, 'after') : undefined,
+  message.value
+    ? addNote(message.value.text, note.value, props.notePosition)
+    : undefined,
 );
-
-// The language is the person's preferred one: changing it here saves it.
-const updatePerson = useUpdatePersonMutation(() => props.slug);
-const languages = computed(() =>
-  LOCALES.map((value) => ({ value, label: tk(`common.language.${value}`) })),
-);
-/**
- * Saves the language picked as the person's preferred one.
- * @param language - The language picked.
- * @returns Nothing, or false when it did not change.
- */
-const onLanguage = (language: Locale) =>
-  language !== props.participant.language &&
-  updatePerson.mutate({ id: props.participant.id, language });
 const sendEmails = useSendEmailsMutation(
   () => props.slug,
   () => props.editionId,
 );
-const waiting = computed(
-  () =>
-    !text.value || updatePerson.isPending.value || sendEmails.isPending.value,
-);
+const waiting = computed(() => !text.value || sendEmails.isPending.value);
 const sending = useBusy(() => sendEmails.isPending.value);
-const savingLanguage = useBusy(() => updatePerson.isPending.value);
+/**
+ * The message is on its way: forgets the choice, then closes.
+ * @returns Nothing.
+ */
+const done = () => {
+  if (chosen.value) choice.value = null;
+  emit('sent');
+};
 
 /**
  * Shows an error in a toast.
@@ -119,7 +109,7 @@ const sharer = useShareMessage(() => props.slug);
  */
 const onShare = () => {
   sharer.share(props.participant.participationId, type.value, text.value);
-  emit('sent');
+  done();
 };
 /**
  * Copies the message, then moves on.
@@ -127,7 +117,7 @@ const onShare = () => {
  */
 const onCopy = () => {
   sharer.copy(props.participant.participationId, type.value, text.value);
-  emit('sent');
+  done();
 };
 const linkCopied = useLinkCopiedMutation(() => props.slug);
 /**
@@ -155,7 +145,7 @@ const onEmail = () =>
       audience: 'all',
       participationIds: [props.participant.participationId],
       note: note.value,
-      notePosition: 'after',
+      notePosition: props.notePosition,
     },
     {
       onSuccess: () => {
@@ -166,7 +156,7 @@ const onEmail = () =>
           color: 'success',
           icon: 'i-lucide-mail-check',
         });
-        emit('sent');
+        done();
       },
       onError,
     },
@@ -246,123 +236,33 @@ watch(
       class="flex flex-col gap-4"
       data-testid="send-sheet"
     >
-      <UiMessageBubble
-        v-if="!customizing"
-        :text="text"
-        :link="message?.link"
-        :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
-        data-testid="send-preview"
-      />
-      <button
-        type="button"
-        class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
-        :class="{ '-mt-3': !customizing }"
-        :aria-expanded="customizing"
-        @click="customizing = !customizing"
-      >
-        {{ t('adminEdition.screen.sheet.customize') }}
-        <span v-if="otherLanguage" class="font-semibold text-toned"
-          >· {{ otherLanguage }}</span
+      <div class="flex flex-col gap-1">
+        <UiMessageBubble
+          :text="text"
+          :link="message?.link"
+          :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+          data-testid="send-preview"
+        />
+        <button
+          type="button"
+          class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+          @click="emit('customize')"
         >
-        <UIcon
-          :name="customizing ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          class="size-4"
-          aria-hidden="true"
-        />
-      </button>
-      <template v-if="customizing">
-        <UiSegmented
-          v-if="tabs.length > 1"
-          v-model="type"
-          :items="tabs"
-          :label="t('adminEdition.screen.emails.message')"
-        />
-        <div class="flex flex-col gap-2">
-          <UiMessageBubble
-            :text="text"
-            :link="message?.link"
-            :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
-            data-testid="send-preview"
+          {{
+            chosen
+              ? t('adminEdition.screen.sheet.editMessage')
+              : t('adminEdition.screen.sheet.customize')
+          }}
+          <span v-if="otherLanguage" class="font-semibold text-toned"
+            >· {{ otherLanguage }}</span
+          >
+          <UIcon
+            name="i-lucide-chevron-right"
+            class="size-4"
+            aria-hidden="true"
           />
-          <div class="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              class="flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold ring-1"
-              :class="
-                writing
-                  ? 'bg-primary-tint font-bold text-primary-ink ring-primary-soft'
-                  : 'ring-default'
-              "
-              :aria-expanded="writing"
-              @click="writing = !writing"
-            >
-              <UIcon name="i-lucide-pencil" class="size-4" aria-hidden="true" />
-              {{
-                writing
-                  ? t('adminEdition.screen.sheet.yourWord')
-                  : note.trim()
-                    ? t('adminEdition.screen.sheet.editWord')
-                    : t('adminEdition.screen.sheet.addNote')
-              }}
-              <UIcon
-                :name="
-                  writing ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
-                "
-                class="size-3.5"
-                aria-hidden="true"
-              />
-            </button>
-            <USelect
-              :model-value="participant.language"
-              :items="languages"
-              :loading="savingLanguage"
-              icon="i-lucide-globe"
-              class="h-10 gap-1.5 rounded-full px-3 text-sm font-semibold"
-              :ui="{
-                leadingIcon: 'size-4',
-                trailingIcon: 'size-3.5',
-                value: 'text-sm',
-              }"
-              :aria-label="
-                t('adminEdition.screen.sheet.language', {
-                  language: tk(`common.language.${participant.language}`),
-                })
-              "
-              @update:model-value="onLanguage"
-            />
-          </div>
-          <div v-if="writing" class="flex flex-col gap-1">
-            <UTextarea
-              v-model="note"
-              :rows="2"
-              :maxlength="NOTE_MAX"
-              autoresize
-              :maxrows="0"
-              autofocus
-              :aria-label="t('adminEdition.screen.sheet.yourWord')"
-              class="w-full"
-              :ui="{ base: 'text-base leading-[1.45]' }"
-            />
-            <div class="flex items-center justify-between">
-              <button
-                type="button"
-                class="min-h-11 text-sm font-bold text-primary-ink"
-                @click="
-                  () => {
-                    note = '';
-                    writing = false;
-                  }
-                "
-              >
-                {{ t('adminEdition.screen.sheet.removeWord') }}
-              </button>
-              <span class="text-[13px] text-toned tabular-nums"
-                >{{ note.length }} / {{ NOTE_MAX }}</span
-              >
-            </div>
-          </div>
-        </div>
-      </template>
+        </button>
+      </div>
 
       <div class="mt-4 flex flex-col gap-2.5">
         <UButton

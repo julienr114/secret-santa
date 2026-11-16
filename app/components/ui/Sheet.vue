@@ -17,6 +17,10 @@ const open = defineModel<boolean>('open', { required: true });
     :title="title"
     :description="description"
     :dismissible="!busy"
+    :ui="{
+      title: 'font-display text-[22px] leading-[1.15] font-bold',
+      description: 'text-sm text-toned',
+    }"
   >
     <template v-if="$slots.header" #header>
       <slot name="header" />

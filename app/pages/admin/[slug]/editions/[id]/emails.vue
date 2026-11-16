@@ -5,7 +5,7 @@ import {
   preselectedForEmail,
   sortParticipants,
 } from '#server/utils/editions';
-import { FOLD_STEP, listView, stackOf } from '#shared/utils/lists';
+import { listView, stackOf } from '#shared/utils/lists';
 import {
   NOTE_MAX,
   addNote,
@@ -108,12 +108,12 @@ const toggleAll = () => {
 const SEARCH_FROM = 10;
 const SHOWN = 5;
 const query = ref('');
-const opened = ref(0);
+const expanded = ref(false);
 const searchable = computed(() => participants.value.length > SEARCH_FROM);
 const view = computed(() =>
   listView(participants.value, {
     query: query.value,
-    opened: opened.value,
+    expanded: expanded.value,
     shown: SHOWN,
     nameOf: fullName,
   }),
@@ -243,8 +243,8 @@ const onSend = () =>
               (count) => t('adminEdition.screen.lists.more', { count })
             "
             :collapse-label="t('adminEdition.screen.lists.collapse')"
-            @more="opened += FOLD_STEP"
-            @collapse="opened = 0"
+            @more="expanded = true"
+            @collapse="expanded = false"
           >
             <template #row="{ item: p }">
               <li class="flex min-h-14 items-center gap-3 px-4 py-2">

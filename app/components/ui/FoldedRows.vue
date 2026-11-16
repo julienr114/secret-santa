@@ -2,9 +2,9 @@
 import type { Avatar } from '#server/utils/avatars';
 import type { Fold } from '#shared/utils/lists';
 
-// The rows of a folded list, inside its <ul>: the first rows, those
-// unfolded so far, "Voir les N autres" while some are left, and last of
-// all "Replier la liste" once some were unfolded. Folding again brings
+// The rows of a folded list, inside its <ul>: the first rows, then
+// "Voir les N autres" while folded, or every other row and, last of all,
+// "Replier la liste" once unfolded. Folding again brings
 // the end of the folded list back on screen. Each row is drawn by the
 // `row` slot; the texts come from the parent.
 defineProps<{

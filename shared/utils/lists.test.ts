@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { FOLD_FROM, FOLD_STEP, foldList, listView, stackOf } from './lists';
+import { FOLD_FROM, foldList, listView, stackOf } from './lists';
 
 describe('stackOf', () => {
   it('shows four items by default and counts the rest', () => {
@@ -49,23 +49,21 @@ describe('foldList', () => {
     expect(rest[0]).toBe(6);
   });
 
-  it('unfolds by batches after the first rows', () => {
-    const once = foldList(people(300), 6, FOLD_STEP);
-    expect(once.unfolded).toHaveLength(FOLD_STEP);
-    expect(once.unfolded[0]).toBe(6);
-    expect(once.rest).toHaveLength(300 - 6 - FOLD_STEP);
-    const all = foldList(people(100), 6, 2 * FOLD_STEP);
-    expect(all.unfolded).toHaveLength(94);
-    expect(all.rest).toEqual([]);
+  it('unfolds every other row at once', () => {
+    const open = foldList(people(300), 6, true);
+    expect(open.shown).toHaveLength(6);
+    expect(open.unfolded).toHaveLength(294);
+    expect(open.unfolded[0]).toBe(6);
+    expect(open.rest).toEqual([]);
   });
 
   it('takes another fold size, never shows less than nothing', () => {
-    expect(foldList(people(5), 3, 0, 4)).toEqual({
+    expect(foldList(people(5), 3, false, 4)).toEqual({
       shown: [0, 1, 2],
       unfolded: [],
       rest: [3, 4],
     });
-    expect(foldList(people(5), -1, -3, 4)).toEqual({
+    expect(foldList(people(5), -1, false, 4)).toEqual({
       shown: [],
       unfolded: [],
       rest: people(5),
@@ -77,10 +75,10 @@ describe('foldList', () => {
       fc.property(
         fc.array(fc.integer()),
         fc.nat(20),
-        fc.nat(120),
+        fc.boolean(),
         fc.nat(20),
-        (items, shown, opened, from) => {
-          const fold = foldList(items, shown, opened, from);
+        (items, shown, expanded, from) => {
+          const fold = foldList(items, shown, expanded, from);
           expect([...fold.shown, ...fold.unfolded, ...fold.rest]).toEqual(
             items,
           );
@@ -92,7 +90,12 @@ describe('foldList', () => {
 
 describe('listView', () => {
   const names = Array.from({ length: 20 }, (_, i) => `Personne ${i}`);
-  const look = { query: '', opened: 0, shown: 6, nameOf: (n: string) => n };
+  const look = {
+    query: '',
+    expanded: false,
+    shown: 6,
+    nameOf: (n: string) => n,
+  };
 
   it('folds a long list', () => {
     const view = listView(names, look);
@@ -100,8 +103,8 @@ describe('listView', () => {
     expect(view.rest).toHaveLength(14);
   });
 
-  it('unfolds as far as asked', () => {
-    const view = listView(names, { ...look, opened: FOLD_STEP });
+  it('unfolds everything at once', () => {
+    const view = listView(names, { ...look, expanded: true });
     expect(view.unfolded).toHaveLength(14);
     expect(view.rest).toEqual([]);
   });

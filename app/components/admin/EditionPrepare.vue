@@ -2,7 +2,7 @@
 import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import { sortParticipants } from '#server/utils/editions';
-import { FOLD_STEP, listView } from '#shared/utils/lists';
+import { listView } from '#shared/utils/lists';
 import type { DrawCheck } from '~/composables/queries/useEdition';
 
 // Step 1 of an edition, "Préparer": what to do now (check the list, then
@@ -73,12 +73,12 @@ const problemHelp = computed(() =>
 const SEARCH_FROM = 10;
 const SHOWN = 6;
 const query = ref('');
-const opened = ref(0);
+const expanded = ref(false);
 const searchable = computed(() => props.participants.length > SEARCH_FROM);
 const view = computed(() =>
   listView(sorted.value, {
     query: query.value,
-    opened: opened.value,
+    expanded: expanded.value,
     shown: SHOWN,
     nameOf: fullName,
   }),
@@ -220,8 +220,8 @@ const missingText = computed(() =>
         :avatar-of="(p) => p.avatar"
         :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
         :collapse-label="t('adminEdition.screen.lists.collapse')"
-        @more="opened += FOLD_STEP"
-        @collapse="opened = 0"
+        @more="expanded = true"
+        @collapse="expanded = false"
       >
         <template #row="{ item: p }">
           <UiListItem

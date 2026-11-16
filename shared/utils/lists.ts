@@ -25,48 +25,44 @@ export const stackOf = <T>(items: readonly T[], max = 4): Stack<T> => {
  */
 export const FOLD_FROM = 12;
 
-/** How many rows one tap on "Voir les N autres" adds. */
-export const FOLD_STEP = 50;
-
 /**
- * A folded list: the first rows, then those already unfolded (after the
- * "Replier la liste" row), then those still behind "Voir les N autres".
+ * A folded list: the first rows, then the others once unfolded (before the
+ * "Replier la liste" row), or still behind "Voir les N autres".
  */
 export type Fold<T> = { shown: T[]; unfolded: T[]; rest: T[] };
 
 /**
- * Folds a long list: past `from` items, only the first `shown` ones show,
- * then the `opened` ones unfolded so far; the others wait behind a row
- * that unfolds them by `FOLD_STEP`.
+ * Folds a long list: past `from` items, only the first `shown` ones show
+ * and the others wait behind a row that unfolds them all at once
+ * (decided by Julien on 16 November 2026: never "Voir les N autres" and
+ * "Replier la liste" together).
  * @param items - The whole list, in its order.
  * @param shown - How many show while it is folded.
- * @param opened - How many rows were unfolded after them; 0 when folded.
+ * @param expanded - The list was unfolded.
  * @param from - The size from which it folds; `FOLD_FROM` by default.
  * @returns The first rows, the unfolded ones, and those still folded.
  */
 export const foldList = <T>(
   items: readonly T[],
   shown: number,
-  opened = 0,
+  expanded = false,
   from = FOLD_FROM,
 ): Fold<T> => {
   if (items.length <= from)
     return { shown: [...items], unfolded: [], rest: [] };
   const head = Math.max(0, Math.floor(shown));
-  const end = head + Math.max(0, Math.floor(opened));
-  return {
-    shown: items.slice(0, head),
-    unfolded: items.slice(head, end),
-    rest: items.slice(end),
-  };
+  const others = items.slice(head);
+  return expanded
+    ? { shown: items.slice(0, head), unfolded: others, rest: [] }
+    : { shown: items.slice(0, head), unfolded: [], rest: others };
 };
 
 /** How a long list of people is looked at right now. */
 export type ListLook<T> = {
   /** What is typed in the search field. */
   query: string;
-  /** How many rows were unfolded with "Voir les N autres"; 0 when folded. */
-  opened: number;
+  /** The list was unfolded with "Voir les N autres". */
+  expanded: boolean;
   /** How many rows show when it folds. */
   shown: number;
   /** The first name searched in each item. */
@@ -77,9 +73,9 @@ export type ListLook<T> = {
 
 /**
  * The rows a long list of people shows: every match while searching
- * (never folded), otherwise the list folded as far as it was unfolded.
+ * (never folded), otherwise the list folded or unfolded.
  * @param items - The whole list, in its order.
- * @param look - The search, how far it was unfolded, and how it folds.
+ * @param look - The search, whether it was unfolded, and how it folds.
  * @returns The first rows, the unfolded ones, and those still folded.
  */
 export const listView = <T>(items: readonly T[], look: ListLook<T>): Fold<T> =>
@@ -91,4 +87,4 @@ export const listView = <T>(items: readonly T[], look: ListLook<T>): Fold<T> =>
         unfolded: [],
         rest: [],
       }
-    : foldList(items, look.shown, look.opened, look.from);
+    : foldList(items, look.shown, look.expanded, look.from);

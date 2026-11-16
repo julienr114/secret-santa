@@ -94,15 +94,10 @@ test('a large group folds its lists, before and after the draw', async ({
   // Six rows, then the rest behind one row that unfolds in place.
   const list = page.getByTestId('participants');
   await expect(list.getByPlaceholder('Chercher un prénom')).toBeVisible();
-  // Unfolded by batches of fifty, then folded again in place.
+  // Unfolded all at once, then folded again from the last row.
   await list
     .getByRole('button', { name: `Voir les ${total - 6} autres` })
     .click();
-  await expect(list.getByText('Grand55', { exact: true })).toBeVisible();
-  const second = list.getByRole('button', {
-    name: `Voir les ${total - 56} autres`,
-  });
-  await second.click();
   await expect(list.getByText('Grand59', { exact: true })).toBeVisible();
   await expect(list.getByRole('button', { name: /^Voir les/ })).toHaveCount(0);
   await list.getByRole('button', { name: 'Replier la liste' }).click();

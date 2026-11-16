@@ -116,12 +116,12 @@ const pickable = (count: number) =>
 const christmasDay = `${new Date().getFullYear()}-12-25`;
 /** Examples of the long lists and the settings rows and sheets. */
 const longList = pickable(12);
-const opened = ref(0);
+const expanded = ref(false);
 const search = ref('');
 const longView = computed(() =>
   listView(longList, {
     query: search.value,
-    opened: opened.value,
+    expanded: expanded.value,
     shown: 3,
     nameOf: (person) => person.name,
     from: 3,
@@ -488,9 +488,9 @@ const entries = computed(() => [
           :avatar-of="(person) => person.avatar"
           :more-label="(count) => `Voir les ${count} autres`"
           collapse-label="Replier la liste"
-          detail="UiFoldedRows et UiFoldRow : listView, par paquets de FOLD_STEP (50)"
-          @more="opened += 50"
-          @collapse="opened = 0"
+          detail="UiFoldedRows et UiFoldRow : listView, tout se déplie d’un coup"
+          @more="expanded = true"
+          @collapse="expanded = false"
         >
           <template #row="{ item: person }">
             <UiListItem :avatar="person.avatar" :title="person.name" />

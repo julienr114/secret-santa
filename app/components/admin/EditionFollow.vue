@@ -8,13 +8,7 @@ import {
   sortParticipants,
   type FollowState,
 } from '#server/utils/editions';
-import {
-  FOLD_FROM,
-  FOLD_STEP,
-  foldList,
-  listView,
-  type Fold,
-} from '#shared/utils/lists';
+import { FOLD_FROM, foldList, listView, type Fold } from '#shared/utils/lists';
 
 // After the draw: what to do now (let everyone know, or close once the
 // party is over), the participants in one list from the least done, each
@@ -84,8 +78,8 @@ const SEARCH_FROM = 10;
 const SERIES_SHOWN = 3;
 const query = ref('');
 const searchable = computed(() => props.participants.length > SEARCH_FROM);
-/** How many rows of each series were unfolded. */
-const opened = ref<Partial<Record<FollowState, number>>>({});
+/** The series unfolded with "Voir les N autres". */
+const unfolded = ref<FollowState[]>([]);
 /** One part of the list: a series (or the search results) and its fold. */
 type Part = { state: FollowState | null; fold: Fold<Participant> };
 const parts = computed<Part[]>(() => {
@@ -95,7 +89,7 @@ const parts = computed<Part[]>(() => {
         state: null,
         fold: listView(sorted.value, {
           query: query.value,
-          opened: 0,
+          expanded: false,
           shown: 0,
           nameOf: fullName,
         }),
@@ -109,7 +103,7 @@ const parts = computed<Part[]>(() => {
       ? foldList(
           series.items,
           SERIES_SHOWN,
-          opened.value[series.state] ?? 0,
+          unfolded.value.includes(series.state),
           SERIES_SHOWN,
         )
       : { shown: series.items, unfolded: [], rest: [] },
@@ -119,16 +113,15 @@ const empty = computed(() =>
   parts.value.every((part) => !part.fold.shown.length),
 );
 /**
- * Unfolds one more batch of a series, or folds it again.
+ * Unfolds a series, or folds it again.
  * @param state - The series.
- * @param more - True to unfold a batch, false to fold it all.
+ * @param open - True to unfold it, false to fold it.
  * @returns Nothing.
  */
-const unfold = (state: FollowState, more: boolean) => {
-  opened.value = {
-    ...opened.value,
-    [state]: more ? (opened.value[state] ?? 0) + FOLD_STEP : 0,
-  };
+const unfold = (state: FollowState, open: boolean) => {
+  unfolded.value = open
+    ? [...unfolded.value, state]
+    : unfolded.value.filter((s) => s !== state);
 };
 // Closing asks for a second tap. Without a real date nothing says it is
 // too early: the row of the list closes too (README 21.3).

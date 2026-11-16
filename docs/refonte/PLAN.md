@@ -117,11 +117,11 @@ Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante no
 Demandé par Julien le 16 novembre 2026, à faire avant de poursuivre (le composant sert dans tous les lots suivants). Références : `GroupeMembres100Deplie`, `Preparer100Deplie`, `Suivi100Deplie`.
 
 - [x] **Replier.** Une fois la liste dépliée, la ligne de repli reste à sa place, juste après les premières lignes, et devient « Replier la liste » (chevron vers le haut, fond `primary-tint`, `aria-expanded="true"`, sans les petites icônes). Un appui referme et ramène la ligne à l'écran si elle n'y est plus.
-- [x] **Par paquets.** Déplier ajoute 50 lignes à la fois (constante nommée), pas tout d'un coup. S'il en reste, une seconde ligne « Voir les N autres » apparaît en bas de ce qui est affiché. Faire évoluer `foldList` (fonction pure, testée) pour prendre le nombre de lignes déjà dépliées.
+- [x] ~~**Par paquets.**~~ Remplacé le 16 novembre 2026 : déplier montre toute la liste d'un coup (voir la Correction 2).
 - [x] La recherche montre toujours tous les résultats, sans repli.
 - [x] Appliquer aux écrans déjà faits (édition à préparer, suivi après tirage, envoi par email) et mettre à jour le guide de style et leurs tests.
 
-Pas de virtualisation : avec le repli par paquets, jamais plus de quelques dizaines de lignes ne sont ajoutées d'un coup, même pour un groupe de 300.
+Pas de virtualisation : même pour un groupe de 300, la liste dépliée reste raisonnable, et une édition est plafonnée à 100 participants.
 
 ### Correction 2 — la ligne « Replier », et les noms de famille
 
@@ -132,7 +132,7 @@ Demandé par Julien le 16 novembre 2026, après avoir vu la première correction
 - [x] **Du même type que la ligne qui a déplié** : fond blanc, même hauteur, titre en brique, même chevron mais vers le haut, et le petit espace en dessous. Sans les trois petites icônes et sans nombre : le texte est « Replier la liste ». Plus de fond teinté.
 - [x] **Au même endroit** : en dernière ligne de la liste, après les personnes dépliées. Elle ne reste pas en haut de la partie dépliée.
 - [x] Dans le suivi après tirage, la ligne garde sous son titre l'état de sa série (« Pas encore envoyé »…), comme la ligne « Voir les N autres ». La case « Dans le suivi après tirage » de la correction précédente est remplacée par celle-ci.
-- [x] Par paquets de 50 : tant qu'il reste des personnes à afficher, la ligne « Voir les N autres » est juste au-dessus de la ligne « Replier ».
+- [x] ~~Par paquets de 50~~ : abandonné par Julien le 16 novembre 2026, après essai (« Voir les N autres » et « Replier la liste » ensemble, c'est bizarre). Un appui sur « Voir les N autres » déplie **toute** la liste ; seule « Replier la liste » reste en bas.
 - [x] Après un appui sur « Replier », ramener la liste à l'écran : sa fin repliée doit être visible.
 
 **Les noms de famille**

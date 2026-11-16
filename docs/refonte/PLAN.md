@@ -236,12 +236,12 @@ Demandé par Julien le 16 novembre 2026, après un audit des maquettes. Plusieur
 
 **Correction 5 — les écrans déjà faits** (lots 1 à 3). À faire avant le lot 4. Maquettes mises à jour : `SelectionEmail`, `SelectionEmail100`, `AjouterParticipants`, `AnnulerTirage`, `VoirResultat`, `VoirResultatAffiche`, `EditionNouvelle`.
 
-- [ ] Le composant, dans le guide de style, avec ses tests.
-- [ ] **Envoi par email à plusieurs** : aujourd'hui aucun contexte, alors que la carte de l'accueil y mène tout droit. Le plus urgent.
-- [ ] **Choisir les participants** : le groupe manquait.
-- [ ] **Annuler le tirage**, **voir un seul résultat**, **exclusions de l'édition**, **nouvelle édition** : le contexte passe au-dessus du titre, dans l'ordre commun.
-- [ ] Vérifier le bouton retour et le titre d'onglet de ces écrans en y arrivant par leur adresse.
-- [ ] Un test de bout en bout : ouvrir l'envoi par email par son adresse, lire le groupe et l'édition, revenir à l'édition par le lien.
+- [x] Le composant, dans le guide de style, avec ses tests.
+- [x] **Envoi par email à plusieurs** : aujourd'hui aucun contexte, alors que la carte de l'accueil y mène tout droit. Le plus urgent.
+- [x] **Choisir les participants** : le groupe manquait.
+- [x] **Annuler le tirage**, **voir un seul résultat**, **exclusions de l'édition**, **nouvelle édition** : le contexte passe au-dessus du titre, dans l'ordre commun.
+- [x] Vérifier le bouton retour et le titre d'onglet de ces écrans en y arrivant par leur adresse.
+- [x] Un test de bout en bout : ouvrir l'envoi par email par son adresse, lire le groupe et l'édition, revenir à l'édition par le lien.
 
 Pour les lots suivants, les maquettes portent déjà la ligne : `GroupeMembres`, `GroupeMembres100`, `GroupeExclusions`, `GroupeInvitation` (aucun groupe n'y était nommé), `GroupeReglages`, `Journal`, `JournalTout`, `JournalPersonne`.
 

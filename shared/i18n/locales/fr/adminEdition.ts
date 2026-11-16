@@ -191,11 +191,6 @@ export default {
   },
   screen: {
     lists: {
-      collapseSeries: {
-        toNotify: 'Replier ceux qui restent à prévenir',
-        notOpened: 'Replier ceux qui n’ont pas encore ouvert',
-        viewed: 'Replier ceux qui ont découvert',
-      },
       collapse: 'Replier la liste',
       series: {
         toNotify: 'Pas encore envoyé',

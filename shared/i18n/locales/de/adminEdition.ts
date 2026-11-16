@@ -192,11 +192,6 @@ export default {
   },
   screen: {
     lists: {
-      collapseSeries: {
-        toNotify: 'Die noch zu Benachrichtigenden einklappen',
-        notOpened: 'Die noch nicht Geöffneten einklappen',
-        viewed: 'Die Entdeckten einklappen',
-      },
       collapse: 'Liste einklappen',
       series: {
         toNotify: 'Noch nicht gesendet',

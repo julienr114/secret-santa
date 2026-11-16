@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import type { Avatar } from '#server/utils/avatars';
 
-// The row that stands for the rest of a long list. Folded: three people's
-// icons overlapping, "Voir les N autres" (and, if given, what the series
-// is), then a small gap before what follows. Unfolded: the same row stays
-// in place as "Replier la liste", tinted; a tap folds the list again and
-// brings the row back on screen. The texts come from the parent.
+// The row that stands for the rest of a long list: three people's icons
+// overlapping, "Voir les N autres" (and, if given, what the series is),
+// a chevron, then a small gap before what follows. The same row, without
+// the icons and with its chevron up, folds an unfolded list again. The
+// texts come from the parent.
 const props = withDefaults(
   defineProps<{
     /** A few people of the rest; three show while folded. */
     avatars?: Avatar[];
-    /** "Voir les 94 autres", or "Replier la liste" once unfolded. */
+    /** "Voir les 94 autres", or "Replier la liste". */
     label: string;
-    /** What the rest have in common, under the label. */
+    /** What the rows have in common, under the label. */
     detail?: string;
-    /** The list is unfolded: this row folds it again. */
+    /** This row folds the list again. */
     expanded?: boolean;
   }>(),
   { avatars: () => [], detail: undefined, expanded: false },
@@ -22,23 +22,7 @@ const props = withDefaults(
 const emit = defineEmits<{ expand: []; collapse: [] }>();
 const shown = computed(() => props.avatars.slice(0, 3));
 const row = ref<HTMLElement | null>(null);
-/**
- * Unfolds, or folds again and keeps the row in sight.
- * @returns Once the row is back on screen.
- */
-const onTap = async () => {
-  if (!props.expanded) {
-    emit('expand');
-    return;
-  }
-  emit('collapse');
-  await nextTick();
-  const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  row.value?.scrollIntoView({
-    block: 'nearest',
-    behavior: smooth ? 'smooth' : 'auto',
-  });
-};
+defineExpose({ row });
 </script>
 
 <template>
@@ -46,9 +30,8 @@ const onTap = async () => {
     <button
       type="button"
       :aria-expanded="expanded"
-      class="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors active:bg-muted"
-      :class="expanded ? 'min-h-13 bg-primary-tint' : 'min-h-15'"
-      @click="onTap"
+      class="flex min-h-15 w-full items-center gap-3 px-4 py-2 text-left transition-colors active:bg-muted"
+      @click="expanded ? emit('collapse') : emit('expand')"
     >
       <span
         v-if="!expanded"
@@ -79,7 +62,6 @@ const onTap = async () => {
     </button>
   </li>
   <li
-    v-if="!expanded"
     class="-mb-px h-2.5 border-y border-default bg-page last:hidden"
     aria-hidden="true"
   />

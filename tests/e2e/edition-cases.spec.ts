@@ -125,8 +125,10 @@ test('a large group folds its lists, before and after the draw', async ({
     name: `Voir les ${total - 3} autres`,
   });
   await expect(fold).toContainText('Pas encore envoyé');
+  // Unfolded, the series ends with "Replier la liste", which keeps its state.
   await fold.click();
-  await expect(
-    page.getByRole('button', { name: 'Replier ceux qui restent à prévenir' }),
-  ).toBeVisible();
+  const back = page.getByRole('button', { name: /^Replier la liste/ });
+  await expect(back).toContainText('Pas encore envoyé');
+  await back.click();
+  await expect(fold).toBeVisible();
 });

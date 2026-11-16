@@ -227,11 +227,7 @@ const confirmingRow = ref(false);
         :key-of="(p) => p.participationId"
         :avatar-of="(p) => p.avatar"
         :more-label="(count) => t('adminEdition.screen.lists.more', { count })"
-        :collapse-label="
-          part.state
-            ? t(`adminEdition.screen.lists.collapseSeries.${part.state}`)
-            : t('adminEdition.screen.lists.collapse')
-        "
+        :collapse-label="t('adminEdition.screen.lists.collapse')"
         :detail="
           part.state
             ? t(`adminEdition.screen.lists.series.${part.state}`)
@@ -267,10 +263,10 @@ const confirmingRow = ref(false);
                 :aria-label="
                   p.messageSentAt
                     ? t('adminEdition.cockpit.resendLinkOf', {
-                        name: p.firstName,
+                        name: fullName(p),
                       })
                     : t('adminEdition.cockpit.sendLinkOf', {
-                        name: p.firstName,
+                        name: fullName(p),
                       })
                 "
                 @click.prevent.stop="emit('send', p.participationId)"

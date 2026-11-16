@@ -4,7 +4,6 @@ export default {
   general: {
     journalPreview: 'Ce que le groupe lira dans le journal',
     editionFallback: 'Édition',
-    tickToConfirm: 'Coche pour confirmer',
   },
   newEdition: {
     dateLabel: 'Date de la fête',
@@ -126,23 +125,31 @@ export default {
     doneDescription: 'Ajuste la liste puis relance le tirage.',
   },
   reveal: {
-    title: 'Voir un résultat',
-    personRequired: 'Choisis une personne',
-    sentenceRequired: 'Recopie « {sentence} »',
-    shownNotice:
-      'Ta consultation est inscrite au journal du groupe. Le résultat disparaît quand tu quittes cet écran.',
-    another: 'Voir un autre résultat',
+    title: 'Voir un seul résultat',
+    warningTitle: "À n'utiliser qu'en dernier recours",
     warningLastResort:
-      "À n'utiliser qu'en dernier recours (désaccord, doute sur un bug…). Tu ne vois qu'un résultat à la fois.",
+      "Un désaccord, un doute sur un bug… Tu ne vois qu'un résultat à la fois.",
     warningJournal:
-      "Le journal du groupe affichera, pour tous les participants : « L'organisateur a consulté le résultat de Léa », avec le prénom de la personne.",
+      "Tout le groupe le saura : c'est inscrit au journal, avec le prénom.",
     warningEphemeral:
-      "Le résultat ne s'affiche qu'ici, et disparaît quand tu quittes l'écran.",
+      "Le résultat ne s'affiche qu'ici et disparaît quand tu quittes l'écran.",
     personLabel: 'Le résultat de qui ?',
     personPlaceholder: 'Choisir…',
+    results: {
+      one: '{count} prénom sur {total}',
+      other: '{count} prénoms sur {total}',
+    },
     sentenceLabel: 'Recopie : {sentence}',
     understood: "Je comprends que tout le groupe saura que j'ai regardé",
-    submit: 'Voir ce résultat',
+    submit: 'Voir le résultat de {name}',
+    submitAnyone: 'Voir le résultat',
+    revealing: 'Ouverture du résultat…',
+    notNow: 'Finalement non',
+    gives: '{name} offre un cadeau à',
+    shownNotice:
+      'Ta consultation est inscrite au journal du groupe. Le résultat disparaît quand tu quittes cet écran.',
+    hide: "Cacher et revenir à l'édition",
+    another: 'Voir un autre résultat',
   },
   drawPairs: {
     gives: 'offre à {name}',

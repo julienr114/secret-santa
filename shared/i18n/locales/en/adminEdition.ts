@@ -5,7 +5,6 @@ export default {
   general: {
     journalPreview: 'What the group will read in the journal',
     editionFallback: 'Edition',
-    tickToConfirm: 'Tick the box to confirm',
   },
   newEdition: {
     dateLabel: 'Date of the party',
@@ -126,23 +125,31 @@ export default {
     doneDescription: 'Adjust the list, then draw again.',
   },
   reveal: {
-    title: 'View a result',
-    personRequired: 'Choose a person',
-    sentenceRequired: 'Type “{sentence}”',
-    shownNotice:
-      'Your viewing is recorded in the group journal. The result disappears when you leave this screen.',
-    another: 'View another result',
+    title: 'See a single result',
+    warningTitle: 'Only as a last resort',
     warningLastResort:
-      'Only use this as a last resort (disagreement, suspected bug…). You only see one result at a time.',
+      'A disagreement, a doubt about a bug… You only see one result at a time.',
     warningJournal:
-      'The group journal will show, to all participants: “The organizer looked at Léa’s result”, with the person’s first name.',
+      'The whole group will know: it is written in the journal, with the first name.',
     warningEphemeral:
-      'The result is only shown here and disappears when you leave the screen.',
+      'The result only shows here and is gone when you leave the screen.',
     personLabel: 'Whose result?',
     personPlaceholder: 'Choose…',
+    results: {
+      one: '{count} name out of {total}',
+      other: '{count} names out of {total}',
+    },
     sentenceLabel: 'Type: {sentence}',
-    understood: 'I understand that the whole group will know I looked',
-    submit: 'View this result',
+    understood: 'I understand the whole group will know I looked',
+    submit: "See {name}'s result",
+    submitAnyone: 'See the result',
+    revealing: 'Opening the result…',
+    notNow: 'Not after all',
+    gives: '{name} gives a gift to',
+    shownNotice:
+      'Your look is written in the group journal. The result is gone when you leave this screen.',
+    hide: 'Hide and go back to the edition',
+    another: 'See another result',
   },
   drawPairs: {
     gives: 'gives to {name}',

@@ -5,7 +5,6 @@ export default {
   general: {
     journalPreview: 'Was die Gruppe im Protokoll lesen wird',
     editionFallback: 'Ausgabe',
-    tickToConfirm: 'Zum Bestätigen ankreuzen',
   },
   newEdition: {
     dateLabel: 'Datum der Bescherung',
@@ -129,24 +128,32 @@ export default {
     doneDescription: 'Passe die Liste an und lose dann neu aus.',
   },
   reveal: {
-    title: 'Ein Ergebnis ansehen',
-    personRequired: 'Wähle eine Person',
-    sentenceRequired: 'Tippe „{sentence}“ ab',
-    shownNotice:
-      'Dein Einblick steht im Protokoll der Gruppe. Das Ergebnis verschwindet, sobald du diesen Bildschirm verlässt.',
-    another: 'Ein weiteres Ergebnis ansehen',
+    title: 'Ein einzelnes Ergebnis ansehen',
+    warningTitle: 'Nur als letzter Ausweg',
     warningLastResort:
-      'Nur als letzter Ausweg (Unstimmigkeit, Verdacht auf einen Fehler…). Du siehst immer nur ein Ergebnis.',
+      'Ein Streit, ein Verdacht auf einen Fehler… Du siehst nur ein Ergebnis auf einmal.',
     warningJournal:
-      'Im Protokoll der Gruppe steht dann für alle Teilnehmer: „Der Organisator hat das Ergebnis von Léa eingesehen“, mit dem Vornamen der Person.',
+      'Die ganze Gruppe erfährt es: Es steht im Protokoll, mit dem Vornamen.',
     warningEphemeral:
-      'Das Ergebnis wird nur hier angezeigt und verschwindet, sobald du den Bildschirm verlässt.',
+      'Das Ergebnis erscheint nur hier und verschwindet, wenn du die Seite verlässt.',
     personLabel: 'Wessen Ergebnis?',
     personPlaceholder: 'Auswählen…',
-    sentenceLabel: 'Tippe ab: {sentence}',
+    results: {
+      one: '{count} Vorname von {total}',
+      other: '{count} Vornamen von {total}',
+    },
+    sentenceLabel: 'Abschreiben: {sentence}',
     understood:
       'Ich verstehe, dass die ganze Gruppe erfährt, dass ich nachgesehen habe',
-    submit: 'Dieses Ergebnis ansehen',
+    submit: 'Ergebnis von {name} ansehen',
+    submitAnyone: 'Ergebnis ansehen',
+    revealing: 'Ergebnis wird geöffnet…',
+    notNow: 'Doch nicht',
+    gives: '{name} beschenkt',
+    shownNotice:
+      'Dein Nachsehen steht im Protokoll der Gruppe. Das Ergebnis verschwindet, wenn du diese Seite verlässt.',
+    hide: 'Verbergen und zurück zur Ausgabe',
+    another: 'Ein anderes Ergebnis ansehen',
   },
   drawPairs: {
     gives: 'beschenkt {name}',

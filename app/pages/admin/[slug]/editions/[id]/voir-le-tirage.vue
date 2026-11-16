@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { fullName } from '#server/utils/people';
-import { z } from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import { useEditionQuery } from '~/composables/queries/useGroup';
+import { byName, displayName, fullName } from '#server/utils/people';
+import {
+  useDashboardQuery,
+  useEditionQuery,
+} from '~/composables/queries/useGroup';
 import {
   useRevealOneMutation,
   type DrawPair,
@@ -17,63 +18,97 @@ definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const { t } = useT();
 const errorMessage = useErrorMessage();
+const goBack = useGoBack();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
+const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 const edition = useEditionQuery(slug, id);
+const dashboard = useDashboardQuery(slug);
 const reveal = useRevealOneMutation(slug, id);
+const busy = useBusy(() => reveal.isPending.value);
 
 useHead({
   title: computed(
     () => `${t('adminEdition.reveal.title')} — ${t('common.appName')}`,
   ),
 });
-const screen = computed(() => ({
-  back: `/admin/${slug.value}/editions/${id.value}`,
-}));
+const screen = computed(() => ({ back: editionPath.value }));
+const subtitle = computed(() =>
+  [dashboard.data.value?.group.name, edition.data.value?.edition.label]
+    .filter(Boolean)
+    .join(' · '),
+);
 
 // Checked by the server as is: the sentence stays in French in every
 // language, only the texts around it are translated.
 const SENTENCE = 'JE VEUX VOIR LE TIRAGE';
-const schema = computed(() =>
-  z.object({
-    personId: z.string().min(1, t('adminEdition.reveal.personRequired')),
-    sentence: z
-      .string()
-      .refine(
-        (v) => v.trim().toUpperCase() === SENTENCE,
-        t('adminEdition.reveal.sentenceRequired', { sentence: SENTENCE }),
-      ),
-    understood: z
-      .boolean()
-      .refine((v) => v, t('adminEdition.general.tickToConfirm')),
+const participants = computed(() =>
+  (edition.data.value?.participants ?? []).toSorted(byName),
+);
+const pickable = computed(() =>
+  participants.value.map((p) => ({
+    id: p.id,
+    name: fullName(p),
+    avatar: p.avatar,
+  })),
+);
+const personId = ref<string | null>(null);
+const sentence = ref('');
+const understood = ref(false);
+const pickerOpen = ref(false);
+watch(personId, () => {
+  pickerOpen.value = false;
+});
+const person = computed(() =>
+  participants.value.find((p) => p.id === personId.value),
+);
+const ready = computed(
+  () =>
+    Boolean(person.value) &&
+    sentence.value.trim().toUpperCase() === SENTENCE &&
+    understood.value,
+);
+const journalLine = computed(() =>
+  t('journal.events.result_revealed', {
+    name: person.value ? displayName(person.value, participants.value) : '…',
   }),
 );
-type Schema = z.output<typeof schema.value>;
-const state = reactive<Schema>({
-  personId: '',
-  sentence: '',
-  understood: false,
-});
+const points = computed(() => [
+  {
+    icon: 'i-lucide-circle-alert',
+    text: t('adminEdition.reveal.warningLastResort'),
+  },
+  { icon: 'i-lucide-file-text', text: t('adminEdition.reveal.warningJournal') },
+  { icon: 'i-lucide-eye-off', text: t('adminEdition.reveal.warningEphemeral') },
+]);
 
 // Shown only in this component's state: gone when leaving the screen.
-const pairs = ref<DrawPair[] | null>(null);
-const participants = computed(() => edition.data.value?.participants ?? []);
-const personItems = computed(() =>
-  participants.value.map((p) => ({ label: fullName(p), value: p.id })),
-);
+const pair = ref<DrawPair | null>(null);
+const personOf = (personIdOf: string | null) =>
+  participants.value.find((p) => p.id === personIdOf);
+const giver = computed(() => personOf(pair.value?.giverId ?? null));
+const receiver = computed(() => personOf(pair.value?.receiverId ?? null));
+/**
+ * Hides the result and starts again with another person.
+ * @returns Nothing.
+ */
 const onAnother = () => {
-  pairs.value = null;
-  Object.assign(state, { personId: '', sentence: '', understood: false });
+  pair.value = null;
+  personId.value = null;
+  sentence.value = '';
+  understood.value = false;
 };
-const onSubmit = (event: FormSubmitEvent<Schema>) =>
+/**
+ * Asks for the result of the person chosen; the server journals it.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onReveal = () =>
+  person.value &&
   reveal.mutate(
-    {
-      personId: event.data.personId,
-      sentence: event.data.sentence,
-    },
+    { personId: person.value.id, sentence: sentence.value },
     {
       onSuccess: (data) => {
-        pairs.value = [data.pair];
+        pair.value = data.pair;
       },
     },
   );
@@ -81,84 +116,190 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <UiPageTitle>
-      {{ t('adminEdition.reveal.title') }}
-    </UiPageTitle>
-    <template v-if="pairs">
-      <UAlert
-        color="warning"
-        variant="subtle"
-        icon="i-lucide-eye"
-        :description="t('adminEdition.reveal.shownNotice')"
-      />
-      <AdminDrawPairs :pairs="pairs" :people="participants" />
-      <UButton
-        variant="subtle"
-        color="neutral"
-        block
-        :label="t('adminEdition.reveal.another')"
-        @click="onAnother"
-      />
-    </template>
-    <template v-else>
-      <ul class="flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
-        <li>{{ t('adminEdition.reveal.warningLastResort') }}</li>
-        <li>{{ t('adminEdition.reveal.warningJournal') }}</li>
-        <li>{{ t('adminEdition.reveal.warningEphemeral') }}</li>
-      </ul>
-      <UForm
-        :schema="schema"
-        :state="state"
-        class="flex flex-col gap-5"
-        @submit="onSubmit"
-      >
-        <UFormField
-          name="personId"
-          :label="t('adminEdition.reveal.personLabel')"
-          required
+    <AdminQueryState
+      :pending="edition.isPending.value"
+      :error="edition.error.value"
+      :skeleton="['title', 'card']"
+    >
+      <div class="flex flex-col gap-1">
+        <UiPageTitle>{{ t('adminEdition.reveal.title') }}</UiPageTitle>
+        <p class="text-[15px] text-toned">{{ subtitle }}</p>
+      </div>
+
+      <template v-if="pair">
+        <section
+          aria-live="polite"
+          class="flex flex-col items-center gap-4 rounded-2xl bg-default px-5 py-6 text-center shadow-sm ring-1 ring-default"
+          data-testid="revealed"
         >
-          <USelect
-            v-model="state.personId"
-            :items="personItems"
-            :placeholder="t('adminEdition.reveal.personPlaceholder')"
-            class="w-full"
+          <div class="flex items-center gap-3.5">
+            <UiAvatar
+              v-if="giver"
+              :avatar="giver.avatar"
+              class="size-16 text-[28px]"
+            />
+            <UIcon
+              name="i-lucide-arrow-right"
+              class="size-6 text-primary"
+              aria-hidden="true"
+            />
+            <UiAvatar
+              v-if="receiver"
+              :avatar="receiver.avatar"
+              class="size-16 text-[28px]"
+            />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <p class="text-[15px] text-toned">
+              {{
+                t('adminEdition.reveal.gives', {
+                  name: giver ? fullName(giver) : '?',
+                })
+              }}
+            </p>
+            <p
+              class="font-display text-[40px] leading-[1.05] font-bold text-primary"
+            >
+              {{ receiver ? fullName(receiver) : '?' }}
+            </p>
+          </div>
+        </section>
+        <UiNotice variant="caution" icon="i-lucide-eye">
+          {{ t('adminEdition.reveal.shownNotice') }}
+        </UiNotice>
+        <div class="flex flex-col gap-1.5">
+          <UButton
+            block
+            size="xl"
+            class="h-12 justify-center font-bold"
+            :label="t('adminEdition.reveal.hide')"
+            @click="goBack(editionPath)"
           />
-        </UFormField>
+          <UButton
+            block
+            variant="ghost"
+            color="neutral"
+            class="h-[46px] justify-center text-base font-semibold"
+            :label="t('adminEdition.reveal.another')"
+            @click="onAnother"
+          />
+        </div>
+      </template>
+
+      <template v-else>
+        <UiNotice
+          variant="warning"
+          :title="t('adminEdition.reveal.warningTitle')"
+        >
+          <UiPointList :points="points" loose />
+        </UiNotice>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="reveal-person" class="text-[15px] font-semibold">{{
+            t('adminEdition.reveal.personLabel')
+          }}</label>
+          <button
+            id="reveal-person"
+            type="button"
+            aria-haspopup="listbox"
+            class="flex min-h-14 items-center gap-3 rounded-md bg-default px-3 py-1.5 text-left font-semibold ring-1 ring-accented focus-visible:ring-2 focus-visible:ring-primary"
+            @click="pickerOpen = true"
+          >
+            <UiAvatar v-if="person" :avatar="person.avatar" />
+            <span
+              class="grow"
+              :class="{ 'font-normal text-dimmed': !person }"
+              >{{
+                person
+                  ? fullName(person)
+                  : t('adminEdition.reveal.personPlaceholder')
+              }}</span
+            >
+            <UIcon
+              name="i-lucide-chevron-down"
+              class="size-5 shrink-0 text-toned"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+
+        <UiJournalPreview
+          :label="t('adminEdition.general.journalPreview')"
+          icon="i-lucide-eye"
+          :text="journalLine"
+        />
+
         <UFormField
-          name="sentence"
           :label="
             t('adminEdition.reveal.sentenceLabel', { sentence: SENTENCE })
           "
-          required
+          :ui="{ label: 'text-[15px] font-semibold' }"
         >
           <UInput
-            v-model="state.sentence"
+            v-model="sentence"
+            size="xl"
             autocomplete="off"
             autocapitalize="characters"
             class="w-full"
+            :ui="{ base: 'h-12' }"
           />
         </UFormField>
-        <UFormField name="understood">
-          <UCheckbox
-            v-model="state.understood"
-            :label="t('adminEdition.reveal.understood')"
-          />
-        </UFormField>
+        <UiConfirmBox
+          v-model="understood"
+          :label="t('adminEdition.reveal.understood')"
+        />
         <UAlert
           v-if="reveal.isError.value"
           color="error"
           variant="subtle"
           :description="errorMessage(reveal.error.value)"
         />
-        <UButton
-          type="submit"
-          color="neutral"
-          block
-          icon="i-lucide-eye"
-          :loading="reveal.isPending.value"
-          :label="t('adminEdition.reveal.submit')"
-        />
-      </UForm>
-    </template>
+        <div class="flex flex-col gap-1.5">
+          <UButton
+            block
+            color="neutral"
+            size="xl"
+            icon="i-lucide-eye"
+            class="h-12 justify-center bg-inverted font-bold hover:bg-inverted/90"
+            :ui="{ leadingIcon: 'size-5' }"
+            :disabled="!ready || reveal.isPending.value"
+            :loading="busy"
+            :label="
+              busy
+                ? t('adminEdition.reveal.revealing')
+                : person
+                  ? t('adminEdition.reveal.submit', { name: fullName(person) })
+                  : t('adminEdition.reveal.submitAnyone')
+            "
+            @click="onReveal"
+          />
+          <UButton
+            block
+            variant="ghost"
+            color="neutral"
+            class="h-[46px] justify-center text-base font-semibold"
+            :disabled="reveal.isPending.value"
+            :label="t('adminEdition.reveal.notNow')"
+            @click="goBack(editionPath)"
+          />
+        </div>
+      </template>
+    </AdminQueryState>
+
+    <UiPersonPicker
+      v-model:open="pickerOpen"
+      v-model:selected="personId"
+      :title="t('adminEdition.reveal.personLabel')"
+      :description="
+        t('common.count.participants', { count: participants.length })
+      "
+      :people="pickable"
+      :search-label="t('adminEdition.screen.lists.search')"
+      :clear-label="t('adminEdition.screen.lists.clear')"
+      :results-text="
+        (shown, total) =>
+          t('adminEdition.reveal.results', { count: shown, total })
+      "
+    />
   </AdminScreen>
 </template>

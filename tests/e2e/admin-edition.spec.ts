@@ -150,13 +150,22 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // Last-resort access to the draw: guarded, then journaled for everyone.
   await page.getByText('Voir un seul résultat').click();
-  await page.getByRole('combobox').click();
+  await page.getByRole('button', { name: 'Le résultat de qui ?' }).click();
   await page.getByRole('option', { name: 'Hugo' }).click();
+  // The group will read this line, with his name.
+  await expect(
+    page.getByText(
+      "L'organisateur a consulté le résultat de Hugo (accès de dernier recours)",
+    ),
+  ).toBeVisible();
   await page.getByLabel(/Recopie/).fill('je veux voir le tirage');
   await page.getByLabel(/tout le groupe saura/).check();
-  await page.getByRole('button', { name: 'Voir ce résultat' }).click();
+  await page.getByRole('button', { name: 'Voir le résultat de Hugo' }).click();
   // One person at a time, never the whole draw.
-  await expect(page.getByText(/^offre à /)).toHaveCount(1);
+  await expect(page.getByTestId('revealed')).toContainText(
+    'Hugo offre un cadeau à',
+  );
+  await expect(page.getByText(/offre un cadeau à/)).toHaveCount(1);
   await page.getByRole('button', { name: 'Retour' }).click();
 
   // Cancel with a reason, draw again, close.

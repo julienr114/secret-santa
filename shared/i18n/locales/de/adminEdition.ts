@@ -3,6 +3,7 @@ import type { Dict } from '../../types';
 
 export default {
   general: {
+    journalPreview: 'Was die Gruppe im Protokoll lesen wird',
     editionFallback: 'Ausgabe',
     tickToConfirm: 'Zum Bestätigen ankreuzen',
   },
@@ -102,21 +103,30 @@ export default {
     },
   },
   cancelDraw: {
-    title: 'Auslosung aufheben',
-    reasonRequired: 'Erkläre es in ein paar Worten',
-    done: 'Auslosung aufgehoben',
-    doneDescription: 'Passe die Liste an und starte die Auslosung erneut.',
-    effectResults:
-      'Alle Ergebnisse werden gelöscht, die Liste lässt sich wieder ändern.',
-    effectLinks: 'Die Links und Codes bleiben gültig.',
-    effectJournal:
-      'Der Grund steht im Protokoll und ist für die ganze Gruppe sichtbar.',
-    effectMessage:
-      'Schicke nach der neuen Auslosung allen die Nachricht „{message}“.',
+    title: 'Auslosung aufheben?',
+    dangerTitle: 'Alle müssen es neu erfahren',
+    results: {
+      one: 'Das Ergebnis wird gelöscht.',
+      other: 'Die {count} Ergebnisse werden gelöscht.',
+    },
+    viewed: {
+      one: '{count} Person hatte ihres schon angesehen.',
+      other: '{count} Personen hatten ihres schon angesehen.',
+    },
+    listOpen: 'Die Teilnehmerliste lässt sich wieder ändern.',
+    redrawMessage:
+      'Nach der neuen Auslosung musst du allen die Nachricht „{message}“ senden.',
+    linksKept: 'Die persönlichen Links bleiben gültig.',
+    wishesKept: 'Die Wunschlisten bleiben erhalten.',
     reasonLabel: 'Grund',
+    reasonHelp: 'Wird im Protokoll angezeigt, für die ganze Gruppe sichtbar.',
     reasonPlaceholder: 'Tom hat abgesagt',
     understood: 'Ich verstehe, dass die aktuellen Ergebnisse verloren gehen',
+    keep: 'Diese Auslosung behalten',
     submit: 'Auslosung aufheben',
+    cancelling: 'Wird aufgehoben…',
+    done: 'Auslosung aufgehoben',
+    doneDescription: 'Passe die Liste an und lose dann neu aus.',
   },
   reveal: {
     title: 'Ein Ergebnis ansehen',

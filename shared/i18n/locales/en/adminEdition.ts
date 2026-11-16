@@ -3,6 +3,7 @@ import type { Dict } from '../../types';
 
 export default {
   general: {
+    journalPreview: 'What the group will read in the journal',
     editionFallback: 'Edition',
     tickToConfirm: 'Tick the box to confirm',
   },
@@ -99,20 +100,30 @@ export default {
     },
   },
   cancelDraw: {
-    title: 'Cancel the draw',
-    reasonRequired: 'Explain in a few words',
-    done: 'Draw cancelled',
-    doneDescription: 'Adjust the list, then run the draw again.',
-    effectResults:
-      'All results are erased and the list becomes editable again.',
-    effectLinks: 'Links and codes remain valid.',
-    effectJournal:
-      'The reason is shown in the journal, visible to the whole group.',
-    effectMessage: 'After the new draw, send everyone the “{message}” message.',
+    title: 'Cancel the draw?',
+    dangerTitle: 'Everyone will have to find out again',
+    results: {
+      one: 'The result is erased.',
+      other: 'The {count} results are erased.',
+    },
+    viewed: {
+      one: '{count} person had already found out theirs.',
+      other: '{count} people had already found out theirs.',
+    },
+    listOpen: 'The list of participants can be changed again.',
+    redrawMessage:
+      'After the new draw, you will have to let everyone know with the « {message} » message.',
+    linksKept: 'Personal links stay valid.',
+    wishesKept: 'Wish lists are kept.',
     reasonLabel: 'Reason',
+    reasonHelp: 'Shown in the journal, for the whole group to see.',
     reasonPlaceholder: 'Tom dropped out',
-    understood: 'I understand that the current results will be lost',
+    understood: 'I understand the current results will be lost',
+    keep: 'Keep this draw',
     submit: 'Cancel the draw',
+    cancelling: 'Cancelling…',
+    done: 'Draw cancelled',
+    doneDescription: 'Adjust the list, then draw again.',
   },
   reveal: {
     title: 'View a result',

@@ -2,6 +2,7 @@
 // adding people, cancelling the draw and the last-resort reveal.
 export default {
   general: {
+    journalPreview: 'Ce que le groupe lira dans le journal',
     editionFallback: 'Édition',
     tickToConfirm: 'Coche pour confirmer',
   },
@@ -99,21 +100,30 @@ export default {
     },
   },
   cancelDraw: {
-    title: 'Annuler le tirage',
-    reasonRequired: 'Explique en quelques mots',
-    done: 'Tirage annulé',
-    doneDescription: 'Ajuste la liste puis relance le tirage.',
-    effectResults:
-      'Tous les résultats sont effacés, la liste redevient modifiable.',
-    effectLinks: 'Les liens et les codes restent valables.',
-    effectJournal:
-      'Le motif est affiché dans le journal, visible de tout le groupe.',
-    effectMessage:
-      'Après le nouveau tirage, envoie à chacun le message « {message} ».',
+    title: 'Annuler le tirage ?',
+    dangerTitle: 'Tout le monde devra redécouvrir',
+    results: {
+      one: 'Le résultat est effacé.',
+      other: 'Les {count} résultats sont effacés.',
+    },
+    viewed: {
+      one: '{count} personne avait déjà découvert le sien.',
+      other: '{count} personnes avaient déjà découvert le leur.',
+    },
+    listOpen: 'La liste des participants redevient modifiable.',
+    redrawMessage:
+      'Après le nouveau tirage, il faudra prévenir chacun avec le message « {message} ».',
+    linksKept: 'Les liens personnels restent valables.',
+    wishesKept: 'Les listes de souhaits sont conservées.',
     reasonLabel: 'Motif',
+    reasonHelp: 'Affiché dans le journal, visible de tout le groupe.',
     reasonPlaceholder: 'Désistement de Tom',
     understood: 'Je comprends que les résultats actuels seront perdus',
+    keep: 'Garder ce tirage',
     submit: 'Annuler le tirage',
+    cancelling: 'Annulation en cours…',
+    done: 'Tirage annulé',
+    doneDescription: 'Ajuste la liste puis relance le tirage.',
   },
   reveal: {
     title: 'Voir un résultat',

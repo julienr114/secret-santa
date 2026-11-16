@@ -279,7 +279,7 @@ const personPath = computed(
         />
       </div>
 
-      <div class="mt-2 flex flex-col" :class="resend ? 'gap-3.5' : 'gap-2.5'">
+      <div class="mt-6 flex flex-col" :class="resend ? 'gap-3.5' : 'gap-2.5'">
         <div v-if="participant.email" class="flex flex-col gap-0.5">
           <UButton
             block

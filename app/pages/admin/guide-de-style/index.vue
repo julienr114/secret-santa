@@ -62,6 +62,8 @@ const SEGMENTS = [
   { value: 'redraw', label: 'Nouveau tirage' },
 ];
 const toggle = ref(true);
+/** The box of the UiCheckRow example. */
+const ticked = ref(true);
 const date = ref('');
 const sheet = ref(false);
 /** The four states of the envelope of a draw. */
@@ -638,6 +640,15 @@ const entries = computed(() => [
         />
       </UiList>
       <UiSpinner label="UiSpinner" />
+      <UiList>
+        <UiCheckRow
+          v-model:checked="ticked"
+          :avatar="sample"
+          title="UiCheckRow"
+          subtitle="Toute la ligne coche"
+          label="Cocher l'exemple"
+        />
+      </UiList>
     </section>
 
     <section class="flex flex-col gap-4">

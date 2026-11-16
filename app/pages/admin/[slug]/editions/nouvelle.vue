@@ -5,13 +5,13 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 import {
   useCreateEditionMutation,
   useDashboardQuery,
-  useUpdateEditionMutation,
 } from '~/composables/queries/useGroup';
 
 // A new edition: its name, the day of the party (Christmas Day offered),
 // the budget and a word for the participants (both taken from the last
-// edition, both optional), then who is taken over. The budget and the word
-// are the edition's own rules, saved right after it is created.
+// edition, both optional), then who is taken over. The budget and the word,
+// when they differ from the group's, are the edition's own rules, sent
+// with it.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const { t } = useT();
@@ -19,7 +19,6 @@ const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const dashboard = useDashboardQuery(slug);
 const create = useCreateEditionMutation(slug);
-const update = useUpdateEditionMutation(slug);
 const { previous, previousRules, members } = useTakenOver(slug);
 const context = useScreenContext(slug);
 useHead({
@@ -69,26 +68,25 @@ const saving = ref(false);
 const busy = useBusy(() => saving.value);
 const failure = ref<unknown>(null);
 /**
- * Creates the edition, then gives it its own budget and word when they
- * differ from the group's, and opens it.
+ * Creates the edition, with its own budget and word when they differ from
+ * the group's, and opens it.
  * @param event - The form's values, checked.
  * @returns Once the edition is open.
  */
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   const { label, eventDate, budget, guardianMessage } = event.data;
+  const own =
+    budget !== (groupRules.value?.budget ?? '') ||
+    guardianMessage !== (groupRules.value?.guardianMessage ?? '');
   saving.value = true;
   failure.value = null;
   try {
-    const { edition } = await create.mutateAsync({ label, year, eventDate });
-    const own =
-      budget !== (groupRules.value?.budget ?? '') ||
-      guardianMessage !== (groupRules.value?.guardianMessage ?? '');
-    if (own) {
-      await update.mutateAsync({
-        id: edition.id,
-        rulesOverride: { eventDate, budget, guardianMessage },
-      });
-    }
+    const { edition } = await create.mutateAsync({
+      label,
+      year,
+      eventDate,
+      ...(own ? { budget, guardianMessage } : {}),
+    });
     await navigateTo(`/admin/${slug.value}/editions/${edition.id}`, {
       replace: true,
     });

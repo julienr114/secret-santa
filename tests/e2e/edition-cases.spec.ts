@@ -41,6 +41,48 @@ test.afterAll(async () => {
   await state.api?.dispose();
 });
 
+test('an edition is created with its own budget and word, in one go', async () => {
+  const api = state.api!;
+  await api.post('/api/admin/groups', {
+    data: { slug: 'cas-budget', name: 'cas-budget' },
+  });
+  const at = '/api/admin/cas-budget';
+  const created = await api.post(`${at}/editions`, {
+    data: {
+      label: 'Noël budget',
+      year: 2026,
+      eventDate: '2026-12-24',
+      budget: '30 €',
+      guardianMessage: 'Rien de fait main cette année.',
+    },
+  });
+  expect(created.status()).toBe(201);
+  const { edition } = await created.json();
+  const { rules } = await (
+    await api.get(`${at}/editions/${edition.id}`)
+  ).json();
+  expect(rules).toMatchObject({
+    eventDate: '2026-12-24',
+    budget: '30 €',
+    guardianMessage: 'Rien de fait main cette année.',
+  });
+  // Nothing in the journal says the rules changed after the creation.
+  const { entries } = await (await api.get(`${at}/journal?locale=fr`)).json();
+  expect(
+    entries.some((e: { text: string }) => /modifié les règles/.test(e.text)),
+  ).toBe(false);
+  // Too long a budget is refused, like everywhere else.
+  const tooLong = await api.post(`${at}/editions`, {
+    data: {
+      label: 'Noël trop',
+      year: 2027,
+      eventDate: '2027-12-24',
+      budget: 'x'.repeat(201),
+    },
+  });
+  expect(tooLong.status()).toBe(400);
+});
+
 test('an edition without participants says to add them', async ({ page }) => {
   const { id } = await setUp('cas-vide', []);
   await apiLogin(page.request, SUPER);

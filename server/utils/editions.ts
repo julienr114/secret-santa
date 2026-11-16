@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
-import { rulesOverrideSchema } from './rules';
+import { rulesOverrideSchema, rulesPatchSchema } from './rules';
 import { byName } from './people';
 
 // Editions of a group (README 4.1). Pure helpers; the routes do the I/O.
@@ -14,10 +14,17 @@ export type EditionStatus = (typeof EDITION_STATUSES)[number];
 /** The day of the party: a real date, required since 15 November 2026. */
 export const eventDateSchema = z.iso.date();
 
+/**
+ * A new edition. The budget and the word for the participants, when given,
+ * are its own rules from the start (decided on 17 November 2026), so the
+ * journal does not say the rules changed right after it was created.
+ */
 export const editionInputSchema = z.object({
   label: z.string().trim().min(1).max(60),
   year: z.number().int().min(2000).max(2100),
   eventDate: eventDateSchema,
+  budget: rulesPatchSchema.shape.budget,
+  guardianMessage: rulesPatchSchema.shape.guardianMessage,
 });
 
 export const editionPatchSchema = z

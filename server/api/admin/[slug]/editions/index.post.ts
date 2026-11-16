@@ -50,8 +50,15 @@ export default defineEventHandler(async (event) => {
     label: body.label,
     year: body.year,
     status: 'preparing',
-    // The day of the party belongs to the edition (README 22.9).
-    rulesOverride: { eventDate: body.eventDate },
+    // The day of the party belongs to the edition (README 22.9), and so do
+    // a budget and a word given with it.
+    rulesOverride: {
+      eventDate: body.eventDate,
+      ...(body.budget === undefined ? {} : { budget: body.budget }),
+      ...(body.guardianMessage === undefined
+        ? {}
+        : { guardianMessage: body.guardianMessage }),
+    },
     rulesSnapshot: null,
     historyWaivers: null,
     reminderSentAt: null,

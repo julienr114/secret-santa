@@ -172,6 +172,7 @@ export default {
   invite: {
     title: 'Lien d’invitation',
     off: 'Désactivé',
+    active: 'Actif',
     description:
       'Partage-le : chacun se connecte avec son adresse email et rejoint le groupe, et son tirage en cours tant qu’il n’a pas eu lieu.',
     share: 'Partager',

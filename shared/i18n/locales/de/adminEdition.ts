@@ -176,6 +176,7 @@ export default {
   invite: {
     title: 'Einladungslink',
     off: 'Inaktiv',
+    active: 'Aktiv',
     description:
       'Teile ihn: Jeder meldet sich mit seiner E-Mail-Adresse an und tritt der Gruppe bei, und ihrer laufenden Auslosung, solange sie nicht stattgefunden hat.',
     share: 'Teilen',

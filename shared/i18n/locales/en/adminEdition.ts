@@ -172,6 +172,7 @@ export default {
   invite: {
     title: 'Invitation link',
     off: 'Off',
+    active: 'Active',
     description:
       'Share it: everyone logs in with their email address and joins the group, and its draw in progress until it takes place.',
     share: 'Share',

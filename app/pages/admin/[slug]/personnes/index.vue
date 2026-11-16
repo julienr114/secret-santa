@@ -1,23 +1,32 @@
 <script setup lang="ts">
-import { byName, fullName } from '#server/utils/people';
+import { byName, fullName, type PublicPerson } from '#server/utils/people';
 import { formatEventDate } from '#server/utils/rules';
+import { notDrawnBy } from '#shared/utils/exclusions';
+import { listView } from '#shared/utils/lists';
 import {
   useDashboardQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
 
+// The members of a group: one list, those who take part first, each with
+// their address and who they never draw; then « Ajouter une personne »,
+// and the invitation link for those who sign up on their own.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t } = useT();
+const { t, locale } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const people = usePeopleQuery(slug);
-// The invitation link belongs to the group: its state on the row.
 const dashboard = useDashboardQuery(slug);
-const { locale } = useT();
+const context = useScreenContext(slug);
+useHead({ title: () => context.titleOf(t('adminGroup.people.title')) });
+const screen = computed(() => ({ back: `/admin/${slug.value}` }));
+
+// The invitation link belongs to the group: its state on the row.
 const inviteSummary = computed(() => {
   const g = dashboard.data.value?.group;
   if (!g?.inviteCode) return t('adminEdition.invite.off');
   return [
+    t('adminEdition.invite.active'),
     t('adminEdition.invite.placesLeft', { count: g.invitePlaces ?? 0 }),
     ...(g.inviteUntil
       ? [
@@ -28,91 +37,126 @@ const inviteSummary = computed(() => {
       : []),
   ].join(' · ');
 });
-useHead({
-  title: computed(
-    () => `${t('adminGroup.people.title')} — ${t('common.appName')}`,
-  ),
-});
-const screen = computed(() => ({
-  back: `/admin/${slug.value}`,
-}));
 
 const persons = computed(() => people.data.value?.persons ?? []);
-const label = (id: string) => {
-  const p = persons.value.find((x) => x.id === id);
-  return p ? fullName(p) : '?';
-};
-const exclusionCount = computed(
-  () => people.data.value?.exclusions.length ?? 0,
-);
-const subtitle = (active: boolean) =>
-  active ? undefined : t('adminGroup.people.inactive');
+const exclusions = computed(() => people.data.value?.exclusions ?? []);
+/** Those who take part first, then the others, by name in each. */
 const sorted = computed(() =>
   persons.value.toSorted(
     (a, b) => Number(b.active) - Number(a.active) || byName(a, b),
   ),
 );
+/**
+ * The line under a member: their address, and who they never draw; or
+ * that they no longer take part.
+ * @param person - The member.
+ * @returns The line.
+ */
+const subtitleOf = (person: PublicPerson) => {
+  if (!person.active) return t('adminGroup.people.inactive');
+  const names = notDrawnBy(person.id, exclusions.value)
+    .map((n) => persons.value.find((p) => p.id === n.personId))
+    .filter((p): p is PublicPerson => Boolean(p))
+    .map(fullName);
+  return [
+    person.email ?? t('adminEdition.screen.emails.noEmail'),
+    names.length
+      ? t('adminGroup.people.notDrawing', {
+          names: new Intl.ListFormat(locale.value, {
+            type: 'conjunction',
+          }).format(names),
+        })
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
+};
+
+// Past ten people, a search; past twelve, six rows then a fold row.
+const SEARCH_FROM = 10;
+const SHOWN = 6;
+const query = ref('');
+const expanded = ref(false);
+const searchable = computed(() => persons.value.length > SEARCH_FROM);
+const view = computed(() =>
+  listView(sorted.value, {
+    query: query.value,
+    expanded: expanded.value,
+    shown: SHOWN,
+    nameOf: fullName,
+  }),
+);
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <div class="flex items-center justify-between gap-3">
-      <UiPageTitle>
-        {{ t('adminGroup.people.title') }}
-      </UiPageTitle>
-      <UButton
-        :to="`/admin/${slug}/personnes/nouvelle`"
-        icon="i-lucide-plus"
-        :label="t('common.actions.add')"
+    <div class="flex flex-col gap-1">
+      <UiPageContext
+        :parts="context.parts.value"
+        :label="t('common.context')"
       />
+      <UiPageTitle>{{ t('adminGroup.people.title') }}</UiPageTitle>
     </div>
     <AdminQueryState
       :pending="people.isPending.value"
       :error="people.error.value"
+      :skeleton="['list']"
+      :rows="6"
     >
-      <p v-if="persons.length === 0" class="text-muted">
-        {{ t('adminGroup.people.empty') }}
-      </p>
-      <UiList v-else>
-        <UiListItem
-          v-for="person in sorted"
-          :key="person.id"
-          :avatar="person.avatar"
-          :to="`/admin/${slug}/personnes/${person.id}`"
-          :title="label(person.id)"
-          :subtitle="subtitle(person.active)"
-          :class="{ 'opacity-60': !person.active }"
-        >
-        </UiListItem>
-      </UiList>
-      <UiList>
+      <section class="flex flex-col gap-1.5" data-testid="members">
+        <UiSectionTitle v-if="searchable">{{
+          t('adminGroup.dashboard.persons', { count: persons.length })
+        }}</UiSectionTitle>
+        <UiSearchField
+          v-if="searchable"
+          v-model="query"
+          class="mb-1.5"
+          :label="t('adminEdition.screen.lists.search')"
+          :clear-label="t('adminEdition.screen.lists.clear')"
+        />
+        <UiList :footer="t('adminGroup.people.historyKept')">
+          <li
+            v-if="persons.length > 0 && view.shown.length === 0"
+            class="px-4 py-3 text-sm text-muted"
+          >
+            {{ t('adminEdition.screen.lists.noMatch') }}
+          </li>
+          <UiFoldedRows
+            :fold="view"
+            :key-of="(p) => p.id"
+            :avatar-of="(p) => p.avatar"
+            :more-label="
+              (count) => t('adminEdition.screen.lists.more', { count })
+            "
+            :collapse-label="t('adminEdition.screen.lists.collapse')"
+            @more="expanded = true"
+            @collapse="expanded = false"
+          >
+            <template #row="{ item: person }">
+              <UiListItem
+                :avatar="person.avatar"
+                :to="`/admin/${slug}/personnes/${person.id}`"
+                :title="fullName(person)"
+                :subtitle="subtitleOf(person)"
+                :class="{ 'opacity-50': !person.active }"
+              />
+            </template>
+          </UiFoldedRows>
+          <UiListItem
+            :to="`/admin/${slug}/personnes/nouvelle`"
+            icon="i-lucide-user-plus"
+            :title="t('adminGroup.people.add')"
+          />
+        </UiList>
+      </section>
+      <UiList :title="t('adminGroup.people.orInvite')">
         <UiListItem
           :to="`/admin/${slug}/invitation`"
           icon="i-lucide-link"
-          :title="t('adminEdition.invite.title')"
+          :title="t('adminEdition.screen.empty.invite')"
           :subtitle="inviteSummary"
           data-testid="invite-row"
         />
-      </UiList>
-      <UiList>
-        <UiListItem
-          :to="`/admin/${slug}/exclusions`"
-          icon="i-lucide-ban"
-          :title="t('adminGroup.exclusions.title')"
-          :subtitle="t('adminGroup.exclusions.summary')"
-        >
-          <template #trailing>
-            <UBadge
-              :label="String(exclusionCount)"
-              :color="exclusionCount > 0 ? 'primary' : 'neutral'"
-              variant="subtle"
-              class="shrink-0 rounded-full tabular-nums"
-              :aria-label="
-                t('common.count.exclusions', { count: exclusionCount })
-              "
-            />
-          </template>
-        </UiListItem>
       </UiList>
     </AdminQueryState>
   </AdminScreen>

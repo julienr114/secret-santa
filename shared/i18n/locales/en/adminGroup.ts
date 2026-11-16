@@ -88,9 +88,13 @@ export default {
     pastEditions: 'Past editions',
   },
   people: {
-    title: 'People',
+    title: 'Members',
     empty: 'Start by adding the members of the group.',
-    inactive: 'deactivated',
+    inactive: 'No longer takes part',
+    notDrawing: 'does not draw {names}',
+    add: 'Add a person',
+    historyKept: 'The history of those who no longer take part is kept.',
+    orInvite: 'Or let them sign up',
   },
   newPerson: {
     title: 'New person',

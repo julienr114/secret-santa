@@ -97,7 +97,7 @@ const NuxtLink = resolveComponent('NuxtLink');
         </span>
         <span
           v-else-if="subtitle"
-          class="block truncate text-[13px] text-toned"
+          class="line-clamp-2 text-[13px] text-toned"
           >{{ subtitle }}</span
         >
       </span>

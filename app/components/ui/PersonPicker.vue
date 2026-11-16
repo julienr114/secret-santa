@@ -38,24 +38,11 @@ const shown = computed(() =>
   <UiSheet v-model:open="open" :title="title" :description="description">
     <div class="flex flex-col gap-3.5 py-2">
       <template v-if="searchable">
-        <UInput
+        <UiSearchField
           v-model="query"
-          icon="i-lucide-search"
-          :placeholder="searchLabel"
-          :aria-label="searchLabel"
-          class="w-full"
-        >
-          <template v-if="query" #trailing>
-            <UButton
-              variant="ghost"
-              color="neutral"
-              size="sm"
-              icon="i-lucide-x"
-              :aria-label="clearLabel"
-              @click="query = ''"
-            />
-          </template>
-        </UInput>
+          :label="searchLabel"
+          :clear-label="clearLabel"
+        />
         <p class="text-[13px] text-muted" aria-live="polite">
           {{ resultsText(shown.length, people.length) }}
         </p>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import {
   NOTE_MAX,
   addNote,
@@ -110,7 +111,7 @@ const onEmail = () =>
       onSuccess: () =>
         toast.add({
           title: t('adminEdition.share.emailSent', {
-            name: props.participant.firstName,
+            name: fullName(props.participant),
           }),
           color: 'success',
           icon: 'i-lucide-mail-check',

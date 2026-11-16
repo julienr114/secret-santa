@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useCheckQuery,
@@ -49,7 +50,10 @@ const personOf = (pid: string) => participants.value.find((p) => p.id === pid);
  * @param pid - The person.
  * @returns Their first name, or "?".
  */
-const firstNameOf = (pid: string) => personOf(pid)?.firstName ?? '?';
+const firstNameOf = (pid: string) => {
+  const person = personOf(pid);
+  return person ? fullName(person) : '?';
+};
 
 const previousPairs = computed(() =>
   canEdit.value ? (check.data.value?.previousPairs ?? []) : [],

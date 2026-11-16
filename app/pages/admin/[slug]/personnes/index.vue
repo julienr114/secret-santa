@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { byName, fullName } from '#server/utils/people';
 import { formatEventDate } from '#server/utils/rules';
 import {
   useDashboardQuery,
@@ -39,13 +40,7 @@ const screen = computed(() => ({
 const persons = computed(() => people.data.value?.persons ?? []);
 const label = (id: string) => {
   const p = persons.value.find((x) => x.id === id);
-  if (!p) return '?';
-  const twins = persons.value.filter(
-    (x) => x.id !== id && x.firstName === p.firstName,
-  );
-  return twins.length && p.lastName
-    ? `${p.firstName} ${p.lastName}`
-    : p.firstName;
+  return p ? fullName(p) : '?';
 };
 const exclusionCount = computed(
   () => people.data.value?.exclusions.length ?? 0,
@@ -53,7 +48,9 @@ const exclusionCount = computed(
 const subtitle = (active: boolean) =>
   active ? undefined : t('adminGroup.people.inactive');
 const sorted = computed(() =>
-  persons.value.toSorted((a, b) => Number(b.active) - Number(a.active)),
+  persons.value.toSorted(
+    (a, b) => Number(b.active) - Number(a.active) || byName(a, b),
+  ),
 );
 </script>
 

@@ -169,7 +169,7 @@ const onSend = () =>
       onSuccess: ({ sent, left }) => {
         const names = participants.value
           .filter((p) => isSelected(p.participationId))
-          .map((p) => p.firstName);
+          .map(fullName);
         toast.add({
           title: t('adminEdition.cockpit.email.sent', { count: sent }),
           description: left === 0 && sent > 0 ? sentTo(names) : undefined,
@@ -265,7 +265,7 @@ const onSend = () =>
                   size="xl"
                   :aria-label="
                     t('adminEdition.screen.emails.select', {
-                      name: p.firstName,
+                      name: fullName(p),
                     })
                   "
                   class="flex size-11 items-center justify-center"
@@ -282,7 +282,7 @@ const onSend = () =>
                   :label="t('adminEdition.screen.emails.addEmail')"
                   :aria-label="
                     t('adminEdition.screen.emails.addEmailLabel', {
-                      name: p.firstName,
+                      name: fullName(p),
                     })
                   "
                 />
@@ -296,7 +296,7 @@ const onSend = () =>
         <h2 class="text-xs font-bold tracking-wide text-muted uppercase">
           {{
             t('adminEdition.screen.emails.previewFor', {
-              name: first.firstName,
+              name: fullName(first),
             })
           }}
         </h2>

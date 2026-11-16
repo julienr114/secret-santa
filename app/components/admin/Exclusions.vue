@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import {
   useCreateExclusionMutation,
   useDeleteExclusionMutation,
@@ -39,12 +40,15 @@ const exclusions = computed(() =>
 );
 const past = computed(() => Boolean(props.archived));
 const personOf = (id: string) => persons.value.find((p) => p.id === id);
-const nameOf = (id: string) => personOf(id)?.firstName ?? '?';
+const nameOf = (id: string) => {
+  const person = personOf(id);
+  return person ? fullName(person) : '?';
+};
 const options = (exclude?: string) =>
   persons.value
     .filter((p) => p.active)
     .map((p) => ({
-      label: p.firstName,
+      label: fullName(p),
       value: p.id,
       disabled: p.id === exclude,
     }));

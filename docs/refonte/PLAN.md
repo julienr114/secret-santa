@@ -29,7 +29,7 @@ Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 3. Lire un écran déjà refait comme modèle : `app/pages/admin/[slug]/editions/[id]/index.vue` et ses composants `AdminEdition*`, `AdminSendSheet`, `AdminDateSheet`.
 4. Pour chaque lot, lire les maquettes citées **et** l'écran actuel avant d'écrire une ligne.
 
-Les maquettes sont la référence pour la structure, la hiérarchie et les textes. Leurs prénoms, dates et chiffres sont des exemples. En cas d'écart entre une maquette et une règle du README 23.3, la règle gagne ; le noter en section 6.
+**Les maquettes se reproduisent fidèlement** (demandé par Julien le 16 novembre 2026) : pas seulement la structure et les textes, mais aussi la forme des éléments, leurs tailles, leurs espacements, leurs couleurs et l'ordre des actions. Une maquette donne ses valeurs en clair dans ses styles en ligne (hauteurs, rayons, graisses) : les reprendre, en passant par les jetons et les composants du design system, quitte à ajouter une variante à un composant `ui/*`. Avant de clore un écran, le comparer à sa maquette côte à côte, à 390 px de large : prendre avec Playwright une capture du fichier de la maquette et une capture de l'écran dans le même état, les regarder toutes les deux, et corriger jusqu'à ce qu'il ne reste que des écarts de données. À la fin de chaque lot, lister dans le résumé les écarts qui restent, écran par écran. Seuls les prénoms, dates et chiffres sont des exemples. Deux écarts permis : une règle du README 23.3 contredite par la maquette (la règle gagne, à noter en section 6), et un texte qui vient d'un modèle de message existant (13.2), qui reste celui du modèle.
 
 ## 3. Règles de travail
 
@@ -117,12 +117,45 @@ Le repli ne s'active qu'au-delà de **12 personnes** dans la liste (constante no
 Demandé par Julien le 16 novembre 2026, à faire avant de poursuivre (le composant sert dans tous les lots suivants). Références : `GroupeMembres100Deplie`, `Preparer100Deplie`, `Suivi100Deplie`.
 
 - [x] **Replier.** Une fois la liste dépliée, la ligne de repli reste à sa place, juste après les premières lignes, et devient « Replier la liste » (chevron vers le haut, fond `primary-tint`, `aria-expanded="true"`, sans les petites icônes). Un appui referme et ramène la ligne à l'écran si elle n'y est plus.
-- [ ] **Dans le suivi après tirage** (ajouté après coup, voir `Suivi100Deplie`), où chaque série a son repli : chaque série se replie à part, et sa ligne dit laquelle (« Replier ceux qui restent à prévenir », et de même pour les deux autres séries).
 - [x] **Par paquets.** Déplier ajoute 50 lignes à la fois (constante nommée), pas tout d'un coup. S'il en reste, une seconde ligne « Voir les N autres » apparaît en bas de ce qui est affiché. Faire évoluer `foldList` (fonction pure, testée) pour prendre le nombre de lignes déjà dépliées.
 - [x] La recherche montre toujours tous les résultats, sans repli.
 - [x] Appliquer aux écrans déjà faits (édition à préparer, suivi après tirage, envoi par email) et mettre à jour le guide de style et leurs tests.
 
 Pas de virtualisation : avec le repli par paquets, jamais plus de quelques dizaines de lignes ne sont ajoutées d'un coup, même pour un groupe de 300.
+
+### Correction 2 — la ligne « Replier », et les noms de famille
+
+Demandé par Julien le 16 novembre 2026, après avoir vu la première correction. À faire avant le lot 2. Références : `GroupeMembres100Deplie`, `Preparer100Deplie`, `Suivi100Deplie` (les trois montrent la page défilée jusqu'à la fin de la liste dépliée).
+
+**La ligne « Replier »** (remplace ce qui a été fait dans la « Correction du lot 0 »)
+
+- [x] **Du même type que la ligne qui a déplié** : fond blanc, même hauteur, titre en brique, même chevron mais vers le haut, et le petit espace en dessous. Sans les trois petites icônes et sans nombre : le texte est « Replier la liste ». Plus de fond teinté.
+- [x] **Au même endroit** : en dernière ligne de la liste, après les personnes dépliées. Elle ne reste pas en haut de la partie dépliée.
+- [x] Dans le suivi après tirage, la ligne garde sous son titre l'état de sa série (« Pas encore envoyé »…), comme la ligne « Voir les N autres ». La case « Dans le suivi après tirage » de la correction précédente est remplacée par celle-ci.
+- [x] Par paquets de 50 : tant qu'il reste des personnes à afficher, la ligne « Voir les N autres » est juste au-dessus de la ligne « Replier ».
+- [x] Après un appui sur « Replier », ramener la liste à l'écran : sa fin repliée doit être visible.
+
+**Les noms de famille**
+
+- [x] Dans les écrans de l'organisateur et du super-admin, afficher le nom de famille après le prénom **dès qu'il est renseigné** (`fullName` de `server/utils/people.ts`), et plus seulement pour départager deux prénoms identiques : listes de membres et de participants, fiches, sélecteur de personne, envoi par email, exclusions.
+- [x] La recherche trouve aussi sur le nom de famille (`matchesName`, `highlightName`, avec leurs tests).
+- [x] Le tri reste par prénom, puis par nom.
+- [x] **Seule exception à « interface seulement »** : si une route ne renvoie pas `lastName` (c'est le cas des participants d'une édition), l'ajouter à sa réponse. Rien d'autre côté serveur, pas de migration.
+- [x] Côté participant (page du tirage, résultat, messages, journal), ne rien changer : le prénom, et le nom seulement pour départager des homonymes (`displayName`, README 20).
+- [x] Mettre à jour le README 20 et les tests.
+
+### Correction 3 — le panneau d'envoi, fidèle aux maquettes
+
+Demandé par Julien le 16 novembre 2026, sur capture d'écran. À faire avant le lot 2. Références : `Envoi`, `EnvoiSansEmail`, `Renvoi`. Fichiers : `AdminSendSheet.vue`, `AdminSendOptions.vue`.
+
+- [x] **Choix du message** : un contrôle segmenté, pas trois pastilles. Une piste grise arrondie (`bg-muted`, 4 px de marge intérieure), trois colonnes égales, l'option choisie en blanc avec une ombre légère et un texte foncé en gras. Pas de fond brique.
+- [x] **Le message** : une bulle, pas un bloc pleine largeur. Alignée à gauche, 92 % de large au plus, coins arrondis sauf celui du bas à gauche, le lien sur sa propre ligne, en gras et en brique.
+- [x] **Bouton principal** : 56 px de haut. Avec une adresse : « Envoyer par email » et l'adresse en dessous, sur deux lignes. Sans adresse : « Partager (WhatsApp, SMS…) ».
+- [x] **Actions secondaires** : avec une adresse, « Partager » et « Copier » côte à côte, 46 px, en contour. Sans adresse, « Copier le message » seul, en contour.
+- [x] **Sans adresse** : sous les boutons, la ligne « {Prénom} n'a pas d'adresse email. » avec le lien « Ajouter », qui ouvre la fiche de la personne. Elle manque aujourd'hui.
+- [x] **Personne suivante** : dans le bandeau vert, l'icône de la personne suivante (32 px) à la place de la flèche, son prénom en gras, « Passer » souligné à droite.
+- [x] **Fermer** : bouton rond de 44 px sur fond `bg-muted`.
+- [x] Contrôler de la même façon `Renvoi`, et l'écran `SelectionEmail` (mêmes onglets, même bulle pour l'aperçu).
 
 ### Lot 2 — Édition : sous-écrans
 

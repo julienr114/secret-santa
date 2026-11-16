@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
 import {
   useDeletePersonMutation,
@@ -26,8 +27,10 @@ const persons = computed(() => people.data.value?.persons ?? []);
 const person = computed(
   () => persons.value.find((p) => p.id === id.value) ?? null,
 );
-const nameOf = (pid: string) =>
-  persons.value.find((p) => p.id === pid)?.firstName ?? '?';
+const nameOf = (pid: string) => {
+  const other = persons.value.find((p) => p.id === pid);
+  return other ? fullName(other) : '?';
+};
 const exclusions = computed(() =>
   (people.data.value?.exclusions ?? [])
     .filter((e) => e.giverId === id.value || e.receiverId === id.value)
@@ -39,7 +42,7 @@ const exclusions = computed(() =>
 useHead({
   title: computed(
     () =>
-      `${person.value?.firstName ?? t('adminGroup.person.fallbackTitle')} — ${t('common.appName')}`,
+      `${person.value ? fullName(person.value) : t('adminGroup.person.fallbackTitle')} — ${t('common.appName')}`,
   ),
 });
 const screen = computed(() => ({
@@ -84,7 +87,7 @@ const onDelete = () =>
       </p>
       <template v-else>
         <UiPageTitle>
-          {{ person.firstName }}
+          {{ fullName(person) }}
         </UiPageTitle>
         <AdminPersonForm
           :key="person.id"
@@ -132,7 +135,7 @@ const onDelete = () =>
           <li v-else class="flex flex-col gap-2 px-4 py-3">
             <p class="text-sm">
               {{
-                t('adminGroup.person.deleteConfirm', { name: person.firstName })
+                t('adminGroup.person.deleteConfirm', { name: fullName(person) })
               }}
             </p>
             <div class="flex gap-2">

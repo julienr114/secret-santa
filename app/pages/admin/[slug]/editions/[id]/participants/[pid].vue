@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { MessageType, NotePosition } from '#server/utils/messages';
 import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
@@ -73,7 +74,7 @@ const message = computed(() => messages.data.value?.messages[pid.value]);
 useHead({
   title: computed(
     () =>
-      `${p.value?.firstName ?? t('adminEdition.participant.fallbackTitle')} — ${t('common.appName')}`,
+      `${p.value ? fullName(p.value) : t('adminEdition.participant.fallbackTitle')} — ${t('common.appName')}`,
   ),
 });
 const screen = computed(() => ({
@@ -137,7 +138,7 @@ const onRemove = () =>
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-4">
             <UiAvatar :avatar="p.avatar" size="xl" />
-            <UiPageTitle>{{ p.firstName }}</UiPageTitle>
+            <UiPageTitle>{{ fullName(p) }}</UiPageTitle>
           </div>
           <div class="flex flex-wrap gap-1">
             <AdminStatusBadge
@@ -208,7 +209,7 @@ const onRemove = () =>
               <p class="text-sm">
                 {{
                   t('adminEdition.participant.regenerateConfirm', {
-                    name: p.firstName,
+                    name: fullName(p),
                   })
                 }}
               </p>
@@ -239,7 +240,7 @@ const onRemove = () =>
               <p class="text-sm">
                 {{
                   t('adminEdition.participant.removeConfirm', {
-                    name: p.firstName,
+                    name: fullName(p),
                   })
                 }}
               </p>

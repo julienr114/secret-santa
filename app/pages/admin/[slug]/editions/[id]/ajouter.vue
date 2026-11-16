@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import {
   useEditionQuery,
   usePeopleQuery,
@@ -73,9 +74,9 @@ const onAdd = (personId: string, firstName: string) =>
           v-for="person in candidates"
           :key="person.id"
           :avatar="person.avatar"
-          :title="person.firstName"
+          :title="fullName(person)"
           :subtitle="person.lastName ?? undefined"
-          @click="onAdd(person.id, person.firstName)"
+          @click="onAdd(person.id, fullName(person))"
         >
           <template #trailing>
             <UIcon name="i-lucide-plus-circle" class="size-6 text-primary" />

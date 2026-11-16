@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import { z } from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useEditionQuery } from '~/composables/queries/useGroup';
@@ -58,7 +59,7 @@ const state = reactive<Schema>({
 const pairs = ref<DrawPair[] | null>(null);
 const participants = computed(() => edition.data.value?.participants ?? []);
 const personItems = computed(() =>
-  participants.value.map((p) => ({ label: p.firstName, value: p.id })),
+  participants.value.map((p) => ({ label: fullName(p), value: p.id })),
 );
 const onAnother = () => {
   pairs.value = null;

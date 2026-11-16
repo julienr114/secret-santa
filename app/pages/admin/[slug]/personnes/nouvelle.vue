@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { PersonFormValue } from '~/components/admin/PersonForm.vue';
 import { useCreatePersonMutation } from '~/composables/queries/useGroup';
 
@@ -24,7 +25,7 @@ const onSubmit = (value: PersonFormValue) =>
   create.mutate(value, {
     onSuccess: ({ person }) => {
       toast.add({
-        title: t('adminGroup.newPerson.added', { name: person.firstName }),
+        title: t('adminGroup.newPerson.added', { name: fullName(person) }),
         color: 'success',
         icon: 'i-lucide-check',
       });

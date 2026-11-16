@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fullName } from '#server/utils/people';
 import type { Participant } from '#server/database/editions';
 import { followState } from '#server/utils/editions';
 import {
@@ -152,7 +153,7 @@ const onEmail = () =>
       onSuccess: () => {
         toast.add({
           title: t('adminEdition.screen.sheet.emailSent', {
-            name: props.participant.firstName,
+            name: fullName(props.participant),
           }),
           color: 'success',
           icon: 'i-lucide-mail-check',
@@ -178,9 +179,9 @@ const statusLine = computed(() => {
     :title="
       resend
         ? t('adminEdition.screen.sheet.resendTo', {
-            name: participant.firstName,
+            name: fullName(participant),
           })
-        : t('adminEdition.screen.sheet.sendTo', { name: participant.firstName })
+        : t('adminEdition.screen.sheet.sendTo', { name: fullName(participant) })
     "
   >
     <template #header>
@@ -191,10 +192,10 @@ const statusLine = computed(() => {
             {{
               resend
                 ? t('adminEdition.screen.sheet.resendTo', {
-                    name: participant.firstName,
+                    name: fullName(participant),
                   })
                 : t('adminEdition.screen.sheet.sendTo', {
-                    name: participant.firstName,
+                    name: fullName(participant),
                   })
             }}
           </h2>
@@ -330,7 +331,7 @@ const statusLine = computed(() => {
         <p class="text-[13px] text-muted">
           {{
             t('adminEdition.screen.sheet.otherHint', {
-              name: participant.firstName,
+              name: fullName(participant),
             })
           }}
         </p>

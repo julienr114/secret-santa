@@ -464,7 +464,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `group_id` | text FK | |
 | `first_name` | text | Affiché partout |
 | `email` | text nullable | Facultatif, pour l'envoi groupé par email (13.3) |
-| `last_name` | text nullable | Pour départager les homonymes |
+| `last_name` | text nullable | Affiché après le prénom dans les écrans de l'organisateur et du super-admin dès qu'il est renseigné ; côté participant, seulement pour départager des homonymes |
 | `active` | integer (booléen) | Désactivation plutôt que suppression |
 | `created_at` | text | |
 
@@ -586,7 +586,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 - **Préparer** : carte « À faire maintenant » avec la vérification (le tirage est possible, sinon pourquoi) et « Lancer le tirage », qui ouvre un panneau de confirmation (participants, règles, personnes du groupe absentes de l'édition). Puis la liste des participants (nombre d'idées, langue des messages), « Ajouter des participants », et une section « Si tu veux » : prévenir avant le tirage, exclusions.
 - **Cas limites de « Préparer »** : sans participant, la carte dit « Ajoute les participants » (« Ajouter des participants », « Inviter par lien ») ; un tirage impossible a sa carte « À corriger avant le tirage » : une ligne par personne bloquée ou trop contrainte, la phrase d'aide, « Voir les exclusions » et « Ajouter des participants » à la place de « Lancer le tirage ».
 - **Grands groupes** : au-delà de 10 participants, une recherche au-dessus de la liste ; au-delà de 12 (`FOLD_FROM`), la liste se replie (`listView`) : 6 lignes avant le tirage ; après, chaque série (`followSeries` : pas encore envoyé, pas encore consulté, résultat consulté) montre 3 lignes puis sa ligne de repli, qui rappelle l'état de la série. Le bouton de la carte dit « Prévenir les N par email ». L'écran d'envoi à plusieurs se replie après 5 lignes ; la sélection porte toujours sur toute la liste.
-- **Noms dans les listes de l'édition** (décidé par Julien le 16 novembre 2026) : chaque ligne montre le prénom et le nom dès que le nom est renseigné, et la recherche porte sur les deux ; dans un comité, plusieurs « Adèle » se suivent sinon sans qu'on les distingue. Le journal et la page du participant gardent la règle de la section 20 : le prénom seul, le nom seulement pour départager des homonymes. Une ligne de repli dépliée dit ce qu'elle replie (« Replier ceux qui restent à prévenir »).
+- **Noms** (décidé par Julien le 16 novembre 2026) : dans les écrans de l'organisateur et du super-admin (listes de membres et de participants, fiches, sélecteur de personne, envoi par email, exclusions), le nom de famille suit le prénom dès qu'il est renseigné (`fullName`) ; la recherche porte aussi sur le nom, le tri se fait par prénom puis par nom (`byName`). Côté participant (page du tirage, résultat, messages, journal), rien ne change : le prénom, et le nom seulement pour départager des homonymes (section 20, `displayName`).
 - **Tirée** : carte « Préviens chacun que le tirage est fait » avec trois compteurs (à prévenir, pas encore ouvert, a découvert) et « Prévenir par email » (puis « Relancer par email ») vers l'écran d'envoi groupé. La liste met en tête ceux qui restent à prévenir (`sortParticipants`) ; le bouton rond de chaque ligne ouvre le panneau d'envoi, qui passe ensuite à la personne suivante.
 - **Panneau d'envoi** : le message (onglets), son texte exact, un mot à ajouter, la langue (enregistrée sur la personne), puis l'email en premier s'il y a une adresse, sinon le partage du téléphone ; pour un renvoi, corriger l'adresse ou passer par un autre chemin (partager, copier le message, copier le lien seul).
 - **Fêter** : à partir du lendemain de la fête, la carte devient « La fête est passée : clôture l'édition ».
@@ -898,6 +898,7 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 | Noms et slugs des deux familles ? | À demander au moment de la mise en service |
 | Qui est l'organisateur de la deuxième famille ? | Julien, tant qu'il n'a nommé personne |
 | Le journal affiche-t-il les noms de famille ? | Prénom seul, nom ajouté uniquement en cas d'homonymes |
+| Les écrans de l'organisateur affichent-ils le nom de famille ? | Oui, dès qu'il est renseigné, après le prénom ; recherche et tri le prennent en compte (décidé le 16 novembre 2026). Côté participant, la règle ci-dessus ne change pas |
 | Rappel automatique aux retardataires ? | Non, relance manuelle par l'organisateur |
 | Après clôture, afficher à tous le tableau complet « qui a offert à qui » ? | Non, sauf demande explicite |
 | Reprendre la liste de souhaits de l'an dernier à la création d'une édition ? | Non en V1 : liste vide à chaque édition. Un bouton « Reprendre ma liste de l'an dernier » est une évolution simple si la famille le demande |
@@ -1307,8 +1308,8 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
 | `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche (`UiSearchField`) sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
 | `UiSearchField` | Champ de recherche au-dessus d'une liste de plus de 10 personnes : loupe, libellé, croix pour vider. La recherche montre tous les résultats, sans repli |
-| `UiFoldRow` | La ligne qui remplace la suite d'une longue liste : trois icônes de personne, « Voir les N autres » et, si besoin, l'état de la série ; puis une petite bande avant la suite. Une fois la liste dépliée, la même ligne reste à sa place et devient « Replier la liste » (fond `primary-tint`, chevron vers le haut) ; la replier la ramène à l'écran |
-| `UiFoldedRows` | Les lignes d'une liste repliée, dans son `<ul>` : les premières lignes, « Replier la liste » et les lignes déjà dépliées, puis « Voir les N autres » tant qu'il en reste. Chaque appui déplie `FOLD_STEP` (50) lignes de plus (`foldList`, `listView`) ; chaque ligne est dessinée par l'emplacement `row` |
+| `UiFoldRow` | La ligne qui remplace la suite d'une longue liste : trois icônes de personne, « Voir les N autres » et, si besoin, l'état de la série, un chevron ; puis une petite bande avant la suite. La même ligne, sans les icônes et chevron vers le haut, replie une liste dépliée (« Replier la liste ») |
+| `UiFoldedRows` | Les lignes d'une liste repliée, dans son `<ul>` : les premières lignes et celles déjà dépliées, « Voir les N autres » tant qu'il en reste (chaque appui en déplie `FOLD_STEP`, 50), puis en dernière ligne « Replier la liste » ; replier ramène la fin de la liste à l'écran (`foldList`, `listView`). Chaque ligne est dessinée par l'emplacement `row` |
 | `UiSettingSheet` | Cadre de tout panneau de réglage : titre, aide, contenu, « Valider » et « Annuler » ; un enregistrement refusé s'affiche en ligne rouge au-dessus du bouton, le panneau reste ouvert et la saisie est gardée |
 | `UiChoiceSheet`, `UiTextSheet`, `UiNumberSheet` | Sur `UiSettingSheet` : une valeur parmi plusieurs (aide par choix), un texte avec son compteur, un nombre entre bornes (moins, nombre, plus). La valeur n'est gardée qu'avec « Valider » |
 

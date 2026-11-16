@@ -21,6 +21,7 @@ const securityHeaders = {
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
+  devServer: { port: 4000 },
   devtools: { enabled: true },
   modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxt/ui'],
   // Secrets come from the environment (NUXT_* variables, Cloudflare secrets

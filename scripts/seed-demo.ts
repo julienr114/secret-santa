@@ -9,7 +9,7 @@
 //   disabled.
 // - Camille organises two groups and takes part in both, and in the demo
 //   family too: three draws at once, each at a different step.
-const BASE = process.argv[2] ?? 'http://localhost:3000';
+const BASE = process.argv[2] ?? 'http://localhost:4000';
 // A super-admin address: the one created by the migration, or one of
 // NUXT_SUPER_ADMIN_EMAILS. The dev server must run with
 // NUXT_DEV_LOGIN_LINKS=true, so that the login link comes back here

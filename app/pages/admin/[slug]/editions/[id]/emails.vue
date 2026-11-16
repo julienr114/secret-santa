@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { preselectedForEmail, sortParticipants } from '#server/utils/editions';
+import {
+  followState,
+  preselectedForEmail,
+  sortParticipants,
+} from '#server/utils/editions';
+import { listView, stackOf } from '#shared/utils/lists';
 import {
   NOTE_MAX,
   addNote,
@@ -20,7 +25,7 @@ const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
-const { t, tk } = useT();
+const { t, tk, locale } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
@@ -97,6 +102,22 @@ const toggleAll = () => {
     : withEmail.value.map((p) => p.participationId);
 };
 
+// Past ten people, a search; past twelve, five rows then a fold row. The
+// selection always covers the whole list, shown or not.
+const SEARCH_FROM = 10;
+const SHOWN = 5;
+const query = ref('');
+const expanded = ref(false);
+const searchable = computed(() => participants.value.length > SEARCH_FROM);
+const view = computed(() =>
+  listView(participants.value, {
+    query: query.value,
+    expanded: expanded.value,
+    shown: SHOWN,
+    nameOf: (p) => p.firstName,
+  }),
+);
+
 // The preview shows the message of the first one ticked.
 const messages = useMessagesQuery(slug, id, type);
 const first = computed(() =>
@@ -112,6 +133,25 @@ const preview = computed(() => {
 
 const sendEmails = useSendEmailsMutation(slug, id);
 /**
+ * Says who was just sent the message: up to three first names, then how
+ * many others.
+ * @param names - The first names of those sent to.
+ * @returns "Inès, Louis et Rose sont prévenus."
+ */
+const sentTo = (names: string[]) => {
+  const { shown, more } = stackOf(names, 3);
+  const list =
+    more > 0
+      ? t('adminEdition.screen.drawSheet.andOthers', {
+          names: shown.join(', '),
+          count: more,
+        })
+      : new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
+          shown,
+        );
+  return t('adminEdition.screen.sentTo', { names: list, count: names.length });
+};
+/**
  * Sends the message to those ticked, then goes back to the edition.
  * @returns Nothing: the mutation reports by itself.
  */
@@ -125,11 +165,13 @@ const onSend = () =>
       notePosition: 'after',
     },
     {
-      onSuccess: () => {
+      onSuccess: ({ sent, left }) => {
+        const names = participants.value
+          .filter((p) => isSelected(p.participationId))
+          .map((p) => p.firstName);
         toast.add({
-          title: t('adminEdition.cockpit.email.sent', {
-            count: selected.value.length,
-          }),
+          title: t('adminEdition.cockpit.email.sent', { count: sent }),
+          description: left === 0 && sent > 0 ? sentTo(names) : undefined,
           color: 'success',
           icon: 'i-lucide-mail-check',
         });
@@ -177,11 +219,23 @@ const onSend = () =>
             @click="toggleAll"
           />
         </div>
+        <UiSearchField
+          v-if="searchable"
+          v-model="query"
+          :label="t('adminEdition.screen.lists.search')"
+          :clear-label="t('adminEdition.screen.lists.clear')"
+        />
         <ul
           class="divide-y divide-divider overflow-hidden rounded-lg bg-default ring-1 ring-default"
         >
           <li
-            v-for="p in participants"
+            v-if="view.shown.length === 0"
+            class="px-4 py-3 text-sm text-muted"
+          >
+            {{ t('adminEdition.screen.lists.noMatch') }}
+          </li>
+          <li
+            v-for="p in view.shown"
             :key="p.participationId"
             class="flex min-h-14 items-center gap-3 px-4 py-2"
           >
@@ -189,6 +243,7 @@ const onSend = () =>
             <div class="min-w-0 grow">
               <p class="truncate font-semibold">{{ p.firstName }}</p>
               <p class="truncate text-xs text-muted">
+                {{ t(`adminEdition.screen.lists.series.${followState(p)}`) }} ·
                 {{ p.email ?? t('adminEdition.screen.emails.noEmail') }}
               </p>
             </div>
@@ -218,6 +273,14 @@ const onSend = () =>
               "
             />
           </li>
+          <UiFoldRow
+            v-if="view.rest.length"
+            :avatars="view.rest.map((p) => p.avatar)"
+            :label="
+              t('adminEdition.screen.lists.more', { count: view.rest.length })
+            "
+            @expand="expanded = true"
+          />
         </ul>
       </section>
 

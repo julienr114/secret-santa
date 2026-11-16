@@ -57,11 +57,20 @@ const message = computed(() =>
     : '',
 );
 
-/** The settings as saved, sent again with the one that changes. */
+/** Settings chosen and not yet confirmed by the server, shown at once. */
+const pending = ref<
+  Partial<{
+    until: string | null;
+    places: number | null;
+    message: string | null;
+  }>
+>({});
+/** The settings as shown, sent again with the one that changes. */
 const settings = computed(() => ({
   until: group.value?.inviteUntil ?? null,
   places: group.value?.invitePlaces ?? null,
   message: group.value?.inviteMessage ?? null,
+  ...pending.value,
 }));
 const editing = ref<null | 'places' | 'until' | 'message'>(null);
 const sheetOpen = (which: 'places' | 'until' | 'message') =>
@@ -74,17 +83,22 @@ const sheetOpen = (which: 'places' | 'until' | 'message') =>
 const placesOpen = sheetOpen('places');
 const untilOpen = sheetOpen('until');
 const messageOpen = sheetOpen('message');
-const error = ref<string | null>(null);
-watch(editing, () => {
-  error.value = null;
-});
 /**
- * Saves one setting of the link, then closes its sheet.
+ * Whether a setting is being saved.
+ * @param key - The setting.
+ * @returns True while its change is on its way.
+ */
+const savingKey = (key: 'until' | 'places' | 'message') => key in pending.value;
+/**
+ * Saves one setting of the link, shown at once, its sheet closed; an
+ * error puts the old value back with a toast (README 23.3).
  * @param change - The setting that changes.
- * @returns Nothing: the mutation reports by itself.
+ * @returns Nothing: errors are told in a toast.
  */
 const save = (change: Partial<typeof settings.value>) => {
+  editing.value = null;
   const next = { ...settings.value, ...change };
+  pending.value = { ...pending.value, ...change };
   mutation.mutate(
     {
       open: true,
@@ -93,12 +107,10 @@ const save = (change: Partial<typeof settings.value>) => {
       message: next.message?.trim() || null,
     },
     {
-      onSuccess: () => {
-        editing.value = null;
+      onSettled: () => {
+        pending.value = {};
       },
-      onError: (failure) => {
-        error.value = errorMessage(failure);
-      },
+      onError,
     },
   );
 };
@@ -234,16 +246,22 @@ const messageValue = computed(() =>
           <UiListItem
             :title="t('adminEdition.invite.places')"
             :value="String(settings.places ?? room)"
+            :busy="savingKey('places')"
+            :busy-label="t('common.actions.saving')"
             :on-click="() => (editing = 'places')"
           />
           <UiListItem
             :title="t('adminEdition.invite.until')"
             :value="untilValue"
+            :busy="savingKey('until')"
+            :busy-label="t('common.actions.saving')"
             :on-click="() => (editing = 'until')"
           />
           <UiListItem
             :title="t('adminEdition.invite.messageRow')"
             :value="messageValue"
+            :busy="savingKey('message')"
+            :busy-label="t('common.actions.saving')"
             :on-click="() => (editing = 'message')"
           />
         </UiList>
@@ -318,8 +336,6 @@ const messageValue = computed(() =>
       :increase-label="t('adminEdition.invite.more')"
       :validate-label="t('common.actions.validate')"
       :cancel-label="t('common.actions.cancel')"
-      :error="error"
-      :loading="mutation.isPending.value"
       @validate="(places) => save({ places })"
     />
     <AdminDateSheet
@@ -329,8 +345,6 @@ const messageValue = computed(() =>
       :label="t('adminEdition.invite.dateLabel')"
       :value="settings.until ?? ''"
       :clear-label="t('adminEdition.invite.noUntil')"
-      :error="error"
-      :loading="mutation.isPending.value"
       @validate="(until) => save({ until: until || null })"
     />
     <UiTextSheet
@@ -342,8 +356,6 @@ const messageValue = computed(() =>
       :maxlength="INVITE_MESSAGE_MAX"
       :validate-label="t('common.actions.validate')"
       :cancel-label="t('common.actions.cancel')"
-      :error="error"
-      :loading="mutation.isPending.value"
       @validate="(text) => save({ message: text })"
     />
   </AdminScreen>

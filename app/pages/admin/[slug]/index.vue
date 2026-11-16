@@ -5,18 +5,14 @@ import {
   useOrganizersQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
-import { useDeleteGroupMutation } from '~/composables/queries/useGroups';
 
 // Group home: the edition going on (or the card to prepare the next one),
 // the group in four rows (members, exclusions, journal, settings), then
 // the past editions.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
-const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const { user } = useUserSession();
-const isSuper = computed(() => user.value?.role === 'super_admin');
 const dashboard = useDashboardQuery(slug);
 const name = computed(() => dashboard.data.value?.group.name ?? slug.value);
 
@@ -62,35 +58,6 @@ const past = computed(() =>
     .filter((e) => e.id !== dashboard.data.value?.currentEditionId)
     .toReversed(),
 );
-const toast = useToast();
-// Deleting the group and everything in it: super-admin only, and only
-// after typing the group's identifier.
-const deleteGroup = useDeleteGroupMutation();
-const deleteOpen = ref(false);
-const deleteConfirm = ref('');
-const openDelete = () => {
-  deleteConfirm.value = '';
-  deleteGroup.reset();
-  deleteOpen.value = true;
-};
-const canDelete = computed(() => deleteConfirm.value.trim() === slug.value);
-const onDelete = () => {
-  const id = dashboard.data.value?.group.id;
-  if (!id || !canDelete.value) return;
-  deleteGroup.mutate(
-    { id, confirm: deleteConfirm.value },
-    {
-      onSuccess: () => {
-        toast.add({
-          title: t('adminGroup.dashboard.deleteDone'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
-        navigateTo('/', { replace: true });
-      },
-    },
-  );
-};
 const editionSubtitle = (status: string, count?: number) =>
   `${tk(`common.status.${status}`)} · ${t('common.count.participants', { count: count ?? 0 })}`;
 </script>
@@ -168,59 +135,6 @@ const editionSubtitle = (status: string, count?: number) =>
           :subtitle="editionSubtitle(edition.status, edition.participantCount)"
         />
       </UiList>
-
-      <UiList v-if="isSuper" :title="t('adminGroup.dashboard.superSection')">
-        <UiListItem
-          icon="i-lucide-trash-2"
-          tone="danger"
-          :title="t('adminGroup.dashboard.deleteGroup')"
-          :subtitle="t('adminGroup.dashboard.deleteGroupHint')"
-          :on-click="openDelete"
-        />
-      </UiList>
-      <UDrawer
-        v-model:open="deleteOpen"
-        :title="t('adminGroup.dashboard.deleteTitle', { name })"
-        :description="t('adminGroup.dashboard.deleteDescription')"
-      >
-        <template #body>
-          <form
-            id="delete-group-form"
-            class="flex flex-col gap-4 py-2"
-            novalidate
-            @submit.prevent="onDelete"
-          >
-            <UFormField
-              :label="t('adminGroup.dashboard.deleteConfirmLabel', { slug })"
-            >
-              <UInput
-                v-model="deleteConfirm"
-                autocomplete="off"
-                autocapitalize="off"
-                class="w-full"
-              />
-            </UFormField>
-            <UAlert
-              v-if="deleteGroup.isError.value"
-              color="error"
-              variant="subtle"
-              :description="errorMessage(deleteGroup.error.value)"
-            />
-          </form>
-        </template>
-        <template #footer>
-          <UButton
-            type="submit"
-            form="delete-group-form"
-            block
-            color="error"
-            icon="i-lucide-trash-2"
-            :disabled="!canDelete"
-            :loading="deleteGroup.isPending.value"
-            :label="t('adminGroup.dashboard.deleteAction')"
-          />
-        </template>
-      </UDrawer>
     </AdminQueryState>
   </AdminScreen>
 </template>

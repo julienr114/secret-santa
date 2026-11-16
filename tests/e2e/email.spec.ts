@@ -207,6 +207,8 @@ test('only the super-admin can delete a group, with everything in it', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
+  await page.goto(`/admin/${SLUG}/reglages`);
+  await hydrated(page);
   await expect(page.getByText('Supprimer le groupe')).toHaveCount(0);
   const refused = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
@@ -222,9 +224,12 @@ test('only the super-admin can delete a group, with everything in it', async ({
     { data: { confirm: 'autre-chose' } },
   );
   expect(careless.status()).toBe(400);
-  await page.goto(`/admin/${SLUG}`);
+  await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
   await page.getByText('Supprimer le groupe').click();
+  await expect(
+    page.getByRole('button', { name: 'Garder le groupe' }),
+  ).toBeVisible();
   const confirm = page.getByRole('button', {
     name: 'Supprimer définitivement',
   });

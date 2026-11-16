@@ -279,9 +279,9 @@ test('organisers decide who organises with them', async ({
 
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
   await page.getByRole('link', { name: /^Réglages/ }).click();
-  await page.getByRole('link', { name: /Organisateurs/ }).click();
-  await expect(heading(page)).toHaveText('Organisateurs');
-  await expect(page.getByText(GROUP.organizer)).toBeVisible();
+  await expect(heading(page)).toHaveText('Réglages');
+  const section = page.getByTestId('organizers');
+  await expect(section.getByText(GROUP.organizer)).toBeVisible();
   await expect(page.getByText('C’est toi')).toBeVisible();
   // Nobody removes themselves by a slip: no cross on one's own row.
   await expect(
@@ -290,10 +290,10 @@ test('organisers decide who organises with them', async ({
     }),
   ).toHaveCount(0);
 
-  await page.getByText('Ajouter un organisateur').click();
-  await page.getByLabel('Adresse email').fill(coOrganizer);
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page.getByText(coOrganizer)).toBeVisible();
+  await page.getByRole('button', { name: /^Ajouter un organisateur/ }).click();
+  await page.getByLabel('Son adresse email').fill(coOrganizer);
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  await expect(section.getByText(coOrganizer)).toBeVisible();
 
   // Named, the same session manages the group, without logging in again.
   const groups = await (await other.get('/api/admin/groups')).json();

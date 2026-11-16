@@ -51,15 +51,19 @@ test('the three emails are on by default and can be turned off', async ({
   await hydrated(page);
   const section = page.getByTestId('notifications');
   const joined = section.getByRole('switch', {
-    name: 'Quand quelqu’un rejoint le groupe par le lien',
+    name: 'Quelqu’un rejoint le groupe par le lien',
   });
   await expect(joined).toBeChecked();
   await expect(
-    section.getByRole('switch', { name: 'Rappel avant l’échange' }),
+    section.getByRole('switch', { name: 'Rappel 3 jours avant la fête' }),
   ).toBeChecked();
+  // A switch saves as soon as it is turned: no « Enregistrer ».
+  const saved = page.waitForResponse(
+    (r) => r.url().endsWith('/rules') && r.request().method() === 'PATCH',
+  );
   await joined.click();
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(page.getByText(/enregistr/i).first()).toBeVisible();
+  await saved;
+  await expect(joined).not.toBeChecked();
   const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
   expect(rules.notifyJoined).toBe(false);
   expect(rules.notifyReminder).toBe(true);

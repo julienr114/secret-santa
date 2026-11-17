@@ -11,12 +11,41 @@ const emit = defineEmits<{ open: [] }>();
 const { t } = useT();
 const party = usePartyText();
 
-const envelope = computed(() =>
-  envelopeState(personalPhase(props.draw.status), props.draw.revealed, false),
+/** New hints from the person they give to, to read (lot 16 bis). */
+const newHints = computed(
+  () => props.draw.status === 'drawn' && props.draw.receiverHints === 'new',
 );
+const envelope = computed(() =>
+  newHints.value
+    ? 'sealed'
+    : envelopeState(
+        personalPhase(props.draw.status),
+        props.draw.revealed,
+        false,
+      ),
+);
+/** The line under the title: the party, after the news when there are. */
+const partyLine = computed(() => {
+  if (!newHints.value) return party.long(props.draw.eventDate);
+  const when = party.short(props.draw.eventDate);
+  return [
+    t('auth.home.drawCard.newHintsBody'),
+    when && `${when.charAt(0).toUpperCase()}${when.slice(1)}.`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+});
 /** Title and button of the card, by what the draw waits for. */
 const state = computed(() => {
   const { draw } = props;
+  if (newHints.value) {
+    return {
+      title: t('auth.home.drawCard.newHints'),
+      button: t('auth.home.drawCard.readHints'),
+      to: draw.path,
+      variant: 'solid' as const,
+    };
+  }
   if (draw.status === 'drawn') {
     return draw.revealed
       ? {
@@ -61,8 +90,8 @@ const state = computed(() => {
       <h2 class="font-display text-[22px] leading-snug font-bold">
         {{ state.title }}
       </h2>
-      <span v-if="party.long(draw.eventDate)" class="text-sm text-muted">
-        {{ party.long(draw.eventDate) }}
+      <span v-if="partyLine" class="text-sm text-muted">
+        {{ partyLine }}
       </span>
     </NuxtLink>
     <UButton
@@ -70,7 +99,7 @@ const state = computed(() => {
       :to="state.to"
       block
       size="xl"
-      icon="i-lucide-gift"
+      :icon="newHints ? undefined : 'i-lucide-gift'"
       :variant="state.variant"
       class="min-h-14 justify-center font-bold"
       :label="state.button"

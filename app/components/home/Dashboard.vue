@@ -47,7 +47,11 @@ const action = computed(() =>
   data.value ? pickHomeAction(data.value, today, dismissed.value) : null,
 );
 /** Cards about the one draw, which its own card already shows. */
-const ABOUT_THE_DRAW: readonly HomeActionKind[] = ['discover', 'addHints'];
+const ABOUT_THE_DRAW: readonly HomeActionKind[] = [
+  'discover',
+  'readHints',
+  'addHints',
+];
 const topCard = computed(() =>
   layout.value === 'singleDraw' &&
   action.value &&

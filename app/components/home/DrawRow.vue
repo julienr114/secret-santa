@@ -39,7 +39,9 @@ const icon = computed(() => {
 const news = computed(() => Boolean(props.draw.journal) && !props.quietJournal);
 const subtitle = computed(() =>
   [
-    t(`auth.home.step.${props.draw.step}.state`),
+    props.draw.status === 'drawn' && props.draw.receiverHints === 'new'
+      ? t('auth.home.newHints')
+      : t(`auth.home.step.${props.draw.step}.state`),
     !props.noParty && party.short(props.draw.eventDate),
   ]
     .filter(Boolean)

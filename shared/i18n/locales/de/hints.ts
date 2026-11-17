@@ -179,6 +179,8 @@ export default {
   },
   result: {
     title: 'Damit du besser wählst',
+    isNew: 'Neu',
+    updatedOn: 'Hinweise aktualisiert am {date}',
     none: '{name} hat noch keine Hinweise hinterlassen.',
     ask: 'Um Hinweise bitten',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
@@ -190,7 +192,6 @@ export default {
     willEmail: 'Du bekommst eine E-Mail, sobald Hinweise da sind.',
     willSee:
       'Schau wieder hier vorbei: Die Hinweise erscheinen, sobald sie da sind.',
-    waiting: 'Geschenk-Hinweise warten auf dich.',
   },
   request: {
     title: '{name} um Hinweise bitten?',
@@ -208,6 +209,10 @@ export default {
     cancel: 'Nicht jetzt',
   },
   state: {
+    hintsLeft: {
+      one: '{count} von {total} hat Hinweise hinterlassen',
+      other: '{count} von {total} haben Hinweise hinterlassen',
+    },
     none: 'Noch nichts',
     filledEditable: 'Ausgefüllt · änderbar bis zur Feier',
     filledLocked: 'Ausgefüllt · nicht mehr änderbar',

@@ -295,11 +295,13 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   // hints are waiting, without any name.
   await expect(page.getByText('Tu sais déjà à qui tu offres')).toBeVisible();
   await expect(
-    page.getByText('Des pistes de cadeaux t’attendent.'),
+    page.getByText('Ses pistes de cadeaux t’attendent à l’intérieur.', {
+      exact: false,
+    }),
   ).toBeVisible();
   await expect(page.locator('main')).not.toContainText(receiver);
   await page
-    .getByRole('button', { name: "Revoir à qui j'offre un cadeau" })
+    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
     .click();
   await expect(page.getByTestId('receiver')).toHaveText(receiver);
   await page.getByRole('button', { name: 'Cacher mon résultat' }).click();

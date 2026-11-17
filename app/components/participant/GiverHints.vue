@@ -14,7 +14,7 @@ const props = defineProps<{
   token: string;
   reveal: Reveal & { hints: NonNullable<Reveal['hints']> };
 }>();
-const { t, tk } = useT();
+const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
 const request = useRequestHintsMutation(() => props.token);
 const busy = useBusy(() => request.isPending.value);
@@ -40,6 +40,15 @@ const answered = computed(
     said.value.prefers.length > 0 ||
     Boolean(sentences.value) ||
     said.value.indifferent.length > 0,
+);
+/** « le 16 novembre », in the reader's language. */
+const updatedOn = computed(() =>
+  hints.value.updatedAt
+    ? new Intl.DateTimeFormat(locale.value, {
+        day: 'numeric',
+        month: 'long',
+      }).format(new Date(hints.value.updatedAt))
+    : '',
 );
 const texts = computed(() => portraitTexts(hints.value.portrait.texts));
 const empty = computed(
@@ -67,9 +76,23 @@ const onSend = () =>
 
 <template>
   <div class="flex flex-col gap-3.5" data-testid="giver-hints">
-    <h2 class="font-display text-xl font-bold">
-      {{ t('hints.result.title') }}
-    </h2>
+    <div class="flex flex-col gap-0.5">
+      <div class="flex items-center gap-2">
+        <h2 class="font-display text-xl font-bold">
+          {{ t('hints.result.title') }}
+        </h2>
+        <span
+          v-if="hints.isNew"
+          class="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-inverted"
+          data-testid="hints-new"
+        >
+          {{ t('hints.result.isNew') }}
+        </span>
+      </div>
+      <p v-if="hints.isNew && updatedOn" class="text-[13px] text-toned">
+        {{ t('hints.result.updatedOn', { date: updatedOn }) }}
+      </p>
+    </div>
     <template v-if="!empty">
       <div
         v-if="answered"

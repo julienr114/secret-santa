@@ -177,10 +177,31 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page.getByRole('link', { name: 'Commencer' }).click();
   await page.getByTestId('hint-second').click();
   await expect(heading(page)).toHaveText('Un objet, ou un moment ?');
+  // New hints are put forward to the giver (lot 16 bis): on their home,
+  // once logged in with their address…
+  const home = await page
+    .context()
+    .browser()!
+    .newContext({
+      baseURL: page.url().split('/p/')[0],
+    });
+  const giverPage = await home.newPage();
+  await apiLogin(
+    giverPage.request,
+    `${giver.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()}-trefle@example.com`,
+  );
+  await open(giverPage, '/');
+  await expect(giverPage.getByTestId('draw-card')).toContainText(
+    'De nouvelles pistes pour ton cadeau',
+  );
+  await home.close();
+  // …and on the page of the draw, until the result is opened again.
   await open(page, `/p/${state.tokens[giver]}`);
+  await expect(page.getByText('De nouvelles pistes t’attendent')).toBeVisible();
   await page
-    .getByRole('button', { name: "Revoir à qui j'offre un cadeau" })
+    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
     .click();
+  await expect(page.getByTestId('hints-new')).toHaveText('Nouveau');
   // The giver reads it in sentences.
   await expect(page.getByTestId('giver-portrait')).toContainText(
     `${receiver} préfère :`,
@@ -188,6 +209,18 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await expect(page.getByTestId('giver-portrait')).toContainText(
     'un cadeau surprenant plutôt qu’utile',
   );
+  // Opened once, they are no longer new.
+  await open(page, `/p/${state.tokens[giver]}`);
+  await expect(page.getByText('Tu sais déjà à qui tu offres')).toBeVisible();
+  await expect(
+    page.getByText('Ses pistes de cadeaux t’attendent à l’intérieur.', {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
+    .click();
+  await expect(page.getByTestId('hints-new')).toHaveCount(0);
   // The request is answered: the banner is gone.
   const answered = await ok(
     await page.request.get(`/api/p/${state.tokens[receiver]}/hints`),
@@ -204,6 +237,12 @@ test('asking for hints is anonymous, and possible once per draw', async ({
     ]),
   ).toContainEqual([receiver, true]);
   expect(JSON.stringify(edition)).not.toMatch(/surprenant|second/);
+  // On the follow-up, a count, never which ones are new nor for whom.
+  await page.context().addCookies((await admin().storageState()).cookies);
+  await open(page, `/admin/${SLUG}/editions/${state.editionId}`);
+  await expect(page.getByTestId('hints-count')).toHaveText(
+    '1 sur 3 a laissé des pistes',
+  );
 });
 
 test('a cancelled draw takes its requests away', async ({ page }) => {

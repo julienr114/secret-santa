@@ -174,6 +174,10 @@ const envelope = computed(() =>
     false,
   ),
 );
+/** No hint from the person they give to, or the edition is closed. */
+const withoutHints = computed(
+  () => me.value?.receiverHints === 'none' || me.value?.phase === 'closed',
+);
 /** Title, text and line under the button of the middle card. */
 const card = computed(() => {
   const state = me.value;
@@ -187,17 +191,32 @@ const card = computed(() => {
     case 'ready':
       return {
         title: t('participant.home.ready.title'),
-        body: t('participant.home.ready.body'),
+        body:
+          state && state.receiverHints !== 'none'
+            ? t('participant.home.ready.bodyHints')
+            : t('participant.home.ready.body'),
         hint: t('participant.home.ready.hint'),
       };
     case 'seen':
+      // Hints put forward (lot 16 bis): new ones, some, or none yet.
+      if (state?.receiverHints === 'new') {
+        return {
+          title: t('participant.home.seen.newTitle'),
+          body: t('participant.home.seen.newBody'),
+          hint: '',
+        };
+      }
+      if (state?.receiverHints === 'some') {
+        return {
+          title: t('participant.home.seen.title'),
+          body: t('participant.home.seen.bodyHints'),
+          hint: '',
+        };
+      }
       return {
         title: t('participant.home.seen.title'),
         body: t('participant.home.seen.body'),
-        hint:
-          state && state.receiverHints !== 'none'
-            ? t('hints.result.waiting')
-            : '',
+        hint: state?.canAskHints ? t('participant.home.seen.noHintsYet') : '',
       };
     default:
       return {
@@ -295,15 +314,18 @@ const card = computed(() => {
           block
           size="xl"
           icon="i-lucide-gift"
-          :variant="me.revealed ? 'outline' : 'solid'"
+          class="font-bold"
+          :variant="me.revealed && withoutHints ? 'outline' : 'solid'"
           :disabled="revealMutation.isPending.value"
           :loading="revealing"
           :label="
             revealing
               ? t('participant.home.ready.revealing')
-              : me.revealed
-                ? t('participant.home.seen.revealAgain')
-                : t('participant.home.ready.reveal')
+              : !me.revealed
+                ? t('participant.home.ready.reveal')
+                : withoutHints
+                  ? t('participant.home.seen.revealAgain')
+                  : t('participant.home.seen.revealWithHints')
           "
           @click="onReveal"
         />

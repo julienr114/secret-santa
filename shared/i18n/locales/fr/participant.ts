@@ -25,6 +25,8 @@ export default {
     ready: {
       title: "Ton enveloppe t'attend",
       body: "Le tirage est fait. Assure-toi que personne ne regarde ton écran avant de l'ouvrir.",
+      bodyHints:
+        'Le tirage est fait, et des pistes de cadeaux t’attendent à l’intérieur. Assure-toi que personne ne regarde ton écran avant de l’ouvrir.',
       reveal: "Découvrir à qui j'offre un cadeau",
       revealing: 'Ouverture de l’enveloppe…',
       hint: 'Ton résultat se referme dès que tu quittes la page.',
@@ -36,6 +38,13 @@ export default {
     seen: {
       title: 'Tu sais déjà à qui tu offres',
       body: 'Un trou de mémoire ? Assure-toi que personne ne regarde ton écran.',
+      bodyHints:
+        'Ses pistes de cadeaux t’attendent à l’intérieur. Assure-toi que personne ne regarde ton écran.',
+      newTitle: 'De nouvelles pistes t’attendent',
+      newBody:
+        'La personne à qui tu offres en a laissé depuis ta dernière visite. Assure-toi que personne ne regarde ton écran.',
+      revealWithHints: 'Revoir mon résultat et ses pistes',
+      noHintsYet: 'Pas encore de pistes. Tu pourras lui en demander.',
       revealAgain: "Revoir à qui j'offre un cadeau",
     },
     closed: {

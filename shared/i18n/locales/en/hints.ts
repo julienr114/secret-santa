@@ -179,6 +179,8 @@ export default {
   },
   result: {
     title: 'To help you choose',
+    isNew: 'New',
+    updatedOn: 'Hints updated on {date}',
     none: '{name} hasn’t left any hints yet.',
     ask: 'Ask for hints',
     askHint: 'Without saying it comes from you.',
@@ -188,7 +190,6 @@ export default {
       '{name} will see it on their hints page, without knowing it comes from you.',
     willEmail: 'You will get an email as soon as hints arrive.',
     willSee: 'Come back here: the hints will show as soon as they arrive.',
-    waiting: 'Gift hints are waiting for you.',
   },
   request: {
     title: 'Ask {name} for hints?',
@@ -206,6 +207,10 @@ export default {
     cancel: 'Not now',
   },
   state: {
+    hintsLeft: {
+      one: '{count} of {total} left hints',
+      other: '{count} of {total} left hints',
+    },
     none: 'Nothing yet',
     filledEditable: 'Filled in · can be changed until the party',
     filledLocked: 'Filled in · can no longer be changed',

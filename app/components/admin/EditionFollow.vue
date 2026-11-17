@@ -38,6 +38,13 @@ const { t } = useT();
 const base = computed(() => `/admin/${props.slug}/editions/${props.editionId}`);
 const sorted = computed(() => sortParticipants(props.participants, 'drawn'));
 const counts = computed(() => participantCounters(props.participants));
+/**
+ * How many left gift hints (lot 16 bis): a number, never which ones are
+ * new nor for whom.
+ */
+const withHints = computed(
+  () => props.participants.filter((p) => p.hasHints).length,
+);
 const allNotified = computed(() => counts.value.toNotify === 0);
 /** The message the email screen opens on. */
 const emailType = computed(() => {
@@ -252,6 +259,18 @@ const partyTitle = computed(() =>
     <UiSectionTitle>{{
       t('common.count.participants', { count: participants.length })
     }}</UiSectionTitle>
+    <p
+      v-if="withHints > 0"
+      class="px-1 text-[13px] text-toned"
+      data-testid="hints-count"
+    >
+      {{
+        t('hints.state.hintsLeft', {
+          count: withHints,
+          total: participants.length,
+        })
+      }}
+    </p>
     <UiSearchField
       v-if="searchable"
       v-model="query"

@@ -27,6 +27,8 @@ export default {
     ready: {
       title: 'Your envelope is waiting',
       body: 'The draw is done. Make sure nobody is looking at your screen before you open it.',
+      bodyHints:
+        'The draw is done, and gift hints are waiting for you inside. Make sure nobody is looking at your screen before you open it.',
       reveal: 'Find out who I am giving a gift to',
       revealing: 'Opening the envelope…',
       hint: 'Your result closes as soon as you leave the page.',
@@ -38,6 +40,13 @@ export default {
     seen: {
       title: 'You already know who you are giving to',
       body: 'A memory lapse? Make sure nobody is looking at your screen.',
+      bodyHints:
+        'Their gift hints are waiting for you inside. Make sure nobody is looking at your screen.',
+      newTitle: 'New hints are waiting for you',
+      newBody:
+        'The person you give to left some since your last visit. Make sure nobody is looking at your screen.',
+      revealWithHints: 'See my result and their hints again',
+      noHintsYet: 'No hints yet. You can ask them for some.',
       revealAgain: 'See who I am giving to again',
     },
     closed: {

@@ -181,6 +181,8 @@ export default {
   // On the giver's result.
   result: {
     title: 'Pour t’aider à choisir',
+    isNew: 'Nouveau',
+    updatedOn: 'Pistes mises à jour le {date}',
     none: '{name} n’a pas encore laissé de pistes.',
     ask: 'Lui demander des pistes',
     askHint: 'Sans dire que ça vient de toi.',
@@ -191,7 +193,6 @@ export default {
       '{name} le verra sur sa page de pistes, sans savoir que ça vient de toi.',
     willEmail: 'Tu recevras un email dès que des pistes arrivent.',
     willSee: 'Reviens ici : les pistes s’afficheront dès qu’elles arrivent.',
-    waiting: 'Des pistes de cadeaux t’attendent.',
   },
   request: {
     title: 'Demander des pistes à {name} ?',
@@ -210,6 +211,10 @@ export default {
   },
   // Lines that say where someone's hints stand.
   state: {
+    hintsLeft: {
+      one: '{count} sur {total} a laissé des pistes',
+      other: '{count} sur {total} ont laissé des pistes',
+    },
     none: 'Rien pour l’instant',
     filledEditable: 'Remplies · modifiables jusqu’à la fête',
     filledLocked: 'Remplies · plus modifiables',

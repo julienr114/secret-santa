@@ -27,6 +27,8 @@ export default {
     ready: {
       title: 'Dein Umschlag wartet auf dich',
       body: 'Die Auslosung ist erfolgt. Achte darauf, dass niemand auf deinen Bildschirm schaut, bevor du ihn öffnest.',
+      bodyHints:
+        'Die Auslosung ist erfolgt, und drinnen warten Geschenk-Hinweise auf dich. Achte darauf, dass niemand auf deinen Bildschirm schaut, bevor du ihn öffnest.',
       reveal: 'Erfahren, wen ich beschenke',
       revealing: 'Umschlag wird geöffnet…',
       hint: 'Dein Ergebnis schließt sich, sobald du die Seite verlässt.',
@@ -38,6 +40,13 @@ export default {
     seen: {
       title: 'Du weißt schon, wen du beschenkst',
       body: 'Vergessen? Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      bodyHints:
+        'Drinnen warten die Geschenk-Hinweise auf dich. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      newTitle: 'Neue Hinweise warten auf dich',
+      newBody:
+        'Die Person, die du beschenkst, hat seit deinem letzten Besuch welche hinterlassen. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      revealWithHints: 'Mein Ergebnis und die Hinweise noch einmal sehen',
+      noHintsYet: 'Noch keine Hinweise. Du kannst darum bitten.',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
     },
     closed: {

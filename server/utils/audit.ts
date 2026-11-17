@@ -30,6 +30,12 @@ export const AUDIT_TYPES = [
   'language_changed',
   'edition_closed',
   'draw_revealed',
+  // A draw made elsewhere (README 22.12): never what anyone answered.
+  'answers_started',
+  'answer_given',
+  'answer_changed',
+  'answers_validated',
+  'answers_abandoned',
 ] as const;
 export type AuditType = (typeof AUDIT_TYPES)[number];
 

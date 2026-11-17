@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
   const { group, db, edition, rules } = await requireEdition(event);
   const { type } = await validatedQuery(event, querySchema);
   // Nothing to share for a message that does not fit the edition's stage.
-  if (!messageTypesFor(edition.status).includes(type)) return { messages: {} };
+  if (!messageTypesFor(edition.status, edition.drawMode).includes(type))
+    return { messages: {} };
   const dataKey = await dataKeyOf(event);
   const [people, rows] = await Promise.all([
     listParticipants(db, edition.id),

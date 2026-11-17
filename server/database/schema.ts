@@ -5,6 +5,7 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/sqlite-core';
+import { DRAW_MODES } from '../utils/answers';
 
 // Data model from README section 10. Ids are text (nanoid), dates are ISO
 // 8601 UTC strings, booleans are integers. Every query must filter on the
@@ -98,6 +99,9 @@ export const editions = sqliteTable(
     // When the organiser revealed who gave to whom (README 22.9, lot 13):
     // for good, and before closing.
     revealedAt: text('revealed_at'),
+    // Drawn by the app, or already elsewhere: then each participant says
+    // who they give to (README 22.12, lot 17).
+    drawMode: text('draw_mode', { enum: DRAW_MODES }).notNull().default('app'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('editions_group_idx').on(t.groupId)],
@@ -217,6 +221,25 @@ export const hintRequests = sqliteTable(
     answeredAt: text('answered_at'),
   },
   (t) => [index('hint_requests_edition_idx').on(t.editionId)],
+);
+
+// Who each participant says they give to, for a draw made elsewhere
+// (README 22.12). The receiver is a person, encrypted like a draw's; never
+// sent to the organiser. Gone once validated (then a draw) or abandoned.
+export const drawAnswers = sqliteTable(
+  'draw_answers',
+  {
+    participationId: text('participation_id')
+      .primaryKey()
+      .references(() => participations.id),
+    editionId: text('edition_id')
+      .notNull()
+      .references(() => editions.id),
+    receiverEnc: text('receiver_enc').notNull(),
+    receiverIv: text('receiver_iv').notNull(),
+    answeredAt: text('answered_at').notNull(),
+  },
+  (t) => [index('draw_answers_edition_idx').on(t.editionId)],
 );
 
 export const AUDIT_ACTORS = [

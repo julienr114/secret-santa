@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
   const { type, audience, participationIds, note, notePosition } =
     await validatedBody(event, bodySchema);
-  if (!messageTypesFor(edition.status).includes(type)) {
+  if (!messageTypesFor(edition.status, edition.drawMode).includes(type)) {
     throw createError({
       statusCode: 409,
       statusMessage: 'message_not_available',

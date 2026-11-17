@@ -28,6 +28,17 @@ export default {
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
     draw_revealed:
       'Der Organisator hat die Ergebnisse der Auslosung aufgedeckt',
+    answers_started:
+      'Der Organisator hat angegeben, dass die Auslosung woanders stattfand: Jeder gibt seine Antwort',
+    answer_given: '{name} hat die eigene Antwort gegeben',
+    answer_changed: '{name} hat die eigene Antwort geändert',
+    answers_validated: {
+      one: 'Der Organisator hat die Antworten bestätigt: Die Auslosung gilt für {count} Teilnehmer',
+      other:
+        'Der Organisator hat die Antworten bestätigt: Die Auslosung gilt für {count} Teilnehmer',
+    },
+    answers_abandoned:
+      'Der Organisator hat die Antworten verworfen, um mit der App auszulosen',
   },
   noReason: 'nicht angegeben',
   what: {
@@ -35,6 +46,9 @@ export default {
     drawn: '„Auslosung erfolgt“',
     reminder: '„Erinnerung“',
     redraw: '„Neue Auslosung“',
+    answerRequest: '„Anfrage“',
+    answerReminder: '„Erinnerung“',
+    answerCheck: '„Zu prüfen“',
     other: 'eine Nachricht',
   },
   via: {
@@ -54,6 +68,8 @@ export default {
     result_viewed: 'Du hast dein Ergebnis entdeckt',
     avatar_changed: 'Du hast dein Symbol geändert',
     language_changed: 'Du hast deine Sprache geändert ({language})',
+    answer_given: 'Du hast deine Antwort gegeben',
+    answer_changed: 'Du hast deine Antwort geändert',
   },
   screen: {
     helpLink: 'Wozu dient es?',

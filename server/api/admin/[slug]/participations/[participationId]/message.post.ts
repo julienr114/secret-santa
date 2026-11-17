@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
   }
   const { type, via } = await validatedBody(event, bodySchema);
-  if (!messageTypesFor(edition.status).includes(type)) {
+  if (!messageTypesFor(edition.status, edition.drawMode).includes(type)) {
     throw createError({
       statusCode: 409,
       statusMessage: 'message_not_available',

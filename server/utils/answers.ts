@@ -184,3 +184,35 @@ export const answersCard = (state: AnswersState): AnswersCard => {
   if (state.deduced) return 'oneMissing';
   return 'collect';
 };
+
+export const ANSWER_ACTIONS = [
+  'start',
+  'abandon',
+  'validate',
+  'answer',
+  'draw',
+] as const;
+/** What can be done around the answers, and the ordinary draw. */
+export type AnswerAction = (typeof ANSWER_ACTIONS)[number];
+
+/**
+ * Whether an action fits the edition now: the mode is chosen, and the
+ * answers given, abandoned or validated, only before the draw; the app
+ * draws only an edition not waiting for answers.
+ * @param edition - Its status and how it is drawn.
+ * @param action - The action.
+ * @returns Ok, or why not.
+ */
+export const answersAllow = (
+  edition: { status: string; drawMode: DrawMode },
+  action: AnswerAction,
+): Result<true> => {
+  if (edition.status !== 'preparing') {
+    return fail('invalid_transition', { status: edition.status, action });
+  }
+  const collecting = edition.drawMode === 'elsewhere';
+  if (action === 'start' || action === 'draw') {
+    return collecting ? fail('collecting_answers') : ok(true);
+  }
+  return collecting ? ok(true) : fail('not_collecting_answers');
+};

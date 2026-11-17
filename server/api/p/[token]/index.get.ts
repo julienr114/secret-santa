@@ -18,6 +18,8 @@ import {
   personalPhase,
 } from '#server/utils/personal';
 import { canEditHints, canRequestHints } from '#server/utils/hints';
+import { editionPersons, findAnswers } from '#server/database/answers';
+import { answersState } from '#server/utils/answers';
 
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
@@ -43,6 +45,16 @@ export default defineEventHandler(async (event) => {
       : null;
   const request = receiver?.receiverParticipationId
     ? await findHintRequest(db, receiver.receiverParticipationId)
+    : null;
+  // A draw made elsewhere (README 22.12): whether they answered, and how
+  // many did; never what anyone answered.
+  const collecting =
+    edition.status === 'preparing' && edition.drawMode === 'elsewhere';
+  const answers = collecting
+    ? answersState(
+        (await editionPersons(db, edition.id)).map((p) => p.id),
+        await findAnswers(db, edition.id, await dataKeyOf(event)),
+      )
     : null;
   // For the invitation to keep the draw in an account: is this draw
   // already in the logged-in account, can it be added, or is it someone
@@ -88,6 +100,14 @@ export default defineEventHandler(async (event) => {
     editionLabel: edition.label,
     status: edition.status,
     phase: personalPhase(edition.status),
+    drawMode: edition.drawMode,
+    answer: answers
+      ? {
+          given: answers.answered.includes(person.id),
+          answered: answers.answered.length,
+          total: answers.answered.length + answers.missing.length,
+        }
+      : null,
     // The day of the party is no secret: the messages give it to all.
     eventDate: rules.eventDate,
     // The budget and the organiser's words, shown on every state of the

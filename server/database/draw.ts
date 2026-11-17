@@ -1,10 +1,16 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
-import { assignments, participations, type EditionRow } from './schema';
+import {
+  assignments,
+  editions,
+  participations,
+  type EditionRow,
+} from './schema';
 import { listExclusions } from './people';
 import { listEditions, listParticipants, type Participant } from './editions';
-import { decrypt } from '#server/utils/crypto';
-import type { DrawInput } from '#server/utils/draw';
+import { decrypt, encrypt } from '#server/utils/crypto';
+import { DRAWN_PARTICIPATION } from '#server/utils/editions';
+import type { Assignment, DrawInput } from '#server/utils/draw';
 import {
   applyWaivers,
   buildHistory,
@@ -186,4 +192,62 @@ export const findGiverParticipationId = async (
     )
     .limit(1);
   return row?.id ?? null;
+};
+
+/**
+ * The statements that store a draw: the pairs, receivers encrypted, the
+ * edition drawn (only if it was still being prepared), and the sending
+ * tracked from here on. Shared by the draw of the app and the answers of
+ * a draw made elsewhere, once validated (README 22.12).
+ * @param db - The database.
+ * @param draw - The edition, its pairs, what it was drawn with, and when.
+ * @param dataKey - The server key.
+ * @returns The statements, for one batch; the unique (edition, giver)
+ *   index makes a concurrent second draw fail.
+ */
+export const drawStatements = async (
+  db: Db,
+  draw: {
+    editionId: string;
+    pairs: Assignment[];
+    snapshot: unknown;
+    now: string;
+    newId: () => string;
+  },
+  dataKey: CryptoKey,
+) => {
+  const rows = await Promise.all(
+    draw.pairs.map(async ({ giverId, receiverId }) => {
+      const { enc, iv } = await encrypt(receiverId, dataKey);
+      return {
+        id: draw.newId(),
+        editionId: draw.editionId,
+        giverPersonId: giverId,
+        receiverEnc: enc,
+        receiverIv: iv,
+        createdAt: draw.now,
+      };
+    }),
+  );
+  return [
+    db
+      .update(editions)
+      .set({
+        status: 'drawn',
+        drawnAt: draw.now,
+        rulesSnapshot: draw.snapshot,
+      })
+      .where(
+        and(eq(editions.id, draw.editionId), eq(editions.status, 'preparing')),
+      ),
+    // One statement per assignment: D1 caps a statement at 100 bound
+    // parameters, which a single multi-row insert passes at 17 people.
+    ...rows.map((row) => db.insert(assignments).values(row)),
+    // Sending is tracked from the draw on: an invitation shared earlier
+    // does not count as the "draw done" message.
+    db
+      .update(participations)
+      .set({ ...DRAWN_PARTICIPATION })
+      .where(eq(participations.editionId, draw.editionId)),
+  ] as const;
 };

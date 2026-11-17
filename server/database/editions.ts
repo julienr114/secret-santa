@@ -38,6 +38,8 @@ export type PublicEdition = {
   closedAt: string | null;
   /** When the organiser revealed who gave to whom, or null. */
   revealedAt: string | null;
+  /** Drawn by the app, or already elsewhere (README 22.12). */
+  drawMode: EditionRow['drawMode'];
   createdAt: string;
   participantCount?: number;
   /** When the organisers were reminded that the exchange is near. */
@@ -65,6 +67,7 @@ export const publicEdition = (
   drawnAt: edition.drawnAt,
   closedAt: edition.closedAt,
   revealedAt: edition.revealedAt,
+  drawMode: edition.drawMode,
   createdAt: edition.createdAt,
   reminderSentAt: edition.reminderSentAt,
   ...(participantCount === undefined ? {} : { participantCount }),

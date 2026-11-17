@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   answerStatusOf,
+  answersAllow,
   answersCard,
   answersState,
   canValidateAnswers,
@@ -185,5 +186,36 @@ describe('answersCard', () => {
         answersState(PEOPLE, [a('camille', 'hugo'), a('ines', 'hugo')]),
       ),
     ).toBe('conflict');
+  });
+});
+
+describe('answersAllow', () => {
+  const edition = (status: string, drawMode: 'app' | 'elsewhere') => ({
+    status,
+    drawMode,
+  });
+  it('starts, and draws with the app, only an edition drawn by the app', () => {
+    expect(answersAllow(edition('preparing', 'app'), 'start').ok).toBe(true);
+    expect(answersAllow(edition('preparing', 'app'), 'draw').ok).toBe(true);
+    expect(
+      answersAllow(edition('preparing', 'elsewhere'), 'draw'),
+    ).toMatchObject({ ok: false, reason: 'collecting_answers' });
+  });
+
+  it('takes answers, abandons or validates only while collecting', () => {
+    ['answer', 'abandon', 'validate'].forEach((action) => {
+      expect(
+        answersAllow(edition('preparing', 'elsewhere'), action as 'answer').ok,
+      ).toBe(true);
+      expect(
+        answersAllow(edition('preparing', 'app'), action as 'answer'),
+      ).toMatchObject({ ok: false, reason: 'not_collecting_answers' });
+    });
+  });
+
+  it('does nothing once drawn', () => {
+    expect(answersAllow(edition('drawn', 'elsewhere'), 'answer')).toMatchObject(
+      { ok: false, reason: 'invalid_transition' },
+    );
   });
 });

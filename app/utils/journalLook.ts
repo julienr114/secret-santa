@@ -21,12 +21,18 @@ const ICONS: Record<string, string> = {
   language_changed: 'i-lucide-globe',
   edition_closed: 'i-lucide-archive',
   draw_revealed: 'i-lucide-eye',
+  answers_started: 'i-lucide-clipboard-list',
+  answer_given: 'i-lucide-check',
+  answer_changed: 'i-lucide-pencil',
+  answers_validated: 'i-lucide-sparkle',
+  answers_abandoned: 'i-lucide-rotate-ccw',
 };
 
 /** Milestones of an edition. */
 const MILESTONES = new Set([
   'edition_created',
   'draw_done',
+  'answers_validated',
   'draw_revealed',
   'edition_closed',
 ]);

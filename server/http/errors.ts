@@ -35,6 +35,10 @@ const STATUS_BY_REASON: Record<string, number> = {
   results_revealed: 409,
   party_date_missing: 409,
   party_not_reached: 409,
+  collecting_answers: 409,
+  not_collecting_answers: 409,
+  answers_not_ready: 409,
+  invalid_answer: 400,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

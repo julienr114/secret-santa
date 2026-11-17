@@ -26,6 +26,16 @@ export default {
     language_changed: '{name} changed their language ({language})',
     edition_closed: 'The edition {label} is closed',
     draw_revealed: 'The organizer revealed the results of the draw',
+    answers_started:
+      'The organizer said the draw was made elsewhere: everyone gives their answer',
+    answer_given: '{name} gave their answer',
+    answer_changed: '{name} changed their answer',
+    answers_validated: {
+      one: 'The organizer validated the answers: the draw counts for {count} participant',
+      other:
+        'The organizer validated the answers: the draw counts for {count} participants',
+    },
+    answers_abandoned: 'The organizer dropped the answers to draw with the app',
   },
   noReason: 'not given',
   what: {
@@ -33,6 +43,9 @@ export default {
     drawn: '“Draw done”',
     reminder: '“Reminder”',
     redraw: '“New draw”',
+    answerRequest: '“Request”',
+    answerReminder: '“Reminder”',
+    answerCheck: '“To check”',
     other: 'a message',
   },
   via: {
@@ -51,6 +64,8 @@ export default {
     result_viewed: 'You discovered your result',
     avatar_changed: 'You changed your icon',
     language_changed: 'You changed your language ({language})',
+    answer_given: 'You gave your answer',
+    answer_changed: 'You changed your answer',
   },
   screen: {
     helpLink: 'What is it for?',

@@ -25,6 +25,17 @@ export default {
     language_changed: '{name} a changé sa langue ({language})',
     edition_closed: "L'édition {label} est clôturée",
     draw_revealed: "L'organisateur a dévoilé les résultats du tirage",
+    answers_started:
+      "L'organisateur a indiqué que le tirage a été fait ailleurs : chacun donne sa réponse",
+    answer_given: '{name} a donné sa réponse',
+    answer_changed: '{name} a changé sa réponse',
+    answers_validated: {
+      one: "L'organisateur a validé les réponses : le tirage compte pour {count} participant",
+      other:
+        "L'organisateur a validé les réponses : le tirage compte pour {count} participants",
+    },
+    answers_abandoned:
+      "L'organisateur a abandonné les réponses pour tirer avec l'application",
   },
   noReason: 'non précisé',
   what: {
@@ -32,6 +43,9 @@ export default {
     drawn: '« Tirage fait »',
     reminder: '« Relance »',
     redraw: '« Nouveau tirage »',
+    answerRequest: '« Demande »',
+    answerReminder: '« Relance »',
+    answerCheck: '« À vérifier »',
     other: 'un message',
   },
   via: {
@@ -52,6 +66,8 @@ export default {
     result_viewed: 'Tu as découvert ton résultat',
     avatar_changed: 'Tu as changé ton icône',
     language_changed: 'Tu as changé ta langue ({language})',
+    answer_given: 'Tu as donné ta réponse',
+    answer_changed: 'Tu as changé ta réponse',
   },
   screen: {
     helpLink: 'À quoi sert-il ?',

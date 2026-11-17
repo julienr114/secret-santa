@@ -12,6 +12,7 @@ import {
   persons,
 } from '#server/database/schema';
 import { deleteHintsOf } from '#server/database/hints';
+import { deleteAnswersOfParticipations } from '#server/database/answers';
 import { requireSuperAdmin } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -47,6 +48,7 @@ export default defineEventHandler(async (event) => {
     .where(inArray(participations.editionId, editionIds));
   await db.batch([
     ...deleteHintsOf(db, participationIds),
+    deleteAnswersOfParticipations(db, participationIds),
     db.delete(assignments).where(inArray(assignments.editionId, editionIds)),
     db.delete(auditLog).where(eq(auditLog.groupId, id)),
     db

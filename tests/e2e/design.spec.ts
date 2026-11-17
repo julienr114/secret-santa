@@ -90,5 +90,6 @@ test('the style guide shows the edition components', async ({ page }) => {
     '2 personnes ont découvert leur résultat',
   );
   await journal.getByRole('button', { name: /^Voir le détail/ }).click();
-  await expect(journal).toContainText('Hugo a découvert son résultat');
+  // Unfolded, one row per person: their icon and their name.
+  await expect(journal).toContainText('Hugo');
 });

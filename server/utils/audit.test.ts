@@ -4,6 +4,7 @@ import {
   auditEvent,
   describeEvent,
   journalEntries,
+  keyPeople,
   sanitizeMeta,
   type Meta,
 } from './audit';
@@ -322,5 +323,41 @@ describe('changes a participant makes to their own profile', () => {
         { names, locale: 'en' },
       ),
     ).toBe('Léa changed their language (English)');
+  });
+});
+
+describe('keyPeople', () => {
+  const entry = (id: string, personId: string | null) => ({
+    id,
+    type: 'result_viewed',
+    editionId: 'e1',
+    actor: 'participant',
+    createdAt: '2026-12-01T10:00:00.000Z',
+    text: '…',
+    personId,
+    messageType: null,
+    via: null,
+    ownText: null,
+  });
+  const keyed = keyPeople({
+    entries: [entry('a', 'secret-1'), entry('b', 'secret-2'), entry('c', null)],
+    people: [
+      { id: 'secret-1', name: 'Léa' },
+      { id: 'secret-2', name: 'Tom' },
+    ],
+    me: 'secret-2',
+  });
+
+  it('never gives a real id away', () => {
+    expect(JSON.stringify(keyed)).not.toMatch(/secret/);
+  });
+
+  it('keeps each line with its person, and the reader', () => {
+    expect(keyed.entries.map((e) => e.personId)).toEqual(['p0', 'p1', null]);
+    expect(keyed.people.map((p) => [p.id, p.name])).toEqual([
+      ['p0', 'Léa'],
+      ['p1', 'Tom'],
+    ]);
+    expect(keyed.me).toBe('p1');
   });
 });

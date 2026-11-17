@@ -192,6 +192,37 @@ export type JournalEntry = {
 const metaWord = (meta: Meta | null | undefined, key: string) =>
   typeof meta?.[key] === 'string' ? (meta[key] as string) : null;
 
+/** A journal whose people are known by keys. */
+export type KeyedJournal<P extends { id: string }> = {
+  entries: JournalEntry[];
+  people: P[];
+  me: string | null;
+};
+
+/**
+ * Replaces the ids of the people by keys that only hold within this
+ * answer (`p0`, `p1`…), for a participant: no answer of theirs carries
+ * another person's id (README 8.3), yet the filter and the folded lines
+ * still match a line with its person.
+ * @param journal - The entries, the people they name, and the reader.
+ * @returns The same journal, keyed.
+ */
+export const keyPeople = <P extends { id: string }>(
+  journal: KeyedJournal<P>,
+): KeyedJournal<P> => {
+  const keys = new Map(journal.people.map((p, i) => [p.id, `p${i}`]));
+  const keyOf = (id: string | null) =>
+    id === null ? null : (keys.get(id) ?? null);
+  return {
+    entries: journal.entries.map((entry) => ({
+      ...entry,
+      personId: keyOf(entry.personId),
+    })),
+    people: journal.people.map((p) => ({ ...p, id: keyOf(p.id)! })),
+    me: keyOf(journal.me),
+  };
+};
+
 /**
  * Journal rows as shown to the group: one sentence each in `locale`,
  * newest first. People appear by first name, with the last name only to tell

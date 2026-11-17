@@ -147,7 +147,17 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     page.getByRole('button', { name: /^Modifier le message/ }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Copier le message' }).click();
-  // Once sent, the sheet closes.
+  // Once sent, the sheet closes, and the address forgets Léa: coming back
+  // to it from the email screen must not open her sheet again.
+  await expect(page.getByTestId('send-sheet')).toHaveCount(0);
+  await expect(page).not.toHaveURL(/envoyer=/);
+  await page
+    .getByRole('link', { name: /par email$/ })
+    .first()
+    .click();
+  await expect(heading(page)).toHaveText('Envoyer par email');
+  await page.goBack();
+  await expect(page.getByText('Préviens chacun').first()).toBeVisible();
   await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Léa, le tirage est fait/);

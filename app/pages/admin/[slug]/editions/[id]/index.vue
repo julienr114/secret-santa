@@ -248,6 +248,14 @@ const sendOpen = computed({
     if (!open) sendId.value = null;
   },
 });
+// Once the sheet is closed, the address forgets the person too: coming
+// back to it (from the email screen, or by reloading) must not open their
+// sheet again.
+watch(sendId, (pid) => {
+  if (pid || route.query.envoyer === undefined) return;
+  const { envoyer: _envoyer, ...query } = route.query;
+  void router.replace({ query });
+});
 /**
  * Opens « Personnaliser le message » for one person; the edition's address
  * keeps their sheet, which opens again on the way back.

@@ -1,22 +1,12 @@
 <script setup lang="ts">
-import { formatEventDate } from '#server/utils/rules';
 import type { Reveal } from '~/composables/queries/usePersonal';
 
-// The result, on a gift tag: who the participant gives to, the budget
-// and the date, the organiser's note, then the receiver's hints. Turns
+// The result, on a gift tag: who the participant gives to, then the
+// receiver's hints. The budget, the date and the organiser's note are on
+// the page itself, in every state (lot 16 bis). Turns
 // over once when it appears.
-const props = defineProps<{ token: string; reveal: Reveal }>();
-const { t, locale } = useT();
-/** Budget and date, each only when the organiser gave it. */
-const tiles = computed(() =>
-  [
-    { label: t('participant.reveal.budget'), value: props.reveal.budget },
-    {
-      label: t('participant.reveal.date'),
-      value: formatEventDate(props.reveal.eventDate, locale.value),
-    },
-  ].filter((tile) => tile.value),
-);
+defineProps<{ token: string; reveal: Reveal }>();
+const { t } = useT();
 </script>
 
 <template>
@@ -30,26 +20,6 @@ const tiles = computed(() =>
       >
         {{ reveal.receiver.name }}
       </p>
-    </div>
-    <dl
-      v-if="tiles.length"
-      class="grid gap-2"
-      :class="tiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'"
-    >
-      <div
-        v-for="tile in tiles"
-        :key="tile.label"
-        class="flex flex-col rounded-lg bg-muted px-3 py-2 text-center"
-      >
-        <dt class="text-xs font-semibold text-muted">{{ tile.label }}</dt>
-        <dd class="font-semibold">{{ tile.value }}</dd>
-      </div>
-    </dl>
-    <div v-if="reveal.guardianMessage" class="flex flex-col gap-1.5">
-      <p class="text-xs font-bold tracking-wide text-muted uppercase">
-        {{ t('participant.reveal.guardianMessage') }}
-      </p>
-      <UiTextPreview>{{ reveal.guardianMessage }}</UiTextPreview>
     </div>
     <template v-if="reveal.hints">
       <hr class="border-t-2 border-dashed border-default" />

@@ -2,6 +2,8 @@
 export default {
   home: {
     greeting: 'Salut {firstName} !',
+    facts: { budget: 'Budget', party: 'Fête le' },
+    note: { title: "Le mot de l'organisateur", more: 'Lire la suite' },
     changeAvatar: 'Changer mon icône',
     steps: {
       label: 'Étapes du tirage',
@@ -64,9 +66,6 @@ export default {
   },
   reveal: {
     youGiveTo: 'Tu offres un cadeau à',
-    budget: 'Budget',
-    date: 'Date',
-    guardianMessage: "Le mot de l'organisateur",
     seeLink: 'Voir le lien',
   },
   wishes: {

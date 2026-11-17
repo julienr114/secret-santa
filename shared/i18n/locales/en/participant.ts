@@ -4,6 +4,8 @@ import type { Dict } from '../../types';
 export default {
   home: {
     greeting: 'Hi {firstName}!',
+    facts: { budget: 'Budget', party: 'Party on' },
+    note: { title: "The organizer's note", more: 'Read more' },
     changeAvatar: 'Change my icon',
     steps: {
       label: 'Steps of the draw',
@@ -66,9 +68,6 @@ export default {
   },
   reveal: {
     youGiveTo: 'You are giving a gift to',
-    budget: 'Budget',
-    date: 'Date',
-    guardianMessage: "The organizer's note",
     seeLink: 'See the link',
   },
   wishes: {

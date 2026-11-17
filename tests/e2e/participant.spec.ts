@@ -113,6 +113,11 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(
     page.getByRole('link', { name: 'Laisser mes pistes de cadeaux' }),
   ).toBeVisible();
+  // The budget and the day of the party under the title, in every state
+  // but a closed edition (lot 16 bis).
+  await expect(
+    page.getByText('Budget 20 € max · Fête le', { exact: false }),
+  ).toBeVisible();
 
   // Alice picks her own avatar. Closing the sheet gives the choice up;
   // only "Valider" saves it.
@@ -435,6 +440,9 @@ test('a closed edition is read only', async ({ page }) => {
   await open(page, `/p/${token}`);
   await expect(page.getByText('La fête est passée')).toBeVisible();
   await expect(page.getByText('Fête passée')).toBeVisible();
+  await expect(page.getByText('Budget 20 € max', { exact: false })).toHaveCount(
+    0,
+  );
   await expect(
     page.getByRole('button', { name: "Découvrir à qui j'offre un cadeau" }),
   ).toBeVisible();

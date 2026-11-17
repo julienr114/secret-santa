@@ -39,6 +39,9 @@ export type PersonalState = {
   phase: PersonalPhase;
   /** The day of the party (ISO), or empty. */
   eventDate: string;
+  budget: string;
+  /** The organiser's words to the participants, or empty. */
+  guardianMessage: string;
   /** What the group lets participants note (README 22.11). */
   giftHints: GiftHintsMode;
   hintsEditable: boolean;

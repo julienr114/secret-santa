@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isIsoDay } from '#server/utils/rules';
 import type { Avatar } from '#server/utils/avatars';
 import {
   envelopeState,
@@ -26,7 +27,7 @@ const personal = usePersonalQuery(token);
 const revealMutation = useRevealMutation(token);
 const revealing = useBusy(() => revealMutation.isPending.value);
 const me = computed(() => personal.data.value);
-const { t } = useT();
+const { t, locale } = useT();
 const errorMessage = useErrorMessage();
 
 // Only in this component's state: gone when leaving or reloading the page.
@@ -174,6 +175,33 @@ const envelope = computed(() =>
     false,
   ),
 );
+/**
+ * Under the title, in every state but a closed edition (lot 16 bis):
+ * « Budget 30 € · Fête le ven. 25 décembre », whatever is known.
+ */
+const facts = computed(() => {
+  const state = me.value;
+  if (!state || state.phase === 'closed') return [];
+  const date = isIsoDay(state.eventDate)
+    ? new Intl.DateTimeFormat(locale.value, {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      }).format(new Date(`${state.eventDate}T12:00:00Z`))
+    : state.eventDate;
+  return [
+    state.budget && {
+      label: t('participant.home.facts.budget'),
+      value: state.budget,
+    },
+    date && { label: t('participant.home.facts.party'), value: date },
+  ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+});
+/** The organiser's words, not on a closed edition. */
+const note = computed(() =>
+  me.value && me.value.phase !== 'closed' ? me.value.guardianMessage : '',
+);
 /** No hint from the person they give to, or the edition is closed. */
 const withoutHints = computed(
   () => me.value?.receiverHints === 'none' || me.value?.phase === 'closed',
@@ -262,6 +290,12 @@ const card = computed(() => {
           <p class="text-sm text-muted">
             {{ me.groupName }} · {{ me.editionLabel }}
           </p>
+          <p v-if="facts.length > 0" class="mt-0.5 text-sm text-toned">
+            <template v-for="(fact, at) in facts" :key="fact.label">
+              <span v-if="at > 0"> · </span>{{ fact.label }}
+              <strong class="font-bold text-default">{{ fact.value }}</strong>
+            </template>
+          </p>
         </div>
       </div>
 
@@ -269,12 +303,14 @@ const card = computed(() => {
 
       <template v-if="view === 'shown' && reveal">
         <ParticipantRevealCard :token="token" :reveal="reveal" />
-        <div class="flex flex-col items-center gap-2">
+        <ParticipantOrganizerNote v-if="note" :text="note" />
+        <div class="-mt-2 flex flex-col items-center gap-2">
           <UButton
-            variant="ghost"
+            variant="outline"
             color="neutral"
             size="lg"
-            class="min-h-11"
+            block
+            class="h-12 justify-center bg-muted font-bold"
             icon="i-lucide-eye-off"
             :label="t('participant.home.shown.hide')"
             @click="onHide"
@@ -306,7 +342,8 @@ const card = computed(() => {
           :to="`/p/${token}/pistes`"
           block
           size="xl"
-          icon="i-lucide-pencil"
+          icon="i-lucide-list-checks"
+          class="font-bold"
           :label="t('participant.home.waiting.action')"
         />
         <UButton
@@ -331,6 +368,8 @@ const card = computed(() => {
         />
         <p v-if="card.hint" class="text-[13px] text-muted">{{ card.hint }}</p>
       </UiCard>
+
+      <ParticipantOrganizerNote v-if="note && view !== 'shown'" :text="note" />
 
       <UiList>
         <UiListItem

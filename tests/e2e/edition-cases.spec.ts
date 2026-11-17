@@ -263,10 +263,13 @@ test('the budget and the word change on the edition, until it is closed', async 
   await page
     .getByRole('button', { name: "Découvrir à qui j'offre un cadeau" })
     .click();
-  await expect(page.locator('.reveal-card')).toContainText('30 €');
-  await expect(page.locator('.reveal-card')).toContainText(
+  // Out of the result card since lot 16 bis: under the title, and in the
+  // organiser's block.
+  await expect(page.getByText('Budget 30 €', { exact: false })).toBeVisible();
+  await expect(page.getByTestId('organizer-note')).toContainText(
     'Après le dessert !',
   );
+  await expect(page.locator('.reveal-card')).not.toContainText('30 €');
 
   // Closed: read only.
   await state.api!.post(`${at}/editions/${id}/close`);

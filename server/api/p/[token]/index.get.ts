@@ -90,6 +90,10 @@ export default defineEventHandler(async (event) => {
     phase: personalPhase(edition.status),
     // The day of the party is no secret: the messages give it to all.
     eventDate: rules.eventDate,
+    // The budget and the organiser's words, shown on every state of the
+    // page (lot 16 bis): no secret, the messages give them to all.
+    budget: rules.budget,
+    guardianMessage: rules.guardianMessage,
     giftHints: rules.giftHints,
     hintsEditable: canEditHints(edition.status, rules.giftHints).ok,
     hasHints: hintsOn && (await participationHasHints(db, participation.id)),

@@ -76,7 +76,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   }
   const created = await ok(
     await admin().post(`${ADMIN}/editions`, {
-      data: { label: 'Noël du trèfle', year: 2026, eventDate: '2026-12-24' },
+      data: {
+        label: 'Noël du trèfle',
+        year: 2026,
+        eventDate: '2026-12-24',
+        guardianMessage: 'Rendez-vous chez Mamie. '.repeat(12),
+      },
     }),
   );
   state.editionId = created.edition.id;
@@ -125,6 +130,13 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await expect(
     page.getByText(`${receiver} n’a pas encore laissé de pistes.`),
   ).toBeVisible();
+  // The organiser's words are out of the result card, cut at three lines.
+  const note = page.getByTestId('organizer-note');
+  await expect(note).toContainText('Rendez-vous chez Mamie.');
+  await note.getByRole('button', { name: 'Lire la suite' }).click();
+  await expect(note.getByRole('button', { name: 'Lire la suite' })).toHaveCount(
+    0,
+  );
   await page.getByRole('button', { name: 'Lui demander des pistes' }).click();
   await expect(
     page.getByRole('heading', { name: `Demander des pistes à ${receiver} ?` }),

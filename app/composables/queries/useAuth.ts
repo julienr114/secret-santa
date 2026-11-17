@@ -167,7 +167,14 @@ export type InvitePayload = {
   /** The organiser's words, if any. */
   message: string | null;
   /** The draw in progress of the group, if any. */
-  edition: { label: string; eventDate: string; participants: number } | null;
+  edition: {
+    label: string;
+    status: 'preparing' | 'drawn' | 'closed';
+    /** Whether the participants have a wish list. */
+    wishlist: boolean;
+    eventDate: string;
+    participants: number;
+  } | null;
   /** Why the link no longer lets anyone in, or null. */
   closed: 'invite_expired' | 'invite_full' | null;
   /** For a logged-in account: its first name, and whether it is in. */
@@ -188,7 +195,7 @@ export const useInviteQuery = (code: MaybeRefOrGetter<string>) =>
 
 /** Joins the group of an invitation link. */
 export const useJoinMutation = (code: MaybeRefOrGetter<string>) =>
-  useApiMutation<{ ok: true }, { firstName: string }>(
+  useApiMutation<{ ok: true; path: string | null }, { firstName: string }>(
     (body) =>
       api(`/api/invite/${toValue(code)}/join`, { method: 'POST', body }),
     () => [keys.home()],

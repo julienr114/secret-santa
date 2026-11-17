@@ -56,7 +56,9 @@ export const hasParticipations = async (
  * Adds an account to a group as a person, copied from its profile, with
  * a random avatar when the profile has none.
  * @param db - Database.
- * @param input - Group, account (with the first name to use) and date.
+ * @param input - Group, account (with the first name to use), date, and
+ *   the id to give the person (a new one by default).
+ * @returns The insert, to await.
  */
 export const insertPersonFromAccount = (
   db: Db,
@@ -64,13 +66,14 @@ export const insertPersonFromAccount = (
     groupId,
     account,
     now,
-  }: { groupId: string; account: ProfileAccount; now: string },
+    id = newId(),
+  }: { groupId: string; account: ProfileAccount; now: string; id?: string },
 ) => {
   const self = personFromProfile(account);
   const avatar = randomAvatar(secureRandomInt);
   return db.insert(persons).values({
     ...self,
-    id: newId(),
+    id,
     groupId,
     avatarEmoji: self.avatarEmoji ?? avatar.emoji,
     avatarColor: self.avatarColor ?? avatar.color,

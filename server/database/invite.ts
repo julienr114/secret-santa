@@ -1,6 +1,12 @@
 import { and, count, eq } from 'drizzle-orm';
 import type { Db } from './client';
-import { currentEdition } from '#server/utils/editions';
+import {
+  canEditParticipants,
+  checkParticipantCount,
+  currentEdition,
+} from '#server/utils/editions';
+import { recordEvent } from './audit';
+import { newParticipation } from './editions';
 import { editions, groups, participations, persons } from './schema';
 
 // Invitation links of groups (README 22.2).
@@ -66,4 +72,45 @@ export const participantCount = async (
     .from(participations)
     .where(eq(participations.editionId, editionId));
   return row?.n ?? 0;
+};
+
+/**
+ * Puts someone who just joined by the link in the draw being prepared
+ * (decided on 17 November 2026), unless they are in it already, the draw
+ * is done, or it is full. The group reads it in the journal.
+ * @param db - Database.
+ * @param input - The current edition, the person, the key of the links.
+ * @returns Their participation in the edition, or null when not in it.
+ */
+export const joinDrawInPreparation = async (
+  db: Db,
+  {
+    edition,
+    personId,
+    dataKey,
+  }: {
+    edition: typeof editions.$inferSelect | null;
+    personId: string;
+    dataKey: CryptoKey;
+  },
+) => {
+  if (!edition) return null;
+  const existing = await findParticipationOf(db, edition.id, personId);
+  if (existing) return existing;
+  if (!canEditParticipants(edition.status)) return null;
+  const size = await participantCount(db, edition.id);
+  if (!checkParticipantCount(size + 1).ok) return null;
+  const row = await newParticipation(
+    { editionId: edition.id, personId },
+    dataKey,
+  );
+  await db.insert(participations).values(row);
+  await recordEvent(db, {
+    type: 'participant_added',
+    groupId: edition.groupId,
+    editionId: edition.id,
+    personId,
+    actor: 'participant',
+  });
+  return row;
 };

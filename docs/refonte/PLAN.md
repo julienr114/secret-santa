@@ -378,11 +378,11 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 
 ### Lot 8 — Connexion, compte, demandes, invitation
 
-- [ ] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états. `RejoindreFerme` montre le cas « plus de place » ; même écran, autre phrase, pour un lien expiré (« Ce lien d'invitation n'est plus valable depuis le 10 décembre. ») et pour un lien désactivé ou inconnu (« Ce lien d'invitation ne marche plus. »). Si le tirage est déjà fait, la personne rejoint le groupe, pas le tirage en cours : le dire sur `RejoindreFait`.
-- [ ] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
+- [x] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états. `RejoindreFerme` montre le cas « plus de place » ; même écran, autre phrase, pour un lien expiré (« Ce lien d'invitation n'est plus valable depuis le 10 décembre. ») et pour un lien désactivé ou inconnu (« Ce lien d'invitation ne marche plus. »). Si le tirage est déjà fait, la personne rejoint le groupe, pas le tirage en cours : le dire sur `RejoindreFait`.
+- [x] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
 - [ ] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
 - [ ] `AccueilMenu`, `AccueilDemandeAttente`, `AccueilDemandeRefusee` : voir « Partiel ».
-- [ ] **Actions en cours** conformes : roue dans « Recevoir mon lien », « Se connecter », « Rejoindre le groupe ».
+- [x] **Actions en cours** conformes : roue dans « Recevoir mon lien », « Se connecter », « Rejoindre le groupe ».
 
 ### Lot 9 — Administration (super-admin)
 
@@ -495,3 +495,9 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 3. **Les envois regroupés.** La maquette dit « L'organisateur a envoyé « Tirage fait » à 5 personnes par email ». La ligne ne porte ni le message ni le moyen d'envoi : l'écran regroupe donc tous les envois d'un jour et d'une édition et dit « L'organisateur a envoyé 5 messages » ; le détail donne chaque phrase, qui, elle, dit le message et le moyen. Ajouter le message et le moyen aux lignes du journal ferait le regroupement de la maquette (changement de route).
 4. **« Qu'est-ce que ça veut dire ? » (`JournalDetail`).** Sans la personne (question 1), le texte ne peut pas dire « à qui Hugo offre un cadeau » ni « Ce que ça change pour toi : rien », faux pour Hugo lui-même. Il dit « à qui la personne nommée offre un cadeau » et « Ce que ça change. Les autres résultats et les listes de souhaits n'ont pas été vus. » J'ai aussi écrit l'explication de deux alertes que la maquette ne montre pas : « Tirage annulé » et l'ancien « L'organisateur a consulté les résultats du tirage ». Les textes te vont ?
 5. **La phrase sous la liste**, « L'essentiel regroupe les envois et laisse de côté les changements d'icône et de langue », explique l'interface ; elle est dans la maquette, donc gardée, et seulement sous « L'essentiel ». On la garde ?
+
+### Lot 8
+
+1. **Rejoindre le tirage en même temps que le groupe.** **Réponse de Julien, 17 novembre 2026 :** la route `join` ajoute aussi la personne à l'édition « à préparer » (exception à « interface seulement », sans migration, avec son test). Fait.
+2. **La date d'un lien d'invitation expiré.** La page d'invitation ne reçoit pas la date limite du lien : « Ce lien d'invitation n'est plus valable » s'affiche donc sans « depuis le 10 décembre ». L'ajouter demande que la route de l'invitation renvoie `inviteUntil` (changement de route). On le fait ?
+3. **L'adresse sur « Se connecter sur cet appareil ? ».** La maquette dit « Tu vas être connecté avec hugo-demo@example.com pendant 30 jours ». La page du lien ne connaît pas l'adresse sans consommer le lien, et c'est voulu (un lecteur d'emails ne doit pas pouvoir l'utiliser). L'écran dit « Tu vas être connecté sur cet appareil pendant 30 jours. » Lire l'adresse du jeton sans le consommer serait une nouvelle route ; on la veut ?

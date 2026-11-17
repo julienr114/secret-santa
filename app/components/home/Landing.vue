@@ -2,13 +2,15 @@
 import type { SignupPrefill } from '~/composables/useSignupPrefill';
 // What someone who is not logged in sees, on the home page and on
 // /login: the logo, the name of the app and what it does, a word for
-// those who came with a personal link, then the one way in.
+// those who came with a personal link, then the one way in. Once the link
+// is sent, only the logo and the name stay above it.
 defineProps<{
   next?: string | null;
   mode?: 'login' | 'signup';
   initial?: SignupPrefill | null;
 }>();
 const { t, setLocale } = useT();
+const sent = ref(false);
 </script>
 
 <template>
@@ -25,13 +27,18 @@ const { t, setLocale } = useT();
         <h1 class="font-display text-4xl font-bold text-primary">
           {{ t('common.appName') }}
         </h1>
-        <p class="text-muted">{{ t('auth.landing.tagline') }}</p>
+        <p v-if="!sent" class="text-muted">{{ t('auth.landing.tagline') }}</p>
       </div>
-      <UiNotice variant="positive" icon="i-lucide-link">
+      <UiNotice v-if="!sent" variant="positive" icon="i-lucide-link">
         {{ t('auth.landing.personalLink') }}
       </UiNotice>
       <UiCard padding="lg">
-        <AuthEmailLogin :next="next" :mode="mode" :initial="initial" />
+        <AuthEmailLogin
+          :next="next"
+          :mode="mode"
+          :initial="initial"
+          @sent="(value) => (sent = value)"
+        />
       </UiCard>
     </UContainer>
   </div>

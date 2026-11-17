@@ -2,31 +2,39 @@
 import { z } from 'zod';
 import { formatEventDate } from '#server/utils/rules';
 import { useInviteQuery, useJoinMutation } from '~/composables/queries/useAuth';
-import { useLogoutMutation } from '~/composables/queries/useSession';
+import { HOME, useLogoutMutation } from '~/composables/queries/useSession';
 
-// An invitation link to a group (README 22.2). It says which group, its
-// draw in progress and the organiser's words; someone without an account
-// logs in or signs up with their address and comes back here; then one
-// button joins the group. The organiser adds them to the draw.
+// An invitation link to a group (README 22.2), in four states: the
+// invitation with the login form; logged in, a first name and « Rejoindre
+// le groupe »; joined (in the draw being prepared, or in the group only
+// when the draw is done); and the link that no longer lets anyone in (no
+// place left, past its last day, turned off or unknown).
 const route = useRoute();
 const code = computed(() => String(route.params.code));
-const { t, locale, setLocale } = useT();
+const { t, locale } = useT();
 const errorMessage = useErrorMessage();
 const invite = useInviteQuery(code);
 const join = useJoinMutation(code);
 const { loggedIn } = useUserSession();
-useHead({ title: () => t('common.appName') });
 
 const data = computed(() => invite.data.value);
 const edition = computed(() => data.value?.edition ?? null);
-const party = computed(() =>
-  edition.value?.eventDate
-    ? t('auth.invite.party', {
-        date: formatEventDate(edition.value.eventDate, locale.value),
-      })
+/** « Noël 2026 · échange le 25 décembre · 5 personnes inscrites ». */
+const editionLine = computed(() =>
+  edition.value
+    ? [
+        edition.value.label,
+        edition.value.eventDate &&
+          t('auth.invite.party', {
+            date: formatEventDate(edition.value.eventDate, locale.value),
+          }),
+        t('auth.invite.count', { count: edition.value.participants }),
+      ]
+        .filter(Boolean)
+        .join(' · ')
     : null,
 );
-const joined = ref(false);
+
 // The first name the group will see, from the profile when it has one.
 const firstName = ref('');
 watch(
@@ -39,144 +47,235 @@ watch(
 const canJoin = computed(
   () => z.string().trim().min(1).safeParse(firstName.value).success,
 );
-const onJoin = () =>
-  join.mutate(
-    { firstName: firstName.value.trim() },
-    {
-      onSuccess: () => {
-        joined.value = true;
-      },
-    },
-  );
+const onJoin = () => join.mutate({ firstName: firstName.value.trim() });
 // Logged in with the wrong address: out, and back to the same invitation.
 const logout = useLogoutMutation();
 const onSwitch = () =>
   logout.mutate(undefined, { onSuccess: () => invite.refetch() });
+
+/** In the group: just joined, or already a member. */
+const joined = computed(
+  () => join.isSuccess.value || Boolean(data.value?.account?.member),
+);
+/** The way to their draw, when they are in it. */
+const path = computed(
+  () => join.data.value?.path ?? data.value?.account?.path ?? null,
+);
+/** What the welcome says under its title. */
+const welcomeText = computed(() => {
+  const label = edition.value?.label ?? '';
+  if (path.value) {
+    return edition.value?.status === 'preparing'
+      ? `${t('auth.invite.inDraw', { label })} ${t('auth.invite.notDrawnYet')}`
+      : t('auth.invite.inDraw', { label });
+  }
+  if (!edition.value) return t('auth.invite.nextDraw');
+  return edition.value.status === 'preparing'
+    ? t('auth.invite.addLater', { label })
+    : t('auth.invite.drawnAlready', { label });
+});
+
+/** Why nobody can come in by this link, as a title and a line. */
+const closed = computed(() => {
+  const group = data.value?.groupName ?? '';
+  if (invite.error.value) {
+    return {
+      title: t('auth.invite.invalid.title'),
+      body: t('auth.invite.invalid.body'),
+    };
+  }
+  if (data.value?.closed === 'invite_full') {
+    return {
+      title: t('auth.invite.full.title'),
+      body: t('auth.invite.full.body', { group }),
+    };
+  }
+  if (data.value?.closed === 'invite_expired') {
+    return {
+      title: t('auth.invite.expired.title'),
+      body: t('auth.invite.expired.body', { group }),
+    };
+  }
+  return null;
+});
 </script>
 
 <template>
-  <div class="flex min-h-dvh flex-col">
-    <header class="flex justify-end px-4 pt-[env(safe-area-inset-top)]">
-      <LanguageSwitch class="mt-2" @change="setLocale" />
-    </header>
-    <UContainer
-      as="main"
-      class="flex max-w-sm grow flex-col justify-center gap-6 py-8"
+  <AuthScreen>
+    <USkeleton
+      v-if="invite.isPending.value"
+      class="h-48 rounded-2xl bg-skeleton"
+      aria-busy="true"
+      :aria-label="t('common.loading')"
+    />
+
+    <div
+      v-else-if="joined && data"
+      class="flex flex-col gap-5 pt-6"
+      data-testid="invite-joined"
     >
-      <p class="text-center font-display text-lg font-bold text-primary">
-        ✦ {{ t('common.appName') }}
-      </p>
-      <div
-        v-if="invite.error.value"
-        class="flex flex-col items-center gap-3 text-center"
-      >
-        <p class="text-4xl" aria-hidden="true">🔒</p>
-        <p role="alert">{{ errorMessage(invite.error.value) }}</p>
-      </div>
-      <USkeleton
-        v-else-if="!data"
-        class="h-48 rounded-lg bg-skeleton"
-        aria-busy="true"
-      />
-      <template v-else>
-        <div class="flex flex-col items-center gap-2 text-center">
-          <p class="text-5xl" aria-hidden="true">🎁</p>
-          <p class="text-muted">{{ t('auth.invite.intro') }}</p>
-          <h1 class="font-display text-3xl font-bold">
-            {{ data.groupName }}
-          </h1>
-          <template v-if="edition">
-            <p class="text-muted">
-              {{ edition.label
-              }}<template v-if="party"> · {{ party }}</template>
-            </p>
-            <p class="text-sm text-dimmed">
-              {{ t('auth.invite.count', { count: edition.participants }) }}
-            </p>
-          </template>
-        </div>
-
-        <UiTextPreview v-if="data.message" data-testid="invite-words">{{
-          data.message
-        }}</UiTextPreview>
-
-        <UiCard
-          v-if="data.account?.path"
-          padding="lg"
-          class="flex flex-col gap-3"
+      <div class="flex flex-col items-center gap-2 text-center">
+        <span
+          class="flex size-16 items-center justify-center rounded-full bg-success-soft text-success-ink"
+          aria-hidden="true"
         >
-          <p class="text-center">{{ t('auth.invite.already') }}</p>
-          <UButton
-            :to="data.account.path"
-            block
-            icon="i-lucide-gift"
-            :label="t('auth.invite.open')"
-          />
-        </UiCard>
-        <UiCard v-else-if="joined || data.account?.member" padding="lg">
-          <p class="text-center" role="status">
-            {{ t('auth.invite.member') }}
-          </p>
-        </UiCard>
-        <UiCard v-else-if="data.closed" padding="lg">
-          <p class="text-center" role="alert">
-            {{ t(`errors.${data.closed}`) }}
-          </p>
-        </UiCard>
-        <UiCard v-else-if="loggedIn" padding="lg">
-          <form class="flex flex-col gap-4" novalidate @submit.prevent="onJoin">
-            <div
-              v-if="data.account"
-              class="flex flex-wrap items-center justify-between gap-x-2 text-sm"
-              data-testid="invite-account"
-            >
-              <span class="min-w-0 truncate text-muted">
-                {{ t('auth.invite.signedAs', { email: data.account.email }) }}
-              </span>
-              <UButton
-                variant="link"
-                color="neutral"
-                size="sm"
-                class="-mr-2.5"
-                :loading="logout.isPending.value"
-                :label="t('auth.invite.notMe')"
-                @click="onSwitch"
-              />
-            </div>
-            <UFormField
-              :label="t('adminGroup.personForm.firstNameLabel')"
-              :help="t('auth.invite.nameHelp')"
-              required
-            >
-              <UInput
-                v-model="firstName"
-                autocomplete="given-name"
-                class="w-full"
-              />
-            </UFormField>
-            <UAlert
-              v-if="join.isError.value"
-              color="error"
-              variant="subtle"
-              :description="errorMessage(join.error.value)"
-            />
+          <UIcon name="i-lucide-check" class="size-8" />
+        </span>
+        <h1 class="font-display text-[30px] leading-[1.1] font-bold">
+          {{ t('auth.invite.welcome', { group: data.groupName }) }}
+        </h1>
+        <p class="text-[15px] leading-[1.45] text-toned" role="status">
+          {{ welcomeText }}
+        </p>
+      </div>
+      <UiCard v-if="path" padding="lg" class="flex flex-col gap-3">
+        <h2
+          v-if="edition?.status === 'preparing'"
+          class="font-display text-[22px] leading-[1.2] font-semibold"
+        >
+          {{ t('auth.invite.meanwhile') }}
+        </h2>
+        <UButton
+          v-if="edition?.wishlist && edition.status === 'preparing'"
+          :to="`${path}/souhaits`"
+          block
+          size="xl"
+          class="h-12 justify-center font-bold"
+          :label="t('auth.invite.wishes')"
+        />
+        <UButton
+          :to="path"
+          block
+          size="xl"
+          :variant="
+            edition?.wishlist && edition.status === 'preparing'
+              ? 'link'
+              : 'solid'
+          "
+          class="h-12 justify-center font-bold"
+          :label="t('auth.invite.seeDraw')"
+        />
+      </UiCard>
+      <UButton
+        v-else
+        :to="HOME"
+        block
+        size="xl"
+        variant="outline"
+        color="neutral"
+        class="h-12 justify-center font-bold"
+        :label="t('auth.invite.goHome')"
+      />
+      <p
+        v-if="data.account"
+        class="text-center text-[13px] leading-[1.4] text-toned"
+      >
+        {{ t('auth.invite.findIt', { email: data.account.email }) }}
+      </p>
+    </div>
+
+    <div
+      v-else-if="closed"
+      class="flex flex-col items-center gap-3 pt-20 text-center"
+      data-testid="invite-closed"
+    >
+      <UiEnvelope state="locked" />
+      <h1 class="font-display text-[28px] leading-[1.15] font-bold">
+        {{ closed.title }}
+      </h1>
+      <p class="text-[15px] leading-[1.5] text-toned" role="alert">
+        {{ closed.body }}
+      </p>
+    </div>
+
+    <template v-else-if="data">
+      <div class="flex flex-col items-center gap-2 text-center">
+        <img src="/favicon.svg" alt="" class="size-14" />
+        <p class="text-[15px] text-toned">{{ t('auth.invite.intro') }}</p>
+        <h1
+          class="font-display text-[34px] leading-[1.05] font-bold text-primary-ink"
+        >
+          {{ data.groupName }}
+        </h1>
+        <p v-if="editionLine" class="text-[15px] text-toned">
+          {{ editionLine }}
+        </p>
+      </div>
+
+      <figure v-if="data.message" class="flex flex-col gap-1.5">
+        <blockquote
+          class="rounded-[16px_16px_16px_4px] bg-muted px-3.5 py-3 leading-[1.45]"
+          data-testid="invite-words"
+        >
+          {{ data.message }}
+        </blockquote>
+        <figcaption class="px-1 text-[13px] text-toned">
+          {{ t('auth.invite.organiserWord') }}
+        </figcaption>
+      </figure>
+
+      <UiCard v-if="loggedIn" padding="lg">
+        <form class="flex flex-col gap-4" novalidate @submit.prevent="onJoin">
+          <div
+            v-if="data.account"
+            class="flex items-center justify-between gap-3 text-sm"
+            data-testid="invite-account"
+          >
+            <span class="min-w-0 truncate text-toned">
+              {{ t('auth.invite.signedAs', { email: data.account.email }) }}
+            </span>
             <UButton
-              type="submit"
-              block
-              icon="i-lucide-user-plus"
-              :disabled="!canJoin"
-              :loading="join.isPending.value"
-              :label="t('auth.invite.joinGroup')"
+              variant="link"
+              class="-mr-2.5 min-h-11 shrink-0 font-bold text-primary-ink underline underline-offset-2"
+              :loading="logout.isPending.value"
+              :label="t('auth.invite.notMe')"
+              @click="onSwitch"
             />
-          </form>
-        </UiCard>
-        <UiCard v-else padding="lg" class="flex flex-col gap-4">
-          <p class="text-center text-sm text-muted">
-            {{ t('auth.invite.loginFirst') }}
-          </p>
-          <AuthEmailLogin :next="`/rejoindre/${code}`" />
-        </UiCard>
-      </template>
-    </UContainer>
-  </div>
+          </div>
+          <UFormField
+            :label="t('adminGroup.personForm.firstNameLabel')"
+            :help="t('auth.invite.nameHelp')"
+            :ui="{
+              label: 'text-[15px] font-semibold',
+              help: 'text-[13px] text-toned',
+            }"
+          >
+            <UInput
+              v-model="firstName"
+              autocomplete="given-name"
+              size="xl"
+              class="w-full"
+              :ui="{ base: 'h-12' }"
+            />
+          </UFormField>
+          <UAlert
+            v-if="join.isError.value"
+            color="error"
+            variant="subtle"
+            :description="errorMessage(join.error.value)"
+          />
+          <UButton
+            type="submit"
+            block
+            size="xl"
+            class="h-12 justify-center font-bold"
+            :disabled="!canJoin || join.isPending.value"
+            :loading="join.isPending.value"
+            :label="
+              join.isPending.value
+                ? t('auth.invite.joining')
+                : t('auth.invite.joinGroup')
+            "
+          />
+        </form>
+      </UiCard>
+      <UiCard v-else padding="lg">
+        <AuthEmailLogin
+          :next="`/rejoindre/${code}`"
+          :intro="t('auth.invite.loginFirst')"
+          :tabs="false"
+        />
+      </UiCard>
+    </template>
+  </AuthScreen>
 </template>

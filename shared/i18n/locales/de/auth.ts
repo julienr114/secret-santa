@@ -9,13 +9,18 @@ export default {
     emailInvalid: 'Ungültige E-Mail-Adresse',
     submit: 'Anmeldelink erhalten',
     sentTitle: 'Schau in dein Postfach',
-    sent: 'Link gesendet. Er ist 15 Minuten gültig und funktioniert nur einmal.',
-    spamHint: 'Schau auch im Spam-Ordner nach.',
     again: 'Andere Adresse verwenden',
     devLink: 'Entwicklungsmodus: Anmeldelink öffnen',
     tabLogin: 'Anmelden',
     tabSignup: 'Konto erstellen',
     signupSubmit: 'Mein Konto erstellen',
+    sentTo:
+      'Link an {email} gesendet. Er ist 15 Minuten gültig und funktioniert nur einmal.',
+    spamHint: 'Nichts angekommen? Schau im Spam-Ordner nach.',
+    sameDevice: 'Öffne den Link auf diesem Gerät: Es wird angemeldet.',
+    submitMine: 'Meinen Link erhalten',
+    sending: 'Link wird gesendet…',
+    emailPlaceholder: 'du@beispiel.de',
   },
   landing: {
     tagline:
@@ -254,9 +259,15 @@ export default {
   },
   confirm: {
     title: 'Anmeldung',
-    body: 'Bestätige, um dich auf diesem Gerät anzumelden.',
     action: 'Anmelden',
     newLink: 'Neuen Link anfordern',
+    question: 'Auf diesem Gerät anmelden?',
+    body: 'Du bleibst auf diesem Gerät 30 Tage angemeldet.',
+    notYours: 'Nicht dein Gerät? Schließ einfach diese Seite.',
+    connecting: 'Anmeldung läuft…',
+    invalidTitle: 'Dieser Link funktioniert nicht mehr',
+    invalidBody:
+      'Ein Anmeldelink ist 15 Minuten gültig und funktioniert nur einmal. Fordere einen neuen an, das dauert zehn Sekunden.',
   },
   account: {
     profile: 'Mein Profil',
@@ -304,15 +315,41 @@ export default {
       one: '{count} Person angemeldet',
       other: '{count} Personen angemeldet',
     },
-    already: 'Du machst bei dieser Auslosung schon mit.',
-    open: 'Meine Auslosung öffnen',
     nameHelp: 'Der Vorname, den die anderen sehen.',
     loginFirst:
       'Melde dich mit deiner E-Mail-Adresse an, um beizutreten. Noch kein Konto? Es wird dabei erstellt.',
     joinGroup: 'Der Gruppe beitreten',
-    member:
-      'Du bist in der Gruppe. Der Organisator fügt dich der Auslosung hinzu; du findest sie auf deiner Startseite.',
     signedAs: 'Angemeldet als {email}',
     notMe: 'Das bin nicht ich',
+    organiserWord: 'Das Wort des Organisators',
+    welcome: 'Willkommen in {group}',
+    inDraw: 'Du machst bei {label} mit.',
+    notDrawnYet:
+      'Die Auslosung hat noch nicht stattgefunden: Dein Organisator sagt dir Bescheid.',
+    addLater:
+      'Du gehörst zur Gruppe. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+    drawnAlready:
+      'Du gehörst zur Gruppe. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
+    nextDraw:
+      'Du gehörst zur Gruppe. Dein Organisator sagt dir bei der nächsten Auslosung Bescheid.',
+    meanwhile: 'In der Zwischenzeit',
+    wishes: 'Meine Geschenkideen notieren',
+    seeDraw: 'Meine Auslosung ansehen',
+    goHome: 'Zu meiner Startseite',
+    findIt:
+      'Du findest sie auf deiner Startseite, wenn du dich mit {email} anmeldest.',
+    joining: 'Beitritt läuft…',
+    full: {
+      title: 'Über diesen Link ist kein Platz mehr frei',
+      body: 'Sag dem Organisator von {group} Bescheid: Er kann Plätze freigeben oder dich selbst hinzufügen.',
+    },
+    expired: {
+      title: 'Dieser Einladungslink ist nicht mehr gültig',
+      body: 'Sag dem Organisator von {group} Bescheid: Er kann ihn verlängern oder dich selbst hinzufügen.',
+    },
+    invalid: {
+      title: 'Dieser Einladungslink funktioniert nicht mehr',
+      body: 'Bitte die Person, die ihn dir geschickt hat, um einen neuen Link.',
+    },
   },
 } satisfies Dict<typeof fr>;

@@ -23,7 +23,10 @@ const state: { api?: APIRequestContext; editionId: string; code: string } = {
 /** Logs the page in from the login form, then follows the screen link. */
 const loginOnScreen = async (page: Page, email: string) => {
   await page.getByLabel('Adresse email').fill(email);
-  await page.getByRole('button', { name: 'Recevoir un lien' }).click();
+  await page.getByRole('button', { name: 'Recevoir mon lien' }).click();
+  await expect(page.getByTestId('login-sent')).toContainText(
+    `Lien envoyé à ${email}`,
+  );
   await page.getByRole('link', { name: /Mode développement/ }).click();
   await page.getByRole('button', { name: 'Se connecter' }).click();
 };
@@ -102,9 +105,14 @@ test('someone with the link signs up and joins the group', async ({ page }) => {
   );
   await page.getByLabel('Prénom').fill('Zoé');
   await page.getByRole('button', { name: 'Rejoindre le groupe' }).click();
-  await expect(page.getByText(/Tu fais partie du groupe/)).toBeVisible();
+  // In the group and in the draw being prepared: her draw is one tap away.
+  const joined = page.getByTestId('invite-joined');
+  await expect(joined).toContainText('Bienvenue dans Famille Invite');
+  await expect(joined).toContainText('Tu participes à Noël invite.');
+  await expect(
+    joined.getByRole('link', { name: 'Voir mon tirage' }),
+  ).toBeVisible();
 
-  // In the group, with her address; the organiser adds her to the draw.
   const { persons } = await (await state.api!.get(`${ADMIN}/persons`)).json();
   const zoe = persons.find((p: { firstName: string }) => p.firstName === 'Zoé');
   expect(zoe.email).toBe('zoe-invite@example.com');
@@ -113,12 +121,21 @@ test('someone with the link signs up and joins the group', async ({ page }) => {
   ).json();
   expect(
     participants.some((p: { firstName: string }) => p.firstName === 'Zoé'),
-  ).toBe(false);
+  ).toBe(true);
+  // The group reads it in the journal.
+  const { entries } = await (
+    await state.api!.get(`${ADMIN}/journal?locale=fr`)
+  ).json();
+  expect(entries.map((e: { text: string }) => e.text)).toContain(
+    "Zoé rejoint l'édition",
+  );
 
   // Coming back to the link: already in.
   await page.reload();
   await hydrated(page);
-  await expect(page.getByText(/Tu fais partie du groupe/)).toBeVisible();
+  await expect(page.getByTestId('invite-joined')).toContainText(
+    'Tu participes à Noël invite.',
+  );
 });
 
 test('a participant keeps a draw opened by its personal link in an account', async ({
@@ -229,5 +246,39 @@ test('the link stops at its places, then at its last day', async ({
   expect(late.status()).toBe(410);
   const unknown = await page.request.get('/api/invite/AAAAAAAAAAAAAAAA');
   expect(unknown.status()).toBe(404);
+  await page.goto('/rejoindre/AAAAAAAAAAAAAAAA');
+  await hydrated(page);
+  await expect(page.getByTestId('invite-closed')).toContainText(
+    'Ce lien d’invitation ne marche plus',
+  );
   await second.dispose();
+});
+
+test('after the draw, the link leads into the group, not into the draw', async ({
+  page,
+}) => {
+  await state.api!.post(`${ADMIN}/invite`, {
+    data: { open: true, places: 5, until: '2099-12-31' },
+  });
+  const draw = await state.api!.post(
+    `${ADMIN}/editions/${state.editionId}/draw`,
+  );
+  expect(draw.ok()).toBe(true);
+  await apiLogin(page.request, 'max-invite@example.com');
+  const joined = await page.request.post(`/api/invite/${state.code}/join`, {
+    data: { firstName: 'Max' },
+  });
+  expect(joined.status()).toBe(201);
+  expect((await joined.json()).path).toBeNull();
+  const { participants } = await (
+    await state.api!.get(`${ADMIN}/editions/${state.editionId}`)
+  ).json();
+  expect(
+    participants.some((p: { firstName: string }) => p.firstName === 'Max'),
+  ).toBe(false);
+  await page.goto(`/rejoindre/${state.code}`);
+  await hydrated(page);
+  await expect(page.getByTestId('invite-joined')).toContainText(
+    'Le tirage de Noël invite est déjà fait',
+  );
 });

@@ -8,13 +8,19 @@ export default {
     emailInvalid: 'Invalid email address',
     submit: 'Get a login link',
     sentTitle: 'Check your inbox',
-    sent: 'Link sent. It is valid for 15 minutes and works only once.',
-    spamHint: 'Remember to look in your spam folder.',
     again: 'Use another address',
     devLink: 'Development mode: open the login link',
     tabLogin: 'Log in',
     tabSignup: 'Create an account',
     signupSubmit: 'Create my account',
+    sentTo:
+      'Link sent to {email}. It is valid for 15 minutes and works only once.',
+    spamHint: 'Nothing came? Look in your spam folder.',
+    sameDevice:
+      'Open the link on this device: it is the one that will be logged in.',
+    submitMine: 'Get my link',
+    sending: 'Sending the link…',
+    emailPlaceholder: 'you@example.com',
   },
   landing: {
     tagline:
@@ -249,9 +255,15 @@ export default {
   },
   confirm: {
     title: 'Log in',
-    body: 'Confirm to log in on this device.',
     action: 'Log in',
     newLink: 'Ask for a new link',
+    question: 'Log in on this device?',
+    body: 'You will be logged in on this device for 30 days.',
+    notYours: 'Not your device? Just close this page.',
+    connecting: 'Logging in…',
+    invalidTitle: 'This link no longer works',
+    invalidBody:
+      'A login link is valid for 15 minutes and works only once. Ask for a new one, it takes ten seconds.',
   },
   account: {
     profile: 'My profile',
@@ -297,15 +309,40 @@ export default {
       one: '{count} person signed up',
       other: '{count} people signed up',
     },
-    already: 'You already take part in this draw.',
-    open: 'Open my draw',
     nameHelp: 'The first name the others will see.',
     loginFirst:
       'Log in with your email address to join. No account yet? It is created on the way.',
     joinGroup: 'Join the group',
-    member:
-      'You are in the group. The organizer will add you to the draw; you will find it on your home page.',
     signedAs: 'Logged in as {email}',
     notMe: 'Not me',
+    organiserWord: 'The organiser’s word',
+    welcome: 'Welcome to {group}',
+    inDraw: 'You take part in {label}.',
+    notDrawnYet:
+      'The draw has not happened yet: your organiser will let you know.',
+    addLater:
+      'You are in the group. Your organiser will add you to the draw of {label}.',
+    drawnAlready:
+      'You are in the group. The draw of {label} is already done: you will be in the next one.',
+    nextDraw:
+      'You are in the group. Your organiser will let you know about the next draw.',
+    meanwhile: 'Meanwhile',
+    wishes: 'Write down my gift ideas',
+    seeDraw: 'See my draw',
+    goHome: 'Go to my home',
+    findIt: 'You will find it on your home by logging in with {email}.',
+    joining: 'Joining…',
+    full: {
+      title: 'No place left with this link',
+      body: 'Tell the organiser of {group}: they can open more places or add you themselves.',
+    },
+    expired: {
+      title: 'This invitation link is no longer valid',
+      body: 'Tell the organiser of {group}: they can extend it or add you themselves.',
+    },
+    invalid: {
+      title: 'This invitation link no longer works',
+      body: 'Ask the person who sent it to you for a new link.',
+    },
   },
 } satisfies Dict<typeof fr>;

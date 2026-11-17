@@ -6,13 +6,18 @@ export default {
     emailInvalid: 'Adresse email invalide',
     submit: 'Recevoir un lien de connexion',
     sentTitle: 'Regarde ta boîte mail',
-    sent: 'Lien envoyé. Il est valable 15 minutes et ne sert qu’une fois.',
-    spamHint: 'Pense à regarder dans les indésirables.',
     again: 'Utiliser une autre adresse',
     devLink: 'Mode développement : ouvrir le lien de connexion',
     tabLogin: 'Se connecter',
     tabSignup: 'Créer un compte',
     signupSubmit: 'Créer mon compte',
+    sentTo:
+      'Lien envoyé à {email}. Il est valable 15 minutes et ne sert qu’une fois.',
+    spamHint: 'Rien reçu ? Regarde dans les indésirables.',
+    sameDevice: 'Ouvre le lien sur cet appareil : c’est lui qui sera connecté.',
+    submitMine: 'Recevoir mon lien',
+    sending: 'Envoi du lien…',
+    emailPlaceholder: 'toi@exemple.fr',
   },
   landing: {
     tagline:
@@ -249,9 +254,15 @@ export default {
   },
   confirm: {
     title: 'Connexion',
-    body: 'Confirme pour te connecter sur cet appareil.',
     action: 'Se connecter',
     newLink: 'Demander un nouveau lien',
+    question: 'Se connecter sur cet appareil ?',
+    body: 'Tu vas être connecté sur cet appareil pendant 30 jours.',
+    notYours: 'Ce n’est pas ton appareil ? Ferme simplement cette page.',
+    connecting: 'Connexion en cours…',
+    invalidTitle: 'Ce lien ne marche plus',
+    invalidBody:
+      'Un lien de connexion est valable 15 minutes et ne sert qu’une fois. Demandes-en un nouveau, ça prend dix secondes.',
   },
   account: {
     profile: 'Mon profil',
@@ -297,15 +308,40 @@ export default {
       one: '{count} personne inscrite',
       other: '{count} personnes inscrites',
     },
-    already: 'Tu participes déjà à ce tirage.',
-    open: 'Ouvrir mon tirage',
     nameHelp: 'Le prénom que verront les autres.',
     loginFirst:
       'Connecte-toi avec ton adresse email pour le rejoindre. Pas encore de compte ? Il se crée tout seul.',
     joinGroup: 'Rejoindre le groupe',
-    member:
-      'Tu fais partie du groupe. L’organisateur t’ajoutera au tirage ; tu le retrouveras sur ton accueil.',
     signedAs: 'Connecté avec {email}',
     notMe: 'Ce n’est pas moi',
+    organiserWord: 'Le mot de l’organisateur',
+    welcome: 'Bienvenue dans {group}',
+    inDraw: 'Tu participes à {label}.',
+    notDrawnYet:
+      'Le tirage n’a pas encore eu lieu : ton organisateur te préviendra.',
+    addLater:
+      'Tu fais partie du groupe. Ton organisateur t’ajoutera au tirage de {label}.',
+    drawnAlready:
+      'Tu fais partie du groupe. Le tirage de {label} est déjà fait : tu seras du prochain.',
+    nextDraw:
+      'Tu fais partie du groupe. Ton organisateur te préviendra du prochain tirage.',
+    meanwhile: 'En attendant',
+    wishes: 'Noter mes idées de cadeaux',
+    seeDraw: 'Voir mon tirage',
+    goHome: 'Aller à mon accueil',
+    findIt: 'Tu le retrouveras sur ton accueil en te connectant avec {email}.',
+    joining: 'Inscription en cours…',
+    full: {
+      title: 'Il n’y a plus de place par ce lien',
+      body: 'Préviens l’organisateur de {group} : il peut rouvrir des places ou t’ajouter lui-même.',
+    },
+    expired: {
+      title: 'Ce lien d’invitation n’est plus valable',
+      body: 'Préviens l’organisateur de {group} : il peut le prolonger ou t’ajouter lui-même.',
+    },
+    invalid: {
+      title: 'Ce lien d’invitation ne marche plus',
+      body: 'Demande un nouveau lien à la personne qui te l’a envoyé.',
+    },
   },
 };

@@ -214,7 +214,7 @@ watch(open, (isOpen) => {
           block
           variant="outline"
           color="error"
-          class="h-12 justify-center text-base font-bold"
+          class="h-12 justify-center text-base font-bold disabled:opacity-55"
           :disabled="!copied || loading"
           :loading="loading"
           :label="t('adminEdition.screen.reveal.anyway')"

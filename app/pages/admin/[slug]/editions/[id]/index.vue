@@ -200,7 +200,9 @@ const dateOpen = ref(false);
       <AdminEditionHeader
         :title="label"
         :subtitle="subtitle"
-        :date-text="status === 'closed' || revealed ? null : dateText"
+        :date-text="
+          status === 'closed' || revealed || partyReached ? null : dateText
+        "
         @edit-date="dateOpen = true"
       />
       <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />

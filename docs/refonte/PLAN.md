@@ -14,11 +14,10 @@ Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 
 | Sujet | Maquettes concernées | Pourquoi |
 |---|---|---|
-| Dévoiler les résultats (README 22.9) | `DevoilerAvant`, `Feter`, `Devoiler`, `Cloturee`, et la ligne « Dévoiler les résultats » de `Suivi100` | Nouvelle fonctionnalité, côté serveur compris |
 | Idées futures | `FuturAccueil`, `FuturListes` | Non planifié |
-| Mot de l'administrateur sur un refus | bloc « Le mot de l'administrateur » de `AccueilDemandeRefusee`, champ « Un mot pour elle » et ses messages tout prêts (`AdminDemande`, `AdminDemandeMot`) | Demande un champ en base et un email |
 | Liste de souhaits | `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` | Remplacée par « Pistes de cadeaux » (README 22.11), codée à part |
-| Alerte du journal sur la page du participant | `TirageAlerteJournal` | Demande de mémoriser la dernière visite ; pas encore décidé |
+
+Dévoiler les résultats, le mot de l'administrateur sur un refus et l'alerte du journal sur la page du participant sortent de ce tableau le 17 novembre 2026 : ce sont les lots 12 et 13.
 
 **Règle générale** : si une maquette affiche une donnée que l'API ne fournit pas, ne pas l'inventer et ne pas toucher au schéma. Laisser l'élément de côté et l'ajouter à la section 6 « Questions pour Julien » de ce fichier.
 
@@ -402,18 +401,45 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 - [x] README 11 et 23 réécrits pour les écrans refaits.
 - [x] Cocher les lots ici, et lister ce qui reste en section 6.
 
+### Lot 11 — Les données que les routes ne renvoyaient pas (sans migration)
+
+Décidé par Julien le 17 novembre 2026 (réponses de la section 6). Les données sont déjà en base : seules les routes changent, chacune avec son test.
+
+- [ ] **Journal** : chaque ligne porte sa personne, et un envoi son message et son moyen. `JournalPersonne` : filtre « Moi » et « Tout le monde » ; lignes regroupées avec les icônes des personnes ; envois regroupés par message et par moyen, comme la maquette ; `JournalDetail` nomme la personne et dit « Ce que ça change pour toi ».
+- [ ] **Invitation expirée** (`RejoindreFerme`) : « n'est plus valable depuis le 10 décembre ».
+- [ ] **`ConnexionConfirmer`** : l'adresse du lien, lue sans le consommer.
+- [ ] **`AccueilDemandeAttente`** : le texte de la demande.
+- [ ] **`AdminCompte`** : ses groupes, avec rôle, membres et état du tirage, y compris ceux où il participe seulement.
+- [ ] **`AdminGroupes`** : membres et état du tirage sur chaque ligne.
+- [ ] **`AdminComptes`** : une demande refusée sur la ligne du compte.
+- [ ] **`AdminAcces`** : le nom du demandeur le plus ancien et « Voir la demande ».
+- [ ] **Genre** : une tournure neutre dans les textes de l'administration.
+
+### Lot 12 — Alerte du journal et mot sur un refus (deux migrations)
+
+Décidé par Julien le 17 novembre 2026.
+
+- [ ] **`TirageAlerteJournal`** : colonne `participations.journal_seen_at` (migration). La page du tirage dit « 1 alerte depuis ta dernière visite » sur la ligne du journal ; ouvrir le journal depuis cette page remet le compte à zéro. Sans visite enregistrée, le compte part du tirage.
+- [ ] **Mot de l'administrateur sur un refus** : colonne `group_requests.decision_note` (migration). Champ « Un mot pour elle » et ses messages tout prêts dans le panneau de réponse (`AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`), repris dans l'email de refus et sur l'accueil (`AccueilDemandeRefusee`).
+
+### Lot 13 — Dévoiler les résultats (README 22.9)
+
+Décidé par Julien le 17 novembre 2026. Une édition clôturée garde ses paires visibles pour l'organisateur, dévoilée ou non (README 8.7 inchangé) : `ClotureeSecrete` n'est pas suivie.
+
+- [ ] Colonne `editions.revealed_at` (migration). Route `POST …/editions/[id]/reveal` : édition tirée, date de fête connue ; avant la fête, seulement si l'organisateur le confirme. Irréversible, inscrite au journal (« L'organisateur a dévoilé les résultats »), sans jamais dire qui offre à qui. Une fois dévoilée, le tirage ne s'annule plus, et la route des résultats renvoie les paires.
+- [ ] `Suivi`, `Suivi100`, `SuiviSansDate` : ligne « Dévoiler les résultats » dans « Plus tard, ou en cas de pépin » ; « Voir un seul résultat ».
+- [ ] `DevoilerAvant` : avant la fête, l'encadré rouge et la phrase à recopier.
+- [ ] `Feter` : la fête passée, « Dévoiler les résultats » et « Clôturer sans dévoiler ».
+- [ ] `Devoiler` : la confirmation dans un panneau.
+- [ ] `Cloturee` : les résultats dévoilés, puis « Clôturer l'édition ».
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
 
-**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Tous les lots sont faits ; une seule case reste ouverte, `JournalPersonne` (lot 6), qui attend la réponse à la question 1 du lot 6. Les questions sans réponse :
-
-- **Données que les routes ne renvoient pas encore** (chacune demande un changement de route, donc ton accord) : la personne concernée par chaque ligne du journal, pour le filtre « Moi », les icônes et prénoms des lignes repliées et un « Ce que ça change pour toi » juste (lot 6, questions 1, 2 et 4) ; le message et le moyen d'un envoi dans le journal (lot 6, question 3) ; la date limite d'un lien d'invitation expiré (lot 8, question 2) ; l'adresse sur « Se connecter sur cet appareil ? » sans consommer le lien (lot 8, question 3) ; le texte de la demande sur l'accueil (lot 8, question 5) ; les groupes d'un compte avec rôle, membres et état, et ceux où il participe (lot 9, question 1) ; membres et état du tirage sur la liste des groupes (lot 9, question 2) ; une demande refusée sur la liste des comptes (lot 9, question 3) ; le nom du demandeur sur la carte du haut de l'accueil (lot 9, question 4).
-- **Choix à valider** : mes textes d'explication des alertes du journal (lot 6, question 4) et la phrase sous la liste, retirée depuis (lot 6, question 5, réglée par la maquette) ; la phrase sous le profil de `Compte` (lot 8, question 4) ; le genre des textes de l'administration (lot 9, question 5) ; « Supprimer le groupe » dans le cadre « Super-admin », à reporter dans la maquette `GroupeReglages` (lot 9, question 6) ; l'ordre du menu du super-admin (lot 9, question 7).
-- **Écart corrigé au lot 10** : le budget et le petit mot d'une édition (Correction 9) s'affichent maintenant dès la validation, comme tout réglage, et reviennent avec un toast si l'enregistrement échoue.
-- **Hors périmètre**, inchangé (section 1) : dévoiler les résultats, les pistes de cadeaux, le mot de l'administrateur sur un refus, l'alerte du journal sur la page du tirage.
+**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Seule question encore ouverte : la maquette `GroupeReglages` (lot 9, question 6). Hors périmètre, inchangé : les pistes de cadeaux (README 22.11).
 
 ### Lot 1
 
@@ -498,25 +524,40 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 ### Lot 6
 
 1. **Le filtre « Moi » et « Tout le monde » (`JournalPersonne`).** Les lignes du journal ne portent pas la personne concernée : la route renvoie le type, la phrase, l'édition et l'heure, jamais l'identifiant de la personne. Le filtre par personne, la pilule « Tout le monde » et la version « Moi (Hugo) » (« Tu as découvert ton résultat », l'encadré vert) sont donc laissés de côté. Il faudrait ajouter la personne à chaque ligne du journal, et, côté participant, savoir laquelle est « moi » : un changement de route. On le fait ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route du journal renvoie la personne de chaque ligne (lot 11).
 2. **Les icônes et les prénoms d'une ligne regroupée.** « 5 personnes ont découvert leur résultat » montre, dans la maquette, les icônes des cinq personnes, et le détail les liste avec leur icône et leur prénom. Sans la personne sur chaque ligne (question 1), la ligne regroupée n'a pas d'icônes et son détail reprend la phrase de chaque événement (« Rose a découvert son résultat », 23:50).
+   **Réponse de Julien, 17 novembre 2026 :** oui, avec la personne de chaque ligne (lot 11).
 3. **Les envois regroupés.** La maquette dit « L'organisateur a envoyé « Tirage fait » à 5 personnes par email ». La ligne ne porte ni le message ni le moyen d'envoi : l'écran regroupe donc tous les envois d'un jour et d'une édition et dit « L'organisateur a envoyé 5 messages » ; le détail donne chaque phrase, qui, elle, dit le message et le moyen. Ajouter le message et le moyen aux lignes du journal ferait le regroupement de la maquette (changement de route).
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route du journal renvoie le message et le moyen d'un envoi (lot 11).
 4. **« Qu'est-ce que ça veut dire ? » (`JournalDetail`).** Sans la personne (question 1), le texte ne peut pas dire « à qui Hugo offre un cadeau » ni « Ce que ça change pour toi : rien », faux pour Hugo lui-même. Il dit « à qui la personne nommée offre un cadeau » et « Ce que ça change. Les autres résultats et les listes de souhaits n'ont pas été vus. » J'ai aussi écrit l'explication de deux alertes que la maquette ne montre pas : « Tirage annulé » et l'ancien « L'organisateur a consulté les résultats du tirage ». Les textes te vont ?
+   **Réponse de Julien, 17 novembre 2026 :** les textes me vont. Avec la personne de chaque ligne, le panneau suit la maquette (« à qui Hugo offre un cadeau », « Ce que ça change pour toi ») (lot 11).
 5. **La phrase sous la liste**, « L'essentiel regroupe les envois et laisse de côté les changements d'icône et de langue », explique l'interface ; elle est dans la maquette, donc gardée, et seulement sous « L'essentiel ». On la garde ?
+   **Réponse de Julien, 17 novembre 2026 :** réglé : la phrase est retirée, comme la maquette.
 
 ### Lot 8
 
 1. **Rejoindre le tirage en même temps que le groupe.** **Réponse de Julien, 17 novembre 2026 :** la route `join` ajoute aussi la personne à l'édition « à préparer » (exception à « interface seulement », sans migration, avec son test). Fait.
 2. **La date d'un lien d'invitation expiré.** La page d'invitation ne reçoit pas la date limite du lien : « Ce lien d'invitation n'est plus valable » s'affiche donc sans « depuis le 10 décembre ». L'ajouter demande que la route de l'invitation renvoie `inviteUntil` (changement de route). On le fait ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route de l'invitation renvoie la date limite (lot 11).
 3. **L'adresse sur « Se connecter sur cet appareil ? ».** La maquette dit « Tu vas être connecté avec hugo-demo@example.com pendant 30 jours ». La page du lien ne connaît pas l'adresse sans consommer le lien, et c'est voulu (un lecteur d'emails ne doit pas pouvoir l'utiliser). L'écran dit « Tu vas être connecté sur cet appareil pendant 30 jours. » Lire l'adresse du jeton sans le consommer serait une nouvelle route ; on la veut ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : une route lit l'adresse du lien sans le consommer (lot 11).
 4. **La phrase sous le profil de `Compte`.** La maquette dit « Ton prénom et ton icône sont repris dans tes tirages ». Le profil ne sert que de modèle quand le compte rejoint ou crée un groupe : une personne déjà dans un groupe garde ce que dit le groupe. L'écran dit donc « Ton prénom et ton icône sont repris quand tu rejoins ou crées un groupe. La langue est celle de tes emails. » Ça te va, ou faut-il que changer le profil change aussi les personnes de ses groupes (changement de route) ?
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, la phrase reste ; changer le profil ne change pas les personnes des groupes.
 5. **Le texte de la demande sur `AccueilDemandeAttente`.** La carte « Ta demande est partie » montre, dans la maquette, ce que la personne a écrit. L'accueil ne reçoit que l'état et la date de la demande : la carte dit « Envoyée le 15 novembre. Un administrateur la lit et te répond par email. », sans le texte. L'ajouter demande que la route de l'accueil renvoie le message (changement de route). On le fait ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route de l'accueil renvoie le texte de la demande (lot 11).
 
 ### Lot 9
 
 1. **Les groupes d'un compte (`AdminCompte`).** La maquette montre pour chaque groupe le rôle (« Organisatrice », « Participante »), le nombre de membres et où en est le tirage, et aussi les groupes où le compte participe seulement. La liste des comptes ne donne que les groupes qu'il organise, par leur nom : l'écran dit « Organise ce groupe », sans membres ni état, et ne montre pas les groupes où il participe. Les ajouter demande que la route des comptes les renvoie (changement de route). On le fait ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route des comptes renvoie ses groupes, avec rôle, membres et état du tirage (lot 11).
 2. **Les lignes de `AdminGroupes`.** La maquette dit « Camille · 5 membres · tirage fait, 1 sur 5 a consulté ». La route des groupes ne donne ni le nombre de membres ni l'état du tirage ; l'organisateur est retrouvé dans la liste des comptes, et la ligne ne dit que lui. Même question : on étend la route ?
+   **Réponse de Julien, 17 novembre 2026 :** oui : la route des groupes renvoie membres et état du tirage (lot 11).
 3. **« demande refusée » sur `AdminComptes`.** La liste ne connaît que les demandes en attente ; une demande refusée n'apparaît pas sur la ligne du compte.
+   **Réponse de Julien, 17 novembre 2026 :** oui : la liste des comptes montre une demande refusée (lot 11).
 4. **La carte du haut de l'accueil d'un super-admin** (`AdminAcces`) dit, dans la maquette, « Léa Martin attend ta réponse depuis le 14 novembre » et « Voir la demande ». L'accueil ne reçoit que le nombre de demandes : la carte garde « Des comptes attendent ta réponse » et « Voir les demandes », et mène maintenant à `/admin`.
+   **Réponse de Julien, 17 novembre 2026 :** oui : l'accueil reçoit le nom du demandeur le plus ancien (lot 11).
 5. **Le genre.** « Groupes qu'elle peut créer », « Organisatrice » : l'application ne connaît pas le genre d'un compte. L'écran dit « Groupes qu'il peut créer » (texte déjà là) et « Organise ce groupe ». Faut-il une tournure neutre partout (« Groupes que ce compte peut créer ») ?
+   **Réponse de Julien, 17 novembre 2026 :** une tournure neutre partout, sans genre en base (lot 11).
 6. **« Supprimer le groupe » dans les réglages** est maintenant dans le cadre « Super-admin », comme le demande ce lot (« un seul composant »), alors que la maquette `GroupeReglages` montre encore la ligne avec « Réservé au super-admin ». À mettre à jour dans la maquette ?
 7. **L'ordre du menu.** `AccueilMenu` met la langue en premier, `AdminAccesMenu` l'administration et le compte en premier, puis la langue. Chaque maquette est suivie : le menu d'un super-admin n'a donc pas le même ordre que celui des autres. C'est voulu ?
+   **Réponse de Julien, 17 novembre 2026 :** ça me va, chaque maquette est suivie.

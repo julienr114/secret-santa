@@ -245,12 +245,22 @@ Afficher les pistes de tout le monde permettrait de deviner par recoupement qui 
 - Sous son résultat, quand la personne n'a rien laissé (ni réponse, ni texte, ni idée), celui qui offre peut « Lui demander des pistes » : un panneau dit ce qui va se passer, puis la demande part **tout de suite**.
 - **Une seule demande par tirage**, sans relance ; le bouton disparaît ensuite. Un nouveau tirage (6.5) efface les demandes : chaque nouveau donneur peut demander une fois.
 - **Anonyme** : aucune route, aucun email, aucune ligne de journal, aucun écran de l'organisateur ne dit qui demande, ni qu'une demande a eu lieu (`tests/e2e/hints.spec.ts` compare tout ce que l'organisateur lit avant et après une demande). La personne le voit par un email si elle a une adresse (« Quelqu'un cherche une idée de cadeau pour toi », vers sa page de pistes) et, dans tous les cas, par un bandeau en haut de sa page de pistes.
-- Quand les premières pistes arrivent, celui qui a demandé reçoit un email (« Des pistes de cadeaux t'attendent »), sans le prénom de la personne : un email ne contient jamais de résultat (8.6). Une seule fois.
+- La première fois que des pistes apparaissent après que celui qui offre a découvert son résultat, **qu'il les ait demandées ou non**, il reçoit un email (« Des pistes de cadeaux t'attendent »), sans le prénom de la personne : un email ne contient jamais de résultat (8.6). Une seule fois par tirage (`participations.hints_announced_at`), jamais pour une simple modification (lot 16 bis, `shouldAnnounceHints`).
 - **Qui a demandé n'est pas stocké** (décidé par Julien le 17 novembre 2026, migration `0020`) : `hint_requests` ne garde que le receveur, l'édition et les dates. Quand les premières pistes arrivent, le serveur retrouve qui offre à la personne en déchiffrant le tirage de l'édition (`findGiverParticipationId`, 8.3), lui écrit, et n'en garde rien. Une demande disparaît avec le tirage quand il est annulé (`tests/e2e/hints.spec.ts`).
 - Les deux emails passent par `plainEmail` de `server/utils/messages.ts`, comme ceux des organisateurs : texte simple, un lien.
 - Limite connue et acceptée : si la demande part juste après une découverte visible au journal, la personne peut faire le lien par l'heure.
 
-### 6 bis.4 Protection contre la triche
+### 6 bis.4 Les pistes mises en avant (lot 16 bis, 17 novembre 2026)
+
+Celui qui offre doit voir qu'il y a des pistes, et quand il y en a de nouvelles. Chaque enregistrement (question, rubrique, idée, reprise) date les pistes de la participation (`participations.hints_updated_at`, migration `0021`) ; l'ouverture du résultat est `last_viewed_at`. Trois états pour celui qui offre (`giverHintsState`) : pas de pistes, des pistes, de **nouvelles** pistes (laissées ou modifiées depuis sa dernière ouverture ; jamais avant la première). Ouvrir son résultat les rend anciennes.
+
+- Résultat à découvrir : « Le tirage est fait, et des pistes de cadeaux t'attendent à l'intérieur. »
+- Résultat caché : « Ses pistes de cadeaux t'attendent à l'intérieur » et « Revoir mon résultat et ses pistes » ; « De nouvelles pistes t'attendent » quand elles sont nouvelles ; sans pistes, le bouton en contour et « Pas encore de pistes. Tu pourras lui en demander. » tant que la demande est possible.
+- Résultat ouvert : la pastille « Nouveau » et « Pistes mises à jour le {date} », à cette ouverture seulement.
+- Accueil : la carte « De nouvelles pistes pour ton cadeau » (22.10, rang 3 bis), et sinon la ligne du tirage « De nouvelles pistes à lire » (le signal du journal garde la priorité).
+- Organisateur : « 1 sur 3 a laissé des pistes » sur le suivi, sans dire lesquelles sont nouvelles ni pour qui. Personne d'autre que celui qui offre ne sait s'il les a lues.
+
+### 6 bis.5 Protection contre la triche
 
 - **Le lien suffit pour modifier ses pistes** (décision v5). Une réécriture par quelqu'un qui aurait récupéré le lien n'est plus journalisée (22.11) : risque accepté, la parade reste de régénérer le lien.
 - Une réponse change seule (`PATCH /api/p/[token]/hints`, seules les clés envoyées changent) ; la liste des idées est remplacée entière (`PUT …/wishes`).
@@ -516,6 +526,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `link_copied_at` | text nullable | |
 | `view_count` | integer | Consultations du résultat |
 | `first_viewed_at`, `last_viewed_at` | text nullable | |
+| `hints_updated_at`, `hints_announced_at` | text nullable | Dernier enregistrement de ses pistes ; email « des pistes sont arrivées » déjà envoyé à son donneur pour ce tirage (migration `0021`, lot 16 bis) |
 | `journal_seen_at` | text nullable | Dernière ouverture du journal depuis la page du tirage (migration `0016`) : les alertes d'après sont comptées sur la page |
 
 ### `assignments`
@@ -588,9 +599,9 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 | `/rejoindre/[code]` | Lien d'invitation d'un groupe (22.2), quatre états : l'invitation et l'adresse ; le prénom et « Rejoindre le groupe » ; la bienvenue (dans le tirage à préparer, ou dans le groupe seulement si le tirage est fait) ; le lien fermé (plus de place, date passée, désactivé ou inconnu) |
 
 Détails d'interface (page du tirage refaite le 15 novembre 2026) :
-- De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Mes pistes de cadeaux » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
+- De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition, puis « Budget **30 €** · Fête le **ven. 25 décembre** » (ce qui est connu, pas sur une édition clôturée) ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Le mot de l'organisateur » dans un bloc beige, coupé à trois lignes avec « Lire la suite » (`ParticipantOrganizerNote`, pas sur une édition clôturée) ; « Mes pistes de cadeaux » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
 - Les états : avant le tirage (enveloppe en pointillés, « Laisser mes pistes de cadeaux ») ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, « Des pistes de cadeaux t'attendent. » quand il y en a) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
-- Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, les pavés Budget et Date, le mot de l'organisateur, puis « Pour t'aider à choisir » (`ParticipantGiverHints`) : ses réponses en phrases, ses textes, ses idées précises (chaque lien affiché « Voir le lien ») ; sans piste, « Lui demander des pistes » et son panneau, puis « Demande envoyée. »
+- Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, puis « Pour t'aider à choisir » (le budget, la date et le mot sont sur la page, depuis le lot 16 bis) (`ParticipantGiverHints`) : ses réponses en phrases, ses textes, ses idées précises (chaque lien affiché « Voir le lien ») ; sans piste, « Lui demander des pistes » et son panneau, puis « Demande envoyée. »
 - Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut retoucher « Découvrir ». Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache.
 - Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton organisateur »).
 
@@ -652,8 +663,8 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, le réglage des pistes (`giftHints`), s'il en a laissé (`hasHints`) et, après sa première découverte, si son receveur en a laissé (`receiverHasHints`). Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
-| `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et les pistes du receveur** (`hints` : réponses, textes, idées, demande déjà faite), et si chacun a une adresse email (pour les mots sous la demande). Compte et journalise la consultation |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, budget et mot de l'organisateur (rien de secret, lot 16 bis), le réglage des pistes (`giftHints`), s'il en a laissé (`hasHints`), les pistes de la personne à qui il offre vues par lui (`receiverHints` : aucune, des pistes, nouvelles) et si une demande est encore possible (`canAskHints`). Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
+| `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et les pistes du receveur** (`hints` : réponses, textes, idées, demande déjà faite), , si elles sont nouvelles depuis la dernière ouverture et leur date (lot 16 bis), et si chacun a une adresse email (pour les mots sous la demande). Compte et journalise la consultation |
 | `GET/PATCH /api/p/[token]/hints` | Ses pistes (réponses, textes, idées, demande en cours, édition à reprendre) ; une réponse ou un texte à la fois. Non journalisé. Refusé si l'édition est clôturée ou le groupe sans pistes |
 | `POST /api/p/[token]/hints/copy` | « Reprendre mes pistes de {édition} », sur une page vide |
 | `POST /api/p/[token]/hints/request` | « Lui demander des pistes » : une fois par tirage, après sa découverte, quand le receveur n'a rien laissé. Anonyme, jamais journalisé ; email au receveur s'il a une adresse |
@@ -1192,6 +1203,7 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 | 1 | Organisateur | Tirage fait, au moins une personne pas prévenue | Préviens chacun que le tirage est fait | « Prévenir par email » → sélection par email |
 | 2 | Super-admin | Au moins une demande de groupe en attente | N demandes de groupe à traiter, « Léa Martin attend ta réponse depuis le 14 novembre » | « Voir la demande » (ou « Voir les demandes ») → administration |
 | 3 | Participant | Tirage fait, résultat jamais découvert | Le tirage est fait ! | « Découvrir à qui j'offre un cadeau » → page du tirage |
+| 3 bis | Participant | Tirage fait, de nouvelles pistes de la personne à qui il offre (lot 16 bis) | De nouvelles pistes pour ton cadeau | « Lire ses pistes » → page du tirage |
 | 4 | Organisateur | Tout le monde prévenu, fête dans 7 jours ou moins, au moins une personne n'a pas consulté | N personnes n'ont pas encore ouvert leur lien | « Relancer » → édition |
 | 5 | Organisateur | Édition à préparer, tirage impossible | Le tirage est impossible pour l'instant | « Corriger » → édition |
 | 6 | Organisateur | Édition à préparer, tirage possible | Vérifie la liste, puis lance le tirage | « Ouvrir l'édition » → édition |
@@ -1235,7 +1247,7 @@ Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient
 
 ### 22.11 Fait : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
 
-**Codé le 17 novembre 2026** (lot 16 de `docs/refonte/PLAN.md` : migration `0019`, tables `gift_portraits` et `hint_requests`, routes `…/hints`, écrans `/p/[token]/pistes`, réglage à trois valeurs ; décrit en 6 bis, 9, 11 et 12). Réponses de Julien du 17 novembre 2026, codées le même jour : les anciennes lignes `wishes_updated` restent en base, cachées ; qui demande des pistes n'est pas stocké, le donneur est retrouvé en déchiffrant le tirage au moment de l'email (migration `0020`) ; chez celui qui offre, des phrases plutôt que des étiquettes (« Inès préfère : », une ligne grise « … : peu importe. » par « Les deux me vont ») ; sur sa page, chaque étiquette ouvre sa question ; « Neuf, ou d'occasion ? » a désormais « Les deux me vont », comme les autres (étiquettes « D'occasion, volontiers », « Plutôt du neuf », « Neuf ou d'occasion » ; chez celui qui offre « D'occasion ou fait main, volontiers. », « Plutôt du neuf que de l'occasion. », « Neuf ou d'occasion : peu importe. ») ; cinq questions avec le réglage « Portrait seulement » (sans « Surprends-moi »). Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
+**Codé le 17 novembre 2026**, puis mis en avant par le lot 16 bis (6 bis.4 : nouvelles pistes, email à celui qui offre même sans demande, carte de l'accueil, budget et mot hors de la carte du résultat) (lot 16 de `docs/refonte/PLAN.md` : migration `0019`, tables `gift_portraits` et `hint_requests`, routes `…/hints`, écrans `/p/[token]/pistes`, réglage à trois valeurs ; décrit en 6 bis, 9, 11 et 12). Réponses de Julien du 17 novembre 2026, codées le même jour : les anciennes lignes `wishes_updated` restent en base, cachées ; qui demande des pistes n'est pas stocké, le donneur est retrouvé en déchiffrant le tirage au moment de l'email (migration `0020`) ; chez celui qui offre, des phrases plutôt que des étiquettes (« Inès préfère : », une ligne grise « … : peu importe. » par « Les deux me vont ») ; sur sa page, chaque étiquette ouvre sa question ; « Neuf, ou d'occasion ? » a désormais « Les deux me vont », comme les autres (étiquettes « D'occasion, volontiers », « Plutôt du neuf », « Neuf ou d'occasion » ; chez celui qui offre « D'occasion ou fait main, volontiers. », « Plutôt du neuf que de l'occasion. », « Neuf ou d'occasion : peu importe. ») ; cinq questions avec le réglage « Portrait seulement » (sans « Surprends-moi »). Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
 
 Conception validée par Julien le 16 novembre 2026. C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
 

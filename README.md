@@ -100,7 +100,7 @@ en préparation ──► tirée ──► clôturée
        └── annulation du tirage (journalisée)
 ```
 
-Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec une date de fête obligatoire : il n'y a plus d'étape « brouillon » ni d'étape « invitations » à ouvrir. L'écran de l'organisateur montre une frise en trois étapes, Préparer, Tirer, Fêter ; « Fêter » est la même édition tirée, à partir du jour de la fête.
+Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec une date de fête obligatoire : il n'y a plus d'étape « brouillon » ni d'étape « invitations » à ouvrir. L'écran de l'organisateur montre une frise en trois étapes, Préparer, Tirer, Fêter ; « Fêter » est la même édition tirée, à partir du jour de la fête. Pour un tirage déjà fait ailleurs (6.7, lot 17), la frise devient Préparer, Réponses, Fêter : l'édition reste `preparing` tant que les réponses sont recueillies, puis passe `drawn` à la validation.
 
 | Statut | Ce qui est possible |
 |---|---|
@@ -114,7 +114,7 @@ Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec un
 2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
 3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les exclusions.
 4. Facultatif : prévient avant le tirage (« Prévenir avant le tirage »), pour que chacun laisse ses pistes.
-5. Lance le tirage quand la vérification est verte, après un récapitulatif dans un panneau du bas.
+5. Lance le tirage quand la vérification est verte, après un récapitulatif dans un panneau du bas. Ou, si le tirage a déjà eu lieu sur papier ou ailleurs, touche « Le tirage a déjà été fait ailleurs ? », demande à chacun à qui il offre, puis valide (6.7).
 6. Prévient chacun que le tirage est fait : par email à plusieurs d'un coup (action principale), ou une personne à la fois depuis sa ligne (email, partage du téléphone, copie).
 7. Suit chaque personne : *à prévenir*, *pas encore ouvert*, *a découvert* (combien de fois), et s'il a laissé des pistes (jamais leur contenu).
 8. En cas de pépin : renvoie un lien, régénère un lien transféré par erreur, annule et relance le tirage.
@@ -124,7 +124,7 @@ Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec un
 
 1. Reçoit son lien personnel (WhatsApp, SMS…), partagé par l'organisateur.
 2. Ouvre son lien : pas de code, pas de compte.
-3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec « Laisser mes pistes de cadeaux ».
+3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec « Laisser mes pistes de cadeaux ». Pour un tirage déjà fait ailleurs : « À qui offres-tu un cadeau ? », puis « Réponse enregistrée » avec l'avancement (6.7).
 4. À tout moment avant la clôture : laisse ou modifie ses **pistes de cadeaux** (6 bis). Le lien suffit (v5).
 5. Après le tirage : touche « Découvrir à qui j'offre un cadeau », voit « Tu offres un cadeau à **Prénom** », avec le budget et la date si renseignés, puis « Pour t'aider à choisir » : les **pistes de Prénom**, ou, s'il n'a rien laissé, « Lui demander des pistes » (6 bis.3). C'est ce geste, et non la simple ouverture du lien, qui compte comme consultation : les aperçus automatiques de liens (WhatsApp, iMessage) ne le déclenchent pas.
 6. Peut revenir consulter son résultat autant de fois qu'il veut. Chaque consultation est comptée et journalisée.
@@ -212,6 +212,18 @@ Procédure réservée à l'organisateur, avec double confirmation :
 - **Nouveau venu** : pas d'historique, donc aucune exclusion liée aux années précédentes.
 - **Absent une année** : la personne est désactivée, jamais supprimée. Son historique est conservé pour son retour.
 - **Suppression définitive** d'une personne : possible uniquement si elle n'a participé à aucune édition. Sinon, désactivation.
+
+### 6.7 Tirage déjà fait ailleurs (lot 17, 17 novembre 2026)
+
+Décisions dans 22.12. Le cœur est pur (`server/utils/answers.ts`, testé) ; les routes ne font que lire, écrire et chiffrer.
+
+- **Le mode** : `editions.draw_mode`, `app` ou `elsewhere`. « Le tirage a déjà été fait ailleurs ? », sous « Lancer le tirage », ouvre un panneau qui dit une fois que les exclusions (et la règle des années précédentes) ne sont pas vérifiées, puis « Demander les réponses » (`answers/start`). Le tirage de l'application refuse alors (`collecting_answers`), et « Abandonner et tirer avec l'application » efface les réponses (`answers/abandon`).
+- **Les réponses** : `draw_answers`, une par participation, le receveur (une personne) chiffré comme un tirage (8.3). Chacun répond sur sa page : tous les participants sauf soi, une recherche au-delà de 10, puis un panneau de confirmation ; il corrige seul jusqu'à la validation. Sa réponse ne s'affiche que s'il la demande (« Revoir ou corriger ma réponse »), par une mutation jamais mise en cache. **Aucun message d'erreur** quand elle heurte celle d'un autre.
+- **Ce que voit l'organisateur** (`answersState`) : qui a répondu, qui est en conflit (deux personnes ont nommé la même), et s'il ne manque qu'une réponse qui se déduit des autres (une seule personne n'est nommée par personne, et ce n'est pas celle qui n'a pas répondu). Jamais ce que quelqu'un a répondu : un test vérifie qu'un changement de réponse sans conflit ne change rien à ce que lit l'organisateur.
+- **La carte « Réponses »** (`answersCard`) : *collect* (« Demande à chacun à qui il offre », Demander puis Relancer par email), *conflict* (« Deux réponses ne vont pas ensemble », les prénoms, « Leur écrire » avec « À vérifier »), *oneMissing* (« Il ne manque que Louis », Relancer ou « Valider sans attendre »), *ready* (« Valider le tirage »). La liste va des réponses à vérifier à ceux qui ont répondu (`sortByAnswer`).
+- **La validation** (`answers/validate`, `pairsFromAnswers`) : les paires, avec celle qui se déduit, sont stockées comme un tirage ordinaire, par le même code que le tirage de l'application (`drawStatements`), sans exclusion appliquée (`manualExclusions: []` dans `rules_snapshot`) ; les réponses sont effacées. L'édition est ensuite une édition tirée comme les autres (liens, suivi, résultat, dévoilement, alertes), et ses paires comptent pour l'an prochain.
+- **Les participants** se changent jusqu'à la validation. Le retrait d'un participant efface sa réponse ; une réponse qui le nommait reste, mais ne compte plus tant qu'il est absent (`validAnswers`) : son auteur repasse « pas encore répondu ». Un nouveau venu n'a pas encore répondu. Points notés en section 6 du plan.
+- **Annuler le tirage** après une validation remet l'édition en préparation, toujours en mode `elsewhere`, sans réponse : on recueille de nouveau, ou on abandonne.
 
 ---
 
@@ -362,6 +374,7 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 - Le receveur de chaque attribution est chiffré en AES-256-GCM avec la clé `DATA_KEY` (variable secrète), un vecteur d'initialisation aléatoire par ligne.
 - Le donneur est en clair, le receveur chiffré : une lecture brute de la base ne révèle pas les résultats.
 - Le déchiffrement n'a lieu que dans trois cas : la consultation par le participant, le calcul des exclusions lors d'un tirage ultérieur, et l'email « des pistes sont arrivées » à celui qui en avait demandé (6 bis.3), pour retrouver qui offre à la personne ; le résultat ne sort pas du serveur.
+- Les réponses d'un tirage fait ailleurs (`draw_answers`, 6.7) sont chiffrées de la même façon. Elles sont déchiffrées pour dire où en sont les réponses (sans les renvoyer), pour la validation, et pour le participant qui demande à revoir la sienne.
 - **Aucune route d'administration ne renvoie une attribution en clair**, y compris pour le super-admin.
 
 ### 8.4 Administration (comptes, depuis le 14 novembre 2026)
@@ -458,6 +471,10 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
 | `edition_closed` | « L'édition Noël 2026 est clôturée » |
 | `draw_revealed` | « L'organisateur a dévoilé les résultats du tirage », dès le jour de la fête : un jalon, pas une alerte ; jamais qui offre à qui |
+| `answers_started` | « L'organisateur a indiqué que le tirage a été fait ailleurs : chacun donne sa réponse » (6.7) |
+| `answer_given` / `answer_changed` | « Léa a donné sa réponse » / « Léa a changé sa réponse », **sans son contenu** : le garde-fou contre un organisateur qui sonderait en changeant la sienne |
+| `answers_validated` | « L'organisateur a validé les réponses : le tirage compte pour 5 participants », un jalon |
+| `answers_abandoned` | « L'organisateur a abandonné les réponses pour tirer avec l'application » |
 
 Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` n'est plus émis ; il reste décrit pour d'anciennes lignes. `results_revealed`, l'ancien accès au tirage entier, sert depuis le lot 13 aux résultats dévoilés **avant** la fête : « L'organisateur a dévoilé les résultats avant la fête », une alerte avec son panneau d'explication (22.15) ; d'anciennes lignes, s'il en reste, se lisent de la même façon, ce qui reste vrai (l'organisateur avait vu tous les résultats).
 
@@ -513,6 +530,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `rules_snapshot` | text (JSON) nullable | Règles et exclusions réellement appliquées au tirage, pour audit |
 | `drawn_at`, `closed_at` | text nullable | |
 | `revealed_at` | text nullable | Résultats dévoilés par l'organisateur (migration `0018`, README 22.9) |
+| `draw_mode` | text | `app` (par défaut) ou `elsewhere`, tirage déjà fait ailleurs (migration `0022`, 6.7) |
 | `created_at` | text | |
 
 ### `participations`
@@ -560,6 +578,16 @@ En clair en base : un souhait ne révèle pas d'attribution. La sauvegarde rempl
 
 Les idées précises restent dans `wishes`.
 
+### `draw_answers` (migration `0022`)
+| Colonne | Type | Notes |
+|---|---|---|
+| `participation_id` | text PK, FK | Une réponse par participant, tant que l'édition recueille les réponses (6.7) |
+| `edition_id` | text FK | |
+| `receiver_enc`, `receiver_iv` | text | La personne nommée, chiffrée (8.3) ; jamais renvoyée à l'organisateur |
+| `answered_at` | text | |
+
+Effacées à la validation (elles deviennent des `assignments`) et à l'abandon.
+
 ### `hint_requests` (migration `0019`)
 | Colonne | Type | Notes |
 |---|---|---|
@@ -600,7 +628,7 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 
 Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 - De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition, puis « Budget **30 €** · Fête le **ven. 25 décembre** » (ce qui est connu, pas sur une édition clôturée) ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Le mot de l'organisateur » dans un bloc beige, coupé à trois lignes avec « Lire la suite » (`ParticipantOrganizerNote`, pas sur une édition clôturée) ; « Mes pistes de cadeaux » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
-- Les états : avant le tirage (enveloppe en pointillés, « Laisser mes pistes de cadeaux ») ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, « Des pistes de cadeaux t'attendent. » quand il y en a) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
+- Les états : avant le tirage (enveloppe en pointillés, « Laisser mes pistes de cadeaux ») ; tirage fait ailleurs (6.7, la frise dit « Ta réponse ») : « À qui offres-tu un cadeau ? » et « Dire à qui j'offre », qui ouvre la liste (`UiPersonPicker`) puis la confirmation (« Tu offres un cadeau à Louis ? », « Oui, c'est Louis », « Choisir quelqu'un d'autre », `ParticipantAnswerSheets`), puis « Réponse enregistrée », « 3 réponses sur 5 pour l'instant » et « Revoir ou corriger ma réponse » en contour ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, « Des pistes de cadeaux t'attendent. » quand il y en a) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
 - Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, puis « Pour t'aider à choisir » (le budget, la date et le mot sont sur la page, depuis le lot 16 bis) (`ParticipantGiverHints`) : ses réponses en phrases, ses textes, ses idées précises (chaque lien affiché « Voir le lien ») ; sans piste, « Lui demander des pistes » et son panneau, puis « Demande envoyée. »
 - Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut retoucher « Découvrir ». Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache.
 - Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton organisateur »).
@@ -638,6 +666,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 - **Choisir les participants** (`…/editions/[id]/ajouter`, décidé par Julien le 16 novembre 2026, avant le tirage seulement) : un seul écran pour ajouter et retirer. Tous les membres actifs du groupe, une case par personne (`UiCheckRow`, toute la ligne coche), cochée si elle participe ; « Tout cocher » ; recherche et repli des longues listes ; « Créer une personne » (elle rejoint le groupe et l'édition, et revient cochée) et « Inviter par lien » ; « Enregistrer · N participants » dans un pied collant (`UiStickyFooter`), qui fait les ajouts et retraits (`participantChanges`) puis revient à l'édition. Après le tirage, l'adresse mène à l'édition.
 - **Grands groupes** : au-delà de 10 participants, une recherche au-dessus de la liste ; au-delà de 12 (`FOLD_FROM`), la liste se replie (`listView`) : 6 lignes avant le tirage ; après, chaque série (`followSeries` : pas encore envoyé, pas encore consulté, résultat consulté) montre 3 lignes puis sa ligne de repli, qui rappelle l'état de la série. Le bouton de la carte dit « Prévenir les N par email ». L'écran d'envoi à plusieurs se replie après 5 lignes ; la sélection porte toujours sur toute la liste.
 - **Noms** (décidé par Julien le 16 novembre 2026) : dans les écrans de l'organisateur et du super-admin (listes de membres et de participants, fiches, sélecteur de personne, envoi par email, exclusions), le nom de famille suit le prénom dès qu'il est renseigné (`fullName`) ; la recherche porte aussi sur le nom, le tri se fait par prénom puis par nom (`byName`). Côté participant (page du tirage, résultat, messages, journal), rien ne change : le prénom, et le nom seulement pour départager des homonymes (section 20, `displayName`).
+- **Tirage déjà fait ailleurs** (lot 17, 6.7) : sous « Lancer le tirage », sur toute la largeur de la carte (`UiActionCard`, `footer`), « Le tirage a déjà été fait ailleurs ? » ouvre `AdminStartAnswersSheet` (trois lignes d'explication, les exclusions non vérifiées, « Demander les réponses », « Pas encore »). L'étape « Réponses » (`AdminEditionAnswers`) : la carte (à prévenir, pas encore répondu, a répondu ; conflit avec les icônes et les prénoms ; une seule réponse manque ; prêt), la liste par statut de réponse (`useAnswerLook` : « Réponse à vérifier », « Pas encore demandé », « Demandé, pas encore répondu », « A répondu »), le bouton rond qui ouvre le panneau d'envoi sur Demande, Relance ou À vérifier, puis « Plus tard, ou en cas de pépin » (changer les participants, « Abandonner et tirer avec l'application » au second appui) et « Personne, organisateur compris, ne voit qui offre à qui. » « Valider » ouvre `AdminValidateAnswersSheet`. L'écran d'envoi à plusieurs coche d'abord ceux à qui le message choisi s'adresse (`preselectedForAnswers`).
 - **Il faut au moins trois participants** (`MIN_PARTICIPANTS`) : à deux, chacun sait à qui l'autre offre.
 - **Tirée** : carte « Préviens chacun que le tirage est fait » avec trois compteurs (à prévenir, pas encore ouvert, a découvert) et « Prévenir par email » (puis « Relancer par email ») vers l'écran d'envoi groupé. La liste met en tête ceux qui restent à prévenir (`sortParticipants`) ; le bouton rond de chaque ligne ouvre le panneau d'envoi, qui passe ensuite à la personne suivante.
 - **Panneau d'envoi** (allégé le 16 novembre 2026, 22.14) : court, seulement de quoi envoyer : sous le titre, où en est la personne (« Envoyé le 14 nov., pas encore consulté ») ; le message entier choisi tout seul (`defaultMessageType` : l'invitation puis sa relance avant le tirage, « Tirage fait » puis la relance après, « Nouveau tirage » quand l'édition a été tirée de nouveau), « Personnaliser le message › » (qui rappelle la langue du message quand ce n'est pas celle de l'organisateur) ; puis l'email en premier s'il y a une adresse, sinon le partage du téléphone, avec la ligne « {Prénom} n'a pas d'adresse email » et son bouton « Ajouter » ; au renvoi, « Renvoyer par email » seul. « Autre moyen, ou un souci ? » remplace le contenu par une liste : partager, copier le message ou le lien seul, corriger l'adresse, puis le dépannage. Une fois le message parti (email, partage ou copie), le panneau se referme.
@@ -663,7 +692,7 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, budget et mot de l'organisateur (rien de secret, lot 16 bis), le réglage des pistes (`giftHints`), s'il en a laissé (`hasHints`), les pistes de la personne à qui il offre vues par lui (`receiverHints` : aucune, des pistes, nouvelles) et si une demande est encore possible (`canAskHints`). Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, budget et mot de l'organisateur (rien de secret, lot 16 bis), le réglage des pistes (`giftHints`), s'il en a laissé (`hasHints`), les pistes de la personne à qui il offre vues par lui (`receiverHints` : aucune, des pistes, nouvelles) et si une demande est encore possible (`canAskHints`). Pour un tirage fait ailleurs (6.7), `drawMode` et `answer` : sa réponse donnée ou non, et combien l'ont donnée, jamais laquelle. Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
 | `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et les pistes du receveur** (`hints` : réponses, textes, idées, demande déjà faite), , si elles sont nouvelles depuis la dernière ouverture et leur date (lot 16 bis), et si chacun a une adresse email (pour les mots sous la demande). Compte et journalise la consultation |
 | `GET/PATCH /api/p/[token]/hints` | Ses pistes (réponses, textes, idées, demande en cours, édition à reprendre) ; une réponse ou un texte à la fois. Non journalisé. Refusé si l'édition est clôturée ou le groupe sans pistes |
 | `POST /api/p/[token]/hints/copy` | « Reprendre mes pistes de {édition} », sur une page vide |
@@ -672,6 +701,8 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 | `PUT /api/p/[token]/wishes` | Corps : la liste complète des idées précises. Remplace la liste, sans journal. Refusé si l'édition est clôturée ou le réglage n'est pas « portrait et idées précises » |
 | `PUT /api/p/[token]/avatar` | Son icône (emoji et couleur), journalisé. Refusé si l'édition est clôturée |
 | `PUT /api/p/[token]/language` | Sa langue préférée, journalisé |
+| `GET /api/p/[token]/answer` | Tirage fait ailleurs (6.7) : les personnes qu'il peut nommer (tous sauf lui) et sa réponse, seulement quand il la demande. Tant que l'édition recueille les réponses |
+| `PUT /api/p/[token]/answer` | Corps `personId` : dit à qui il offre, ou corrige. `invalid_answer` pour soi-même ou une personne hors de l'édition ; jamais d'erreur quand elle heurte celle d'un autre. Journalisé sans son contenu (`answer_given`, `answer_changed`) |
 | `POST /api/p/[token]/journal-seen` | Le participant ouvre le journal : le compte des alertes de sa page repart de maintenant |
 | `GET /api/p/[token]/journal` | Journal du groupe, dans sa langue : les lignes (avec leur personne, et ses lignes à elle à la deuxième personne), les personnes nommées avec leur icône, et `me` |
 
@@ -701,8 +732,9 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
 | `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration, avec la personne de chaque ligne et les personnes nommées |
 | `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente, 100 participants au plus ; le budget et le mot aux participants, s'ils sont donnés, sont les règles propres de l'édition dès sa création, sans ligne « règles modifiées » au journal) |
-| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (a laissé des pistes ou non, `hasHints`, jamais leur contenu), et `redrawn` : tirée de nouveau après une annulation (lu dans le journal, `draw_cancelled`), pour que le panneau d'envoi, « Personnaliser le message » et « Prévenir par email » proposent « Nouveau tirage » tout seuls (décidé par Julien le 17 novembre 2026) ; libellé et règles propres |
-| `POST …/editions/[id]/draw`, `/redraw`, `/close` | Cycle de vie : tirer, annuler le tirage (motif obligatoire), clôturer |
+| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (a laissé des pistes ou non, `hasHints`, jamais leur contenu), pendant le recueil des réponses d'un tirage fait ailleurs, le statut de chacun (`answerStatus`) et `answers` (la carte, les personnes en conflit, celle dont la réponse se déduit ; jamais une réponse), et `redrawn` : tirée de nouveau après une annulation (lu dans le journal, `draw_cancelled`), pour que le panneau d'envoi, « Personnaliser le message » et « Prévenir par email » proposent « Nouveau tirage » tout seuls (décidé par Julien le 17 novembre 2026) ; libellé et règles propres |
+| `POST …/editions/[id]/draw`, `/redraw`, `/close` | Cycle de vie : tirer, annuler le tirage (motif obligatoire), clôturer. Le tirage refuse pendant le recueil des réponses (`collecting_answers`) |
+| `POST …/editions/[id]/answers/start`, `/answers/abandon`, `/answers/validate` | Tirage fait ailleurs (6.7) : recueillir les réponses, les abandonner (effacées), les valider en un tirage (`answers_not_ready` tant qu'elles manquent ou se heurtent, sauf une seule qui se déduit). Journalisé ; la réponse ne contient jamais de paire |
 | `GET …/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi. Liste aussi les paires des éditions clôturées qui excluent |
 | `POST/DELETE …/editions/[id]/history-waivers` | Lever une exclusion d'un tirage précédent pour cette édition ; tout rétablir |
 | `POST …/editions/[id]/participants`, `DELETE …/participants/[participationId]` | Ajouter, retirer (avant le tirage) |
@@ -734,7 +766,7 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 - Fonctions pures `(données) → texte` dans `server/utils/messages.ts`, testées sans réseau. Données : prénom, nom du groupe, label de l'édition, lien personnel, et selon le modèle budget, date, message de l'organisateur.
 - Texte **court et sans mise en forme**, le lien **seul sur sa ligne** pour que les messageries le rendent cliquable et génèrent l'aperçu, un emoji 🎁 au plus.
 - **Aucun message ne contient un résultat.**
-- Les messages proposés suivent l'étape (`messageTypesFor`) : `invitation` et `reminder` avant le tirage, `drawn`, `reminder` et `redraw` après. L'API refuse les autres.
+- Les messages proposés suivent l'étape (`messageTypesFor`) : `invitation` et `reminder` avant le tirage, `drawn`, `reminder` et `redraw` après ; pendant le recueil des réponses d'un tirage fait ailleurs (6.7), `answerRequest`, `answerReminder` et `answerCheck`. L'API refuse les autres.
 - Avant le tirage, l'écran de l'organisateur reste discret : aucun suivi d'envoi ni compteur. Le suivi commence au tirage, qui remet la pastille *envoyé* à zéro : une seule tournée de messages suffit pour jouer.
 
 | Modèle (`type`) | Moment | Contenu |
@@ -743,6 +775,9 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 | `tirage` | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau : [lien] » + budget et date s'ils sont renseignés |
 | `relance` | Manuel | « Petit rappel Léa : ton lien t'attend, pense à l'ouvrir. Ton lien : [lien] » |
 | `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
+| `answerRequest` (Demande) | Tirage fait ailleurs, pas encore demandé | « Salut Léa ! 🎁 Le tirage du Secret Santa de [groupe] ([édition]) a été fait hors de l'application. Dis sur ta page à qui tu offres un cadeau, pour voir ses pistes de cadeaux : [lien] » |
+| `answerReminder` (Relance) | Demandé, pas encore répondu | « Léa, on n'attend plus que toi ! 🎁 Dis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne. [lien] » |
+| `answerCheck` (À vérifier) | Sa réponse heurte celle d'un autre | « Léa, peux-tu vérifier ta réponse ? 🎁 Deux réponses du Secret Santa de [groupe] ne vont pas ensemble. Vérifie à qui tu offres un cadeau, et corrige-la si besoin : [lien] » |
 
 ### 13.3 Envoi groupé par email (v6)
 
@@ -1212,10 +1247,14 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 | 1 | Organisateur | Tirage fait, au moins une personne pas prévenue | Préviens chacun que le tirage est fait | « Prévenir par email » → sélection par email |
 | 2 | Super-admin | Au moins une demande de groupe en attente | N demandes de groupe à traiter, « Léa Martin attend ta réponse depuis le 14 novembre » | « Voir la demande » (ou « Voir les demandes ») → administration |
 | 3 | Participant | Tirage fait, résultat jamais découvert | Le tirage est fait ! | « Découvrir à qui j'offre un cadeau » → page du tirage |
+| 3 ter | Participant | Tirage fait ailleurs (6.7), sa réponse pas encore donnée ; classé avant 3 bis | À qui offres-tu un cadeau ? | « Dire à qui j'offre » → page du tirage |
 | 3 bis | Participant | Tirage fait, de nouvelles pistes de la personne à qui il offre (lot 16 bis) | De nouvelles pistes pour ton cadeau | « Lire ses pistes » → page du tirage |
 | 4 | Organisateur | Tout le monde prévenu, fête dans 7 jours ou moins, au moins une personne n'a pas consulté | N personnes n'ont pas encore ouvert leur lien | « Relancer » → édition |
 | 5 | Organisateur | Édition à préparer, tirage impossible | Le tirage est impossible pour l'instant | « Corriger » → édition |
+| 5 bis | Organisateur | Tirage fait ailleurs, deux réponses se heurtent | Deux réponses ne vont pas ensemble | « Ouvrir l'édition » → édition |
+| 5 ter | Organisateur | Tirage fait ailleurs, tout concorde, ou une seule réponse manque et se déduit | Les réponses vont ensemble : valide le tirage | « Ouvrir l'édition » → édition |
 | 6 | Organisateur | Édition à préparer, tirage possible | Vérifie la liste, puis lance le tirage | « Ouvrir l'édition » → édition |
+| 6 bis | Organisateur | Tirage fait ailleurs, des réponses attendues | Demande à chacun à qui il offre, « N réponses attendues » | « Ouvrir l'édition » → édition |
 | 7 | Participant | Pistes de cadeaux actives, aucune piste, édition non clôturée | Laisse tes pistes de cadeaux | « Mes pistes » → pistes de cadeaux |
 | 8 | Organisateur | Fête passée, édition non clôturée | La fête est passée : clôture l'édition | « Ouvrir l'édition » → édition |
 | 9 | Organisateur | Groupe sans édition en cours | Prépare le tirage de cette année | « Créer l'édition » → nouvelle édition |
@@ -1252,7 +1291,9 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 
 **Côté code** : une seule fonction pure, `pickHomeAction(home, today, dismissed)` dans `server/utils/home.ts`, qui prend l'état de l'accueil, la date du jour et les cartes mises de côté, et renvoie la carte à afficher (ou rien). Ce tableau est son jeu de tests. La route `GET /api/auth/home` fournit ce qu'il lui faut : par édition organisée, la date de la fête, les nombres « à prévenir », « pas encore ouvert » et « a découvert », et si le tirage est possible ; par tirage, si le résultat a été vu, la liste de souhaits et le nombre d'idées.
 
-Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient lieu de carte du haut : les rangs 3 et 7 (qui le concernent) n'en ajoutent pas une seconde. Tout le haut de cette carte ouvre la page du tirage, même avant le tirage, quand elle n'a pas de bouton.
+Lot 17 (17 novembre 2026) : pour un tirage fait ailleurs, la route donne aussi, par édition organisée, la carte des réponses et leur nombre (`answers`, sans la vérification du tirage, qui n'a pas lieu), et par tirage si la réponse est à donner ou donnée (`answer`). Les lignes de tirage disent « Ta réponse est attendue » (avec « Répondre ») ou « Réponse enregistrée », la carte d'un groupe « Réponses · 3 sur 5 ».
+
+Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient lieu de carte du haut : les rangs 3, 3 ter et 7 (qui le concernent) n'en ajoutent pas une seconde. Tout le haut de cette carte ouvre la page du tirage, même avant le tirage, quand elle n'a pas de bouton.
 
 ### 22.11 Fait : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
 
@@ -1294,11 +1335,11 @@ Pourquoi cette forme (recherches lues en résumé le 16 novembre 2026) : celui q
 
 **À faire en même temps** : le vocabulaire (« liste de souhaits », « idées de cadeaux ») sur l'accueil, la page du tirage, le suivi de l'organisateur, les messages et la carte « À faire maintenant » (22.10, rang 7) ; les sections 6 bis, 9 et 11 de ce document. Le lot 7 du plan de refonte (`docs/refonte/PLAN.md`) a été supprimé pour cette raison.
 
-### 22.12 À faire ensuite : tirage déjà fait ailleurs (16 novembre 2026)
+### 22.12 Fait : tirage déjà fait ailleurs (16 novembre 2026)
 
-**Planifié le 17 novembre 2026 : lot 17 de `docs/refonte/PLAN.md`, après les pistes de cadeaux (lot 16).** Maquettes dans `docs/refonte/maquettes/Manuel*.html`.
+**Codé le 17 novembre 2026 : lot 17 de `docs/refonte/PLAN.md`, décrit en 6.7.** Maquettes dans `docs/refonte/maquettes/Manuel*.html`.
 
-Conception validée par Julien le 16 novembre 2026, **remplace 22.6**. Rien n'est codé. À faire après 22.11. Maquettes : même canevas, page « Tirage déjà fait » (12 écrans).
+Conception validée par Julien le 16 novembre 2026, **remplace 22.6**. Maquettes : même canevas, page « Tirage déjà fait » (12 écrans).
 
 **Principe** : le tirage a eu lieu sur papier ou dans une autre application. Chacun dit à qui il offre ; quand tout concorde, l'organisateur valide et l'édition devient une édition tirée ordinaire.
 

@@ -188,6 +188,11 @@ export default {
     },
     adminAccounts: 'Accounts and requests',
     adminGroups: 'All groups',
+    requestSentTitle: 'Your request is on its way',
+    requestSentOn:
+      'Sent on {date}. An administrator reads it and answers you by email.',
+    requestRefusedTitle: 'Your request of {date} was refused',
+    requestAgain: 'Make another request',
   },
   nav: {
     label: 'Administration',

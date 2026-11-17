@@ -109,7 +109,21 @@ const menu = computed(() => [
           class="truncate font-display text-lg font-bold text-primary"
           >✦ {{ t('common.appName') }}</NuxtLink
         >
-        <UDropdownMenu :items="menu" :content="{ align: 'end' }">
+        <UDropdownMenu
+          :items="menu"
+          :content="{ align: 'end' }"
+          :ui="{
+            content:
+              'min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
+            group: 'p-0',
+            label:
+              'px-3.5 pt-3 pb-1 text-xs font-bold tracking-[0.04em] text-toned uppercase',
+            separator: 'mx-0 my-0 bg-divider',
+            item: 'min-h-12 items-center px-3.5 text-base',
+            itemLeadingIcon: 'size-5 text-toned',
+            itemTrailingIcon: 'size-5 text-primary',
+          }"
+        >
           <UButton
             variant="ghost"
             color="neutral"

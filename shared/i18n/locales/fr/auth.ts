@@ -186,6 +186,11 @@ export default {
     },
     adminAccounts: 'Comptes et demandes',
     adminGroups: 'Tous les groupes',
+    requestSentTitle: 'Ta demande est partie',
+    requestSentOn:
+      'Envoyée le {date}. Un administrateur la lit et te répond par email.',
+    requestRefusedTitle: 'Ta demande du {date} a été refusée',
+    requestAgain: 'Faire une autre demande',
   },
   nav: {
     label: 'Administration',

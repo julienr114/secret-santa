@@ -192,6 +192,11 @@ export default {
     },
     adminAccounts: 'Konten und Anfragen',
     adminGroups: 'Alle Gruppen',
+    requestSentTitle: 'Deine Anfrage ist unterwegs',
+    requestSentOn:
+      'Gesendet am {date}. Ein Administrator liest sie und antwortet dir per E-Mail.',
+    requestRefusedTitle: 'Deine Anfrage vom {date} wurde abgelehnt',
+    requestAgain: 'Eine neue Anfrage stellen',
   },
   nav: {
     label: 'Verwaltung',

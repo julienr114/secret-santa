@@ -52,7 +52,9 @@ test('they ask for a group, once at a time', async ({ page }) => {
   );
   await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
   await page.getByRole('button', { name: 'Envoyer ma demande' }).click();
-  await expect(page.getByText(/^Demande envoyée le /)).toBeVisible();
+  await expect(page.getByTestId('home-request')).toContainText(
+    'Ta demande est partie',
+  );
   await expect(
     page.getByRole('button', { name: 'Demander à créer un groupe' }),
   ).toHaveCount(0);
@@ -110,9 +112,17 @@ test('they create their group, organise it, and the quota is used up', async ({
   await expect(top).toContainText('Dis-nous comment tu t’appelles');
   await top.getByRole('link', { name: 'Compléter mon profil' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
-  await page.getByLabel('Prénom', { exact: true }).fill('Nina');
-  await page.getByLabel('Prénom', { exact: true }).blur();
-  await expect(page.getByText('Enregistré').first()).toBeVisible();
+  const firstName = page
+    .getByTestId('profile')
+    .getByRole('button', { name: /^Prénom/ });
+  await firstName.click();
+  await page.getByRole('textbox').fill('Nina');
+  const saved = page.waitForResponse(
+    (r) => r.url().endsWith('/api/auth/profile') && r.ok(),
+  );
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(firstName).toContainText('Nina');
+  await saved;
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour Nina');

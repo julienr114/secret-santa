@@ -212,15 +212,19 @@ const requestOpen = ref(false);
 
       <template v-else>
         <UiCard
-          padding="lg"
-          class="flex flex-col gap-2"
+          padding="none"
+          class="flex flex-col gap-2.5 px-5 py-6"
           data-testid="home-empty"
         >
-          <h2 class="font-display text-xl font-bold">
+          <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
             {{ t('auth.home.empty.title') }}
           </h2>
-          <p class="text-sm text-muted">{{ t('auth.home.empty.body') }}</p>
-          <p class="text-sm text-muted">{{ t('auth.home.empty.link') }}</p>
+          <p class="text-[15px] leading-[1.45] text-toned">
+            {{ t('auth.home.empty.body') }}
+          </p>
+          <p class="text-sm leading-[1.45] text-toned">
+            {{ t('auth.home.empty.link') }}
+          </p>
         </UiCard>
         <UiList v-if="hasPast">
           <UiListItem
@@ -229,7 +233,13 @@ const requestOpen = ref(false);
             :title="t('auth.home.pastDraws')"
           />
         </UiList>
+        <HomeRequestCard
+          v-if="!canCreate && requestNote && request"
+          :request="request"
+          @again="requestOpen = true"
+        />
         <UiCard
+          v-else
           padding="lg"
           class="flex flex-col gap-3"
           data-testid="home-organize"
@@ -238,9 +248,6 @@ const requestOpen = ref(false);
             {{ t('auth.home.organize.title') }}
           </h2>
           <p class="text-sm text-muted">{{ t('auth.home.requestWhy') }}</p>
-          <p v-if="requestNote" class="text-sm font-medium" role="status">
-            {{ requestNote }}
-          </p>
           <UButton
             v-if="canCreate"
             to="/admin/groupes/nouveau"

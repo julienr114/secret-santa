@@ -25,8 +25,10 @@ const read = (): string[] => {
  */
 export const useHomeDismissed = () => {
   const dismissed = useState<string[]>('home-dismissed', () => []);
+  // Added to what is already put off: a card put off before the page
+  // finished mounting stays put off.
   onMounted(() => {
-    dismissed.value = read();
+    dismissed.value = [...new Set([...read(), ...dismissed.value])];
   });
   /**
    * Puts a card off.

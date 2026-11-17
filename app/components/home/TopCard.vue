@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeAction } from '#server/utils/home';
+import { formatDay } from '~/utils/labels';
 
 // "À faire maintenant": the one card on top of the home, chosen by
 // `pickHomeAction` (README 22.10). An optional card can be put off.
@@ -7,18 +8,49 @@ const props = defineProps<{
   action: HomeAction;
   /** The account has several groups: the card names its own. */
   named: boolean;
+  /** For requests: who has been waiting the longest, and since when. */
+  oldestRequest?: { name: string; since: string } | null;
 }>();
 const emit = defineEmits<{ later: [key: string] }>();
-const { t } = useT();
-const eyebrow = computed(() =>
-  props.named && props.action.groupName
+const { t, locale } = useT();
+const eyebrow = computed(() => {
+  if (props.action.kind === 'requests') {
+    return t('auth.home.nowIn', { group: t('auth.admin.title') });
+  }
+  return props.named && props.action.groupName
     ? t('auth.home.nowIn', { group: props.action.groupName })
-    : t('auth.home.now'),
-);
+    : t('auth.home.now');
+});
+/**
+ * The requests card, naming who has been waiting the longest.
+ * @param count - How many requests wait.
+ * @param oldest - The oldest one's account and day.
+ * @returns Its line and its button.
+ */
+const requestWords = (
+  count: number,
+  oldest: { name: string; since: string },
+) => {
+  const at = { name: oldest.name, date: formatDay(oldest.since, locale.value) };
+  return {
+    body:
+      count > 1
+        ? t('auth.home.action.requests.whoOthers', { ...at, count: count - 1 })
+        : t('auth.home.action.requests.who', at),
+    button:
+      count > 1
+        ? t('auth.home.action.requests.button')
+        : t('auth.home.action.requests.buttonOne'),
+  };
+};
 const words = computed(() => {
   const { kind, count } = props.action;
+  const title = t(`auth.home.action.${kind}.title`, { count });
+  if (kind === 'requests' && props.oldestRequest) {
+    return { title, ...requestWords(count, props.oldestRequest) };
+  }
   return {
-    title: t(`auth.home.action.${kind}.title`, { count }),
+    title,
     body: t(`auth.home.action.${kind}.body`, { count }),
     button: t(`auth.home.action.${kind}.button`),
   };

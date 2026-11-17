@@ -58,6 +58,10 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await expect(page.getByTestId('home-request')).toContainText(
     'Ta demande est partie',
   );
+  // What they wrote, as they wrote it.
+  await expect(page.getByTestId('home-request-message')).toHaveText(
+    'Le Noël de ma famille',
+  );
   await expect(
     page.getByRole('button', { name: 'Demander à créer un groupe' }),
   ).toHaveCount(0);
@@ -82,6 +86,14 @@ test('the super-admin sees the request and accepts it', async ({
   await later.dispose();
 
   await loginAsSuper(page, SUPER);
+  // The card on top names who has been waiting the longest.
+  const top = page.getByTestId('top-card');
+  await expect(top).toContainText('À faire maintenant · Administration');
+  await expect(top).toContainText(
+    new RegExp(
+      `${NEWCOMER} attend ta réponse depuis le .+\\. Une autre demande attend aussi\\.`,
+    ),
+  );
   // The administration's row at the bottom of the home counts the
   // requests awaiting an answer.
   await expect(page.getByTestId('home-admin')).toContainText('2');

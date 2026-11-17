@@ -51,7 +51,14 @@ export default {
           other: '{count} Gruppenanfragen zu bearbeiten',
         },
         body: 'Einige Konten warten auf deine Antwort, um ihre Auslosung zu organisieren.',
+        who: '{name} wartet seit dem {date} auf deine Antwort.',
+        whoOthers: {
+          one: '{name} wartet seit dem {date} auf deine Antwort. Eine weitere Anfrage wartet auch.',
+          other:
+            '{name} wartet seit dem {date} auf deine Antwort. {count} weitere Anfragen warten auch.',
+        },
         button: 'Anfragen ansehen',
+        buttonOne: 'Anfrage ansehen',
       },
       discover: {
         title: 'Die Auslosung ist erfolgt!',

@@ -95,6 +95,8 @@ export type HomeDraw = {
 export type HomeRequest = {
   status: 'pending' | 'approved' | 'refused';
   createdAt: string;
+  /** What the account wrote. */
+  message: string;
 };
 export type HomePayload = {
   role: Role;
@@ -111,6 +113,8 @@ export type HomePayload = {
   request: HomeRequest | null;
   /** Requests awaiting the super-admin; 0 for everyone else. */
   pendingRequests: number;
+  /** For a super-admin: who has been waiting the longest, and since when. */
+  oldestRequest: { name: string; since: string } | null;
 };
 
 /** The home of the account: its draws and the groups it manages. */

@@ -51,7 +51,14 @@ export default {
           other: '{count} group requests to handle',
         },
         body: 'Some accounts are waiting for your answer to organize their draw.',
+        who: '{name} has been waiting for your answer since {date}.',
+        whoOthers: {
+          one: '{name} has been waiting for your answer since {date}. One other request is waiting too.',
+          other:
+            '{name} has been waiting for your answer since {date}. {count} other requests are waiting too.',
+        },
         button: 'See the requests',
+        buttonOne: 'See the request',
       },
       discover: {
         title: 'The draw is done!',

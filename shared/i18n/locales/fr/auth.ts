@@ -48,7 +48,14 @@ export default {
           other: '{count} demandes de groupe à traiter',
         },
         body: 'Des comptes attendent ta réponse pour organiser leur tirage.',
+        who: '{name} attend ta réponse depuis le {date}.',
+        whoOthers: {
+          one: '{name} attend ta réponse depuis le {date}. Une autre demande attend aussi.',
+          other:
+            '{name} attend ta réponse depuis le {date}. {count} autres demandes attendent aussi.',
+        },
         button: 'Voir les demandes',
+        buttonOne: 'Voir la demande',
       },
       discover: {
         title: 'Le tirage est fait !',

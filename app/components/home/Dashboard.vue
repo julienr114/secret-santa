@@ -128,6 +128,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
         v-if="topCard"
         :action="topCard"
         :named="named"
+        :oldest-request="data?.oldestRequest"
         @later="dismiss"
       />
 

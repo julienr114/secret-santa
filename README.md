@@ -573,7 +573,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 
 | Route | Écran |
 |---|---|
-| `/` | Accueil, le même pour tous (refait le 15 novembre 2026). Sans session : le logo, une phrase, un encadré pour qui a reçu un lien personnel, puis la connexion. Connecté : « Bonjour » et l'avatar, la carte « À faire maintenant » (22.10), puis selon `homeLayout` : compte vide (d'où viendront les tirages, organiser un Secret Santa), un seul tirage (sa carte avec l'enveloppe, sa liste, les tirages passés), plusieurs tirages (une ligne chacun), ou au moins un groupe organisé (une carte par groupe, `groupCards` : « Mon tirage » et « Gérer le tirage ») Sans tirage, une demande de groupe en attente a sa carte « Ta demande est partie » (envoyée le…, un administrateur te répond par email), une demande refusée la sienne avec « Faire une autre demande » (lot 8 de la refonte). Le menu en haut à droite : « Langue » et les trois langues, puis « Mon compte » et « Se déconnecter », en lignes de 48 px. |
+| `/` | Accueil, le même pour tous (refait le 15 novembre 2026). Sans session : le logo, une phrase, un encadré pour qui a reçu un lien personnel, puis la connexion. Connecté : « Bonjour » et l'avatar, la carte « À faire maintenant » (22.10), puis selon `homeLayout` : compte vide (d'où viendront les tirages, organiser un Secret Santa), un seul tirage (sa carte avec l'enveloppe, sa liste, les tirages passés), plusieurs tirages (une ligne chacun), ou au moins un groupe organisé (une carte par groupe, `groupCards` : « Mon tirage » et « Gérer le tirage ») Sans tirage, une demande de groupe en attente a sa carte « Ta demande est partie » (envoyée le…, un administrateur te répond par email, puis le texte de la demande), une demande refusée la sienne avec « Faire une autre demande » (lot 8 de la refonte). Le menu en haut à droite : « Langue » et les trois langues, puis « Mon compte » et « Se déconnecter », en lignes de 48 px. |
 | `/tirages-passes` | Les éditions clôturées du compte, par année ; chaque ligne ouvre la page du tirage |
 | `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis « Regarde ta boîte mail » (l'adresse, les indésirables, ouvrir le lien sur cet appareil, « Utiliser une autre adresse ») ; la page du lien : « Se connecter sur cet appareil ? », « Tu vas être connecté avec hugo@example.com pendant 30 jours » (l'adresse lue sans consommer le lien) et son bouton, ou, dès l'ouverture, « Ce lien ne marche plus » et « Demander un nouveau lien » |
 | `/admin/groupes/nouveau` | Création d'un groupe, pour tout compte qui a de la place dans son quota : le nom ; pour le super-admin, l'adresse du premier organisateur dans le cadre « Super-admin » ; sinon « Tu en seras l'organisateur » |
@@ -642,7 +642,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `POST /api/auth/link` | Demande un lien de connexion (réponse identique dans tous les cas) |
 | `GET /api/auth/link-email?token=` | L'adresse avec laquelle le lien connecte, sans le consommer ; `410` pour un lien inconnu, utilisé ou expiré |
 | `POST /api/auth/confirm` | Consomme le lien, ouvre la session |
-| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, le nombre d'idées), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et ses demandes. Jamais un résultat |
+| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, le nombre d'idées), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et sa dernière demande (avec son texte) ; pour un super-admin, le nombre de demandes en attente et qui attend depuis le plus longtemps (nom, ou adresse). Jamais un résultat |
 | `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |
 | `POST /api/admin/logout`, `GET /api/admin/session` | Déconnexion (révoque la session), session courante |
 | `GET /api/admin/groups` | Les groupes du compte |
@@ -1158,7 +1158,7 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 | Rang | Rôle | Condition | Titre de la carte | Bouton → destination |
 |---|---|---|---|---|
 | 1 | Organisateur | Tirage fait, au moins une personne pas prévenue | Préviens chacun que le tirage est fait | « Prévenir par email » → sélection par email |
-| 2 | Super-admin | Au moins une demande de groupe en attente | N demandes de groupe à traiter | « Voir les demandes » → comptes |
+| 2 | Super-admin | Au moins une demande de groupe en attente | N demandes de groupe à traiter, « Léa Martin attend ta réponse depuis le 14 novembre » | « Voir la demande » (ou « Voir les demandes ») → administration |
 | 3 | Participant | Tirage fait, résultat jamais découvert | Le tirage est fait ! | « Découvrir à qui j'offre un cadeau » → page du tirage |
 | 4 | Organisateur | Tout le monde prévenu, fête dans 7 jours ou moins, au moins une personne n'a pas consulté | N personnes n'ont pas encore ouvert leur lien | « Relancer » → édition |
 | 5 | Organisateur | Édition à préparer, tirage impossible | Le tirage est impossible pour l'instant | « Corriger » → édition |

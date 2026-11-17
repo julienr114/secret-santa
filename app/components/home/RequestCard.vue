@@ -3,8 +3,8 @@ import type { HomeRequest } from '~/composables/queries/useAuth';
 import { formatDay } from '~/utils/labels';
 
 // Where the account's request for a group stands, on a home without a
-// draw: sent and waiting for an answer, or refused with the way to ask
-// again.
+// draw: sent and waiting for an answer, with what it wrote, or refused
+// with the way to ask again.
 const props = defineProps<{ request: HomeRequest }>();
 const emit = defineEmits<{ again: [] }>();
 const { t, locale } = useT();
@@ -32,6 +32,12 @@ const date = computed(() => formatDay(props.request.createdAt, locale.value));
       </div>
       <p class="text-sm leading-[1.45] text-toned">
         {{ t('auth.home.requestSentOn', { date }) }}
+      </p>
+      <p
+        class="rounded-[10px] bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+        data-testid="home-request-message"
+      >
+        {{ request.message }}
       </p>
     </template>
     <template v-else>

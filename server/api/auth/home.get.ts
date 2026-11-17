@@ -3,9 +3,11 @@ import { findAccountById } from '#server/database/accounts';
 import { listOrganizedGroups, publicGroup } from '#server/database/groups';
 import {
   latestRequest,
+  oldestPendingRequest,
   pendingRequestCount,
   quotaAccountOf,
 } from '#server/database/quota';
+import { fullName } from '#server/utils/people';
 import { remainingGroups } from '#server/utils/quota';
 import {
   currentEditionSummaries,
@@ -30,8 +32,9 @@ const CHECKED_EDITIONS_MAX = 3;
 
 // The home of a logged-in account, the same for everyone: the draws the
 // address takes part in, the groups it organises, and whether it may
-// create one or where its request stands. A super-admin also learns how
-// many requests await them. A draw is opened through its
+// create one or where its request stands (with what it wrote). A
+// super-admin also learns how many requests await them, and who has been
+// waiting the longest. A draw is opened through its
 // personal link: the address was proven by the login link, and it is the
 // one the organiser gave for that person. Never a result here.
 export default defineEventHandler(async (event) => {
@@ -108,6 +111,8 @@ export default defineEventHandler(async (event) => {
   ) as Record<string, boolean | null>;
   const request = account ? await latestRequest(db, account.id) : null;
   const quota = account ? await quotaAccountOf(db, account) : null;
+  const oldest =
+    user.role === 'super_admin' ? await oldestPendingRequest(db) : null;
   return {
     role: user.role,
     firstName: account?.firstName ?? null,
@@ -134,9 +139,20 @@ export default defineEventHandler(async (event) => {
       };
     })(),
     request: request
-      ? { status: request.status, createdAt: request.createdAt }
+      ? {
+          status: request.status,
+          createdAt: request.createdAt,
+          message: request.message,
+        }
       : null,
     pendingRequests:
       user.role === 'super_admin' ? await pendingRequestCount(db) : 0,
+    // Who has been waiting the longest, by name, or by address.
+    oldestRequest: oldest
+      ? {
+          name: fullName(oldest.account) || oldest.account.email,
+          since: oldest.request.createdAt,
+        }
+      : null,
   };
 });

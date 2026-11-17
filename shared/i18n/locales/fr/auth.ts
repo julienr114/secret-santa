@@ -151,7 +151,6 @@ export default {
       drawn: 'Tirage fait · {viewed} sur {count} ont découvert',
       closed: 'Clôturé',
     },
-    newGroup: 'Nouveau groupe',
     createGroup: 'Créer un groupe',
     groupsLeft: {
       one: 'Tu peux encore en créer {count}',

@@ -157,7 +157,6 @@ export default {
       drawn: 'Ausgelost · {viewed} von {count} haben nachgesehen',
       closed: 'Abgeschlossen',
     },
-    newGroup: 'Neue Gruppe',
     createGroup: 'Eine Gruppe anlegen',
     groupsLeft: {
       one: 'Du kannst noch {count} anlegen',

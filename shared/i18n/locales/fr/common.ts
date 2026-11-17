@@ -22,7 +22,6 @@ export default {
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },
     ideas: { one: '{count} idée', other: '{count} idées' },
-    exclusions: { one: '{count} exclusion', other: '{count} exclusions' },
   },
   context: 'Tu es ici',
   actions: {

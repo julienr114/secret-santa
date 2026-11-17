@@ -4,12 +4,6 @@ import { ok, fail, type Result } from './result';
 // Draw rules (README section 5). Keys are English in code; the UI shows the
 // French labels. Group rules hold the defaults, an edition may override.
 
-export const manualExclusionSchema = z.object({
-  giverId: z.string().min(1),
-  receiverId: z.string().min(1),
-  reciprocal: z.boolean().default(false),
-});
-
 // Raw shape without defaults: for partial overrides, only the given keys
 // survive. `rulesSchema` adds the defaults for a complete rule set.
 const shape = {

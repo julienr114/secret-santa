@@ -107,7 +107,6 @@ export default {
   },
   people: {
     title: 'Members',
-    empty: 'Start by adding the members of the group.',
     inactive: 'No longer takes part',
     notDrawing: 'does not draw {names}',
     add: 'Add a person',
@@ -136,13 +135,6 @@ export default {
     notFound: 'Person not found.',
     saved: 'Saved',
     doesNotDraw: 'Does not draw',
-    noExclusion: 'No exclusions',
-    manageExclusions: 'Manage exclusions',
-    participation: 'Participation',
-    deactivateHelp:
-      'A deactivated person is not carried over to future editions. Their history is kept.',
-    deactivate: 'Deactivate',
-    reactivate: 'Reactivate',
     deleteForever: 'Delete permanently',
     deleteHint: 'Only if they have never taken part',
     deleteConfirm: 'Delete {name} for good?',
@@ -193,7 +185,6 @@ export default {
     untilDraw:
       'Exclusions can change until the draw. After that, the edition keeps those it used.',
     title: 'Exclusions',
-    summary: 'Pairs that never draw each other',
     intro:
       'People who must not draw each other: a couple, siblings, a parent and their child…',
     empty: 'No exclusions.',
@@ -234,7 +225,6 @@ export default {
     notifyAllViewed: 'Everyone has found out their draw',
     notifyReminder: 'Reminder 3 days before the party',
     notifyReminderHelp: 'With the list of those who have not opened yet',
-    title: 'Draw rules',
     drawSection: 'Draw',
     previousYears: {
       none: 'No, never mind',

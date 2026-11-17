@@ -113,7 +113,6 @@ export default {
   },
   people: {
     title: 'Mitglieder',
-    empty: 'Füge zuerst die Mitglieder der Gruppe hinzu.',
     inactive: 'Macht nicht mehr mit',
     notDrawing: 'zieht nicht {names}',
     add: 'Person hinzufügen',
@@ -143,13 +142,6 @@ export default {
     notFound: 'Person nicht gefunden.',
     saved: 'Gespeichert',
     doesNotDraw: 'Zieht nicht',
-    noExclusion: 'Kein Ausschluss',
-    manageExclusions: 'Ausschlüsse verwalten',
-    participation: 'Teilnahme',
-    deactivateHelp:
-      'Eine deaktivierte Person wird in künftige Ausgaben nicht übernommen. Ihr Verlauf bleibt erhalten.',
-    deactivate: 'Deaktivieren',
-    reactivate: 'Wieder aktivieren',
     deleteForever: 'Endgültig löschen',
     deleteHint: 'Nur, wenn sie noch nie teilgenommen hat',
     deleteConfirm: '{name} endgültig löschen?',
@@ -201,7 +193,6 @@ export default {
     untilDraw:
       'Ausschlüsse lassen sich bis zur Auslosung ändern. Danach behält die Ausgabe die verwendeten.',
     title: 'Ausschlüsse',
-    summary: 'Paare, die sich nie gegenseitig ziehen',
     intro:
       'Personen, die sich nicht gegenseitig ziehen sollen: ein Paar, Geschwister, ein Elternteil und sein Kind …',
     empty: 'Kein Ausschluss.',
@@ -242,7 +233,6 @@ export default {
     notifyAllViewed: 'Alle haben ihre Auslosung angesehen',
     notifyReminder: 'Erinnerung 3 Tage vor der Feier',
     notifyReminderHelp: 'Mit der Liste derer, die noch nicht geöffnet haben',
-    title: 'Regeln der Auslosung',
     drawSection: 'Auslosung',
     previousYears: {
       none: 'Nein, egal',

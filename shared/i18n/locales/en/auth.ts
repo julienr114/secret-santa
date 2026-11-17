@@ -154,7 +154,6 @@ export default {
       drawn: 'Draw done · {viewed} of {count} found out',
       closed: 'Closed',
     },
-    newGroup: 'New group',
     createGroup: 'Create a group',
     groupsLeft: {
       one: 'You can create {count} more',

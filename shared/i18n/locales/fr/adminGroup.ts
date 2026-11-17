@@ -108,7 +108,6 @@ export default {
   },
   people: {
     title: 'Membres',
-    empty: 'Commence par ajouter les membres du groupe.',
     inactive: 'Ne participe plus',
     notDrawing: 'ne tire pas {names}',
     add: 'Ajouter une personne',
@@ -137,13 +136,6 @@ export default {
     notFound: 'Personne introuvable.',
     saved: 'Enregistré',
     doesNotDraw: 'Ne tire pas',
-    noExclusion: 'Aucune exclusion',
-    manageExclusions: 'Gérer les exclusions',
-    participation: 'Participation',
-    deactivateHelp:
-      "Une personne désactivée n'est pas reprise dans les prochaines éditions. Son historique est conservé.",
-    deactivate: 'Désactiver',
-    reactivate: 'Réactiver',
     deleteForever: 'Supprimer définitivement',
     deleteHint: "Seulement si elle n'a jamais participé",
     deleteConfirm: 'Supprimer {name} pour de bon ?',
@@ -194,7 +186,6 @@ export default {
     untilDraw:
       'Les exclusions se modifient jusqu’au tirage. Ensuite, l’édition garde celles qui ont servi.',
     title: 'Exclusions',
-    summary: 'Paires qui ne se tirent jamais',
     intro:
       "Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des frères et sœurs, un parent et son enfant…",
     empty: 'Aucune exclusion.',
@@ -235,7 +226,6 @@ export default {
     notifyAllViewed: 'Tout le monde a découvert son tirage',
     notifyReminder: 'Rappel 3 jours avant la fête',
     notifyReminderHelp: 'Avec la liste de ceux qui n’ont pas encore ouvert',
-    title: 'Règles du tirage',
     drawSection: 'Tirage',
     previousYears: {
       none: 'Non, peu importe',

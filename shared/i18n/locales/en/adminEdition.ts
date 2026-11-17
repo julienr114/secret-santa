@@ -179,7 +179,6 @@ export default {
     footer: 'The edition is closed: its results are no longer secret.',
   },
   share: {
-    notePlace: 'Where the note goes',
     noteBefore: 'Above the message',
     noteAfter: 'Below the message',
     note: 'Add a note (optional)',

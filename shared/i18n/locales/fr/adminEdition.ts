@@ -179,7 +179,6 @@ export default {
     footer: "L'édition est clôturée : ses résultats ne sont plus secrets.",
   },
   share: {
-    notePlace: 'Placement du mot',
     noteBefore: 'Au-dessus du message',
     noteAfter: 'En dessous du message',
     note: 'Ajouter un mot (facultatif)',

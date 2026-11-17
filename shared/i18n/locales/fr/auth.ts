@@ -294,7 +294,7 @@ export default {
     action: 'Se connecter',
     newLink: 'Demander un nouveau lien',
     question: 'Se connecter sur cet appareil ?',
-    body: 'Tu vas être connecté sur cet appareil pendant 30 jours.',
+    bodyWith: 'Tu vas être connecté avec {email} pendant 30 jours.',
     notYours: 'Ce n’est pas ton appareil ? Ferme simplement cette page.',
     connecting: 'Connexion en cours…',
     invalidTitle: 'Ce lien ne marche plus',

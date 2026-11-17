@@ -297,7 +297,7 @@ export default {
     action: 'Log in',
     newLink: 'Ask for a new link',
     question: 'Log in on this device?',
-    body: 'You will be logged in on this device for 30 days.',
+    bodyWith: 'You will be logged in as {email} for 30 days.',
     notYours: 'Not your device? Just close this page.',
     connecting: 'Logging in…',
     invalidTitle: 'This link no longer works',

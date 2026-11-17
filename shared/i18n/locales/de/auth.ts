@@ -301,7 +301,7 @@ export default {
     action: 'Anmelden',
     newLink: 'Neuen Link anfordern',
     question: 'Auf diesem Gerät anmelden?',
-    body: 'Du bleibst auf diesem Gerät 30 Tage angemeldet.',
+    bodyWith: 'Du bleibst 30 Tage als {email} angemeldet.',
     notYours: 'Nicht dein Gerät? Schließ einfach diese Seite.',
     connecting: 'Anmeldung läuft…',
     invalidTitle: 'Dieser Link funktioniert nicht mehr',

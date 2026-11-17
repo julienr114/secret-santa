@@ -575,7 +575,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 |---|---|
 | `/` | Accueil, le même pour tous (refait le 15 novembre 2026). Sans session : le logo, une phrase, un encadré pour qui a reçu un lien personnel, puis la connexion. Connecté : « Bonjour » et l'avatar, la carte « À faire maintenant » (22.10), puis selon `homeLayout` : compte vide (d'où viendront les tirages, organiser un Secret Santa), un seul tirage (sa carte avec l'enveloppe, sa liste, les tirages passés), plusieurs tirages (une ligne chacun), ou au moins un groupe organisé (une carte par groupe, `groupCards` : « Mon tirage » et « Gérer le tirage ») Sans tirage, une demande de groupe en attente a sa carte « Ta demande est partie » (envoyée le…, un administrateur te répond par email), une demande refusée la sienne avec « Faire une autre demande » (lot 8 de la refonte). Le menu en haut à droite : « Langue » et les trois langues, puis « Mon compte » et « Se déconnecter », en lignes de 48 px. |
 | `/tirages-passes` | Les éditions clôturées du compte, par année ; chaque ligne ouvre la page du tirage |
-| `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis « Regarde ta boîte mail » (l'adresse, les indésirables, ouvrir le lien sur cet appareil, « Utiliser une autre adresse ») ; la page du lien : « Se connecter sur cet appareil ? » et son bouton, ou « Ce lien ne marche plus » et « Demander un nouveau lien » |
+| `/login`, `/login/[jeton]` | Connexion par lien magique : saisie de l'adresse (même écran que l'accueil sans session), puis « Regarde ta boîte mail » (l'adresse, les indésirables, ouvrir le lien sur cet appareil, « Utiliser une autre adresse ») ; la page du lien : « Se connecter sur cet appareil ? », « Tu vas être connecté avec hugo@example.com pendant 30 jours » (l'adresse lue sans consommer le lien) et son bouton, ou, dès l'ouverture, « Ce lien ne marche plus » et « Demander un nouveau lien » |
 | `/admin/groupes/nouveau` | Création d'un groupe, pour tout compte qui a de la place dans son quota : le nom ; pour le super-admin, l'adresse du premier organisateur dans le cadre « Super-admin » ; sinon « Tu en seras l'organisateur » |
 | `/admin` | Super-admin : l'administration (demandes, capacité, comptes, groupes) |
 | `/admin/groupes` | Super-admin : tous les groupes, avec leur organisateur et une recherche |
@@ -640,6 +640,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | Méthode et route | Rôle |
 |---|---|
 | `POST /api/auth/link` | Demande un lien de connexion (réponse identique dans tous les cas) |
+| `GET /api/auth/link-email?token=` | L'adresse avec laquelle le lien connecte, sans le consommer ; `410` pour un lien inconnu, utilisé ou expiré |
 | `POST /api/auth/confirm` | Consomme le lien, ouvre la session |
 | `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, le nombre d'idées), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et ses demandes. Jamais un résultat |
 | `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |

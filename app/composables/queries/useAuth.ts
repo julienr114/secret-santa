@@ -47,6 +47,16 @@ export const useRequestLinkMutation = () =>
     }),
   );
 
+/**
+ * The address a login link logs in with, read without using the link up.
+ * Fails with `login_link_invalid` when it can no longer be used.
+ */
+export const useLinkEmailQuery = (token: MaybeRefOrGetter<string>) =>
+  useApiQuery<{ email: string }>(
+    () => ['login-link', toValue(token)],
+    () => `/api/auth/link-email?token=${encodeURIComponent(toValue(token))}`,
+  );
+
 /** Consumes a login link and loads the new session. */
 export const useConfirmLinkMutation = () => {
   const { fetch } = useUserSession();

@@ -58,9 +58,20 @@ test('a declared super-admin logs in with a link, used by a gesture and only onc
   expect(preview.headers()['referrer-policy']).toBe('no-referrer');
   expect((await page.request.get('/api/admin/groups')).status()).toBe(401);
 
+  // Reading the address it logs in with does not use it up either.
+  const peek = await page.request.get(
+    `/api/auth/link-email?token=${tokenOf(href)}`,
+  );
+  expect(peek.status()).toBe(200);
+  expect(await peek.json()).toEqual({ email: ADMIN_EMAIL });
+  expect(peek.headers()['cache-control']).toContain('no-store');
+
   await page.goto(href);
   await hydrated(page);
   await expect(heading(page)).toHaveText('Se connecter sur cet appareil ?');
+  await expect(page.getByTestId('login-email')).toHaveText(
+    `Tu vas être connecté avec ${ADMIN_EMAIL} pendant 30 jours.`,
+  );
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
   expect((await page.request.get('/api/admin/groups')).status()).toBe(200);
@@ -71,9 +82,14 @@ test('a declared super-admin logs in with a link, used by a gesture and only onc
     data: { token: tokenOf(href) },
   });
   expect(again.status()).toBe(410);
+  expect(
+    (
+      await page.request.get(`/api/auth/link-email?token=${tokenOf(href)}`)
+    ).status(),
+  ).toBe(410);
+  // The page says so at once, without a tap.
   await page.goto(href);
   await hydrated(page);
-  await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Ce lien ne marche plus');
   await expect(
     page.getByRole('link', { name: 'Demander un nouveau lien' }),

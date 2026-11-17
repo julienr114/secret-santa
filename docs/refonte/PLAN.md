@@ -405,15 +405,16 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 
 Décidé par Julien le 17 novembre 2026 (réponses de la section 6). Les données sont déjà en base : seules les routes changent, chacune avec son test.
 
-- [ ] **Journal** : chaque ligne porte sa personne, et un envoi son message et son moyen. `JournalPersonne` : filtre « Moi » et « Tout le monde » ; lignes regroupées avec les icônes des personnes ; envois regroupés par message et par moyen, comme la maquette ; `JournalDetail` nomme la personne et dit « Ce que ça change pour toi ».
-- [ ] **Invitation expirée** (`RejoindreFerme`) : « n'est plus valable depuis le 10 décembre ».
-- [ ] **`ConnexionConfirmer`** : l'adresse du lien, lue sans le consommer.
-- [ ] **`AccueilDemandeAttente`** : le texte de la demande.
-- [ ] **`AdminCompte`** : ses groupes, avec rôle, membres et état du tirage, y compris ceux où il participe seulement.
-- [ ] **`AdminGroupes`** : membres et état du tirage sur chaque ligne.
-- [ ] **`AdminComptes`** : une demande refusée sur la ligne du compte.
-- [ ] **`AdminAcces`** : le nom du demandeur le plus ancien et « Voir la demande ».
-- [ ] **Genre** : une tournure neutre dans les textes de l'administration.
+- [x] **Journal** : chaque ligne porte sa personne, et un envoi son message et son moyen. `JournalPersonne` : filtre « Moi » et « Tout le monde » ; lignes regroupées avec les icônes des personnes ; envois regroupés par message et par moyen, comme la maquette ; `JournalDetail` nomme la personne et dit « Ce que ça change pour toi ».
+- [x] **Invitation expirée** (`RejoindreFerme`) : « n'est plus valable depuis le 10 décembre ».
+- [x] **`ConnexionConfirmer`** : l'adresse du lien, lue sans le consommer.
+- [x] **`AccueilDemandeAttente`** : le texte de la demande.
+- [x] **`AdminCompte`** : ses groupes, avec rôle, membres et état du tirage, y compris ceux où il participe seulement.
+- [x] **`AdminGroupes`** : membres et état du tirage sur chaque ligne.
+- [x] **`AdminComptes`** : une demande refusée sur la ligne du compte.
+- [x] **`AdminAcces`** : le nom du demandeur le plus ancien et « Voir la demande ».
+- [x] **Genre** : une tournure neutre dans les textes de l'administration.
+- [x] Au participant, le journal désigne les personnes par des clés propres à la réponse, jamais par leur identifiant (README 8.3).
 
 ### Lot 12 — Alerte du journal et mot sur un refus (deux migrations)
 

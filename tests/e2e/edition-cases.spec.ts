@@ -205,6 +205,12 @@ test('a large group folds its lists, before and after the draw', async ({
   await back.click();
   await expect(fold).toBeVisible();
 
+  // Nobody has an address, so nobody is ticked: the preview still shows
+  // a message, the first participant's, instead of waiting.
+  await page.goto(`/admin/cas-grand/editions/${id}/emails?type=drawn`);
+  await hydrated(page);
+  await expect(page.getByTestId('email-preview')).toContainText('Grand00');
+
   // The former page of a participant opens their send sheet instead.
   const { participants } = await (
     await state.api!.get(`${at}/editions/${id}`)

@@ -148,10 +148,15 @@ const view = computed(() =>
   }),
 );
 
-// The preview shows the message of the first one ticked.
+// The preview shows the message of the first one ticked; with nobody
+// ticked, of the first one with an address, or of the first of all, so
+// that it never waits for nobody.
 const messages = useMessagesQuery(slug, id, type);
-const first = computed(() =>
-  participants.value.find((p) => isSelected(p.participationId)),
+const first = computed(
+  () =>
+    participants.value.find((p) => isSelected(p.participationId)) ??
+    participants.value.find((p) => p.email) ??
+    participants.value[0],
 );
 const firstMessage = computed(
   () =>

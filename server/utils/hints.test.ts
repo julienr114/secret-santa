@@ -7,7 +7,6 @@ import {
   canEditIdeas,
   canRequestHints,
   shouldTellRequester,
-  upgradeHintsRule,
 } from './hints';
 import { EMPTY_PORTRAIT } from '#shared/utils/hints';
 import { failureOf, valueOf } from '~~/tests/helpers';
@@ -107,9 +106,9 @@ describe('canEditHints and canEditIdeas', () => {
 });
 
 describe('canRequestHints', () => {
-  const base = {
-    status: 'drawn' as const,
-    mode: 'full' as const,
+  const base: Parameters<typeof canRequestHints>[0] = {
+    status: 'drawn',
+    mode: 'full',
     receiverHasHints: false,
     alreadyRequested: false,
   };
@@ -138,25 +137,6 @@ describe('shouldTellRequester', () => {
       shouldTellRequester({ answeredAt: '2026-12-01T10:00:00Z' }, true),
     ).toBe(false);
     expect(shouldTellRequester(null, true)).toBe(false);
-  });
-});
-
-describe('upgradeHintsRule', () => {
-  it('turns the old switch into the setting with three values', () => {
-    expect(upgradeHintsRule({ wishlist: true, budget: '20 €' })).toEqual({
-      giftHints: 'full',
-      budget: '20 €',
-    });
-    expect(upgradeHintsRule({ wishlist: false })).toEqual({
-      giftHints: 'none',
-    });
-  });
-
-  it('keeps a setting already there, and drops the old switch', () => {
-    expect(
-      upgradeHintsRule({ wishlist: false, giftHints: 'portrait' }),
-    ).toEqual({ giftHints: 'portrait' });
-    expect(upgradeHintsRule({ budget: '' })).toEqual({ budget: '' });
   });
 });
 

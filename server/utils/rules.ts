@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
+import { GIFT_HINTS_MODES } from '#shared/utils/hints';
 
 // Draw rules (README section 5). Keys are English in code; the UI shows the
 // French labels. Group rules hold the defaults, an edition may override.
@@ -15,7 +16,8 @@ const shape = {
   messageNote: z.string().max(500),
   // Above or below the standard message.
   messageNotePosition: z.enum(['before', 'after']),
-  wishlist: z.boolean(),
+  // What participants may note for their giver (README 22.11).
+  giftHints: z.enum(GIFT_HINTS_MODES),
   maxWishes: z.number().int().min(1).max(50),
   // Emails to the organisers (README 22.2), each one on or off.
   notifyJoined: z.boolean(),
@@ -30,7 +32,7 @@ export const rulesSchema = z.object({
   guardianMessage: shape.guardianMessage.default(''),
   messageNote: shape.messageNote.default(''),
   messageNotePosition: shape.messageNotePosition.default('after'),
-  wishlist: shape.wishlist.default(true),
+  giftHints: shape.giftHints.default('full'),
   maxWishes: shape.maxWishes.default(10),
   notifyJoined: shape.notifyJoined.default(true),
   notifyAllViewed: shape.notifyAllViewed.default(true),
@@ -50,6 +52,23 @@ export const DEFAULT_RULES: Readonly<Rules> = Object.freeze(
   rulesSchema.parse({}),
 );
 
+/**
+ * The setting of a group from its stored rules: `giftHints` since the gift
+ * hints, else the old `wishlist` switch (on gives the portrait and the
+ * ideas, off no hint).
+ * @param rules - The stored rules, as they are.
+ * @returns The rules with `giftHints` and without `wishlist`.
+ */
+export const upgradeHintsRule = (
+  rules: Record<string, unknown>,
+): Record<string, unknown> => {
+  const { wishlist, ...rest } = rules;
+  if (rest.giftHints !== undefined || typeof wishlist !== 'boolean') {
+    return rest;
+  }
+  return { ...rest, giftHints: wishlist ? 'full' : 'none' };
+};
+
 const dropNullish = (object: unknown): Record<string, unknown> =>
   Object.fromEntries(
     Object.entries((object ?? {}) as Record<string, unknown>).filter(
@@ -67,8 +86,8 @@ export const mergeRules = (
 ): Result<Rules> => {
   const parsed = rulesSchema.safeParse({
     ...DEFAULT_RULES,
-    ...dropNullish(groupRules),
-    ...dropNullish(editionOverride),
+    ...upgradeHintsRule(dropNullish(groupRules)),
+    ...upgradeHintsRule(dropNullish(editionOverride)),
   });
   return parsed.success
     ? ok(parsed.data)

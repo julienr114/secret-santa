@@ -53,7 +53,13 @@ export default {
   draw_not_done: 'Die Auslosung hat noch nicht stattgefunden.',
   result_not_found:
     'Dein Ergebnis wurde nicht gefunden, sag deinem Organisator Bescheid.',
-  wishlist_disabled: 'Diese Gruppe verwendet keine Wunschlisten.',
+  gift_hints_disabled: 'Diese Gruppe verwendet keine Geschenk-Hinweise.',
+  ideas_disabled: 'Diese Gruppe verwendet keine genauen Ideen.',
+  invalid_hints: 'Eine deiner Antworten konnte nicht gespeichert werden.',
+  hints_already_requested:
+    'Du hast für diese Auslosung schon um Hinweise gebeten.',
+  hints_already_given: 'Es sind schon Hinweise da.',
+  no_previous_hints: 'Keine Hinweise zum Übernehmen.',
   too_many_wishes: 'Deine Liste enthält zu viele Ideen.',
   invalid_wish:
     'Eine Idee ist ungültig: höchstens 200 Zeichen und ein Link, der mit http:// oder https:// beginnt.',

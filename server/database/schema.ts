@@ -174,6 +174,47 @@ export const wishes = sqliteTable(
   (t) => [index('wishes_participation_idx').on(t.participationId)],
 );
 
+// Gift hints (README 22.11): the six answers of « Moi et les cadeaux », as
+// fixed values ('first', 'second', 'both'; null without an answer), never
+// text, and the three free texts. One row per participation, once written.
+// The precise ideas stay in `wishes`.
+export const giftPortraits = sqliteTable('gift_portraits', {
+  participationId: text('participation_id')
+    .primaryKey()
+    .references(() => participations.id),
+  usefulOrSurprising: text('useful_or_surprising'),
+  objectOrMoment: text('object_or_moment'),
+  keepOrConsume: text('keep_or_consume'),
+  selfOrShared: text('self_or_shared'),
+  secondHand: text('second_hand'),
+  surprise: text('surprise'),
+  lately: text('lately'),
+  wouldHelp: text('would_help'),
+  avoid: text('avoid'),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// « Lui demander des pistes »: at most one per receiver and per draw. Who
+// asked is encrypted like a receiver (README 8.3), only to write to them
+// once the hints arrive; no route returns it.
+export const hintRequests = sqliteTable(
+  'hint_requests',
+  {
+    receiverParticipationId: text('receiver_participation_id')
+      .primaryKey()
+      .references(() => participations.id),
+    editionId: text('edition_id')
+      .notNull()
+      .references(() => editions.id),
+    requesterEnc: text('requester_enc').notNull(),
+    requesterIv: text('requester_iv').notNull(),
+    requestedAt: text('requested_at').notNull(),
+    // When the hints arrived and the one who asked was told.
+    answeredAt: text('answered_at'),
+  },
+  (t) => [index('hint_requests_edition_idx').on(t.editionId)],
+);
+
 export const AUDIT_ACTORS = [
   'participant',
   'guardian',

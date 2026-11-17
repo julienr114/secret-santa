@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   canEditAvatar,
-  canEditWishes,
   canReveal,
   envelopeState,
   nextStep,
@@ -28,30 +27,6 @@ describe('canReveal', () => {
   it('allows once drawn, and still after closing', () => {
     expect(canReveal('drawn').ok).toBe(true);
     expect(canReveal('closed').ok).toBe(true);
-  });
-});
-
-describe('canEditWishes', () => {
-  const on = { wishlist: true };
-
-  it('allows from the creation of the edition until it is closed', () => {
-    expect(canEditWishes('preparing', on).ok).toBe(true);
-    expect(canEditWishes('drawn', on).ok).toBe(true);
-  });
-
-  it('refuses a closed edition', () => {
-    expect(failureOf(canEditWishes('closed', on)).reason).toBe(
-      'edition_closed',
-    );
-  });
-
-  it('refuses when the group does not use wish lists, whatever the status', () => {
-    expect(
-      failureOf(canEditWishes('preparing', { wishlist: false })).reason,
-    ).toBe('wishlist_disabled');
-    expect(failureOf(canEditWishes('closed', { wishlist: false })).reason).toBe(
-      'wishlist_disabled',
-    );
   });
 });
 

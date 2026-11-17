@@ -10,8 +10,8 @@ import {
   manualExclusions,
   participations,
   persons,
-  wishes,
 } from '#server/database/schema';
+import { deleteHintsOf } from '#server/database/hints';
 import { requireSuperAdmin } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     .from(participations)
     .where(inArray(participations.editionId, editionIds));
   await db.batch([
-    db.delete(wishes).where(inArray(wishes.participationId, participationIds)),
+    ...deleteHintsOf(db, participationIds),
     db.delete(assignments).where(inArray(assignments.editionId, editionIds)),
     db.delete(auditLog).where(eq(auditLog.groupId, id)),
     db

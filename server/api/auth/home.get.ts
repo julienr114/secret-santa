@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
         const merged = mergeRules(groupRules, edition.rulesOverride);
         const rules = merged.ok
           ? merged.value
-          : { wishlist: false, eventDate: '' };
+          : { giftHints: 'none' as const, eventDate: '' };
         const token = dataKey
           ? await decrypt(
               { enc: participation.tokenEnc, iv: participation.tokenIv },
@@ -97,11 +97,11 @@ export default defineEventHandler(async (event) => {
           step: nextStep({
             status: edition.status,
             revealed: participation.viewCount > 0,
-            wishlist: rules.wishlist,
+            wishlist: rules.giftHints !== 'none',
             wishesCount: ideas[participation.id] ?? 0,
           }),
           revealed: participation.viewCount > 0,
-          wishlist: rules.wishlist,
+          wishlist: rules.giftHints !== 'none',
           wishesCount: ideas[participation.id] ?? 0,
           eventDate: rules.eventDate,
           firstName: person.firstName,

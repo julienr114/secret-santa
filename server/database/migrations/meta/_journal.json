@@ -134,6 +134,13 @@
       "when": 1794923765814,
       "tag": "0018_edition_revealed",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1794928843215,
+      "tag": "0019_gift_hints",
+      "breakpoints": true
     }
   ]
 }

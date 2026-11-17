@@ -8,6 +8,7 @@ import {
   daysUntil,
   isIsoDay,
   partyIsOver,
+  upgradeHintsRule,
 } from './rules';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
@@ -20,7 +21,7 @@ describe('rules', () => {
       guardianMessage: '',
       messageNote: '',
       messageNotePosition: 'after',
-      wishlist: true,
+      giftHints: 'full',
       maxWishes: 10,
       notifyJoined: true,
       notifyAllViewed: true,
@@ -120,5 +121,32 @@ describe('daysUntil', () => {
     expect(daysUntil('24 décembre', '2026-11-14')).toBeNull();
     expect(daysUntil('', '2026-11-14')).toBeNull();
     expect(daysUntil(null, '2026-11-14')).toBeNull();
+  });
+});
+
+describe('upgradeHintsRule', () => {
+  it('reads the old switch of a group or an edition in mergeRules', () => {
+    expect(valueOf(mergeRules({ wishlist: false })).giftHints).toBe('none');
+    expect(
+      valueOf(mergeRules({ wishlist: false }, { giftHints: 'portrait' }))
+        .giftHints,
+    ).toBe('portrait');
+  });
+
+  it('turns the old switch into the setting with three values', () => {
+    expect(upgradeHintsRule({ wishlist: true, budget: '20 €' })).toEqual({
+      giftHints: 'full',
+      budget: '20 €',
+    });
+    expect(upgradeHintsRule({ wishlist: false })).toEqual({
+      giftHints: 'none',
+    });
+  });
+
+  it('keeps a setting already there, and drops the old switch', () => {
+    expect(
+      upgradeHintsRule({ wishlist: false, giftHints: 'portrait' }),
+    ).toEqual({ giftHints: 'portrait' });
+    expect(upgradeHintsRule({ budget: '' })).toEqual({ budget: '' });
   });
 });

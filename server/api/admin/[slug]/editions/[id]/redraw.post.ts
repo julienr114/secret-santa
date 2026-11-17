@@ -3,13 +3,15 @@ import { eq } from 'drizzle-orm';
 import { editions, participations } from '#server/database/schema';
 import { deleteAssignments } from '#server/database/draw';
 import { recordEvent } from '#server/database/audit';
+import { deleteHintRequestsOf } from '#server/database/hints';
 import { requireEdition } from '#server/http/edition';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { nextStatus } from '#server/utils/editions';
 
 // Cancel the draw (README 6.5): results gone, list editable again, links
-// and codes kept, view counters reset, reason journaled.
+// and codes kept, view counters reset, reason journaled. The requests for
+// hints go with the draw: the new givers may each ask once.
 const bodySchema = z.object({ reason: z.string().trim().min(3).max(200) });
 
 export default defineEventHandler(async (event) => {
@@ -23,6 +25,7 @@ export default defineEventHandler(async (event) => {
   const { reason } = await validatedBody(event, bodySchema);
   await db.batch([
     deleteAssignments(db, edition.id),
+    deleteHintRequestsOf(db, edition.id),
     db
       .update(editions)
       .set({ status, drawnAt: null, rulesSnapshot: null })

@@ -51,7 +51,12 @@ export default {
   draw_not_done: "Le tirage n'a pas encore eu lieu.",
   result_not_found:
     "Ton résultat est introuvable, préviens ton organisateur qu'il y a un souci.",
-  wishlist_disabled: "Ce groupe n'utilise pas les listes de souhaits.",
+  gift_hints_disabled: "Ce groupe n'utilise pas les pistes de cadeaux.",
+  ideas_disabled: "Ce groupe n'utilise pas les idées précises.",
+  invalid_hints: 'Une de tes réponses n’a pas pu être enregistrée.',
+  hints_already_requested: 'Tu as déjà demandé des pistes pour ce tirage.',
+  hints_already_given: 'Des pistes sont déjà arrivées.',
+  no_previous_hints: 'Aucune piste à reprendre.',
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:
     'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',

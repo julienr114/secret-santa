@@ -16,19 +16,6 @@ export const personalPhase = (status: EditionStatus): PersonalPhase =>
 export const canReveal = (status: EditionStatus): Result<true> =>
   status === 'drawn' || status === 'closed' ? ok(true) : fail('draw_not_done');
 
-/**
- * A wish list is editable from the creation of the edition until it is closed
- * (README 6 bis.1), and only if the group uses wish lists.
- */
-export const canEditWishes = (
-  status: EditionStatus,
-  { wishlist }: { wishlist: boolean },
-): Result<true> => {
-  if (!wishlist) return fail('wishlist_disabled');
-  if (status === 'closed') return fail('edition_closed');
-  return ok(true);
-};
-
 /** A participant may change their own avatar until the edition is closed. */
 export const canEditAvatar = (status: EditionStatus): Result<true> =>
   status === 'closed' ? fail('edition_closed') : ok(true);

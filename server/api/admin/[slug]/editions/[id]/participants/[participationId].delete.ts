@@ -1,5 +1,6 @@
 import { and, eq } from 'drizzle-orm';
-import { participations, wishes } from '#server/database/schema';
+import { participations } from '#server/database/schema';
+import { deleteHintsOf } from '#server/database/hints';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { notFound } from '#server/http/errors';
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
     .limit(1);
   if (!row) throw notFound('participation_not_found');
   await db.batch([
-    db.delete(wishes).where(eq(wishes.participationId, row.id)),
+    ...deleteHintsOf(db, [row.id]),
     db.delete(participations).where(eq(participations.id, row.id)),
   ]);
   await recordEvent(db, {

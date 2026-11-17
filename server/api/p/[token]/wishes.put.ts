@@ -4,7 +4,7 @@ import { recordEvent } from '#server/database/audit';
 import { requirePersonalLink } from '#server/http/personal';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { canEditWishes } from '#server/utils/personal';
+import { canEditIdeas } from '#server/utils/hints';
 import { normalizeWishes } from '#server/utils/wishes';
 import { localeOf } from '#shared/i18n';
 
@@ -15,7 +15,7 @@ const bodySchema = z.object({ wishes: z.array(z.unknown()).max(200) });
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
     await requirePersonalLink(event);
-  unwrap(canEditWishes(edition.status, rules));
+  unwrap(canEditIdeas(edition.status, rules.giftHints));
   const body = await validatedBody(event, bodySchema);
   const list = unwrap(normalizeWishes(body.wishes, rules));
   await replaceWishes(db, participation.id, list);

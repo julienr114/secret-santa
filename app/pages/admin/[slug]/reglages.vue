@@ -121,11 +121,11 @@ const deleting = ref(false);
 
       <UiList :title="t('adminGroup.rules.participantsSection')">
         <UiListItem
-          :checked="shown.wishlist ?? true"
+          :checked="shown.giftHints !== 'none'"
           :title="t('adminGroup.rules.wishlistShort')"
           :subtitle="t('adminGroup.rules.wishlistHelp')"
-          :busy="saving('wishlist')"
-          @update:checked="(on) => save({ wishlist: on })"
+          :busy="saving('giftHints')"
+          @update:checked="(on) => save({ giftHints: on ? 'full' : 'none' })"
         />
         <UiListItem
           :title="t('adminGroup.rules.messageNote')"

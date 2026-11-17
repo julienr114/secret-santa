@@ -47,7 +47,12 @@ export default {
   draw_not_done: 'The draw has not taken place yet.',
   result_not_found:
     'Your result cannot be found, tell your organizer something is wrong.',
-  wishlist_disabled: 'This group does not use wish lists.',
+  gift_hints_disabled: 'This group does not use gift hints.',
+  ideas_disabled: 'This group does not use precise ideas.',
+  invalid_hints: 'One of your answers could not be saved.',
+  hints_already_requested: 'You already asked for hints in this draw.',
+  hints_already_given: 'Hints have already arrived.',
+  no_previous_hints: 'No hints to reuse.',
   too_many_wishes: 'There are too many ideas in your list.',
   invalid_wish:
     'An idea is invalid: 200 characters at most, and a link starting with http:// or https://.',

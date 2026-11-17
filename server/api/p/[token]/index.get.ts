@@ -10,28 +10,29 @@ import { ALERT_TYPES, unseenAlerts } from '#server/utils/audit';
 import { localeOf } from '#shared/i18n';
 import {
   canEditAvatar,
-  canEditWishes,
   canReveal,
   personalPhase,
 } from '#server/utils/personal';
+import { canEditHints } from '#server/utils/hints';
 
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
     await requirePersonalLink(event);
-  const [row] = rules.wishlist
-    ? await db
-        .select({ n: count() })
-        .from(wishes)
-        .where(eq(wishes.participationId, participation.id))
-    : [];
+  const [row] =
+    rules.giftHints !== 'none'
+      ? await db
+          .select({ n: count() })
+          .from(wishes)
+          .where(eq(wishes.participationId, participation.id))
+      : [];
   // Once the participant has discovered their result, the page offers to
   // see it again and says how many ideas await them. Nothing here names
   // the receiver, and nothing is computed before the first reveal.
   const revealed = participation.viewCount > 0 && canReveal(edition.status).ok;
   const receiverParticipationId =
-    revealed && rules.wishlist
+    revealed && rules.giftHints !== 'none'
       ? await findReceiverParticipationId(
           db,
           edition.id,
@@ -91,8 +92,8 @@ export default defineEventHandler(async (event) => {
     phase: personalPhase(edition.status),
     // The day of the party is no secret: the messages give it to all.
     eventDate: rules.eventDate,
-    wishlist: rules.wishlist,
-    wishesEditable: canEditWishes(edition.status, rules).ok,
+    wishlist: rules.giftHints !== 'none',
+    wishesEditable: canEditHints(edition.status, rules.giftHints).ok,
     wishesCount: row?.n ?? 0,
     revealed,
     receiverWishesCount: receiverRow?.n ?? 0,

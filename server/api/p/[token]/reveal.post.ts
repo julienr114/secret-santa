@@ -46,9 +46,10 @@ export default defineEventHandler(async (event) => {
   if (!receiver) {
     throw createError({ statusCode: 500, statusMessage: 'result_unreadable' });
   }
-  const receiverWishes = rules.wishlist
-    ? await listWishes(db, receiver.participationId)
-    : null;
+  const receiverWishes =
+    rules.giftHints !== 'none'
+      ? await listWishes(db, receiver.participationId)
+      : null;
 
   const now = nowIso();
   const [updated] = await db

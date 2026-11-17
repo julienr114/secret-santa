@@ -132,23 +132,6 @@ export const shouldTellRequester = (
 ): boolean => Boolean(request && !request.answeredAt && hasHintsNow);
 
 /**
- * The setting of a group from its stored rules: `giftHints` since the gift
- * hints, else the old `wishlist` switch (on gives the portrait and the
- * ideas, off no hint).
- * @param rules - The stored rules, as they are.
- * @returns The rules with `giftHints` and without `wishlist`.
- */
-export const upgradeHintsRule = (
-  rules: Record<string, unknown>,
-): Record<string, unknown> => {
-  const { wishlist, ...rest } = rules;
-  if (rest.giftHints !== undefined || typeof wishlist !== 'boolean') {
-    return rest;
-  }
-  return { ...rest, giftHints: wishlist ? 'full' : 'none' };
-};
-
-/**
  * The email to the one who receives: the person who gives them a present
  * looks for ideas. It never says who asks (README 22.11).
  * @param data - First name, edition, group, link to their hints page.

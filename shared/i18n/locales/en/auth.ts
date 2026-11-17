@@ -277,7 +277,18 @@ export default {
       other: '{count} already created',
     },
     left: { one: '{count} left', other: '{count} left' },
-    organizes: 'Organises this group',
+    members: { one: '{count} member', other: '{count} members' },
+    draw: {
+      preparing: 'to prepare',
+      drawn: 'drawn',
+      none: 'no draw in progress',
+      viewed: {
+        one: '{count} of {total} has looked',
+        other: '{count} of {total} have looked',
+      },
+    },
+    role: { organizer: 'Organises', participant: 'Takes part' },
+    requestRefused: 'request refused',
     profileOwn:
       'Their profile (first name, icon, language) is theirs: it is not changed from here.',
     activeAccounts: {

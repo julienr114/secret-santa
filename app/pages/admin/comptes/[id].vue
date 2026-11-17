@@ -4,14 +4,16 @@ import { fullName } from '#server/utils/people';
 import {
   useAdminAccountsQuery,
   useUpdateAccountMutation,
+  type AdminAccountGroup,
 } from '~/composables/queries/useAdmin';
 import { formatDay } from '~/utils/labels';
 
 // Super-admin only: one account, read and not edited (its profile is its
 // own, decided on 16 November 2026). Who it is and its last visit; its
 // groups: a request waiting (answered in a sheet), how many it may
-// create, changed with « moins » and « plus » and shown at once, and the
-// groups it organises; then its access.
+// create, changed with « moins » and « plus » and shown at once, the
+// groups it organises (members, draw) and those it takes part in; then
+// its access.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
@@ -91,6 +93,20 @@ const quotaLine = computed(() => {
     .join(' · ');
 });
 
+const { membersPart, drawPart } = useGroupLine();
+/**
+ * The line under one of its groups.
+ * @param group - The group.
+ * @returns « Organise · 5 membres · tirage fait », or « Participe ».
+ */
+const groupLine = (group: AdminAccountGroup) =>
+  group.role === 'organizer'
+    ? [
+        t('auth.admin.role.organizer'),
+        membersPart(group.members),
+        drawPart(group.draw),
+      ].join(' · ')
+    : t('auth.admin.role.participant');
 const requestOpen = ref(false);
 // Disabling asks for a second tap; restoring does not.
 const confirming = ref(false);
@@ -212,7 +228,7 @@ const setDisabled = (disabled: boolean) =>
             icon="i-lucide-users"
             icon-tone="neutral"
             :title="group.name"
-            :subtitle="t('auth.admin.organizes')"
+            :subtitle="groupLine(group)"
           />
         </UiList>
 

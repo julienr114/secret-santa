@@ -1,3 +1,4 @@
+import type { GroupOverview } from '#server/utils/overview';
 import type { PublicGroup } from '#server/database/groups';
 import type { Avatar } from '#server/utils/avatars';
 import type { AdminAccount } from '#server/database/quota';
@@ -23,7 +24,14 @@ export type AppStats = {
   load: 'ok' | 'near' | 'over';
 };
 /** An account as the admin sees it; `me` marks the logged-in one. */
-export type AdminAccountRow = AdminAccount & { me: boolean };
+/** A group of an account, with its members and its draw in progress. */
+export type AdminAccountGroup = AdminAccount['groups'][number] & GroupOverview;
+export type AdminAccountRow = Omit<AdminAccount, 'groups'> & {
+  groups: AdminAccountGroup[];
+  me: boolean;
+};
+/** A group of the app, with its members and its draw in progress. */
+export type AdminGroupRow = PublicGroup & GroupOverview;
 
 /** The pending requests and every account. */
 export const useAdminAccountsQuery = () =>
@@ -69,7 +77,7 @@ export const useDecideRequestMutation = () =>
 
 /** Every group of the app. */
 export const useAllGroupsQuery = () =>
-  useApiQuery<{ groups: PublicGroup[] }>(
+  useApiQuery<{ groups: AdminGroupRow[] }>(
     () => keys.adminGroups(),
     () => '/api/admin/groups',
   );

@@ -3,10 +3,12 @@ import { fullName } from '#server/utils/people';
 import {
   useAdminAccountsQuery,
   useAllGroupsQuery,
+  type AdminGroupRow,
 } from '~/composables/queries/useAdmin';
 
-// Super-admin only: every group of the app, with who organises it, a
-// search by group or organiser, and « Créer un groupe pour quelqu'un ».
+// Super-admin only: every group of the app, with who organises it, its
+// members and where its draw stands, a search by group or organiser, and
+// « Créer un groupe pour quelqu'un ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 useHead({
@@ -35,6 +37,19 @@ const organizersOf = computed(() =>
     {},
   ),
 );
+const { membersPart, drawPart } = useGroupLine();
+/**
+ * The line under a group's name.
+ * @param group - The group.
+ * @returns « Camille · 5 membres · tirage fait, 1 sur 5 a consulté ».
+ */
+const lineOf = (group: AdminGroupRow) =>
+  [
+    (organizersOf.value[group.slug] ?? []).join(', ') ||
+      t('auth.admin.noOrganizer'),
+    membersPart(group.members),
+    drawPart(group.draw, true),
+  ].join(' · ');
 const search = ref('');
 const shown = computed(() => {
   const needle = search.value.trim().toLowerCase();
@@ -90,10 +105,7 @@ const subtitle = computed(() =>
           icon="i-lucide-users"
           icon-tone="neutral"
           :title="group.name"
-          :subtitle="
-            (organizersOf[group.slug] ?? []).join(', ') ||
-            t('auth.admin.noOrganizer')
-          "
+          :subtitle="lineOf(group)"
         />
         <UiListItem
           to="/admin/groupes/nouveau"

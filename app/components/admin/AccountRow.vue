@@ -7,9 +7,10 @@ import { fullName } from '#server/utils/people';
 import { remainingGroups } from '#server/utils/quota';
 
 // One account on the admin's list: its icon, its name (or its address
-// without one), then its address (« Super-admin » for one), its groups
-// (or how many it may create) and its last visit; « À traiter » when a
-// request waits. A tap opens the account's page.
+// without one), then its address (« Super-admin » for one), the groups it
+// organises (or a refused request, or how many it may create) and its
+// last visit; « À traiter » when a request waits. A tap opens the
+// account's page.
 const props = defineProps<{
   account: AdminAccountRow;
   request?: PendingRequest;
@@ -17,10 +18,16 @@ const props = defineProps<{
 const { t, locale } = useT();
 
 const name = computed(() => fullName(props.account));
-/** « 2 groupes », « peut créer 1 groupe » or « aucun groupe ». */
+/**
+ * « 2 groupes », « demande refusée », « peut créer 1 groupe » or « aucun
+ * groupe ».
+ */
 const groupsPart = computed(() => {
-  const organized = props.account.groups.length;
+  const organized = props.account.groups.filter(
+    (group) => group.role === 'organizer',
+  ).length;
   if (organized > 0) return t('auth.admin.groupsCount', { count: organized });
+  if (props.account.requestRefused) return t('auth.admin.requestRefused');
   const left = remainingGroups(props.account);
   return left > 0 && Number.isFinite(left)
     ? t('auth.admin.canCreate', { count: left })

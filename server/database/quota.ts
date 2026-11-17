@@ -15,8 +15,10 @@ import {
   groupRequests,
   editions,
   groups,
+  persons,
   type AccountRow,
 } from './schema';
+import { groupsByAccount, type AccountGroup } from '#server/utils/overview';
 import type { QuotaAccount } from '#server/utils/quota';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 
@@ -114,28 +116,42 @@ export const listSuperAdmins = (db: Db) =>
     .from(accounts)
     .where(and(eq(accounts.isSuperAdmin, true), isNull(accounts.disabledAt)));
 
-/** What the admin sees of an account. */
-/** The groups each account organises, by account id, by name. */
-const organizedGroups = async (
+/** The groups of each account, by account id. */
+const accountGroups = async (
   db: Db,
-): Promise<Record<string, { slug: string; name: string }[]>> =>
-  (
-    await db
-      .select({
-        accountId: groupMembers.accountId,
-        slug: groups.slug,
-        name: groups.name,
-      })
+): Promise<Record<string, AccountGroup[]>> => {
+  const columns = { id: groups.id, slug: groups.slug, name: groups.name };
+  const [organized, joined] = await Promise.all([
+    db
+      .select({ accountId: groupMembers.accountId, ...columns })
       .from(groupMembers)
       .innerJoin(groups, eq(groups.id, groupMembers.groupId))
-      .orderBy(asc(groups.name))
-  ).reduce<Record<string, { slug: string; name: string }[]>>(
-    (acc, { accountId, ...group }) => ({
-      ...acc,
-      [accountId]: [...(acc[accountId] ?? []), group],
-    }),
-    {},
+      .orderBy(asc(groups.name)),
+    db
+      .select({ accountId: accounts.id, ...columns })
+      .from(persons)
+      .innerJoin(accounts, eq(accounts.email, persons.email))
+      .innerJoin(groups, eq(groups.id, persons.groupId))
+      .where(eq(persons.active, true))
+      .orderBy(asc(groups.name)),
+  ]);
+  return groupsByAccount(organized, joined);
+};
+
+/** Accounts whose latest request was refused. */
+const refusedAccounts = async (db: Db): Promise<Set<string>> => {
+  const rows = await db
+    .select({
+      accountId: groupRequests.accountId,
+      status: groupRequests.status,
+    })
+    .from(groupRequests)
+    .orderBy(asc(groupRequests.createdAt));
+  const latest = Object.fromEntries(
+    rows.map((row) => [row.accountId, row.status]),
   );
+  return new Set(Object.keys(latest).filter((id) => latest[id] === 'refused'));
+};
 
 export type AdminAccount = {
   id: string;
@@ -146,8 +162,10 @@ export type AdminAccount = {
   isSuperAdmin: boolean;
   groupQuota: number;
   createdCount: number;
-  /** The groups it organises, with a link on the admin page. */
-  groups: { slug: string; name: string }[];
+  /** The groups it organises, then those it takes part in. */
+  groups: AccountGroup[];
+  /** Its latest request for a group was refused. */
+  requestRefused: boolean;
   createdAt: string;
   lastLoginAt: string | null;
   disabled: boolean;
@@ -155,10 +173,11 @@ export type AdminAccount = {
 
 /** Every account with its counts, by address. */
 export const listAdminAccounts = async (db: Db): Promise<AdminAccount[]> => {
-  const [rows, created, organized] = await Promise.all([
+  const [rows, created, groupsOf, refused] = await Promise.all([
     db.select().from(accounts).orderBy(asc(accounts.email)),
     createdCounts(db),
-    organizedGroups(db),
+    accountGroups(db),
+    refusedAccounts(db),
   ]);
   return rows.map((account) => ({
     id: account.id,
@@ -169,7 +188,8 @@ export const listAdminAccounts = async (db: Db): Promise<AdminAccount[]> => {
     isSuperAdmin: account.isSuperAdmin,
     groupQuota: account.groupQuota,
     createdCount: created[account.id] ?? 0,
-    groups: organized[account.id] ?? [],
+    groups: groupsOf[account.id] ?? [],
+    requestRefused: refused.has(account.id),
     createdAt: account.createdAt,
     lastLoginAt: account.lastLoginAt,
     disabled: Boolean(account.disabledAt),

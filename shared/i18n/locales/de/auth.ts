@@ -281,7 +281,18 @@ export default {
     },
     created: { one: '{count} schon erstellt', other: '{count} schon erstellt' },
     left: { one: 'noch {count} übrig', other: 'noch {count} übrig' },
-    organizes: 'Organisiert diese Gruppe',
+    members: { one: '{count} Mitglied', other: '{count} Mitglieder' },
+    draw: {
+      preparing: 'in Vorbereitung',
+      drawn: 'ausgelost',
+      none: 'keine laufende Auslosung',
+      viewed: {
+        one: '{count} von {total} hat nachgesehen',
+        other: '{count} von {total} haben nachgesehen',
+      },
+    },
+    role: { organizer: 'Organisiert', participant: 'Nimmt teil' },
+    requestRefused: 'Anfrage abgelehnt',
     profileOwn:
       'Das Profil (Vorname, Symbol, Sprache) gehört der Person: Es wird hier nicht geändert.',
     activeAccounts: {

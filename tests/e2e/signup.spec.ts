@@ -130,6 +130,10 @@ test('the super-admin sees the request and accepts it', async ({
     name: new RegExp(NEWCOMER),
   });
   await expect(row).not.toContainText('À traiter');
+  // The one refused says so on its line.
+  await expect(
+    page.getByTestId('accounts').getByRole('link', { name: new RegExp(LATER) }),
+  ).toContainText('demande refusée');
   await row.click();
   await expect(page.getByTestId('quota')).toHaveText('1');
   await expect(page.getByTestId('request-row')).toHaveCount(0);
@@ -217,6 +221,10 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   await hydrated(page);
   await expect(heading(page)).toHaveText('Groupes');
   await expect(page.getByText(GROUP.name)).toBeVisible();
+  // Each line: who organises it, its members, where its draw stands.
+  await expect(
+    page.getByTestId('groups').getByRole('link', { name: GROUP.name }),
+  ).toContainText('Nina · 1 membre · pas de tirage en cours');
   // The search finds a group by its organiser too.
   await page.getByLabel('Chercher un groupe ou un organisateur').fill('Nina');
   await expect(page.getByTestId('groups')).toContainText(GROUP.name);
@@ -232,7 +240,9 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   // A row opens the account's page: its groups with their link, its
   // quota changed at once; its profile is read, not edited.
   await page.getByTestId('accounts').getByText('Nina').click();
-  await expect(page.getByRole('link', { name: GROUP.name })).toBeVisible();
+  await expect(page.getByRole('link', { name: GROUP.name })).toContainText(
+    'Organise · 1 membre · pas de tirage en cours',
+  );
   await expect(page.getByTestId('quota')).toHaveText('1');
   await page.getByRole('button', { name: 'Un groupe de plus' }).click();
   await expect(page.getByTestId('quota')).toHaveText('2');
@@ -249,6 +259,13 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   ).json();
   const idOf = (email: string) =>
     accounts.find((a: { email: string }) => a.email === email).id;
+  const nina = accounts.find((a: { email: string }) => a.email === NEWCOMER);
+  expect(nina.groups[0]).toMatchObject({
+    name: GROUP.name,
+    role: 'organizer',
+    members: 1,
+    draw: null,
+  });
   const self = await page.request.patch(`/api/admin/accounts/${idOf(SUPER)}`, {
     data: { disabled: true },
   });

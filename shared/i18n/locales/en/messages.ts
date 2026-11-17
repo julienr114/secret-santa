@@ -25,6 +25,23 @@ export default {
     cta: 'Your link stays the same:',
     subject: '{firstName}, new Secret Santa draw',
   },
+  answerRequest: {
+    greeting: 'Hi {firstName}! 🎁',
+    body: 'The Secret Santa draw of {groupName} ({editionLabel}) was made outside the app.',
+    cta: "Say on your page who you're giving a gift to, to see their gift hints:",
+    subject: '{firstName}, who are you giving a gift to? ({editionLabel})',
+  },
+  answerReminder: {
+    greeting: "{firstName}, we're only waiting for you! 🎁",
+    cta: "Say who you're giving a gift to: once everyone has answered, each one sees their person's gift hints.",
+    subject: '{firstName}, we are waiting for your Secret Santa answer',
+  },
+  answerCheck: {
+    greeting: '{firstName}, could you check your answer? 🎁',
+    body: "Two answers of the Secret Santa of {groupName} don't fit together.",
+    cta: "Check who you're giving a gift to, and correct it if needed:",
+    subject: '{firstName}, check your Secret Santa answer',
+  },
   budget: 'Budget: {budget}.',
   eventDate: 'See you on {eventDate}.',
   email: {

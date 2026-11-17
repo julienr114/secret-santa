@@ -18,6 +18,9 @@ export default {
     drawn: 'Tirage fait',
     reminder: 'Relance',
     redraw: 'Nouveau tirage',
+    answerRequest: 'Demande',
+    answerReminder: 'Relance',
+    answerCheck: 'À vérifier',
   },
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },

@@ -18,14 +18,29 @@ export const MESSAGE_TYPES = [
   'drawn',
   'reminder',
   'redraw',
+  // A draw already made elsewhere (README 22.12): ask who they give to,
+  // remind, and ask the two whose answers clash to check theirs.
+  'answerRequest',
+  'answerReminder',
+  'answerCheck',
 ] as const;
 export type MessageType = (typeof MESSAGE_TYPES)[number];
 
 /**
  * The messages that make sense at a given stage: before the draw, only the
- * invitation and its reminder; "draw done" and "new draw" need a draw.
+ * invitation and its reminder, or, for a draw made elsewhere, the three
+ * messages of the answers; "draw done" and "new draw" need a draw.
+ * @param status - Status of the edition.
+ * @param mode - How it is drawn: by the app, or elsewhere.
+ * @returns The messages, in the order of their tabs.
  */
-export const messageTypesFor = (status: string): MessageType[] => {
+export const messageTypesFor = (
+  status: string,
+  mode: string = 'app',
+): MessageType[] => {
+  if (status === 'preparing' && mode === 'elsewhere') {
+    return ['answerRequest', 'answerReminder', 'answerCheck'];
+  }
   if (status === 'preparing') return ['invitation', 'reminder'];
   if (status === 'drawn') return ['drawn', 'reminder', 'redraw'];
   return [];
@@ -38,13 +53,20 @@ export const messageTypesFor = (status: string): MessageType[] => {
  * @param status - Status of the edition.
  * @param sent - Whether this person was already sent a message of this draw.
  * @param redrawn - Whether the draw was cancelled and run again.
+ * @param answers - For a draw made elsewhere, whether this person's answer
+ *   clashes with another: then « À vérifier », before anything else.
  * @returns The message, or null when the stage has none.
  */
 export const defaultMessageType = (
   status: string,
   sent: boolean,
   redrawn: boolean,
+  answers?: { mode: string; inConflict: boolean },
 ): MessageType | null => {
+  if (status === 'preparing' && answers?.mode === 'elsewhere') {
+    if (answers.inConflict) return 'answerCheck';
+    return sent ? 'answerReminder' : 'answerRequest';
+  }
   if (status === 'preparing') return sent ? 'reminder' : 'invitation';
   if (status !== 'drawn') return null;
   if (sent) return 'reminder';
@@ -87,6 +109,20 @@ const TEMPLATES: Record<MessageType, (d: MessageData) => MessageKey[]> = {
   ],
   reminder: () => ['messages.reminder.greeting', 'messages.reminder.cta'],
   redraw: () => ['messages.redraw.greeting', 'messages.redraw.cta'],
+  answerRequest: () => [
+    'messages.answerRequest.greeting',
+    'messages.answerRequest.body',
+    'messages.answerRequest.cta',
+  ],
+  answerReminder: () => [
+    'messages.answerReminder.greeting',
+    'messages.answerReminder.cta',
+  ],
+  answerCheck: () => [
+    'messages.answerCheck.greeting',
+    'messages.answerCheck.body',
+    'messages.answerCheck.cta',
+  ],
 };
 
 const linesOf = (

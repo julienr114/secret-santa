@@ -21,6 +21,9 @@ export default {
     drawn: 'Draw done',
     reminder: 'Reminder',
     redraw: 'New draw',
+    answerRequest: 'Request',
+    answerReminder: 'Reminder',
+    answerCheck: 'To check',
   },
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },

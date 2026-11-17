@@ -89,6 +89,32 @@ describe('messageTypesFor', () => {
   it('offers nothing in a draft or a closed edition', () => {
     expect(messageTypesFor('closed')).toEqual([]);
   });
+
+  it('offers the three answer messages for a draw made elsewhere', () => {
+    expect(messageTypesFor('preparing', 'elsewhere')).toEqual([
+      'answerRequest',
+      'answerReminder',
+      'answerCheck',
+    ]);
+    // Once validated, it is an ordinary drawn edition.
+    expect(messageTypesFor('drawn', 'elsewhere')).toEqual([
+      'drawn',
+      'reminder',
+      'redraw',
+    ]);
+  });
+
+  it('writes the answer messages, the reminder as in its mockup', () => {
+    expect(valueOf(buildMessage('answerReminder', data))).toBe(
+      'Léa, on n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
+    );
+    expect(valueOf(buildMessage('answerRequest', data))).toContain(
+      'hors de l’application',
+    );
+    expect(valueOf(buildEmail('answerCheck', data, 'de')).subject).toBe(
+      'Léa, prüf deine Wichtel-Antwort',
+    );
+  });
 });
 
 describe('buildEmail', () => {
@@ -345,6 +371,25 @@ describe('defaultMessageType', () => {
   it('announces a new draw after a redraw', () => {
     expect(defaultMessageType('drawn', false, true)).toBe('redraw');
     expect(defaultMessageType('drawn', true, true)).toBe('reminder');
+  });
+
+  it('asks, reminds, or asks to check, for a draw made elsewhere', () => {
+    const answers = (inConflict: boolean) => ({
+      mode: 'elsewhere',
+      inConflict,
+    });
+    expect(defaultMessageType('preparing', false, false, answers(false))).toBe(
+      'answerRequest',
+    );
+    expect(defaultMessageType('preparing', true, false, answers(false))).toBe(
+      'answerReminder',
+    );
+    expect(defaultMessageType('preparing', true, false, answers(true))).toBe(
+      'answerCheck',
+    );
+    expect(defaultMessageType('drawn', false, false, answers(false))).toBe(
+      'drawn',
+    );
   });
 
   it('offers nothing once closed', () => {

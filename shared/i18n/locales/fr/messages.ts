@@ -24,6 +24,23 @@ export default {
     cta: 'Ton lien ne change pas :',
     subject: '{firstName}, nouveau tirage du Secret Santa',
   },
+  answerRequest: {
+    greeting: 'Salut {firstName} ! 🎁',
+    body: 'Le tirage du Secret Santa de {groupName} ({editionLabel}) a été fait hors de l’application.',
+    cta: 'Dis sur ta page à qui tu offres un cadeau, pour voir ses pistes de cadeaux :',
+    subject: '{firstName}, à qui offres-tu un cadeau ? ({editionLabel})',
+  },
+  answerReminder: {
+    greeting: '{firstName}, on n’attend plus que toi ! 🎁',
+    cta: 'Dis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.',
+    subject: '{firstName}, on attend ta réponse pour le Secret Santa',
+  },
+  answerCheck: {
+    greeting: '{firstName}, peux-tu vérifier ta réponse ? 🎁',
+    body: 'Deux réponses du Secret Santa de {groupName} ne vont pas ensemble.',
+    cta: 'Vérifie à qui tu offres un cadeau, et corrige-la si besoin :',
+    subject: '{firstName}, vérifie ta réponse pour le Secret Santa',
+  },
   budget: 'Budget : {budget}.',
   eventDate: 'Rendez-vous le {eventDate}.',
   email: {

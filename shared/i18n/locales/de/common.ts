@@ -21,6 +21,9 @@ export default {
     drawn: 'Auslosung erfolgt',
     reminder: 'Erinnerung',
     redraw: 'Neue Auslosung',
+    answerRequest: 'Anfrage',
+    answerReminder: 'Erinnerung',
+    answerCheck: 'Zu prüfen',
   },
   count: {
     participants: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },

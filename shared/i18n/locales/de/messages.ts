@@ -25,6 +25,23 @@ export default {
     cta: 'Dein Link bleibt derselbe:',
     subject: '{firstName}, neue Wichtel-Auslosung',
   },
+  answerRequest: {
+    greeting: 'Hallo {firstName}! 🎁',
+    body: 'Die Wichtel-Auslosung von {groupName} ({editionLabel}) wurde außerhalb der App gemacht.',
+    cta: 'Sag auf deiner Seite, wen du beschenkst, um seine Geschenk-Hinweise zu sehen:',
+    subject: '{firstName}, wen beschenkst du? ({editionLabel})',
+  },
+  answerReminder: {
+    greeting: '{firstName}, wir warten nur noch auf dich! 🎁',
+    cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Geschenk-Hinweise seiner Person.',
+    subject: '{firstName}, wir warten auf deine Wichtel-Antwort',
+  },
+  answerCheck: {
+    greeting: '{firstName}, kannst du deine Antwort prüfen? 🎁',
+    body: 'Zwei Antworten beim Wichteln von {groupName} passen nicht zusammen.',
+    cta: 'Prüfe, wen du beschenkst, und korrigiere es bei Bedarf:',
+    subject: '{firstName}, prüf deine Wichtel-Antwort',
+  },
   budget: 'Budget: {budget}.',
   eventDate: 'Wir sehen uns am {eventDate}.',
   email: {

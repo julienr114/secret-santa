@@ -397,16 +397,23 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 
 ### Lot 10 — Finitions
 
-- [ ] Supprimer les composants et les clés de dictionnaire devenus inutiles.
-- [ ] `tests/e2e/design.spec.ts` et guide de style à jour.
-- [ ] README 11 et 23 réécrits pour les écrans refaits.
-- [ ] Cocher les lots ici, et lister ce qui reste en section 6.
+- [x] Supprimer les composants et les clés de dictionnaire devenus inutiles.
+- [x] `tests/e2e/design.spec.ts` et guide de style à jour.
+- [x] README 11 et 23 réécrits pour les écrans refaits.
+- [x] Cocher les lots ici, et lister ce qui reste en section 6.
 
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
+
+**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Tous les lots sont faits ; une seule case reste ouverte, `JournalPersonne` (lot 6), qui attend la réponse à la question 1 du lot 6. Les questions sans réponse :
+
+- **Données que les routes ne renvoient pas encore** (chacune demande un changement de route, donc ton accord) : la personne concernée par chaque ligne du journal, pour le filtre « Moi », les icônes et prénoms des lignes repliées et un « Ce que ça change pour toi » juste (lot 6, questions 1, 2 et 4) ; le message et le moyen d'un envoi dans le journal (lot 6, question 3) ; la date limite d'un lien d'invitation expiré (lot 8, question 2) ; l'adresse sur « Se connecter sur cet appareil ? » sans consommer le lien (lot 8, question 3) ; le texte de la demande sur l'accueil (lot 8, question 5) ; les groupes d'un compte avec rôle, membres et état, et ceux où il participe (lot 9, question 1) ; membres et état du tirage sur la liste des groupes (lot 9, question 2) ; une demande refusée sur la liste des comptes (lot 9, question 3) ; le nom du demandeur sur la carte du haut de l'accueil (lot 9, question 4).
+- **Choix à valider** : mes textes d'explication des alertes du journal (lot 6, question 4) et la phrase sous la liste, retirée depuis (lot 6, question 5, réglée par la maquette) ; la phrase sous le profil de `Compte` (lot 8, question 4) ; le genre des textes de l'administration (lot 9, question 5) ; « Supprimer le groupe » dans le cadre « Super-admin », à reporter dans la maquette `GroupeReglages` (lot 9, question 6) ; l'ordre du menu du super-admin (lot 9, question 7).
+- **Écart corrigé au lot 10** : le budget et le petit mot d'une édition (Correction 9) s'affichent maintenant dès la validation, comme tout réglage, et reviennent avec un toast si l'enregistrement échoue.
+- **Hors périmètre**, inchangé (section 1) : dévoiler les résultats, les pistes de cadeaux, le mot de l'administrateur sur un refus, l'alerte du journal sur la page du tirage.
 
 ### Lot 1
 

@@ -420,19 +420,19 @@ Décidé par Julien le 17 novembre 2026 (réponses de la section 6). Les donnée
 
 Décidé par Julien le 17 novembre 2026.
 
-- [ ] **`TirageAlerteJournal`** : colonne `participations.journal_seen_at` (migration). La page du tirage dit « 1 alerte depuis ta dernière visite » sur la ligne du journal ; ouvrir le journal depuis cette page remet le compte à zéro. Sans visite enregistrée, le compte part du tirage.
-- [ ] **Mot de l'administrateur sur un refus** : colonne `group_requests.decision_note` (migration). Champ « Un mot pour elle » et ses messages tout prêts dans le panneau de réponse (`AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`), repris dans l'email de refus et sur l'accueil (`AccueilDemandeRefusee`).
+- [x] **`TirageAlerteJournal`** : colonne `participations.journal_seen_at` (migration). La page du tirage dit « 1 alerte depuis ta dernière visite » sur la ligne du journal ; ouvrir le journal depuis cette page remet le compte à zéro. Sans visite enregistrée, le compte part du tirage.
+- [x] **Mot de l'administrateur sur un refus** : colonne `group_requests.decision_note` (migration). Champ « Un mot pour elle » et ses messages tout prêts dans le panneau de réponse (`AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`), repris dans l'email de refus et sur l'accueil (`AccueilDemandeRefusee`).
 
 ### Lot 13 — Dévoiler les résultats (README 22.9)
 
 Décidé par Julien le 17 novembre 2026. Une édition clôturée garde ses paires visibles pour l'organisateur, dévoilée ou non (README 8.7 inchangé) : `ClotureeSecrete` n'est pas suivie.
 
-- [ ] Colonne `editions.revealed_at` (migration). Route `POST …/editions/[id]/reveal` : édition tirée, date de fête connue ; avant la fête, seulement si l'organisateur le confirme. Irréversible, inscrite au journal (« L'organisateur a dévoilé les résultats »), sans jamais dire qui offre à qui. Une fois dévoilée, le tirage ne s'annule plus, et la route des résultats renvoie les paires.
-- [ ] `Suivi`, `Suivi100`, `SuiviSansDate` : ligne « Dévoiler les résultats » dans « Plus tard, ou en cas de pépin » ; « Voir un seul résultat ».
-- [ ] `DevoilerAvant` : avant la fête, l'encadré rouge et la phrase à recopier.
-- [ ] `Feter` : la fête passée, « Dévoiler les résultats » et « Clôturer sans dévoiler ».
-- [ ] `Devoiler` : la confirmation dans un panneau.
-- [ ] `Cloturee` : les résultats dévoilés, puis « Clôturer l'édition ».
+- [x] Colonne `editions.revealed_at` (migration). Route `POST …/editions/[id]/reveal` : édition tirée, date de fête connue ; avant la fête, seulement si l'organisateur le confirme. Irréversible, inscrite au journal (« L'organisateur a dévoilé les résultats »), sans jamais dire qui offre à qui. Une fois dévoilée, le tirage ne s'annule plus, et la route des résultats renvoie les paires.
+- [x] `Suivi`, `Suivi100`, `SuiviSansDate` : ligne « Dévoiler les résultats » dans « Plus tard, ou en cas de pépin » ; « Voir un seul résultat ».
+- [x] `DevoilerAvant` : avant la fête, l'encadré rouge et la phrase à recopier.
+- [x] `Feter` : la fête passée, « Dévoiler les résultats » et « Clôturer sans dévoiler ».
+- [x] `Devoiler` : la confirmation dans un panneau.
+- [x] `Cloturee` : les résultats dévoilés, puis « Clôturer l'édition ».
 
 ### Lot 14 — Le journal signalé depuis l'accueil (README 22.15)
 

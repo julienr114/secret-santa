@@ -1,6 +1,7 @@
+import { participationHasHints } from '#server/database/hints';
 import { z } from 'zod';
 import { replaceWishes } from '#server/database/wishes';
-import { tellRequesterIfAsked } from '#server/http/hints';
+import { announceHints } from '#server/http/hints';
 import { requirePersonalLink } from '#server/http/personal';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -18,8 +19,9 @@ export default defineEventHandler(async (event) => {
   unwrap(canEditIdeas(edition.status, rules.giftHints));
   const body = await validatedBody(event, bodySchema);
   const list = unwrap(normalizeWishes(body.wishes, rules));
+  const hadHints = await participationHasHints(db, participation.id);
   await replaceWishes(db, participation.id, list);
-  await tellRequesterIfAsked(event, ctx);
+  await announceHints(event, ctx, hadHints);
   return {
     wishes: list.map(({ label, url }) => ({ label, url })),
     maxWishes: rules.maxWishes,

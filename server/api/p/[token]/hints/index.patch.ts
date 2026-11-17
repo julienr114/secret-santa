@@ -1,7 +1,11 @@
 import { z } from 'zod';
-import { findPortrait, savePortrait } from '#server/database/hints';
+import {
+  findPortrait,
+  savePortrait,
+  participationHasHints,
+} from '#server/database/hints';
 import { requirePersonalLink } from '#server/http/personal';
-import { hintsPayload, tellRequesterIfAsked } from '#server/http/hints';
+import { hintsPayload, announceHints } from '#server/http/hints';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { applyPortraitPatch, canEditHints } from '#server/utils/hints';
@@ -22,7 +26,8 @@ export default defineEventHandler(async (event) => {
   const portrait = unwrap(
     applyPortraitPatch(await findPortrait(db, participation.id), patch),
   );
+  const hadHints = await participationHasHints(db, participation.id);
   await savePortrait(db, participation.id, portrait);
-  await tellRequesterIfAsked(event, ctx);
+  await announceHints(event, ctx, hadHints);
   return hintsPayload(ctx);
 });

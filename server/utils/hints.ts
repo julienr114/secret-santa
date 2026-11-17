@@ -119,18 +119,6 @@ export const canRequestHints = (state: {
   return ok(true);
 };
 
-/**
- * Whether saving hints is the moment to write to the one who asked: there
- * is a request nobody answered yet, and there are hints now.
- * @param request - The request on this participation, if any.
- * @param hasHintsNow - Whether the participant has hints after the save.
- * @returns True once, when the hints arrive.
- */
-export const shouldTellRequester = (
-  request: { answeredAt: string | null } | null,
-  hasHintsNow: boolean,
-): boolean => Boolean(request && !request.answeredAt && hasHintsNow);
-
 /** The hints of a receiver, as their giver sees them (lot 16 bis). */
 export type GiverHintsState = 'none' | 'some' | 'new';
 

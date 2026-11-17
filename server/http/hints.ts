@@ -7,6 +7,7 @@ import {
   findPortrait,
   findPreviousHints,
   markHintRequestAnswered,
+  markHintsAnnounced,
   participationHasHints,
 } from '#server/database/hints';
 import { listWishes } from '#server/database/wishes';
@@ -19,7 +20,7 @@ import {
   buildHintsArrivedEmail,
   canEditHints,
   canEditIdeas,
-  shouldTellRequester,
+  shouldAnnounceHints,
 } from '#server/utils/hints';
 import type { Email } from '#server/utils/messages';
 import { isPortraitEmpty } from '#shared/utils/hints';
@@ -100,34 +101,56 @@ export const emailParticipant = async (
 };
 
 /**
- * After a participant saved hints: if someone asked and these are the
- * first, the one who asked gets an email, once. Who asked is not stored:
- * the giver is found again by decrypting the draw, here only, and never
- * returned (README 6 bis.3).
+ * After a participant saved hints. Their banner « quelqu'un demande des
+ * pistes » goes once there are hints. Their giver gets « des pistes sont
+ * arrivées » the first time hints appear after the giver discovered
+ * their result, asked or not; once per draw, never for a change (lot
+ * 16 bis). Who gives is found again by decrypting the draw, here only,
+ * and never returned (README 6 bis.3).
+ * @param hadHints - Whether the participant had hints before this save.
  */
-export const tellRequesterIfAsked = async (
+export const announceHints = async (
   event: H3Event,
   ctx: PersonalContext,
+  hadHints: boolean,
 ): Promise<void> => {
   const { db, participation, edition, person, group } = ctx;
-  const request = await findHintRequest(db, participation.id);
+  const hasHintsNow = await participationHasHints(db, participation.id);
+  if (!hasHintsNow) return;
+  await markHintRequestAnswered(db, participation.id);
+  // The cheap checks first: the draw is only decrypted when it may count.
   if (
-    !shouldTellRequester(
-      request,
-      await participationHasHints(db, participation.id),
-    )
+    hadHints ||
+    edition.status !== 'drawn' ||
+    participation.hintsAnnouncedAt !== null
   ) {
     return;
   }
-  const [answered] = await markHintRequestAnswered(db, participation.id);
-  if (!answered) return;
   const giver = await findGiverParticipationId(
     db,
     edition.id,
     person.id,
     await dataKeyOf(event),
   );
-  if (!giver) return;
+  const [giverRow] = giver
+    ? await db
+        .select({ viewCount: participations.viewCount })
+        .from(participations)
+        .where(eq(participations.id, giver))
+        .limit(1)
+    : [];
+  if (
+    !giver ||
+    !shouldAnnounceHints({
+      hadHints,
+      hasHintsNow,
+      giverRevealed: (giverRow?.viewCount ?? 0) > 0,
+      alreadyAnnounced: false,
+    }) ||
+    !(await markHintsAnnounced(db, participation.id))
+  ) {
+    return;
+  }
   await emailParticipant(event, db, giver, (data, locale) =>
     buildHintsArrivedEmail(
       { ...data, editionLabel: edition.label, groupName: group.name },

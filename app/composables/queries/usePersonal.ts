@@ -1,3 +1,4 @@
+import type { GiverHintsState } from '#server/utils/hints';
 import type { JournalPersonCard } from '#server/database/journal';
 import { useQuery, type QueryKey } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
@@ -45,8 +46,10 @@ export type PersonalState = {
   hasHints: boolean;
   /** Has already discovered their result at least once. */
   revealed: boolean;
-  /** The receiver left hints; false until the first reveal. */
-  receiverHasHints: boolean;
+  /** The hints of the person they give to: none, some, or new. */
+  receiverHints: GiverHintsState;
+  /** « Lui demander des pistes » is still possible. */
+  canAskHints: boolean;
   /** Alerts of the journal since it was last opened from this page. */
   journalAlerts: number;
 };
@@ -59,6 +62,10 @@ export type GiverHints = {
   ideas: WishItem[];
   /** They already asked for hints. */
   requested: boolean;
+  /** Left or changed since the result was last opened (lot 16 bis). */
+  isNew: boolean;
+  /** When they last changed. */
+  updatedAt: string | null;
 };
 /** The page « Mes pistes de cadeaux ». */
 export type HintsPayload = {

@@ -6,7 +6,7 @@ import {
 } from '#server/database/hints';
 import { listWishes, replaceWishes } from '#server/database/wishes';
 import { requirePersonalLink } from '#server/http/personal';
-import { hintsPayload, tellRequesterIfAsked } from '#server/http/hints';
+import { hintsPayload, announceHints } from '#server/http/hints';
 import { notFound, unwrap } from '#server/http/errors';
 import { canEditHints } from '#server/utils/hints';
 
@@ -43,6 +43,6 @@ export default defineEventHandler(async (event) => {
         .map((idea, position) => ({ ...idea, position })),
     );
   }
-  await tellRequesterIfAsked(event, ctx);
+  await announceHints(event, ctx, false);
   return hintsPayload(ctx);
 });

@@ -194,7 +194,10 @@ const card = computed(() => {
       return {
         title: t('participant.home.seen.title'),
         body: t('participant.home.seen.body'),
-        hint: state?.receiverHasHints ? t('hints.result.waiting') : '',
+        hint:
+          state && state.receiverHints !== 'none'
+            ? t('hints.result.waiting')
+            : '',
       };
     default:
       return {

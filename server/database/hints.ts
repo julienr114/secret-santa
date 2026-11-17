@@ -18,6 +18,8 @@ import {
   wishes,
 } from './schema';
 import { listWishes } from './wishes';
+import { findReceiverParticipationId } from './draw';
+import { giverHintsState, type GiverHintsState } from '#server/utils/hints';
 import { touchHints } from './participations';
 import { nowIso } from '#server/http/context';
 import {
@@ -278,4 +280,49 @@ export const giverHints = async (
     findHintRequest(db, receiverParticipationId),
   ]);
   return { mode, portrait, ideas, requested: Boolean(request) };
+};
+
+/**
+ * The hints of the person a giver gives to, as the giver sees them (lot
+ * 16 bis): none, some or new since they last opened their result, with
+ * the receiver's participation and when their hints last changed. Found
+ * by decrypting the giver's own line of the draw; never returned as such.
+ */
+export const receiverHintsOf = async (
+  db: Db,
+  giver: {
+    editionId: string;
+    personId: string;
+    lastViewedAt: string | null;
+  },
+  dataKey: CryptoKey,
+): Promise<{
+  state: GiverHintsState;
+  receiverParticipationId: string | null;
+  hintsUpdatedAt: string | null;
+}> => {
+  const receiverParticipationId = await findReceiverParticipationId(
+    db,
+    giver.editionId,
+    giver.personId,
+    dataKey,
+  );
+  if (!receiverParticipationId) {
+    return { state: 'none', receiverParticipationId, hintsUpdatedAt: null };
+  }
+  const [row] = await db
+    .select({ hintsUpdatedAt: participations.hintsUpdatedAt })
+    .from(participations)
+    .where(eq(participations.id, receiverParticipationId))
+    .limit(1);
+  const hintsUpdatedAt = row?.hintsUpdatedAt ?? null;
+  return {
+    state: giverHintsState({
+      hasHints: await participationHasHints(db, receiverParticipationId),
+      hintsUpdatedAt,
+      lastOpenedAt: giver.lastViewedAt,
+    }),
+    receiverParticipationId,
+    hintsUpdatedAt,
+  };
 };

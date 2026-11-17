@@ -1,4 +1,7 @@
-import { participationsWithHints } from '#server/database/hints';
+import {
+  participationsWithHints,
+  receiverHintsOf,
+} from '#server/database/hints';
 import { useDb } from '#server/database/client';
 import { findAccountById } from '#server/database/accounts';
 import { listOrganizedGroups, publicGroup } from '#server/database/groups';
@@ -103,7 +106,25 @@ export default defineEventHandler(async (event) => {
           revealed: participation.viewCount > 0,
           hintsOn: rules.giftHints !== 'none',
           hasHints: withHints.has(participation.id),
-          receiverHints: 'none' as const,
+          // New hints from the person they give to (lot 16 bis); only
+          // for a draw going on, once they have discovered their result.
+          receiverHints:
+            dataKey &&
+            edition.status === 'drawn' &&
+            participation.viewCount > 0 &&
+            rules.giftHints !== 'none'
+              ? (
+                  await receiverHintsOf(
+                    db,
+                    {
+                      editionId: edition.id,
+                      personId: person.id,
+                      lastViewedAt: participation.lastViewedAt,
+                    },
+                    dataKey,
+                  )
+                ).state
+              : ('none' as const),
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),

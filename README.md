@@ -831,6 +831,15 @@ secret-santa/
 7. L'application est servie sur `https://under-the-tree.party` (domaine personnalisé du Worker, déclaré dans `wrangler.toml`) et reste joignable sur `https://secret-santa.julienr114.workers.dev`.
 8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des organisateurs.
 
+**Un onglet resté ouvert après un déploiement** (Correction 11, 17 novembre 2026) : les fichiers de code (`/_nuxt/…`) changent de nom à chaque déploiement et les anciens disparaissent. Pour qu'un onglet ne reste pas sur l'ancienne version, avec des appuis sans effet :
+
+- les pages HTML partent en `Cache-Control: no-cache` (`server/plugins/htmlCache.ts`), sauf celles qui ont déjà leur `no-store` ;
+- le fichier qui annonce une nouvelle version (`/_nuxt/builds/latest.json`) est en `no-cache` aussi. Nitro lui donnait à la fois une seconde et l'année des autres fichiers, que Cloudflare joignait : une règle ajoutée à la fin de `_headers` au build (`nuxt.config.ts`) retire les deux ;
+- les fichiers de code gardent leur cache d'un an ;
+- Nuxt recharge la page quand le code d'un écran manque, ou à la navigation suivante quand une nouvelle version est annoncée (comportement par défaut, gardé).
+
+Testé par `tests/e2e/deploy.spec.ts`.
+
 Développement local : base D1 locale émulée par Miniflare (`nitro dev`), état dans `.wrangler/state/v3`.
 
 ---

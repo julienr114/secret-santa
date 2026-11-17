@@ -515,9 +515,9 @@ Ce que le README ne tranche pas, à noter en section 6 plutôt que de décider s
 
 Constaté par Julien le 17 novembre 2026, après le déploiement des lots 16 et 16 bis : dans Chrome sur iPhone, des clics ne font rien et des icônes manquent, alors que Safari et l'ordinateur vont bien. Cause : l'onglet garde le code de la version précédente ; chaque écran charge son propre fichier de code (`/_nuxt/…`), dont le nom change à chaque déploiement, et les anciens fichiers n'existent plus sur le serveur (404). La page `/` est envoyée sans en-tête de cache.
 
-- [ ] **Les pages se revérifient toujours** : `Cache-Control: no-cache` sur les pages HTML (dans `routeRules` de `nuxt.config.ts`), sans toucher aux fichiers de `/_nuxt/`, qui gardent leur cache d'un an. Les pages `/p/**` gardent leur `no-store`.
-- [ ] **Un fichier de code disparu recharge la page** au lieu de ne rien faire : option de Nuxt pour les erreurs de chargement d'un écran (`experimental.emitRouteChunkError`), et vérifier que les icônes suivent.
-- [ ] Un test de bout en bout qui simule un fichier disparu, et l'essai sur Chrome iPhone après le déploiement suivant.
+- [x] **Les pages se revérifient toujours** : `Cache-Control: no-cache` sur les pages HTML, sans toucher aux fichiers de `/_nuxt/`, qui gardent leur cache d'un an. Les pages `/p/**` gardent leur `no-store`. *Fait par un plugin serveur (`server/plugins/htmlCache.ts`) plutôt que par `routeRules` : une règle `/**` serait aussi passée dans le `_headers` de Cloudflare, et jointe à l'année des fichiers de code.*
+- [x] **Un fichier de code disparu recharge la page** au lieu de ne rien faire. `experimental.emitRouteChunkError` vaut déjà `automatic` par défaut : Nuxt recharge quand le code d'un écran manque, et à la navigation suivante quand le fichier `/_nuxt/builds/latest.json` annonce une nouvelle version. *Trouvé en plus* : ce fichier partait avec `max-age=31536000, immutable, max-age=1` (deux règles de `_headers` jointes), si bien qu'aucun onglet n'apprenait un déploiement. Une règle ajoutée à la fin de `_headers` au build le remet en `no-cache`. Les icônes n'ont pas de fichier à elles : elles viennent de `/api/_nuxt_icon` par leur nom, et reviennent avec le rechargement.
+- [x] Un test de bout en bout qui simule un fichier disparu (`tests/e2e/deploy.spec.ts`), et vérifie les en-têtes. *Reste l'essai sur Chrome iPhone après le déploiement.* Un onglet resté sur la version d'avant cette correction ne verra pas le changement tout seul : le fermer une fois.
 
 ## 6. Questions pour Julien
 

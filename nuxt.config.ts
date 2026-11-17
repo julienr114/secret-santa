@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs';
+import { appendFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { defineNuxtConfig } from 'nuxt/config';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -54,6 +57,25 @@ export default defineNuxtConfig({
   // Cloudflare Workers. In dev, Nitro emulates the bindings declared in
   // wrangler.toml through Miniflare (state in .wrangler/state/v3).
   nitro: { preset: 'cloudflare_module' },
+  hooks: {
+    // The file that tells an open tab a new version is out must be asked
+    // again each time (Correction 11). Nitro gives it, through the
+    // `_headers` of Cloudflare, both « one second » and the year of the
+    // other code files, joined: the year won, and no tab ever learnt of a
+    // deployment. A rule at the end of the file takes both off, then sets
+    // its own (Cloudflare applies the rules in order). Added after the
+    // preset's own hook, which writes the file.
+    'nitro:init': (nitro) => {
+      nitro.hooks.hook('compiled', async () => {
+        const file = join(nitro.options.output.publicDir, '_headers');
+        if (!existsSync(file)) return;
+        await appendFile(
+          file,
+          '\n/_nuxt/builds/latest.json\n  ! cache-control\n  cache-control: no-cache\n',
+        );
+      });
+    },
+  },
   routeRules: {
     '/**': { headers: securityHeaders },
     '/p/**': { headers: personalHeaders },

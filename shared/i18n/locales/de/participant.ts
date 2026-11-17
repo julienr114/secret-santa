@@ -66,6 +66,10 @@ export default {
     journal: {
       title: 'Protokoll der Gruppe',
       subtitle: 'Alles, was passiert ist, für alle sichtbar',
+      alerts: {
+        one: '{count} Hinweis seit deinem letzten Besuch',
+        other: '{count} Hinweise seit deinem letzten Besuch',
+      },
     },
   },
   reveal: {

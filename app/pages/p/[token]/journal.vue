@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { useJournalQuery } from '~/composables/queries/usePersonal';
+import {
+  useJournalQuery,
+  useJournalSeenMutation,
+} from '~/composables/queries/usePersonal';
 
 // The group's journal, as every participant can read it (README section 9).
+// Opening it clears the alerts counted on the draw page.
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const journal = useJournalQuery(token);
+const seen = useJournalSeenMutation(token);
+onMounted(() => seen.mutate(undefined));
 const { t } = useT();
 </script>
 

@@ -66,6 +66,10 @@ export default {
     journal: {
       title: 'Group journal',
       subtitle: 'Everything that happened, for all to see',
+      alerts: {
+        one: '{count} alert since your last visit',
+        other: '{count} alerts since your last visit',
+      },
     },
   },
   reveal: {

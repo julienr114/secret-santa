@@ -121,6 +121,9 @@ export const participations = sqliteTable(
     viewCount: integer('view_count').notNull().default(0),
     firstViewedAt: text('first_viewed_at'),
     lastViewedAt: text('last_viewed_at'),
+    // When the participant last opened the journal from their page: the
+    // alerts since then are counted on it (lot 12 of the redesign).
+    journalSeenAt: text('journal_seen_at'),
   },
   (t) => [
     uniqueIndex('participations_edition_person_idx').on(

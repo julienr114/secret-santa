@@ -510,6 +510,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `link_copied_at` | text nullable | |
 | `view_count` | integer | Consultations du résultat |
 | `first_viewed_at`, `last_viewed_at` | text nullable | |
+| `journal_seen_at` | text nullable | Dernière ouverture du journal depuis la page du tirage (migration `0016`) : les alertes d'après sont comptées sur la page |
 
 ### `assignments`
 | Colonne | Type | Notes |
@@ -557,7 +558,7 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 
 | Route | Écran |
 |---|---|
-| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
+| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. La ligne « Journal du groupe » dit « 1 alerte depuis ta dernière visite », avec un point moutarde, quand un résultat a été consulté par l'organisateur dans le groupe ou que son lien a été régénéré depuis sa dernière ouverture du journal (depuis le tirage s'il ne l'a jamais ouvert ; lot 12, `unseenAlerts`). Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
 | `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées et enregistrement (voir 6 bis.4) |
 | `/p/[token]/journal` | Journal du groupe, le même que celui de l'organisateur (section 9) : « L'essentiel » ou « Tout », l'édition, une frise par jour, les lignes répétées repliées, les alertes expliquées, « À quoi sert-il ? » |
 | `/rejoindre/[code]` | Lien d'invitation d'un groupe (22.2), quatre états : l'invitation et l'adresse ; le prénom et « Rejoindre le groupe » ; la bienvenue (dans le tirage à préparer, ou dans le groupe seulement si le tirage est fait) ; le lien fermé (plus de place, date passée, désactivé ou inconnu) |
@@ -625,12 +626,13 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, liste de souhaits active ou non. Jamais le résultat. N'est pas compté comme une consultation |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, liste de souhaits active ou non. Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
 | `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Compte et journalise la consultation |
 | `GET /api/p/[token]/wishes` | Sa propre liste de souhaits |
 | `PUT /api/p/[token]/wishes` | Corps : la liste complète. Remplace la liste, journalise. Refusé si l'édition est clôturée ou la règle inactive |
 | `PUT /api/p/[token]/avatar` | Son icône (emoji et couleur), journalisé. Refusé si l'édition est clôturée |
 | `PUT /api/p/[token]/language` | Sa langue préférée, journalisé |
+| `POST /api/p/[token]/journal-seen` | Le participant ouvre le journal : le compte des alertes de sa page repart de maintenant |
 | `GET /api/p/[token]/journal` | Journal du groupe, dans sa langue : les lignes (avec leur personne, et ses lignes à elle à la deuxième personne), les personnes nommées avec leur icône, et `me` |
 
 ### Admin

@@ -328,8 +328,22 @@ const card = computed(() => {
           :to="`/p/${token}/journal`"
           icon="i-lucide-scroll-text"
           :title="t('participant.home.journal.title')"
-          :subtitle="t('participant.home.journal.subtitle')"
-        />
+          :subtitle="
+            me.journalAlerts > 0
+              ? t('participant.home.journal.alerts', {
+                  count: me.journalAlerts,
+                })
+              : t('participant.home.journal.subtitle')
+          "
+          data-testid="journal-row"
+        >
+          <template v-if="me.journalAlerts > 0" #trailing>
+            <span
+              class="size-3 shrink-0 rounded-full bg-alert shadow-[0_0_0_3px_var(--color-warning-soft)]"
+              aria-hidden="true"
+            />
+          </template>
+        </UiListItem>
       </UiList>
 
       <UiCard

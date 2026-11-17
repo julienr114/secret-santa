@@ -17,6 +17,7 @@ const ADMIN = `/api/admin/${SLUG}`;
 const NAMES = ['Alice', 'Bruno', 'Chloé'];
 
 type Participant = {
+  id: string;
   firstName: string;
   participationId: string;
   viewCount: number;
@@ -289,6 +290,28 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   ).toBeVisible();
   await expect(page.getByText('Tu as découvert ton résultat')).toHaveCount(1);
   await expect(page.getByText('Alice a découvert son résultat')).toHaveCount(0);
+
+  // The organiser looks at Bruno's result: on her page, Alice is told
+  // there is an alert since she last opened the journal, until she does.
+  const bruno = await participantNamed('Bruno');
+  await post(`${ADMIN}/editions/${state.editionId}/reveal-one`, {
+    personId: bruno.id,
+    sentence: 'JE VEUX VOIR LE TIRAGE',
+  });
+  const alerts = async () =>
+    (await (await page.request.get(`/api/p/${tokenOf('Alice')}`)).json())
+      .journalAlerts;
+  expect(await alerts()).toBe(1);
+  await open(page, `/p/${tokenOf('Alice')}`);
+  await expect(page.getByTestId('journal-row')).toContainText(
+    '1 alerte depuis ta dernière visite',
+  );
+  const seen = page.waitForResponse(
+    (r) => r.url().endsWith('/journal-seen') && r.ok(),
+  );
+  await page.getByTestId('journal-row').click();
+  await seen;
+  expect(await alerts()).toBe(0);
 });
 
 test('a cancelled draw keeps the wish lists and resets the counters', async ({

@@ -64,6 +64,10 @@ export default {
     journal: {
       title: 'Journal du groupe',
       subtitle: "Tout ce qui s'est passé, à la vue de tous",
+      alerts: {
+        one: '{count} alerte depuis ta dernière visite',
+        other: '{count} alertes depuis ta dernière visite',
+      },
     },
   },
   reveal: {

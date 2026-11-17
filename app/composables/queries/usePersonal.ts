@@ -38,6 +38,8 @@ export type PersonalState = {
   revealed: boolean;
   /** Ideas in the receiver's list; 0 until the first reveal. */
   receiverWishesCount: number;
+  /** Alerts of the journal since it was last opened from this page. */
+  journalAlerts: number;
 };
 export type WishItem = { label: string; url: string | null };
 export type WishesPayload = {
@@ -146,6 +148,13 @@ export const useSaveLanguageMutation = (token: Token) =>
   useApiMutation<{ language: Locale }, Locale>(
     (language) =>
       api(`${base(token)}/language`, { method: 'PUT', body: { language } }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/** Opening the journal: the alerts on the page start again from now. */
+export const useJournalSeenMutation = (token: Token) =>
+  useApiMutation<{ ok: true }, undefined>(
+    () => api(`${base(token)}/journal-seen`, { method: 'POST' }),
     () => [keys.personal(toValue(token))],
   );
 

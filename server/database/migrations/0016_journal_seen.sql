@@ -1,0 +1,1 @@
+ALTER TABLE `participations` ADD `journal_seen_at` text;

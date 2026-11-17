@@ -257,3 +257,29 @@ export const journalEntries = (
           : null,
     }));
 };
+
+// --- Alerts since the last visit (lot 12, README 22.15) -------------------
+
+/** What a participant is told about on their page: a result looked at, or their link renewed. */
+const ACCESS_ALERTS = new Set<string>(['result_revealed', 'results_revealed']);
+
+/**
+ * How many alerts of the journal a participant has not seen: every
+ * access to a result in the group, and the renewal of their own link,
+ * since they last opened the journal.
+ * @param rows - Events of the group.
+ * @param me - The participant's person.
+ * @param since - When they last opened the journal (or, never, the draw).
+ * @returns The number of alerts after `since`.
+ */
+export const unseenAlerts = (
+  rows: { type: string; personId: string | null; createdAt: string }[],
+  me: string,
+  since: string,
+): number =>
+  rows.filter(
+    (row) =>
+      row.createdAt > since &&
+      (ACCESS_ALERTS.has(row.type) ||
+        (row.type === 'link_regenerated' && row.personId === me)),
+  ).length;

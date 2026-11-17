@@ -1,11 +1,12 @@
-import { count, eq } from 'drizzle-orm';
-import { wishes } from '#server/database/schema';
+import { and, count, eq, gt, inArray } from 'drizzle-orm';
+import { auditLog, wishes } from '#server/database/schema';
 import { findReceiverParticipationId } from '#server/database/draw';
 import { dataKeyOf } from '#server/http/context';
 import { requirePersonalLink } from '#server/http/personal';
 import { optionalAccount } from '#server/http/auth';
 import { findAccountById } from '#server/database/accounts';
 import { avatarOf } from '#server/utils/avatars';
+import { unseenAlerts } from '#server/utils/audit';
 import { localeOf } from '#shared/i18n';
 import {
   canEditAvatar,
@@ -56,6 +57,28 @@ export default defineEventHandler(async (event) => {
       : person.email
         ? 'other'
         : 'free';
+  // Alerts of the journal since the participant last opened it from
+  // here; never opened, since the draw.
+  const since =
+    participation.journalSeenAt ?? edition.drawnAt ?? edition.createdAt;
+  const alertRows = await db
+    .select({
+      type: auditLog.type,
+      personId: auditLog.personId,
+      createdAt: auditLog.createdAt,
+    })
+    .from(auditLog)
+    .where(
+      and(
+        eq(auditLog.groupId, group.id),
+        gt(auditLog.createdAt, since),
+        inArray(auditLog.type, [
+          'result_revealed',
+          'results_revealed',
+          'link_regenerated',
+        ]),
+      ),
+    );
   return {
     linked,
     // Their own address, if the organiser gave one: to create an account
@@ -76,5 +99,6 @@ export default defineEventHandler(async (event) => {
     wishesCount: row?.n ?? 0,
     revealed,
     receiverWishesCount: receiverRow?.n ?? 0,
+    journalAlerts: unseenAlerts(alertRows, person.id, since),
   };
 });

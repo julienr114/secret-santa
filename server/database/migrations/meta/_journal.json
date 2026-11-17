@@ -113,6 +113,13 @@
       "when": 1794732808908,
       "tag": "0015_edition_preparing",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1794923454847,
+      "tag": "0016_journal_seen",
+      "breakpoints": true
     }
   ]
 }

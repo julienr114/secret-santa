@@ -5,6 +5,7 @@ import {
   describeEvent,
   journalEntries,
   keyPeople,
+  unseenAlerts,
   sanitizeMeta,
   type Meta,
 } from './audit';
@@ -359,5 +360,26 @@ describe('keyPeople', () => {
       ['p1', 'Tom'],
     ]);
     expect(keyed.me).toBe('p1');
+  });
+});
+
+describe('unseenAlerts', () => {
+  const at = (minute: number) =>
+    `2026-12-01T10:${String(minute).padStart(2, '0')}:00.000Z`;
+  const rows = [
+    { type: 'result_revealed', personId: 'p2', createdAt: at(30) },
+    { type: 'link_regenerated', personId: 'p1', createdAt: at(20) },
+    { type: 'link_regenerated', personId: 'p2', createdAt: at(15) },
+    { type: 'result_viewed', personId: 'p1', createdAt: at(12) },
+    { type: 'results_revealed', personId: null, createdAt: at(5) },
+  ];
+
+  it('counts any access to a result, and the renewal of my own link', () => {
+    expect(unseenAlerts(rows, 'p1', at(0))).toBe(3);
+  });
+
+  it('counts only what happened after the last visit', () => {
+    expect(unseenAlerts(rows, 'p1', at(20))).toBe(1);
+    expect(unseenAlerts(rows, 'p1', at(30))).toBe(0);
   });
 });

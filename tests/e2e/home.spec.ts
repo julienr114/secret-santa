@@ -53,3 +53,74 @@ test('the home tells an organiser where their edition stands', async ({
   await admin.dispose();
   await organizer.dispose();
 });
+
+test('the home says when the journal of a draw has news', async ({
+  page,
+  playwright,
+  baseURL,
+}) => {
+  const SLUG2 = 'famille-signal';
+  const AT = `/api/admin/${SLUG2}`;
+  const ZOE = 'zoe-signal@example.com';
+  const admin = await playwright.request.newContext({ baseURL });
+  await apiLogin(admin, SUPER);
+  await admin.post('/api/admin/groups', {
+    data: { slug: SLUG2, name: 'Famille Signal' },
+  });
+  const ids: Record<string, string> = {};
+  for (const [firstName, email] of [
+    ['Zoé', ZOE],
+    ['Yann', null],
+    ['Xavier', null],
+  ] as const) {
+    const { person } = await (
+      await admin.post(`${AT}/persons`, {
+        data: { firstName, ...(email ? { email } : {}) },
+      })
+    ).json();
+    ids[firstName] = person.id;
+  }
+  const { edition } = await (
+    await admin.post(`${AT}/editions`, {
+      data: { label: 'Noël signal', year: 2026, eventDate: '2099-12-24' },
+    })
+  ).json();
+  await admin.post(`${AT}/editions/${edition.id}/draw`);
+  const { participants } = await (
+    await admin.get(`${AT}/editions/${edition.id}`)
+  ).json();
+  const zoe = participants.find(
+    (p: { firstName: string }) => p.firstName === 'Zoé',
+  );
+  // Her link is renewed: she alone is told.
+  await admin.post(`${AT}/participations/${zoe.participationId}/regenerate`);
+
+  await apiLogin(page.request, ZOE);
+  const signal = async () =>
+    (await (await page.request.get('/api/auth/home')).json()).draws[0].journal;
+  expect(await signal()).toMatchObject({
+    count: 1,
+    alert: { type: 'link_regenerated' },
+  });
+  await page.goto('/');
+  await expect(page.getByTestId('journal-signal')).toContainText(
+    /Du nouveau au journal\. Ton lien a été régénéré le .+\./,
+  );
+
+  // The organiser looks at Yann's result: two alerts, one line.
+  await admin.post(`${AT}/editions/${edition.id}/reveal-one`, {
+    data: { personId: ids.Yann, sentence: 'JE VEUX VOIR LE TIRAGE' },
+  });
+  await page.reload();
+  await expect(page.getByTestId('journal-signal')).toContainText(
+    '2 alertes depuis ta dernière visite.',
+  );
+  // Opening the journal clears it.
+  const seen = page.waitForResponse(
+    (r) => r.url().endsWith('/journal-seen') && r.ok(),
+  );
+  await page.getByTestId('journal-signal').click();
+  await seen;
+  expect(await signal()).toBeNull();
+  await admin.dispose();
+});

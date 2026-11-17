@@ -5,7 +5,11 @@ import type { HomeDraw } from '~/composables/queries/useAuth';
 // One group on the home of an account that organises: its name (with
 // "Organisateur" when the account organises it), the edition and the
 // party, then the account's own draw and the way to manage the edition.
-const props = defineProps<{ card: GroupCard<HomeDraw> }>();
+const props = defineProps<{
+  card: GroupCard<HomeDraw>;
+  /** The draw whose journal news the card on top already says. */
+  quietDrawId?: string | null;
+}>();
 const emit = defineEmits<{ open: [path: string] }>();
 const { t } = useT();
 const party = usePartyText();
@@ -80,6 +84,7 @@ const manageTo = computed(() =>
         :draw="card.draw"
         :title="t('auth.home.myDraw')"
         no-party
+        :quiet-journal="card.draw.id === quietDrawId"
         @open="emit('open', card.draw.path)"
       />
       <UiListItem

@@ -55,6 +55,15 @@ const topCard = computed(() =>
     ? null
     : action.value,
 );
+/** The draw the top card is about, if any: its journal news goes there. */
+const topDraw = computed(() => {
+  const to = topCard.value?.to;
+  return to
+    ? (draws.value.find(
+        (draw) => to === draw.path || to.startsWith(`${draw.path}/`),
+      ) ?? null)
+    : null;
+});
 /** The account has several groups: the top card names its own. */
 const named = computed(
   () =>
@@ -129,6 +138,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
         :action="topCard"
         :named="named"
         :oldest-request="data?.oldestRequest"
+        :signal-draw="topDraw"
         @later="dismiss"
       />
 
@@ -161,6 +171,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
             v-for="draw in sortedDraws"
             :key="draw.id"
             :draw="draw"
+            :quiet-journal="draw.id === topDraw?.id"
             @open="onOpen(draw.path)"
           />
         </UiList>
@@ -180,6 +191,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
             v-for="card in cards"
             :key="card.groupId"
             :card="card"
+            :quiet-draw-id="topDraw?.id"
             @open="onOpen"
           />
         </section>

@@ -200,6 +200,16 @@ export default {
     requestSentOn:
       'Gesendet am {date}. Ein Administrator liest sie und antwortet dir per E-Mail.',
     requestNote: 'Ein Wort vom Administrator',
+    journalSignal: {
+      lead: 'Neues im Protokoll.',
+      row: 'Neues im Protokoll',
+      link_regenerated: 'Dein Link wurde am {date} erneuert.',
+      result_revealed: 'Der Organisator hat am {date} ein Ergebnis angesehen.',
+      results_revealed:
+        'Die Ergebnisse wurden am {date} vor der Feier aufgedeckt.',
+      draw_cancelled: 'Die Auslosung wurde am {date} aufgehoben.',
+      several: '{count} Hinweise seit deinem letzten Besuch.',
+    },
     requestRefusedTitle: 'Deine Anfrage vom {date} wurde abgelehnt',
     requestAgain: 'Eine neue Anfrage stellen',
     adminHint: 'Konten, Gruppen, Anfragen',

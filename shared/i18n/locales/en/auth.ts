@@ -196,6 +196,16 @@ export default {
     requestSentOn:
       'Sent on {date}. An administrator reads it and answers you by email.',
     requestNote: 'A word from the administrator',
+    journalSignal: {
+      lead: 'New in the journal.',
+      row: 'New in the journal',
+      link_regenerated: 'Your link was renewed on {date}.',
+      result_revealed: 'The organiser looked at a result on {date}.',
+      results_revealed:
+        'The results were revealed before the party, on {date}.',
+      draw_cancelled: 'The draw was cancelled on {date}.',
+      several: '{count} alerts since your last visit.',
+    },
     requestRefusedTitle: 'Your request of {date} was refused',
     requestAgain: 'Make another request',
     adminHint: 'Accounts, groups, requests',

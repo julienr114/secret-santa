@@ -4,7 +4,8 @@ import type { HomeDraw } from '~/composables/queries/useAuth';
 
 // The one draw of an account that only takes part in one, as the top
 // card of its home: its envelope, where it stands, the day of the party
-// (all of it opens the draw), and the button of the moment.
+// (all of it opens the draw), the button of the moment, and « Du nouveau
+// au journal » when an alert waits (README 22.15).
 const props = defineProps<{ draw: HomeDraw }>();
 const emit = defineEmits<{ open: [] }>();
 const { t } = useT();
@@ -74,6 +75,12 @@ const state = computed(() => {
       class="min-h-14 justify-center font-bold"
       :label="state.button"
       @click="emit('open')"
+    />
+    <HomeJournalSignal
+      v-if="draw.journal"
+      :signal="draw.journal"
+      :path="draw.path"
+      @open="emit('open')"
     />
   </UiCard>
 </template>

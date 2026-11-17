@@ -5,6 +5,7 @@ import {
   describeEvent,
   journalEntries,
   keyPeople,
+  journalSignal,
   unseenAlerts,
   sanitizeMeta,
   type Meta,
@@ -367,13 +368,13 @@ describe('unseenAlerts', () => {
   const at = (minute: number) =>
     `2026-12-01T10:${String(minute).padStart(2, '0')}:00.000Z`;
   const rows = [
-    { type: 'result_revealed', personId: 'p2', createdAt: at(30) },
-    { type: 'link_regenerated', personId: 'p1', createdAt: at(20) },
-    { type: 'link_regenerated', personId: 'p2', createdAt: at(15) },
-    { type: 'result_viewed', personId: 'p1', createdAt: at(12) },
-    { type: 'results_revealed', personId: null, createdAt: at(5) },
-    { type: 'draw_cancelled', personId: null, createdAt: at(3) },
-    { type: 'draw_revealed', personId: null, createdAt: at(2) },
+    { id: 'u1', type: 'result_revealed', personId: 'p2', createdAt: at(30) },
+    { id: 'u2', type: 'link_regenerated', personId: 'p1', createdAt: at(20) },
+    { id: 'u3', type: 'link_regenerated', personId: 'p2', createdAt: at(15) },
+    { id: 'u4', type: 'result_viewed', personId: 'p1', createdAt: at(12) },
+    { id: 'u5', type: 'results_revealed', personId: null, createdAt: at(5) },
+    { id: 'u6', type: 'draw_cancelled', personId: null, createdAt: at(3) },
+    { id: 'u7', type: 'draw_revealed', personId: null, createdAt: at(2) },
   ];
 
   it('counts what README 22.15 lists, and the renewal of my own link', () => {
@@ -386,5 +387,59 @@ describe('unseenAlerts', () => {
   it('counts only what happened after the last visit', () => {
     expect(unseenAlerts(rows, 'p1', at(20))).toBe(1);
     expect(unseenAlerts(rows, 'p1', at(30))).toBe(0);
+  });
+});
+
+describe('journalSignal', () => {
+  const row = (
+    id: string,
+    type: string,
+    personId: string | null,
+    minute: number,
+  ) => ({
+    id,
+    type,
+    personId,
+    createdAt: `2026-12-01T10:${String(minute).padStart(2, '0')}:00.000Z`,
+  });
+  const since = '2026-12-01T10:00:00.000Z';
+
+  it('says nothing when no alert waits', () => {
+    expect(
+      journalSignal([row('a', 'result_viewed', 'p1', 5)], 'p1', since),
+    ).toBeNull();
+  });
+
+  it('names the alert when it is alone', () => {
+    expect(
+      journalSignal(
+        [
+          row('a', 'link_regenerated', 'p1', 5),
+          row('b', 'link_regenerated', 'p2', 6),
+        ],
+        'p1',
+        since,
+      ),
+    ).toEqual({
+      count: 1,
+      alert: {
+        id: 'a',
+        type: 'link_regenerated',
+        createdAt: row('a', '', null, 5).createdAt,
+      },
+    });
+  });
+
+  it('only counts several', () => {
+    expect(
+      journalSignal(
+        [
+          row('a', 'draw_cancelled', null, 5),
+          row('b', 'result_revealed', 'p3', 7),
+        ],
+        'p1',
+        since,
+      ),
+    ).toEqual({ count: 2, alert: null });
   });
 });

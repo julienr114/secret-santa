@@ -272,23 +272,78 @@ const GROUP_ALERTS = new Set<string>([
   'draw_cancelled',
 ]);
 
+/** The kinds of event the participant is told about, as stored. */
+export const ALERT_TYPES = [...GROUP_ALERTS, 'link_regenerated'];
+
+/** An event of the journal, as the alerts need it. */
+export type AlertRow = {
+  id: string;
+  type: string;
+  personId: string | null;
+  createdAt: string;
+};
+
 /**
- * How many alerts of the journal a participant has not seen since they
- * last opened it: an access to a result, the results revealed before the
+ * The alerts of the journal a participant has not seen since they last
+ * opened it: an access to a result, the results revealed before the
  * party, a cancelled draw, and the renewal of their own link.
+ * @param rows - Events of the group.
+ * @param me - The participant's person.
+ * @param since - When they last opened the journal (or, never, the draw).
+ * @returns Those alerts, newest first.
+ */
+export const unseenAlertRows = <R extends AlertRow>(
+  rows: R[],
+  me: string,
+  since: string,
+): R[] =>
+  rows
+    .filter(
+      (row) =>
+        row.createdAt > since &&
+        (GROUP_ALERTS.has(row.type) ||
+          (row.type === 'link_regenerated' && row.personId === me)),
+    )
+    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+/**
+ * How many alerts of the journal a participant has not seen.
  * @param rows - Events of the group.
  * @param me - The participant's person.
  * @param since - When they last opened the journal (or, never, the draw).
  * @returns The number of alerts after `since`.
  */
-export const unseenAlerts = (
-  rows: { type: string; personId: string | null; createdAt: string }[],
+export const unseenAlerts = (rows: AlertRow[], me: string, since: string) =>
+  unseenAlertRows(rows, me, since).length;
+
+/** What the home says of a draw's journal (README 22.15, lot 14). */
+export type JournalSignal = {
+  count: number;
+  /** The alert, when there is only one: its kind, day and line. */
+  alert: { id: string; type: string; createdAt: string } | null;
+};
+
+/**
+ * The signal of a draw's journal on the home: how many alerts wait, and
+ * which one when it is alone.
+ * @param rows - Events of the group.
+ * @param me - The participant's person.
+ * @param since - When they last opened the journal (or, never, the draw).
+ * @returns The signal, or null when nothing waits.
+ */
+export const journalSignal = (
+  rows: AlertRow[],
   me: string,
   since: string,
-): number =>
-  rows.filter(
-    (row) =>
-      row.createdAt > since &&
-      (GROUP_ALERTS.has(row.type) ||
-        (row.type === 'link_regenerated' && row.personId === me)),
-  ).length;
+): JournalSignal | null => {
+  const unseen = unseenAlertRows(rows, me, since);
+  if (unseen.length === 0) return null;
+  const [only] = unseen;
+  return {
+    count: unseen.length,
+    alert:
+      unseen.length === 1 && only
+        ? { id: only.id, type: only.type, createdAt: only.createdAt }
+        : null,
+  };
+};

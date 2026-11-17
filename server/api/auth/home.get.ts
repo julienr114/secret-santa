@@ -17,7 +17,10 @@ import {
 import { loadDrawContext } from '#server/database/draw';
 import { requireAccount } from '#server/http/auth';
 import { dataKeyOf } from '#server/http/context';
+import { and, inArray } from 'drizzle-orm';
+import { auditLog } from '#server/database/schema';
 import { avatarOf } from '#server/utils/avatars';
+import { ALERT_TYPES, journalSignal } from '#server/utils/audit';
 import { decrypt } from '#server/utils/crypto';
 import { checkFeasibility } from '#server/utils/draw';
 import { nextStep } from '#server/utils/personal';
@@ -49,6 +52,27 @@ export default defineEventHandler(async (event) => {
     db,
     rows.map((row) => row.participation.id),
   );
+  // The alerts of the journals of the draws going on (README 22.15).
+  const going = rows.filter((row) => row.edition.status !== 'closed');
+  const groupIds = [...new Set(going.map((row) => row.edition.groupId))];
+  const alertRows =
+    groupIds.length === 0
+      ? []
+      : await db
+          .select({
+            id: auditLog.id,
+            groupId: auditLog.groupId,
+            type: auditLog.type,
+            personId: auditLog.personId,
+            createdAt: auditLog.createdAt,
+          })
+          .from(auditLog)
+          .where(
+            and(
+              inArray(auditLog.groupId, groupIds),
+              inArray(auditLog.type, ALERT_TYPES),
+            ),
+          );
   const draws = await Promise.all(
     rows.map(
       async ({ participation, edition, person, groupName, groupRules }) => {
@@ -82,6 +106,18 @@ export default defineEventHandler(async (event) => {
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),
+          // Alerts since the journal was last opened from this draw; never
+          // opened, since the draw (lot 14).
+          journal:
+            edition.status === 'closed'
+              ? null
+              : journalSignal(
+                  alertRows.filter((row) => row.groupId === edition.groupId),
+                  person.id,
+                  participation.journalSeenAt ??
+                    edition.drawnAt ??
+                    edition.createdAt,
+                ),
         };
       },
     ),

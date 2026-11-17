@@ -10,6 +10,10 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const journal = useJournalQuery(token);
 const seen = useJournalSeenMutation(token);
+/** Opened from the home on an alert: its explanation shows at once. */
+const explainId = computed(() =>
+  typeof route.query.alerte === 'string' ? route.query.alerte : null,
+);
 onMounted(() => seen.mutate(undefined));
 const { t } = useT();
 </script>
@@ -32,6 +36,7 @@ const { t } = useT();
       :current-edition-id="journal.data.value.currentEditionId"
       :people="journal.data.value.people"
       :me="journal.data.value.me"
+      :explain-id="explainId"
     />
   </ParticipantScreen>
 </template>

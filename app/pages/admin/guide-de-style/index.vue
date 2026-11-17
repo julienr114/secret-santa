@@ -803,6 +803,21 @@ const entries = computed(() => [
     </section>
 
     <section class="flex flex-col gap-3">
+      <UiSectionTitle>Signal du journal sur l’accueil</UiSectionTitle>
+      <HomeJournalSignal
+        :signal="{
+          count: 1,
+          alert: { id: 'x', type: 'link_regenerated', createdAt: at(60) },
+        }"
+        path="/p/exemple"
+      />
+      <HomeJournalSignal
+        :signal="{ count: 2, alert: null }"
+        path="/p/exemple"
+      />
+    </section>
+
+    <section class="flex flex-col gap-3">
       <UiSectionTitle>Journal</UiSectionTitle>
       <JournalView
         :entries="entries"

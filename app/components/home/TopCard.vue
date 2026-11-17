@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeAction } from '#server/utils/home';
+import type { HomeDraw } from '~/composables/queries/useAuth';
 import { formatDay } from '~/utils/labels';
 
 // "À faire maintenant": the one card on top of the home, chosen by
@@ -10,6 +11,8 @@ const props = defineProps<{
   named: boolean;
   /** For requests: who has been waiting the longest, and since when. */
   oldestRequest?: { name: string; since: string } | null;
+  /** The draw the card is about, when its journal has news. */
+  signalDraw?: HomeDraw | null;
 }>();
 const emit = defineEmits<{ later: [key: string] }>();
 const { t, locale } = useT();
@@ -80,6 +83,12 @@ const words = computed(() => {
         class="min-h-11 justify-center"
         :label="t('auth.home.later')"
         @click="emit('later', action.dismissKey)"
+      />
+      <HomeJournalSignal
+        v-if="signalDraw?.journal"
+        :signal="signalDraw.journal"
+        :path="signalDraw.path"
+        class="mt-2"
       />
     </template>
   </UiActionCard>

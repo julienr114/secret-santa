@@ -4,6 +4,7 @@ import type { EditionStatus } from '#server/utils/editions';
 import type { DrawStep } from '#server/utils/personal';
 import type { Role, SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
+import type { JournalSignal } from '#server/utils/audit';
 import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -72,6 +73,8 @@ export const useConfirmLinkMutation = () => {
 
 /** One draw the account takes part in, opened through its personal link. */
 export type HomeDraw = {
+  /** Alerts of its journal since the last visit; null when none. */
+  journal: JournalSignal | null;
   id: string;
   path: string;
   groupId: string;

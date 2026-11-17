@@ -22,6 +22,8 @@ const props = defineProps<{
   people?: JournalPersonCard[];
   /** The participant reading it; none for the organiser. */
   me?: string | null;
+  /** An alert to explain at once, opened from the home. */
+  explainId?: string | null;
 }>();
 const { t } = useT();
 
@@ -121,6 +123,10 @@ const explainedName = computed(
 );
 const helpOpen = ref(false);
 const explained = ref<JournalEntry | null>(null);
+onMounted(() => {
+  const entry = props.entries.find((e) => e.id === props.explainId);
+  if (entry && isJournalAlert(entry.type)) explained.value = entry;
+});
 const alertOpen = computed({
   get: () => explained.value !== null,
   set: (value) => {

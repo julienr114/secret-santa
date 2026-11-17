@@ -85,6 +85,10 @@ test('the style guide shows the edition components', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: /UiPersonField : une personne/ }),
   ).toContainText('Hugo');
+  // The home signal of the journal: one alert named, or how many.
+  const signals = page.getByTestId('journal-signal');
+  await expect(signals.first()).toContainText('Ton lien a été régénéré');
+  await expect(signals.nth(1)).toContainText('2 alertes');
   const journal = page.getByTestId('journal');
   await expect(journal).toContainText(
     '2 personnes ont découvert leur résultat',

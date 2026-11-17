@@ -12,6 +12,8 @@ const props = defineProps<{
   title?: string;
   /** Leaves the party out, when the card around it already gives it. */
   noParty?: boolean;
+  /** Its journal's news is already said in the card on top. */
+  quietJournal?: boolean;
 }>();
 const emit = defineEmits<{ open: [] }>();
 const { t } = useT();
@@ -33,6 +35,8 @@ const icon = computed(() => {
   if (status === 'preparing') return 'i-lucide-clock';
   return revealed ? 'i-lucide-mail-open' : 'i-lucide-mail';
 });
+/** « Du nouveau au journal » instead of where it stands (README 22.15). */
+const news = computed(() => Boolean(props.draw.journal) && !props.quietJournal);
 const subtitle = computed(() =>
   [
     t(`auth.home.step.${props.draw.step}.state`),
@@ -64,8 +68,21 @@ const subtitle = computed(() =>
         <span class="block truncate font-medium">{{
           title ?? draw.groupName
         }}</span>
-        <span class="block truncate text-sm text-muted">{{ subtitle }}</span>
+        <span
+          v-if="news"
+          class="block truncate text-sm font-bold text-warning-ink"
+          data-testid="journal-news"
+          >{{ t('auth.home.journalSignal.row') }}</span
+        >
+        <span v-else class="block truncate text-sm text-muted">{{
+          subtitle
+        }}</span>
       </span>
+      <span
+        v-if="news"
+        class="size-2.5 shrink-0 rounded-full bg-alert"
+        aria-hidden="true"
+      />
       <UIcon
         v-if="!action"
         name="i-lucide-chevron-right"

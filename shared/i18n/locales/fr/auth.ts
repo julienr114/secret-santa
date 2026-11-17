@@ -194,6 +194,16 @@ export default {
     requestSentOn:
       'Envoyée le {date}. Un administrateur la lit et te répond par email.',
     requestNote: 'Le mot de l’administrateur',
+    journalSignal: {
+      lead: 'Du nouveau au journal.',
+      row: 'Du nouveau au journal',
+      link_regenerated: 'Ton lien a été régénéré le {date}.',
+      result_revealed: 'L’organisateur a regardé un résultat le {date}.',
+      results_revealed:
+        'Les résultats ont été dévoilés avant la fête, le {date}.',
+      draw_cancelled: 'Le tirage a été annulé le {date}.',
+      several: '{count} alertes depuis ta dernière visite.',
+    },
     requestRefusedTitle: 'Ta demande du {date} a été refusée',
     requestAgain: 'Faire une autre demande',
     adminHint: 'Comptes, groupes, demandes',

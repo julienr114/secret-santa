@@ -6,7 +6,7 @@ import { requirePersonalLink } from '#server/http/personal';
 import { optionalAccount } from '#server/http/auth';
 import { findAccountById } from '#server/database/accounts';
 import { avatarOf } from '#server/utils/avatars';
-import { unseenAlerts } from '#server/utils/audit';
+import { ALERT_TYPES, unseenAlerts } from '#server/utils/audit';
 import { localeOf } from '#shared/i18n';
 import {
   canEditAvatar,
@@ -63,6 +63,7 @@ export default defineEventHandler(async (event) => {
     participation.journalSeenAt ?? edition.drawnAt ?? edition.createdAt;
   const alertRows = await db
     .select({
+      id: auditLog.id,
       type: auditLog.type,
       personId: auditLog.personId,
       createdAt: auditLog.createdAt,
@@ -72,12 +73,7 @@ export default defineEventHandler(async (event) => {
       and(
         eq(auditLog.groupId, group.id),
         gt(auditLog.createdAt, since),
-        inArray(auditLog.type, [
-          'result_revealed',
-          'results_revealed',
-          'draw_cancelled',
-          'link_regenerated',
-        ]),
+        inArray(auditLog.type, ALERT_TYPES),
       ),
     );
   return {

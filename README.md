@@ -1294,6 +1294,17 @@ En bref, version hybride : le panneau reste court (l'en-tête, le message entier
 
 Sous le titre, l'en-tête dit où en est la personne ; une fois le lien parti et pas encore ouvert, avec le jour du dernier envoi : « Envoyé le 14 nov., pas encore consulté » (décidé par Julien le 17 novembre 2026). Pas le moyen d'envoi, que l'application ne connaît pas toujours.
 
+### 22.15 Idée : le journal signalé depuis l'accueil (17 novembre 2026)
+
+Non planifié. Maquettes dans `docs/refonte/maquettes/` : `FuturAccueilJournal` (lien régénéré), `FuturAccueilJournalAcces` (accès de dernier recours), `FuturAccueilJournalDeux` (plusieurs alertes : une seule ligne, « 2 alertes depuis ta dernière visite », qui mène au journal), `FuturAccueilJournalPlusieurs` (plusieurs tirages : si l'alerte concerne le tirage de la carte, le signal est dans la carte ; sinon il remplace le sous-titre de la ligne du tirage concerné, avec un point ambré, et la ligne mène à la page du tirage), `FuturAccueilJournalOrganisateur` (quelqu'un qui organise un groupe et participe à un autre : même règle, le signal est sur la ligne « Mon tirage » du groupe concerné).
+
+Pas de lien permanent vers le journal sur l'accueil : le journal appartient à un groupe et non au compte, il ne contient le plus souvent rien de notable, et l'accueil sert à savoir où en est son tirage. À la place, un signal sur la carte du tirage, seulement quand le journal contient une alerte que la personne n'a pas encore vue :
+
+- un accès de dernier recours à un résultat dans ce groupe ;
+- un lien régénéré qui la concerne.
+
+Le signal est une ligne dans la carte, sous le bouton principal (« Du nouveau au journal. Ton lien a été régénéré le 16 novembre. »), qui mène droit à l'explication de l'alerte. Il disparaît une fois l'alerte vue. C'est le prolongement de la ligne « Journal du groupe · 1 alerte depuis ta dernière visite » de la page d'un tirage, et il s'appuie sur la même information.
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. Complété par la refonte des écrans (15 au 17 novembre 2026). La page **Guide de style** (`/admin/guide-de-style`, super-admin, dernière ligne de l'administration) montre tout ce qui est décrit ici, et `tests/e2e/design.spec.ts` vérifie qu'elle s'affiche, dans la langue choisie dans le menu.

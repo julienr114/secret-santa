@@ -11,6 +11,8 @@ defineProps<{
   busy?: boolean;
   /** Opened from another sheet, over it. */
   nested?: boolean;
+  /** Classes of the drawer's parts, merged over the sheet's own. */
+  ui?: Partial<Record<'container' | 'title' | 'description', string>>;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 </script>
@@ -23,8 +25,9 @@ const open = defineModel<boolean>('open', { required: true });
     :dismissible="!busy"
     :nested="nested"
     :ui="{
-      title: 'font-display text-[22px] leading-[1.15] font-bold',
-      description: 'text-sm text-toned',
+      ...ui,
+      title: `font-display text-[22px] leading-[1.15] font-bold ${ui?.title ?? ''}`,
+      description: `text-sm text-toned ${ui?.description ?? ''}`,
     }"
   >
     <template v-if="$slots.header" #header>

@@ -65,21 +65,17 @@ export default {
   },
   help: {
     title: 'À quoi sert le journal ?',
-    intro:
-      'À garder le tirage honnête : tout ce qui touche au secret y est noté, à la vue de tout le groupe. Tricher reste possible, mais ça se voit.',
-    notes: 'Ce qu’il note',
-    note1: 'Le tirage, son annulation, la clôture',
-    note2: 'Chaque lien envoyé, copié ou régénéré',
-    note3: 'La première fois que chacun découvre son résultat',
-    note4: 'Les listes de souhaits modifiées',
-    note5: 'Tout accès de l’organisateur à un résultat',
-    never: 'Ce qu’il ne dit jamais',
-    never1: 'Qui offre à qui',
-    never2: 'Ce que contiennent les listes de souhaits',
-    who: 'Qui le voit',
-    who1: 'Tous les participants du groupe et l’organisateur, avec les mêmes lignes',
     warning:
       'Une ligne te concerne et ne vient pas de toi ? Préviens ton organisateur : il peut régénérer ton lien.',
+    intro:
+      'À garder le tirage honnête. Tricher reste possible, mais ça se voit.',
+    notes: 'Il note',
+    notesBody:
+      'Le tirage, chaque lien envoyé ou régénéré, chaque résultat découvert, les listes de souhaits modifiées, et tout accès de l’organisateur à un résultat.',
+    never: 'Il ne dit jamais',
+    neverBody: 'Qui offre à qui, ni le contenu des listes de souhaits.',
+    who: 'Tout le groupe le voit',
+    whoBody: 'Participants et organisateur, avec les mêmes lignes.',
   },
   alert: {
     at: '{day} à {time}',

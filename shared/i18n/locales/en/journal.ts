@@ -66,21 +66,16 @@ export default {
   },
   help: {
     title: 'What is the journal for?',
-    intro:
-      'To keep the draw honest: everything that touches the secret is written here, for the whole group to see. Cheating is still possible, but it shows.',
-    notes: 'What it records',
-    note1: 'The draw, its cancellation, the closing',
-    note2: 'Each link sent, copied or renewed',
-    note3: 'The first time each person discovers their result',
-    note4: 'Wish lists that change',
-    note5: 'Any look by the organiser at a result',
-    never: 'What it never says',
-    never1: 'Who gives to whom',
-    never2: 'What the wish lists contain',
-    who: 'Who sees it',
-    who1: 'Every participant of the group and the organiser, with the same lines',
     warning:
       'A line is about you and you did not do it? Tell your organiser: they can renew your link.',
+    intro: 'To keep the draw honest. Cheating is still possible, but it shows.',
+    notes: 'It records',
+    notesBody:
+      'The draw, each link sent or renewed, each result discovered, wish lists that change, and any look by the organiser at a result.',
+    never: 'It never says',
+    neverBody: 'Who gives to whom, nor what the wish lists contain.',
+    who: 'The whole group sees it',
+    whoBody: 'Participants and organiser, with the same lines.',
   },
   alert: {
     at: '{day} at {time}',

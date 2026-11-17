@@ -1,37 +1,33 @@
 <script setup lang="ts">
-// « À quoi sert le journal ? »: what it records, what it never says, who
-// sees it, and what to do about a line one did not expect.
+// « À quoi sert le journal ? », short enough to fit a phone without
+// scrolling: one sentence of why, then what it records, what it never
+// says and who sees it, each a short title and one sentence, and what to
+// do about a line one did not expect.
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
 
-/** The three parts of the sheet, each with its icon and its points. */
+/** The three parts of the sheet, each with its icon and its sentence. */
 const sections = computed(() => [
   {
     key: 'notes',
     icon: 'i-lucide-list-checks',
-    tone: 'bg-primary-soft text-primary',
+    tone: 'bg-primary-soft text-primary-ink',
     title: t('journal.help.notes'),
-    points: [
-      t('journal.help.note1'),
-      t('journal.help.note2'),
-      t('journal.help.note3'),
-      t('journal.help.note4'),
-      t('journal.help.note5'),
-    ],
+    body: t('journal.help.notesBody'),
   },
   {
     key: 'never',
     icon: 'i-lucide-lock',
     tone: 'bg-success-soft text-success-ink',
     title: t('journal.help.never'),
-    points: [t('journal.help.never1'), t('journal.help.never2')],
+    body: t('journal.help.neverBody'),
   },
   {
     key: 'who',
     icon: 'i-lucide-users',
     tone: 'bg-muted text-toned',
     title: t('journal.help.who'),
-    points: [t('journal.help.who1')],
+    body: t('journal.help.whoBody'),
   },
 ]);
 </script>
@@ -41,8 +37,13 @@ const sections = computed(() => [
     v-model:open="open"
     :title="t('journal.help.title')"
     :description="t('journal.help.intro')"
+    :ui="{
+      container: 'gap-3.5',
+      title: 'text-2xl',
+      description: 'text-[15px] leading-[1.4]',
+    }"
   >
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-3.5" data-testid="journal-help">
       <section
         v-for="section in sections"
         :key="section.key"
@@ -55,16 +56,18 @@ const sections = computed(() => [
         >
           <UIcon :name="section.icon" class="size-4" />
         </span>
-        <div class="flex min-w-0 flex-col gap-1">
-          <h3 class="font-sans text-base font-bold">{{ section.title }}</h3>
-          <ul class="list-disc pl-4.5 text-sm leading-[1.5] text-toned">
-            <li v-for="point in section.points" :key="point">{{ point }}</li>
-          </ul>
+        <div class="flex min-w-0 flex-col gap-px">
+          <h3 class="font-sans text-[15px] leading-[1.4] font-bold">
+            {{ section.title }}
+          </h3>
+          <p class="text-sm leading-[1.4] text-toned">{{ section.body }}</p>
         </div>
       </section>
-      <UiNotice variant="caution" icon="i-lucide-info">
+      <p
+        class="rounded-xl bg-warning-tint px-3 py-2.5 text-sm leading-[1.4] text-alert-link ring-1 ring-warning-ring"
+      >
         {{ t('journal.help.warning') }}
-      </UiNotice>
+      </p>
     </div>
     <template #footer>
       <UButton

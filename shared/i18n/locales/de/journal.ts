@@ -70,21 +70,17 @@ export default {
   },
   help: {
     title: 'Wozu dient das Protokoll?',
-    intro:
-      'Damit die Auslosung ehrlich bleibt: Alles, was das Geheimnis berührt, wird hier für die ganze Gruppe sichtbar notiert. Schummeln bleibt möglich, aber man sieht es.',
-    notes: 'Was es notiert',
-    note1: 'Die Auslosung, ihre Absage, den Abschluss',
-    note2: 'Jeden gesendeten, kopierten oder erneuerten Link',
-    note3: 'Das erste Mal, wenn jemand sein Ergebnis entdeckt',
-    note4: 'Geänderte Wunschlisten',
-    note5: 'Jeden Blick des Organisators auf ein Ergebnis',
-    never: 'Was es nie verrät',
-    never1: 'Wer wen beschenkt',
-    never2: 'Was in den Wunschlisten steht',
-    who: 'Wer es sieht',
-    who1: 'Alle Teilnehmer der Gruppe und der Organisator, mit denselben Zeilen',
     warning:
       'Eine Zeile betrifft dich und kommt nicht von dir? Sag es deinem Organisator: Er kann deinen Link erneuern.',
+    intro:
+      'Damit die Auslosung ehrlich bleibt. Schummeln bleibt möglich, aber man sieht es.',
+    notes: 'Es notiert',
+    notesBody:
+      'Die Auslosung, jeden gesendeten oder erneuerten Link, jedes entdeckte Ergebnis, geänderte Wunschlisten und jeden Blick des Organisators auf ein Ergebnis.',
+    never: 'Es verrät nie',
+    neverBody: 'Wer wen beschenkt, noch was in den Wunschlisten steht.',
+    who: 'Die ganze Gruppe sieht es',
+    whoBody: 'Teilnehmer und Organisator, mit denselben Zeilen.',
   },
   alert: {
     at: '{day} um {time}',

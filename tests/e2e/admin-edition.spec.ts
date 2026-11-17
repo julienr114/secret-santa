@@ -273,8 +273,23 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     .click();
   await expect(page.getByText('Pourquoi c’est permis.')).toBeVisible();
   await page.getByRole('button', { name: 'J’ai compris' }).click();
+  // On an iPhone 16 the whole help sheet fits, nothing scrolls, even in
+  // what Safari leaves visible of its 393 × 852 screen (393 × 659).
+  await page.setViewportSize({ width: 393, height: 659 });
   await page.getByRole('button', { name: 'À quoi sert-il ?' }).click();
-  await expect(page.getByText('Ce qu’il ne dit jamais')).toBeVisible();
+  const help = page.getByTestId('journal-help');
+  await expect(help).toContainText('Il ne dit jamais');
+  await expect(help).toContainText(
+    'Qui offre à qui, ni le contenu des listes de souhaits.',
+  );
+  const scrolls = await help.evaluate((element) => {
+    const body = element.parentElement!;
+    return body.scrollHeight > body.clientHeight;
+  });
+  expect(scrolls).toBe(false);
+  await expect(
+    page.getByRole('button', { name: 'J’ai compris' }),
+  ).toBeInViewport();
   await page.getByRole('button', { name: 'J’ai compris' }).click();
 });
 

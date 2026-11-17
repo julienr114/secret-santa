@@ -443,9 +443,9 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `wishes_updated` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
 | `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
 | `edition_closed` | « L'édition Noël 2026 est clôturée » |
-| `draw_revealed` | « L'organisateur a dévoilé les résultats du tirage » (« … avant la fête » si c'était avant) : un jalon, pas une alerte ; jamais qui offre à qui |
+| `draw_revealed` | « L'organisateur a dévoilé les résultats du tirage », dès le jour de la fête : un jalon, pas une alerte ; jamais qui offre à qui |
 
-Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` et `results_revealed` (tirage entier) ne sont plus émis ; ils restent décrits pour d'anciennes lignes.
+Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` n'est plus émis ; il reste décrit pour d'anciennes lignes. `results_revealed`, l'ancien accès au tirage entier, sert depuis le lot 13 aux résultats dévoilés **avant** la fête : « L'organisateur a dévoilé les résultats avant la fête », une alerte avec son panneau d'explication (22.15) ; d'anciennes lignes, s'il en reste, se lisent de la même façon, ce qui reste vrai (l'organisateur avait vu tous les résultats).
 
 Chaque événement porte la date, l'heure et l'auteur (`participant`, `organisateur`, `super-admin` ou `système`).
 
@@ -560,7 +560,7 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 
 | Route | Écran |
 |---|---|
-| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. La ligne « Journal du groupe » dit « 1 alerte depuis ta dernière visite », avec un point moutarde, quand un résultat a été consulté par l'organisateur dans le groupe ou que son lien a été régénéré depuis sa dernière ouverture du journal (depuis le tirage s'il ne l'a jamais ouvert ; lot 12, `unseenAlerts`). Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
+| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. La ligne « Journal du groupe » dit « 1 alerte depuis ta dernière visite », avec un point moutarde, quand, depuis sa dernière ouverture du journal, un résultat a été consulté par l'organisateur, les résultats ont été dévoilés avant la fête, le tirage a été annulé, ou son propre lien a été régénéré (les événements de 22.15) (depuis le tirage s'il ne l'a jamais ouvert ; lot 12, `unseenAlerts`). Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
 | `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées et enregistrement (voir 6 bis.4) |
 | `/p/[token]/journal` | Journal du groupe, le même que celui de l'organisateur (section 9) : « L'essentiel » ou « Tout », l'édition, une frise par jour, les lignes répétées repliées, les alertes expliquées, « À quoi sert-il ? » |
 | `/rejoindre/[code]` | Lien d'invitation d'un groupe (22.2), quatre états : l'invitation et l'adresse ; le prénom et « Rejoindre le groupe » ; la bienvenue (dans le tirage à préparer, ou dans le groupe seulement si le tirage est fait) ; le lien fermé (plus de place, date passée, désactivé ou inconnu) |
@@ -672,7 +672,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `POST …/editions/[id]/participants`, `DELETE …/participants/[participationId]` | Ajouter, retirer (avant le tirage) |
 | `GET …/editions/[id]/messages?type=` | Textes prêts à partager pour chaque participant, dans sa langue, sans effet de bord |
 | `POST …/editions/[id]/emails` | Envoi par email (13.3) : `type`, puis `participationIds` ou `audience` |
-| `POST …/editions/[id]/reveal` | Dévoile les résultats, pour de bon (README 22.9) : édition tirée avec une date de fête ; avant la fête, seulement avec `early: true` (`party_not_reached` sinon). Journalisé (`draw_revealed`) ; ensuite le tirage ne s'annule plus (`results_revealed`) |
+| `POST …/editions/[id]/reveal` | Dévoile les résultats, pour de bon (README 22.9) : édition tirée avec une date de fête ; avant la fête, seulement avec `early: true` (`party_not_reached` sinon). Journalisé : `draw_revealed` dès le jour de la fête, `results_revealed` avant (une alerte, 22.15) ; ensuite le tirage ne s'annule plus (`results_revealed`) |
 | `GET …/editions/[id]/results` | Qui a offert à qui, pour une édition **dévoilée ou clôturée** uniquement |
 | `POST …/editions/[id]/reveal-one` | Accès de dernier recours à un résultat (8.7) |
 | `POST/DELETE /api/admin/[groupe]/participations/[id]/message` | Pose ou retire la pastille *envoyé* ; corps `type` et `via` ∈ `share`, `copy` |

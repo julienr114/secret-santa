@@ -17,8 +17,7 @@ export default {
       other: 'Le tirage a été effectué pour {count} participants',
     },
     draw_cancelled: 'Le tirage a été annulé. Motif : {reason}',
-    results_revealed:
-      "L'organisateur a consulté les résultats du tirage (accès de dernier recours)",
+    results_revealed: "L'organisateur a dévoilé les résultats avant la fête",
     result_revealed:
       "L'organisateur a consulté le résultat de {name} (accès de dernier recours)",
     result_viewed: '{name} a découvert son résultat',
@@ -29,10 +28,9 @@ export default {
     avatar_changed: '{name} a changé son icône',
     language_changed: '{name} a changé sa langue ({language})',
     edition_closed: "L'édition {label} est clôturée",
-    draw_revealed: "L'organisateur a dévoilé les résultats du tirage{early}",
+    draw_revealed: "L'organisateur a dévoilé les résultats du tirage",
   },
   noReason: 'non précisé',
-  beforeParty: ' avant la fête',
   what: {
     invitation: '« Invitation »',
     drawn: '« Tirage fait »',
@@ -124,11 +122,11 @@ export default {
         'Les autres résultats et les listes de souhaits n’ont pas été vus.',
     },
     results_revealed: {
-      title: 'Accès de dernier recours',
-      happened: 'L’organisateur a regardé les résultats du tirage.',
-      why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit accepter que tout le groupe le sache.',
+      title: 'Résultats dévoilés avant la fête',
+      happened: 'L’organisateur a vu qui offre à qui, avant la fête.',
+      why: 'Dévoiler est permis dès le jour de la fête. Plus tôt, l’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
       changes:
-        'Il sait qui offre à qui. Si le groupe le souhaite, le tirage peut être annulé et relancé.',
+        'Ton résultat ne change pas, et les participants ne voient pas la liste. Le tirage ne peut plus être annulé.',
     },
     draw_cancelled: {
       title: 'Tirage annulé',

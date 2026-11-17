@@ -153,7 +153,6 @@ export const describeEvent = (
     language: hasMessage(`common.language.${text(meta, 'language', '')}`)
       ? t(`common.language.${text(meta, 'language', '')}`)
       : '',
-    early: meta.early === true ? t('journal.beforeParty') : '',
     via: hasMessage(`journal.via.${text(meta, 'via', '')}`)
       ? t(`journal.via.${text(meta, 'via', '')}`)
       : '',
@@ -262,13 +261,21 @@ export const journalEntries = (
 
 // --- Alerts since the last visit (lot 12, README 22.15) -------------------
 
-/** What a participant is told about on their page: a result looked at, or their link renewed. */
-const ACCESS_ALERTS = new Set<string>(['result_revealed', 'results_revealed']);
+/**
+ * What every participant is told about on their page (README 22.15): a
+ * result looked at, the results revealed before the party, a cancelled
+ * draw; their own renewed link is told to them only.
+ */
+const GROUP_ALERTS = new Set<string>([
+  'result_revealed',
+  'results_revealed',
+  'draw_cancelled',
+]);
 
 /**
- * How many alerts of the journal a participant has not seen: every
- * access to a result in the group, and the renewal of their own link,
- * since they last opened the journal.
+ * How many alerts of the journal a participant has not seen since they
+ * last opened it: an access to a result, the results revealed before the
+ * party, a cancelled draw, and the renewal of their own link.
  * @param rows - Events of the group.
  * @param me - The participant's person.
  * @param since - When they last opened the journal (or, never, the draw).
@@ -282,6 +289,6 @@ export const unseenAlerts = (
   rows.filter(
     (row) =>
       row.createdAt > since &&
-      (ACCESS_ALERTS.has(row.type) ||
+      (GROUP_ALERTS.has(row.type) ||
         (row.type === 'link_regenerated' && row.personId === me)),
   ).length;

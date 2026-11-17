@@ -12,7 +12,9 @@ import { mergeRules } from '#server/utils/rules';
 // « Dévoiler les résultats » (README 22.9, lot 13): the organiser sees who
 // gave to whom, for good. From the day of the party; before it, only with
 // `early`, which the screen asks for after a stern warning. Written in
-// the journal for everyone, never saying who gave to whom. The pairs are
+// the journal for everyone, never saying who gave to whom: from the day
+// of the party a milestone (`draw_revealed`); before it an alert
+// (`results_revealed`, README 22.15), since the secret ends early. The pairs are
 // then read with GET …/results; the edition stays open until closed.
 const bodySchema = z.object({ early: z.boolean().default(false) });
 
@@ -35,11 +37,10 @@ export default defineEventHandler(async (event) => {
     });
   }
   await recordEvent(db, {
-    type: 'draw_revealed',
+    type: allowed.early ? 'results_revealed' : 'draw_revealed',
     groupId: group.id,
     editionId: edition.id,
     actor: user.role,
-    meta: { early: allowed.early },
   });
   return { ok: true };
 });

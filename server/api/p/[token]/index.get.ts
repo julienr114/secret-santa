@@ -75,6 +75,7 @@ export default defineEventHandler(async (event) => {
         inArray(auditLog.type, [
           'result_revealed',
           'results_revealed',
+          'draw_cancelled',
           'link_regenerated',
         ]),
       ),

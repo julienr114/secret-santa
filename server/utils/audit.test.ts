@@ -372,10 +372,15 @@ describe('unseenAlerts', () => {
     { type: 'link_regenerated', personId: 'p2', createdAt: at(15) },
     { type: 'result_viewed', personId: 'p1', createdAt: at(12) },
     { type: 'results_revealed', personId: null, createdAt: at(5) },
+    { type: 'draw_cancelled', personId: null, createdAt: at(3) },
+    { type: 'draw_revealed', personId: null, createdAt: at(2) },
   ];
 
-  it('counts any access to a result, and the renewal of my own link', () => {
-    expect(unseenAlerts(rows, 'p1', at(0))).toBe(3);
+  it('counts what README 22.15 lists, and the renewal of my own link', () => {
+    // An access to a result, results revealed before the party, a
+    // cancelled draw, my link; not someone else's link, a discovery, nor
+    // results revealed from the day of the party.
+    expect(unseenAlerts(rows, 'p1', at(0))).toBe(4);
   });
 
   it('counts only what happened after the last visit', () => {

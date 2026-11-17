@@ -18,8 +18,7 @@ export default {
       other: 'The draw was done for {count} participants',
     },
     draw_cancelled: 'The draw was cancelled. Reason: {reason}',
-    results_revealed:
-      'The organizer looked at the results of the draw (last-resort access)',
+    results_revealed: 'The organizer revealed the results before the party',
     result_revealed:
       "The organizer looked at {name}'s result (last-resort access)",
     result_viewed: '{name} discovered their result',
@@ -30,10 +29,9 @@ export default {
     avatar_changed: '{name} changed their icon',
     language_changed: '{name} changed their language ({language})',
     edition_closed: 'The edition {label} is closed',
-    draw_revealed: 'The organizer revealed the results of the draw{early}',
+    draw_revealed: 'The organizer revealed the results of the draw',
   },
   noReason: 'not given',
-  beforeParty: ' before the party',
   what: {
     invitation: '“Invitation”',
     drawn: '“Draw done”',
@@ -121,11 +119,11 @@ export default {
       changes: 'The other results and the wish lists were not seen.',
     },
     results_revealed: {
-      title: 'Last-resort access',
-      happened: 'The organiser looked at the results of the draw.',
-      why: 'In case of doubt or disagreement, it must be possible to check. The organiser has to accept that the whole group will know.',
+      title: 'Results revealed before the party',
+      happened: 'The organiser saw who gives to whom, before the party.',
+      why: 'Revealing is allowed from the day of the party. Earlier, the organiser has to copy a sentence and accept that the whole group will know.',
       changes:
-        'They know who gives to whom. If the group wishes, the draw can be cancelled and run again.',
+        'Your result does not change, and the participants do not see the list. The draw can no longer be cancelled.',
     },
     draw_cancelled: {
       title: 'Draw cancelled',

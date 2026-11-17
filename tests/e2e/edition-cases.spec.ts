@@ -398,6 +398,6 @@ test('before the party, revealing asks for a phrase', async ({ page }) => {
   await expect(page.getByTestId('revealed-notice')).toBeVisible();
   const { entries } = await (await api.get(`${at}/journal`)).json();
   expect(entries[0].text).toBe(
-    "L'organisateur a dévoilé les résultats du tirage avant la fête",
+    "L'organisateur a dévoilé les résultats avant la fête",
   );
 });

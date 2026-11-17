@@ -19,7 +19,7 @@ export default {
     },
     draw_cancelled: 'Die Auslosung wurde aufgehoben. Grund: {reason}',
     results_revealed:
-      'Der Organisator hat die Ergebnisse der Auslosung eingesehen (Notzugriff)',
+      'Der Organisator hat die Ergebnisse vor der Feier aufgedeckt',
     result_revealed:
       'Der Organisator hat das Ergebnis von {name} eingesehen (Notzugriff)',
     result_viewed: '{name} hat das eigene Ergebnis entdeckt',
@@ -31,10 +31,9 @@ export default {
     language_changed: '{name} hat die eigene Sprache geändert ({language})',
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
     draw_revealed:
-      'Der Organisator hat die Ergebnisse der Auslosung{early} aufgedeckt',
+      'Der Organisator hat die Ergebnisse der Auslosung aufgedeckt',
   },
   noReason: 'nicht angegeben',
-  beforeParty: ' vor der Feier',
   what: {
     invitation: '„Einladung“',
     drawn: '„Auslosung erfolgt“',
@@ -125,11 +124,12 @@ export default {
         'Die anderen Ergebnisse und die Wunschlisten wurden nicht gesehen.',
     },
     results_revealed: {
-      title: 'Zugriff im Notfall',
-      happened: 'Der Organisator hat die Ergebnisse der Auslosung angesehen.',
-      why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss akzeptieren, dass die ganze Gruppe es erfährt.',
+      title: 'Ergebnisse vor der Feier aufgedeckt',
+      happened:
+        'Der Organisator hat gesehen, wer wen beschenkt, noch vor der Feier.',
+      why: 'Aufdecken ist ab dem Tag der Feier erlaubt. Früher muss der Organisator einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
       changes:
-        'Er weiß, wer wen beschenkt. Wenn die Gruppe es wünscht, kann die Auslosung abgesagt und neu gestartet werden.',
+        'Dein Ergebnis ändert sich nicht, und die Teilnehmenden sehen die Liste nicht. Die Auslosung kann nicht mehr aufgehoben werden.',
     },
     draw_cancelled: {
       title: 'Auslosung abgesagt',

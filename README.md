@@ -59,7 +59,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 8. **Tirage unique par édition**, avec une procédure explicite et journalisée d'annulation/relance.
 9. **Hébergement Cloudflare Workers** (application + base D1) : un seul compte, et la base ne se met pas en veille alors que l'application ne sert qu'un mois par an. Preset Nitro `cloudflare_module`, déploiement manuel (section 16).
 10. **Stack Nuxt 4 / TypeScript strict** : Vue 3 et Nuxt sont la stack que Julien maîtrise. Back-end en **routes serveur Nitro**, base via **Drizzle ORM**, interface en **Nuxt UI 4**, appels API côté client via **TanStack Query (Vue)**. Pas de store global : TanStack Query porte l'état serveur, le reste tient dans des `ref` locaux.
-11. **Liste de souhaits** (décision v2) : chaque participant peut saisir quelques idées de cadeaux ; son donneur les découvre **uniquement** sur l'écran de résultat, après avoir touché « Découvrir ». La liste ne révèle jamais qui a tiré qui. Détails en section 6 bis.
+11. **Pistes de cadeaux** (liste de souhaits en v2, remplacée le 17 novembre 2026, 22.11) : chaque participant peut dire qui il est et ce qui lui ferait plaisir ; son donneur le découvre **uniquement** sous son résultat, après avoir touché « Découvrir ». Rien ne révèle qui a tiré qui. Détails en section 6 bis.
 12. **Programmation fonctionnelle et standards de l'industrie** (décision v2) : fonctions pures pour tout le métier, effets de bord repoussés dans les routes, ESLint + Prettier, tests Vitest sur la logique métier, Git en petits commits. Détails en section 7.1.
 
 ### Hors périmètre
@@ -67,7 +67,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 - Tout envoi sans action de l'organisateur : pas d'envoi automatique, pas d'API WhatsApp ni de SMS.
 - Chiffrement de bout en bout.
 - Messagerie anonyme, paiement, application native.
-- Dans la liste de souhaits : réservation d'un cadeau (« je le prends ») et notification du donneur quand la liste change.
+- Dans les pistes de cadeaux : réservation d'un cadeau (« je le prends ») et notification du donneur quand elles changent (seule exception : la réponse à une demande de pistes, 6 bis.3).
 - Comptes utilisateurs ou code secret pour les participants (le lien suffit, décision v5).
 
 ---
@@ -84,7 +84,7 @@ Ces points ont été tranchés avec Julien. Ne pas les rouvrir sans lui demander
 | **Participation** | La présence d'une personne dans une édition. Porte le lien personnel. |
 | **Attribution** | Le résultat du tirage : « X offre à Y ». |
 | **Journal** | La liste publique des événements d'un groupe. |
-| **Souhait** | Une idée de cadeau saisie par un participant pour une édition. Visible par son donneur après le tirage. |
+| **Pistes de cadeaux** | Ce qu'un participant laisse pour celui qui lui offre, pour une édition : six réponses, trois textes, des idées précises. Visibles par son donneur après le tirage (section 6 bis). |
 
 Une personne présente dans deux familles est enregistrée **deux fois** (une personne par groupe), avec un lien distinct.
 
@@ -104,19 +104,19 @@ Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec un
 
 | Statut | Ce qui est possible |
 |---|---|
-| `preparing` | L'organisateur compose la liste des participants et les exclusions, règle les paramètres. Les liens marchent déjà : il peut, s'il le veut, prévenir avant le tirage pour que chacun note ses idées. |
-| `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les souhaits de son receveur, et continuer à modifier ses propres souhaits. |
-| `clôturée` | Après la fête. Lecture seule, souhaits compris. Sert d'historique pour l'exclusion de l'année suivante. |
+| `preparing` | L'organisateur compose la liste des participants et les exclusions, règle les paramètres. Les liens marchent déjà : il peut, s'il le veut, prévenir avant le tirage pour que chacun laisse ses pistes de cadeaux. |
+| `tirée` | Le tirage est fait. La liste des participants est verrouillée. Chacun peut consulter son résultat et les pistes de son receveur, et continuer à modifier les siennes. |
+| `clôturée` | Après la fête. Lecture seule, pistes comprises. Sert d'historique pour l'exclusion de l'année suivante. |
 
 ### 4.2 Parcours de l'organisateur
 
 1. Se connecte avec son adresse email (lien magique) et ouvre son groupe.
 2. Crée l'édition. L'application **reprend les participants de l'édition précédente** (les exclusions appartiennent au groupe et restent valables).
 3. Coche qui participe, ajoute les nouveaux, désactive les absents, met à jour les exclusions.
-4. Facultatif : prévient avant le tirage (« Prévenir avant le tirage »), pour que chacun note ses idées.
+4. Facultatif : prévient avant le tirage (« Prévenir avant le tirage »), pour que chacun laisse ses pistes.
 5. Lance le tirage quand la vérification est verte, après un récapitulatif dans un panneau du bas.
 6. Prévient chacun que le tirage est fait : par email à plusieurs d'un coup (action principale), ou une personne à la fois depuis sa ligne (email, partage du téléphone, copie).
-7. Suit chaque personne : *à prévenir*, *pas encore ouvert*, *a découvert* (combien de fois), et le nombre d'idées (jamais leur contenu).
+7. Suit chaque personne : *à prévenir*, *pas encore ouvert*, *a découvert* (combien de fois), et s'il a laissé des pistes (jamais leur contenu).
 8. En cas de pépin : renvoie un lien, régénère un lien transféré par erreur, annule et relance le tirage.
 9. Après la fête : clôture l'édition.
 
@@ -124,9 +124,9 @@ Depuis le 15 novembre 2026 (22.8), l'édition naît **en préparation**, avec un
 
 1. Reçoit son lien personnel (WhatsApp, SMS…), partagé par l'organisateur.
 2. Ouvre son lien : pas de code, pas de compte.
-3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec une invitation à remplir sa liste de souhaits.
-4. À tout moment avant la clôture : renseigne ou modifie sa **liste de souhaits** (quelques idées, avec un lien facultatif). Le lien suffit (v5).
-5. Après le tirage : touche « Découvrir à qui j'offre un cadeau », voit « Tu offres un cadeau à **Prénom** », avec le budget et la date si renseignés, puis la **liste de souhaits de Prénom** (ou « Prénom n'a pas encore donné d'idée »). C'est ce geste, et non la simple ouverture du lien, qui compte comme consultation : les aperçus automatiques de liens (WhatsApp, iMessage) ne le déclenchent pas.
+3. Avant le tirage : voit un écran d'attente (« Le tirage n'a pas encore eu lieu ») avec « Laisser mes pistes de cadeaux ».
+4. À tout moment avant la clôture : laisse ou modifie ses **pistes de cadeaux** (6 bis). Le lien suffit (v5).
+5. Après le tirage : touche « Découvrir à qui j'offre un cadeau », voit « Tu offres un cadeau à **Prénom** », avec le budget et la date si renseignés, puis « Pour t'aider à choisir » : les **pistes de Prénom**, ou, s'il n'a rien laissé, « Lui demander des pistes » (6 bis.3). C'est ce geste, et non la simple ouverture du lien, qui compte comme consultation : les aperçus automatiques de liens (WhatsApp, iMessage) ne le déclenchent pas.
 6. Peut revenir consulter son résultat autant de fois qu'il veut. Chaque consultation est comptée et journalisée.
 7. Peut consulter le journal de son groupe.
 
@@ -156,8 +156,8 @@ Réglables par l'organisateur, avec une valeur par défaut au niveau du groupe e
 | `budget` | vide | Texte libre affiché sur la page de résultat (ex. « 20 € max ») ; par édition |
 | `date_evenement` | vide | Date de la fête, affichée sur la page de résultat ; par édition |
 | `message_gardien` | vide | Petit mot affiché sur la page de résultat ; par édition |
-| `liste_souhaits` | oui | Active la liste de souhaits pour le groupe. Si non, l'écran et les routes correspondants sont masqués |
-| `souhaits_max` | 10 | Nombre maximal d'idées par participant et par édition ; plus réglable à l'écran |
+| `pistes_cadeaux` (`giftHints`) | portrait et idées précises | Ce que chacun peut laisser à celui qui lui offre : portrait et idées précises (`full`), portrait seulement (`portrait`), aucune piste (`none`) ; remplace l'interrupteur `liste_souhaits` (6 bis.1) |
+| `souhaits_max` (`maxWishes`) | 10 | Nombre maximal d'idées précises par participant et par édition ; plus réglable à l'écran |
 
 ---
 
@@ -215,41 +215,45 @@ Procédure réservée à l'organisateur, avec double confirmation :
 
 ---
 
-## 6 bis. Liste de souhaits
+## 6 bis. Pistes de cadeaux
 
-Ajoutée en v2 à la demande de Julien. L'objectif : aider le donneur à choisir, sans rien changer au secret du tirage.
+Ajoutées en v2 sous la forme d'une liste de souhaits, **remplacées le 17 novembre 2026 par les pistes de cadeaux** (22.11, lot 16 de `docs/refonte/PLAN.md`). L'objectif : aider celui qui offre à choisir, en lui disant qui est la personne plutôt que « offrez-moi ça », sans rien changer au secret du tirage.
 
 ### 6 bis.1 Principes
 
-- Une liste **par participation** (donc par personne et par édition) : les envies changent d'une année sur l'autre. Pas de reprise automatique de l'an dernier en V1 (voir section 20).
-- Chaque souhait est une **idée courte** (texte de 200 caractères max) avec un **lien facultatif** (`http`/`https` uniquement, validé côté serveur, affiché avec `rel="noopener noreferrer nofollow"`).
-- Au plus `souhaits_max` idées par liste (défaut 10). La fonctionnalité se désactive par la règle `liste_souhaits`.
-- La liste est modifiable en préparation et une fois tirée, figée en `clôturée`.
-- Une relance du tirage (6.5) **conserve** les listes : elles appartiennent à la participation, pas à l'attribution.
+- Des pistes **par participation** (donc par personne et par édition). Quand la page est vide, « Reprendre mes pistes de {édition} » copie celles de la dernière édition du groupe où la personne en avait laissé (portrait, et idées si le groupe les garde).
+- **Tout est facultatif.** La page « Mes pistes de cadeaux » (`/p/[token]/pistes`) a quatre blocs :
+  - **Moi et les cadeaux** : six questions à deux choix plus « Les deux me vont », une par écran (`/p/[token]/pistes/question?n=1` à `6`), un appui pour répondre et passer à la suivante, « Plus tard » pour revenir. Les réponses sont des **valeurs fixes par question** (`first`, `second`, `both`, ou rien), jamais du texte, pour pouvoir un jour les compter (22.11, « statistiques »).
+  - **En ce moment**, **Ce qui me servirait**, **J'évite, ou j'ai déjà** : trois textes libres de 300 caractères, chacun écrit dans un panneau.
+  - **Une idée précise, si tu sèches** : l'ancienne liste (une idée de 200 caractères, un lien facultatif `http`/`https` affiché avec `rel="noopener noreferrer nofollow"`), au plus `maxWishes` idées (10).
+- **Réglage du groupe à trois valeurs** (`giftHints`) : `full` (portrait et idées précises, par défaut), `portrait` (sans idée d'objet : la surprise reste entière), `none` (aucune piste : la page, la ligne et les routes disparaissent). La migration `0019` a converti l'ancien interrupteur `wishlist` (activé donne `full`, désactivé `none`), et `mergeRules` lit encore l'ancien s'il en reste un.
+- Modifiables en préparation et une fois tirée, figées en `clôturée`. Une relance du tirage (6.5) **conserve** les pistes : elles appartiennent à la participation.
 
 ### 6 bis.2 Qui voit quoi
 
 | Acteur | Accès |
 |---|---|
-| Le participant | Lit et modifie sa propre liste depuis sa page personnelle |
-| Son donneur | Lit la liste de son receveur sur l'écran de résultat, en même temps que le prénom |
-| L'organisateur | Voit seulement le **nombre d'idées** par participant (pastille *souhaits renseignés*), jamais le contenu |
-| Le journal | Mentionne qu'une liste a été mise à jour, jamais son contenu |
+| Le participant | Lit et modifie ses propres pistes depuis sa page personnelle |
+| Celui qui lui offre | Les lit sous son résultat, « Pour t'aider à choisir » : les réponses en étiquettes, puis « En ce moment », « Ce qui lui servirait », « À éviter », « Si tu sèches ». Aucun pronom genré |
+| L'organisateur | Seulement **si la personne a laissé des pistes** (« A laissé des pistes », `hasHints`), jamais leur contenu |
+| Le journal | Rien (plus d'événement `wishes_updated`) |
 
-Le contenu d'une liste n'est donc jamais exposé en dehors des deux premiers cas. Ce n'est pas un secret aussi fort que l'attribution, mais afficher les listes de tout le monde permettrait de deviner par recoupement qui achète quoi pour qui. On s'en abstient.
+Afficher les pistes de tout le monde permettrait de deviner par recoupement qui achète quoi pour qui : on s'en abstient.
 
-### 6 bis.3 Protection contre la triche
+### 6 bis.3 Demander des pistes
 
-- **Le lien suffit pour modifier sa liste** (décision v5). Un lien transféré permettrait donc de réécrire les envies de quelqu'un : chaque modification est journalisée (« Léa a mis à jour sa liste »), ce qui rend l'abus visible, et l'organisateur peut régénérer le lien.
-- Lecture de sa propre liste : le lien suffit (rien à y gagner pour un tricheur).
-- La sauvegarde **remplace la liste entière** (une seule requête idempotente, pas de gestion d'items unitaires) : plus simple, et conforme à l'approche fonctionnelle.
-- Événement `wishes_updated` au journal : « Léa a mis à jour sa liste de souhaits (3 idées) ».
+- Sous son résultat, quand la personne n'a rien laissé (ni réponse, ni texte, ni idée), celui qui offre peut « Lui demander des pistes » : un panneau dit ce qui va se passer, puis la demande part **tout de suite**.
+- **Une seule demande par tirage**, sans relance ; le bouton disparaît ensuite. Un nouveau tirage (6.5) efface les demandes : chaque nouveau donneur peut demander une fois.
+- **Anonyme** : aucune route, aucun email, aucune ligne de journal, aucun écran de l'organisateur ne dit qui demande, ni qu'une demande a eu lieu (`tests/e2e/hints.spec.ts` compare tout ce que l'organisateur lit avant et après une demande). La personne le voit par un email si elle a une adresse (« Quelqu'un cherche une idée de cadeau pour toi », vers sa page de pistes) et, dans tous les cas, par un bandeau en haut de sa page de pistes.
+- Quand les premières pistes arrivent, celui qui a demandé reçoit un email (« Des pistes de cadeaux t'attendent »), sans le prénom de la personne : un email ne contient jamais de résultat (8.6). Une seule fois.
+- **Qui a demandé** est gardé chiffré avec la clé serveur (`hint_requests.requester_enc`, comme un receveur, 8.3), seulement pour lui écrire ; aucune route ne le renvoie. Choix provisoire, à confirmer par Julien (question en section 6 du plan).
+- Les deux emails passent par `plainEmail` de `server/utils/messages.ts`, comme ceux des organisateurs : texte simple, un lien.
+- Limite connue et acceptée : si la demande part juste après une découverte visible au journal, la personne peut faire le lien par l'heure.
 
-### 6 bis.4 Écran
+### 6 bis.4 Protection contre la triche
 
-- Route `/p/[token]/souhaits`, accessible depuis la page personnelle par un bouton « Ma liste de souhaits ».
-- Un champ par idée, bouton « Ajouter une idée », suppression par croix, lien facultatif sous chaque idée. Un bouton « Enregistrer ».
-- Sur l'écran de résultat, la liste du receveur apparaît sous le prénom, après l'animation de révélation, sous le titre « Ses idées de cadeaux ».
+- **Le lien suffit pour modifier ses pistes** (décision v5). Une réécriture par quelqu'un qui aurait récupéré le lien n'est plus journalisée (22.11) : risque accepté, la parade reste de régénérer le lien.
+- Une réponse change seule (`PATCH /api/p/[token]/hints`, seules les clés envoyées changent) ; la liste des idées est remplacée entière (`PUT …/wishes`).
 
 ---
 
@@ -394,8 +398,8 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 
 - [x] Aucune attribution dans une réponse d'API admin tant que l'édition n'est pas clôturée (hors accès de dernier recours, 8.7). Vérifié par `tests/e2e/security.spec.ts`, qui apprend les vraies paires par les liens des participants puis les cherche dans toutes les réponses admin, organisateur et super-admin.
 - [x] Aucune attribution dans les logs (aucun `console.*` côté serveur) ni dans les messages et emails (tests unitaires).
-- [x] Aucun contenu de liste de souhaits dans une réponse d'API admin ni dans le journal (même test).
-- [x] Toute modification faite avec un lien personnel est journalisée : liste de souhaits, icône (`avatar_changed`), langue (`language_changed`).
+- [x] Aucun contenu de pistes de cadeaux dans une réponse d'API admin ni dans le journal (même test) ; une demande de pistes ne change aucune réponse de l'organisateur ni le journal (`tests/e2e/hints.spec.ts`).
+- [x] Toute modification faite avec un lien personnel est journalisée : icône (`avatar_changed`), langue (`language_changed`). Les pistes de cadeaux ne le sont plus depuis le 17 novembre 2026 (22.11, risque accepté).
 - [x] Toutes les entrées validées par Zod ; les champs inconnus sont ignorés.
 - [x] Requêtes paramétrées uniquement (Drizzle).
 - [x] Limitation des tentatives sur la connexion admin, sur l'adresse `CF-Connecting-IP` (un `X-Forwarded-For` forgé ne la contourne plus) ; les échecs périmés sont purgés.
@@ -440,7 +444,7 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `draw_cancelled` | « Le tirage a été annulé. Motif : désistement de Tom » |
 | `result_revealed` | « L'organisateur a consulté le résultat de Léa (accès de dernier recours) » |
 | `result_viewed` | « Léa a découvert son résultat » : **seule la première consultation** de chacun est inscrite (décision du 14 novembre 2026). Les suivantes restent comptées pour l'organisateur, mais les journaliser permettrait de rapprocher « Léa a mis à jour sa liste » et « Tom a consulté son résultat » et de deviner qui offre à qui |
-| `wishes_updated` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
+| ~~`wishes_updated`~~ | Plus écrit ni affiché depuis les pistes de cadeaux (22.11) ; les anciennes lignes restent en base, `journalEntries` les écarte (`RETIRED_TYPES`) |
 | `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
 | `edition_closed` | « L'édition Noël 2026 est clôturée » |
 | `draw_revealed` | « L'organisateur a dévoilé les résultats du tirage », dès le jour de la fête : un jalon, pas une alerte ; jamais qui offre à qui |
@@ -535,7 +539,25 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 
 En clair en base : un souhait ne révèle pas d'attribution. La sauvegarde remplace toutes les lignes d'une participation dans une transaction (`DELETE` puis `INSERT`). Le `group_id` se retrouve via la participation et l'édition : toute requête passe par cette jointure pour respecter le cloisonnement (8.5).
 
-### `audit_log`
+### `gift_portraits` (migration `0019`)
+| Colonne | Type | Notes |
+|---|---|---|
+| `participation_id` | text PK, FK | Une ligne par participation, dès qu'elle a écrit quelque chose |
+| `useful_or_surprising`, `object_or_moment`, `keep_or_consume`, `self_or_shared`, `second_hand`, `surprise` | text nullable | Les six réponses : `first`, `second` ou `both`, jamais du texte ; null sans réponse |
+| `lately`, `would_help`, `avoid` | text nullable | Les trois textes, 300 caractères |
+| `updated_at` | text | |
+
+Les idées précises restent dans `wishes`.
+
+### `hint_requests` (migration `0019`)
+| Colonne | Type | Notes |
+|---|---|---|
+| `receiver_participation_id` | text PK, FK | Une demande au plus par receveur et par tirage |
+| `edition_id` | text FK | Pour tout effacer à un nouveau tirage |
+| `requester_enc`, `requester_iv` | text | La participation qui a demandé, chiffrée (8.3) ; seulement pour lui écrire quand les pistes arrivent |
+| `requested_at` | text | |
+| `answered_at` | text nullable | Les pistes sont arrivées et l'email est parti |
+
 | Colonne | Type | Notes |
 |---|---|---|
 | `id` | text PK | |
@@ -560,15 +582,16 @@ Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zon
 
 | Route | Écran |
 |---|---|
-| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Bouton « Ma liste de souhaits » si la règle est active. La ligne « Journal du groupe » dit « 1 alerte depuis ta dernière visite », avec un point moutarde, quand, depuis sa dernière ouverture du journal, un résultat a été consulté par l'organisateur, les résultats ont été dévoilés avant la fête, le tirage a été annulé, ou son propre lien a été régénéré (les événements de 22.15) (depuis la création de l'édition s'il ne l'a jamais ouvert, pour qu'un tirage annulé puis refait reste signalé ; lot 12, `unseenAlerts`). Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
-| `/p/[token]/souhaits` | Liste de souhaits du participant : édition des idées et enregistrement (voir 6 bis.4) |
+| `/p/[token]` | Page personnelle. Selon l'état : attente du tirage, bouton « Découvrir », résultat, lien invalide. Ligne « Mes pistes de cadeaux » (« Rien pour l'instant », « Remplies · modifiables jusqu'à la fête ») si le groupe a des pistes. La ligne « Journal du groupe » dit « 1 alerte depuis ta dernière visite », avec un point moutarde, quand, depuis sa dernière ouverture du journal, un résultat a été consulté par l'organisateur, les résultats ont été dévoilés avant la fête, le tirage a été annulé, ou son propre lien a été régénéré (les événements de 22.15) (depuis la création de l'édition s'il ne l'a jamais ouvert, pour qu'un tirage annulé puis refait reste signalé ; lot 12, `unseenAlerts`). Balises `<title>` et Open Graph **neutres** (« Secret Santa »), sans prénom : les messageries génèrent un aperçu du lien |
+| `/p/[token]/pistes` | Mes pistes de cadeaux (6 bis) : « Seule la personne qui t'offre un cadeau les verra », ou le bandeau d'une demande ; « Moi et les cadeaux » (carte « Pour commencer » puis les réponses en étiquettes et « Modifier ») ; « Reprendre mes pistes de {édition} » sur une page vide ; les trois textes, chacun dans son panneau (`UiTextSheet`) ; « Une idée précise, si tu sèches » (`ParticipantIdeasSection`). L'ancienne adresse `/p/[token]/souhaits` y mène |
+| `/p/[token]/pistes/question?n=` | Une des six questions : la progression en points, « Plus tard », deux grands choix et « Les deux me vont » ; un appui enregistre et passe à la suivante |
 | `/p/[token]/journal` | Journal du groupe, le même que celui de l'organisateur (section 9) : « L'essentiel » ou « Tout », l'édition, une frise par jour, les lignes répétées repliées, les alertes expliquées, « À quoi sert-il ? » |
 | `/rejoindre/[code]` | Lien d'invitation d'un groupe (22.2), quatre états : l'invitation et l'adresse ; le prénom et « Rejoindre le groupe » ; la bienvenue (dans le tirage à préparer, ou dans le groupe seulement si le tirage est fait) ; le lien fermé (plus de place, date passée, désactivé ou inconnu) |
 
 Détails d'interface (page du tirage refaite le 15 novembre 2026) :
-- De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Ma liste de souhaits » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
-- Les états : avant le tirage (enveloppe en pointillés, « Noter mes idées de cadeaux ») ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, nombre d'idées qui attendent) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
-- Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, les pavés Budget et Date, le mot de l'organisateur, puis ses idées, chaque lien affiché « Voir le lien ».
+- De haut en bas : l'icône (avec un crayon tant qu'elle est modifiable), « Salut {prénom} ! », le groupe et l'édition ; une frise Invitation, Tirage, Fête (`participantSteps`, avec « bientôt », « fait », « dans N jours », « passée ») ; une carte avec une enveloppe (`envelopeState`) ; « Mes pistes de cadeaux » et « Journal du groupe » ; la carte « Garde tes tirages au même endroit ».
+- Les états : avant le tirage (enveloppe en pointillés, « Laisser mes pistes de cadeaux ») ; à découvrir (enveloppe scellée, « Découvrir à qui j'offre un cadeau ») ; résultat affiché ; déjà découvert (enveloppe ouverte, « Revoir… » en contour, « Des pistes de cadeaux t'attendent. » quand il y en a) ; clôturée (« La fête est passée », et « Découvrir » si le résultat n'a jamais été vu) ; lien invalide (enveloppe au cadenas, sans en-tête ni listes, sur les trois pages `/p/**`).
+- Résultat : sur une étiquette cadeau qui se retourne en apparaissant (sans animation si `prefers-reduced-motion`) : « Tu offres un cadeau à », l'icône et le prénom en très grand, les pavés Budget et Date, le mot de l'organisateur, puis « Pour t'aider à choisir » (`ParticipantGiverHints`) : ses réponses en étiquettes (`UiTagList`), ses textes, ses idées précises (chaque lien affiché « Voir le lien ») ; sans piste, « Lui demander des pistes » et son panneau, puis « Demande envoyée. »
 - Le résultat ne reste pas affiché : il disparaît quand on quitte ou recharge la page, il faut retoucher « Découvrir ». Côté TanStack Query, la révélation est une **mutation**, jamais une requête mise en cache.
 - Messages d'erreur clairs et sans jargon (« Ce lien n'est plus valable, demande-en un nouveau à ton organisateur »).
 
@@ -590,7 +613,7 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 | `/admin/[groupe]/personnes` | Membres (refait le 16 novembre 2026) : une liste, chacun avec son adresse et qui il ne tire pas (`notDrawnBy`), ceux qui ne participent plus grisés à la fin, recherche et repli ; « Ajouter une personne » en bas, puis « Inviter par lien ». La fiche d'une personne : son icône, prénom, adresse, langue de ses messages, nom de famille (panneaux), « Ne tire pas » (retrait d'un appui, ajout dans « Nouvelle exclusion »), « Enregistrer », puis « Retirer du groupe » (son historique reste) ; une fois retirée, « Remettre dans le groupe » ou « Supprimer définitivement ». « Nouvelle personne » : icône au hasard, prénom, adresse, langue, « Participe à {édition} » quand une édition se prépare, « Ajouter » ou « Ajouter, puis en créer une autre » |
 | `/admin/[groupe]/exclusions` | Exclusions du groupe : « Ajouter une exclusion » en premier (panneau où chaque personne se choisit dans `UiPersonPicker`, avec la phrase qui en résulte), les paires « Camille et Hugo », et une exclusion dans un seul sens en toutes lettres, « Inès ne tire pas Louis » (sans flèche, décidé par Julien le 17 novembre 2026), puis la règle des années précédentes, réglée dans les réglages |
 | `/admin/[groupe]/editions/nouvelle` | Nouvelle édition (refaite le 16 novembre 2026) : nom, date de la fête (le 25 décembre proposé), budget et petit mot facultatifs (le budget repris de la dernière édition), qui sera repris (`carriedOver`), « Créer l'édition ». Le budget et le mot, s'ils diffèrent de ceux du groupe, sont envoyés avec la création et deviennent les règles propres de l'édition |
-| `/admin/[groupe]/reglages` | Réglages du groupe (refaits le 16 novembre 2026), une ligne par réglage, chacun dans son panneau ou par son interrupteur : Tirage (éviter la même personne), Participants (listes de souhaits, mot ajouté aux messages et sa place), M'écrire par email (trois emails aux organisateurs), Organisateurs (« Nouvel organisateur » dans un panneau, retrait par un second appui) ; pour le super-admin, « Supprimer le groupe » dans le cadre « Super-admin », puis dans un panneau : ce qui disparaît, l'identifiant à recopier, « Garder le groupe » en premier |
+| `/admin/[groupe]/reglages` | Réglages du groupe (refaits le 16 novembre 2026), une ligne par réglage, chacun dans son panneau ou par son interrupteur : Tirage (éviter la même personne), Participants (pistes de cadeaux, à trois valeurs dans un panneau ; mot ajouté aux messages et sa place), M'écrire par email (trois emails aux organisateurs), Organisateurs (« Nouvel organisateur » dans un panneau, retrait par un second appui) ; pour le super-admin, « Supprimer le groupe » dans le cadre « Super-admin », puis dans un panneau : ce qui disparaît, l'identifiant à recopier, « Garder le groupe » en premier |
 | `/admin/[groupe]/editions/[id]` | Pilotage d'une édition (voir ci-dessous) |
 | `/admin/[groupe]/editions/[id]/emails` | Envoi par email à plusieurs participants (13.3) |
 | `/admin/[groupe]/editions/[id]/exclusions` | Exclusions qui s'appliquent à l'édition : celles du groupe et les paires des tirages précédents, levables ; une fois tirée, celles appliquées |
@@ -630,10 +653,13 @@ Le jeton du lien est le seul identifiant ; inconnu, mal formé ou régénéré, 
 
 | Méthode et route | Rôle |
 |---|---|
-| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, liste de souhaits active ou non. Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
-| `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et la liste de souhaits du receveur**. Compte et journalise la consultation |
-| `GET /api/p/[token]/wishes` | Sa propre liste de souhaits |
-| `PUT /api/p/[token]/wishes` | Corps : la liste complète. Remplace la liste, journalise. Refusé si l'édition est clôturée ou la règle inactive |
+| `GET /api/p/[token]` | État de la participation : prénom, icône, langue, groupe, édition, phase, date de la fête, le réglage des pistes (`giftHints`), s'il en a laissé (`hasHints`) et, après sa première découverte, si son receveur en a laissé (`receiverHasHints`). Le nombre d'alertes du journal depuis sa dernière visite (`journalAlerts`). Jamais le résultat. N'est pas compté comme une consultation |
+| `POST /api/p/[token]/reveal` | Bouton « Découvrir ». Renvoie le receveur, le budget, la date, le message **et les pistes du receveur** (`hints` : réponses, textes, idées, demande déjà faite), et si chacun a une adresse email (pour les mots sous la demande). Compte et journalise la consultation |
+| `GET/PATCH /api/p/[token]/hints` | Ses pistes (réponses, textes, idées, demande en cours, édition à reprendre) ; une réponse ou un texte à la fois. Non journalisé. Refusé si l'édition est clôturée ou le groupe sans pistes |
+| `POST /api/p/[token]/hints/copy` | « Reprendre mes pistes de {édition} », sur une page vide |
+| `POST /api/p/[token]/hints/request` | « Lui demander des pistes » : une fois par tirage, après sa découverte, quand le receveur n'a rien laissé. Anonyme, jamais journalisé ; email au receveur s'il a une adresse |
+| `GET /api/p/[token]/wishes` | Ses idées précises |
+| `PUT /api/p/[token]/wishes` | Corps : la liste complète des idées précises. Remplace la liste, sans journal. Refusé si l'édition est clôturée ou le réglage n'est pas « portrait et idées précises » |
 | `PUT /api/p/[token]/avatar` | Son icône (emoji et couleur), journalisé. Refusé si l'édition est clôturée |
 | `PUT /api/p/[token]/language` | Sa langue préférée, journalisé |
 | `POST /api/p/[token]/journal-seen` | Le participant ouvre le journal : le compte des alertes de sa page repart de maintenant |
@@ -648,7 +674,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `POST /api/auth/link` | Demande un lien de connexion (réponse identique dans tous les cas) |
 | `GET /api/auth/link-email?token=` | L'adresse avec laquelle le lien connecte, sans le consommer ; `410` pour un lien inconnu, utilisé ou expiré |
 | `POST /api/auth/confirm` | Consomme le lien, ouvre la session |
-| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, le nombre d'idées), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et sa dernière demande (avec son texte) ; pour chaque tirage en cours, les alertes de son journal depuis la dernière visite (22.15) ; pour un super-admin, le nombre de demandes en attente et qui attend depuis le plus longtemps (nom, ou adresse). Jamais un résultat |
+| `GET /api/auth/home` | L'accueil du compte : ses tirages (avec leur lien personnel, où ils en sont, s'ils ont laissé des pistes), les groupes qu'il organise (où en est l'édition, à prévenir, pas encore ouverts, tirage possible), son rôle et sa dernière demande (avec son texte) ; pour chaque tirage en cours, les alertes de son journal depuis la dernière visite (22.15) ; pour un super-admin, le nombre de demandes en attente et qui attend depuis le plus longtemps (nom, ou adresse). Jamais un résultat |
 | `GET /api/auth/sessions`, `POST /api/auth/sessions/revoke-all` | Mon compte : appareils, tout déconnecter |
 | `POST /api/admin/logout`, `GET /api/admin/session` | Déconnexion (révoque la session), session courante |
 | `GET /api/admin/groups` | Les groupes du compte, chacun avec ses membres actifs et son tirage en cours (`draw` : état, participants, résultats ouverts ; `null` sans tirage en cours) |
@@ -665,7 +691,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
 | `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration, avec la personne de chaque ligne et les personnes nommées |
 | `GET/POST /api/admin/[groupe]/editions` | Liste, création (avec reprise de l'édition précédente, 100 participants au plus ; le budget et le mot aux participants, s'ils sont donnés, sont les règles propres de l'édition dès sa création, sans ligne « règles modifiées » au journal) |
-| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (nombre de souhaits, jamais leur contenu), et `redrawn` : tirée de nouveau après une annulation (lu dans le journal, `draw_cancelled`), pour que le panneau d'envoi, « Personnaliser le message » et « Prévenir par email » proposent « Nouveau tirage » tout seuls (décidé par Julien le 17 novembre 2026) ; libellé et règles propres |
+| `GET/PATCH /api/admin/[groupe]/editions/[id]` | Édition avec ses participants et leurs statuts (a laissé des pistes ou non, `hasHints`, jamais leur contenu), et `redrawn` : tirée de nouveau après une annulation (lu dans le journal, `draw_cancelled`), pour que le panneau d'envoi, « Personnaliser le message » et « Prévenir par email » proposent « Nouveau tirage » tout seuls (décidé par Julien le 17 novembre 2026) ; libellé et règles propres |
 | `POST …/editions/[id]/draw`, `/redraw`, `/close` | Cycle de vie : tirer, annuler le tirage (motif obligatoire), clôturer |
 | `GET …/editions/[id]/check` | Le tirage est-il possible ? Sinon, pourquoi. Liste aussi les paires des éditions clôturées qui excluent |
 | `POST/DELETE …/editions/[id]/history-waivers` | Lever une exclusion d'un tirage précédent pour cette édition ; tout rétablir |
@@ -703,7 +729,7 @@ Décision v5 : l'application n'envoie rien elle-même et ne stocke aucun numéro
 
 | Modèle (`type`) | Moment | Contenu |
 |---|---|---|
-| `invitation` | Avant le tirage, facultatif | « Salut Léa ! 🎁 Tu participes au Secret Santa de [groupe] ([édition]). Ouvre ton lien et note quelques idées de cadeaux : [lien] » |
+| `invitation` | Avant le tirage, facultatif | « Salut Léa ! 🎁 Tu participes au Secret Santa de [groupe] ([édition]). Ouvre ton lien et laisse quelques pistes de cadeaux : [lien] » |
 | `tirage` | Après le tirage | « Le tirage est fait ! Ouvre ton lien pour découvrir à qui tu offres un cadeau : [lien] » + budget et date s'ils sont renseignés |
 | `relance` | Manuel | « Petit rappel Léa : ton lien t'attend, pense à l'ouvrir. Ton lien : [lien] » |
 | `nouveau_tirage` | Après une relance du tirage | « Un nouveau tirage a eu lieu, ton ancien résultat n'est plus valable. Ton lien ne change pas : [lien] » |
@@ -739,13 +765,13 @@ secret-santa/
 │   ├── app.vue · app.config.ts  ← thème Nuxt UI, langue de l'interface
 │   ├── pages/
 │   │   ├── index.vue            ← page d'accueil neutre
-│   │   ├── p/[token]/           ← participant : index, souhaits, journal
+│   │   ├── p/[token]/           ← participant : index, pistes (et sa question), journal
 │   │   └── admin/               ← connexion, groupes, puis [slug]/ : accueil, personnes,
 │   │                              exclusions, réglages, organisateur, journal, éditions/[id]/…
 │   ├── components/
 │   │   ├── ui/                  ← design system : PageTitle, SectionTitle, Card, List, ListItem, Avatar, TextPreview
 │   │   ├── admin/               ← Screen, StatusCard, SendOptions, Exclusions, PersonForm, DateField…
-│   │   ├── participant/         ← Screen, RevealCard, WishList
+│   │   ├── participant/         ← Screen, RevealCard, GiverHints, IdeasSection, WishList
 │   │   └── JournalList · JournalView · LanguageSwitch
 │   ├── composables/
 │   │   ├── useT.ts · useErrorMessage.ts · useShareMessage.ts
@@ -813,7 +839,7 @@ Enseignements : l'horloge est gelée pendant une requête Worker (`performance.n
 
 **Étape 2 — Cœur métier, sans interface** ✅
 Modules purs de `server/utils/`, chacun avec son fichier de test. Points à connaître :
-- **Clés anglaises dans le code**, textes dans les dictionnaires. Règles : `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `wishlist`, `maxWishes` (`rules.ts`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.ts`).
+- **Clés anglaises dans le code**, textes dans les dictionnaires. Règles : `excludePreviousYears`, `budget`, `eventDate`, `guardianMessage`, `giftHints` (ex-`wishlist`), `maxWishes` (`rules.ts`, schéma Zod = source de vérité, `mergeRules(groupRules, override)`). Types de message : `invitation`, `drawn`, `reminder`, `redraw` (`messages.ts`).
 - `draw(input, { random })` : l'appelant fournit `history` (receveurs passés par donneur, déjà filtré sur N éditions et sur la participation du donneur) et `random` (`secureRandomInt` en production). `checkFeasibility` renvoie `blocked` et `constrained` pour la carte de statut.
 - `audit.ts` purge de `meta` toute clé évoquant un résultat ou un secret (`receiver`, `assignment`, `token`…), à n'importe quelle profondeur.
 - Le hachage mêle le poivre au secret (`${pepper}\0${secret}`), 20 000 itérations par défaut, plafonné à 100 000.
@@ -886,14 +912,14 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 - Chaque modèle contient le lien et le prénom, jamais de receveur ni de contenu de souhait, quelles que soient les données passées (test qui injecte un receveur dans les données et vérifie qu'il n'apparaît pas).
 - Le lien est seul sur sa ligne.
 
-### Liste de souhaits
+### Pistes de cadeaux
 
-- La normalisation (`wishes.ts`) rejette : plus de `souhaits_max` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
-- `PUT /wishes` est journalisé à chaque modification.
-- `PUT /wishes` sur une édition clôturée ou un groupe où `liste_souhaits` est désactivée est refusé.
-- `POST /reveal` renvoie la liste du receveur et uniquement la sienne.
-- Les routes admin de participants renvoient un nombre de souhaits et jamais de libellé (test qui parcourt les réponses, comme pour les attributions).
-- Après une annulation et relance du tirage, les listes sont intactes.
+- `server/utils/hints.test.ts` : une réponse est une valeur fixe (`first`, `second`, `both`), un texte de plus de 300 caractères est refusé ; qui peut écrire (jusqu'à la clôture, idées précises seulement en `full`) ; qui peut demander (après le tirage, une fois, quand le receveur n'a rien) ; l'email à celui qui a demandé part une fois ; les deux emails ne nomment ni celui qui demande ni le receveur.
+- La normalisation des idées (`wishes.ts`) rejette : plus de `maxWishes` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
+- `PUT /wishes` et `PATCH /hints` sur une édition clôturée sont refusés ; selon le réglage, les idées (`portrait`) ou tout (`none`).
+- `POST /reveal` renvoie les pistes du receveur et uniquement les siennes ; les routes admin disent seulement `hasHints` (`security.spec.ts`).
+- Une demande de pistes ne change rien de ce que lit l'organisateur ni le journal, et une seconde est refusée (`hints.spec.ts`).
+- Après une annulation et relance du tirage, les pistes sont intactes.
 
 ### Parcours
 
@@ -928,8 +954,8 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 | Les écrans de l'organisateur affichent-ils le nom de famille ? | Oui, dès qu'il est renseigné, après le prénom ; recherche et tri le prennent en compte (décidé le 16 novembre 2026). Côté participant, la règle ci-dessus ne change pas |
 | Rappel automatique aux retardataires ? | Non, relance manuelle par l'organisateur |
 | Après clôture, afficher à tous le tableau complet « qui a offert à qui » ? | Non, sauf demande explicite |
-| Reprendre la liste de souhaits de l'an dernier à la création d'une édition ? | Non en V1 : liste vide à chaque édition. Un bouton « Reprendre ma liste de l'an dernier » est une évolution simple si la famille le demande |
-| L'organisateur peut-il voir le contenu des listes de souhaits ? | Non, seulement le nombre d'idées (voir 6 bis.2) |
+| Reprendre les pistes de l'an dernier ? | Pas automatiquement : « Reprendre mes pistes de {édition} » sur une page vide (6 bis.1) |
+| L'organisateur peut-il voir le contenu des pistes de cadeaux ? | Non, seulement si la personne en a laissé (voir 6 bis.2) |
 
 ---
 
@@ -941,7 +967,7 @@ Français, anglais, allemand. Le français reste la langue de référence et la 
 
 | Où | Langue |
 |---|---|
-| Page personnelle, liste de souhaits, journal du participant | Langue préférée de la personne (`persons.language`, migration `0006`, `fr` par défaut) |
+| Page personnelle, pistes de cadeaux, journal du participant | Langue préférée de la personne (`persons.language`, migration `0006`, `fr` par défaut) |
 | Messages à partager et emails | Langue préférée du **destinataire**, pas celle de l'organisateur |
 | Administration | Choix du visiteur, gardé dans un cookie `locale` sur l'appareil ; à défaut, langue du navigateur ; à défaut, français |
 | Lien invalide | Cookie ou langue du navigateur (on ne sait pas qui c'est) |
@@ -952,7 +978,7 @@ L'organisateur règle la langue d'une personne sur sa fiche. Le participant la c
 
 - **Date de la fête** : saisie avec un sélecteur de date (Nuxt UI `UInputDate` + `UCalendar`, le 25 décembre de l'année proposé en un geste), stockée en jour ISO dans `eventDate`. Elle est écrite dans la langue de chacun (messages, emails, page de résultat). Une ancienne valeur en texte libre reste affichée telle quelle. Le bouton **« Clôturer » n'apparaît qu'à partir du lendemain** de cette date ; sans vraie date, il reste disponible.
 - **Exclusions après le tirage** : l'écran d'une édition tirée ou clôturée affiche les exclusions **appliquées au tirage** (`rules_snapshot`), plus celles du groupe, qui ont pu changer depuis.
-- **Suppression d'un groupe** : super-admin uniquement, `POST /api/admin/groups/[id]/delete` avec l'identifiant du groupe à recopier. Efface le groupe, ses personnes, exclusions, éditions, tirages, listes de souhaits et journal, en une transaction. Irréversible.
+- **Suppression d'un groupe** : super-admin uniquement, `POST /api/admin/groups/[id]/delete` avec l'identifiant du groupe à recopier. Efface le groupe, ses personnes, exclusions, éditions, tirages, pistes de cadeaux et journal, en une transaction. Irréversible.
 - **Barre du haut de l'administration** : logo toujours visible, un seul menu (langue, déconnexion), chemin réduit aux niveaux parents.
 - **Avatars** : emoji de marché de Noël ajoutés (bretzel, vin chaud, marrons…), puis six emoji retirés le 14 novembre 2026 ; il en reste 30. Une icône enregistrée avec un emoji retiré est remplacée par une icône par défaut, la couleur étant gardée.
 
@@ -1170,7 +1196,7 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 | 4 | Organisateur | Tout le monde prévenu, fête dans 7 jours ou moins, au moins une personne n'a pas consulté | N personnes n'ont pas encore ouvert leur lien | « Relancer » → édition |
 | 5 | Organisateur | Édition à préparer, tirage impossible | Le tirage est impossible pour l'instant | « Corriger » → édition |
 | 6 | Organisateur | Édition à préparer, tirage possible | Vérifie la liste, puis lance le tirage | « Ouvrir l'édition » → édition |
-| 7 | Participant | Listes de souhaits actives, zéro idée, édition non clôturée | Note quelques idées de cadeaux | « Mes idées » → liste de souhaits |
+| 7 | Participant | Pistes de cadeaux actives, aucune piste, édition non clôturée | Laisse tes pistes de cadeaux | « Mes pistes » → pistes de cadeaux |
 | 8 | Organisateur | Fête passée, édition non clôturée | La fête est passée : clôture l'édition | « Ouvrir l'édition » → édition |
 | 9 | Organisateur | Groupe sans édition en cours | Prépare le tirage de cette année | « Créer l'édition » → nouvelle édition |
 | 10 | Compte | Peut créer un groupe et n'en a aucun | Ta demande est acceptée : crée ton groupe | « Créer mon groupe » → nouveau groupe |
@@ -1208,11 +1234,11 @@ Proposition issue des maquettes de l'accueil (même canevas qu'en 22.8, rangée 
 
 Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient lieu de carte du haut : les rangs 3 et 7 (qui le concernent) n'en ajoutent pas une seconde. Tout le haut de cette carte ouvre la page du tirage, même avant le tirage, quand elle n'a pas de bouton.
 
-### 22.11 À faire en premier : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
+### 22.11 Fait : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
 
-**Planifié le 17 novembre 2026 : lot 16 de `docs/refonte/PLAN.md`, avant le tirage déjà fait (lot 17).** Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
+**Codé le 17 novembre 2026** (lot 16 de `docs/refonte/PLAN.md` : migration `0019`, tables `gift_portraits` et `hint_requests`, routes `…/hints`, écrans `/p/[token]/pistes`, réglage à trois valeurs ; décrit en 6 bis, 9, 11 et 12). Deux points restent à confirmer par Julien (section 6 du plan) : les anciennes lignes `wishes_updated` (plus affichées) et la façon de retenir qui a demandé des pistes (chiffrée, comme un receveur). Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
 
-Conception validée par Julien le 16 novembre 2026. **Rien n'est codé.** C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
+Conception validée par Julien le 16 novembre 2026. C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
 
 **Pourquoi** : une liste de souhaits fait « offrez-moi ça ». Celui qui offre a surtout besoin de savoir qui est la personne.
 
@@ -1377,6 +1403,8 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiStickyFooter` | La bande blanche collée en bas d'un long écran, avec son action principale ; elle descend jusqu'au bas de la page |
 | `UiPointList` | Quelques points, chacun après un petit rond ou son icône ; `tone` colore les marques (rouge pour ce qui se perd, vert pour ce qui reste) |
 | `UiJournalPreview` | « Ce que le groupe lira dans le journal » : la ligne dans une carte blanche, avant l'action qui l'écrit |
+| `UiTagList` | Quelques mots côte à côte, chacun dans une pastille kraft, qui passent à la ligne : les réponses de « Moi et les cadeaux » |
+| `UiStar` | L'étoile moutarde à quatre branches, pleine, devant une idée précise |
 | `UiConfirmBox` | La case « Je comprends que… » à cocher avant une action qui ne se rattrape pas |
 | `UiPageContext` | Où se trouve un écran, en une ligne grise au-dessus du titre : « {Groupe} · {Édition} », chaque morceau un lien de 44 px vers l'accueil du groupe ou l'édition (`useScreenContext`, qui donne aussi le titre de l'onglet, `pageTitle`) |
 | `UiPersonField` | Un champ qui contient une personne (icône et prénom, ou une indication) et ouvre le choix d'une personne |
@@ -1390,7 +1418,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiFoldRow` | La ligne qui remplace la suite d'une longue liste : trois icônes de personne, « Voir les N autres » et, si besoin, l'état de la série (emplacement `detail`, pour son icône), un chevron ; puis une petite bande avant la suite. La même ligne, sans les icônes et chevron vers le haut, replie une liste dépliée (« Replier la liste ») |
 | `UiFoldedRows` | Les lignes d'une liste repliée, dans son `<ul>` : les premières lignes, puis « Voir les N autres » ; un appui déplie tout d'un coup (décidé par Julien le 16 novembre 2026 : jamais « Voir les N autres » et « Replier la liste » ensemble), et « Replier la liste » vient en dernière ligne ; replier ramène la fin de la liste à l'écran (`foldList`, `listView`). Chaque ligne est dessinée par l'emplacement `row` |
 | `UiSettingSheet` | Cadre de tout panneau de réglage : titre, aide, contenu, « Valider » et « Annuler » ; un enregistrement refusé s'affiche en ligne rouge au-dessus du bouton, le panneau reste ouvert et la saisie est gardée |
-| `UiChoiceSheet`, `UiTextSheet`, `UiNumberSheet` | Sur `UiSettingSheet` : une valeur parmi plusieurs (aide par choix), un texte avec son compteur, un nombre entre bornes (moins, nombre, plus ; le nombre se tape aussi, ramené dans les bornes en quittant le champ, décidé par Julien le 17 novembre 2026). La valeur n'est gardée qu'avec « Valider » |
+| `UiChoiceSheet`, `UiTextSheet`, `UiNumberSheet` | Sur `UiSettingSheet` : une valeur parmi plusieurs (aide par choix), un texte avec son compteur (`hide-label` quand le titre nomme déjà le champ), un nombre entre bornes (moins, nombre, plus ; le nombre se tape aussi, ramené dans les bornes en quittant le champ, décidé par Julien le 17 novembre 2026). La valeur n'est gardée qu'avec « Valider » |
 
 Fonctions pures qui les servent, testées : `stackOf`, `foldList` et `listView` (`shared/utils/lists.ts`), `followSeries` (`server/utils/editions.ts`), `matchesName` et `highlightName` (`shared/utils/names.ts`), `participantSteps` et `envelopeState` (`server/utils/personal.ts`).
 
@@ -1423,6 +1451,6 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 
 ### 23.4 Reste à faire
 
-- **La refonte des interfaces est faite** (lots 0 à 10, 15 au 17 novembre 2026) : le plan coché est dans [`docs/refonte/PLAN.md`](docs/refonte/PLAN.md), les maquettes en HTML dans `docs/refonte/maquettes/`. Ce qui reste est dans sa section 6 : les questions ouvertes (presque toutes des données que les routes ne renvoient pas encore) et les maquettes hors périmètre (dévoiler les résultats, pistes de cadeaux, mot de l'administrateur sur un refus, alerte du journal sur la page du tirage).
+- **La refonte des interfaces est faite** (lots 0 à 10, 15 au 17 novembre 2026) : le plan coché est dans [`docs/refonte/PLAN.md`](docs/refonte/PLAN.md), les maquettes en HTML dans `docs/refonte/maquettes/`. Ce qui reste est dans sa section 6 : les questions ouvertes (presque toutes des données que les routes ne renvoient pas encore) et les maquettes encore hors périmètre (tirage déjà fait ailleurs, lot 17 ; idées futures).
 - Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
 

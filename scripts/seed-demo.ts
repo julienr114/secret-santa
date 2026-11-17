@@ -2,7 +2,7 @@
 // pnpm dev, then pnpm seed:demo [base URL]. It can be run again: each
 // part is skipped when it already exists.
 // - "Famille Démo": three past editions (drawn and closed) and an open
-//   one with a few wish lists. Julien carries the super-admin's address,
+//   one with a few gift hints. Julien carries the super-admin's address,
 //   so that their home shows draws.
 // - Accounts: one with a request pending, one accepted that has not
 //   created its group yet, one refused, one with its own group, and one
@@ -135,7 +135,8 @@ const seedFamily = async () => {
   }
   const currentId = await createEdition(CURRENT_YEAR);
 
-  // A few wish lists, saved through the personal links like participants do.
+  // A few gift hints (README 22.11), saved through the personal links like
+  // participants do: precise ideas, and a portrait for Anaïs.
   const WISHES: Record<string, { label: string; url?: string }[]> = {
     Anaïs: [
       { label: 'Un roman policier' },
@@ -162,6 +163,10 @@ const seedFamily = async () => {
     const path = new URL(linkOf(firstName)).pathname;
     await call('PUT', `/api${path}/wishes`, { wishes });
   }
+  await call('PATCH', `/api${new URL(linkOf('Anaïs')).pathname}/hints`, {
+    answers: { usefulOrSurprising: 'first', objectOrMoment: 'second' },
+    texts: { lately: 'La course à pied, les BD, la cuisine du dimanche.' },
+  });
 };
 
 const ACCOUNTS = {

@@ -8,11 +8,13 @@ export type SkeletonPart =
   | 'card'
   | 'envelope'
   | 'groups'
+  | 'journal'
   | 'list';
 
 // A screen on its way, composed by the screen from pieces: a title, a
 // header with the person's icon, the edition's stepper or the draw's
-// steps, an action card, the envelope of a draw, group cards, a list.
+// steps, an action card, the envelope of a draw, group cards, the
+// journal (its two views, its filter, a vertical timeline), a list.
 // The busy state and its words go on the whole, for screen readers. It
 // keeps its room but shows only after 200 ms, so a quick load does not
 // flicker.
@@ -26,6 +28,11 @@ withDefaults(
   }>(),
   { rows: 4 },
 );
+/** The lines of the journal's two days, by width. */
+const JOURNAL_DAYS = [
+  ['70%', '55%', '62%'],
+  ['48%', '66%'],
+];
 /** Hidden for the first 200 ms, so a quick load does not flicker. */
 const shown = useBusy(() => true);
 </script>
@@ -99,6 +106,42 @@ const shown = useBusy(() => true);
             <USkeleton class="h-11 rounded-md bg-skeleton-soft" />
             <USkeleton class="h-11 rounded-md bg-skeleton-soft" />
           </div>
+        </div>
+      </div>
+      <div v-else-if="part === 'journal'" class="flex flex-col gap-5">
+        <USkeleton class="h-12 rounded-[10px] bg-skeleton-soft" />
+        <div class="flex gap-2">
+          <USkeleton class="h-10 w-[110px] rounded-full bg-skeleton-soft" />
+          <USkeleton class="h-10 w-[130px] rounded-full bg-skeleton-soft" />
+        </div>
+        <div
+          v-for="(widths, day) in JOURNAL_DAYS"
+          :key="day"
+          class="flex flex-col gap-3.5"
+        >
+          <USkeleton class="h-3 w-2/5 rounded bg-skeleton" />
+          <ul class="relative flex flex-col gap-4.5">
+            <span
+              class="absolute top-2 bottom-2 left-[19px] w-0.5 bg-skeleton"
+              aria-hidden="true"
+            />
+            <li
+              v-for="width in widths"
+              :key="width"
+              class="flex items-start gap-3"
+            >
+              <span class="flex w-10 shrink-0 justify-center">
+                <span class="relative size-8 rounded-full bg-default" />
+              </span>
+              <span class="flex grow items-center gap-3 pt-[9px]">
+                <USkeleton
+                  class="h-3.5 rounded bg-skeleton"
+                  :style="{ width }"
+                />
+                <USkeleton class="ml-auto h-2.5 w-9 rounded bg-skeleton" />
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
       <div v-else class="flex flex-col gap-1.5">

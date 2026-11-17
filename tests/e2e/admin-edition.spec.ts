@@ -266,6 +266,16 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     page.getByText("L'édition Noël 2026 est clôturée"),
   ).toBeVisible();
   expect(await page.getByTestId('journal').innerText()).not.toMatch(/offre/);
+  // An alert says what it means; the journal says what it is for.
+  await page
+    .getByRole('button', { name: 'Qu’est-ce que ça veut dire ?' })
+    .first()
+    .click();
+  await expect(page.getByText('Pourquoi c’est permis.')).toBeVisible();
+  await page.getByRole('button', { name: 'J’ai compris' }).click();
+  await page.getByRole('button', { name: 'À quoi sert-il ?' }).click();
+  await expect(page.getByText('Ce qu’il ne dit jamais')).toBeVisible();
+  await page.getByRole('button', { name: 'J’ai compris' }).click();
 });
 
 test('organisers decide who organises with them', async ({

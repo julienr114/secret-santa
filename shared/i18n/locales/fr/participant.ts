@@ -97,7 +97,7 @@ export default {
   },
   journal: {
     title: 'Journal du groupe',
-    intro: 'Tout le monde voit ce journal. Il ne dit jamais qui offre à qui.',
+    intro: 'Tout le groupe voit ce journal. Il ne dit jamais qui offre à qui.',
     allEditions: 'Toutes les éditions',
     edition: 'Édition',
     empty: "Rien à signaler pour l'instant.",

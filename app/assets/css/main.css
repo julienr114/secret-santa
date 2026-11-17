@@ -90,6 +90,14 @@
   --color-envelope: var(--color-kraft-200);
   --color-envelope-fold: var(--color-kraft-300);
   --color-star: var(--color-mustard-400);
+
+  /* The journal: its thread, and an alert that everyone should notice
+     (a mustard knot, its text in the darkest mustard, its link a step
+     lighter). */
+  --color-thread: var(--color-brick-200);
+  --color-alert: var(--color-mustard-400);
+  --color-alert-ink: var(--color-mustard-950);
+  --color-alert-link: var(--color-mustard-900);
 }
 
 /* Cards, inputs and menus stay white on top of the kraft page. */
@@ -123,4 +131,12 @@
   .animate-spin {
     animation: none;
   }
+}
+
+/* A knot of the journal's thread wears a ring in the page colour: the
+   thread seems to stop just before it and to start again after. */
+@utility knot {
+  box-shadow:
+    0 0 0 4px var(--color-page),
+    0 2px 6px 3px rgb(60 30 10 / 0.06);
 }

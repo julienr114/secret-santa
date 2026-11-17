@@ -102,6 +102,13 @@ test('a personal page follows the preferred language, and can change it', async 
 
   // Like every change made with a link, it is written to the journal.
   await page.getByRole('link', { name: /Group journal/ }).click();
+  // A change of language is left out of the essentials: it is in
+  // « Everything ».
+  await expect(page.getByTestId('journal')).toBeVisible();
+  await expect(
+    page.getByText('Greta changed their language (English)'),
+  ).toHaveCount(0);
+  await page.getByText('Everything', { exact: true }).click();
   await expect(
     page.getByText('Greta changed their language (English)'),
   ).toBeVisible();

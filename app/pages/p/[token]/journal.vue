@@ -14,13 +14,11 @@ const { t } = useT();
     :back="`/p/${token}`"
     :pending="journal.isPending.value"
     :error="journal.error.value"
+    :skeleton="['title', 'journal']"
   >
     <UiPageTitle>
       {{ t('participant.journal.title') }}
     </UiPageTitle>
-    <p class="text-sm text-muted">
-      {{ t('participant.journal.intro') }}
-    </p>
     <JournalView
       v-if="journal.data.value"
       :entries="journal.data.value.entries"

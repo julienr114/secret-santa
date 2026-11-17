@@ -366,11 +366,11 @@ Réponses de Julien du 17 novembre 2026 aux questions de la section 6. À faire 
 
 Fichiers : `JournalList.vue`, `JournalView.vue`, `admin/[slug]/journal.vue`, `p/[token]/journal.vue`.
 
-- [ ] `Journal`, `JournalTout` : deux vues, « L'essentiel » et « Tout » ; par jour ; les événements répétés d'un même type regroupés en une ligne dépliable (« 5 personnes ont découvert leur résultat »). Fonctions pures `essentialEvents` et `groupEvents`, testées.
+- [x] `Journal`, `JournalTout` : deux vues, « L'essentiel » et « Tout » ; par jour ; les événements répétés d'un même type regroupés en une ligne dépliable (« 5 personnes ont découvert leur résultat »). Fonctions pures `essentialEvents` et `groupEvents`, testées.
 - [ ] `JournalPersonne` : filtre « Moi », seulement si les événements portent déjà la personne concernée ; sinon section 6.
-- [ ] `JournalDetail` : « Qu'est-ce que ça veut dire ? » ouvre un panneau qui explique l'alerte.
-- [ ] `JournalAide` : panneau « À quoi sert le journal ? ».
-- [ ] **Squelette** du journal : une pièce « frise verticale » (`ChargementJournal`).
+- [x] `JournalDetail` : « Qu'est-ce que ça veut dire ? » ouvre un panneau qui explique l'alerte.
+- [x] `JournalAide` : panneau « À quoi sert le journal ? ».
+- [x] **Squelette** du journal : une pièce « frise verticale » (`ChargementJournal`).
 
 ### Lot 7 — supprimé
 
@@ -390,6 +390,7 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 - [ ] `Admin`, `AdminPlusieursDemandes` : accueil de l'administration ; la demande la plus ancienne dans la carte, les suivantes en lignes.
 - [ ] `AdminDemande` : réponse dans un panneau, avec l'effet sur le quota (sans le champ « Un mot pour elle »).
 - [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`).
+- [ ] `GroupeNouveauAdmin` (`admin/groupes/nouveau.vue`, vu par un super-admin) : le champ « Adresse du premier organisateur » reste, mais dans un bloc à part, en pointillés, intitulé « Super-admin » avec la mention « Visible seulement par les super-admins ». Un compte normal ne voit ni le bloc ni le champ, et garde la phrase « Tu en seras l'organisateur ». Même marquage pour toute commande réservée au super-admin posée sur un écran que tout le monde voit (par exemple « Supprimer le groupe » dans les réglages) : un seul composant.
 
 - [ ] Validé par Julien le 16 novembre 2026 : le super-admin ne modifie plus le profil d'un compte (prénom, icône, langue), il le lit seulement ; « Accepter » et « Refuser » ont le même poids visuel. Retirer du client le formulaire de profil de `admin/comptes/[id].vue` ; la route d'API reste en place.
 - [ ] **Actions en cours** conformes : roue dans « Accepter » et « Refuser ».
@@ -487,3 +488,10 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 3. **« Réservé au super-admin »** sous « Supprimer le groupe » n'est montré qu'au super-admin, seul à voir la ligne.
    **Réponse de Julien, 17 novembre 2026 :** ça me va.
 
+### Lot 6
+
+1. **Le filtre « Moi » et « Tout le monde » (`JournalPersonne`).** Les lignes du journal ne portent pas la personne concernée : la route renvoie le type, la phrase, l'édition et l'heure, jamais l'identifiant de la personne. Le filtre par personne, la pilule « Tout le monde » et la version « Moi (Hugo) » (« Tu as découvert ton résultat », l'encadré vert) sont donc laissés de côté. Il faudrait ajouter la personne à chaque ligne du journal, et, côté participant, savoir laquelle est « moi » : un changement de route. On le fait ?
+2. **Les icônes et les prénoms d'une ligne regroupée.** « 5 personnes ont découvert leur résultat » montre, dans la maquette, les icônes des cinq personnes, et le détail les liste avec leur icône et leur prénom. Sans la personne sur chaque ligne (question 1), la ligne regroupée n'a pas d'icônes et son détail reprend la phrase de chaque événement (« Rose a découvert son résultat », 23:50).
+3. **Les envois regroupés.** La maquette dit « L'organisateur a envoyé « Tirage fait » à 5 personnes par email ». La ligne ne porte ni le message ni le moyen d'envoi : l'écran regroupe donc tous les envois d'un jour et d'une édition et dit « L'organisateur a envoyé 5 messages » ; le détail donne chaque phrase, qui, elle, dit le message et le moyen. Ajouter le message et le moyen aux lignes du journal ferait le regroupement de la maquette (changement de route).
+4. **« Qu'est-ce que ça veut dire ? » (`JournalDetail`).** Sans la personne (question 1), le texte ne peut pas dire « à qui Hugo offre un cadeau » ni « Ce que ça change pour toi : rien », faux pour Hugo lui-même. Il dit « à qui la personne nommée offre un cadeau » et « Ce que ça change. Les autres résultats et les listes de souhaits n'ont pas été vus. » J'ai aussi écrit l'explication de deux alertes que la maquette ne montre pas : « Tirage annulé » et l'ancien « L'organisateur a consulté les résultats du tirage ». Les textes te vont ?
+5. **La phrase sous la liste**, « L'essentiel regroupe les envois et laisse de côté les changements d'icône et de langue », explique l'interface ; elle est dans la maquette, donc gardée, et seulement sous « L'essentiel ». On la garde ?

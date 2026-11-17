@@ -40,4 +40,76 @@ export default {
     other: 'a message',
   },
   via: { copy: ' (message copied)', share: ' (shared)', email: ' (email)' },
+  screen: {
+    helpLink: 'What is it for?',
+    views: 'What the journal shows',
+    essential: 'The essentials',
+    all: 'Everything',
+    essentialNote:
+      'The essentials fold the sends together and leave out changes of icon and language. “Everything” shows each event.',
+    showDetail: 'Show the details',
+    hideDetail: 'Fold',
+    whatMeans: 'What does this mean?',
+    understood: 'Got it',
+  },
+  grouped: {
+    result_viewed: '{strong} discovered their result',
+    message_sent: 'The organiser sent {strong}',
+    link_copied: 'The organiser copied {strong}',
+    link_shared: 'The organiser shared {strong}',
+    participant_added: '{strong} join the edition',
+  },
+  groupedCount: {
+    result_viewed: { one: '{count} person', other: '{count} people' },
+    message_sent: { one: '{count} message', other: '{count} messages' },
+    link_copied: { one: '{count} link', other: '{count} links' },
+    link_shared: { one: '{count} link', other: '{count} links' },
+    participant_added: { one: '{count} person', other: '{count} people' },
+  },
+  help: {
+    title: 'What is the journal for?',
+    intro:
+      'To keep the draw honest: everything that touches the secret is written here, for the whole group to see. Cheating is still possible, but it shows.',
+    notes: 'What it records',
+    note1: 'The draw, its cancellation, the closing',
+    note2: 'Each link sent, copied or renewed',
+    note3: 'The first time each person discovers their result',
+    note4: 'Wish lists that change',
+    note5: 'Any look by the organiser at a result',
+    never: 'What it never says',
+    never1: 'Who gives to whom',
+    never2: 'What the wish lists contain',
+    who: 'Who sees it',
+    who1: 'Every participant of the group and the organiser, with the same lines',
+    warning:
+      'A line is about you and you did not do it? Tell your organiser: they can renew your link.',
+  },
+  alert: {
+    at: '{day} at {time}',
+    happened: 'What happened.',
+    why: 'Why it is allowed.',
+    changes: 'What it changes.',
+    result_revealed: {
+      title: 'Last-resort access',
+      happened:
+        'The organiser looked at who the person named gives a gift to. They saw only that result.',
+      why: 'In case of doubt or disagreement, it must be possible to check. The organiser has to copy a sentence and accept that the whole group will know.',
+      changes: 'The other results and the wish lists were not seen.',
+    },
+    results_revealed: {
+      title: 'Last-resort access',
+      happened: 'The organiser looked at the results of the draw.',
+      why: 'In case of doubt or disagreement, it must be possible to check. The organiser has to accept that the whole group will know.',
+      changes:
+        'They know who gives to whom. If the group wishes, the draw can be cancelled and run again.',
+    },
+    draw_cancelled: {
+      title: 'Draw cancelled',
+      happened:
+        'The organiser cancelled the draw, for the reason written above. The old results are erased.',
+      why: 'Someone dropping out, someone forgotten: better to run it again than keep a wrong draw. The reason is written in the journal for the whole group.',
+      changes:
+        'Everyone will get a new message and discover a new result. The links and the wish lists do not change.',
+    },
+  },
 } satisfies Dict<typeof fr>;

@@ -44,4 +44,77 @@ export default {
     share: ' (geteilt)',
     email: ' (E-Mail)',
   },
+  screen: {
+    helpLink: 'Wozu dient es?',
+    views: 'Was das Protokoll zeigt',
+    essential: 'Das Wichtigste',
+    all: 'Alles',
+    essentialNote:
+      'Das Wichtigste fasst die Sendungen zusammen und lässt Änderungen von Symbol und Sprache weg. „Alles“ zeigt jedes Ereignis.',
+    showDetail: 'Details zeigen',
+    hideDetail: 'Einklappen',
+    whatMeans: 'Was bedeutet das?',
+    understood: 'Verstanden',
+  },
+  grouped: {
+    result_viewed: '{strong} haben ihr Ergebnis entdeckt',
+    message_sent: 'Der Organisator hat {strong} gesendet',
+    link_copied: 'Der Organisator hat {strong} kopiert',
+    link_shared: 'Der Organisator hat {strong} geteilt',
+    participant_added: '{strong} sind der Ausgabe beigetreten',
+  },
+  groupedCount: {
+    result_viewed: { one: '{count} Person', other: '{count} Personen' },
+    message_sent: { one: '{count} Nachricht', other: '{count} Nachrichten' },
+    link_copied: { one: '{count} Link', other: '{count} Links' },
+    link_shared: { one: '{count} Link', other: '{count} Links' },
+    participant_added: { one: '{count} Person', other: '{count} Personen' },
+  },
+  help: {
+    title: 'Wozu dient das Protokoll?',
+    intro:
+      'Damit die Auslosung ehrlich bleibt: Alles, was das Geheimnis berührt, wird hier für die ganze Gruppe sichtbar notiert. Schummeln bleibt möglich, aber man sieht es.',
+    notes: 'Was es notiert',
+    note1: 'Die Auslosung, ihre Absage, den Abschluss',
+    note2: 'Jeden gesendeten, kopierten oder erneuerten Link',
+    note3: 'Das erste Mal, wenn jemand sein Ergebnis entdeckt',
+    note4: 'Geänderte Wunschlisten',
+    note5: 'Jeden Blick des Organisators auf ein Ergebnis',
+    never: 'Was es nie verrät',
+    never1: 'Wer wen beschenkt',
+    never2: 'Was in den Wunschlisten steht',
+    who: 'Wer es sieht',
+    who1: 'Alle Teilnehmer der Gruppe und der Organisator, mit denselben Zeilen',
+    warning:
+      'Eine Zeile betrifft dich und kommt nicht von dir? Sag es deinem Organisator: Er kann deinen Link erneuern.',
+  },
+  alert: {
+    at: '{day} um {time}',
+    happened: 'Was passiert ist.',
+    why: 'Warum das erlaubt ist.',
+    changes: 'Was sich ändert.',
+    result_revealed: {
+      title: 'Zugriff im Notfall',
+      happened:
+        'Der Organisator hat nachgesehen, wen die genannte Person beschenkt. Er hat nur dieses eine Ergebnis gesehen.',
+      why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
+      changes:
+        'Die anderen Ergebnisse und die Wunschlisten wurden nicht gesehen.',
+    },
+    results_revealed: {
+      title: 'Zugriff im Notfall',
+      happened: 'Der Organisator hat die Ergebnisse der Auslosung angesehen.',
+      why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss akzeptieren, dass die ganze Gruppe es erfährt.',
+      changes:
+        'Er weiß, wer wen beschenkt. Wenn die Gruppe es wünscht, kann die Auslosung abgesagt und neu gestartet werden.',
+    },
+    draw_cancelled: {
+      title: 'Auslosung abgesagt',
+      happened:
+        'Der Organisator hat die Auslosung abgesagt, aus dem oben genannten Grund. Die alten Ergebnisse sind gelöscht.',
+      why: 'Eine Absage, ein Vergessener: Lieber neu auslosen als eine falsche Auslosung behalten. Der Grund steht für die ganze Gruppe im Protokoll.',
+      changes:
+        'Alle bekommen eine neue Nachricht und entdecken ein neues Ergebnis. Die Links und die Wunschlisten bleiben gleich.',
+    },
+  },
 } satisfies Dict<typeof fr>;

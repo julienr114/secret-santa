@@ -1,51 +1,17 @@
 <script setup lang="ts">
 import type { JournalEntry } from '#server/utils/audit';
+import type { JournalDay } from '#shared/utils/journal';
 
-// The public journal (README section 9) as a timeline, newest first and
-// grouped by day. A thin red thread runs down the left and fades out;
-// every event hangs on it with an emoji that tells what happened.
-// Two levels, so the eye finds what matters: milestones of the edition
-// (created, draw, closing…) are cards, everyday events are plain lines.
-// Shared by the participant and admin sides.
-const props = defineProps<{ entries: JournalEntry[] }>();
-
-const EMOJIS: Record<string, string> = {
-  edition_created: '🎄',
-  participant_added: '👋',
-  participant_removed: '🚪',
-  rules_changed: '📜',
-  message_sent: '✉️',
-  link_copied: '🔗',
-  link_shared: '🔗',
-  link_regenerated: '🔑',
-  draw_done: '🎲',
-  draw_cancelled: '↩️',
-  results_revealed: '👀',
-  result_revealed: '👀',
-  result_viewed: '🎁',
-  wishes_updated: '📝',
-  avatar_changed: '🎨',
-  language_changed: '🌍',
-  edition_closed: '🎉',
-};
-const emojiOf = (type: string) => EMOJIS[type] ?? '✦';
-
-const MILESTONES = new Set([
-  'edition_created',
-  'draw_done',
-  'draw_cancelled',
-  'results_revealed',
-  'result_revealed',
-  'edition_closed',
-]);
-// Milestones everyone should notice: something was undone or looked at.
-const ALERTS = new Set([
-  'draw_cancelled',
-  'results_revealed',
-  'result_revealed',
-]);
-
+// The public journal (README section 9) as a timeline, newest first, by
+// day. A thin brick thread runs down the left; every line hangs on it
+// with its icon. Milestones of the edition are white cards, alerts are
+// mustard cards with what they mean, everyday events plain lines, and
+// the repeated ones a line that unfolds. Shared by the participant and
+// the organiser.
+defineProps<{ days: JournalDay<JournalEntry>[] }>();
+const emit = defineEmits<{ explain: [entry: JournalEntry] }>();
 const { t, locale } = useT();
+
 const dayFormat = computed(
   () =>
     new Intl.DateTimeFormat(locale.value, {
@@ -57,103 +23,122 @@ const dayFormat = computed(
 const timeFormat = computed(
   () => new Intl.DateTimeFormat(locale.value, { timeStyle: 'short' }),
 );
+/**
+ * The time of a moment.
+ * @param iso - The moment.
+ * @returns « 14:02 ».
+ */
 const timeOf = (iso: string) => timeFormat.value.format(new Date(iso));
-
-// Entries arrive newest first; consecutive ones of the same day share a
-// heading.
-type Day = { label: string; entries: JournalEntry[] };
-const days = computed(() =>
-  props.entries.reduce<Day[]>((acc, entry) => {
-    const label = dayFormat.value.format(new Date(entry.createdAt));
-    const last = acc.at(-1);
-    return last && last.label === label
-      ? [...acc.slice(0, -1), { label, entries: [...last.entries, entry] }]
-      : [...acc, { label, entries: [entry] }];
-  }, []),
-);
+/**
+ * The heading of a day.
+ * @param day - The day, as `YYYY-MM-DD`.
+ * @returns « dimanche 15 novembre ».
+ */
+const dayLabel = (day: string) =>
+  dayFormat.value.format(new Date(`${day}T12:00:00`));
 </script>
 
 <template>
-  <p v-if="entries.length === 0" class="text-sm text-muted">
+  <p v-if="days.length === 0" class="text-sm text-muted">
     {{ t('participant.journal.empty') }}
   </p>
-  <div v-else class="relative" data-testid="journal">
-    <!-- The thread: 2.5rem rail, line in its middle, fading at the end. -->
+  <div v-else class="relative flex flex-col gap-7" data-testid="journal">
     <span
-      class="absolute top-3 bottom-0 left-[calc(1.25rem-1px)] w-0.5 rounded-full bg-linear-to-b from-primary/70 via-primary/30 to-transparent"
+      class="absolute top-2.5 bottom-0 left-[19px] w-0.5 rounded-full bg-thread"
       aria-hidden="true"
     />
     <section
       v-for="day in days"
-      :key="day.label"
-      class="relative pb-8 last:pb-2"
+      :key="day.day"
+      class="relative flex flex-col gap-4"
     >
       <h2 class="flex items-center font-sans">
         <span class="flex w-10 shrink-0 justify-center" aria-hidden="true">
-          <span class="knot size-2.5 rounded-full bg-primary" />
+          <span
+            class="size-2.5 rounded-full bg-primary shadow-[0_0_0_4px_var(--color-page)]"
+          />
         </span>
         <span
-          class="pl-3 text-xs font-semibold tracking-wider text-muted uppercase"
-          >{{ day.label }}</span
+          class="pl-3 text-xs font-bold tracking-[0.06em] text-toned uppercase"
+          >{{ dayLabel(day.day) }}</span
         >
       </h2>
-      <ol class="mt-4 flex flex-col gap-5">
+      <ol class="flex flex-col gap-4.5">
         <li
-          v-for="entry in day.entries"
-          :key="entry.id"
+          v-for="line in day.lines"
+          :key="line.kind === 'one' ? line.entry.id : line.entries[0]!.id"
           class="flex items-start gap-3"
         >
-          <span class="flex w-10 shrink-0 justify-center" aria-hidden="true">
-            <span
-              v-if="MILESTONES.has(entry.type)"
-              class="knot mt-2 flex size-10 items-center justify-center rounded-full text-lg"
-              :class="ALERTS.has(entry.type) ? 'bg-warning' : 'bg-primary'"
-              >{{ emojiOf(entry.type) }}</span
+          <template v-if="line.kind === 'one'">
+            <span class="flex w-10 shrink-0 justify-center" aria-hidden="true">
+              <span
+                class="knot flex items-center justify-center rounded-full"
+                :class="{
+                  'size-10 bg-alert text-alert-ink':
+                    journalLook(line.entry.type).level === 'alert',
+                  'size-10 bg-primary text-white':
+                    journalLook(line.entry.type).level === 'milestone',
+                  'size-8 bg-default text-toned':
+                    journalLook(line.entry.type).level === 'line',
+                }"
+              >
+                <UIcon
+                  :name="journalLook(line.entry.type).icon"
+                  :class="
+                    journalLook(line.entry.type).level === 'line'
+                      ? 'size-4'
+                      : 'size-5'
+                  "
+                />
+              </span>
+            </span>
+            <div
+              v-if="journalLook(line.entry.type).level !== 'line'"
+              class="flex min-w-0 grow flex-col gap-1 rounded-2xl px-4 py-3"
+              :class="
+                journalLook(line.entry.type).level === 'alert'
+                  ? 'bg-warning-tint ring-1 ring-warning-ring'
+                  : 'bg-default shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
+              "
             >
-            <span
-              v-else
-              class="knot flex size-8 items-center justify-center rounded-full bg-default text-sm"
-              >{{ emojiOf(entry.type) }}</span
-            >
-          </span>
-
-          <UiCard
-            v-if="MILESTONES.has(entry.type)"
-            as="div"
-            padding="none"
-            class="min-w-0 grow px-4 py-3"
-          >
-            <p class="font-display text-lg leading-snug font-semibold">
-              {{ entry.text }}
-            </p>
-            <time
-              :datetime="entry.createdAt"
-              class="mt-0.5 block text-xs text-muted"
-              >{{ timeOf(entry.createdAt) }}</time
-            >
-          </UiCard>
-          <div v-else class="flex min-w-0 grow items-baseline gap-3 pt-1">
-            <p class="min-w-0 grow leading-snug break-words">
-              {{ entry.text }}
-            </p>
-            <time
-              :datetime="entry.createdAt"
-              class="shrink-0 text-xs text-dimmed tabular-nums"
-              >{{ timeOf(entry.createdAt) }}</time
-            >
-          </div>
+              <p
+                class="font-display text-[17px] leading-[1.3] font-semibold break-words"
+                :class="
+                  journalLook(line.entry.type).level === 'alert'
+                    ? 'text-alert-ink'
+                    : 'text-highlighted'
+                "
+              >
+                {{ line.entry.text }}
+              </p>
+              <time
+                :datetime="line.entry.createdAt"
+                class="text-xs text-toned"
+                >{{ timeOf(line.entry.createdAt) }}</time
+              >
+              <button
+                v-if="journalLook(line.entry.type).level === 'alert'"
+                type="button"
+                class="flex min-h-8 items-center self-start text-[13px] font-bold text-alert-link underline underline-offset-2"
+                @click="emit('explain', line.entry)"
+              >
+                {{ t('journal.screen.whatMeans') }}
+              </button>
+            </div>
+            <div v-else class="flex min-w-0 grow items-baseline gap-3 pt-[5px]">
+              <p class="min-w-0 grow text-[15px] leading-[1.35] break-words">
+                {{ line.entry.text }}
+              </p>
+              <time
+                :datetime="line.entry.createdAt"
+                class="shrink-0 text-xs text-toned tabular-nums"
+                >{{ timeOf(line.entry.createdAt) }}</time
+              >
+            </div>
+          </template>
+          <JournalGroup v-else :type="line.type" :entries="line.entries" />
         </li>
       </ol>
     </section>
   </div>
 </template>
-
-<style scoped>
-/* Each knot wears a ring in the page colour: the thread seems to stop
-   just before it and to start again after. */
-.knot {
-  box-shadow:
-    0 0 0 4px var(--color-page),
-    0 2px 6px 3px rgb(60 30 10 / 0.06);
-}
-</style>

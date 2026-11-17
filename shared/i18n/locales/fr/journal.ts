@@ -39,4 +39,77 @@ export default {
     other: 'un message',
   },
   via: { copy: ' (message copié)', share: ' (partagé)', email: ' (email)' },
+  screen: {
+    helpLink: 'À quoi sert-il ?',
+    views: 'Ce que montre le journal',
+    essential: 'L’essentiel',
+    all: 'Tout',
+    essentialNote:
+      'L’essentiel regroupe les envois et laisse de côté les changements d’icône et de langue. « Tout » montre chaque événement.',
+    showDetail: 'Voir le détail',
+    hideDetail: 'Replier',
+    whatMeans: 'Qu’est-ce que ça veut dire ?',
+    understood: 'J’ai compris',
+  },
+  grouped: {
+    result_viewed: '{strong} ont découvert leur résultat',
+    message_sent: 'L’organisateur a envoyé {strong}',
+    link_copied: 'L’organisateur a copié {strong}',
+    link_shared: 'L’organisateur a partagé {strong}',
+    participant_added: '{strong} rejoignent l’édition',
+  },
+  groupedCount: {
+    result_viewed: { one: '{count} personne', other: '{count} personnes' },
+    message_sent: { one: '{count} message', other: '{count} messages' },
+    link_copied: { one: '{count} lien', other: '{count} liens' },
+    link_shared: { one: '{count} lien', other: '{count} liens' },
+    participant_added: { one: '{count} personne', other: '{count} personnes' },
+  },
+  help: {
+    title: 'À quoi sert le journal ?',
+    intro:
+      'À garder le tirage honnête : tout ce qui touche au secret y est noté, à la vue de tout le groupe. Tricher reste possible, mais ça se voit.',
+    notes: 'Ce qu’il note',
+    note1: 'Le tirage, son annulation, la clôture',
+    note2: 'Chaque lien envoyé, copié ou régénéré',
+    note3: 'La première fois que chacun découvre son résultat',
+    note4: 'Les listes de souhaits modifiées',
+    note5: 'Tout accès de l’organisateur à un résultat',
+    never: 'Ce qu’il ne dit jamais',
+    never1: 'Qui offre à qui',
+    never2: 'Ce que contiennent les listes de souhaits',
+    who: 'Qui le voit',
+    who1: 'Tous les participants du groupe et l’organisateur, avec les mêmes lignes',
+    warning:
+      'Une ligne te concerne et ne vient pas de toi ? Préviens ton organisateur : il peut régénérer ton lien.',
+  },
+  alert: {
+    at: '{day} à {time}',
+    happened: 'Ce qui s’est passé.',
+    why: 'Pourquoi c’est permis.',
+    changes: 'Ce que ça change.',
+    result_revealed: {
+      title: 'Accès de dernier recours',
+      happened:
+        'L’organisateur a regardé à qui la personne nommée offre un cadeau. Il n’a vu que ce résultat-là.',
+      why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
+      changes:
+        'Les autres résultats et les listes de souhaits n’ont pas été vus.',
+    },
+    results_revealed: {
+      title: 'Accès de dernier recours',
+      happened: 'L’organisateur a regardé les résultats du tirage.',
+      why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit accepter que tout le groupe le sache.',
+      changes:
+        'Il sait qui offre à qui. Si le groupe le souhaite, le tirage peut être annulé et relancé.',
+    },
+    draw_cancelled: {
+      title: 'Tirage annulé',
+      happened:
+        'L’organisateur a annulé le tirage, pour le motif écrit ci-dessus. Les anciens résultats sont effacés.',
+      why: 'Un désistement, un oubli : mieux vaut relancer que garder un tirage faux. Le motif est écrit au journal pour tout le groupe.',
+      changes:
+        'Chacun recevra un nouveau message et découvrira un nouveau résultat. Les liens et les listes de souhaits ne changent pas.',
+    },
+  },
 };

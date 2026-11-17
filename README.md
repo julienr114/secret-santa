@@ -445,6 +445,8 @@ Les événements stockés ne contiennent aucun texte : la phrase est composée �
 
 Chaque événement porte la date, l'heure et l'auteur (`participant`, `organisateur`, `super-admin` ou `système`).
 
+**L'écran** (lot 6 de la refonte, 17 novembre 2026), le même pour le participant et l'organisateur (`JournalView`) : « Tout le groupe voit ce journal » et « À quoi sert-il ? », qui ouvre un panneau (ce qu'il note, ce qu'il ne dit jamais, qui le voit) ; deux vues, « L'essentiel », sans les changements d'icône et de langue (`essentialEvents`), et « Tout » ; l'édition (celle en cours d'abord, ou toutes) ; puis une frise par jour (`journalDays`). Les jalons de l'édition (création, tirage, clôture) sont des cartes blanches, les alertes (un résultat consulté par l'organisateur, un tirage annulé) des cartes moutarde avec « Qu'est-ce que ça veut dire ? », qui ouvre un panneau d'explication. Les événements d'un même type, d'un même jour et d'une même édition (découvertes, envois, liens copiés ou partagés, arrivées) tiennent sur une ligne, « 5 personnes ont découvert leur résultat », placée à l'heure du dernier, avec « Voir le détail » (`groupEvents`, `shared/utils/journal.ts`). Les lignes ne portant pas la personne concernée, il n'y a pas encore de filtre par personne (questions du lot 6 dans `docs/refonte/PLAN.md`).
+
 ---
 
 ## 10. Modèle de données
@@ -813,7 +815,7 @@ Page personnelle `/p/[token]` dans tous ses états (attente, bouton « Découvri
 - Règles pures dans `server/utils/personal.ts` (`personalPhase`, `canReveal`, `canEditWishes`). Une édition clôturée laisse consulter son résultat (toujours compté et journalisé).
 - Le résultat ne vit que dans l'état de la page (mutation TanStack Query, jamais mise en cache) : il disparaît au rechargement.
 - En-têtes `Referrer-Policy`, `Cache-Control: no-store` et `X-Robots-Tag` posés par `routeRules` sur `/p/**` et `/api/p/**`.
-- Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalList` et `loadJournal` sont prêts à resservir côté organisateur.
+- Le journal renvoyé au participant ne contient que des phrases (`journalEntries`), jamais le `meta` brut. Le composant `JournalView` et `loadJournal` servent aussi côté organisateur.
 - Depuis le 15 novembre 2026, l'état renvoie aussi la date de la fête (rien de secret : les messages la donnent à tous), pour le compte à rebours de la frise.
 - La page se met à jour seule : l'état est redemandé toutes les 10 s tant que l'onglet est visible (pas de SSE ni de WebSocket ; le vrai push par Durable Object a été étudié puis écarté le 13 novembre 2026, trop de mécanique pour un événement annuel).
 - Le participant change son icône depuis sa page (`PUT /api/p/[token]/avatar`, panneau du bas avec « Valider ») jusqu'à la clôture. La personne modifiée vient du lien, jamais de la requête ; le changement est journalisé.

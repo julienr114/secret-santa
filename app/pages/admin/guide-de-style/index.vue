@@ -183,7 +183,7 @@ const at = (minutes: number) =>
  * @param type - Journal event type.
  * @param minutes - How long ago it happened.
  * @param meta - Values overriding the sample placeholders.
- * @returns The entry as JournalList expects it.
+ * @returns The entry as the journal expects it.
  */
 const entry = (
   id: string,
@@ -207,9 +207,10 @@ const entry = (
     ...meta,
   }),
 });
-/** One entry of each visual kind: plain line, milestone, alert. */
+/** One entry of each visual kind: plain line, folded lines, milestone, alert. */
 const entries = computed(() => [
   entry('1', 'result_viewed', 5),
+  entry('1b', 'result_viewed', 12, { name: 'Hugo' }),
   entry('2', 'draw_done', 30),
   entry('3', 'wishes_updated', 90, { count: 3 }),
   entry('4', 'result_revealed', 200),
@@ -751,7 +752,11 @@ const entries = computed(() => [
 
     <section class="flex flex-col gap-3">
       <UiSectionTitle>Journal</UiSectionTitle>
-      <JournalList :entries="entries" />
+      <JournalView
+        :entries="entries"
+        :editions="[{ id: 'e', label: 'Noël 2026' }]"
+        current-edition-id="e"
+      />
     </section>
 
     <section class="flex flex-col gap-2">

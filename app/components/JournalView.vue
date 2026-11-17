@@ -130,7 +130,7 @@ const alertOpen = computed({
 </script>
 
 <template>
-  <p class="text-[15px] leading-[1.45] text-toned">
+  <p v-if="!onMe" class="text-[15px] leading-[1.45] text-toned">
     {{ t('participant.journal.intro') }}
     <button
       type="button"

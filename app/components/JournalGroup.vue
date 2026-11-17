@@ -135,10 +135,11 @@ const icon = computed(() => journalLook(props.type).icon);
         class="flex items-center gap-3 text-sm"
       >
         <template v-if="personOf(entry)">
-          <UiAvatar :avatar="personOf(entry)!.avatar" size="sm" />
-          <span class="min-w-0 grow truncate font-semibold">{{
-            personOf(entry)!.name
-          }}</span>
+          <UiAvatar
+            :avatar="personOf(entry)!.avatar"
+            class="-mr-1 size-6! text-[11px]!"
+          />
+          <span class="min-w-0 grow truncate">{{ personOf(entry)!.name }}</span>
         </template>
         <span v-else class="min-w-0 grow break-words">{{ entry.text }}</span>
         <time

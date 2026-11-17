@@ -58,9 +58,9 @@ export default defineEventHandler(async (event) => {
         ? 'other'
         : 'free';
   // Alerts of the journal since the participant last opened it from
-  // here; never opened, since the draw.
-  const since =
-    participation.journalSeenAt ?? edition.drawnAt ?? edition.createdAt;
+  // here; never opened, since the edition was created (a cancelled draw
+  // stays told after a new one).
+  const since = participation.journalSeenAt ?? edition.createdAt;
   const alertRows = await db
     .select({
       id: auditLog.id,

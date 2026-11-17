@@ -289,7 +289,7 @@ export type AlertRow = {
  * party, a cancelled draw, and the renewal of their own link.
  * @param rows - Events of the group.
  * @param me - The participant's person.
- * @param since - When they last opened the journal (or, never, the draw).
+ * @param since - When they last opened the journal (never: the edition's creation).
  * @returns Those alerts, newest first.
  */
 export const unseenAlertRows = <R extends AlertRow>(
@@ -310,7 +310,7 @@ export const unseenAlertRows = <R extends AlertRow>(
  * How many alerts of the journal a participant has not seen.
  * @param rows - Events of the group.
  * @param me - The participant's person.
- * @param since - When they last opened the journal (or, never, the draw).
+ * @param since - When they last opened the journal (never: the edition's creation).
  * @returns The number of alerts after `since`.
  */
 export const unseenAlerts = (rows: AlertRow[], me: string, since: string) =>
@@ -328,7 +328,7 @@ export type JournalSignal = {
  * which one when it is alone.
  * @param rows - Events of the group.
  * @param me - The participant's person.
- * @param since - When they last opened the journal (or, never, the draw).
+ * @param since - When they last opened the journal (never: the edition's creation).
  * @returns The signal, or null when nothing waits.
  */
 export const journalSignal = (

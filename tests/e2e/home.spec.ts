@@ -122,5 +122,23 @@ test('the home says when the journal of a draw has news', async ({
   await page.getByTestId('journal-signal').click();
   await seen;
   expect(await signal()).toBeNull();
+
+  // Xavier never opened the journal: a draw cancelled then made again
+  // is still told to him, the count starting from the edition.
+  await admin.post(`${AT}/editions/${edition.id}/redraw`, {
+    data: { reason: 'Un oubli' },
+  });
+  await admin.post(`${AT}/editions/${edition.id}/draw`);
+  const xavier = participants.find(
+    (p: { firstName: string }) => p.firstName === 'Xavier',
+  );
+  const { link } = await (
+    await admin.post(`${AT}/participations/${xavier.participationId}/link`)
+  ).json();
+  const state = await (
+    await page.request.get(`/api/p/${new URL(link).pathname.split('/').pop()}`)
+  ).json();
+  // The access to Yann's result and the cancelled draw.
+  expect(state.journalAlerts).toBe(2);
   await admin.dispose();
 });

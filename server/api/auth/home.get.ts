@@ -107,16 +107,16 @@ export default defineEventHandler(async (event) => {
           firstName: person.firstName,
           avatar: avatarOf(person),
           // Alerts since the journal was last opened from this draw; never
-          // opened, since the draw (lot 14).
+          // opened, since the edition was created, so that a draw cancelled
+          // then made again is still told (decided by Julien on 17 November
+          // 2026).
           journal:
             edition.status === 'closed'
               ? null
               : journalSignal(
                   alertRows.filter((row) => row.groupId === edition.groupId),
                   person.id,
-                  participation.journalSeenAt ??
-                    edition.drawnAt ??
-                    edition.createdAt,
+                  participation.journalSeenAt ?? edition.createdAt,
                 ),
         };
       },

@@ -58,6 +58,13 @@ export default {
       bodyNotSeen:
         'This edition is closed. You can still find out who you were giving a gift to.',
     },
+    tiles: {
+      hintsTodo: 'To fill in',
+      hintsEditable: 'Filled in, can be changed until the party',
+      hintsLocked: 'Filled in, can no longer be changed',
+      hintsShort: 'Filled in',
+      hintsNone: 'Nothing left',
+    },
     journal: {
       title: 'Group journal',
       subtitle: 'Everything that happened, for all to see',

@@ -167,12 +167,42 @@ const onConfirmAnswer = (personId: string) =>
       toast.add({ title: errorMessage(error), color: 'error' }),
   });
 
-/** Where their own hints stand, under « Mes pistes de cadeaux ». */
-const hintsSubtitle = computed(() => {
-  if (!me.value?.hasHints) return t('hints.state.none');
-  return me.value.hintsEditable
-    ? t('hints.state.filledEditable')
-    : t('hints.state.filledLocked');
+/**
+ * The things to do on the page, one tile each (README 22.16): for now
+ * « Mes pistes de cadeaux », when the group uses them. Waiting for an
+ * action, done, or only telling once they can no longer be changed.
+ */
+const tiles = computed(() => {
+  const state = me.value;
+  if (!state || state.giftHints === 'none') return [];
+  const hints = state.hasHints
+    ? {
+        state: 'done' as const,
+        text: state.hintsEditable
+          ? t('participant.home.tiles.hintsEditable')
+          : t('participant.home.tiles.hintsLocked'),
+        short: t('participant.home.tiles.hintsShort'),
+      }
+    : state.hintsEditable
+      ? {
+          state: 'todo' as const,
+          text: t('participant.home.tiles.hintsTodo'),
+          short: t('participant.home.tiles.hintsTodo'),
+        }
+      : {
+          state: 'idle' as const,
+          text: t('participant.home.tiles.hintsNone'),
+          short: t('participant.home.tiles.hintsNone'),
+        };
+  return [
+    {
+      key: 'hints',
+      to: `/p/${token.value}/pistes`,
+      icon: 'i-lucide-list-checks',
+      title: t('hints.title'),
+      ...hints,
+    },
+  ];
 });
 
 const today = new Date().toLocaleDateString('sv-SE');
@@ -484,35 +514,33 @@ const card = computed(() => {
 
       <ParticipantOrganizerNote v-if="note && view !== 'shown'" :text="note" />
 
-      <UiList>
-        <UiListItem
-          v-if="me.giftHints !== 'none'"
-          :to="`/p/${token}/pistes`"
-          icon="i-lucide-list-checks"
-          :title="t('hints.title')"
-          :subtitle="hintsSubtitle"
+      <ParticipantJournalRow
+        v-if="me.journalAlerts > 0"
+        :to="`/p/${token}/journal`"
+        :alerts="me.journalAlerts"
+      />
+      <div
+        v-if="tiles.length > 0"
+        class="grid gap-3"
+        :class="tiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'"
+        data-testid="tiles"
+      >
+        <UiTile
+          v-for="tile in tiles"
+          :key="tile.key"
+          :to="tile.to"
+          :icon="tile.icon"
+          :title="tile.title"
+          :state="tile.state"
+          :text="tiles.length > 1 ? tile.short : tile.text"
+          :compact="tiles.length > 1"
         />
-        <UiListItem
-          :to="`/p/${token}/journal`"
-          icon="i-lucide-scroll-text"
-          :title="t('participant.home.journal.title')"
-          :subtitle="
-            me.journalAlerts > 0
-              ? t('participant.home.journal.alerts', {
-                  count: me.journalAlerts,
-                })
-              : t('participant.home.journal.subtitle')
-          "
-          data-testid="journal-row"
-        >
-          <template v-if="me.journalAlerts > 0" #trailing>
-            <span
-              class="size-3 shrink-0 rounded-full bg-alert shadow-[0_0_0_3px_var(--color-warning-soft)]"
-              aria-hidden="true"
-            />
-          </template>
-        </UiListItem>
-      </UiList>
+      </div>
+      <ParticipantJournalRow
+        v-if="me.journalAlerts === 0"
+        :to="`/p/${token}/journal`"
+        :alerts="0"
+      />
 
       <UiCard
         v-if="me.linked === null || me.linked === 'free'"

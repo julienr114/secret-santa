@@ -592,6 +592,45 @@ const entries = computed(() => [
         <UiStar />
         <code class="text-xs">UiStar : l’étoile devant une idée précise</code>
       </p>
+      <UiTile
+        to="#"
+        icon="i-lucide-list-checks"
+        title="Mes pistes de cadeaux"
+        state="todo"
+        text="À remplir"
+      />
+      <UiTile
+        to="#"
+        icon="i-lucide-list-checks"
+        title="Mes pistes de cadeaux"
+        state="done"
+        text="Remplies, modifiables jusqu’à la fête"
+      />
+      <div class="grid grid-cols-2 gap-3">
+        <UiTile
+          to="#"
+          icon="i-lucide-list-checks"
+          title="Mes pistes de cadeaux"
+          state="done"
+          text="Remplies"
+          compact
+        />
+        <UiTile
+          to="#"
+          icon="i-lucide-circle-help"
+          title="Une autre chose"
+          state="todo"
+          text="À faire"
+          compact
+        />
+      </div>
+      <code class="text-xs"
+        >UiTile : une chose à faire sur la page d’un tirage, à faire (cerclée de
+        brique), faite (coche) ou seulement dite ; seule, sur toute la largeur,
+        à deux, côte à côte (compact)</code
+      >
+      <ParticipantJournalRow to="#" :alerts="0" />
+      <ParticipantJournalRow to="#" :alerts="1" />
     </section>
 
     <section class="flex flex-col gap-3">

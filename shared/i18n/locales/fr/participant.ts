@@ -56,6 +56,13 @@ export default {
       bodyNotSeen:
         'Cette édition est clôturée. Tu peux encore découvrir à qui tu offrais un cadeau.',
     },
+    tiles: {
+      hintsTodo: 'À remplir',
+      hintsEditable: 'Remplies, modifiables jusqu’à la fête',
+      hintsLocked: 'Remplies, plus modifiables',
+      hintsShort: 'Remplies',
+      hintsNone: 'Rien laissé',
+    },
     journal: {
       title: 'Journal du groupe',
       subtitle: "Tout ce qui s'est passé, à la vue de tous",

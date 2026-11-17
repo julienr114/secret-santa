@@ -153,6 +153,11 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   expect(invalid.status()).toBe(400);
   expect((await participantNamed('Bruno')).avatar).not.toEqual(fox);
 
+  // One tile per thing to do, alone on the whole width: waiting for an
+  // action, framed in brick (README 22.16).
+  const tile = page.getByTestId('tile');
+  await expect(tile).toHaveAttribute('data-state', 'todo');
+  await expect(tile).toContainText('À remplir');
   await page.getByRole('link', { name: /Mes pistes de cadeaux/ }).click();
   await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   // Six questions, one tap each, then back to the page; « Plus tard »
@@ -237,9 +242,10 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(page.getByText('Encore 8 possibles')).toBeVisible();
 
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(
-    page.getByText('Remplies · modifiables jusqu’à la fête'),
-  ).toBeVisible();
+  await expect(page.getByTestId('tile')).toHaveAttribute('data-state', 'done');
+  await expect(page.getByTestId('tile')).toContainText(
+    'Remplies, modifiables jusqu’à la fête',
+  );
   await page.getByRole('link', { name: /Mes pistes de cadeaux/ }).click();
   await expect(page.getByText('Des chaussettes')).toBeVisible();
 
@@ -360,6 +366,10 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   await expect(page.getByTestId('journal-row')).toContainText(
     '1 alerte depuis ta dernière visite',
   );
+  // In amber, above the tiles (README 22.16).
+  const row = await page.getByTestId('journal-row').boundingBox();
+  const tiles = await page.getByTestId('tiles').boundingBox();
+  expect(row!.y).toBeLessThan(tiles!.y);
   const seen = page.waitForResponse(
     (r) => r.url().endsWith('/journal-seen') && r.ok(),
   );
@@ -446,7 +456,9 @@ test('a closed edition is read only', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: "Découvrir à qui j'offre un cadeau" }),
   ).toBeVisible();
-  await expect(page.getByText('Remplies · plus modifiables')).toBeVisible();
+  await expect(page.getByTestId('tile')).toContainText(
+    'Remplies, plus modifiables',
+  );
   await expect(
     page.getByRole('button', { name: 'Changer mon icône' }),
   ).toHaveCount(0);

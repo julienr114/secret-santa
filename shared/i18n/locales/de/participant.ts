@@ -58,6 +58,13 @@ export default {
       bodyNotSeen:
         'Diese Ausgabe ist abgeschlossen. Du kannst noch erfahren, wen du beschenken solltest.',
     },
+    tiles: {
+      hintsTodo: 'Auszufüllen',
+      hintsEditable: 'Ausgefüllt, änderbar bis zur Feier',
+      hintsLocked: 'Ausgefüllt, nicht mehr änderbar',
+      hintsShort: 'Ausgefüllt',
+      hintsNone: 'Nichts hinterlassen',
+    },
     journal: {
       title: 'Protokoll der Gruppe',
       subtitle: 'Alles, was passiert ist, für alle sichtbar',

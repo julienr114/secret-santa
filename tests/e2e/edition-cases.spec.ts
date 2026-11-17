@@ -338,7 +338,7 @@ test('from the day of the party, the organiser reveals who gave to whom', async 
   const today = new Date().toISOString().slice(0, 10);
   await api.patch(`${at}/editions/${id}`, { data: { eventDate: today } });
 
-  await apiLogin(page.request, SUPER);
+  await page.context().addCookies((await api.storageState()).cookies);
   await page.goto(`/admin/cas-devoiler/editions/${id}`);
   await hydrated(page);
   const card = page.getByTestId('action-card');
@@ -383,7 +383,7 @@ test('before the party, revealing asks for a phrase', async ({ page }) => {
   const quiet = await api.post(`${at}/editions/${id}/reveal`, { data: {} });
   expect(quiet.status()).toBe(409);
 
-  await apiLogin(page.request, SUPER);
+  await page.context().addCookies((await api.storageState()).cookies);
   await page.goto(`/admin/cas-devoiler-tot/editions/${id}`);
   await hydrated(page);
   await page.getByTestId('reveal-row').click();

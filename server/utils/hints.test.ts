@@ -6,7 +6,8 @@ import {
   canEditHints,
   canEditIdeas,
   canRequestHints,
-  shouldTellRequester,
+  giverHintsState,
+  shouldAnnounceHints,
 } from './hints';
 import { EMPTY_PORTRAIT } from '#shared/utils/hints';
 import { failureOf, valueOf } from '~~/tests/helpers';
@@ -137,14 +138,64 @@ describe('canRequestHints', () => {
   });
 });
 
-describe('shouldTellRequester', () => {
-  it('writes once, when hints arrive after a request', () => {
-    expect(shouldTellRequester({ answeredAt: null }, true)).toBe(true);
-    expect(shouldTellRequester({ answeredAt: null }, false)).toBe(false);
+describe('giverHintsState', () => {
+  const at = (day: number) =>
+    `2026-12-${String(day).padStart(2, '0')}T10:00:00.000Z`;
+
+  it('says none without hints, some before a first opening', () => {
     expect(
-      shouldTellRequester({ answeredAt: '2026-12-01T10:00:00Z' }, true),
-    ).toBe(false);
-    expect(shouldTellRequester(null, true)).toBe(false);
+      giverHintsState({
+        hasHints: false,
+        hintsUpdatedAt: at(5),
+        lastOpenedAt: at(1),
+      }),
+    ).toBe('none');
+    expect(
+      giverHintsState({
+        hasHints: true,
+        hintsUpdatedAt: at(5),
+        lastOpenedAt: null,
+      }),
+    ).toBe('some');
+  });
+
+  it('says new when they changed since the result was last opened', () => {
+    expect(
+      giverHintsState({
+        hasHints: true,
+        hintsUpdatedAt: at(5),
+        lastOpenedAt: at(3),
+      }),
+    ).toBe('new');
+    expect(
+      giverHintsState({
+        hasHints: true,
+        hintsUpdatedAt: at(2),
+        lastOpenedAt: at(3),
+      }),
+    ).toBe('some');
+  });
+});
+
+describe('shouldAnnounceHints', () => {
+  const base = {
+    hadHints: false,
+    hasHintsNow: true,
+    giverRevealed: true,
+    alreadyAnnounced: false,
+  };
+
+  it('writes the first time hints appear after the giver looked', () => {
+    expect(shouldAnnounceHints(base)).toBe(true);
+  });
+
+  it('never for a change, before the giver looked, nor twice', () => {
+    expect(shouldAnnounceHints({ ...base, hadHints: true })).toBe(false);
+    expect(shouldAnnounceHints({ ...base, hasHintsNow: false })).toBe(false);
+    expect(shouldAnnounceHints({ ...base, giverRevealed: false })).toBe(false);
+    expect(shouldAnnounceHints({ ...base, alreadyAnnounced: true })).toBe(
+      false,
+    );
   });
 });
 

@@ -60,6 +60,11 @@ export default {
         button: 'See the requests',
         buttonOne: 'See the request',
       },
+      readHints: {
+        title: 'New hints for your present',
+        body: 'The person you give to just left some.',
+        button: 'Read their hints',
+      },
       discover: {
         title: 'The draw is done!',
         body: 'Your envelope is waiting. Make sure nobody is looking at your screen.',
@@ -130,6 +135,9 @@ export default {
       seeAgain: 'You already know who you are giving to',
       reveal: 'Find out who I am giving a gift to',
       revealAgain: 'See who I am giving to again',
+      newHints: 'New hints for your present',
+      newHintsBody: 'The person you give to just left some.',
+      readHints: 'Read their hints',
       hints: 'Leave my gift hints',
     },
     step: {
@@ -139,6 +147,7 @@ export default {
       seeAgain: { state: 'You know who you are giving to' },
       closed: { state: 'Exchange over' },
     },
+    newHints: 'New hints to read',
     pastDraws: 'Past draws',
     organizeOwn: 'Organize my own draw',
     organizeOwnHint: 'On request, during the beta',

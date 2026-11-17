@@ -137,6 +137,49 @@ export const shouldTellRequester = (
   hasHintsNow: boolean,
 ): boolean => Boolean(request && !request.answeredAt && hasHintsNow);
 
+/** The hints of a receiver, as their giver sees them (lot 16 bis). */
+export type GiverHintsState = 'none' | 'some' | 'new';
+
+/**
+ * Whether the giver has hints to read, and whether they are new: left or
+ * changed since the giver last opened their result. Before a first
+ * opening, they are hints, not news; opening the result makes them old.
+ * @param state - Whether the receiver has hints, when they last changed,
+ *   when the giver last opened their result.
+ * @returns none, some or new.
+ */
+export const giverHintsState = (state: {
+  hasHints: boolean;
+  hintsUpdatedAt: string | null;
+  lastOpenedAt: string | null;
+}): GiverHintsState => {
+  if (!state.hasHints) return 'none';
+  return state.lastOpenedAt &&
+    state.hintsUpdatedAt &&
+    state.hintsUpdatedAt > state.lastOpenedAt
+    ? 'new'
+    : 'some';
+};
+
+/**
+ * Whether saving hints is the moment to email the giver « des pistes sont
+ * arrivées »: the first time hints appear after the giver discovered
+ * their result, asked or not; once per draw, never for a change.
+ * @param state - Hints before and after the save, whether the giver has
+ *   discovered their result, whether this draw already announced them.
+ * @returns True once.
+ */
+export const shouldAnnounceHints = (state: {
+  hadHints: boolean;
+  hasHintsNow: boolean;
+  giverRevealed: boolean;
+  alreadyAnnounced: boolean;
+}): boolean =>
+  !state.hadHints &&
+  state.hasHintsNow &&
+  state.giverRevealed &&
+  !state.alreadyAnnounced;
+
 /**
  * The email to the one who receives: the person who gives them a present
  * looks for ideas. It never says who asks (README 22.11).

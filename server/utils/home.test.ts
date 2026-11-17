@@ -22,6 +22,7 @@ const draw = (over: Partial<HomeDrawState> = {}): HomeDrawState => ({
   revealed: true,
   hintsOn: true,
   hasHints: true,
+  receiverHints: 'none',
   eventDate: '2026-12-24',
   ...over,
 });
@@ -91,6 +92,36 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
     expect(
       pickHomeAction(home({ draws: [draw({ revealed: false })] }), TODAY),
     ).toMatchObject({ kind: 'discover', to: '/p/token1', dismissKey: null });
+  });
+
+  it('3 bis. new hints from the person they give to, before anything else of theirs', () => {
+    expect(
+      pickHomeAction(
+        home({ draws: [draw({ receiverHints: 'new', hasHints: false })] }),
+        TODAY,
+      ),
+    ).toMatchObject({ kind: 'readHints', to: '/p/token1', dismissKey: null });
+    // Hints read, or not new: no card.
+    expect(
+      kindOf(home({ draws: [draw({ receiverHints: 'some' })] })),
+    ).toBeNull();
+    // Discovering comes first, on another draw.
+    expect(
+      kindOf(
+        home({
+          draws: [
+            draw({ receiverHints: 'new' }),
+            draw({ id: 'p2', path: '/p/token2', revealed: false }),
+          ],
+        }),
+      ),
+    ).toBe('discover');
+    // Not after the edition is closed.
+    expect(
+      kindOf(
+        home({ draws: [draw({ receiverHints: 'new', status: 'closed' })] }),
+      ),
+    ).toBeNull();
   });
 
   it('4. everyone notified, the party within 7 days, links still unopened', () => {

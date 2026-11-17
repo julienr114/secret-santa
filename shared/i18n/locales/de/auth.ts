@@ -60,6 +60,11 @@ export default {
         button: 'Anfragen ansehen',
         buttonOne: 'Anfrage ansehen',
       },
+      readHints: {
+        title: 'Neue Hinweise für dein Geschenk',
+        body: 'Die Person, die du beschenkst, hat gerade welche hinterlassen.',
+        button: 'Hinweise lesen',
+      },
       discover: {
         title: 'Die Auslosung ist erfolgt!',
         body: 'Dein Umschlag wartet. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
@@ -130,6 +135,10 @@ export default {
       seeAgain: 'Du weißt schon, wen du beschenkst',
       reveal: 'Erfahren, wen ich beschenke',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
+      newHints: 'Neue Hinweise für dein Geschenk',
+      newHintsBody:
+        'Die Person, die du beschenkst, hat gerade welche hinterlassen.',
+      readHints: 'Hinweise lesen',
       hints: 'Meine Geschenk-Hinweise hinterlassen',
     },
     step: {
@@ -145,6 +154,7 @@ export default {
       seeAgain: { state: 'Du weißt, wen du beschenkst' },
       closed: { state: 'Bescherung vorbei' },
     },
+    newHints: 'Neue Hinweise zum Lesen',
     pastDraws: 'Vergangene Auslosungen',
     organizeOwn: 'Meine eigene Auslosung organisieren',
     organizeOwnHint: 'Auf Anfrage, während der Beta',

@@ -1,3 +1,4 @@
+import type { GiverHintsState } from '#server/utils/hints';
 import type { PublicGroup } from '#server/database/groups';
 import type { HomeEditionState } from '#server/utils/home';
 import type { EditionStatus } from '#server/utils/editions';
@@ -90,6 +91,8 @@ export type HomeDraw = {
   hintsOn: boolean;
   /** They left hints. */
   hasHints: boolean;
+  /** The hints of the person they give to: none, some, or new. */
+  receiverHints: GiverHintsState;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;
   firstName: string;

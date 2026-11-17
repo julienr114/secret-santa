@@ -57,6 +57,11 @@ export default {
         button: 'Voir les demandes',
         buttonOne: 'Voir la demande',
       },
+      readHints: {
+        title: 'De nouvelles pistes pour ton cadeau',
+        body: 'La personne à qui tu offres vient d’en laisser.',
+        button: 'Lire ses pistes',
+      },
       discover: {
         title: 'Le tirage est fait !',
         body: 'Ton enveloppe t’attend. Assure-toi que personne ne regarde ton écran.',
@@ -127,6 +132,9 @@ export default {
       seeAgain: 'Tu sais déjà à qui tu offres',
       reveal: 'Découvrir à qui j’offre un cadeau',
       revealAgain: 'Revoir à qui j’offre un cadeau',
+      newHints: 'De nouvelles pistes pour ton cadeau',
+      newHintsBody: 'La personne à qui tu offres vient d’en laisser.',
+      readHints: 'Lire ses pistes',
       hints: 'Laisser mes pistes de cadeaux',
     },
     step: {
@@ -136,6 +144,7 @@ export default {
       seeAgain: { state: 'Tu sais à qui tu offres' },
       closed: { state: 'Échange passé' },
     },
+    newHints: 'De nouvelles pistes à lire',
     pastDraws: 'Tirages passés',
     organizeOwn: 'Organiser mon propre tirage',
     organizeOwnHint: 'Sur demande, le temps de la bêta',

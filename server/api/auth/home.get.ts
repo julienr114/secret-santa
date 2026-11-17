@@ -103,6 +103,7 @@ export default defineEventHandler(async (event) => {
           revealed: participation.viewCount > 0,
           hintsOn: rules.giftHints !== 'none',
           hasHints: withHints.has(participation.id),
+          receiverHints: 'none' as const,
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),

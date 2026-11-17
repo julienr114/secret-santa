@@ -63,7 +63,7 @@ const words = computed(() => {
 <template>
   <UiActionCard :eyebrow="eyebrow" :title="words.title" data-testid="top-card">
     <UiEnvelope
-      v-if="action.kind === 'discover'"
+      v-if="action.kind === 'discover' || action.kind === 'readHints'"
       state="sealed"
       class="self-center"
     />

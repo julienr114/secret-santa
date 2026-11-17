@@ -1,6 +1,7 @@
 import type { Role } from './auth';
 import type { EditionStatus } from './editions';
 import { daysUntil, isIsoDay, partyIsOver } from './rules';
+import type { GiverHintsState } from './hints';
 
 // The home of an account (README 11 and 22.10): which card goes on top,
 // how the page is laid out, and one card per group. Pure: the route
@@ -21,6 +22,11 @@ export type HomeDrawState = {
   hintsOn: boolean;
   /** They left hints: an answer, a text or an idea. */
   hasHints: boolean;
+  /**
+   * The hints of the person they give to, as they see them (lot 16 bis):
+   * none, some, or new since they last opened their result.
+   */
+  receiverHints: GiverHintsState;
   /** An ISO day, or older free text, or empty. */
   eventDate: string;
 };
@@ -65,6 +71,7 @@ export const HOME_ACTIONS = [
   'notify',
   'requests',
   'discover',
+  'readHints',
   'remind',
   'fixDraw',
   'startDraw',
@@ -205,17 +212,22 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
         { ...at, kind: 'discover', count: 1, to: draw.path, dismissKey: null },
       ];
     }
-    return draw.hintsOn && !draw.hasHints
-      ? [
-          {
-            ...at,
-            kind: 'addHints',
-            count: 0,
-            to: `${draw.path}/pistes`,
-            dismissKey: `addHints:${draw.id}`,
-          },
-        ]
-      : [];
+    return [
+      ...when(draw.status === 'drawn' && draw.receiverHints === 'new', {
+        ...at,
+        kind: 'readHints',
+        count: 1,
+        to: draw.path,
+        dismissKey: null,
+      }),
+      ...when(draw.hintsOn && !draw.hasHints, {
+        ...at,
+        kind: 'addHints',
+        count: 0,
+        to: `${draw.path}/pistes`,
+        dismissKey: `addHints:${draw.id}`,
+      }),
+    ];
   });
 
 /**

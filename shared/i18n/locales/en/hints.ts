@@ -27,7 +27,8 @@ export default {
     done: 'Hints from {edition} reused',
   },
   me: {
-    title: 'Me and presents',
+    title: 'When it comes to presents, I prefer…',
+    context: 'Me and presents',
   },
   question: {
     context: 'question {index} of {count}',
@@ -81,36 +82,38 @@ export default {
       secondHelp: 'I give a precise idea further down.',
     },
   },
+  // The answers on the participant's own page, ending the sentence of
+  // `me.title`, in lower case.
   tags: {
     usefulOrSurprising: {
-      first: 'Rather useful',
-      second: 'Rather surprising',
-      both: 'Useful or surprising',
+      first: 'a useful present',
+      second: 'a surprising present',
+      both: 'useful or surprising, either way',
     },
     objectOrMoment: {
-      first: 'A thing',
-      second: 'A moment',
-      both: 'A thing or a moment',
+      first: 'a thing',
+      second: 'a moment',
+      both: 'a thing or a moment',
     },
     keepOrConsume: {
-      first: 'To keep',
-      second: 'To use up',
-      both: 'To keep or to use up',
+      first: 'something to keep',
+      second: 'something to use up',
+      both: 'to keep or to use up',
     },
     selfOrShared: {
-      first: 'Just for them',
-      second: 'To share',
-      both: 'Just for oneself or to share',
+      first: 'a present just for me',
+      second: 'a present to share',
+      both: 'just for me or to share',
     },
     secondHand: {
-      first: 'Second-hand, gladly',
-      second: 'Rather new',
-      both: 'New or second-hand',
+      first: 'second-hand or handmade',
+      second: 'something new',
+      both: 'new or second-hand',
     },
     surprise: {
-      first: 'Loves surprises',
-      second: 'Would rather know',
-      both: 'Surprise or not',
+      first: 'a surprise',
+      second: 'knowing in advance',
+      both: 'surprise or not',
     },
   },
   giver: {
@@ -140,6 +143,15 @@ export default {
     surprise: {
       first: '{name} loves surprises.',
       second: '{name} would rather know what they get.',
+    },
+    // The subject of « {subject} : peu importe. ».
+    subjects: {
+      usefulOrSurprising: 'Useful or surprising',
+      objectOrMoment: 'A thing or a moment',
+      keepOrConsume: 'To keep or to use up',
+      selfOrShared: 'Just for oneself or to share',
+      secondHand: 'New or second-hand',
+      surprise: 'Surprise or not',
     },
     indifferent: '{subject}: either is fine.',
   },

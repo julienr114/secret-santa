@@ -27,7 +27,8 @@ export default {
     done: 'Hinweise von {edition} übernommen',
   },
   me: {
-    title: 'Ich und Geschenke',
+    title: 'Bei Geschenken mag ich lieber…',
+    context: 'Ich und Geschenke',
   },
   question: {
     context: 'Frage {index} von {count}',
@@ -81,35 +82,37 @@ export default {
       secondHelp: 'Weiter unten gebe ich eine genaue Idee an.',
     },
   },
+  // The answers on the participant's own page, ending the sentence of
+  // `me.title`, in lower case.
   tags: {
     usefulOrSurprising: {
-      first: 'Eher nützlich',
-      second: 'Eher überraschend',
-      both: 'Nützlich oder überraschend',
+      first: 'ein nützliches Geschenk',
+      second: 'ein überraschendes Geschenk',
+      both: 'nützlich oder überraschend, egal',
     },
     objectOrMoment: {
-      first: 'Ein Ding',
-      second: 'Ein Erlebnis',
-      both: 'Ding oder Erlebnis',
+      first: 'ein Ding',
+      second: 'ein Erlebnis',
+      both: 'ein Ding oder ein Erlebnis',
     },
     keepOrConsume: {
-      first: 'Zum Behalten',
-      second: 'Zum Verbrauchen',
-      both: 'Behalten oder verbrauchen',
+      first: 'etwas zum Behalten',
+      second: 'etwas zum Verbrauchen',
+      both: 'behalten oder verbrauchen',
     },
     selfOrShared: {
-      first: 'Nur für sich',
-      second: 'Zum Teilen',
-      both: 'Für sich oder zum Teilen',
+      first: 'ein Geschenk für mich',
+      second: 'ein Geschenk zum Teilen',
+      both: 'für mich oder zum Teilen',
     },
     secondHand: {
-      first: 'Gebraucht, gern',
-      second: 'Lieber neu',
-      both: 'Neu oder gebraucht',
+      first: 'Gebrauchtes oder Selbstgemachtes',
+      second: 'Neues',
+      both: 'neu oder gebraucht',
     },
     surprise: {
-      first: 'Mag Überraschungen',
-      second: 'Weiß es lieber',
+      first: 'die Überraschung',
+      second: 'es vorher zu wissen',
       both: 'Überraschung oder nicht',
     },
   },
@@ -140,6 +143,15 @@ export default {
     surprise: {
       first: '{name} mag Überraschungen.',
       second: '{name} weiß lieber, was es gibt.',
+    },
+    // The subject of « {subject} : peu importe. ».
+    subjects: {
+      usefulOrSurprising: 'Nützlich oder überraschend',
+      objectOrMoment: 'Ding oder Erlebnis',
+      keepOrConsume: 'Behalten oder verbrauchen',
+      selfOrShared: 'Für sich oder zum Teilen',
+      secondHand: 'Neu oder gebraucht',
+      surprise: 'Überraschung oder nicht',
     },
     indifferent: '{subject}: egal.',
   },

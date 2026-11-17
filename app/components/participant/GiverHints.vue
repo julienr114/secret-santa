@@ -115,7 +115,7 @@ const onSend = () =>
         >
           {{
             t('hints.giver.indifferent', {
-              subject: tk(`hints.tags.${question}.both`),
+              subject: tk(`hints.giver.subjects.${question}`),
             })
           }}
         </p>

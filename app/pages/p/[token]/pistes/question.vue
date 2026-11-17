@@ -130,7 +130,7 @@ const onAnswer = (answer: HintAnswer | null) => {
       </div>
       <div class="flex flex-col gap-1.5">
         <p class="text-sm text-toned">
-          {{ alone ? t('hints.me.title') : context }}
+          {{ alone ? t('hints.me.context') : context }}
         </p>
         <UiPageTitle class="leading-[1.1]">
           {{ tk(`hints.questions.${question}.title`) }}

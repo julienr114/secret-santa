@@ -166,24 +166,26 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await page.getByRole('button', { name: 'Plus tard' }).click();
   await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   const tags = page.getByTestId('hints-tags');
-  await expect(tags).toContainText('Plutôt utile');
-  await expect(tags).toContainText('Un objet ou un moment');
+  // The block reads as a sentence.
+  await expect(page.getByText('Côté cadeaux, je préfère…')).toBeVisible();
+  await expect(tags).toContainText('un cadeau utile');
+  await expect(tags).toContainText('un objet ou un moment');
   // A question without an answer is a dashed tag that opens it.
   await tags.getByRole('link', { name: 'À garder, ou à consommer ?' }).click();
   await expect(heading(page)).toHaveText('À garder, ou à consommer ?');
   await page.getByTestId('hint-first').click();
   await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
-  await expect(tags).toContainText('À garder');
+  await expect(tags).toContainText('quelque chose à garder');
   // A tag opens its own question, its answer checked; one tap changes it
   // and comes back, « Effacer ma réponse » takes it back.
-  await tags.getByRole('link', { name: 'Plutôt utile' }).click();
+  await tags.getByRole('link', { name: 'un cadeau utile' }).click();
   await expect(page.getByTestId('hint-first')).toHaveAttribute(
     'aria-pressed',
     'true',
   );
   await page.getByTestId('hint-second').click();
-  await expect(tags).toContainText('Plutôt surprenant');
-  await tags.getByRole('link', { name: 'Plutôt surprenant' }).click();
+  await expect(tags).toContainText('un cadeau surprenant');
+  await tags.getByRole('link', { name: 'un cadeau surprenant' }).click();
   await page.getByTestId('hint-clear').click();
   await expect(
     tags.getByRole('link', { name: 'Utile, ou surprenant ?' }),

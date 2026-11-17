@@ -26,7 +26,8 @@ export default {
     done: 'Pistes de {edition} reprises',
   },
   me: {
-    title: 'Moi et les cadeaux',
+    title: 'Côté cadeaux, je préfère…',
+    context: 'Moi et les cadeaux',
   },
   question: {
     context: 'question {index} sur {count}',
@@ -81,36 +82,38 @@ export default {
     },
   },
   // What the giver reads, one tag per answer.
+  // The answers on the participant's own page, ending the sentence of
+  // `me.title`, in lower case.
   tags: {
     usefulOrSurprising: {
-      first: 'Plutôt utile',
-      second: 'Plutôt surprenant',
-      both: 'Utile ou surprenant',
+      first: 'un cadeau utile',
+      second: 'un cadeau surprenant',
+      both: 'utile ou surprenant, peu importe',
     },
     objectOrMoment: {
-      first: 'Un objet',
-      second: 'Un moment',
-      both: 'Un objet ou un moment',
+      first: 'un objet',
+      second: 'un moment',
+      both: 'un objet ou un moment',
     },
     keepOrConsume: {
-      first: 'À garder',
-      second: 'À consommer',
-      both: 'À garder ou à consommer',
+      first: 'quelque chose à garder',
+      second: 'quelque chose à consommer',
+      both: 'à garder ou à consommer',
     },
     selfOrShared: {
-      first: 'Pour soi',
-      second: 'À partager',
-      both: 'Pour soi ou à partager',
+      first: 'un cadeau pour moi',
+      second: 'un cadeau à partager',
+      both: 'pour moi ou à partager',
     },
     secondHand: {
-      first: 'D’occasion, volontiers',
-      second: 'Plutôt du neuf',
-      both: 'Neuf ou d’occasion',
+      first: 'l’occasion ou le fait main',
+      second: 'le neuf',
+      both: 'neuf ou d’occasion',
     },
     surprise: {
-      first: 'Aime la surprise',
-      second: 'Préfère savoir',
-      both: 'Surprise ou pas',
+      first: 'la surprise',
+      second: 'savoir à l’avance',
+      both: 'surprise ou pas',
     },
   },
   // What the giver reads of « Moi et les cadeaux », in sentences.
@@ -141,6 +144,15 @@ export default {
     surprise: {
       first: '{name} aime la surprise.',
       second: '{name} préfère savoir ce qu’on lui offre.',
+    },
+    // The subject of « {subject} : peu importe. ».
+    subjects: {
+      usefulOrSurprising: 'Utile ou surprenant',
+      objectOrMoment: 'Un objet ou un moment',
+      keepOrConsume: 'À garder ou à consommer',
+      selfOrShared: 'Pour soi ou à partager',
+      secondHand: 'Neuf ou d’occasion',
+      surprise: 'Surprise ou pas',
     },
     indifferent: '{subject} : peu importe.',
   },

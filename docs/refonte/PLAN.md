@@ -529,6 +529,10 @@ Décidé par Julien le 17 novembre 2026. Interface seulement, aucune migration. 
 - [x] **Réglages du groupe** : ne gardent que ce qui vaut pour toutes les éditions. Le noter en section 6 si une ligne ne se range pas clairement.
 - [x] **Page du tirage du participant** (tous les états `Tirage*`, `PistesResultat*`, `ManuelTirage*`) : la liste du bas disparaît. Une tuile par chose à faire : celle qui attend une action est cerclée de rouge avec son appel (« À remplir »), celle qui est faite porte une coche et son état. Une tuile seule prend toute la largeur (c'est le cas tant qu'il n'y a que « Mes pistes de cadeaux ») ; à deux, elles se mettent côte à côte (`DevineTirage`). Dessous, « Journal du groupe » reste une ligne à part, encadrée et bien visible, avec son sous-titre ; en cas d'alerte (lots 12 et 14) elle passe au-dessus des tuiles, en ambre (`TirageAlerteJournal`).
 - [x] Un seul composant pour la tuile, dans `app/components/ui`, présenté au guide de style. Trois langues, `tests/e2e`.
+- [x] **Complément du 17 novembre 2026 — « Préparer »** (`Main`, `PreparerVide`, `PreparerImpossible`, `Preparer100`, `Preparer100Deplie`, `ManuelPreparer`) : « Si tu veux » garde « Prévenir avant le tirage » et « Exclusions », puis « Réglages de l'édition » (`AdminEditionSettingsRow`, la même ligne aux trois étapes) ; le budget et le petit mot en sortent.
+- [x] **Complément — « Réponses »** (`ManuelCollecte`, `ManuelConflit`, `ManuelUneManque`, `ManuelPret`, `SouciReponses`) : « Réglages de l'édition » et « Un souci ? » remplacent « Plus tard, ou en cas de pépin » ; le panneau (`AdminTroubleSheet`, `answers`) contient « Ajouter ou retirer des participants » et « Abandonner et tirer avec l'application » (second appui).
+- [x] **Complément — tuile des pistes après la clôture** : sans piste, pas de tuile ; avec des pistes, elle reste en lecture seule (`hintsTile`, testée).
+- [x] **Complément — illustrations** : les six dessins des maquettes, un composant chacun (`UiEnvelopeSealed`, `UiEnvelopePending`, `UiEnvelopeOpened`, `UiEnvelopeLocked`, `UiEnvelopeSent`, `UiPodium`), les couleurs du design system par leurs jetons (brique, sapin, moutarde, kraft, fond, texte atténué), les autres telles que dessinées ; `UiEnvelope` choisit selon `envelopeState`, l'écran « Regarde ta boîte mail » prend `UiEnvelopeSent`. Le podium est prêt pour le lot 19, présenté seulement au guide de style.
 
 ### Lot 19 — « Devine qui », le jeu de pronostics (README 22.17)
 
@@ -735,3 +739,16 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 5. **Sans piste après la clôture**, la tuile dit « Rien laissé », sans cercle ni coche ; aucune maquette ne montre ce cas.
 6. **Le petit mot** sur la page des réglages tient sur une ligne, coupé par des points de suspension ; la maquette le montre sur deux lignes.
 7. Les maquettes `PropSuivi`, `PropTirage` et `PropSouci` sont supprimées. `DevineSuivi` et `DevineSuiviRappelFait` pointent encore vers `PropSouci.dc.html`.
+
+**Réponses de Julien, 17 novembre 2026.**
+
+- Points 1, 2 et 3 : d'accord, rien à changer.
+- Point 4 : oui, la même ligne « Réglages de l'édition » à toutes les étapes. **Préparer** : la liste « Si tu veux » garde « Prévenir avant le tirage » et « Exclusions », puis la ligne « Réglages de l'édition » ; le budget et le petit mot en sortent (maquettes `Main`, `Preparer*`, `ManuelPreparer`). **Réponses** : la liste « Plus tard, ou en cas de pépin » est remplacée par « Réglages de l'édition » et « Un souci ? », dont le panneau contient « Ajouter ou retirer des participants » et « Abandonner et tirer avec l'application » (maquettes `ManuelCollecte`, `ManuelConflit`, `ManuelUneManque`, `ManuelPret`, panneau `SouciReponses`). À faire.
+- Point 5 : après la clôture, une tuile des pistes vide ne s'affiche pas du tout ; avec des pistes, elle reste, en lecture seule. À faire.
+- Point 6 : le petit mot sur une ligne, ça va.
+- Point 7 : les liens de `DevineSuivi` et `DevineSuiviRappelFait` sont corrigés vers `Souci.dc.html`. Les maquettes `Feter` et `EtatConfirmation` montrent maintenant les deux lignes, comme le code.
+
+**Compléments faits le 17 novembre 2026** (points 4 et 5) : voir les cases cochées du lot 18. Restent à savoir :
+
+8. **Les couleurs sans jeton** des illustrations (le papier en dégradé `#efe3cd` à `#e2d2b4`, le rabat `#f8f1e3` à `#efe4cf`, les traits `#cdb48a`, l'ombre `#3c1e0a`, la boule `#d9a93a`) sont gardées telles que dessinées. Faut-il en faire des jetons (« papier d'enveloppe », par exemple) ?
+9. **Hydratation** : la page d'un lien invalide signale un écart d'hydratation dans la console, déjà en production avant ce lot ; sans effet visible. À corriger à part ?

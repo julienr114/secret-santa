@@ -13,7 +13,7 @@ useHead({
   ),
 });
 const screen = computed(() => ({
-  back: '/',
+  back: isSuper.value ? '/admin/groupes' : '/',
 }));
 
 // A super-admin creates groups for others and names their organiser; any
@@ -65,43 +65,62 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
 
 <template>
   <AdminScreen v-bind="screen">
-    <UiPageTitle>
-      {{ t('adminGroup.newGroup.title') }}
-    </UiPageTitle>
+    <div class="flex flex-col gap-1">
+      <UiPageTitle>{{ t('adminGroup.newGroup.title') }}</UiPageTitle>
+      <p class="text-[15px] text-toned">{{ t('adminGroup.newGroup.intro') }}</p>
+    </div>
     <UForm
       :schema="schema"
       :state="state"
-      class="flex flex-col gap-5"
+      class="flex flex-col gap-6"
       @submit="onSubmit"
     >
       <UFormField
         name="name"
         :label="t('adminGroup.newGroup.nameLabel')"
-        required
+        :help="t('adminGroup.newGroup.nameHelp')"
+        :ui="{
+          label: 'text-[15px] font-semibold',
+          help: 'text-[13px] leading-[1.4] text-toned',
+        }"
       >
         <UInput
           v-model="state.name"
           :placeholder="t('adminGroup.newGroup.namePlaceholder')"
+          size="xl"
           class="w-full"
+          :ui="{ base: 'h-12' }"
           autofocus
         />
       </UFormField>
-      <UFormField
-        v-if="isSuper"
-        name="organizer"
-        :label="t('adminGroup.newGroup.organizerLabel')"
-        :help="t('adminGroup.newGroup.organizerHelp')"
-      >
-        <UInput
-          v-model="state.organizer"
-          type="email"
-          inputmode="email"
-          autocomplete="off"
-          autocapitalize="none"
-          class="w-full"
-        />
-      </UFormField>
-      <UiNotice v-if="!isSuper" variant="info" icon="i-lucide-info">
+      <UiRestricted v-if="isSuper" :label="t('auth.account.superAdmin')">
+        <UFormField
+          name="organizer"
+          :help="t('adminGroup.newGroup.organizerHelp')"
+          :ui="{ help: 'text-[13px] leading-[1.4] text-toned' }"
+        >
+          <template #label>
+            <span class="text-[15px] font-semibold"
+              >{{ t('adminGroup.newGroup.organizerLabel') }}
+              <span class="font-normal text-toned">{{
+                t('adminEdition.newEdition.optional')
+              }}</span></span
+            >
+          </template>
+          <UInput
+            v-model="state.organizer"
+            type="email"
+            inputmode="email"
+            autocomplete="off"
+            autocapitalize="none"
+            :placeholder="t('adminGroup.newGroup.organizerPlaceholder')"
+            size="xl"
+            class="w-full"
+            :ui="{ base: 'h-12' }"
+          />
+        </UFormField>
+      </UiRestricted>
+      <UiNotice v-else variant="info" icon="i-lucide-info">
         {{ t('adminGroup.newGroup.note') }}
       </UiNotice>
       <UAlert
@@ -113,8 +132,14 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
       <UButton
         type="submit"
         block
+        size="xl"
+        class="h-12 justify-center font-bold"
         :loading="create.isPending.value"
-        :label="t('adminGroup.newGroup.submit')"
+        :label="
+          create.isPending.value
+            ? t('adminGroup.newGroup.creating')
+            : t('adminGroup.newGroup.submit')
+        "
       />
       <p
         v-if="!isSuper && groupsLeft !== null"

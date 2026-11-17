@@ -98,6 +98,16 @@
   --color-alert: var(--color-mustard-400);
   --color-alert-ink: var(--color-mustard-950);
   --color-alert-link: var(--color-mustard-900);
+
+  /* What only a super-admin sees on a screen everyone sees: a dashed
+     frame on a paler kraft. */
+  --color-restricted: #fbf6ec;
+  --color-restricted-ring: #b89a63;
+
+  /* The edges of the cards waiting under the first one of a stack, paler
+     to darker as they go back. */
+  --color-stack: #f8f1e5;
+  --color-stack-back: #efe6d6;
 }
 
 /* Cards, inputs and menus stay white on top of the kraft page. */

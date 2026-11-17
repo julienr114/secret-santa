@@ -104,10 +104,11 @@ export type HomePayload = {
 };
 
 /** The home of the account: its draws and the groups it manages. */
-export const useHomeQuery = () =>
+export const useHomeQuery = (enabled: MaybeRefOrGetter<boolean> = true) =>
   useApiQuery<HomePayload>(
     () => keys.home(),
     () => '/api/auth/home',
+    enabled,
   );
 
 /** Asks the super-admins for the right to create a group. */

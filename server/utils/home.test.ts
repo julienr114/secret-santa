@@ -82,7 +82,7 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
     expect(action).toMatchObject({
       kind: 'requests',
       count: 2,
-      to: '/admin/comptes',
+      to: '/admin',
     });
     expect(kindOf(home({ role: 'member', pendingRequests: 2 }))).toBeNull();
   });

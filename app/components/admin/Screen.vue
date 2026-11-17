@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { LOCALES } from '#shared/i18n';
+import { useHomeQuery } from '~/composables/queries/useAuth';
 import {
   HOME,
   LOGIN,
@@ -11,8 +12,8 @@ import {
 // `back` when the page was opened directly), the logo in the middle (a
 // link to the home) and the menu on the right (language, account, log
 // out); a screen with a `bar` has « Annuler », its title and where it
-// belongs instead. A super-admin also gets a bottom bar
-// to their own pages.
+// belongs instead. A super-admin's menu opens on « Administration », with
+// the number of requests waiting.
 const props = defineProps<{
   back?: string | null;
   /**
@@ -32,29 +33,49 @@ const goBack = useGoBack();
 const logout = useLogoutMutation();
 const onLogout = () =>
   logout.mutate(undefined, { onSuccess: () => navigateTo(LOGIN) });
-const menu = computed(() => [
-  [
-    { type: 'label' as const, label: t('common.language.label') },
-    ...LOCALES.map((code) => ({
-      label: tk(`common.language.${code}`),
-      type: 'checkbox' as const,
-      checked: code === locale.value,
-      onSelect: () => setLocale(code),
-    })),
-  ],
-  [
-    {
-      label: t('auth.account.title'),
-      icon: 'i-lucide-circle-user',
-      to: '/compte',
-    },
-    {
-      label: t('common.actions.logout'),
-      icon: 'i-lucide-log-out',
-      onSelect: onLogout,
-    },
-  ],
+const home = useHomeQuery(isSuper);
+/** Requests for a group waiting for the super-admin. */
+const pending = computed(() => home.data.value?.pendingRequests ?? 0);
+const languages = computed(() => [
+  { type: 'label' as const, label: t('common.language.label') },
+  ...LOCALES.map((code) => ({
+    label: tk(`common.language.${code}`),
+    type: 'checkbox' as const,
+    checked: code === locale.value,
+    onSelect: () => setLocale(code),
+  })),
 ]);
+const account = computed(() => [
+  {
+    label: t('auth.account.title'),
+    icon: 'i-lucide-circle-user',
+    to: '/compte',
+  },
+  {
+    label: t('common.actions.logout'),
+    icon: 'i-lucide-log-out',
+    onSelect: onLogout,
+  },
+]);
+// The super-admin's menu starts with the administration and their
+// account; everyone else's with the language.
+const menu = computed(() =>
+  isSuper.value
+    ? [
+        [
+          {
+            label: t('auth.admin.title'),
+            icon: 'i-lucide-shield',
+            to: '/admin',
+            slot: 'admin' as const,
+            class: 'font-bold',
+          },
+        ],
+        account.value,
+        languages.value,
+      ]
+    : [languages.value, account.value],
+);
 </script>
 
 <template>
@@ -124,6 +145,13 @@ const menu = computed(() => [
             itemTrailingIcon: 'size-5 text-primary',
           }"
         >
+          <template #admin-trailing>
+            <UiCountBadge
+              v-if="pending > 0"
+              :count="pending"
+              :label="t('auth.home.requestsToHandle', { count: pending })"
+            />
+          </template>
           <UButton
             variant="ghost"
             color="neutral"
@@ -134,13 +162,8 @@ const menu = computed(() => [
         </UDropdownMenu>
       </UContainer>
     </header>
-    <UContainer
-      as="main"
-      class="flex w-full max-w-md grow flex-col gap-6 py-5"
-      :class="{ 'pb-24': isSuper }"
-    >
+    <UContainer as="main" class="flex w-full max-w-md grow flex-col gap-6 py-5">
       <slot />
     </UContainer>
-    <AdminBottomNav v-if="isSuper" />
   </div>
 </template>

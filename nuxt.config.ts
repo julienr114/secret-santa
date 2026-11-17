@@ -63,8 +63,6 @@ export default defineNuxtConfig({
     // An invitation link is shared, but still no business of search engines.
     '/rejoindre/**': { headers: personalHeaders },
     '/api/invite/**': { headers: personalHeaders },
-    // The old address of the login page.
-    '/admin': { redirect: '/' },
     '/api/auth/**': { headers: personalHeaders },
   },
   app: {

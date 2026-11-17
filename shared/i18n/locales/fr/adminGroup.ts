@@ -1,8 +1,6 @@
 export default {
   newGroup: {
     organizerLabel: 'Adresse du premier organisateur',
-    organizerHelp:
-      'Facultatif. Tu pourras en ajouter d’autres depuis le groupe.',
     title: 'Nouveau groupe',
     nameLabel: 'Nom du groupe',
     namePlaceholder: 'Famille Rabin',
@@ -14,6 +12,13 @@ export default {
       one: 'Tu peux encore créer {count} groupe',
       other: 'Tu peux encore créer {count} groupes',
     },
+    intro: 'Une famille, une bande d’amis, une équipe : un groupe par cercle.',
+    nameHelp:
+      'Tu pourras le voir, toi et les membres, en haut de chaque tirage.',
+    organizerHelp:
+      'Pour créer le groupe de quelqu’un d’autre : il lui suffira de se connecter avec cette adresse. Vide, le groupe n’a pas encore d’organisateur.',
+    organizerPlaceholder: 'prenom@exemple.fr',
+    creating: 'Création en cours…',
   },
   organizers: {
     title: 'Organisateurs',

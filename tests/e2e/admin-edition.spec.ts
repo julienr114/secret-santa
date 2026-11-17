@@ -21,8 +21,11 @@ const GROUP = {
 
 test('super-admin creates a group with its guardian', async ({ page }) => {
   await loginAsSuper(page, SUPER);
-  await page.getByRole('link', { name: 'Tous les groupes' }).click();
-  await page.getByRole('link', { name: 'Nouveau groupe' }).click();
+  await page.getByRole('link', { name: /^Administration/ }).click();
+  await page.getByRole('link', { name: /^Groupes/ }).click();
+  await page
+    .getByRole('link', { name: /^Créer un groupe pour quelqu’un/ })
+    .click();
   await expect(heading(page)).toHaveText('Nouveau groupe');
   await page.getByLabel('Nom du groupe').fill(GROUP.name);
   await page

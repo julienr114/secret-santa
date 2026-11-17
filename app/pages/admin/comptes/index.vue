@@ -4,15 +4,21 @@ import {
   type AdminAccountRow,
 } from '~/composables/queries/useAdmin';
 
-// Super-admin only: every account in one list, those awaiting an answer
-// first, then the disabled ones, folded. A row opens the account's page; a search narrows the lists by name or address.
+// Super-admin only: the accounts in use, those awaiting an answer first,
+// the oldest request first, with a search by name or address; the
+// disabled ones behind their own row (`?desactives`).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
-useHead({
-  title: () => `${t('auth.admin.accountsTitle')} — ${t('common.appName')}`,
-});
+const route = useRoute();
+const disabledView = computed(() => 'desactives' in route.query);
+const title = computed(() =>
+  disabledView.value
+    ? t('auth.admin.disabledRow')
+    : t('auth.admin.accountsTitle'),
+);
+useHead({ title: () => `${title.value} — ${t('common.appName')}` });
 const screen = computed(() => ({
-  back: '/',
+  back: disabledView.value ? '/admin/comptes' : '/admin',
 }));
 
 const query = useAdminAccountsQuery();
@@ -26,6 +32,11 @@ const requestOf = computed(
     ),
 );
 const search = ref('');
+/**
+ * Whether an account matches the search, by name or address.
+ * @param account - The account.
+ * @returns True when it matches, or with nothing typed.
+ */
 const matches = (account: AdminAccountRow) => {
   const needle = search.value.trim().toLowerCase();
   return (
@@ -35,84 +46,83 @@ const matches = (account: AdminAccountRow) => {
     )
   );
 };
-const all = computed(() => (query.data.value?.accounts ?? []).filter(matches));
-// Oldest request first.
+const everyone = computed(() => query.data.value?.accounts ?? []);
+/** Accounts awaiting an answer, oldest request first. */
 const asking = computed(() =>
   (query.data.value?.requests ?? []).flatMap((request) =>
-    all.value.filter((account) => account.id === request.accountId),
+    everyone.value.filter((account) => account.id === request.accountId),
   ),
 );
-// One list: accounts awaiting an answer first, oldest request first.
-const active = computed(() => [
+const inUse = computed(() => [
   ...asking.value,
-  ...all.value.filter((a) => !a.disabled && !requestOf.value.has(a.id)),
+  ...everyone.value.filter((a) => !a.disabled && !requestOf.value.has(a.id)),
 ]);
 const disabled = computed(() =>
-  all.value.filter((a) => a.disabled && !requestOf.value.has(a.id)),
+  everyone.value.filter((a) => a.disabled && !requestOf.value.has(a.id)),
 );
-const showDisabled = ref(false);
-// The requests to handle are counted on top of the list.
-const listTitle = computed(() =>
-  [
-    t('auth.admin.accounts', { count: active.value.length }),
-    ...(asking.value.length > 0
-      ? [t('auth.admin.requests', { count: asking.value.length })]
-      : []),
-  ].join(' · '),
+const shown = computed(() =>
+  (disabledView.value ? disabled.value : inUse.value).filter(matches),
 );
-const total = computed(() => query.data.value?.accounts.length ?? 0);
+const subtitle = computed(() =>
+  disabledView.value
+    ? t('auth.admin.accounts', { count: disabled.value.length })
+    : [
+        t('auth.admin.activeAccounts', { count: inUse.value.length }),
+        asking.value.length > 0 &&
+          t('auth.admin.requests', { count: asking.value.length }),
+      ]
+        .filter(Boolean)
+        .join(' · '),
+);
 </script>
 
 <template>
   <AdminScreen v-bind="screen">
-    <UiPageTitle>{{ t('auth.admin.accountsTitle') }}</UiPageTitle>
+    <div class="flex flex-col gap-1">
+      <UiPageTitle>{{ title }}</UiPageTitle>
+      <p v-if="query.data.value" class="text-[15px] text-toned">
+        {{ subtitle }}
+      </p>
+    </div>
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
+      :skeleton="['list']"
+      :rows="6"
     >
-      <UInput
-        v-if="total > 5"
+      <UiSearchField
         v-model="search"
-        icon="i-lucide-search"
-        :placeholder="t('auth.admin.search')"
-        class="w-full"
+        :label="t('auth.admin.search')"
+        :clear-label="t('adminEdition.screen.lists.clear')"
       />
-      <UiList :title="listTitle" data-testid="accounts">
-        <li v-if="active.length === 0" class="px-4 py-3 text-sm text-muted">
+      <UiList
+        :footer="
+          !disabledView && asking.length > 0
+            ? t('auth.admin.requestsFirst')
+            : undefined
+        "
+        data-testid="accounts"
+      >
+        <li v-if="shown.length === 0" class="px-4 py-3 text-sm text-muted">
           {{ t('auth.admin.noMatch') }}
         </li>
         <AdminAccountRow
-          v-for="account in active"
+          v-for="account in shown"
           :key="account.id"
           :account="account"
           :request="requestOf.get(account.id)"
         />
       </UiList>
-      <section v-if="disabled.length > 0" class="flex flex-col gap-1">
-        <UButton
-          variant="link"
-          color="neutral"
-          size="sm"
-          class="self-start px-1"
-          :trailing-icon="
-            showDisabled ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
-          "
-          :aria-expanded="showDisabled"
-          :label="
-            showDisabled
-              ? t('auth.admin.disabledHide')
-              : t('auth.admin.disabledShow', { count: disabled.length })
-          "
-          @click="showDisabled = !showDisabled"
+      <UiList v-if="!disabledView && disabled.length > 0">
+        <UiListItem
+          to="/admin/comptes?desactives"
+          icon="i-lucide-archive"
+          icon-tone="neutral"
+          :title="t('auth.admin.disabledRow')"
+          :subtitle="t('auth.admin.accounts', { count: disabled.length })"
+          data-testid="disabled-row"
         />
-        <UiList v-if="showDisabled" data-testid="disabled-accounts">
-          <AdminAccountRow
-            v-for="account in disabled"
-            :key="account.id"
-            :account="account"
-          />
-        </UiList>
-      </section>
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

@@ -4,7 +4,6 @@ import type { Dict } from '../../types';
 export default {
   newGroup: {
     organizerLabel: 'Adresse des ersten Organisators',
-    organizerHelp: 'Optional. Weitere kannst du in der Gruppe hinzufügen.',
     title: 'Neue Gruppe',
     nameLabel: 'Name der Gruppe',
     namePlaceholder: 'Familie Müller',
@@ -16,6 +15,12 @@ export default {
       one: 'Du kannst noch {count} Gruppe anlegen',
       other: 'Du kannst noch {count} Gruppen anlegen',
     },
+    intro: 'Eine Familie, ein Freundeskreis, ein Team: eine Gruppe pro Kreis.',
+    nameHelp: 'Du und die Mitglieder seht ihn oben in jeder Auslosung.',
+    organizerHelp:
+      'Um die Gruppe von jemand anderem zu erstellen: Die Person meldet sich einfach mit dieser Adresse an. Leer hat die Gruppe noch keinen Organisator.',
+    organizerPlaceholder: 'name@beispiel.de',
+    creating: 'Wird erstellt…',
   },
   organizers: {
     title: 'Organisatoren',

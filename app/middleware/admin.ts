@@ -19,9 +19,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // was just made an organiser must not be turned away.
   if (user.value?.role === 'member') await fetch();
   if (!loggedIn.value) return navigateTo(LOGIN);
-  const superOnly = SUPER_ONLY.some(
-    (path) => to.path === path || to.path.startsWith(`${path}/`),
-  );
+  // The administration's home is /admin itself, not what lies under it.
+  const superOnly =
+    to.path === '/admin' ||
+    SUPER_ONLY.some(
+      (path) => to.path === path || to.path.startsWith(`${path}/`),
+    );
   return user.value?.role === 'member' ||
     (superOnly && user.value?.role !== 'super_admin')
     ? navigateTo(HOME)

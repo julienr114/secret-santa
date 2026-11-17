@@ -230,7 +230,7 @@ const accountCandidates = (home: HomeState): Candidate[] => {
       ...at,
       kind: 'requests',
       count: home.pendingRequests,
-      to: '/admin/comptes',
+      to: '/admin',
       dismissKey: null,
     }),
     ...when(home.canCreateGroup && home.groups.length === 0, {

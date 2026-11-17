@@ -218,15 +218,16 @@ const deleting = ref(false);
         />
       </UiList>
 
-      <UiList v-if="isSuper">
-        <UiListItem
-          icon="i-lucide-trash-2"
-          tone="danger"
-          :title="t('adminGroup.dashboard.deleteGroup')"
-          :subtitle="t('adminGroup.deleteGroup.superOnly')"
-          :on-click="() => (deleting = true)"
-        />
-      </UiList>
+      <UiRestricted v-if="isSuper" :label="t('auth.account.superAdmin')" flush>
+        <ul>
+          <UiListItem
+            icon="i-lucide-trash-2"
+            tone="danger"
+            :title="t('adminGroup.dashboard.deleteGroup')"
+            :on-click="() => (deleting = true)"
+          />
+        </ul>
+      </UiRestricted>
     </AdminQueryState>
 
     <UiChoiceSheet

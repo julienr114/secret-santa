@@ -4,7 +4,6 @@ import type { Dict } from '../../types';
 export default {
   newGroup: {
     organizerLabel: 'Address of the first organizer',
-    organizerHelp: 'Optional. You can add others from the group.',
     title: 'New group',
     nameLabel: 'Group name',
     namePlaceholder: 'Smith family',
@@ -16,6 +15,12 @@ export default {
       one: 'You can create {count} more group',
       other: 'You can create {count} more groups',
     },
+    intro: 'A family, a group of friends, a team: one group per circle.',
+    nameHelp: 'You and the members will see it at the top of each draw.',
+    organizerHelp:
+      'To create someone else’s group: they just log in with this address. Empty, the group has no organiser yet.',
+    organizerPlaceholder: 'name@example.com',
+    creating: 'Creating…',
   },
   organizers: {
     title: 'Organisers',

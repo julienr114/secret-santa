@@ -4,11 +4,12 @@ import type {
   PendingRequest,
 } from '~/composables/queries/useAdmin';
 import { fullName } from '#server/utils/people';
-import { formatDay } from '~/utils/labels';
+import { remainingGroups } from '#server/utils/quota';
 
-// One account on the admin page, on rows of the same height: who it is
-// (name, or address without one), a one-line summary, and a badge when a
-// request awaits the admin. A tap opens the account's page.
+// One account on the admin's list: its icon, its name (or its address
+// without one), then its address (« Super-admin » for one), its groups
+// (or how many it may create) and its last visit; « À traiter » when a
+// request waits. A tap opens the account's page.
 const props = defineProps<{
   account: AdminAccountRow;
   request?: PendingRequest;
@@ -16,52 +17,47 @@ const props = defineProps<{
 const { t, locale } = useT();
 
 const name = computed(() => fullName(props.account));
-// The request in a few words, or the groups and the last visit.
-const summary = computed(() => {
-  if (props.request) return props.request.message;
-  const groups = t('auth.admin.groupsCount', {
-    count: props.account.groups.length,
-  });
-  return props.account.lastLoginAt
-    ? `${groups} · ${t('auth.admin.seenOn', {
-        date: formatDay(props.account.lastLoginAt, locale.value),
-      })}`
-    : `${groups} · ${t('auth.admin.neverLoggedIn')}`;
+/** « 2 groupes », « peut créer 1 groupe » or « aucun groupe ». */
+const groupsPart = computed(() => {
+  const organized = props.account.groups.length;
+  if (organized > 0) return t('auth.admin.groupsCount', { count: organized });
+  const left = remainingGroups(props.account);
+  return left > 0 && Number.isFinite(left)
+    ? t('auth.admin.canCreate', { count: left })
+    : t('auth.admin.noGroup');
 });
+const line = computed(() =>
+  [
+    props.account.isSuperAdmin
+      ? t('auth.account.superAdmin')
+      : name.value && props.account.email,
+    groupsPart.value,
+    props.account.lastLoginAt &&
+      t('auth.admin.seenOn', {
+        date: new Intl.DateTimeFormat(locale.value, {
+          day: 'numeric',
+          month: 'short',
+        }).format(new Date(props.account.lastLoginAt)),
+      }),
+  ]
+    .filter(Boolean)
+    .join(' · '),
+);
 </script>
 
 <template>
-  <li :class="{ 'opacity-60': account.disabled }">
-    <NuxtLink
-      :to="`/admin/comptes/${account.id}`"
-      class="flex h-16 w-full items-center gap-3 px-4 text-left transition-colors active:bg-muted"
-    >
-      <UiAvatar :avatar="account.avatar" />
-      <span class="min-w-0 grow">
-        <span class="block truncate font-medium">{{
-          name || account.email
-        }}</span>
-        <span class="block truncate text-sm text-dimmed">{{ summary }}</span>
-      </span>
-      <UBadge
-        v-if="request"
-        color="warning"
-        variant="solid"
-        size="sm"
-        :label="t('auth.admin.toHandle')"
-      />
-      <UBadge
-        v-else-if="account.isSuperAdmin"
-        color="primary"
-        variant="subtle"
-        size="sm"
-        :label="t('auth.account.superAdmin')"
-      />
-      <UIcon
-        name="i-lucide-chevron-right"
-        class="size-5 shrink-0 text-dimmed"
-        aria-hidden="true"
-      />
-    </NuxtLink>
-  </li>
+  <UiListItem
+    :to="`/admin/comptes/${account.id}`"
+    :avatar="account.avatar"
+    :title="name || account.email"
+    :subtitle="line"
+    :class="{ 'opacity-60': account.disabled }"
+  >
+    <template v-if="request" #trailing>
+      <span
+        class="shrink-0 rounded-full bg-warning-soft px-2 py-0.5 text-[13px] font-bold text-warning-ink"
+        >{{ t('auth.admin.toHandle') }}</span
+      >
+    </template>
+  </UiListItem>
 </template>

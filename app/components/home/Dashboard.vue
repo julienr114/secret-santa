@@ -93,6 +93,9 @@ const requestNote = computed(() => {
     : t('auth.home.requestRefused', { date });
 });
 const requestOpen = ref(false);
+/** A super-admin finds the administration at the bottom of the home. */
+const isSuper = computed(() => data.value?.role === 'super_admin');
+const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
 </script>
 
 <template>
@@ -291,6 +294,28 @@ const requestOpen = ref(false);
           :subtitle="t('auth.home.organizeOwnHint')"
           :on-click="() => (requestOpen = true)"
         />
+      </UiList>
+      <UiList
+        v-if="isSuper"
+        :title="t('auth.account.superAdmin')"
+        data-testid="home-admin"
+      >
+        <UiListItem
+          to="/admin"
+          icon="i-lucide-shield"
+          icon-tone="neutral"
+          :title="t('auth.admin.title')"
+          :subtitle="t('auth.home.adminHint')"
+        >
+          <template v-if="pendingRequests > 0" #trailing>
+            <UiCountBadge
+              :count="pendingRequests"
+              :label="
+                t('auth.home.requestsToHandle', { count: pendingRequests })
+              "
+            />
+          </template>
+        </UiListItem>
       </UiList>
     </AdminQueryState>
 

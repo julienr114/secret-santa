@@ -26,7 +26,9 @@ export default defineAppConfig({
         container:
           'min-h-0 gap-4 overflow-hidden px-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]',
         header: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
-        body: 'min-h-0 overflow-y-auto overscroll-contain px-[max(1rem,env(safe-area-inset-left))]',
+        // A little room above and below, taken back by the margins: the
+        // frame of a box at the very top or bottom is not clipped.
+        body: '-my-1 min-h-0 overflow-y-auto overscroll-contain px-[max(1rem,env(safe-area-inset-left))] py-1',
         footer: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
       },
     },

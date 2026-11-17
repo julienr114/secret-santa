@@ -1300,8 +1300,16 @@ Non planifié. Maquettes dans `docs/refonte/maquettes/` : `FuturAccueilJournal` 
 
 Pas de lien permanent vers le journal sur l'accueil : le journal appartient à un groupe et non au compte, il ne contient le plus souvent rien de notable, et l'accueil sert à savoir où en est son tirage. À la place, un signal sur la carte du tirage, seulement quand le journal contient une alerte que la personne n'a pas encore vue :
 
-- un accès de dernier recours à un résultat dans ce groupe ;
-- un lien régénéré qui la concerne.
+| Événement du journal | Ce qui s'est passé | Qui voit le signal | Maquette |
+| --- | --- | --- | --- |
+| `result_revealed` | L'organisateur a regardé un résultat (dernier recours) | Tout le groupe | `FuturAccueilJournalAcces` |
+| `results_revealed` | Les résultats ont été dévoilés avant la fête | Tout le groupe | `FuturAccueilJournalDevoile` |
+| `draw_cancelled` | Le tirage a été annulé | Tout le groupe | `FuturAccueilJournalAnnule` |
+| `link_regenerated` | Son lien a été régénéré | Elle seulement | `FuturAccueilJournal` |
+
+Ce sont les trois événements qui ont déjà un panneau d'explication dans le journal, plus le lien régénéré pour la personne concernée. Aucun autre événement ne déclenche de signal (liens envoyés, copiés ou partagés, résultats découverts, participants, règles, icône, langue, clôture). L'organisateur n'a pas de signal sur « Gérer le tirage » : ces alertes viennent de ses propres actions.
+
+Limite connue : si l'organisateur copie le lien de quelqu'un et l'ouvre à sa place, le journal ne note que « lien copié » puis « résultat découvert ». Le signal ne le détecte pas ; il faudrait savoir depuis quel appareil le résultat a été ouvert.
 
 Le signal est une ligne dans la carte, sous le bouton principal (« Du nouveau au journal. Ton lien a été régénéré le 16 novembre. »), qui mène droit à l'explication de l'alerte. Il disparaît une fois l'alerte vue. C'est le prolongement de la ligne « Journal du groupe · 1 alerte depuis ta dernière visite » de la page d'un tirage, et il s'appuie sur la même information.
 

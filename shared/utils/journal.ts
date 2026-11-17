@@ -7,6 +7,11 @@ export type JournalLike = {
   type: string;
   createdAt: string;
   editionId: string | null;
+  /** The person the event is about. */
+  personId?: string | null;
+  /** For a message sent: which one, and how. */
+  messageType?: string | null;
+  via?: string | null;
 };
 
 /** Events « L'essentiel » leaves out: a new icon, another language. */
@@ -36,8 +41,24 @@ export type JournalLine<E> =
   { kind: 'one'; entry: E } | { kind: 'group'; type: string; entries: E[] };
 
 /**
+ * The entries about one person.
+ * @param entries - The journal, in any order.
+ * @param personId - The person; null keeps everyone.
+ * @returns The entries about them, in the same order.
+ */
+export const aboutPerson = <E extends JournalLike>(
+  entries: E[],
+  personId: string | null,
+): E[] =>
+  personId === null
+    ? entries
+    : entries.filter((entry) => entry.personId === personId);
+
+/**
  * Folds the events of a kind that happened the same day, in the same
- * edition, into one line, placed where the newest of them is.
+ * edition, into one line, placed where the newest of them is. Messages
+ * sent fold only with the same message sent the same way (« Tirage fait »
+ * by email).
  * @param entries - The journal, newest first.
  * @param dayOf - The day of a moment, as the reader counts days.
  * @returns The lines, newest first; a kind seen once stays a single event.
@@ -48,7 +69,13 @@ export const groupEvents = <E extends JournalLike>(
 ): JournalLine<E>[] => {
   const keyOf = (entry: E) =>
     GROUPED.has(entry.type)
-      ? `${dayOf(entry.createdAt)}|${entry.editionId ?? ''}|${entry.type}`
+      ? [
+          dayOf(entry.createdAt),
+          entry.editionId ?? '',
+          entry.type,
+          entry.messageType ?? '',
+          entry.via ?? '',
+        ].join('|')
       : null;
   const together = (key: string) =>
     entries.filter((entry) => keyOf(entry) === key);

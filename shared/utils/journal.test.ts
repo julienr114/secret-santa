@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
+  aboutPerson,
   essentialEvents,
   groupEvents,
   journalDays,
@@ -32,6 +33,22 @@ describe('essentialEvents', () => {
       entry('d', 'draw_done', '2026-11-14T20:00:00Z'),
     ];
     expect(essentialEvents(entries).map((e) => e.id)).toEqual(['a', 'd']);
+  });
+});
+
+describe('aboutPerson', () => {
+  const entries = [
+    { ...entry('a', 'result_viewed', '2026-11-14T23:50:00Z'), personId: 'p1' },
+    { ...entry('b', 'draw_done', '2026-11-14T21:00:00Z'), personId: null },
+    { ...entry('c', 'link_copied', '2026-11-14T20:00:00Z'), personId: 'p2' },
+  ];
+
+  it('keeps only the events about the person', () => {
+    expect(aboutPerson(entries, 'p2').map((e) => e.id)).toEqual(['c']);
+  });
+
+  it('keeps everything without a person', () => {
+    expect(aboutPerson(entries, null)).toEqual(entries);
   });
 });
 
@@ -67,6 +84,26 @@ describe('groupEvents', () => {
       entry('r1', 'result_revealed', '2026-11-14T14:02:00Z'),
     ];
     expect(ids(groupEvents(entries, dayOf))).toEqual(['s2', 's1', 'r2', 'r1']);
+  });
+
+  it('folds messages sent only with the same message sent the same way', () => {
+    const sent = (id: string, messageType: string, via: string) => ({
+      ...entry(id, 'message_sent', `2026-11-14T21:3${id}:00Z`),
+      messageType,
+      via,
+    });
+    const entries = [
+      sent('5', 'drawn', 'email'),
+      sent('4', 'drawn', 'copy'),
+      sent('3', 'drawn', 'email'),
+      sent('2', 'reminder', 'email'),
+      sent('1', 'drawn', 'email'),
+    ];
+    expect(ids(groupEvents(entries, dayOf))).toEqual([
+      ['5', '3', '1'],
+      '4',
+      '2',
+    ]);
   });
 
   it('keeps every event exactly once, in order', () => {

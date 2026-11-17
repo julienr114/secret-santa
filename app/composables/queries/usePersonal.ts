@@ -1,3 +1,4 @@
+import type { JournalPersonCard } from '#server/database/journal';
 import { useQuery, type QueryKey } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { Avatar } from '#server/utils/avatars';
@@ -57,6 +58,9 @@ export type Reveal = {
 export type JournalPayload = {
   entries: JournalEntry[];
   editions: { id: string; label: string }[];
+  people: JournalPersonCard[];
+  /** The participant reading it. */
+  me: string;
   currentEditionId: string;
   language: Locale;
 };

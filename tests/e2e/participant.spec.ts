@@ -274,6 +274,21 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
     await page.request.get(`/api/p/${tokenOf('Alice')}/journal`)
   ).text();
   expect(api).not.toMatch(/receiver|meta/i);
+  // Each line says whom it is about; « Moi » keeps hers, told to her.
+  const payload = JSON.parse(api);
+  const alice = payload.people.find(
+    (p: { name: string }) => p.name === 'Alice',
+  );
+  expect(payload.me).toBe(alice.id);
+  await page.getByTestId('journal-person').click();
+  await page.getByRole('option', { name: 'Moi (Alice)' }).click();
+  await expect(
+    page.getByText('Tout ce qui touche ton lien et ton résultat.', {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText('Tu as découvert ton résultat')).toHaveCount(1);
+  await expect(page.getByText('Alice a découvert son résultat')).toHaveCount(0);
 });
 
 test('a cancelled draw keeps the wish lists and resets the counters', async ({

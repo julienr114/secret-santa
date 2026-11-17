@@ -1,3 +1,4 @@
+import type { JournalPersonCard } from '#server/database/journal';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
 import type { Participant, PublicEdition } from '#server/database/editions';
@@ -43,6 +44,7 @@ export const useDashboardQuery = (slug: Slug) =>
 export type GroupJournal = {
   entries: JournalEntry[];
   editions: { id: string; label: string }[];
+  people: JournalPersonCard[];
   currentEditionId: string | null;
   language: Locale;
 };

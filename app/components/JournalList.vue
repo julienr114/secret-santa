@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { JournalEntry } from '#server/utils/audit';
 import type { JournalDay } from '#shared/utils/journal';
+import type { JournalPersonCard } from '#server/database/journal';
 
 // The public journal (README section 9) as a timeline, newest first, by
 // day. A thin brick thread runs down the left; every line hangs on it
@@ -8,7 +9,11 @@ import type { JournalDay } from '#shared/utils/journal';
 // mustard cards with what they mean, everyday events plain lines, and
 // the repeated ones a line that unfolds. Shared by the participant and
 // the organiser.
-defineProps<{ days: JournalDay<JournalEntry>[] }>();
+defineProps<{
+  days: JournalDay<JournalEntry>[];
+  /** The people the lines are about, for the folded lines. */
+  people: JournalPersonCard[];
+}>();
 const emit = defineEmits<{ explain: [entry: JournalEntry] }>();
 const { t, locale } = useT();
 
@@ -136,7 +141,12 @@ const dayLabel = (day: string) =>
               >
             </div>
           </template>
-          <JournalGroup v-else :type="line.type" :entries="line.entries" />
+          <JournalGroup
+            v-else
+            :type="line.type"
+            :entries="line.entries"
+            :people="people"
+          />
         </li>
       </ol>
     </section>

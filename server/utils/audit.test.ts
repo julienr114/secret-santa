@@ -113,7 +113,7 @@ describe('describeEvent', () => {
         ev('message_sent', { messageType: 'invitation', via: 'share' }),
         { names },
       ),
-    ).toBe("L'organisateur a envoyé l'invitation à Léa (partagé)");
+    ).toBe("L'organisateur a envoyé « Invitation » à Léa par partage");
     expect(describeEvent(ev('link_copied'), { names })).toBe(
       "L'organisateur a copié le lien de Léa",
     );
@@ -189,7 +189,37 @@ describe('journalEntries', () => {
       actor: 'participant',
       createdAt: '2026-12-02T10:00:00.000Z',
       text: 'Tom a découvert son résultat',
+      personId: 'p3',
+      messageType: null,
+      via: null,
+      ownText: null,
     });
+  });
+
+  it('tells the reader the events about them in the second person', () => {
+    const entries = journalEntries(
+      [
+        row('a', 'p3', '2026-12-01T10:00:00.000Z'),
+        row('b', 'p1', '2026-12-02T10:00:00.000Z'),
+      ],
+      people,
+      'fr',
+      'p3',
+    );
+    expect(entries.map((e) => e.ownText)).toEqual([
+      null,
+      'Tu as découvert ton résultat',
+    ]);
+  });
+
+  it('keeps the third person for an event without its own sentence', () => {
+    const [entry] = journalEntries(
+      [{ ...row('a', 'p3', '2026-12-01T10:00:00.000Z'), type: 'draw_done' }],
+      people,
+      'fr',
+      'p3',
+    );
+    expect(entry?.ownText).toBe(entry?.text);
   });
 
   it('adds the last name only for homonyms', () => {
@@ -207,6 +237,23 @@ describe('journalEntries', () => {
     );
     expect(JSON.stringify(entries)).not.toContain('receiverId');
     expect(entries[0]).not.toHaveProperty('meta');
+  });
+
+  it('passes on which message was sent, and how', () => {
+    const [entry] = journalEntries(
+      [
+        {
+          ...row('a', 'p1', '2026-12-01T10:00:00.000Z'),
+          type: 'message_sent',
+          meta: { messageType: 'drawn', via: 'email', receiverId: 'p3' },
+        },
+      ],
+      people,
+    );
+    expect(entry).toMatchObject({ messageType: 'drawn', via: 'email' });
+    expect(entry?.text).toBe(
+      "L'organisateur a envoyé « Tirage fait » à Léa Rabin par email",
+    );
   });
 });
 
@@ -226,11 +273,13 @@ describe('describeEvent in other languages', () => {
   it('translates every type without leaving a placeholder', () => {
     (['fr', 'en', 'de'] as const).forEach((locale) => {
       AUDIT_TYPES.forEach((type) => {
-        const text = describeEvent(
-          { type, personId: 'p1', meta: { count: 2, label: 'X' } },
-          { names, locale },
-        );
-        expect(text, `${locale} ${type}`).not.toMatch(/\{\w+\}/);
+        [false, true].forEach((own) => {
+          const text = describeEvent(
+            { type, personId: 'p1', meta: { count: 2, label: 'X' } },
+            { names, locale, own },
+          );
+          expect(text, `${locale} ${type}`).not.toMatch(/\{\w+\}/);
+        });
       });
     });
   });
@@ -251,9 +300,7 @@ describe('describeEvent in other languages', () => {
       [{ id: 'p1', firstName: 'Léa' }],
       'en',
     );
-    expect(entry?.text).toBe(
-      'The organizer sent the invitation to Léa (email)',
-    );
+    expect(entry?.text).toBe('The organizer sent “Invitation” to Léa by email');
   });
 });
 

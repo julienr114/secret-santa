@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import type { JournalEntry } from '#server/utils/audit';
+import { hasMessage } from '#shared/i18n';
 
 // « Qu'est-ce que ça veut dire ? » on an alert of the journal: the line
 // itself, when it happened, then what happened, why it is allowed and
-// what it changes.
-const props = defineProps<{ entry: JournalEntry | null }>();
+// what it changes, for whoever reads it: the organiser, the person the
+// alert is about, or another participant.
+const props = defineProps<{
+  entry: JournalEntry | null;
+  /** The person the alert is about. */
+  name: string | null;
+  reader: 'organiser' | 'them' | 'other';
+}>();
 const open = defineModel<boolean>('open', { required: true });
 const { t, tk, locale } = useT();
 
@@ -29,13 +36,33 @@ const when = computed(() => {
     time,
   });
 });
+/** What it changes, as the reader sees it. */
+const READER_PART = { organiser: 'changes', them: 'forMe', other: 'forOthers' };
+/**
+ * The text of a paragraph, for this reader when the alert has one.
+ * @param alert - The kind of alert.
+ * @param part - `happened`, `why` or `changes`.
+ * @returns The paragraph.
+ */
+const textOf = (alert: string, part: 'happened' | 'why' | 'changes') => {
+  const own = `journal.alert.${alert}.${READER_PART[props.reader]}`;
+  const key =
+    part === 'changes' && hasMessage(own)
+      ? own
+      : `journal.alert.${alert}.${part}`;
+  return tk(key, { name: props.name ?? t('journal.someone') });
+};
 /** The three paragraphs, each led by its words in bold. */
 const paragraphs = computed(() =>
   kind.value
     ? (['happened', 'why', 'changes'] as const).map((part) => ({
         part,
-        lead: t(`journal.alert.${part}`),
-        text: tk(`journal.alert.${kind.value}.${part}`),
+        lead: t(
+          part === 'changes' && props.reader !== 'organiser'
+            ? 'journal.alert.changesYou'
+            : `journal.alert.${part}`,
+        ),
+        text: textOf(kind.value!, part),
       }))
     : [],
 );

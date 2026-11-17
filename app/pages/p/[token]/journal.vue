@@ -24,6 +24,8 @@ const { t } = useT();
       :entries="journal.data.value.entries"
       :editions="journal.data.value.editions"
       :current-edition-id="journal.data.value.currentEditionId"
+      :people="journal.data.value.people"
+      :me="journal.data.value.me"
     />
   </ParticipantScreen>
 </template>

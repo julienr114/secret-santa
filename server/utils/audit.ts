@@ -119,16 +119,22 @@ export type DescribableEvent = {
 
 /**
  * One sentence for an event, in `locale` (French by default). `names` maps
- * person ids to display names.
+ * person ids to display names; `own` tells it to the person it is about
+ * (« Tu as découvert ton résultat »), for the events that have such a
+ * sentence.
  */
 export const describeEvent = (
   event: DescribableEvent,
   {
     names = {},
     locale = DEFAULT_LOCALE,
-  }: { names?: Record<string, string>; locale?: Locale } = {},
+    own = false,
+  }: { names?: Record<string, string>; locale?: Locale; own?: boolean } = {},
 ): string => {
-  const key = `journal.events.${event.type}`;
+  const key = keyOrFallback(
+    own ? `journal.own.${event.type}` : '',
+    `journal.events.${event.type}`,
+  );
   if (!hasMessage(key)) return translateKey(locale, 'journal.unknown');
   const meta = event.meta ?? {};
   const t = (k: string) => translateKey(locale, k);
@@ -173,17 +179,31 @@ export type JournalEntry = {
   actor: string;
   createdAt: string;
   text: string;
+  /** The person the event is about, if any. */
+  personId: string | null;
+  /** For a message sent: which one, and how (`email`, `copy`, `share`). */
+  messageType: string | null;
+  via: string | null;
+  /** The sentence told to the reader, when the event is about them. */
+  ownText: string | null;
 };
+
+/** Words of a meta that may be shown: the kind of message, and how. */
+const metaWord = (meta: Meta | null | undefined, key: string) =>
+  typeof meta?.[key] === 'string' ? (meta[key] as string) : null;
 
 /**
  * Journal rows as shown to the group: one sentence each in `locale`,
  * newest first. People appear by first name, with the last name only to tell
- * homonyms apart (README 20). Meta is not passed on.
+ * homonyms apart (README 20). Of the meta, only the kind of a message sent
+ * and how it went are passed on. `me`, the reader when they are a
+ * participant, gets the events about them told in the second person too.
  */
 export const journalEntries = (
   rows: JournalRow[],
   people: JournalPerson[],
   locale: Locale = DEFAULT_LOCALE,
+  me: string | null = null,
 ): JournalEntry[] => {
   const names = Object.fromEntries(
     people.map((person) => [person.id, displayName(person, people)]),
@@ -197,5 +217,12 @@ export const journalEntries = (
       actor: row.actor,
       createdAt: row.createdAt,
       text: describeEvent(row, { names, locale }),
+      personId: row.personId ?? null,
+      messageType: metaWord(row.meta, 'messageType'),
+      via: metaWord(row.meta, 'via'),
+      ownText:
+        me !== null && row.personId === me
+          ? describeEvent(row, { names, locale, own: true })
+          : null,
     }));
 };

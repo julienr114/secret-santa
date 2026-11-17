@@ -32,13 +32,35 @@ export default {
   },
   noReason: 'non précisé',
   what: {
-    invitation: "l'invitation",
-    drawn: 'le message « tirage fait »',
-    reminder: 'la relance',
-    redraw: 'le message « nouveau tirage »',
+    invitation: '« Invitation »',
+    drawn: '« Tirage fait »',
+    reminder: '« Relance »',
+    redraw: '« Nouveau tirage »',
     other: 'un message',
   },
-  via: { copy: ' (message copié)', share: ' (partagé)', email: ' (email)' },
+  via: {
+    copy: ' par message copié',
+    share: ' par partage',
+    email: ' par email',
+  },
+  // The same events, told to the person they are about (filter « Moi »).
+  own: {
+    participant_added: 'Tu rejoins l’édition',
+    participant_removed: 'Tu quittes l’édition',
+    message_sent: 'L’organisateur t’a envoyé {what}{via}',
+    link_copied: 'L’organisateur a copié ton lien',
+    link_shared: 'L’organisateur a partagé ton lien',
+    link_regenerated: 'Ton lien a été régénéré',
+    result_revealed:
+      'L’organisateur a consulté ton résultat (accès de dernier recours)',
+    result_viewed: 'Tu as découvert ton résultat',
+    wishes_updated: {
+      one: 'Tu as mis à jour ta liste de souhaits ({count} idée)',
+      other: 'Tu as mis à jour ta liste de souhaits ({count} idées)',
+    },
+    avatar_changed: 'Tu as changé ton icône',
+    language_changed: 'Tu as changé ta langue ({language})',
+  },
   screen: {
     helpLink: 'À quoi sert-il ?',
     views: 'Ce que montre le journal',
@@ -48,17 +70,22 @@ export default {
     hideDetail: 'Replier',
     whatMeans: 'Qu’est-ce que ça veut dire ?',
     understood: 'J’ai compris',
+    person: 'Personne concernée',
+    everyone: 'Tout le monde',
+    me: 'Moi ({name})',
+    meNote:
+      'Tout ce qui touche ton lien et ton résultat. Si une ligne ne vient pas de toi, préviens ton organisateur.',
   },
   grouped: {
     result_viewed: '{strong} ont découvert leur résultat',
-    message_sent: 'L’organisateur a envoyé {strong}',
+    message_sent: 'L’organisateur a envoyé {what} à {strong}{via}',
     link_copied: 'L’organisateur a copié {strong}',
     link_shared: 'L’organisateur a partagé {strong}',
     participant_added: '{strong} rejoignent l’édition',
   },
   groupedCount: {
     result_viewed: { one: '{count} personne', other: '{count} personnes' },
-    message_sent: { one: '{count} message', other: '{count} messages' },
+    message_sent: { one: '{count} personne', other: '{count} personnes' },
     link_copied: { one: '{count} lien', other: '{count} liens' },
     link_shared: { one: '{count} lien', other: '{count} liens' },
     participant_added: { one: '{count} personne', other: '{count} personnes' },
@@ -82,10 +109,14 @@ export default {
     happened: 'Ce qui s’est passé.',
     why: 'Pourquoi c’est permis.',
     changes: 'Ce que ça change.',
+    changesYou: 'Ce que ça change pour toi.',
     result_revealed: {
       title: 'Accès de dernier recours',
       happened:
-        'L’organisateur a regardé à qui la personne nommée offre un cadeau. Il n’a vu que ce résultat-là.',
+        'L’organisateur a regardé à qui {name} offre un cadeau. Il n’a vu que ce résultat-là.',
+      forOthers: 'Rien : ton résultat et ta liste n’ont pas été vus.',
+      forMe:
+        'Il sait à qui tu offres un cadeau. Personne d’autre ne l’a vu, et ton résultat ne change pas.',
       why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
       changes:
         'Les autres résultats et les listes de souhaits n’ont pas été vus.',

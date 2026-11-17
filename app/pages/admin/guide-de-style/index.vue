@@ -196,6 +196,10 @@ const entry = (
   editionId: 'e',
   actor: 'guardian',
   createdAt: at(minutes),
+  personId: String(meta.name ?? 'Léa'),
+  messageType: null,
+  via: null,
+  ownText: null,
   text: tk(`journal.events.${type}`, {
     name: 'Léa',
     label: 'Noël 2026',
@@ -207,6 +211,11 @@ const entry = (
     ...meta,
   }),
 });
+/** The people of the sample journal, for the icons of a folded line. */
+const journalPeople = [
+  { id: 'Léa', name: 'Léa', avatar: { emoji: '🦌', color: 'plum' } },
+  { id: 'Hugo', name: 'Hugo', avatar: { emoji: '🐧', color: 'mustard' } },
+] as const;
 /** One entry of each visual kind: plain line, folded lines, milestone, alert. */
 const entries = computed(() => [
   entry('1', 'result_viewed', 5),
@@ -799,6 +808,7 @@ const entries = computed(() => [
         :entries="entries"
         :editions="[{ id: 'e', label: 'Noël 2026' }]"
         current-edition-id="e"
+        :people="[...journalPeople]"
       />
     </section>
 

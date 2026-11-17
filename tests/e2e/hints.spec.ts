@@ -261,12 +261,12 @@ test('the setting: portrait only, then no hint at all', async ({ page }) => {
   expect(idea.status()).toBe(403);
   await open(page, `/p/${token}/pistes`);
   await expect(page.getByText('Une idée précise, si tu sèches')).toHaveCount(0);
-  // Five questions without the precise ideas; « D'occasion ou fait main »
-  // is a yes or a no, and the last.
+  // Five questions without the precise ideas: « Neuf, ou d'occasion ? »
+  // is the last.
   await open(page, `/p/${token}/pistes/question?n=5`);
-  await expect(heading(page)).toHaveText('D’occasion ou fait main, ça te va ?');
+  await expect(heading(page)).toHaveText('Neuf, ou d’occasion ?');
   await expect(page.getByText('question 5 sur 5')).toBeVisible();
-  await expect(page.getByTestId('hint-both')).toHaveCount(0);
+  await expect(page.getByTestId('hint-both')).toBeVisible();
 
   await ok(
     await admin().patch(`${ADMIN}/rules`, { data: { giftHints: 'none' } }),

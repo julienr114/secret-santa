@@ -90,15 +90,6 @@ export const questionsFor = (mode: GiftHintsMode): readonly HintQuestion[] =>
     ? HINT_QUESTIONS.filter((question) => question !== 'surprise')
     : HINT_QUESTIONS;
 
-/**
- * Whether a question offers « Les deux me vont »: all but « D'occasion ou
- * fait main », which is a yes or a no.
- * @param question - The question.
- * @returns True when both is a possible answer.
- */
-export const allowsBoth = (question: HintQuestion): boolean =>
-  question !== 'secondHand';
-
 /** One tag of « Moi et les cadeaux »: a question and its answer. */
 export type HintTag = { question: HintQuestion; answer: HintAnswer };
 

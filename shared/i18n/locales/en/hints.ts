@@ -67,10 +67,10 @@ export default {
       secondHelp: 'A game, a meal, something to enjoy together.',
     },
     secondHand: {
-      title: 'Second-hand or handmade: fine with you?',
-      first: 'Yes, that’s fine',
-      firstHelp: 'Second-hand, or something homemade.',
-      second: 'Rather new',
+      title: 'New, or second-hand?',
+      first: 'Second-hand or handmade',
+      firstHelp: 'Second-hand, or something homemade: I like that.',
+      second: 'New',
       secondHelp: 'Something new, in its box.',
     },
     surprise: {
@@ -103,8 +103,9 @@ export default {
       both: 'Just for oneself or to share',
     },
     secondHand: {
-      first: 'Second-hand is fine',
+      first: 'Second-hand, gladly',
       second: 'Rather new',
+      both: 'New or second-hand',
     },
     surprise: {
       first: 'Loves surprises',
@@ -133,7 +134,7 @@ export default {
       },
     },
     secondHand: {
-      first: 'Second-hand or handmade is fine with them.',
+      first: 'Second-hand or handmade, gladly.',
       second: 'Rather new than second-hand.',
     },
     surprise: {

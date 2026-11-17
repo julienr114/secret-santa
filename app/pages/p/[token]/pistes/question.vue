@@ -5,7 +5,6 @@ import {
   useSaveHintsMutation,
 } from '~/composables/queries/usePersonal';
 import {
-  allowsBoth,
   nextQuestion,
   questionAt,
   questionsFor,
@@ -14,8 +13,8 @@ import {
 } from '#shared/utils/hints';
 
 // One of the questions of « Moi et les cadeaux » (README 22.11): six, or
-// five without the precise ideas; two big choices and, but for second
-// hand, « Les deux me vont ». One tap saves the answer and goes
+// five without the precise ideas; two big choices and « Les deux me
+// vont ». One tap saves the answer and goes
 // on to the next question, back to the page after the last one. Opened
 // from a tag of the page (`modifier=1`), it is that one question alone:
 // its answer checked, a tap saves and goes back, « Effacer ma réponse »
@@ -176,7 +175,6 @@ const onAnswer = (answer: HintAnswer | null) => {
         </button>
       </div>
       <button
-        v-if="allowsBoth(question)"
         type="button"
         :aria-pressed="current === 'both'"
         class="h-12 rounded-md border bg-transparent font-semibold transition-colors active:bg-muted"

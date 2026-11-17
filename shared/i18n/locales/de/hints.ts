@@ -67,10 +67,10 @@ export default {
       secondHelp: 'Ein Spiel, ein Essen, etwas für mehrere.',
     },
     secondHand: {
-      title: 'Gebraucht oder selbst gemacht: passt das für dich?',
-      first: 'Ja, passt',
-      firstHelp: 'Secondhand oder etwas Selbstgemachtes.',
-      second: 'Lieber neu',
+      title: 'Neu oder gebraucht?',
+      first: 'Gebraucht oder selbst gemacht',
+      firstHelp: 'Secondhand oder etwas Selbstgemachtes: Das mag ich.',
+      second: 'Neu',
       secondHelp: 'Etwas Neues, originalverpackt.',
     },
     surprise: {
@@ -103,8 +103,9 @@ export default {
       both: 'Für sich oder zum Teilen',
     },
     secondHand: {
-      first: 'Gebraucht ist okay',
+      first: 'Gebraucht, gern',
       second: 'Lieber neu',
+      both: 'Neu oder gebraucht',
     },
     surprise: {
       first: 'Mag Überraschungen',
@@ -133,7 +134,7 @@ export default {
       },
     },
     secondHand: {
-      first: 'Gebraucht oder selbst gemacht ist okay.',
+      first: 'Gebraucht oder selbst gemacht, gern.',
       second: 'Lieber neu als gebraucht.',
     },
     surprise: {

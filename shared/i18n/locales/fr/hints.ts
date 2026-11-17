@@ -66,10 +66,10 @@ export default {
       secondHelp: 'Un jeu, un repas, quelque chose à plusieurs.',
     },
     secondHand: {
-      title: 'D’occasion ou fait main, ça te va ?',
-      first: 'Oui, ça me va',
-      firstHelp: 'Une seconde main, un objet fait maison.',
-      second: 'Plutôt du neuf',
+      title: 'Neuf, ou d’occasion ?',
+      first: 'D’occasion ou fait main',
+      firstHelp: 'Une seconde main, un objet fait maison : j’aime ça.',
+      second: 'Neuf',
       secondHelp: 'Un objet neuf, dans son emballage.',
     },
     surprise: {
@@ -103,8 +103,9 @@ export default {
       both: 'Pour soi ou à partager',
     },
     secondHand: {
-      first: 'D’occasion, oui',
+      first: 'D’occasion, volontiers',
       second: 'Plutôt du neuf',
+      both: 'Neuf ou d’occasion',
     },
     surprise: {
       first: 'Aime la surprise',
@@ -134,7 +135,7 @@ export default {
       },
     },
     secondHand: {
-      first: 'D’occasion ou fait main, ça lui va.',
+      first: 'D’occasion ou fait main, volontiers.',
       second: 'Plutôt du neuf que de l’occasion.',
     },
     surprise: {

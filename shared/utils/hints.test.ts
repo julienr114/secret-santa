@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   EMPTY_PORTRAIT,
-  allowsBoth,
   answeredCount,
   firstUnanswered,
   giverPortrait,
@@ -90,6 +89,10 @@ describe('hints', () => {
       surprise: 'first',
       indifferent: ['selfOrShared'],
     });
+    // « Neuf, ou d'occasion ? » takes « Les deux me vont » too.
+    expect(
+      giverPortrait({ ...answers, secondHand: 'both' }).indifferent,
+    ).toEqual(['selfOrShared', 'secondHand']);
     expect(giverPortrait({ ...answers, surprise: 'both' }, 'portrait')).toEqual(
       {
         prefers: [
@@ -131,10 +134,5 @@ describe('hints', () => {
     expect(nextQuestion('secondHand', 'portrait')).toBeNull();
     expect(nextQuestion('secondHand', 'full')).toBe('surprise');
     expect(questionAt('6', 'portrait')).toBe('usefulOrSurprising');
-  });
-
-  it('has no « Les deux me vont » for second hand', () => {
-    expect(allowsBoth('secondHand')).toBe(false);
-    expect(allowsBoth('objectOrMoment')).toBe(true);
   });
 });

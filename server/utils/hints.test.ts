@@ -64,12 +64,12 @@ describe('applyPortraitPatch', () => {
     });
   });
 
-  it('has no « Les deux me vont » for second hand', () => {
+  it('takes « Les deux me vont » on every question', () => {
     expect(
-      failureOf(
+      valueOf(
         applyPortraitPatch(EMPTY_PORTRAIT, { answers: { secondHand: 'both' } }),
-      ).details,
-    ).toEqual({ field: 'answers.secondHand' });
+      ).answers.secondHand,
+    ).toBe('both');
   });
 
   it('refuses a text over 300 characters and ignores unknown keys', () => {

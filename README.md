@@ -223,7 +223,7 @@ Ajoutées en v2 sous la forme d'une liste de souhaits, **remplacées le 17 novem
 
 - Des pistes **par participation** (donc par personne et par édition). Quand la page est vide, « Reprendre mes pistes de {édition} » copie celles de la dernière édition du groupe où la personne en avait laissé (portrait, et idées si le groupe les garde).
 - **Tout est facultatif.** La page « Mes pistes de cadeaux » (`/p/[token]/pistes`) a quatre blocs :
-  - **Moi et les cadeaux** : six questions à deux choix plus « Les deux me vont », une par écran (`/p/[token]/pistes/question?n=1` à `6`), un appui pour répondre et passer à la suivante, « Plus tard » pour revenir. Les réponses sont des **valeurs fixes par question** (`first`, `second`, `both`, ou rien), jamais du texte, pour pouvoir un jour les compter (22.11, « statistiques »).
+  - **Moi et les cadeaux** : six questions à deux choix, une par écran (`/p/[token]/pistes/question?n=1` à `6`), un appui pour répondre et passer à la suivante, « Plus tard » pour revenir. Chaque question propose aussi « Les deux me vont », sauf « D'occasion ou fait main, ça te va ? », qui est un oui ou un non. Avec le réglage « Portrait seulement », la question « Surprends-moi, ou je préfère savoir ? » n'est pas posée : il en reste cinq, et les compteurs le disent (« question 2 sur 5 ») (`questionsFor`). Les réponses sont des **valeurs fixes par question** (`first`, `second`, `both`, ou rien), jamais du texte, pour pouvoir un jour les compter (22.11, « statistiques »).
   - **En ce moment**, **Ce qui me servirait**, **J'évite, ou j'ai déjà** : trois textes libres de 300 caractères, chacun écrit dans un panneau.
   - **Une idée précise, si tu sèches** : l'ancienne liste (une idée de 200 caractères, un lien facultatif `http`/`https` affiché avec `rel="noopener noreferrer nofollow"`), au plus `maxWishes` idées (10).
 - **Réglage du groupe à trois valeurs** (`giftHints`) : `full` (portrait et idées précises, par défaut), `portrait` (sans idée d'objet : la surprise reste entière), `none` (aucune piste : la page, la ligne et les routes disparaissent). La migration `0019` a converti l'ancien interrupteur `wishlist` (activé donne `full`, désactivé `none`), et `mergeRules` lit encore l'ancien s'il en reste un.
@@ -234,7 +234,7 @@ Ajoutées en v2 sous la forme d'une liste de souhaits, **remplacées le 17 novem
 | Acteur | Accès |
 |---|---|
 | Le participant | Lit et modifie ses propres pistes depuis sa page personnelle |
-| Celui qui lui offre | Les lit sous son résultat, « Pour t'aider à choisir » : les réponses en étiquettes, puis « En ce moment », « Ce qui lui servirait », « À éviter », « Si tu sèches ». Aucun pronom genré |
+| Celui qui lui offre | Les lit sous son résultat, « Pour t'aider à choisir » : une étiquette par réponse tranchée (`portraitTags` ; « Les deux me vont » n'en fait pas), et, s'il y a au moins un « Les deux me vont », une seule ligne discrète dessous, « Pour le reste, les deux lui vont. » ; puis « En ce moment », « Ce qui lui servirait », « À éviter », « Si tu sèches ». Aucun pronom genré. Sur sa propre page, la personne lit de même « Pour le reste, les deux me vont. » |
 | L'organisateur | Seulement **si la personne a laissé des pistes** (« A laissé des pistes », `hasHints`), jamais leur contenu |
 | Le journal | Rien (plus d'événement `wishes_updated`) |
 
@@ -246,7 +246,7 @@ Afficher les pistes de tout le monde permettrait de deviner par recoupement qui 
 - **Une seule demande par tirage**, sans relance ; le bouton disparaît ensuite. Un nouveau tirage (6.5) efface les demandes : chaque nouveau donneur peut demander une fois.
 - **Anonyme** : aucune route, aucun email, aucune ligne de journal, aucun écran de l'organisateur ne dit qui demande, ni qu'une demande a eu lieu (`tests/e2e/hints.spec.ts` compare tout ce que l'organisateur lit avant et après une demande). La personne le voit par un email si elle a une adresse (« Quelqu'un cherche une idée de cadeau pour toi », vers sa page de pistes) et, dans tous les cas, par un bandeau en haut de sa page de pistes.
 - Quand les premières pistes arrivent, celui qui a demandé reçoit un email (« Des pistes de cadeaux t'attendent »), sans le prénom de la personne : un email ne contient jamais de résultat (8.6). Une seule fois.
-- **Qui a demandé** est gardé chiffré avec la clé serveur (`hint_requests.requester_enc`, comme un receveur, 8.3), seulement pour lui écrire ; aucune route ne le renvoie. Choix provisoire, à confirmer par Julien (question en section 6 du plan).
+- **Qui a demandé n'est pas stocké** (décidé par Julien le 17 novembre 2026, migration `0020`) : `hint_requests` ne garde que le receveur, l'édition et les dates. Quand les premières pistes arrivent, le serveur retrouve qui offre à la personne en déchiffrant le tirage de l'édition (`findGiverParticipationId`, 8.3), lui écrit, et n'en garde rien. Une demande disparaît avec le tirage quand il est annulé (`tests/e2e/hints.spec.ts`).
 - Les deux emails passent par `plainEmail` de `server/utils/messages.ts`, comme ceux des organisateurs : texte simple, un lien.
 - Limite connue et acceptée : si la demande part juste après une découverte visible au journal, la personne peut faire le lien par l'heure.
 
@@ -351,7 +351,7 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 
 - Le receveur de chaque attribution est chiffré en AES-256-GCM avec la clé `DATA_KEY` (variable secrète), un vecteur d'initialisation aléatoire par ligne.
 - Le donneur est en clair, le receveur chiffré : une lecture brute de la base ne révèle pas les résultats.
-- Le déchiffrement n'a lieu que dans deux cas : la consultation par le participant, et le calcul des exclusions lors d'un tirage ultérieur.
+- Le déchiffrement n'a lieu que dans trois cas : la consultation par le participant, le calcul des exclusions lors d'un tirage ultérieur, et l'email « des pistes sont arrivées » à celui qui en avait demandé (6 bis.3), pour retrouver qui offre à la personne ; le résultat ne sort pas du serveur.
 - **Aucune route d'administration ne renvoie une attribution en clair**, y compris pour le super-admin.
 
 ### 8.4 Administration (comptes, depuis le 14 novembre 2026)
@@ -543,7 +543,7 @@ En clair en base : un souhait ne révèle pas d'attribution. La sauvegarde rempl
 | Colonne | Type | Notes |
 |---|---|---|
 | `participation_id` | text PK, FK | Une ligne par participation, dès qu'elle a écrit quelque chose |
-| `useful_or_surprising`, `object_or_moment`, `keep_or_consume`, `self_or_shared`, `second_hand`, `surprise` | text nullable | Les six réponses : `first`, `second` ou `both`, jamais du texte ; null sans réponse |
+| `useful_or_surprising`, `object_or_moment`, `keep_or_consume`, `self_or_shared`, `second_hand`, `surprise` | text nullable | Les six réponses : `first`, `second` ou `both` (pas `both` pour `second_hand`), jamais du texte ; null sans réponse |
 | `lately`, `would_help`, `avoid` | text nullable | Les trois textes, 300 caractères |
 | `updated_at` | text | |
 
@@ -552,9 +552,8 @@ Les idées précises restent dans `wishes`.
 ### `hint_requests` (migration `0019`)
 | Colonne | Type | Notes |
 |---|---|---|
-| `receiver_participation_id` | text PK, FK | Une demande au plus par receveur et par tirage |
+| `receiver_participation_id` | text PK, FK | Une demande au plus par receveur et par tirage ; qui l'a faite n'est pas gardé (migration `0020`) |
 | `edition_id` | text FK | Pour tout effacer à un nouveau tirage |
-| `requester_enc`, `requester_iv` | text | La participation qui a demandé, chiffrée (8.3) ; seulement pour lui écrire quand les pistes arrivent |
 | `requested_at` | text | |
 | `answered_at` | text nullable | Les pistes sont arrivées et l'email est parti |
 
@@ -914,11 +913,11 @@ Restes connus : remesurer la délivrabilité des emails (13.3), faire relire l'a
 
 ### Pistes de cadeaux
 
-- `server/utils/hints.test.ts` : une réponse est une valeur fixe (`first`, `second`, `both`), un texte de plus de 300 caractères est refusé ; qui peut écrire (jusqu'à la clôture, idées précises seulement en `full`) ; qui peut demander (après le tirage, une fois, quand le receveur n'a rien) ; l'email à celui qui a demandé part une fois ; les deux emails ne nomment ni celui qui demande ni le receveur.
+- `server/utils/hints.test.ts` et `shared/utils/hints.test.ts` : une réponse est une valeur fixe (`first`, `second`, `both`, pas `both` pour l'occasion), cinq questions sans les idées précises, une étiquette par réponse tranchée, un texte de plus de 300 caractères est refusé ; qui peut écrire (jusqu'à la clôture, idées précises seulement en `full`) ; qui peut demander (après le tirage, une fois, quand le receveur n'a rien) ; l'email à celui qui a demandé part une fois ; les deux emails ne nomment ni celui qui demande ni le receveur.
 - La normalisation des idées (`wishes.ts`) rejette : plus de `maxWishes` idées, un libellé vide ou de plus de 200 caractères, une URL qui n'est pas `http`/`https`, et renvoie des positions contiguës à partir de 0.
 - `PUT /wishes` et `PATCH /hints` sur une édition clôturée sont refusés ; selon le réglage, les idées (`portrait`) ou tout (`none`).
 - `POST /reveal` renvoie les pistes du receveur et uniquement les siennes ; les routes admin disent seulement `hasHints` (`security.spec.ts`).
-- Une demande de pistes ne change rien de ce que lit l'organisateur ni le journal, et une seconde est refusée (`hints.spec.ts`).
+- Une demande de pistes ne change rien de ce que lit l'organisateur ni le journal, une seconde est refusée, et l'annulation du tirage l'efface (`hints.spec.ts`).
 - Après une annulation et relance du tirage, les pistes sont intactes.
 
 ### Parcours
@@ -1236,7 +1235,7 @@ Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient
 
 ### 22.11 Fait : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
 
-**Codé le 17 novembre 2026** (lot 16 de `docs/refonte/PLAN.md` : migration `0019`, tables `gift_portraits` et `hint_requests`, routes `…/hints`, écrans `/p/[token]/pistes`, réglage à trois valeurs ; décrit en 6 bis, 9, 11 et 12). Deux points restent à confirmer par Julien (section 6 du plan) : les anciennes lignes `wishes_updated` (plus affichées) et la façon de retenir qui a demandé des pistes (chiffrée, comme un receveur). Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
+**Codé le 17 novembre 2026** (lot 16 de `docs/refonte/PLAN.md` : migration `0019`, tables `gift_portraits` et `hint_requests`, routes `…/hints`, écrans `/p/[token]/pistes`, réglage à trois valeurs ; décrit en 6 bis, 9, 11 et 12). Réponses de Julien du 17 novembre 2026, codées le même jour : les anciennes lignes `wishes_updated` restent en base, cachées ; qui demande des pistes n'est pas stocké, le donneur est retrouvé en déchiffrant le tirage au moment de l'email (migration `0020`) ; une étiquette seulement pour une réponse tranchée, et une ligne « Pour le reste, les deux lui vont. » ; pas de « Les deux me vont » pour « D'occasion ou fait main » ; cinq questions avec le réglage « Portrait seulement » (sans « Surprends-moi »). Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
 
 Conception validée par Julien le 16 novembre 2026. C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
 

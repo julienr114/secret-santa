@@ -420,7 +420,7 @@ Décidé par Julien le 17 novembre 2026 (réponses de la section 6). Les donnée
 
 Décidé par Julien le 17 novembre 2026.
 
-- [x] **`TirageAlerteJournal`** : colonne `participations.journal_seen_at` (migration). La page du tirage dit « 1 alerte depuis ta dernière visite » sur la ligne du journal ; ouvrir le journal depuis cette page remet le compte à zéro. Sans visite enregistrée, le compte part du tirage.
+- [x] **`TirageAlerteJournal`** : colonne `participations.journal_seen_at` (migration). La page du tirage dit « 1 alerte depuis ta dernière visite » sur la ligne du journal ; ouvrir le journal depuis cette page remet le compte à zéro. Sans visite enregistrée, le compte part de la création de l'édition.
 - [x] **Mot de l'administrateur sur un refus** : colonne `group_requests.decision_note` (migration). Champ « Un mot pour elle » et ses messages tout prêts dans le panneau de réponse (`AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`), repris dans l'email de refus et sur l'accueil (`AccueilDemandeRefusee`).
 
 ### Lot 13 — Dévoiler les résultats (README 22.9)
@@ -465,9 +465,11 @@ Décidé par Julien le 17 novembre 2026. Aujourd'hui `UiAvatar` écrit l'emoji c
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
 
-**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Seule question encore ouverte : la maquette `GroupeReglages` (lot 9, question 6).
+**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Plus de question ouverte.
 
-**Lot 14, la règle « sans visite, le compte part du tirage ».** Elle cache bien une annulation dans un cas : quelqu'un qui n'a jamais ouvert le journal, quand le tirage a été annulé puis refait. Le compte part alors du nouveau tirage (`drawn_at`), et l'annulation, plus ancienne, n'est pas comptée, ni sur l'accueil ni sur la page du tirage. Tant que le tirage n'est pas refait, elle l'est (le compte part de la création de l'édition). Pour la compter aussi, il faudrait partir de la création de l'édition pour tout le monde ; mais alors un lien régénéré avant le premier tirage compterait aussi (les accès à un résultat, eux, ne peuvent pas venir avant). À trancher. Hors périmètre, inchangé : les pistes de cadeaux (README 22.11).
+**Lot 14, la règle « sans visite, le compte part du tirage ».** Elle cachait une annulation suivie d'un nouveau tirage, pour qui n'avait jamais ouvert le journal. **Réponse de Julien, 17 novembre 2026 :** le compte part de la création de l'édition ; un lien régénéré avant le premier tirage compte aussi. Fait.
+
+**`GroupeReglages`** (lot 9, question 6). **Réponse de Julien, 17 novembre 2026 :** on garde le cadre « Super-admin » ; la maquette est à mettre à jour. Hors périmètre, inchangé : les pistes de cadeaux (README 22.11).
 
 ### Lot 1
 

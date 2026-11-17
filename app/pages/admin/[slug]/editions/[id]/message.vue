@@ -50,12 +50,18 @@ const participants = computed(() =>
   sortParticipants(edition.data.value?.participants ?? [], status.value),
 );
 const selection = useEmailSelection(id);
-/** The person the preview is for: the one, or the first ticked. */
+/**
+ * The person the preview is for: the one, or the first ticked; with
+ * nobody ticked (or the page reloaded), the first with an address, or the
+ * first of all, as on the email screen, so that it never waits for nobody.
+ */
 const person = computed(() =>
   many.value
-    ? participants.value.find((p) =>
+    ? (participants.value.find((p) =>
         (selection.value ?? []).includes(p.participationId),
-      )
+      ) ??
+      participants.value.find((p) => p.email) ??
+      participants.value[0])
     : participants.value.find((p) => p.participationId === who.value),
 );
 const count = computed(() => selection.value?.length ?? 0);

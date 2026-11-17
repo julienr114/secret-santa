@@ -101,6 +101,15 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await expect(count).toHaveText('1 sélectionné sur 3');
   await ada.click();
   await expect(count).toHaveText('0 sélectionné sur 3');
+  // Nobody ticked: the preview still shows a message, as on the email
+  // screen, and not an endless loading.
+  await page.getByRole('link', { name: /^Modifier le message/ }).click();
+  await expect(heading(page)).toHaveText('Personnaliser le message');
+  await expect(page.getByTestId('customize-preview')).toContainText(
+    'Salut Ada !',
+  );
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(count).toHaveText('0 sélectionné sur 3');
   await page.getByRole('button', { name: 'Tout sélectionner' }).click();
   await expect(count).toHaveText('1 sélectionné sur 3');
   await page.getByRole('button', { name: 'Envoyer 1 email' }).click();

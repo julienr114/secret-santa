@@ -7,6 +7,8 @@ const props = defineProps<{
   description?: string;
   /** The name of the field. */
   label: string;
+  /** The title already names the field: its label is for screen readers. */
+  hideLabel?: boolean;
   /** The text saved now. */
   value: string;
   maxlength: number;
@@ -36,12 +38,15 @@ watch(open, (isOpen) => {
     :loading="loading"
     @validate="emit('validate', draft.trim())"
   >
-    <UFormField :label="label" :ui="{ label: 'text-[15px] font-semibold' }">
+    <UFormField
+      :label="label"
+      :ui="{ label: hideLabel ? 'sr-only' : 'text-[15px] font-semibold' }"
+    >
       <UTextarea
         v-model="draft"
         :maxlength="maxlength"
         :placeholder="placeholder"
-        :rows="3"
+        :rows="hideLabel ? 4 : 3"
         autoresize
         size="xl"
         class="w-full"

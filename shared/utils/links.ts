@@ -24,3 +24,14 @@ export const aroundLink = (text: string, link: string): AroundLink => {
         after: text.slice(at + link.length).trim(),
       };
 };
+
+/**
+ * The site of a link, to show it short: « boutique-jeux.example ».
+ * @param url - An http or https address.
+ * @returns Its host without « www. », or the address itself when it does
+ *   not read as one.
+ */
+export const hostOf = (url: string): string => {
+  const match = /^https?:\/\/(?:www\.)?([^/?#:]+)/i.exec(url.trim());
+  return match?.[1] ?? url;
+};

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { aroundLink } from './links';
+import { aroundLink, hostOf } from './links';
 
 const LINK = 'https://under-the-tree.party/p/aIFR42';
 
@@ -43,5 +43,15 @@ describe('aroundLink', () => {
       shown: '',
       after: '',
     });
+  });
+});
+
+describe('hostOf', () => {
+  it('keeps the site of a link', () => {
+    expect(hostOf('https://www.boutique-jeux.example/jeux/42?x=1')).toBe(
+      'boutique-jeux.example',
+    );
+    expect(hostOf('http://exemple.fr:8080/a')).toBe('exemple.fr');
+    expect(hostOf('pas une adresse')).toBe('pas une adresse');
   });
 });

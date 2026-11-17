@@ -246,7 +246,7 @@ const card = computed(() => {
       <UiStepper :steps="steps" :label="t('participant.home.steps.label')" />
 
       <template v-if="view === 'shown' && reveal">
-        <ParticipantRevealCard :reveal="reveal" />
+        <ParticipantRevealCard :token="token" :reveal="reveal" />
         <div class="flex flex-col items-center gap-2">
           <UButton
             variant="ghost"

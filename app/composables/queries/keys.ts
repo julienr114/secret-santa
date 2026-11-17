@@ -16,5 +16,6 @@ export const keys = {
   // Personal link: everything under the token is refetched together.
   personal: (token: string) => ['p', token] as const,
   wishes: (token: string) => ['p', token, 'wishes'] as const,
+  hints: (token: string) => ['p', token, 'hints'] as const,
   journal: (token: string) => ['p', token, 'journal'] as const,
 };

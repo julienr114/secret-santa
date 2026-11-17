@@ -6,7 +6,13 @@ import type { JournalEntry } from '#server/utils/audit';
 import type { EditionStatus } from '#server/utils/editions';
 import type { PersonalPhase } from '#server/utils/personal';
 import type { Locale } from '#shared/i18n';
-import type { GiftHintsMode, Portrait } from '#shared/utils/hints';
+import type {
+  GiftHintsMode,
+  HintAnswer,
+  HintQuestion,
+  HintText,
+  Portrait,
+} from '#shared/utils/hints';
 import { keys } from './keys';
 import { api, useApiMutation } from './useApi';
 
@@ -148,6 +154,42 @@ export const useWishesQuery = (token: Token) =>
   usePersonalRead<WishesPayload>(
     () => keys.wishes(toValue(token)),
     () => `${base(token)}/wishes`,
+  );
+
+/** « Mes pistes de cadeaux » (README 22.11). */
+export const useHintsQuery = (token: Token) =>
+  usePersonalRead<HintsPayload>(
+    () => keys.hints(toValue(token)),
+    () => `${base(token)}/hints`,
+  );
+
+/** One answer or one text: only the keys given change. */
+export type HintsPatch = {
+  answers?: Partial<Record<HintQuestion, HintAnswer | null>>;
+  texts?: Partial<Record<HintText, string | null>>;
+};
+
+export const useSaveHintsMutation = (token: Token) =>
+  useApiMutation<HintsPayload, HintsPatch>(
+    (patch) => api(`${base(token)}/hints`, { method: 'PATCH', body: patch }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/** « Reprendre mes pistes de {édition} », on an empty page. */
+export const useCopyHintsMutation = (token: Token) =>
+  useApiMutation<HintsPayload, undefined>(
+    () => api(`${base(token)}/hints/copy`, { method: 'POST' }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/**
+ * « Lui demander des pistes »: once per draw, anonymous. Nothing is
+ * refetched: the result lives in the page's state, and only says now that
+ * the request left.
+ */
+export const useRequestHintsMutation = (token: Token) =>
+  useApiMutation<{ requested: true; emailed: boolean }, undefined>(() =>
+    api(`${base(token)}/hints/request`, { method: 'POST' }),
   );
 
 export const useJournalQuery = (token: Token) =>

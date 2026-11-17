@@ -5,8 +5,10 @@ export default {
   intro: 'Aide la personne qui t’offre un cadeau. Tout est facultatif.',
   whoSees:
     'Seule la personne qui t’offre un cadeau les verra, une fois le tirage fait.',
-  requested:
-    'La personne qui t’offre un cadeau cherche l’inspiration. Six questions à choix suffisent, trente secondes.',
+  requested: {
+    title: 'La personne qui t’offre un cadeau cherche l’inspiration.',
+    body: 'Six questions à choix suffisent, trente secondes.',
+  },
   readOnly: 'Tes pistes ne sont plus modifiables pour cette édition.',
   until: 'Tu peux les modifier jusqu’à la fête.',
   start: {

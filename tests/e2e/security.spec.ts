@@ -109,6 +109,10 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { wishes: [{ label: `${WISH} de ${person.firstName}` }] },
     });
     expect(saved.ok()).toBe(true);
+    const portrait = await ctx('anonymous').patch(`/api/p/${token}/hints`, {
+      data: { texts: { avoid: `${WISH} évité par ${person.firstName}` } },
+    });
+    expect(portrait.ok()).toBe(true);
   }
 });
 
@@ -187,21 +191,26 @@ test('a participant learns their own result only, and only by asking', async () 
   const { giver, receiver } = state.pairs[0] ?? {};
   if (!giver || !receiver) throw new Error('no pair');
   const token = state.tokens[giver.id];
-  for (const path of ['', '/wishes', '/journal']) {
+  for (const path of ['', '/wishes', '/hints', '/journal']) {
     const text = await (
       await ctx('anonymous').get(`/api/p/${token}${path}`)
     ).text();
     expect(text, path).not.toContain(receiver.id);
     expect(text, path).not.toContain(`${WISH} de ${receiver.firstName}`);
+    expect(text, path).not.toContain(`par ${receiver.firstName}`);
     expect(text, path).not.toMatch(FORBIDDEN);
   }
-  // The reveal gives the receiver's ideas and nobody else's.
+  // The reveal gives the receiver's hints and nobody else's.
   const reveal = await (
     await ctx('anonymous').post(`/api/p/${token}/reveal`)
   ).json();
-  expect(reveal.wishes).toEqual([
+  expect(reveal.hints.ideas).toEqual([
     { label: `${WISH} de ${receiver.firstName}`, url: null },
   ]);
+  expect(reveal.hints.portrait.texts.avoid).toBe(
+    `${WISH} évité par ${receiver.firstName}`,
+  );
+  expect(JSON.stringify(reveal).match(new RegExp(WISH, 'g'))).toHaveLength(2);
   expect(JSON.stringify(reveal)).not.toMatch(FORBIDDEN);
 });
 

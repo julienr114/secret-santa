@@ -6,8 +6,10 @@ export default {
   intro: 'Hilf der Person, die dich beschenkt. Alles ist freiwillig.',
   whoSees:
     'Nur die Person, die dich beschenkt, sieht sie, sobald ausgelost ist.',
-  requested:
-    'Die Person, die dich beschenkt, sucht nach Inspiration. Sechs Auswahlfragen reichen, dreißig Sekunden.',
+  requested: {
+    title: 'Die Person, die dich beschenkt, sucht nach Inspiration.',
+    body: 'Sechs Auswahlfragen reichen, dreißig Sekunden.',
+  },
   readOnly: 'Deine Hinweise lassen sich für diese Ausgabe nicht mehr ändern.',
   until: 'Du kannst sie bis zur Feier ändern.',
   start: {

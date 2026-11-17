@@ -6,8 +6,10 @@ export default {
   intro: 'Help the person who gives you a present. Everything is optional.',
   whoSees:
     'Only the person who gives you a present will see them, once the draw is done.',
-  requested:
-    'The person who gives you a present is looking for inspiration. Six multiple-choice questions are enough: thirty seconds.',
+  requested: {
+    title: 'The person who gives you a present is looking for inspiration.',
+    body: 'Six multiple-choice questions are enough: thirty seconds.',
+  },
   readOnly: 'Your hints can no longer be changed for this edition.',
   until: 'You can change them until the party.',
   start: {

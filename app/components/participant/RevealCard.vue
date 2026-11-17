@@ -3,9 +3,9 @@ import { formatEventDate } from '#server/utils/rules';
 import type { Reveal } from '~/composables/queries/usePersonal';
 
 // The result, on a gift tag: who the participant gives to, the budget
-// and the date, the organiser's note, then the receiver's ideas. Turns
+// and the date, the organiser's note, then the receiver's hints. Turns
 // over once when it appears.
-const props = defineProps<{ reveal: Reveal }>();
+const props = defineProps<{ token: string; reveal: Reveal }>();
 const { t, locale } = useT();
 /** Budget and date, each only when the organiser gave it. */
 const tiles = computed(() =>
@@ -53,18 +53,10 @@ const tiles = computed(() =>
     </div>
     <template v-if="reveal.hints">
       <hr class="border-t-2 border-dashed border-default" />
-      <div class="flex flex-col gap-3">
-        <h2 class="font-display text-lg font-bold">
-          {{ t('participant.reveal.ideas') }}
-        </h2>
-        <ParticipantWishList
-          v-if="reveal.hints.ideas.length > 0"
-          :wishes="reveal.hints.ideas"
-        />
-        <p v-else class="text-sm text-muted">
-          {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}
-        </p>
-      </div>
+      <ParticipantGiverHints
+        :token="token"
+        :reveal="{ ...reveal, hints: reveal.hints }"
+      />
     </template>
   </UiGiftTag>
 </template>

@@ -143,7 +143,7 @@ const longView = computed(() =>
     from: 3,
   }),
 );
-const wishlistOn = ref(true);
+const notifyOn = ref(true);
 const sheetOpen = reactive({
   choice: false,
   text: false,
@@ -563,6 +563,14 @@ const entries = computed(() => [
           UiGiftTag : une étiquette cadeau, son contenu dans le slot.
         </p>
       </UiGiftTag>
+      <UiTagList :tags="['Plutôt utile', 'Un moment', 'J’aime la surprise']" />
+      <code class="text-xs"
+        >UiTagList : les réponses de « Moi et les cadeaux »</code
+      >
+      <p class="flex items-center gap-2.5">
+        <UiStar />
+        <code class="text-xs">UiStar : l’étoile devant une idée précise</code>
+      </p>
     </section>
 
     <section class="flex flex-col gap-3">
@@ -604,9 +612,9 @@ const entries = computed(() => [
           :on-click="() => (sheetOpen.choice = true)"
         />
         <UiListItem
-          v-model:checked="wishlistOn"
-          title="Listes de souhaits"
-          subtitle="Chacun note des idées pour celui qui lui offre"
+          v-model:checked="notifyOn"
+          title="Quelqu'un rejoint le groupe"
+          subtitle="Un email à chaque arrivée par le lien"
         />
         <UiListItem
           title="Mot ajouté aux messages"

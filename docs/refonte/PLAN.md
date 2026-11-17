@@ -519,6 +519,34 @@ Constaté par Julien le 17 novembre 2026, après le déploiement des lots 16 et 
 - [x] **Un fichier de code disparu recharge la page** au lieu de ne rien faire. `experimental.emitRouteChunkError` vaut déjà `automatic` par défaut : Nuxt recharge quand le code d'un écran manque, et à la navigation suivante quand le fichier `/_nuxt/builds/latest.json` annonce une nouvelle version. *Trouvé en plus* : ce fichier partait avec `max-age=31536000, immutable, max-age=1` (deux règles de `_headers` jointes), si bien qu'aucun onglet n'apprenait un déploiement. Une règle ajoutée à la fin de `_headers` au build le remet en `no-cache`. Les icônes n'ont pas de fichier à elles : elles viennent de `/api/_nuxt_icon` par leur nom, et reviennent avec le rechargement.
 - [x] Un test de bout en bout qui simule un fichier disparu (`tests/e2e/deploy.spec.ts`), et vérifie les en-têtes. *Reste l'essai sur Chrome iPhone après le déploiement.* Un onglet resté sur la version d'avant cette correction ne verra pas le changement tout seul : le fermer une fois.
 
+### Lot 18 — Des pages plus claires, avec moins de lignes en bas (README 22.16)
+
+Décidé par Julien le 17 novembre 2026. Interface seulement, aucune migration. À faire avant le lot 19, qui s'appuie dessus. Les maquettes courantes sont à jour depuis le 17 novembre 2026 : `Suivi`, `SuiviSansDate`, `Suivi100`, `Suivi100Deplie`, `EditionReglages`, `Souci`, et tous les états de la page du tirage (`Tirage*`, `PistesResultat*`, `ManuelTirage*`). `DevineSuivi`, `DevineTirage` et `PropEditionReglages` montrent les mêmes pages avec le jeu du lot 19 en plus. Les fichiers `PropSuivi.html`, `PropTirage.html` et `PropSouci.html` sont des doublons à supprimer du dépôt.
+
+- [ ] **Suivi de l'organisateur** (`Suivi`, `SuiviSansDate`, `Suivi100`, `Suivi100Deplie`) : la liste « Plus tard, ou en cas de pépin » disparaît. Deux lignes la remplacent, « Réglages de l'édition » et « Un souci ? ». « Dévoiler les résultats » n'apparaît plus avant la fête (étape « Fêter »).
+- [ ] **Page « Réglages de l'édition »** (`EditionReglages`) : date, budget, petit mot ; le jeu s'y ajoute au lot 19 (`PropEditionReglages`). Chaque ligne ouvre le panneau qui existe déjà ; rien ne change dans les routes.
+- [ ] **Panneau « Un souci ? »** (`Souci`) : voir un seul résultat, dévoiler avant la fête, annuler et relancer le tirage. Chaque ligne ouvre l'écran qui existe déjà.
+- [ ] **Réglages du groupe** : ne gardent que ce qui vaut pour toutes les éditions. Le noter en section 6 si une ligne ne se range pas clairement.
+- [ ] **Page du tirage du participant** (tous les états `Tirage*`, `PistesResultat*`, `ManuelTirage*`) : la liste du bas disparaît. Une tuile par chose à faire : celle qui attend une action est cerclée de rouge avec son appel (« À remplir »), celle qui est faite porte une coche et son état. Une tuile seule prend toute la largeur (c'est le cas tant qu'il n'y a que « Mes pistes de cadeaux ») ; à deux, elles se mettent côte à côte (`DevineTirage`). Dessous, « Journal du groupe » reste une ligne à part, encadrée et bien visible, avec son sous-titre ; en cas d'alerte (lots 12 et 14) elle passe au-dessus des tuiles, en ambre (`TirageAlerteJournal`).
+- [ ] Un seul composant pour la tuile, dans `app/components/ui`, présenté au guide de style. Trois langues, `tests/e2e`.
+
+### Lot 19 — « Devine qui », le jeu de pronostics (README 22.17)
+
+Décidé par Julien le 17 novembre 2026. Fonctionnalité complète : base, routes, tâche planifiée, écrans. Le README 22.17 fait foi ; les maquettes `Devine*` se reproduisent à l'identique. À découper en plusieurs commits, les tests avec chaque étape.
+
+- [ ] **Le cœur, en fonctions pures** (`server/utils`, README 7.1), testé avant tout le reste : si les pronostics sont ouverts ; déplacer un pronostic quand la personne est déjà choisie ; corriger les pronostics d'un joueur (la ligne de la personne à qui il offre ne compte jamais) ; le classement ; chaque prix, avec la règle des ex æquo (jusqu'à trois noms, au-delà une phrase, rien si personne) ; pas de palmarès à moins de trois joueurs.
+- [ ] **Base** (migration) : le mode du jeu et l'heure de fin sur l'édition ; les pronostics (qui pronostique, pour quel destinataire, quelle personne). Aucune route ne renvoie le pronostic de quelqu'un d'autre avant le dévoilement.
+- [ ] **Réglage** (`DevineReglage`) : trois valeurs et l'heure de fin, dans « Réglages de l'édition » (lot 18). Demande une date de fête. Repris de l'édition précédente.
+- [ ] **Participant, avant la fête** : `DevineAccueil`, la tuile « Devine qui » de la page du tirage (lot 18, `DevineTirage`), `DevineUnique`, `DevineUniqueFait`, `DevineChoisir`, `DevinePaires`, `DevineChoisirPaire`, `DevineFerme`. En mode « Toutes les paires », la ligne de la personne à qui j'offre est rendue exactement comme les autres.
+- [ ] **Organisateur** : la carte du jeu sur le suivi (`DevineSuivi`), avec le nombre de joueurs, jamais un pronostic. Le message « Fais ton pronostic » passe par le panneau d'envoi existant.
+- [ ] **Fin et réponses** : les pronostics ferment à l'heure choisie, ou au dévoilement si c'est plus tôt. Si l'organisateur n'a pas dévoilé, la tâche planifiée (`server/plugins/reminders.ts`) dévoile le lendemain de la fête à cette heure-là, inscrit au journal comme une action automatique. Tant que le jeu est actif, « Clôturer sans dévoiler » n'est pas proposé. Tirage annulé ou jeu éteint : pronostics effacés.
+- [ ] **Le palmarès en images** (`DevineStory1` à `7`) : 7 secondes par écran puis passage automatique au suivant une fois lancé ; appui à droite ou à gauche pour avancer ou reculer ; maintenir met en pause ; la croix ferme ; avec « réduire les animations », rien ne défile tout seul. Un prix sans gagnant est sauté.
+- [ ] **La page des réponses** (`DevinePalmares` : en haut, « Découvrir le palmarès » qui lance les images ; dessous, mes pronostics sans correction. `DevinePalmaresVu`, une fois les images vues : « Revoir le palmarès » et mes pronostics corrigés. Ni verdict ni palmarès en liste) et **les invitations** : journal (`DevineJournal`), accueil (`DevineAccueilPalmares`), page du tirage (`DevineTiragePalmares`). Aucune ne dévoile un nom. Une fois le palmarès vu, la carte de l'accueil disparaît et les liens mènent au récapitulatif.
+- [ ] **Journal** : activation du jeu, fin des pronostics, « le palmarès est arrivé ». Trois langues.
+- [ ] README 22.17 marqué fait, sections 9 à 12 à jour. Guide de style et `tests/e2e`.
+
+Ce que le README ne tranche pas, à noter en section 6 : le fuseau horaire de l'heure de fin ; ce que voit un participant ajouté ou retiré d'un groupe entre deux éditions dans le palmarès d'une édition passée ; les textes du palmarès en mode « Qui m'offre ? », où « Le détective » n'existe pas.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.

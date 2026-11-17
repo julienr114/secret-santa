@@ -1412,6 +1412,64 @@ Limite connue : si l'organisateur copie le lien de quelqu'un et l'ouvre à sa pl
 
 Le signal est une ligne dans la carte, sous le bouton principal (« Du nouveau au journal. Ton lien a été régénéré le 16 novembre. »), qui mène droit à l'explication de l'alerte. Il disparaît une fois l'alerte vue. C'est le prolongement de la ligne « Journal du groupe · 1 alerte depuis ta dernière visite » de la page d'un tirage, et il s'appuie sur la même information.
 
+### 22.16 À faire : des pages plus claires, avec moins de lignes en bas (17 novembre 2026)
+
+Conception validée par Julien le 17 novembre 2026. Lot 18 de `docs/refonte/PLAN.md`. Les maquettes courantes sont à jour (`Suivi*`, `EditionReglages`, `Souci`, `Tirage*`) ; `DevineSuivi`, `DevineTirage` et `PropEditionReglages` montrent les mêmes pages avec le jeu de 22.17.
+
+**Pourquoi** : chaque nouveauté a été ajoutée comme une ligne de plus en bas d'une liste. Les deux listes mélangent des choses sans rapport, donc rien ne ressort.
+
+**Le suivi de l'organisateur** (`DevineSuivi`). La liste « Plus tard, ou en cas de pépin » disparaît. À sa place :
+
+| Élément | Contenu |
+|---|---|
+| La carte du jeu | Sous la liste des participants, quand un jeu est actif : « Le jeu de cette édition », son nom, son avancement. Elle ouvre son réglage |
+| « Réglages de l'édition » | Une ligne, qui ouvre une page à part (`PropEditionReglages`) : date, budget, petit mot, jeu |
+| « Un souci ? » | Une ligne, qui ouvre un panneau (`Souci`) : voir un seul résultat, dévoiler avant la fête, annuler et relancer le tirage |
+
+« Dévoiler les résultats » n'est plus sur cette page avant la fête : c'est l'étape « Fêter » de la frise. La version forcée est dans « Un souci ? ». Les réglages du groupe ne gardent que ce qui vaut pour toutes les éditions.
+
+**La page du tirage du participant** (`DevineTirage`). La liste du bas disparaît. À sa place, des tuiles sur deux colonnes, une par chose à faire (« Mes pistes de cadeaux », « Devine qui », et les suivantes) : la tuile qui attend une action est cerclée de rouge avec son appel (« Fais ton pronostic »), celle qui est faite porte une coche. « Journal du groupe » reste une ligne à part sous les tuiles, encadrée et bien visible ; en cas d'alerte (lots 12 et 14) elle passe au-dessus, en ambre. Une tuile n'existe que si la fonctionnalité est active pour l'édition ; une tuile seule prend toute la largeur.
+
+### 22.17 À faire : « Devine qui », le jeu de pronostics (17 novembre 2026)
+
+Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode prédictions » de 22.3. Lot 19 de `docs/refonte/PLAN.md`. Maquettes : `docs/refonte/maquettes/Devine*.html`.
+
+**Principe** : après le tirage, chacun peut pronostiquer qui offre à qui. Les réponses tombent à la fête, quand le tirage est dévoilé.
+
+| Sujet | Décision |
+|---|---|
+| Vocabulaire | Le jeu s'appelle « Devine qui ». On dit « pronostic », jamais « pari » |
+| Réglage | Par édition, par l'organisateur, repris de l'édition précédente : « Aucun pronostic » (par défaut), « Qui m'offre ? » (un seul pronostic : son propre Père Noël), « Toutes les paires » (celui-là, plus un par autre participant, autant qu'on veut) |
+| Conditions | Une date de fête, et une heure de fin des pronostics ce jour-là, demandée dans le réglage |
+| Qui joue | Chaque participant, librement. Rien n'est obligatoire |
+| Changer d'avis | Jusqu'à la fin des pronostics |
+| Un Père Noël, un seul destinataire | En mode « Toutes les paires », choisir une personne déjà choisie pour quelqu'un d'autre déplace le pronostic ; la liste le dit (« Ton pronostic pour Hugo ») |
+| Le leurre | En mode « Toutes les paires », la ligne de la personne à qui j'offre est là comme les autres : je peux y mettre un leurre ou rien, elle ne compte jamais, et rien à l'écran ne la distingue. Sans elle, mon écran montrerait à qui j'offre |
+| Fin des pronostics | À l'heure choisie le jour de la fête, ou dès que le tirage est dévoilé si c'est plus tôt |
+| Les réponses | Quand l'organisateur dévoile le tirage (22.9), ou automatiquement le lendemain de la fête, à l'heure de fin des pronostics, s'il ne l'a pas fait |
+| Clôturer sans dévoiler | N'est plus proposé tant que le jeu est actif. Éteindre le jeu efface les pronostics |
+| Tirage annulé | Les pronostics sont effacés |
+| Avant la fête | Personne ne voit rien : ni score, ni tendance, ni pronostic d'un autre. L'organisateur voit seulement combien ont joué |
+| Journal | L'activation du jeu, la fin des pronostics, et « le palmarès est arrivé ». Jamais un pronostic |
+| Communication | Une ligne dans le message « tirage fait », la tuile de la page du tirage, une carte sur l'accueil. Aucun email de rappel ; l'organisateur peut envoyer lui-même « Fais ton pronostic » |
+| Limite connue | Un organisateur qui a regardé un résultat en dernier recours peut tricher sur son pronostic ; le journal le montre déjà |
+
+**Le palmarès**
+
+- Classement au nombre de bons pronostics ; à égalité, celui qui en a fait le moins passe devant.
+- Les prix : « Démasqués » (ceux qui ont deviné leur Père Noël), « Le détective » (le plus de bons pronostics, mode « Toutes les paires »), « Le mieux caché » (celui que personne n'a démasqué), « Le plus transparent » (démasqué par le plus de monde), « Le suspect idéal » (le plus souvent cité à tort).
+- **Ex æquo** : jusqu'à trois gagnants, le prix passe au pluriel et les nomme tous ; au-delà, il devient une phrase avec un nombre, sans nom ; un prix sans personne ne s'affiche pas. Pas de dernier du classement. Pas de palmarès à moins de trois joueurs.
+
+**Le palmarès en images** (`DevineStory1` à `7`) : des écrans plein cadre, un par moment (l'ouverture, le suspense, mon Père Noël, puis un prix par écran, la fin), avec une barre de progression en haut.
+
+- Une fois lancé, chaque écran dure 7 secondes puis passe au suivant tout seul, comme une story.
+- Un appui à droite passe au suivant, à gauche revient au précédent ; maintenir l'écran met en pause ; la croix ferme.
+- Si l'appareil demande moins d'animations, rien ne défile tout seul : on avance à l'appui.
+- Un prix sans gagnant est sauté. Le dernier écran propose « Voir tous les résultats » et « Revoir depuis le début ».
+- **La page « Devine qui : les réponses »** (`DevinePalmares`) ne liste pas le palmarès : en haut, un bouton « Découvrir le palmarès » qui lance les images ; dessous, mes pronostics tels que je les ai faits, sans correction, pour ne rien gâcher. Une fois les images vues (`DevinePalmaresVu`), le bouton devient « Revoir le palmarès » et mes pronostics sont corrigés. Pas de carte « Tu avais deviné » : c'est le rôle des images. Le palmarès du groupe n'existe qu'en images.
+
+**Partout ailleurs, une invitation** : le journal (`DevineJournal`), l'accueil (`DevineAccueilPalmares`) et la page du tirage (`DevineTiragePalmares`, où c'est l'action principale) disent « le palmarès est arrivé » et lancent les images, sans rien dévoiler. L'accueil rappelle d'ouvrir son cadeau d'abord. Une fois le palmarès vu, la carte de l'accueil disparaît et les liens mènent au récapitulatif.
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. Complété par la refonte des écrans (15 au 17 novembre 2026). La page **Guide de style** (`/admin/guide-de-style`, super-admin, dernière ligne de l'administration) montre tout ce qui est décrit ici, et `tests/e2e/design.spec.ts` vérifie qu'elle s'affiche, dans la langue choisie dans le menu.

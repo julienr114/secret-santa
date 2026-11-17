@@ -231,19 +231,27 @@ test('the budget and the word change on the edition, until it is closed', async 
   const edition = `/admin/cas-regles/editions/${id}`;
   await page.goto(edition);
   await hydrated(page);
-  // Before the draw, in « Si tu veux ».
+  // Before the draw, « Réglages de l'édition » in « Si tu veux » leads to
+  // the same page as after it (README 22.16).
+  await expect(page.getByTestId('settings-row')).toContainText(
+    'Date, budget, petit mot',
+  );
+  await expect(page.getByTestId('rule-budget')).toHaveCount(0);
+  await page.getByTestId('settings-row').click();
   const budget = page.getByTestId('rule-budget');
   await expect(budget).toContainText('Aucun pour l’instant');
   await budget.click();
   await page.getByRole('textbox').fill('25 €');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('25 €');
-  await expect(page.getByText('cas-regles · Budget 25 €')).toBeVisible();
   const word = page.getByTestId('rule-word');
   await word.click();
   await page.getByRole('textbox').fill('Après le dessert !');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(word).toContainText('Après le dessert !');
+  await page.goto(edition);
+  await hydrated(page);
+  await expect(page.getByText('cas-regles · Budget 25 €')).toBeVisible();
 
   // After the draw, on « Réglages de l'édition » (README 22.16), which
   // the follow-up sums up; the page of the draw shows the new budget.
@@ -285,6 +293,12 @@ test('the budget and the word change on the edition, until it is closed', async 
   await expect(budget).toContainText('30 €');
   await budget.click();
   await expect(page.getByRole('textbox')).toHaveCount(0);
+  // Nobody here left hints: once closed, no tile for them, only the
+  // journal (decided by Julien on 17 November 2026).
+  await page.goto(new URL(link).pathname);
+  await hydrated(page);
+  await expect(page.getByTestId('journal-row')).toBeVisible();
+  await expect(page.getByTestId('tile')).toHaveCount(0);
 });
 
 test('a screen reached by its address says where it belongs, and leads back', async ({

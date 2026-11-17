@@ -63,7 +63,6 @@ export default {
       hintsEditable: 'Filled in, can be changed until the party',
       hintsLocked: 'Filled in, can no longer be changed',
       hintsShort: 'Filled in',
-      hintsNone: 'Nothing left',
     },
     journal: {
       title: 'Group journal',

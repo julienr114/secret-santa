@@ -3,6 +3,7 @@ import {
   canEditAvatar,
   canReveal,
   envelopeState,
+  hintsTile,
   nextStep,
   participantSteps,
   personalPhase,
@@ -155,5 +156,28 @@ describe('envelopeState', () => {
     expect(envelopeState('ready', true, false)).toBe('opened');
     expect(envelopeState('closed', false, false)).toBe('sealed');
     expect(envelopeState('closed', true, false)).toBe('opened');
+  });
+});
+
+describe('hintsTile', () => {
+  const tile = (over: Partial<Parameters<typeof hintsTile>[0]>) =>
+    hintsTile({
+      giftHints: 'full',
+      hasHints: false,
+      hintsEditable: true,
+      ...over,
+    });
+  it('waits for hints, then is done', () => {
+    expect(tile({})).toBe('todo');
+    expect(tile({ hasHints: true })).toBe('done');
+  });
+
+  it('stays once closed with hints, and is gone without', () => {
+    expect(tile({ hasHints: true, hintsEditable: false })).toBe('done');
+    expect(tile({ hintsEditable: false })).toBeNull();
+  });
+
+  it('is gone when the group has no hints', () => {
+    expect(tile({ giftHints: 'none', hasHints: true })).toBeNull();
   });
 });

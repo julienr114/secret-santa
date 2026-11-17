@@ -63,7 +63,6 @@ export default {
       hintsEditable: 'Ausgefüllt, änderbar bis zur Feier',
       hintsLocked: 'Ausgefüllt, nicht mehr änderbar',
       hintsShort: 'Ausgefüllt',
-      hintsNone: 'Nichts hinterlassen',
     },
     journal: {
       title: 'Protokoll der Gruppe',

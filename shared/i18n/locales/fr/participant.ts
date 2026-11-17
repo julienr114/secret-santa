@@ -61,7 +61,6 @@ export default {
       hintsEditable: 'Remplies, modifiables jusqu’à la fête',
       hintsLocked: 'Remplies, plus modifiables',
       hintsShort: 'Remplies',
-      hintsNone: 'Rien laissé',
     },
     journal: {
       title: 'Journal du groupe',

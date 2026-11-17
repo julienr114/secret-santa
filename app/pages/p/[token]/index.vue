@@ -3,6 +3,7 @@ import { isIsoDay } from '#server/utils/rules';
 import type { Avatar } from '#server/utils/avatars';
 import {
   envelopeState,
+  hintsTile,
   participantSteps,
   type ParticipantStep,
   type StepNote,
@@ -170,29 +171,26 @@ const onConfirmAnswer = (personId: string) =>
 /**
  * The things to do on the page, one tile each (README 22.16): for now
  * « Mes pistes de cadeaux », when the group uses them. Waiting for an
- * action, done, or only telling once they can no longer be changed.
+ * action, or done; once they can no longer be changed, only if some were
+ * left (decided by Julien on 17 November 2026).
  */
 const tiles = computed(() => {
   const state = me.value;
-  if (!state || state.giftHints === 'none') return [];
-  const hints = state.hasHints
-    ? {
-        state: 'done' as const,
-        text: state.hintsEditable
-          ? t('participant.home.tiles.hintsEditable')
-          : t('participant.home.tiles.hintsLocked'),
-        short: t('participant.home.tiles.hintsShort'),
-      }
-    : state.hintsEditable
+  const kind = state ? hintsTile(state) : null;
+  if (!state || !kind) return [];
+  const hints =
+    kind === 'done'
       ? {
+          state: 'done' as const,
+          text: state.hintsEditable
+            ? t('participant.home.tiles.hintsEditable')
+            : t('participant.home.tiles.hintsLocked'),
+          short: t('participant.home.tiles.hintsShort'),
+        }
+      : {
           state: 'todo' as const,
           text: t('participant.home.tiles.hintsTodo'),
           short: t('participant.home.tiles.hintsTodo'),
-        }
-      : {
-          state: 'idle' as const,
-          text: t('participant.home.tiles.hintsNone'),
-          short: t('participant.home.tiles.hintsNone'),
         };
   return [
     {

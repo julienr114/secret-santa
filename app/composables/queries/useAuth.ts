@@ -177,6 +177,8 @@ export type InvitePayload = {
     participants: number;
   } | null;
   /** Why the link no longer lets anyone in, or null. */
+  /** The last day an expired link worked. */
+  expiredAfter: string | null;
   closed: 'invite_expired' | 'invite_full' | null;
   /** For a logged-in account: its first name, and whether it is in. */
   account: {

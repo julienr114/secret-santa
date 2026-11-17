@@ -390,6 +390,7 @@ export default {
     },
     expired: {
       title: 'Dieser Einladungslink ist nicht mehr gültig',
+      titleSince: 'Dieser Einladungslink ist seit dem {date} nicht mehr gültig',
       body: 'Sag dem Organisator von {group} Bescheid: Er kann ihn verlängern oder dich selbst hinzufügen.',
     },
     invalid: {

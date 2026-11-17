@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { z } from 'zod';
 import { formatEventDate } from '#server/utils/rules';
+import { dayAfter } from '#shared/utils/dates';
+import { formatDay } from '~/utils/labels';
 import { useInviteQuery, useJoinMutation } from '~/composables/queries/useAuth';
 import { HOME, useLogoutMutation } from '~/composables/queries/useSession';
 
@@ -95,8 +97,13 @@ const closed = computed(() => {
     };
   }
   if (data.value?.closed === 'invite_expired') {
+    const after = data.value.expiredAfter;
     return {
-      title: t('auth.invite.expired.title'),
+      title: after
+        ? t('auth.invite.expired.titleSince', {
+            date: formatDay(dayAfter(after), locale.value),
+          })
+        : t('auth.invite.expired.title'),
       body: t('auth.invite.expired.body', { group }),
     };
   }

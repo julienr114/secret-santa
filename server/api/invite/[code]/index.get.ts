@@ -41,6 +41,11 @@ export default defineEventHandler(async (event) => {
           participants: await participantCount(db, edition.id),
         }
       : null,
+    // The last day the link worked, once it has expired.
+    expiredAfter:
+      group.inviteUntil && group.inviteUntil < nowIso().slice(0, 10)
+        ? group.inviteUntil
+        : null,
     // Why the link no longer lets anyone in, or null.
     closed: (() => {
       const open = canJoinGroup(

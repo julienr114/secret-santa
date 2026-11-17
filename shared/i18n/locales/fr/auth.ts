@@ -380,6 +380,7 @@ export default {
     },
     expired: {
       title: 'Ce lien d’invitation n’est plus valable',
+      titleSince: 'Ce lien d’invitation n’est plus valable depuis le {date}',
       body: 'Préviens l’organisateur de {group} : il peut le prolonger ou t’ajouter lui-même.',
     },
     invalid: {

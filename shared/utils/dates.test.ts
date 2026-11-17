@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortDay } from './dates';
+import { dayAfter, shortDay } from './dates';
 
 describe('shortDay', () => {
   const sent = '2026-11-14T10:30:00.000Z';
@@ -12,5 +12,14 @@ describe('shortDay', () => {
 
   it('takes a plain day as well as a timestamp', () => {
     expect(shortDay('2026-12-24', 'fr')).toBe('24 déc.');
+  });
+});
+
+describe('dayAfter', () => {
+  it('moves to the next day, month and year', () => {
+    expect(dayAfter('2026-12-10')).toBe('2026-12-11');
+    expect(dayAfter('2026-11-30')).toBe('2026-12-01');
+    expect(dayAfter('2026-12-31')).toBe('2027-01-01');
+    expect(dayAfter('2028-02-28')).toBe('2028-02-29');
   });
 });

@@ -244,6 +244,18 @@ test('the link stops at its places, then at its last day', async ({
     data: { firstName: 'Lou' },
   });
   expect(late.status()).toBe(410);
+  const expired = await (
+    await page.request.get(`/api/invite/${state.code}`)
+  ).json();
+  expect(expired).toMatchObject({
+    closed: 'invite_expired',
+    expiredAfter: '2020-01-01',
+  });
+  await page.goto(`/rejoindre/${state.code}`);
+  await hydrated(page);
+  await expect(page.getByTestId('invite-closed')).toContainText(
+    'Ce lien d’invitation n’est plus valable depuis le 2 janvier',
+  );
   const unknown = await page.request.get('/api/invite/AAAAAAAAAAAAAAAA');
   expect(unknown.status()).toBe(404);
   await page.goto('/rejoindre/AAAAAAAAAAAAAAAA');

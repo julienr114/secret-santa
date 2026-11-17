@@ -383,6 +383,7 @@ export default {
     },
     expired: {
       title: 'This invitation link is no longer valid',
+      titleSince: 'This invitation link has not been valid since {date}',
       body: 'Tell the organiser of {group}: they can extend it or add you themselves.',
     },
     invalid: {

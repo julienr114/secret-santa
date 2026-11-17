@@ -86,7 +86,7 @@ export default {
         },
         button: 'Open the edition',
       },
-      addWishes: {
+      addHints: {
         title: 'Write down a few gift ideas',
         body: 'They will help the person who drew your name.',
         button: 'My ideas',
@@ -125,7 +125,7 @@ export default {
       },
       partyToday: 'Party today',
       waiting: 'The draw has not taken place yet',
-      addWishes: 'Write down a few gift ideas',
+      addHints: 'Write down a few gift ideas',
       discover: 'Your envelope is waiting',
       seeAgain: 'You already know who you are giving to',
       reveal: 'Find out who I am giving a gift to',
@@ -133,7 +133,7 @@ export default {
       wishes: 'My ideas',
     },
     step: {
-      addWishes: { state: 'Add your ideas', action: 'My ideas' },
+      addHints: { state: 'Add your ideas', action: 'My ideas' },
       wait: { state: 'Draw to come' },
       discover: { state: 'The draw took place', action: 'Discover' },
       seeAgain: { state: 'You know who you are giving to' },

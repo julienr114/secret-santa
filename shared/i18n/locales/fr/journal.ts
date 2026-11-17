@@ -21,10 +21,6 @@ export default {
     result_revealed:
       "L'organisateur a consulté le résultat de {name} (accès de dernier recours)",
     result_viewed: '{name} a découvert son résultat',
-    wishes_updated: {
-      one: '{name} a mis à jour sa liste de souhaits ({count} idée)',
-      other: '{name} a mis à jour sa liste de souhaits ({count} idées)',
-    },
     avatar_changed: '{name} a changé son icône',
     language_changed: '{name} a changé sa langue ({language})',
     edition_closed: "L'édition {label} est clôturée",
@@ -54,10 +50,6 @@ export default {
     result_revealed:
       'L’organisateur a consulté ton résultat (accès de dernier recours)',
     result_viewed: 'Tu as découvert ton résultat',
-    wishes_updated: {
-      one: 'Tu as mis à jour ta liste de souhaits ({count} idée)',
-      other: 'Tu as mis à jour ta liste de souhaits ({count} idées)',
-    },
     avatar_changed: 'Tu as changé ton icône',
     language_changed: 'Tu as changé ta langue ({language})',
   },

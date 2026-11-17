@@ -221,7 +221,6 @@ const entries = computed(() => [
   entry('1', 'result_viewed', 5),
   entry('1b', 'result_viewed', 12, { name: 'Hugo' }),
   entry('2', 'draw_done', 30),
-  entry('3', 'wishes_updated', 90, { count: 3 }),
   entry('4', 'result_revealed', 200),
   entry('5', 'message_sent', 300),
   entry('6', 'edition_created', 400),

@@ -83,7 +83,7 @@ export default {
         },
         button: 'Ouvrir l’édition',
       },
-      addWishes: {
+      addHints: {
         title: 'Note quelques idées de cadeaux',
         body: 'Elles aideront la personne qui t’a tiré·e au sort.',
         button: 'Mes idées',
@@ -122,7 +122,7 @@ export default {
       },
       partyToday: 'Fête aujourd’hui',
       waiting: 'Le tirage n’a pas encore eu lieu',
-      addWishes: 'Note quelques idées de cadeaux',
+      addHints: 'Note quelques idées de cadeaux',
       discover: 'Ton enveloppe t’attend',
       seeAgain: 'Tu sais déjà à qui tu offres',
       reveal: 'Découvrir à qui j’offre un cadeau',
@@ -130,7 +130,7 @@ export default {
       wishes: 'Mes idées',
     },
     step: {
-      addWishes: { state: 'Ajoute tes idées', action: 'Mes idées' },
+      addHints: { state: 'Ajoute tes idées', action: 'Mes idées' },
       wait: { state: 'Tirage à venir' },
       discover: { state: 'Le tirage a eu lieu', action: 'Découvrir' },
       seeAgain: { state: 'Tu sais à qui tu offres' },

@@ -26,7 +26,6 @@ export const AUDIT_TYPES = [
   'results_revealed',
   'result_revealed',
   'result_viewed',
-  'wishes_updated',
   'avatar_changed',
   'language_changed',
   'edition_closed',
@@ -167,6 +166,12 @@ export type JournalPerson = {
   firstName: string;
   lastName?: string | null;
 };
+/**
+ * Types no longer written nor shown: `wishes_updated`, since the gift
+ * hints (README 22.11), whose old lines stay in the table.
+ */
+export const RETIRED_TYPES: readonly string[] = ['wishes_updated'];
+
 export type JournalRow = DescribableEvent & {
   id: string;
   editionId?: string | null;
@@ -241,6 +246,7 @@ export const journalEntries = (
     people.map((person) => [person.id, displayName(person, people)]),
   );
   return rows
+    .filter((row) => !RETIRED_TYPES.includes(row.type))
     .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
     .map((row) => ({
       id: row.id,

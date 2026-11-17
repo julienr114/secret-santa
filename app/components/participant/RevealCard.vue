@@ -51,15 +51,15 @@ const tiles = computed(() =>
       </p>
       <UiTextPreview>{{ reveal.guardianMessage }}</UiTextPreview>
     </div>
-    <template v-if="reveal.wishes">
+    <template v-if="reveal.hints">
       <hr class="border-t-2 border-dashed border-default" />
       <div class="flex flex-col gap-3">
         <h2 class="font-display text-lg font-bold">
           {{ t('participant.reveal.ideas') }}
         </h2>
         <ParticipantWishList
-          v-if="reveal.wishes.length > 0"
-          :wishes="reveal.wishes"
+          v-if="reveal.hints.ideas.length > 0"
+          :wishes="reveal.hints.ideas"
         />
         <p v-else class="text-sm text-muted">
           {{ t('participant.reveal.noIdeas', { name: reveal.receiver.name }) }}

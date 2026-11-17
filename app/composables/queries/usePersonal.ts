@@ -6,6 +6,7 @@ import type { JournalEntry } from '#server/utils/audit';
 import type { EditionStatus } from '#server/utils/editions';
 import type { PersonalPhase } from '#server/utils/personal';
 import type { Locale } from '#shared/i18n';
+import type { GiftHintsMode, Portrait } from '#shared/utils/hints';
 import { keys } from './keys';
 import { api, useApiMutation } from './useApi';
 
@@ -31,17 +32,40 @@ export type PersonalState = {
   phase: PersonalPhase;
   /** The day of the party (ISO), or empty. */
   eventDate: string;
-  wishlist: boolean;
-  wishesEditable: boolean;
-  wishesCount: number;
+  /** What the group lets participants note (README 22.11). */
+  giftHints: GiftHintsMode;
+  hintsEditable: boolean;
+  /** They left hints of their own. */
+  hasHints: boolean;
   /** Has already discovered their result at least once. */
   revealed: boolean;
-  /** Ideas in the receiver's list; 0 until the first reveal. */
-  receiverWishesCount: number;
+  /** The receiver left hints; false until the first reveal. */
+  receiverHasHints: boolean;
   /** Alerts of the journal since it was last opened from this page. */
   journalAlerts: number;
 };
 export type WishItem = { label: string; url: string | null };
+/** What the giver reads on their result. */
+export type GiverHints = {
+  portrait: Portrait;
+  ideas: WishItem[];
+  /** They already asked for hints. */
+  requested: boolean;
+};
+/** The page « Mes pistes de cadeaux ». */
+export type HintsPayload = {
+  mode: GiftHintsMode;
+  editable: boolean;
+  ideasEditable: boolean;
+  portrait: Portrait;
+  ideas: WishItem[];
+  maxIdeas: number;
+  /** Someone asked for hints and none arrived yet. */
+  requested: boolean;
+  /** The earlier edition whose hints can be reused, on an empty page. */
+  previousEdition: string | null;
+  language: Locale;
+};
 export type WishesPayload = {
   wishes: WishItem[];
   maxWishes: number;
@@ -53,8 +77,10 @@ export type Reveal = {
   budget: string;
   eventDate: string;
   guardianMessage: string;
-  /** null when the group does not use wish lists. */
-  wishes: WishItem[] | null;
+  /** What the receiver left; null when the group has no hints. */
+  hints: GiverHints | null;
+  receiverHasEmail: boolean;
+  requesterHasEmail: boolean;
   viewCount: number;
 };
 export type JournalPayload = {

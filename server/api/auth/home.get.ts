@@ -1,3 +1,4 @@
+import { participationsWithHints } from '#server/database/hints';
 import { useDb } from '#server/database/client';
 import { findAccountById } from '#server/database/accounts';
 import { listOrganizedGroups, publicGroup } from '#server/database/groups';
@@ -12,7 +13,6 @@ import { remainingGroups } from '#server/utils/quota';
 import {
   currentEditionSummaries,
   listParticipationsByEmail,
-  wishesCounts,
 } from '#server/database/home';
 import { loadDrawContext } from '#server/database/draw';
 import { requireAccount } from '#server/http/auth';
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
     ? await listParticipationsByEmail(db, account.email)
     : [];
   const dataKey = rows.length > 0 ? await dataKeyOf(event) : null;
-  const ideas = await wishesCounts(
+  const withHints = await participationsWithHints(
     db,
     rows.map((row) => row.participation.id),
   );
@@ -97,12 +97,12 @@ export default defineEventHandler(async (event) => {
           step: nextStep({
             status: edition.status,
             revealed: participation.viewCount > 0,
-            wishlist: rules.giftHints !== 'none',
-            wishesCount: ideas[participation.id] ?? 0,
+            hintsOn: rules.giftHints !== 'none',
+            hasHints: withHints.has(participation.id),
           }),
           revealed: participation.viewCount > 0,
-          wishlist: rules.giftHints !== 'none',
-          wishesCount: ideas[participation.id] ?? 0,
+          hintsOn: rules.giftHints !== 'none',
+          hasHints: withHints.has(participation.id),
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),

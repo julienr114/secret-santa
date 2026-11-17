@@ -17,7 +17,6 @@ const ICONS: Record<string, string> = {
   results_revealed: 'i-lucide-eye',
   result_revealed: 'i-lucide-eye',
   result_viewed: 'i-lucide-mail-open',
-  wishes_updated: 'i-lucide-gift',
   avatar_changed: 'i-lucide-pencil',
   language_changed: 'i-lucide-globe',
   edition_closed: 'i-lucide-archive',

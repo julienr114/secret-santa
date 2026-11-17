@@ -12,7 +12,7 @@ export default {
     drawn: 'Tirée',
     closed: 'Clôturée',
   },
-  badge: { sent: 'envoyé', wishes: 'souhaits', viewed: 'consulté' },
+  badge: { sent: 'envoyé', hints: 'pistes', viewed: 'consulté' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Tirage fait',

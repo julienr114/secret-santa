@@ -17,9 +17,10 @@ export type HomeDrawState = {
   status: EditionStatus;
   /** The result was seen at least once. */
   revealed: boolean;
-  /** The group uses wish lists. */
-  wishlist: boolean;
-  wishesCount: number;
+  /** The group uses gift hints (README 22.11). */
+  hintsOn: boolean;
+  /** They left hints: an answer, a text or an idea. */
+  hasHints: boolean;
   /** An ISO day, or older free text, or empty. */
   eventDate: string;
 };
@@ -67,7 +68,7 @@ export const HOME_ACTIONS = [
   'remind',
   'fixDraw',
   'startDraw',
-  'addWishes',
+  'addHints',
   'close',
   'prepare',
   'createGroup',
@@ -204,14 +205,14 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
         { ...at, kind: 'discover', count: 1, to: draw.path, dismissKey: null },
       ];
     }
-    return draw.wishlist && draw.wishesCount === 0
+    return draw.hintsOn && !draw.hasHints
       ? [
           {
             ...at,
-            kind: 'addWishes',
+            kind: 'addHints',
             count: 0,
-            to: `${draw.path}/souhaits`,
-            dismissKey: `addWishes:${draw.id}`,
+            to: `${draw.path}/pistes`,
+            dismissKey: `addHints:${draw.id}`,
           },
         ]
       : [];

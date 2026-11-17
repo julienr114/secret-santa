@@ -56,6 +56,7 @@ export default {
   invalid_hints: 'Une de tes réponses n’a pas pu être enregistrée.',
   hints_already_requested: 'Tu as déjà demandé des pistes pour ce tirage.',
   hints_already_given: 'Des pistes sont déjà arrivées.',
+  result_not_seen: 'Découvre d’abord à qui tu offres un cadeau.',
   no_previous_hints: 'Aucune piste à reprendre.',
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:

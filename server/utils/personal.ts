@@ -21,7 +21,7 @@ export const canEditAvatar = (status: EditionStatus): Result<true> =>
   status === 'closed' ? fail('edition_closed') : ok(true);
 
 export const DRAW_STEPS = [
-  'addWishes',
+  'addHints',
   'wait',
   'discover',
   'seeAgain',
@@ -32,18 +32,18 @@ export type DrawStep = (typeof DRAW_STEPS)[number];
 /**
  * What a participant has to do next, for the home page.
  * @param draw - Status of the edition, whether the result was already
- *   seen, whether the group uses wish lists and how many ideas they wrote.
+ *   seen, whether the group uses gift hints and whether they left some.
  * @returns The next step.
  */
 export const nextStep = (draw: {
   status: EditionStatus;
   revealed: boolean;
-  wishlist: boolean;
-  wishesCount: number;
+  hintsOn: boolean;
+  hasHints: boolean;
 }): DrawStep => {
   if (draw.status === 'closed') return 'closed';
   if (draw.status === 'drawn') return draw.revealed ? 'seeAgain' : 'discover';
-  return draw.wishlist && draw.wishesCount === 0 ? 'addWishes' : 'wait';
+  return draw.hintsOn && !draw.hasHints ? 'addHints' : 'wait';
 };
 
 /** Where a step of the participant's timeline stands. */

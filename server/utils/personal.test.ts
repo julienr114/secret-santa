@@ -42,14 +42,14 @@ describe('nextStep', () => {
   const draw = {
     status: 'preparing' as const,
     revealed: false,
-    wishlist: true,
-    wishesCount: 0,
+    hintsOn: true,
+    hasHints: false,
   };
 
   it('asks for ideas before the draw, then waits', () => {
-    expect(nextStep(draw)).toBe('addWishes');
-    expect(nextStep({ ...draw, wishesCount: 2 })).toBe('wait');
-    expect(nextStep({ ...draw, wishlist: false })).toBe('wait');
+    expect(nextStep(draw)).toBe('addHints');
+    expect(nextStep({ ...draw, hasHints: true })).toBe('wait');
+    expect(nextStep({ ...draw, hintsOn: false })).toBe('wait');
   });
 
   it('offers to discover the result, then to see it again', () => {

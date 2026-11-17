@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
           label: edition.label,
           // Drawn already: whoever joins now is in the group, not this draw.
           status: edition.status,
-          wishlist: rules?.ok ? rules.value.giftHints !== 'none' : true,
+          hintsOn: rules?.ok ? rules.value.giftHints !== 'none' : true,
           eventDate: rules?.ok ? rules.value.eventDate : '',
           participants: await participantCount(db, edition.id),
         }

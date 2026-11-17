@@ -32,11 +32,11 @@ const state = computed(() => {
           variant: 'solid' as const,
         };
   }
-  return draw.wishlist && draw.wishesCount === 0
+  return draw.hintsOn && !draw.hasHints
     ? {
-        title: t('auth.home.drawCard.addWishes'),
+        title: t('auth.home.drawCard.addHints'),
         button: t('auth.home.drawCard.wishes'),
-        to: `${draw.path}/souhaits`,
+        to: `${draw.path}/pistes`,
         variant: 'solid' as const,
       }
     : { title: t('auth.home.drawCard.waiting'), button: null, to: null };

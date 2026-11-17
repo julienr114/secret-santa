@@ -2,7 +2,7 @@ import { count, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { Db } from './client';
 import { currentEdition, type EditionStatus } from '#server/utils/editions';
 import { mergeRules } from '#server/utils/rules';
-import { editions, groups, participations, persons, wishes } from './schema';
+import { editions, groups, participations, persons } from './schema';
 
 /**
  * The participations of the people registered with an address, in every
@@ -23,23 +23,6 @@ export const listParticipationsByEmail = (db: Db, email: string) =>
     .innerJoin(groups, eq(groups.id, editions.groupId))
     .where(eq(persons.email, email))
     .orderBy(desc(editions.year), desc(editions.createdAt));
-
-/** How many ideas each participation wrote, by participation id. */
-export const wishesCounts = async (
-  db: Db,
-  participationIds: string[],
-): Promise<Record<string, number>> =>
-  participationIds.length === 0
-    ? {}
-    : Object.fromEntries(
-        (
-          await db
-            .select({ id: wishes.participationId, n: count() })
-            .from(wishes)
-            .where(inArray(wishes.participationId, participationIds))
-            .groupBy(wishes.participationId)
-        ).map((row) => [row.id, row.n]),
-      );
 
 /** Where the current edition of a group stands, for its organiser. */
 export type EditionSummary = {

@@ -20,6 +20,7 @@ const STATUS_BY_REASON: Record<string, number> = {
   hints_already_requested: 409,
   hints_already_given: 409,
   no_previous_hints: 404,
+  result_not_seen: 409,
   email_failed: 502,
   group_quota_reached: 403,
   group_request_pending: 409,

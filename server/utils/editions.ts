@@ -70,21 +70,21 @@ export const previousEdition = <E extends EditionLike>(
 export type ParticipantStatus = {
   messageSentAt?: string | null;
   viewCount: number;
-  wishesCount: number;
+  hasHints: boolean;
 };
 
-export const BADGES = ['sent', 'wishes', 'viewed'] as const;
+export const BADGES = ['sent', 'hints', 'viewed'] as const;
 export type Badge = (typeof BADGES)[number];
 
 /** Status badges for a participant card (README section 11). */
 export const participantBadges = ({
   messageSentAt,
   viewCount,
-  wishesCount,
+  hasHints,
 }: ParticipantStatus): Badge[] =>
   [
     messageSentAt ? 'sent' : null,
-    wishesCount > 0 ? 'wishes' : null,
+    hasHints ? 'hints' : null,
     viewCount > 0 ? 'viewed' : null,
   ].filter((b): b is Badge => b !== null);
 

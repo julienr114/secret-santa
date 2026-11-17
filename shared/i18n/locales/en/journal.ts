@@ -22,10 +22,6 @@ export default {
     result_revealed:
       "The organizer looked at {name}'s result (last-resort access)",
     result_viewed: '{name} discovered their result',
-    wishes_updated: {
-      one: '{name} updated their wish list ({count} idea)',
-      other: '{name} updated their wish list ({count} ideas)',
-    },
     avatar_changed: '{name} changed their icon',
     language_changed: '{name} changed their language ({language})',
     edition_closed: 'The edition {label} is closed',
@@ -53,10 +49,6 @@ export default {
     link_regenerated: 'Your link was regenerated',
     result_revealed: 'The organizer looked at your result (last-resort access)',
     result_viewed: 'You discovered your result',
-    wishes_updated: {
-      one: 'You updated your wish list ({count} idea)',
-      other: 'You updated your wish list ({count} ideas)',
-    },
     avatar_changed: 'You changed your icon',
     language_changed: 'You changed your language ({language})',
   },

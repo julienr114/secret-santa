@@ -1,5 +1,6 @@
-import { and, count, eq, gt, inArray } from 'drizzle-orm';
-import { auditLog, wishes } from '#server/database/schema';
+import { and, eq, gt, inArray } from 'drizzle-orm';
+import { auditLog } from '#server/database/schema';
+import { participationHasHints } from '#server/database/hints';
 import { findReceiverParticipationId } from '#server/database/draw';
 import { dataKeyOf } from '#server/http/context';
 import { requirePersonalLink } from '#server/http/personal';
@@ -20,19 +21,13 @@ import { canEditHints } from '#server/utils/hints';
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
     await requirePersonalLink(event);
-  const [row] =
-    rules.giftHints !== 'none'
-      ? await db
-          .select({ n: count() })
-          .from(wishes)
-          .where(eq(wishes.participationId, participation.id))
-      : [];
-  // Once the participant has discovered their result, the page offers to
-  // see it again and says how many ideas await them. Nothing here names
-  // the receiver, and nothing is computed before the first reveal.
+  const hintsOn = rules.giftHints !== 'none';
+  // Once the participant has discovered their result, the page says
+  // whether hints await them. Nothing here names the receiver, and nothing
+  // is computed before the first reveal.
   const revealed = participation.viewCount > 0 && canReveal(edition.status).ok;
   const receiverParticipationId =
-    revealed && rules.giftHints !== 'none'
+    revealed && hintsOn
       ? await findReceiverParticipationId(
           db,
           edition.id,
@@ -40,12 +35,6 @@ export default defineEventHandler(async (event) => {
           await dataKeyOf(event),
         )
       : null;
-  const [receiverRow] = receiverParticipationId
-    ? await db
-        .select({ n: count() })
-        .from(wishes)
-        .where(eq(wishes.participationId, receiverParticipationId))
-    : [];
   // For the invitation to keep the draw in an account: is this draw
   // already in the logged-in account, can it be added, or is it someone
   // else's? Null without an account.
@@ -92,11 +81,13 @@ export default defineEventHandler(async (event) => {
     phase: personalPhase(edition.status),
     // The day of the party is no secret: the messages give it to all.
     eventDate: rules.eventDate,
-    wishlist: rules.giftHints !== 'none',
-    wishesEditable: canEditHints(edition.status, rules.giftHints).ok,
-    wishesCount: row?.n ?? 0,
+    giftHints: rules.giftHints,
+    hintsEditable: canEditHints(edition.status, rules.giftHints).ok,
+    hasHints: hintsOn && (await participationHasHints(db, participation.id)),
     revealed,
-    receiverWishesCount: receiverRow?.n ?? 0,
+    receiverHasHints: receiverParticipationId
+      ? await participationHasHints(db, receiverParticipationId)
+      : false,
     journalAlerts: unseenAlerts(alertRows, person.id, since),
   };
 });

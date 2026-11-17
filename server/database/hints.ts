@@ -17,6 +17,7 @@ import {
   participations,
   wishes,
 } from './schema';
+import { listWishes } from './wishes';
 import { nowIso } from '#server/http/context';
 import {
   EMPTY_PORTRAIT,
@@ -242,3 +243,22 @@ export const deleteHintsOf = (
       .delete(hintRequests)
       .where(inIds(hintRequests.receiverParticipationId, participationIds)),
   ] as const;
+
+/**
+ * What the giver reads on their result (README 22.11): the portrait, the
+ * precise ideas when the group keeps them, and whether they already asked
+ * for hints (only the giver of a receiver can ask, so a request on the
+ * receiver is theirs).
+ */
+export const giverHints = async (
+  db: Db,
+  receiverParticipationId: string,
+  mode: 'full' | 'portrait',
+) => {
+  const [portrait, ideas, request] = await Promise.all([
+    findPortrait(db, receiverParticipationId),
+    mode === 'full' ? listWishes(db, receiverParticipationId) : [],
+    findHintRequest(db, receiverParticipationId),
+  ]);
+  return { portrait, ideas, requested: Boolean(request) };
+};

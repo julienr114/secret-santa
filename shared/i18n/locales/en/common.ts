@@ -15,7 +15,7 @@ export default {
     drawn: 'Drawn',
     closed: 'Closed',
   },
-  badge: { sent: 'sent', wishes: 'wishes', viewed: 'viewed' },
+  badge: { sent: 'sent', hints: 'hints', viewed: 'viewed' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Draw done',

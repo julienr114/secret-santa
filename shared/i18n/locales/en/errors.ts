@@ -52,6 +52,7 @@ export default {
   invalid_hints: 'One of your answers could not be saved.',
   hints_already_requested: 'You already asked for hints in this draw.',
   hints_already_given: 'Hints have already arrived.',
+  result_not_seen: 'First discover who you give a present to.',
   no_previous_hints: 'No hints to reuse.',
   too_many_wishes: 'There are too many ideas in your list.',
   invalid_wish:

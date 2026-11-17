@@ -86,7 +86,7 @@ export default {
         },
         button: 'Ausgabe öffnen',
       },
-      addWishes: {
+      addHints: {
         title: 'Notiere ein paar Geschenkideen',
         body: 'Sie helfen der Person, die dich gezogen hat.',
         button: 'Meine Ideen',
@@ -125,7 +125,7 @@ export default {
       },
       partyToday: 'Fest heute',
       waiting: 'Die Auslosung hat noch nicht stattgefunden',
-      addWishes: 'Notiere ein paar Geschenkideen',
+      addHints: 'Notiere ein paar Geschenkideen',
       discover: 'Dein Umschlag wartet auf dich',
       seeAgain: 'Du weißt schon, wen du beschenkst',
       reveal: 'Erfahren, wen ich beschenke',
@@ -133,7 +133,7 @@ export default {
       wishes: 'Meine Ideen',
     },
     step: {
-      addWishes: { state: 'Füge deine Ideen hinzu', action: 'Meine Ideen' },
+      addHints: { state: 'Füge deine Ideen hinzu', action: 'Meine Ideen' },
       wait: { state: 'Auslosung steht bevor' },
       discover: {
         state: 'Die Auslosung hat stattgefunden',

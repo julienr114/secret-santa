@@ -86,9 +86,10 @@ export type HomeDraw = {
   step: DrawStep;
   /** The result was seen at least once. */
   revealed: boolean;
-  /** The group uses wish lists. */
-  wishlist: boolean;
-  wishesCount: number;
+  /** The group uses gift hints (README 22.11). */
+  hintsOn: boolean;
+  /** They left hints. */
+  hasHints: boolean;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;
   firstName: string;
@@ -190,8 +191,8 @@ export type InvitePayload = {
   edition: {
     label: string;
     status: 'preparing' | 'drawn' | 'closed';
-    /** Whether the participants have a wish list. */
-    wishlist: boolean;
+    /** Whether the participants may leave gift hints. */
+    hintsOn: boolean;
     eventDate: string;
     participants: number;
   } | null;

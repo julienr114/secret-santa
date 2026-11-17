@@ -114,17 +114,12 @@ const onCreate = () => {
   prefill.value = { firstName: me.value?.firstName ?? '', email: '' };
 };
 
-const wishesSubtitle = computed(() => {
-  const count = me.value?.wishesCount ?? 0;
-  const editable = me.value?.wishesEditable ?? false;
-  if (count > 0) {
-    return editable
-      ? t('participant.home.wishes.editable', { count })
-      : t('participant.home.wishes.locked', { count });
-  }
-  return editable
-    ? t('participant.home.wishes.help')
-    : t('participant.home.wishes.none');
+/** Where their own hints stand, under « Mes pistes de cadeaux ». */
+const hintsSubtitle = computed(() => {
+  if (!me.value?.hasHints) return t('hints.state.none');
+  return me.value.hintsEditable
+    ? t('hints.state.filledEditable')
+    : t('hints.state.filledLocked');
 });
 
 const today = new Date().toLocaleDateString('sv-SE');
@@ -182,13 +177,12 @@ const envelope = computed(() =>
 /** Title, text and line under the button of the middle card. */
 const card = computed(() => {
   const state = me.value;
-  const ideas = state?.receiverWishesCount ?? 0;
   switch (view.value) {
     case 'waiting':
       return {
         title: t('participant.home.waiting.title'),
         body: t('participant.home.waiting.body'),
-        hint: state?.wishesEditable ? t('participant.home.waiting.hint') : '',
+        hint: state?.hintsEditable ? t('participant.home.waiting.hint') : '',
       };
     case 'ready':
       return {
@@ -200,10 +194,7 @@ const card = computed(() => {
       return {
         title: t('participant.home.seen.title'),
         body: t('participant.home.seen.body'),
-        hint:
-          ideas > 0
-            ? t('participant.home.seen.ideasWaiting', { count: ideas })
-            : '',
+        hint: state?.receiverHasHints ? t('hints.result.waiting') : '',
       };
     default:
       return {
@@ -289,8 +280,8 @@ const card = computed(() => {
           :description="errorMessage(revealMutation.error.value)"
         />
         <UButton
-          v-if="view === 'waiting' && me.wishesEditable"
-          :to="`/p/${token}/souhaits`"
+          v-if="view === 'waiting' && me.hintsEditable"
+          :to="`/p/${token}/pistes`"
           block
           size="xl"
           icon="i-lucide-pencil"
@@ -318,11 +309,11 @@ const card = computed(() => {
 
       <UiList>
         <UiListItem
-          v-if="me.wishlist"
-          :to="`/p/${token}/souhaits`"
+          v-if="me.giftHints !== 'none'"
+          :to="`/p/${token}/pistes`"
           icon="i-lucide-list-checks"
-          :title="t('participant.home.wishes.title')"
-          :subtitle="wishesSubtitle"
+          :title="t('hints.title')"
+          :subtitle="hintsSubtitle"
         />
         <UiListItem
           :to="`/p/${token}/journal`"

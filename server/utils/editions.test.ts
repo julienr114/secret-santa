@@ -65,9 +65,9 @@ describe('currentEdition / previousEdition', () => {
 describe('participantBadges', () => {
   it('lists the badges in display order', () => {
     expect(
-      participantBadges({ messageSentAt: 'x', viewCount: 2, wishesCount: 3 }),
-    ).toEqual(['sent', 'wishes', 'viewed']);
-    expect(participantBadges({ viewCount: 0, wishesCount: 0 })).toEqual([]);
+      participantBadges({ messageSentAt: 'x', viewCount: 2, hasHints: true }),
+    ).toEqual(['sent', 'hints', 'viewed']);
+    expect(participantBadges({ viewCount: 0, hasHints: false })).toEqual([]);
   });
 });
 

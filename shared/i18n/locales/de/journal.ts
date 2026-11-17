@@ -23,10 +23,6 @@ export default {
     result_revealed:
       'Der Organisator hat das Ergebnis von {name} eingesehen (Notzugriff)',
     result_viewed: '{name} hat das eigene Ergebnis entdeckt',
-    wishes_updated: {
-      one: '{name} hat die Wunschliste aktualisiert ({count} Idee)',
-      other: '{name} hat die Wunschliste aktualisiert ({count} Ideen)',
-    },
     avatar_changed: '{name} hat das eigene Symbol geändert',
     language_changed: '{name} hat die eigene Sprache geändert ({language})',
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
@@ -56,10 +52,6 @@ export default {
     result_revealed:
       'Der Organisator hat dein Ergebnis eingesehen (Notzugriff)',
     result_viewed: 'Du hast dein Ergebnis entdeckt',
-    wishes_updated: {
-      one: 'Du hast deine Wunschliste aktualisiert ({count} Idee)',
-      other: 'Du hast deine Wunschliste aktualisiert ({count} Ideen)',
-    },
     avatar_changed: 'Du hast dein Symbol geändert',
     language_changed: 'Du hast deine Sprache geändert ({language})',
   },

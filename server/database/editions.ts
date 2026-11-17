@@ -1,12 +1,7 @@
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
-import {
-  editions,
-  participations,
-  persons,
-  wishes,
-  type EditionRow,
-} from './schema';
+import { editions, participations, persons, type EditionRow } from './schema';
+import { participationsWithHints } from './hints';
 import { encrypt, generateToken, hashToken } from '#server/utils/crypto';
 import { participantBadges, type Badge } from '#server/utils/editions';
 import { publicPerson, type PublicPerson } from '#server/utils/people';
@@ -138,7 +133,8 @@ export type Participant = PublicPerson & {
   linkCopiedAt: string | null;
   viewCount: number;
   lastViewedAt: string | null;
-  wishesCount: number;
+  /** Left gift hints: a yes or no, never what (README 22.11). */
+  hasHints: boolean;
   badges: Badge[];
 };
 
@@ -154,17 +150,7 @@ export const listParticipants = async (
     .where(eq(participations.editionId, editionId))
     .orderBy(asc(persons.firstName));
   const ids = rows.map((r) => r.participation.id);
-  const wishRows =
-    ids.length === 0
-      ? []
-      : await db
-          .select({ participationId: wishes.participationId, n: count() })
-          .from(wishes)
-          .where(inArray(wishes.participationId, ids))
-          .groupBy(wishes.participationId);
-  const wishCounts = Object.fromEntries(
-    wishRows.map((r) => [r.participationId, r.n]),
-  );
+  const withHints = await participationsWithHints(db, ids);
   return rows.map(({ participation, person }) => {
     const status = {
       participationId: participation.id,
@@ -172,7 +158,7 @@ export const listParticipants = async (
       linkCopiedAt: participation.linkCopiedAt,
       viewCount: participation.viewCount,
       lastViewedAt: participation.lastViewedAt,
-      wishesCount: wishCounts[participation.id] ?? 0,
+      hasHints: withHints.has(participation.id),
     };
     return {
       ...publicPerson(person),

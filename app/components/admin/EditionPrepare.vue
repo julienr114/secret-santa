@@ -27,14 +27,14 @@ const sorted = computed(() =>
   sortParticipants(props.participants, 'preparing'),
 );
 /**
- * The line under a participant before the draw: their number of ideas,
+ * The line under a participant before the draw: whether they left hints,
  * and the language of their messages when it is not the organiser's.
  * @param p - The participant.
  * @returns The line, or undefined when there is nothing to say.
  */
 const subtitleOf = (p: Participant) =>
   [
-    p.wishesCount > 0 && t('common.count.ideas', { count: p.wishesCount }),
+    p.hasHints && t('hints.state.left'),
     p.language !== locale.value &&
       tk(`adminEdition.screen.prepare.messagesIn.${p.language}`),
   ]

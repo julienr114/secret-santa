@@ -47,7 +47,7 @@ const action = computed(() =>
   data.value ? pickHomeAction(data.value, today, dismissed.value) : null,
 );
 /** Cards about the one draw, which its own card already shows. */
-const ABOUT_THE_DRAW: readonly HomeActionKind[] = ['discover', 'addWishes'];
+const ABOUT_THE_DRAW: readonly HomeActionKind[] = ['discover', 'addHints'];
 const topCard = computed(() =>
   layout.value === 'singleDraw' &&
   action.value &&
@@ -73,7 +73,7 @@ const named = computed(
     ]).size > 1,
 );
 /** Draws going on, the one waiting for an action first. */
-const STEP_ORDER = ['discover', 'addWishes', 'seeAgain', 'wait', 'closed'];
+const STEP_ORDER = ['discover', 'addHints', 'seeAgain', 'wait', 'closed'];
 const sortedDraws = computed(() =>
   going.value.toSorted(
     (a, b) => STEP_ORDER.indexOf(a.step) - STEP_ORDER.indexOf(b.step),
@@ -144,10 +144,10 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
 
       <template v-if="layout === 'singleDraw' && single">
         <HomeDrawCard :draw="single" @open="onOpen(single.path)" />
-        <UiList v-if="single.wishlist || hasPast">
+        <UiList v-if="single.hintsOn || hasPast">
           <UiListItem
-            v-if="single.wishlist"
-            :to="`${single.path}/souhaits`"
+            v-if="single.hintsOn"
+            :to="`${single.path}/pistes`"
             icon="i-lucide-list-checks"
             :title="t('auth.home.myWishes')"
             @click="onOpen(single.path)"

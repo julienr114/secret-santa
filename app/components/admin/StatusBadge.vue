@@ -12,7 +12,7 @@ const COLORS: Record<
   drawn: 'success',
   closed: 'neutral',
   sent: 'info',
-  wishes: 'primary',
+  hints: 'primary',
   viewed: 'secondary',
 };
 const { tk } = useT();

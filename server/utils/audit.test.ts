@@ -133,9 +133,6 @@ describe('describeEvent', () => {
     expect(describeEvent(ev('result_viewed', { count: 3 }), { names })).toBe(
       'Léa a découvert son résultat',
     );
-    expect(describeEvent(ev('wishes_updated', { count: 1 }), { names })).toBe(
-      'Léa a mis à jour sa liste de souhaits (1 idée)',
-    );
     expect(
       describeEvent(ev('edition_closed', { label: 'Noël 2026' }, null), {
         names,
@@ -174,6 +171,21 @@ describe('journalEntries', () => {
     actor: 'participant',
     meta: { count: 1, receiverId: 'p3' },
     createdAt,
+  });
+
+  it('no longer shows the old « wishes_updated » lines', () => {
+    expect(
+      journalEntries(
+        [
+          {
+            ...row('a', 'p3', '2026-12-01T10:00:00.000Z'),
+            type: 'wishes_updated',
+          },
+          row('b', 'p3', '2026-12-02T10:00:00.000Z'),
+        ],
+        people,
+      ).map((e) => e.id),
+    ).toEqual(['b']);
   });
 
   it('lists the newest first, with one sentence each', () => {

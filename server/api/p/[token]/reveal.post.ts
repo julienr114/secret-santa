@@ -1,7 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { assignments, participations } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
-import { listWishes } from '#server/database/wishes';
+import { giverHints } from '#server/database/hints';
 import { recordEvent } from '#server/database/audit';
 import { requirePersonalLink } from '#server/http/personal';
 import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
@@ -46,10 +46,10 @@ export default defineEventHandler(async (event) => {
   if (!receiver) {
     throw createError({ statusCode: 500, statusMessage: 'result_unreadable' });
   }
-  const receiverWishes =
-    rules.giftHints !== 'none'
-      ? await listWishes(db, receiver.participationId)
-      : null;
+  const hints =
+    rules.giftHints === 'none'
+      ? null
+      : await giverHints(db, receiver.participationId, rules.giftHints);
 
   const now = nowIso();
   const [updated] = await db
@@ -103,7 +103,10 @@ export default defineEventHandler(async (event) => {
     budget: rules.budget,
     eventDate: rules.eventDate,
     guardianMessage: rules.guardianMessage,
-    wishes: receiverWishes,
+    hints,
+    // For the words under « Lui demander des pistes ».
+    receiverHasEmail: Boolean(receiver.person.email),
+    requesterHasEmail: Boolean(person.email),
     viewCount,
   };
 });

@@ -59,6 +59,7 @@ export default {
   hints_already_requested:
     'Du hast für diese Auslosung schon um Hinweise gebeten.',
   hints_already_given: 'Es sind schon Hinweise da.',
+  result_not_seen: 'Finde zuerst heraus, wen du beschenkst.',
   no_previous_hints: 'Keine Hinweise zum Übernehmen.',
   too_many_wishes: 'Deine Liste enthält zu viele Ideen.',
   invalid_wish:

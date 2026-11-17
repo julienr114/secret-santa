@@ -147,8 +147,8 @@ const closed = computed(() => {
           {{ t('auth.invite.meanwhile') }}
         </h2>
         <UButton
-          v-if="edition?.wishlist && edition.status === 'preparing'"
-          :to="`${path}/souhaits`"
+          v-if="edition?.hintsOn && edition.status === 'preparing'"
+          :to="`${path}/pistes`"
           block
           size="xl"
           class="h-12 justify-center font-bold"
@@ -159,7 +159,7 @@ const closed = computed(() => {
           block
           size="xl"
           :variant="
-            edition?.wishlist && edition.status === 'preparing'
+            edition?.hintsOn && edition.status === 'preparing'
               ? 'link'
               : 'solid'
           "

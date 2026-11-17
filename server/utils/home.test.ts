@@ -20,8 +20,8 @@ const draw = (over: Partial<HomeDrawState> = {}): HomeDrawState => ({
   editionLabel: 'Noël 2026',
   status: 'drawn',
   revealed: true,
-  wishlist: true,
-  wishesCount: 2,
+  hintsOn: true,
+  hasHints: true,
   eventDate: '2026-12-24',
   ...over,
 });
@@ -122,19 +122,19 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
     expect(kindOf(state(null))).toBe('startDraw');
   });
 
-  it('7. a wish list still empty, until the edition is closed', () => {
+  it('7. no gift hints yet, until the edition is closed', () => {
     const state = (over: Partial<HomeDrawState>) =>
-      home({ draws: [draw({ wishesCount: 0, ...over })] });
+      home({ draws: [draw({ hasHints: false, ...over })] });
     expect(pickHomeAction(state({}), TODAY)).toMatchObject({
-      kind: 'addWishes',
-      to: '/p/token1/souhaits',
-      dismissKey: 'addWishes:p1',
+      kind: 'addHints',
+      to: '/p/token1/pistes',
+      dismissKey: 'addHints:p1',
     });
     expect(kindOf(state({ status: 'preparing', revealed: false }))).toBe(
-      'addWishes',
+      'addHints',
     );
     expect(kindOf(state({ status: 'closed' }))).toBeNull();
-    expect(kindOf(state({ wishlist: false }))).toBeNull();
+    expect(kindOf(state({ hintsOn: false }))).toBeNull();
   });
 
   it('8. the party is over and the edition still open', () => {
@@ -194,9 +194,9 @@ describe('pickHomeAction, order and ties', () => {
     const state = home({
       firstName: null,
       canCreateGroup: true,
-      draws: [draw({ wishesCount: 0 })],
+      draws: [draw({ hasHints: false })],
     });
-    expect(kindOf(state)).toBe('addWishes');
+    expect(kindOf(state)).toBe('addHints');
   });
 
   it('between two groups, the nearest party first', () => {
@@ -244,12 +244,12 @@ describe('pickHomeAction, order and ties', () => {
 
   it('lets "Plus tard" put off an optional card, never a needed one', () => {
     const optional = home({
-      draws: [draw({ wishesCount: 0 })],
+      draws: [draw({ hasHints: false })],
       firstName: null,
     });
-    expect(kindOf(optional, TODAY, ['addWishes:p1'])).toBe('completeProfile');
+    expect(kindOf(optional, TODAY, ['addHints:p1'])).toBe('completeProfile');
     expect(
-      kindOf(optional, TODAY, ['addWishes:p1', 'completeProfile']),
+      kindOf(optional, TODAY, ['addHints:p1', 'completeProfile']),
     ).toBeNull();
     const needed = home({ draws: [draw({ revealed: false })] });
     expect(kindOf(needed, TODAY, ['discover:p1'])).toBe('discover');

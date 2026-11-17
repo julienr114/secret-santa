@@ -16,7 +16,7 @@ Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 |---|---|---|
 | Dévoiler les résultats (README 22.9) | `DevoilerAvant`, `Feter`, `Devoiler`, `Cloturee`, et la ligne « Dévoiler les résultats » de `Suivi100` | Nouvelle fonctionnalité, côté serveur compris |
 | Idées futures | `FuturAccueil`, `FuturListes` | Non planifié |
-| Mot de l'administrateur sur un refus | bloc « Le mot de l'administrateur » de `AccueilDemandeRefusee`, champ « Un mot pour elle » de `AdminDemande` | Demande un champ en base et un email |
+| Mot de l'administrateur sur un refus | bloc « Le mot de l'administrateur » de `AccueilDemandeRefusee`, champ « Un mot pour elle » et ses messages tout prêts (`AdminDemande`, `AdminDemandeMot`) | Demande un champ en base et un email |
 | Liste de souhaits | `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` | Remplacée par « Pistes de cadeaux » (README 22.11), codée à part |
 | Alerte du journal sur la page du participant | `TirageAlerteJournal` | Demande de mémoriser la dernière visite ; pas encore décidé |
 
@@ -389,7 +389,7 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 - [ ] `AdminAcces`, `AdminAccesMenu` : la barre du bas (`AdminBottomNav`) disparaît ; l'accès se fait par une ligne « Administration » en bas de l'accueil et par le menu, avec le nombre de demandes en attente.
 - [ ] `Admin`, `AdminPlusieursDemandes` : accueil de l'administration ; la demande la plus ancienne dans la carte, les suivantes en lignes. Sans demande (`AdminSansDemande`), la carte laisse place à une ligne « Aucune demande à traiter ».
 - [ ] `AdminDemande` : réponse dans un panneau, avec l'effet sur le quota (sans le champ « Un mot pour elle »).
-- [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`).
+- [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`). Les deux listes ont un champ de recherche (`UiSearchField`) : nom ou adresse pour les comptes, nom du groupe ou organisateur pour les groupes.
 - [ ] `GroupeNouveauAdmin` (`admin/groupes/nouveau.vue`, vu par un super-admin) : le champ « Adresse du premier organisateur » reste, mais dans un bloc à part, en pointillés, intitulé « Super-admin », sans phrase d'explication (le titre suffit ; même chose sur la carte « Administration » de l'accueil, `AdminAcces` et `AdminAccesMenu`). Un compte normal ne voit ni le bloc ni le champ, et garde la phrase « Tu en seras l'organisateur ». Même marquage pour toute commande réservée au super-admin posée sur un écran que tout le monde voit (par exemple « Supprimer le groupe » dans les réglages) : un seul composant.
 
 - [ ] Validé par Julien le 16 novembre 2026 : le super-admin ne modifie plus le profil d'un compte (prénom, icône, langue), il le lit seulement ; « Accepter » et « Refuser » ont le même poids visuel. Retirer du client le formulaire de profil de `admin/comptes/[id].vue` ; la route d'API reste en place.

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Message tout prêt — Administration — répondre à une demande</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #8f877b; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
+  <div aria-hidden="true" style="height: 110px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; color: #5c554c">Administration</div>
+
+  <section aria-label="Demande de Léa Martin" style="flex-grow: 1; background: #fffdf9; border-radius: 20px 20px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 16px">
+    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #dccbad"></span>
+    <div style="display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #d6e6ef; box-shadow: 0 0 0 1px #94bbd0; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">🧣</span><div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 22px; line-height: 1.15">Demande de Léa Martin</h1><p style="margin: 0; font-size: 14px; color: #57534e">Envoyée le 14 novembre</p></div></div>
+    <p style="margin: 0; padding: 10px 12px; border-radius: 10px; background: #f1e8d8; font-size: 15px; line-height: 1.45">Le Noël de ma famille, une douzaine de personnes.</p>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Si tu acceptes</h2>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px"><li style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="flex-grow: 1; color: #57534e">Groupes qu’elle peut créer</span><span style="color: #57534e">0</span><span aria-hidden="true" style="color: #78716c; display: flex"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><strong style="font-size: 15px">1</strong></li><li style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="flex-grow: 1; color: #57534e">Groupes dans l’application</span><span style="color: #57534e">4</span><span aria-hidden="true" style="color: #78716c; display: flex"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><strong style="font-size: 15px">5</strong></li></ul>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="50" aria-label="Capacité" style="height: 8px; border-radius: 999px; background: #e9dcc5; overflow: hidden"><div style="width: 10%; height: 100%; border-radius: 999px; background: #2f613f"></div></div>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #57534e">5 sur environ 50 groupes couverts par les offres gratuites.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="reply" style="font-size: 15px; font-weight: 600">Un mot pour elle <span style="font-weight: 400; color: #57534e">(facultatif)</span></label>
+      <div role="group" aria-label="Messages tout prêts" style="display: flex; gap: 8px; white-space: nowrap"><button type="button" aria-pressed="false" style="height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: #fffdf9; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-weight: 600; font-family: inherit; font-size: 14px">Bienvenue</button><button type="button" aria-pressed="false" style="height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: #fffdf9; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-weight: 600; font-family: inherit; font-size: 14px">C’est complet</button><button type="button" aria-pressed="true" style="height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: #f6e2dd; box-shadow: 0 0 0 1.5px #b8483a; color: #8a2f27; font-weight: 700; font-family: inherit; font-size: 14px">Entre proches</button></div>
+      <textarea id="reply" rows="3" placeholder="Bienvenue ! Dis-moi si tu bloques." style="box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid #a8a29e; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 16px; line-height: 1.4; resize: none">Désolé, je réserve l’application à mes proches pour l’instant. Bon Noël quand même !</textarea>
+      <p style="margin: 0; font-size: 13px; color: #57534e">Ajouté à l’email qui la prévient de ta réponse.</p>
+    </div>
+    <div style="margin-top: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button style="height: 48px; box-sizing: border-box; border: 1px solid #dccbad; border-radius: 6px; background: transparent; color: #292524; font-family: inherit; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; height: 52px">Refuser</button>
+      <button style="height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Accepter</button>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

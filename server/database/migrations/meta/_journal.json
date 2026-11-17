@@ -141,6 +141,13 @@
       "when": 1794928843215,
       "tag": "0019_gift_hints",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1794931379240,
+      "tag": "0020_hint_requests_anonymous",
+      "breakpoints": true
     }
   ]
 }

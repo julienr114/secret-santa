@@ -53,6 +53,8 @@ export type PersonalState = {
 export type WishItem = { label: string; url: string | null };
 /** What the giver reads on their result. */
 export type GiverHints = {
+  /** The group setting: which questions were asked. */
+  mode: 'full' | 'portrait';
   portrait: Portrait;
   ideas: WishItem[];
   /** They already asked for hints. */

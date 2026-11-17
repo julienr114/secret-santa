@@ -9,6 +9,7 @@ import {
   HINT_TEXTS,
   HINT_TEXT_MAX,
   answeredCount,
+  hasBothAnswers,
   portraitTags,
   type HintText,
 } from '#shared/utils/hints';
@@ -39,10 +40,15 @@ const context = computed(() =>
 );
 const tags = computed(() =>
   hints.value
-    ? portraitTags(hints.value.portrait.answers).map(({ question, answer }) =>
-        tk(`hints.tags.${question}.${answer}`),
+    ? portraitTags(hints.value.portrait.answers, hints.value.mode).map(
+        ({ question, answer }) => tk(`hints.tags.${question}.${answer}`),
       )
     : [],
+);
+const bothRest = computed(() =>
+  hints.value
+    ? hasBothAnswers(hints.value.portrait.answers, hints.value.mode)
+    : false,
 );
 const answered = computed(() =>
   hints.value ? answeredCount(hints.value.portrait.answers) > 0 : false,
@@ -116,7 +122,11 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
         data-testid="hints-requested"
       >
         <strong>{{ t('hints.requested.title') }}</strong>
-        {{ t('hints.requested.body') }}
+        {{
+          hints.mode === 'portrait'
+            ? t('hints.requested.bodyPortrait')
+            : t('hints.requested.body')
+        }}
       </UiNotice>
       <UiNotice v-else-if="editable" variant="positive" icon="i-lucide-lock">
         {{ t('hints.whoSees') }}
@@ -135,7 +145,10 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
             {{ t('hints.me.edit') }}
           </NuxtLink>
         </div>
-        <UiTagList :tags="tags" />
+        <UiTagList v-if="tags.length > 0" :tags="tags" />
+        <p v-if="bothRest" class="text-sm text-toned">
+          {{ t('hints.me.bothRest') }}
+        </p>
       </UiCard>
       <UiCard
         v-else-if="editable"
@@ -150,7 +163,11 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
             {{ t('hints.start.label') }}
           </p>
           <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
-            {{ t('hints.start.title') }}
+            {{
+              hints.mode === 'portrait'
+                ? t('hints.start.titlePortrait')
+                : t('hints.start.title')
+            }}
           </h2>
           <p class="text-[15px] leading-[1.45] text-toned">
             {{ t('hints.start.examples') }} {{ t('hints.start.body') }}

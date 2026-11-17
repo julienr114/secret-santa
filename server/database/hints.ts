@@ -183,15 +183,10 @@ export const findHintRequest = async (
   return row ?? null;
 };
 
-/** Records a request; the one who asked is already encrypted. */
+/** Records a request, without who asked (README 6 bis.3). */
 export const insertHintRequest = (
   db: Db,
-  request: {
-    receiverParticipationId: string;
-    editionId: string;
-    requesterEnc: string;
-    requesterIv: string;
-  },
+  request: { receiverParticipationId: string; editionId: string },
 ) =>
   db
     .insert(hintRequests)
@@ -212,10 +207,7 @@ export const markHintRequestAnswered = (
         isNull(hintRequests.answeredAt),
       ),
     )
-    .returning({
-      requesterEnc: hintRequests.requesterEnc,
-      requesterIv: hintRequests.requesterIv,
-    });
+    .returning({ answeredAt: hintRequests.answeredAt });
 
 /**
  * Statements that forget the requests of an edition: a new draw gives new
@@ -260,5 +252,5 @@ export const giverHints = async (
     mode === 'full' ? listWishes(db, receiverParticipationId) : [],
     findHintRequest(db, receiverParticipationId),
   ]);
-  return { portrait, ideas, requested: Boolean(request) };
+  return { mode, portrait, ideas, requested: Boolean(request) };
 };

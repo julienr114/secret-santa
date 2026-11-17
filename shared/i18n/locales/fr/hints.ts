@@ -8,12 +8,14 @@ export default {
   requested: {
     title: 'La personne qui t’offre un cadeau cherche l’inspiration.',
     body: 'Six questions à choix suffisent, trente secondes.',
+    bodyPortrait: 'Cinq questions à choix suffisent, trente secondes.',
   },
   readOnly: 'Tes pistes ne sont plus modifiables pour cette édition.',
   until: 'Tu peux les modifier jusqu’à la fête.',
   start: {
     label: 'Pour commencer',
     title: 'Six questions, trente secondes',
+    titlePortrait: 'Cinq questions, trente secondes',
     examples: 'Utile ou surprenant ? Un objet ou un moment ?',
     body: 'Tu réponds d’un doigt, sans rien écrire.',
     action: 'Commencer',
@@ -23,13 +25,17 @@ export default {
     hint: 'Tu pourras les retoucher',
     done: 'Pistes de {edition} reprises',
   },
-  me: { title: 'Moi et les cadeaux', edit: 'Modifier' },
+  me: {
+    title: 'Moi et les cadeaux',
+    edit: 'Modifier',
+    bothRest: 'Pour le reste, les deux me vont.',
+  },
   question: {
-    context: 'question {index} sur 6',
+    context: 'question {index} sur {count}',
     later: 'Plus tard',
     both: 'Les deux me vont',
     footer: 'Un appui, et on passe à la suite. Tu pourras changer d’avis.',
-    progress: 'Question {index} sur 6',
+    progress: 'Question {index} sur {count}',
   },
   questions: {
     usefulOrSurprising: {
@@ -42,7 +48,7 @@ export default {
     objectOrMoment: {
       title: 'Un objet, ou un moment ?',
       first: 'Un objet',
-      firstHelp: 'Quelque chose à garder ou à utiliser.',
+      firstHelp: 'Quelque chose de concret, que je déballe.',
       second: 'Un moment',
       secondHelp: 'Une sortie, un repas, un atelier.',
     },
@@ -56,9 +62,9 @@ export default {
     selfOrShared: {
       title: 'Pour moi, ou à partager ?',
       first: 'Pour moi',
-      firstHelp: 'Rien que pour moi.',
+      firstHelp: 'Un plaisir personnel.',
       second: 'À partager',
-      secondHelp: 'Avec mes proches, à plusieurs.',
+      secondHelp: 'Un jeu, un repas, quelque chose à plusieurs.',
     },
     secondHand: {
       title: 'D’occasion ou fait main, ça te va ?',
@@ -72,7 +78,7 @@ export default {
       first: 'Surprends-moi',
       firstHelp: 'Je découvrirai le jour de la fête.',
       second: 'Je préfère savoir',
-      secondHelp: 'Une idée précise, pas de mauvaise surprise.',
+      secondHelp: 'Je donne une idée précise plus bas.',
     },
   },
   // What the giver reads, one tag per answer.
@@ -80,32 +86,26 @@ export default {
     usefulOrSurprising: {
       first: 'Plutôt utile',
       second: 'Plutôt surprenant',
-      both: 'Utile ou surprenant',
     },
     objectOrMoment: {
       first: 'Un objet',
       second: 'Un moment',
-      both: 'Un objet ou un moment',
     },
     keepOrConsume: {
       first: 'À garder',
       second: 'À consommer',
-      both: 'À garder ou à consommer',
     },
     selfOrShared: {
       first: 'Pour soi',
       second: 'À partager',
-      both: 'Pour soi ou à partager',
     },
     secondHand: {
       first: 'D’occasion, oui',
       second: 'Plutôt du neuf',
-      both: 'Neuf ou d’occasion',
     },
     surprise: {
-      first: 'J’aime la surprise',
+      first: 'Aime la surprise',
       second: 'Préfère savoir',
-      both: 'Surprise ou pas',
     },
   },
   texts: {
@@ -145,6 +145,7 @@ export default {
   // On the giver's result.
   result: {
     title: 'Pour t’aider à choisir',
+    bothRest: 'Pour le reste, les deux lui vont.',
     none: '{name} n’a pas encore laissé de pistes.',
     ask: 'Lui demander des pistes',
     askHint: 'Sans dire que ça vient de toi.',
@@ -194,6 +195,8 @@ export default {
       subject: 'Quelqu’un cherche une idée de cadeau pour toi',
       greeting: 'Bonjour {name},',
       body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : six questions à choix, trente secondes, et quelques mots si tu veux.',
+      bodyPortrait:
+        'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : cinq questions à choix, trente secondes, et quelques mots si tu veux.',
       cta: 'Donner quelques pistes :',
       anonymous: 'On ne te dira pas qui demande : c’est un Secret Santa.',
       once: 'Tu ne recevras ce message qu’une fois.',

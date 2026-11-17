@@ -195,8 +195,9 @@ export const giftPortraits = sqliteTable('gift_portraits', {
 });
 
 // « Lui demander des pistes »: at most one per receiver and per draw. Who
-// asked is encrypted like a receiver (README 8.3), only to write to them
-// once the hints arrive; no route returns it.
+// asked is not stored: when the hints arrive, the giver is found again by
+// decrypting the draw (README 6 bis.3, decided by Julien on 17 November
+// 2026).
 export const hintRequests = sqliteTable(
   'hint_requests',
   {
@@ -206,8 +207,6 @@ export const hintRequests = sqliteTable(
     editionId: text('edition_id')
       .notNull()
       .references(() => editions.id),
-    requesterEnc: text('requester_enc').notNull(),
-    requesterIv: text('requester_iv').notNull(),
     requestedAt: text('requested_at').notNull(),
     // When the hints arrived and the one who asked was told.
     answeredAt: text('answered_at'),

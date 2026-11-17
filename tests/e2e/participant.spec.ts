@@ -161,7 +161,10 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await page.getByRole('button', { name: 'Plus tard' }).click();
   await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   await expect(page.getByText('Plutôt utile')).toBeVisible();
-  await expect(page.getByText('Un objet ou un moment')).toBeVisible();
+  // « Les deux me vont » makes no tag, one line says it.
+  await expect(
+    page.getByText('Pour le reste, les deux me vont.'),
+  ).toBeVisible();
   // A text, in its sheet, kept with « Valider ».
   await page.getByText('Dire ce qui m’occupe').click();
   await page

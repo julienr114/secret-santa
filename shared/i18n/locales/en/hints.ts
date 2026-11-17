@@ -9,12 +9,14 @@ export default {
   requested: {
     title: 'The person who gives you a present is looking for inspiration.',
     body: 'Six multiple-choice questions are enough: thirty seconds.',
+    bodyPortrait: 'Five multiple-choice questions are enough: thirty seconds.',
   },
   readOnly: 'Your hints can no longer be changed for this edition.',
   until: 'You can change them until the party.',
   start: {
     label: 'To begin',
     title: 'Six questions, thirty seconds',
+    titlePortrait: 'Five questions, thirty seconds',
     examples: 'Useful or surprising? A thing or a moment?',
     body: 'One tap per answer, nothing to write.',
     action: 'Start',
@@ -24,13 +26,17 @@ export default {
     hint: 'You can touch them up',
     done: 'Hints from {edition} reused',
   },
-  me: { title: 'Me and presents', edit: 'Change' },
+  me: {
+    title: 'Me and presents',
+    edit: 'Change',
+    bothRest: 'For the rest, either is fine with me.',
+  },
   question: {
-    context: 'question {index} of 6',
+    context: 'question {index} of {count}',
     later: 'Later',
     both: 'Either is fine',
     footer: 'One tap, and on to the next. You can change your mind.',
-    progress: 'Question {index} of 6',
+    progress: 'Question {index} of {count}',
   },
   questions: {
     usefulOrSurprising: {
@@ -43,7 +49,7 @@ export default {
     objectOrMoment: {
       title: 'A thing, or a moment?',
       first: 'A thing',
-      firstHelp: 'Something to keep or to use.',
+      firstHelp: 'Something concrete, to unwrap.',
       second: 'A moment',
       secondHelp: 'An outing, a meal, a workshop.',
     },
@@ -57,9 +63,9 @@ export default {
     selfOrShared: {
       title: 'Just for me, or to share?',
       first: 'Just for me',
-      firstHelp: 'All mine.',
+      firstHelp: 'A treat for myself.',
       second: 'To share',
-      secondHelp: 'With my loved ones, together.',
+      secondHelp: 'A game, a meal, something to enjoy together.',
     },
     secondHand: {
       title: 'Second-hand or handmade: fine with you?',
@@ -73,39 +79,33 @@ export default {
       first: 'Surprise me',
       firstHelp: 'I’ll find out on the day of the party.',
       second: 'I’d rather know',
-      secondHelp: 'A precise idea, no bad surprise.',
+      secondHelp: 'I give a precise idea further down.',
     },
   },
   tags: {
     usefulOrSurprising: {
       first: 'Rather useful',
       second: 'Rather surprising',
-      both: 'Useful or surprising',
     },
     objectOrMoment: {
       first: 'A thing',
       second: 'A moment',
-      both: 'A thing or a moment',
     },
     keepOrConsume: {
       first: 'To keep',
       second: 'To use up',
-      both: 'To keep or to use up',
     },
     selfOrShared: {
       first: 'Just for them',
       second: 'To share',
-      both: 'Just for them or to share',
     },
     secondHand: {
       first: 'Second-hand is fine',
       second: 'Rather new',
-      both: 'New or second-hand',
     },
     surprise: {
       first: 'Loves surprises',
       second: 'Would rather know',
-      both: 'Surprise or not',
     },
   },
   texts: {
@@ -144,6 +144,7 @@ export default {
   },
   result: {
     title: 'To help you choose',
+    bothRest: 'For the rest, either is fine with them.',
     none: '{name} hasn’t left any hints yet.',
     ask: 'Ask for hints',
     askHint: 'Without saying it comes from you.',
@@ -191,6 +192,8 @@ export default {
       subject: 'Someone is looking for a gift idea for you',
       greeting: 'Hello {name},',
       body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
+      bodyPortrait:
+        'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: five multiple-choice questions, thirty seconds, and a few words if you like.',
       cta: 'Leave a few hints:',
       anonymous: 'We won’t tell you who is asking: it’s a Secret Santa.',
       once: 'You will only get this message once.',

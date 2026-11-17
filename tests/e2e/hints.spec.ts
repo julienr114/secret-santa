@@ -184,6 +184,11 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await expect(page.getByTestId('giver-hints')).toContainText(
     'Plutôt surprenant',
   );
+  // The request is answered: the banner is gone.
+  const answered = await ok(
+    await page.request.get(`/api/p/${state.tokens[receiver]}/hints`),
+  );
+  expect(answered.requested).toBe(false);
   // The organiser only learns that hints were left.
   const edition = await ok(
     await admin().get(`${ADMIN}/editions/${state.editionId}`),
@@ -195,6 +200,48 @@ test('asking for hints is anonymous, and possible once per draw', async ({
     ]),
   ).toContainEqual([receiver, true]);
   expect(JSON.stringify(edition)).not.toMatch(/surprenant|second/);
+});
+
+test('a cancelled draw takes its requests away', async ({ page }) => {
+  const hasHints = async (firstName: string) =>
+    (
+      await ok(await admin().get(`${ADMIN}/editions/${state.editionId}`))
+    ).participants.find((p: { firstName: string }) => p.firstName === firstName)
+      .hasHints;
+  // A giver whose receiver left nothing asks.
+  const candidates: string[] = [];
+  for (const name of NAMES) {
+    if (!(await hasHints(state.receiverOf[name] ?? ''))) candidates.push(name);
+  }
+  const asker = candidates[0] ?? '';
+  const receiver = state.receiverOf[asker] ?? '';
+  await ok(
+    await page.request.post(`/api/p/${state.tokens[asker]}/hints/request`),
+  );
+  const requested = async () =>
+    (await ok(await page.request.get(`/api/p/${state.tokens[receiver]}/hints`)))
+      .requested;
+  expect(await requested()).toBe(true);
+  await ok(
+    await admin().post(`${ADMIN}/editions/${state.editionId}/redraw`, {
+      data: { reason: 'Test des pistes' },
+    }),
+  );
+  expect(await requested()).toBe(false);
+  // Drawn again: the new giver may ask once more.
+  await ok(await admin().post(`${ADMIN}/editions/${state.editionId}/draw`));
+  for (const firstName of NAMES) {
+    const reveal = await ok(
+      await page.request.post(`/api/p/${state.tokens[firstName]}/reveal`),
+    );
+    state.receiverOf[firstName] = reveal.receiver.name;
+  }
+  const newGiver =
+    NAMES.find((name) => state.receiverOf[name] === receiver) ?? '';
+  const again = await page.request.post(
+    `/api/p/${state.tokens[newGiver]}/hints/request`,
+  );
+  expect(again.status()).toBe(200);
 });
 
 test('the setting: portrait only, then no hint at all', async ({ page }) => {
@@ -210,6 +257,12 @@ test('the setting: portrait only, then no hint at all', async ({ page }) => {
   expect(idea.status()).toBe(403);
   await open(page, `/p/${token}/pistes`);
   await expect(page.getByText('Une idée précise, si tu sèches')).toHaveCount(0);
+  // Five questions without the precise ideas; « D'occasion ou fait main »
+  // is a yes or a no, and the last.
+  await open(page, `/p/${token}/pistes/question?n=5`);
+  await expect(heading(page)).toHaveText('D’occasion ou fait main, ça te va ?');
+  await expect(page.getByText('question 5 sur 5')).toBeVisible();
+  await expect(page.getByTestId('hint-both')).toHaveCount(0);
 
   await ok(
     await admin().patch(`${ADMIN}/rules`, { data: { giftHints: 'none' } }),

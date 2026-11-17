@@ -63,6 +63,14 @@ describe('applyPortraitPatch', () => {
     });
   });
 
+  it('has no « Les deux me vont » for second hand', () => {
+    expect(
+      failureOf(
+        applyPortraitPatch(EMPTY_PORTRAIT, { answers: { secondHand: 'both' } }),
+      ).details,
+    ).toEqual({ field: 'answers.secondHand' });
+  });
+
   it('refuses a text over 300 characters and ignores unknown keys', () => {
     expect(
       failureOf(
@@ -146,6 +154,7 @@ describe('hint emails', () => {
     editionLabel: 'Noël 2026',
     groupName: 'Famille Camille',
     link: 'https://example.com/p/abc/pistes',
+    mode: 'full' as const,
   };
 
   it('asks without saying who asks', () => {
@@ -155,6 +164,10 @@ describe('hint emails', () => {
     expect(email.text).toContain('Noël 2026 (Famille Camille)');
     expect(email.text).toContain(`\n${data.link}\n`);
     expect(email.text).toContain('On ne te dira pas qui demande');
+    expect(email.text).toContain('six questions');
+    expect(
+      buildHintsRequestEmail({ ...data, mode: 'portrait' }, 'fr').text,
+    ).toContain('cinq questions');
   });
 
   it('tells the giver that hints arrived, without naming the receiver', () => {

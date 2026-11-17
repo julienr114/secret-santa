@@ -77,20 +77,61 @@ export const isPortraitEmpty = (portrait: Portrait): boolean =>
 export const hasHints = (portrait: Portrait, ideasCount: number): boolean =>
   ideasCount > 0 || !isPortraitEmpty(portrait);
 
-/** One tag of the result: a question and its answer. */
-export type HintTag = { question: HintQuestion; answer: HintAnswer };
+/**
+ * The questions asked under a setting: all six with the precise ideas;
+ * without them (`portrait`), not « Surprends-moi, ou je préfère savoir ? »,
+ * whose second choice points to an idea below (decided by Julien on
+ * 17 November 2026).
+ * @param mode - The group setting.
+ * @returns The questions, in their order.
+ */
+export const questionsFor = (mode: GiftHintsMode): readonly HintQuestion[] =>
+  mode === 'portrait'
+    ? HINT_QUESTIONS.filter((question) => question !== 'surprise')
+    : HINT_QUESTIONS;
 
 /**
- * The tags shown to the giver, in the order of the questions, for the
- * questions answered.
- * @param answers - The answers, null where none.
- * @returns One tag per answer.
+ * Whether a question offers « Les deux me vont »: all but « D'occasion ou
+ * fait main », which is a yes or a no.
+ * @param question - The question.
+ * @returns True when both is a possible answer.
  */
-export const portraitTags = (answers: HintAnswers): HintTag[] =>
-  HINT_QUESTIONS.flatMap((question) => {
+export const allowsBoth = (question: HintQuestion): boolean =>
+  question !== 'secondHand';
+
+/** One tag of the result: a question and its clear-cut answer. */
+export type HintTag = { question: HintQuestion; answer: 'first' | 'second' };
+
+/**
+ * The tags shown, in the order of the questions asked: only the clear-cut
+ * answers; « Les deux me vont » makes no tag.
+ * @param answers - The answers, null where none.
+ * @param mode - The group setting: a question not asked shows nothing.
+ * @returns One tag per clear-cut answer.
+ */
+export const portraitTags = (
+  answers: HintAnswers,
+  mode: GiftHintsMode = 'full',
+): HintTag[] =>
+  questionsFor(mode).flatMap((question) => {
     const answer = answers[question];
-    return answer ? [{ question, answer }] : [];
+    return answer === 'first' || answer === 'second'
+      ? [{ question, answer }]
+      : [];
   });
+
+/**
+ * Whether some question asked was answered « Les deux me vont »: then one
+ * discreet line under the tags says so.
+ * @param answers - The answers, null where none.
+ * @param mode - The group setting.
+ * @returns True when at least one answer is both.
+ */
+export const hasBothAnswers = (
+  answers: HintAnswers,
+  mode: GiftHintsMode = 'full',
+): boolean =>
+  questionsFor(mode).some((question) => answers[question] === 'both');
 
 /**
  * The text blocks shown to the giver, in their order, the empty ones left
@@ -109,20 +150,29 @@ export const portraitTexts = (
 /**
  * Which question comes after one, in the flow of « Moi et les cadeaux ».
  * @param question - The question just answered.
+ * @param mode - The group setting.
  * @returns The next one, or null after the last.
  */
-export const nextQuestion = (question: HintQuestion): HintQuestion | null =>
-  HINT_QUESTIONS[HINT_QUESTIONS.indexOf(question) + 1] ?? null;
+export const nextQuestion = (
+  question: HintQuestion,
+  mode: GiftHintsMode = 'full',
+): HintQuestion | null => {
+  const asked = questionsFor(mode);
+  return asked[asked.indexOf(question) + 1] ?? null;
+};
 
 /**
- * Reads a question from an address (`?question=2`, from 1 to 6).
+ * Reads a question from an address (`?n=2`, from 1 to the number asked).
  * @param value - The query value.
+ * @param mode - The group setting.
  * @returns The question, the first one when the value is not a number in
  *   range.
  */
-export const questionAt = (value: unknown): HintQuestion => {
+export const questionAt = (
+  value: unknown,
+  mode: GiftHintsMode = 'full',
+): HintQuestion => {
+  const asked = questionsFor(mode);
   const index = Number(value) - 1;
-  return (
-    HINT_QUESTIONS[Number.isInteger(index) ? index : 0] ?? 'usefulOrSurprising'
-  );
+  return asked[Number.isInteger(index) ? index : 0] ?? 'usefulOrSurprising';
 };

@@ -11,10 +11,10 @@ import {
 } from '#server/database/hints';
 import { listWishes } from '#server/database/wishes';
 import { personalLink } from '#server/database/participations';
+import { findGiverParticipationId } from '#server/database/draw';
 import { dataKeyOf } from './context';
 import { emailConfigured, sendEmails } from './email';
 import type { PersonalContext } from './personal';
-import { decrypt } from '#server/utils/crypto';
 import {
   buildHintsArrivedEmail,
   canEditHints,
@@ -101,14 +101,15 @@ export const emailParticipant = async (
 
 /**
  * After a participant saved hints: if someone asked and these are the
- * first, the one who asked gets an email, once. Who asked is only read
- * here, decrypted, and never returned.
+ * first, the one who asked gets an email, once. Who asked is not stored:
+ * the giver is found again by decrypting the draw, here only, and never
+ * returned (README 6 bis.3).
  */
 export const tellRequesterIfAsked = async (
   event: H3Event,
   ctx: PersonalContext,
 ): Promise<void> => {
-  const { db, participation, edition, group } = ctx;
+  const { db, participation, edition, person, group } = ctx;
   const request = await findHintRequest(db, participation.id);
   if (
     !shouldTellRequester(
@@ -120,12 +121,14 @@ export const tellRequesterIfAsked = async (
   }
   const [answered] = await markHintRequestAnswered(db, participation.id);
   if (!answered) return;
-  const requester = await decrypt(
-    { enc: answered.requesterEnc, iv: answered.requesterIv },
+  const giver = await findGiverParticipationId(
+    db,
+    edition.id,
+    person.id,
     await dataKeyOf(event),
   );
-  if (!requester.ok) return;
-  await emailParticipant(event, db, requester.value, (data, locale) =>
+  if (!giver) return;
+  await emailParticipant(event, db, giver, (data, locale) =>
     buildHintsArrivedEmail(
       { ...data, editionLabel: edition.label, groupName: group.name },
       locale,

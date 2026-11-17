@@ -8,6 +8,7 @@ import {
   HINT_QUESTIONS,
   HINT_TEXTS,
   HINT_TEXT_MAX,
+  allowsBoth,
   type GiftHintsMode,
   type Portrait,
 } from '#shared/utils/hints';
@@ -64,6 +65,11 @@ export const applyPortraitPatch = (
       field: issue?.path.slice(0, 2).join('.') ?? '',
     });
   }
+  const refused = HINT_QUESTIONS.find(
+    (question) =>
+      parsed.data.answers[question] === 'both' && !allowsBoth(question),
+  );
+  if (refused) return fail('invalid_hints', { field: `answers.${refused}` });
   return ok({
     answers: { ...portrait.answers, ...parsed.data.answers },
     texts: { ...portrait.texts, ...parsed.data.texts },
@@ -144,6 +150,8 @@ export const buildHintsRequestEmail = (
     editionLabel: string;
     groupName: string;
     link: string;
+    /** Five questions without the precise ideas, six with them. */
+    mode: GiftHintsMode;
   },
   locale: Locale,
 ): Email =>
@@ -153,10 +161,16 @@ export const buildHintsRequestEmail = (
       translate(locale, 'hints.email.request.greeting', {
         name: data.firstName,
       }),
-      translate(locale, 'hints.email.request.body', {
-        edition: data.editionLabel,
-        group: data.groupName,
-      }),
+      translate(
+        locale,
+        data.mode === 'portrait'
+          ? 'hints.email.request.bodyPortrait'
+          : 'hints.email.request.body',
+        {
+          edition: data.editionLabel,
+          group: data.groupName,
+        },
+      ),
       translate(locale, 'hints.email.request.cta'),
     ],
     link: data.link,

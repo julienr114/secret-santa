@@ -146,3 +146,44 @@ export const findReceiverParticipationId = async (
     .limit(1);
   return row?.id ?? null;
 };
+
+/**
+ * The participation of whoever gives to a receiver, by decrypting the
+ * draw of the edition (README 8.3): only to email them that hints arrived
+ * after their request (README 6 bis.3). Never returned by a route.
+ */
+export const findGiverParticipationId = async (
+  db: Db,
+  editionId: string,
+  receiverPersonId: string,
+  dataKey: CryptoKey,
+): Promise<string | null> => {
+  const rows = await db
+    .select()
+    .from(assignments)
+    .where(eq(assignments.editionId, editionId));
+  const receivers = await Promise.all(
+    rows.map(async (row) => ({
+      giverPersonId: row.giverPersonId,
+      receiverId: await decrypt(
+        { enc: row.receiverEnc, iv: row.receiverIv },
+        dataKey,
+      ),
+    })),
+  );
+  const giver = receivers.find(
+    ({ receiverId }) => receiverId.ok && receiverId.value === receiverPersonId,
+  );
+  if (!giver) return null;
+  const [row] = await db
+    .select({ id: participations.id })
+    .from(participations)
+    .where(
+      and(
+        eq(participations.editionId, editionId),
+        eq(participations.personId, giver.giverPersonId),
+      ),
+    )
+    .limit(1);
+  return row?.id ?? null;
+};

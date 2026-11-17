@@ -5,15 +5,17 @@ import {
   useSaveHintsMutation,
 } from '~/composables/queries/usePersonal';
 import {
-  HINT_QUESTIONS,
+  allowsBoth,
   nextQuestion,
   questionAt,
+  questionsFor,
   type HintAnswer,
   type HintQuestion,
 } from '#shared/utils/hints';
 
-// One of the six questions of « Moi et les cadeaux » (README 22.11): two
-// big choices and « Les deux me vont ». One tap saves the answer and goes
+// One of the questions of « Moi et les cadeaux » (README 22.11): six, or
+// five without the precise ideas; two big choices and, but for second
+// hand, « Les deux me vont ». One tap saves the answer and goes
 // on to the next question, back to the page after the last one.
 const route = useRoute();
 const router = useRouter();
@@ -27,15 +29,17 @@ const { t, tk } = useT();
 const errorMessage = useErrorMessage();
 const toast = useToast();
 
-const question = computed(() => questionAt(route.query.n));
-const index = computed(() => HINT_QUESTIONS.indexOf(question.value) + 1);
+const mode = computed(() => query.data.value?.mode ?? 'full');
+const asked = computed(() => questionsFor(mode.value));
+const question = computed(() => questionAt(route.query.n, mode.value));
+const index = computed(() => asked.value.indexOf(question.value) + 1);
 const current = computed(
   () => query.data.value?.portrait.answers[question.value] ?? null,
 );
 const pagePath = computed(() => `/p/${token.value}/pistes`);
 const context = computed(() =>
   personal.data.value
-    ? `${personal.data.value.groupName} · ${personal.data.value.editionLabel} · ${t('hints.question.context', { index: index.value })}`
+    ? `${personal.data.value.groupName} · ${personal.data.value.editionLabel} · ${t('hints.question.context', { index: index.value, count: asked.value.length })}`
     : '',
 );
 
@@ -58,7 +62,7 @@ const choices = computed(() =>
 );
 /** Where a dot of the progress stands: answered, the one asked, or not yet. */
 const dots = computed(() =>
-  HINT_QUESTIONS.map((key) =>
+  asked.value.map((key) =>
     key === question.value
       ? 'current'
       : query.data.value?.portrait.answers[key]
@@ -78,9 +82,9 @@ const onAnswer = (answer: HintAnswer) => {
       },
     );
   }
-  const next = nextQuestion(question.value);
+  const next = nextQuestion(question.value, mode.value);
   return next
-    ? router.replace({ query: { n: HINT_QUESTIONS.indexOf(next) + 1 } })
+    ? router.replace({ query: { n: asked.value.indexOf(next) + 1 } })
     : goBack(pagePath.value);
 };
 </script>
@@ -96,7 +100,9 @@ const onAnswer = (answer: HintAnswer) => {
       <div class="flex items-center justify-between">
         <div
           role="img"
-          :aria-label="t('hints.question.progress', { index })"
+          :aria-label="
+            t('hints.question.progress', { index, count: asked.length })
+          "
           class="flex items-center gap-1.5"
         >
           <span
@@ -156,6 +162,7 @@ const onAnswer = (answer: HintAnswer) => {
         </button>
       </div>
       <button
+        v-if="allowsBoth(question)"
         type="button"
         :aria-pressed="current === 'both'"
         class="h-12 rounded-md border bg-transparent font-semibold transition-colors active:bg-muted"

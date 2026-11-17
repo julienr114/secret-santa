@@ -9,12 +9,14 @@ export default {
   requested: {
     title: 'Die Person, die dich beschenkt, sucht nach Inspiration.',
     body: 'Sechs Auswahlfragen reichen, dreißig Sekunden.',
+    bodyPortrait: 'Fünf Auswahlfragen reichen, dreißig Sekunden.',
   },
   readOnly: 'Deine Hinweise lassen sich für diese Ausgabe nicht mehr ändern.',
   until: 'Du kannst sie bis zur Feier ändern.',
   start: {
     label: 'Zum Anfang',
     title: 'Sechs Fragen, dreißig Sekunden',
+    titlePortrait: 'Fünf Fragen, dreißig Sekunden',
     examples: 'Nützlich oder überraschend? Ein Ding oder ein Erlebnis?',
     body: 'Ein Tipp pro Antwort, nichts zu schreiben.',
     action: 'Loslegen',
@@ -24,13 +26,17 @@ export default {
     hint: 'Du kannst sie danach anpassen',
     done: 'Hinweise von {edition} übernommen',
   },
-  me: { title: 'Ich und Geschenke', edit: 'Ändern' },
+  me: {
+    title: 'Ich und Geschenke',
+    edit: 'Ändern',
+    bothRest: 'Beim Rest ist mir beides recht.',
+  },
   question: {
-    context: 'Frage {index} von 6',
+    context: 'Frage {index} von {count}',
     later: 'Später',
     both: 'Beides ist mir recht',
     footer: 'Ein Tipp, und weiter geht’s. Du kannst es dir anders überlegen.',
-    progress: 'Frage {index} von 6',
+    progress: 'Frage {index} von {count}',
   },
   questions: {
     usefulOrSurprising: {
@@ -43,7 +49,7 @@ export default {
     objectOrMoment: {
       title: 'Ein Ding oder ein Erlebnis?',
       first: 'Ein Ding',
-      firstHelp: 'Etwas zum Behalten oder Benutzen.',
+      firstHelp: 'Etwas Greifbares zum Auspacken.',
       second: 'Ein Erlebnis',
       secondHelp: 'Ein Ausflug, ein Essen, ein Workshop.',
     },
@@ -57,9 +63,9 @@ export default {
     selfOrShared: {
       title: 'Für mich oder zum Teilen?',
       first: 'Für mich',
-      firstHelp: 'Nur für mich.',
+      firstHelp: 'Eine Freude nur für mich.',
       second: 'Zum Teilen',
-      secondHelp: 'Mit meinen Lieben, gemeinsam.',
+      secondHelp: 'Ein Spiel, ein Essen, etwas für mehrere.',
     },
     secondHand: {
       title: 'Gebraucht oder selbst gemacht: passt das für dich?',
@@ -73,39 +79,33 @@ export default {
       first: 'Überrasch mich',
       firstHelp: 'Ich lasse mich am Tag der Feier überraschen.',
       second: 'Lieber wissen',
-      secondHelp: 'Eine genaue Idee, keine böse Überraschung.',
+      secondHelp: 'Weiter unten gebe ich eine genaue Idee an.',
     },
   },
   tags: {
     usefulOrSurprising: {
       first: 'Eher nützlich',
       second: 'Eher überraschend',
-      both: 'Nützlich oder überraschend',
     },
     objectOrMoment: {
       first: 'Ein Ding',
       second: 'Ein Erlebnis',
-      both: 'Ding oder Erlebnis',
     },
     keepOrConsume: {
       first: 'Zum Behalten',
       second: 'Zum Verbrauchen',
-      both: 'Behalten oder verbrauchen',
     },
     selfOrShared: {
       first: 'Nur für sich',
       second: 'Zum Teilen',
-      both: 'Für sich oder zum Teilen',
     },
     secondHand: {
       first: 'Gebraucht ist okay',
       second: 'Lieber neu',
-      both: 'Neu oder gebraucht',
     },
     surprise: {
       first: 'Mag Überraschungen',
       second: 'Weiß es lieber',
-      both: 'Überraschung oder nicht',
     },
   },
   texts: {
@@ -144,6 +144,7 @@ export default {
   },
   result: {
     title: 'Damit du besser wählst',
+    bothRest: 'Beim Rest ist beides recht.',
     none: '{name} hat noch keine Hinweise hinterlassen.',
     ask: 'Um Hinweise bitten',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
@@ -193,6 +194,8 @@ export default {
       subject: 'Jemand sucht eine Geschenkidee für dich',
       greeting: 'Hallo {name},',
       body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
+      bodyPortrait:
+        'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       cta: 'Ein paar Hinweise geben:',
       anonymous: 'Wir verraten dir nicht, wer fragt: Es ist Wichteln.',
       once: 'Du bekommst diese Nachricht nur einmal.',

@@ -3,7 +3,11 @@ import {
   useRequestHintsMutation,
   type Reveal,
 } from '~/composables/queries/usePersonal';
-import { portraitTags, portraitTexts } from '#shared/utils/hints';
+import {
+  hasBothAnswers,
+  portraitTags,
+  portraitTexts,
+} from '#shared/utils/hints';
 
 // « Pour t'aider à choisir », under the result (README 22.11): the
 // receiver's answers as tags, their texts, their precise ideas. With no
@@ -21,14 +25,18 @@ const busy = useBusy(() => request.isPending.value);
 const hints = computed(() => props.reveal.hints);
 const name = computed(() => props.reveal.receiver.name);
 const tags = computed(() =>
-  portraitTags(hints.value.portrait.answers).map(({ question, answer }) =>
-    tk(`hints.tags.${question}.${answer}`),
+  portraitTags(hints.value.portrait.answers, hints.value.mode).map(
+    ({ question, answer }) => tk(`hints.tags.${question}.${answer}`),
   ),
+);
+const bothRest = computed(() =>
+  hasBothAnswers(hints.value.portrait.answers, hints.value.mode),
 );
 const texts = computed(() => portraitTexts(hints.value.portrait.texts));
 const empty = computed(
   () =>
     tags.value.length === 0 &&
+    !bothRest.value &&
     texts.value.length === 0 &&
     hints.value.ideas.length === 0,
 );
@@ -56,6 +64,13 @@ const onSend = () =>
     </h2>
     <template v-if="!empty">
       <UiTagList v-if="tags.length > 0" :tags="tags" />
+      <p
+        v-if="bothRest"
+        class="-mt-1.5 text-sm text-toned"
+        data-testid="hints-both-rest"
+      >
+        {{ t('hints.result.bothRest') }}
+      </p>
       <div v-for="block in texts" :key="block.key" class="flex flex-col gap-1">
         <p class="text-xs font-bold tracking-[0.04em] text-toned uppercase">
           {{ tk(`hints.texts.${block.key}.giver`) }}

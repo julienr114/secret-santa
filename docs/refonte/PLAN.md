@@ -447,6 +447,18 @@ Décidé par Julien le 17 novembre 2026. À faire après le lot 12 : le signal s
 
 Ces maquettes sont sur la page « Accueil et connexion » du canevas, rangée « Le journal signalé depuis l'accueil » ; leurs fichiers gardent le préfixe `Futur`.
 
+### Lot 15 — Les avatars en images, identiques sur tous les appareils
+
+Décidé par Julien le 17 novembre 2026. Aujourd'hui `UiAvatar` écrit l'emoji comme un caractère : chaque système le dessine à sa façon (Apple, Google, Samsung, Microsoft). Julien veut le dessin d'Apple pour tout le monde. Indépendant des autres lots, sans migration.
+
+- [ ] Dépendance de développement `emoji-datasource-apple` (images PNG de 64 px, une par emoji ; vérifier le chemin exact dans le paquet). N'embarquer dans l'app que les 30 images de `AVATAR_EMOJIS`, copiées dans `public/` par un script, pas tout le paquet.
+- [ ] Une seule fonction pure donne l'adresse de l'image d'un emoji (nom de fichier tiré des points de code, y compris `fe0f` pour ❄️ et ⛸️), avec un test qui vérifie que chacun des 30 emojis a son fichier. Le dossier des images est le seul endroit à changer pour passer à un autre jeu.
+- [ ] `UiAvatar` affiche l'image (`alt=""`, le nom de la personne est déjà à côté), à la même taille visuelle que l'emoji actuel ; si l'image ne charge pas, il retombe sur le caractère. Même chose dans `AvatarPicker` et partout où un avatar est dessiné sans `UiAvatar`.
+- [ ] Les emails et les messages gardent les caractères : rien n'y change.
+- [ ] 64 px suffit jusqu'à 32 px d'affichage sur un écran dense ; au-delà (avatar de 56 px de l'accueil), l'image est légèrement agrandie. Le noter en section 6 si le flou se voit.
+- [ ] README : dire que les images viennent d'Apple, qu'elles restent sous son copyright et ne sont pas sous licence libre, que ce choix est assumé pour un usage familial, et qu'il faudra passer à Noto Emoji (Apache 2.0) ou à Fluent Emoji (MIT) si l'app s'ouvre plus largement.
+- [ ] Guide de style et `tests/e2e` à jour.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.

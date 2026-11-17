@@ -3,6 +3,7 @@ import { isIsoDay } from '#server/utils/rules';
 import type { Avatar } from '#server/utils/avatars';
 import {
   envelopeState,
+  gameTile,
   hintsTile,
   participantSteps,
   type ParticipantStep,
@@ -185,7 +186,9 @@ const tiles = computed(() => {
           text: state.hintsEditable
             ? t('participant.home.tiles.hintsEditable')
             : t('participant.home.tiles.hintsLocked'),
-          short: t('participant.home.tiles.hintsShort'),
+          short: state.hintsEditable
+            ? t('participant.home.tiles.hintsShort')
+            : t('participant.home.tiles.hintsShortLocked'),
         }
       : {
           state: 'todo' as const,
@@ -202,6 +205,43 @@ const tiles = computed(() => {
     },
   ];
 });
+/** The tile « Devine qui » (README 22.17), when the game is on. */
+const gameTileView = computed(() => {
+  const at = gameTile(me.value?.guess ?? null);
+  if (!at) return null;
+  const STATES = {
+    play: 'todo',
+    played: 'done',
+    waiting: 'idle',
+    palmares: 'award',
+    answers: 'done',
+  } as const;
+  const text = t(`participant.home.tiles.game.${at}`);
+  return {
+    key: 'game',
+    to: `/p/${token.value}/devine`,
+    icon: 'i-lucide-search',
+    title: t('participant.game.title'),
+    state: STATES[at],
+    text,
+    short: text,
+  };
+});
+const allTiles = computed(() =>
+  [...tiles.value, gameTileView.value].filter(
+    (tile): tile is NonNullable<typeof tile> => Boolean(tile),
+  ),
+);
+/**
+ * The palmarès of « Devine qui » has come and is not watched yet: it is
+ * the card of the page (maquette DevineTiragePalmares).
+ */
+const palmaresCard = computed(
+  () =>
+    Boolean(me.value?.guess?.palmares) &&
+    !me.value?.guess?.seen &&
+    !reveal.value,
+);
 
 const today = new Date().toLocaleDateString('sv-SE');
 /**
@@ -446,6 +486,39 @@ const card = computed(() => {
         </div>
       </template>
       <UiCard
+        v-else-if="palmaresCard"
+        padding="lg"
+        class="flex flex-col items-center gap-3 text-center"
+        data-testid="palmares-card"
+      >
+        <UiPodium />
+        <h2 class="font-display text-[26px] leading-[1.2] font-bold">
+          {{ t('participant.game.arrived') }}
+        </h2>
+        <p class="text-[15px] text-toned">
+          {{ t('participant.game.arrivedBody') }}
+        </p>
+        <UButton
+          :to="`/p/${token}/devine/palmares`"
+          block
+          size="xl"
+          class="justify-center bg-pine-700 font-bold hover:bg-pine-800 active:bg-pine-800"
+          :label="t('participant.game.discover')"
+        />
+        <button
+          type="button"
+          class="mt-1 flex min-h-11 items-center text-[15px] text-toned underline"
+          :disabled="revealMutation.isPending.value"
+          @click="onReveal"
+        >
+          {{
+            me.revealed
+              ? t('participant.game.seeMyResult')
+              : t('participant.game.discoverMyResult')
+          }}
+        </button>
+      </UiCard>
+      <UiCard
         v-else
         padding="lg"
         class="flex flex-col items-center gap-3 text-center"
@@ -518,20 +591,20 @@ const card = computed(() => {
         :alerts="me.journalAlerts"
       />
       <div
-        v-if="tiles.length > 0"
+        v-if="allTiles.length > 0"
         class="grid gap-3"
-        :class="tiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'"
+        :class="allTiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'"
         data-testid="tiles"
       >
         <UiTile
-          v-for="tile in tiles"
+          v-for="tile in allTiles"
           :key="tile.key"
           :to="tile.to"
           :icon="tile.icon"
           :title="tile.title"
           :state="tile.state"
-          :text="tiles.length > 1 ? tile.short : tile.text"
-          :compact="tiles.length > 1"
+          :text="allTiles.length > 1 ? tile.short : tile.text"
+          :compact="allTiles.length > 1"
         />
       </div>
       <ParticipantJournalRow

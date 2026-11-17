@@ -263,7 +263,7 @@ test('the budget and the word change on the edition, until it is closed', async 
   );
   await page.getByTestId('settings-row').click();
   await expect(page.getByTestId('edition-settings')).toContainText(
-    'Date de la fête',
+    'La fêteDate',
   );
   await budget.click();
   await page.getByRole('textbox').fill('30 €');

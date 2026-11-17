@@ -95,6 +95,15 @@ export type HomeDraw = {
   receiverHints: GiverHintsState;
   /** A draw made elsewhere: their answer to give, or given (22.12). */
   answer: HomeAnswer;
+  /** « Devine qui » (22.17). */
+  game: {
+    open: boolean;
+    played: boolean;
+    palmares: boolean;
+    seen: boolean;
+    endsAt: string | null;
+    mode: 'none' | 'santa' | 'all';
+  } | null;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;
   firstName: string;

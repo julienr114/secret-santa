@@ -24,6 +24,8 @@ const props = defineProps<{
   me?: string | null;
   /** An alert to explain at once, opened from the home. */
   explainId?: string | null;
+  /** Where « Découvrir le palmarès » leads for an edition (22.17). */
+  palmaresOf?: (editionId: string | null) => string | null;
 }>();
 const { t } = useT();
 
@@ -179,6 +181,7 @@ const alertOpen = computed({
   <JournalList
     :days="days"
     :people="people ?? []"
+    :palmares-of="palmaresOf"
     @explain="(entry) => (explained = entry)"
   />
   <JournalHelpSheet v-model:open="helpOpen" />

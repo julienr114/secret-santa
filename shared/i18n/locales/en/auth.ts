@@ -37,6 +37,16 @@ export default {
     nowIn: 'To do now · {group}',
     later: 'Later',
     action: {
+      guess: {
+        title: "Guess who's giving you a gift",
+        body: 'A guess before the party, and the answer at the party.',
+        button: 'Make my guess',
+      },
+      palmares: {
+        title: 'The Devine qui palmarès is here',
+        body: "Who gave to whom, and who had guessed? Make sure you've opened your gift first.",
+        button: 'Discover the palmarès',
+      },
       giveAnswer: {
         title: 'Who are you giving a gift to?',
         body: 'The draw was made outside the app: say it on your page to see their gift hints.',
@@ -146,6 +156,14 @@ export default {
       on: 'party on {date}',
     },
     drawCard: {
+      guessTitle: "Guess who's giving you a gift",
+      guessSanta: 'One guess, until {end}. The answer at the party.',
+      guessAll: 'Guesses, until {end}. The answer at the party.',
+      guessButton: 'Make my guess',
+      palmaresTitle: 'The Devine qui palmarès is here',
+      palmaresBody:
+        "Who gave to whom, and who had guessed? Make sure you've opened your gift first.",
+      palmaresButton: 'Discover the palmarès',
       giveAnswer: 'Who are you giving a gift to?',
       answer: "Say who I'm giving to",
       answerGiven: 'Answer saved',

@@ -62,8 +62,13 @@ const words = computed(() => {
 
 <template>
   <UiActionCard :eyebrow="eyebrow" :title="words.title" data-testid="top-card">
+    <UiPodium v-if="action.kind === 'palmares'" class="self-center" />
     <UiEnvelope
-      v-if="action.kind === 'discover' || action.kind === 'readHints'"
+      v-else-if="
+        action.kind === 'discover' ||
+        action.kind === 'readHints' ||
+        action.kind === 'guess'
+      "
       state="sealed"
       class="self-center"
     />
@@ -74,6 +79,11 @@ const words = computed(() => {
         block
         size="xl"
         class="min-h-14 justify-center font-bold"
+        :class="
+          action.kind === 'palmares'
+            ? 'bg-pine-700 hover:bg-pine-800 active:bg-pine-800'
+            : ''
+        "
         :label="words.button"
       />
       <UButton

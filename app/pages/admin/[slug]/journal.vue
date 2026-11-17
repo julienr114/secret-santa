@@ -33,6 +33,10 @@ const screen = computed(() => ({ back: `/admin/${slug.value}` }));
         :editions="journal.data.value.editions"
         :current-edition-id="journal.data.value.currentEditionId"
         :people="journal.data.value.people"
+        :palmares-of="
+          (editionId) =>
+            editionId ? `/admin/${slug}/editions/${editionId}/palmares` : null
+        "
       />
     </AdminQueryState>
   </AdminScreen>

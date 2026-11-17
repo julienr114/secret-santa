@@ -13,6 +13,8 @@ defineProps<{
   days: JournalDay<JournalEntry>[];
   /** The people the lines are about, for the folded lines. */
   people: JournalPersonCard[];
+  /** Where « Découvrir le palmarès » leads for an edition (README 22.17). */
+  palmaresOf?: (editionId: string | null) => string | null;
 }>();
 const emit = defineEmits<{ explain: [entry: JournalEntry] }>();
 const { t, locale } = useT();
@@ -83,6 +85,8 @@ const dayLabel = (day: string) =>
                     journalLook(line.entry.type).level === 'alert',
                   'size-10 bg-primary text-white':
                     journalLook(line.entry.type).level === 'milestone',
+                  'size-10 bg-pine-700 text-white':
+                    journalLook(line.entry.type).level === 'award',
                   'size-8 bg-default text-toned':
                     journalLook(line.entry.type).level === 'line',
                 }"
@@ -103,7 +107,9 @@ const dayLabel = (day: string) =>
               :class="
                 journalLook(line.entry.type).level === 'alert'
                   ? 'bg-warning-tint ring-1 ring-warning-ring'
-                  : 'bg-default shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
+                  : journalLook(line.entry.type).level === 'award'
+                    ? 'bg-success-tint ring-1 ring-pine-300'
+                    : 'bg-default shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
               "
             >
               <p
@@ -111,7 +117,9 @@ const dayLabel = (day: string) =>
                 :class="
                   journalLook(line.entry.type).level === 'alert'
                     ? 'text-alert-ink'
-                    : 'text-highlighted'
+                    : journalLook(line.entry.type).level === 'award'
+                      ? 'text-pine-800'
+                      : 'text-highlighted'
                 "
               >
                 {{ line.entry.text }}
@@ -129,6 +137,16 @@ const dayLabel = (day: string) =>
               >
                 {{ t('journal.screen.whatMeans') }}
               </button>
+              <NuxtLink
+                v-else-if="
+                  journalLook(line.entry.type).level === 'award' &&
+                  palmaresOf?.(line.entry.editionId)
+                "
+                :to="palmaresOf(line.entry.editionId)!"
+                class="flex min-h-8 items-center self-start text-[13px] font-bold text-pine-800 underline underline-offset-2"
+                data-testid="journal-palmares"
+                >{{ t('participant.game.discover') }}</NuxtLink
+              >
             </div>
             <div v-else class="flex min-w-0 grow items-baseline gap-3 pt-[5px]">
               <p class="min-w-0 grow text-[15px] leading-[1.35] break-words">

@@ -30,6 +30,7 @@ import { nextStep } from '#server/utils/personal';
 import { mergeRules } from '#server/utils/rules';
 import { answersOfEdition } from '#server/database/answers';
 import { answersCard } from '#server/utils/answers';
+import { gamePayload } from '#server/http/guesses';
 
 /**
  * How many editions to prepare get their draw checked on the home: the
@@ -97,6 +98,21 @@ export default defineEventHandler(async (event) => {
             ? ('given' as const)
             : ('toGive' as const)
           : null;
+        // « Devine qui » (22.17): a guess to make, or the palmarès.
+        const game =
+          dataKey && edition.guessMode !== 'none' && edition.status === 'drawn'
+            ? await gamePayload(
+                {
+                  db,
+                  edition,
+                  person,
+                  participation,
+                  group: { name: groupName },
+                  rules: { eventDate: rules.eventDate },
+                },
+                dataKey,
+              )
+            : null;
         const token = dataKey
           ? await decrypt(
               { enc: participation.tokenEnc, iv: participation.tokenIv },
@@ -141,6 +157,16 @@ export default defineEventHandler(async (event) => {
                   )
                 ).state
               : ('none' as const),
+          game: game
+            ? {
+                open: game.open,
+                played: game.mine.length > 0,
+                palmares: Boolean(game.results?.enough),
+                seen: Boolean(game.results?.seen),
+                endsAt: game.endsAt,
+                mode: game.mode,
+              }
+            : null,
           eventDate: rules.eventDate,
           firstName: person.firstName,
           avatar: avatarOf(person),

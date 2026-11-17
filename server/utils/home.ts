@@ -31,6 +31,17 @@ export type HomeDrawState = {
   receiverHints: GiverHintsState;
   /** A draw made elsewhere: their answer to give, or given (22.12). */
   answer: HomeAnswer;
+  /**
+   * « Devine qui » (22.17): open and not played yet, or its palmarès come
+   * and not watched; null when the game is off.
+   */
+  game: {
+    open: boolean;
+    played: boolean;
+    palmares: boolean;
+    seen: boolean;
+    endsAt: string | null;
+  } | null;
   /** An ISO day, or older free text, or empty. */
   eventDate: string;
 };
@@ -81,6 +92,7 @@ export const HOME_ACTIONS = [
   'requests',
   'discover',
   'giveAnswer',
+  'palmares',
   'readHints',
   'remind',
   'fixDraw',
@@ -88,6 +100,7 @@ export const HOME_ACTIONS = [
   'validateAnswers',
   'startDraw',
   'askAnswers',
+  'guess',
   'addHints',
   'close',
   'prepare',
@@ -252,6 +265,22 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
       ];
     }
     return [
+      // « Devine qui » (22.17): the palmarès to watch, once one's own
+      // result was seen; a guess to make, optional.
+      ...when(Boolean(draw.game?.palmares && !draw.game.seen), {
+        ...at,
+        kind: 'palmares',
+        count: 1,
+        to: `${draw.path}/devine/palmares`,
+        dismissKey: null,
+      }),
+      ...when(Boolean(draw.game?.open && !draw.game.played), {
+        ...at,
+        kind: 'guess',
+        count: 1,
+        to: `${draw.path}/devine`,
+        dismissKey: `guess:${draw.id}`,
+      }),
       ...when(draw.status === 'drawn' && draw.receiverHints === 'new', {
         ...at,
         kind: 'readHints',

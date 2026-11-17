@@ -34,6 +34,16 @@ export default {
     nowIn: 'À faire maintenant · {group}',
     later: 'Plus tard',
     action: {
+      guess: {
+        title: 'Devine qui t’offre ton cadeau',
+        body: 'Un pronostic avant la fête, et la réponse à la fête.',
+        button: 'Faire mon pronostic',
+      },
+      palmares: {
+        title: 'Le palmarès de Devine qui est arrivé',
+        body: 'Qui offrait à qui, et qui avait deviné ? Assure-toi d’avoir ouvert ton cadeau avant.',
+        button: 'Découvrir le palmarès',
+      },
       giveAnswer: {
         title: 'À qui offres-tu un cadeau ?',
         body: 'Le tirage a été fait hors de l’application : dis-le sur ta page pour voir ses pistes de cadeaux.',
@@ -143,6 +153,14 @@ export default {
       on: 'fête le {date}',
     },
     drawCard: {
+      guessTitle: 'Devine qui t’offre ton cadeau',
+      guessSanta: 'Un pronostic, jusqu’au {end}. Réponse à la fête.',
+      guessAll: 'Des pronostics, jusqu’au {end}. Réponse à la fête.',
+      guessButton: 'Faire mon pronostic',
+      palmaresTitle: 'Le palmarès de Devine qui est arrivé',
+      palmaresBody:
+        'Qui offrait à qui, et qui avait deviné ? Assure-toi d’avoir ouvert ton cadeau avant.',
+      palmaresButton: 'Découvrir le palmarès',
       giveAnswer: 'À qui offres-tu un cadeau ?',
       answer: 'Dire à qui j’offre',
       answerGiven: 'Réponse enregistrée',

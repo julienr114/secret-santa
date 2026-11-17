@@ -60,13 +60,16 @@ export const isJournalAlert = (type: string): type is JournalAlert =>
 /**
  * How a kind of event is drawn on the thread.
  * @param type - The kind of event.
- * @returns Its icon, and `alert`, `milestone` or `line`.
+ * @returns Its icon, and `alert`, `award` (the palmarès of « Devine qui »,
+ *   in pine, README 22.17), `milestone` or `line`.
  */
 export const journalLook = (type: string) => ({
   icon: ICONS[type] ?? 'i-lucide-circle',
   level: isJournalAlert(type)
     ? ('alert' as const)
-    : MILESTONES.has(type)
-      ? ('milestone' as const)
-      : ('line' as const),
+    : type === 'guess_results_ready'
+      ? ('award' as const)
+      : MILESTONES.has(type)
+        ? ('milestone' as const)
+        : ('line' as const),
 });

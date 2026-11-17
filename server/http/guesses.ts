@@ -137,7 +137,13 @@ export type GamePerson = { id: string; name: string; avatar: Avatar };
  * @param dataKey - The server key.
  * @returns The game, or null when it is off or the draw not made.
  */
-export const gamePayload = async (ctx: PersonalContext, dataKey: CryptoKey) => {
+export const gamePayload = async (
+  ctx: Pick<PersonalContext, 'db' | 'edition' | 'person' | 'participation'> & {
+    group: { name: string };
+    rules: { eventDate: string };
+  },
+  dataKey: CryptoKey,
+) => {
   const { db, edition, person, participation, rules } = ctx;
   if (edition.guessMode === 'none' || edition.status === 'preparing') {
     return null;
@@ -151,6 +157,11 @@ export const gamePayload = async (ctx: PersonalContext, dataKey: CryptoKey) => {
   const revealed = Boolean(edition.revealedAt) || edition.status === 'closed';
   const mine = await guessesOf(db, edition.id, person.id);
   const base = {
+    // The language of the page, like every read of a personal link.
+    language: localeOf(person.language),
+    groupName: ctx.group.name,
+    firstName: person.firstName,
+    editionLabel: edition.label,
     mode: edition.guessMode as GuessMode,
     open: guessesOpen(edition, nowIso()),
     endsAt: edition.guessEndsAt,

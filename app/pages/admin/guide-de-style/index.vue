@@ -630,17 +630,18 @@ const entries = computed(() => [
         />
         <UiTile
           to="#"
-          icon="i-lucide-circle-help"
-          title="Une autre chose"
-          state="todo"
-          text="À faire"
+          icon="i-lucide-search"
+          title="Devine qui"
+          state="award"
+          text="Le palmarès t’attend"
           compact
         />
       </div>
       <code class="text-xs"
         >UiTile : une chose à faire sur la page d’un tirage, à faire (cerclée de
-        brique), faite (coche) ou seulement dite ; seule, sur toute la largeur,
-        à deux, côte à côte (compact)</code
+        brique), faite (coche), seulement dite, ou le palmarès qui attend
+        (award, en vert sapin) ; seule, sur toute la largeur, à deux, côte à
+        côte (compact)</code
       >
       <ParticipantJournalRow to="#" :alerts="0" />
       <ParticipantJournalRow to="#" :alerts="1" />

@@ -1,4 +1,6 @@
 import type { GiverHintsState } from '#server/utils/hints';
+import type { GuessMode } from '#server/utils/guesses';
+import type { gamePayload } from '#server/http/guesses';
 import type { JournalPersonCard } from '#server/database/journal';
 import { useQuery, type QueryKey } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
@@ -57,6 +59,17 @@ export type PersonalState = {
   journalAlerts: number;
   /** Drawn by the app, or already elsewhere (README 22.12). */
   drawMode: 'app' | 'elsewhere';
+  /** « Devine qui » (README 22.17): what its tile and cards need. */
+  guess: {
+    mode: GuessMode;
+    open: boolean;
+    endsAt: string | null;
+    played: boolean;
+    revealed: boolean;
+    /** Three players or more: there are awards and images. */
+    palmares: boolean;
+    seen: boolean;
+  } | null;
   /** While answers are collected: theirs given, and how many are. */
   answer: { given: boolean; answered: number; total: number } | null;
 };
@@ -277,5 +290,28 @@ export const useSaveAnswerMutation = (token: Token) =>
   useApiMutation<{ ok: true }, string>(
     (personId) =>
       api(`${base(token)}/answer`, { method: 'PUT', body: { personId } }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/** « Devine qui » for one participant (README 22.17). */
+export type GamePayload = NonNullable<Awaited<ReturnType<typeof gamePayload>>>;
+
+export const useGameQuery = (token: Token) =>
+  usePersonalRead<GamePayload>(
+    () => keys.game(toValue(token)),
+    () => `${base(token)}/guess`,
+  );
+
+/** A guess made, changed or taken back (`giverId: null`). */
+export const useGuessMutation = (token: Token) =>
+  useApiMutation<unknown, { recipientId: string; giverId: string | null }>(
+    (body) => api(`${base(token)}/guess`, { method: 'PUT', body }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/** The palmarès was watched: « Revoir », guesses corrected. */
+export const useResultsSeenMutation = (token: Token) =>
+  useApiMutation<unknown, undefined>(
+    () => api(`${base(token)}/guess/seen`, { method: 'POST' }),
     () => [keys.personal(toValue(token))],
   );

@@ -37,6 +37,12 @@ const { t } = useT();
       :people="journal.data.value.people"
       :me="journal.data.value.me"
       :explain-id="explainId"
+      :palmares-of="
+        (editionId) =>
+          editionId === journal.data.value?.currentEditionId
+            ? `/p/${token}/devine/palmares`
+            : null
+      "
     />
   </ParticipantScreen>
 </template>

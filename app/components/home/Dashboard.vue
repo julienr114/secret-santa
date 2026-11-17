@@ -50,7 +50,9 @@ const action = computed(() =>
 const ABOUT_THE_DRAW: readonly HomeActionKind[] = [
   'discover',
   'giveAnswer',
+  'palmares',
   'readHints',
+  'guess',
   'addHints',
 ];
 const topCard = computed(() =>

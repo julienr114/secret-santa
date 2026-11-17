@@ -18,4 +18,5 @@ export const keys = {
   wishes: (token: string) => ['p', token, 'wishes'] as const,
   hints: (token: string) => ['p', token, 'hints'] as const,
   journal: (token: string) => ['p', token, 'journal'] as const,
+  game: (token: string) => ['p', token, 'game'] as const,
 };

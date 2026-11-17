@@ -3,6 +3,7 @@ import {
   canEditAvatar,
   canReveal,
   envelopeState,
+  gameTile,
   hintsTile,
   nextStep,
   participantSteps,
@@ -179,5 +180,39 @@ describe('hintsTile', () => {
 
   it('is gone when the group has no hints', () => {
     expect(tile({ giftHints: 'none', hasHints: true })).toBeNull();
+  });
+});
+
+describe('gameTile', () => {
+  const game = (over: Partial<NonNullable<Parameters<typeof gameTile>[0]>>) =>
+    gameTile({
+      open: true,
+      played: false,
+      revealed: false,
+      palmares: false,
+      seen: false,
+      ...over,
+    });
+  it('asks for a guess, then says it is made', () => {
+    expect(game({})).toBe('play');
+    expect(game({ played: true })).toBe('played');
+  });
+
+  it('waits for the party once closed', () => {
+    expect(game({ open: false })).toBe('waiting');
+  });
+
+  it('offers the palmarès once revealed, then the answers', () => {
+    expect(game({ open: false, revealed: true, palmares: true })).toBe(
+      'palmares',
+    );
+    expect(
+      game({ open: false, revealed: true, palmares: true, seen: true }),
+    ).toBe('answers');
+    expect(game({ open: false, revealed: true })).toBe('answers');
+  });
+
+  it('is gone when the game is off', () => {
+    expect(gameTile(null)).toBeNull();
   });
 });

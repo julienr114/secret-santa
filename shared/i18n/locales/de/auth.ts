@@ -37,6 +37,16 @@ export default {
     nowIn: 'Jetzt zu tun · {group}',
     later: 'Später',
     action: {
+      guess: {
+        title: 'Rate, wer dich beschenkt',
+        body: 'Ein Tipp vor der Feier, die Antwort bei der Feier.',
+        button: 'Meinen Tipp abgeben',
+      },
+      palmares: {
+        title: 'Die Rangliste von Devine qui ist da',
+        body: 'Wer hat wen beschenkt, und wer hatte es erraten? Öffne zuerst dein Geschenk.',
+        button: 'Die Rangliste entdecken',
+      },
       giveAnswer: {
         title: 'Wen beschenkst du?',
         body: 'Die Auslosung fand außerhalb der App statt: Sag es auf deiner Seite, um die Geschenk-Hinweise deiner Person zu sehen.',
@@ -146,6 +156,14 @@ export default {
       on: 'Fest am {date}',
     },
     drawCard: {
+      guessTitle: 'Rate, wer dich beschenkt',
+      guessSanta: 'Ein Tipp, bis {end}. Die Antwort bei der Feier.',
+      guessAll: 'Tipps, bis {end}. Die Antwort bei der Feier.',
+      guessButton: 'Meinen Tipp abgeben',
+      palmaresTitle: 'Die Rangliste von Devine qui ist da',
+      palmaresBody:
+        'Wer hat wen beschenkt, und wer hatte es erraten? Öffne zuerst dein Geschenk.',
+      palmaresButton: 'Die Rangliste entdecken',
       giveAnswer: 'Wen beschenkst du?',
       answer: 'Sagen, wen ich beschenke',
       answerGiven: 'Antwort gespeichert',

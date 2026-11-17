@@ -9,14 +9,26 @@ import type { HomeDraw } from '~/composables/queries/useAuth';
 const props = defineProps<{ draw: HomeDraw }>();
 const emit = defineEmits<{ open: [] }>();
 const { t } = useT();
+const endText = useGuessEnd();
 const party = usePartyText();
 
 /** New hints from the person they give to, to read (lot 16 bis). */
 const newHints = computed(
   () => props.draw.status === 'drawn' && props.draw.receiverHints === 'new',
 );
+/** « Devine qui » (22.17): its palmarès, or a guess to make. */
+const palmares = computed(
+  () =>
+    props.draw.revealed &&
+    Boolean(props.draw.game?.palmares && !props.draw.game.seen),
+);
+const guessing = computed(
+  () =>
+    props.draw.revealed &&
+    Boolean(props.draw.game?.open && !props.draw.game.played),
+);
 const envelope = computed(() =>
-  newHints.value
+  newHints.value || guessing.value
     ? 'sealed'
     : envelopeState(
         personalPhase(props.draw.status),
@@ -26,6 +38,13 @@ const envelope = computed(() =>
 );
 /** The line under the title: the party, after the news when there are. */
 const partyLine = computed(() => {
+  if (palmares.value) return t('auth.home.drawCard.palmaresBody');
+  if (guessing.value && props.draw.game?.endsAt) {
+    const end = endText(props.draw.game.endsAt);
+    return props.draw.game.mode === 'santa'
+      ? t('auth.home.drawCard.guessSanta', { end })
+      : t('auth.home.drawCard.guessAll', { end });
+  }
   if (!newHints.value) return party.long(props.draw.eventDate);
   const when = party.short(props.draw.eventDate);
   return [
@@ -38,6 +57,22 @@ const partyLine = computed(() => {
 /** Title and button of the card, by what the draw waits for. */
 const state = computed(() => {
   const { draw } = props;
+  if (palmares.value) {
+    return {
+      title: t('auth.home.drawCard.palmaresTitle'),
+      button: t('auth.home.drawCard.palmaresButton'),
+      to: `${draw.path}/devine/palmares`,
+      variant: 'solid' as const,
+    };
+  }
+  if (guessing.value) {
+    return {
+      title: t('auth.home.drawCard.guessTitle'),
+      button: t('auth.home.drawCard.guessButton'),
+      to: `${draw.path}/devine`,
+      variant: 'solid' as const,
+    };
+  }
   if (newHints.value) {
     return {
       title: t('auth.home.drawCard.newHints'),
@@ -102,7 +137,8 @@ const state = computed(() => {
       class="flex flex-col items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:ring-primary"
       @click="emit('open')"
     >
-      <UiEnvelope :state="envelope" />
+      <UiPodium v-if="palmares" />
+      <UiEnvelope v-else :state="envelope" />
       <span class="text-xs font-bold tracking-wide text-primary-ink uppercase">
         {{ draw.groupName }} · {{ draw.editionLabel }}
       </span>
@@ -118,7 +154,8 @@ const state = computed(() => {
       :to="state.to"
       block
       size="xl"
-      :icon="newHints ? undefined : 'i-lucide-gift'"
+      :icon="newHints || palmares || guessing ? undefined : 'i-lucide-gift'"
+      :class="palmares ? 'bg-pine-700 hover:bg-pine-800' : ''"
       :variant="state.variant"
       class="min-h-14 justify-center font-bold"
       :label="state.button"

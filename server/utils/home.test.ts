@@ -24,6 +24,7 @@ const draw = (over: Partial<HomeDrawState> = {}): HomeDrawState => ({
   hasHints: true,
   receiverHints: 'none',
   answer: null,
+  game: null,
   eventDate: '2026-12-24',
   ...over,
 });
@@ -169,6 +170,60 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
       count: 1,
       to: '/admin/famille-martin/editions/e1',
     });
+  });
+
+  it('3 quater and 7 bis. « Devine qui »: the palmarès, then a guess to make', () => {
+    const game = (over: Partial<NonNullable<HomeDrawState['game']>>) => ({
+      open: true,
+      played: false,
+      palmares: false,
+      seen: false,
+      endsAt: '2026-12-24T17:00:00.000Z',
+      ...over,
+    });
+    expect(
+      pickHomeAction(home({ draws: [draw({ game: game({}) })] }), TODAY),
+    ).toMatchObject({
+      kind: 'guess',
+      to: '/p/token1/devine',
+      dismissKey: 'guess:p1',
+    });
+    expect(
+      kindOf(home({ draws: [draw({ game: game({ played: true }) })] })),
+    ).toBeNull();
+    const palmares = home({
+      draws: [
+        draw({ game: game({ open: false, palmares: true }), revealed: true }),
+      ],
+    });
+    expect(pickHomeAction(palmares, TODAY)).toMatchObject({
+      kind: 'palmares',
+      to: '/p/token1/devine/palmares',
+      dismissKey: null,
+    });
+    // One's own gift first.
+    expect(
+      kindOf(
+        home({
+          draws: [
+            draw({
+              game: game({ open: false, palmares: true }),
+              revealed: false,
+            }),
+          ],
+        }),
+      ),
+    ).toBe('discover');
+    // Watched: the card goes.
+    expect(
+      kindOf(
+        home({
+          draws: [
+            draw({ game: game({ open: false, palmares: true, seen: true }) }),
+          ],
+        }),
+      ),
+    ).toBeNull();
   });
 
   it('4. everyone notified, the party within 7 days, links still unopened', () => {

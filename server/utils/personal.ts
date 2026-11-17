@@ -166,3 +166,29 @@ export const hintsTile = (p: {
   if (p.hasHints) return 'done';
   return p.hintsEditable ? 'todo' : null;
 };
+
+/** Where the tile « Devine qui » stands (README 22.17). */
+export type GameTile = 'play' | 'played' | 'waiting' | 'palmares' | 'answers';
+
+/**
+ * The tile « Devine qui » on the page of a draw: a guess to make, made,
+ * waiting for the party once closed, then the palmarès to watch (in pine),
+ * then the answers.
+ * @param game - The game as the page knows it, or null when it is off.
+ * @returns Where the tile stands, or null for no tile.
+ */
+export const gameTile = (
+  game: {
+    open: boolean;
+    played: boolean;
+    revealed: boolean;
+    palmares: boolean;
+    seen: boolean;
+  } | null,
+): GameTile | null => {
+  if (!game) return null;
+  if (game.revealed)
+    return game.palmares && !game.seen ? 'palmares' : 'answers';
+  if (game.open) return game.played ? 'played' : 'play';
+  return 'waiting';
+};

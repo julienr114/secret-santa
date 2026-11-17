@@ -22,6 +22,8 @@ import {
   preselectedForEmail,
   participantCounters,
   sortParticipants,
+  CANCELLED_PARTICIPATION,
+  DRAWN_PARTICIPATION,
 } from './editions';
 import fc from 'fast-check';
 import { failureOf, valueOf } from '~~/tests/helpers';
@@ -409,5 +411,23 @@ describe('canRevealDraw', () => {
         canRevealDraw({ status, revealedAt: null }, party, '2026-12-26', false),
       ).toMatchObject({ reason: 'invalid_transition' }),
     );
+  });
+});
+
+describe('participations reset by the lifecycle', () => {
+  it('a cancelled draw forgets views and that hints were announced', () => {
+    expect(CANCELLED_PARTICIPATION).toEqual({
+      viewCount: 0,
+      firstViewedAt: null,
+      lastViewedAt: null,
+      hintsAnnouncedAt: null,
+    });
+  });
+
+  it('a draw made again announces hints once more', () => {
+    expect(DRAWN_PARTICIPATION).toEqual({
+      messageSentAt: null,
+      hintsAnnouncedAt: null,
+    });
   });
 });

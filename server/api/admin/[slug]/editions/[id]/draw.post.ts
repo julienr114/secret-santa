@@ -7,7 +7,7 @@ import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { unwrap } from '#server/http/errors';
 import { encrypt, secureRandomInt } from '#server/utils/crypto';
 import { draw } from '#server/utils/draw';
-import { nextStatus } from '#server/utils/editions';
+import { DRAWN_PARTICIPATION, nextStatus } from '#server/utils/editions';
 
 // The draw (README 6.3): server side only, receivers stored encrypted, the
 // response never contains an assignment.
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
       // does not count as the "draw done" message.
       db
         .update(participations)
-        .set({ messageSentAt: null })
+        .set({ ...DRAWN_PARTICIPATION })
         .where(eq(participations.editionId, edition.id)),
     ])
     .catch(() => {

@@ -124,6 +124,16 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page
     .getByRole('button', { name: "Revoir à qui j'offre un cadeau" })
     .click();
+  // Every opening of the result moves its date, not only the first: it is
+  // what makes hints new or not (lot 16 bis).
+  const lastViewedAt = async () =>
+    (
+      await ok(await admin().get(`${ADMIN}/editions/${state.editionId}`))
+    ).participants.find((p: { firstName: string }) => p.firstName === giver)
+      .lastViewedAt;
+  const opened = await lastViewedAt();
+  await ok(await page.request.post(`/api/p/${state.tokens[giver]}/reveal`));
+  expect(await lastViewedAt()).not.toBe(opened);
   // What the organiser reads once the result is on screen (seeing it again
   // is counted, as always), before the request.
   const before = await organiserView();

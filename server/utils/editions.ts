@@ -410,3 +410,27 @@ export const canRevealDraw = (
   if (before && !early) return fail('party_not_reached');
   return ok({ early: before });
 };
+
+// --- Participations reset by the lifecycle ---------------------------------
+
+/**
+ * What cancelling a draw resets on every participation (README 6.5): the
+ * counts of views, and the announcement of hints, so that the next giver
+ * is told once too (lot 16 bis).
+ */
+export const CANCELLED_PARTICIPATION = Object.freeze({
+  viewCount: 0,
+  firstViewedAt: null,
+  lastViewedAt: null,
+  hintsAnnouncedAt: null,
+});
+
+/**
+ * What a draw resets on every participation: the « envoyé » badge (one
+ * round of messages is enough), and the announcement of hints, for a draw
+ * made again.
+ */
+export const DRAWN_PARTICIPATION = Object.freeze({
+  messageSentAt: null,
+  hintsAnnouncedAt: null,
+});

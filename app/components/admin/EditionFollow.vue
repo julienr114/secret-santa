@@ -15,6 +15,8 @@ import { FOLD_FROM, foldList, listView, type Fold } from '#shared/utils/lists';
 // round button to send or send again, then what can be done later, or,
 // from the day of the party, what to do if something goes wrong.
 const props = defineProps<{
+  /** The group uses gift hints: else no count of them. */
+  hintsOn?: boolean;
   slug: string;
   editionId: string;
   participants: Participant[];
@@ -260,7 +262,7 @@ const partyTitle = computed(() =>
       t('common.count.participants', { count: participants.length })
     }}</UiSectionTitle>
     <p
-      v-if="withHints > 0"
+      v-if="hintsOn !== false && withHints > 0"
       class="px-1 text-[13px] text-toned"
       data-testid="hints-count"
     >

@@ -7,7 +7,7 @@ import { deleteHintRequestsOf } from '#server/database/hints';
 import { requireEdition } from '#server/http/edition';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { nextStatus } from '#server/utils/editions';
+import { CANCELLED_PARTICIPATION, nextStatus } from '#server/utils/editions';
 
 // Cancel the draw (README 6.5): results gone, list editable again, links
 // and codes kept, view counters reset, reason journaled. The requests for
@@ -32,13 +32,7 @@ export default defineEventHandler(async (event) => {
       .where(eq(editions.id, edition.id)),
     db
       .update(participations)
-      .set({
-        viewCount: 0,
-        firstViewedAt: null,
-        lastViewedAt: null,
-        // A new giver will be told once, too.
-        hintsAnnouncedAt: null,
-      })
+      .set({ ...CANCELLED_PARTICIPATION })
       .where(eq(participations.editionId, edition.id)),
   ]);
   await recordEvent(db, {

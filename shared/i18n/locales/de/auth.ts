@@ -24,7 +24,7 @@ export default {
   },
   landing: {
     tagline:
-      'Das Familienwichteln: Alle erfahren heimlich, wen sie beschenken.',
+      'Wichteln in der Familie, unter Freunden oder unter Kollegen: Alle erfahren heimlich, wen sie beschenken.',
     personalLink:
       'Du hast einen persönlichen Link erhalten? Öffne ihn direkt: Er funktioniert ohne Konto.',
   },

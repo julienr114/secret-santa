@@ -21,7 +21,7 @@ export default {
   },
   landing: {
     tagline:
-      'Le Secret Santa de la famille : chacun découvre en secret à qui il offre un cadeau.',
+      'Le Secret Santa en famille, entre amis ou entre collègues : chacun découvre en secret à qui il offre un cadeau.',
     personalLink:
       'Tu as reçu un lien personnel ? Ouvre-le directement : il fonctionne sans compte.',
   },

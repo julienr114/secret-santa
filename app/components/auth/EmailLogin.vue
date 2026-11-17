@@ -78,42 +78,7 @@ const onAgain = () => {
     role="status"
     data-testid="login-sent"
   >
-    <svg
-      class="h-[104px] w-[150px]"
-      viewBox="0 0 184 128"
-      fill="none"
-      aria-hidden="true"
-    >
-      <rect
-        x="6"
-        y="14"
-        width="172"
-        height="108"
-        rx="8"
-        class="fill-envelope stroke-envelope-fold"
-        stroke-width="2"
-      />
-      <path
-        d="M7 118 70 66M177 118 114 66"
-        class="stroke-envelope-fold"
-        stroke-width="2"
-        stroke-linecap="round"
-      />
-      <path
-        d="M8 18 84 74a13 13 0 0 0 16 0l76-56"
-        class="fill-skeleton-soft stroke-envelope-fold"
-        stroke-width="2"
-        stroke-linejoin="round"
-      />
-      <circle cx="150" cy="26" r="20" class="fill-success" />
-      <path
-        d="m141 26 6 6 12-12"
-        stroke="white"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    <UiEnvelopeSent />
     <div class="flex flex-col gap-1.5">
       <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
         {{ t('auth.login.sentTitle') }}

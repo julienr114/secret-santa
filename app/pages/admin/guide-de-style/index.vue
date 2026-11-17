@@ -571,7 +571,20 @@ const entries = computed(() => [
           <UiEnvelope :state="state" />
           <code class="text-xs">UiEnvelope {{ state }}</code>
         </li>
+        <li class="flex flex-col items-center gap-1">
+          <UiEnvelopeSent />
+          <code class="text-xs">UiEnvelopeSent</code>
+        </li>
+        <li class="flex flex-col items-center gap-1">
+          <UiPodium />
+          <code class="text-xs">UiPodium (lot 19)</code>
+        </li>
       </ul>
+      <code class="text-xs"
+        >Une illustration par composant (UiEnvelopePending, UiEnvelopeSealed,
+        UiEnvelopeOpened, UiEnvelopeLocked), choisie par UiEnvelope selon
+        envelopeState</code
+      >
       <UiGiftTag>
         <p class="text-center text-muted">
           UiGiftTag : une étiquette cadeau, son contenu dans le slot.

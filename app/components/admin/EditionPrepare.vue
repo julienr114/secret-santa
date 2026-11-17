@@ -7,7 +7,8 @@ import type { DrawCheck } from '~/composables/queries/useEdition';
 
 // Step 1 of an edition, "Préparer": what to do now (check the list, then
 // start the draw), the participants, and what can be done if wished
-// (let people know before the draw, exclusions, budget and word). Nothing about sending:
+// (let people know before the draw, exclusions, « Réglages de l'édition »,
+// README 22.16). Nothing about sending:
 // the follow-up starts with the draw (README 13.2). Under the draw, « Le
 // tirage a déjà été fait ailleurs ? » (README 22.12).
 const props = defineProps<{
@@ -303,6 +304,6 @@ const missingText = computed(() =>
           : t('adminEdition.screen.prepare.exclusionsNone')
       "
     />
-    <AdminEditionRuleRows :slug="slug" :edition-id="editionId" />
+    <AdminEditionSettingsRow :slug="slug" :edition-id="editionId" />
   </UiList>
 </template>

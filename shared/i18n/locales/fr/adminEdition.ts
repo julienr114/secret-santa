@@ -518,6 +518,7 @@ export default {
   trouble: {
     title: 'Un souci ?',
     row: 'Désistement, lien perdu, erreur de tirage',
+    rowAnswers: 'Changer les participants, abandonner',
     description: 'Chacune de ces actions est inscrite au journal du groupe.',
     revealOne: 'Voir un seul résultat',
     revealOneHint: 'Quelqu’un a perdu son lien et n’a pas d’autre moyen',
@@ -607,6 +608,7 @@ export default {
     participantsHint: 'Possible tant que tu n’as pas validé',
     abandon: 'Abandonner et tirer avec l’application',
     abandonHint: 'Les réponses sont effacées · journalisé',
+    abandonHintShort: 'Les réponses sont effacées',
     abandonConfirm:
       'Effacer toutes les réponses et revenir au tirage par l’application ?',
     abandonYes: 'Abandonner',

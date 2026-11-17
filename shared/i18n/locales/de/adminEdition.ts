@@ -525,6 +525,7 @@ export default {
   trouble: {
     title: 'Ein Problem?',
     row: 'Absage, verlorener Link, Fehler bei der Auslosung',
+    rowAnswers: 'Teilnehmer ändern, aufgeben',
     description: 'Jede dieser Aktionen wird im Protokoll der Gruppe vermerkt.',
     revealOne: 'Ein einzelnes Ergebnis ansehen',
     revealOneHint:
@@ -614,6 +615,7 @@ export default {
     participantsHint: 'Möglich, solange du nicht bestätigt hast',
     abandon: 'Aufgeben und mit der App auslosen',
     abandonHint: 'Die Antworten werden gelöscht · protokolliert',
+    abandonHintShort: 'Die Antworten werden gelöscht',
     abandonConfirm:
       'Alle Antworten löschen und zur Auslosung mit der App zurückkehren?',
     abandonYes: 'Aufgeben',

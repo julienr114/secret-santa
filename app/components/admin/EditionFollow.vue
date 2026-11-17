@@ -30,9 +30,6 @@ const props = defineProps<{
   /** The day of the party, written out; null when unknown. */
   dateText: string | null;
   closing: boolean;
-  /** The edition's budget and word, said on « Réglages de l'édition ». */
-  budget?: string;
-  word?: string;
 }>();
 const emit = defineEmits<{
   send: [participationId: string];
@@ -150,17 +147,6 @@ const onRevealEarly = () => {
   troubleOpen.value = false;
   emit('reveal');
 };
-/** What « Réglages de l'édition » says: what is set, or what it holds. */
-const settingsLine = computed(
-  () =>
-    [
-      props.budget &&
-        t('adminEdition.settings.budgetIs', { budget: props.budget }),
-      props.word && t('adminEdition.settings.word'),
-    ]
-      .filter(Boolean)
-      .join(' · ') || t('adminEdition.settings.what'),
-);
 /** How many opened their result, against everyone: the bar of the card. */
 const viewedShare = computed(() =>
   props.participants.length === 0
@@ -377,14 +363,7 @@ const partyTitle = computed(() =>
 
   <div class="flex flex-col gap-3">
     <UiList>
-      <UiListItem
-        :to="`${base}/reglages`"
-        icon="i-lucide-sliders-horizontal"
-        icon-tone="neutral"
-        :title="t('adminEdition.settings.title')"
-        :subtitle="settingsLine"
-        data-testid="settings-row"
-      />
+      <AdminEditionSettingsRow :slug="slug" :edition-id="editionId" />
       <UiListItem
         icon="i-lucide-circle-help"
         icon-tone="neutral"

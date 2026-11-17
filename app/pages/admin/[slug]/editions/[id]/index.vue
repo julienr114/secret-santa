@@ -343,8 +343,6 @@ const dateOpen = ref(false);
         :can-close="canClose"
         :date-text="dateText"
         :closing="close.isPending.value"
-        :budget="rules?.budget"
-        :word="rules?.guardianMessage"
         @send="(pid) => (sendId = pid)"
         @close="onClose"
         @reveal="revealOpen = true"

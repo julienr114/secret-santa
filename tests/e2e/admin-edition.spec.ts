@@ -82,7 +82,8 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // A budget of its own, shown in the edition's header.
   await page.getByLabel(/^Budget/).fill('20 €');
   await page.getByRole('button', { name: "Créer l'édition" }).click();
-  await expect(page.getByText('Budget 20 €')).toBeVisible();
+  await expect(page.getByText('Famille E2E · Budget 20 €')).toBeVisible();
+  await expect(page.getByTestId('settings-row')).toContainText('Budget 20 €');
   // Ready to prepare at once: links work, the draw can be checked.
   await expect(
     page.getByText('5 participants, toutes les règles sont respectées.'),

@@ -513,6 +513,7 @@ export default {
   trouble: {
     title: 'A problem?',
     row: 'Dropout, lost link, draw mistake',
+    rowAnswers: 'Change the participants, give up',
     description: "Each of these actions is written in the group's journal.",
     revealOne: 'See a single result',
     revealOneHint: 'Someone lost their link and has no other way',
@@ -600,6 +601,7 @@ export default {
     participantsHint: "Possible as long as you haven't validated",
     abandon: 'Give up and draw with the app',
     abandonHint: 'The answers are deleted · logged',
+    abandonHintShort: 'The answers are deleted',
     abandonConfirm: "Delete all answers and go back to the app's draw?",
     abandonYes: 'Give up',
     abandoned: 'The answers are deleted: you can draw with the app.',

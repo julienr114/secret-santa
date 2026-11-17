@@ -10,8 +10,8 @@ import type {
 // Step « Réponses » of a draw already made elsewhere (README 22.12): what
 // to do now (ask everyone, ask the two whose answers clash to check, the
 // last answer follows from the others, or validate), the participants
-// with where each stands, never what they answered, then what can be done
-// later or if something goes wrong. Maquettes ManuelCollecte,
+// with where each stands, never what they answered, then « Réglages de
+// l'édition » and « Un souci ? » (README 22.16). Maquettes ManuelCollecte,
 // ManuelConflit, ManuelUneManque, ManuelPret.
 const props = defineProps<{
   slug: string;
@@ -110,9 +110,9 @@ const view = computed(() =>
     nameOf: fullName,
   }),
 );
-// Abandoning asks for a second tap.
-const confirming = ref(false);
-const abandonShown = useBusy(() => props.abandoning);
+// « Réglages de l'édition » and « Un souci ? » (README 22.16): changing
+// the participants and giving up the answers are in the sheet.
+const troubleOpen = ref(false);
 </script>
 
 <template>
@@ -299,47 +299,30 @@ const abandonShown = useBusy(() => props.abandoning);
     <p class="px-1 text-[13px] leading-[1.4] text-toned">{{ listFooter }}</p>
   </section>
 
-  <div class="flex flex-col gap-1.5">
-    <UiList :title="t('adminEdition.answers.later')">
+  <div class="flex flex-col gap-3">
+    <UiList>
+      <AdminEditionSettingsRow :slug="slug" :edition-id="editionId" />
       <UiListItem
-        :to="`${base}/ajouter`"
-        icon="i-lucide-user-plus"
+        icon="i-lucide-circle-help"
         icon-tone="neutral"
-        :title="t('adminEdition.answers.participants')"
-        :subtitle="t('adminEdition.answers.participantsHint')"
-      />
-      <UiListItem
-        v-if="!confirming"
-        icon="i-lucide-rotate-ccw"
-        tone="danger"
-        :title="t('adminEdition.answers.abandon')"
-        :subtitle="t('adminEdition.answers.abandonHint')"
-        :on-click="() => (confirming = true)"
+        :title="t('adminEdition.trouble.title')"
+        :subtitle="t('adminEdition.trouble.rowAnswers')"
+        :on-click="() => (troubleOpen = true)"
         chevron
-        data-testid="abandon-row"
+        data-testid="trouble-row"
       />
-      <li v-else class="flex flex-col gap-2 px-4 py-3">
-        <p class="text-sm">{{ t('adminEdition.answers.abandonConfirm') }}</p>
-        <div class="flex gap-2">
-          <UButton
-            color="error"
-            :disabled="abandoning"
-            :loading="abandonShown"
-            :label="t('adminEdition.answers.abandonYes')"
-            @click="emit('abandon')"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            :disabled="abandoning"
-            :label="t('common.actions.cancel')"
-            @click="confirming = false"
-          />
-        </div>
-      </li>
     </UiList>
     <p class="px-1 text-[13px] leading-[1.4] text-toned">
       {{ t('adminEdition.answers.secret') }}
     </p>
   </div>
+
+  <AdminTroubleSheet
+    v-model:open="troubleOpen"
+    :slug="slug"
+    :edition-id="editionId"
+    answers
+    :abandoning="abandoning"
+    @abandon="emit('abandon')"
+  />
 </template>

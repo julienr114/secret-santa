@@ -221,7 +221,7 @@ test('the last answer follows from the others, and validates', async ({
   );
 });
 
-test('giving up the answers deletes them', async ({ request }) => {
+test('giving up the answers deletes them', async ({ page, request }) => {
   // A group of its own: the first one's edition is going on.
   const GROUP = '/api/admin/famille-brouillon';
   await ok(
@@ -258,10 +258,18 @@ test('giving up the answers deletes them', async ({ request }) => {
       data: { personId: ids.Fanny },
     }),
   );
-  await ok(await admin().post(`${base}/answers/abandon`));
-  const page = await ok(await request.get(`/api/p/${token}`));
-  expect(page.drawMode).toBe('app');
-  expect(page.answer).toBeNull();
+  // From « Un souci ? » (README 22.16), with a second tap.
+  await apiLogin(page.request, 'super-elsewhere@example.com');
+  await open(page, `/admin/famille-brouillon/editions/${created.edition.id}`);
+  await page.getByTestId('trouble-row').click();
+  const sheet = page.getByTestId('trouble-sheet');
+  await expect(sheet).toContainText('Ajouter ou retirer des participants');
+  await page.getByTestId('abandon-row').click();
+  await page.getByRole('button', { name: 'Abandonner', exact: true }).click();
+  await expect(page.getByTestId('elsewhere-link')).toBeVisible();
+  const mine = await ok(await request.get(`/api/p/${token}`));
+  expect(mine.drawMode).toBe('app');
+  expect(mine.answer).toBeNull();
   // Started again: Elsa's answer is gone.
   await ok(await admin().post(`${base}/answers/start`));
   const again = await ok(await request.get(`/api/p/${token}`));

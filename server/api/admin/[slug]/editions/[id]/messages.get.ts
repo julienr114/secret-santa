@@ -46,6 +46,10 @@ export default defineEventHandler(async (event) => {
             link,
             budget: rules.budget,
             eventDate: rules.eventDate,
+            // « Devine qui » is on: a line in « Tirage fait » (22.17).
+            guessEndsAt:
+              edition.guessMode === 'none' ? null : edition.guessEndsAt,
+            guessTimeZone: edition.guessTimeZone,
           },
           // Written in the recipient's language, not the guardian's.
           person?.language,

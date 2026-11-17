@@ -1,3 +1,4 @@
+import { carriedGame } from '#server/utils/guesses';
 import { eq } from 'drizzle-orm';
 import { editions, participations } from '#server/database/schema';
 import {
@@ -65,6 +66,13 @@ export default defineEventHandler(async (event) => {
     drawnAt: null,
     closedAt: null,
     revealedAt: null,
+    drawMode: 'app',
+    // « Devine qui » is taken from the previous edition (README 22.17),
+    // its end moved to the new party at the same time of day.
+    ...carriedGame(previous, body.eventDate),
+    guessReminderSentAt: null,
+    guessesClosedAt: null,
+    guessResultsSentAt: null,
     createdAt: nowIso(),
   };
   const rows = await Promise.all(

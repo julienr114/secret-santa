@@ -41,6 +41,22 @@ export default {
     cta: 'Vérifie à qui tu offres un cadeau, et corrige-la si besoin :',
     subject: '{firstName}, vérifie ta réponse pour le Secret Santa',
   },
+  guessLine:
+    '🔍 Devine qui t’offre ton cadeau : tes pronostics jusqu’au {guessEnd}.',
+  guessReminder: {
+    greeting: 'Salut {firstName} ! 🔍',
+    body: 'Devine qui t’offre ton cadeau cette année : tu as jusqu’au {guessEnd} pour faire ton pronostic. Réponse à la fête !',
+    subject: '{firstName}, devine qui t’offre ton cadeau',
+  },
+  guessResults: {
+    subject: 'Le palmarès de Devine qui est arrivé',
+    greeting: 'Bonjour {firstName},',
+    body: 'Le tirage de {editionLabel} ({groupName}) est dévoilé. Tu peux enfin savoir qui t’a offert ton cadeau, et qui avait deviné.',
+    giftFirst: 'Si tu n’as pas encore ouvert ton cadeau, fais-le d’abord.',
+    cta: 'Découvrir le palmarès',
+    once: 'Tu ne recevras ce message qu’une fois.',
+    signature: 'Under the Tree',
+  },
   budget: 'Budget : {budget}.',
   eventDate: 'Rendez-vous le {eventDate}.',
   email: {

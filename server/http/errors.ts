@@ -39,6 +39,13 @@ const STATUS_BY_REASON: Record<string, number> = {
   not_collecting_answers: 409,
   answers_not_ready: 409,
   invalid_answer: 400,
+  guess_game_on: 409,
+  guesses_off: 409,
+  guesses_closed: 409,
+  invalid_guess: 400,
+  guess_needs_end: 400,
+  guess_reminder_sent: 409,
+  results_not_revealed: 409,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

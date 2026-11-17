@@ -36,6 +36,13 @@ export default {
         'The organizer validated the answers: the draw counts for {count} participants',
     },
     answers_abandoned: 'The organizer dropped the answers to draw with the app',
+    guesses_enabled: 'Devine qui: the guessing game is open',
+    guesses_closed: 'Devine qui: the guesses are closed',
+    guess_results_ready: 'Devine qui: the results are in',
+    guess_reminder_sent: {
+      one: 'The organizer reminded {count} person of the game',
+      other: 'The organizer reminded {count} people of the game',
+    },
   },
   noReason: 'not given',
   what: {

@@ -1,5 +1,5 @@
 import { requireGroupAccess } from '#server/http/auth';
-import { dataKeyOf } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { notFound, unwrap } from '#server/http/errors';
 import {
   findEdition,
@@ -17,6 +17,8 @@ import {
   type AnswerStatus,
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
+import { playersOf } from '#server/database/guesses';
+import { guessesOpen } from '#server/utils/guesses';
 
 /**
  * Where the answers of a draw made elsewhere stand (README 22.12): who
@@ -68,12 +70,27 @@ export default defineEventHandler(async (event) => {
   const answers = collecting
     ? await answersOf(event, db, edition.id, participants)
     : { participants, answers: null };
+  // « Devine qui » (README 22.17): who has played, never what.
+  const players =
+    edition.guessMode === 'none'
+      ? new Set<string>()
+      : await playersOf(db, edition.id);
+  const guess = {
+    mode: edition.guessMode,
+    endsAt: edition.guessEndsAt,
+    timeZone: edition.guessTimeZone,
+    open: guessesOpen(edition, nowIso()),
+    players: answers.participants.filter((p) => players.has(p.id)).length,
+    reminderSentAt: edition.guessReminderSentAt,
+  };
   return {
     edition: publicEdition(edition, participants.length),
     rules: unwrap(mergeRules(group.rules, edition.rulesOverride)),
-    participants: answers.participants as (Participant & {
-      answerStatus?: AnswerStatus;
-    })[],
+    participants: answers.participants.map((p) => ({
+      ...p,
+      played: players.has(p.id),
+    })) as (Participant & { answerStatus?: AnswerStatus; played: boolean })[],
+    guess,
     answers: answers.answers,
     // Drawn again after a cancelled draw: « Nouveau tirage » is the
     // message to send.

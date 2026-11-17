@@ -1,5 +1,6 @@
 import { ok, fail, type Result } from './result';
 import { formatEventDate } from './rules';
+import { guessEndText } from '#shared/utils/dates';
 import {
   DEFAULT_LOCALE,
   translate,
@@ -23,6 +24,8 @@ export const MESSAGE_TYPES = [
   'answerRequest',
   'answerReminder',
   'answerCheck',
+  // « Devine qui » (README 22.17): the one reminder of the organiser.
+  'guessReminder',
 ] as const;
 export type MessageType = (typeof MESSAGE_TYPES)[number];
 
@@ -80,6 +83,12 @@ export type MessageData = {
   link: string;
   budget?: string;
   eventDate?: string;
+  /**
+   * « Devine qui » is on (README 22.17): when the guesses end, an instant,
+   * and the time zone it was chosen in.
+   */
+  guessEndsAt?: string | null;
+  guessTimeZone?: string | null;
 };
 
 const params = (d: MessageData, locale: Locale): Params => ({
@@ -88,6 +97,9 @@ const params = (d: MessageData, locale: Locale): Params => ({
   editionLabel: d.editionLabel,
   budget: d.budget ?? '',
   eventDate: formatEventDate(d.eventDate, locale),
+  guessEnd: d.guessEndsAt
+    ? guessEndText(d.guessEndsAt, locale, d.guessTimeZone ?? undefined)
+    : '',
 });
 
 const details = (d: MessageData): MessageKey[] => [
@@ -105,6 +117,7 @@ const TEMPLATES: Record<MessageType, (d: MessageData) => MessageKey[]> = {
   drawn: (d) => [
     'messages.drawn.greeting',
     ...details(d),
+    ...(d.guessEndsAt ? (['messages.guessLine'] as const) : []),
     'messages.drawn.cta',
   ],
   reminder: () => ['messages.reminder.greeting', 'messages.reminder.cta'],
@@ -117,6 +130,10 @@ const TEMPLATES: Record<MessageType, (d: MessageData) => MessageKey[]> = {
   answerReminder: () => [
     'messages.answerReminder.greeting',
     'messages.answerReminder.cta',
+  ],
+  guessReminder: () => [
+    'messages.guessReminder.greeting',
+    'messages.guessReminder.body',
   ],
   answerCheck: () => [
     'messages.answerCheck.greeting',
@@ -324,6 +341,53 @@ export const plainEmail = ({
       '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
       ...before.map(paragraph),
       `<p style="margin:0 0 20px"><a href="${href}">${href}</a></p>`,
+      ...after.map(paragraph),
+      '</div>',
+    ].join(''),
+  };
+};
+
+/**
+ * « Le palmarès de Devine qui est arrivé » (README 22.17), once, to every
+ * participant with an address, players or not. No name in it: it only
+ * leads to the results, and asks to open one's gift first.
+ * @param data - First name, group, edition and the link of the page.
+ * @param locale - The recipient's language.
+ * @returns The email.
+ */
+export const buildGuessResultsEmail = (
+  data: {
+    firstName: string;
+    groupName: string;
+    editionLabel: string;
+    link: string;
+  },
+  locale: Locale = DEFAULT_LOCALE,
+): Email => {
+  const t = (key: MessageKey) =>
+    translate(locale, key, {
+      firstName: data.firstName,
+      groupName: data.groupName,
+      editionLabel: data.editionLabel,
+    });
+  const before = [
+    t('messages.guessResults.greeting'),
+    t('messages.guessResults.body'),
+    t('messages.guessResults.giftFirst'),
+  ];
+  const after = [
+    t('messages.guessResults.once'),
+    t('messages.guessResults.signature'),
+  ];
+  const cta = t('messages.guessResults.cta');
+  const href = escapeHtml(data.link);
+  return {
+    subject: t('messages.guessResults.subject'),
+    text: [...before, '', `${cta} : ${data.link}`, '', ...after].join('\n'),
+    html: [
+      '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
+      ...before.map(paragraph),
+      `<p style="margin:0 0 20px"><a href="${href}">${escapeHtml(cta)}</a></p>`,
       ...after.map(paragraph),
       '</div>',
     ].join(''),

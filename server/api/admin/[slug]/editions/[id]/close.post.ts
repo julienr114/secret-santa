@@ -10,6 +10,11 @@ import { nextStatus } from '#server/utils/editions';
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition } = await requireEdition(event);
   const status = unwrap(nextStatus(edition.status, 'close'));
+  // « Devine qui » (README 22.17): its answers come with the reveal, so
+  // closing without revealing waits until the game is turned off.
+  if (edition.guessMode !== 'none' && !edition.revealedAt) {
+    throw createError({ statusCode: 409, statusMessage: 'guess_game_on' });
+  }
   await db
     .update(editions)
     .set({ status, closedAt: nowIso() })

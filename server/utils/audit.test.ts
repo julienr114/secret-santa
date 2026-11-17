@@ -148,6 +148,7 @@ describe('describeEvent', () => {
         type.startsWith('edition') ||
           type.startsWith('draw') ||
           type.startsWith('answers_') ||
+          type.startsWith('guess') ||
           type === 'rules_changed' ||
           type === 'results_revealed'
           ? ''

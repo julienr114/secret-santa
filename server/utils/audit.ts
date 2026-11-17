@@ -36,6 +36,11 @@ export const AUDIT_TYPES = [
   'answer_changed',
   'answers_validated',
   'answers_abandoned',
+  // « Devine qui » (README 22.17): never a guess.
+  'guesses_enabled',
+  'guesses_closed',
+  'guess_results_ready',
+  'guess_reminder_sent',
 ] as const;
 export type AuditType = (typeof AUDIT_TYPES)[number];
 

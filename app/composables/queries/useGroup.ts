@@ -7,6 +7,7 @@ import type { JournalEntry } from '#server/utils/audit';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
 import type { AnswerStatus, AnswersCard } from '#server/utils/answers';
+import type { GuessMode } from '#server/utils/guesses';
 import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -25,7 +26,22 @@ export type PeoplePayload = {
   exclusions: ExclusionRow[];
 };
 /** A participant, with their answer status while answers are collected. */
-export type EditionParticipant = Participant & { answerStatus?: AnswerStatus };
+export type EditionParticipant = Participant & {
+  answerStatus?: AnswerStatus;
+  /** Made at least one guess in « Devine qui » (never which). */
+  played?: boolean;
+};
+/** « Devine qui » on the edition (README 22.17). */
+export type GuessSummary = {
+  mode: GuessMode;
+  /** The end of the guesses (instant), and the zone it was chosen in. */
+  endsAt: string | null;
+  timeZone: string | null;
+  open: boolean;
+  /** How many have played. */
+  players: number;
+  reminderSentAt: string | null;
+};
 /** Where the answers of a draw made elsewhere stand (README 22.12). */
 export type AnswersSummary = {
   card: AnswersCard;
@@ -40,6 +56,7 @@ export type EditionPayload = {
   participants: EditionParticipant[];
   /** While the answers of a draw made elsewhere are collected. */
   answers: AnswersSummary | null;
+  guess: GuessSummary;
   /** Drawn again after a cancelled draw. */
   redrawn: boolean;
 };

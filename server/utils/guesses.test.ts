@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   autoRevealAt,
+  carriedGame,
   changeGuessMode,
   autoRevealDue,
   correctedGuesses,
@@ -237,5 +238,36 @@ describe('changeGuessMode', () => {
 
   it('deletes everything when the game is turned off', () => {
     expect(changeGuessMode('none', guesses)).toEqual({ kept: [], lost: 3 });
+  });
+});
+
+describe('carriedGame', () => {
+  it('takes the mode, the end moved to the new party', () => {
+    expect(
+      carriedGame(
+        {
+          guessMode: 'all',
+          guessEndsAt: '2025-12-24T19:00:00.000Z',
+          guessTimeZone: 'Europe/Paris',
+          rulesOverride: { eventDate: '2025-12-24' },
+        },
+        '2026-12-25',
+      ),
+    ).toEqual({
+      guessMode: 'all',
+      guessEndsAt: '2026-12-25T19:00:00.000Z',
+      guessTimeZone: 'Europe/Paris',
+    });
+  });
+
+  it('starts without a game otherwise', () => {
+    const none = { guessMode: 'none', guessEndsAt: null, guessTimeZone: null };
+    expect(carriedGame(null, '2026-12-25')).toEqual(none);
+    expect(
+      carriedGame(
+        { guessMode: 'none', guessEndsAt: null, guessTimeZone: null },
+        '2026-12-25',
+      ),
+    ).toEqual(none);
   });
 });

@@ -6,6 +6,7 @@ import {
   NOTE_MAX,
   addNote,
   buildEmail,
+  buildGuessResultsEmail,
   buildMessage,
   emailTargets,
   escapeHtml,
@@ -403,5 +404,36 @@ describe('defaultMessageType', () => {
           expect(messageTypesFor(status)).toContain(
             defaultMessageType(status, sent, redrawn),
           );
+  });
+});
+
+describe('« Devine qui » in the messages', () => {
+  const game = {
+    ...data,
+    guessEndsAt: '2026-12-25T17:00:00.000Z',
+    guessTimeZone: 'Europe/Paris',
+  };
+  it('adds a line to « Tirage fait » while the game is on', () => {
+    expect(valueOf(buildMessage('drawn', game))).toContain(
+      '🔍 Devine qui t’offre ton cadeau : tes pronostics jusqu’au 25 décembre à 18 h.',
+    );
+    expect(valueOf(buildMessage('drawn', data))).not.toContain('Devine');
+  });
+
+  it('writes the reminder as in its mockup', () => {
+    expect(valueOf(buildMessage('guessReminder', game))).toBe(
+      'Salut Léa ! 🔍\nDevine qui t’offre ton cadeau cette année : tu as jusqu’au 25 décembre à 18 h pour faire ton pronostic. Réponse à la fête !\nhttps://secret-santa.example/p/abc123',
+    );
+  });
+
+  it('announces the results without any name but the reader’s', () => {
+    const email = buildGuessResultsEmail(
+      { ...data, link: 'https://secret-santa.example/p/abc123/devine' },
+      'fr',
+    );
+    expect(email.subject).toBe('Le palmarès de Devine qui est arrivé');
+    expect(email.text).toContain('Bonjour Léa,');
+    expect(email.text).toContain('fais-le d’abord');
+    expect(email.html).toContain('>Découvrir le palmarès</a>');
   });
 });

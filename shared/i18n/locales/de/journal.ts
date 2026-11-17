@@ -39,6 +39,13 @@ export default {
     },
     answers_abandoned:
       'Der Organisator hat die Antworten verworfen, um mit der App auszulosen',
+    guesses_enabled: 'Devine qui: Das Tippspiel ist eröffnet',
+    guesses_closed: 'Devine qui: Die Tipps sind geschlossen',
+    guess_results_ready: 'Devine qui: Die Rangliste ist da',
+    guess_reminder_sent: {
+      one: 'Der Organisator hat {count} Person an das Spiel erinnert',
+      other: 'Der Organisator hat {count} Personen an das Spiel erinnert',
+    },
   },
   noReason: 'nicht angegeben',
   what: {

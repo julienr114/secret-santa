@@ -251,3 +251,34 @@ export const drawStatements = async (
       .where(eq(participations.editionId, draw.editionId)),
   ] as const;
 };
+
+/**
+ * Every pair of a draw, decrypted: only once it is revealed or closed
+ * (README 22.9), for the results and the palmarès of « Devine qui ».
+ * @param db - The database.
+ * @param editionId - The edition.
+ * @param dataKey - The server key.
+ * @returns The pairs that can be read.
+ */
+export const readPairs = async (
+  db: Db,
+  editionId: string,
+  dataKey: CryptoKey,
+): Promise<Assignment[]> => {
+  const rows = await db
+    .select()
+    .from(assignments)
+    .where(eq(assignments.editionId, editionId));
+  const pairs = await Promise.all(
+    rows.map(async (row) => {
+      const receiver = await decrypt(
+        { enc: row.receiverEnc, iv: row.receiverIv },
+        dataKey,
+      );
+      return receiver.ok
+        ? [{ giverId: row.giverPersonId, receiverId: receiver.value }]
+        : [];
+    }),
+  );
+  return pairs.flat();
+};

@@ -4,6 +4,7 @@ import { editions, participations } from '#server/database/schema';
 import { deleteAssignments } from '#server/database/draw';
 import { recordEvent } from '#server/database/audit';
 import { deleteHintRequestsOf } from '#server/database/hints';
+import { deleteGuessesOf } from '#server/database/guesses';
 import { requireEdition } from '#server/http/edition';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -26,9 +27,18 @@ export default defineEventHandler(async (event) => {
   await db.batch([
     deleteAssignments(db, edition.id),
     deleteHintRequestsOf(db, edition.id),
+    // The guesses of « Devine qui » were about this draw (README 22.17).
+    deleteGuessesOf(db, [edition.id]),
     db
       .update(editions)
-      .set({ status, drawnAt: null, rulesSnapshot: null })
+      .set({
+        status,
+        drawnAt: null,
+        rulesSnapshot: null,
+        guessReminderSentAt: null,
+        guessesClosedAt: null,
+        guessResultsSentAt: null,
+      })
       .where(eq(editions.id, edition.id)),
     db
       .update(participations)

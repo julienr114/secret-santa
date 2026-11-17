@@ -378,3 +378,41 @@ export const changeGuessMode = (
     to === 'none' ? [] : to === 'santa' ? keepSantaGuesses(guesses) : guesses;
   return { kept, lost: guesses.length - kept.length };
 };
+
+/**
+ * The game of a new edition, taken from the previous one (README 22.17):
+ * the same mode, the end at the same time of day on the new party.
+ * @param previous - The previous edition, its game and its party, if any.
+ * @param eventDate - The day of the new party.
+ * @returns The game's settings of the new edition.
+ */
+export const carriedGame = (
+  previous: {
+    guessMode: GuessMode;
+    guessEndsAt: string | null;
+    guessTimeZone: string | null;
+    rulesOverride?: unknown;
+  } | null,
+  eventDate: string,
+): {
+  guessMode: GuessMode;
+  guessEndsAt: string | null;
+  guessTimeZone: string | null;
+} => {
+  const previousDate = (
+    previous?.rulesOverride as { eventDate?: unknown } | null
+  )?.eventDate;
+  if (
+    !previous ||
+    previous.guessMode === 'none' ||
+    !previous.guessEndsAt ||
+    typeof previousDate !== 'string'
+  ) {
+    return { guessMode: 'none', guessEndsAt: null, guessTimeZone: null };
+  }
+  return {
+    guessMode: previous.guessMode,
+    guessEndsAt: moveGuessEnd(previous.guessEndsAt, previousDate, eventDate),
+    guessTimeZone: previous.guessTimeZone,
+  };
+};

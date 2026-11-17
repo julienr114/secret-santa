@@ -10,8 +10,13 @@ import { mergeRules } from '#server/utils/rules';
 // Every morning (cron in wrangler.toml): a few days before an exchange,
 // the organisers learn who has not discovered their result yet. Each
 // edition is reminded once; nobody missing, nothing is sent.
+/** The hourly schedule of wrangler.toml, left to the game. */
+const HOURLY_CRON = '30 * * * *';
+
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hook('cloudflare:scheduled', async ({ env }) => {
+  nitroApp.hooks.hook('cloudflare:scheduled', async ({ env, controller }) => {
+    // The hourly run is for « Devine qui » only (server/plugins/guesses.ts).
+    if (controller?.cron === HOURLY_CRON) return;
     const d1 = (env as { DB?: D1Binding }).DB;
     if (!d1) return;
     const db = dbOf(d1);

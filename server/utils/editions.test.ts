@@ -431,12 +431,13 @@ describe('canRevealDraw', () => {
 });
 
 describe('participations reset by the lifecycle', () => {
-  it('a cancelled draw forgets views and that hints were announced', () => {
+  it('a cancelled draw forgets views, announced hints and seen results', () => {
     expect(CANCELLED_PARTICIPATION).toEqual({
       viewCount: 0,
       firstViewedAt: null,
       lastViewedAt: null,
       hintsAnnouncedAt: null,
+      guessResultsSeenAt: null,
     });
   });
 

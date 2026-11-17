@@ -429,6 +429,7 @@ export const CANCELLED_PARTICIPATION = Object.freeze({
   firstViewedAt: null,
   lastViewedAt: null,
   hintsAnnouncedAt: null,
+  guessResultsSeenAt: null,
 });
 
 /**

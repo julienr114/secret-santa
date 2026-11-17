@@ -42,6 +42,22 @@ export default {
     cta: 'Prüfe, wen du beschenkst, und korrigiere es bei Bedarf:',
     subject: '{firstName}, prüf deine Wichtel-Antwort',
   },
+  guessLine: '🔍 Rate, wer dich beschenkt: deine Tipps bis {guessEnd}.',
+  guessReminder: {
+    greeting: 'Hallo {firstName}! 🔍',
+    body: 'Rate, wer dich dieses Jahr beschenkt: Du hast bis {guessEnd} Zeit für deinen Tipp. Die Antwort gibt es bei der Feier!',
+    subject: '{firstName}, rate, wer dich beschenkt',
+  },
+  guessResults: {
+    subject: 'Die Rangliste von Devine qui ist da',
+    greeting: 'Hallo {firstName},',
+    body: 'Die Auslosung von {editionLabel} ({groupName}) ist aufgedeckt. Du kannst endlich erfahren, wer dich beschenkt hat und wer es erraten hatte.',
+    giftFirst:
+      'Wenn du dein Geschenk noch nicht geöffnet hast, mach das zuerst.',
+    cta: 'Die Rangliste entdecken',
+    once: 'Du bekommst diese Nachricht nur einmal.',
+    signature: 'Under the Tree',
+  },
   budget: 'Budget: {budget}.',
   eventDate: 'Wir sehen uns am {eventDate}.',
   email: {

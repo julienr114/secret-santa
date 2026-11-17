@@ -6,6 +6,7 @@ import {
   index,
 } from 'drizzle-orm/sqlite-core';
 import { DRAW_MODES } from '../utils/answers';
+import { GUESS_MODES } from '../utils/guesses';
 
 // Data model from README section 10. Ids are text (nanoid), dates are ISO
 // 8601 UTC strings, booleans are integers. Every query must filter on the
@@ -102,6 +103,17 @@ export const editions = sqliteTable(
     // Drawn by the app, or already elsewhere: then each participant says
     // who they give to (README 22.12, lot 17).
     drawMode: text('draw_mode', { enum: DRAW_MODES }).notNull().default('app'),
+    // « Devine qui » (README 22.17, lot 19): the mode, the end of the
+    // guesses as an instant and the time zone it was chosen in (for the
+    // messages), the one reminder, the end and the email of the results.
+    guessMode: text('guess_mode', { enum: GUESS_MODES })
+      .notNull()
+      .default('none'),
+    guessEndsAt: text('guess_ends_at'),
+    guessTimeZone: text('guess_time_zone'),
+    guessReminderSentAt: text('guess_reminder_sent_at'),
+    guessesClosedAt: text('guesses_closed_at'),
+    guessResultsSentAt: text('guess_results_sent_at'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('editions_group_idx').on(t.groupId)],
@@ -136,6 +148,8 @@ export const participations = sqliteTable(
     hintsUpdatedAt: text('hints_updated_at'),
     // When their giver was emailed that hints arrived: once per draw.
     hintsAnnouncedAt: text('hints_announced_at'),
+    // When they watched the results of « Devine qui » (lot 19).
+    guessResultsSeenAt: text('guess_results_seen_at'),
   },
   (t) => [
     uniqueIndex('participations_edition_person_idx').on(
@@ -221,6 +235,35 @@ export const hintRequests = sqliteTable(
     answeredAt: text('answered_at'),
   },
   (t) => [index('hint_requests_edition_idx').on(t.editionId)],
+);
+
+// « Devine qui » (README 22.17): `guesser` thinks `giver` gives to
+// `recipient`, by person. Never sent to anyone else before the reveal.
+export const guesses = sqliteTable(
+  'guesses',
+  {
+    id: text('id').primaryKey(),
+    editionId: text('edition_id')
+      .notNull()
+      .references(() => editions.id),
+    guesserPersonId: text('guesser_person_id')
+      .notNull()
+      .references(() => persons.id),
+    recipientPersonId: text('recipient_person_id')
+      .notNull()
+      .references(() => persons.id),
+    giverPersonId: text('giver_person_id')
+      .notNull()
+      .references(() => persons.id),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('guesses_edition_guesser_recipient_idx').on(
+      t.editionId,
+      t.guesserPersonId,
+      t.recipientPersonId,
+    ),
+  ],
 );
 
 // Who each participant says they give to, for a draw made elsewhere

@@ -36,6 +36,13 @@ export default {
     },
     answers_abandoned:
       "L'organisateur a abandonné les réponses pour tirer avec l'application",
+    guesses_enabled: 'Devine qui : le jeu de pronostics est ouvert',
+    guesses_closed: 'Devine qui : les pronostics sont fermés',
+    guess_results_ready: 'Devine qui : le palmarès est arrivé',
+    guess_reminder_sent: {
+      one: "L'organisateur a rappelé le jeu à {count} personne",
+      other: "L'organisateur a rappelé le jeu à {count} personnes",
+    },
   },
   noReason: 'non précisé',
   what: {

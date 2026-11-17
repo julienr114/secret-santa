@@ -42,6 +42,21 @@ export default {
     cta: "Check who you're giving a gift to, and correct it if needed:",
     subject: '{firstName}, check your Secret Santa answer',
   },
+  guessLine: "🔍 Guess who's giving you a gift: your guesses until {guessEnd}.",
+  guessReminder: {
+    greeting: 'Hi {firstName}! 🔍',
+    body: "Guess who's giving you a gift this year: you have until {guessEnd} to make your guess. The answer comes at the party!",
+    subject: "{firstName}, guess who's giving you a gift",
+  },
+  guessResults: {
+    subject: 'The Devine qui results are in',
+    greeting: 'Hello {firstName},',
+    body: 'The draw of {editionLabel} ({groupName}) is revealed. You can finally find out who gave you your gift, and who had guessed.',
+    giftFirst: "If you haven't opened your gift yet, do it first.",
+    cta: 'Discover the results',
+    once: "You'll only receive this message once.",
+    signature: 'Under the Tree',
+  },
   budget: 'Budget: {budget}.',
   eventDate: 'See you on {eventDate}.',
   email: {

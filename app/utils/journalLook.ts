@@ -26,6 +26,10 @@ const ICONS: Record<string, string> = {
   answer_changed: 'i-lucide-pencil',
   answers_validated: 'i-lucide-sparkle',
   answers_abandoned: 'i-lucide-rotate-ccw',
+  guesses_enabled: 'i-lucide-search',
+  guesses_closed: 'i-lucide-lock',
+  guess_results_ready: 'i-lucide-sparkle',
+  guess_reminder_sent: 'i-lucide-bell',
 };
 
 /** Milestones of an edition. */

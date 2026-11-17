@@ -21,6 +21,7 @@ export default {
     answerRequest: 'Demande',
     answerReminder: 'Relance',
     answerCheck: 'À vérifier',
+    guessReminder: 'Rappel du jeu',
   },
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },

@@ -20,11 +20,12 @@ import {
 import { canEditHints, canRequestHints } from '#server/utils/hints';
 import { editionPersons, findAnswers } from '#server/database/answers';
 import { answersState } from '#server/utils/answers';
+import { gamePayload } from '#server/http/guesses';
 
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
 export default defineEventHandler(async (event) => {
-  const { db, participation, edition, person, group, rules } =
+  const { db, participation, edition, person, group, rules, ...rest } =
     await requirePersonalLink(event);
   const hintsOn = rules.giftHints !== 'none';
   // Once drawn, the page says whether the person they give to left hints,
@@ -56,6 +57,12 @@ export default defineEventHandler(async (event) => {
         await findAnswers(db, edition.id, await dataKeyOf(event)),
       )
     : null;
+  // « Devine qui » (README 22.17): what its tile and its cards need,
+  // never anyone else's guess.
+  const game = await gamePayload(
+    { db, participation, edition, person, group, rules, ...rest },
+    await dataKeyOf(event),
+  );
   // For the invitation to keep the draw in an account: is this draw
   // already in the logged-in account, can it be added, or is it someone
   // else's? Null without an account.
@@ -127,5 +134,17 @@ export default defineEventHandler(async (event) => {
       alreadyRequested: Boolean(request),
     }).ok,
     journalAlerts: unseenAlerts(alertRows, person.id, since),
+    guess: game
+      ? {
+          mode: game.mode,
+          open: game.open,
+          endsAt: game.endsAt,
+          played: game.mine.length > 0,
+          revealed: game.revealed,
+          // The palmarès exists (three players or more), and was watched.
+          palmares: Boolean(game.results?.enough),
+          seen: Boolean(game.results?.seen),
+        }
+      : null,
   };
 });

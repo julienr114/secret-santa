@@ -3,7 +3,8 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { editions } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
-import { nowIso } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
+import { afterReveal } from '#server/http/guesses';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { canRevealDraw } from '#server/utils/editions';
@@ -42,5 +43,12 @@ export default defineEventHandler(async (event) => {
     editionId: edition.id,
     actor: user.role,
   });
+  // « Devine qui » (README 22.17): the guesses close, the results come.
+  await afterReveal(
+    { db, event, dataKey: await dataKeyOf(event) },
+    edition,
+    group,
+    user.role,
+  );
   return { ok: true };
 });

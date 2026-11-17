@@ -87,6 +87,10 @@ export default defineEventHandler(async (event) => {
             link: await personalLink(event, row, dataKey),
             budget: rules.budget,
             eventDate: rules.eventDate,
+            // « Devine qui » is on: a line in « Tirage fait » (22.17).
+            guessEndsAt:
+              edition.guessMode === 'none' ? null : edition.guessEndsAt,
+            guessTimeZone: edition.guessTimeZone,
           },
           person.language,
           note,

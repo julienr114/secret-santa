@@ -438,12 +438,12 @@ Décidé par Julien le 17 novembre 2026. Une édition clôturée garde ses paire
 
 Décidé par Julien le 17 novembre 2026. À faire après le lot 12 : le signal s'appuie sur `participations.journal_seen_at` et sur le même compte d'alertes que la page du tirage. Pas de migration.
 
-- [ ] **Route de l'accueil** : pour chaque tirage de la personne, le nombre d'alertes du journal depuis sa dernière visite et, s'il n'y en a qu'une, son type et sa date. Quatre événements comptent, et aucun autre : `result_revealed`, `results_revealed` avant la fête, `draw_cancelled` (tout le groupe), et `link_regenerated` (seulement la personne dont le lien a été régénéré). Avec ses tests.
-- [ ] **Dans la carte** (`FuturAccueilJournal`, `FuturAccueilJournalAcces`, `FuturAccueilJournalDevoile`, `FuturAccueilJournalAnnule`) : quand l'alerte concerne le tirage de la carte, une ligne ambrée sous le bouton principal, « Du nouveau au journal. » suivi de la phrase de l'événement et de sa date. Elle ouvre le journal sur l'explication de l'alerte.
-- [ ] **Plusieurs alertes** (`FuturAccueilJournalDeux`) : une seule ligne, « 2 alertes depuis ta dernière visite », qui ouvre le journal.
-- [ ] **Sur un autre tirage** (`FuturAccueilJournalPlusieurs`, `FuturAccueilJournalOrganisateur`) : le sous-titre de la ligne du tirage devient « Du nouveau au journal », avec un point ambré ; la ligne mène à la page du tirage. Rien sur la ligne « Gérer le tirage » d'un organisateur.
-- [ ] Le signal disparaît quand le journal a été ouvert (même remise à zéro que le lot 12). Si la règle « sans visite enregistrée, le compte part du tirage » cache une annulation, le noter en section 6 plutôt que de trancher.
-- [ ] Textes en fr, en et de ; guide de style et `tests/e2e` à jour.
+- [x] **Route de l'accueil** : pour chaque tirage de la personne, le nombre d'alertes du journal depuis sa dernière visite et, s'il n'y en a qu'une, son type et sa date. Quatre événements comptent, et aucun autre : `result_revealed`, `results_revealed` avant la fête, `draw_cancelled` (tout le groupe), et `link_regenerated` (seulement la personne dont le lien a été régénéré). Avec ses tests.
+- [x] **Dans la carte** (`FuturAccueilJournal`, `FuturAccueilJournalAcces`, `FuturAccueilJournalDevoile`, `FuturAccueilJournalAnnule`) : quand l'alerte concerne le tirage de la carte, une ligne ambrée sous le bouton principal, « Du nouveau au journal. » suivi de la phrase de l'événement et de sa date. Elle ouvre le journal sur l'explication de l'alerte.
+- [x] **Plusieurs alertes** (`FuturAccueilJournalDeux`) : une seule ligne, « 2 alertes depuis ta dernière visite », qui ouvre le journal.
+- [x] **Sur un autre tirage** (`FuturAccueilJournalPlusieurs`, `FuturAccueilJournalOrganisateur`) : le sous-titre de la ligne du tirage devient « Du nouveau au journal », avec un point ambré ; la ligne mène à la page du tirage. Rien sur la ligne « Gérer le tirage » d'un organisateur.
+- [x] Le signal disparaît quand le journal a été ouvert (même remise à zéro que le lot 12). Si la règle « sans visite enregistrée, le compte part du tirage » cache une annulation, le noter en section 6 plutôt que de trancher.
+- [x] Textes en fr, en et de ; guide de style et `tests/e2e` à jour.
 
 Ces maquettes sont sur la page « Accueil et connexion » du canevas, rangée « Le journal signalé depuis l'accueil » ; leurs fichiers gardent le préfixe `Futur`.
 
@@ -465,7 +465,9 @@ Décidé par Julien le 17 novembre 2026. Aujourd'hui `UiAvatar` écrit l'emoji c
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
 
-**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Seule question encore ouverte : la maquette `GroupeReglages` (lot 9, question 6). Hors périmètre, inchangé : les pistes de cadeaux (README 22.11).
+**Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Seule question encore ouverte : la maquette `GroupeReglages` (lot 9, question 6).
+
+**Lot 14, la règle « sans visite, le compte part du tirage ».** Elle cache bien une annulation dans un cas : quelqu'un qui n'a jamais ouvert le journal, quand le tirage a été annulé puis refait. Le compte part alors du nouveau tirage (`drawn_at`), et l'annulation, plus ancienne, n'est pas comptée, ni sur l'accueil ni sur la page du tirage. Tant que le tirage n'est pas refait, elle l'est (le compte part de la création de l'édition). Pour la compter aussi, il faudrait partir de la création de l'édition pour tout le monde ; mais alors un lien régénéré avant le premier tirage compterait aussi (les accès à un résultat, eux, ne peuvent pas venir avant). À trancher. Hors périmètre, inchangé : les pistes de cadeaux (README 22.11).
 
 ### Lot 1
 

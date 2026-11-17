@@ -34,6 +34,29 @@ export default {
     nowIn: 'À faire maintenant · {group}',
     later: 'Plus tard',
     action: {
+      giveAnswer: {
+        title: 'À qui offres-tu un cadeau ?',
+        body: 'Le tirage a été fait hors de l’application : dis-le sur ta page pour voir ses pistes de cadeaux.',
+        button: 'Dire à qui j’offre',
+      },
+      fixAnswers: {
+        title: 'Deux réponses ne vont pas ensemble',
+        body: 'Demande aux personnes concernées de vérifier leur réponse.',
+        button: 'Ouvrir l’édition',
+      },
+      validateAnswers: {
+        title: 'Les réponses vont ensemble : valide le tirage',
+        body: 'Chacun verra ensuite les pistes de cadeaux de sa personne.',
+        button: 'Ouvrir l’édition',
+      },
+      askAnswers: {
+        title: 'Demande à chacun à qui il offre',
+        body: {
+          one: '{count} réponse attendue.',
+          other: '{count} réponses attendues.',
+        },
+        button: 'Ouvrir l’édition',
+      },
       notify: {
         title: 'Préviens chacun que le tirage est fait',
         body: {
@@ -120,6 +143,9 @@ export default {
       on: 'fête le {date}',
     },
     drawCard: {
+      giveAnswer: 'À qui offres-tu un cadeau ?',
+      answer: 'Dire à qui j’offre',
+      answerGiven: 'Réponse enregistrée',
       partyOn: 'Fête le {date}',
       partyOnIn: {
         one: 'Fête le {date}, demain',
@@ -138,6 +164,8 @@ export default {
       hints: 'Laisser mes pistes de cadeaux',
     },
     step: {
+      giveAnswer: { state: 'Ta réponse est attendue', action: 'Répondre' },
+      answerGiven: { state: 'Réponse enregistrée' },
       addHints: { state: 'Ajoute tes pistes', action: 'Mes pistes' },
       wait: { state: 'Tirage à venir' },
       discover: { state: 'Le tirage a eu lieu', action: 'Découvrir' },
@@ -154,6 +182,7 @@ export default {
     myDraw: 'Mon tirage',
     manage: 'Gérer le tirage',
     editionState: {
+      answers: 'Réponses · {answered} sur {count}',
       idle: 'Pas de tirage en cours',
       preparing: {
         one: 'À préparer · {count} participant',

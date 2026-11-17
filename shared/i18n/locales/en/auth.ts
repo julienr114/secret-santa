@@ -37,6 +37,29 @@ export default {
     nowIn: 'To do now · {group}',
     later: 'Later',
     action: {
+      giveAnswer: {
+        title: 'Who are you giving a gift to?',
+        body: 'The draw was made outside the app: say it on your page to see their gift hints.',
+        button: "Say who I'm giving to",
+      },
+      fixAnswers: {
+        title: "Two answers don't fit together",
+        body: 'Ask the people concerned to check their answer.',
+        button: 'Open the edition',
+      },
+      validateAnswers: {
+        title: 'The answers fit together: validate the draw',
+        body: "Everyone will then see their person's gift hints.",
+        button: 'Open the edition',
+      },
+      askAnswers: {
+        title: 'Ask everyone who they give to',
+        body: {
+          one: '{count} answer expected.',
+          other: '{count} answers expected.',
+        },
+        button: 'Open the edition',
+      },
       notify: {
         title: 'Let everyone know the draw is done',
         body: {
@@ -123,6 +146,9 @@ export default {
       on: 'party on {date}',
     },
     drawCard: {
+      giveAnswer: 'Who are you giving a gift to?',
+      answer: "Say who I'm giving to",
+      answerGiven: 'Answer saved',
       partyOn: 'Party on {date}',
       partyOnIn: {
         one: 'Party on {date}, tomorrow',
@@ -141,6 +167,8 @@ export default {
       hints: 'Leave my gift hints',
     },
     step: {
+      giveAnswer: { state: 'Your answer is expected', action: 'Answer' },
+      answerGiven: { state: 'Answer saved' },
       addHints: { state: 'Add your hints', action: 'My hints' },
       wait: { state: 'Draw to come' },
       discover: { state: 'The draw took place', action: 'Discover' },
@@ -157,6 +185,7 @@ export default {
     myDraw: 'My draw',
     manage: 'Manage the draw',
     editionState: {
+      answers: 'Answers · {answered} of {count}',
       idle: 'No draw in progress',
       preparing: {
         one: 'To prepare · {count} participant',

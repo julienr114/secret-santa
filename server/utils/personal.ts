@@ -20,7 +20,15 @@ export const canReveal = (status: EditionStatus): Result<true> =>
 export const canEditAvatar = (status: EditionStatus): Result<true> =>
   status === 'closed' ? fail('edition_closed') : ok(true);
 
+/**
+ * For a draw made elsewhere (README 22.12): their answer is still to
+ * give, or given; null otherwise.
+ */
+export type HomeAnswer = 'toGive' | 'given' | null;
+
 export const DRAW_STEPS = [
+  'giveAnswer',
+  'answerGiven',
   'addHints',
   'wait',
   'discover',
@@ -32,7 +40,8 @@ export type DrawStep = (typeof DRAW_STEPS)[number];
 /**
  * What a participant has to do next, for the home page.
  * @param draw - Status of the edition, whether the result was already
- *   seen, whether the group uses gift hints and whether they left some.
+ *   seen, whether the group uses gift hints and whether they left some;
+ *   for a draw made elsewhere, whether their answer is still to give.
  * @returns The next step.
  */
 export const nextStep = (draw: {
@@ -40,9 +49,12 @@ export const nextStep = (draw: {
   revealed: boolean;
   hintsOn: boolean;
   hasHints: boolean;
+  answer?: HomeAnswer;
 }): DrawStep => {
   if (draw.status === 'closed') return 'closed';
   if (draw.status === 'drawn') return draw.revealed ? 'seeAgain' : 'discover';
+  if (draw.answer === 'toGive') return 'giveAnswer';
+  if (draw.answer === 'given') return 'answerGiven';
   return draw.hintsOn && !draw.hasHints ? 'addHints' : 'wait';
 };
 
@@ -53,7 +65,8 @@ export type StepState = 'done' | 'current' | 'todo';
  * What a step says beside its name: the draw is soon or done; the party
  * is in some days, today, or over. Null when there is nothing to add.
  */
-export type StepNote = 'soon' | 'done' | 'inDays' | 'today' | 'over' | null;
+export type StepNote =
+  'soon' | 'done' | 'answer' | 'inDays' | 'today' | 'over' | null;
 
 /** One step of the participant's timeline. */
 export type ParticipantStep = {
@@ -87,18 +100,26 @@ const partyNote = (
  * @param phase - What the personal page shows.
  * @param eventDate - The date of the party, if any.
  * @param today - ISO day.
+ * @param answering - The draw was made elsewhere and the participant says
+ *   who they give to: the draw reads « Ta réponse » (README 22.12).
  * @returns The invitation, the draw and the party, with where each stands.
  */
 export const participantSteps = (
   phase: PersonalPhase,
   eventDate: string | null | undefined,
   today: string,
+  answering = false,
 ): ParticipantStep[] => [
   { key: 'invitation', state: 'done', note: null },
   {
     key: 'draw',
     state: phase === 'closed' ? 'done' : 'current',
-    note: phase === 'waiting' ? 'soon' : 'done',
+    note:
+      phase === 'waiting' && answering
+        ? 'answer'
+        : phase === 'waiting'
+          ? 'soon'
+          : 'done',
   },
   phase === 'closed'
     ? { key: 'party', state: 'done', note: 'over' }

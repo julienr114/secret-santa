@@ -18,5 +18,5 @@ exec pnpm wrangler dev --port 3100 --persist-to "$STATE" --log-level warn \
   --var NUXT_RESEND_API_KEY: \
   --var NUXT_DEV_LOGIN_LINKS:true \
   --var NUXT_LINK_REQUESTS_PER_IP:1000 \
-  --var NUXT_SUPER_ADMIN_EMAILS:admin@example.com,second@example.com,third@example.com,super-edition@example.com,super-email@example.com,super-language@example.com,super-participant@example.com,super-security@example.com,super-signup@example.com,super-invite@example.com,super-notify@example.com,super-design@example.com,super-home@example.com,super-cases@example.com,super-hints@example.com,super-deploy@example.com \
+  --var NUXT_SUPER_ADMIN_EMAILS:admin@example.com,second@example.com,third@example.com,super-edition@example.com,super-email@example.com,super-language@example.com,super-participant@example.com,super-security@example.com,super-signup@example.com,super-invite@example.com,super-notify@example.com,super-design@example.com,super-home@example.com,super-cases@example.com,super-hints@example.com,super-deploy@example.com,super-elsewhere@example.com \
   --var NUXT_PUBLIC_BASE_URL:http://localhost:3100

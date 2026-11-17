@@ -26,6 +26,12 @@ const subtitle = computed(() =>
 const editionState = computed(() => {
   const edition = props.card.edition;
   if (!edition) return t('auth.home.editionState.idle');
+  if (edition.status === 'preparing' && edition.answers) {
+    return t('auth.home.editionState.answers', {
+      answered: edition.answers.answered,
+      count: edition.participants,
+    });
+  }
   if (edition.status === 'preparing') {
     return t('auth.home.editionState.preparing', {
       count: edition.participants,

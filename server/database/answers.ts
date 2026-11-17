@@ -2,7 +2,7 @@ import { and, eq, inArray, type SQLWrapper } from 'drizzle-orm';
 import type { Db } from './client';
 import { drawAnswers, participations, persons } from './schema';
 import { decrypt, encrypt } from '#server/utils/crypto';
-import type { Answer } from '#server/utils/answers';
+import { answersState, type Answer } from '#server/utils/answers';
 
 // The answers of a draw made elsewhere (README 22.12). Receivers are
 // encrypted like a draw's and decrypted here only: to check the answers
@@ -141,3 +141,21 @@ export const editionPersons = async (db: Db, editionId: string) =>
       .innerJoin(persons, eq(persons.id, participations.personId))
       .where(eq(participations.editionId, editionId))
   ).map((row) => row.person);
+
+/**
+ * Where the answers of an edition stand: who answered, who clashes,
+ * whether the last one follows. Never what anyone answered.
+ * @param db - The database.
+ * @param editionId - The edition.
+ * @param dataKey - The server key.
+ * @returns The state.
+ */
+export const answersOfEdition = async (
+  db: Db,
+  editionId: string,
+  dataKey: CryptoKey,
+) =>
+  answersState(
+    (await editionPersons(db, editionId)).map((p) => p.id),
+    await findAnswers(db, editionId, dataKey),
+  );

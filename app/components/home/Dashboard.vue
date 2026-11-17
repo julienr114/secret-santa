@@ -49,6 +49,7 @@ const action = computed(() =>
 /** Cards about the one draw, which its own card already shows. */
 const ABOUT_THE_DRAW: readonly HomeActionKind[] = [
   'discover',
+  'giveAnswer',
   'readHints',
   'addHints',
 ];

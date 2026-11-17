@@ -2,7 +2,7 @@ import type { GiverHintsState } from '#server/utils/hints';
 import type { PublicGroup } from '#server/database/groups';
 import type { HomeEditionState } from '#server/utils/home';
 import type { EditionStatus } from '#server/utils/editions';
-import type { DrawStep } from '#server/utils/personal';
+import type { DrawStep, HomeAnswer } from '#server/utils/personal';
 import type { Role, SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
 import type { JournalSignal } from '#server/utils/audit';
@@ -93,6 +93,8 @@ export type HomeDraw = {
   hasHints: boolean;
   /** The hints of the person they give to: none, some, or new. */
   receiverHints: GiverHintsState;
+  /** A draw made elsewhere: their answer to give, or given (22.12). */
+  answer: HomeAnswer;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;
   firstName: string;

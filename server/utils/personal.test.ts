@@ -59,6 +59,15 @@ describe('nextStep', () => {
     );
   });
 
+  it('asks for their answer to a draw made elsewhere, then says it is given', () => {
+    expect(nextStep({ ...draw, answer: 'toGive' })).toBe('giveAnswer');
+    expect(nextStep({ ...draw, answer: 'given' })).toBe('answerGiven');
+    // Once validated, an ordinary draw.
+    expect(nextStep({ ...draw, status: 'drawn', answer: null })).toBe(
+      'discover',
+    );
+  });
+
   it('has nothing left to do once closed', () => {
     expect(nextStep({ ...draw, status: 'closed', revealed: true })).toBe(
       'closed',
@@ -76,6 +85,12 @@ describe('participantSteps', () => {
     expect(states(steps)).toEqual(['done', 'current', 'todo']);
     expect(steps[1]?.note).toBe('soon');
     expect(steps[2]).toMatchObject({ note: 'inDays', days: 24 });
+  });
+
+  it('asks for their answer when the draw was made elsewhere', () => {
+    const steps = participantSteps('waiting', '2026-12-25', today, true);
+    expect(states(steps)).toEqual(['done', 'current', 'todo']);
+    expect(steps[1]?.note).toBe('answer');
   });
 
   it('says the draw is done, and the party is today', () => {

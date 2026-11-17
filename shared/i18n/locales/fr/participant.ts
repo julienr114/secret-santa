@@ -9,6 +9,7 @@ export default {
       label: 'Étapes du tirage',
       invitation: 'Invitation',
       drawSoon: 'Tirage · bientôt',
+      answer: 'Ta réponse',
       drawDone: 'Tirage fait',
       party: 'Fête',
       partyIn: {
@@ -98,5 +99,42 @@ export default {
     added: 'Tirage ajouté à ton compte',
     sendTo: 'Recevoir mon lien à {email}',
     sent: 'Lien envoyé à {email} : ouvre-le pour créer ton compte. Pense à regarder dans les indésirables.',
+  },
+  // A draw made elsewhere (README 22.12): saying who they give to.
+  answer: {
+    card: {
+      title: 'À qui offres-tu un cadeau ?',
+      body: 'Le tirage a été fait hors de l’application. Dis-le ici pour voir ses pistes de cadeaux. Assure-toi que personne ne regarde ton écran.',
+      action: 'Dire à qui j’offre',
+      hint: 'Ta réponse reste secrète, même pour l’organisateur.',
+      savedTitle: 'Réponse enregistrée',
+      savedBody: {
+        one: 'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponse sur {total} pour l’instant.',
+        other:
+          'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponses sur {total} pour l’instant.',
+      },
+      review: 'Revoir ou corriger ma réponse',
+      savedHint:
+        'Ta réponse reste cachée : elle ne s’affiche que si tu le demandes.',
+    },
+    choose: {
+      title: 'À qui offres-tu un cadeau ?',
+      description:
+        'La personne que tu as tirée, sur papier ou dans l’autre application.',
+      search: 'Chercher un prénom',
+      results: {
+        one: '{shown} prénom sur {total}',
+        other: '{shown} prénoms sur {total}',
+      },
+    },
+    confirm: {
+      title: 'Tu offres un cadeau à {name} ?',
+      description:
+        'Vérifie bien : c’est la personne que tu as tirée, sur papier ou dans l’autre application.',
+      note: 'Tu pourras corriger ta réponse tant que l’organisateur n’a pas validé le tirage. Personne d’autre ne la voit.',
+      yes: 'Oui, c’est {name}',
+      other: 'Choisir quelqu’un d’autre',
+    },
+    saved: 'Réponse enregistrée',
   },
 };

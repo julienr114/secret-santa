@@ -37,6 +37,29 @@ export default {
     nowIn: 'Jetzt zu tun · {group}',
     later: 'Später',
     action: {
+      giveAnswer: {
+        title: 'Wen beschenkst du?',
+        body: 'Die Auslosung fand außerhalb der App statt: Sag es auf deiner Seite, um die Geschenk-Hinweise deiner Person zu sehen.',
+        button: 'Sagen, wen ich beschenke',
+      },
+      fixAnswers: {
+        title: 'Zwei Antworten passen nicht zusammen',
+        body: 'Bitte die betroffenen Personen, ihre Antwort zu prüfen.',
+        button: 'Ausgabe öffnen',
+      },
+      validateAnswers: {
+        title: 'Die Antworten passen zusammen: Bestätige die Auslosung',
+        body: 'Jeder sieht danach die Geschenk-Hinweise seiner Person.',
+        button: 'Ausgabe öffnen',
+      },
+      askAnswers: {
+        title: 'Frag alle, wen sie beschenken',
+        body: {
+          one: '{count} Antwort erwartet.',
+          other: '{count} Antworten erwartet.',
+        },
+        button: 'Ausgabe öffnen',
+      },
       notify: {
         title: 'Sag allen, dass die Auslosung erfolgt ist',
         body: {
@@ -123,6 +146,9 @@ export default {
       on: 'Fest am {date}',
     },
     drawCard: {
+      giveAnswer: 'Wen beschenkst du?',
+      answer: 'Sagen, wen ich beschenke',
+      answerGiven: 'Antwort gespeichert',
       partyOn: 'Fest am {date}',
       partyOnIn: {
         one: 'Fest am {date}, morgen',
@@ -142,6 +168,8 @@ export default {
       hints: 'Meine Geschenk-Hinweise hinterlassen',
     },
     step: {
+      giveAnswer: { state: 'Deine Antwort wird erwartet', action: 'Antworten' },
+      answerGiven: { state: 'Antwort gespeichert' },
       addHints: {
         state: 'Füge deine Hinweise hinzu',
         action: 'Meine Hinweise',
@@ -164,6 +192,7 @@ export default {
     myDraw: 'Meine Auslosung',
     manage: 'Auslosung verwalten',
     editionState: {
+      answers: 'Antworten · {answered} von {count}',
       idle: 'Keine laufende Auslosung',
       preparing: {
         one: 'Vorzubereiten · {count} Teilnehmer',

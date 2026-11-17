@@ -23,6 +23,7 @@ const draw = (over: Partial<HomeDrawState> = {}): HomeDrawState => ({
   hintsOn: true,
   hasHints: true,
   receiverHints: 'none',
+  answer: null,
   eventDate: '2026-12-24',
   ...over,
 });
@@ -36,6 +37,7 @@ const edition = (over: Partial<HomeEditionState> = {}): HomeEditionState => ({
   viewed: 6,
   eventDate: '2026-12-24',
   drawPossible: null,
+  answers: null,
   ...over,
 });
 const group = (
@@ -122,6 +124,51 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
         home({ draws: [draw({ receiverHints: 'new', status: 'closed' })] }),
       ),
     ).toBeNull();
+  });
+
+  it('3 ter. their answer to a draw made elsewhere, before their hints', () => {
+    const state = home({
+      draws: [draw({ status: 'preparing', answer: 'toGive', hasHints: false })],
+    });
+    expect(pickHomeAction(state, TODAY)).toMatchObject({
+      kind: 'giveAnswer',
+      to: '/p/token1',
+      dismissKey: null,
+    });
+    // Given: only the hints are left to leave.
+    expect(
+      kindOf(
+        home({
+          draws: [
+            draw({ status: 'preparing', answer: 'given', hasHints: false }),
+          ],
+        }),
+      ),
+    ).toBe('addHints');
+  });
+
+  it('5 bis and 6 bis. the answers of a draw made elsewhere', () => {
+    const state = (card: 'collect' | 'conflict' | 'oneMissing' | 'ready') =>
+      home({
+        groups: [
+          group(
+            {},
+            edition({
+              status: 'preparing',
+              participants: 5,
+              answers: { card, answered: 4 },
+            }),
+          ),
+        ],
+      });
+    expect(kindOf(state('conflict'))).toBe('fixAnswers');
+    expect(kindOf(state('ready'))).toBe('validateAnswers');
+    expect(kindOf(state('oneMissing'))).toBe('validateAnswers');
+    expect(pickHomeAction(state('collect'), TODAY)).toMatchObject({
+      kind: 'askAnswers',
+      count: 1,
+      to: '/admin/famille-martin/editions/e1',
+    });
   });
 
   it('4. everyone notified, the party within 7 days, links still unopened', () => {

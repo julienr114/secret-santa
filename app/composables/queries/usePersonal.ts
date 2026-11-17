@@ -55,6 +55,17 @@ export type PersonalState = {
   canAskHints: boolean;
   /** Alerts of the journal since it was last opened from this page. */
   journalAlerts: number;
+  /** Drawn by the app, or already elsewhere (README 22.12). */
+  drawMode: 'app' | 'elsewhere';
+  /** While answers are collected: theirs given, and how many are. */
+  answer: { given: boolean; answered: number; total: number } | null;
+};
+/** Someone they may say they give to. */
+export type AnswerChoice = { id: string; name: string; avatar: Avatar };
+/** Who they may name, and their own answer when they ask to see it. */
+export type AnswerPayload = {
+  choices: AnswerChoice[];
+  receiver: AnswerChoice | null;
 };
 export type WishItem = { label: string; url: string | null };
 /** What the giver reads on their result. */
@@ -247,5 +258,24 @@ export const useJournalSeenMutation = (token: Token) =>
 export const useRevealMutation = (token: Token) =>
   useApiMutation<Reveal, undefined>(
     () => api(`${base(token)}/reveal`, { method: 'POST' }),
+    () => [keys.personal(toValue(token))],
+  );
+
+/**
+ * Opens their answer to a draw made elsewhere (README 22.12): the people
+ * they may name and the one they named. A mutation, like the result: only
+ * on demand, never kept in the cache.
+ */
+export const useOpenAnswerMutation = (token: Token) =>
+  useApiMutation<AnswerPayload, undefined>(
+    () => api(`${base(token)}/answer`),
+    () => [],
+  );
+
+/** Says who they give to, or corrects it. */
+export const useSaveAnswerMutation = (token: Token) =>
+  useApiMutation<{ ok: true }, string>(
+    (personId) =>
+      api(`${base(token)}/answer`, { method: 'PUT', body: { personId } }),
     () => [keys.personal(toValue(token))],
   );

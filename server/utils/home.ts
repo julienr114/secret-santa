@@ -2,6 +2,8 @@ import type { Role } from './auth';
 import type { EditionStatus } from './editions';
 import { daysUntil, isIsoDay, partyIsOver } from './rules';
 import type { GiverHintsState } from './hints';
+import type { HomeAnswer } from './personal';
+import type { AnswersCard } from './answers';
 
 // The home of an account (README 11 and 22.10): which card goes on top,
 // how the page is laid out, and one card per group. Pure: the route
@@ -27,6 +29,8 @@ export type HomeDrawState = {
    * none, some, or new since they last opened their result.
    */
   receiverHints: GiverHintsState;
+  /** A draw made elsewhere: their answer to give, or given (22.12). */
+  answer: HomeAnswer;
   /** An ISO day, or older free text, or empty. */
   eventDate: string;
 };
@@ -45,6 +49,11 @@ export type HomeEditionState = {
   eventDate: string;
   /** Can the draw be made? Null when it was not checked. */
   drawPossible: boolean | null;
+  /**
+   * A draw made elsewhere (README 22.12): where its answers stand, and how
+   * many were given; null when the app draws.
+   */
+  answers: { card: AnswersCard; answered: number } | null;
 };
 
 /** A group the account organises, with its current edition. */
@@ -71,10 +80,14 @@ export const HOME_ACTIONS = [
   'notify',
   'requests',
   'discover',
+  'giveAnswer',
   'readHints',
   'remind',
   'fixDraw',
+  'fixAnswers',
+  'validateAnswers',
   'startDraw',
+  'askAnswers',
   'addHints',
   'close',
   'prepare',
@@ -166,6 +179,21 @@ const organizerCandidates = (
     }
     const page = `/admin/${group.slug}/editions/${edition.id}`;
     const at = { ...base, to: page, eventDate: edition.eventDate };
+    if (edition.status === 'preparing' && edition.answers) {
+      const ANSWER_CARDS = {
+        conflict: 'fixAnswers',
+        ready: 'validateAnswers',
+        oneMissing: 'validateAnswers',
+        collect: 'askAnswers',
+      } as const;
+      return [
+        {
+          ...at,
+          kind: ANSWER_CARDS[edition.answers.card],
+          count: edition.participants - edition.answers.answered,
+        },
+      ];
+    }
     if (edition.status === 'preparing') {
       return [
         {
@@ -210,6 +238,17 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
     if (draw.status === 'drawn' && !draw.revealed) {
       return [
         { ...at, kind: 'discover', count: 1, to: draw.path, dismissKey: null },
+      ];
+    }
+    if (draw.status === 'preparing' && draw.answer === 'toGive') {
+      return [
+        {
+          ...at,
+          kind: 'giveAnswer',
+          count: 1,
+          to: draw.path,
+          dismissKey: null,
+        },
       ];
     }
     return [

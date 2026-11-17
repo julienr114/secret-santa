@@ -9,9 +9,13 @@ import {
 } from '#server/utils/personal';
 import type { Step } from '~/components/ui/Stepper.vue';
 import {
+  useOpenAnswerMutation,
   usePersonalQuery,
   useRevealMutation,
+  useSaveAnswerMutation,
   useSaveAvatarMutation,
+  type AnswerChoice,
+  type AnswerPayload,
   type Reveal,
 } from '~/composables/queries/usePersonal';
 import {
@@ -115,6 +119,54 @@ const onCreate = () => {
   prefill.value = { firstName: me.value?.firstName ?? '', email: '' };
 };
 
+// A draw made elsewhere (README 22.12): saying who they give to, or
+// seeing and correcting it. The answer is loaded only when asked for, and
+// forgotten when the sheets close.
+const openAnswer = useOpenAnswerMutation(token);
+const saveAnswer = useSaveAnswerMutation(token);
+const opening = useBusy(() => openAnswer.isPending.value);
+const answerStep = ref<'choose' | 'confirm' | null>(null);
+const answerChosen = ref<AnswerChoice | null>(null);
+const answerData = ref<AnswerPayload | null>(null);
+watch(answerStep, (open) => {
+  if (open) return;
+  answerChosen.value = null;
+  answerData.value = null;
+});
+/**
+ * Loads who they may name and their answer, then opens the list, or the
+ * confirmation on their current answer.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onAnswer = () =>
+  openAnswer.mutate(undefined, {
+    onSuccess: (data) => {
+      answerData.value = data;
+      answerChosen.value = data.receiver;
+      answerStep.value = data.receiver ? 'confirm' : 'choose';
+    },
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
+/**
+ * Saves their answer, then closes the sheets.
+ * @param personId - The person they give to.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onConfirmAnswer = (personId: string) =>
+  saveAnswer.mutate(personId, {
+    onSuccess: () => {
+      answerStep.value = null;
+      toast.add({
+        title: t('participant.answer.saved'),
+        color: 'success',
+        icon: 'i-lucide-check',
+      });
+    },
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
+
 /** Where their own hints stand, under « Mes pistes de cadeaux ». */
 const hintsSubtitle = computed(() => {
   if (!me.value?.hasHints) return t('hints.state.none');
@@ -132,6 +184,7 @@ const today = new Date().toLocaleDateString('sv-SE');
 const stepLabel = (step: ParticipantStep): string => {
   if (step.key === 'invitation') return t('participant.home.steps.invitation');
   if (step.key === 'draw') {
+    if (step.note === 'answer') return t('participant.home.steps.answer');
     return step.note === 'soon'
       ? t('participant.home.steps.drawSoon')
       : t('participant.home.steps.drawDone');
@@ -146,23 +199,28 @@ const stepLabel = (step: ParticipantStep): string => {
 /** Icon of the current step: a clock before the draw, a star after. */
 const STEP_ICONS: Partial<Record<NonNullable<StepNote>, string>> = {
   soon: 'i-lucide-clock',
+  answer: 'i-lucide-sparkle',
   done: 'i-lucide-star',
 };
 const steps = computed<Step[]>(() =>
   me.value
-    ? participantSteps(me.value.phase, me.value.eventDate, today).map(
-        (step) => ({
-          label: stepLabel(step),
-          state: step.state,
-          icon: step.note ? STEP_ICONS[step.note] : undefined,
-        }),
-      )
+    ? participantSteps(
+        me.value.phase,
+        me.value.eventDate,
+        today,
+        Boolean(me.value.answer),
+      ).map((step) => ({
+        label: stepLabel(step),
+        state: step.state,
+        icon: step.note ? STEP_ICONS[step.note] : undefined,
+      }))
     : [],
 );
 
 /** Which card the middle of the page shows. */
 const view = computed(() => {
   const state = me.value;
+  if (state?.answer) return 'answer';
   if (!state || state.phase === 'waiting') return 'waiting';
   if (reveal.value) return 'shown';
   if (state.phase === 'closed') return 'closed';
@@ -218,6 +276,21 @@ const withoutHints = computed(
 const card = computed(() => {
   const state = me.value;
   switch (view.value) {
+    case 'answer':
+      return state?.answer?.given
+        ? {
+            title: t('participant.answer.card.savedTitle'),
+            body: t('participant.answer.card.savedBody', {
+              count: state.answer.answered,
+              total: state.answer.total,
+            }),
+            hint: t('participant.answer.card.savedHint'),
+          }
+        : {
+            title: t('participant.answer.card.title'),
+            body: t('participant.answer.card.body'),
+            hint: t('participant.answer.card.hint'),
+          };
     case 'waiting':
       return {
         title: t('participant.home.waiting.title'),
@@ -362,7 +435,23 @@ const card = computed(() => {
           :description="errorMessage(revealMutation.error.value)"
         />
         <UButton
-          v-if="view === 'waiting' && me.hintsEditable"
+          v-if="view === 'answer'"
+          block
+          size="xl"
+          class="font-bold"
+          :variant="me.answer?.given ? 'outline' : 'solid'"
+          :disabled="openAnswer.isPending.value"
+          :loading="opening"
+          :label="
+            me.answer?.given
+              ? t('participant.answer.card.review')
+              : t('participant.answer.card.action')
+          "
+          data-testid="answer-open"
+          @click="onAnswer"
+        />
+        <UButton
+          v-else-if="view === 'waiting' && me.hintsEditable"
           :to="`/p/${token}/pistes`"
           block
           size="xl"
@@ -486,6 +575,14 @@ const card = computed(() => {
           @click="onClaim"
         />
       </UiCard>
+      <ParticipantAnswerSheets
+        v-if="answerData"
+        v-model:step="answerStep"
+        v-model:chosen="answerChosen"
+        :choices="answerData.choices"
+        :saving="saveAnswer.isPending.value"
+        @confirm="onConfirmAnswer"
+      />
       <AdminAvatarSheet
         v-if="avatar"
         v-model:open="pickerOpen"

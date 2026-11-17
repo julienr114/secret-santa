@@ -46,6 +46,15 @@ const state = computed(() => {
       variant: 'solid' as const,
     };
   }
+  // A draw made elsewhere: their answer, before anything else (22.12).
+  if (draw.status === 'preparing' && draw.answer === 'toGive') {
+    return {
+      title: t('auth.home.drawCard.giveAnswer'),
+      button: t('auth.home.drawCard.answer'),
+      to: draw.path,
+      variant: 'solid' as const,
+    };
+  }
   if (draw.status === 'drawn') {
     return draw.revealed
       ? {
@@ -60,6 +69,16 @@ const state = computed(() => {
           to: draw.path,
           variant: 'solid' as const,
         };
+  }
+  if (draw.status === 'preparing' && draw.answer === 'given') {
+    return draw.hintsOn && !draw.hasHints
+      ? {
+          title: t('auth.home.drawCard.answerGiven'),
+          button: t('auth.home.drawCard.hints'),
+          to: `${draw.path}/pistes`,
+          variant: 'solid' as const,
+        }
+      : { title: t('auth.home.drawCard.answerGiven'), button: null, to: null };
   }
   return draw.hintsOn && !draw.hasHints
     ? {

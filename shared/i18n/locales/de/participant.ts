@@ -11,6 +11,7 @@ export default {
       label: 'Schritte der Auslosung',
       invitation: 'Einladung',
       drawSoon: 'Auslosung · bald',
+      answer: 'Deine Antwort',
       drawDone: 'Auslosung erfolgt',
       party: 'Fest',
       partyIn: {
@@ -100,5 +101,41 @@ export default {
     added: 'Auslosung zu deinem Konto hinzugefügt',
     sendTo: 'Meinen Link an {email} senden',
     sent: 'Link an {email} gesendet: Öffne ihn, um dein Konto zu erstellen. Schau auch im Spam-Ordner nach.',
+  },
+  answer: {
+    card: {
+      title: 'Wen beschenkst du?',
+      body: 'Die Auslosung fand außerhalb der App statt. Sag es hier, um die Geschenk-Hinweise deiner Person zu sehen. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      action: 'Sagen, wen ich beschenke',
+      hint: 'Deine Antwort bleibt geheim, selbst für den Organisator.',
+      savedTitle: 'Antwort gespeichert',
+      savedBody: {
+        one: 'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antwort von {total}.',
+        other:
+          'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antworten von {total}.',
+      },
+      review: 'Meine Antwort ansehen oder korrigieren',
+      savedHint:
+        'Deine Antwort bleibt verborgen: Sie erscheint nur, wenn du danach fragst.',
+    },
+    choose: {
+      title: 'Wen beschenkst du?',
+      description:
+        'Die Person, die du gezogen hast, auf Papier oder in der anderen App.',
+      search: 'Einen Vornamen suchen',
+      results: {
+        one: '{shown} Vorname von {total}',
+        other: '{shown} Vornamen von {total}',
+      },
+    },
+    confirm: {
+      title: 'Du beschenkst {name}?',
+      description:
+        'Prüf es gut: Es ist die Person, die du gezogen hast, auf Papier oder in der anderen App.',
+      note: 'Du kannst deine Antwort korrigieren, bis der Organisator die Auslosung bestätigt. Niemand sonst sieht sie.',
+      yes: 'Ja, es ist {name}',
+      other: 'Jemand anderen wählen',
+    },
+    saved: 'Antwort gespeichert',
   },
 } satisfies Dict<typeof fr>;

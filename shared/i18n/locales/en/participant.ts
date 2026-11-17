@@ -11,6 +11,7 @@ export default {
       label: 'Steps of the draw',
       invitation: 'Invitation',
       drawSoon: 'Draw · soon',
+      answer: 'Your answer',
       drawDone: 'Draw done',
       party: 'Party',
       partyIn: {
@@ -99,5 +100,39 @@ export default {
     added: 'Draw added to your account',
     sendTo: 'Get my link at {email}',
     sent: 'Link sent to {email}: open it to create your account. Remember to look in your spam folder.',
+  },
+  answer: {
+    card: {
+      title: 'Who are you giving a gift to?',
+      body: "The draw was made outside the app. Say it here to see their gift hints. Make sure nobody's looking at your screen.",
+      action: "Say who I'm giving to",
+      hint: 'Your answer stays secret, even from the organizer.',
+      savedTitle: 'Answer saved',
+      savedBody: {
+        one: "You'll see your person's gift hints once everyone has answered. {count} answer out of {total} so far.",
+        other:
+          "You'll see your person's gift hints once everyone has answered. {count} answers out of {total} so far.",
+      },
+      review: 'See or correct my answer',
+      savedHint: 'Your answer stays hidden: it only shows if you ask for it.',
+    },
+    choose: {
+      title: 'Who are you giving a gift to?',
+      description: 'The person you drew, on paper or in the other app.',
+      search: 'Search a first name',
+      results: {
+        one: '{shown} name out of {total}',
+        other: '{shown} names out of {total}',
+      },
+    },
+    confirm: {
+      title: 'You are giving a gift to {name}?',
+      description:
+        "Check carefully: it's the person you drew, on paper or in the other app.",
+      note: 'You can correct your answer until the organizer validates the draw. Nobody else sees it.',
+      yes: "Yes, it's {name}",
+      other: 'Choose someone else',
+    },
+    saved: 'Answer saved',
   },
 } satisfies Dict<typeof fr>;

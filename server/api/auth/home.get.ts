@@ -28,6 +28,8 @@ import { decrypt } from '#server/utils/crypto';
 import { checkFeasibility } from '#server/utils/draw';
 import { nextStep } from '#server/utils/personal';
 import { mergeRules } from '#server/utils/rules';
+import { answersOfEdition } from '#server/database/answers';
+import { answersCard } from '#server/utils/answers';
 
 /**
  * How many editions to prepare get their draw checked on the home: the
@@ -83,6 +85,18 @@ export default defineEventHandler(async (event) => {
         const rules = merged.ok
           ? merged.value
           : { giftHints: 'none' as const, eventDate: '' };
+        // A draw made elsewhere (README 22.12): is their answer given?
+        const answers =
+          dataKey &&
+          edition.status === 'preparing' &&
+          edition.drawMode === 'elsewhere'
+            ? await answersOfEdition(db, edition.id, dataKey)
+            : null;
+        const answer = answers
+          ? answers.answered.includes(person.id)
+            ? ('given' as const)
+            : ('toGive' as const)
+          : null;
         const token = dataKey
           ? await decrypt(
               { enc: participation.tokenEnc, iv: participation.tokenIv },
@@ -102,7 +116,9 @@ export default defineEventHandler(async (event) => {
             revealed: participation.viewCount > 0,
             hintsOn: rules.giftHints !== 'none',
             hasHints: withHints.has(participation.id),
+            answer,
           }),
+          answer,
           revealed: participation.viewCount > 0,
           hintsOn: rules.giftHints !== 'none',
           hasHints: withHints.has(participation.id),
@@ -146,10 +162,42 @@ export default defineEventHandler(async (event) => {
   );
   const managed = await listOrganizedGroups(db, user.accountId);
   const summaries = await currentEditionSummaries(db, managed);
+  const collecting = (groupId: string) =>
+    summaries[groupId]?.edition.status === 'preparing' &&
+    summaries[groupId]?.edition.drawMode === 'elsewhere';
   const toCheck = managed
-    .filter((group) => summaries[group.id]?.edition.status === 'preparing')
+    .filter(
+      (group) =>
+        summaries[group.id]?.edition.status === 'preparing' &&
+        !collecting(group.id),
+    )
     .slice(0, CHECKED_EDITIONS_MAX);
-  const checkKey = toCheck.length > 0 ? await dataKeyOf(event) : null;
+  const answering = managed.filter((group) => collecting(group.id));
+  const checkKey =
+    toCheck.length > 0 || answering.length > 0 ? await dataKeyOf(event) : null;
+  // Where the answers of a draw made elsewhere stand, never what they are.
+  const answersByGroup = Object.fromEntries(
+    await Promise.all(
+      answering.map(async (group) => {
+        const state = checkKey
+          ? await answersOfEdition(
+              db,
+              summaries[group.id]!.edition.id,
+              checkKey,
+            )
+          : null;
+        return [
+          group.id,
+          state
+            ? { card: answersCard(state), answered: state.answered.length }
+            : null,
+        ];
+      }),
+    ),
+  ) as Record<
+    string,
+    { card: ReturnType<typeof answersCard>; answered: number } | null
+  >;
   const drawPossible = Object.fromEntries(
     await Promise.all(
       toCheck.map(async (group) => {
@@ -185,6 +233,7 @@ export default defineEventHandler(async (event) => {
         ? {
             ...summaries[group.id]!.summary,
             drawPossible: drawPossible[group.id] ?? null,
+            answers: answersByGroup[group.id] ?? null,
           }
         : null,
     })),

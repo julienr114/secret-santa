@@ -20,9 +20,11 @@ const { t } = useT();
 const party = usePartyText();
 
 /** What the row waits for: where its button leads, after the draw path. */
-const ACTIONS = { discover: '', addHints: '/pistes' } as const;
+const ACTIONS = { discover: '', giveAnswer: '', addHints: '/pistes' } as const;
 const action = computed(() =>
-  props.draw.step === 'discover' || props.draw.step === 'addHints'
+  props.draw.step === 'discover' ||
+  props.draw.step === 'giveAnswer' ||
+  props.draw.step === 'addHints'
     ? {
         to: `${props.draw.path}${ACTIONS[props.draw.step]}`,
         label: t(`auth.home.step.${props.draw.step}.action`),

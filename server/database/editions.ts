@@ -41,6 +41,8 @@ export type PublicEdition = {
   rulesOverride: unknown;
   drawnAt: string | null;
   closedAt: string | null;
+  /** When the organiser revealed who gave to whom, or null. */
+  revealedAt: string | null;
   createdAt: string;
   participantCount?: number;
   /** When the organisers were reminded that the exchange is near. */
@@ -67,6 +69,7 @@ export const publicEdition = (
   rulesOverride: edition.rulesOverride,
   drawnAt: edition.drawnAt,
   closedAt: edition.closedAt,
+  revealedAt: edition.revealedAt,
   createdAt: edition.createdAt,
   reminderSentAt: edition.reminderSentAt,
   ...(participantCount === undefined ? {} : { participantCount }),

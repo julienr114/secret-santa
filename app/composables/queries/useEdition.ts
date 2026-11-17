@@ -62,6 +62,9 @@ export const useDrawMutation = (slug: Ref, id: Ref) =>
   editionAction(slug, id, 'draw');
 export const useCloseMutation = (slug: Ref, id: Ref) =>
   editionAction(slug, id, 'close');
+/** Reveals who gave to whom; `early` before the day of the party. */
+export const useRevealDrawMutation = (slug: Ref, id: Ref) =>
+  editionAction<{ early: boolean }>(slug, id, 'reveal');
 export const useCancelDrawMutation = (slug: Ref, id: Ref) =>
   editionAction<{ reason: string }>(slug, id, 'redraw');
 

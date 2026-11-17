@@ -18,21 +18,26 @@ const LABELS = {
  * The stepper of an edition, on its screen and on the group's card.
  * @param status - Status of the edition.
  * @param eventDate - Day of the party.
+ * @param revealed - Whether its results were revealed.
  * @returns The steps for `UiStepper`.
  */
 export const useEditionSteps = (
   status: MaybeRefOrGetter<EditionStatus>,
   eventDate: MaybeRefOrGetter<string | null | undefined>,
+  revealed: MaybeRefOrGetter<boolean> = false,
 ) => {
   const { t } = useT();
   const today = new Date().toLocaleDateString('sv-SE');
   return computed<Step[]>(() =>
-    editionSteps(toValue(status), toValue(eventDate), today).map(
-      (step, index) => ({
-        label: t(LABELS[step.label]),
-        state: step.state,
-        icon: index === 0 ? undefined : 'i-lucide-sparkle',
-      }),
-    ),
+    editionSteps(
+      toValue(status),
+      toValue(eventDate),
+      today,
+      toValue(revealed),
+    ).map((step, index) => ({
+      label: t(LABELS[step.label]),
+      state: step.state,
+      icon: index === 0 ? undefined : 'i-lucide-sparkle',
+    })),
   );
 };

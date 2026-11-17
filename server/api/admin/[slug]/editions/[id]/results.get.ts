@@ -5,11 +5,12 @@ import { requireEdition } from '#server/http/edition';
 import { dataKeyOf } from '#server/http/context';
 import { decrypt } from '#server/utils/crypto';
 
-// Who gave to whom, for a CLOSED edition only: after the party results are
-// no longer secret (decision of 2026-11-13). Any other status is refused.
+// Who gave to whom, once revealed (README 22.9) or for a closed edition:
+// after the party results are no longer secret (decision of 2026-11-13).
+// A draw neither revealed nor closed is refused.
 export default defineEventHandler(async (event) => {
   const { db, edition } = await requireEdition(event);
-  if (edition.status !== 'closed') {
+  if (edition.status !== 'closed' && !edition.revealedAt) {
     throw createError({ statusCode: 403, statusMessage: 'results_secret' });
   }
   const dataKey = await dataKeyOf(event);

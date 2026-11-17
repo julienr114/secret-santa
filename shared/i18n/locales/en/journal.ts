@@ -30,8 +30,10 @@ export default {
     avatar_changed: '{name} changed their icon',
     language_changed: '{name} changed their language ({language})',
     edition_closed: 'The edition {label} is closed',
+    draw_revealed: 'The organizer revealed the results of the draw{early}',
   },
   noReason: 'not given',
+  beforeParty: ' before the party',
   what: {
     invitation: '“Invitation”',
     drawn: '“Draw done”',

@@ -16,6 +16,12 @@ export default {
   edition_in_progress: "Clôture d'abord l'édition en cours.",
   edition_closed: 'Cette édition est clôturée.',
   invalid_rules: 'Règles invalides.',
+  results_already_revealed: 'Les résultats sont déjà dévoilés.',
+  results_revealed:
+    'Les résultats sont dévoilés : le tirage ne peut plus être annulé.',
+  party_date_missing:
+    'Ajoute d’abord la date de la fête pour pouvoir dévoiler les résultats.',
+  party_not_reached: 'La fête n’a pas encore eu lieu.',
   invalid_transition:
     "Cette action n'est pas possible à ce stade de l'édition.",
   no_solution:

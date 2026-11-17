@@ -127,6 +127,13 @@
       "when": 1794923607068,
       "tag": "0017_request_note",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1794923765814,
+      "tag": "0018_edition_revealed",
+      "breakpoints": true
     }
   ]
 }

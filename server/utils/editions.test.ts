@@ -15,6 +15,7 @@ import {
   participantBadges,
   previousEdition,
   editionStep,
+  canRevealDraw,
   editionSteps,
   followSeries,
   followState,
@@ -350,5 +351,63 @@ describe('editionSteps', () => {
       ['drawDone', 'done'],
       ['partyDone', 'done'],
     ]);
+  });
+});
+
+describe('editionSteps once revealed', () => {
+  it('shows every step done, the party « Fêté »', () => {
+    expect(
+      editionSteps('drawn', '2026-12-25', '2026-12-26', true).map((s) => [
+        s.label,
+        s.state,
+      ]),
+    ).toEqual([
+      ['prepare', 'done'],
+      ['drawDone', 'done'],
+      ['partyDone', 'done'],
+    ]);
+  });
+});
+
+describe('canRevealDraw', () => {
+  const drawn = { status: 'drawn' as const, revealedAt: null };
+  const party = '2026-12-25';
+
+  it('reveals from the day of the party', () => {
+    expect(canRevealDraw(drawn, party, '2026-12-25', false)).toEqual({
+      ok: true,
+      value: { early: false },
+    });
+    expect(canRevealDraw(drawn, party, '2027-01-03', false).ok).toBe(true);
+  });
+
+  it('before the party, only when the organiser insists', () => {
+    expect(canRevealDraw(drawn, party, '2026-12-01', false)).toMatchObject({
+      ok: false,
+      reason: 'party_not_reached',
+    });
+    expect(canRevealDraw(drawn, party, '2026-12-01', true)).toEqual({
+      ok: true,
+      value: { early: true },
+    });
+  });
+
+  it('refuses without a date, once revealed, or outside a drawn edition', () => {
+    expect(canRevealDraw(drawn, '', '2026-12-26', true)).toMatchObject({
+      reason: 'party_date_missing',
+    });
+    expect(
+      canRevealDraw(
+        { ...drawn, revealedAt: '2026-12-25T20:00:00Z' },
+        party,
+        '2026-12-26',
+        false,
+      ),
+    ).toMatchObject({ reason: 'results_already_revealed' });
+    (['preparing', 'closed'] as const).forEach((status) =>
+      expect(
+        canRevealDraw({ status, revealedAt: null }, party, '2026-12-26', false),
+      ).toMatchObject({ reason: 'invalid_transition' }),
+    );
   });
 });

@@ -15,6 +15,11 @@ const bodySchema = z.object({ reason: z.string().trim().min(3).max(200) });
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition } = await requireEdition(event);
   const status = unwrap(nextStatus(edition.status, 'cancel_draw'));
+  // Once revealed, who gave to whom is known: drawing again would not
+  // make it secret again.
+  if (edition.revealedAt) {
+    throw createError({ statusCode: 409, statusMessage: 'results_revealed' });
+  }
   const { reason } = await validatedBody(event, bodySchema);
   await db.batch([
     deleteAssignments(db, edition.id),

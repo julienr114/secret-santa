@@ -416,7 +416,7 @@ Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 param�
 ### 8.7 Secret et éditions passées (décisions du 13 novembre 2026)
 
 - **Édition clôturée = résultats non secrets.** L'organisateur voit le tirage d'une édition clôturée dans les archives (« Léa a offert à Tom ») et, pendant la préparation de l'édition suivante, la liste nommée des paires exclues par les années précédentes. Il peut **lever une de ces exclusions pour l'édition en cours seulement** (colonne `editions.history_waivers`, migration `0004`), ou tout rétablir.
-- Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées.
+- Une édition **tirée mais pas encore clôturée** reste secrète : ses paires ne sont que comptées, sauf si l'organisateur les a **dévoilées** (22.9) : dès le jour de la fête, ou avant après un avertissement ; c'est définitif, journalisé pour tous, et seul l'organisateur voit la liste.
 - **Accès de dernier recours, un résultat à la fois** (`POST /api/admin/[groupe]/editions/[id]/reveal-one`, corps `personId` ; d'abord prévu pour le tirage entier, restreint à une personne par appel le 13 novembre 2026, événement `result_revealed` qui nomme la personne dans le journal) : phrase « JE VEUX VOIR LE TIRAGE » à recopier, case de confirmation, et événement `results_revealed` inscrit au **journal public** (« L'organisateur a consulté les résultats du tirage »). L'organisateur pourrait de toute façon ouvrir les liens personnels ; cette voie officielle a l'avantage d'être visible de tous. Le résultat n'est affiché que dans l'état de l'écran, jamais mis en cache.
 - Ces trois points remplacent, pour les éditions clôturées et l'accès de dernier recours, la règle « aucune route d'administration ne renvoie une attribution » de la section 8.3, qui reste vraie pour tout le reste.
 
@@ -443,6 +443,7 @@ Visible par tous les participants du groupe (depuis leur page personnelle) et pa
 | `wishes_updated` | « Léa a mis à jour sa liste de souhaits (3 idées) » |
 | `avatar_changed` / `language_changed` | « Léa a changé son icône » / « Léa a changé sa langue (Deutsch) » |
 | `edition_closed` | « L'édition Noël 2026 est clôturée » |
+| `draw_revealed` | « L'organisateur a dévoilé les résultats du tirage » (« … avant la fête » si c'était avant) : un jalon, pas une alerte ; jamais qui offre à qui |
 
 Les événements stockés ne contiennent aucun texte : la phrase est composée à l'affichage, dans la langue du lecteur (section 21). `link_shared` et `results_revealed` (tirage entier) ne sont plus émis ; ils restent décrits pour d'anciennes lignes.
 
@@ -497,6 +498,7 @@ Base D1 (SQLite). Identifiants en texte (UUID ou nanoid). Dates en ISO 8601 UTC.
 | `rules_override` | text (JSON) nullable | Surcharge des règles du groupe |
 | `rules_snapshot` | text (JSON) nullable | Règles et exclusions réellement appliquées au tirage, pour audit |
 | `drawn_at`, `closed_at` | text nullable | |
+| `revealed_at` | text nullable | Résultats dévoilés par l'organisateur (migration `0018`, README 22.9) |
 | `created_at` | text | |
 
 ### `participations`
@@ -607,11 +609,13 @@ Détails d'interface (page du tirage refaite le 15 novembre 2026) :
 - **Tirée** : carte « Préviens chacun que le tirage est fait » avec trois compteurs (à prévenir, pas encore ouvert, a découvert) et « Prévenir par email » (puis « Relancer par email ») vers l'écran d'envoi groupé. La liste met en tête ceux qui restent à prévenir (`sortParticipants`) ; le bouton rond de chaque ligne ouvre le panneau d'envoi, qui passe ensuite à la personne suivante.
 - **Panneau d'envoi** (allégé le 16 novembre 2026, 22.14) : court, seulement de quoi envoyer : sous le titre, où en est la personne (« Envoyé le 14 nov., pas encore consulté ») ; le message entier choisi tout seul (`defaultMessageType` : l'invitation puis sa relance avant le tirage, « Tirage fait » puis la relance après, « Nouveau tirage » quand l'édition a été tirée de nouveau), « Personnaliser le message › » (qui rappelle la langue du message quand ce n'est pas celle de l'organisateur) ; puis l'email en premier s'il y a une adresse, sinon le partage du téléphone, avec la ligne « {Prénom} n'a pas d'adresse email » et son bouton « Ajouter » ; au renvoi, « Renvoyer par email » seul. « Autre moyen, ou un souci ? » remplace le contenu par une liste : partager, copier le message ou le lien seul, corriger l'adresse, puis le dépannage. Une fois le message parti (email, partage ou copie), le panneau se referme.
 - **Personnaliser le message** (`…/editions/[id]/message?pour=`, une personne ou `plusieurs`) : quel message (trois segments), l'aperçu entier, « Un mot en plus » (placé selon la règle du groupe, 500 caractères), la langue du message pour une personne (enregistrée sur elle). « Valider » garde ces choix le temps de l'envoi (`useMessageChoice`, jamais en base) et ramène au panneau, qui dit alors « Modifier le message », ou à l'envoi groupé, sa sélection intacte (`useEmailSelection`). Rien n'est envoyé par « Valider ».
-- **Fêter** : à partir du lendemain de la fête, la carte devient « La fête est passée : clôture l'édition ».
+- **Fêter** (lot 13, README 22.9) : dès le jour de la fête, la carte devient « La fête est passée : dévoile les résultats » (« C'est le jour de la fête : … » le jour même), avec la barre des résultats consultés, « Dévoiler les résultats » et, à partir du lendemain, « Clôturer sans dévoiler » (second appui) ; « Pour l'instant, toi seul verras qui a offert à qui. » La liste du bas devient « En cas de pépin » : voir un seul résultat, annuler et relancer.
+- **Dévoiler** : un panneau (`AdminRevealSheet`). Dès le jour de la fête : la fête a eu lieu, qui n'a pas consulté son résultat, « Toi seul verras la liste », « C'est définitif, et le journal du groupe l'indique », puis « Dévoiler les résultats » ou « Pas encore ». Avant la fête, depuis la ligne « Dévoiler les résultats » de « Plus tard » : l'encadré rouge « Le secret s'arrête ici, pour de bon », la phrase « dévoiler avant la fête » à recopier, « Attendre la fête » en vert et « Dévoiler quand même » en contour rouge, actif une fois la phrase recopiée.
+- **Résultats dévoilés** (l'édition reste tirée jusqu'à sa clôture) : la frise entièrement faite, l'encadré « Résultats dévoilés », « Le tirage · N participants » (chaque paire, avec l'icône du receveur ; « Pour l'instant, toi seul vois cette liste »), les exclusions appliquées, le journal, « Clôturer l'édition » (second appui) et « Préparer l'édition suivante ».
 - **Clôturée** : la frise entièrement faite (« Fêté »), « fêté le … » sous le titre, l'encadré « Édition clôturée », les paires du tirage (README 8.7), les lignes « Exclusions appliquées au tirage » et « Journal du groupe », puis « Préparer l'édition suivante ».
 - **Annuler le tirage** (`…/annuler`) : l'encadré rouge « Tout le monde devra redécouvrir » (résultats effacés et combien les avaient vus, liste de nouveau modifiable, message « Nouveau tirage » à envoyer), ce qui reste (liens, listes de souhaits), le motif, la ligne que le journal affichera, la case « Je comprends… », puis « Garder ce tirage » en vert et « Annuler le tirage » en contour rouge, actif une fois le motif écrit et la case cochée.
 - **Voir un seul résultat** (`…/voir-le-tirage`) : l'encadré « À n'utiliser qu'en dernier recours », le choix de la personne dans `UiPersonPicker` (recherche au-delà de 10), la ligne que le journal affichera avec son prénom, la phrase « JE VEUX VOIR LE TIRAGE » à recopier, la case « Je comprends… », puis « Voir le résultat de {Prénom} ». Le résultat (« Hugo offre un cadeau à » et le prénom en grand) reste à l'écran jusqu'à « Cacher et revenir à l'édition » ou « Voir un autre résultat ».
-- **Plus tard, ou en cas de pépin** : budget et petit mot, clôturer (possible après la fête), voir un seul résultat (dernier recours, journalisé), annuler et relancer le tirage. Une fois l'édition clôturée, budget et mot restent lisibles, sans panneau.
+- **Plus tard, ou en cas de pépin** : budget et petit mot, « Dévoiler les résultats » (« Prévu après la fête, le … », ou « Ajoute d'abord la date de la fête » sans date, et alors la ligne « Clôturer l'édition » reste), voir un seul résultat (dernier recours, journalisé), annuler et relancer le tirage. Une fois l'édition clôturée, budget et mot restent lisibles, sans panneau.
 - **Plus de fiche participant** (décidé par Julien le 16 novembre 2026 : elle doublait le panneau d'envoi). Avant le tirage, toucher une personne ouvre sa fiche dans le groupe (on y corrige un prénom, une adresse, une exclusion) ; après, le panneau d'envoi. Les réparations sont dans la liste « Autre moyen, ou un souci ? » (`AdminParticipantTroubleshoot`) : « Pas envoyé finalement ? » une fois un message parti, et « Régénérer son lien » (second appui). Retirer quelqu'un passe par « Choisir les participants ». L'adresse s'ajoute (« Ajouter ») ou se corrige (« La corriger ») sur place (`AdminEmailInline`) : une adresse refusée s'affiche en rouge sous le champ ; enregistrée, le panneau propose l'email en premier. L'ancienne adresse `…/participants/[id]` mène à l'édition, panneau ouvert sur la personne (`?envoyer=`).
 
 ---
@@ -668,7 +672,8 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `POST …/editions/[id]/participants`, `DELETE …/participants/[participationId]` | Ajouter, retirer (avant le tirage) |
 | `GET …/editions/[id]/messages?type=` | Textes prêts à partager pour chaque participant, dans sa langue, sans effet de bord |
 | `POST …/editions/[id]/emails` | Envoi par email (13.3) : `type`, puis `participationIds` ou `audience` |
-| `GET …/editions/[id]/results` | Qui a offert à qui, pour une édition **clôturée** uniquement |
+| `POST …/editions/[id]/reveal` | Dévoile les résultats, pour de bon (README 22.9) : édition tirée avec une date de fête ; avant la fête, seulement avec `early: true` (`party_not_reached` sinon). Journalisé (`draw_revealed`) ; ensuite le tirage ne s'annule plus (`results_revealed`) |
+| `GET …/editions/[id]/results` | Qui a offert à qui, pour une édition **dévoilée ou clôturée** uniquement |
 | `POST …/editions/[id]/reveal-one` | Accès de dernier recours à un résultat (8.7) |
 | `POST/DELETE /api/admin/[groupe]/participations/[id]/message` | Pose ou retire la pastille *envoyé* ; corps `type` et `via` ∈ `share`, `copy` |
 | `POST /api/admin/[groupe]/participations/[id]/link` | Obtenir le lien seul, journalisé |
@@ -1125,9 +1130,9 @@ préparer ──► tirée ──► clôturée
 - [x] **Après le tirage, une seule tournée** : « Prévenir par email » est l'action principale ; le partage à la main reste sur chaque ligne. Liste groupée : à prévenir, pas encore ouvert, ont découvert.
 - [x] **Mettre à jour** les sections 4.1, 4.2, 11, 13.2 et l'étape 5 bis (souhaits « modifiable en `invitations` et `tirée` »), les dictionnaires (`adminEdition.cockpit.draftIntro`, `openInvitations`, libellés de statut), le guide de style et les tests de bout en bout.
 
-### 22.9 Idée : « Dévoiler les résultats » à l'étape Fêter (15 novembre 2026)
+### 22.9 Fait : « Dévoiler les résultats » à l'étape Fêter (15 novembre 2026)
 
-Idée de Julien, cadrée le 15 novembre 2026. **Rien n'est codé**, et ce n'est pas encore planifié. Maquettes : même canevas qu'en 22.8 (écrans « Étape 2 · Dévoiler avant la fête », « Étape 3 · Fêter, à dévoiler », « Confirmation du dévoilement », « Résultats dévoilés »).
+Idée de Julien, cadrée le 15 novembre 2026. **Codé le 17 novembre 2026** (lot 13 de la refonte : colonne `editions.revealed_at`, migration `0018`, `POST …/reveal`, événement `draw_revealed`, écrans « Fêter », « Dévoiler », « Résultats dévoilés » ; section 11). Une édition clôturée sans être dévoilée garde ses paires visibles pour l'organisateur (8.7 inchangé, décidé par Julien le 17 novembre 2026) : la maquette « Clôturée sans dévoiler » n'est pas suivie. Maquettes : même canevas qu'en 22.8 (écrans « Étape 2 · Dévoiler avant la fête », « Étape 3 · Fêter, à dévoiler », « Confirmation du dévoilement », « Résultats dévoilés »).
 
 **Principe** : à l'étape « Fêter », l'action principale de l'organisateur devient « Dévoiler les résultats » (qui a offert à qui) ; « Clôturer sans dévoiler » reste possible en action secondaire. La frise garde trois étapes.
 

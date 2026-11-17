@@ -64,6 +64,7 @@ export default defineEventHandler(async (event) => {
     reminderSentAt: null,
     drawnAt: null,
     closedAt: null,
+    revealedAt: null,
     createdAt: nowIso(),
   };
   const rows = await Promise.all(

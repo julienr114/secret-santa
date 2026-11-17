@@ -29,8 +29,10 @@ export default {
     avatar_changed: '{name} a changé son icône',
     language_changed: '{name} a changé sa langue ({language})',
     edition_closed: "L'édition {label} est clôturée",
+    draw_revealed: "L'organisateur a dévoilé les résultats du tirage{early}",
   },
   noReason: 'non précisé',
+  beforeParty: ' avant la fête',
   what: {
     invitation: '« Invitation »',
     drawn: '« Tirage fait »',

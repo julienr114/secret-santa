@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
-import { rulesOverrideSchema, rulesPatchSchema } from './rules';
+import { isIsoDay, rulesOverrideSchema, rulesPatchSchema } from './rules';
 import { byName } from './people';
 
 // Editions of a group (README 4.1). Pure helpers; the routes do the I/O.
@@ -262,20 +262,22 @@ export type EditionStepView = {
 
 /**
  * The three steps of an edition as the stepper shows them: done before
- * the current one, all done once closed; the draw reads « Tirage fait »
- * once drawn, the party « Fêté » once closed.
+ * the current one, all done once closed or revealed; the draw reads
+ * « Tirage fait » once drawn, the party « Fêté » once closed or revealed.
  * @param status - Status of the edition.
  * @param eventDate - Day of the party (ISO), or anything else when unknown.
  * @param today - ISO day.
+ * @param revealed - Whether the results were revealed.
  * @returns The steps, in order.
  */
 export const editionSteps = (
   status: EditionStatus,
   eventDate: string | null | undefined,
   today: string,
+  revealed = false,
 ): EditionStepView[] => {
   const at = EDITION_STEPS.indexOf(editionStep(status, eventDate, today));
-  const closed = status === 'closed';
+  const closed = status === 'closed' || revealed;
   const labels = [
     'prepare',
     status === 'preparing' ? 'draw' : 'drawDone',
@@ -375,4 +377,36 @@ export const followSeries = <P extends FollowedParticipant>(
     state,
     items: sorted.filter((p) => followState(p) === state),
   })).filter((series) => series.items.length > 0);
+};
+
+// --- Revealing the results (README 22.9, lot 13) --------------------------
+
+/** What deciding whether the results may be revealed needs of an edition. */
+export type RevealableEdition = {
+  status: EditionStatus;
+  revealedAt: string | null;
+};
+
+/**
+ * Whether the organiser may reveal who gave to whom: a drawn edition, not
+ * revealed yet, whose party has a date. From the day of the party; before
+ * it, only when they say so (`early`), after a stern warning.
+ * @param edition - The edition.
+ * @param eventDate - Day of the party.
+ * @param today - ISO day.
+ * @param early - The organiser chose to reveal before the party.
+ * @returns Ok, with whether it is before the party; or why not.
+ */
+export const canRevealDraw = (
+  edition: RevealableEdition,
+  eventDate: string | null | undefined,
+  today: string,
+  early: boolean,
+): Result<{ early: boolean }> => {
+  if (edition.status !== 'drawn') return fail('invalid_transition');
+  if (edition.revealedAt) return fail('results_already_revealed');
+  if (!isIsoDay(eventDate)) return fail('party_date_missing');
+  const before = today < eventDate;
+  if (before && !early) return fail('party_not_reached');
+  return ok({ early: before });
 };

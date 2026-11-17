@@ -235,11 +235,12 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   expect(moved.ok()).toBe(true);
   await page.reload();
   await hydrated(page);
-  // The party is over: closing is the action of the moment.
-  await expect(
-    page.getByText("La fête est passée : clôture l'édition"),
-  ).toBeVisible();
-  await page.getByRole('button', { name: "Clôturer l'édition" }).click();
+  // The party is over: revealing the results is the action of the
+  // moment; closing without revealing stays at hand, with a second tap.
+  await expect(page.getByTestId('action-card')).toContainText(
+    'La fête est passée : dévoile les résultats',
+  );
+  await page.getByRole('button', { name: 'Clôturer sans dévoiler' }).click();
   await page.getByRole('button', { name: "Clôturer l'édition" }).click();
   // Closed: every step done, read only, and the way to the next edition.
   await expect(page.getByTestId('closed-notice')).toContainText(

@@ -30,8 +30,11 @@ export default {
     avatar_changed: '{name} hat das eigene Symbol geändert',
     language_changed: '{name} hat die eigene Sprache geändert ({language})',
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
+    draw_revealed:
+      'Der Organisator hat die Ergebnisse der Auslosung{early} aufgedeckt',
   },
   noReason: 'nicht angegeben',
+  beforeParty: ' vor der Feier',
   what: {
     invitation: '„Einladung“',
     drawn: '„Auslosung erfolgt“',

@@ -325,3 +325,79 @@ test.describe('on an iPhone', () => {
     await expect(page.getByTestId('draw-sheet')).toHaveCount(0);
   });
 });
+
+test('from the day of the party, the organiser reveals who gave to whom', async ({
+  page,
+}) => {
+  const { at, id } = await setUp('cas-devoiler', ['Ada', 'Bob', 'Cyd']);
+  const api = state.api!;
+  await api.post(`${at}/editions/${id}/draw`);
+  // Still secret: no pairs before revealing.
+  expect((await api.get(`${at}/editions/${id}/results`)).status()).toBe(403);
+  // The party is today.
+  const today = new Date().toISOString().slice(0, 10);
+  await api.patch(`${at}/editions/${id}`, { data: { eventDate: today } });
+
+  await apiLogin(page.request, SUPER);
+  await page.goto(`/admin/cas-devoiler/editions/${id}`);
+  await hydrated(page);
+  const card = page.getByTestId('action-card');
+  await expect(card).toContainText('dévoile les résultats');
+  await card.getByRole('button', { name: 'Dévoiler les résultats' }).click();
+  const sheet = page.getByRole('dialog');
+  await expect(sheet.getByTestId('reveal-confirm')).toContainText(
+    '3 personnes n’ont pas consulté leur résultat',
+  );
+  await sheet.getByRole('button', { name: 'Dévoiler les résultats' }).click();
+  await expect(page.getByTestId('revealed-notice')).toContainText(
+    'Résultats dévoilés',
+  );
+  await expect(page.getByText('Le tirage · 3 participants')).toBeVisible();
+  await expect(page.getByText(/^a offert à /)).toHaveCount(3);
+  await expect(page.locator('[aria-current="step"]')).toHaveCount(0);
+
+  // For good: once only, and the draw can no longer be cancelled.
+  const pairs = await (await api.get(`${at}/editions/${id}/results`)).json();
+  expect(pairs.pairs).toHaveLength(3);
+  const again = await api.post(`${at}/editions/${id}/reveal`, { data: {} });
+  expect(again.status()).toBe(409);
+  const redraw = await api.post(`${at}/editions/${id}/redraw`, {
+    data: { reason: 'Trop tard' },
+  });
+  expect(redraw.status()).toBe(409);
+  // Everyone reads it in the journal, never who gave to whom.
+  const { entries } = await (await api.get(`${at}/journal`)).json();
+  expect(entries[0].text).toBe(
+    "L'organisateur a dévoilé les résultats du tirage",
+  );
+});
+
+test('before the party, revealing asks for a phrase', async ({ page }) => {
+  const { at, id } = await setUp('cas-devoiler-tot', ['Ada', 'Bob', 'Cyd']);
+  const api = state.api!;
+  await api.post(`${at}/editions/${id}/draw`);
+  await api.patch(`${at}/editions/${id}`, {
+    data: { eventDate: '2099-12-24' },
+  });
+  // Not on the quiet: the route wants the organiser's say-so.
+  const quiet = await api.post(`${at}/editions/${id}/reveal`, { data: {} });
+  expect(quiet.status()).toBe(409);
+
+  await apiLogin(page.request, SUPER);
+  await page.goto(`/admin/cas-devoiler-tot/editions/${id}`);
+  await hydrated(page);
+  await page.getByTestId('reveal-row').click();
+  const sheet = page.getByRole('dialog');
+  await expect(sheet.getByTestId('reveal-early')).toContainText(
+    'Le secret s’arrête ici, pour de bon',
+  );
+  const anyway = sheet.getByRole('button', { name: 'Dévoiler quand même' });
+  await expect(anyway).toBeDisabled();
+  await sheet.getByRole('textbox').fill('Dévoiler avant la fête');
+  await anyway.click();
+  await expect(page.getByTestId('revealed-notice')).toBeVisible();
+  const { entries } = await (await api.get(`${at}/journal`)).json();
+  expect(entries[0].text).toBe(
+    "L'organisateur a dévoilé les résultats du tirage avant la fête",
+  );
+});

@@ -95,6 +95,9 @@ export const editions = sqliteTable(
     reminderSentAt: text('reminder_sent_at'),
     drawnAt: text('drawn_at'),
     closedAt: text('closed_at'),
+    // When the organiser revealed who gave to whom (README 22.9, lot 13):
+    // for good, and before closing.
+    revealedAt: text('revealed_at'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('editions_group_idx').on(t.groupId)],

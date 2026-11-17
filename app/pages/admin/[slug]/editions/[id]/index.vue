@@ -10,6 +10,7 @@ import {
   useCheckQuery,
   useCloseMutation,
   useDrawMutation,
+  useRevealDrawMutation,
 } from '~/composables/queries/useEdition';
 
 // The edition screen (README 11): where
@@ -38,6 +39,7 @@ const people = usePeopleQuery(slug);
 const check = useCheckQuery(slug, id);
 const drawMutation = useDrawMutation(slug, id);
 const close = useCloseMutation(slug, id);
+const revealDraw = useRevealDrawMutation(slug, id);
 
 const status = computed(
   () => edition.data.value?.edition.status ?? 'preparing',
@@ -45,6 +47,10 @@ const status = computed(
 const rules = computed(() => edition.data.value?.rules);
 const participants = computed(() => edition.data.value?.participants ?? []);
 const redrawn = computed(() => edition.data.value?.redrawn ?? false);
+/** The organiser revealed who gave to whom (README 22.9). */
+const revealed = computed(() =>
+  Boolean(edition.data.value?.edition.revealedAt),
+);
 const label = computed(
   () =>
     edition.data.value?.edition.label ??
@@ -55,7 +61,7 @@ const screen = computed(() => ({ back: `/admin/${slug.value}` }));
 const subtitle = computed(() =>
   [
     dashboard.data.value?.group.name,
-    status.value === 'closed'
+    status.value === 'closed' || partyReached.value
       ? dateText.value &&
         t('adminEdition.screen.closed.partedOn', { date: dateText.value })
       : rules.value?.budget &&
@@ -71,7 +77,11 @@ const hasDate = computed(() => isIsoDay(eventDate.value));
 const dateText = computed(() =>
   hasDate.value ? formatEventDate(eventDate.value, locale.value) : null,
 );
-const steps = useEditionSteps(status, eventDate);
+const steps = useEditionSteps(status, eventDate, revealed);
+/** From the day of the party, revealing is the action of the moment. */
+const partyReached = computed(
+  () => status.value === 'drawn' && hasDate.value && today >= eventDate.value,
+);
 // Closing waits for the day after the party (README 21.3).
 const canClose = computed(
   () =>
@@ -119,6 +129,28 @@ const runDraw = () =>
  * @returns Nothing: the mutation reports by itself.
  */
 const onClose = () => close.mutate(undefined, { onError });
+
+const revealOpen = ref(false);
+/**
+ * Reveals the results, then closes the sheet with a toast.
+ * @param early - Before the day of the party.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onReveal = (early: boolean) =>
+  revealDraw.mutate(
+    { early },
+    {
+      onSuccess: () => {
+        revealOpen.value = false;
+        toast.add({
+          title: t('adminEdition.screen.reveal.done'),
+          icon: 'i-lucide-eye',
+          color: 'success',
+        });
+      },
+      onError,
+    },
+  );
 
 // The send sheet follows one participant; once done, it moves on to the
 // next one still to notify.
@@ -168,7 +200,7 @@ const dateOpen = ref(false);
       <AdminEditionHeader
         :title="label"
         :subtitle="subtitle"
-        :date-text="status === 'closed' ? null : dateText"
+        :date-text="status === 'closed' || revealed ? null : dateText"
         @edit-date="dateOpen = true"
       />
       <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
@@ -189,17 +221,28 @@ const dateOpen = ref(false);
         :exclusion-count="exclusionCount"
         @draw="drawOpen = true"
       />
+      <AdminEditionRevealed
+        v-else-if="status === 'drawn' && revealed"
+        :slug="slug"
+        :edition-id="id"
+        :participants="participants"
+        :applied-exclusions="appliedExclusions"
+        :closing="close.isPending.value"
+        @close="onClose"
+      />
       <AdminEditionFollow
         v-else-if="status === 'drawn'"
         :slug="slug"
         :edition-id="id"
         :participants="participants"
         :redrawn="redrawn"
+        :party-reached="partyReached"
         :can-close="canClose"
         :date-text="dateText"
         :closing="close.isPending.value"
         @send="(pid) => (sendId = pid)"
         @close="onClose"
+        @reveal="revealOpen = true"
       />
       <template v-else>
         <UiCard
@@ -289,6 +332,14 @@ const dateOpen = ref(false);
       :note-position="rules?.messageNotePosition ?? 'after'"
       @sent="onSent"
       @customize="onCustomize(sendTarget.participationId)"
+    />
+    <AdminRevealSheet
+      v-if="hasDate && status === 'drawn' && !revealed"
+      v-model:open="revealOpen"
+      :event-date="eventDate"
+      :participants="participants"
+      :loading="revealDraw.isPending.value"
+      @confirm="onReveal"
     />
     <AdminPartyDateSheet
       v-model:open="dateOpen"

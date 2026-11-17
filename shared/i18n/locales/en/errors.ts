@@ -18,6 +18,11 @@ export default {
   edition_in_progress: 'Close the current edition first.',
   edition_closed: 'This edition is closed.',
   invalid_rules: 'Invalid rules.',
+  results_already_revealed: 'The results are already revealed.',
+  results_revealed:
+    'The results are revealed: the draw can no longer be cancelled.',
+  party_date_missing: 'Add the date of the party first to reveal the results.',
+  party_not_reached: 'The party has not happened yet.',
   invalid_transition: 'This action is not possible at this stage.',
   no_solution: 'No draw is possible with these rules: relax an exclusion.',
   too_many_participants: 'An edition cannot have more than 100 participants.',

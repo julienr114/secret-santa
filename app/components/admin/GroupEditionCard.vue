@@ -21,7 +21,11 @@ const details = useEditionQuery(
 const eventDate = computed(
   () => details.data.value?.rules.eventDate ?? props.groupDate,
 );
-const steps = useEditionSteps(() => props.edition.status, eventDate);
+const steps = useEditionSteps(
+  () => props.edition.status,
+  eventDate,
+  () => Boolean(props.edition.revealedAt),
+);
 const today = new Date().toLocaleDateString('sv-SE');
 const dateLine = computed(() => {
   if (!isIsoDay(eventDate.value)) return null;

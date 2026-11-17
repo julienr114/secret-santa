@@ -9,22 +9,30 @@ import {
 } from '#server/utils/editions';
 import { FOLD_FROM, foldList, listView, type Fold } from '#shared/utils/lists';
 
-// After the draw: what to do now (let everyone know, or close once the
-// party is over), the participants in one list from the least done, each
-// with a round button to send or send again, then what can be done later.
+// After the draw: what to do now (let everyone know; from the day of the
+// party, reveal the results, or close without revealing once it is
+// over), the participants in one list from the least done, each with a
+// round button to send or send again, then what can be done later, or,
+// from the day of the party, what to do if something goes wrong.
 const props = defineProps<{
   slug: string;
   editionId: string;
   participants: Participant[];
   /** Drawn again after a cancelled draw: « Nouveau tirage » is sent. */
   redrawn: boolean;
-  /** The party is over: closing becomes the action of the moment. */
+  /** The day of the party has come: revealing is the action of the moment. */
+  partyReached: boolean;
+  /** The party is over: the edition may be closed. */
   canClose: boolean;
   /** The day of the party, written out; null when unknown. */
   dateText: string | null;
   closing: boolean;
 }>();
-const emit = defineEmits<{ send: [participationId: string]; close: [] }>();
+const emit = defineEmits<{
+  send: [participationId: string];
+  close: [];
+  reveal: [];
+}>();
 const { t } = useT();
 
 const base = computed(() => `/admin/${props.slug}/editions/${props.editionId}`);
@@ -119,50 +127,96 @@ const unfold = (state: FollowState, open: boolean) => {
 // too early: the row of the list closes too (README 21.3).
 const confirming = ref(false);
 const confirmingRow = ref(false);
+/** How many opened their result, against everyone: the bar of the card. */
+const viewedShare = computed(() =>
+  props.participants.length === 0
+    ? 0
+    : Math.round((counts.value.viewed / props.participants.length) * 100),
+);
+/** On the day itself the party is not « over » yet. */
+const partyTitle = computed(() =>
+  props.canClose
+    ? t('adminEdition.screen.reveal.cardTitle')
+    : t('adminEdition.screen.reveal.cardTitleToday'),
+);
 </script>
 
 <template>
   <UiActionCard
-    v-if="canClose"
+    v-if="partyReached"
     :eyebrow="t('adminEdition.screen.now')"
-    :title="t('adminEdition.screen.follow.partyTitle')"
-    :help="t('adminEdition.screen.follow.partyHelp')"
+    :title="partyTitle"
+    :help="t('adminEdition.screen.reveal.onlyYou')"
     data-testid="action-card"
   >
-    <UiCounters :items="counters" />
+    <p class="-mt-3 text-sm leading-[1.45] text-toned">
+      {{ t('adminEdition.screen.reveal.cardHelp') }}
+    </p>
+    <div class="flex flex-col gap-1.5">
+      <div
+        role="progressbar"
+        :aria-valuenow="counts.viewed"
+        aria-valuemin="0"
+        :aria-valuemax="participants.length"
+        :aria-label="t('adminEdition.screen.reveal.viewedLabel')"
+        class="h-2 overflow-hidden rounded-full bg-track"
+      >
+        <div
+          class="h-full rounded-full bg-success"
+          :style="{ width: `${viewedShare}%` }"
+        />
+      </div>
+      <p class="text-[13px] text-toned">
+        {{
+          t('adminEdition.screen.reveal.viewed', {
+            count: counts.viewed,
+            total: participants.length,
+          })
+        }}
+      </p>
+    </div>
     <template #action>
       <UButton
-        v-if="!confirming"
         block
         size="xl"
+        icon="i-lucide-eye"
         class="h-12 justify-center font-bold"
         :ui="{ leadingIcon: 'size-5' }"
-        icon="i-lucide-archive"
-        :label="t('adminEdition.screen.follow.closeRow')"
-        @click="confirming = true"
+        :label="t('adminEdition.screen.reveal.action')"
+        @click="emit('reveal')"
       />
-      <div v-else class="flex flex-col gap-2">
-        <p class="text-sm">
-          {{ t('adminEdition.screen.follow.closeConfirm') }}
-        </p>
-        <div class="grid grid-cols-2 gap-2">
-          <UButton
-            block
-            variant="soft"
-            color="neutral"
-            :disabled="closing"
-            :label="t('common.actions.cancel')"
-            @click="confirming = false"
-          />
-          <UButton
-            block
-            :disabled="closing"
-            :loading="closingShown"
-            :label="closeLabel"
-            @click="emit('close')"
-          />
+      <template v-if="canClose">
+        <UButton
+          v-if="!confirming"
+          block
+          variant="ghost"
+          class="h-11 justify-center text-[15px] font-semibold text-primary-ink"
+          :label="t('adminEdition.screen.reveal.closeWithout')"
+          @click="confirming = true"
+        />
+        <div v-else class="flex flex-col gap-2 pt-1">
+          <p class="text-sm">
+            {{ t('adminEdition.screen.follow.closeConfirm') }}
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <UButton
+              block
+              variant="soft"
+              color="neutral"
+              :disabled="closing"
+              :label="t('common.actions.cancel')"
+              @click="confirming = false"
+            />
+            <UButton
+              block
+              :disabled="closing"
+              :loading="closingShown"
+              :label="closeLabel"
+              @click="emit('close')"
+            />
+          </div>
         </div>
-      </div>
+      </template>
     </template>
   </UiActionCard>
   <UiActionCard
@@ -272,47 +326,80 @@ const confirmingRow = ref(false);
   </section>
 
   <UiList
+    v-if="partyReached"
+    :title="t('adminEdition.screen.reveal.trouble')"
+    data-testid="trouble"
+  >
+    <UiListItem
+      :to="`${base}/voir-le-tirage`"
+      icon="i-lucide-eye"
+      icon-tone="neutral"
+      :title="t('adminEdition.screen.follow.revealOne')"
+      :subtitle="t('adminEdition.screen.follow.revealOneHint')"
+    />
+    <UiListItem
+      :to="`${base}/annuler`"
+      icon="i-lucide-rotate-ccw"
+      tone="danger"
+      :title="t('adminEdition.screen.follow.cancel')"
+      :subtitle="t('adminEdition.screen.follow.cancelHint')"
+    />
+  </UiList>
+  <UiList
+    v-else
     :title="t('adminEdition.screen.follow.later')"
     :footer="t('adminEdition.screen.follow.noResults')"
   >
     <AdminEditionRuleRows :slug="slug" :edition-id="editionId" />
     <UiListItem
-      v-if="!canClose && dateText"
-      icon="i-lucide-archive"
+      v-if="dateText"
+      icon="i-lucide-sparkle"
       icon-tone="neutral"
-      :title="t('adminEdition.screen.follow.closeRow')"
-      :subtitle="
-        t('adminEdition.screen.follow.closeRowLater', { date: dateText })
-      "
-      :chevron="false"
-      class="opacity-60"
+      :title="t('adminEdition.screen.reveal.row')"
+      :subtitle="t('adminEdition.screen.reveal.rowLater', { date: dateText })"
+      :on-click="() => emit('reveal')"
+      chevron
+      data-testid="reveal-row"
     />
-    <UiListItem
-      v-else-if="!dateText && !confirmingRow"
-      icon="i-lucide-archive"
-      icon-tone="neutral"
-      :title="t('adminEdition.screen.follow.closeRow')"
-      :subtitle="t('adminEdition.screen.follow.closeRowHint')"
-      :on-click="() => (confirmingRow = true)"
-    />
-    <li v-else-if="!dateText" class="flex flex-col gap-2 px-4 py-3">
-      <p class="text-sm">{{ t('adminEdition.screen.follow.closeConfirm') }}</p>
-      <div class="flex gap-2">
-        <UButton
-          :disabled="closing"
-          :loading="closingShown"
-          :label="closeLabel"
-          @click="emit('close')"
-        />
-        <UButton
-          variant="ghost"
-          color="neutral"
-          :disabled="closing"
-          :label="t('common.actions.cancel')"
-          @click="confirmingRow = false"
-        />
-      </div>
-    </li>
+    <template v-else>
+      <UiListItem
+        icon="i-lucide-sparkle"
+        icon-tone="neutral"
+        :title="t('adminEdition.screen.reveal.row')"
+        :subtitle="t('adminEdition.screen.reveal.rowNoDate')"
+        :chevron="false"
+        class="opacity-60"
+        data-testid="reveal-row"
+      />
+      <UiListItem
+        v-if="!confirmingRow"
+        icon="i-lucide-archive"
+        icon-tone="neutral"
+        :title="t('adminEdition.screen.follow.closeRow')"
+        :subtitle="t('adminEdition.screen.follow.closeRowHint')"
+        :on-click="() => (confirmingRow = true)"
+      />
+      <li v-else class="flex flex-col gap-2 px-4 py-3">
+        <p class="text-sm">
+          {{ t('adminEdition.screen.follow.closeConfirm') }}
+        </p>
+        <div class="flex gap-2">
+          <UButton
+            :disabled="closing"
+            :loading="closingShown"
+            :label="closeLabel"
+            @click="emit('close')"
+          />
+          <UButton
+            variant="ghost"
+            color="neutral"
+            :disabled="closing"
+            :label="t('common.actions.cancel')"
+            @click="confirmingRow = false"
+          />
+        </div>
+      </li>
+    </template>
     <UiListItem
       :to="`${base}/voir-le-tirage`"
       icon="i-lucide-eye"

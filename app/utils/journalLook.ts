@@ -21,10 +21,16 @@ const ICONS: Record<string, string> = {
   avatar_changed: 'i-lucide-pencil',
   language_changed: 'i-lucide-globe',
   edition_closed: 'i-lucide-archive',
+  draw_revealed: 'i-lucide-eye',
 };
 
 /** Milestones of an edition. */
-const MILESTONES = new Set(['edition_created', 'draw_done', 'edition_closed']);
+const MILESTONES = new Set([
+  'edition_created',
+  'draw_done',
+  'draw_revealed',
+  'edition_closed',
+]);
 
 /** Kinds of event that come with what they mean. */
 export const JOURNAL_ALERTS = [

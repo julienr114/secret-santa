@@ -4,7 +4,7 @@ import type { Avatar } from '#server/utils/avatars';
 import type { DrawPair } from '~/composables/queries/useEdition';
 
 // Who gives (or gave, for past editions) to whom: the giver's avatar and
-// name, and below "gave to …".
+// name, below "gave to …", and the receiver's avatar after an arrow.
 const props = defineProps<{
   pairs: DrawPair[];
   people: {
@@ -45,6 +45,16 @@ const nameOf = (id: string | null) => {
       :avatar="personOf(pair.giverId)?.avatar"
       :title="nameOf(pair.giverId)"
       :subtitle="subtitleOf(pair)"
-    />
+      :chevron="false"
+    >
+      <template v-if="personOf(pair.receiverId)" #trailing>
+        <UIcon
+          name="i-lucide-arrow-right"
+          class="size-4 shrink-0 text-dimmed"
+          aria-hidden="true"
+        />
+        <UiAvatar :avatar="personOf(pair.receiverId)!.avatar" size="sm" />
+      </template>
+    </UiListItem>
   </UiList>
 </template>

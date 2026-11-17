@@ -19,6 +19,12 @@ export default {
   edition_in_progress: 'Schließe zuerst die laufende Ausgabe ab.',
   edition_closed: 'Diese Ausgabe ist abgeschlossen.',
   invalid_rules: 'Ungültige Regeln.',
+  results_already_revealed: 'Die Ergebnisse sind bereits aufgedeckt.',
+  results_revealed:
+    'Die Ergebnisse sind aufgedeckt: Die Auslosung kann nicht mehr aufgehoben werden.',
+  party_date_missing:
+    'Trag zuerst das Datum der Feier ein, um die Ergebnisse aufzudecken.',
+  party_not_reached: 'Die Feier hat noch nicht stattgefunden.',
   invalid_transition: 'Diese Aktion ist in dieser Phase nicht möglich.',
   no_solution:
     'Mit diesen Regeln ist keine Auslosung möglich: lockere einen Ausschluss.',

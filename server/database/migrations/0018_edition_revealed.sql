@@ -1,0 +1,1 @@
+ALTER TABLE `editions` ADD `revealed_at` text;

@@ -16,11 +16,17 @@ export const useDecideRequest = () => {
    * @param id - The request.
    * @param approve - True to accept it.
    * @param onDone - What to do once it is decided, like closing a sheet.
+   * @param note - A word for the asker, added to the email.
    * @returns Nothing: the toast reports.
    */
-  const decide = (id: string, approve: boolean, onDone?: () => void) =>
+  const decide = (
+    id: string,
+    approve: boolean,
+    onDone?: () => void,
+    note?: string,
+  ) =>
     mutation.mutate(
-      { id, approve },
+      { id, approve, note },
       {
         onSuccess: () => {
           onDone?.();

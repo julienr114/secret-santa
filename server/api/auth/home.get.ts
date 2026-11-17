@@ -143,6 +143,7 @@ export default defineEventHandler(async (event) => {
           status: request.status,
           createdAt: request.createdAt,
           message: request.message,
+          note: request.decisionNote,
         }
       : null,
     pendingRequests:

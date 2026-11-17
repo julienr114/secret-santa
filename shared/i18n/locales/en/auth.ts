@@ -195,6 +195,7 @@ export default {
     requestSentTitle: 'Your request is on its way',
     requestSentOn:
       'Sent on {date}. An administrator reads it and answers you by email.',
+    requestNote: 'A word from the administrator',
     requestRefusedTitle: 'Your request of {date} was refused',
     requestAgain: 'Make another request',
     adminHint: 'Accounts, groups, requests',
@@ -309,6 +310,21 @@ export default {
     createForHint: 'With the address of its organiser',
     oneOf: 'To handle · 1 of {count}',
     handle: 'Handle',
+    note: {
+      label: 'A word with your answer',
+      optional: '(optional)',
+      presets: 'Ready-made messages',
+      welcome: 'Welcome',
+      welcomeText:
+        'Welcome! You can create your group right now. Tell me if you get stuck.',
+      full: 'It’s full',
+      fullText: 'Sorry, the app is full for this year. Try again next year!',
+      close: 'Close ones only',
+      closeText:
+        'Sorry, I keep the app for my close ones for now. Merry Christmas all the same!',
+      placeholder: 'Welcome! Tell me if you get stuck.',
+      hint: 'Added to the email that gives your answer.',
+    },
   },
   confirm: {
     title: 'Log in',
@@ -364,6 +380,7 @@ export default {
     refusedSubject: 'Your group request on Under the Tree',
     refused:
       'Your group request was refused. You can make another one from the app.',
+    note: 'A word from the administrator:',
   },
   invite: {
     intro: 'You are invited to the Secret Santa',

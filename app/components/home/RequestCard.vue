@@ -4,7 +4,7 @@ import { formatDay } from '~/utils/labels';
 
 // Where the account's request for a group stands, on a home without a
 // draw: sent and waiting for an answer, with what it wrote, or refused
-// with the way to ask again.
+// with the administrator's word and the way to ask again.
 const props = defineProps<{ request: HomeRequest }>();
 const emit = defineEmits<{ again: [] }>();
 const { t, locale } = useT();
@@ -44,6 +44,17 @@ const date = computed(() => formatDay(props.request.createdAt, locale.value));
       <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
         {{ t('auth.home.requestRefusedTitle', { date }) }}
       </h2>
+      <div v-if="request.note" class="flex flex-col gap-1">
+        <p class="text-xs font-bold tracking-[0.04em] text-toned uppercase">
+          {{ t('auth.home.requestNote') }}
+        </p>
+        <p
+          class="rounded-[10px] bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+          data-testid="home-request-note"
+        >
+          {{ request.note }}
+        </p>
+      </div>
       <UButton
         block
         variant="outline"

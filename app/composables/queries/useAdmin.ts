@@ -66,11 +66,11 @@ export const useUpdateAccountMutation = () =>
 
 /** Approves or refuses a request for a group. */
 export const useDecideRequestMutation = () =>
-  useApiMutation<{ ok: true }, { id: string; approve: boolean }>(
-    ({ id, approve }) =>
+  useApiMutation<{ ok: true }, { id: string; approve: boolean; note?: string }>(
+    ({ id, approve, note }) =>
       api(`/api/admin/group-requests/${id}/decide`, {
         method: 'POST',
-        body: { approve },
+        body: { approve, ...(note ? { note } : {}) },
       }),
     () => [keys.adminAccounts(), keys.home()],
   );

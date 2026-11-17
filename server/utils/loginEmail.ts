@@ -44,22 +44,31 @@ export const buildGroupRequestEmail = (
     link,
   });
 
+/** Longest word a super-admin may add to an answer. */
+export const DECISION_NOTE_MAX = 300;
+
 /**
- * Tells the asker what was decided about their request.
+ * Tells the asker what was decided about their request, with the
+ * super-admin's word if they wrote one.
  * @param approved - Whether the request was approved.
  * @param link - The home page of the app.
  * @param locale - Language of the account.
+ * @param note - The super-admin's word, or nothing.
  * @returns Subject, text and HTML.
  */
 export const buildDecisionEmail = (
   approved: boolean,
   link: string,
   locale: Locale,
+  note: string | null = null,
 ): Email => {
   const key = approved ? ('approved' as const) : ('refused' as const);
   return plainEmail({
     subject: translate(locale, `auth.decisionEmail.${key}Subject`),
-    before: [translate(locale, `auth.decisionEmail.${key}`)],
+    before: [
+      translate(locale, `auth.decisionEmail.${key}`),
+      ...(note ? [translate(locale, 'auth.decisionEmail.note'), note] : []),
+    ],
     link,
   });
 };

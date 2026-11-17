@@ -68,6 +68,22 @@ describe('buildDecisionEmail', () => {
     );
   });
 
+  it('carries the word of the super-admin, escaped in the HTML', () => {
+    const email = buildDecisionEmail(
+      false,
+      LINK,
+      'fr',
+      'Complet <cette> année',
+    );
+    expect(email.text).toContain(
+      "Le mot de l'administrateur :\nComplet <cette> année",
+    );
+    expect(email.html).toContain('Complet &lt;cette&gt; année');
+    expect(buildDecisionEmail(false, LINK, 'fr').text).not.toContain(
+      "Le mot de l'administrateur",
+    );
+  });
+
   it('carries the link to the app', () => {
     expect(buildDecisionEmail(true, LINK, 'de').html).toContain(
       `href="${LINK}"`,

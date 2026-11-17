@@ -360,7 +360,7 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - **Rôle**, recalculé à chaque requête depuis le compte, jamais lu dans le cookie : **super-admin** (indicateur `accounts.is_super_admin`, plusieurs possibles), **organisateur** (au moins un groupe dans `group_members`) ou **membre** (tous les autres : un participant qui se connecte pour retrouver ses tirages). Un membre n'a aucun accès à `/api/admin/*` (403) ni aux écrans `/admin`.
 - **Inscription libre** (14 novembre 2026) : toute adresse valide reçoit un lien ; son compte est créé à la première demande, simple membre, dans la langue du participant qu'un organisateur aurait saisi avec cette adresse. Seul un compte désactivé ne reçoit rien. Garde-fous : 5 demandes par heure et par adresse, 20 par adresse IP.
 - **Quota de groupes** (`accounts.group_quota`, 0 par défaut) : un compte crée un groupe s'il lui reste de la place (groupes créés et encore existants, `groups.created_by`) ; il en devient le premier organisateur. Un super-admin n'a pas de limite.
-- **Demande de groupe** (`group_requests`) : depuis l'accueil, un compte sans place écrit pour qui il veut organiser un tirage ; une seule demande en attente à la fois. Chaque super-admin reçoit un email. Accepter laisse la place pour **un** groupe de plus ; dans les deux cas le demandeur est prévenu par email.
+- **Demande de groupe** (`group_requests`) : depuis l'accueil, un compte sans place écrit pour qui il veut organiser un tirage ; une seule demande en attente à la fois. Chaque super-admin reçoit un email. Accepter laisse la place pour **un** groupe de plus ; dans les deux cas le demandeur est prévenu par email. Le super-admin peut y ajouter un mot (300 caractères, facultatif), tapé ou tout prêt (« Bienvenue », « C'est complet », « Entre proches ») : colonne `decision_note` (migration `0017`, lot 12), repris dans l'email (« Le mot de l'administrateur : ») et, pour un refus, sur l'accueil du demandeur.
 - **Pages du super-admin** (refaites au lot 9 de la refonte, 17 novembre 2026). Plus de barre du bas : on y entre par la ligne « Administration » en bas de l'accueil (section « Super-admin ») et par le menu, où elle vient en premier ; toutes deux portent le nombre de demandes en attente (`UiCountBadge`).
   - `/admin` : l'accueil de l'administration. La demande la plus ancienne dans une carte (qui, quand, son texte ; un seul bouton « Traiter » ouvre son panneau, où l'on refuse ou accepte), posée sur une pile quand d'autres attendent (un bord de carte par demande derrière, deux au plus, `UiStack`), intitulée « À traiter · 1 sur N » ; une fois répondue, elle part vers la gauche et la suivante monte de la pile (sans mouvement si l'appareil le demande). Sans nom, l'adresse sert de titre. Sans demande, « Aucune demande à traiter » ; la capacité (groupes de l'application sur environ 50, `AdminCapacityBar`, et ce que donneraient les demandes acceptées) ; puis Comptes, Groupes et le guide de style. L'ancienne redirection de `/admin` vers l'accueil n'existe plus ; un compte qui n'est pas super-admin y est renvoyé à l'accueil par le middleware.
   - Le panneau d'une demande (`AdminRequestSheet`) : l'icône et le nom, la date, le texte, « Si tu acceptes » (groupes qu'il peut créer, groupes de l'application, la barre de capacité), puis « Refuser » et « Accepter », du même poids, chacun avec sa roue (`useDecideRequest`).
@@ -651,7 +651,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `POST /api/admin/groups` | Création par un super-admin ou un compte qui a de la place dans son quota (il en devient organisateur) |
 | `POST /api/auth/group-requests` | Demande de groupe (une seule en attente), email aux super-admins |
 | `GET /api/admin/accounts`, `PATCH /api/admin/accounts/[id]` | Super-admin : comptes (leurs groupes, organisés ou non, avec membres et tirage ; `requestRefused`) et demandes en attente ; quota, désactivation |
-| `POST /api/admin/group-requests/[id]/decide` | Super-admin : accepte ou refuse une demande, email au demandeur |
+| `POST /api/admin/group-requests/[id]/decide` | Super-admin : accepte ou refuse une demande (`approve`, `note` facultatif), email au demandeur avec le mot |
 | `PATCH /api/admin/groups/[id]` | Super-admin : nom |
 | `GET/POST /api/admin/[groupe]/organizers`, `DELETE …/organizers/[compte]` | Organisateurs du groupe |
 | `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
@@ -1049,7 +1049,7 @@ Réponses de Julien aux questions posées ; elles complètent 22.2.
 - `persons.account_id` (facultatif) : relie une personne d'un groupe à un compte, quand le participant en crée un.
 - `login_links` : `token_hash`, `account_id`, `created_at`, `expires_at`, `used_at`, `ip_hash`.
 - `sessions` : `id`, `account_id`, `created_at`, `last_seen_at`, `expires_at`, `revoked_at`. Le cookie scellé ne porte que l'identifiant de session, ce qui permet de **révoquer** une session côté serveur.
-- `group_requests` : demande de création de groupe (compte, message, état, date de décision).
+- `group_requests` : demande de création de groupe (compte, message, état, date de décision, mot du super-admin).
 
 **Lien magique : règles de sécurité**
 

@@ -1,0 +1,1 @@
+ALTER TABLE `group_requests` ADD `decision_note` text;

@@ -120,6 +120,11 @@ test('the super-admin sees the request and accepts it', async ({
   await expect(card.getByRole('heading')).toHaveText(LATER);
   await expect(card.getByText(LATER)).toHaveCount(1);
   await card.getByRole('button', { name: 'Traiter' }).click();
+  // A ready-made word goes with the answer.
+  await sheet.getByRole('button', { name: 'C’est complet' }).click();
+  await expect(sheet.getByTestId('request-note')).toHaveValue(
+    /application est complète/,
+  );
   await sheet.getByRole('button', { name: 'Refuser' }).click();
   await expect(card).toContainText('Aucune demande à traiter');
 
@@ -137,6 +142,18 @@ test('the super-admin sees the request and accepts it', async ({
   await row.click();
   await expect(page.getByTestId('quota')).toHaveText('1');
   await expect(page.getByTestId('request-row')).toHaveCount(0);
+});
+
+test('the one refused reads the word of the administrator', async ({
+  page,
+}) => {
+  await apiLogin(page.request, LATER);
+  await page.goto('/');
+  await hydrated(page);
+  await expect(page.getByTestId('home-request')).toContainText('refusée');
+  await expect(page.getByTestId('home-request-note')).toHaveText(
+    'Désolé, l’application est complète pour cette année. Retente ta chance l’an prochain !',
+  );
 });
 
 test('they create their group, organise it, and the quota is used up', async ({

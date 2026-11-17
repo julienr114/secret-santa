@@ -193,6 +193,7 @@ export default {
     requestSentTitle: 'Ta demande est partie',
     requestSentOn:
       'Envoyée le {date}. Un administrateur la lit et te répond par email.',
+    requestNote: 'Le mot de l’administrateur',
     requestRefusedTitle: 'Ta demande du {date} a été refusée',
     requestAgain: 'Faire une autre demande',
     adminHint: 'Comptes, groupes, demandes',
@@ -306,6 +307,22 @@ export default {
     createForHint: 'Avec l’adresse de son organisateur',
     oneOf: 'À traiter · 1 sur {count}',
     handle: 'Traiter',
+    note: {
+      label: 'Un mot en réponse',
+      optional: '(facultatif)',
+      presets: 'Messages tout prêts',
+      welcome: 'Bienvenue',
+      welcomeText:
+        'Bienvenue ! Tu peux créer ton groupe dès maintenant. Dis-moi si tu bloques quelque part.',
+      full: 'C’est complet',
+      fullText:
+        'Désolé, l’application est complète pour cette année. Retente ta chance l’an prochain !',
+      close: 'Entre proches',
+      closeText:
+        'Désolé, je réserve l’application à mes proches pour l’instant. Bon Noël quand même !',
+      placeholder: 'Bienvenue ! Dis-moi si tu bloques.',
+      hint: 'Ajouté à l’email qui annonce ta réponse.',
+    },
   },
   confirm: {
     title: 'Connexion',
@@ -361,6 +378,7 @@ export default {
     refusedSubject: 'Ta demande de groupe sur Under the Tree',
     refused:
       'Ta demande de groupe a été refusée. Tu peux en faire une autre depuis l’application.',
+    note: "Le mot de l'administrateur :",
   },
   invite: {
     intro: 'Tu es invité au Secret Santa',

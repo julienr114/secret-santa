@@ -199,6 +199,7 @@ export default {
     requestSentTitle: 'Deine Anfrage ist unterwegs',
     requestSentOn:
       'Gesendet am {date}. Ein Administrator liest sie und antwortet dir per E-Mail.',
+    requestNote: 'Ein Wort vom Administrator',
     requestRefusedTitle: 'Deine Anfrage vom {date} wurde abgelehnt',
     requestAgain: 'Eine neue Anfrage stellen',
     adminHint: 'Konten, Gruppen, Anfragen',
@@ -313,6 +314,22 @@ export default {
     createForHint: 'Mit der Adresse des Organisators',
     oneOf: 'Zu bearbeiten · 1 von {count}',
     handle: 'Bearbeiten',
+    note: {
+      label: 'Ein Wort zur Antwort',
+      optional: '(freiwillig)',
+      presets: 'Fertige Nachrichten',
+      welcome: 'Willkommen',
+      welcomeText:
+        'Willkommen! Du kannst deine Gruppe jetzt erstellen. Sag mir, wenn du nicht weiterkommst.',
+      full: 'Ausgebucht',
+      fullText:
+        'Leider ist die App für dieses Jahr voll. Versuch es nächstes Jahr wieder!',
+      close: 'Nur Nahestehende',
+      closeText:
+        'Leider behalte ich die App vorerst meinen Nahestehenden vor. Trotzdem frohe Weihnachten!',
+      placeholder: 'Willkommen! Sag mir, wenn du nicht weiterkommst.',
+      hint: 'Wird der E-Mail mit deiner Antwort hinzugefügt.',
+    },
   },
   confirm: {
     title: 'Anmeldung',
@@ -370,6 +387,7 @@ export default {
     refusedSubject: 'Deine Gruppenanfrage auf Under the Tree',
     refused:
       'Deine Gruppenanfrage wurde abgelehnt. Du kannst in der App eine neue stellen.',
+    note: 'Ein Wort vom Administrator:',
   },
   invite: {
     intro: 'Du bist zum Wichteln eingeladen',

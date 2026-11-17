@@ -8,17 +8,25 @@ import { appUrl, nowIso } from '#server/http/context';
 import { sendEmails } from '#server/http/email';
 import { notFound } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { buildDecisionEmail } from '#server/utils/loginEmail';
+import {
+  buildDecisionEmail,
+  DECISION_NOTE_MAX,
+} from '#server/utils/loginEmail';
 import { quotaAfterApproval } from '#server/utils/quota';
 import { localeOf } from '#shared/i18n';
 
 // Super-admin only: answers a request for a group. Approving leaves the
-// account room for one more group; either way the asker is told by email.
-const bodySchema = z.object({ approve: z.boolean() });
+// account room for one more group; either way the asker is told by email,
+// with the super-admin's word if they wrote one (kept for their home).
+const bodySchema = z.object({
+  approve: z.boolean(),
+  note: z.string().trim().max(DECISION_NOTE_MAX).optional(),
+});
 
 export default defineEventHandler(async (event) => {
   const user = await requireSuperAdmin(event);
-  const { approve } = await validatedBody(event, bodySchema);
+  const { approve, note: typed } = await validatedBody(event, bodySchema);
+  const note = typed || null;
   const db = useDb(event);
   const row = await findRequest(db, getRouterParam(event, 'id') ?? '');
   if (!row) throw notFound('request_not_found');
@@ -30,6 +38,7 @@ export default defineEventHandler(async (event) => {
       status: approve ? 'approved' : 'refused',
       decidedAt: now,
       decidedBy: user.accountId,
+      decisionNote: note,
     })
     .where(
       and(
@@ -55,6 +64,7 @@ export default defineEventHandler(async (event) => {
         approve,
         appUrl(event, '/'),
         localeOf(row.account.language),
+        note,
       ),
       to: row.account.email,
     },

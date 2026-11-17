@@ -304,6 +304,9 @@ export const groupRequests = sqliteTable(
     createdAt: text('created_at').notNull(),
     decidedAt: text('decided_at'),
     decidedBy: text('decided_by').references(() => accounts.id),
+    // The super-admin's words with the answer, in its email and on the
+    // asker's home (lot 12 of the redesign).
+    decisionNote: text('decision_note'),
   },
   (t) => [
     index('group_requests_account_idx').on(t.accountId, t.createdAt),

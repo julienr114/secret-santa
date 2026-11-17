@@ -6,10 +6,12 @@ import type {
 } from '~/composables/queries/useAdmin';
 import { fullName } from '#server/utils/people';
 import { formatDay } from '~/utils/labels';
+import { DECISION_NOTE_MAX } from '#server/utils/loginEmail';
 
 // A request for a group, answered like a decision: who asks and when,
 // their words, what accepting changes (the groups they may create, the
-// groups of the app against what the free plans carry), then « Refuser »
+// groups of the app against what the free plans carry), a word for them,
+// typed or ready-made, added to the email of the answer, then « Refuser »
 // and « Accepter », of the same weight.
 const props = defineProps<{
   account: AdminAccountRow;
@@ -34,15 +36,31 @@ const changes = computed(() => [
   },
 ]);
 const busy = computed(() => deciding(props.request.id));
+const note = ref('');
+const noteId = useId();
+/** The ready-made words, each with its button. */
+const PRESETS = ['welcome', 'full', 'close'] as const;
+const presets = computed(() =>
+  PRESETS.map((preset) => ({
+    preset,
+    label: t(`auth.admin.note.${preset}`),
+    text: t(`auth.admin.note.${preset}Text`),
+  })),
+);
 /**
- * Answers the request, then closes the sheet.
+ * Answers the request with the word written, then closes the sheet.
  * @param approve - True to accept it.
  * @returns Nothing.
  */
 const onDecide = (approve: boolean) =>
-  decide(props.request.id, approve, () => {
-    open.value = false;
-  });
+  decide(
+    props.request.id,
+    approve,
+    () => {
+      open.value = false;
+    },
+    note.value.trim() || undefined,
+  );
 </script>
 
 <template>
@@ -105,6 +123,47 @@ const onDecide = (approve: boolean) =>
           "
         />
       </section>
+      <div class="flex flex-col gap-1.5">
+        <label :for="noteId" class="text-[15px] font-semibold">
+          {{ t('auth.admin.note.label') }}
+          <span class="font-normal text-toned">{{
+            t('auth.admin.note.optional')
+          }}</span>
+        </label>
+        <div
+          role="group"
+          :aria-label="t('auth.admin.note.presets')"
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            v-for="item in presets"
+            :key="item.preset"
+            type="button"
+            :aria-pressed="note === item.text"
+            class="h-9 rounded-full px-3 text-sm"
+            :class="
+              note === item.text
+                ? 'bg-primary-soft font-bold text-primary-ink ring-[1.5px] ring-primary'
+                : 'bg-default font-semibold ring-1 ring-default'
+            "
+            @click="note = item.text"
+          >
+            {{ item.label }}
+          </button>
+        </div>
+        <UTextarea
+          :id="noteId"
+          v-model="note"
+          :rows="3"
+          :maxlength="DECISION_NOTE_MAX"
+          :placeholder="t('auth.admin.note.placeholder')"
+          autoresize
+          class="w-full"
+          :ui="{ base: 'text-base' }"
+          data-testid="request-note"
+        />
+        <p class="text-[13px] text-toned">{{ t('auth.admin.note.hint') }}</p>
+      </div>
     </div>
     <template #footer>
       <div class="grid grid-cols-2 gap-2.5">

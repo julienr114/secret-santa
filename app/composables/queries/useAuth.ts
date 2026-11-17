@@ -97,6 +97,8 @@ export type HomeRequest = {
   createdAt: string;
   /** What the account wrote. */
   message: string;
+  /** The super-admin's word with the answer, if any. */
+  note: string | null;
 };
 export type HomePayload = {
   role: Role;

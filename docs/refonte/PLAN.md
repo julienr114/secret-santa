@@ -433,6 +433,19 @@ Décidé par Julien le 17 novembre 2026. Une édition clôturée garde ses paire
 - [ ] `Devoiler` : la confirmation dans un panneau.
 - [ ] `Cloturee` : les résultats dévoilés, puis « Clôturer l'édition ».
 
+### Lot 14 — Le journal signalé depuis l'accueil (README 22.15)
+
+Décidé par Julien le 17 novembre 2026. À faire après le lot 12 : le signal s'appuie sur `participations.journal_seen_at` et sur le même compte d'alertes que la page du tirage. Pas de migration.
+
+- [ ] **Route de l'accueil** : pour chaque tirage de la personne, le nombre d'alertes du journal depuis sa dernière visite et, s'il n'y en a qu'une, son type et sa date. Quatre événements comptent, et aucun autre : `result_revealed`, `results_revealed` avant la fête, `draw_cancelled` (tout le groupe), et `link_regenerated` (seulement la personne dont le lien a été régénéré). Avec ses tests.
+- [ ] **Dans la carte** (`FuturAccueilJournal`, `FuturAccueilJournalAcces`, `FuturAccueilJournalDevoile`, `FuturAccueilJournalAnnule`) : quand l'alerte concerne le tirage de la carte, une ligne ambrée sous le bouton principal, « Du nouveau au journal. » suivi de la phrase de l'événement et de sa date. Elle ouvre le journal sur l'explication de l'alerte.
+- [ ] **Plusieurs alertes** (`FuturAccueilJournalDeux`) : une seule ligne, « 2 alertes depuis ta dernière visite », qui ouvre le journal.
+- [ ] **Sur un autre tirage** (`FuturAccueilJournalPlusieurs`, `FuturAccueilJournalOrganisateur`) : le sous-titre de la ligne du tirage devient « Du nouveau au journal », avec un point ambré ; la ligne mène à la page du tirage. Rien sur la ligne « Gérer le tirage » d'un organisateur.
+- [ ] Le signal disparaît quand le journal a été ouvert (même remise à zéro que le lot 12). Si la règle « sans visite enregistrée, le compte part du tirage » cache une annulation, le noter en section 6 plutôt que de trancher.
+- [ ] Textes en fr, en et de ; guide de style et `tests/e2e` à jour.
+
+Ces maquettes sont sur la page « Accueil et connexion » du canevas, rangée « Le journal signalé depuis l'accueil » ; leurs fichiers gardent le préfixe `Futur`.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.

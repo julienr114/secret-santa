@@ -1295,9 +1295,9 @@ En bref, version hybride : le panneau reste court (l'en-tête, le message entier
 
 Sous le titre, l'en-tête dit où en est la personne ; une fois le lien parti et pas encore ouvert, avec le jour du dernier envoi : « Envoyé le 14 nov., pas encore consulté » (décidé par Julien le 17 novembre 2026). Pas le moyen d'envoi, que l'application ne connaît pas toujours.
 
-### 22.15 Idée : le journal signalé depuis l'accueil (17 novembre 2026)
+### 22.15 À faire : le journal signalé depuis l'accueil (17 novembre 2026)
 
-Non planifié. Maquettes dans `docs/refonte/maquettes/` : `FuturAccueilJournal` (lien régénéré), `FuturAccueilJournalAcces` (accès de dernier recours), `FuturAccueilJournalDeux` (plusieurs alertes : une seule ligne, « 2 alertes depuis ta dernière visite », qui mène au journal), `FuturAccueilJournalPlusieurs` (plusieurs tirages : si l'alerte concerne le tirage de la carte, le signal est dans la carte ; sinon il remplace le sous-titre de la ligne du tirage concerné, avec un point ambré, et la ligne mène à la page du tirage), `FuturAccueilJournalOrganisateur` (quelqu'un qui organise un groupe et participe à un autre : même règle, le signal est sur la ligne « Mon tirage » du groupe concerné).
+Planifié : lot 14 de `docs/refonte/PLAN.md`, après le lot 12. Maquettes dans `docs/refonte/maquettes/` : `FuturAccueilJournal` (lien régénéré), `FuturAccueilJournalAcces` (accès de dernier recours), `FuturAccueilJournalDeux` (plusieurs alertes : une seule ligne, « 2 alertes depuis ta dernière visite », qui mène au journal), `FuturAccueilJournalPlusieurs` (plusieurs tirages : si l'alerte concerne le tirage de la carte, le signal est dans la carte ; sinon il remplace le sous-titre de la ligne du tirage concerné, avec un point ambré, et la ligne mène à la page du tirage), `FuturAccueilJournalOrganisateur` (quelqu'un qui organise un groupe et participe à un autre : même règle, le signal est sur la ligne « Mon tirage » du groupe concerné).
 
 Pas de lien permanent vers le journal sur l'accueil : le journal appartient à un groupe et non au compte, il ne contient le plus souvent rien de notable, et l'accueil sert à savoir où en est son tirage. À la place, un signal sur la carte du tirage, seulement quand le journal contient une alerte que la personne n'a pas encore vue :
 

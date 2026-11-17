@@ -16,7 +16,10 @@ import {
 // One of the questions of « Moi et les cadeaux » (README 22.11): six, or
 // five without the precise ideas; two big choices and, but for second
 // hand, « Les deux me vont ». One tap saves the answer and goes
-// on to the next question, back to the page after the last one.
+// on to the next question, back to the page after the last one. Opened
+// from a tag of the page (`modifier=1`), it is that one question alone:
+// its answer checked, a tap saves and goes back, « Effacer ma réponse »
+// takes it back.
 const route = useRoute();
 const router = useRouter();
 const token = computed(() => String(route.params.token));
@@ -37,6 +40,8 @@ const current = computed(
   () => query.data.value?.portrait.answers[question.value] ?? null,
 );
 const pagePath = computed(() => `/p/${token.value}/pistes`);
+/** One question alone, from a tag of the page. */
+const alone = computed(() => route.query.modifier === '1');
 const context = computed(() =>
   personal.data.value
     ? `${personal.data.value.groupName} · ${personal.data.value.editionLabel} · ${t('hints.question.context', { index: index.value, count: asked.value.length })}`
@@ -72,7 +77,7 @@ const dots = computed(() =>
 );
 
 // The answer leaves at once; the next question shows without waiting.
-const onAnswer = (answer: HintAnswer) => {
+const onAnswer = (answer: HintAnswer | null) => {
   if (answer !== current.value) {
     save.mutate(
       { answers: { [question.value]: answer } },
@@ -82,7 +87,7 @@ const onAnswer = (answer: HintAnswer) => {
       },
     );
   }
-  const next = nextQuestion(question.value, mode.value);
+  const next = alone.value ? null : nextQuestion(question.value, mode.value);
   return next
     ? router.replace({ query: { n: asked.value.indexOf(next) + 1 } })
     : goBack(pagePath.value);
@@ -97,7 +102,7 @@ const onAnswer = (answer: HintAnswer) => {
     :error="query.error.value"
   >
     <div class="flex min-h-[calc(100dvh-7.5rem)] flex-col gap-5">
-      <div class="flex items-center justify-between">
+      <div v-if="!alone" class="flex items-center justify-between">
         <div
           role="img"
           :aria-label="
@@ -125,7 +130,9 @@ const onAnswer = (answer: HintAnswer) => {
         </button>
       </div>
       <div class="flex flex-col gap-1.5">
-        <p class="text-sm text-toned">{{ context }}</p>
+        <p class="text-sm text-toned">
+          {{ alone ? t('hints.me.title') : context }}
+        </p>
         <UiPageTitle class="leading-[1.1]">
           {{ tk(`hints.questions.${question}.title`) }}
         </UiPageTitle>
@@ -136,11 +143,11 @@ const onAnswer = (answer: HintAnswer) => {
           :key="choice.answer"
           type="button"
           :aria-pressed="current === choice.answer"
-          class="flex min-h-30 w-full items-center gap-3.5 rounded-2xl border bg-default p-4 text-left transition-colors active:bg-muted"
+          class="flex min-h-30 w-full items-center gap-3.5 rounded-2xl p-4 text-left transition-colors active:bg-muted"
           :class="
             current === choice.answer
-              ? 'border-primary ring-1 ring-primary'
-              : 'border-default'
+              ? 'border-2 border-primary bg-primary-tint'
+              : 'border border-default bg-default'
           "
           :data-testid="`hint-${choice.answer}`"
           @click="onAnswer(choice.answer)"
@@ -159,6 +166,13 @@ const onAnswer = (answer: HintAnswer) => {
               choice.help
             }}</span>
           </span>
+          <span
+            v-if="current === choice.answer"
+            class="ml-auto flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-inverted"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-check" class="size-4" />
+          </span>
         </button>
       </div>
       <button
@@ -176,7 +190,19 @@ const onAnswer = (answer: HintAnswer) => {
       >
         {{ t('hints.question.both') }}
       </button>
-      <p class="mt-auto text-center text-[13px] leading-[1.4] text-toned">
+      <button
+        v-if="alone && current"
+        type="button"
+        class="mt-auto flex min-h-11 items-center justify-center text-[15px] font-semibold text-toned underline"
+        data-testid="hint-clear"
+        @click="onAnswer(null)"
+      >
+        {{ t('hints.question.clear') }}
+      </button>
+      <p
+        v-else-if="!alone"
+        class="mt-auto text-center text-[13px] leading-[1.4] text-toned"
+      >
         {{ t('hints.question.footer') }}
       </p>
     </div>

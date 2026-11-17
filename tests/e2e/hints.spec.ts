@@ -181,8 +181,12 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page
     .getByRole('button', { name: "Revoir à qui j'offre un cadeau" })
     .click();
-  await expect(page.getByTestId('giver-hints')).toContainText(
-    'Plutôt surprenant',
+  // The giver reads it in sentences.
+  await expect(page.getByTestId('giver-portrait')).toContainText(
+    `${receiver} préfère :`,
+  );
+  await expect(page.getByTestId('giver-portrait')).toContainText(
+    'un cadeau surprenant plutôt qu’utile',
   );
   // The request is answered: the banner is gone.
   const answered = await ok(

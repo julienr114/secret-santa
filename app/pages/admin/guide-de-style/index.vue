@@ -563,9 +563,16 @@ const entries = computed(() => [
           UiGiftTag : une étiquette cadeau, son contenu dans le slot.
         </p>
       </UiGiftTag>
-      <UiTagList :tags="['Plutôt utile', 'Un moment', 'J’aime la surprise']" />
+      <UiTagList
+        :tags="[
+          'Plutôt utile',
+          { label: 'Un moment', to: '#' },
+          { label: 'Pour moi, ou à partager ?', to: '#', missing: true },
+        ]"
+      />
       <code class="text-xs"
-        >UiTagList : les réponses de « Moi et les cadeaux »</code
+        >UiTagList : les réponses de « Moi et les cadeaux », en lien, ou en
+        pointillés quand il en manque une</code
       >
       <p class="flex items-center gap-2.5">
         <UiStar />

@@ -9,8 +9,8 @@ import {
   HINT_TEXTS,
   HINT_TEXT_MAX,
   answeredCount,
-  hasBothAnswers,
-  portraitTags,
+  firstUnanswered,
+  questionsFor,
   type HintText,
 } from '#shared/utils/hints';
 
@@ -38,23 +38,37 @@ const context = computed(() =>
       ]
     : [],
 );
-const tags = computed(() =>
-  hints.value
-    ? portraitTags(hints.value.portrait.answers, hints.value.mode).map(
-        ({ question, answer }) => tk(`hints.tags.${question}.${answer}`),
-      )
-    : [],
-);
-const bothRest = computed(() =>
-  hints.value
-    ? hasBothAnswers(hints.value.portrait.answers, hints.value.mode)
-    : false,
-);
+const questionsPath = computed(() => `/p/${token.value}/pistes/question`);
+/**
+ * « Moi et les cadeaux »: one tag per question asked, its answer, or
+ * dashed with the question while it has none. Each one opens its own
+ * question, to change or clear the answer.
+ */
+const tags = computed(() => {
+  const data = hints.value;
+  if (!data) return [];
+  return questionsFor(data.mode).flatMap((question, at) => {
+    const answer = data.portrait.answers[question];
+    const to = editable.value
+      ? `${questionsPath.value}?n=${at + 1}&modifier=1`
+      : undefined;
+    if (answer) return [{ label: tk(`hints.tags.${question}.${answer}`), to }];
+    return editable.value
+      ? [{ label: tk(`hints.questions.${question}.title`), to, missing: true }]
+      : [];
+  });
+});
+/** « Commencer » starts at the first question without an answer. */
+const startPath = computed(() => {
+  const data = hints.value;
+  if (!data) return questionsPath.value;
+  const asked = questionsFor(data.mode);
+  const first = firstUnanswered(data.portrait.answers, data.mode);
+  return `${questionsPath.value}?n=${asked.indexOf(first) + 1}`;
+});
 const answered = computed(() =>
   hints.value ? answeredCount(hints.value.portrait.answers) > 0 : false,
 );
-const questionsPath = computed(() => `/p/${token.value}/pistes/question`);
-
 // The text being written, in its sheet: kept only with « Valider ».
 const editing = ref<HintText | null>(null);
 const sheetOpen = computed({
@@ -133,22 +147,10 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
       </UiNotice>
 
       <UiCard v-if="answered" class="flex flex-col gap-3 px-5 pt-4 pb-5">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="font-display text-xl font-bold">
-            {{ t('hints.me.title') }}
-          </h2>
-          <NuxtLink
-            v-if="editable"
-            :to="questionsPath"
-            class="flex min-h-11 items-center text-[15px] font-bold text-primary-ink underline"
-          >
-            {{ t('hints.me.edit') }}
-          </NuxtLink>
-        </div>
-        <UiTagList v-if="tags.length > 0" :tags="tags" />
-        <p v-if="bothRest" class="text-sm text-toned">
-          {{ t('hints.me.bothRest') }}
-        </p>
+        <h2 class="font-display text-xl font-bold">
+          {{ t('hints.me.title') }}
+        </h2>
+        <UiTagList :tags="tags" data-testid="hints-tags" />
       </UiCard>
       <UiCard
         v-else-if="editable"
@@ -174,7 +176,7 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
           </p>
         </div>
         <UButton
-          :to="questionsPath"
+          :to="startPath"
           block
           size="xl"
           class="min-h-12 justify-center font-bold"

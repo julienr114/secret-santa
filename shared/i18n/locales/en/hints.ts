@@ -28,11 +28,10 @@ export default {
   },
   me: {
     title: 'Me and presents',
-    edit: 'Change',
-    bothRest: 'For the rest, either is fine with me.',
   },
   question: {
     context: 'question {index} of {count}',
+    clear: 'Clear my answer',
     later: 'Later',
     both: 'Either is fine',
     footer: 'One tap, and on to the next. You can change your mind.',
@@ -86,18 +85,22 @@ export default {
     usefulOrSurprising: {
       first: 'Rather useful',
       second: 'Rather surprising',
+      both: 'Useful or surprising',
     },
     objectOrMoment: {
       first: 'A thing',
       second: 'A moment',
+      both: 'A thing or a moment',
     },
     keepOrConsume: {
       first: 'To keep',
       second: 'To use up',
+      both: 'To keep or to use up',
     },
     selfOrShared: {
       first: 'Just for them',
       second: 'To share',
+      both: 'Just for oneself or to share',
     },
     secondHand: {
       first: 'Second-hand is fine',
@@ -106,7 +109,38 @@ export default {
     surprise: {
       first: 'Loves surprises',
       second: 'Would rather know',
+      both: 'Surprise or not',
     },
+  },
+  giver: {
+    prefers: '{name} prefers:',
+    choices: {
+      usefulOrSurprising: {
+        first: 'a useful present rather than a surprising one',
+        second: 'a surprising present rather than a useful one',
+      },
+      objectOrMoment: {
+        first: 'a thing rather than a moment',
+        second: 'a moment rather than a thing',
+      },
+      keepOrConsume: {
+        first: 'something to keep rather than to use up',
+        second: 'something to use up rather than to keep',
+      },
+      selfOrShared: {
+        first: 'a present just for them rather than to share',
+        second: 'a present to share rather than just for them',
+      },
+    },
+    secondHand: {
+      first: 'Second-hand or handmade is fine with them.',
+      second: 'Rather new than second-hand.',
+    },
+    surprise: {
+      first: '{name} loves surprises.',
+      second: '{name} would rather know what they get.',
+    },
+    indifferent: '{subject}: either is fine.',
   },
   texts: {
     lately: {
@@ -144,7 +178,6 @@ export default {
   },
   result: {
     title: 'To help you choose',
-    bothRest: 'For the rest, either is fine with them.',
     none: '{name} hasn’t left any hints yet.',
     ask: 'Ask for hints',
     askHint: 'Without saying it comes from you.',

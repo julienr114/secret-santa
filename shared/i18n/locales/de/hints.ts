@@ -28,11 +28,10 @@ export default {
   },
   me: {
     title: 'Ich und Geschenke',
-    edit: 'Ändern',
-    bothRest: 'Beim Rest ist mir beides recht.',
   },
   question: {
     context: 'Frage {index} von {count}',
+    clear: 'Meine Antwort löschen',
     later: 'Später',
     both: 'Beides ist mir recht',
     footer: 'Ein Tipp, und weiter geht’s. Du kannst es dir anders überlegen.',
@@ -86,18 +85,22 @@ export default {
     usefulOrSurprising: {
       first: 'Eher nützlich',
       second: 'Eher überraschend',
+      both: 'Nützlich oder überraschend',
     },
     objectOrMoment: {
       first: 'Ein Ding',
       second: 'Ein Erlebnis',
+      both: 'Ding oder Erlebnis',
     },
     keepOrConsume: {
       first: 'Zum Behalten',
       second: 'Zum Verbrauchen',
+      both: 'Behalten oder verbrauchen',
     },
     selfOrShared: {
       first: 'Nur für sich',
       second: 'Zum Teilen',
+      both: 'Für sich oder zum Teilen',
     },
     secondHand: {
       first: 'Gebraucht ist okay',
@@ -106,7 +109,38 @@ export default {
     surprise: {
       first: 'Mag Überraschungen',
       second: 'Weiß es lieber',
+      both: 'Überraschung oder nicht',
     },
+  },
+  giver: {
+    prefers: '{name} mag lieber:',
+    choices: {
+      usefulOrSurprising: {
+        first: 'ein nützliches Geschenk statt eines überraschenden',
+        second: 'ein überraschendes Geschenk statt eines nützlichen',
+      },
+      objectOrMoment: {
+        first: 'ein Ding statt eines Erlebnisses',
+        second: 'ein Erlebnis statt eines Dings',
+      },
+      keepOrConsume: {
+        first: 'etwas zum Behalten statt zum Verbrauchen',
+        second: 'etwas zum Verbrauchen statt zum Behalten',
+      },
+      selfOrShared: {
+        first: 'ein Geschenk nur für sich statt zum Teilen',
+        second: 'ein Geschenk zum Teilen statt nur für sich',
+      },
+    },
+    secondHand: {
+      first: 'Gebraucht oder selbst gemacht ist okay.',
+      second: 'Lieber neu als gebraucht.',
+    },
+    surprise: {
+      first: '{name} mag Überraschungen.',
+      second: '{name} weiß lieber, was es gibt.',
+    },
+    indifferent: '{subject}: egal.',
   },
   texts: {
     lately: {
@@ -144,7 +178,6 @@ export default {
   },
   result: {
     title: 'Damit du besser wählst',
-    bothRest: 'Beim Rest ist beides recht.',
     none: '{name} hat noch keine Hinweise hinterlassen.',
     ask: 'Um Hinweise bitten',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',

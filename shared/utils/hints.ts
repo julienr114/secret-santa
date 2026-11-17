@@ -99,15 +99,15 @@ export const questionsFor = (mode: GiftHintsMode): readonly HintQuestion[] =>
 export const allowsBoth = (question: HintQuestion): boolean =>
   question !== 'secondHand';
 
-/** One tag of the result: a question and its clear-cut answer. */
-export type HintTag = { question: HintQuestion; answer: 'first' | 'second' };
+/** One tag of « Moi et les cadeaux »: a question and its answer. */
+export type HintTag = { question: HintQuestion; answer: HintAnswer };
 
 /**
- * The tags shown, in the order of the questions asked: only the clear-cut
- * answers; « Les deux me vont » makes no tag.
+ * The tags of the participant's own page, in the order of the questions
+ * asked: one per answer, « Les deux me vont » included.
  * @param answers - The answers, null where none.
  * @param mode - The group setting: a question not asked shows nothing.
- * @returns One tag per clear-cut answer.
+ * @returns One tag per answer.
  */
 export const portraitTags = (
   answers: HintAnswers,
@@ -115,23 +115,72 @@ export const portraitTags = (
 ): HintTag[] =>
   questionsFor(mode).flatMap((question) => {
     const answer = answers[question];
-    return answer === 'first' || answer === 'second'
-      ? [{ question, answer }]
-      : [];
+    return answer ? [{ question, answer }] : [];
   });
 
 /**
- * Whether some question asked was answered « Les deux me vont »: then one
- * discreet line under the tags says so.
+ * The first question asked that has no answer: where « Commencer » starts.
  * @param answers - The answers, null where none.
  * @param mode - The group setting.
- * @returns True when at least one answer is both.
+ * @returns The question, or the first one when all are answered.
  */
-export const hasBothAnswers = (
+export const firstUnanswered = (
   answers: HintAnswers,
   mode: GiftHintsMode = 'full',
-): boolean =>
-  questionsFor(mode).some((question) => answers[question] === 'both');
+): HintQuestion => {
+  const asked = questionsFor(mode);
+  return asked.find((question) => !answers[question]) ?? asked[0]!;
+};
+
+/** The questions said as « X plutôt que Y » to the giver. */
+export const PREFERENCE_QUESTIONS = [
+  'usefulOrSurprising',
+  'objectOrMoment',
+  'keepOrConsume',
+  'selfOrShared',
+] as const satisfies readonly HintQuestion[];
+
+/** A clear-cut answer. */
+export type ClearAnswer = 'first' | 'second';
+const clear = (answer: HintAnswer | null): ClearAnswer | null =>
+  answer === 'first' || answer === 'second' ? answer : null;
+
+/** What the giver reads of « Moi et les cadeaux », in sentences. */
+export type GiverPortrait = {
+  /** « {prénom} préfère : », one line per clear-cut answer. */
+  prefers: { question: HintQuestion; answer: ClearAnswer }[];
+  /** Second hand, a sentence of its own. */
+  secondHand: ClearAnswer | null;
+  /** Surprise, a sentence of its own, when the question is asked. */
+  surprise: ClearAnswer | null;
+  /** « Les deux me vont »: one grey line per question. */
+  indifferent: HintQuestion[];
+};
+
+/**
+ * Turns the answers into what the giver reads (decided by Julien on
+ * 17 November 2026): the preferences of the first four questions, then
+ * second hand and surprise in their own sentences, then the questions
+ * where both suit.
+ * @param answers - The answers, null where none.
+ * @param mode - The group setting.
+ * @returns The parts to say, each empty when there is nothing.
+ */
+export const giverPortrait = (
+  answers: HintAnswers,
+  mode: GiftHintsMode = 'full',
+): GiverPortrait => {
+  const asked = questionsFor(mode);
+  return {
+    prefers: PREFERENCE_QUESTIONS.flatMap((question) => {
+      const answer = clear(answers[question]);
+      return answer ? [{ question, answer }] : [];
+    }),
+    secondHand: clear(answers.secondHand),
+    surprise: asked.includes('surprise') ? clear(answers.surprise) : null,
+    indifferent: asked.filter((question) => answers[question] === 'both'),
+  };
+};
 
 /**
  * The text blocks shown to the giver, in their order, the empty ones left

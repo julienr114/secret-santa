@@ -27,11 +27,10 @@ export default {
   },
   me: {
     title: 'Moi et les cadeaux',
-    edit: 'Modifier',
-    bothRest: 'Pour le reste, les deux me vont.',
   },
   question: {
     context: 'question {index} sur {count}',
+    clear: 'Effacer ma réponse',
     later: 'Plus tard',
     both: 'Les deux me vont',
     footer: 'Un appui, et on passe à la suite. Tu pourras changer d’avis.',
@@ -86,18 +85,22 @@ export default {
     usefulOrSurprising: {
       first: 'Plutôt utile',
       second: 'Plutôt surprenant',
+      both: 'Utile ou surprenant',
     },
     objectOrMoment: {
       first: 'Un objet',
       second: 'Un moment',
+      both: 'Un objet ou un moment',
     },
     keepOrConsume: {
       first: 'À garder',
       second: 'À consommer',
+      both: 'À garder ou à consommer',
     },
     selfOrShared: {
       first: 'Pour soi',
       second: 'À partager',
+      both: 'Pour soi ou à partager',
     },
     secondHand: {
       first: 'D’occasion, oui',
@@ -106,7 +109,39 @@ export default {
     surprise: {
       first: 'Aime la surprise',
       second: 'Préfère savoir',
+      both: 'Surprise ou pas',
     },
+  },
+  // What the giver reads of « Moi et les cadeaux », in sentences.
+  giver: {
+    prefers: '{name} préfère :',
+    choices: {
+      usefulOrSurprising: {
+        first: 'un cadeau utile plutôt que surprenant',
+        second: 'un cadeau surprenant plutôt qu’utile',
+      },
+      objectOrMoment: {
+        first: 'un objet plutôt qu’un moment',
+        second: 'un moment plutôt qu’un objet',
+      },
+      keepOrConsume: {
+        first: 'quelque chose à garder plutôt qu’à consommer',
+        second: 'quelque chose à consommer plutôt qu’à garder',
+      },
+      selfOrShared: {
+        first: 'un cadeau pour soi plutôt qu’à partager',
+        second: 'un cadeau à partager plutôt que pour soi',
+      },
+    },
+    secondHand: {
+      first: 'D’occasion ou fait main, ça lui va.',
+      second: 'Plutôt du neuf que de l’occasion.',
+    },
+    surprise: {
+      first: '{name} aime la surprise.',
+      second: '{name} préfère savoir ce qu’on lui offre.',
+    },
+    indifferent: '{subject} : peu importe.',
   },
   texts: {
     lately: {
@@ -145,7 +180,6 @@ export default {
   // On the giver's result.
   result: {
     title: 'Pour t’aider à choisir',
-    bothRest: 'Pour le reste, les deux lui vont.',
     none: '{name} n’a pas encore laissé de pistes.',
     ask: 'Lui demander des pistes',
     askHint: 'Sans dire que ça vient de toi.',

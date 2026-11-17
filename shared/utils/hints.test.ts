@@ -3,7 +3,8 @@ import {
   EMPTY_PORTRAIT,
   allowsBoth,
   answeredCount,
-  hasBothAnswers,
+  firstUnanswered,
+  giverPortrait,
   hasHints,
   isPortraitEmpty,
   nextQuestion,
@@ -43,24 +44,69 @@ describe('hints', () => {
     expect(hasHints(portrait, 0)).toBe(true);
   });
 
-  it('gives a tag for clear-cut answers only, and says when both suit', () => {
+  it('gives one tag per answer on the own page, both included', () => {
     expect(portraitTags(portrait.answers)).toEqual([
       { question: 'usefulOrSurprising', answer: 'first' },
+      { question: 'surprise', answer: 'both' },
     ]);
-    expect(hasBothAnswers(portrait.answers)).toBe(true);
-    expect(hasBothAnswers(EMPTY_PORTRAIT.answers)).toBe(false);
     // Without the precise ideas, the surprise question is not asked.
-    expect(hasBothAnswers(portrait.answers, 'portrait')).toBe(false);
-    expect(
-      portraitTags(
-        {
-          ...EMPTY_PORTRAIT.answers,
-          surprise: 'first',
-          keepOrConsume: 'second',
-        },
-        'portrait',
-      ),
-    ).toEqual([{ question: 'keepOrConsume', answer: 'second' }]);
+    expect(portraitTags(portrait.answers, 'portrait')).toEqual([
+      { question: 'usefulOrSurprising', answer: 'first' },
+    ]);
+  });
+
+  it('starts the questions at the first one without an answer', () => {
+    expect(firstUnanswered(EMPTY_PORTRAIT.answers)).toBe('usefulOrSurprising');
+    expect(firstUnanswered(portrait.answers)).toBe('objectOrMoment');
+    const allButSurprise = {
+      usefulOrSurprising: 'first',
+      objectOrMoment: 'first',
+      keepOrConsume: 'first',
+      selfOrShared: 'first',
+      secondHand: 'first',
+      surprise: null,
+    } as const;
+    expect(firstUnanswered(allButSurprise)).toBe('surprise');
+    expect(firstUnanswered(allButSurprise, 'portrait')).toBe(
+      'usefulOrSurprising',
+    );
+  });
+
+  it('says the answers to the giver in sentences', () => {
+    const answers = {
+      usefulOrSurprising: 'first',
+      objectOrMoment: 'second',
+      keepOrConsume: null,
+      selfOrShared: 'both',
+      secondHand: 'second',
+      surprise: 'first',
+    } as const;
+    expect(giverPortrait(answers)).toEqual({
+      prefers: [
+        { question: 'usefulOrSurprising', answer: 'first' },
+        { question: 'objectOrMoment', answer: 'second' },
+      ],
+      secondHand: 'second',
+      surprise: 'first',
+      indifferent: ['selfOrShared'],
+    });
+    expect(giverPortrait({ ...answers, surprise: 'both' }, 'portrait')).toEqual(
+      {
+        prefers: [
+          { question: 'usefulOrSurprising', answer: 'first' },
+          { question: 'objectOrMoment', answer: 'second' },
+        ],
+        secondHand: 'second',
+        surprise: null,
+        indifferent: ['selfOrShared'],
+      },
+    );
+    expect(giverPortrait(EMPTY_PORTRAIT.answers)).toEqual({
+      prefers: [],
+      secondHand: null,
+      surprise: null,
+      indifferent: [],
+    });
   });
 
   it('gives the texts in the order of the page', () => {

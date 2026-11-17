@@ -3,14 +3,11 @@ import {
   useRequestHintsMutation,
   type Reveal,
 } from '~/composables/queries/usePersonal';
-import {
-  hasBothAnswers,
-  portraitTags,
-  portraitTexts,
-} from '#shared/utils/hints';
+import { giverPortrait, portraitTexts } from '#shared/utils/hints';
 
 // « Pour t'aider à choisir », under the result (README 22.11): the
-// receiver's answers as tags, their texts, their precise ideas. With no
+// receiver's answers in sentences (« Inès préfère : »…), their texts,
+// their precise ideas. With no
 // hint at all, « Lui demander des pistes », once per draw: a sheet says
 // what will happen, then the request leaves at once, anonymous.
 const props = defineProps<{
@@ -24,19 +21,30 @@ const busy = useBusy(() => request.isPending.value);
 
 const hints = computed(() => props.reveal.hints);
 const name = computed(() => props.reveal.receiver.name);
-const tags = computed(() =>
-  portraitTags(hints.value.portrait.answers, hints.value.mode).map(
-    ({ question, answer }) => tk(`hints.tags.${question}.${answer}`),
-  ),
+const said = computed(() =>
+  giverPortrait(hints.value.portrait.answers, hints.value.mode),
 );
-const bothRest = computed(() =>
-  hasBothAnswers(hints.value.portrait.answers, hints.value.mode),
+/** Second hand and surprise, in one paragraph. */
+const sentences = computed(() =>
+  [
+    said.value.secondHand &&
+      tk(`hints.giver.secondHand.${said.value.secondHand}`),
+    said.value.surprise &&
+      tk(`hints.giver.surprise.${said.value.surprise}`, { name: name.value }),
+  ]
+    .filter(Boolean)
+    .join(' '),
+);
+const answered = computed(
+  () =>
+    said.value.prefers.length > 0 ||
+    Boolean(sentences.value) ||
+    said.value.indifferent.length > 0,
 );
 const texts = computed(() => portraitTexts(hints.value.portrait.texts));
 const empty = computed(
   () =>
-    tags.value.length === 0 &&
-    !bothRest.value &&
+    !answered.value &&
     texts.value.length === 0 &&
     hints.value.ideas.length === 0,
 );
@@ -63,14 +71,32 @@ const onSend = () =>
       {{ t('hints.result.title') }}
     </h2>
     <template v-if="!empty">
-      <UiTagList v-if="tags.length > 0" :tags="tags" />
-      <p
-        v-if="bothRest"
-        class="-mt-1.5 text-sm text-toned"
-        data-testid="hints-both-rest"
+      <div
+        v-if="answered"
+        class="flex flex-col gap-1.5 text-[15px] leading-[1.45]"
+        data-testid="giver-portrait"
       >
-        {{ t('hints.result.bothRest') }}
-      </p>
+        <template v-if="said.prefers.length > 0">
+          <p>{{ t('hints.giver.prefers', { name }) }}</p>
+          <ul class="flex list-disc flex-col gap-0.5 pl-5">
+            <li v-for="line in said.prefers" :key="line.question">
+              {{ tk(`hints.giver.choices.${line.question}.${line.answer}`) }}
+            </li>
+          </ul>
+        </template>
+        <p v-if="sentences">{{ sentences }}</p>
+        <p
+          v-for="question in said.indifferent"
+          :key="question"
+          class="text-toned"
+        >
+          {{
+            t('hints.giver.indifferent', {
+              subject: tk(`hints.tags.${question}.both`),
+            })
+          }}
+        </p>
+      </div>
       <div v-for="block in texts" :key="block.key" class="flex flex-col gap-1">
         <p class="text-xs font-bold tracking-[0.04em] text-toned uppercase">
           {{ tk(`hints.texts.${block.key}.giver`) }}

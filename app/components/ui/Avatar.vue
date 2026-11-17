@@ -2,7 +2,8 @@
 import type { Avatar } from '#server/utils/avatars';
 import { AVATAR_SHADES } from '~/utils/avatars';
 
-// A person's Christmas emoji in a coloured circle.
+// A person's Christmas emoji in a coloured circle, drawn as Apple's image
+// on every device (`UiEmoji`).
 const props = withDefaults(
   defineProps<{ avatar: Avatar; size?: 'sm' | 'md' | 'lg' | 'xl' }>(),
   {
@@ -25,6 +26,6 @@ const shade = computed(() => AVATAR_SHADES[props.avatar.color]);
     :style="{ backgroundColor: shade.bg, '--tw-ring-color': shade.ring }"
     aria-hidden="true"
   >
-    {{ avatar.emoji }}
+    <UiEmoji :emoji="avatar.emoji" />
   </span>
 </template>

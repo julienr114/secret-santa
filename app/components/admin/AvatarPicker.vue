@@ -49,7 +49,7 @@ onMounted(() => {
         "
         @click="model = { ...model, emoji }"
       >
-        {{ emoji }}
+        <UiEmoji :emoji="emoji" />
       </button>
     </div>
     <div

@@ -25,6 +25,7 @@
     "deploy:prod": "nuxt build && wrangler deploy",
     "typecheck": "nuxt typecheck",
     "test:e2e": "playwright test",
+    "emoji:copy": "node --experimental-strip-types scripts/copy-emoji-images.ts",
     "seed:demo": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-demo.ts"
   },
   "dependencies": {
@@ -46,6 +47,7 @@
     "@tailwindcss/vite": "^4.3.5",
     "@vitest/coverage-v8": "^5.1.0",
     "drizzle-kit": "^0.31.11",
+    "emoji-datasource-apple": "^16.0.0",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-functional": "^10.0.1",

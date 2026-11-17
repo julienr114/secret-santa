@@ -21,6 +21,14 @@ test('the style guide shows the edition components', async ({ page }) => {
     page.getByRole('img', { name: '12 participants' }).first(),
   ).toContainText('+8');
 
+  // An avatar's emoji is Apple's image, the same on every device, and it
+  // loads (lot 15).
+  const emoji = page.locator('img[src^="/emoji/"]').first();
+  await expect(emoji).toBeVisible();
+  expect(
+    await emoji.evaluate((img: HTMLImageElement) => img.naturalWidth),
+  ).toBe(64);
+
   // Ten people or fewer: no search.
   await page.getByRole('button', { name: 'UiPersonPicker (5)' }).click();
   const list = page.getByRole('listbox', { name: 'Le résultat de qui ?' });

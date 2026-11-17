@@ -72,4 +72,23 @@ test('the style guide shows the edition components', async ({ page }) => {
   await page.getByRole('radio', { name: 'Non, peu importe' }).check();
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(row).toContainText('Non, peu importe');
+
+  // The pieces added with the redesign: a count, a stack, the super-admin
+  // frame, a person field, and the journal with its folded line.
+  await expect(
+    page.getByRole('img', { name: '3 demandes à traiter' }),
+  ).toHaveText('3');
+  await expect(page.getByText(/UiStack : une carte posée/)).toBeVisible();
+  await expect(
+    page.getByRole('group', { name: /Super-admin/ }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /UiPersonField : une personne/ }),
+  ).toContainText('Hugo');
+  const journal = page.getByTestId('journal');
+  await expect(journal).toContainText(
+    '2 personnes ont découvert leur résultat',
+  );
+  await journal.getByRole('button', { name: /^Voir le détail/ }).click();
+  await expect(journal).toContainText('Hugo a découvert son résultat');
 });

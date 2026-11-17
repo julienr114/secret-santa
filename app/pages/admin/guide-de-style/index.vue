@@ -318,6 +318,7 @@ const entries = computed(() => [
         <AdminStatusBadge v-for="code in STATUSES" :key="code" :code="code" />
         <AdminStatusBadge v-for="code in BADGES" :key="code" :code="code" />
         <UBadge color="neutral" variant="subtle" size="sm" label="DE" />
+        <UiCountBadge :count="3" label="3 demandes à traiter" />
       </div>
     </section>
 
@@ -344,6 +345,32 @@ const entries = computed(() => [
       <UiCard padding="lg" class="text-center">
         UiCard <code>lg</code> : pour un message centré.
       </UiCard>
+      <UiStack :behind="2">
+        <UiCard padding="lg">
+          UiStack : une carte posée sur la pile, un bord par élément en attente
+          derrière elle, deux au plus.
+        </UiCard>
+      </UiStack>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <UiSectionTitle>Réservé au super-admin</UiSectionTitle>
+      <UiRestricted label="Super-admin">
+        <p class="text-sm">
+          UiRestricted : ce que seul un super-admin voit sur un écran que tout
+          le monde voit, dans un cadre en pointillés, sans phrase d'explication.
+        </p>
+      </UiRestricted>
+      <UiRestricted label="Super-admin" flush>
+        <ul>
+          <UiListItem
+            icon="i-lucide-trash-2"
+            tone="danger"
+            title="Avec des lignes (flush)"
+            :on-click="() => undefined"
+          />
+        </ul>
+      </UiRestricted>
     </section>
 
     <section class="flex flex-col gap-3">
@@ -711,6 +738,22 @@ const entries = computed(() => [
       <UFormField :label="t('adminGroup.rules.eventDate')">
         <AdminDateField v-model="date" :suggestion="christmasDay" />
       </UFormField>
+      <UiPersonField
+        label="UiPersonField : une personne"
+        :person="{ name: 'Hugo', avatar: sample }"
+        placeholder="Choisir…"
+        @open="picker = true"
+      />
+      <UiChoiceList
+        v-model="choice"
+        :choices="choices"
+        label="UiChoiceList : un choix parmi quelques-uns"
+        titled
+      />
+      <p class="px-1 text-xs text-muted">
+        UiStickyFooter garde le bouton d'un écran en bas, au-dessus de la barre
+        de l'iPhone (écran « Personnaliser le message »).
+      </p>
     </section>
 
     <section class="flex flex-col gap-3">

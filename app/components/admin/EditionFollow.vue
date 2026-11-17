@@ -275,6 +275,7 @@ const confirmingRow = ref(false);
     :title="t('adminEdition.screen.follow.later')"
     :footer="t('adminEdition.screen.follow.noResults')"
   >
+    <AdminEditionRuleRows :slug="slug" :edition-id="editionId" />
     <UiListItem
       v-if="!canClose && dateText"
       icon="i-lucide-archive"

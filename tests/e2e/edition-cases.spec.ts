@@ -217,6 +217,60 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(page.getByTestId('send-sheet')).toBeVisible();
 });
 
+test('the budget and the word change on the edition, until it is closed', async ({
+  page,
+}) => {
+  const { at, id } = await setUp('cas-regles', ['Ada', 'Bob', 'Cléo']);
+  await page.context().addCookies((await state.api!.storageState()).cookies);
+  const edition = `/admin/cas-regles/editions/${id}`;
+  await page.goto(edition);
+  await hydrated(page);
+  // Before the draw, in « Si tu veux ».
+  const budget = page.getByTestId('rule-budget');
+  await expect(budget).toContainText('Aucun pour l’instant');
+  await budget.click();
+  await page.getByRole('textbox').fill('25 €');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('25 €');
+  await expect(page.getByText('cas-regles · Budget 25 €')).toBeVisible();
+  const word = page.getByTestId('rule-word');
+  await word.click();
+  await page.getByRole('textbox').fill('Après le dessert !');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(word).toContainText('Après le dessert !');
+
+  // After the draw, in « Plus tard, ou en cas de pépin »; the result
+  // card shows the new budget.
+  await state.api!.post(`${at}/editions/${id}/draw`);
+  await page.reload();
+  await hydrated(page);
+  await budget.click();
+  await page.getByRole('textbox').fill('30 €');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('30 €');
+  const { messages } = await (
+    await state.api!.get(`${at}/editions/${id}/messages?type=drawn`)
+  ).json();
+  const link = (Object.values(messages)[0] as { link: string }).link;
+  await page.goto(new URL(link).pathname);
+  await hydrated(page);
+  await page
+    .getByRole('button', { name: "Découvrir à qui j'offre un cadeau" })
+    .click();
+  await expect(page.locator('.reveal-card')).toContainText('30 €');
+  await expect(page.locator('.reveal-card')).toContainText(
+    'Après le dessert !',
+  );
+
+  // Closed: read only.
+  await state.api!.post(`${at}/editions/${id}/close`);
+  await page.goto(edition);
+  await hydrated(page);
+  await expect(budget).toContainText('30 €');
+  await budget.click();
+  await expect(page.getByRole('textbox')).toHaveCount(0);
+});
+
 test('a screen reached by its address says where it belongs, and leads back', async ({
   page,
 }) => {

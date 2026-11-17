@@ -254,6 +254,7 @@ const dateOpen = ref(false);
             :title="t('adminEdition.screen.closed.journal')"
             :subtitle="t('adminEdition.screen.closed.journalHint')"
           />
+          <AdminEditionRuleRows :slug="slug" :edition-id="id" readonly />
         </UiList>
         <UButton
           :to="`/admin/${slug}/editions/nouvelle`"

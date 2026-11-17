@@ -291,6 +291,13 @@ export default {
     partyOn: 'Party on {date}',
     changeDate: 'Party on {date}. Change the date',
     budget: 'Budget {budget}',
+    rules: {
+      none: 'None yet',
+      budgetHelp: 'Shown with each result.',
+      budgetPlaceholder: '€20',
+      wordHelp: 'Shown with each result.',
+      wordLabel: 'Your word',
+    },
     now: 'To do now',
     prepare: {
       title: 'Check the list, then start the draw',

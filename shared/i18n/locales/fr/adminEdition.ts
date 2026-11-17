@@ -292,6 +292,13 @@ export default {
     partyOn: 'Fête le {date}',
     changeDate: 'Fête le {date}. Modifier la date',
     budget: 'Budget {budget}',
+    rules: {
+      none: 'Aucun pour l’instant',
+      budgetHelp: 'Affiché avec le résultat de chacun.',
+      budgetPlaceholder: '20 €',
+      wordHelp: 'Affiché avec le résultat de chacun.',
+      wordLabel: 'Ton mot',
+    },
     now: 'À faire maintenant',
     prepare: {
       title: 'Vérifie la liste, puis lance le tirage',

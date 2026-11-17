@@ -3,12 +3,14 @@ import type { Avatar } from '#server/utils/avatars';
 
 // One row: optional leading avatar or icon, title and subtitle (or a
 // subtitle slot), trailing slot and a chevron when it opens another screen
-// (`chevron: false` hides it when the row carries its own action). A
+// (`chevron: false` hides it when the row carries its own action;
+// `chevron: true` shows it on a button row that opens a sheet). A
 // settings row shows its current `value` on the right, or a switch when
 // it is bound with `v-model:checked`.
 const props = withDefaults(
   defineProps<{
     to?: string;
+    /** Shown for a link or a value unless false; forced when true. */
     chevron?: boolean;
     title: string;
     subtitle?: string;
@@ -30,7 +32,7 @@ const props = withDefaults(
   }>(),
   {
     to: undefined,
-    chevron: true,
+    chevron: undefined,
     subtitle: undefined,
     icon: undefined,
     avatar: undefined,
@@ -121,7 +123,7 @@ const NuxtLink = resolveComponent('NuxtLink');
         :label="busyLabel ?? title"
       />
       <UIcon
-        v-else-if="(to || value) && chevron"
+        v-else-if="chevron ?? Boolean(to || value)"
         name="i-lucide-chevron-right"
         class="size-5 shrink-0 text-dimmed"
       />

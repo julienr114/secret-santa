@@ -340,14 +340,14 @@ Validé par Julien le 16 novembre 2026, en réponse à la question 1 du lot 5. �
 
 Le budget, la date de la fête et le petit mot se règlent **par édition**, plus par groupe : « Nouvelle édition » les demande et reprend ceux de l'édition précédente (lot 3). Il manquait de pouvoir corriger le budget et le mot une fois l'édition créée.
 
-- [ ] **À préparer** : dans la section « Si tu veux », après « Exclusions », deux lignes : « Budget » et « Petit mot pour les participants », chacune avec sa valeur en sous-titre (« Aucun pour l'instant » si vide).
-- [ ] **Tirage fait** : les deux mêmes lignes en tête de la section « Plus tard, ou en cas de pépin ».
-- [ ] Chaque ligne ouvre `UiTextSheet` (lot 0) et s'enregistre à la validation, par la route qui modifie déjà les règles d'une édition (celle que « Nouvelle édition » appelle). Rien à ajouter côté serveur.
-- [ ] Modifiables tant que l'édition n'est pas clôturée ; en lecture seule ensuite.
-- [ ] Le budget sous le titre de l'édition et la carte du résultat côté participant se mettent à jour aussitôt.
-- [ ] S'applique à tous les états de l'écran (aucun participant, tirage impossible, grands groupes), même si seules `Main` et `Suivi` sont redessinées.
-- [ ] **Le nombre d'idées par liste** n'est plus réglable et garde sa valeur : c'est voulu, la liste de souhaits sera remplacée par les pistes de cadeaux (README 22.11).
-- [ ] Mettre à jour le README 5 (règles par groupe) : ces trois règles sont désormais celles de l'édition.
+- [x] **À préparer** : dans la section « Si tu veux », après « Exclusions », deux lignes : « Budget » et « Petit mot pour les participants », chacune avec sa valeur en sous-titre (« Aucun pour l'instant » si vide).
+- [x] **Tirage fait** : les deux mêmes lignes en tête de la section « Plus tard, ou en cas de pépin ».
+- [x] Chaque ligne ouvre `UiTextSheet` (lot 0) et s'enregistre à la validation, par la route qui modifie déjà les règles d'une édition (celle que « Nouvelle édition » appelle). Rien à ajouter côté serveur.
+- [x] Modifiables tant que l'édition n'est pas clôturée ; en lecture seule ensuite.
+- [x] Le budget sous le titre de l'édition et la carte du résultat côté participant se mettent à jour aussitôt.
+- [x] S'applique à tous les états de l'écran (aucun participant, tirage impossible, grands groupes), même si seules `Main` et `Suivi` sont redessinées.
+- [x] **Le nombre d'idées par liste** n'est plus réglable et garde sa valeur : c'est voulu, la liste de souhaits sera remplacée par les pistes de cadeaux (README 22.11).
+- [x] Mettre à jour le README 5 (règles par groupe) : ces trois règles sont désormais celles de l'édition.
 
 ### Correction 10 — les réponses aux questions
 

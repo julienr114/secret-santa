@@ -147,15 +147,17 @@ Dans aucun de ces cas l'organisateur ne voit le résultat.
 
 Réglables par l'organisateur, avec une valeur par défaut au niveau du groupe et une surcharge possible par édition.
 
+**Le budget, la date de la fête et le petit mot sont des règles de l'édition** (décidé par Julien le 16 novembre 2026, Correction 9) : « Nouvelle édition » les demande en reprenant ceux de l'édition précédente, et l'écran de l'édition les corrige tant qu'elle n'est pas clôturée (lignes « Budget » et « Petit mot pour les participants », dans « Si tu veux » avant le tirage, en tête de « Plus tard, ou en cas de pépin » après ; en lecture seule une fois clôturée). Ils s'enregistrent dans `rules_override` de l'édition ; la valeur du groupe ne sert plus que de repli pour les anciennes éditions. Le nombre d'idées par liste n'est plus réglable à l'écran et garde sa valeur : la liste de souhaits sera remplacée par les pistes de cadeaux (22.11).
+
 | Règle | Défaut | Description |
 |---|---|---|
 | `exclure_annees_precedentes` | 1 | « Éviter de retomber sur la même personne » : non, l'an dernier, les 2 ou les 3 dernières années (0 à 3) |
 | `exclusions_manuelles` | aucune | Paires interdites supplémentaires (ex. « A ne tire jamais B »), à sens unique ou réciproques |
-| `budget` | vide | Texte libre affiché sur la page de résultat (ex. « 20 € max ») |
-| `date_evenement` | vide | Date de la fête, affichée sur la page de résultat |
-| `message_gardien` | vide | Petit mot affiché sur la page de résultat |
+| `budget` | vide | Texte libre affiché sur la page de résultat (ex. « 20 € max ») ; par édition |
+| `date_evenement` | vide | Date de la fête, affichée sur la page de résultat ; par édition |
+| `message_gardien` | vide | Petit mot affiché sur la page de résultat ; par édition |
 | `liste_souhaits` | oui | Active la liste de souhaits pour le groupe. Si non, l'écran et les routes correspondants sont masqués |
-| `souhaits_max` | 10 | Nombre maximal d'idées par participant et par édition |
+| `souhaits_max` | 10 | Nombre maximal d'idées par participant et par édition ; plus réglable à l'écran |
 
 ---
 
@@ -1314,7 +1316,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiPageTitle` | Le titre d'un écran, un seul par page (`h1`) |
 | `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe, en Nunito même quand c'est un `h2` |
 | `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
-| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône ronde de 40 px (brique pour ce qui est à faire, grise sinon : `icon-tone="neutral"`, rouge pour `tone="danger"`), emoji ou icône de personne, et un emplacement `trailing` ; 60 px de haut, titre en semi-gras, sous-titre en 13 px ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
+| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône ronde de 40 px (brique pour ce qui est à faire, grise sinon : `icon-tone="neutral"`, rouge pour `tone="danger"`), emoji ou icône de personne, et un emplacement `trailing` ; le chevron va avec un lien ou une valeur, `chevron` le force (`true`, un bouton qui ouvre un panneau) ou le retire (`false`) ; 60 px de haut, titre en semi-gras, sous-titre en 13 px ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
 | `UiAvatar` | L'icône d'une personne, en quatre tailles : `sm` 32 px, `md` 40 px, `lg` 56 px (en-tête d'une page), `xl` 80 px (résultat, fiche, choix de l'icône) |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
 | `UiMessageBubble` | Un message tel que la personne le lira, dans une bulle (92 % de large au plus, coin bas gauche resserré) : ses mots, puis son lien seul sur sa ligne, en gras, sans `https://`, coupé s'il est trop long (`aroundLink`) |

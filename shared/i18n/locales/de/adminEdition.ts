@@ -300,6 +300,13 @@ export default {
     partyOn: 'Bescherung am {date}',
     changeDate: 'Bescherung am {date}. Datum ändern',
     budget: 'Budget {budget}',
+    rules: {
+      none: 'Noch keins',
+      budgetHelp: 'Wird mit jedem Ergebnis angezeigt.',
+      budgetPlaceholder: '20 €',
+      wordHelp: 'Wird mit jedem Ergebnis angezeigt.',
+      wordLabel: 'Dein Wort',
+    },
     now: 'Jetzt zu tun',
     prepare: {
       title: 'Prüfe die Liste, dann starte die Auslosung',

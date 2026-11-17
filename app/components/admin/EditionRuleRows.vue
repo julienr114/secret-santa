@@ -6,7 +6,8 @@ import {
 
 // The budget and the word for the participants, as two rows of the
 // edition screen (Correction 9, decided on 16 November 2026): each opens
-// its sheet and is saved with « Valider », as the edition's own rules.
+// its sheet and is saved with « Valider », as the edition's own rules,
+// shown at once.
 // Read only once the edition is closed.
 const props = defineProps<{
   slug: string;
@@ -15,6 +16,7 @@ const props = defineProps<{
 }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
+const toast = useToast();
 
 const edition = useEditionQuery(
   () => props.slug,
@@ -31,37 +33,51 @@ const RULES = {
 type Rule = keyof typeof RULES;
 
 const editing = ref<Rule | null>(null);
-const failure = ref<unknown>(null);
-const saving = ref<Rule | null>(null);
+/** Values chosen and not yet confirmed by the server: shown at once. */
+const pending = ref<Partial<Record<Rule, string>>>({});
 const sheet = (rule: Rule) =>
   computed({
     get: () => editing.value === rule,
     set: (value) => {
       editing.value = value ? rule : null;
-      failure.value = null;
     },
   });
 const budgetOpen = sheet('budget');
 const wordOpen = sheet('guardianMessage');
 
 /**
+ * A rule as shown: the value being saved, or the edition's.
+ * @param rule - The rule.
+ * @returns Its value, maybe empty.
+ */
+const shownOf = (rule: Rule) =>
+  pending.value[rule] ?? rules.value?.[rule] ?? '';
+/**
  * What a row says under its title: the value, or that there is none.
  * @param rule - The rule.
  * @returns The line.
  */
 const valueOf = (rule: Rule) =>
-  rules.value?.[rule] || t('adminEdition.screen.rules.none');
+  shownOf(rule) || t('adminEdition.screen.rules.none');
+/**
+ * Whether a rule is being saved.
+ * @param rule - The rule.
+ * @returns True while its change is on its way.
+ */
+const saving = (rule: Rule) => rule in pending.value;
 
 /**
  * Saves one rule as the edition's own, keeping its other own rules (the
- * route replaces them all).
+ * route replaces them all). Like every setting (README 23.3): the sheet
+ * closes, the new value shows at once with the wheel on its row, and a
+ * failure puts the old one back with a toast.
  * @param rule - The rule changed.
  * @param value - Its new value.
- * @returns Nothing: the sheet closes once saved, or shows the error.
+ * @returns Nothing.
  */
 const onValidate = (rule: Rule, value: string) => {
-  saving.value = rule;
-  failure.value = null;
+  editing.value = null;
+  pending.value = { ...pending.value, [rule]: value };
   update.mutate(
     {
       id: props.editionId,
@@ -71,14 +87,12 @@ const onValidate = (rule: Rule, value: string) => {
       },
     },
     {
-      onSuccess: () => {
-        editing.value = null;
-      },
-      onError: (error) => {
-        failure.value = error;
-      },
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
       onSettled: () => {
-        saving.value = null;
+        pending.value = Object.fromEntries(
+          Object.entries(pending.value).filter(([key]) => key !== rule),
+        );
       },
     },
   );
@@ -92,7 +106,7 @@ const onValidate = (rule: Rule, value: string) => {
     :title="t('adminEdition.newEdition.budgetLabel')"
     :subtitle="valueOf('budget')"
     :chevron="!readonly"
-    :busy="saving === 'budget'"
+    :busy="saving('budget')"
     :busy-label="t('common.actions.saving')"
     :on-click="readonly ? undefined : () => (editing = 'budget')"
     data-testid="rule-budget"
@@ -103,7 +117,7 @@ const onValidate = (rule: Rule, value: string) => {
     :title="t('adminEdition.newEdition.messageLabel')"
     :subtitle="valueOf('guardianMessage')"
     :chevron="!readonly"
-    :busy="saving === 'guardianMessage'"
+    :busy="saving('guardianMessage')"
     :busy-label="t('common.actions.saving')"
     :on-click="readonly ? undefined : () => (editing = 'guardianMessage')"
     data-testid="rule-word"
@@ -114,13 +128,11 @@ const onValidate = (rule: Rule, value: string) => {
     :title="t('adminEdition.newEdition.budgetLabel')"
     :description="t('adminEdition.screen.rules.budgetHelp')"
     :label="t('adminEdition.newEdition.budgetLabel')"
-    :value="rules?.budget ?? ''"
+    :value="shownOf('budget')"
     :maxlength="RULES.budget.max"
     :placeholder="t('adminEdition.screen.rules.budgetPlaceholder')"
     :validate-label="t('common.actions.validate')"
     :cancel-label="t('common.actions.cancel')"
-    :loading="saving === 'budget'"
-    :error="failure ? errorMessage(failure) : null"
     @validate="(value) => onValidate('budget', value)"
   />
   <UiTextSheet
@@ -129,13 +141,11 @@ const onValidate = (rule: Rule, value: string) => {
     :title="t('adminEdition.newEdition.messageLabel')"
     :description="t('adminEdition.screen.rules.wordHelp')"
     :label="t('adminEdition.screen.rules.wordLabel')"
-    :value="rules?.guardianMessage ?? ''"
+    :value="shownOf('guardianMessage')"
     :maxlength="RULES.guardianMessage.max"
     :placeholder="t('adminEdition.newEdition.messagePlaceholder')"
     :validate-label="t('common.actions.validate')"
     :cancel-label="t('common.actions.cancel')"
-    :loading="saving === 'guardianMessage'"
-    :error="failure ? errorMessage(failure) : null"
     @validate="(value) => onValidate('guardianMessage', value)"
   />
 </template>

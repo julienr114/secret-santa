@@ -282,6 +282,12 @@ export default {
     revokeAllConfirm: 'Log out of every device?',
     firstNameHelp: 'Reused when you create a group.',
     lastNameHelp: 'Optional. Tells you apart from a namesake.',
+    profileHint:
+      'Your first name and your icon are used when you join or create a group. The language is the one of your emails.',
+    language: 'Language',
+    connectedOn: 'Logged in on {date}',
+    revokeShort: 'Log out',
+    logoutHere: 'Log out of this device',
   },
   email: {
     subject: 'Your login link for Under the Tree',

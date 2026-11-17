@@ -281,6 +281,12 @@ export default {
     revokeAllConfirm: 'Déconnecter tous les appareils ?',
     firstNameHelp: 'Repris quand tu crées un groupe.',
     lastNameHelp: 'Facultatif. Te distingue d’un homonyme.',
+    profileHint:
+      'Ton prénom et ton icône sont repris quand tu rejoins ou crées un groupe. La langue est celle de tes emails.',
+    language: 'Langue',
+    connectedOn: 'Connecté le {date}',
+    revokeShort: 'Déconnecter',
+    logoutHere: 'Se déconnecter de cet appareil',
   },
   email: {
     subject: 'Ton lien de connexion à Under the Tree',

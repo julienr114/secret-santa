@@ -287,6 +287,12 @@ export default {
     firstNameHelp: 'Wird übernommen, wenn du eine Gruppe erstellst.',
     lastNameHelp:
       'Optional. Unterscheidet dich von einer Person gleichen Namens.',
+    profileHint:
+      'Dein Vorname und dein Symbol werden übernommen, wenn du einer Gruppe beitrittst oder eine erstellst. Die Sprache ist die deiner E-Mails.',
+    language: 'Sprache',
+    connectedOn: 'Angemeldet am {date}',
+    revokeShort: 'Abmelden',
+    logoutHere: 'Von diesem Gerät abmelden',
   },
   email: {
     subject: 'Dein Anmeldelink für Under the Tree',

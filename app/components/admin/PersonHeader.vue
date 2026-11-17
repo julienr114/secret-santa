@@ -2,15 +2,18 @@
 import type { Avatar } from '#server/utils/avatars';
 import type { ContextPart } from '~/components/ui/PageContext.vue';
 
-// The head of a person's screen: their icon, large, with a pencil that
-// changes it in a sheet, then where the screen belongs, the title and a
-// line about them.
+// The head of a person's screen, or of one's own account: the icon,
+// large, with a pencil that changes it in a sheet, then where the screen
+// belongs, the title and a line about them.
 const props = defineProps<{
   title: string;
   subtitle?: string;
-  context: ContextPart[];
+  /** Where the screen belongs; none for one's own account. */
+  context?: ContextPart[];
   /** `lg` for a person's page, `md` for a new one. */
   size?: 'md' | 'lg';
+  /** The title of the icon's sheet, « Son icône » unless said. */
+  avatarTitle?: string;
 }>();
 const avatar = defineModel<Avatar>('avatar', { required: true });
 const { t } = useT();
@@ -49,14 +52,18 @@ const big = computed(() => props.size !== 'md');
       </span>
     </button>
     <div class="flex min-w-0 flex-col gap-1">
-      <UiPageContext :parts="context" :label="t('common.context')" />
+      <UiPageContext
+        v-if="context?.length"
+        :parts="context"
+        :label="t('common.context')"
+      />
       <UiPageTitle>{{ title }}</UiPageTitle>
       <p v-if="subtitle" class="text-[15px] text-toned">{{ subtitle }}</p>
     </div>
     <AdminAvatarSheet
       v-model:open="open"
       :initial="avatar"
-      :title="t('adminGroup.avatar.theirs')"
+      :title="avatarTitle ?? t('adminGroup.avatar.theirs')"
       @validate="onValidate"
     />
   </div>

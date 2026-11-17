@@ -380,17 +380,17 @@ Supprimé le 16 novembre 2026. Les quatre écrans de la liste de souhaits (`Souh
 
 - [x] `Rejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (`rejoindre/[code].vue`) : les quatre états. `RejoindreFerme` montre le cas « plus de place » ; même écran, autre phrase, pour un lien expiré (« Ce lien d'invitation n'est plus valable depuis le 10 décembre. ») et pour un lien désactivé ou inconnu (« Ce lien d'invitation ne marche plus. »). Si le tirage est déjà fait, la personne rejoint le groupe, pas le tirage en cours : le dire sur `RejoindreFait`.
 - [x] `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide` (`AuthEmailLogin.vue`, `login/[token].vue`) : logo à la place de l'emoji clé, textes des maquettes.
-- [ ] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
+- [x] `Compte` (`compte.vue`) : profil en lignes modifiables, appareils, déconnexion.
 - [ ] `AccueilMenu`, `AccueilDemandeAttente`, `AccueilDemandeRefusee` : voir « Partiel ».
 - [x] **Actions en cours** conformes : roue dans « Recevoir mon lien », « Se connecter », « Rejoindre le groupe ».
 
 ### Lot 9 — Administration (super-admin)
 
 - [ ] `AdminAcces`, `AdminAccesMenu` : la barre du bas (`AdminBottomNav`) disparaît ; l'accès se fait par une ligne « Administration » en bas de l'accueil et par le menu, avec le nombre de demandes en attente.
-- [ ] `Admin`, `AdminPlusieursDemandes` : accueil de l'administration ; la demande la plus ancienne dans la carte, les suivantes en lignes.
+- [ ] `Admin`, `AdminPlusieursDemandes` : accueil de l'administration ; la demande la plus ancienne dans la carte, les suivantes en lignes. Sans demande (`AdminSansDemande`), la carte laisse place à une ligne « Aucune demande à traiter ».
 - [ ] `AdminDemande` : réponse dans un panneau, avec l'effet sur le quota (sans le champ « Un mot pour elle »).
 - [ ] `AdminComptes`, `AdminCompte`, `AdminGroupes` (`admin/comptes/*`, `admin/groupes/index.vue`).
-- [ ] `GroupeNouveauAdmin` (`admin/groupes/nouveau.vue`, vu par un super-admin) : le champ « Adresse du premier organisateur » reste, mais dans un bloc à part, en pointillés, intitulé « Super-admin » avec la mention « Visible seulement par les super-admins ». Un compte normal ne voit ni le bloc ni le champ, et garde la phrase « Tu en seras l'organisateur ». Même marquage pour toute commande réservée au super-admin posée sur un écran que tout le monde voit (par exemple « Supprimer le groupe » dans les réglages) : un seul composant.
+- [ ] `GroupeNouveauAdmin` (`admin/groupes/nouveau.vue`, vu par un super-admin) : le champ « Adresse du premier organisateur » reste, mais dans un bloc à part, en pointillés, intitulé « Super-admin », sans phrase d'explication (le titre suffit ; même chose sur la carte « Administration » de l'accueil, `AdminAcces` et `AdminAccesMenu`). Un compte normal ne voit ni le bloc ni le champ, et garde la phrase « Tu en seras l'organisateur ». Même marquage pour toute commande réservée au super-admin posée sur un écran que tout le monde voit (par exemple « Supprimer le groupe » dans les réglages) : un seul composant.
 
 - [ ] Validé par Julien le 16 novembre 2026 : le super-admin ne modifie plus le profil d'un compte (prénom, icône, langue), il le lit seulement ; « Accepter » et « Refuser » ont le même poids visuel. Retirer du client le formulaire de profil de `admin/comptes/[id].vue` ; la route d'API reste en place.
 - [ ] **Actions en cours** conformes : roue dans « Accepter » et « Refuser ».
@@ -501,3 +501,4 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 1. **Rejoindre le tirage en même temps que le groupe.** **Réponse de Julien, 17 novembre 2026 :** la route `join` ajoute aussi la personne à l'édition « à préparer » (exception à « interface seulement », sans migration, avec son test). Fait.
 2. **La date d'un lien d'invitation expiré.** La page d'invitation ne reçoit pas la date limite du lien : « Ce lien d'invitation n'est plus valable » s'affiche donc sans « depuis le 10 décembre ». L'ajouter demande que la route de l'invitation renvoie `inviteUntil` (changement de route). On le fait ?
 3. **L'adresse sur « Se connecter sur cet appareil ? ».** La maquette dit « Tu vas être connecté avec hugo-demo@example.com pendant 30 jours ». La page du lien ne connaît pas l'adresse sans consommer le lien, et c'est voulu (un lecteur d'emails ne doit pas pouvoir l'utiliser). L'écran dit « Tu vas être connecté sur cet appareil pendant 30 jours. » Lire l'adresse du jeton sans le consommer serait une nouvelle route ; on la veut ?
+4. **La phrase sous le profil de `Compte`.** La maquette dit « Ton prénom et ton icône sont repris dans tes tirages ». Le profil ne sert que de modèle quand le compte rejoint ou crée un groupe : une personne déjà dans un groupe garde ce que dit le groupe. L'écran dit donc « Ton prénom et ton icône sont repris quand tu rejoins ou crées un groupe. La langue est celle de tes emails. » Ça te va, ou faut-il que changer le profil change aussi les personnes de ses groupes (changement de route) ?

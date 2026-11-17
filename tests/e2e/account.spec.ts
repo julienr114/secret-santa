@@ -60,16 +60,24 @@ test('a declared super-admin logs in with a link, used by a gesture and only onc
 
   await page.goto(href);
   await hydrated(page);
-  await expect(heading(page)).toHaveText('Connexion');
+  await expect(heading(page)).toHaveText('Se connecter sur cet appareil ?');
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
   expect((await page.request.get('/api/admin/groups')).status()).toBe(200);
 
-  // The same link a second time is refused.
+  // The same link a second time is refused, and the page says how to get
+  // a new one.
   const again = await page.request.post('/api/auth/confirm', {
     data: { token: tokenOf(href) },
   });
   expect(again.status()).toBe(410);
+  await page.goto(href);
+  await hydrated(page);
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(heading(page)).toHaveText('Ce lien ne marche plus');
+  await expect(
+    page.getByRole('link', { name: 'Demander un nouveau lien' }),
+  ).toBeVisible();
 });
 
 test('asking for a new link invalidates the previous one', async ({
@@ -119,8 +127,26 @@ test('my account lists the devices, and logging out everywhere closes them all',
   await expect(heading(page)).toHaveText('Mon compte');
   await expect(page.getByText(ADMIN_EMAIL)).toBeVisible();
   await expect(page.getByText('Cet appareil', { exact: true })).toHaveCount(1);
-  // This device, the other one, and the two sessions of the tests above.
-  await expect(page.getByText(/^Vu le /)).toHaveCount(4);
+  // This device since it logged in; the other one and the two sessions of
+  // the tests above, when last seen.
+  await expect(page.getByText(/^Connecté le /)).toHaveCount(1);
+  await expect(page.getByText(/^Vu le /)).toHaveCount(3);
+
+  // The profile in rows: a last name, typed in its sheet, saved at once.
+  const lastName = page
+    .getByTestId('profile')
+    .getByRole('button', { name: /^Nom de famille/ });
+  await expect(lastName).toContainText('Ajouter');
+  await lastName.click();
+  await page.getByRole('textbox').fill('Martin');
+  const saved = page.waitForResponse(
+    (r) => r.url().endsWith('/api/auth/profile') && r.ok(),
+  );
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(lastName).toContainText('Martin');
+  await saved;
+  const profile = await (await page.request.get('/api/auth/sessions')).json();
+  expect(profile.lastName).toBe('Martin');
   const sessions = await (await page.request.get('/api/auth/sessions')).json();
   const mine = sessions.sessions.find((s: { current: boolean }) => s.current);
   expect(
@@ -133,7 +159,7 @@ test('my account lists the devices, and logging out everywhere closes them all',
     .first()
     .click();
   await expect(page.getByText('Appareil déconnecté')).toBeVisible();
-  await expect(page.getByText(/^Vu le /)).toHaveCount(3);
+  await expect(page.getByText(/^Vu le /)).toHaveCount(2);
 
   await page.getByText('Déconnecter partout').click();
   await page.getByRole('button', { name: 'Déconnecter partout' }).click();

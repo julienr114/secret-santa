@@ -1,0 +1,68 @@
+import type { Locale } from '#shared/i18n';
+import type { Avatar } from '#server/utils/avatars';
+import {
+  useAccountQuery,
+  useSaveProfileMutation,
+  type ProfileBody,
+} from '~/composables/queries/useAuth';
+
+/** One change of the profile, as a row makes it. */
+type ProfilePatch = Partial<{
+  firstName: string;
+  lastName: string | null;
+  language: Locale;
+  avatar: Avatar;
+}>;
+/** The parts of the profile a row shows. */
+type ProfileField = keyof ProfilePatch;
+
+/**
+ * The account and its profile, each change saved on its own as soon as
+ * it is chosen, like the settings (README 23.3): the new value shows at
+ * once, the row says it is saving, and an error puts the old value back
+ * with a toast.
+ * @returns The account, the profile as shown, `save` and `saving`.
+ */
+export const useProfileSaver = () => {
+  const account = useAccountQuery();
+  const update = useSaveProfileMutation();
+  const toast = useToast();
+  const errorMessage = useErrorMessage();
+  /** Values chosen and not yet confirmed by the server. */
+  const pending = ref<ProfilePatch>({});
+  const shown = computed(() => ({ ...account.data.value, ...pending.value }));
+  /**
+   * Saves one change, shown at once.
+   * @param patch - The fields that change.
+   * @returns Nothing: errors are told in a toast.
+   */
+  const save = (patch: ProfilePatch) => {
+    pending.value = { ...pending.value, ...patch };
+    const fields = Object.keys(patch);
+    /** Forgets the values of this change, kept or not. */
+    const settle = () => {
+      pending.value = Object.fromEntries(
+        Object.entries(pending.value).filter(([key]) => !fields.includes(key)),
+      );
+    };
+    const { avatar, ...rest } = patch;
+    const body: ProfileBody = {
+      ...rest,
+      ...(avatar
+        ? { avatarEmoji: avatar.emoji, avatarColor: avatar.color }
+        : {}),
+    };
+    update.mutate(body, {
+      onSettled: settle,
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
+    });
+  };
+  /**
+   * Whether a field is being saved.
+   * @param field - The field.
+   * @returns True while its change is on its way.
+   */
+  const saving = (field: ProfileField) => field in pending.value;
+  return { account, shown, save, saving };
+};

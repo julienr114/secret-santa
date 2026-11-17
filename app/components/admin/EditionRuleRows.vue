@@ -13,6 +13,11 @@ const props = defineProps<{
   slug: string;
   editionId: string;
   readonly?: boolean;
+  /**
+   * The value on the right and short titles, as on « Réglages de
+   * l'édition » (README 22.16), instead of the value under the title.
+   */
+  values?: boolean;
 }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
@@ -104,7 +109,8 @@ const onValidate = (rule: Rule, value: string) => {
     :icon="RULES.budget.icon"
     icon-tone="neutral"
     :title="t('adminEdition.newEdition.budgetLabel')"
-    :subtitle="valueOf('budget')"
+    :subtitle="values ? undefined : valueOf('budget')"
+    :value="values ? valueOf('budget') : undefined"
     :chevron="!readonly"
     :busy="saving('budget')"
     :busy-label="t('common.actions.saving')"
@@ -114,8 +120,13 @@ const onValidate = (rule: Rule, value: string) => {
   <UiListItem
     :icon="RULES.guardianMessage.icon"
     icon-tone="neutral"
-    :title="t('adminEdition.newEdition.messageLabel')"
-    :subtitle="valueOf('guardianMessage')"
+    :title="
+      values
+        ? t('adminEdition.settings.wordTitle')
+        : t('adminEdition.newEdition.messageLabel')
+    "
+    :subtitle="values ? undefined : valueOf('guardianMessage')"
+    :value="values ? valueOf('guardianMessage') : undefined"
     :chevron="!readonly"
     :busy="saving('guardianMessage')"
     :busy-label="t('common.actions.saving')"

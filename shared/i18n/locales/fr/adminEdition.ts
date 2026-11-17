@@ -375,6 +375,7 @@ export default {
       revealOneHint: 'Dernier recours, inscrit au journal',
       cancel: 'Annuler et relancer le tirage',
       cancelHint: 'Désistement, oubli… journalisé',
+      listFooter: 'Ceux qui restent à prévenir sont en premier.',
       noResults: 'Personne, organisateur compris, ne voit les résultats ici.',
     },
     reveal: {
@@ -502,6 +503,29 @@ export default {
       copyLink: 'Copier le lien seul',
       emailSent: 'Email envoyé à {name}',
     },
+  },
+  // Lot 18 (README 22.16): the edition's settings on a page of their own,
+  // and « Un souci ? » in a sheet.
+  settings: {
+    title: 'Réglages de l’édition',
+    intro: 'Ce que voient les participants de {label}.',
+    dateTitle: 'Date de la fête',
+    wordTitle: 'Petit mot',
+    budgetIs: 'Budget {budget}',
+    word: 'petit mot',
+    what: 'Date, budget, petit mot',
+  },
+  trouble: {
+    title: 'Un souci ?',
+    row: 'Désistement, lien perdu, erreur de tirage',
+    description: 'Chacune de ces actions est inscrite au journal du groupe.',
+    revealOne: 'Voir un seul résultat',
+    revealOneHint: 'Quelqu’un a perdu son lien et n’a pas d’autre moyen',
+    revealEarly: 'Dévoiler avant la fête',
+    revealEarlyHint: 'Tout le monde saura qui offre à qui',
+    cancel: 'Annuler et relancer le tirage',
+    cancelHint: 'Désistement, erreur… tout le monde retire',
+    close: 'Fermer',
   },
   // A draw already made elsewhere (README 22.12, lot 17).
   answers: {

@@ -203,7 +203,12 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Léa et Tom')).toBeVisible();
   await page.getByRole('button', { name: 'Retour' }).click();
 
-  // Last-resort access to the draw: guarded, then journaled for everyone.
+  // Last-resort access to the draw, in « Un souci ? »: guarded, then
+  // journaled for everyone.
+  await page.getByTestId('trouble-row').click();
+  await expect(page.getByTestId('trouble-sheet')).toContainText(
+    'Dévoiler avant la fête',
+  );
   await page.getByText('Voir un seul résultat').click();
   await page.getByRole('button', { name: 'Le résultat de qui ?' }).click();
   await page.getByRole('option', { name: 'Hugo' }).click();
@@ -224,6 +229,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Retour' }).click();
 
   // Cancel with a reason, draw again, close.
+  await page.getByTestId('trouble-row').click();
   await page.getByText('Annuler et relancer le tirage').click();
   await page.getByLabel('Motif').fill('Test de relance');
   await page.getByLabel(/Je comprends/).check();

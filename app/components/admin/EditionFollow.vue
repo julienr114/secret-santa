@@ -12,8 +12,9 @@ import { FOLD_FROM, foldList, listView, type Fold } from '#shared/utils/lists';
 // After the draw: what to do now (let everyone know; from the day of the
 // party, reveal the results, or close without revealing once it is
 // over), the participants in one list from the least done, each with a
-// round button to send or send again, then what can be done later, or,
-// from the day of the party, what to do if something goes wrong.
+// round button to send or send again, then two rows: « Réglages de
+// l'édition », a page of its own, and « Un souci ? », a sheet (README
+// 22.16).
 const props = defineProps<{
   /** The group uses gift hints: else no count of them. */
   hintsOn?: boolean;
@@ -29,6 +30,9 @@ const props = defineProps<{
   /** The day of the party, written out; null when unknown. */
   dateText: string | null;
   closing: boolean;
+  /** The edition's budget and word, said on « Réglages de l'édition ». */
+  budget?: string;
+  word?: string;
 }>();
 const emit = defineEmits<{
   send: [participationId: string];
@@ -132,10 +136,31 @@ const unfold = (state: FollowState, open: boolean) => {
     ? [...unfolded.value, state]
     : unfolded.value.filter((s) => s !== state);
 };
-// Closing asks for a second tap. Without a real date nothing says it is
-// too early: the row of the list closes too (README 21.3).
+// Closing asks for a second tap.
 const confirming = ref(false);
-const confirmingRow = ref(false);
+// What used to be « Plus tard, ou en cas de pépin » (README 22.16): the
+// edition's settings on a page of their own, and « Un souci ? » in a sheet.
+const troubleOpen = ref(false);
+/**
+ * Closes « Un souci ? », then opens the sheet that reveals the results
+ * before the party.
+ * @returns Nothing.
+ */
+const onRevealEarly = () => {
+  troubleOpen.value = false;
+  emit('reveal');
+};
+/** What « Réglages de l'édition » says: what is set, or what it holds. */
+const settingsLine = computed(
+  () =>
+    [
+      props.budget &&
+        t('adminEdition.settings.budgetIs', { budget: props.budget }),
+      props.word && t('adminEdition.settings.word'),
+    ]
+      .filter(Boolean)
+      .join(' · ') || t('adminEdition.settings.what'),
+);
 /** How many opened their result, against everyone: the bar of the card. */
 const viewedShare = computed(() =>
   props.participants.length === 0
@@ -256,6 +281,7 @@ const partyTitle = computed(() =>
       />
     </template>
   </UiActionCard>
+  <slot name="after-card" />
 
   <section class="flex flex-col gap-1.5" data-testid="participants">
     <UiSectionTitle>{{
@@ -344,96 +370,44 @@ const partyTitle = computed(() =>
         </template>
       </UiFoldedRows>
     </UiList>
+    <p class="px-1 text-[13px] leading-[1.4] text-toned">
+      {{ t('adminEdition.screen.follow.listFooter') }}
+    </p>
   </section>
 
-  <UiList
-    v-if="partyReached"
-    :title="t('adminEdition.screen.reveal.trouble')"
-    data-testid="trouble"
-  >
-    <UiListItem
-      :to="`${base}/voir-le-tirage`"
-      icon="i-lucide-eye"
-      icon-tone="neutral"
-      :title="t('adminEdition.screen.follow.revealOne')"
-      :subtitle="t('adminEdition.screen.follow.revealOneHint')"
-    />
-    <UiListItem
-      :to="`${base}/annuler`"
-      icon="i-lucide-rotate-ccw"
-      tone="danger"
-      :title="t('adminEdition.screen.follow.cancel')"
-      :subtitle="t('adminEdition.screen.follow.cancelHint')"
-    />
-  </UiList>
-  <UiList
-    v-else
-    :title="t('adminEdition.screen.follow.later')"
-    :footer="t('adminEdition.screen.follow.noResults')"
-  >
-    <AdminEditionRuleRows :slug="slug" :edition-id="editionId" />
-    <UiListItem
-      v-if="dateText"
-      icon="i-lucide-sparkle"
-      icon-tone="neutral"
-      :title="t('adminEdition.screen.reveal.row')"
-      :subtitle="t('adminEdition.screen.reveal.rowLater', { date: dateText })"
-      :on-click="() => emit('reveal')"
-      chevron
-      data-testid="reveal-row"
-    />
-    <template v-else>
+  <div class="flex flex-col gap-3">
+    <UiList>
       <UiListItem
-        icon="i-lucide-sparkle"
+        :to="`${base}/reglages`"
+        icon="i-lucide-sliders-horizontal"
         icon-tone="neutral"
-        :title="t('adminEdition.screen.reveal.row')"
-        :subtitle="t('adminEdition.screen.reveal.rowNoDate')"
-        :chevron="false"
-        class="opacity-60"
-        data-testid="reveal-row"
+        :title="t('adminEdition.settings.title')"
+        :subtitle="settingsLine"
+        data-testid="settings-row"
       />
       <UiListItem
-        v-if="!confirmingRow"
-        icon="i-lucide-archive"
+        icon="i-lucide-circle-help"
         icon-tone="neutral"
-        :title="t('adminEdition.screen.follow.closeRow')"
-        :subtitle="t('adminEdition.screen.follow.closeRowHint')"
-        :on-click="() => (confirmingRow = true)"
+        :title="t('adminEdition.trouble.title')"
+        :subtitle="t('adminEdition.trouble.row')"
+        :on-click="() => (troubleOpen = true)"
+        chevron
+        data-testid="trouble-row"
       />
-      <li v-else class="flex flex-col gap-2 px-4 py-3">
-        <p class="text-sm">
-          {{ t('adminEdition.screen.follow.closeConfirm') }}
-        </p>
-        <div class="flex gap-2">
-          <UButton
-            :disabled="closing"
-            :loading="closingShown"
-            :label="closeLabel"
-            @click="emit('close')"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            :disabled="closing"
-            :label="t('common.actions.cancel')"
-            @click="confirmingRow = false"
-          />
-        </div>
-      </li>
-    </template>
-    <UiListItem
-      :to="`${base}/voir-le-tirage`"
-      icon="i-lucide-eye"
-      icon-tone="neutral"
-      :title="t('adminEdition.screen.follow.revealOne')"
-      :subtitle="t('adminEdition.screen.follow.revealOneHint')"
-    />
-    <UiListItem
-      :to="`${base}/annuler`"
-      icon="i-lucide-rotate-ccw"
-      tone="danger"
-      :title="t('adminEdition.screen.follow.cancel')"
-      :subtitle="t('adminEdition.screen.follow.cancelHint')"
-    />
-  </UiList>
+    </UiList>
+    <p class="px-1 text-[13px] leading-[1.4] text-toned">
+      {{ t('adminEdition.screen.follow.noResults') }}
+    </p>
+  </div>
+
+  <AdminTroubleSheet
+    v-model:open="troubleOpen"
+    :slug="slug"
+    :edition-id="editionId"
+    :can-reveal-early="Boolean(dateText) && !partyReached"
+    :can-close-here="!dateText"
+    :closing="closing"
+    @reveal-early="onRevealEarly"
+    @close="emit('close')"
+  />
 </template>

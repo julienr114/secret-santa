@@ -245,11 +245,18 @@ test('the budget and the word change on the edition, until it is closed', async 
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(word).toContainText('Après le dessert !');
 
-  // After the draw, in « Plus tard, ou en cas de pépin »; the result
-  // card shows the new budget.
+  // After the draw, on « Réglages de l'édition » (README 22.16), which
+  // the follow-up sums up; the page of the draw shows the new budget.
   await state.api!.post(`${at}/editions/${id}/draw`);
   await page.reload();
   await hydrated(page);
+  await expect(page.getByTestId('settings-row')).toContainText(
+    'Budget 25 € · petit mot',
+  );
+  await page.getByTestId('settings-row').click();
+  await expect(page.getByTestId('edition-settings')).toContainText(
+    'Date de la fête',
+  );
   await budget.click();
   await page.getByRole('textbox').fill('30 €');
   await page.getByRole('button', { name: 'Valider' }).click();
@@ -395,7 +402,9 @@ test('before the party, revealing asks for a phrase', async ({ page }) => {
   await page.context().addCookies((await api.storageState()).cookies);
   await page.goto(`/admin/cas-devoiler-tot/editions/${id}`);
   await hydrated(page);
-  await page.getByTestId('reveal-row').click();
+  // Before the party, revealing is in « Un souci ? ».
+  await page.getByTestId('trouble-row').click();
+  await page.getByText('Dévoiler avant la fête').click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByTestId('reveal-early')).toContainText(
     'Le secret s’arrête ici, pour de bon',

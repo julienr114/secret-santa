@@ -296,7 +296,7 @@ const dateOpen = ref(false);
       <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
 
       <AdminPartyDateCard
-        v-if="!hasDate && status !== 'closed'"
+        v-if="!hasDate && status === 'preparing'"
         :slug="slug"
         :edition-id="id"
       />
@@ -343,10 +343,16 @@ const dateOpen = ref(false);
         :can-close="canClose"
         :date-text="dateText"
         :closing="close.isPending.value"
+        :budget="rules?.budget"
+        :word="rules?.guardianMessage"
         @send="(pid) => (sendId = pid)"
         @close="onClose"
         @reveal="revealOpen = true"
-      />
+      >
+        <template v-if="!hasDate" #after-card>
+          <AdminPartyDateCard :slug="slug" :edition-id="id" />
+        </template>
+      </AdminEditionFollow>
       <template v-else>
         <UiCard
           padding="lg"

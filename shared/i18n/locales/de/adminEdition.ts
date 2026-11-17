@@ -384,6 +384,7 @@ export default {
       revealOneHint: 'Letzter Ausweg, im Journal vermerkt',
       cancel: 'Auslosung annullieren und neu starten',
       cancelHint: 'Absage, jemand vergessen… im Journal vermerkt',
+      listFooter: 'Wer noch zu benachrichtigen ist, steht oben.',
       noResults:
         'Niemand, auch der Organisator nicht, sieht hier die Ergebnisse.',
     },
@@ -511,6 +512,28 @@ export default {
       copyLink: 'Nur den Link kopieren',
       emailSent: 'E-Mail an {name} gesendet',
     },
+  },
+  settings: {
+    title: 'Einstellungen der Ausgabe',
+    intro: 'Was die Teilnehmer von {label} sehen.',
+    dateTitle: 'Datum der Feier',
+    wordTitle: 'Kurze Notiz',
+    budgetIs: 'Budget {budget}',
+    word: 'kurze Notiz',
+    what: 'Datum, Budget, kurze Notiz',
+  },
+  trouble: {
+    title: 'Ein Problem?',
+    row: 'Absage, verlorener Link, Fehler bei der Auslosung',
+    description: 'Jede dieser Aktionen wird im Protokoll der Gruppe vermerkt.',
+    revealOne: 'Ein einzelnes Ergebnis ansehen',
+    revealOneHint:
+      'Jemand hat seinen Link verloren und keine andere Möglichkeit',
+    revealEarly: 'Vor der Feier aufdecken',
+    revealEarlyHint: 'Alle werden wissen, wer wen beschenkt',
+    cancel: 'Auslosung absagen und neu starten',
+    cancelHint: 'Absage, Fehler… alle losen neu',
+    close: 'Schließen',
   },
   answers: {
     elsewhereLink: 'Wurde schon woanders ausgelost?',

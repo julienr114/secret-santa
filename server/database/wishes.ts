@@ -3,6 +3,7 @@ import type { Db } from './client';
 import { wishes } from './schema';
 import type { Wish } from '#server/utils/wishes';
 import { newId, nowIso } from '#server/http/context';
+import { touchHints } from './participations';
 
 export type PublicWish = { label: string; url: string | null };
 
@@ -28,6 +29,7 @@ export const replaceWishes = (
 ) => {
   const createdAt = nowIso();
   return db.batch([
+    touchHints(db, participationId, createdAt),
     db.delete(wishes).where(eq(wishes.participationId, participationId)),
     ...list.map((wish) =>
       db

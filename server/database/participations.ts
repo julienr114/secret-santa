@@ -86,3 +86,13 @@ export const listEditionPeople = (db: Db, editionId: string) =>
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
     .where(eq(participations.editionId, editionId));
+
+/**
+ * The statement that dates the hints of a participation: its giver sees
+ * them as new until they open their result again (lot 16 bis).
+ */
+export const touchHints = (db: Db, participationId: string, at: string) =>
+  db
+    .update(participations)
+    .set({ hintsUpdatedAt: at })
+    .where(eq(participations.id, participationId));

@@ -18,6 +18,7 @@ import {
   wishes,
 } from './schema';
 import { listWishes } from './wishes';
+import { touchHints } from './participations';
 import { nowIso } from '#server/http/context';
 import {
   EMPTY_PORTRAIT,
@@ -70,21 +71,45 @@ export const findPortrait = async (
   return portraitOf(row);
 };
 
-/** Writes the whole portrait of a participation. */
+/** Writes the whole portrait of a participation, and dates its hints. */
 export const savePortrait = (
   db: Db,
   participationId: string,
   portrait: Portrait,
 ) => {
-  const values = {
-    ...portrait.answers,
-    ...portrait.texts,
-    updatedAt: nowIso(),
-  };
-  return db
-    .insert(giftPortraits)
-    .values({ participationId, ...values })
-    .onConflictDoUpdate({ target: giftPortraits.participationId, set: values });
+  const updatedAt = nowIso();
+  const values = { ...portrait.answers, ...portrait.texts, updatedAt };
+  return db.batch([
+    db
+      .insert(giftPortraits)
+      .values({ participationId, ...values })
+      .onConflictDoUpdate({
+        target: giftPortraits.participationId,
+        set: values,
+      }),
+    touchHints(db, participationId, updatedAt),
+  ]);
+};
+
+/**
+ * Whether the giver was already told this draw that hints arrived, and
+ * marks it: true only for the first caller.
+ */
+export const markHintsAnnounced = async (
+  db: Db,
+  participationId: string,
+): Promise<boolean> => {
+  const rows = await db
+    .update(participations)
+    .set({ hintsAnnouncedAt: nowIso() })
+    .where(
+      and(
+        eq(participations.id, participationId),
+        isNull(participations.hintsAnnouncedAt),
+      ),
+    )
+    .returning({ id: participations.id });
+  return rows.length > 0;
 };
 
 /** How many precise ideas a participation wrote. */

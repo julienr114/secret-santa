@@ -127,6 +127,11 @@ export const participations = sqliteTable(
     // When the participant last opened the journal from their page: the
     // alerts since then are counted on it (lot 12 of the redesign).
     journalSeenAt: text('journal_seen_at'),
+    // When the participant last saved hints (question, text, idea, reuse),
+    // for their giver's « nouvelles pistes » (lot 16 bis).
+    hintsUpdatedAt: text('hints_updated_at'),
+    // When their giver was emailed that hints arrived: once per draw.
+    hintsAnnouncedAt: text('hints_announced_at'),
   },
   (t) => [
     uniqueIndex('participations_edition_person_idx').on(

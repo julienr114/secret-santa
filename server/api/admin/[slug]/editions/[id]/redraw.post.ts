@@ -32,7 +32,13 @@ export default defineEventHandler(async (event) => {
       .where(eq(editions.id, edition.id)),
     db
       .update(participations)
-      .set({ viewCount: 0, firstViewedAt: null, lastViewedAt: null })
+      .set({
+        viewCount: 0,
+        firstViewedAt: null,
+        lastViewedAt: null,
+        // A new giver will be told once, too.
+        hintsAnnouncedAt: null,
+      })
       .where(eq(participations.editionId, edition.id)),
   ]);
   await recordEvent(db, {

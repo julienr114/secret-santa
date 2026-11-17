@@ -347,6 +347,22 @@ describe('editionSteps', () => {
     ]);
   });
 
+  it('collects the answers of a draw made elsewhere after preparing', () => {
+    expect(
+      editionSteps(
+        'preparing',
+        '2026-12-25',
+        '2026-12-01',
+        false,
+        'elsewhere',
+      ).map((s) => [s.label, s.state]),
+    ).toEqual([
+      ['prepare', 'done'],
+      ['answers', 'current'],
+      ['party', 'todo'],
+    ]);
+  });
+
   it('has every step done once closed', () => {
     expect(states('closed', '2026-12-01')).toEqual([
       ['prepare', 'done'],

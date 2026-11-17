@@ -67,6 +67,13 @@ export const useRevealDrawMutation = (slug: Ref, id: Ref) =>
   editionAction<{ early: boolean }>(slug, id, 'reveal');
 export const useCancelDrawMutation = (slug: Ref, id: Ref) =>
   editionAction<{ reason: string }>(slug, id, 'redraw');
+// A draw already made elsewhere (README 22.12).
+export const useStartAnswersMutation = (slug: Ref, id: Ref) =>
+  editionAction(slug, id, 'answers/start');
+export const useAbandonAnswersMutation = (slug: Ref, id: Ref) =>
+  editionAction(slug, id, 'answers/abandon');
+export const useValidateAnswersMutation = (slug: Ref, id: Ref) =>
+  editionAction(slug, id, 'answers/validate');
 
 export const useAddParticipantMutation = (slug: Ref, id: Ref) =>
   useApiMutation<{ participationId: string }, string>(

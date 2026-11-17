@@ -99,6 +99,13 @@ const checklist = [
     title: 'Léa ne participe pas encore',
     detail: 'Elle est dans le groupe mais pas dans cette édition.',
   },
+  {
+    key: 'info',
+    state: 'ok' as const,
+    icon: 'i-lucide-info',
+    title: 'Une ligne qui renseigne',
+    detail: 'icon remplace la coche (panneau « Le tirage a déjà été fait ? »).',
+  },
 ];
 const sheetDemo = ref(false);
 const picker = ref(false);
@@ -392,6 +399,13 @@ const entries = computed(() => [
         <UiCounters :items="counters" />
         <template #action>
           <UButton block icon="i-lucide-mail" label="Action principale" />
+        </template>
+        <template #footer>
+          <p
+            class="flex min-h-13 items-center px-5 text-[15px] font-bold text-primary-ink"
+          >
+            footer : une dernière ligne sur toute la largeur
+          </p>
         </template>
       </UiActionCard>
       <div class="flex items-center gap-3">

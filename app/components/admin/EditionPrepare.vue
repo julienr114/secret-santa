@@ -8,7 +8,8 @@ import type { DrawCheck } from '~/composables/queries/useEdition';
 // Step 1 of an edition, "Préparer": what to do now (check the list, then
 // start the draw), the participants, and what can be done if wished
 // (let people know before the draw, exclusions, budget and word). Nothing about sending:
-// the follow-up starts with the draw (README 13.2).
+// the follow-up starts with the draw (README 13.2). Under the draw, « Le
+// tirage a déjà été fait ailleurs ? » (README 22.12).
 const props = defineProps<{
   slug: string;
   editionId: string;
@@ -18,7 +19,7 @@ const props = defineProps<{
   missing: string[];
   exclusionCount: number;
 }>();
-const emit = defineEmits<{ draw: [] }>();
+const emit = defineEmits<{ draw: []; elsewhere: [] }>();
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
 
@@ -166,6 +167,21 @@ const missingText = computed(() =>
         :label="t('adminEdition.screen.prepare.add')"
       />
     </template>
+    <template #footer>
+      <button
+        type="button"
+        class="flex min-h-13 w-full items-center justify-between gap-2 px-5 text-left text-[15px] font-bold text-primary-ink active:bg-muted"
+        data-testid="elsewhere-link"
+        @click="emit('elsewhere')"
+      >
+        {{ t('adminEdition.answers.elsewhereLink') }}
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="size-4.5 shrink-0"
+          aria-hidden="true"
+        />
+      </button>
+    </template>
   </UiActionCard>
   <UiActionCard
     v-else
@@ -197,6 +213,21 @@ const missingText = computed(() =>
         :label="t('adminEdition.screen.prepare.action')"
         @click="emit('draw')"
       />
+    </template>
+    <template #footer>
+      <button
+        type="button"
+        class="flex min-h-13 w-full items-center justify-between gap-2 px-5 text-left text-[15px] font-bold text-primary-ink active:bg-muted"
+        data-testid="elsewhere-link"
+        @click="emit('elsewhere')"
+      >
+        {{ t('adminEdition.answers.elsewhereLink') }}
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="size-4.5 shrink-0"
+          aria-hidden="true"
+        />
+      </button>
     </template>
   </UiActionCard>
 

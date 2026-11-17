@@ -285,6 +285,7 @@ export default {
       label: "Étapes de l'édition",
       prepare: 'Préparer',
       draw: 'Tirer',
+      answers: 'Réponses',
       drawDone: 'Tirage fait',
       party: 'Fêter',
     },
@@ -500,6 +501,109 @@ export default {
       copyMessage: 'Copier le message',
       copyLink: 'Copier le lien seul',
       emailSent: 'Email envoyé à {name}',
+    },
+  },
+  // A draw already made elsewhere (README 22.12, lot 17).
+  answers: {
+    elsewhereLink: 'Le tirage a déjà été fait ailleurs ?',
+    notYet: 'Pas encore',
+    start: {
+      title: 'Le tirage a déjà été fait ?',
+      description:
+        'Sur papier ou avec une autre application : ici, chacun dit à qui il offre, et profite des pistes de cadeaux.',
+      eachTitle: 'Chacun répond sur sa page',
+      eachDetail: 'Sa réponse reste secrète, même pour toi.',
+      closedTitle: 'Tout reste fermé jusqu’à la dernière réponse',
+      closedDetail:
+        'Si deux réponses ne vont pas ensemble, tu sais qui contacter, pas ce qu’ils ont répondu.',
+      validateTitle: 'Tu valides, et c’est un tirage comme les autres',
+      validateDetail:
+        'Pistes de cadeaux, relances, historique pour l’an prochain.',
+      exclusionOne: 'L’exclusion du groupe ({pair}) n’est pas vérifiée',
+      exclusionMany: 'Les {count} exclusions du groupe ne sont pas vérifiées',
+      historyOnly: 'La règle des années précédentes n’est pas vérifiée',
+      andHistory: ', ni la règle des années précédentes',
+      why: ' : le tirage a eu lieu ailleurs. Elle reste enregistrée pour les prochaines éditions.',
+      whyMany:
+        ' : le tirage a eu lieu ailleurs. Elles restent enregistrées pour les prochaines éditions.',
+      back: 'Tu peux revenir au tirage par l’application tant que tu n’as pas validé.',
+      confirm: 'Demander les réponses',
+    },
+    card: {
+      collectTitle: 'Demande à chacun à qui il offre',
+      ask: 'Demander par email',
+      remindAll: 'Relancer par email',
+      askHelp:
+        'Personne ne voit de pistes de cadeaux avant que tout le monde ait répondu et que tu aies validé.',
+      toNotify: 'à prévenir',
+      asked: 'pas encore répondu',
+      answered: { one: 'a répondu', other: 'ont répondu' },
+      conflictEyebrow: 'À corriger',
+      conflictTitle: 'Deux réponses ne vont pas ensemble',
+      conflictTitleMany: 'Des réponses ne vont pas ensemble',
+      conflictBody:
+        'ont nommé la même personne. L’un des deux s’est trompé : demande-leur de vérifier.',
+      conflictAction: 'Leur écrire',
+      conflictHelp:
+        'Tu ne vois pas qui ils ont nommé. Chacun corrige sa réponse lui-même, sur sa page.',
+      oneMissingTitle: 'Il ne manque que {name}',
+      oneMissingBody:
+        'Les {count} autres réponses vont ensemble. Celle de {name} se déduit : il ne reste qu’une personne que nul n’a nommée.',
+      remind: 'Relancer {name}',
+      validateWithout: 'Valider sans attendre {name}',
+      oneMissingHelp:
+        'Sa réponse est remplie pour lui, sans que tu la voies. Il la découvrira sur sa page.',
+      readyTitle: 'Tout le monde a répondu : valide le tirage',
+      readyBody: '{count} réponses, elles vont toutes ensemble.',
+      validate: 'Valider le tirage',
+      readyHelp:
+        'Chacun verra ensuite les pistes de cadeaux de la personne à qui il offre.',
+    },
+    status: {
+      toCheck: 'Réponse à vérifier',
+      toNotify: 'Pas encore demandé',
+      asked: 'Demandé, pas encore répondu',
+      answered: 'A répondu',
+    },
+    sheet: {
+      answerRequest: 'Demander à {name}',
+      answerReminder: 'Relancer {name}',
+      answerCheck: 'Écrire à {name}',
+      askedOn: 'Demandé le {date}, pas encore répondu',
+    },
+    listFooter: {
+      collect:
+        'Ceux qui restent à prévenir sont en premier. Tu vois qui a répondu, jamais ce qu’il a répondu.',
+      conflict:
+        'Les réponses à vérifier sont en premier. {names} ne voient aucun message d’erreur : c’est à toi de les prévenir.',
+      other: 'Tu vois qui a répondu, jamais ce qu’il a répondu.',
+    },
+    later: 'Plus tard, ou en cas de pépin',
+    participants: 'Ajouter ou retirer des participants',
+    participantsHint: 'Possible tant que tu n’as pas validé',
+    abandon: 'Abandonner et tirer avec l’application',
+    abandonHint: 'Les réponses sont effacées · journalisé',
+    abandonConfirm:
+      'Effacer toutes les réponses et revenir au tirage par l’application ?',
+    abandonYes: 'Abandonner',
+    abandoned: 'Les réponses sont effacées : tu peux tirer avec l’application.',
+    secret: 'Personne, organisateur compris, ne voit qui offre à qui.',
+    validate: {
+      title: 'Valider le tirage ?',
+      description:
+        'Les {count} réponses vont ensemble : chacun offre un cadeau et en reçoit un.',
+      descriptionDeduced:
+        'Les {count} réponses vont ensemble, et celle de {name} s’en déduit : chacun offre un cadeau et en reçoit un.',
+      lockedTitle: 'Les réponses ne pourront plus être modifiées',
+      lockedDetail: 'Pour corriger ensuite, il faudra annuler le tirage.',
+      listTitle: 'La liste des participants sera verrouillée',
+      listDetail: 'Comme après un tirage par l’application.',
+      hintsTitle: 'Chacun verra les pistes de cadeaux de sa personne',
+      hintsDetail: 'Tu les préviens juste après, par email.',
+      secret: 'Personne, toi compris, ne voit qui offre à qui.',
+      confirm: 'Valider le tirage',
+      validating: 'Validation…',
+      done: 'Le tirage est validé',
     },
   },
 };

@@ -256,7 +256,7 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 /** How a step of the stepper reads, and where it stands. */
 export type EditionStepView = {
   /** The words of the step: « Préparer », « Tirage fait », « Fêté »… */
-  label: 'prepare' | 'draw' | 'drawDone' | 'party' | 'partyDone';
+  label: 'prepare' | 'draw' | 'answers' | 'drawDone' | 'party' | 'partyDone';
   state: 'done' | 'current' | 'todo';
 };
 
@@ -268,6 +268,8 @@ export type EditionStepView = {
  * @param eventDate - Day of the party (ISO), or anything else when unknown.
  * @param today - ISO day.
  * @param revealed - Whether the results were revealed.
+ * @param drawMode - For a draw made elsewhere, the answers are collected
+ *   (« Réponses ») once the list is prepared (README 22.12).
  * @returns The steps, in order.
  */
 export const editionSteps = (
@@ -275,12 +277,16 @@ export const editionSteps = (
   eventDate: string | null | undefined,
   today: string,
   revealed = false,
+  drawMode: string = 'app',
 ): EditionStepView[] => {
-  const at = EDITION_STEPS.indexOf(editionStep(status, eventDate, today));
+  const answering = status === 'preparing' && drawMode === 'elsewhere';
+  const at = answering
+    ? 1
+    : EDITION_STEPS.indexOf(editionStep(status, eventDate, today));
   const closed = status === 'closed' || revealed;
   const labels = [
     'prepare',
-    status === 'preparing' ? 'draw' : 'drawDone',
+    answering ? 'answers' : status === 'preparing' ? 'draw' : 'drawDone',
     closed ? 'partyDone' : 'party',
   ] as const;
   return labels.map((label, index) => ({

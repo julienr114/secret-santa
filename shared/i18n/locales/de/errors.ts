@@ -85,4 +85,10 @@ export default {
     'Dieser Einladungslink ist abgelaufen: Bitte den Organisator um einen neuen.',
   invite_full:
     'Über diesen Link ist kein Platz mehr frei: Sag dem Organisator Bescheid.',
+  collecting_answers:
+    'Die Auslosung fand woanders statt: Jeder gibt seine Antwort. Verwirf die Antworten, um mit der App auszulosen.',
+  not_collecting_answers: 'Diese Ausgabe sammelt keine Antworten.',
+  answers_not_ready:
+    'Die Antworten sind noch nicht vollständig oder passen nicht zusammen.',
+  invalid_answer: 'Wähle eine andere Person der Ausgabe.',
 } satisfies Dict<typeof fr>;

@@ -284,6 +284,7 @@ export default {
       label: 'Steps of the edition',
       prepare: 'Prepare',
       draw: 'Draw',
+      answers: 'Answers',
       drawDone: 'Drawn',
       party: 'Celebrate',
     },
@@ -497,6 +498,107 @@ export default {
       copyMessage: 'Copy the message',
       copyLink: 'Copy the link only',
       emailSent: 'Email sent to {name}',
+    },
+  },
+  answers: {
+    elsewhereLink: 'Was the draw already made elsewhere?',
+    notYet: 'Not yet',
+    start: {
+      title: 'Was the draw already made?',
+      description:
+        'On paper or with another app: here, everyone says who they give to, and enjoys the gift hints.',
+      eachTitle: 'Everyone answers on their page',
+      eachDetail: 'Their answer stays secret, even from you.',
+      closedTitle: 'Everything stays closed until the last answer',
+      closedDetail:
+        "If two answers don't fit together, you know whom to contact, not what they answered.",
+      validateTitle: "You validate, and it's a draw like any other",
+      validateDetail: 'Gift hints, reminders, history for next year.',
+      exclusionOne: "The group's exclusion ({pair}) is not checked",
+      exclusionMany: "The group's {count} exclusions are not checked",
+      historyOnly: 'The rule of previous years is not checked',
+      andHistory: ', nor the rule of previous years',
+      why: ': the draw took place elsewhere. It stays saved for the next editions.',
+      whyMany:
+        ': the draw took place elsewhere. They stay saved for the next editions.',
+      back: "You can go back to the app's draw as long as you haven't validated.",
+      confirm: 'Ask for the answers',
+    },
+    card: {
+      collectTitle: 'Ask everyone who they give to',
+      ask: 'Ask by email',
+      remindAll: 'Remind by email',
+      askHelp:
+        "Nobody sees any gift hints until everyone has answered and you've validated.",
+      toNotify: 'to notify',
+      asked: 'not answered yet',
+      answered: { one: 'answered', other: 'answered' },
+      conflictEyebrow: 'To fix',
+      conflictTitle: "Two answers don't fit together",
+      conflictTitleMany: "Some answers don't fit together",
+      conflictBody:
+        'named the same person. One of them got it wrong: ask them to check.',
+      conflictAction: 'Write to them',
+      conflictHelp:
+        "You don't see whom they named. Each one corrects their answer themselves, on their page.",
+      oneMissingTitle: 'Only {name} is missing',
+      oneMissingBody:
+        "The {count} other answers fit together. {name}'s follows from them: only one person is left whom nobody named.",
+      remind: 'Remind {name}',
+      validateWithout: 'Validate without waiting for {name}',
+      oneMissingHelp:
+        "Their answer is filled in for them, without you seeing it. They'll find it on their page.",
+      readyTitle: 'Everyone has answered: validate the draw',
+      readyBody: '{count} answers, they all fit together.',
+      validate: 'Validate the draw',
+      readyHelp:
+        "Everyone will then see the gift hints of the person they're giving to.",
+    },
+    status: {
+      toCheck: 'Answer to check',
+      toNotify: 'Not asked yet',
+      asked: 'Asked, not answered yet',
+      answered: 'Answered',
+    },
+    sheet: {
+      answerRequest: 'Ask {name}',
+      answerReminder: 'Remind {name}',
+      answerCheck: 'Write to {name}',
+      askedOn: 'Asked on {date}, not answered yet',
+    },
+    listFooter: {
+      collect:
+        'Those still to notify come first. You see who answered, never what they answered.',
+      conflict:
+        "Answers to check come first. {names} don't see any error message: it's up to you to tell them.",
+      other: 'You see who answered, never what they answered.',
+    },
+    later: 'Later, or if something goes wrong',
+    participants: 'Add or remove participants',
+    participantsHint: "Possible as long as you haven't validated",
+    abandon: 'Give up and draw with the app',
+    abandonHint: 'The answers are deleted · logged',
+    abandonConfirm: "Delete all answers and go back to the app's draw?",
+    abandonYes: 'Give up',
+    abandoned: 'The answers are deleted: you can draw with the app.',
+    secret: 'Nobody, organizer included, sees who gives to whom.',
+    validate: {
+      title: 'Validate the draw?',
+      description:
+        'The {count} answers fit together: everyone gives one gift and receives one.',
+      descriptionDeduced:
+        "The {count} answers fit together, and {name}'s follows from them: everyone gives one gift and receives one.",
+      lockedTitle: 'The answers can no longer be changed',
+      lockedDetail:
+        'To correct them later, the draw will have to be cancelled.',
+      listTitle: 'The list of participants will be locked',
+      listDetail: "As after the app's draw.",
+      hintsTitle: "Everyone will see their person's gift hints",
+      hintsDetail: 'You notify them right after, by email.',
+      secret: 'Nobody, you included, sees who gives to whom.',
+      confirm: 'Validate the draw',
+      validating: 'Validating…',
+      done: 'The draw is validated',
     },
   },
 } satisfies Dict<typeof fr>;

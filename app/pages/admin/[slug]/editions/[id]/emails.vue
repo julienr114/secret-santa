@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
-import type { Participant } from '#server/database/editions';
+import type { EditionParticipant as Participant } from '~/composables/queries/useGroup';
+import { preselectedForAnswers, sortByAnswer } from '#server/utils/answers';
 import {
   followState,
   preselectedForEmail,
@@ -49,11 +50,26 @@ const edition = useEditionQuery(slug, id);
 const status = computed(
   () => edition.data.value?.edition.status ?? 'preparing',
 );
-const participants = computed(() =>
-  sortParticipants(edition.data.value?.participants ?? [], status.value),
-);
+const participants = computed(() => {
+  const list = edition.data.value?.participants ?? [];
+  // While answers are collected, in the order of the « Réponses » list.
+  return answering.value
+    ? sortByAnswer(
+        list.map((p) => ({
+          ...p,
+          answerStatus: p.answerStatus ?? ('toNotify' as const),
+        })),
+        fullName,
+      )
+    : sortParticipants(list, status.value);
+});
 
-const types = computed(() => messageTypesFor(status.value));
+const drawMode = computed(() => edition.data.value?.edition.drawMode ?? 'app');
+/** While the answers of a draw made elsewhere are collected. */
+const answering = computed(
+  () => status.value === 'preparing' && drawMode.value === 'elsewhere',
+);
+const types = computed(() => messageTypesFor(status.value, drawMode.value));
 const asked = computed(() => String(route.query.type ?? ''));
 const choice = useMessageChoice(id);
 const chosen = computed(() =>
@@ -76,6 +92,7 @@ const customizePath = computed(
 
 const withEmail = computed(() => participants.value.filter((p) => p.email));
 const { lookOf } = useFollowLook();
+const { answerLook } = useAnswerLook();
 /**
  * What a row says under the name: no address, or where the person stands.
  * @param p - The participant.
@@ -83,7 +100,9 @@ const { lookOf } = useFollowLook();
  */
 const rowLook = (p: Participant) =>
   p.email
-    ? lookOf(p)
+    ? answering.value
+      ? answerLook(p.answerStatus ?? 'toNotify')
+      : lookOf(p)
     : {
         icon: 'i-lucide-circle-dashed',
         iconTone: 'text-toned',
@@ -94,7 +113,13 @@ const rowLook = (p: Participant) =>
 // when going to « Personnaliser le message », which previews for them.
 const ticks = useEmailSelection(id);
 const preselected = computed(() =>
-  participants.value.filter(preselectedForEmail).map((p) => p.participationId),
+  participants.value
+    .filter((p) =>
+      answering.value
+        ? preselectedForAnswers(type.value, p)
+        : preselectedForEmail(p),
+    )
+    .map((p) => p.participationId),
 );
 const selected = computed({
   get: () => ticks.value ?? preselected.value,

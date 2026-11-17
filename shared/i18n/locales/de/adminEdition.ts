@@ -293,6 +293,7 @@ export default {
       label: 'Schritte der Ausgabe',
       prepare: 'Vorbereiten',
       draw: 'Auslosen',
+      answers: 'Antworten',
       drawDone: 'Ausgelost',
       party: 'Feiern',
     },
@@ -509,6 +510,109 @@ export default {
       copyMessage: 'Nachricht kopieren',
       copyLink: 'Nur den Link kopieren',
       emailSent: 'E-Mail an {name} gesendet',
+    },
+  },
+  answers: {
+    elsewhereLink: 'Wurde schon woanders ausgelost?',
+    notYet: 'Noch nicht',
+    start: {
+      title: 'Wurde schon ausgelost?',
+      description:
+        'Auf Papier oder mit einer anderen App: Hier sagt jeder, wen er beschenkt, und nutzt die Geschenk-Hinweise.',
+      eachTitle: 'Jeder antwortet auf seiner Seite',
+      eachDetail: 'Die Antwort bleibt geheim, selbst für dich.',
+      closedTitle: 'Alles bleibt bis zur letzten Antwort geschlossen',
+      closedDetail:
+        'Wenn zwei Antworten nicht zusammenpassen, weißt du, wen du ansprechen musst, aber nicht, was geantwortet wurde.',
+      validateTitle: 'Du bestätigst, und es ist eine Auslosung wie jede andere',
+      validateDetail:
+        'Geschenk-Hinweise, Erinnerungen, Verlauf fürs nächste Jahr.',
+      exclusionOne: 'Der Ausschluss der Gruppe ({pair}) wird nicht geprüft',
+      exclusionMany: 'Die {count} Ausschlüsse der Gruppe werden nicht geprüft',
+      historyOnly: 'Die Regel der Vorjahre wird nicht geprüft',
+      andHistory: ', ebenso wenig die Regel der Vorjahre',
+      why: ': Die Auslosung fand woanders statt. Er bleibt für die nächsten Ausgaben gespeichert.',
+      whyMany:
+        ': Die Auslosung fand woanders statt. Sie bleiben für die nächsten Ausgaben gespeichert.',
+      back: 'Du kannst zur Auslosung mit der App zurück, solange du nicht bestätigt hast.',
+      confirm: 'Nach den Antworten fragen',
+    },
+    card: {
+      collectTitle: 'Frag alle, wen sie beschenken',
+      ask: 'Per E-Mail fragen',
+      remindAll: 'Per E-Mail erinnern',
+      askHelp:
+        'Niemand sieht Geschenk-Hinweise, bevor alle geantwortet haben und du bestätigt hast.',
+      toNotify: 'zu benachrichtigen',
+      asked: 'noch nicht geantwortet',
+      answered: { one: 'hat geantwortet', other: 'haben geantwortet' },
+      conflictEyebrow: 'Zu korrigieren',
+      conflictTitle: 'Zwei Antworten passen nicht zusammen',
+      conflictTitleMany: 'Einige Antworten passen nicht zusammen',
+      conflictBody:
+        'haben dieselbe Person genannt. Einer von beiden hat sich geirrt: Bitte sie, nachzusehen.',
+      conflictAction: 'Ihnen schreiben',
+      conflictHelp:
+        'Du siehst nicht, wen sie genannt haben. Jeder korrigiert seine Antwort selbst, auf seiner Seite.',
+      oneMissingTitle: 'Es fehlt nur noch {name}',
+      oneMissingBody:
+        'Die {count} anderen Antworten passen zusammen. Die von {name} ergibt sich daraus: Es bleibt nur eine Person, die niemand genannt hat.',
+      remind: '{name} erinnern',
+      validateWithout: 'Bestätigen, ohne auf {name} zu warten',
+      oneMissingHelp:
+        'Die Antwort wird für diese Person ausgefüllt, ohne dass du sie siehst. Sie findet sie auf ihrer Seite.',
+      readyTitle: 'Alle haben geantwortet: Bestätige die Auslosung',
+      readyBody: '{count} Antworten, sie passen alle zusammen.',
+      validate: 'Auslosung bestätigen',
+      readyHelp:
+        'Jeder sieht danach die Geschenk-Hinweise der Person, die er beschenkt.',
+    },
+    status: {
+      toCheck: 'Antwort zu prüfen',
+      toNotify: 'Noch nicht gefragt',
+      asked: 'Gefragt, noch nicht geantwortet',
+      answered: 'Hat geantwortet',
+    },
+    sheet: {
+      answerRequest: '{name} fragen',
+      answerReminder: '{name} erinnern',
+      answerCheck: '{name} schreiben',
+      askedOn: 'Gefragt am {date}, noch nicht geantwortet',
+    },
+    listFooter: {
+      collect:
+        'Wer noch zu benachrichtigen ist, steht oben. Du siehst, wer geantwortet hat, nie was.',
+      conflict:
+        'Zu prüfende Antworten stehen oben. {names} sehen keine Fehlermeldung: Es liegt an dir, ihnen Bescheid zu geben.',
+      other: 'Du siehst, wer geantwortet hat, nie was.',
+    },
+    later: 'Später, oder wenn etwas schiefgeht',
+    participants: 'Teilnehmer hinzufügen oder entfernen',
+    participantsHint: 'Möglich, solange du nicht bestätigt hast',
+    abandon: 'Aufgeben und mit der App auslosen',
+    abandonHint: 'Die Antworten werden gelöscht · protokolliert',
+    abandonConfirm:
+      'Alle Antworten löschen und zur Auslosung mit der App zurückkehren?',
+    abandonYes: 'Aufgeben',
+    abandoned: 'Die Antworten sind gelöscht: Du kannst mit der App auslosen.',
+    secret: 'Niemand, auch nicht der Organisator, sieht, wer wen beschenkt.',
+    validate: {
+      title: 'Auslosung bestätigen?',
+      description:
+        'Die {count} Antworten passen zusammen: Jeder macht ein Geschenk und bekommt eins.',
+      descriptionDeduced:
+        'Die {count} Antworten passen zusammen, und die von {name} ergibt sich daraus: Jeder macht ein Geschenk und bekommt eins.',
+      lockedTitle: 'Die Antworten können nicht mehr geändert werden',
+      lockedDetail:
+        'Um sie danach zu korrigieren, muss die Auslosung abgesagt werden.',
+      listTitle: 'Die Teilnehmerliste wird gesperrt',
+      listDetail: 'Wie nach einer Auslosung mit der App.',
+      hintsTitle: 'Jeder sieht die Geschenk-Hinweise seiner Person',
+      hintsDetail: 'Du benachrichtigst sie gleich danach per E-Mail.',
+      secret: 'Niemand, auch du nicht, sieht, wer wen beschenkt.',
+      confirm: 'Auslosung bestätigen',
+      validating: 'Wird bestätigt…',
+      done: 'Die Auslosung ist bestätigt',
     },
   },
 } satisfies Dict<typeof fr>;

@@ -2,7 +2,7 @@
 import { fullName } from '#server/utils/people';
 import { followState } from '#server/utils/editions';
 import { shortDay } from '#shared/utils/dates';
-import type { Participant } from '#server/database/editions';
+import type { EditionParticipant } from '~/composables/queries/useGroup';
 import {
   addNote,
   defaultMessageType,
@@ -32,9 +32,11 @@ const props = defineProps<{
   status: string;
   /** Drawn again after a cancelled draw. */
   redrawn: boolean;
-  participant: Participant;
+  participant: EditionParticipant;
   /** Where a word added goes: above or below the message (group rule). */
   notePosition: NotePosition;
+  /** A draw made elsewhere asks for answers (README 22.12). */
+  drawMode?: string;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const emit = defineEmits<{ sent: []; customize: [] }>();
@@ -43,7 +45,11 @@ const errorMessage = useErrorMessage();
 const toast = useToast();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
-const types = computed(() => messageTypesFor(props.status));
+const types = computed(() => messageTypesFor(props.status, props.drawMode));
+/** While the answers of a draw made elsewhere are collected. */
+const answering = computed(
+  () => props.status === 'preparing' && props.drawMode === 'elsewhere',
+);
 // The message chosen on « Personnaliser le message » for this person, or
 // the one for them (« Nouveau tirage » once the draw was run again).
 const choice = useMessageChoice(() => props.editionId);
@@ -53,7 +59,10 @@ const chosen = computed(() =>
 const type = computed<MessageType>(
   () =>
     chosen.value?.type ??
-    defaultMessageType(props.status, resend.value, props.redrawn) ??
+    defaultMessageType(props.status, resend.value, props.redrawn, {
+      mode: props.drawMode ?? 'app',
+      inConflict: props.participant.answerStatus === 'toCheck',
+    }) ??
     types.value[0] ??
     'invitation',
 );
@@ -166,25 +175,39 @@ const onEmail = () =>
   );
 const name = computed(() => fullName(props.participant));
 const title = computed(() =>
-  t(
-    resend.value
-      ? 'adminEdition.screen.sheet.resendTo'
-      : 'adminEdition.screen.sheet.sendTo',
-    { name: name.value },
-  ),
+  answering.value
+    ? tk(`adminEdition.answers.sheet.${type.value}`, { name: name.value })
+    : t(
+        resend.value
+          ? 'adminEdition.screen.sheet.resendTo'
+          : 'adminEdition.screen.sheet.sendTo',
+        { name: name.value },
+      ),
 );
 const { lookOf } = useFollowLook();
+const { answerLook } = useAnswerLook();
 /** Where the participant stands, under the title. */
-const look = computed(() => lookOf(props.participant));
-/** The state's words, with the day of the last send while not opened. */
-const lookText = computed(() =>
-  followState(props.participant) === 'notOpened' &&
-  props.participant.messageSentAt
-    ? t('adminEdition.screen.sheet.sentOn', {
-        date: shortDay(props.participant.messageSentAt, locale.value),
-      })
-    : look.value.text,
+const look = computed(() =>
+  answering.value
+    ? answerLook(props.participant.answerStatus ?? 'toNotify')
+    : lookOf(props.participant),
 );
+/** The state's words, with the day of the last send while waiting. */
+const lookText = computed(() => {
+  const sentAt = props.participant.messageSentAt;
+  if (answering.value) {
+    return props.participant.answerStatus === 'asked' && sentAt
+      ? t('adminEdition.answers.sheet.askedOn', {
+          date: shortDay(sentAt, locale.value),
+        })
+      : look.value.text;
+  }
+  return followState(props.participant) === 'notOpened' && sentAt
+    ? t('adminEdition.screen.sheet.sentOn', {
+        date: shortDay(sentAt, locale.value),
+      })
+    : look.value.text;
+});
 /** The message's language, said next to « Personnaliser » when not ours. */
 const otherLanguage = computed(() =>
   props.participant.language === locale.value

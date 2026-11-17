@@ -216,3 +216,36 @@ export const answersAllow = (
   }
   return collecting ? ok(true) : fail('not_collecting_answers');
 };
+
+/**
+ * The three figures of the « Réponses » card: still to ask, asked and not
+ * answered, answered (an answer to check is one given).
+ * @param people - The participants with their status.
+ * @returns The counts.
+ */
+export const answerCounters = (people: { answerStatus: AnswerStatus }[]) => ({
+  toNotify: people.filter((p) => p.answerStatus === 'toNotify').length,
+  asked: people.filter((p) => p.answerStatus === 'asked').length,
+  answered: people.filter(
+    (p) => p.answerStatus === 'answered' || p.answerStatus === 'toCheck',
+  ).length,
+});
+
+/**
+ * Who the email screen ticks first, for each message of the answers: the
+ * request for those not asked yet, the reminder for those asked who have
+ * not answered, « À vérifier » for those whose answers clash; always with
+ * an address.
+ * @param type - The message.
+ * @param p - A participant: their address and status.
+ * @returns True when ticked from the start.
+ */
+export const preselectedForAnswers = (
+  type: string,
+  p: { email?: string | null; answerStatus?: AnswerStatus },
+): boolean => {
+  if (!p.email) return false;
+  if (type === 'answerCheck') return p.answerStatus === 'toCheck';
+  if (type === 'answerReminder') return p.answerStatus === 'asked';
+  return p.answerStatus === 'toNotify';
+};

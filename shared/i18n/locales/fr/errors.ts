@@ -80,4 +80,10 @@ export default {
   invite_expired:
     'Ce lien d’invitation a expiré : demande-en un nouveau à l’organisateur.',
   invite_full: 'Il n’y a plus de place par ce lien : préviens l’organisateur.',
+  collecting_answers:
+    'Le tirage a été fait ailleurs : chacun donne sa réponse. Abandonne les réponses pour tirer avec l’application.',
+  not_collecting_answers: 'Cette édition ne recueille pas de réponses.',
+  answers_not_ready:
+    'Les réponses ne sont pas encore complètes ou ne vont pas ensemble.',
+  invalid_answer: 'Choisis une autre personne de l’édition.',
 };

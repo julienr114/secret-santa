@@ -7,10 +7,13 @@ import {
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
 import {
+  useAbandonAnswersMutation,
   useCheckQuery,
   useCloseMutation,
   useDrawMutation,
   useRevealDrawMutation,
+  useStartAnswersMutation,
+  useValidateAnswersMutation,
 } from '~/composables/queries/useEdition';
 
 // The edition screen (README 11): where
@@ -40,12 +43,21 @@ const check = useCheckQuery(slug, id);
 const drawMutation = useDrawMutation(slug, id);
 const close = useCloseMutation(slug, id);
 const revealDraw = useRevealDrawMutation(slug, id);
+const startAnswers = useStartAnswersMutation(slug, id);
+const abandonAnswers = useAbandonAnswersMutation(slug, id);
+const validateAnswers = useValidateAnswersMutation(slug, id);
 
 const status = computed(
   () => edition.data.value?.edition.status ?? 'preparing',
 );
 const rules = computed(() => edition.data.value?.rules);
 const participants = computed(() => edition.data.value?.participants ?? []);
+/** Drawn by the app, or already elsewhere (README 22.12). */
+const drawMode = computed(() => edition.data.value?.edition.drawMode ?? 'app');
+/** Where the answers stand while they are collected, else null. */
+const answers = computed(() =>
+  status.value === 'preparing' ? (edition.data.value?.answers ?? null) : null,
+);
 const redrawn = computed(() => edition.data.value?.redrawn ?? false);
 /** The organiser revealed who gave to whom (README 22.9). */
 const revealed = computed(() =>
@@ -77,7 +89,7 @@ const hasDate = computed(() => isIsoDay(eventDate.value));
 const dateText = computed(() =>
   hasDate.value ? formatEventDate(eventDate.value, locale.value) : null,
 );
-const steps = useEditionSteps(status, eventDate, revealed);
+const steps = useEditionSteps(status, eventDate, revealed, drawMode);
 /** From the day of the party, revealing is the action of the moment. */
 const partyReached = computed(
   () => status.value === 'drawn' && hasDate.value && today >= eventDate.value,
@@ -129,6 +141,74 @@ const runDraw = () =>
  * @returns Nothing: the mutation reports by itself.
  */
 const onClose = () => close.mutate(undefined, { onError });
+
+// A draw already made elsewhere (README 22.12): start collecting the
+// answers, give up on them, or validate them into a draw.
+const startOpen = ref(false);
+/** Each exclusion of the group, as « Camille et Hugo », for the sheet. */
+const exclusionPairs = computed(() => {
+  const persons = people.data.value?.persons ?? [];
+  const nameOf = (personId: string) =>
+    persons.find((p) => p.id === personId)?.firstName ?? '?';
+  const list = new Intl.ListFormat(locale.value, { type: 'conjunction' });
+  return (people.data.value?.exclusions ?? []).map((e) =>
+    list.format([nameOf(e.giverId), nameOf(e.receiverId)]),
+  );
+});
+/** The rule of the previous years would have applied to this draw. */
+const historyApplies = computed(
+  () =>
+    (check.data.value?.historyExclusions ?? 0) +
+      (check.data.value?.previousPairs.length ?? 0) >
+    0,
+);
+/**
+ * Starts collecting the answers, then closes the sheet.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onStartAnswers = () =>
+  startAnswers.mutate(undefined, {
+    onSuccess: () => {
+      startOpen.value = false;
+    },
+    onError,
+  });
+/**
+ * Deletes the answers and goes back to the app's draw.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onAbandonAnswers = () =>
+  abandonAnswers.mutate(undefined, {
+    onSuccess: () =>
+      toast.add({
+        title: t('adminEdition.answers.abandoned'),
+        icon: 'i-lucide-rotate-ccw',
+        color: 'success',
+      }),
+    onError,
+  });
+const validateOpen = ref(false);
+/** The one whose answer follows from the others, for the sheet. */
+const deducedName = computed(() => {
+  const personId = answers.value?.deducedFor;
+  return participants.value.find((p) => p.id === personId)?.firstName ?? null;
+});
+/**
+ * Validates the answers into a draw, then closes the sheet with a toast.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onValidateAnswers = () =>
+  validateAnswers.mutate(undefined, {
+    onSuccess: () => {
+      validateOpen.value = false;
+      toast.add({
+        title: t('adminEdition.answers.validate.done'),
+        icon: 'i-lucide-sparkles',
+        color: 'success',
+      });
+    },
+    onError,
+  });
 
 const revealOpen = ref(false);
 /**
@@ -213,8 +293,19 @@ const dateOpen = ref(false);
         :edition-id="id"
       />
 
+      <AdminEditionAnswers
+        v-if="status === 'preparing' && answers"
+        :slug="slug"
+        :edition-id="id"
+        :participants="participants"
+        :answers="answers"
+        :abandoning="abandonAnswers.isPending.value"
+        @send="(pid) => (sendId = pid)"
+        @validate="validateOpen = true"
+        @abandon="onAbandonAnswers"
+      />
       <AdminEditionPrepare
-        v-if="status === 'preparing'"
+        v-else-if="status === 'preparing'"
         :slug="slug"
         :edition-id="id"
         :participants="participants"
@@ -222,6 +313,7 @@ const dateOpen = ref(false);
         :missing="missing"
         :exclusion-count="exclusionCount"
         @draw="drawOpen = true"
+        @elsewhere="startOpen = true"
       />
       <AdminEditionRevealed
         v-else-if="status === 'drawn' && revealed"
@@ -333,8 +425,23 @@ const dateOpen = ref(false);
       :redrawn="redrawn"
       :participant="sendTarget"
       :note-position="rules?.messageNotePosition ?? 'after'"
+      :draw-mode="drawMode"
       @sent="onSent"
       @customize="onCustomize(sendTarget.participationId)"
+    />
+    <AdminStartAnswersSheet
+      v-model:open="startOpen"
+      :exclusions="exclusionPairs"
+      :history="historyApplies"
+      :loading="startAnswers.isPending.value"
+      @confirm="onStartAnswers"
+    />
+    <AdminValidateAnswersSheet
+      v-model:open="validateOpen"
+      :count="participants.length"
+      :deduced-name="answers?.card === 'oneMissing' ? deducedName : null"
+      :loading="validateAnswers.isPending.value"
+      @confirm="onValidateAnswers"
     />
     <AdminRevealSheet
       v-if="hasDate && status === 'drawn' && !revealed"

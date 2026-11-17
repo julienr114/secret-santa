@@ -12,6 +12,8 @@ export type NoticeItem = {
   state: 'ok' | 'warning';
   title: string;
   detail?: string;
+  /** Another icon than the check, for a row that only tells. */
+  icon?: string;
 };
 withDefaults(
   defineProps<{
@@ -97,7 +99,8 @@ withDefaults(
       >
         <UIcon
           :name="
-            item.state === 'ok' ? 'i-lucide-check' : 'i-lucide-alert-triangle'
+            item.icon ??
+            (item.state === 'ok' ? 'i-lucide-check' : 'i-lucide-alert-triangle')
           "
           class="size-4"
         />

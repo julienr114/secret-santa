@@ -2,7 +2,8 @@
 // What to do now, as a card: a small label in capitals, a title in the
 // display font, what shows it (a sentence with a check, counters, a
 // bar) in the default slot, the action in the `action` slot, and a line
-// of help under it.
+// of help under it, and a last row across the card (`footer`), set apart
+// by a line.
 defineProps<{
   eyebrow: string;
   title: string;
@@ -31,6 +32,9 @@ defineProps<{
       <p v-if="help" class="text-center text-[13px] leading-[1.4] text-toned">
         {{ help }}
       </p>
+    </div>
+    <div v-if="$slots.footer" class="-mx-5 -mb-5 border-t border-divider">
+      <slot name="footer" />
     </div>
   </UiCard>
 </template>

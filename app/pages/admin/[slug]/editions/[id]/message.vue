@@ -68,7 +68,8 @@ const count = computed(() => selection.value?.length ?? 0);
 
 // The draft starts from what was chosen before, or the message for them.
 const choice = useMessageChoice(id);
-const types = computed(() => messageTypesFor(status.value));
+const drawMode = computed(() => edition.data.value?.edition.drawMode ?? 'app');
+const types = computed(() => messageTypesFor(status.value, drawMode.value));
 const asked = computed(() => String(route.query.type ?? ''));
 /**
  * The message the draft starts from.
@@ -83,6 +84,10 @@ const startType = (): MessageType => {
       status.value,
       Boolean(person.value?.messageSentAt),
       edition.data.value?.redrawn ?? false,
+      {
+        mode: drawMode.value,
+        inConflict: person.value?.answerStatus === 'toCheck',
+      },
     ) ??
     types.value[0] ??
     'invitation'

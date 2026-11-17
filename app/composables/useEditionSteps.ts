@@ -9,6 +9,7 @@ import type { Step } from '~/components/ui/Stepper.vue';
 const LABELS = {
   prepare: 'adminEdition.screen.steps.prepare',
   draw: 'adminEdition.screen.steps.draw',
+  answers: 'adminEdition.screen.steps.answers',
   drawDone: 'adminEdition.screen.steps.drawDone',
   party: 'adminEdition.screen.steps.party',
   partyDone: 'adminEdition.screen.closed.partyDone',
@@ -19,12 +20,14 @@ const LABELS = {
  * @param status - Status of the edition.
  * @param eventDate - Day of the party.
  * @param revealed - Whether its results were revealed.
+ * @param drawMode - Drawn by the app, or already elsewhere.
  * @returns The steps for `UiStepper`.
  */
 export const useEditionSteps = (
   status: MaybeRefOrGetter<EditionStatus>,
   eventDate: MaybeRefOrGetter<string | null | undefined>,
   revealed: MaybeRefOrGetter<boolean> = false,
+  drawMode: MaybeRefOrGetter<string> = 'app',
 ) => {
   const { t } = useT();
   const today = new Date().toLocaleDateString('sv-SE');
@@ -34,6 +37,7 @@ export const useEditionSteps = (
       toValue(eventDate),
       today,
       toValue(revealed),
+      toValue(drawMode),
     ).map((step, index) => ({
       label: t(LABELS[step.label]),
       state: step.state,

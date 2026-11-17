@@ -6,6 +6,7 @@ import type { ExclusionRow } from '#server/database/schema';
 import type { JournalEntry } from '#server/utils/audit';
 import type { PublicPerson } from '#server/utils/people';
 import type { Rules, RulesPatch } from '#server/utils/rules';
+import type { AnswerStatus, AnswersCard } from '#server/utils/answers';
 import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -23,10 +24,22 @@ export type PeoplePayload = {
   persons: PublicPerson[];
   exclusions: ExclusionRow[];
 };
+/** A participant, with their answer status while answers are collected. */
+export type EditionParticipant = Participant & { answerStatus?: AnswerStatus };
+/** Where the answers of a draw made elsewhere stand (README 22.12). */
+export type AnswersSummary = {
+  card: AnswersCard;
+  /** Persons whose answers clash. */
+  conflicts: string[];
+  /** The one person left, when their answer follows from the others. */
+  deducedFor: string | null;
+};
 export type EditionPayload = {
   edition: PublicEdition;
   rules: Rules;
-  participants: Participant[];
+  participants: EditionParticipant[];
+  /** While the answers of a draw made elsewhere are collected. */
+  answers: AnswersSummary | null;
   /** Drawn again after a cancelled draw. */
   redrawn: boolean;
 };

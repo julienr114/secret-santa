@@ -76,4 +76,9 @@ export default {
     'This invitation link has expired: ask the organizer for a new one.',
   invite_full:
     'There is no place left through this link: let the organizer know.',
+  collecting_answers:
+    'The draw was made elsewhere: everyone gives their answer. Give up on the answers to draw with the app.',
+  not_collecting_answers: 'This edition is not collecting answers.',
+  answers_not_ready: "The answers aren't complete yet, or don't fit together.",
+  invalid_answer: 'Choose another person of the edition.',
 } satisfies Dict<typeof fr>;

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  answerCounters,
   answerStatusOf,
+  preselectedForAnswers,
   answersAllow,
   answersCard,
   answersState,
@@ -217,5 +219,34 @@ describe('answersAllow', () => {
     expect(answersAllow(edition('drawn', 'elsewhere'), 'answer')).toMatchObject(
       { ok: false, reason: 'invalid_transition' },
     );
+  });
+});
+
+describe('answerCounters and preselectedForAnswers', () => {
+  const people = (['toCheck', 'toNotify', 'asked', 'answered'] as const).map(
+    (answerStatus) => ({ answerStatus, email: 'x@example.com' }),
+  );
+  it('counts an answer to check as given', () => {
+    expect(answerCounters(people)).toEqual({
+      toNotify: 1,
+      asked: 1,
+      answered: 2,
+    });
+  });
+
+  it('ticks first those each message is for, with an address', () => {
+    const ticked = (type: string) =>
+      people
+        .filter((p) => preselectedForAnswers(type, p))
+        .map((p) => p.answerStatus);
+    expect(ticked('answerRequest')).toEqual(['toNotify']);
+    expect(ticked('answerReminder')).toEqual(['asked']);
+    expect(ticked('answerCheck')).toEqual(['toCheck']);
+    expect(
+      preselectedForAnswers('answerRequest', {
+        email: null,
+        answerStatus: 'toNotify',
+      }),
+    ).toBe(false);
   });
 });

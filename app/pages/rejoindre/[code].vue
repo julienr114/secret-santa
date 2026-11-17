@@ -50,6 +50,10 @@ const canJoin = computed(
 const onJoin = () => join.mutate({ firstName: firstName.value.trim() });
 // Logged in with the wrong address: out, and back to the same invitation.
 const logout = useLogoutMutation();
+/** « Connecté avec », before the address shown in full on its own line. */
+const signedAs = computed(
+  () => t('auth.invite.signedAs', { email: '\u0000' }).split('\u0000')[0],
+);
 const onSwitch = () =>
   logout.mutate(undefined, { onSuccess: () => invite.refetch() });
 
@@ -221,9 +225,13 @@ const closed = computed(() => {
             class="flex items-center justify-between gap-3 text-sm"
             data-testid="invite-account"
           >
-            <span class="min-w-0 truncate text-toned">
-              {{ t('auth.invite.signedAs', { email: data.account.email }) }}
-            </span>
+            <p class="min-w-0 text-toned">
+              {{ signedAs
+              }}<strong
+                class="block font-semibold break-all text-highlighted"
+                >{{ data.account.email }}</strong
+              >
+            </p>
             <UButton
               variant="link"
               class="-mr-2.5 min-h-11 shrink-0 font-bold text-primary-ink underline underline-offset-2"

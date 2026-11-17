@@ -354,9 +354,19 @@ const onSend = () =>
                 @update:checked="(on) => toggle(p.participationId, on)"
               >
                 <template #subtitle>
-                  <span v-if="followState(p) === 'toNotify'" class="truncate"
-                    >{{ t('adminEdition.screen.lists.series.toNotify') }} ·
-                    {{ p.email }}</span
+                  <span
+                    v-if="
+                      answering
+                        ? p.answerStatus === 'toNotify'
+                        : followState(p) === 'toNotify'
+                    "
+                    class="truncate"
+                    >{{
+                      answering
+                        ? t('adminEdition.answers.status.toNotify')
+                        : t('adminEdition.screen.lists.series.toNotify')
+                    }}
+                    · {{ p.email }}</span
                   >
                   <template v-else>
                     <UIcon

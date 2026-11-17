@@ -506,14 +506,71 @@ export default {
   },
   // Lot 18 (README 22.16): the edition's settings on a page of their own,
   // and « Un souci ? » in a sheet.
+  game: {
+    eyebrow: 'Le jeu de cette édition',
+    players: {
+      one: '{players} sur {total} a fait un pronostic.',
+      other: '{players} sur {total} ont fait un pronostic.',
+    },
+    endsOn: 'Fin le {end}.',
+    closed: 'Les pronostics sont fermés.',
+    remind: 'Envoyer un rappel',
+    reminded: 'Rappel envoyé le {date}',
+    reminderTitle: 'Rappeler le jeu',
+    notPlayed: {
+      one: '{count} personne n’a pas encore fait de pronostic',
+      other: '{count} personnes n’ont pas encore fait de pronostic',
+    },
+    notPlayedTitle: 'Pas encore joué',
+    willGetEmail: 'Recevra le rappel par email',
+    noEmail: 'Sans adresse email',
+    message: 'Le message',
+    addWord: 'Ajouter un mot',
+    sendEmail: 'Envoyer par email',
+    to: 'À {names}',
+    shareThem: {
+      one: '{names} n’a pas d’adresse : partage-lui son lien avec le bouton de sa ligne.',
+      other:
+        '{names} n’ont pas d’adresse : partage-leur leur lien avec le bouton de leur ligne.',
+    },
+    reminderSent: {
+      one: 'Rappel envoyé à {count} personne',
+      other: 'Rappel envoyé à {count} personnes',
+    },
+  },
+  guess: {
+    title: 'Devine qui',
+    description:
+      'Un jeu de pronostics : qui offre à qui ? Les réponses tombent à la fête.',
+    mode: {
+      none: 'Aucun pronostic',
+      santa: 'Qui m’offre ?',
+      all: 'Toutes les paires',
+    },
+    modeHint: {
+      none: 'Le jeu est éteint',
+      santa: 'Chacun devine son propre Père Noël',
+      all: 'Chacun pronostique aussi pour les autres, autant qu’il veut',
+    },
+    endLabel: 'Fin des pronostics, le {date} à',
+    answersWhen:
+      'Les réponses tombent quand tu dévoiles le tirage à la fête, ou toutes seules le lendemain.',
+    lossSanta:
+      'Les pronostics sur les autres seront effacés : seuls restent ceux de chacun sur son propre Père Noël.',
+    lossOff: 'Tous les pronostics seront effacés.',
+    confirmLoss: 'Effacer et valider',
+  },
   settings: {
     title: 'Réglages de l’édition',
     intro: 'Ce que voient les participants de {label}.',
-    dateTitle: 'Date de la fête',
+    dateTitle: 'Date',
     wordTitle: 'Petit mot',
     budgetIs: 'Budget {budget}',
     word: 'petit mot',
     what: 'Date, budget, petit mot',
+    party: 'La fête',
+    game: 'Le jeu',
+    gameShort: 'jeu',
   },
   trouble: {
     title: 'Un souci ?',

@@ -501,14 +501,71 @@ export default {
       emailSent: 'Email sent to {name}',
     },
   },
+  game: {
+    eyebrow: 'The game of this edition',
+    players: {
+      one: '{players} of {total} made a guess.',
+      other: '{players} of {total} made a guess.',
+    },
+    endsOn: 'Ends on {end}.',
+    closed: 'The guesses are closed.',
+    remind: 'Send a reminder',
+    reminded: 'Reminder sent on {date}',
+    reminderTitle: 'Remind of the game',
+    notPlayed: {
+      one: "{count} person hasn't made a guess yet",
+      other: "{count} people haven't made a guess yet",
+    },
+    notPlayedTitle: 'Not played yet',
+    willGetEmail: 'Will get the reminder by email',
+    noEmail: 'No email address',
+    message: 'The message',
+    addWord: 'Add a note',
+    sendEmail: 'Send by email',
+    to: 'To {names}',
+    shareThem: {
+      one: '{names} has no address: share their link with the button of their row.',
+      other:
+        '{names} have no address: share their links with the buttons of their rows.',
+    },
+    reminderSent: {
+      one: 'Reminder sent to {count} person',
+      other: 'Reminder sent to {count} people',
+    },
+  },
+  guess: {
+    title: 'Devine qui',
+    description:
+      'A guessing game: who gives to whom? The answers come at the party.',
+    mode: {
+      none: 'No guesses',
+      santa: 'Who gives to me?',
+      all: 'Every pair',
+    },
+    modeHint: {
+      none: 'The game is off',
+      santa: 'Everyone guesses their own Secret Santa',
+      all: 'Everyone also guesses for the others, as much as they like',
+    },
+    endLabel: 'End of the guesses, on {date} at',
+    answersWhen:
+      'The answers come when you reveal the draw at the party, or by themselves the day after.',
+    lossSanta:
+      "The guesses about the others will be deleted: only everyone's guess on their own Secret Santa stays.",
+    lossOff: 'Every guess will be deleted.',
+    confirmLoss: 'Delete and validate',
+  },
   settings: {
     title: 'Edition settings',
     intro: 'What the participants of {label} see.',
-    dateTitle: 'Date of the party',
+    dateTitle: 'Date',
     wordTitle: 'Short note',
     budgetIs: 'Budget {budget}',
     word: 'short note',
     what: 'Date, budget, short note',
+    party: 'The party',
+    game: 'The game',
+    gameShort: 'game',
   },
   trouble: {
     title: 'A problem?',

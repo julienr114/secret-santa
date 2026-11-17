@@ -513,14 +513,71 @@ export default {
       emailSent: 'E-Mail an {name} gesendet',
     },
   },
+  game: {
+    eyebrow: 'Das Spiel dieser Ausgabe',
+    players: {
+      one: '{players} von {total} hat getippt.',
+      other: '{players} von {total} haben getippt.',
+    },
+    endsOn: 'Ende am {end}.',
+    closed: 'Die Tipps sind geschlossen.',
+    remind: 'Eine Erinnerung senden',
+    reminded: 'Erinnerung gesendet am {date}',
+    reminderTitle: 'An das Spiel erinnern',
+    notPlayed: {
+      one: '{count} Person hat noch nicht getippt',
+      other: '{count} Personen haben noch nicht getippt',
+    },
+    notPlayedTitle: 'Noch nicht gespielt',
+    willGetEmail: 'Bekommt die Erinnerung per E-Mail',
+    noEmail: 'Keine E-Mail-Adresse',
+    message: 'Die Nachricht',
+    addWord: 'Ein Wort hinzufügen',
+    sendEmail: 'Per E-Mail senden',
+    to: 'An {names}',
+    shareThem: {
+      one: '{names} hat keine Adresse: Teile den Link mit dem Knopf der Zeile.',
+      other:
+        '{names} haben keine Adresse: Teile ihre Links mit den Knöpfen ihrer Zeilen.',
+    },
+    reminderSent: {
+      one: 'Erinnerung an {count} Person gesendet',
+      other: 'Erinnerung an {count} Personen gesendet',
+    },
+  },
+  guess: {
+    title: 'Devine qui',
+    description:
+      'Ein Tippspiel: Wer beschenkt wen? Die Antworten gibt es bei der Feier.',
+    mode: {
+      none: 'Keine Tipps',
+      santa: 'Wer beschenkt mich?',
+      all: 'Alle Paare',
+    },
+    modeHint: {
+      none: 'Das Spiel ist aus',
+      santa: 'Jeder rät seinen eigenen Wichtel',
+      all: 'Jeder tippt auch für die anderen, so viel er will',
+    },
+    endLabel: 'Ende der Tipps, am {date} um',
+    answersWhen:
+      'Die Antworten kommen, wenn du die Auslosung bei der Feier aufdeckst, oder von selbst am Tag danach.',
+    lossSanta:
+      'Die Tipps zu den anderen werden gelöscht: Nur die Tipps auf den eigenen Wichtel bleiben.',
+    lossOff: 'Alle Tipps werden gelöscht.',
+    confirmLoss: 'Löschen und bestätigen',
+  },
   settings: {
     title: 'Einstellungen der Ausgabe',
     intro: 'Was die Teilnehmer von {label} sehen.',
-    dateTitle: 'Datum der Feier',
+    dateTitle: 'Datum',
     wordTitle: 'Kurze Notiz',
     budgetIs: 'Budget {budget}',
     word: 'kurze Notiz',
     what: 'Datum, Budget, kurze Notiz',
+    party: 'Die Feier',
+    game: 'Das Spiel',
+    gameShort: 'Spiel',
   },
   trouble: {
     title: 'Ein Problem?',

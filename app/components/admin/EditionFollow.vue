@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
-import type { Participant } from '#server/database/editions';
+import type {
+  EditionParticipant as Participant,
+  GuessSummary,
+} from '~/composables/queries/useGroup';
 import {
   followSeries,
   participantCounters,
@@ -30,6 +33,12 @@ const props = defineProps<{
   /** The day of the party, written out; null when unknown. */
   dateText: string | null;
   closing: boolean;
+  /** « Devine qui » (README 22.17). */
+  guess?: GuessSummary;
+  /** When the draw was revealed, if it was. */
+  revealedAt?: string | null;
+  /** Where a word added goes: above or below the message (group rule). */
+  notePosition?: 'before' | 'after';
 }>();
 const emit = defineEmits<{
   send: [participationId: string];
@@ -135,6 +144,24 @@ const unfold = (state: FollowState, open: boolean) => {
 };
 // Closing asks for a second tap.
 const confirming = ref(false);
+// « Devine qui » (README 22.17): its card, and the one reminder.
+const gameOn = computed(() => (props.guess?.mode ?? 'none') !== 'none');
+const notPlayed = computed(() =>
+  props.participants.filter((p) => p.played === false),
+);
+const reminderOpen = ref(false);
+/** The palmarès can be watched once the draw is revealed. */
+const revealedGame = computed(() => Boolean(props.revealedAt));
+/**
+ * Closes the reminder, then opens the send sheet of someone without an
+ * address.
+ * @param participationId - The person.
+ * @returns Nothing.
+ */
+const onShareFromReminder = (participationId: string) => {
+  reminderOpen.value = false;
+  emit('send', participationId);
+};
 // What used to be « Plus tard, ou en cas de pépin » (README 22.16): the
 // edition's settings on a page of their own, and « Un souci ? » in a sheet.
 const troubleOpen = ref(false);
@@ -205,7 +232,8 @@ const partyTitle = computed(() =>
         :label="t('adminEdition.screen.reveal.action')"
         @click="emit('reveal')"
       />
-      <template v-if="canClose">
+      <!-- The answers of the game come with the reveal (README 22.17). -->
+      <template v-if="canClose && !gameOn">
         <UButton
           v-if="!confirming"
           block
@@ -360,6 +388,26 @@ const partyTitle = computed(() =>
       {{ t('adminEdition.screen.follow.listFooter') }}
     </p>
   </section>
+
+  <AdminGameCard
+    v-if="guess && gameOn"
+    :slug="slug"
+    :edition-id="editionId"
+    :guess="guess"
+    :participants="participants.length"
+    :can-remind="notPlayed.some((p) => p.email)"
+    :revealed="revealedGame"
+    @remind="reminderOpen = true"
+  />
+  <AdminGameReminderSheet
+    v-if="guess && gameOn"
+    v-model:open="reminderOpen"
+    :slug="slug"
+    :edition-id="editionId"
+    :people="notPlayed"
+    :note-position="notePosition ?? 'after'"
+    @send="onShareFromReminder"
+  />
 
   <div class="flex flex-col gap-3">
     <UiList>

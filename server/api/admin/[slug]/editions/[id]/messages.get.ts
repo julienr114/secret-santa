@@ -21,9 +21,15 @@ const querySchema = z.object({ type: z.enum(MESSAGE_TYPES) });
 export default defineEventHandler(async (event) => {
   const { group, db, edition, rules } = await requireEdition(event);
   const { type } = await validatedQuery(event, querySchema);
-  // Nothing to share for a message that does not fit the edition's stage.
-  if (!messageTypesFor(edition.status, edition.drawMode).includes(type))
+  // Nothing to share for a message that does not fit the edition's stage;
+  // the reminder of « Devine qui » while the game is on (README 22.17).
+  const game = type === 'guessReminder' && edition.guessMode !== 'none';
+  if (
+    !game &&
+    !messageTypesFor(edition.status, edition.drawMode).includes(type)
+  ) {
     return { messages: {} };
+  }
   const dataKey = await dataKeyOf(event);
   const [people, rows] = await Promise.all([
     listParticipants(db, edition.id),

@@ -343,6 +343,8 @@ const dateOpen = ref(false);
         :can-close="canClose"
         :date-text="dateText"
         :closing="close.isPending.value"
+        :guess="edition.data.value?.guess"
+        :note-position="rules?.messageNotePosition ?? 'after'"
         @send="(pid) => (sendId = pid)"
         @close="onClose"
         @reveal="revealOpen = true"
@@ -416,6 +418,21 @@ const dateOpen = ref(false);
           :label="t('adminEdition.screen.closed.next')"
         />
       </template>
+      <!-- « Devine qui »: once revealed, its palmarès (README 22.17). -->
+      <AdminGameCard
+        v-if="
+          status === 'drawn' &&
+          revealed &&
+          edition.data.value &&
+          edition.data.value.guess.mode !== 'none'
+        "
+        :slug="slug"
+        :edition-id="id"
+        :guess="edition.data.value.guess"
+        :participants="participants.length"
+        :can-remind="false"
+        revealed
+      />
     </AdminQueryState>
 
     <AdminDrawSheet

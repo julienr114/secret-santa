@@ -1,5 +1,6 @@
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { MessageType } from '#server/utils/messages';
+import type { GuessMode } from '#server/utils/guesses';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -74,6 +75,21 @@ export const useAbandonAnswersMutation = (slug: Ref, id: Ref) =>
   editionAction(slug, id, 'answers/abandon');
 export const useValidateAnswersMutation = (slug: Ref, id: Ref) =>
   editionAction(slug, id, 'answers/validate');
+// « Devine qui » (README 22.17).
+export const useSetGuessMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<
+    unknown,
+    { mode: GuessMode; endsAt?: string; timeZone?: string }
+  >(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/guess`, {
+        method: 'PUT',
+        body,
+      }),
+    () => groupKeys(slug),
+  );
+export const useGuessReminderMutation = (slug: Ref, id: Ref) =>
+  editionAction<{ note: string }>(slug, id, 'guess/reminder');
 
 export const useAddParticipantMutation = (slug: Ref, id: Ref) =>
   useApiMutation<{ participationId: string }, string>(

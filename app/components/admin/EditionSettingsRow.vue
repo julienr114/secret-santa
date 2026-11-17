@@ -17,6 +17,9 @@ const line = computed(() => {
       rules?.budget &&
         t('adminEdition.settings.budgetIs', { budget: rules.budget }),
       rules?.guardianMessage && t('adminEdition.settings.word'),
+      edition.data.value?.guess.mode !== 'none' &&
+        edition.data.value?.guess &&
+        t('adminEdition.settings.gameShort'),
     ]
       .filter(Boolean)
       .join(' · ') || t('adminEdition.settings.what')

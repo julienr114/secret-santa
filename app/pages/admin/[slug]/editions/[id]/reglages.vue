@@ -2,10 +2,11 @@
 import { formatEventDate } from '#server/utils/rules';
 import { useEditionQuery } from '~/composables/queries/useGroup';
 
-// « Réglages de l'édition » (README 22.16, maquette EditionReglages): what
-// the participants of this edition see, the date of the party, the budget
-// and the word, each changed in the sheet that already exists. Once the
-// edition is closed, read only.
+// « Réglages de l'édition » (README 22.16, maquettes EditionReglages and
+// PropEditionReglages): what the participants of this edition see, the
+// party (date, budget, word) and the game « Devine qui » (22.17), each
+// changed in its sheet. Once the edition is closed, read only; the game
+// no longer changes once the draw is revealed.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -24,6 +25,11 @@ const closed = computed(() => edition.data.value?.edition.status === 'closed');
 const eventDate = computed(() => edition.data.value?.rules.eventDate ?? '');
 const label = computed(() => edition.data.value?.edition.label ?? '');
 const dateOpen = ref(false);
+const guess = computed(() => edition.data.value?.guess);
+const gameFixed = computed(
+  () => closed.value || Boolean(edition.data.value?.edition.revealedAt),
+);
+const guessOpen = ref(false);
 </script>
 
 <template>
@@ -43,7 +49,10 @@ const dateOpen = ref(false);
           {{ t('adminEdition.settings.intro', { label }) }}
         </p>
       </div>
-      <UiList data-testid="edition-settings">
+      <UiList
+        :title="t('adminEdition.settings.party')"
+        data-testid="edition-settings"
+      >
         <UiListItem
           icon="i-lucide-calendar"
           icon-tone="neutral"
@@ -64,6 +73,17 @@ const dateOpen = ref(false);
           values
         />
       </UiList>
+      <UiList v-if="guess" :title="t('adminEdition.settings.game')">
+        <UiListItem
+          icon="i-lucide-search"
+          icon-tone="neutral"
+          :title="t('adminEdition.guess.title')"
+          :value="t(`adminEdition.guess.mode.${guess.mode}`)"
+          :chevron="!gameFixed"
+          :on-click="gameFixed ? undefined : () => (guessOpen = true)"
+          data-testid="setting-guess"
+        />
+      </UiList>
     </AdminQueryState>
     <AdminPartyDateSheet
       v-if="!closed"
@@ -71,6 +91,14 @@ const dateOpen = ref(false);
       :slug="slug"
       :edition-id="id"
       :value="eventDate"
+    />
+    <AdminGuessSheet
+      v-if="guess && !gameFixed && eventDate"
+      v-model:open="guessOpen"
+      :slug="slug"
+      :edition-id="id"
+      :guess="guess"
+      :event-date="eventDate"
     />
   </AdminScreen>
 </template>

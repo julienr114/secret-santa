@@ -49,8 +49,6 @@ export default {
     views: 'Was das Protokoll zeigt',
     essential: 'Das Wichtigste',
     all: 'Alles',
-    essentialNote:
-      'Das Wichtigste fasst die Sendungen zusammen und lässt Änderungen von Symbol und Sprache weg. „Alles“ zeigt jedes Ereignis.',
     showDetail: 'Details zeigen',
     hideDetail: 'Einklappen',
     whatMeans: 'Was bedeutet das?',

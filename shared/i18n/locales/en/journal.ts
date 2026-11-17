@@ -45,8 +45,6 @@ export default {
     views: 'What the journal shows',
     essential: 'The essentials',
     all: 'Everything',
-    essentialNote:
-      'The essentials fold the sends together and leave out changes of icon and language. “Everything” shows each event.',
     showDetail: 'Show the details',
     hideDetail: 'Fold',
     whatMeans: 'What does this mean?',

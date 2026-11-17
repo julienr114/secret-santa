@@ -44,8 +44,6 @@ export default {
     views: 'Ce que montre le journal',
     essential: 'L’essentiel',
     all: 'Tout',
-    essentialNote:
-      'L’essentiel regroupe les envois et laisse de côté les changements d’icône et de langue. « Tout » montre chaque événement.',
     showDetail: 'Voir le détail',
     hideDetail: 'Replier',
     whatMeans: 'Qu’est-ce que ça veut dire ?',

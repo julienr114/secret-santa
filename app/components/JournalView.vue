@@ -90,12 +90,6 @@ const alertOpen = computed({
     />
   </div>
   <JournalList :days="days" @explain="(entry) => (explained = entry)" />
-  <p
-    v-if="view === 'essential' && days.length > 0"
-    class="text-[13px] leading-[1.4] text-toned"
-  >
-    {{ t('journal.screen.essentialNote') }}
-  </p>
   <JournalHelpSheet v-model:open="helpOpen" />
   <JournalAlertSheet v-model:open="alertOpen" :entry="explained" />
 </template>

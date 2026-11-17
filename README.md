@@ -1210,6 +1210,8 @@ Avec un seul tirage en cours et aucun groupe organisé, la carte du tirage tient
 
 ### 22.11 À faire en premier : « Pistes de cadeaux », à la place de la liste de souhaits (16 novembre 2026)
 
+**Planifié le 17 novembre 2026 : lot 16 de `docs/refonte/PLAN.md`, avant le tirage déjà fait (lot 17).** Maquettes dans `docs/refonte/maquettes/Pistes*.html`.
+
 Conception validée par Julien le 16 novembre 2026. **Rien n'est codé.** C'est la prochaine fonctionnalité, avant le tirage déjà fait (22.12). Maquettes : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « Pistes de cadeaux » (11 écrans).
 
 **Pourquoi** : une liste de souhaits fait « offrez-moi ça ». Celui qui offre a surtout besoin de savoir qui est la personne.
@@ -1247,6 +1249,8 @@ Pourquoi cette forme (recherches lues en résumé le 16 novembre 2026) : celui q
 **À faire en même temps** : le vocabulaire (« liste de souhaits », « idées de cadeaux ») sur l'accueil, la page du tirage, le suivi de l'organisateur, les messages et la carte « À faire maintenant » (22.10, rang 7) ; les sections 6 bis, 9 et 11 de ce document. Le lot 7 du plan de refonte (`docs/refonte/PLAN.md`) a été supprimé pour cette raison.
 
 ### 22.12 À faire ensuite : tirage déjà fait ailleurs (16 novembre 2026)
+
+**Planifié le 17 novembre 2026 : lot 17 de `docs/refonte/PLAN.md`, après les pistes de cadeaux (lot 16).** Maquettes dans `docs/refonte/maquettes/Manuel*.html`.
 
 Conception validée par Julien le 16 novembre 2026, **remplace 22.6**. Rien n'est codé. À faire après 22.11. Maquettes : même canevas, page « Tirage déjà fait » (12 écrans).
 

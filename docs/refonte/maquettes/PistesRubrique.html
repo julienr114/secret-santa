@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mes pistes de cadeaux — modifier « En ce moment »</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #8f877b; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
+  <div aria-hidden="true" style="height: 330px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; color: #5c554c">Mes pistes de cadeaux</div>
+  <section aria-label="En ce moment" style="flex-grow: 1; background: #fffdf9; border-radius: 20px 20px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 18px">
+    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #dccbad"></span>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 24px; line-height: 1.15">En ce moment</h1>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #57534e">Ce qui t’occupe ou te fait envie ces temps-ci. Pas besoin d’objets précis.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="aime" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">En ce moment</label>
+      <textarea id="aime" rows="4" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #a8a29e; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 16px; line-height: 1.45; resize: none">Je me mets à la course à pied, je lis des BD et je cuisine le dimanche.</textarea>
+      <p style="margin: 0; display: flex; justify-content: space-between; font-size: 13px; color: #57534e"><span>Un loisir qui démarre, une lecture, un projet…</span><span>71 / 300</span></p>
+    </div>
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px">
+      <button style="width: 100%; height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px">Valider</button>
+      <a href="#" style="height: 46px; border-radius: 6px; color: #292524; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Annuler</a>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

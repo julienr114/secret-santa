@@ -15,9 +15,9 @@ Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 | Sujet | Maquettes concernées | Pourquoi |
 |---|---|---|
 | Idées futures | `FuturAccueil`, `FuturListes` | Non planifié |
-| Liste de souhaits | `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` | Remplacée par « Pistes de cadeaux » (README 22.11), codée à part |
+| Liste de souhaits | `Souhaits`, `SouhaitsVide`, `SouhaitsIdee`, `SouhaitsFigee` | Remplacée par « Pistes de cadeaux » (README 22.11) : c'est le lot 16 |
 
-Dévoiler les résultats, le mot de l'administrateur sur un refus et l'alerte du journal sur la page du participant sortent de ce tableau le 17 novembre 2026 : ce sont les lots 12 et 13.
+Dévoiler les résultats, le mot de l'administrateur sur un refus et l'alerte du journal sur la page du participant sortent de ce tableau le 17 novembre 2026 : ce sont les lots 12 et 13. Le même jour s'ajoutent deux fonctionnalités complètes, avec base et routes : les pistes de cadeaux (lot 16), puis le tirage déjà fait ailleurs (lot 17). La règle générale ci-dessous ne s'applique pas à ces deux lots.
 
 **Règle générale** : si une maquette affiche une donnée que l'API ne fournit pas, ne pas l'inventer et ne pas toucher au schéma. Laisser l'élément de côté et l'ajouter à la section 6 « Questions pour Julien » de ce fichier.
 
@@ -458,6 +458,44 @@ Décidé par Julien le 17 novembre 2026. Aujourd'hui `UiAvatar` écrit l'emoji c
 - [x] 64 px suffit jusqu'à 32 px d'affichage sur un écran dense ; au-delà (avatar de 56 px de l'accueil), l'image est légèrement agrandie. Le noter en section 6 si le flou se voit.
 - [x] README : dire que les images viennent d'Apple, qu'elles restent sous son copyright et ne sont pas sous licence libre, que ce choix est assumé pour un usage familial, et qu'il faudra passer à Noto Emoji (Apache 2.0) ou à Fluent Emoji (MIT) si l'app s'ouvre plus largement.
 - [x] Guide de style et `tests/e2e` à jour.
+
+### Lot 16 — Pistes de cadeaux, à la place de la liste de souhaits (README 22.11)
+
+Décidé par Julien le 17 novembre 2026. Fonctionnalité complète. Le README 22.11 fait foi ; les maquettes `Pistes*` (11 écrans) se reproduisent à l'identique. Remplace le lot 7 supprimé.
+
+À découper en plusieurs commits, les tests avec chaque étape.
+
+- [ ] **Base** (migration) : pour chaque participation, les six réponses de « Moi et les cadeaux », enregistrées comme des valeurs fixes par question (premier choix, second choix, « les deux me vont », sans réponse), jamais comme du texte ; et les trois textes libres de 300 caractères (« En ce moment », « Ce qui me servirait », « J'évite, ou j'ai déjà »). La liste actuelle est conservée telle quelle : elle devient « Une idée précise, si tu sèches ».
+- [ ] **Réglage du groupe à trois valeurs** (`PistesReglage`), à la place de l'interrupteur : portrait et idées précises, portrait seulement, aucune piste. La migration convertit l'ancien réglage (activé donne la première valeur, désactivé la dernière).
+- [ ] **Ma page** : `Pistes`, `PistesVide`, `PistesQuestion` (une question par écran, un appui pour répondre), `PistesRubrique`. Tout est facultatif. « Reprendre mes pistes de {édition précédente} » quand la page est vide.
+- [ ] **Chez celui qui offre** : `PistesResultat` (les six réponses en étiquettes, puis les rubriques) et `PistesResultatVide`. Seul celui qui offre les voit, après le tirage (README 6 bis.2 inchangé). Aucun pronom genré.
+- [ ] **Demander des pistes** : `PistesDemander`, `PistesResultatDemande`, `PistesDemande` (le bandeau sur la page de la personne), `PistesEmail`. Une seule demande par tirage, sans relance ; le bouton disparaît ensuite. Anonyme : aucune route, aucun email, aucune ligne de journal, aucun écran de l'organisateur ne dit qui demande, ni qu'une demande a eu lieu. Envoyée tout de suite. Quand des pistes arrivent, celui qui a demandé reçoit un email. Les deux emails passent par `buildEmail` (README 13.3) : texte simple, un lien.
+- [ ] **Journal** : l'événement `wishes_updated` n'est plus écrit ni affiché, et le panneau « À quoi sert le journal ? » dit « Qui offre à qui, ni les pistes de cadeaux de chacun » (maquette `JournalAide`). L'organisateur ne voit qu'un état, « a laissé des pistes » ou non.
+- [ ] **Vocabulaire** : « liste de souhaits » et « idées de cadeaux » disparaissent de l'accueil, de la page du tirage, du suivi de l'organisateur, des messages et de la carte « À faire maintenant » (README 22.10, rang 7). Trois langues.
+- [ ] **Statistiques** : rien à coder. Seule contrainte, déjà couverte par la base : des valeurs fixes par question, et jamais d'analyse des textes libres.
+- [ ] README : 22.11 marqué fait, sections 6 bis, 9 et 11 mises à jour. Guide de style et `tests/e2e` à jour.
+
+Ce que le README ne tranche pas, à noter en section 6 : ce que deviennent les lignes `wishes_updated` déjà au journal (proposition : ne plus les afficher), et comment retenir qui a demandé des pistes pour lui écrire ensuite, sans que cette information soit lisible ailleurs.
+
+### Lot 17 — Tirage déjà fait ailleurs (README 22.12)
+
+Décidé par Julien le 17 novembre 2026. À faire après le lot 16. Fonctionnalité complète : base, routes, écrans. Toutes les décisions sont dans le tableau du README 22.12, qui fait foi ; les maquettes `Manuel*` (12 écrans) se reproduisent à l'identique, comme le reste (section 2). Elles ont été dessinées avant les pistes de cadeaux et parlent encore de « liste de souhaits » : écrire « pistes de cadeaux » à la place, avec le vocabulaire du lot 16.
+
+À découper en plusieurs commits, dans cet ordre, les tests avec chaque étape.
+
+- [ ] **Le cœur, en fonctions pures** (`server/utils`, README 7.1), testé avant tout le reste : à partir des réponses, dire qui est en conflit (deux personnes ont nommé la même), s'il ne manque qu'une réponse et laquelle s'en déduit, et si l'édition peut être validée ; transformer des réponses concordantes en un tirage ordinaire.
+- [ ] **Base** (migration) : le mode de l'édition (tirage par l'application ou déjà fait ailleurs) et les réponses des participants. Une réponse n'est jamais renvoyée par une route de l'organisateur ; à la validation, les réponses deviennent un tirage normal (receveur chiffré) et sont effacées.
+- [ ] **Routes** : démarrer le mode depuis une édition à préparer ; abandonner (efface les réponses, tant que rien n'est validé) ; enregistrer ou corriger sa réponse (participant, jusqu'à la validation) ; l'état pour l'organisateur (nombre de réponses, prénoms des personnes en conflit, jamais leur réponse) ; valider.
+- [ ] **Journal** : le mode démarré, chaque réponse enregistrée ou changée (sans son contenu : c'est le garde-fou contre un organisateur qui sonderait avec sa propre réponse), la validation, l'abandon. Textes en fr, en, de.
+- [ ] **Organisateur, démarrage** : `ManuelPreparer` (le lien « Le tirage a déjà été fait ailleurs ? » sous « Lancer le tirage ») et `ManuelDemarrer` (le panneau, qui dit une fois que les exclusions ne s'appliquent pas).
+- [ ] **Organisateur, étape « Réponses »** : frise Préparer, Réponses, Fêter. `ManuelCollecte` (demander les réponses), `ManuelRelance`, `ManuelConflit`, `ManuelUneManque`, `ManuelPret`, `ManuelValider`. Les trois messages (Demande, Relance, À vérifier) passent par le panneau d'envoi existant (Correction 7) et par `server/utils/messages.ts`.
+- [ ] **Participant** : `ManuelTirageDeclarer`, `ManuelTirageChoisir` (tous les participants sauf soi, recherche au-delà de 10), `ManuelTirageConfirmer`, `ManuelTirageAttente` (« Réponse enregistrée », avec l'avancement). Aucun message d'erreur en cas de conflit.
+- [ ] **Avant la validation** : personne ne voit les pistes de cadeaux de quelqu'un d'autre, et « Demander des pistes » n'existe pas encore ; ajout et retrait de participants possibles. Les exclusions ne sont ni appliquées, ni vérifiées, ni signalées.
+- [ ] **Après la validation** : l'édition est une édition tirée ordinaire (liens, suivi, résultat, dévoilement du lot 13, alertes du lot 14), et ses paires comptent dans l'historique de l'an prochain.
+- [ ] Accueil : la carte « À faire maintenant » (README 22.10) et les lignes de tirage connaissent les nouveaux états (réponse à donner, réponse enregistrée, réponses à valider).
+- [ ] README : 22.12 marqué fait, et les sections qui décrivent le tirage et les étapes de l'organisateur mises à jour. Guide de style et `tests/e2e` à jour.
+
+Ce que le README ne tranche pas, à noter en section 6 plutôt que de décider seul : le sort d'une réponse qui nomme un participant retiré ensuite, et celui d'un participant ajouté après que tout le monde a répondu.
 
 ## 6. Questions pour Julien
 

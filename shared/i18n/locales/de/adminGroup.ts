@@ -45,8 +45,9 @@ export default {
       other: 'Die {count} Personen und ihre Ausschlüsse.',
     },
     editions: {
-      one: 'Die Ausgabe, ihre Auslosung und die Wunschlisten.',
-      other: 'Die {count} Ausgaben, ihre Auslosungen und die Wunschlisten.',
+      one: 'Die Ausgabe, ihre Auslosung und die Geschenk-Hinweise.',
+      other:
+        'Die {count} Ausgaben, ihre Auslosungen und die Geschenk-Hinweise.',
     },
     journal: 'Das Protokoll der Gruppe.',
     links: 'Die persönlichen Links funktionieren nicht mehr.',
@@ -219,8 +220,6 @@ export default {
       'Niemand beschenkt jemanden, den er in den letzten Jahren schon hatte.',
     tighter: 'Je länger der Zeitraum, desto enger die Auslosung.',
     participantsSection: 'Teilnehmer',
-    wishlistShort: 'Wunschlisten',
-    wishlistHelp: 'Jeder notiert Ideen für die Person, die ihn beschenkt',
     messageNote: 'Wort in den Nachrichten',
     messageNoteHelp:
       'Wird jeder Nachricht und E-Mail an die Teilnehmer unverändert hinzugefügt. Du kannst es beim Senden noch ändern.',

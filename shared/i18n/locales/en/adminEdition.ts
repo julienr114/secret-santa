@@ -132,7 +132,7 @@ export default {
     redrawMessage:
       'After the new draw, you will have to let everyone know with the « {message} » message.',
     linksKept: 'Personal links stay valid.',
-    wishesKept: 'Wish lists are kept.',
+    hintsKept: 'Gift hints are kept.',
     reasonLabel: 'Reason',
     reasonHelp: 'Shown in the journal, for the whole group to see.',
     reasonPlaceholder: 'Tom dropped out',
@@ -309,7 +309,7 @@ export default {
       add: 'Add participants',
       optional: 'If you like',
       notifyBefore: 'Let people know before the draw',
-      notifyBeforeHint: 'Optional: everyone can already note their ideas',
+      notifyBeforeHint: 'Optional: everyone can already leave their hints',
       exclusions: 'Exclusions',
       exclusionsCount: {
         one: '{count} exclusion',
@@ -381,7 +381,7 @@ export default {
       cardTitle: 'The party is over: reveal the results',
       cardTitleToday: 'It’s party day: reveal the results',
       cardHelp:
-        'It is optional, and final. Wish lists can still be changed until the edition is closed.',
+        'It is optional, and final. Gift hints can still be changed until the edition is closed.',
       viewed: {
         one: '{count} of {total} has looked at their result',
         other: '{count} of {total} have looked at their result',
@@ -410,7 +410,7 @@ export default {
       onlyYouTitle: 'Only you will see the list',
       onlyYouHint: 'The participants do not see it for now.',
       final:
-        'It is final, and the group’s journal says so. Wish lists can still be changed.',
+        'It is final, and the group’s journal says so. Gift hints can still be changed.',
       notYet: 'Not yet',
       earlyTitle: 'Reveal before the party?',
       earlyIntro: {
@@ -428,13 +428,13 @@ export default {
       done: 'Results revealed',
       revealedTitle: 'Results revealed',
       revealedHelp:
-        'Wish lists can still be changed until the edition is closed.',
+        'Gift hints can still be changed until the edition is closed.',
       pairsTitle: {
         one: 'The draw · {count} participant',
         other: 'The draw · {count} participants',
       },
       pairsFooter: 'For now, only you see this list.',
-      closeHint: 'Freezes the edition and the wish lists',
+      closeHint: 'Freezes the edition and the gift hints',
     },
     missingDate: {
       title: 'When is the party?',

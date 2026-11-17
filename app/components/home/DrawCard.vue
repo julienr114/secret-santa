@@ -35,7 +35,7 @@ const state = computed(() => {
   return draw.hintsOn && !draw.hasHints
     ? {
         title: t('auth.home.drawCard.addHints'),
-        button: t('auth.home.drawCard.wishes'),
+        button: t('auth.home.drawCard.hints'),
         to: `${draw.path}/pistes`,
         variant: 'solid' as const,
       }

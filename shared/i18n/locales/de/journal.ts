@@ -92,9 +92,9 @@ export default {
       'Damit die Auslosung ehrlich bleibt. Schummeln bleibt möglich, aber man sieht es.',
     notes: 'Es notiert',
     notesBody:
-      'Die Auslosung, jeden gesendeten oder erneuerten Link, jedes entdeckte Ergebnis, geänderte Wunschlisten und jeden Blick des Organisators auf ein Ergebnis.',
+      'Die Auslosung, jeden gesendeten oder erneuerten Link, jedes entdeckte Ergebnis und jeden Blick des Organisators auf ein Ergebnis.',
     never: 'Es verrät nie',
-    neverBody: 'Wer wen beschenkt, noch was in den Wunschlisten steht.',
+    neverBody: 'Wer wen beschenkt, noch die Geschenk-Hinweise der anderen.',
     who: 'Die ganze Gruppe sieht es',
     whoBody: 'Teilnehmer und Organisator, mit denselben Zeilen.',
   },
@@ -113,7 +113,7 @@ export default {
         'Er weiß, wen du beschenkst. Sonst hat es niemand gesehen, und dein Ergebnis ändert sich nicht.',
       why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
       changes:
-        'Die anderen Ergebnisse und die Wunschlisten wurden nicht gesehen.',
+        'Die anderen Ergebnisse und die Geschenk-Hinweise wurden nicht gesehen.',
     },
     results_revealed: {
       title: 'Ergebnisse vor der Feier aufgedeckt',
@@ -129,7 +129,7 @@ export default {
         'Der Organisator hat die Auslosung abgesagt, aus dem oben genannten Grund. Die alten Ergebnisse sind gelöscht.',
       why: 'Eine Absage, ein Vergessener: Lieber neu auslosen als eine falsche Auslosung behalten. Der Grund steht für die ganze Gruppe im Protokoll.',
       changes:
-        'Alle bekommen eine neue Nachricht und entdecken ein neues Ergebnis. Die Links und die Wunschlisten bleiben gleich.',
+        'Alle bekommen eine neue Nachricht und entdecken ein neues Ergebnis. Die Links und die Geschenk-Hinweise bleiben gleich.',
     },
   },
 } satisfies Dict<typeof fr>;

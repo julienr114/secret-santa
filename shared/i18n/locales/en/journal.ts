@@ -88,9 +88,9 @@ export default {
     intro: 'To keep the draw honest. Cheating is still possible, but it shows.',
     notes: 'It records',
     notesBody:
-      'The draw, each link sent or renewed, each result discovered, wish lists that change, and any look by the organiser at a result.',
+      'The draw, each link sent or renewed, each result discovered, and any look by the organiser at a result.',
     never: 'It never says',
-    neverBody: 'Who gives to whom, nor what the wish lists contain.',
+    neverBody: 'Who gives to whom, nor anyone’s gift hints.',
     who: 'The whole group sees it',
     whoBody: 'Participants and organiser, with the same lines.',
   },
@@ -108,7 +108,7 @@ export default {
       forMe:
         'They know who you give a gift to. Nobody else saw it, and your result does not change.',
       why: 'In case of doubt or disagreement, it must be possible to check. The organiser has to copy a sentence and accept that the whole group will know.',
-      changes: 'The other results and the wish lists were not seen.',
+      changes: 'The other results and the gift hints were not seen.',
     },
     results_revealed: {
       title: 'Results revealed before the party',
@@ -123,7 +123,7 @@ export default {
         'The organiser cancelled the draw, for the reason written above. The old results are erased.',
       why: 'Someone dropping out, someone forgotten: better to run it again than keep a wrong draw. The reason is written in the journal for the whole group.',
       changes:
-        'Everyone will get a new message and discover a new result. The links and the wish lists do not change.',
+        'Everyone will get a new message and discover a new result. The links and the gift hints do not change.',
     },
   },
 } satisfies Dict<typeof fr>;

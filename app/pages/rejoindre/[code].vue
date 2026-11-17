@@ -152,7 +152,7 @@ const closed = computed(() => {
           block
           size="xl"
           class="h-12 justify-center font-bold"
-          :label="t('auth.invite.wishes')"
+          :label="t('auth.invite.hints')"
         />
         <UButton
           :to="path"

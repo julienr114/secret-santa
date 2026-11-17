@@ -149,7 +149,12 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
             v-if="single.hintsOn"
             :to="`${single.path}/pistes`"
             icon="i-lucide-list-checks"
-            :title="t('auth.home.myWishes')"
+            :title="t('hints.title')"
+            :subtitle="
+              single.hasHints
+                ? t('hints.state.filledEditable')
+                : t('hints.state.none')
+            "
             @click="onOpen(single.path)"
           />
           <UiListItem

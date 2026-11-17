@@ -34,7 +34,7 @@ describe('buildMessage', () => {
 
   it('writes the invitation and the drawn message with budget and date', () => {
     expect(valueOf(buildMessage('invitation', data))).toBe(
-      'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et note quelques idées de cadeaux :\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
       valueOf(

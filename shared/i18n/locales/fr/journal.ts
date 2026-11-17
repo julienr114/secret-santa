@@ -90,9 +90,9 @@ export default {
       'À garder le tirage honnête. Tricher reste possible, mais ça se voit.',
     notes: 'Il note',
     notesBody:
-      'Le tirage, chaque lien envoyé ou régénéré, chaque résultat découvert, les listes de souhaits modifiées, et tout accès de l’organisateur à un résultat.',
+      'Le tirage, chaque lien envoyé ou régénéré, chaque résultat découvert, et tout accès de l’organisateur à un résultat.',
     never: 'Il ne dit jamais',
-    neverBody: 'Qui offre à qui, ni le contenu des listes de souhaits.',
+    neverBody: 'Qui offre à qui, ni les pistes de cadeaux de chacun.',
     who: 'Tout le groupe le voit',
     whoBody: 'Participants et organisateur, avec les mêmes lignes.',
   },
@@ -111,7 +111,7 @@ export default {
         'Il sait à qui tu offres un cadeau. Personne d’autre ne l’a vu, et ton résultat ne change pas.',
       why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
       changes:
-        'Les autres résultats et les listes de souhaits n’ont pas été vus.',
+        'Les autres résultats et les pistes de cadeaux n’ont pas été vus.',
     },
     results_revealed: {
       title: 'Résultats dévoilés avant la fête',
@@ -126,7 +126,7 @@ export default {
         'L’organisateur a annulé le tirage, pour le motif écrit ci-dessus. Les anciens résultats sont effacés.',
       why: 'Un désistement, un oubli : mieux vaut relancer que garder un tirage faux. Le motif est écrit au journal pour tout le groupe.',
       changes:
-        'Chacun recevra un nouveau message et découvrira un nouveau résultat. Les liens et les listes de souhaits ne changent pas.',
+        'Chacun recevra un nouveau message et découvrira un nouveau résultat. Les liens et les pistes de cadeaux ne changent pas.',
     },
   },
 };

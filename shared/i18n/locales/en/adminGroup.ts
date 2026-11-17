@@ -43,8 +43,8 @@ export default {
       other: 'The {count} people and their exclusions.',
     },
     editions: {
-      one: 'The edition, its draw and the wish lists.',
-      other: 'The {count} editions, their draws and the wish lists.',
+      one: 'The edition, its draw and the gift hints.',
+      other: 'The {count} editions, their draws and the gift hints.',
     },
     journal: 'The group journal.',
     links: 'Personal links stop working.',
@@ -211,8 +211,6 @@ export default {
       'Nobody gives to someone they already had in the last years.',
     tighter: 'The longer the period, the tighter the draw.',
     participantsSection: 'Participants',
-    wishlistShort: 'Wish lists',
-    wishlistHelp: 'Everyone writes ideas for the one who gives to them',
     messageNote: 'Word added to messages',
     messageNoteHelp:
       'Added as is to every message and email sent to participants. You can still change it when sending.',

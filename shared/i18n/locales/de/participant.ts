@@ -21,7 +21,7 @@ export default {
     waiting: {
       title: 'Die Auslosung hat noch nicht stattgefunden',
       body: 'Dein Organisator gibt dir Bescheid. Behalte diesen Link: hier erfährst du, wen du beschenkst.',
-      action: 'Meine Geschenkideen notieren',
+      action: 'Meine Geschenk-Hinweise hinterlassen',
       hint: 'Hilf in der Zwischenzeit der Person, die dich ziehen wird.',
     },
     ready: {
@@ -39,29 +39,12 @@ export default {
       title: 'Du weißt schon, wen du beschenkst',
       body: 'Vergessen? Achte darauf, dass niemand auf deinen Bildschirm schaut.',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
-      ideasWaiting: {
-        one: 'Die Liste enthält {count} Geschenkidee.',
-        other: 'Die Liste enthält {count} Geschenkideen.',
-      },
     },
     closed: {
       title: 'Das Fest ist vorbei',
       body: 'Diese Ausgabe ist abgeschlossen. Du kannst noch sehen, wen du beschenkt hast.',
       bodyNotSeen:
         'Diese Ausgabe ist abgeschlossen. Du kannst noch erfahren, wen du beschenken solltest.',
-    },
-    wishes: {
-      title: 'Meine Wunschliste',
-      help: 'Hilf der Person, die dich gezogen hat',
-      none: 'Keine Ideen',
-      editable: {
-        one: '{count} Idee · bis zum Fest änderbar',
-        other: '{count} Ideen · bis zum Fest änderbar',
-      },
-      locked: {
-        one: '{count} Idee · nicht mehr änderbar',
-        other: '{count} Ideen · nicht mehr änderbar',
-      },
     },
     journal: {
       title: 'Protokoll der Gruppe',
@@ -77,20 +60,10 @@ export default {
     budget: 'Budget',
     date: 'Datum',
     guardianMessage: 'Die Nachricht des Organisators',
-    ideas: 'Geschenkideen dieser Person',
-    noIdeas: '{name} hat noch keine Ideen angegeben.',
     seeLink: 'Link ansehen',
   },
   wishes: {
-    title: 'Meine Wunschliste',
-    intro:
-      'Ein paar Ideen für die Person, die dich beschenkt. Nur sie wird sie sehen.',
-    readOnly: 'Die Liste kann für diese Ausgabe nicht mehr geändert werden.',
-    max: 'Höchstens {count} Ideen.',
-    empty: 'Noch keine Ideen.',
-    emptyReadOnly: 'Du hattest keine Ideen notiert.',
     openLink: 'Link von „{label}“ öffnen',
-    add: 'Idee hinzufügen',
     sheet: {
       new: 'Neue Idee',
       edit: 'Idee bearbeiten',

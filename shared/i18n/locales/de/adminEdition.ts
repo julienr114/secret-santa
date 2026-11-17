@@ -134,7 +134,7 @@ export default {
     redrawMessage:
       'Nach der neuen Auslosung musst du allen die Nachricht „{message}“ senden.',
     linksKept: 'Die persönlichen Links bleiben gültig.',
-    wishesKept: 'Die Wunschlisten bleiben erhalten.',
+    hintsKept: 'Die Geschenk-Hinweise bleiben erhalten.',
     reasonLabel: 'Grund',
     reasonHelp: 'Wird im Protokoll angezeigt, für die ganze Gruppe sichtbar.',
     reasonPlaceholder: 'Tom hat abgesagt',
@@ -318,7 +318,8 @@ export default {
       add: 'Teilnehmende hinzufügen',
       optional: 'Wenn du möchtest',
       notifyBefore: 'Vor der Auslosung benachrichtigen',
-      notifyBeforeHint: 'Optional: Alle können schon ihre Ideen notieren',
+      notifyBeforeHint:
+        'Optional: Alle können schon ihre Hinweise hinterlassen',
       exclusions: 'Ausschlüsse',
       exclusionsCount: {
         one: '{count} Ausschluss',
@@ -392,7 +393,7 @@ export default {
       cardTitle: 'Die Feier ist vorbei: Deck die Ergebnisse auf',
       cardTitleToday: 'Heute ist die Feier: Deck die Ergebnisse auf',
       cardHelp:
-        'Das ist freiwillig und endgültig. Die Wunschlisten bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
+        'Das ist freiwillig und endgültig. Die Geschenk-Hinweise bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
       viewed: {
         one: '{count} von {total} hat das eigene Ergebnis angesehen',
         other: '{count} von {total} haben ihr Ergebnis angesehen',
@@ -421,7 +422,7 @@ export default {
       onlyYouTitle: 'Nur du siehst die Liste',
       onlyYouHint: 'Die Teilnehmenden sehen sie vorerst nicht.',
       final:
-        'Das ist endgültig, und das Protokoll der Gruppe zeigt es an. Die Wunschlisten bleiben änderbar.',
+        'Das ist endgültig, und das Protokoll der Gruppe zeigt es an. Die Geschenk-Hinweise bleiben änderbar.',
       notYet: 'Noch nicht',
       earlyTitle: 'Vor der Feier aufdecken?',
       earlyIntro: {
@@ -439,13 +440,13 @@ export default {
       done: 'Ergebnisse aufgedeckt',
       revealedTitle: 'Ergebnisse aufgedeckt',
       revealedHelp:
-        'Die Wunschlisten bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
+        'Die Geschenk-Hinweise bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
       pairsTitle: {
         one: 'Die Auslosung · {count} Teilnehmer',
         other: 'Die Auslosung · {count} Teilnehmende',
       },
       pairsFooter: 'Vorerst siehst nur du diese Liste.',
-      closeHint: 'Friert die Ausgabe und die Wunschlisten ein',
+      closeHint: 'Friert die Ausgabe und die Geschenk-Hinweise ein',
     },
     missingDate: {
       title: 'Wann ist die Bescherung?',

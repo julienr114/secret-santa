@@ -50,7 +50,7 @@ const effects = computed(() => [
 ]);
 const kept = computed(() => [
   { icon: 'i-lucide-check', text: t('adminEdition.cancelDraw.linksKept') },
-  { icon: 'i-lucide-check', text: t('adminEdition.cancelDraw.wishesKept') },
+  { icon: 'i-lucide-check', text: t('adminEdition.cancelDraw.hintsKept') },
 ]);
 
 /** The server's own bounds on a reason. */

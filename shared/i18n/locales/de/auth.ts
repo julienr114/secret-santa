@@ -87,13 +87,13 @@ export default {
         button: 'Ausgabe öffnen',
       },
       addHints: {
-        title: 'Notiere ein paar Geschenkideen',
+        title: 'Hinterlass deine Geschenk-Hinweise',
         body: 'Sie helfen der Person, die dich gezogen hat.',
-        button: 'Meine Ideen',
+        button: 'Meine Hinweise',
       },
       close: {
         title: 'Das Fest ist vorbei: Schließe die Ausgabe ab',
-        body: 'Die Wunschlisten werden schreibgeschützt; die Auslosung dient den Ausschlüssen der folgenden Jahre.',
+        body: 'Die Hinweise werden schreibgeschützt; die Auslosung dient den Ausschlüssen der folgenden Jahre.',
         button: 'Ausgabe öffnen',
       },
       prepare: {
@@ -125,15 +125,18 @@ export default {
       },
       partyToday: 'Fest heute',
       waiting: 'Die Auslosung hat noch nicht stattgefunden',
-      addHints: 'Notiere ein paar Geschenkideen',
+      addHints: 'Die Auslosung hat noch nicht stattgefunden',
       discover: 'Dein Umschlag wartet auf dich',
       seeAgain: 'Du weißt schon, wen du beschenkst',
       reveal: 'Erfahren, wen ich beschenke',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
-      wishes: 'Meine Ideen',
+      hints: 'Meine Geschenk-Hinweise hinterlassen',
     },
     step: {
-      addHints: { state: 'Füge deine Ideen hinzu', action: 'Meine Ideen' },
+      addHints: {
+        state: 'Füge deine Hinweise hinzu',
+        action: 'Meine Hinweise',
+      },
       wait: { state: 'Auslosung steht bevor' },
       discover: {
         state: 'Die Auslosung hat stattgefunden',
@@ -142,7 +145,6 @@ export default {
       seeAgain: { state: 'Du weißt, wen du beschenkst' },
       closed: { state: 'Bescherung vorbei' },
     },
-    myWishes: 'Meine Wunschliste',
     pastDraws: 'Vergangene Auslosungen',
     organizeOwn: 'Meine eigene Auslosung organisieren',
     organizeOwnHint: 'Auf Anfrage, während der Beta',
@@ -424,7 +426,7 @@ export default {
     nextDraw:
       'Du gehörst zur Gruppe. Dein Organisator sagt dir bei der nächsten Auslosung Bescheid.',
     meanwhile: 'In der Zwischenzeit',
-    wishes: 'Meine Geschenkideen notieren',
+    hints: 'Meine Geschenk-Hinweise hinterlassen',
     seeDraw: 'Meine Auslosung ansehen',
     goHome: 'Zu meiner Startseite',
     findIt:

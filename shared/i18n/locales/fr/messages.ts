@@ -5,7 +5,7 @@ export default {
   invitation: {
     greeting: 'Salut {firstName} ! 🎁',
     body: 'Tu participes au Secret Santa de {groupName} ({editionLabel}).',
-    cta: 'Ouvre ton lien et note quelques idées de cadeaux :',
+    cta: 'Ouvre ton lien et laisse quelques pistes de cadeaux :',
     subject: '{firstName}, ton lien pour le Secret Santa ({editionLabel})',
   },
   drawn: {

@@ -21,7 +21,7 @@ export default {
     waiting: {
       title: 'The draw has not taken place yet',
       body: 'Your organizer will let you know. Keep this link: this is where you will find out who you are giving a gift to.',
-      action: 'Write down my gift ideas',
+      action: 'Leave my gift hints',
       hint: 'In the meantime, help the person who will draw your name.',
     },
     ready: {
@@ -39,29 +39,12 @@ export default {
       title: 'You already know who you are giving to',
       body: 'A memory lapse? Make sure nobody is looking at your screen.',
       revealAgain: 'See who I am giving to again',
-      ideasWaiting: {
-        one: 'Their list has {count} gift idea.',
-        other: 'Their list has {count} gift ideas.',
-      },
     },
     closed: {
       title: 'The party is over',
       body: 'This edition is closed. You can still see who you gave a gift to.',
       bodyNotSeen:
         'This edition is closed. You can still find out who you were giving a gift to.',
-    },
-    wishes: {
-      title: 'My wish list',
-      help: 'Help the person who drew your name',
-      none: 'No ideas',
-      editable: {
-        one: '{count} idea · can be changed until the party',
-        other: '{count} ideas · can be changed until the party',
-      },
-      locked: {
-        one: '{count} idea · can no longer be changed',
-        other: '{count} ideas · can no longer be changed',
-      },
     },
     journal: {
       title: 'Group journal',
@@ -77,20 +60,10 @@ export default {
     budget: 'Budget',
     date: 'Date',
     guardianMessage: "The organizer's note",
-    ideas: 'Their gift ideas',
-    noIdeas: '{name} has not given any ideas yet.',
     seeLink: 'See the link',
   },
   wishes: {
-    title: 'My wish list',
-    intro:
-      'A few ideas to help the person giving you a gift. Only they will see them.',
-    readOnly: 'The list can no longer be changed for this edition.',
-    max: '{count} ideas at most.',
-    empty: 'No ideas yet.',
-    emptyReadOnly: 'You had not written down any ideas.',
     openLink: 'Open the link of "{label}"',
-    add: 'Add an idea',
     sheet: {
       new: 'New idea',
       edit: 'Edit the idea',

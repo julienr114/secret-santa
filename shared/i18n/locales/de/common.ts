@@ -24,7 +24,6 @@ export default {
   },
   count: {
     participants: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },
-    ideas: { one: '{count} Idee', other: '{count} Ideen' },
   },
   context: 'Du bist hier',
   actions: {

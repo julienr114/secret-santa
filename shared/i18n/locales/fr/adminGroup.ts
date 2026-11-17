@@ -43,8 +43,8 @@ export default {
       other: 'Les {count} personnes et leurs exclusions.',
     },
     editions: {
-      one: 'L’édition, son tirage et les listes de souhaits.',
-      other: 'Les {count} éditions, leurs tirages et les listes de souhaits.',
+      one: 'L’édition, son tirage et les pistes de cadeaux.',
+      other: 'Les {count} éditions, leurs tirages et les pistes de cadeaux.',
     },
     journal: 'Le journal du groupe.',
     links: 'Les liens personnels cessent de marcher.',
@@ -212,8 +212,6 @@ export default {
       "Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années.",
     tighter: 'Plus la période est longue, plus le tirage est contraint.',
     participantsSection: 'Participants',
-    wishlistShort: 'Listes de souhaits',
-    wishlistHelp: 'Chacun note des idées pour celui qui lui offre',
     messageNote: 'Mot ajouté aux messages',
     messageNoteHelp:
       'Ajouté tel quel à chaque message et email envoyé aux participants. Tu peux encore le modifier au moment d’envoyer.',

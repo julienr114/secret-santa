@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { NOTE_MAX, type NotePosition } from '#server/utils/messages';
+import { GIFT_HINTS_MODES } from '#shared/utils/hints';
 import {
   useDashboardQuery,
   useOrganizersQuery,
@@ -12,7 +13,7 @@ import {
 // participants, the emails to the organisers, the organisers themselves,
 // and, for the super-admin, deleting the group.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t } = useT();
+const { t, tk } = useT();
 const route = useRoute();
 const toast = useToast();
 const errorMessage = useErrorMessage();
@@ -30,8 +31,8 @@ const organizers = useOrganizersQuery(slug);
 const removeOrganizer = useRemoveOrganizerMutation(slug);
 const group = computed(() => dashboard.data.value?.group);
 
-const editing = ref<null | 'years' | 'note'>(null);
-const sheet = (which: 'years' | 'note') =>
+const editing = ref<null | 'years' | 'note' | 'hints'>(null);
+const sheet = (which: 'years' | 'note' | 'hints') =>
   computed({
     get: () => editing.value === which,
     set: (value) => {
@@ -40,6 +41,16 @@ const sheet = (which: 'years' | 'note') =>
   });
 const yearsOpen = sheet('years');
 const noteOpen = sheet('note');
+const hintsOpen = sheet('hints');
+
+/** What participants may note for their giver (README 22.11). */
+const hintsChoices = computed(() =>
+  GIFT_HINTS_MODES.map((mode) => ({
+    value: mode,
+    label: tk(`hints.setting.${mode}`),
+    hint: tk(`hints.setting.${mode}Help`),
+  })),
+);
 
 /** How far back nobody draws the same person again, as a row says it. */
 const yearsChoices = computed(() => [
@@ -121,11 +132,13 @@ const deleting = ref(false);
 
       <UiList :title="t('adminGroup.rules.participantsSection')">
         <UiListItem
-          :checked="shown.giftHints !== 'none'"
-          :title="t('adminGroup.rules.wishlistShort')"
-          :subtitle="t('adminGroup.rules.wishlistHelp')"
+          :title="t('hints.setting.title')"
+          :subtitle="tk(`hints.setting.${shown.giftHints ?? 'full'}`)"
+          :chevron="true"
           :busy="saving('giftHints')"
-          @update:checked="(on) => save({ giftHints: on ? 'full' : 'none' })"
+          :busy-label="t('common.actions.saving')"
+          :on-click="() => (editing = 'hints')"
+          data-testid="gift-hints-setting"
         />
         <UiListItem
           :title="t('adminGroup.rules.messageNote')"
@@ -242,6 +255,21 @@ const deleting = ref(false);
         (years) => {
           editing = null;
           save({ excludePreviousYears: years });
+        }
+      "
+    />
+    <UiChoiceSheet
+      v-model:open="hintsOpen"
+      :title="t('hints.setting.title')"
+      :description="t('hints.setting.help')"
+      :choices="hintsChoices"
+      :value="shown.giftHints ?? 'full'"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      @validate="
+        (mode) => {
+          editing = null;
+          save({ giftHints: mode });
         }
       "
     />

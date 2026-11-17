@@ -161,7 +161,7 @@ test('a participant logs in with their address and finds their draw', async ({
   // Her only draw is the card of the home: where it stands, what to do.
   const draw = page.getByTestId('draw-card');
   await expect(draw).toContainText('Famille Courrier · Noël courrier');
-  await expect(draw).toContainText('Note quelques idées de cadeaux');
+  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
 
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
@@ -169,26 +169,31 @@ test('a participant logs in with their address and finds their draw', async ({
   await page.goto(`/admin/${SLUG}`);
   await expect(heading(page)).toHaveText('Bonjour');
 
-  // No idea written yet: the card leads straight to the wish list.
-  await draw.getByRole('link', { name: 'Mes idées' }).click();
-  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}\/souhaits$/);
-  // Opened from home, the list says which draw it belongs to.
-  await expect(page.getByTestId('draw-name')).toHaveText(
-    'Famille Courrier · Noël courrier',
+  // No hint left yet: the card leads straight to the gift hints.
+  await draw
+    .getByRole('link', { name: 'Laisser mes pistes de cadeaux' })
+    .click();
+  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}\/pistes$/);
+  // Opened from home, the page says which draw it belongs to.
+  await expect(page.getByRole('navigation', { name: 'Tu es ici' })).toHaveText(
+    /Famille Courrier\s*·\s*Noël courrier/,
   );
-  const personal = new URL(page.url()).pathname.replace(/\/souhaits$/, '');
+  const personal = new URL(page.url()).pathname.replace(/\/pistes$/, '');
   // Back from the list leads home, where the user came from: no loop
   // through the draw page.
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
 
-  // With an idea written, the card waits for the draw, and opens it.
+  // With a precise idea left, the card waits for the draw, and opens it.
   await page.request.put(`/api${personal}/wishes`, {
     data: { wishes: [{ label: 'Un livre' }] },
   });
   await page.reload();
   await hydrated(page);
   await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
+  await expect(
+    draw.getByRole('link', { name: 'Laisser mes pistes de cadeaux' }),
+  ).toHaveCount(0);
   await draw.getByRole('link', { name: /Famille Courrier/ }).click();
   await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await expect(page.getByText('Dana')).toBeVisible();

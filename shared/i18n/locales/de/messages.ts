@@ -5,7 +5,7 @@ export default {
   invitation: {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Du machst beim Wichteln von {groupName} mit ({editionLabel}).',
-    cta: 'Öffne deinen Link und notiere ein paar Geschenkideen:',
+    cta: 'Öffne deinen Link und hinterlass ein paar Geschenk-Hinweise:',
     subject: '{firstName}, dein Link für das Wichteln ({editionLabel})',
   },
   drawn: {

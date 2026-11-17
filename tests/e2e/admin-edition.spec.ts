@@ -284,7 +284,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   const help = page.getByTestId('journal-help');
   await expect(help).toContainText('Il ne dit jamais');
   await expect(help).toContainText(
-    'Qui offre à qui, ni le contenu des listes de souhaits.',
+    'Qui offre à qui, ni les pistes de cadeaux de chacun.',
   );
   const scrolls = await help.evaluate((element) => {
     const body = element.parentElement!;

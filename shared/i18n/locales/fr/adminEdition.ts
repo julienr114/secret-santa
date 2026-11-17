@@ -132,7 +132,7 @@ export default {
     redrawMessage:
       'Après le nouveau tirage, il faudra prévenir chacun avec le message « {message} ».',
     linksKept: 'Les liens personnels restent valables.',
-    wishesKept: 'Les listes de souhaits sont conservées.',
+    hintsKept: 'Les pistes de cadeaux sont conservées.',
     reasonLabel: 'Motif',
     reasonHelp: 'Affiché dans le journal, visible de tout le groupe.',
     reasonPlaceholder: 'Désistement de Tom',
@@ -310,7 +310,7 @@ export default {
       add: 'Ajouter des participants',
       optional: 'Si tu veux',
       notifyBefore: 'Prévenir avant le tirage',
-      notifyBeforeHint: 'Facultatif : chacun peut déjà noter ses idées',
+      notifyBeforeHint: 'Facultatif : chacun peut déjà laisser ses pistes',
       exclusions: 'Exclusions',
       exclusionsCount: {
         one: '{count} exclusion',
@@ -383,7 +383,7 @@ export default {
       cardTitle: 'La fête est passée : dévoile les résultats',
       cardTitleToday: 'C’est le jour de la fête : dévoile les résultats',
       cardHelp:
-        'C’est facultatif, et définitif. Les listes de souhaits restent modifiables tant que l’édition n’est pas clôturée.',
+        'C’est facultatif, et définitif. Les pistes de cadeaux restent modifiables tant que l’édition n’est pas clôturée.',
       viewed: {
         one: '{count} sur {total} a consulté son résultat',
         other: '{count} sur {total} ont consulté leur résultat',
@@ -413,7 +413,7 @@ export default {
       onlyYouTitle: 'Toi seul verras la liste',
       onlyYouHint: 'Les participants ne la voient pas pour l’instant.',
       final:
-        'C’est définitif, et le journal du groupe l’indique. Les listes de souhaits restent modifiables.',
+        'C’est définitif, et le journal du groupe l’indique. Les pistes de cadeaux restent modifiables.',
       notYet: 'Pas encore',
       earlyTitle: 'Dévoiler avant la fête ?',
       earlyIntro: {
@@ -431,13 +431,13 @@ export default {
       done: 'Résultats dévoilés',
       revealedTitle: 'Résultats dévoilés',
       revealedHelp:
-        'Les listes de souhaits restent modifiables jusqu’à la clôture de l’édition.',
+        'Les pistes de cadeaux restent modifiables jusqu’à la clôture de l’édition.',
       pairsTitle: {
         one: 'Le tirage · {count} participant',
         other: 'Le tirage · {count} participants',
       },
       pairsFooter: 'Pour l’instant, toi seul vois cette liste.',
-      closeHint: 'Fige l’édition et les listes de souhaits',
+      closeHint: 'Fige l’édition et les pistes de cadeaux',
     },
     missingDate: {
       title: 'Quand a lieu la fête ?',

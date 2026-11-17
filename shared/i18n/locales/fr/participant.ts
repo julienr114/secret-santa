@@ -1,4 +1,4 @@
-// The participant's side: personal page, wish list, journal.
+// The participant's side: personal page, journal.
 export default {
   home: {
     greeting: 'Salut {firstName} !',
@@ -19,7 +19,7 @@ export default {
     waiting: {
       title: "Le tirage n'a pas encore eu lieu",
       body: "Ton organisateur te préviendra. Garde ce lien : c'est ici que tu découvriras à qui tu offres un cadeau.",
-      action: 'Noter mes idées de cadeaux',
+      action: 'Laisser mes pistes de cadeaux',
       hint: 'En attendant, aide la personne qui te tirera au sort.',
     },
     ready: {
@@ -37,29 +37,12 @@ export default {
       title: 'Tu sais déjà à qui tu offres',
       body: 'Un trou de mémoire ? Assure-toi que personne ne regarde ton écran.',
       revealAgain: "Revoir à qui j'offre un cadeau",
-      ideasWaiting: {
-        one: 'Sa liste contient {count} idée de cadeau.',
-        other: 'Sa liste contient {count} idées de cadeaux.',
-      },
     },
     closed: {
       title: 'La fête est passée',
       body: 'Cette édition est clôturée. Tu peux encore revoir à qui tu as offert un cadeau.',
       bodyNotSeen:
         'Cette édition est clôturée. Tu peux encore découvrir à qui tu offrais un cadeau.',
-    },
-    wishes: {
-      title: 'Ma liste de souhaits',
-      help: 'Aide la personne qui t’a tiré·e au sort',
-      none: 'Aucune idée',
-      editable: {
-        one: "{count} idée · modifiable jusqu'à la fête",
-        other: "{count} idées · modifiables jusqu'à la fête",
-      },
-      locked: {
-        one: '{count} idée · plus modifiable',
-        other: '{count} idées · plus modifiables',
-      },
     },
     journal: {
       title: 'Journal du groupe',
@@ -75,20 +58,10 @@ export default {
     budget: 'Budget',
     date: 'Date',
     guardianMessage: "Le mot de l'organisateur",
-    ideas: 'Ses idées de cadeaux',
-    noIdeas: "{name} n'a pas encore donné d'idée.",
     seeLink: 'Voir le lien',
   },
   wishes: {
-    title: 'Ma liste de souhaits',
-    intro:
-      "Quelques idées pour aider la personne qui t'offre un cadeau. Elle seule les verra.",
-    readOnly: "La liste n'est plus modifiable pour cette édition.",
-    max: '{count} idées au plus.',
-    empty: 'Aucune idée pour l’instant.',
-    emptyReadOnly: "Tu n'avais noté aucune idée.",
     openLink: 'Ouvrir le lien de « {label} »',
-    add: 'Ajouter une idée',
     sheet: {
       new: 'Nouvelle idée',
       edit: 'Modifier l’idée',

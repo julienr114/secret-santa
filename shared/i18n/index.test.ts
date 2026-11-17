@@ -83,21 +83,21 @@ describe('translate', () => {
 
   it('picks the plural form of the language: 0 is singular in French only', () => {
     const count = (locale: 'fr' | 'en' | 'de', n: number) =>
-      translate(locale, 'common.count.ideas', { count: n });
+      translate(locale, 'common.count.participants', { count: n });
     expect([0, 1, 2].map((n) => count('fr', n))).toEqual([
-      '0 idée',
-      '1 idée',
-      '2 idées',
+      '0 participant',
+      '1 participant',
+      '2 participants',
     ]);
     expect([0, 1, 2].map((n) => count('en', n))).toEqual([
-      '0 ideas',
-      '1 idea',
-      '2 ideas',
+      '0 participants',
+      '1 participant',
+      '2 participants',
     ]);
     expect([0, 1, 2].map((n) => count('de', n))).toEqual([
-      '0 Ideen',
-      '1 Idee',
-      '2 Ideen',
+      '0 Teilnehmer',
+      '1 Teilnehmer',
+      '2 Teilnehmer',
     ]);
   });
 
@@ -106,7 +106,7 @@ describe('translate', () => {
     expect(translateKey('en', 'common')).toBe('common');
     expect(hasMessage('no.such.key')).toBe(false);
     expect(hasMessage('common.status.preparing')).toBe(true);
-    expect(hasMessage('common.count.ideas')).toBe(true);
+    expect(hasMessage('common.count.participants')).toBe(true);
   });
 
   it('elides « de » before a name in French only', () => {

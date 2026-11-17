@@ -4,7 +4,7 @@ import type { Dict } from '../../types';
 export default {
   home: {
     greeting: 'Hallo {firstName}!',
-    facts: { budget: 'Budget', party: 'Feier am' },
+    facts: { budget: 'Budget:', party: 'Feier am' },
     note: { title: 'Die Nachricht des Organisators', more: 'Weiterlesen' },
     changeAvatar: 'Mein Symbol ändern',
     steps: {

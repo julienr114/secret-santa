@@ -265,7 +265,7 @@ test('the budget and the word change on the edition, until it is closed', async 
     .click();
   // Out of the result card since lot 16 bis: under the title, and in the
   // organiser's block.
-  await expect(page.getByText('Budget 30 €', { exact: false })).toBeVisible();
+  await expect(page.getByTestId('draw-facts')).toContainText('Budget : 30 €');
   await expect(page.getByTestId('organizer-note')).toContainText(
     'Après le dessert !',
   );

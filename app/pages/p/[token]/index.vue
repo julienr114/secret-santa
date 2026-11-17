@@ -176,8 +176,9 @@ const envelope = computed(() =>
   ),
 );
 /**
- * Under the title, in every state but a closed edition (lot 16 bis):
- * « Budget 30 € · Fête le ven. 25 décembre », whatever is known.
+ * A band across the page, between the header and the timeline, in every
+ * state but a closed edition (lot 16 bis): « Fête le ven. 25 décembre »,
+ * then « Budget : 30 € », whatever is known; a long budget wraps.
  */
 const facts = computed(() => {
   const state = me.value;
@@ -191,12 +192,19 @@ const facts = computed(() => {
       }).format(new Date(`${state.eventDate}T12:00:00Z`))
     : state.eventDate;
   return [
+    date && {
+      icon: 'i-lucide-calendar',
+      label: t('participant.home.facts.party'),
+      value: date,
+    },
     state.budget && {
+      icon: 'i-lucide-tag',
       label: t('participant.home.facts.budget'),
       value: state.budget,
     },
-    date && { label: t('participant.home.facts.party'), value: date },
-  ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+  ].filter((fact): fact is { icon: string; label: string; value: string } =>
+    Boolean(fact),
+  );
 });
 /** The organiser's words, not on a closed edition. */
 const note = computed(() =>
@@ -290,14 +298,30 @@ const card = computed(() => {
           <p class="text-sm text-muted">
             {{ me.groupName }} · {{ me.editionLabel }}
           </p>
-          <p v-if="facts.length > 0" class="mt-0.5 text-sm text-toned">
-            <template v-for="(fact, at) in facts" :key="fact.label">
-              <span v-if="at > 0"> · </span>{{ fact.label }}
-              <strong class="font-bold text-default">{{ fact.value }}</strong>
-            </template>
-          </p>
         </div>
       </div>
+
+      <ul
+        v-if="facts.length > 0"
+        class="-mt-2 flex flex-wrap gap-x-4.5 gap-y-1.5 text-sm leading-[1.4] text-toned"
+        data-testid="draw-facts"
+      >
+        <li
+          v-for="fact in facts"
+          :key="fact.label"
+          class="flex min-w-0 items-start gap-1.5"
+        >
+          <UIcon
+            :name="fact.icon"
+            class="mt-0.5 size-4 shrink-0"
+            aria-hidden="true"
+          />
+          <span class="min-w-0 break-words">
+            {{ fact.label }}
+            <strong class="font-bold text-default">{{ fact.value }}</strong>
+          </span>
+        </li>
+      </ul>
 
       <UiStepper :steps="steps" :label="t('participant.home.steps.label')" />
 

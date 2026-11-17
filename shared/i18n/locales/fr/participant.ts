@@ -2,7 +2,7 @@
 export default {
   home: {
     greeting: 'Salut {firstName} !',
-    facts: { budget: 'Budget', party: 'Fête le' },
+    facts: { budget: 'Budget :', party: 'Fête le' },
     note: { title: "Le mot de l'organisateur", more: 'Lire la suite' },
     changeAvatar: 'Changer mon icône',
     steps: {

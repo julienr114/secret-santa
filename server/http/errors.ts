@@ -47,6 +47,8 @@ const STATUS_BY_REASON: Record<string, number> = {
   guess_needs_end: 400,
   guess_reminder_sent: 409,
   results_not_revealed: 409,
+  list_incomplete: 409,
+  list_shared: 409,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

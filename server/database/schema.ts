@@ -453,6 +453,103 @@ export const groupRequests = sqliteTable(
   ],
 );
 
+// Gift lists (README 22.19, lot 21), apart from the groups and the draws:
+// every row hangs from the account that holds the list.
+
+// The people of my family, kept from one list to the next on the account.
+// A person is not an account.
+export const familyMembers = sqliteTable(
+  'family_members',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    firstName: text('first_name').notNull(),
+    avatarEmoji: text('avatar_emoji').notNull(),
+    avatarColor: text('avatar_color').notNull(),
+    // Practical details: what the family always asks.
+    birthDate: text('birth_date'),
+    clothingSize: text('clothing_size'),
+    shoeSize: text('shoe_size'),
+    // Their tastes: the questions and texts of the gift hints (22.11).
+    answers: text('answers', { mode: 'json' }).$type<
+      Record<string, string | null>
+    >(),
+    texts: text('texts', { mode: 'json' }).$type<
+      Record<string, string | null>
+    >(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('family_members_account_idx').on(t.accountId)],
+);
+
+export const giftLists = sqliteTable(
+  'gift_lists',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    iconEmoji: text('icon_emoji').notNull(),
+    iconColor: text('icon_color').notNull(),
+    title: text('title').notNull().default(''),
+    eventDate: text('event_date'),
+    // The word for the family: the starting text while untouched, the
+    // holder's own once changed, nothing once erased.
+    note: text('note'),
+    noteEdited: integer('note_edited', { mode: 'boolean' })
+      .notNull()
+      .default(false),
+    // The public link, made at the first share; a new one replaces it.
+    shareToken: text('share_token').unique(),
+    sharedAt: text('shared_at'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [index('gift_lists_account_idx').on(t.accountId)],
+);
+
+// The people on a list, in their order.
+export const giftListPeople = sqliteTable(
+  'gift_list_people',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    memberId: text('member_id')
+      .notNull()
+      .references(() => familyMembers.id),
+    position: integer('position').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_list_people_list_member_idx').on(t.listId, t.memberId),
+  ],
+);
+
+// One idea of a person on a list: a line of text and maybe a link.
+export const giftListIdeas = sqliteTable(
+  'gift_list_ideas',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    listPersonId: text('list_person_id')
+      .notNull()
+      .references(() => giftListPeople.id),
+    text: text('text').notNull(),
+    url: text('url'),
+    position: integer('position').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('gift_list_ideas_list_idx').on(t.listId)],
+);
+
+export type FamilyMemberRow = typeof familyMembers.$inferSelect;
+export type GiftListRow = typeof giftLists.$inferSelect;
+export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;
 export type GroupRequestRow = typeof groupRequests.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;

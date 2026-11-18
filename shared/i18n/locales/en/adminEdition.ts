@@ -18,6 +18,8 @@ export default {
     shownWithResult: 'Shown with the result.',
     messageLabel: 'A word for the participants',
     messagePlaceholder: 'We open the presents after dessert!',
+    messageRow: 'Optional. Shown with the result.',
+    messageNone: 'None',
     takenOver: {
       one: '{count} participant taken over.',
       other: '{count} participants taken over.',

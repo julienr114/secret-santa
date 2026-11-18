@@ -8,8 +8,9 @@ import {
 } from '~/composables/queries/useGroup';
 
 // A new edition: its name, the day of the party (Christmas Day offered),
-// the budget and a word for the participants (both taken from the last
-// edition, both optional), then who is taken over. The budget and the word,
+// the budget (taken from the last edition) and a word for the
+// participants, written on its own page (Correction 18), both optional,
+// then who is taken over. The budget and the word,
 // when they differ from the group's, are the edition's own rules, sent
 // with it.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -47,18 +48,26 @@ const groupRules = computed(() => dashboard.data.value?.rules);
 // date, otherwise picked here, with Christmas Day offered in one tap.
 const groupDate = groupRules.value?.eventDate ?? '';
 const year = dashboard.data.value?.nextEdition.year ?? new Date().getFullYear();
-const state = reactive({
+// Kept while the word is written on its own page (README 23.3), dropped
+// once the edition is created or the form is left elsewhere.
+const draft = useNewEditionDraft(slug);
+draft.value ??= {
   label: dashboard.data.value?.nextEdition.label ?? '',
   eventDate: isIsoDay(groupDate) ? groupDate : '',
   budget: groupRules.value?.budget ?? '',
   guardianMessage: '',
+  budgetTouched: false,
+};
+const state = draft.value;
+const wordPath = computed(() => `/admin/${slug.value}/editions/nouvelle/mot`);
+onBeforeRouteLeave((to) => {
+  if (to.path !== wordPath.value) draft.value = null;
 });
 // The budget of the last edition, once it is known, unless typed over.
-const budgetTouched = ref(false);
 watch(
   previousRules,
   (rules) => {
-    if (rules && !budgetTouched.value) state.budget = rules.budget;
+    if (rules && !state.budgetTouched) state.budget = rules.budget;
   },
   { immediate: true },
 );
@@ -155,30 +164,22 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           size="xl"
           class="w-full"
           :ui="{ base: 'h-12' }"
-          @update:model-value="budgetTouched = true"
+          @update:model-value="state.budgetTouched = true"
         />
       </UFormField>
-      <UFormField
-        name="guardianMessage"
-        :help="t('adminEdition.newEdition.shownWithResult')"
-        :ui="{ help: 'text-[13px] leading-[1.4] text-toned' }"
-      >
-        <template #label>
-          <span class="text-[15px] font-semibold"
-            >{{ t('adminEdition.newEdition.messageLabel') }}
-            <span class="font-normal text-toned">{{
-              t('adminEdition.newEdition.optional')
-            }}</span></span
-          >
-        </template>
-        <UInput
-          v-model="state.guardianMessage"
-          size="xl"
-          class="w-full"
-          :placeholder="t('adminEdition.newEdition.messagePlaceholder')"
-          :ui="{ base: 'h-12' }"
+      <UiList>
+        <UiListItem
+          :to="wordPath"
+          :title="t('adminEdition.newEdition.messageLabel')"
+          :subtitle="t('adminEdition.newEdition.messageRow')"
+          :value="
+            state.guardianMessage.trim()
+              ? state.guardianMessage
+              : t('adminEdition.newEdition.messageNone')
+          "
+          data-testid="new-edition-word"
         />
-      </UFormField>
+      </UiList>
       <UiCard
         padding="md"
         class="flex items-center gap-3"

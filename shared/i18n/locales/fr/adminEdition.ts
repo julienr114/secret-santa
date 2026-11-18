@@ -17,6 +17,8 @@ export default {
     shownWithResult: 'Affiché avec le résultat.',
     messageLabel: 'Petit mot pour les participants',
     messagePlaceholder: 'On ouvre les cadeaux après le dessert !',
+    messageRow: 'Facultatif. Affiché avec le résultat.',
+    messageNone: 'Aucun',
     takenOver: {
       one: '{count} participant repris.',
       other: '{count} participants repris.',

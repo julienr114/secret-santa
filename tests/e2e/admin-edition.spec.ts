@@ -81,6 +81,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: /^Proposer le 25 décembre/ }).click();
   // A budget of its own, shown in the edition's header.
   await page.getByLabel(/^Budget/).fill('20 €');
+  // The word is written on its own page; the form is kept (README 23.3).
+  const word = page.getByTestId('new-edition-word');
+  await expect(word).toContainText('Aucun');
+  await word.click();
+  await expect(page).toHaveURL(/\/editions\/nouvelle\/mot$/);
+  await page.getByLabel(/Ton mot/).fill('Après le dessert !');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(word).toContainText('Après le dessert !');
+  await expect(page.getByLabel(/^Budget/)).toHaveValue('20 €');
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   await expect(page.getByText('Famille E2E · Budget 20 €')).toBeVisible();
   await expect(page.getByTestId('settings-row')).toContainText('Budget 20 €');

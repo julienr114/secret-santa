@@ -18,6 +18,8 @@ export default {
     shownWithResult: 'Wird mit dem Ergebnis angezeigt.',
     messageLabel: 'Ein Wort an die Teilnehmer',
     messagePlaceholder: 'Die Geschenke öffnen wir nach dem Dessert!',
+    messageRow: 'Optional. Wird mit dem Ergebnis angezeigt.',
+    messageNone: 'Keins',
     takenOver: {
       one: '{count} Teilnehmer übernommen.',
       other: '{count} Teilnehmer übernommen.',

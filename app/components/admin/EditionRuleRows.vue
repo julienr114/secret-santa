@@ -5,9 +5,9 @@ import {
 } from '~/composables/queries/useGroup';
 
 // The budget and the word for the participants, as two rows of the
-// edition screen (Correction 9, decided on 16 November 2026): each opens
-// its sheet and is saved with « Valider », as the edition's own rules,
-// shown at once.
+// edition screen (Correction 9, decided on 16 November 2026), saved as the
+// edition's own rules: the budget in its sheet, shown at once; the word on
+// its own page (README 23.3, Correction 18).
 // Read only once the edition is closed.
 const props = defineProps<{
   slug: string;
@@ -30,7 +30,7 @@ const edition = useEditionQuery(
 const update = useUpdateEditionMutation(() => props.slug);
 const rules = computed(() => edition.data.value?.rules);
 
-/** The two rules, each with what its row and its sheet say. */
+/** The two rules, each with its length and its row's icon. */
 const RULES = {
   budget: { max: 60, icon: 'i-lucide-circle-euro' },
   guardianMessage: { max: 300, icon: 'i-lucide-message-circle' },
@@ -40,15 +40,12 @@ type Rule = keyof typeof RULES;
 const editing = ref<Rule | null>(null);
 /** Values chosen and not yet confirmed by the server: shown at once. */
 const pending = ref<Partial<Record<Rule, string>>>({});
-const sheet = (rule: Rule) =>
-  computed({
-    get: () => editing.value === rule,
-    set: (value) => {
-      editing.value = value ? rule : null;
-    },
-  });
-const budgetOpen = sheet('budget');
-const wordOpen = sheet('guardianMessage');
+const budgetOpen = computed({
+  get: () => editing.value === 'budget',
+  set: (value) => {
+    editing.value = value ? 'budget' : null;
+  },
+});
 
 /**
  * A rule as shown: the value being saved, or the edition's.
@@ -130,7 +127,7 @@ const onValidate = (rule: Rule, value: string) => {
     :chevron="!readonly"
     :busy="saving('guardianMessage')"
     :busy-label="t('common.actions.saving')"
-    :on-click="readonly ? undefined : () => (editing = 'guardianMessage')"
+    :to="readonly ? undefined : `/admin/${slug}/editions/${editionId}/mot`"
     data-testid="rule-word"
   />
   <UiTextSheet
@@ -145,18 +142,5 @@ const onValidate = (rule: Rule, value: string) => {
     :validate-label="t('common.actions.validate')"
     :cancel-label="t('common.actions.cancel')"
     @validate="(value) => onValidate('budget', value)"
-  />
-  <UiTextSheet
-    v-if="!readonly"
-    v-model:open="wordOpen"
-    :title="t('adminEdition.newEdition.messageLabel')"
-    :description="t('adminEdition.screen.rules.wordHelp')"
-    :label="t('adminEdition.screen.rules.wordLabel')"
-    :value="shownOf('guardianMessage')"
-    :maxlength="RULES.guardianMessage.max"
-    :placeholder="t('adminEdition.newEdition.messagePlaceholder')"
-    :validate-label="t('common.actions.validate')"
-    :cancel-label="t('common.actions.cancel')"
-    @validate="(value) => onValidate('guardianMessage', value)"
   />
 </template>

@@ -245,8 +245,15 @@ test('the budget and the word change on the edition, until it is closed', async 
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('25 €');
   const word = page.getByTestId('rule-word');
+  // The word is written on its own page (README 23.3): « Retour » gives
+  // it up, « Valider » keeps it.
   await word.click();
-  await page.getByRole('textbox').fill('Après le dessert !');
+  await expect(page).toHaveURL(/\/mot$/);
+  await page.getByLabel(/Ton mot/).fill('Oublié');
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(word).not.toContainText('Oublié');
+  await word.click();
+  await page.getByLabel(/Ton mot/).fill('Après le dessert !');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(word).toContainText('Après le dessert !');
   await page.goto(edition);

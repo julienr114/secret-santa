@@ -47,7 +47,12 @@ const onLanguage = (locale: Locale) => {
 </script>
 
 <template>
-  <div class="min-h-dvh pb-[calc(2rem+env(safe-area-inset-bottom))]">
+  <!-- At least the window's height, so a sticky footer rests at the
+       bottom of a short screen; while the keyboard is up, the height left
+       above it (useKeyboardInset). -->
+  <div
+    class="flex min-h-[var(--keyboard-visible,100dvh)] flex-col pb-[calc(2rem+env(safe-area-inset-bottom))]"
+  >
     <header class="pt-[env(safe-area-inset-top)]">
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
         <div>
@@ -70,7 +75,10 @@ const onLanguage = (locale: Locale) => {
         <LanguageSwitch class="-mr-2 justify-self-end" @change="onLanguage" />
       </UContainer>
     </header>
-    <UContainer as="main" class="flex max-w-md flex-col gap-6 py-4">
+    <UContainer
+      as="main"
+      class="flex w-full max-w-md grow flex-col gap-6 pt-4 pb-5"
+    >
       <div
         v-if="error"
         class="flex flex-col items-center gap-3 py-12 text-center"

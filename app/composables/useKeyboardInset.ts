@@ -1,15 +1,23 @@
 import { keyboardInset } from '#shared/utils/keyboard';
 
 /**
- * Follows the on-screen keyboard while a bottom sheet is open (iPhone,
- * where the keyboard covers the page instead of shrinking it): sets
- * `--sheet-lift` (how far the sheet must rise) and `--sheet-visible` (the
- * height left) on the page, which every drawer reads (app.config.ts).
+ * Follows the on-screen keyboard (iPhone, where the keyboard covers the
+ * page instead of shrinking it): sets `--{name}-lift` (how far what sits
+ * at the bottom must rise) and `--{name}-visible` (the height left) on the
+ * page. `sheet` while a bottom sheet is open, read by every drawer
+ * (app.config.ts); `keyboard` while a page has a sticky footer, read by
+ * the footer and the screens' height (README 23.3).
  * Nothing on the server, nothing without `visualViewport`.
- * @param active - Whether the sheet is open.
+ * @param active - Whether to follow it.
+ * @param name - The prefix of the two variables.
  * @returns The lift and the visible height, in pixels (0 when none).
  */
-export const useKeyboardInset = (active: () => boolean) => {
+export const useKeyboardInset = (
+  active: () => boolean,
+  name: 'sheet' | 'keyboard' = 'sheet',
+) => {
+  const lift = `--${name}-lift`;
+  const visible = `--${name}-visible`;
   const inset = ref({ lift: 0, visible: 0 });
   const read = () => {
     const vv = window.visualViewport;
@@ -21,19 +29,19 @@ export const useKeyboardInset = (active: () => boolean) => {
     });
     const root = document.documentElement.style;
     if (inset.value.lift > 0) {
-      root.setProperty('--sheet-lift', `${inset.value.lift}px`);
-      root.setProperty('--sheet-visible', `${inset.value.visible}px`);
+      root.setProperty(lift, `${inset.value.lift}px`);
+      root.setProperty(visible, `${inset.value.visible}px`);
     } else {
-      root.removeProperty('--sheet-lift');
-      root.removeProperty('--sheet-visible');
+      root.removeProperty(lift);
+      root.removeProperty(visible);
     }
   };
   const stop = () => {
     window.visualViewport?.removeEventListener('resize', read);
     window.visualViewport?.removeEventListener('scroll', read);
     inset.value = { lift: 0, visible: 0 };
-    document.documentElement.style.removeProperty('--sheet-lift');
-    document.documentElement.style.removeProperty('--sheet-visible');
+    document.documentElement.style.removeProperty(lift);
+    document.documentElement.style.removeProperty(visible);
   };
   watch(
     active,

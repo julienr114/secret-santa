@@ -5,7 +5,9 @@
 </script>
 
 <template>
-  <div class="min-h-dvh pb-[calc(2rem+env(safe-area-inset-bottom))]">
+  <div
+    class="min-h-[var(--keyboard-visible,100dvh)] pb-[calc(2rem+env(safe-area-inset-bottom))]"
+  >
     <slot />
   </div>
 </template>

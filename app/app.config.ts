@@ -24,8 +24,11 @@ export default defineAppConfig({
         // The height, the keyboard and the corners are set by UiSheet, after
         // the drawer's own direction classes.
         content: 'sm:mx-auto sm:max-w-md sm:rounded-t-2xl',
+        // At the bottom, the home bar's room or 1 rem, whichever is more,
+        // not both (asked by Julien on 18 November 2026); above the
+        // keyboard (--sheet-lift), 1 rem.
         container:
-          'min-h-0 gap-4 overflow-hidden px-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]',
+          'min-h-0 gap-4 overflow-hidden px-0 pt-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)-var(--sheet-lift,0px)))]',
         header: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
         // A little room above and below, taken back by the margins: the
         // frame of a box at the very top or bottom is not clipped.

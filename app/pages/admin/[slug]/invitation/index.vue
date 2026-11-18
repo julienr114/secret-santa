@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { INVITE_MESSAGE_MAX, buildInviteMessage } from '#server/utils/invite';
+import { buildInviteMessage } from '#server/utils/invite';
 import { MAX_PARTICIPANTS } from '#server/utils/editions';
 import { formatEventDate } from '#server/utils/rules';
 import {
@@ -10,8 +10,8 @@ import {
 
 // The invitation link of a group, closed by default. Once open: the
 // message to share, as the guests will read it, then the link's settings,
-// each saved from its own sheet (places left, last day, the organiser's
-// words on its page), then a new link or none. Whoever opens the link
+// each saved from its own sheet (places left, last day) or written on its
+// own page (the organiser's word, README 23.3), then a new link or none. Whoever opens the link
 // logs in and joins the group.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
@@ -72,8 +72,8 @@ const settings = computed(() => ({
   message: group.value?.inviteMessage ?? null,
   ...pending.value,
 }));
-const editing = ref<null | 'places' | 'until' | 'message'>(null);
-const sheetOpen = (which: 'places' | 'until' | 'message') =>
+const editing = ref<null | 'places' | 'until'>(null);
+const sheetOpen = (which: 'places' | 'until') =>
   computed({
     get: () => editing.value === which,
     set: (value) => {
@@ -82,13 +82,12 @@ const sheetOpen = (which: 'places' | 'until' | 'message') =>
   });
 const placesOpen = sheetOpen('places');
 const untilOpen = sheetOpen('until');
-const messageOpen = sheetOpen('message');
 /**
  * Whether a setting is being saved.
  * @param key - The setting.
  * @returns True while its change is on its way.
  */
-const savingKey = (key: 'until' | 'places' | 'message') => key in pending.value;
+const savingKey = (key: 'until' | 'places') => key in pending.value;
 /**
  * Saves one setting of the link, shown at once, its sheet closed; an
  * error puts the old value back with a toast (README 23.3).
@@ -260,9 +259,8 @@ const messageValue = computed(() =>
           <UiListItem
             :title="t('adminEdition.invite.messageRow')"
             :value="messageValue"
-            :busy="savingKey('message')"
-            :busy-label="t('common.actions.saving')"
-            :on-click="() => (editing = 'message')"
+            :to="`/admin/${slug}/invitation/mot`"
+            data-testid="invite-word"
           />
         </UiList>
 
@@ -346,17 +344,6 @@ const messageValue = computed(() =>
       :value="settings.until ?? ''"
       :clear-label="t('adminEdition.invite.noUntil')"
       @validate="(until) => save({ until: until || null })"
-    />
-    <UiTextSheet
-      v-model:open="messageOpen"
-      :title="t('adminEdition.invite.messageRow')"
-      :description="t('adminEdition.invite.messageHelp')"
-      :label="t('adminEdition.invite.messageRow')"
-      :value="settings.message ?? ''"
-      :maxlength="INVITE_MESSAGE_MAX"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="(text) => save({ message: text })"
     />
   </AdminScreen>
 </template>

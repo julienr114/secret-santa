@@ -67,13 +67,14 @@ test('the organiser creates the group link from the people page', async ({
   const text = (await message.textContent()) ?? '';
   state.code = text.trim().split('/').at(-1)!;
   expect(state.code).toMatch(/^[A-Za-z0-9_-]{16}$/);
-  // Each setting is saved from its own sheet: the words on the page here.
-  await page.getByRole('button', { name: /^Ton mot sur la page/ }).click();
-  await page.getByRole('textbox').fill('Bienvenue dans la famille !');
+  // The word on the page is written on its own page (README 23.3).
+  await page.getByTestId('invite-word').click();
+  await expect(page).toHaveURL(/\/invitation\/mot$/);
+  await page.getByLabel(/^Ton mot/).fill('Bienvenue dans la famille !');
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(
-    page.getByRole('button', { name: /^Ton mot sur la page/ }),
-  ).toContainText('« Bienvenue dans la famille ! »');
+  await expect(page.getByTestId('invite-word')).toContainText(
+    '« Bienvenue dans la famille ! »',
+  );
   // Two places are enough here: typed, then one more and one less.
   await page.getByRole('button', { name: /^Places restantes/ }).click();
   const places = page.getByRole('spinbutton', { name: 'Places restantes' });

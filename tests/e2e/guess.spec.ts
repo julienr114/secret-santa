@@ -149,9 +149,11 @@ test('a participant guesses, and a person named twice moves', async ({
   // Through the route: naming the same person for another line moves it.
   const anna = await ok(await request.get(`/api/p/${state.tokens.Anna}/guess`));
   const first = anna.mine[0];
+  // Not the one Anna gives to: that line never counts (the decoy).
   const other = NAMES.find(
     (n) =>
       n !== 'Anna' &&
+      n !== state.receiverOf.Anna &&
       state.ids[n] !== first.recipientId &&
       state.ids[n] !== first.giverId,
   )!;
@@ -175,7 +177,14 @@ test('nobody sees anyone else’s guess before the party', async ({
     await ok(await guess(request, name, name, santaOf(name)));
   }
   const before = await (await admin().get(edition())).text();
-  await ok(await guess(request, 'Basile', 'Emma', santaOf('Emma')));
+  // Someone Basile neither is nor gives to, so that he cannot name himself.
+  const recipient = NAMES.find(
+    (n) =>
+      n !== 'Basile' &&
+      n !== state.receiverOf.Basile &&
+      santaOf(n) !== 'Basile',
+  )!;
+  await ok(await guess(request, 'Basile', recipient, santaOf(recipient)));
   const after = await (await admin().get(edition())).text();
   // The organiser learns who has played, never what.
   expect(after).toBe(before);
@@ -238,6 +247,21 @@ test('the reveal brings the palmarès, in images then corrected', async ({
     'Revoir le palmarès',
   );
   await expect(page.getByTestId('my-guesses')).toContainText('1 bon sur 1');
+
+  // The organiser: once revealed, the whole game card opens the palmarès,
+  // which starts by itself.
+  await apiLogin(page.request, SUPER);
+  await open(page, `/admin/${SLUG}/editions/${state.editionId}`);
+  await page.getByTestId('game-card').click({ position: { x: 150, y: 30 } });
+  await expect(page.getByTestId('stories')).toHaveAttribute(
+    'data-screen',
+    'opening',
+  );
+  await expect(page.getByTestId('stories')).not.toHaveAttribute(
+    'data-screen',
+    'opening',
+    { timeout: 10_000 },
+  );
 });
 
 test('fewer than three players: no palmarès, and the hour closes it', async ({

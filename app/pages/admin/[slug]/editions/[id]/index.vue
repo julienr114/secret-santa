@@ -331,7 +331,22 @@ const dateOpen = ref(false);
         :applied-exclusions="appliedExclusions"
         :closing="close.isPending.value"
         @close="onClose"
-      />
+      >
+        <!-- « Devine qui »: once revealed, its palmarès (README 22.17). -->
+        <template
+          v-if="edition.data.value && edition.data.value.guess.mode !== 'none'"
+          #after-pairs
+        >
+          <AdminGameCard
+            :slug="slug"
+            :edition-id="id"
+            :guess="edition.data.value.guess"
+            :participants="participants.length"
+            :can-remind="false"
+            revealed
+          />
+        </template>
+      </AdminEditionRevealed>
       <AdminEditionFollow
         v-else-if="status === 'drawn'"
         :slug="slug"
@@ -419,21 +434,6 @@ const dateOpen = ref(false);
           :label="t('adminEdition.screen.closed.next')"
         />
       </template>
-      <!-- « Devine qui »: once revealed, its palmarès (README 22.17). -->
-      <AdminGameCard
-        v-if="
-          status === 'drawn' &&
-          revealed &&
-          edition.data.value &&
-          edition.data.value.guess.mode !== 'none'
-        "
-        :slug="slug"
-        :edition-id="id"
-        :guess="edition.data.value.guess"
-        :participants="participants.length"
-        :can-remind="false"
-        revealed
-      />
     </AdminQueryState>
 
     <AdminDrawSheet

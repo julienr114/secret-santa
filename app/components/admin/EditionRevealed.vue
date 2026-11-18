@@ -52,6 +52,8 @@ const closingShown = useBusy(() => props.closing);
     "
     :footer="t('adminEdition.screen.reveal.pairsFooter')"
   />
+  <!-- « Devine qui », under the pairs (README 22.17). -->
+  <slot name="after-pairs" />
   <UiList>
     <UiListItem
       :to="`${base}/exclusions`"

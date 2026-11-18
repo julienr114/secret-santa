@@ -9,8 +9,9 @@ import {
 } from '#shared/utils/palmares';
 
 // The palmarès of « Devine qui » in images (README 22.17, maquettes
-// DevineStory1 to 7): full screens, a bar of progress on top. Once
-// started, each screen stays 7 seconds then the next one comes; a tap on
+// DevineStory1 to 7): full screens, a bar of progress on top. They start
+// at once (asked by Julien on 18 November 2026): each screen stays 7
+// seconds then the next one comes; a tap on
 // the right goes on, on the left goes back; holding the screen pauses;
 // the cross closes. When the device asks for less motion, nothing moves
 // by itself. The last screen offers every result and starting again.
@@ -53,6 +54,9 @@ const personOf = (id: string | null | undefined) =>
 const reduced = ref(false);
 onMounted(() => {
   reduced.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The images start by themselves, unless less motion is asked for.
+  started.value = true;
+  run();
 });
 
 // The clock of the stories: 7 seconds per screen once started.
@@ -88,12 +92,11 @@ const go = (side: 'left' | 'right') => {
     emit('seen');
   } else if (!clock.timer) run();
 };
-/** Starts again from the first screen. */
+/** Starts again from the first screen, the clock running. */
 const restart = () => {
   at.value = 0;
   elapsed.value = 0;
-  started.value = false;
-  stop();
+  run();
 };
 
 // A tap goes on or back; holding pauses.
@@ -370,11 +373,7 @@ const santaWords = computed(() => {
       class="text-center text-sm opacity-80"
       aria-live="polite"
     >
-      {{
-        at === 0
-          ? t('participant.game.story.tapStart')
-          : t('participant.game.story.tapNext')
-      }}
+      {{ t('participant.game.story.tapNext') }}
     </p>
   </div>
 </template>

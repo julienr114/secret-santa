@@ -58,12 +58,13 @@ const line = computed(() =>
       </p>
       <h2 class="font-display text-xl leading-[1.2] font-bold">
         <!-- The game's setting opens at once (asked by Julien on 18
-             November 2026); once revealed, it no longer changes: the
-             settings page shows it. -->
+             November 2026); once revealed, it no longer changes, and the
+             whole card opens the palmarès. -->
         <NuxtLink
           v-if="revealed"
-          :to="`/admin/${slug}/editions/${editionId}/reglages`"
+          :to="`/admin/${slug}/editions/${editionId}/palmares`"
           class="before:absolute before:inset-0 before:rounded-2xl"
+          data-testid="game-palmares"
           >{{ t('adminEdition.guess.title') }}</NuxtLink
         >
         <button
@@ -77,12 +78,10 @@ const line = computed(() =>
         </button>
       </h2>
       <p class="text-sm leading-[1.4] text-toned">{{ line }}</p>
-      <NuxtLink
+      <span
         v-if="revealed"
-        :to="`/admin/${slug}/editions/${editionId}/palmares`"
-        class="relative z-1 flex min-h-9 items-center self-start text-sm font-bold text-pine-800 underline"
-        data-testid="game-palmares"
-        >{{ t('participant.game.discover') }}</NuxtLink
+        class="flex min-h-9 items-center self-start text-sm font-bold text-pine-800 underline"
+        >{{ t('participant.game.discover') }}</span
       >
       <button
         v-else-if="canRemind && !guess.reminderSentAt && guess.open"

@@ -280,7 +280,6 @@ export default {
       endTitleAlone: 'Joyeux Noël !',
       allResults: 'Voir tous les résultats',
       again: 'Revoir depuis le début',
-      tapStart: 'Touche pour commencer',
       tapNext: 'Touche pour continuer',
     },
   },

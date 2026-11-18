@@ -274,7 +274,6 @@ export default {
       endTitleAlone: 'Merry Christmas!',
       allResults: 'See every result',
       again: 'Watch again from the start',
-      tapStart: 'Tap to start',
       tapNext: 'Tap to continue',
     },
   },

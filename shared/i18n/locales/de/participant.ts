@@ -280,7 +280,6 @@ export default {
       endTitleAlone: 'Frohe Weihnachten!',
       allResults: 'Alle Ergebnisse ansehen',
       again: 'Von vorne ansehen',
-      tapStart: 'Tippe, um zu beginnen',
       tapNext: 'Tippe, um weiterzumachen',
     },
   },

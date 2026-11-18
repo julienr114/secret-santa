@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NOTE_MAX, type NotePosition } from '#server/utils/messages';
 import { GIFT_HINTS_MODES } from '#shared/utils/hints';
 import {
   useDashboardQuery,
@@ -9,7 +8,8 @@ import {
 } from '~/composables/queries/useGroup';
 
 // The group's settings, each a row whose value changes in its sheet or
-// with its switch, saved at once (no « Enregistrer »): the draw, the
+// with its switch, saved at once (no « Enregistrer »), or written on its
+// own page (the word added to the messages, README 23.3): the draw, the
 // participants, the emails to the organisers, the organisers themselves,
 // and, for the super-admin, deleting the group.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -31,8 +31,8 @@ const organizers = useOrganizersQuery(slug);
 const removeOrganizer = useRemoveOrganizerMutation(slug);
 const group = computed(() => dashboard.data.value?.group);
 
-const editing = ref<null | 'years' | 'note' | 'hints'>(null);
-const sheet = (which: 'years' | 'note' | 'hints') =>
+const editing = ref<null | 'years' | 'hints'>(null);
+const sheet = (which: 'years' | 'hints') =>
   computed({
     get: () => editing.value === which,
     set: (value) => {
@@ -40,7 +40,6 @@ const sheet = (which: 'years' | 'note' | 'hints') =>
     },
   });
 const yearsOpen = sheet('years');
-const noteOpen = sheet('note');
 const hintsOpen = sheet('hints');
 
 /** What participants may note for their giver (README 22.11). */
@@ -77,11 +76,6 @@ const noteValue = computed(() =>
     ? `« ${shown.value.messageNote} »`
     : t('adminEdition.invite.noWords'),
 );
-const position = ref<NotePosition>('after');
-watch(noteOpen, (opened) => {
-  if (opened) position.value = shown.value.messageNotePosition ?? 'after';
-});
-const positions = useNotePositionItems();
 
 // Organisers: removing asks for a second tap.
 const adding = ref(false);
@@ -143,9 +137,8 @@ const deleting = ref(false);
         <UiListItem
           :title="t('adminGroup.rules.messageNote')"
           :value="noteValue"
-          :busy="saving('messageNote')"
-          :busy-label="t('common.actions.saving')"
-          :on-click="() => (editing = 'note')"
+          :to="`/admin/${slug}/reglages/mot`"
+          data-testid="group-note"
         />
       </UiList>
 
@@ -273,30 +266,6 @@ const deleting = ref(false);
         }
       "
     />
-    <UiTextSheet
-      v-model:open="noteOpen"
-      :title="t('adminGroup.rules.messageNote')"
-      :description="t('adminGroup.rules.messageNoteHelp')"
-      :label="t('adminGroup.rules.yourWord')"
-      :value="shown.messageNote ?? ''"
-      :maxlength="NOTE_MAX"
-      :hint="t('adminGroup.rules.asTyped')"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="
-        (note) => {
-          editing = null;
-          save({ messageNote: note.trim(), messageNotePosition: position });
-        }
-      "
-    >
-      <UiChoiceList
-        v-model="position"
-        :choices="positions"
-        :label="t('adminGroup.rules.where')"
-        titled
-      />
-    </UiTextSheet>
     <AdminOrganizerSheet
       v-model:open="adding"
       :slug="slug"

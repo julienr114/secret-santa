@@ -247,6 +247,32 @@ test('a participant logs in with their address and finds their draw', async ({
   await expect(heading(page)).toHaveText('Bonjour');
 });
 
+test('the word added to the messages is written on its own page', async ({
+  page,
+}) => {
+  await loginAsOrganizer(page, SLUG, ORGANIZER);
+  await page.goto(`/admin/${SLUG}/reglages`);
+  await hydrated(page);
+  const row = page.getByTestId('group-note');
+  await row.click();
+  await expect(page).toHaveURL(/\/reglages\/mot$/);
+  // « Retour » gives it up (README 23.3).
+  await page.getByLabel(/^Ton mot/).fill('Oublié');
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(row).not.toContainText('Oublié');
+  await row.click();
+  await page.getByLabel(/^Ton mot/).fill('Rendez-vous à 19 h !');
+  await page.getByText('Au-dessus du message').click();
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(page).toHaveURL(new RegExp(`/${SLUG}/reglages$`));
+  await expect(row).toContainText('Rendez-vous à 19 h !');
+  const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
+  expect(rules).toMatchObject({
+    messageNote: 'Rendez-vous à 19 h !',
+    messageNotePosition: 'before',
+  });
+});
+
 test('only the super-admin can delete a group, with everything in it', async ({
   page,
 }) => {

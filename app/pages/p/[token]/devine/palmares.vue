@@ -45,6 +45,8 @@ const onSeen = () => {
       :santa="results.santa"
       :unmasked="results.unmasked"
       :small="results.size === 'small'"
+      :close-call="results.closeCall"
+      :me="game.me"
       :first-name="game.firstName"
       :answers-path="`/p/${token}/devine`"
       @seen="onSeen"

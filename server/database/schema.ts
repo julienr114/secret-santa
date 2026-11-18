@@ -256,6 +256,13 @@ export const guesses = sqliteTable(
       .notNull()
       .references(() => persons.id),
     updatedAt: text('updated_at').notNull(),
+    // The persons named on this line before the current answer, oldest
+    // first (Correction 14): « La girouette » and « Si près du but ». Empty
+    // for guesses made before.
+    previousGiverIds: text('previous_giver_ids', { mode: 'json' })
+      .$type<string[]>()
+      .notNull()
+      .default([]),
   },
   (t) => [
     uniqueIndex('guesses_edition_guesser_recipient_idx').on(

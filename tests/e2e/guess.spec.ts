@@ -241,11 +241,20 @@ test('the reveal brings the palmarès, in images then corrected', async ({
   // A tap on the left goes back.
   await stage.click({ position: { x: 20, y: 200 } });
   await expect(stories).toHaveAttribute('data-screen', 'suspense');
-  // On to the end.
-  for (const _ of Array.from({ length: 10 })) {
-    if ((await stories.getAttribute('data-screen')) === 'end') break;
+  // On to the end. The award screens turn mustard, plum, pine, brick,
+  // whatever awards were shown (README 22.17).
+  await stage.click({ position: { x: 300, y: 200 } });
+  const looks: string[] = [];
+  for (const _ of Array.from({ length: 16 })) {
+    const shown = await stories.getAttribute('data-screen');
+    if (shown === 'end') break;
+    if (shown !== 'santa' && shown !== 'closeCall') {
+      looks.push((await stories.getAttribute('data-look')) ?? '');
+    }
     await stage.click({ position: { x: 300, y: 200 } });
   }
+  const turn = ['mustard', 'plum', 'pine', 'brick'];
+  expect(looks).toEqual(looks.map((_, i) => turn[i % 4]));
   await expect(stories).toContainText('Joyeux Noël,');
   await page.getByTestId('stories-all').click();
   // Watched: the guesses are corrected, and the button says « Revoir ».

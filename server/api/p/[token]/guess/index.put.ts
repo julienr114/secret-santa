@@ -42,7 +42,12 @@ export default defineEventHandler(async (event) => {
   const mine =
     giverId === null
       ? before.filter((g) => g.recipientId !== recipientId)
-      : placeGuess(before, { guesserId: person.id, recipientId, giverId });
+      : placeGuess(before, {
+          guesserId: person.id,
+          recipientId,
+          giverId,
+          at: nowIso(),
+        });
   await db.batch(
     replaceGuessesOf(db, edition.id, person.id, mine, {
       newId,

@@ -169,6 +169,13 @@
       "when": 1794954048856,
       "tag": "0023_guesses",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1794993815995,
+      "tag": "0024_guess_history",
+      "breakpoints": true
     }
   ]
 }

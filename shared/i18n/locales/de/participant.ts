@@ -240,53 +240,111 @@ export default {
     seeMyResult: 'Noch einmal sehen, wen ich beschenkt habe',
     discoverMyResult: 'Entdecken, wen ich beschenkt habe',
     awards: {
+      crowd: '{count} Personen gleichauf',
       unmasked: {
         title: 'Enttarnt',
         titleMany: 'Enttarnt',
         body: 'Hat den eigenen Wichtel erraten.',
-        bodyMany: 'Haben den eigenen Wichtel erraten.',
-        crowd: '{count} Personen',
+        bodyMany: 'Sie haben ihren Wichtel erraten.',
+        share: '{n} von {m}',
+        crowdOf: 'Personen von {total}',
+        shareBody: 'haben ihren Wichtel erraten.',
+        all: 'Die Wichtel konnten nichts verbergen.',
+        most: 'Ein gutes Jahr für Detektive.',
       },
       detective: {
         title: 'Der Detektiv',
         titleMany: 'Die Detektive',
-        body: {
-          one: '{count} richtiger Tipp von {total}. Niemand war besser.',
-          other: '{count} richtige Tipps von {total}. Niemand war besser.',
+        body: '{right} richtige Tipps von {made}.',
+        bodyAlone: {
+          one: '{right} richtige Tipps von {made}, davon einer, den sonst niemand gefunden hat.',
+          other:
+            '{right} richtige Tipps von {made}, davon {n}, die sonst niemand gefunden hat.',
         },
-        bodyMany: {
-          one: '{count} richtiger Tipp von {total}, gleichauf.',
-          other: '{count} richtige Tipps von {total}, gleichauf.',
-        },
-        crowd: '{count} Detektive',
+        bodyMany: 'Je {right} richtige Tipps von {made}.',
+      },
+      flawless: {
+        title: 'Fehlerfrei',
+        titleMany: 'Fehlerfrei',
+        body: '{N} Tipps, {n} richtig. Nichts zu meckern.',
+        bodyMany: '{N} Tipps pro Person, alle richtig. Nichts zu meckern.',
       },
       transparent: {
         title: 'Der Durchschaubarste',
         titleMany: 'Die Durchschaubarsten',
-        body: {
-          one: 'Von {count} Person enttarnt.',
-          other: 'Von {count} Personen enttarnt.',
-        },
-        bodyMany: {
-          one: 'Jeweils von {count} Person enttarnt.',
-          other: 'Jeweils von {count} Personen enttarnt.',
-        },
-        crowd: '{count} Personen',
+        body: '{N} von {m} Personen haben ihn enttarnt. Ein Geheimnis zu wahren ist nicht leicht.',
+        bodyMany:
+          '{N} von {m} Personen haben jeden von ihnen enttarnt. Ein Geheimnis zu wahren ist nicht leicht.',
       },
       hidden: {
-        title: 'Am besten versteckt',
-        titleMany: 'Am besten versteckt',
-        body: 'Niemand hat sie enttarnt. Große Kunst.',
-        bodyMany: 'Niemand hat sie enttarnt. Große Kunst.',
-        crowd: '{count} Personen',
+        title: 'Der am besten Versteckte',
+        titleMany: 'Die am besten Versteckten',
+        none: '{N} Personen haben ihn gesucht, keine hat ihn gefunden. Große Kunst.',
+        one: '{N} Personen haben ihn gesucht, nur eine hat ihn gefunden.',
+        some: '{N} Personen haben ihn gesucht, nur {f} haben ihn gefunden.',
+        manyNone:
+          '{N} Personen haben jeden von ihnen gesucht, keine hat sie gefunden. Große Kunst.',
+        manySome:
+          '{N} Personen haben jeden von ihnen gesucht, wenige haben sie gefunden.',
+      },
+      rumour: {
+        title: 'Das Gerücht',
+        titleMany: 'Das Gerücht',
+        claim: '{giver} beschenkte\n{recipient}?',
+        body: '{N} von euch waren sich sicher. Es war falsch.',
       },
       suspect: {
         title: 'Der ideale Verdächtige',
         titleMany: 'Die idealen Verdächtigen',
-        body: '{count}-mal zu Unrecht genannt. Man fragt sich, warum.',
-        bodyMany:
-          'Jeweils {count}-mal zu Unrecht genannt. Man fragt sich, warum.',
-        crowd: '{count} Personen',
+        never: '{count}-mal als Wichtel genannt. Jedes Mal zu Unrecht.',
+        body: '{count}-mal zu Unrecht als Wichtel genannt.',
+        bodyMany: 'Je {count}-mal zu Unrecht als Wichtel genannt.',
+      },
+      twins: {
+        title: 'Die Zwillinge',
+        titleMany: 'Die Zwillinge',
+        noError: '{N} gleiche Tipps von {m}. Habt ihr euch abgesprochen?',
+        oneError:
+          '{N} gleiche Tipps von {m}, davon ein Fehler. Habt ihr euch abgesprochen?',
+        errors:
+          '{N} gleiche Tipps von {m}, davon {e} Fehler. Habt ihr euch abgesprochen?',
+      },
+      triplets: {
+        title: 'Die Drillinge',
+        titleMany: 'Die Drillinge',
+        body: 'Dieselben Tipps, zu dritt. Da wurde getuschelt.',
+      },
+      lastMinute: {
+        title: 'Auf den letzten Drücker',
+        titleMany: 'Auf den letzten Drücker',
+        last: 'Hat sich in der allerletzten Minute entschieden.',
+        body: {
+          one: 'Hat sich eine Minute vor dem Ende der Tipps entschieden.',
+          other: 'Hat sich {n} Minuten vor dem Ende der Tipps entschieden.',
+        },
+      },
+      weathervane: {
+        title: 'Die Wetterfahne',
+        titleMany: 'Die Wetterfahnen',
+        body: 'Hat {n}-mal die Meinung geändert, bevor die Entscheidung fiel.',
+        bodyMany: 'Haben je {n}-mal die Meinung geändert.',
+      },
+      group: {
+        title: 'Ihr alle',
+        titleMany: 'Ihr alle',
+        score: '{right} von {total}',
+        scoreLabel: 'richtige Tipps',
+        better: 'Per Zufall hättet ihr {chance} gehabt. Gar nicht schlecht.',
+        same: 'Per Zufall hättet ihr {chance} gehabt. Der Zufall hätte es genauso gut gemacht.',
+        worse:
+          'Per Zufall hättet ihr {chance} gehabt. Die Wichtel waren gut versteckt.',
+      },
+      closeCall: {
+        title: 'So knapp',
+        big: 'Fast!',
+        body: 'Du hattest den Wichtel von {name} gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
+        bodyMe:
+          'Du hattest deinen Wichtel gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
       },
     },
     story: {

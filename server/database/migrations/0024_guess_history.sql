@@ -1,0 +1,1 @@
+ALTER TABLE `guesses` ADD `previous_giver_ids` text DEFAULT '[]' NOT NULL;

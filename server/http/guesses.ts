@@ -12,10 +12,13 @@ import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
 import {
   correctedGuesses,
+  countedGuesses,
+  guessesEndedAt,
   guessesOpen,
   palmares,
   type GuessMode,
 } from '#server/utils/guesses';
+import { closeCallOf } from '#server/utils/awards';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { byName, displayName } from '#server/utils/people';
 import type { PersonalContext } from './personal';
@@ -181,8 +184,19 @@ export const gamePayload = async (
     readPairs(db, edition.id, dataKey),
   ]);
   const mode = edition.guessMode as GuessMode;
-  const result = palmares(guesses, pairs, mode);
+  const endedAt = guessesEndedAt(edition);
+  const result = palmares(guesses, pairs, mode, endedAt);
   const santa = pairs.find((p) => p.receiverId === person.id)?.giverId ?? null;
+  // « Si près du but », for this player only, in the full palmarès.
+  const closeCall =
+    result.size === 'full'
+      ? closeCallOf(person.id, {
+          counted: countedGuesses(guesses, pairs, mode),
+          pairs,
+          mode,
+          endedAt,
+        })
+      : null;
   return {
     ...base,
     results: {
@@ -198,6 +212,7 @@ export const gamePayload = async (
         : null,
       // How many guessed their own Santa, for « Tu fais partie des 3 sur 6 ».
       unmasked: result.awards.find((a) => a.kind === 'unmasked')?.count ?? 0,
+      closeCall,
     },
   };
 };

@@ -109,13 +109,20 @@ describe('guessChoices and placeGuess', () => {
     // Naming f for d moves it away from a.
     expect(placeGuess(mine, g('a', 'd', 'f'))).toEqual([
       g('a', 'c', 'b'),
-      g('a', 'd', 'f'),
+      { ...g('a', 'd', 'f'), previous: [] },
     ]);
-    // A new guess for c replaces the old one.
+    // A new guess for c replaces the old one, which it remembers.
     expect(placeGuess(mine, g('a', 'c', 'e'))).toEqual([
       g('a', 'a', 'f'),
-      g('a', 'c', 'e'),
+      { ...g('a', 'c', 'e'), previous: ['b'] },
     ]);
+  });
+
+  it('remembers every earlier answer, and nothing for the same one', () => {
+    const once = placeGuess([g('a', 'c', 'b')], g('a', 'c', 'e'));
+    const twice = placeGuess(once, g('a', 'c', 'd'));
+    expect(twice[0]?.previous).toEqual(['b', 'e']);
+    expect(placeGuess(twice, { ...g('a', 'c', 'd'), at: 'later' })).toBe(twice);
   });
 
   it('keeps only the guesses on one’s own Santa', () => {
@@ -182,50 +189,16 @@ describe('palmares', () => {
     });
   });
 
-  it('gives each award, with ties up to three names', () => {
-    const guesses = [
-      // a: right on own Santa (f), right on c (b), wrong on d (b → moved).
-      g('a', 'a', 'f'),
-      g('a', 'c', 'b'),
-      g('a', 'e', 'b'),
-      // b: right on own Santa (a), wrong on d (e).
-      g('b', 'b', 'a'),
-      g('b', 'd', 'e'),
-      // c: wrong on own Santa (e), right on f (e).
-      g('c', 'c', 'e'),
-      g('c', 'f', 'e'),
-    ];
-    const result = palmares(guesses, PAIRS, 'all');
-    expect(result.players).toBe(3);
+  it('gives the awards of the full palmarès (awards.test.ts)', () => {
+    const guesses = [g('a', 'a', 'f'), g('b', 'b', 'a'), g('c', 'c', 'b')];
+    const result = palmares(guesses, PAIRS, 'santa');
     expect(result.size).toBe('full');
-    const byKind = Object.fromEntries(result.awards.map((x) => [x.kind, x]));
-    expect(byKind.unmasked).toMatchObject({ winners: ['a', 'b'], count: 2 });
-    // a: 2 right out of 3 made.
-    expect(byKind.detective).toMatchObject({
-      winners: ['a'],
-      value: 2,
+    expect(result.awards.map((x) => x.kind)).toEqual(['unmasked']);
+    expect(result.awards[0]).toMatchObject({
+      winners: ['a', 'b', 'c'],
+      value: 3,
       total: 3,
     });
-    // f, a, b and e were each unmasked once: four, a sentence.
-    expect(byKind.transparent).toMatchObject({ winners: [], count: 4 });
-    // Nobody unmasked c nor d.
-    expect(byKind.hidden).toMatchObject({ winners: ['c', 'd'], count: 2 });
-    // e was named wrongly twice.
-    expect(byKind.suspect).toMatchObject({ winners: ['e'], value: 2 });
-  });
-
-  it('keeps three awards in « Qui m’offre ? », without a ranking', () => {
-    const guesses = [g('a', 'a', 'f'), g('b', 'b', 'c'), g('c', 'c', 'b')];
-    const kinds = palmares(guesses, PAIRS, 'santa').awards.map((x) => x.kind);
-    expect(kinds).not.toContain('detective');
-    expect(kinds).not.toContain('transparent');
-    expect(kinds).toEqual(['unmasked', 'hidden', 'suspect']);
-  });
-
-  it('leaves out an award nobody wins', () => {
-    const guesses = [g('a', 'a', 'b'), g('b', 'b', 'c'), g('c', 'c', 'd')];
-    const kinds = palmares(guesses, PAIRS, 'all').awards.map((x) => x.kind);
-    expect(kinds).toEqual(['hidden', 'suspect']);
   });
 });
 
@@ -251,26 +224,6 @@ describe('ranking and correctedGuesses', () => {
       { recipientId: 'c', guessedId: 'e', actualId: 'b', right: false },
       { recipientId: 'b', guessedId: 'a', actualId: 'a', right: true },
     ]);
-  });
-});
-
-describe('naming oneself (« Moi »)', () => {
-  it('counts for the ranking, never for the awards about the Santas', () => {
-    // Each names themselves on their receiver's line: right, and counted.
-    const guesses = [
-      g('a', 'b', 'a'),
-      g('b', 'c', 'b'),
-      g('c', 'd', 'c'),
-      g('c', 'c', 'b'),
-    ];
-    const result = palmares(guesses, PAIRS, 'all');
-    const byKind = Object.fromEntries(result.awards.map((x) => [x.kind, x]));
-    expect(result.players).toBe(3);
-    // c: 2 right of 2.
-    expect(byKind.detective).toMatchObject({ winners: ['c'], value: 2 });
-    // Only b was unmasked, by c; nobody unmasked themselves.
-    expect(byKind.transparent).toMatchObject({ winners: ['b'], value: 1 });
-    expect(byKind.hidden?.count).toBe(5);
   });
 });
 

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Avatar } from '#server/utils/avatars';
+import type { Award } from '#server/utils/awards';
 import {
   STORY_SECONDS,
+  storyLooks,
   storyScreens,
   storyStep,
-  type AwardKind,
   type StoryScreen,
 } from '#shared/utils/palmares';
+import { numberWord } from '#shared/utils/words';
 
 // The palmarès of « Devine qui » in images (README 22.17, maquettes
 // DevineStory1 to 7): full screens, a bar of progress on top. They start
@@ -16,13 +18,6 @@ import {
 // the cross closes. When the device asks for less motion, nothing moves
 // by itself. The last screen offers every result and starting again.
 type Person = { id: string; name: string; avatar: Avatar };
-type Award = {
-  kind: AwardKind;
-  winners: string[];
-  count: number;
-  value: number;
-  total?: number;
-};
 const props = defineProps<{
   editionLabel: string;
   people: Person[];
@@ -35,6 +30,10 @@ const props = defineProps<{
   unmasked: number;
   /** The small palmarès (Correction 12): one's own Santa, no award. */
   small?: boolean;
+  /** « Si près du but », for the reader only: the line, or null. */
+  closeCall?: string | null;
+  /** The reader, when they take part. */
+  me?: string | null;
   /** The reader's first name, for « Joyeux Noël » ; none for an organiser. */
   firstName: string | null;
   /** Where « Voir tous les résultats » and the cross lead. */
@@ -44,8 +43,13 @@ const emit = defineEmits<{ seen: [] }>();
 const { t, tk, locale } = useT();
 
 const screens = computed<StoryScreen[]>(() =>
-  storyScreens({ awards: props.awards, hasSanta: Boolean(props.santa) }),
+  storyScreens({
+    awards: props.awards,
+    hasSanta: Boolean(props.santa),
+    closeCall: Boolean(props.closeCall),
+  }),
 );
+const looks = computed(() => storyLooks(screens.value));
 const at = ref(0);
 const started = ref(false);
 const paused = ref(false);
@@ -127,50 +131,191 @@ const fill = (index: number) =>
           : 0
         : Math.min(1, elapsed.value / (STORY_SECONDS * 1000));
 
-/** The colours of a screen: background, text, and softer text. */
+/** The colours of a screen, by its place (README 22.17). */
 const LOOKS = {
-  opening: 'bg-[#274e34] text-white',
-  suspense: 'bg-[#a43a2f] text-white',
-  santa: 'bg-[#a43a2f] text-white',
-  unmasked: 'bg-[#274e34] text-white',
-  detective: 'bg-[#e6b94a] text-[#3a240c]',
-  transparent: 'bg-[#a43a2f] text-white',
-  hidden: 'bg-[#5b3a55] text-white',
-  suspect: 'bg-[#274e34] text-white',
-  end: 'bg-[#f7f2e9] text-[#292524]',
+  pine: 'bg-[#274e34] text-white',
+  brick: 'bg-[#a43a2f] text-white',
+  mustard: 'bg-[#e6b94a] text-[#3a240c]',
+  plum: 'bg-[#5b3a55] text-white',
+  cream: 'bg-[#f7f2e9] text-[#292524]',
 } as const;
-const look = computed(() =>
-  screen.value.kind === 'award'
-    ? LOOKS[screen.value.award]
-    : LOOKS[screen.value.kind],
-);
+const lookName = computed(() => looks.value[at.value] ?? 'pine');
+const look = computed(() => LOOKS[lookName.value]);
 const dark = computed(
-  () =>
-    screen.value.kind === 'end' ||
-    (screen.value.kind === 'award' && screen.value.award === 'detective'),
+  () => lookName.value === 'mustard' || lookName.value === 'cream',
 );
 
 const list = (names: string[]) =>
   new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(names);
-/** What an award screen says. */
-const awardWords = (award: Award) => {
-  const winners = award.winners
+const word = (n: number, capital = false) =>
+  numberWord(n, locale.value, capital);
+/** How an award screen is laid out. */
+type AwardView = {
+  eyebrow: string;
+  /** Big avatars, a grid of names, a number alone, or the group's score. */
+  layout: 'avatars' | 'grid' | 'number' | 'score';
+  people: Person[];
+  /** The big words: the names, a share, a number, a claim. */
+  big: string;
+  /** Under the big words, smaller. */
+  sub: string;
+  body: string;
+};
+/**
+ * What an award screen says (README 22.17, maquettes DevineStory*): one
+ * winner, several by name, or a crowd past three.
+ * @param award - The award.
+ * @returns Its words and layout.
+ */
+const awardWords = (award: Award): AwardView => {
+  const key = `participant.game.awards.${award.kind}`;
+  const people = award.winners
     .map(personOf)
     .filter((p): p is Person => Boolean(p));
   const many = award.count > 1;
-  const key = `participant.game.awards.${award.kind}`;
-  return {
+  const crowd =
+    people.length === 0 && award.count > 0
+      ? t('participant.game.awards.crowd', { count: award.count })
+      : '';
+  const base = {
     eyebrow: tk(`${key}.${many ? 'titleMany' : 'title'}`),
-    people: winners,
-    name: winners.length > 0 ? list(winners.map((w) => w.name)) : '',
-    // More than three: a sentence with a number, no name.
-    crowd:
-      winners.length === 0 ? tk(`${key}.crowd`, { count: award.count }) : '',
-    body: tk(`${key}.${many ? 'bodyMany' : 'body'}`, {
-      count: award.value,
-      total: award.total ?? 0,
-    }),
+    layout: 'avatars' as const,
+    people,
+    big: crowd || list(people.map((p) => p.name)),
+    sub: '',
   };
+  const n = award.value;
+  const total = award.total ?? 0;
+  switch (award.kind) {
+    case 'unmasked': {
+      const tone =
+        n === total
+          ? tk(`${key}.all`)
+          : n * 2 >= total
+            ? tk(`${key}.most`)
+            : '';
+      if (award.count <= 3) {
+        return {
+          ...base,
+          body: tk(`${key}.${many ? 'bodyMany' : 'body'}`),
+        };
+      }
+      const shareBody = [tk(`${key}.shareBody`), tone]
+        .filter(Boolean)
+        .join(' ');
+      return award.count <= 9
+        ? {
+            ...base,
+            layout: 'grid',
+            big: tk(`${key}.share`, { n: word(n, true), m: word(total) }),
+            body: shareBody,
+          }
+        : {
+            ...base,
+            layout: 'number',
+            big: String(n),
+            sub: tk(`${key}.crowdOf`, { total }),
+            body: shareBody,
+          };
+    }
+    case 'detective':
+      return {
+        ...base,
+        body: many
+          ? tk(`${key}.bodyMany`, { right: n, made: total })
+          : award.extra
+            ? tk(`${key}.bodyAlone`, {
+                count: award.extra,
+                n: word(award.extra),
+                right: n,
+                made: total,
+              })
+            : tk(`${key}.body`, { right: n, made: total }),
+      };
+    case 'flawless':
+      return {
+        ...base,
+        body: tk(`${key}.${many ? 'bodyMany' : 'body'}`, {
+          N: word(n, true),
+          n: word(n),
+        }),
+      };
+    case 'transparent':
+      return {
+        ...base,
+        body: tk(`${key}.${many ? 'bodyMany' : 'body'}`, {
+          N: word(n, true),
+          m: word(total),
+        }),
+      };
+    case 'hidden': {
+      const params = { N: word(total, true), f: word(n) };
+      const which = many
+        ? n === 0
+          ? 'manyNone'
+          : 'manySome'
+        : n === 0
+          ? 'none'
+          : n === 1
+            ? 'one'
+            : 'some';
+      return { ...base, body: tk(`${key}.${which}`, params) };
+    }
+    case 'rumour': {
+      const recipient = personOf(award.recipientId);
+      return {
+        ...base,
+        people: recipient ? [...people, recipient] : people,
+        big: tk(`${key}.claim`, {
+          giver: people[0]?.name ?? '',
+          recipient: recipient?.name ?? '',
+        }),
+        body: tk(`${key}.body`, { N: word(n, true) }),
+      };
+    }
+    case 'suspect':
+      return {
+        ...base,
+        body: many
+          ? tk(`${key}.bodyMany`, { count: n })
+          : tk(`${key}.${award.extra ? 'never' : 'body'}`, { count: n }),
+      };
+    case 'twins': {
+      const errors = award.extra ?? 0;
+      return {
+        ...base,
+        body: tk(
+          `${key}.${errors === 0 ? 'noError' : errors === 1 ? 'oneError' : 'errors'}`,
+          { N: word(n, true), m: word(total), e: word(errors) },
+        ),
+      };
+    }
+    case 'lastMinute':
+      return {
+        ...base,
+        body:
+          n === 0
+            ? tk(`${key}.last`)
+            : tk(`${key}.body`, { count: n, n: word(n) }),
+      };
+    case 'weathervane':
+      return {
+        ...base,
+        body: tk(`${key}.${many ? 'bodyMany' : 'body'}`, { n: word(n) }),
+      };
+    case 'group':
+      return {
+        ...base,
+        layout: 'score',
+        big: tk(`${key}.score`, { right: n, total }),
+        sub: tk(`${key}.scoreLabel`),
+        body: tk(`${key}.${award.tone ?? 'same'}`, {
+          chance: award.extra ?? 0,
+        }),
+      };
+    default:
+      return { ...base, body: tk(`${key}.body`) };
+  }
 };
 /** The award of the screen shown, in words. */
 const awardView = computed(() => {
@@ -178,6 +323,20 @@ const awardView = computed(() => {
   if (current.kind !== 'award') return null;
   const award = props.awards.find((a) => a.kind === current.award);
   return award ? awardWords(award) : null;
+});
+/** « Si près du but »: the line, its person. */
+const closeCallView = computed(() => {
+  if (!props.closeCall) return null;
+  const person = personOf(props.closeCall);
+  const mine = props.closeCall === props.me;
+  return {
+    person,
+    body: mine
+      ? t('participant.game.awards.closeCall.bodyMe')
+      : t('participant.game.awards.closeCall.body', {
+          name: person?.name ?? '',
+        }),
+  };
 });
 /** How many played, in the words of the small palmarès. */
 const smallKey = (players: number) =>
@@ -218,6 +377,7 @@ const santaWords = computed(() => {
     :class="look"
     data-testid="stories"
     :data-screen="screen.kind === 'award' ? screen.award : screen.kind"
+    :data-look="lookName"
   >
     <div
       role="img"
@@ -323,22 +483,81 @@ const santaWords = computed(() => {
         </p>
       </template>
 
+      <template v-else-if="screen.kind === 'closeCall' && closeCallView">
+        <p class="text-sm font-bold tracking-[0.08em] uppercase opacity-90">
+          {{ t('participant.game.awards.closeCall.title') }}
+        </p>
+        <UiAvatar
+          v-if="closeCallView.person"
+          :avatar="closeCallView.person.avatar"
+          size="xl"
+          class="size-32! text-6xl! shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
+        />
+        <p class="font-display text-[52px] leading-[1.08] font-bold">
+          {{ t('participant.game.awards.closeCall.big') }}
+        </p>
+        <p class="max-w-75 text-lg leading-[1.4] opacity-90">
+          {{ closeCallView.body }}
+        </p>
+      </template>
+
       <template v-else-if="awardView">
         <p class="text-sm font-bold tracking-[0.08em] uppercase opacity-90">
           {{ awardView.eyebrow }}
         </p>
-        <span v-if="awardView.people.length > 0" class="flex">
+        <span
+          v-if="awardView.layout === 'avatars' && awardView.people.length > 0"
+          class="flex"
+        >
           <UiAvatar
             v-for="(person, index) in awardView.people"
             :key="person.id"
             :avatar="person.avatar"
             size="xl"
-            class="size-32! text-6xl! shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
-            :class="index > 0 ? '-ml-6' : ''"
+            class="shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
+            :class="[
+              awardView.people.length > 1
+                ? 'size-24! text-5xl!'
+                : 'size-32! text-6xl!',
+              index > 0 ? '-ml-4' : '',
+            ]"
           />
         </span>
-        <p class="font-display text-[52px] leading-[1.08] font-bold">
-          {{ awardView.name || awardView.crowd }}
+        <ul
+          v-else-if="awardView.layout === 'grid'"
+          class="grid w-full max-w-80 grid-cols-3 gap-x-2 gap-y-3"
+          data-testid="award-grid"
+        >
+          <li
+            v-for="person in awardView.people"
+            :key="person.id"
+            class="flex min-w-0 flex-col items-center gap-1"
+          >
+            <UiAvatar
+              :avatar="person.avatar"
+              size="lg"
+              class="shadow-[0_0_0_3px_rgba(255,253,249,0.9)]"
+            />
+            <span class="w-full truncate text-[15px] font-bold">{{
+              person.name
+            }}</span>
+          </li>
+        </ul>
+        <p
+          v-if="awardView.layout === 'number' || awardView.layout === 'score'"
+          class="font-display text-[88px] leading-none font-bold"
+        >
+          {{ awardView.big }}
+        </p>
+        <p
+          v-else
+          class="font-display leading-[1.08] font-bold whitespace-pre-line"
+          :class="awardView.layout === 'grid' ? 'text-[44px]' : 'text-[48px]'"
+        >
+          {{ awardView.big }}
+        </p>
+        <p v-if="awardView.sub" class="-mt-3 text-xl font-bold">
+          {{ awardView.sub }}
         </p>
         <p class="max-w-75 text-lg leading-[1.4] opacity-90">
           {{ awardView.body }}

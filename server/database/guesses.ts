@@ -10,6 +10,8 @@ const toGuess = (row: typeof guesses.$inferSelect): Guess => ({
   guesserId: row.guesserPersonId,
   recipientId: row.recipientPersonId,
   giverId: row.giverPersonId,
+  at: row.updatedAt,
+  previous: row.previousGiverIds ?? [],
 });
 
 /**
@@ -60,7 +62,8 @@ export const playersOf = async (db: Db, editionId: string) =>
   );
 
 /**
- * The statements that replace one player's guesses.
+ * The statements that replace one player's guesses, each with its time
+ * and its earlier answers.
  * @param db - The database.
  * @param editionId - The edition.
  * @param guesserId - The player.
@@ -92,7 +95,9 @@ export const replaceGuessesOf = (
         guesserPersonId: g.guesserId,
         recipientPersonId: g.recipientId,
         giverPersonId: g.giverId,
-        updatedAt: now,
+        // An answer unchanged keeps its time (« Sur le fil »).
+        updatedAt: g.at ?? now,
+        previousGiverIds: g.previous ?? [],
       }),
     ),
   ] as const;

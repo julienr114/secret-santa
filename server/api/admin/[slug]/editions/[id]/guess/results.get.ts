@@ -4,7 +4,11 @@ import { editionPersons } from '#server/database/answers';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf } from '#server/http/context';
 import { avatarOf } from '#server/utils/avatars';
-import { palmares, type GuessMode } from '#server/utils/guesses';
+import {
+  guessesEndedAt,
+  palmares,
+  type GuessMode,
+} from '#server/utils/guesses';
 import { byName, displayName } from '#server/utils/people';
 
 // The palmarès of « Devine qui » for the organiser (README 22.17), even
@@ -26,7 +30,12 @@ export default defineEventHandler(async (event) => {
     listGuesses(db, edition.id),
     readPairs(db, edition.id, await dataKeyOf(event)),
   ]);
-  const result = palmares(guesses, pairs, edition.guessMode as GuessMode);
+  const result = palmares(
+    guesses,
+    pairs,
+    edition.guessMode as GuessMode,
+    guessesEndedAt(edition),
+  );
   return {
     editionLabel: edition.label,
     people: rows.toSorted(byName).map((p) => ({

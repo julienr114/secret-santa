@@ -240,53 +240,112 @@ export default {
     seeMyResult: 'Revoir à qui j’ai offert un cadeau',
     discoverMyResult: 'Découvrir à qui j’offrais un cadeau',
     awards: {
+      crowd: '{count} personnes à égalité',
       unmasked: {
         title: 'Démasqué',
         titleMany: 'Démasqués',
         body: 'A deviné son Père Noël.',
-        bodyMany: 'Ont deviné leur Père Noël.',
-        crowd: '{count} personnes',
+        bodyMany: 'Ils avaient deviné leur Père Noël.',
+        share: '{n} sur {m}',
+        crowdOf: 'personnes sur {total}',
+        shareBody: 'avaient deviné leur Père Noël.',
+        all: 'Les Pères Noël n’ont rien pu cacher.',
+        most: 'Belle année pour les détectives.',
       },
       detective: {
         title: 'Le détective',
         titleMany: 'Les détectives',
-        body: {
-          one: '{count} bon pronostic sur {total}. Personne n’a fait mieux.',
+        body: '{right} bons pronostics sur {made}.',
+        bodyAlone: {
+          one: '{right} bons pronostics sur {made}, dont un que personne d’autre n’avait trouvé.',
           other:
-            '{count} bons pronostics sur {total}. Personne n’a fait mieux.',
+            '{right} bons pronostics sur {made}, dont {n} que personne d’autre n’avait trouvés.',
         },
-        bodyMany: {
-          one: '{count} bon pronostic sur {total}, à égalité.',
-          other: '{count} bons pronostics sur {total}, à égalité.',
-        },
-        crowd: '{count} détectives',
+        bodyMany: '{right} bons pronostics sur {made} chacun.',
+      },
+      flawless: {
+        title: 'Le sans-faute',
+        titleMany: 'Les sans-faute',
+        body: '{N} pronostics, {n} bons. Rien à redire.',
+        bodyMany: '{N} pronostics chacun, tous bons. Rien à redire.',
       },
       transparent: {
         title: 'Le plus transparent',
         titleMany: 'Les plus transparents',
-        body: {
-          one: 'Démasqué par {count} personne.',
-          other: 'Démasqué par {count} personnes.',
-        },
-        bodyMany: {
-          one: 'Démasqués par {count} personne chacun.',
-          other: 'Démasqués par {count} personnes chacun.',
-        },
-        crowd: '{count} personnes',
+        body: '{N} personnes sur {m} l’ont démasqué. Pas facile, de garder un secret.',
+        bodyMany:
+          '{N} personnes sur {m} ont démasqué chacun d’eux. Pas facile, de garder un secret.',
       },
       hidden: {
         title: 'Le mieux caché',
         titleMany: 'Les mieux cachés',
-        body: 'Personne ne l’a démasqué. Du grand art.',
-        bodyMany: 'Personne ne les a démasqués. Du grand art.',
-        crowd: '{count} personnes',
+        none: '{N} personnes l’ont cherché, aucune ne l’a trouvé. Du grand art.',
+        one: '{N} personnes l’ont cherché, une seule l’a trouvé.',
+        some: '{N} personnes l’ont cherché, {f} seulement l’ont trouvé.',
+        manyNone:
+          '{N} personnes ont cherché chacun d’eux, aucune ne les a trouvés. Du grand art.',
+        manySome:
+          '{N} personnes ont cherché chacun d’eux, peu les ont trouvés.',
+      },
+      rumour: {
+        title: 'La rumeur',
+        titleMany: 'La rumeur',
+        claim: '{giver} offrait\nà {recipient} ?',
+        body: '{N} d’entre vous en étaient sûrs. C’était faux.',
       },
       suspect: {
         title: 'Le suspect idéal',
         titleMany: 'Les suspects idéaux',
-        body: 'Cité {count} fois à tort. On se demande pourquoi.',
-        bodyMany: 'Cités {count} fois à tort chacun. On se demande pourquoi.',
-        crowd: '{count} personnes',
+        never: 'Cité {count} fois comme Père Noël. À tort, à chaque fois.',
+        body: 'Cité {count} fois à tort comme Père Noël.',
+        bodyMany: 'Cités {count} fois à tort chacun comme Père Noël.',
+      },
+      twins: {
+        title: 'Les jumeaux',
+        titleMany: 'Les jumeaux',
+        noError:
+          '{N} pronostics identiques sur {m}. Vous vous êtes concertés ?',
+        oneError:
+          '{N} pronostics identiques sur {m}, dont une erreur. Vous vous êtes concertés ?',
+        errors:
+          '{N} pronostics identiques sur {m}, dont {e} erreurs. Vous vous êtes concertés ?',
+      },
+      triplets: {
+        title: 'Les triplés',
+        titleMany: 'Les triplés',
+        body: 'Les mêmes pronostics, à trois. Il y a eu des messes basses.',
+      },
+      lastMinute: {
+        title: 'Sur le fil',
+        titleMany: 'Sur le fil',
+        last: 'A tranché dans la dernière minute des pronostics.',
+        body: {
+          one: 'A tranché une minute avant la fin des pronostics.',
+          other: 'A tranché {n} minutes avant la fin des pronostics.',
+        },
+      },
+      weathervane: {
+        title: 'La girouette',
+        titleMany: 'Les girouettes',
+        body: 'A changé d’avis {n} fois avant de se décider.',
+        bodyMany: 'Ont changé d’avis {n} fois chacun avant de se décider.',
+      },
+      group: {
+        title: 'À vous tous',
+        titleMany: 'À vous tous',
+        score: '{right} sur {total}',
+        scoreLabel: 'bons pronostics',
+        better: 'Au hasard, vous en auriez eu {chance}. Pas mal du tout.',
+        same: 'Au hasard, vous en auriez eu {chance}. Le hasard aurait fait aussi bien.',
+        worse:
+          'Au hasard, vous en auriez eu {chance}. Les Pères Noël étaient bien cachés.',
+      },
+      closeCall: {
+        title: 'Si près du but',
+        big: 'Presque !',
+        body: 'Tu avais trouvé le Père Noël de {name}… puis tu as changé d’avis. L’instinct avait raison.',
+        bodyMe:
+          'Tu avais trouvé ton Père Noël… puis tu as changé d’avis. L’instinct avait raison.',
       },
     },
     story: {

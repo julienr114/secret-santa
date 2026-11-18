@@ -1480,11 +1480,11 @@ Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode
 | Tirage annulé | Les pronostics sont effacés |
 | Avant la fête | Personne ne voit rien : ni score, ni tendance, ni pronostic d'un autre. L'organisateur voit combien ont joué et qui n'a pas encore joué, jamais un pronostic |
 | Journal | L'activation du jeu, la fin des pronostics, et « le palmarès est arrivé ». Jamais un pronostic |
-| Communication | Une ligne dans le message « tirage fait », la tuile de la page du tirage, une carte sur l'accueil. Aucun rappel automatique. Sur la carte du jeu, l'organisateur peut « Envoyer un rappel » (`DevineRappel`) : le panneau liste ceux qui n'ont pas encore fait de pronostic (l'organisateur voit qui a joué, comme il voit qui a découvert son résultat ; il ne voit jamais un pronostic) et leur envoie un email, avec un mot en plus s'il le veut. Ceux qui n'ont pas d'adresse sont signalés dans la liste, avec le bouton de partage de leur lien. Le bouton n'apparaît que s'il reste quelqu'un à rappeler et que les pronostics sont ouverts |
+| Communication | Une ligne dans le message « tirage fait », puis tout ce que décrit « Donner envie de jouer, et rappeler » plus bas (Correction 15) |
 | Changer de mode | Passer de « Qui m'offre ? » à « Toutes les paires » garde les pronostics. Le chemin inverse efface tous les pronostics sauf celui de son propre Père Noël, après confirmation |
 | Heure de fin | Enregistrée comme un instant précis, dans le fuseau du navigateur de l'organisateur au moment du réglage. Chacun la voit dans son propre fuseau |
 | Date de fête | Ne peut pas être retirée tant que le jeu est actif : il faut d'abord éteindre le jeu |
-| Le rappel | Un seul par édition. Une fois envoyé, la carte du jeu affiche « Rappel envoyé le… » à la place du lien (`DevineSuiviRappelFait`) |
+| Le rappel | L'organisateur rappelle quand il veut, autant de fois qu'il veut (Correction 15 ; avant : un seul par édition). La carte du jeu affiche « Dernier rappel le… » et « Rappeler encore » (`DevineSuiviRappelFait`) |
 | L'email du palmarès | Au dévoilement, manuel ou automatique, un email « Le palmarès de Devine qui est arrivé » (`DevineEmailPalmares`) part à tous les participants qui ont une adresse, joueurs ou non. Aucun nom dedans, une seule fois. Pas d'email si personne n'a joué |
 | Qui voit le palmarès | Tous les participants, même ceux qui n'ont pas joué, et l'organisateur même s'il ne participe pas ; pour lui, l'écran « mon Père Noël » est sauté |
 | Édition passée | Le palmarès reste figé sur les participants de l'édition, même si le groupe a changé depuis |
@@ -1499,6 +1499,31 @@ Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode
 - **Aucun joueur** : rien du jeu n'apparaît après le dévoilement, ni tuile, ni invitation, ni email, ni ligne « le palmarès est arrivé » au journal. Il n'existe plus de page « pas de palmarès cette fois ».
 - **Édition à trois participants où le jeu était déjà actif** avant la Correction 12 : petit palmarès, quel que soit le nombre de joueurs.
 
+**Donner envie de jouer, et rappeler** (Correction 15, 18 novembre 2026). Le palmarès récompense ; il manquait de quoi faire entrer dans le jeu.
+
+| Levier | Règle | Maquette |
+|---|---|---|
+| Le bon moment | Juste après avoir découvert à qui j'offre, sous le résultat, une carte cerclée de rouge : « Et toi, qui t'offre ton cadeau ? », le compte des joueurs, « Faire mon pronostic », « Je passe mon tour ». Tant que je n'ai ni joué ni passé mon tour | `DevineInviteResultat` |
+| Les autres jouent | « 4 sur 6 ont déjà joué » sur la tuile, la carte de l'accueil et la carte du résultat. Un simple compte, sur ceux qui n'ont pas passé leur tour. Affiché dès qu'au moins deux personnes ont joué | `DevineTirageFin`, `DevineAccueilFin` |
+| L'échéance | « Plus que 3 jours » sur la tuile et la carte, dans les sept derniers jours ; « Dernier jour » le jour même | `DevineTirageFin`, `DevineAccueilFin` |
+| Les prix | Sur la page du jeu, « À gagner à la fête » : quelques noms de prix possibles dans le mode de l'édition, puis « et d'autres… » | `DevineUniquePrix` |
+| Dans la course | Une fois qu'on a joué : les prix qu'on peut encore viser, et ce qu'il manque pour le suivant (« Encore un pronostic pour viser Le sans-faute »). Jamais un score, jamais une tendance | `DevinePairesCourse` |
+| Le défi | À partir de la deuxième édition avec le jeu : le résultat de l'an dernier, « À battre » | `DevineUniquePrix` |
+| Je passe mon tour | Un lien sur la carte du résultat, la carte de l'accueil, la page du jeu et en bas de l'email de rappel. Celui qui passe son tour n'est plus rappelé, sort de la liste « n'a pas encore joué » de l'organisateur et des comptes ; sa tuile dit « Tu passes ton tour ». Il peut revenir jusqu'à la fin (« Finalement, je joue »), et il voit le palmarès comme les autres | `DevinePasse` |
+
+Les rappels :
+
+| Rappel | Règle | Maquette |
+|---|---|---|
+| Automatique, aux joueurs | Un seul, 48 heures avant la fin, à 10 h dans le fuseau du réglage. À ceux qui ont une adresse, n'ont pas passé leur tour, et n'ont pas joué ; en mode « Toutes les paires », aussi à ceux qui n'ont pronostiqué que leur Père Noël, avec un autre texte. Pas envoyé si le jeu a été activé moins de trois jours avant la fin, ni si l'organisateur a rappelé dans les deux derniers jours. Le lien arrive sur l'écran du pronostic | `DevineEmailRappelAuto`, `DevineEmailRappelEncore` |
+| Manuel, par email | Quand l'organisateur veut, autant de fois qu'il veut. Le panneau liste ceux qui n'ont pas joué (jamais ceux qui passent leur tour) et rappelle la date du dernier rappel | `DevineRappel` |
+| Manuel, au groupe | « Écrire au groupe » : un message à partager ou copier, pour WhatsApp ou SMS. Il donne le compte et l'échéance, ne nomme personne et ne contient aucun lien personnel | `DevineRappelGroupe` |
+| La relance suggérée | Sur le suivi, cinq jours avant la fin, s'il reste quelqu'un à rappeler : la carte du jeu passe en avant, cerclée de rouge, avec « 2 personnes n'ont pas encore joué. Fin dans 5 jours. » et un bouton « Leur rappeler » | `DevineSuiviRelance` |
+| À l'organisateur, point d'étape | Un email cinq jours avant la fin, seulement s'il reste quelqu'un à rappeler : qui n'a pas joué, qui n'a pas d'adresse, quand part le rappel automatique | `DevineEmailOrgaPoint` |
+| À l'organisateur, fermeture | Un email à la fin des pronostics : combien ont joué, « Dévoiler le tirage », et le rappel que le tirage se dévoilera seul le lendemain | `DevineEmailOrgaFin` |
+
+Deux réglages, dans le réglage du jeu, activés par défaut (`DevineReglage`) : « Rappel automatique » (aux joueurs) et « Me tenir au courant » (les deux emails à l'organisateur ; avec plusieurs organisateurs, chacun règle le sien). Tous ces emails sont dans les trois langues, dans la langue de la personne. Aucun ne dit qui a pronostiqué quoi.
+
 **Les prix, un par un** (Correction 14). Un « pronostic compté » est un pronostic hors leurre (la ligne de la personne à qui j'offre ne compte jamais). Les « tentatives » sur un Père Noël sont les pronostics comptés faits sur la ligne de la personne à qui il offre. La **note lissée** d'un compte `k` sur `n` vaut `(k + 1) / (n + 2)` : elle évite qu'un seul essai donne la note maximale.
 
 | Prix | Calcul | Condition d'affichage | Maquette |
@@ -1506,10 +1531,10 @@ Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode
 | Démasqués | Ceux qui ont deviné leur propre Père Noël. Ce prix est une liste, pas un podium, donc il nomme plus de monde que les autres : jusqu'à trois, les grands avatars ; de quatre à neuf, une grille de trois par ligne avec les prénoms ; au-delà de neuf, le nombre seul, sur le nombre de joueurs qui ont pronostiqué leur Père Noël (« 11 personnes sur 14 ») | Au moins un | `DevineStoryDemasques`, `DevineStoryDemasquesGrille`, `DevineStoryDemasquesNeuf`, `DevineStoryDemasquesPlus` |
 | Le détective | Somme de ses bons pronostics, chacun valant entre 1 et 2 points : 1 + la part des autres joueurs de cette ligne qui se sont trompés (1,5 s'il était seul sur la ligne). Une erreur ne coûte rien. À égalité : la meilleure précision, puis le moins de pronostics | Au moins 2 bons pronostics. Mode « Toutes les paires » | `DevineStory4` |
 | Le sans-faute | Tous ses pronostics comptés sont justes | Au moins 3 pronostics. S'il est aussi le détective, cet écran remplace celui du détective | `DevineStorySansFaute` |
-| Le mieux caché | La note lissée la plus haute : (trompés + 1) / (tentatives + 2) | Au moins 2 tentatives sur lui | `DevineStory5` |
-| Le plus transparent | La même note, la plus basse | Démasqué au moins 2 fois. Jamais la même personne que le mieux caché | `DevineStoryTransparent` |
-| Le suspect idéal | Le plus souvent cité à tort. À égalité : celui qui n'a jamais été cité à raison | Cité à tort au moins 2 fois | `DevineStory6` |
-| La rumeur | La fausse piste la plus partagée, une paire « X offrait à Y » : la note lissée (joueurs qui l'ont pronostiquée + 1) / (tentatives sur cette ligne + 2). **Une seule rumeur affichée** : à égalité, celle crue par le plus de joueurs, puis celle qui vise le Père Noël le mieux caché, puis la plus ancienne | Assez de joueurs y ont cru pour la taille du groupe : au moins 2, et au moins un joueur sur quatre, arrondi au-dessus (2 jusqu'à 8 joueurs, 3 de 9 à 12, 4 de 13 à 16…) | `DevineStoryRumeur` |
+| Le mieux caché | La note lissée la plus haute : (trompés + 1) / (tentatives + 2) | Autant de tentatives sur lui que le seuil du groupe | `DevineStory5` |
+| Le plus transparent | La même note, la plus basse | Démasqué autant de fois que le seuil du groupe. Jamais la même personne que le mieux caché | `DevineStoryTransparent` |
+| Le suspect idéal | Le plus souvent cité à tort. À égalité : celui qui n'a jamais été cité à raison | Cité à tort autant de fois que le seuil du groupe | `DevineStory6` |
+| La rumeur | La fausse piste la plus partagée, une paire « X offrait à Y » : la note lissée (joueurs qui l'ont pronostiquée + 1) / (tentatives sur cette ligne + 2). **Une seule rumeur affichée** : à égalité, celle crue par le plus de joueurs, puis celle qui vise le Père Noël le mieux caché, puis la plus ancienne | Autant de joueurs que le seuil du groupe y ont cru | `DevineStoryRumeur` |
 | Les jumeaux | Les deux joueurs aux pronostics les plus proches. Se tromper ensemble compte double : 2 points par erreur commune, 1 par bonne réponse commune. Note : (points + 1) / (2 × lignes que les deux ont pronostiquées + 2). **Une seule paire affichée** : la meilleure note, puis celle dont aucun membre n'a déjà un prix à l'écran, puis celle qui s'est fixée la première (dernier pronostic commun enregistré le plus tôt) | Au moins 3 pronostics identiques | `DevineStoryJumeaux` |
 | Les triplés | Trois joueurs dont les trois paires remplissent chacune la condition des jumeaux, et qui contiennent la meilleure paire. Au-delà de trois, on revient à la meilleure paire | À la place des jumeaux, quand ce trio existe | `DevineStoryTriples` |
 | Sur le fil | Le dernier pronostic compté enregistré avant la fin | Fait dans la dernière heure avant la fin des pronostics | `DevineStoryFil` |
@@ -1517,6 +1542,7 @@ Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode
 | Si près du but | J'avais la bonne réponse sur une ligne, puis j'ai changé pour une mauvaise. **Écran personnel** : seul le joueur concerné le voit, juste après « mon Père Noël ». S'il y a plusieurs lignes, celle du Père Noël le mieux caché | Au moins une ligne dans ce cas | `DevineStoryPresDuBut` |
 | Le score du groupe | Bons pronostics sur pronostics comptés, comparé au hasard : pronostics comptés / (participants − 2), arrondi. Trois phrases selon le résultat : nettement mieux que le hasard, à peu près pareil, moins bien (« les Pères Noël étaient bien cachés ») | Au moins 6 pronostics comptés. Dernier écran avant la fin | `DevineStoryGroupe` |
 
+- **Le seuil du groupe** : un joueur sur quatre, arrondi au-dessus, au moins 2 et au plus 5 (2 jusqu'à 8 joueurs, 3 de 9 à 12, 4 de 13 à 16, 5 à partir de 17). Les « joueurs » sont ceux qui ont fait au moins un pronostic compté. Il sert de condition d'affichage à quatre prix : la rumeur, le suspect idéal, le plus transparent et le mieux caché. Le plafond à 5 évite que ces prix disparaissent dans les grands groupes, où personne ne pronostique toutes les lignes. Les notes pondérées, elles, ne changent pas : le seuil décide seulement si le prix mérite d'être montré.
 - **Les maquettes des prix portent leur règle.** Chaque maquette de prix montre l'écran, et dessous, dans un encadré « La règle · ne fait pas partie de l'écran », le calcul, la condition d'affichage et le départage. L'encadré n'est pas à reproduire dans l'application.
 - **Les prix à paire n'ont jamais d'ex æquo** (jumeaux, rumeur) : deux paires feraient quatre noms à l'écran. Un départage désigne toujours une seule paire.
 - **L'ordre des écrans de prix** : Démasqués, Le détective ou Le sans-faute, Le plus transparent, Le mieux caché, La rumeur, Le suspect idéal, Les jumeaux, Sur le fil, La girouette, Le score du groupe. « Si près du but » vient avant, avec « mon Père Noël ».
@@ -1541,7 +1567,8 @@ Conception validée par Julien le 17 novembre 2026, à partir de l'idée « mode
 - **Base** (migration `0023`) : sur `editions`, `guess_mode`, `guess_ends_at` (un instant), `guess_time_zone` (le fuseau de l'organisateur au réglage, pour écrire l'heure dans les messages), `guess_reminder_sent_at`, `guesses_closed_at`, `guess_results_sent_at` ; sur `participations`, `guess_results_seen_at` ; la table `guesses` (qui pronostique, pour quel destinataire, quelle personne, par personne).
 - **Tâche planifiée** : une seconde cron, toutes les 15 minutes (`server/plugins/guesses.ts`, Correction 12), inscrit la fin des pronostics au journal, et dévoile le tirage le lendemain de la fête à l'heure de fin si l'organisateur ne l'a pas fait (action `system`). Le rappel du matin garde sa cron de 8 h. Après tout dévoilement, manuel ou automatique, `afterReveal` (`server/http/guesses.ts`) ferme les pronostics, et, dès qu'une personne a joué, inscrit « le palmarès est arrivé » et envoie l'email du palmarès, une fois.
 - **Messages** : une ligne dans « Tirage fait » tant que le jeu est actif, le rappel du jeu (`guessReminder`) et l'email du palmarès (`buildGuessResultsEmail`), dans les trois langues ; l'heure s'écrit « 25 décembre à 18 h » (`guessEndText`, `shared/utils/dates.ts`), à l'écran dans le fuseau du lecteur, une fois la page montée.
-- **Écrans** : décrits en section 11 ; le palmarès en images est `ParticipantStories`, ses écrans choisis par `storyScreens` (`shared/utils/palmares.ts`, testé).
+- **Écrans** : décrits en section 11 ; le palmarès en images est `ParticipantStories`, ses écrans choisis par `storyScreens` et leurs couleurs par `storyLooks` (`shared/utils/palmares.ts`, testés), les nombres écrits en lettres par `numberWord` (`shared/utils/words.ts`).
+- **Les prix (Correction 14, codée le 18 novembre 2026)** : `server/utils/awards.ts`, testé prix par prix : `smoothed`, `groupThreshold`, `detectiveScores` (aussi le classement), `santaScores`, `twinScores`, `awardsOf`, `pickAwards` (huit écrans au plus), `closeCallOf` (« Si près du but », pour le seul joueur concerné). Migration `0024` : `guesses.previous_giver_ids`, les réponses précédentes de chaque ligne ; chaque pronostic garde l'heure de sa réponse actuelle. `palmares` reçoit la fin réelle des pronostics (`guessesEndedAt`).
 
 ### 22.18 Fait : la page d'un tirage dévoilé (18 novembre 2026)
 

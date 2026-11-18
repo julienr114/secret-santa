@@ -1,5 +1,6 @@
 import { ok, fail, type Result } from './result';
 import type { Assignment } from './draw';
+import { awardsOf, detectiveScores, type Award } from './awards';
 
 // « Devine qui », the game of guesses (README 22.17). After the draw, each
 // participant may guess who gives to whom; the answers come at the party,
@@ -11,7 +12,15 @@ export const GUESS_MODES = ['none', 'santa', 'all'] as const;
 export type GuessMode = (typeof GUESS_MODES)[number];
 
 /** One guess: `guesserId` thinks `giverId` gives to `recipientId` (persons). */
-export type Guess = { guesserId: string; recipientId: string; giverId: string };
+export type Guess = {
+  guesserId: string;
+  recipientId: string;
+  giverId: string;
+  /** When this answer was given (ISO). */
+  at?: string;
+  /** The persons named on this line before, oldest first (Correction 14). */
+  previous?: string[];
+};
 
 /** Fewer players than this: the small palmarès, without awards. */
 export const MIN_PLAYERS = 3;
@@ -38,6 +47,19 @@ export const GAME_OFF = {
   guessEndsAt: null,
   guessTimeZone: null,
 } as const;
+
+/**
+ * When the guesses ended: the end time, or the reveal if it came first.
+ * @param edition - Its end time and when the guesses were closed.
+ * @returns The instant (ISO), or null.
+ */
+export const guessesEndedAt = (edition: {
+  guessEndsAt: string | null;
+  guessesClosedAt: string | null;
+}): string | null =>
+  [edition.guessEndsAt, edition.guessesClosedAt]
+    .filter((x): x is string => Boolean(x))
+    .toSorted()[0] ?? null;
 
 /**
  * Whether guesses can be made or changed now: the game is on, the edition
@@ -136,17 +158,26 @@ export const guessChoices = (p: {
 /**
  * One player's guesses with a new one: a person names one recipient only,
  * so naming them again moves the guess (« Ton pronostic pour Hugo : le
- * choisir le déplace ici »).
+ * choisir le déplace ici »). The line keeps who it named before (for
+ * « La girouette » and « Si près du but »); the same answer again changes
+ * nothing, not even its time.
  * @param mine - The player's guesses.
- * @param guess - The new guess.
+ * @param guess - The new guess, with its time.
  * @returns The player's guesses afterwards.
  */
-export const placeGuess = (mine: Guess[], guess: Guess): Guess[] => [
-  ...mine.filter(
-    (g) => g.recipientId !== guess.recipientId && g.giverId !== guess.giverId,
-  ),
-  guess,
-];
+export const placeGuess = (mine: Guess[], guess: Guess): Guess[] => {
+  const old = mine.find((g) => g.recipientId === guess.recipientId);
+  if (old?.giverId === guess.giverId) return mine;
+  return [
+    ...mine.filter(
+      (g) => g.recipientId !== guess.recipientId && g.giverId !== guess.giverId,
+    ),
+    {
+      ...guess,
+      previous: old ? [...(old.previous ?? []), old.giverId] : [],
+    },
+  ];
+};
 
 /**
  * Going back to « Qui m'offre ? »: only the guesses on one's own Santa stay.
@@ -199,79 +230,27 @@ export const countedGuesses = (
 export const isRight = (guess: Guess, pairs: Assignment[]): boolean =>
   receiverMap(pairs).get(guess.giverId) === guess.recipientId;
 
-/** An award: up to three winners by name, or only how many past that. */
-export type Award = {
-  kind: 'unmasked' | 'detective' | 'transparent' | 'hidden' | 'suspect';
-  /** The winners, by person, when there are three at most. */
-  winners: string[];
-  /** How many share it (more than three: a sentence, no name). */
-  count: number;
-  /** What it rests on: right guesses (and out of how many), or times. */
-  value: number;
-  total?: number;
-};
-
-/** The award for a set of people sharing it, or nothing without anyone. */
-const award = (
-  kind: Award['kind'],
-  winners: string[],
-  value: number,
-  total?: number,
-): Award[] =>
-  winners.length === 0
-    ? []
-    : [
-        {
-          kind,
-          winners: winners.length <= 3 ? winners : [],
-          count: winners.length,
-          value,
-          ...(total === undefined ? {} : { total }),
-        },
-      ];
-
-/** Those who share the highest score, if it is above zero. */
-const best = (scores: Map<string, number>): [string[], number] => {
-  const top = Math.max(0, ...scores.values());
-  return top === 0
-    ? [[], 0]
-    : [[...scores].filter(([, v]) => v === top).map(([id]) => id), top];
-};
-
-const tally = (ids: string[]) =>
-  ids.reduce(
-    (m, id) => m.set(id, (m.get(id) ?? 0) + 1),
-    new Map<string, number>(),
-  );
-
 /** A player's line of the ranking. */
 export type Standing = { playerId: string; right: number; made: number };
 
 /**
- * The ranking (« Toutes les paires »): the most right guesses first; with
- * the same number, who made the fewest comes first.
+ * The ranking (« Toutes les paires »): the detective's score first (each
+ * right guess worth more when others were wrong), then precision, then
+ * who made the fewest.
  * @param counted - The guesses that count.
  * @param pairs - The draw.
  * @returns One line per player.
  */
-export const ranking = (counted: Guess[], pairs: Assignment[]): Standing[] => {
-  const players = [...new Set(counted.map((g) => g.guesserId))];
-  return players
-    .map((playerId) => {
-      const own = counted.filter((g) => g.guesserId === playerId);
-      return {
-        playerId,
-        right: own.filter((g) => isRight(g, pairs)).length,
-        made: own.length,
-      };
-    })
+export const ranking = (counted: Guess[], pairs: Assignment[]): Standing[] =>
+  detectiveScores(counted, pairs)
     .toSorted(
       (a, b) =>
-        b.right - a.right ||
+        b.score - a.score ||
+        b.right / b.made - a.right / a.made ||
         a.made - b.made ||
         a.playerId.localeCompare(b.playerId),
-    );
-};
+    )
+    .map(({ playerId, right, made }) => ({ playerId, right, made }));
 
 /**
  * How much of a palmarès there is (Correction 12): nothing without a
@@ -304,71 +283,33 @@ export type Palmares = {
   guesses: number;
   /** Nothing, the small palmarès, or the full one with its awards. */
   size: PalmaresSize;
-  /** In the order of the images; an award without a winner is left out. */
+  /** In the order of the images; an award whose condition fails is left out. */
   awards: Award[];
 };
 
 /**
- * The awards of a game (README 22.17): « Démasqués » (guessed their own
- * Santa), « Le détective » (the most right guesses, fewer made first),
- * « Le plus transparent » (unmasked by the most players), « Les mieux
- * cachés » (Santas nobody unmasked) and « Le suspect idéal » (named the
- * most often wrongly). In « Qui m'offre ? », no detective nor transparent.
+ * The palmarès of a game (README 22.17, Correction 14): its size, and, for
+ * the full one, its award screens (`awardsOf`).
  * @param guesses - Every guess.
  * @param pairs - The draw.
  * @param mode - The game.
+ * @param endedAt - When the guesses ended, for « Sur le fil ».
  * @returns The palmarès.
  */
 export const palmares = (
   guesses: Guess[],
   pairs: Assignment[],
   mode: GuessMode,
+  endedAt: string | null = null,
 ): Palmares => {
   const counted = countedGuesses(guesses, pairs, mode);
   const players = new Set(counted.map((g) => g.guesserId)).size;
   const size = palmaresSize(players, pairs.length);
-  if (size !== 'full') {
-    return { players, guesses: counted.length, size, awards: [] };
-  }
-  const right = counted.filter((g) => isRight(g, pairs));
-  // Being found by oneself is not being unmasked: the awards about the
-  // Santas leave out the guesses where the player named themselves.
-  const aboutOthers = counted.filter((g) => g.giverId !== g.guesserId);
-  const rightOthers = aboutOthers.filter((g) => isRight(g, pairs));
-  const wrong = aboutOthers.filter((g) => !isRight(g, pairs));
-  const unmasked = right
-    .filter((g) => g.guesserId === g.recipientId)
-    .map((g) => g.guesserId);
-  const standings = ranking(counted, pairs);
-  const top = standings[0];
-  const detectives =
-    top && top.right > 0
-      ? standings
-          .filter((s) => s.right === top.right && s.made === top.made)
-          .map((s) => s.playerId)
-      : [];
-  const [transparent, unmaskings] = best(
-    tally(rightOthers.map((g) => g.giverId)),
-  );
-  const unmaskedGivers = new Set(rightOthers.map((g) => g.giverId));
-  const hidden = pairs
-    .map((p) => p.giverId)
-    .filter((id) => !unmaskedGivers.has(id));
-  const [suspects, citations] = best(tally(wrong.map((g) => g.giverId)));
-  const playersCount = players;
   return {
     players,
     guesses: counted.length,
     size,
-    awards: [
-      ...award('unmasked', unmasked, unmasked.length, playersCount),
-      ...(mode === 'all'
-        ? award('detective', detectives, top?.right ?? 0, top?.made)
-        : []),
-      ...(mode === 'all' ? award('transparent', transparent, unmaskings) : []),
-      ...award('hidden', hidden, 0),
-      ...award('suspect', suspects, citations),
-    ],
+    awards: size === 'full' ? awardsOf({ counted, pairs, mode, endedAt }) : [],
   };
 };
 

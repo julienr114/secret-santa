@@ -235,52 +235,110 @@ export default {
     seeMyResult: 'See again who I gave a gift to',
     discoverMyResult: 'Discover who I was giving a gift to',
     awards: {
+      crowd: '{count} people tied',
       unmasked: {
         title: 'Unmasked',
         titleMany: 'Unmasked',
         body: 'Guessed their Secret Santa.',
-        bodyMany: 'Guessed their Secret Santa.',
-        crowd: '{count} people',
+        bodyMany: 'They guessed their Secret Santa.',
+        share: '{n} out of {m}',
+        crowdOf: 'people out of {total}',
+        shareBody: 'guessed their Secret Santa.',
+        all: 'The Santas couldn’t hide a thing.',
+        most: 'A great year for detectives.',
       },
       detective: {
         title: 'The detective',
         titleMany: 'The detectives',
-        body: {
-          one: '{count} right guess out of {total}. Nobody did better.',
-          other: '{count} right guesses out of {total}. Nobody did better.',
+        body: '{right} right guesses out of {made}.',
+        bodyAlone: {
+          one: '{right} right guesses out of {made}, one that nobody else found.',
+          other:
+            '{right} right guesses out of {made}, {n} that nobody else found.',
         },
-        bodyMany: {
-          one: '{count} right guess out of {total}, tied.',
-          other: '{count} right guesses out of {total}, tied.',
-        },
-        crowd: '{count} detectives',
+        bodyMany: '{right} right guesses out of {made} each.',
+      },
+      flawless: {
+        title: 'Flawless',
+        titleMany: 'Flawless',
+        body: '{N} guesses, {n} right. Nothing to add.',
+        bodyMany: '{N} guesses each, all right. Nothing to add.',
       },
       transparent: {
         title: 'The most transparent',
         titleMany: 'The most transparent',
-        body: {
-          one: 'Unmasked by {count} person.',
-          other: 'Unmasked by {count} people.',
-        },
-        bodyMany: {
-          one: 'Each unmasked by {count} person.',
-          other: 'Each unmasked by {count} people.',
-        },
-        crowd: '{count} people',
+        body: '{N} people out of {m} unmasked them. Keeping a secret isn’t easy.',
+        bodyMany:
+          '{N} people out of {m} unmasked each of them. Keeping a secret isn’t easy.',
       },
       hidden: {
         title: 'The best hidden',
         titleMany: 'The best hidden',
-        body: 'Nobody unmasked them. A work of art.',
-        bodyMany: 'Nobody unmasked them. A work of art.',
-        crowd: '{count} people',
+        none: '{N} people looked for them, none found them. A masterpiece.',
+        one: '{N} people looked for them, only one found them.',
+        some: '{N} people looked for them, only {f} found them.',
+        manyNone:
+          '{N} people looked for each of them, none found them. A masterpiece.',
+        manySome: '{N} people looked for each of them, few found them.',
+      },
+      rumour: {
+        title: 'The rumour',
+        titleMany: 'The rumour',
+        claim: '{giver} gave\nto {recipient}?',
+        body: '{N} of you were sure of it. It was wrong.',
       },
       suspect: {
         title: 'The ideal suspect',
         titleMany: 'The ideal suspects',
-        body: 'Named wrongly {count} times. One wonders why.',
-        bodyMany: 'Each named wrongly {count} times. One wonders why.',
-        crowd: '{count} people',
+        never: 'Named {count} times as Secret Santa. Wrongly, every time.',
+        body: 'Named wrongly {count} times as Secret Santa.',
+        bodyMany: 'Each named wrongly {count} times as Secret Santa.',
+      },
+      twins: {
+        title: 'The twins',
+        titleMany: 'The twins',
+        noError: '{N} identical guesses out of {m}. Did you plan this?',
+        oneError:
+          '{N} identical guesses out of {m}, one of them wrong. Did you plan this?',
+        errors:
+          '{N} identical guesses out of {m}, {e} of them wrong. Did you plan this?',
+      },
+      triplets: {
+        title: 'The triplets',
+        titleMany: 'The triplets',
+        body: 'The same guesses, the three of you. There was whispering.',
+      },
+      lastMinute: {
+        title: 'Down to the wire',
+        titleMany: 'Down to the wire',
+        last: 'Decided in the very last minute of the guesses.',
+        body: {
+          one: 'Decided one minute before the guesses ended.',
+          other: 'Decided {n} minutes before the guesses ended.',
+        },
+      },
+      weathervane: {
+        title: 'The weathervane',
+        titleMany: 'The weathervanes',
+        body: 'Changed their mind {n} times before deciding.',
+        bodyMany: 'Each changed their mind {n} times before deciding.',
+      },
+      group: {
+        title: 'All of you',
+        titleMany: 'All of you',
+        score: '{right} out of {total}',
+        scoreLabel: 'right guesses',
+        better: 'By chance, you would have had {chance}. Not bad at all.',
+        same: 'By chance, you would have had {chance}. Chance would have done as well.',
+        worse:
+          'By chance, you would have had {chance}. The Santas were well hidden.',
+      },
+      closeCall: {
+        title: 'So close',
+        big: 'Almost!',
+        body: 'You had found {name}’s Secret Santa… then you changed your mind. Your instinct was right.',
+        bodyMe:
+          'You had found your Secret Santa… then you changed your mind. Your instinct was right.',
       },
     },
     story: {

@@ -754,7 +754,7 @@ Toutes ces routes exigent une session ; celles d'un groupe exigent d'en être l'
 | `GET/POST /api/admin/[groupe]/organizers`, `DELETE …/organizers/[compte]` | Organisateurs du groupe |
 | `POST /api/admin/groups/[id]/delete` | Super-admin : supprime le groupe et tout ce qu'il contient ; corps `confirm` = identifiant du groupe |
 | `GET /api/admin/[groupe]` | Accueil du groupe : éditions, édition en cours, règles |
-| `GET/POST /api/admin/[groupe]/persons`, `PATCH/DELETE …/persons/[id]` | Personnes : prénom, nom, email, langue, icône, actif. Suppression seulement si la personne n'a jamais participé |
+| `GET/POST /api/admin/[groupe]/persons`, `PATCH/DELETE …/persons/[id]` | Personnes : prénom, nom, email, langue, icône, actif. Une adresse n'appartient qu'à une personne du groupe : la donner à une seconde est refusé (`409 email_taken`, `canUseEmail`), à la création, à la modification et quand on rattache un tirage à son compte. Suppression seulement si la personne n'a jamais participé |
 | `POST /api/admin/[groupe]/exclusions`, `DELETE …/exclusions/[id]` | Exclusions |
 | `GET/PATCH /api/admin/[groupe]/rules` | Règles du groupe |
 | `GET /api/admin/[groupe]/journal` | Journal, dans la langue de l'administration, avec la personne de chaque ligne et les personnes nommées |

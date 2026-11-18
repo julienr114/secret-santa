@@ -1,3 +1,5 @@
+import { canUseEmail } from '#server/utils/people';
+import { findPersonByGroupEmail } from '#server/database/invite';
 import { eq } from 'drizzle-orm';
 import { findAccountById } from '#server/database/accounts';
 import { persons } from '#server/database/schema';
@@ -17,6 +19,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
   unwrap(canClaim(person.email, account.email));
+  unwrap(
+    canUseEmail(
+      account.email,
+      await findPersonByGroupEmail(db, person.groupId, account.email),
+      person.id,
+    ),
+  );
   if (person.email !== account.email) {
     await db
       .update(persons)

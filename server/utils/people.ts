@@ -98,6 +98,21 @@ export const personFromProfile = (account: ProfileAccount) => ({
  * @param change - What is asked: deletion, or the fields of an edit.
  * @returns Ok, or `person_is_organizer`.
  */
+/**
+ * Whether an address can be given to a person: one address belongs to one
+ * person of a group (it is how they log in and find their draws).
+ * @param email - The address given, or none.
+ * @param holder - The person of the group who already has it, or null.
+ * @param selfId - The person being saved, when they exist already.
+ * @returns Ok, or `email_taken`.
+ */
+export const canUseEmail = (
+  email: string | null | undefined,
+  holder: { id: string } | null,
+  selfId?: string,
+): Result<true> =>
+  !email || !holder || holder.id === selfId ? ok(true) : fail('email_taken');
+
 export const canChangePerson = (
   email: string | null,
   organizerEmails: readonly string[],

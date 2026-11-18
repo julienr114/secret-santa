@@ -5,8 +5,10 @@ import { requireGroupAccess } from '#server/http/auth';
 import { notFound, unwrap } from '#server/http/errors';
 import { listOrganizers } from '#server/database/groups';
 import { validatedBody } from '#server/http/validate';
+import { findPersonByGroupEmail } from '#server/database/invite';
 import {
   canChangePerson,
+  canUseEmail,
   personPatchSchema,
   publicPerson,
 } from '#server/utils/people';
@@ -24,6 +26,16 @@ export default defineEventHandler(async (event) => {
       person.email,
       organizers.map((o) => o.email),
       patch,
+    ),
+  );
+  // One address, one person of the group.
+  unwrap(
+    canUseEmail(
+      patch.email,
+      patch.email
+        ? await findPersonByGroupEmail(db, group.id, patch.email)
+        : null,
+      person.id,
     ),
   );
   await db.update(persons).set(patch).where(eq(persons.id, person.id));

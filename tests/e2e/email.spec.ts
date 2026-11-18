@@ -66,6 +66,27 @@ test('the guardian adds addresses and sends to those who have one', async ({
   expect(
     persons.find((p: { firstName: string }) => p.firstName === 'Ada').email,
   ).toBe('ada@example.com');
+  // One address, one person of the group: neither a new person nor Bob
+  // can take Ada's.
+  const twin = await page.request.post(`${ADMIN}/persons`, {
+    data: { firstName: 'Ada bis', email: 'ada@example.com' },
+  });
+  expect(twin.status()).toBe(409);
+  const bob = persons.find((p: { firstName: string }) => p.firstName === 'Bob');
+  const taken = await page.request.patch(`${ADMIN}/persons/${bob.id}`, {
+    data: { email: 'ADA@example.com' },
+  });
+  expect(taken.status()).toBe(409);
+  // On screen, the form says why.
+  await page.goto(`/admin/${SLUG}/personnes/${bob.id}`);
+  await hydrated(page);
+  await page.getByLabel(/^Adresse email/).fill('ada@example.com');
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(
+    page
+      .getByText('Cette adresse est déjà celle d’une autre personne du groupe.')
+      .first(),
+  ).toBeVisible();
 
   await page.goto(`/admin/${SLUG}/editions/${state.editionId}`);
   await hydrated(page);

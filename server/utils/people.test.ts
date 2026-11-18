@@ -1,7 +1,9 @@
+import { failureOf } from '~~/tests/helpers';
 import { describe, it, expect } from 'vitest';
 import {
   byName,
   canChangePerson,
+  canUseEmail,
   displayName,
   firstNameFromEmail,
   fullName,
@@ -136,6 +138,20 @@ describe('firstNameFromEmail', () => {
 
   it('keeps the address when there is no word to take', () => {
     expect(firstNameFromEmail('2024@example.com')).toBe('2024@example.com');
+  });
+});
+
+describe('canUseEmail', () => {
+  it('lets an address belong to one person of the group only', () => {
+    expect(canUseEmail('ada@example.com', null).ok).toBe(true);
+    expect(canUseEmail('ada@example.com', { id: 'p1' }, 'p1').ok).toBe(true);
+    expect(canUseEmail(null, { id: 'p1' }, 'p2').ok).toBe(true);
+    expect(failureOf(canUseEmail('ada@example.com', { id: 'p1' })).reason).toBe(
+      'email_taken',
+    );
+    expect(
+      failureOf(canUseEmail('ada@example.com', { id: 'p1' }, 'p2')).reason,
+    ).toBe('email_taken');
   });
 });
 

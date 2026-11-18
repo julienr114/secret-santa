@@ -96,4 +96,5 @@ export default {
     'The game needs at least four players: with three, there’s nothing to guess.',
   draw_not_revealed: 'The draw is not revealed yet.',
   already_played: 'You already made a guess: take it back first.',
+  email_taken: 'This address already belongs to another person of the group.',
 } satisfies Dict<typeof fr>;

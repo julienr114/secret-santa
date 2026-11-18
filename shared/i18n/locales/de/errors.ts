@@ -106,4 +106,5 @@ export default {
     'Das Spiel braucht mindestens vier: zu dritt gibt es nichts zu erraten.',
   draw_not_revealed: 'Die Auslosung ist noch nicht aufgedeckt.',
   already_played: 'Du hast schon getippt: Nimm den Tipp erst zurück.',
+  email_taken: 'Diese Adresse gehört schon einer anderen Person der Gruppe.',
 } satisfies Dict<typeof fr>;

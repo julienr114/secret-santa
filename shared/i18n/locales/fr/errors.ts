@@ -101,4 +101,5 @@ export default {
     'Le jeu se joue à quatre au moins : à trois, il n’y a rien à deviner.',
   draw_not_revealed: 'Le tirage n’est pas encore dévoilé.',
   already_played: 'Tu as déjà fait un pronostic : retire-le d’abord.',
+  email_taken: 'Cette adresse est déjà celle d’une autre personne du groupe.',
 };

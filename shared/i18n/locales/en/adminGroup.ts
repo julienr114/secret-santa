@@ -158,6 +158,13 @@ export default {
     languageHelp: 'Their page, messages and emails are in this language.',
   },
   avatar: {
+    groups: {
+      people: 'Characters',
+      animals: 'Animals',
+      food: 'Treats',
+      activities: 'Activities',
+      decor: 'Christmas decor',
+    },
     title: 'My icon',
     theirs: 'Their icon',
     emoji: 'Emoji',

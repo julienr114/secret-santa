@@ -167,6 +167,13 @@ export default {
       'Die Seite, die Nachrichten und die E-Mails dieser Person sind in dieser Sprache.',
   },
   avatar: {
+    groups: {
+      people: 'Figuren',
+      animals: 'Tiere',
+      food: 'Leckereien',
+      activities: 'Aktivitäten',
+      decor: 'Weihnachtsdeko',
+    },
     title: 'Mein Symbol',
     theirs: 'Sein Symbol',
     emoji: 'Emoji',

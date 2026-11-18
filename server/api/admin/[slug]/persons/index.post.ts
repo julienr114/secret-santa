@@ -1,7 +1,8 @@
 import { persons } from '#server/database/schema';
 import { requireGroupAccess } from '#server/http/auth';
 import { newId, nowIso } from '#server/http/context';
-import { randomAvatar } from '#server/utils/avatars';
+import { avatarOf, freshAvatar } from '#server/utils/avatars';
+import { listPeople } from '#server/database/people';
 import { secureRandomInt } from '#server/utils/crypto';
 import { validatedBody } from '#server/http/validate';
 import {
@@ -27,8 +28,12 @@ export default defineEventHandler(async (event) => {
         : null,
     ),
   );
-  // Random Christmas avatar unless the guardian picked one.
-  const avatar = randomAvatar(secureRandomInt);
+  // A Christmas icon nobody of the group has yet, unless the guardian
+  // picked one.
+  const avatar = freshAvatar(
+    (await listPeople(db, group.id)).map(avatarOf),
+    secureRandomInt,
+  );
   const person = {
     id: newId(),
     groupId: group.id,

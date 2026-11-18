@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import { newId } from '#server/http/context';
-import { randomAvatar } from '#server/utils/avatars';
+import { avatarOf, freshAvatar } from '#server/utils/avatars';
 import { secureRandomInt } from '#server/utils/crypto';
 import { personFromProfile, type ProfileAccount } from '#server/utils/people';
 import {
@@ -60,7 +60,7 @@ export const hasParticipations = async (
  *   the id to give the person (a new one by default).
  * @returns The insert, to await.
  */
-export const insertPersonFromAccount = (
+export const insertPersonFromAccount = async (
   db: Db,
   {
     groupId,
@@ -70,7 +70,11 @@ export const insertPersonFromAccount = (
   }: { groupId: string; account: ProfileAccount; now: string; id?: string },
 ) => {
   const self = personFromProfile(account);
-  const avatar = randomAvatar(secureRandomInt);
+  // An icon nobody of the group has yet, unless the profile has one.
+  const avatar = freshAvatar(
+    (await listPeople(db, groupId)).map(avatarOf),
+    secureRandomInt,
+  );
   return db.insert(persons).values({
     ...self,
     id,

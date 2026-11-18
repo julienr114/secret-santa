@@ -35,8 +35,178 @@ export const AVATAR_EMOJIS = [
   '🎠',
   '⛸️',
   '🛷',
+  // Added on 18 November 2026, with those removed on 14 November back:
+  // only ever appended, so that no default avatar changes.
+  '🧑‍🎄',
+  '🧝‍♀️',
+  '🧝‍♂️',
+  '👼',
+  '☃️',
+  '🫎',
+  '🐻‍❄️',
+  '🐻',
+  '🐿️',
+  '🦔',
+  '🐺',
+  '🐇',
+  '🦭',
+  '🐑',
+  '🦃',
+  '🕊️',
+  '🐦',
+  '🐈',
+  '🐕',
+  '🍰',
+  '🧁',
+  '🥧',
+  '🍮',
+  '🍯',
+  '🥐',
+  '🧇',
+  '🥞',
+  '🍐',
+  '🍇',
+  '🥕',
+  '🧀',
+  '🍗',
+  '🥂',
+  '🍾',
+  '☕',
+  '🫖',
+  '🎿',
+  '🏂',
+  '🏒',
+  '🎡',
+  '🎶',
+  '🎺',
+  '🎻',
+  '🎲',
+  '🧩',
+  '♟️',
+  '🃏',
+  '🌲',
+  '✨',
+  '🌨️',
+  '🔔',
+  '🕯️',
+  '🔥',
+  '🪵',
+  '🧥',
+  '🧸',
+  '🚂',
+  '🏔️',
+  '🏡',
+  '🎊',
 ] as const;
 export type AvatarEmoji = (typeof AVATAR_EMOJIS)[number];
+
+/** The families of emojis, in the order of the choice, like a keyboard. */
+export const AVATAR_GROUP_KEYS = [
+  'people',
+  'animals',
+  'food',
+  'activities',
+  'decor',
+] as const;
+export type AvatarGroupKey = (typeof AVATAR_GROUP_KEYS)[number];
+
+/**
+ * The emojis ranged by family for the choice (18 November 2026): people,
+ * animals, food and drinks, activities, then the decor of Christmas. Each
+ * emoji of AVATAR_EMOJIS is in one family exactly (tested).
+ */
+export const AVATAR_GROUPS: Record<AvatarGroupKey, readonly AvatarEmoji[]> = {
+  people: ['🎅', '🤶', '🧑‍🎄', '🧝', '🧝‍♀️', '🧝‍♂️', '👼', '⛄', '☃️'],
+  animals: [
+    '🦌',
+    '🫎',
+    '🐧',
+    '🦊',
+    '🦉',
+    '🐻‍❄️',
+    '🐻',
+    '🐿️',
+    '🦔',
+    '🐺',
+    '🐇',
+    '🦭',
+    '🐑',
+    '🦃',
+    '🕊️',
+    '🐦',
+    '🐈',
+    '🐕',
+  ],
+  food: [
+    '🍪',
+    '🥛',
+    '🍫',
+    '🍬',
+    '🍭',
+    '🍰',
+    '🧁',
+    '🥧',
+    '🍮',
+    '🍯',
+    '🥨',
+    '🥐',
+    '🧇',
+    '🥞',
+    '🌰',
+    '🍎',
+    '🍊',
+    '🍐',
+    '🍇',
+    '🥕',
+    '🧀',
+    '🫕',
+    '🍗',
+    '🍷',
+    '🥂',
+    '🍾',
+    '☕',
+    '🫖',
+  ],
+  activities: [
+    '⛸️',
+    '🛷',
+    '🎿',
+    '🏂',
+    '🏒',
+    '🎠',
+    '🎡',
+    '🎶',
+    '🎺',
+    '🎻',
+    '🎲',
+    '🧩',
+    '♟️',
+    '🃏',
+  ],
+  decor: [
+    '🎄',
+    '🌲',
+    '🎁',
+    '🎀',
+    '🌟',
+    '✨',
+    '❄️',
+    '🌨️',
+    '🔔',
+    '🕯️',
+    '🔥',
+    '🪵',
+    '🧦',
+    '🧣',
+    '🧤',
+    '🧥',
+    '🧸',
+    '🚂',
+    '🏔️',
+    '🏡',
+    '🎊',
+  ],
+};
 
 // The first set, used for the default avatar derived from an id: kept
 // apart so that adding emojis never changes someone's existing default.
@@ -65,6 +235,28 @@ export const randomAvatar = (random: (n: number) => number): Avatar => ({
   emoji: pick(AVATAR_EMOJIS, random(AVATAR_EMOJIS.length)),
   color: pick(AVATAR_COLORS, random(AVATAR_COLORS.length)),
 });
+
+/**
+ * The icon of a new person of a group: a combination of emoji and colour
+ * nobody of the group has yet, an emoji nobody has if there is one left;
+ * any when every combination is taken (18 November 2026).
+ * @param taken - The icons of the group's persons.
+ * @param random - A random integer below its argument.
+ * @returns The icon.
+ */
+export const freshAvatar = (
+  taken: readonly Avatar[],
+  random: (n: number) => number,
+): Avatar => {
+  const used = new Set(taken.map((a) => `${a.emoji} ${a.color}`));
+  const usedEmojis = new Set(taken.map((a) => a.emoji));
+  const free = AVATAR_EMOJIS.flatMap((emoji) =>
+    AVATAR_COLORS.map((color) => ({ emoji, color })),
+  ).filter((a) => !used.has(`${a.emoji} ${a.color}`));
+  const unseen = free.filter((a) => !usedEmojis.has(a.emoji));
+  const pool = unseen.length > 0 ? unseen : free;
+  return pool.length > 0 ? pool[random(pool.length)]! : randomAvatar(random);
+};
 
 // FNV-1a: a small, stable string hash.
 const hash = (text: string): number =>

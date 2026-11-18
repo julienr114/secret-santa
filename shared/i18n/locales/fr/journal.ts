@@ -92,8 +92,11 @@ export default {
     person: 'Personne concernée',
     everyone: 'Tout le monde',
     me: 'Moi ({name})',
-    meNote:
-      'Tout ce qui touche ton lien et ton enveloppe. Si une ligne ne vient pas de toi, préviens ton organisateur.',
+    meNote: {
+      one: 'Tout ce qui touche ton lien et ton enveloppe. Si une ligne ne vient pas de toi, préviens ton organisateur.',
+      other:
+        'Tout ce qui touche ton lien et ton enveloppe. Si une ligne ne vient pas de toi, préviens tes organisateurs.',
+    },
   },
   grouped: {
     result_viewed: '{strong} ont ouvert leur enveloppe',
@@ -111,8 +114,11 @@ export default {
   },
   help: {
     title: 'À quoi sert le journal ?',
-    warning:
-      'Une ligne te concerne et ne vient pas de toi ? Préviens ton organisateur : il peut régénérer ton lien.',
+    warning: {
+      one: 'Une ligne te concerne et ne vient pas de toi ? Préviens ton organisateur : il peut régénérer ton lien.',
+      other:
+        'Une ligne te concerne et ne vient pas de toi ? Préviens tes organisateurs : ils peuvent régénérer ton lien.',
+    },
     intro:
       'À garder le tirage honnête. Tricher reste possible, mais ça se voit.',
     notes: 'Il note',
@@ -121,7 +127,7 @@ export default {
     never: 'Il ne dit jamais',
     neverBody: 'Qui offre à qui, ni les pistes de cadeaux de chacun.',
     who: 'Tout le groupe le voit',
-    whoBody: 'Participants et organisateur, avec les mêmes lignes.',
+    whoBody: 'Participants et organisateurs, avec les mêmes lignes.',
   },
   alert: {
     at: '{day} à {time}',

@@ -632,6 +632,15 @@ Demandée par Julien le 18 novembre 2026. Tout est dans `docs/refonte/TEXTES.md`
 - [x] **« Surprise », pas « palmarès »**, dans `DevinePasse` : « On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête. », dans les trois langues. La progression compte bien toutes les lignes (« 3 pronostics sur 6 ») : les maquettes `DevinePairesCourse` et `DevinePasse` sont alignées.
 
 
+### Correction 17 — Le contexte dans les messages, et plusieurs organisateurs
+
+Demandée par Julien le 18 novembre 2026 : les messages manquaient de contexte (« Devine qui », « Under the Tree » ne disent rien), et un groupe peut avoir plusieurs organisateurs. Règle dans `docs/refonte/TEXTES.md`, section 15.
+
+- [x] **Le contexte** : le groupe dans l'objet de chaque email, le Secret Santa du groupe dès la première ligne de chaque message, « Devine qui » présenté. Trois langues.
+- [x] **Point 1, la signature** : un email envoyé par un organisateur est signé de son prénom ; sans prénom, ou envoyé par l'application, « Le Secret Santa de {groupe} ». « Under the Tree » ne signe plus que les emails à l'organisateur.
+- [x] **Point 3, « tes organisateurs »** : côté participant (page du tirage, jeu, journal, demande de pistes, invitation), le pluriel dès que le groupe a plusieurs organisateurs.
+- [ ] **Point 4, plus tard** : dire qui a fait quoi entre organisateurs (« Dernier rappel le 20 décembre, par Hugo », « Hugo le reçoit aussi » dans les emails d'étape, le prénom dans le journal au lieu de « L'organisateur »). Demande de garder qui a fait l'action.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
@@ -893,4 +902,13 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 2. **Le rappel automatique en retard** : au-delà de six heures après son heure, il est noté comme manqué et ne partira plus.
 3. **Ce que j'ai changé hors de `TEXTES.md`, dans la même voix** : côté participant, les dernières mentions de « ton résultat » dans le journal (l'accès de dernier recours, l'aide « Moi », les explications des alertes, le signal de l'accueil) disent « ton enveloppe » ; le badge « consulté » devient « enveloppe ouverte », et le compte de l'accueil organisateur « ont ouvert leur enveloppe ». Les textes de l'organisateur sur « Voir un seul résultat » gardent « résultat ». En anglais, « organiser » devient « organizer » partout et « The day you exchange the gifts » devient « The day of the party, when gifts are given » ; en allemand, « Bescherung » devient « Feier » partout (date de la fête, clôture), « protokolliert » devient « im Journal vermerkt ».
 4. **`home.drawCard.waiting`** (« Le tirage n'a pas encore eu lieu », carte de l'accueil) n'est pas dans `TEXTES.md` : inchangé.
+
+### Correction 17
+
+Codée le 18 novembre 2026. Points tranchés seul, à relire :
+
+1. **Point 2 (messages automatiques) non retenu** : ils signent « Le Secret Santa de {groupe} », sans prénom. Même signature quand l'organisateur qui envoie n'a pas donné de prénom dans son compte.
+2. **Les messages à partager** (WhatsApp, SMS) n'ont pas de signature : ils partent du téléphone de l'organisateur. Ils gagnent seulement le contexte en première ligne.
+3. **Les messages d'erreur** gardent « ton organisateur » : ils ne savent pas de quel groupe il s'agit.
+4. **La forme des objets** : « Secret Santa de {groupe} : … » en français, « {groupe} Secret Santa: … » en anglais, « Wichteln {groupe}: … » en allemand ; pour les emails à l'organisateur, « Devine qui, {groupe} : … ». Le prénom reste dans chaque objet.
 

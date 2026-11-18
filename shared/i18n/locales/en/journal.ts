@@ -91,8 +91,11 @@ export default {
     person: 'Who it is about',
     everyone: 'Everyone',
     me: 'Me ({name})',
-    meNote:
-      'Everything about your link and your envelope. If a line did not come from you, tell your organizer.',
+    meNote: {
+      one: 'Everything about your link and your envelope. If a line did not come from you, tell your organizer.',
+      other:
+        'Everything about your link and your envelope. If a line did not come from you, tell your organizers.',
+    },
   },
   grouped: {
     result_viewed: '{strong} opened their envelope',
@@ -110,8 +113,11 @@ export default {
   },
   help: {
     title: 'What is the journal for?',
-    warning:
-      'A line is about you and you did not do it? Tell your organizer: they can renew your link.',
+    warning: {
+      one: 'A line is about you and you did not do it? Tell your organizer: they can renew your link.',
+      other:
+        'A line is about you and you did not do it? Tell your organizers: they can renew your link.',
+    },
     intro: 'To keep the draw honest. Cheating is still possible, but it shows.',
     notes: 'It records',
     notesBody:
@@ -119,7 +125,7 @@ export default {
     never: 'It never says',
     neverBody: 'Who gives to whom, nor anyone’s gift hints.',
     who: 'The whole group sees it',
-    whoBody: 'Participants and organizer, with the same lines.',
+    whoBody: 'Participants and organizers, with the same lines.',
   },
   alert: {
     at: '{day} at {time}',

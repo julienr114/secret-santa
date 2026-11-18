@@ -219,8 +219,10 @@ export default {
     namedHelp:
       'Le tirage est dévoilé : {name} saura que la demande vient de toi.',
     anonymous: 'Ton nom n’apparaît nulle part',
-    anonymousHelp:
-      'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
+    anonymousHelp: {
+      one: 'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
+      other: 'Ni dans l’email, ni dans le journal, ni pour les organisateurs.',
+    },
     once: 'Une seule demande par tirage',
     onceHelp: 'Pas de relance possible : on ne harcèle personne.',
     send: 'Envoyer la demande',
@@ -250,12 +252,14 @@ export default {
   },
   email: {
     request: {
-      subject: 'Quelqu’un cherche une idée de cadeau pour toi',
+      subject:
+        'Secret Santa de {group} : quelqu’un cherche une idée de cadeau pour toi',
       greeting: 'Bonjour {name},',
       body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : six questions à choix, trente secondes, et quelques mots si tu veux.',
       bodyPortrait:
         'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : cinq questions à choix, trente secondes, et quelques mots si tu veux.',
-      subjectFrom: '{from} cherche une idée de cadeau pour toi',
+      subjectFrom:
+        'Secret Santa de {group} : {from} cherche une idée de cadeau pour toi',
       bodyFrom:
         '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Six questions à choix, trente secondes, et quelques mots si tu veux.',
       bodyPortraitFrom:
@@ -265,7 +269,7 @@ export default {
       once: 'Tu ne recevras ce message qu’une fois.',
     },
     arrived: {
-      subject: 'Des pistes de cadeaux t’attendent',
+      subject: 'Secret Santa de {group} : des pistes de cadeaux t’attendent',
       greeting: 'Bonjour {name},',
       body: 'La personne à qui tu offres un cadeau pour {edition} ({group}) a laissé des pistes. Ouvre ton lien pour les lire :',
     },

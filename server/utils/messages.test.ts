@@ -49,14 +49,14 @@ describe('buildMessage', () => {
         }),
       ),
     ).toBe(
-      'Léa, les jeux sont faits ! 🎁\nBudget : 20 € max.\nRendez-vous le 24 décembre.\nOuvre ton lien pour découvrir à qui tu offres un cadeau :\nhttps://secret-santa.example/p/abc123',
+      'Léa, les jeux sont faits pour le Secret Santa de la famille Martin ! 🎁\nBudget : 20 € max.\nRendez-vous le 24 décembre.\nOuvre ton lien pour découvrir à qui tu offres un cadeau :\nhttps://secret-santa.example/p/abc123',
     );
     expect(valueOf(buildMessage('drawn', data))).not.toContain('Budget');
   });
 
   it('writes a short reminder', () => {
     expect(valueOf(buildMessage('reminder', data))).toContain(
-      'ton enveloppe prend la poussière',
+      'ton enveloppe du Secret Santa de la famille Martin prend la poussière',
     );
   });
 
@@ -110,13 +110,13 @@ describe('messageTypesFor', () => {
 
   it('writes the answer messages, the reminder as in its mockup', () => {
     expect(valueOf(buildMessage('answerReminder', data))).toBe(
-      'Léa, on n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
+      'Léa, le Secret Santa de la famille Martin n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
     );
     expect(valueOf(buildMessage('answerRequest', data))).toContain(
       'hors de l’application',
     );
     expect(valueOf(buildEmail('answerCheck', data, 'de')).subject).toBe(
-      'Léa, prüf deine Wichtel-Antwort',
+      'Wichteln la famille Martin: Kannst du deine Antwort prüfen, Léa?',
     );
   });
 });
@@ -236,7 +236,7 @@ describe('languages', () => {
       ),
     );
     expect(email.subject).toBe(
-      'Léa, die Lose sind gezogen: dein Umschlag wartet',
+      'Wichteln la famille Martin: Léa, die Lose sind gezogen, dein Umschlag wartet',
     );
     expect(email.text).toContain('Budget: 20 €.');
     expect(email.text).toContain('Wir sehen uns am 24.12..');
@@ -420,14 +420,14 @@ describe('« Devine qui » in the messages', () => {
   };
   it('adds a line to « Tirage fait » while the game is on', () => {
     expect(valueOf(buildMessage('drawn', game))).toContain(
-      '🔍 Devine qui t’offre ton cadeau : tes pronostics jusqu’au 25 décembre à 18 h.',
+      '🔍 Devine qui, le jeu de pronostics du Secret Santa : qui t’offre ton cadeau ? Tes pronostics jusqu’au 25 décembre à 18 h.',
     );
     expect(valueOf(buildMessage('drawn', data))).not.toContain('Devine');
   });
 
   it('writes the reminder as in its mockup', () => {
     expect(valueOf(buildMessage('guessReminder', game))).toBe(
-      'Salut Léa ! 🔍\nDevine qui t’offre ton cadeau cette année : tu as jusqu’au 25 décembre à 18 h pour faire ton pronostic. Réponse à la fête !\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🔍\nDevine qui, le jeu de pronostics du Secret Santa de la famille Martin : qui t’offre ton cadeau cette année ? Tu as jusqu’au 25 décembre à 18 h pour faire ton pronostic. Réponse à la fête !\nhttps://secret-santa.example/p/abc123',
     );
   });
 
@@ -436,7 +436,9 @@ describe('« Devine qui » in the messages', () => {
       { ...data, link: 'https://secret-santa.example/p/abc123/devine' },
       'fr',
     );
-    expect(email.subject).toBe('Le palmarès de Devine qui est arrivé');
+    expect(email.subject).toBe(
+      'Secret Santa de la famille Martin : le palmarès de Devine qui est arrivé',
+    );
     expect(email.text).toContain('Bonjour Léa,');
     expect(email.text).toContain('fais-le d’abord');
     expect(email.html).toContain('>Découvrir le palmarès</a>');
@@ -465,7 +467,7 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Plus que 2 jours pour deviner qui t’offre ton cadeau',
+      'Secret Santa de Famille Camille : plus que 2 jours pour deviner qui t’offre ton cadeau',
     );
     expect(email.text).toContain(
       '4 personnes sur 6 ont déjà fait leur pronostic',
@@ -483,7 +485,9 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'more',
       'fr',
     );
-    expect(email.subject).toBe('Encore quelques pronostics avant la fin ?');
+    expect(email.subject).toBe(
+      'Secret Santa de Famille Camille : encore quelques pronostics avant la fin ?',
+    );
     expect(email.text).not.toContain('Je passe mon tour');
   });
 
@@ -503,7 +507,7 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Devine qui : 2 personnes n’ont pas encore joué',
+      'Devine qui, Famille Camille : 2 personnes n’ont pas encore joué',
     );
     expect(email.text).toContain(
       'Rose et Louis n’ont pas encore joué ; Louis n’a pas d’adresse email.',
@@ -526,5 +530,28 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
     );
     expect(email.text).toContain('4 personnes sur 5 ont joué.');
     expect(email.text).toContain('dévoilé tout seul demain à 18 h.');
+  });
+});
+
+describe('the signature of an email (who sends it)', () => {
+  const data = {
+    firstName: 'Léa',
+    groupName: 'Famille Martin',
+    editionLabel: 'Noël 2026',
+    link: 'https://example.com/p/abc',
+  };
+  it('signs with the first name of the organiser who sends it', () => {
+    const email = valueOf(
+      buildEmail('drawn', { ...data, sender: 'Camille' }, 'fr'),
+    );
+    expect(email.text).toContain(
+      'Camille, pour le Secret Santa de Famille Martin',
+    );
+  });
+
+  it('signs with the Secret Santa when nobody is known', () => {
+    const email = valueOf(buildEmail('drawn', data, 'fr'));
+    expect(email.text).toContain('Le Secret Santa de Famille Martin');
+    expect(email.subject).toContain('Famille Martin');
   });
 });

@@ -4,6 +4,7 @@
 // « Lire la suite » when it is longer.
 defineProps<{ text: string }>();
 const { t } = useT();
+const organizers = useOrganizers();
 const paragraph = ref<HTMLElement | null>(null);
 const open = ref(false);
 /** Whether the three lines hide some of it; measured once shown. */
@@ -22,7 +23,7 @@ onMounted(() => {
     <h2
       class="font-sans text-xs font-bold tracking-[0.04em] text-toned uppercase"
     >
-      {{ t('participant.home.note.title') }}
+      {{ t('participant.home.note.title', { count: organizers }) }}
     </h2>
     <p
       ref="paragraph"

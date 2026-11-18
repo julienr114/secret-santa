@@ -21,8 +21,10 @@ import type { GuessOption } from '~/components/participant/GuessSheet.vue';
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useGameQuery(token);
+useOrganizersOf(() => query.data.value?.organizers);
 const save = useGuessMutation(token);
 const { t } = useT();
+const organizers = useOrganizers();
 const toast = useToast();
 const errorMessage = useErrorMessage();
 
@@ -496,7 +498,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
             {{ t('participant.game.atParty') }}
           </h2>
           <p class="text-sm text-toned">
-            {{ t('participant.game.atPartyBody') }}
+            {{ t('participant.game.atPartyBody', { count: organizers }) }}
           </p>
         </UiCard>
         <UiList

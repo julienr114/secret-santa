@@ -6,8 +6,11 @@ export default {
     bannerTitle: 'The draw is no longer secret.',
     bannerBy:
       '{name} revealed it on {date}: everyone can see who gives to whom.',
-    bannerOrganizer:
-      'Your organizer revealed it on {date}: everyone can see who gives to whom.',
+    bannerOrganizer: {
+      one: 'Your organizer revealed it on {date}: everyone can see who gives to whom.',
+      other:
+        'One of your organizers revealed it on {date}: everyone can see who gives to whom.',
+    },
     bannerMe: 'You revealed it on {date}: everyone can see who gives to whom.',
     journal: 'See the journal',
     santaTitle: 'Who gives me my present?',
@@ -37,7 +40,10 @@ export default {
   home: {
     greeting: 'Hi {firstName}!',
     facts: { budget: 'Budget:', party: 'Party on' },
-    note: { title: "The organizer's note", more: 'Read more' },
+    note: {
+      title: { one: "The organizer's note", other: 'The organizers’ note' },
+      more: 'Read more',
+    },
     changeAvatar: 'Change my icon',
     steps: {
       label: 'Steps of the draw',
@@ -56,7 +62,11 @@ export default {
     },
     waiting: {
       title: 'Just a little longer',
-      body: 'The draw hasn’t happened yet. Your organizer will give you a shout; keep this link, this is where it all happens.',
+      body: {
+        one: 'The draw hasn’t happened yet. Your organizer will give you a shout; keep this link, this is where it all happens.',
+        other:
+          'The draw hasn’t happened yet. Your organizers will give you a shout; keep this link, this is where it all happens.',
+      },
       action: 'Leave my gift hints',
       hint: 'In the meantime, give a hand to whoever draws your name.',
     },
@@ -164,7 +174,10 @@ export default {
       title: 'Who are you giving a gift to?',
       body: 'The draw was made outside the app. Say here who you’re giving to, to see their gift hints. Check nobody’s reading over your shoulder.',
       action: "Say who I'm giving to",
-      hint: 'Your answer stays secret, even from the organizer.',
+      hint: {
+        one: 'Your answer stays secret, even from the organizer.',
+        other: 'Your answer stays secret, even from the organizers.',
+      },
       savedTitle: 'Got it',
       savedBody: {
         one: "You'll see your person's gift hints once everyone has answered. {count} answer out of {total} so far.",
@@ -187,7 +200,11 @@ export default {
       title: 'You are giving a gift to {name}?',
       description:
         "Check carefully: it's the person you drew, on paper or in the other app.",
-      note: 'You can correct your answer until the organizer validates the draw. Nobody else sees it.',
+      note: {
+        one: 'You can correct your answer until the organizer validates the draw. Nobody else sees it.',
+        other:
+          'You can correct your answer until the organizers validate the draw. Nobody else sees it.',
+      },
       yes: "Yes, it's {name}",
       other: 'Choose someone else',
     },
@@ -260,8 +277,11 @@ export default {
     movedFromMe: 'Your guess for you: choosing it moves it here',
     clear: 'Delete this guess',
     atParty: 'Answer at the party',
-    atPartyBody:
-      'The answers come when your organizer reveals the draw. With a surprise.',
+    atPartyBody: {
+      one: 'The answers come when your organizer reveals the draw. With a surprise.',
+      other:
+        'The answers come when your organizers reveal the draw. With a surprise.',
+    },
     answersTitle: 'Devine qui: the answers',
     answersWaiting: 'The draw is revealed. The answers are waiting for you.',
     answersSeen: 'The draw is revealed. Here is what your guesses were worth.',

@@ -215,8 +215,10 @@ export default {
     namedHelp:
       'The draw is revealed: {name} will know the request comes from you.',
     anonymous: 'Your name appears nowhere',
-    anonymousHelp:
-      'Not in the email, not in the journal, not to the organizer.',
+    anonymousHelp: {
+      one: 'Not in the email, not in the journal, not to the organizer.',
+      other: 'Not in the email, not in the journal, not to the organizers.',
+    },
     once: 'One request per draw',
     onceHelp: 'No reminders: we don’t pester anyone.',
     send: 'Send the request',
@@ -245,12 +247,14 @@ export default {
   },
   email: {
     request: {
-      subject: 'Someone is looking for a gift idea for you',
+      subject:
+        '{group} Secret Santa: someone is looking for a gift idea for you',
       greeting: 'Hello {name},',
       body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
       bodyPortrait:
         'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: five multiple-choice questions, thirty seconds, and a few words if you like.',
-      subjectFrom: '{from} is looking for a gift idea for you',
+      subjectFrom:
+        '{group} Secret Santa: {from} is looking for a gift idea for you',
       bodyFrom:
         '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
       bodyPortraitFrom:
@@ -260,7 +264,7 @@ export default {
       once: 'You will only get this message once.',
     },
     arrived: {
-      subject: 'Gift hints are waiting for you',
+      subject: '{group} Secret Santa: gift hints are waiting for you',
       greeting: 'Hello {name},',
       body: 'The person you give a present to for {edition} ({group}) left some hints. Open your link to read them:',
     },

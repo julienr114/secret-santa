@@ -28,6 +28,7 @@ const props = defineProps<{
   palmaresOf?: (editionId: string | null) => string | null;
 }>();
 const { t } = useT();
+const organizers = useOrganizers();
 
 const view = ref<'essential' | 'all'>('essential');
 const views = computed(() => [
@@ -176,7 +177,7 @@ const alertOpen = computed({
     class="flex items-start gap-2.5 rounded-xl bg-success-tint px-3.5 py-3 text-sm leading-[1.45] text-success-ink"
   >
     <UIcon name="i-lucide-check" class="mt-px size-4.5 shrink-0" />
-    {{ t('journal.screen.meNote') }}
+    {{ t('journal.screen.meNote', { count: organizers }) }}
   </p>
   <JournalList
     :days="days"

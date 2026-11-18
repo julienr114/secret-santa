@@ -6,8 +6,11 @@ export default {
     bannerTitle: 'Die Auslosung ist kein Geheimnis mehr.',
     bannerBy:
       '{name} hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
-    bannerOrganizer:
-      'Dein Organisator hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+    bannerOrganizer: {
+      one: 'Dein Organisator hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+      other:
+        'Einer deiner Organisatoren hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+    },
     bannerMe:
       'Du hast sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
     journal: 'Im Protokoll ansehen',
@@ -38,7 +41,13 @@ export default {
   home: {
     greeting: 'Hallo {firstName}!',
     facts: { budget: 'Budget:', party: 'Feier am' },
-    note: { title: 'Die Nachricht des Organisators', more: 'Weiterlesen' },
+    note: {
+      title: {
+        one: 'Die Nachricht des Organisators',
+        other: 'Die Nachricht der Organisatoren',
+      },
+      more: 'Weiterlesen',
+    },
     changeAvatar: 'Mein Symbol ändern',
     steps: {
       label: 'Schritte der Auslosung',
@@ -57,7 +66,11 @@ export default {
     },
     waiting: {
       title: 'Noch ein wenig Geduld',
-      body: 'Die Auslosung steht noch aus. Dein Organisator meldet sich; behalte diesen Link, hier spielt sich alles ab.',
+      body: {
+        one: 'Die Auslosung steht noch aus. Dein Organisator meldet sich; behalte diesen Link, hier spielt sich alles ab.',
+        other:
+          'Die Auslosung steht noch aus. Deine Organisatoren melden sich; behalte diesen Link, hier spielt sich alles ab.',
+      },
       action: 'Meine Geschenk-Hinweise hinterlassen',
       hint: 'Greif in der Zwischenzeit der Person unter die Arme, die dich ziehen wird.',
     },
@@ -166,7 +179,10 @@ export default {
       title: 'Wen beschenkst du?',
       body: 'Die Auslosung fand außerhalb der App statt. Sag hier, wen du beschenkst, um die Geschenk-Hinweise zu sehen. Schau kurz, ob dir niemand über die Schulter guckt.',
       action: 'Sagen, wen ich beschenke',
-      hint: 'Deine Antwort bleibt geheim, selbst für den Organisator.',
+      hint: {
+        one: 'Deine Antwort bleibt geheim, selbst für den Organisator.',
+        other: 'Deine Antwort bleibt geheim, selbst für die Organisatoren.',
+      },
       savedTitle: 'Ist notiert',
       savedBody: {
         one: 'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antwort von {total}.',
@@ -191,7 +207,11 @@ export default {
       title: 'Du beschenkst {name}?',
       description:
         'Prüf es gut: Es ist die Person, die du gezogen hast, auf Papier oder in der anderen App.',
-      note: 'Du kannst deine Antwort korrigieren, bis der Organisator die Auslosung bestätigt. Niemand sonst sieht sie.',
+      note: {
+        one: 'Du kannst deine Antwort korrigieren, bis der Organisator die Auslosung bestätigt. Niemand sonst sieht sie.',
+        other:
+          'Du kannst deine Antwort korrigieren, bis die Organisatoren die Auslosung bestätigen. Niemand sonst sieht sie.',
+      },
       yes: 'Ja, es ist {name}',
       other: 'Jemand anderen wählen',
     },
@@ -264,8 +284,11 @@ export default {
     movedFromMe: 'Dein Tipp für dich: Ihn zu wählen verschiebt ihn hierher',
     clear: 'Diesen Tipp löschen',
     atParty: 'Antwort bei der Feier',
-    atPartyBody:
-      'Die Antworten kommen, wenn dein Organisator die Auslosung aufdeckt. Mit einer Überraschung.',
+    atPartyBody: {
+      one: 'Die Antworten kommen, wenn dein Organisator die Auslosung aufdeckt. Mit einer Überraschung.',
+      other:
+        'Die Antworten kommen, wenn deine Organisatoren die Auslosung aufdecken. Mit einer Überraschung.',
+    },
     answersTitle: 'Devine qui: die Antworten',
     answersWaiting:
       'Die Auslosung ist aufgedeckt. Die Antworten warten auf dich.',

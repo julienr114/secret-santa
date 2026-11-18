@@ -33,10 +33,12 @@ import {
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
+useOrganizersOf(() => personal.data.value?.organizers);
 const revealMutation = useRevealMutation(token);
 const revealing = useBusy(() => revealMutation.isPending.value);
 const me = computed(() => personal.data.value);
 const { t, locale } = useT();
+const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 
 // Only in this component's state: gone when leaving or reloading the page.
@@ -406,12 +408,14 @@ const card = computed(() => {
         : {
             title: t('participant.answer.card.title'),
             body: t('participant.answer.card.body'),
-            hint: t('participant.answer.card.hint'),
+            hint: t('participant.answer.card.hint', {
+              count: organizers.value,
+            }),
           };
     case 'waiting':
       return {
         title: t('participant.home.waiting.title'),
-        body: t('participant.home.waiting.body'),
+        body: t('participant.home.waiting.body', { count: organizers.value }),
         hint: state?.hintsEditable ? t('participant.home.waiting.hint') : '',
       };
     case 'ready':

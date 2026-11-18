@@ -4,8 +4,11 @@ export default {
     bannerTitle: 'Le tirage n’est plus secret.',
     bannerBy:
       '{name} l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
-    bannerOrganizer:
-      'Ton organisateur l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+    bannerOrganizer: {
+      one: 'Ton organisateur l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+      other:
+        'L’un de tes organisateurs l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+    },
     bannerMe:
       'Tu l’as dévoilé le {date} : tout le monde peut voir qui offre à qui.',
     journal: 'Voir au journal',
@@ -36,7 +39,13 @@ export default {
   home: {
     greeting: 'Salut {firstName} !',
     facts: { budget: 'Budget :', party: 'Fête le' },
-    note: { title: "Le mot de l'organisateur", more: 'Lire la suite' },
+    note: {
+      title: {
+        one: "Le mot de l'organisateur",
+        other: 'Le mot des organisateurs',
+      },
+      more: 'Lire la suite',
+    },
     changeAvatar: 'Changer mon icône',
     steps: {
       label: 'Étapes du tirage',
@@ -55,7 +64,11 @@ export default {
     },
     waiting: {
       title: 'Encore un peu de patience',
-      body: 'Le tirage n’est pas encore fait. Ton organisateur te fera signe ; garde ce lien, c’est ici que tout se jouera.',
+      body: {
+        one: 'Le tirage n’est pas encore fait. Ton organisateur te fera signe ; garde ce lien, c’est ici que tout se jouera.',
+        other:
+          'Le tirage n’est pas encore fait. Tes organisateurs te feront signe ; garde ce lien, c’est ici que tout se jouera.',
+      },
       action: 'Laisser mes pistes de cadeaux',
       hint: 'En attendant, donne un coup de pouce à la personne qui te tirera au sort.',
     },
@@ -165,7 +178,10 @@ export default {
       title: 'À qui offres-tu un cadeau ?',
       body: 'Le tirage a été fait hors de l’application. Dis ici à qui tu offres, pour voir ses pistes de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
       action: 'Dire à qui j’offre',
-      hint: 'Ta réponse reste secrète, même pour l’organisateur.',
+      hint: {
+        one: 'Ta réponse reste secrète, même pour l’organisateur.',
+        other: 'Ta réponse reste secrète, même pour les organisateurs.',
+      },
       savedTitle: 'C’est noté',
       savedBody: {
         one: 'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponse sur {total} pour l’instant.',
@@ -190,7 +206,11 @@ export default {
       title: 'Tu offres un cadeau à {name} ?',
       description:
         'Vérifie bien : c’est la personne que tu as tirée, sur papier ou dans l’autre application.',
-      note: 'Tu pourras corriger ta réponse tant que l’organisateur n’a pas validé le tirage. Personne d’autre ne la voit.',
+      note: {
+        one: 'Tu pourras corriger ta réponse tant que l’organisateur n’a pas validé le tirage. Personne d’autre ne la voit.',
+        other:
+          'Tu pourras corriger ta réponse tant que les organisateurs n’ont pas validé le tirage. Personne d’autre ne la voit.',
+      },
       yes: 'Oui, c’est {name}',
       other: 'Choisir quelqu’un d’autre',
     },
@@ -266,8 +286,11 @@ export default {
     movedFromMe: 'Ton pronostic pour toi : le choisir le déplace ici',
     clear: 'Effacer ce pronostic',
     atParty: 'Réponse à la fête',
-    atPartyBody:
-      'Les réponses arrivent quand ton organisateur dévoile le tirage. Avec une surprise.',
+    atPartyBody: {
+      one: 'Les réponses arrivent quand ton organisateur dévoile le tirage. Avec une surprise.',
+      other:
+        'Les réponses arrivent quand tes organisateurs dévoilent le tirage. Avec une surprise.',
+    },
     answersTitle: 'Devine qui : les réponses',
     answersWaiting: 'Le tirage est dévoilé. Les réponses t’attendent.',
     answersSeen: 'Le tirage est dévoilé. Voici ce que valaient tes pronostics.',

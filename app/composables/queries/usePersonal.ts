@@ -36,6 +36,8 @@ export type PersonalState = {
   avatar: Avatar;
   avatarEditable: boolean;
   groupName: string;
+  /** How many organisers the group has (« tes organisateurs »). */
+  organizers: number;
   editionLabel: string;
   status: EditionStatus;
   phase: PersonalPhase;
@@ -154,6 +156,8 @@ export type JournalPayload = {
   /** The participant reading it. */
   me: string;
   currentEditionId: string;
+  /** How many organisers the group has (« tes organisateurs »). */
+  organizers: number;
   language: Locale;
 };
 

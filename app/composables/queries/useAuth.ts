@@ -204,6 +204,8 @@ export const useRevokeAllMutation = () => {
 /** What an invitation link shows. */
 export type InvitePayload = {
   groupName: string;
+  /** How many organisers the group has (« tes organisateurs »). */
+  organizers: number;
   /** The organiser's words, if any. */
   message: string | null;
   /** The draw in progress of the group, if any. */

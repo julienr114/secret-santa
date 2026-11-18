@@ -18,6 +18,7 @@ const props = defineProps<{
   named?: boolean;
 }>();
 const { t, tk, locale } = useT();
+const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 const request = useRequestHintsMutation(() => props.token);
 const busy = useBusy(() => request.isPending.value);
@@ -202,7 +203,7 @@ const onSend = () =>
                 key: 'anonymous',
                 state: 'ok',
                 title: t('hints.request.anonymous'),
-                detail: t('hints.request.anonymousHelp'),
+                detail: t('hints.request.anonymousHelp', { count: organizers }),
               },
           {
             key: 'once',

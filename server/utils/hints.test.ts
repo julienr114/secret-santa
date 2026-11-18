@@ -210,7 +210,9 @@ describe('hint emails', () => {
 
   it('asks without saying who asks', () => {
     const email = buildHintsRequestEmail(data, 'fr');
-    expect(email.subject).toBe('Quelqu’un cherche une idée de cadeau pour toi');
+    expect(email.subject).toBe(
+      'Secret Santa de Famille Camille : quelqu’un cherche une idée de cadeau pour toi',
+    );
     expect(email.text).toContain('Bonjour Inès,');
     expect(email.text).toContain('Noël 2026 (Famille Camille)');
     expect(email.text).toContain(`\n${data.link}\n`);
@@ -223,7 +225,9 @@ describe('hint emails', () => {
 
   it('names who asks once the draw is revealed (README 22.18)', () => {
     const email = buildHintsRequestEmail({ ...data, from: 'Hugo' }, 'fr');
-    expect(email.subject).toBe('Hugo cherche une idée de cadeau pour toi');
+    expect(email.subject).toBe(
+      'Secret Santa de Famille Camille : Hugo cherche une idée de cadeau pour toi',
+    );
     expect(email.text).toContain('Hugo t’offre un cadeau pour Noël 2026');
     expect(email.text).not.toContain('On ne te dira pas qui demande');
   });
@@ -233,7 +237,9 @@ describe('hint emails', () => {
       { ...data, firstName: 'Camille', link: 'https://example.com/p/xyz' },
       'en',
     );
-    expect(email.subject).toBe('Gift hints are waiting for you');
+    expect(email.subject).toBe(
+      'Famille Camille Secret Santa: gift hints are waiting for you',
+    );
     expect(email.text).toContain('Hello Camille,');
     expect(email.text).not.toContain('Inès');
     expect(email.html).toContain('href="https://example.com/p/xyz"');

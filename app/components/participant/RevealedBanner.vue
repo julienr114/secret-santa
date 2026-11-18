@@ -12,13 +12,17 @@ const props = defineProps<{
   journalPath: string;
 }>();
 const { t, locale } = useT();
+const organizers = useOrganizers();
 const text = computed(() => {
   const date = formatEventDate(props.revealedAt.slice(0, 10), locale.value);
   const by = props.revealedBy;
   if (by?.kind === 'me') return t('participant.revealed.bannerMe', { date });
   return by
     ? t('participant.revealed.bannerBy', { name: by.name, date })
-    : t('participant.revealed.bannerOrganizer', { date });
+    : t('participant.revealed.bannerOrganizer', {
+        date,
+        count: organizers.value,
+      });
 });
 </script>
 

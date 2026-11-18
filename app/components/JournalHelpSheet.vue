@@ -5,6 +5,7 @@
 // do about a line one did not expect.
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
+const organizers = useOrganizers();
 
 /** The three parts of the sheet, each with its icon and its sentence. */
 const sections = computed(() => [
@@ -66,7 +67,7 @@ const sections = computed(() => [
       <p
         class="rounded-xl bg-warning-tint px-3 py-2.5 text-sm leading-[1.4] text-alert-link ring-1 ring-warning-ring"
       >
-        {{ t('journal.help.warning') }}
+        {{ t('journal.help.warning', { count: organizers }) }}
       </p>
     </div>
     <template #footer>

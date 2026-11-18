@@ -2,6 +2,7 @@ import { loadJournal } from '#server/database/journal';
 import { keyPeople } from '#server/utils/audit';
 import { requirePersonalLink } from '#server/http/personal';
 import { localeOf } from '#shared/i18n';
+import { organizerCount } from '#server/database/groups';
 
 // The group's public journal, for anyone holding a valid link (README
 // 8.5), written in the reader's preferred language; `me` is who reads it,
@@ -15,6 +16,8 @@ export default defineEventHandler(async (event) => {
     ...journal,
     ...keyPeople({ ...journal, me: person.id }),
     currentEditionId: edition.id,
+    // « ton organisateur » or « tes organisateurs ».
+    organizers: await organizerCount(db, group.id),
     language,
   };
 });

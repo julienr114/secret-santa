@@ -6,58 +6,66 @@ export default {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Du bist dabei: das Wichteln von {groupName} ({editionLabel}).',
     cta: 'Öffne deinen Link und hinterlass ein paar Geschenk-Hinweise:',
-    subject: '{firstName}, dein Link für das Wichteln ({editionLabel})',
+    subject: 'Wichteln {groupName}: dein Link, {firstName}',
   },
   drawn: {
-    greeting: '{firstName}, die Lose sind gezogen! 🎁',
+    greeting:
+      '{firstName}, beim Wichteln von {groupName} sind die Lose gezogen! 🎁',
     cta: 'Öffne deinen Link, um zu erfahren, wen du beschenkst:',
-    subject: '{firstName}, die Lose sind gezogen: dein Umschlag wartet',
+    subject:
+      'Wichteln {groupName}: {firstName}, die Lose sind gezogen, dein Umschlag wartet',
   },
   reminder: {
     greeting:
-      '{firstName}, dein Umschlag setzt Staub an. Mach ihn schnell auf!',
+      '{firstName}, dein Umschlag beim Wichteln von {groupName} setzt Staub an. Mach ihn schnell auf!',
     cta: 'Dein Link:',
-    subject: '{firstName}, dein Umschlag wartet immer noch',
+    subject:
+      'Wichteln {groupName}: {firstName}, dein Umschlag wartet immer noch',
   },
   redraw: {
     greeting:
-      '{firstName}, die Karten werden neu gemischt. Es gab eine neue Auslosung: vergiss die alte.',
+      '{firstName}, beim Wichteln von {groupName} werden die Karten neu gemischt. Es gab eine neue Auslosung: vergiss die alte.',
     cta: 'Dein Link bleibt derselbe:',
-    subject: '{firstName}, die Karten werden neu gemischt: neue Auslosung',
+    subject:
+      'Wichteln {groupName}: {firstName}, die Karten werden neu gemischt, neue Auslosung',
   },
   answerRequest: {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Die Wichtel-Auslosung von {groupName} ({editionLabel}) wurde außerhalb der App gemacht.',
     cta: 'Sag auf deiner Seite, wen du beschenkst, um seine Geschenk-Hinweise zu sehen:',
-    subject: '{firstName}, wen beschenkst du? ({editionLabel})',
+    subject: 'Wichteln {groupName}: Wen beschenkst du, {firstName}?',
   },
   answerReminder: {
-    greeting: '{firstName}, wir warten nur noch auf dich! 🎁',
+    greeting:
+      '{firstName}, beim Wichteln von {groupName} fehlt nur noch deine Antwort! 🎁',
     cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Geschenk-Hinweise seiner Person.',
-    subject: '{firstName}, wir warten auf deine Wichtel-Antwort',
+    subject: 'Wichteln {groupName}: Wir warten auf deine Antwort, {firstName}',
   },
   answerCheck: {
     greeting: '{firstName}, kannst du deine Antwort prüfen? 🎁',
     body: 'Beim Wichteln von {groupName} hat sich ein Knoten gebildet: zwei Antworten passen nicht zusammen.',
     cta: 'Prüfe, wen du beschenkst, und korrigiere es bei Bedarf:',
-    subject: '{firstName}, prüf deine Wichtel-Antwort',
+    subject:
+      'Wichteln {groupName}: Kannst du deine Antwort prüfen, {firstName}?',
   },
-  guessLine: '🔍 Rate, wer dich beschenkt: deine Tipps bis {guessEnd}.',
+  guessLine:
+    '🔍 Devine qui, das Tippspiel zum Wichteln: Wer beschenkt dich? Deine Tipps bis {guessEnd}.',
   guessReminder: {
     greeting: 'Hallo {firstName}! 🔍',
-    body: 'Rate, wer dich dieses Jahr beschenkt: Du hast bis {guessEnd} Zeit für deinen Tipp. Die Antwort gibt es bei der Feier!',
-    subject: '{firstName}, rate, wer dich beschenkt',
+    body: 'Devine qui, das Tippspiel zum Wichteln von {groupName}: Wer beschenkt dich dieses Jahr? Du hast bis {guessEnd} Zeit für deinen Tipp. Antwort bei der Feier!',
+    subject: 'Wichteln {groupName}: Rate, wer dich beschenkt, {firstName}',
   },
   guessAuto: {
-    subject: 'Nur noch {days} Tage, um zu erraten, wer dich beschenkt',
+    subject:
+      'Wichteln {groupName}: Nur noch {days} Tage, um zu erraten, wer dich beschenkt',
     greeting: 'Hallo {firstName},',
     body: {
-      one: 'Für {editionLabel} ({groupName}) hat schon {count} von {total} Personen getippt. Und du: Wer beschenkt dich?',
+      one: 'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. {count} von {total} Personen hat schon getippt. Und du: Wer beschenkt dich?',
       other:
-        'Für {editionLabel} ({groupName}) haben schon {count} von {total} Personen getippt. Und du: Wer beschenkt dich?',
+        'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. {count} von {total} Personen haben schon getippt. Und du: Wer beschenkt dich?',
     },
     nobody:
-      'Für {editionLabel} ({groupName}) hat noch niemand getippt. Und du: Wer beschenkt dich?',
+      'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. Noch niemand hat getippt. Und du: Wer beschenkt dich?',
     until:
       'Du hast Zeit bis {guessEnd}. Antwort bei der Feier, mit einer Überraschung.',
     cta: 'Meinen Tipp abgeben',
@@ -65,19 +73,20 @@ export default {
     skip: 'Ich setze aus',
     skipAfter: ', und wir erinnern dich nicht mehr.',
     once: 'Das ist die einzige automatische Erinnerung, die du bekommst.',
-    signature: 'Under the Tree',
+    signature: 'Das Wichteln von {groupName}',
   },
   guessMore: {
-    subject: 'Noch ein paar Tipps vor dem Ende?',
+    subject: 'Wichteln {groupName}: Noch ein paar Tipps vor dem Ende?',
     greeting: 'Hallo {firstName},',
-    body: 'Du hast deinen Tipp zu deinem Wichtel für {editionLabel} ({groupName}) abgegeben. Gut gemacht.',
+    body: 'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), deinen Tipp zu deinem Wichtel abgegeben. Gut gemacht.',
     more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung bei der Feier.',
     cta: 'Weiter tippen',
   },
   guessPoint: {
     subject: {
-      one: 'Devine qui: {count} Person hat noch nicht gespielt',
-      other: 'Devine qui: {count} Personen haben noch nicht gespielt',
+      one: 'Devine qui, {groupName}: {count} Person hat noch nicht gespielt',
+      other:
+        'Devine qui, {groupName}: {count} Personen haben noch nicht gespielt',
     },
     greeting: 'Hallo {firstName},',
     body: 'Für {editionLabel} ({groupName}) haben {played} von {total} Personen getippt.',
@@ -97,10 +106,10 @@ export default {
     },
     cta: 'Jetzt erinnern',
     off: 'Du kannst diese E-Mails in den Einstellungen des Spiels abschalten.',
-    signature: 'Under the Tree',
+    signature: 'Under the Tree, die App für euer Wichteln',
   },
   guessEnd: {
-    subject: 'Devine qui: Die Tipps sind geschlossen',
+    subject: 'Devine qui, {groupName}: Die Tipps sind geschlossen',
     greeting: 'Hallo {firstName},',
     body: {
       one: 'Für {editionLabel} ({groupName}) hat {count} von {total} Personen gespielt. Die Rangliste ist bereit: Sie startet, sobald du die Auslosung aufdeckst.',
@@ -111,22 +120,23 @@ export default {
     alone:
       'Wenn du es nicht tust, wird sie morgen um {time} von selbst aufgedeckt.',
     off: 'Du kannst diese E-Mails in den Einstellungen des Spiels abschalten.',
-    signature: 'Under the Tree',
+    signature: 'Under the Tree, die App für euer Wichteln',
   },
   guessResults: {
-    subject: 'Die Rangliste von Devine qui ist da',
+    subject: 'Wichteln {groupName}: Die Rangliste von Devine qui ist da',
     greeting: 'Hallo {firstName},',
-    body: 'Die Auslosung von {editionLabel} ({groupName}) ist aufgedeckt. Du kannst endlich erfahren, wer dich beschenkt hat und wer es erraten hatte.',
+    body: 'Die Auslosung beim Wichteln von {groupName} ({editionLabel}) ist aufgedeckt, und Devine qui, das Tippspiel, hat seine Rangliste. Endlich erfährst du, wer dich beschenkt hat und wer es erraten hatte.',
     giftFirst:
       'Wenn du dein Geschenk noch nicht geöffnet hast, mach das zuerst.',
     cta: 'Die Rangliste entdecken',
     once: 'Du bekommst diese Nachricht nur einmal.',
-    signature: 'Under the Tree',
+    signature: 'Das Wichteln von {groupName}',
   },
   budget: 'Budget: {budget}.',
   eventDate: 'Wir sehen uns am {eventDate}.',
   email: {
+    signatureFrom: '{sender}, fürs Wichteln von {groupName}',
     personal: 'Dieser Link gehört nur dir: leite ihn nicht weiter.',
-    signature: 'Der Organisator des Wichtelns von {groupName}',
+    signature: 'Das Wichteln von {groupName}',
   },
 } satisfies Dict<typeof fr>;

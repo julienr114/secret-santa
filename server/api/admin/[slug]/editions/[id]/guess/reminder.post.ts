@@ -1,3 +1,4 @@
+import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { editions, participations } from '#server/database/schema';
@@ -54,6 +55,8 @@ export default defineEventHandler(async (event) => {
   if (targets.length === 0) {
     throw createError({ statusCode: 409, statusMessage: 'email_missing' });
   }
+  // The email is signed by the organiser who sends it (their first name).
+  const sender = (await findAccountById(db, user.accountId))?.firstName ?? null;
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
     targets.map(async (person) => {
@@ -65,6 +68,7 @@ export default defineEventHandler(async (event) => {
             {
               firstName: person.firstName,
               groupName: group.name,
+              sender,
               editionLabel: edition.label,
               link: await personalLink(event, row, dataKey),
               guessEndsAt: edition.guessEndsAt,

@@ -21,6 +21,7 @@ import { canEditHints, canRequestHints } from '#server/utils/hints';
 import { editionPersons, findAnswers } from '#server/database/answers';
 import { answersState } from '#server/utils/answers';
 import { gamePayload } from '#server/http/guesses';
+import { organizerCount } from '#server/database/groups';
 
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
@@ -104,6 +105,8 @@ export default defineEventHandler(async (event) => {
     avatar: avatarOf(person),
     avatarEditable: canEditAvatar(edition.status).ok,
     groupName: group.name,
+    // « ton organisateur » or « tes organisateurs ».
+    organizers: await organizerCount(db, group.id),
     editionLabel: edition.label,
     status: edition.status,
     phase: personalPhase(edition.status),

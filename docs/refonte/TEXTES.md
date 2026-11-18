@@ -389,3 +389,19 @@ Les mêmes clés que les sections 3 à 11, dans la même voix. Ce ne sont pas de
 
 Elle reprend, clé par clé, les textes modifiés en français. Les quelque 1 400 autres textes anglais et allemands n'ont pas été relus un par un pour leur clarté. Deux écarts de vocabulaire ont été repérés au passage et sont traités dans le tableau des mots ; une relecture complète de chaque langue reste à faire si on la veut.
 
+## 15. Le contexte dans les messages, et plusieurs organisateurs (Correction 17)
+
+Demandé par Julien le 18 novembre 2026 : « Under the Tree » ne dit rien, et « Devine qui » non plus si on ne l'a pas vu.
+
+| Règle | Exemple |
+|---|---|
+| L'objet de chaque email nomme le groupe | « Secret Santa de Famille Martin : Léa, les jeux sont faits, ton enveloppe t'attend » |
+| La première ligne de chaque message dit que c'est le Secret Santa du groupe, messages à partager compris | « Léa, les jeux sont faits pour le Secret Santa de Famille Martin ! 🎁 » |
+| « Devine qui » est présenté chaque fois qu'un message en parle | « Devine qui, le jeu de pronostics du Secret Santa : qui t'offre ton cadeau ? » |
+| Un email envoyé par un organisateur est signé de son prénom | « Camille, pour le Secret Santa de Famille Martin » |
+| Un email que personne n'envoie (rappel automatique, palmarès), ou un organisateur sans prénom, signe sans nom | « Le Secret Santa de Famille Martin » |
+| « Under the Tree » ne signe plus que les emails à l'organisateur | « Under the Tree, l'application de votre Secret Santa » |
+| Côté participant, « tes organisateurs » au pluriel dès qu'il y en a plusieurs | « Tes organisateurs te feront signe » |
+
+Les lignes du journal (« L'organisateur a envoyé… ») décrivent l'action d'une personne : elles restent au singulier en attendant de nommer qui a fait quoi (plus tard, Correction 17, point 4).
+

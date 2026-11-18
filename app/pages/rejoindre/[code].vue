@@ -14,8 +14,10 @@ import { HOME, useLogoutMutation } from '~/composables/queries/useSession';
 const route = useRoute();
 const code = computed(() => String(route.params.code));
 const { t, locale } = useT();
+const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 const invite = useInviteQuery(code);
+useOrganizersOf(() => invite.data.value?.organizers);
 const join = useJoinMutation(code);
 const { loggedIn } = useUserSession();
 
@@ -72,12 +74,13 @@ const welcomeText = computed(() => {
   const label = edition.value?.label ?? '';
   if (path.value) {
     return edition.value?.status === 'preparing'
-      ? `${t('auth.invite.inDraw', { label })} ${t('auth.invite.notDrawnYet')}`
+      ? `${t('auth.invite.inDraw', { label })} ${t('auth.invite.notDrawnYet', { count: organizers.value })}`
       : t('auth.invite.inDraw', { label });
   }
-  if (!edition.value) return t('auth.invite.nextDraw');
+  if (!edition.value)
+    return t('auth.invite.nextDraw', { count: organizers.value });
   return edition.value.status === 'preparing'
-    ? t('auth.invite.addLater', { label })
+    ? t('auth.invite.addLater', { label, count: organizers.value })
     : t('auth.invite.drawnAlready', { label });
 });
 
@@ -93,7 +96,7 @@ const closed = computed(() => {
   if (data.value?.closed === 'invite_full') {
     return {
       title: t('auth.invite.full.title'),
-      body: t('auth.invite.full.body', { group }),
+      body: t('auth.invite.full.body', { group, count: organizers.value }),
     };
   }
   if (data.value?.closed === 'invite_expired') {
@@ -104,7 +107,7 @@ const closed = computed(() => {
             date: formatDay(dayAfter(after), locale.value),
           })
         : t('auth.invite.expired.title'),
-      body: t('auth.invite.expired.body', { group }),
+      body: t('auth.invite.expired.body', { group, count: organizers.value }),
     };
   }
   return null;
@@ -221,7 +224,7 @@ const closed = computed(() => {
           {{ data.message }}
         </blockquote>
         <figcaption class="px-1 text-[13px] text-toned">
-          {{ t('auth.invite.organiserWord') }}
+          {{ t('auth.invite.organiserWord', { count: organizers }) }}
         </figcaption>
       </figure>
 

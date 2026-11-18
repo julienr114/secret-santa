@@ -95,8 +95,11 @@ export default {
     person: 'Betroffene Person',
     everyone: 'Alle',
     me: 'Ich ({name})',
-    meNote:
-      'Alles, was deinen Link und deinen Umschlag betrifft. Kommt eine Zeile nicht von dir, sag es deinem Organisator.',
+    meNote: {
+      one: 'Alles, was deinen Link und deinen Umschlag betrifft. Kommt eine Zeile nicht von dir, sag es deinem Organisator.',
+      other:
+        'Alles, was deinen Link und deinen Umschlag betrifft. Kommt eine Zeile nicht von dir, sag es deinen Organisatoren.',
+    },
   },
   grouped: {
     result_viewed: '{strong} haben ihren Umschlag geöffnet',
@@ -114,8 +117,11 @@ export default {
   },
   help: {
     title: 'Wozu dient das Protokoll?',
-    warning:
-      'Eine Zeile betrifft dich und kommt nicht von dir? Sag es deinem Organisator: Er kann deinen Link erneuern.',
+    warning: {
+      one: 'Eine Zeile betrifft dich und kommt nicht von dir? Sag es deinem Organisator: Er kann deinen Link erneuern.',
+      other:
+        'Eine Zeile betrifft dich und kommt nicht von dir? Sag es deinen Organisatoren: Sie können deinen Link erneuern.',
+    },
     intro:
       'Damit die Auslosung ehrlich bleibt. Schummeln bleibt möglich, aber man sieht es.',
     notes: 'Es notiert',
@@ -124,7 +130,7 @@ export default {
     never: 'Es verrät nie',
     neverBody: 'Wer wen beschenkt, noch die Geschenk-Hinweise der anderen.',
     who: 'Die ganze Gruppe sieht es',
-    whoBody: 'Teilnehmer und Organisator, mit denselben Zeilen.',
+    whoBody: 'Teilnehmer und Organisatoren, mit denselben Zeilen.',
   },
   alert: {
     at: '{day} um {time}',

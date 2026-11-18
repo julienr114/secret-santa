@@ -90,12 +90,18 @@ export type MessageData = {
    */
   guessEndsAt?: string | null;
   guessTimeZone?: string | null;
+  /**
+   * The first name of the organiser who sends it, for the signature of an
+   * email; none when unknown (it then signs with the Secret Santa).
+   */
+  sender?: string | null;
 };
 
 const params = (d: MessageData, locale: Locale): Params => ({
   firstName: d.firstName,
   groupName: d.groupName,
   editionLabel: d.editionLabel,
+  sender: d.sender ?? '',
   budget: d.budget ?? '',
   eventDate: formatEventDate(d.eventDate, locale),
   guessEnd: d.guessEndsAt
@@ -245,7 +251,12 @@ export const buildEmail = (
   const below = position === 'after' ? extra : [];
   const closing = [
     translate(locale, 'messages.email.personal'),
-    translate(locale, 'messages.email.signature', params(data, locale)),
+    // Signed by the organiser who sends it, or by the Secret Santa.
+    translate(
+      locale,
+      data.sender ? 'messages.email.signatureFrom' : 'messages.email.signature',
+      params(data, locale),
+    ),
   ];
   const link = escapeHtml(data.link);
   return ok({

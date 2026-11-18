@@ -218,8 +218,11 @@ export default {
     namedHelp:
       'Die Auslosung ist aufgedeckt: {name} weiß, dass die Anfrage von dir kommt.',
     anonymous: 'Dein Name erscheint nirgends',
-    anonymousHelp:
-      'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
+    anonymousHelp: {
+      one: 'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
+      other:
+        'Weder in der E-Mail noch im Protokoll noch für die Organisatoren.',
+    },
     once: 'Eine einzige Anfrage pro Auslosung',
     onceHelp: 'Keine Erinnerung möglich: wir bedrängen niemanden.',
     send: 'Anfrage senden',
@@ -248,12 +251,12 @@ export default {
   },
   email: {
     request: {
-      subject: 'Jemand sucht eine Geschenkidee für dich',
+      subject: 'Wichteln {group}: Jemand sucht eine Geschenkidee für dich',
       greeting: 'Hallo {name},',
       body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       bodyPortrait:
         'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      subjectFrom: '{from} sucht eine Geschenkidee für dich',
+      subjectFrom: 'Wichteln {group}: {from} sucht eine Geschenkidee für dich',
       bodyFrom:
         '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       bodyPortraitFrom:
@@ -263,7 +266,7 @@ export default {
       once: 'Du bekommst diese Nachricht nur einmal.',
     },
     arrived: {
-      subject: 'Geschenk-Hinweise warten auf dich',
+      subject: 'Wichteln {group}: Geschenkhinweise warten auf dich',
       greeting: 'Hallo {name},',
       body: 'Die Person, die du zu {edition} ({group}) beschenkst, hat Hinweise hinterlassen. Öffne deinen Link, um sie zu lesen:',
     },

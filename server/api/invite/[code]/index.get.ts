@@ -10,6 +10,7 @@ import { dataKeyOf, nowIso } from '#server/http/context';
 import { canJoinGroup } from '#server/utils/invite';
 import { requireInvite } from '#server/http/invite';
 import { mergeRules } from '#server/utils/rules';
+import { organizerCount } from '#server/database/groups';
 
 // What an invitation link shows: the group, its draw in progress if any,
 // whether the link still lets people in (deadline, places), and, for a
@@ -31,6 +32,8 @@ export default defineEventHandler(async (event) => {
   return {
     groupName: group.name,
     message: group.inviteMessage,
+    // « ton organisateur » or « tes organisateurs ».
+    organizers: await organizerCount(db, group.id),
     edition: edition
       ? {
           label: edition.label,

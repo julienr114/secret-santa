@@ -482,16 +482,28 @@ export default {
     joinGroup: 'Der Gruppe beitreten',
     signedAs: 'Angemeldet als {email}',
     notMe: 'Das bin nicht ich',
-    organiserWord: 'Das Wort des Organisators',
+    organiserWord: {
+      one: 'Das Wort des Organisators',
+      other: 'Das Wort der Organisatoren',
+    },
     welcome: 'Willkommen in {group}',
     inDraw: 'Du machst bei {label} mit.',
-    notDrawnYet: 'Die Auslosung steht noch aus: Dein Organisator meldet sich.',
-    addLater:
-      'Du gehörst zur Gruppe. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+    notDrawnYet: {
+      one: 'Die Auslosung steht noch aus: Dein Organisator meldet sich.',
+      other: 'Die Auslosung steht noch aus: Deine Organisatoren melden sich.',
+    },
+    addLater: {
+      one: 'Du gehörst zur Gruppe. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+      other:
+        'Du gehörst zur Gruppe. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
+    },
     drawnAlready:
       'Du gehörst zur Gruppe. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
-    nextDraw:
-      'Du gehörst zur Gruppe. Dein Organisator meldet sich zur nächsten Auslosung.',
+    nextDraw: {
+      one: 'Du gehörst zur Gruppe. Dein Organisator meldet sich zur nächsten Auslosung.',
+      other:
+        'Du gehörst zur Gruppe. Deine Organisatoren melden sich zur nächsten Auslosung.',
+    },
     meanwhile: 'In der Zwischenzeit',
     hints: 'Meine Geschenk-Hinweise hinterlassen',
     seeDraw: 'Meine Auslosung ansehen',
@@ -501,12 +513,20 @@ export default {
     joining: 'Beitritt läuft…',
     full: {
       title: 'Über diesen Link ist kein Platz mehr frei',
-      body: 'Sag dem Organisator von {group} Bescheid: Er kann Plätze freigeben oder dich selbst hinzufügen.',
+      body: {
+        one: 'Sag dem Organisator von {group} Bescheid: Er kann Plätze freigeben oder dich selbst hinzufügen.',
+        other:
+          'Sag den Organisatoren von {group} Bescheid: Sie können Plätze freigeben oder dich selbst hinzufügen.',
+      },
     },
     expired: {
       title: 'Dieser Einladungslink ist nicht mehr gültig',
       titleSince: 'Dieser Einladungslink ist seit dem {date} nicht mehr gültig',
-      body: 'Sag dem Organisator von {group} Bescheid: Er kann ihn verlängern oder dich selbst hinzufügen.',
+      body: {
+        one: 'Sag dem Organisator von {group} Bescheid: Er kann ihn verlängern oder dich selbst hinzufügen.',
+        other:
+          'Sag den Organisatoren von {group} Bescheid: Sie können ihn verlängern oder dich selbst hinzufügen.',
+      },
     },
     invalid: {
       title: 'Dieser Einladungslink funktioniert nicht mehr',

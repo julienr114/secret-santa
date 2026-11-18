@@ -154,3 +154,13 @@ export const removeOrganizer = (db: Db, groupId: string, accountId: string) =>
       ),
     )
     .returning({ accountId: groupMembers.accountId });
+
+/**
+ * How many organisers a group has: the participant's texts say « ton
+ * organisateur » or « tes organisateurs ».
+ * @param db - The database.
+ * @param groupId - The group.
+ * @returns The count.
+ */
+export const organizerCount = async (db: Db, groupId: string) =>
+  (await listOrganizers(db, groupId)).length;

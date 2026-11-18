@@ -5,6 +5,7 @@ import { editions, participations, persons } from '#server/database/schema';
 import type { EditionRow } from '#server/database/schema';
 import { gameMembers, guessesOf, listGuesses } from '#server/database/guesses';
 import { listEditions } from '#server/database/editions';
+import { organizerCount } from '#server/database/groups';
 import { editionPersons } from '#server/database/answers';
 import { readPairs } from '#server/database/draw';
 import { personalPath } from '#server/database/participations';
@@ -207,6 +208,8 @@ export const gamePayload = async (
     // The language of the page, like every read of a personal link.
     language: localeOf(person.language),
     groupName: ctx.group.name,
+    // « ton organisateur » or « tes organisateurs ».
+    organizers: await organizerCount(db, edition.groupId),
     firstName: person.firstName,
     editionLabel: edition.label,
     mode: edition.guessMode as GuessMode,

@@ -186,8 +186,11 @@ export const buildHintsRequestEmail = (
     subject: data.from
       ? translate(locale, 'hints.email.request.subjectFrom', {
           from: data.from,
+          group: data.groupName,
         })
-      : translate(locale, 'hints.email.request.subject'),
+      : translate(locale, 'hints.email.request.subject', {
+          group: data.groupName,
+        }),
     before: [
       translate(locale, 'hints.email.request.greeting', {
         name: data.firstName,
@@ -229,7 +232,9 @@ export const buildHintsArrivedEmail = (
   locale: Locale,
 ): Email =>
   plainEmail({
-    subject: translate(locale, 'hints.email.arrived.subject'),
+    subject: translate(locale, 'hints.email.arrived.subject', {
+      group: data.groupName,
+    }),
     before: [
       translate(locale, 'hints.email.arrived.greeting', {
         name: data.firstName,

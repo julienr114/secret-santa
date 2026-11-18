@@ -18,6 +18,7 @@ const step = defineModel<'choose' | 'confirm' | null>('step', {
 const chosen = defineModel<AnswerChoice | null>('chosen', { required: true });
 const emit = defineEmits<{ confirm: [personId: string] }>();
 const { t } = useT();
+const organizers = useOrganizers();
 const busy = useBusy(() => props.saving);
 
 const pickerOpen = computed({
@@ -76,7 +77,7 @@ const selected = computed({
       </div>
     </template>
     <p class="py-2 text-sm leading-[1.5] text-toned">
-      {{ t('participant.answer.confirm.note') }}
+      {{ t('participant.answer.confirm.note', { count: organizers }) }}
     </p>
     <template #footer>
       <UButton

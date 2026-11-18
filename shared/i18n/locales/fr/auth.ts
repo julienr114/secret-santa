@@ -468,17 +468,29 @@ export default {
     joinGroup: 'Rejoindre le groupe',
     signedAs: 'Connecté avec {email}',
     notMe: 'Ce n’est pas moi',
-    organiserWord: 'Le mot de l’organisateur',
+    organiserWord: {
+      one: 'Le mot de l’organisateur',
+      other: 'Le mot des organisateurs',
+    },
     welcome: 'Bienvenue dans {group}',
     inDraw: 'Tu participes à {label}.',
-    notDrawnYet:
-      'Le tirage n’est pas encore fait : ton organisateur te fera signe.',
-    addLater:
-      'Tu fais partie du groupe. Ton organisateur t’ajoutera au tirage de {label}.',
+    notDrawnYet: {
+      one: 'Le tirage n’est pas encore fait : ton organisateur te fera signe.',
+      other:
+        'Le tirage n’est pas encore fait : tes organisateurs te feront signe.',
+    },
+    addLater: {
+      one: 'Tu fais partie du groupe. Ton organisateur t’ajoutera au tirage de {label}.',
+      other:
+        'Tu fais partie du groupe. Tes organisateurs t’ajouteront au tirage de {label}.',
+    },
     drawnAlready:
       'Tu fais partie du groupe. Le tirage de {label} est déjà fait : tu seras du prochain.',
-    nextDraw:
-      'Tu fais partie du groupe. Ton organisateur te fera signe pour le prochain tirage.',
+    nextDraw: {
+      one: 'Tu fais partie du groupe. Ton organisateur te fera signe pour le prochain tirage.',
+      other:
+        'Tu fais partie du groupe. Tes organisateurs te feront signe pour le prochain tirage.',
+    },
     meanwhile: 'En attendant',
     hints: 'Laisser mes pistes de cadeaux',
     seeDraw: 'Voir mon tirage',
@@ -487,12 +499,20 @@ export default {
     joining: 'Inscription en cours…',
     full: {
       title: 'Il n’y a plus de place par ce lien',
-      body: 'Préviens l’organisateur de {group} : il peut rouvrir des places ou t’ajouter lui-même.',
+      body: {
+        one: 'Préviens l’organisateur de {group} : il peut rouvrir des places ou t’ajouter lui-même.',
+        other:
+          'Préviens les organisateurs de {group} : ils peuvent rouvrir des places ou t’ajouter eux-mêmes.',
+      },
     },
     expired: {
       title: 'Ce lien d’invitation n’est plus valable',
       titleSince: 'Ce lien d’invitation n’est plus valable depuis le {date}',
-      body: 'Préviens l’organisateur de {group} : il peut le prolonger ou t’ajouter lui-même.',
+      body: {
+        one: 'Préviens l’organisateur de {group} : il peut le prolonger ou t’ajouter lui-même.',
+        other:
+          'Préviens les organisateurs de {group} : ils peuvent le prolonger ou t’ajouter eux-mêmes.',
+      },
     },
     invalid: {
       title: 'Ce lien d’invitation ne marche plus',

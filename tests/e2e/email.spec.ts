@@ -226,9 +226,16 @@ test('a participant logs in with their address and finds their draw', async ({
   await expect(
     draw.getByRole('link', { name: 'Laisser mes pistes de cadeaux' }),
   ).toHaveCount(0);
+  // A second organiser: the page now speaks of « tes organisateurs ».
+  await api.post(`${ADMIN}/organizers`, {
+    data: { email: 'second-courrier@example.com' },
+  });
   await draw.getByRole('link', { name: /Famille Courrier/ }).click();
   await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await expect(page.getByText('Dana')).toBeVisible();
+  await expect(
+    page.getByText(/Tes organisateurs te feront signe/),
+  ).toBeVisible();
   // Opened from home, the draw shows the way back; opened from its link
   // (here a reload), it does not.
   await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();

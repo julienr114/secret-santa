@@ -470,17 +470,29 @@ export default {
     joinGroup: 'Join the group',
     signedAs: 'Logged in as {email}',
     notMe: 'Not me',
-    organiserWord: 'The organizer’s word',
+    organiserWord: {
+      one: 'The organizer’s word',
+      other: 'The organizers’ word',
+    },
     welcome: 'Welcome to {group}',
     inDraw: 'You take part in {label}.',
-    notDrawnYet:
-      'The draw hasn’t happened yet: your organizer will give you a shout.',
-    addLater:
-      'You are in the group. Your organizer will add you to the draw of {label}.',
+    notDrawnYet: {
+      one: 'The draw hasn’t happened yet: your organizer will give you a shout.',
+      other:
+        'The draw hasn’t happened yet: your organizers will give you a shout.',
+    },
+    addLater: {
+      one: 'You are in the group. Your organizer will add you to the draw of {label}.',
+      other:
+        'You are in the group. Your organizers will add you to the draw of {label}.',
+    },
     drawnAlready:
       'You are in the group. The draw of {label} is already done: you will be in the next one.',
-    nextDraw:
-      'You’re in the group. Your organizer will give you a shout for the next draw.',
+    nextDraw: {
+      one: 'You’re in the group. Your organizer will give you a shout for the next draw.',
+      other:
+        'You’re in the group. Your organizers will give you a shout for the next draw.',
+    },
     meanwhile: 'Meanwhile',
     hints: 'Leave my gift hints',
     seeDraw: 'See my draw',
@@ -489,12 +501,20 @@ export default {
     joining: 'Joining…',
     full: {
       title: 'No place left with this link',
-      body: 'Tell the organizer of {group}: they can open more places or add you themselves.',
+      body: {
+        one: 'Tell the organizer of {group}: they can open more places or add you themselves.',
+        other:
+          'Tell the organizers of {group}: they can open more places or add you themselves.',
+      },
     },
     expired: {
       title: 'This invitation link is no longer valid',
       titleSince: 'This invitation link has not been valid since {date}',
-      body: 'Tell the organizer of {group}: they can extend it or add you themselves.',
+      body: {
+        one: 'Tell the organizer of {group}: they can extend it or add you themselves.',
+        other:
+          'Tell the organizers of {group}: they can extend it or add you themselves.',
+      },
     },
     invalid: {
       title: 'This invitation link no longer works',

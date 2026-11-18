@@ -9,6 +9,7 @@ import {
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const journal = useJournalQuery(token);
+useOrganizersOf(() => journal.data.value?.organizers);
 const seen = useJournalSeenMutation(token);
 /** Opened from the home on an alert: its explanation shows at once. */
 const explainId = computed(() =>

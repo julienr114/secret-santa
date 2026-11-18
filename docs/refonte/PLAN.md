@@ -596,17 +596,27 @@ Demandée par Julien le 18 novembre 2026 : « j'adore en avoir plein, un tirage 
 
 Demandée par Julien le 18 novembre 2026. Le README 22.17, « Donner envie de jouer, et rappeler », fait foi. Maquettes : `DevineInviteResultat`, `DevineTirageFin`, `DevineAccueilFin`, `DevineUniquePrix`, `DevinePairesCourse`, `DevinePasse`, `DevineSuiviRelance`, `DevineRappel` (mise à jour), `DevineRappelGroupe`, `DevineSuiviRappelFait` (mise à jour), `DevineReglage` (mise à jour), et les quatre emails `DevineEmailRappelAuto`, `DevineEmailRappelEncore`, `DevineEmailOrgaPoint`, `DevineEmailOrgaFin`.
 
-- [ ] **« Je passe mon tour »** (migration) : un participant peut passer son tour et revenir jusqu'à la fin. Fonctions pures testées : qui reste « à rappeler », et le compte « x sur y ont joué », où y exclut ceux qui passent leur tour. La route de l'organisateur les distingue ; les routes des participants ne renvoient que le compte.
-- [ ] **Le jeu proposé au bon moment** : la carte sous le résultat (`DevineInviteResultat`), tant qu'on n'a ni joué ni passé son tour.
-- [ ] **Le compte et l'échéance** sur la tuile, la carte de l'accueil et la carte du résultat : le compte dès deux joueurs, l'échéance dans les sept derniers jours. Fonction pure pour le texte de l'échéance.
-- [ ] **Les prix à gagner** sur la page du jeu, selon le mode de l'édition, et **« Tu es dans la course pour… »** une fois qu'on a joué : fonction pure qui dit, pour un joueur, les prix encore accessibles et ce qu'il manque pour le suivant. Elle ne lit que ses propres pronostics : jamais un score, jamais ceux des autres.
-- [ ] **Le défi de l'an dernier**, quand l'édition précédente du groupe avait le jeu et un palmarès.
-- [ ] **Le rappel automatique aux joueurs**, par la tâche planifiée : une fois, 48 heures avant la fin, selon les conditions du README ; deux textes selon l'état du joueur ; lien direct vers l'écran du pronostic ; lien « Je passe mon tour ». Fonction pure testée : qui le reçoit, et quand il ne part pas.
-- [ ] **Les rappels de l'organisateur, sans limite** : la règle « un seul par édition » disparaît. Le panneau garde la date du dernier rappel ; « Écrire au groupe » (`DevineRappelGroupe`) partage ou copie un message sans nom ni lien personnel.
-- [ ] **La relance suggérée** sur le suivi, cinq jours avant la fin (`DevineSuiviRelance`).
-- [ ] **Les deux emails à l'organisateur** : cinq jours avant la fin s'il reste quelqu'un à rappeler, et à la fermeture des pronostics.
-- [ ] **Les deux réglages** du jeu, activés par défaut (`DevineReglage`).
-- [ ] Journal : le rappel automatique y est inscrit comme une action automatique, sans nom. Trois langues partout. README 22.17 marqué fait pour cette partie, sections 9 à 12 à jour, `tests/e2e`.
+- [x] **« Je passe mon tour »** (migration) : un participant peut passer son tour et revenir jusqu'à la fin. Fonctions pures testées : qui reste « à rappeler », et le compte « x sur y ont joué », où y exclut ceux qui passent leur tour. La route de l'organisateur les distingue ; les routes des participants ne renvoient que le compte.
+- [x] **Le jeu proposé au bon moment** : la carte sous le résultat (`DevineInviteResultat`), tant qu'on n'a ni joué ni passé son tour.
+- [x] **Le compte et l'échéance** sur la tuile, la carte de l'accueil et la carte du résultat : le compte dès deux joueurs, l'échéance dans les sept derniers jours. Fonction pure pour le texte de l'échéance.
+- [x] **Les prix restent une surprise** (changement du 18 novembre, 10 h 40) : avant la fête, aucun texte de l'application ni d'un email ne nomme un prix ni n'en donne le nombre ; on dit « une surprise », pas « le palmarès », aux joueurs. La page du jeu porte la phrase de la surprise (`DevineUniquePrix`). Une fois qu'on a joué en mode « Toutes les paires » : « 3 pronostics sur 5 » et une barre de progression (`DevinePairesCourse`), calculés sur ses seuls pronostics. Pas de « dans la course pour… ».
+- [x] **Le défi de l'an dernier**, quand l'édition précédente du groupe avait le jeu et un palmarès.
+- [x] **Le rappel automatique aux joueurs**, par la tâche planifiée : une fois, 48 heures avant la fin, selon les conditions du README ; deux textes selon l'état du joueur ; lien direct vers l'écran du pronostic ; lien « Je passe mon tour ». Fonction pure testée : qui le reçoit, et quand il ne part pas.
+- [x] **Les rappels de l'organisateur, sans limite** : la règle « un seul par édition » disparaît. Le panneau garde la date du dernier rappel ; « Écrire au groupe » (`DevineRappelGroupe`) partage ou copie un message sans nom ni lien personnel.
+- [x] **La relance suggérée** sur le suivi, cinq jours avant la fin (`DevineSuiviRelance`).
+- [x] **Les deux emails à l'organisateur** : cinq jours avant la fin s'il reste quelqu'un à rappeler, et à la fermeture des pronostics.
+- [x] **Les deux réglages** du jeu, activés par défaut (`DevineReglage`).
+- [x] Journal : le rappel automatique y est inscrit comme une action automatique, sans nom. Trois langues partout. README 22.17 marqué fait pour cette partie, sections 9 à 12 à jour, `tests/e2e`.
+
+### Correction 16 — Les textes : plus clairs, et un ton plus souriant
+
+Demandée par Julien le 18 novembre 2026. Tout est dans `docs/refonte/TEXTES.md` : la voix (section 1), les mots (sections 2 et 12), puis, fichier par fichier, le texte actuel et le texte proposé. Le document ne liste que ce qui change.
+
+- [ ] **Partie 1, validée** (sections 3 à 5) : `participant.ts`, `messages.ts`, `errors.ts`. Côté participant, « mon enveloppe » remplace « mon résultat », et « c'est terminé pour cette année » remplace « cette édition est clôturée ».
+- [ ] **Parties 2 et 3, validées le 18 novembre à 11 h 10** (sections 6 à 12) : `common.ts`, `notify.ts`, `journal.ts`, `hints.ts`, `auth.ts`, `adminGroup.ts`, `adminEdition.ts`. Sur le suivi de l'organisateur, « Enveloppe ouverte » remplace « Résultat consulté » ; « les résultats » reste pour le tirage entier.
+- [ ] **L'anglais et l'allemand** : `TEXTES.md`, section 13, donne le texte proposé pour chaque clé modifiée, et le tableau des mots dans chaque langue. En anglais, « organizer » partout (les fichiers mélangent « organizer » et « organiser ») et « party », pas « exchange » ; en allemand, « Feier », pas « Bescherung », et « Umschlag », pas « Ergebnis », pour l'état d'une personne. Pour un texte absent de la section 13, suivre l'esprit, pas le mot à mot.
+- [ ] Tout nouveau texte écrit pour les Corrections 13 à 15 suit la voix de `TEXTES.md` ; avant la fête, aucun texte ne nomme un prix ni ne dit « palmarès » aux joueurs (Correction 15).
+- [ ] Les maquettes gardent leurs anciens textes : en cas d'écart, `TEXTES.md` fait foi pour les mots, les maquettes pour la mise en page. Tests et `tests/e2e` mis à jour là où ils lisent un texte.
 
 ## 6. Questions pour Julien
 
@@ -837,4 +847,17 @@ Codée le 18 novembre 2026. Points que j'ai tranchés seul, à relire :
 6. **La force des prix** (le plafond de huit écrans) : la note lissée pour les prix pondérés ; « Sur le fil » 1 − minutes ÷ 60 ; « Le suspect idéal » citations ÷ joueurs ; « La girouette » (changements + 1) ÷ (changements + pronostics + 2).
 7. **« Sur le fil »** compte jusqu'à la fin réelle des pronostics : l'heure de fin, ou le dévoilement s'il est venu plus tôt. Avec un dévoilement anticipé, le dernier pronostic tombe souvent « dans la dernière heure ».
 8. **Les phrases inventées** (plusieurs gagnants, une foule au-delà de trois, « une seule l'a trouvé », les trois langues) sont dans `shared/i18n/locales/*/participant.ts`, `participant.game.awards`. En allemand, « Der Durchschaubarste » et « Der am besten Versteckte » sonnent lourd : à relire.
+
+### Correction 15
+
+Codée le 18 novembre 2026. Points tranchés seul, à relire :
+
+1. **« 3 pronostics sur 5 »** : la maquette `DevinePairesCourse` compte cinq lignes pour six participants, alors que la page en montre six (« Qui t'offre ? » et les cinq autres ; la ligne de la personne à qui j'offre compte depuis « Se nommer soi-même »). Je compte toutes les lignes de la page : « 3 pronostics sur 6 ».
+2. **Passer son tour après avoir joué** n'est pas possible : il faut d'abord retirer ses pronostics. Faire un pronostic reprend la partie de soi-même.
+3. **Le lien « Je passe mon tour » de l'email** ouvre la page du jeu et demande une confirmation (un lien ne doit rien changer à lui seul).
+4. **Le rappel automatique** : s'il ne part pas (coupé, jeu allumé tard, organisateur qui vient de rappeler), il ne partira plus. Le jour du rappel est compté dans le fuseau du réglage.
+5. **L'email de fermeture** ne part que si les pronostics ferment à l'heure : un dévoilement anticipé les ferme sans lui. « Bonjour {prénom} » prend le prénom du compte de l'organisateur, vide s'il n'en a pas donné.
+6. **« Me tenir au courant »** n'apparaît qu'aux organisateurs du groupe : un super-admin qui n'en fait pas partie ne voit que « Rappel automatique ».
+7. **Le message au groupe**, au-delà de sept jours, commence par « On joue à Devine qui jusqu'au 25 décembre à 18 h ! » ; dans les sept derniers jours, « Plus que 5 jours… », et « Dernier jour… » le jour même.
+8. **« Tu verras quand même le palmarès à la fête »** (`DevinePasse`) garde le mot « palmarès », comme la maquette, alors que la règle dit de parler de « surprise » aux joueurs avant la fête. À trancher. Le seul autre texte d'avant la fête qui le disait (« Réponse à la fête ») dit maintenant « les résultats et la surprise ».
 

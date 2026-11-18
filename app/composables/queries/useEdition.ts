@@ -79,7 +79,13 @@ export const useValidateAnswersMutation = (slug: Ref, id: Ref) =>
 export const useSetGuessMutation = (slug: Ref, id: Ref) =>
   useApiMutation<
     unknown,
-    { mode: GuessMode; endsAt?: string; timeZone?: string }
+    {
+      mode: GuessMode;
+      endsAt?: string;
+      timeZone?: string;
+      autoReminder?: boolean;
+      news?: boolean;
+    }
   >(
     (body) =>
       api(`${base(slug)}/editions/${toValue(id)}/guess`, {

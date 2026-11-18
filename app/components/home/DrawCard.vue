@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { envelopeState, personalPhase } from '#server/utils/personal';
 import type { HomeDraw } from '~/composables/queries/useAuth';
+import { useSkipGameMutation } from '~/composables/queries/usePersonal';
 
 // The one draw of an account that only takes part in one, as the top
 // card of its home: its envelope, where it stands, the day of the party
@@ -29,8 +30,23 @@ const opened = computed(() => (palmares.value ? null : props.draw.opened));
 const guessing = computed(
   () =>
     props.draw.revealed &&
-    Boolean(props.draw.game?.open && !props.draw.game.played),
+    Boolean(
+      props.draw.game?.open &&
+      !props.draw.game.played &&
+      !props.draw.game.skipped,
+    ),
 );
+// « 4 sur 6 ont déjà joué. Plus que 3 jours : réponse à la fête. » and
+// « Je passe mon tour » (Correction 15, DevineAccueilFin).
+const gameLines = useGameLines();
+const skip = useSkipGameMutation(() => props.draw.path.split('/p/')[1] ?? '');
+const toast = useToast();
+const errorMessage = useErrorMessage();
+const onSkip = () =>
+  skip.mutate(true, {
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
 const envelope = computed(() =>
   newHints.value || guessing.value
     ? 'sealed'
@@ -50,6 +66,19 @@ const partyLine = computed(() => {
       .join(' ');
   }
   if (guessing.value && props.draw.game?.endsAt) {
+    const count = gameLines.count(
+      props.draw.game.count,
+      'auth.home.drawCard.guessCount',
+    );
+    const deadline = gameLines.deadline(props.draw.game.endsAt);
+    if (count || deadline) {
+      return [
+        count,
+        deadline
+          ? t('auth.home.drawCard.guessDeadline', { deadline })
+          : t('participant.game.inviteNone'),
+      ].join(' ');
+    }
     const end = endText(props.draw.game.endsAt);
     return props.draw.game.mode === 'santa'
       ? t('auth.home.drawCard.guessSanta', { end })
@@ -184,6 +213,16 @@ const state = computed(() => {
       :label="state.button"
       @click="emit('open')"
     />
+    <button
+      v-if="guessing && draw.game?.canSkip"
+      type="button"
+      class="flex min-h-11 items-center text-sm text-toned underline"
+      :disabled="skip.isPending.value"
+      data-testid="home-game-skip"
+      @click="onSkip"
+    >
+      {{ t('auth.home.drawCard.guessSkip') }}
+    </button>
     <HomeJournalSignal
       v-if="draw.journal"
       :signal="draw.journal"

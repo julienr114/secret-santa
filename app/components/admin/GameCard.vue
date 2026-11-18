@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { formatEventDate } from '#server/utils/rules';
+import { daysLeft } from '#server/utils/nudges';
 import type { GuessSummary } from '~/composables/queries/useGroup';
 
 // « Devine qui » on the follow-up of an edition (README 22.17, maquettes
-// DevineSuivi and DevineSuiviRappelFait): how many have played, when the
-// guesses end, and « Envoyer un rappel », once, while someone is left to
-// remind and the guesses are open; then « Rappel envoyé le… ». A tap on
+// DevineSuivi, DevineSuiviRelance and DevineSuiviRappelFait): how many
+// have played, when the guesses end, and the reminder, as often as the
+// organiser wants (Correction 15): « Envoyer un rappel », then « Dernier
+// rappel le… » and « Rappeler encore ». Five days before the end, while
+// someone is left, the card stands out with « Leur rappeler ». A tap on
 // the card opens the game's setting in its sheet. Never a guess.
 const props = defineProps<{
   slug: string;
   editionId: string;
   guess: GuessSummary;
-  participants: number;
-  /** Someone has not played yet and could be reminded. */
+  /** Someone is left to remind. */
   canRemind: boolean;
   /** The draw is revealed: the palmarès can be watched. */
   revealed?: boolean;
@@ -21,30 +23,61 @@ const emit = defineEmits<{ remind: []; settings: [] }>();
 const { t, locale } = useT();
 const endText = useGuessEnd();
 
+const playersLine = computed(() =>
+  t('adminEdition.game.players', {
+    // « 0 sur 5 ont fait… »: nobody yet reads as a plural.
+    count: props.guess.players === 0 ? 2 : props.guess.players,
+    players: props.guess.players,
+    total: props.guess.total,
+  }),
+);
 const line = computed(() =>
   [
-    // « 0 sur 5 ont fait… »: nobody yet reads as a plural.
-    t('adminEdition.game.players', {
-      count: props.guess.players === 0 ? 2 : props.guess.players,
-      players: props.guess.players,
-      total: props.participants,
-    }),
+    playersLine.value,
     props.guess.endsAt &&
       (props.guess.open
-        ? t('adminEdition.game.endsOn', {
-            end: endText(props.guess.endsAt),
-          })
+        ? t('adminEdition.game.endsOn', { end: endText(props.guess.endsAt) })
         : t('adminEdition.game.closed')),
   ]
     .filter(Boolean)
     .join(' '),
 );
+// The days left are read in this browser's zone, once mounted.
+const days = ref<number | null>(null);
+onMounted(() => {
+  if (!props.guess.endsAt) return;
+  days.value = daysLeft(
+    props.guess.endsAt,
+    new Date().toISOString(),
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+  );
+});
+/** The suggested reminder (DevineSuiviRelance). */
+const nudge = computed(
+  () => props.guess.nudge && !props.revealed && props.canRemind,
+);
+const nudgeEnd = computed(() =>
+  days.value === null
+    ? ''
+    : days.value <= 0
+      ? t('adminEdition.game.nudgeToday')
+      : t('adminEdition.game.nudgeEnd', { count: days.value }),
+);
+const canAct = computed(
+  () => props.canRemind && props.guess.open && !props.revealed,
+);
 </script>
 
 <template>
   <section
-    class="relative flex items-center gap-3.5 rounded-2xl bg-default px-5 py-4 shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5"
+    class="relative flex items-center gap-3.5 rounded-2xl bg-default px-5 py-4"
+    :class="
+      nudge
+        ? 'ring-2 ring-primary'
+        : 'shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
+    "
     data-testid="game-card"
+    :data-nudge="nudge || undefined"
   >
     <span
       class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-ink"
@@ -77,31 +110,49 @@ const line = computed(() =>
           {{ t('adminEdition.guess.title') }}
         </button>
       </h2>
-      <p class="text-sm leading-[1.4] text-toned">{{ line }}</p>
-      <span
-        v-if="revealed"
-        class="flex min-h-9 items-center self-start text-sm font-bold text-pine-800 underline"
-        >{{ t('participant.game.discover') }}</span
-      >
-      <button
-        v-else-if="canRemind && !guess.reminderSentAt && guess.open"
-        type="button"
-        class="relative z-1 flex min-h-9 items-center self-start text-sm font-bold text-primary-ink underline"
-        data-testid="game-remind"
-        @click="emit('remind')"
-      >
-        {{ t('adminEdition.game.remind') }}
-      </button>
-      <p
-        v-else-if="guess.reminderSentAt"
-        class="flex min-h-9 items-center text-sm text-toned"
-      >
-        {{
-          t('adminEdition.game.reminded', {
-            date: formatEventDate(guess.reminderSentAt.slice(0, 10), locale),
-          })
-        }}
-      </p>
+      <template v-if="nudge">
+        <p class="text-sm leading-[1.4] font-bold">
+          {{ t('adminEdition.game.nudgeLeft', { count: guess.left }) }}
+        </p>
+        <p class="text-sm leading-[1.4] text-toned">{{ nudgeEnd }}</p>
+        <UButton
+          class="relative z-1 mt-2 self-start font-bold"
+          :label="t('adminEdition.game.nudgeButton')"
+          data-testid="game-remind"
+          @click="emit('remind')"
+        />
+      </template>
+      <template v-else>
+        <p class="text-sm leading-[1.4] text-toned">{{ line }}</p>
+        <p
+          v-if="guess.reminderSentAt && !revealed"
+          class="mt-1 text-sm text-toned"
+        >
+          {{
+            t('adminEdition.game.lastReminder', {
+              date: formatEventDate(guess.reminderSentAt.slice(0, 10), locale),
+            })
+          }}
+        </p>
+        <span
+          v-if="revealed"
+          class="flex min-h-9 items-center self-start text-sm font-bold text-pine-800 underline"
+          >{{ t('participant.game.discover') }}</span
+        >
+        <button
+          v-else-if="canAct"
+          type="button"
+          class="relative z-1 flex min-h-9 items-center self-start text-sm font-bold text-primary-ink underline"
+          data-testid="game-remind"
+          @click="emit('remind')"
+        >
+          {{
+            guess.reminderSentAt
+              ? t('adminEdition.game.remindAgain')
+              : t('adminEdition.game.remind')
+          }}
+        </button>
+      </template>
     </div>
     <UIcon
       name="i-lucide-chevron-right"

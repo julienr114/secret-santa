@@ -114,6 +114,17 @@ export const editions = sqliteTable(
     guessReminderSentAt: text('guess_reminder_sent_at'),
     guessesClosedAt: text('guesses_closed_at'),
     guessResultsSentAt: text('guess_results_sent_at'),
+    // Correction 15 (README 22.17, « Donner envie de jouer, et rappeler »):
+    // the automatic reminder (a setting, on by default) and when it went
+    // or was settled; when the game was turned on; when the organisers'
+    // point (five days before) and end emails went.
+    guessAutoReminder: integer('guess_auto_reminder', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    guessAutoReminderSentAt: text('guess_auto_reminder_sent_at'),
+    guessEnabledAt: text('guess_enabled_at'),
+    guessPointSentAt: text('guess_point_sent_at'),
+    guessEndSentAt: text('guess_end_sent_at'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('editions_group_idx').on(t.groupId)],
@@ -150,6 +161,8 @@ export const participations = sqliteTable(
     hintsAnnouncedAt: text('hints_announced_at'),
     // When they watched the results of « Devine qui » (lot 19).
     guessResultsSeenAt: text('guess_results_seen_at'),
+    // « Je passe mon tour » (Correction 15): no reminder, out of the counts.
+    guessSkippedAt: text('guess_skipped_at'),
   },
   (t) => [
     uniqueIndex('participations_edition_person_idx').on(
@@ -394,6 +407,11 @@ export const groupMembers = sqliteTable(
     accountId: text('account_id')
       .notNull()
       .references(() => accounts.id),
+    // « Me tenir au courant » of « Devine qui » (Correction 15): each
+    // organiser sets their own, on by default.
+    guessNews: integer('guess_news', { mode: 'boolean' })
+      .notNull()
+      .default(true),
     createdAt: text('created_at').notNull(),
   },
   (t) => [

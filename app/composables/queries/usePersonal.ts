@@ -74,6 +74,11 @@ export type PersonalState = {
     /** Someone played: there is a palmarès, small or full. */
     palmares: boolean;
     seen: boolean;
+    /** « Je passe mon tour » (Correction 15), and whether it is offered. */
+    skipped: boolean;
+    canSkip: boolean;
+    /** « 4 sur 6 ont joué », among those who did not pass their turn. */
+    count: { played: number; total: number };
   } | null;
   /** While answers are collected: theirs given, and how many are. */
   answer: { given: boolean; answered: number; total: number } | null;
@@ -335,6 +340,15 @@ export const useGuessMutation = (token: Token) =>
   useApiMutation<unknown, { recipientId: string; giverId: string | null }>(
     (body) => api(`${base(token)}/guess`, { method: 'PUT', body }),
     () => [keys.personal(toValue(token))],
+  );
+
+/** « Je passe mon tour », or « Finalement, je joue » (Correction 15). */
+export const useSkipGameMutation = (token: Token) =>
+  useApiMutation<{ skipped: boolean }, boolean>(
+    (skip) =>
+      api(`${base(token)}/guess/skip`, { method: 'POST', body: { skip } }),
+    // The home's card follows too.
+    () => [keys.personal(toValue(token)), keys.home()],
   );
 
 /** The palmarès was watched: « Revoir », guesses corrected. */

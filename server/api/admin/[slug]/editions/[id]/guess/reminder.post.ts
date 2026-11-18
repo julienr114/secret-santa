@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { and, eq, isNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { editions, participations } from '#server/database/schema';
 import { listParticipants } from '#server/database/editions';
-import { playersOf } from '#server/database/guesses';
+import { gameMembers } from '#server/database/guesses';
+import { toRemind } from '#server/utils/nudges';
 import { personalLink } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -13,21 +14,16 @@ import { validatedBody } from '#server/http/validate';
 import { guessesOpen } from '#server/utils/guesses';
 import { NOTE_MAX, buildEmail } from '#server/utils/messages';
 
-// « Envoyer un rappel » (README 22.17, DevineRappel): once per edition,
-// an email to those who have not made a guess yet and have an address,
-// with the organiser's word if any. Who has played is known, never what.
+// « Envoyer un rappel » (README 22.17, DevineRappel): as often as the
+// organiser wants (Correction 15), an email to those who have not made a
+// guess yet, have an address and did not pass their turn, with the
+// organiser's word if any. Who has played is known, never what.
 const bodySchema = z.object({ note: z.string().max(NOTE_MAX).default('') });
 
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
   if (!guessesOpen(edition, nowIso())) {
     throw createError({ statusCode: 409, statusMessage: 'guesses_closed' });
-  }
-  if (edition.guessReminderSentAt) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'guess_reminder_sent',
-    });
   }
   if (!emailConfigured(event)) {
     throw createError({
@@ -36,31 +32,18 @@ export default defineEventHandler(async (event) => {
     });
   }
   const { note } = await validatedBody(event, bodySchema);
-  const [people, players, rows] = await Promise.all([
+  const [people, members, rows] = await Promise.all([
     listParticipants(db, edition.id),
-    playersOf(db, edition.id),
+    gameMembers(db, edition.id),
     db
       .select()
       .from(participations)
       .where(eq(participations.editionId, edition.id)),
   ]);
-  const targets = people.filter((p) => p.email && !players.has(p.id));
+  const left = new Set(toRemind(members).map((m) => m.id));
+  const targets = people.filter((p) => p.email && left.has(p.id));
   if (targets.length === 0) {
     throw createError({ statusCode: 409, statusMessage: 'email_missing' });
-  }
-  // Only once: two organisers cannot both send it.
-  const claimed = await db
-    .update(editions)
-    .set({ guessReminderSentAt: nowIso() })
-    .where(
-      and(eq(editions.id, edition.id), isNull(editions.guessReminderSentAt)),
-    )
-    .returning({ id: editions.id });
-  if (claimed.length === 0) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'guess_reminder_sent',
-    });
   }
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
@@ -87,15 +70,12 @@ export default defineEventHandler(async (event) => {
       };
     }),
   );
-  const sent = await sendEmails(event, emails);
-  if (!sent.ok) {
-    // Nothing went: the reminder can be sent again.
-    await db
-      .update(editions)
-      .set({ guessReminderSentAt: null })
-      .where(eq(editions.id, edition.id));
-    unwrap(sent);
-  }
+  unwrap(await sendEmails(event, emails));
+  // The last reminder, for « Dernier rappel le… » and the automatic one.
+  await db
+    .update(editions)
+    .set({ guessReminderSentAt: nowIso() })
+    .where(eq(editions.id, edition.id));
   await recordEvent(db, {
     type: 'guess_reminder_sent',
     groupId: group.id,

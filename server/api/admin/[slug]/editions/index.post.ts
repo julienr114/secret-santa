@@ -45,6 +45,8 @@ export default defineEventHandler(async (event) => {
     (p) => p.active && (previousIds === null || previousIds.includes(p.id)),
   );
   unwrap(checkParticipantCount(people.length));
+  const game = carriedGame(previous, body.eventDate);
+  const createdAt = nowIso();
   const edition: typeof editions.$inferSelect = {
     id: newId(),
     groupId: group.id,
@@ -69,11 +71,19 @@ export default defineEventHandler(async (event) => {
     drawMode: 'app',
     // « Devine qui » is taken from the previous edition (README 22.17),
     // its end moved to the new party at the same time of day.
-    ...carriedGame(previous, body.eventDate),
+    ...game,
     guessReminderSentAt: null,
     guessesClosedAt: null,
     guessResultsSentAt: null,
-    createdAt: nowIso(),
+    // The automatic reminder keeps the previous edition's setting.
+    guessAutoReminder: previous?.guessAutoReminder ?? true,
+    guessAutoReminderSentAt: null,
+    guessPointSentAt: null,
+    guessEndSentAt: null,
+    // A game carried over is on from the creation (« activé moins de
+    // trois jours avant la fin », README 22.17).
+    guessEnabledAt: game.guessMode === 'none' ? null : createdAt,
+    createdAt,
   };
   const rows = await Promise.all(
     people.map((p) =>

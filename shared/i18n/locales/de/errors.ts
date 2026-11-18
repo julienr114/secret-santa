@@ -93,4 +93,5 @@ export default {
   invalid_answer: 'Wähle eine andere Person der Ausgabe.',
   game_needs_four: 'Das Spiel braucht mindestens vier Teilnehmende.',
   draw_not_revealed: 'Die Auslosung ist noch nicht aufgedeckt.',
+  already_played: 'Du hast schon getippt: Nimm den Tipp erst zurück.',
 } satisfies Dict<typeof fr>;

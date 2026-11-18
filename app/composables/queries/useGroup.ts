@@ -30,6 +30,8 @@ export type EditionParticipant = Participant & {
   answerStatus?: AnswerStatus;
   /** Made at least one guess in « Devine qui » (never which). */
   played?: boolean;
+  /** Passed their turn (Correction 15). */
+  skipped?: boolean;
 };
 /** « Devine qui » on the edition (README 22.17). */
 export type GuessSummary = {
@@ -38,9 +40,19 @@ export type GuessSummary = {
   endsAt: string | null;
   timeZone: string | null;
   open: boolean;
-  /** How many have played. */
+  /** How many have played, out of those who did not pass their turn. */
   players: number;
+  total: number;
+  /** Not played, not passed their turn: left to remind. */
+  left: number;
+  /** The organiser's last reminder (no limit, Correction 15). */
   reminderSentAt: string | null;
+  /** The automatic reminder is on. */
+  autoReminder: boolean;
+  /** « Me tenir au courant », this organiser's; null when not a member. */
+  news: boolean | null;
+  /** Five days before the end, someone left: suggest a reminder. */
+  nudge: boolean;
   /** The game can be turned on: before the draw, or four people drawn. */
   possible: boolean;
 };

@@ -535,6 +535,41 @@ export default {
       other:
         '{names} n’ont pas d’adresse : partage-leur leur lien avec le bouton de leur ligne.',
     },
+    remindAgain: 'Rappeler encore',
+    lastReminder: 'Dernier rappel le {date}',
+    lastNone: 'Dernier rappel : aucun.',
+    lastOn: 'Dernier rappel : le {date}.',
+    nudgeLeft: {
+      one: '{count} personne n’a pas encore joué.',
+      other: '{count} personnes n’ont pas encore joué.',
+    },
+    nudgeEnd: {
+      one: 'Fin demain.',
+      other: 'Fin dans {count} jours.',
+    },
+    nudgeToday: 'Fin aujourd’hui.',
+    nudgeButton: 'Leur rappeler',
+    writeGroup: 'Écrire au groupe',
+    group: {
+      subtitle: 'Un message pour tout le monde',
+      days: {
+        one: 'Plus qu’un jour pour jouer à Devine qui ! 🔍',
+        other: 'Plus que {count} jours pour jouer à Devine qui ! 🔍',
+      },
+      lastDay: 'Dernier jour pour jouer à Devine qui ! 🔍',
+      until: 'On joue à Devine qui jusqu’au {end} ! 🔍',
+      count: {
+        one: '{count} sur {total} a déjà fait son pronostic.',
+        other: '{count} sur {total} ont déjà fait leur pronostic.',
+      },
+      nobody: 'Personne n’a encore fait de pronostic.',
+      tail: 'Qui offre à qui ? Réponse à la fête, avec une surprise.',
+      personal: 'Chacun retrouve le jeu avec son lien personnel.',
+      share: 'Partager',
+      copy: 'Copier le message',
+      copied: 'Message copié',
+      help: 'Pour WhatsApp, SMS… Le message ne nomme personne et ne contient aucun lien personnel.',
+    },
     reminderSent: {
       one: 'Rappel envoyé à {count} personne',
       other: 'Rappel envoyé à {count} personnes',
@@ -552,6 +587,10 @@ export default {
     needsFour: 'À partir de quatre participants.',
     needsFourWhy:
       'À trois, chacun sait déjà qui lui offre : il n’y a rien à deviner.',
+    autoReminder: 'Rappel automatique',
+    autoReminderHint: '2 jours avant la fin, à ceux qui n’ont pas joué',
+    news: 'Me tenir au courant',
+    newsHint: 'Un email 5 jours avant la fin, un à la fermeture',
     modeHint: {
       none: 'Le jeu est éteint',
       santa: 'Chacun devine son propre Père Noël',

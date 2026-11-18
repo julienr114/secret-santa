@@ -160,6 +160,12 @@ export default {
       openedBody: 'The draw is no longer secret.',
       openedHints: 'See their gift hints',
       openedDraw: 'See the draw',
+      guessCount: {
+        one: '{count} out of {total} has already played.',
+        other: '{count} out of {total} have already played.',
+      },
+      guessDeadline: '{deadline}: answer at the party.',
+      guessSkip: 'I’ll sit this one out',
       guessTitle: "Guess who's giving you a gift",
       guessSanta: 'One guess, until {end}. The answer at the party.',
       guessAll: 'Guesses, until {end}. The answer at the party.',

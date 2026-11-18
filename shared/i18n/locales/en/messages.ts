@@ -48,6 +48,69 @@ export default {
     body: "Guess who's giving you a gift this year: you have until {guessEnd} to make your guess. The answer comes at the party!",
     subject: "{firstName}, guess who's giving you a gift",
   },
+  guessAuto: {
+    subject: 'Only {days} days left to guess who gives you your present',
+    greeting: 'Hello {firstName},',
+    body: {
+      one: 'For {editionLabel} ({groupName}), {count} person out of {total} has already made a guess. What about you: who gives you your present?',
+      other:
+        'For {editionLabel} ({groupName}), {count} people out of {total} have already made a guess. What about you: who gives you your present?',
+    },
+    nobody:
+      'For {editionLabel} ({groupName}), nobody has made a guess yet. What about you: who gives you your present?',
+    until: 'You have until {guessEnd}. Answer at the party, with a surprise.',
+    cta: 'Make my guess',
+    skipBefore: 'Don’t feel like playing? ',
+    skip: 'I’ll sit this one out',
+    skipAfter: ', and we won’t remind you again.',
+    once: 'This is the only automatic reminder you will get.',
+    signature: 'Under the Tree',
+  },
+  guessMore: {
+    subject: 'A few more guesses before the end?',
+    greeting: 'Hello {firstName},',
+    body: 'You made your guess about your Secret Santa for {editionLabel} ({groupName}). Well played.',
+    more: 'You have {days} days left to guess who gives to the others too. The more guesses, the better the surprise at the party.',
+    cta: 'Continue my guesses',
+  },
+  guessPoint: {
+    subject: {
+      one: 'Devine qui: {count} person hasn’t played yet',
+      other: 'Devine qui: {count} people haven’t played yet',
+    },
+    greeting: 'Hello {firstName},',
+    body: 'For {editionLabel} ({groupName}), {played} people out of {total} have made a guess.',
+    missing: {
+      one: '{names} hasn’t played yet;',
+      other: '{names} haven’t played yet;',
+    },
+    noEmail: {
+      one: '{noEmail} has no email address.',
+      other: '{noEmail} have no email address.',
+    },
+    closes: 'The guesses close on {guessEnd}, in {days} days.',
+    auto: {
+      one: 'An automatic reminder will go tomorrow to those with an address.',
+      other:
+        'An automatic reminder will go in {count} days to those with an address.',
+    },
+    cta: 'Remind them now',
+    off: 'You can turn these emails off in the game settings.',
+    signature: 'Under the Tree',
+  },
+  guessEnd: {
+    subject: 'Devine qui: the guesses are closed',
+    greeting: 'Hello {firstName},',
+    body: {
+      one: 'For {editionLabel} ({groupName}), {count} person out of {total} played. The palmarès is ready: it starts as soon as you reveal the draw.',
+      other:
+        'For {editionLabel} ({groupName}), {count} people out of {total} played. The palmarès is ready: it starts as soon as you reveal the draw.',
+    },
+    cta: 'Reveal the draw',
+    alone: 'If you don’t, it will reveal itself tomorrow at {time}.',
+    off: 'You can turn these emails off in the game settings.',
+    signature: 'Under the Tree',
+  },
   guessResults: {
     subject: 'The Devine qui results are in',
     greeting: 'Hello {firstName},',

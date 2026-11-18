@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
+import { participations } from '#server/database/schema';
 import { editionPersons } from '#server/database/answers';
 import { guessesOf, replaceGuessesOf } from '#server/database/guesses';
 import { newId, nowIso } from '#server/http/context';
@@ -22,7 +24,8 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const { db, edition, person } = await requirePersonalLink(event);
+  const { db, edition, person, participation } =
+    await requirePersonalLink(event);
   if (!guessesOpen(edition, nowIso())) {
     throw createError({ statusCode: 409, statusMessage: 'guesses_closed' });
   }
@@ -48,12 +51,17 @@ export default defineEventHandler(async (event) => {
           giverId,
           at: nowIso(),
         });
-  await db.batch(
-    replaceGuessesOf(db, edition.id, person.id, mine, {
+  await db.batch([
+    ...replaceGuessesOf(db, edition.id, person.id, mine, {
       newId,
       now: nowIso(),
     }),
-  );
+    // Playing takes back « Je passe mon tour » (Correction 15).
+    db
+      .update(participations)
+      .set({ guessSkippedAt: null })
+      .where(eq(participations.id, participation.id)),
+  ]);
   return {
     mine: mine.map((g) => ({ recipientId: g.recipientId, giverId: g.giverId })),
   };

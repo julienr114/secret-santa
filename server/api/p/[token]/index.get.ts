@@ -146,6 +146,10 @@ export default defineEventHandler(async (event) => {
           // The palmarès exists (one player at least), and was watched.
           palmares: Boolean(game.results && game.results.size !== 'none'),
           seen: Boolean(game.results?.seen),
+          // Correction 15: passed their turn, and the count of players.
+          skipped: game.skipped,
+          canSkip: game.canSkip,
+          count: game.count,
         }
       : null,
   };

@@ -169,7 +169,8 @@ export const hintsTile = (p: {
 };
 
 /** Where the tile « Devine qui » stands (README 22.17). */
-export type GameTile = 'play' | 'played' | 'waiting' | 'palmares' | 'answers';
+export type GameTile =
+  'play' | 'played' | 'skipped' | 'waiting' | 'palmares' | 'answers';
 
 /**
  * The tile « Devine qui » on the page of a draw: a guess to make, made,
@@ -185,6 +186,8 @@ export const gameTile = (
     revealed: boolean;
     palmares: boolean;
     seen: boolean;
+    /** Passed their turn (Correction 15). */
+    skipped?: boolean;
   } | null,
 ): GameTile | null => {
   if (!game) return null;
@@ -193,7 +196,10 @@ export const gameTile = (
     if (!game.palmares) return null;
     return game.seen ? 'answers' : 'palmares';
   }
-  if (game.open) return game.played ? 'played' : 'play';
+  if (game.open) {
+    if (game.played) return 'played';
+    return game.skipped ? 'skipped' : 'play';
+  }
   return 'waiting';
 };
 

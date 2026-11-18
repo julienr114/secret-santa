@@ -1,9 +1,10 @@
 import { ok, fail, type Result } from './result';
 import { formatEventDate } from './rules';
-import { guessEndText } from '#shared/utils/dates';
+import { clockTime, guessEndText } from '#shared/utils/dates';
 import {
   DEFAULT_LOCALE,
   translate,
+  translateKey,
   type Locale,
   type MessageKey,
   type Params,
@@ -392,4 +393,238 @@ export const buildGuessResultsEmail = (
       '</div>',
     ].join(''),
   };
+};
+
+/** A line after the button, with a link inside: « {before}{link}{after} ». */
+type LinkLine = { before: string; label: string; link: string; after: string };
+
+/**
+ * An email with one button, and words before and after it.
+ * @param p - Subject, lines before, the button, lines after.
+ * @returns The email, in text and in HTML.
+ */
+const buttonEmail = (p: {
+  subject: string;
+  before: string[];
+  cta: string;
+  link: string;
+  after: (string | LinkLine)[];
+}): Email => ({
+  subject: p.subject,
+  text: [
+    ...p.before,
+    '',
+    `${p.cta} : ${p.link}`,
+    '',
+    ...p.after.map((line) =>
+      typeof line === 'string'
+        ? line
+        : `${line.before}${line.label} (${line.link})${line.after}`,
+    ),
+  ].join('\n'),
+  html: [
+    '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
+    ...p.before.map(paragraph),
+    `<p style="margin:0 0 20px"><a href="${escapeHtml(p.link)}">${escapeHtml(p.cta)}</a></p>`,
+    ...p.after.map((line) =>
+      typeof line === 'string'
+        ? paragraph(line)
+        : `<p style="margin:0 0 12px">${escapeHtml(line.before)}<a href="${escapeHtml(line.link)}">${escapeHtml(line.label)}</a>${escapeHtml(line.after)}</p>`,
+    ),
+    '</div>',
+  ].join(''),
+});
+
+/** What every email of « Devine qui » to a participant knows. */
+type GameEmailData = {
+  firstName: string;
+  groupName: string;
+  editionLabel: string;
+  /** The page of the game, on the personal link. */
+  link: string;
+  guessEndsAt: string;
+  guessTimeZone: string | null;
+};
+
+/**
+ * The automatic reminder (README 22.17, Correction 15): once, two days
+ * before the end. `play` to those who did not play, with « Je passe mon
+ * tour »; `more` to those who only guessed their own Santa, in « Toutes
+ * les paires ». No name.
+ * @param data - The person, the edition, the links, the count.
+ * @param text - Which text.
+ * @param locale - The recipient's language.
+ * @returns The email.
+ */
+export const buildGuessAutoReminderEmail = (
+  data: GameEmailData & {
+    skipLink: string;
+    played: number;
+    total: number;
+    days: number;
+  },
+  text: 'play' | 'more',
+  locale: Locale = DEFAULT_LOCALE,
+): Email => {
+  const params = {
+    firstName: data.firstName,
+    groupName: data.groupName,
+    editionLabel: data.editionLabel,
+    guessEnd: guessEndText(
+      data.guessEndsAt,
+      locale,
+      data.guessTimeZone ?? undefined,
+    ),
+    count: data.played,
+    total: data.total,
+    days: data.days,
+  };
+  const t = (key: string) => translateKey(locale, `messages.${key}`, params);
+  if (text === 'more') {
+    return buttonEmail({
+      subject: t('guessMore.subject'),
+      before: [
+        t('guessMore.greeting'),
+        t('guessMore.body'),
+        t('guessMore.more'),
+      ],
+      cta: t('guessMore.cta'),
+      link: data.link,
+      after: [t('guessAuto.once'), t('guessAuto.signature')],
+    });
+  }
+  return buttonEmail({
+    subject: t('guessAuto.subject'),
+    before: [
+      t('guessAuto.greeting'),
+      data.played === 0 ? t('guessAuto.nobody') : t('guessAuto.body'),
+      t('guessAuto.until'),
+    ],
+    cta: t('guessAuto.cta'),
+    link: data.link,
+    after: [
+      {
+        before: t('guessAuto.skipBefore'),
+        label: t('guessAuto.skip'),
+        link: data.skipLink,
+        after: t('guessAuto.skipAfter'),
+      },
+      t('guessAuto.once'),
+      t('guessAuto.signature'),
+    ],
+  });
+};
+
+/** What the organisers' emails of « Devine qui » know. */
+type OrganizerGameData = {
+  firstName: string;
+  groupName: string;
+  editionLabel: string;
+  /** The follow-up of the edition. */
+  link: string;
+  guessEndsAt: string;
+  guessTimeZone: string | null;
+  played: number;
+  total: number;
+};
+
+/**
+ * The organiser's point, five days before the end, while someone is left
+ * to remind (README 22.17, DevineEmailOrgaPoint): who has not played,
+ * who has no address, when the automatic reminder goes.
+ * @param data - The organiser, the edition, the counts and the names.
+ * @param locale - The organiser's language.
+ * @returns The email.
+ */
+export const buildGuessPointEmail = (
+  data: OrganizerGameData & {
+    /** Those left to remind, and those of them without an address. */
+    missing: string[];
+    noEmail: string[];
+    days: number;
+    /** Days before the automatic reminder; null when it will not go. */
+    autoIn: number | null;
+  },
+  locale: Locale = DEFAULT_LOCALE,
+): Email => {
+  const list = (names: string[]) =>
+    new Intl.ListFormat(locale, { type: 'conjunction' }).format(names);
+  const params = {
+    firstName: data.firstName,
+    groupName: data.groupName,
+    editionLabel: data.editionLabel,
+    guessEnd: guessEndText(
+      data.guessEndsAt,
+      locale,
+      data.guessTimeZone ?? undefined,
+    ),
+    played: data.played,
+    total: data.total,
+    count: data.missing.length,
+    names: list(data.missing),
+    noEmail: list(data.noEmail),
+    noEmailCount: data.noEmail.length,
+    days: data.days,
+    autoIn: data.autoIn ?? 0,
+  };
+  const t = (key: string, more: Record<string, string | number> = {}) =>
+    translateKey(locale, `messages.guessPoint.${key}`, { ...params, ...more });
+  return buttonEmail({
+    subject: t('subject'),
+    before: [
+      t('greeting'),
+      [
+        t('body'),
+        t('missing'),
+        data.noEmail.length > 0
+          ? t('noEmail', { count: data.noEmail.length })
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+      [
+        t('closes'),
+        data.autoIn === null ? '' : t('auto', { count: data.autoIn }),
+      ]
+        .filter(Boolean)
+        .join(' '),
+    ],
+    cta: t('cta'),
+    link: data.link,
+    after: [t('off'), t('signature')],
+  });
+};
+
+/**
+ * The organiser's email at the end of the guesses (DevineEmailOrgaFin):
+ * how many played, « Dévoiler le tirage », and that it reveals itself the
+ * day after.
+ * @param data - The organiser, the edition, the counts.
+ * @param locale - The organiser's language.
+ * @returns The email.
+ */
+export const buildGuessEndEmail = (
+  data: OrganizerGameData,
+  locale: Locale = DEFAULT_LOCALE,
+): Email => {
+  const t = (key: string) =>
+    translateKey(locale, `messages.guessEnd.${key}`, {
+      firstName: data.firstName,
+      groupName: data.groupName,
+      editionLabel: data.editionLabel,
+      count: data.played,
+      total: data.total,
+      time: clockTime(
+        data.guessEndsAt,
+        locale,
+        data.guessTimeZone ?? undefined,
+      ),
+    });
+  return buttonEmail({
+    subject: t('subject'),
+    before: [t('greeting'), t('body')],
+    cta: t('cta'),
+    link: data.link,
+    after: [t('alone'), t('off'), t('signature')],
+  });
 };

@@ -530,6 +530,41 @@ export default {
       other:
         '{names} have no address: share their links with the buttons of their rows.',
     },
+    remindAgain: 'Remind again',
+    lastReminder: 'Last reminder on {date}',
+    lastNone: 'Last reminder: none.',
+    lastOn: 'Last reminder: {date}.',
+    nudgeLeft: {
+      one: '{count} person hasn’t played yet.',
+      other: '{count} people haven’t played yet.',
+    },
+    nudgeEnd: {
+      one: 'Ends tomorrow.',
+      other: 'Ends in {count} days.',
+    },
+    nudgeToday: 'Ends today.',
+    nudgeButton: 'Remind them',
+    writeGroup: 'Write to the group',
+    group: {
+      subtitle: 'One message for everyone',
+      days: {
+        one: 'One day left to play Devine qui! 🔍',
+        other: 'Only {count} days left to play Devine qui! 🔍',
+      },
+      lastDay: 'Last day to play Devine qui! 🔍',
+      until: 'Devine qui is on until {end}! 🔍',
+      count: {
+        one: '{count} out of {total} has already made a guess.',
+        other: '{count} out of {total} have already made a guess.',
+      },
+      nobody: 'Nobody has made a guess yet.',
+      tail: 'Who gives to whom? Answer at the party, with a surprise.',
+      personal: 'Everyone finds the game with their personal link.',
+      share: 'Share',
+      copy: 'Copy the message',
+      copied: 'Message copied',
+      help: 'For WhatsApp, SMS… The message names nobody and holds no personal link.',
+    },
     reminderSent: {
       one: 'Reminder sent to {count} person',
       other: 'Reminder sent to {count} people',
@@ -547,6 +582,10 @@ export default {
     needsFour: 'From four participants.',
     needsFourWhy:
       'With three, everyone already knows who gives to them: there is nothing to guess.',
+    autoReminder: 'Automatic reminder',
+    autoReminderHint: '2 days before the end, to those who have not played',
+    news: 'Keep me posted',
+    newsHint: 'An email 5 days before the end, one at the close',
     modeHint: {
       none: 'The game is off',
       santa: 'Everyone guesses their own Secret Santa',

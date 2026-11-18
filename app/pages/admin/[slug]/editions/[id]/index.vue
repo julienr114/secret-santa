@@ -352,7 +352,6 @@ const dateOpen = ref(false);
             :slug="slug"
             :edition-id="id"
             :guess="edition.data.value.guess"
-            :participants="participants.length"
             :can-remind="false"
             revealed
           />

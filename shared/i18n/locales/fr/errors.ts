@@ -88,4 +88,5 @@ export default {
   invalid_answer: 'Choisis une autre personne de l’édition.',
   game_needs_four: 'Le jeu demande au moins quatre participants.',
   draw_not_revealed: 'Le tirage n’est pas encore dévoilé.',
+  already_played: 'Tu as déjà fait un pronostic : retire-le d’abord.',
 };

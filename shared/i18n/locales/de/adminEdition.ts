@@ -543,6 +543,41 @@ export default {
       other:
         '{names} haben keine Adresse: Teile ihre Links mit den Knöpfen ihrer Zeilen.',
     },
+    remindAgain: 'Noch einmal erinnern',
+    lastReminder: 'Letzte Erinnerung am {date}',
+    lastNone: 'Letzte Erinnerung: keine.',
+    lastOn: 'Letzte Erinnerung: am {date}.',
+    nudgeLeft: {
+      one: '{count} Person hat noch nicht gespielt.',
+      other: '{count} Personen haben noch nicht gespielt.',
+    },
+    nudgeEnd: {
+      one: 'Ende morgen.',
+      other: 'Ende in {count} Tagen.',
+    },
+    nudgeToday: 'Ende heute.',
+    nudgeButton: 'Sie erinnern',
+    writeGroup: 'Der Gruppe schreiben',
+    group: {
+      subtitle: 'Eine Nachricht für alle',
+      days: {
+        one: 'Nur noch ein Tag, um Devine qui zu spielen! 🔍',
+        other: 'Nur noch {count} Tage, um Devine qui zu spielen! 🔍',
+      },
+      lastDay: 'Letzter Tag, um Devine qui zu spielen! 🔍',
+      until: 'Devine qui läuft bis {end}! 🔍',
+      count: {
+        one: '{count} von {total} hat schon getippt.',
+        other: '{count} von {total} haben schon getippt.',
+      },
+      nobody: 'Noch niemand hat getippt.',
+      tail: 'Wer beschenkt wen? Antwort bei der Feier, mit einer Überraschung.',
+      personal: 'Alle finden das Spiel über ihren persönlichen Link.',
+      share: 'Teilen',
+      copy: 'Nachricht kopieren',
+      copied: 'Nachricht kopiert',
+      help: 'Für WhatsApp, SMS… Die Nachricht nennt niemanden und enthält keinen persönlichen Link.',
+    },
     reminderSent: {
       one: 'Erinnerung an {count} Person gesendet',
       other: 'Erinnerung an {count} Personen gesendet',
@@ -560,6 +595,10 @@ export default {
     needsFour: 'Ab vier Teilnehmenden.',
     needsFourWhy:
       'Zu dritt weiß jeder schon, wer ihn beschenkt: Es gibt nichts zu erraten.',
+    autoReminder: 'Automatische Erinnerung',
+    autoReminderHint: '2 Tage vor dem Ende, an alle, die nicht gespielt haben',
+    news: 'Mich auf dem Laufenden halten',
+    newsHint: 'Eine E-Mail 5 Tage vor dem Ende, eine beim Schluss',
     modeHint: {
       none: 'Das Spiel ist aus',
       santa: 'Jeder rät seinen eigenen Wichtel',

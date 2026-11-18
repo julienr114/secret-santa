@@ -41,6 +41,7 @@ export const AUDIT_TYPES = [
   'guesses_closed',
   'guess_results_ready',
   'guess_reminder_sent',
+  'guess_auto_reminder_sent',
 ] as const;
 export type AuditType = (typeof AUDIT_TYPES)[number];
 

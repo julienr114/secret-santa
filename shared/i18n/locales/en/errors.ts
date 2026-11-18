@@ -83,4 +83,5 @@ export default {
   invalid_answer: 'Choose another person of the edition.',
   game_needs_four: 'The game needs at least four participants.',
   draw_not_revealed: 'The draw is not revealed yet.',
+  already_played: 'You already made a guess: take it back first.',
 } satisfies Dict<typeof fr>;

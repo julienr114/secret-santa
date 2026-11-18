@@ -97,6 +97,16 @@ export default {
       hintsShort: 'Remplies',
       hintsShortLocked: 'Plus modifiables',
       game: {
+        skipped: 'Tu passes ton tour',
+        count: {
+          one: '{count} sur {total} a joué',
+          other: '{count} sur {total} ont joué',
+        },
+        days: {
+          one: 'Plus qu’un jour',
+          other: 'Plus que {count} jours',
+        },
+        lastDay: 'Dernier jour',
         play: 'Fais ton pronostic',
         played: 'Pronostic fait',
         waiting: 'Réponse à la fête',
@@ -197,6 +207,43 @@ export default {
     whoGivesMeShort: 'Qui t’offre ?',
     whoGivesTo: 'Qui offre à {name} ?',
     myGuess: 'Mon pronostic',
+    surprise: 'Une surprise attend le groupe à la fête.',
+    surpriseMore: 'Plus vous êtes nombreux à jouer, plus elle sera belle.',
+    challenge: {
+      one: 'L’an dernier, {count} personne sur {total} avait deviné son Père Noël. À battre.',
+      other:
+        'L’an dernier, {count} personnes sur {total} avaient deviné leur Père Noël. À battre.',
+    },
+    challengeNone:
+      'L’an dernier, personne n’avait deviné son Père Noël. À battre.',
+    skip: 'Je passe mon tour',
+    skippedTitle: 'Tu passes ton tour',
+    skippedBody:
+      'On ne te rappellera pas le jeu. Tu verras quand même le palmarès à la fête.',
+    unskip: 'Finalement, je joue',
+    unskipUntil: 'Possible jusqu’au {end}.',
+    skipConfirm: 'Passer ton tour ?',
+    skipConfirmBody:
+      'On ne te rappellera plus le jeu. Tu pourras revenir jusqu’au {end}.',
+    skipCancel: 'Finalement non',
+    progress: {
+      one: '{count} pronostic sur {total}.',
+      other: '{count} pronostics sur {total}.',
+    },
+    progressLeft: {
+      one: 'Encore un et tu auras fait le tour : la surprise de la fête n’en sera que plus belle.',
+      other:
+        'Encore {n} et tu auras fait le tour : la surprise de la fête n’en sera que plus belle.',
+    },
+    progressDone:
+      'Tu as fait le tour : la surprise de la fête n’en sera que plus belle.',
+    inviteTitle: 'Et toi, qui t’offre ton cadeau ?',
+    inviteCount: {
+      one: '{count} sur {total} a déjà fait son pronostic. Réponse à la fête.',
+      other:
+        '{count} sur {total} ont déjà fait leur pronostic. Réponse à la fête.',
+    },
+    inviteNone: 'Réponse à la fête.',
     makeGuess: 'Faire mon pronostic',
     changeMind: 'Changer d’avis',
     secret: 'Personne ne voit ton pronostic avant la fête.',
@@ -219,7 +266,7 @@ export default {
     clear: 'Effacer ce pronostic',
     atParty: 'Réponse à la fête',
     atPartyBody:
-      'Les résultats et le palmarès arrivent quand ton organisateur dévoile le tirage.',
+      'Les résultats et la surprise arrivent quand ton organisateur dévoile le tirage.',
     answersTitle: 'Devine qui : les réponses',
     answersWaiting: 'Le tirage est dévoilé. Les réponses t’attendent.',
     answersSeen: 'Le tirage est dévoilé. Voici ce que valaient tes pronostics.',

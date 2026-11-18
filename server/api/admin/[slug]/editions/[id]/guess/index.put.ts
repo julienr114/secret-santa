@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
-import { editions, guesses } from '#server/database/schema';
+import { and, eq } from 'drizzle-orm';
+import { editions, groupMembers, guesses } from '#server/database/schema';
 import { deleteGuessesOf, listGuesses } from '#server/database/guesses';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -24,6 +24,10 @@ const bodySchema = z.object({
   mode: z.enum(GUESS_MODES),
   endsAt: z.iso.datetime().optional(),
   timeZone: z.string().min(1).max(64).optional(),
+  // Correction 15: the automatic reminder (the edition's), and « Me tenir
+  // au courant » (the organiser's own, for this group).
+  autoReminder: z.boolean().optional(),
+  news: z.boolean().optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -31,7 +35,10 @@ export default defineEventHandler(async (event) => {
   if (edition.status === 'closed' || edition.revealedAt) {
     throw createError({ statusCode: 409, statusMessage: 'invalid_transition' });
   }
-  const { mode, endsAt, timeZone } = await validatedBody(event, bodySchema);
+  const { mode, endsAt, timeZone, autoReminder, news } = await validatedBody(
+    event,
+    bodySchema,
+  );
   if (mode !== 'none' && (!endsAt || !timeZone)) {
     throw createError({ statusCode: 400, statusMessage: 'guess_needs_end' });
   }
@@ -54,6 +61,16 @@ export default defineEventHandler(async (event) => {
         guessMode: mode,
         guessEndsAt: mode === 'none' ? null : endsAt,
         guessTimeZone: mode === 'none' ? null : timeZone,
+        ...(autoReminder === undefined
+          ? {}
+          : { guessAutoReminder: autoReminder }),
+        // When the game was turned on: a late game gets no automatic
+        // reminder (README 22.17).
+        ...(edition.guessMode === 'none' && mode !== 'none'
+          ? { guessEnabledAt: now }
+          : mode === 'none'
+            ? { guessEnabledAt: null }
+            : {}),
       })
       .where(eq(editions.id, edition.id)),
     ...(lost > 0
@@ -72,6 +89,19 @@ export default defineEventHandler(async (event) => {
           ),
         ]
       : []),
+    ...(news === undefined
+      ? []
+      : [
+          db
+            .update(groupMembers)
+            .set({ guessNews: news })
+            .where(
+              and(
+                eq(groupMembers.groupId, group.id),
+                eq(groupMembers.accountId, user.accountId),
+              ),
+            ),
+        ]),
   ]);
   if (edition.guessMode === 'none' && mode !== 'none') {
     await recordEvent(db, {

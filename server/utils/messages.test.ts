@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
+  buildGuessAutoReminderEmail,
+  buildGuessEndEmail,
+  buildGuessPointEmail,
   EMAIL_BATCH_MAX,
   defaultMessageType,
   MESSAGE_TYPES,
@@ -435,5 +438,91 @@ describe('« Devine qui » in the messages', () => {
     expect(email.text).toContain('Bonjour Léa,');
     expect(email.text).toContain('fais-le d’abord');
     expect(email.html).toContain('>Découvrir le palmarès</a>');
+  });
+});
+
+describe('the emails of « Devine qui » (Correction 15)', () => {
+  const game = {
+    firstName: 'Rose',
+    groupName: 'Famille Camille',
+    editionLabel: 'Noël 2026',
+    link: 'https://example.com/p/abc/devine',
+    guessEndsAt: '2026-12-25T17:00:00.000Z',
+    guessTimeZone: 'Europe/Paris',
+  };
+  it('reminds who did not play, with « Je passe mon tour »', () => {
+    const email = buildGuessAutoReminderEmail(
+      {
+        ...game,
+        skipLink: 'https://example.com/p/abc/devine?passer=1',
+        played: 4,
+        total: 6,
+        days: 2,
+      },
+      'play',
+      'fr',
+    );
+    expect(email.subject).toBe(
+      'Plus que 2 jours pour deviner qui t’offre ton cadeau',
+    );
+    expect(email.text).toContain(
+      '4 personnes sur 6 ont déjà fait leur pronostic',
+    );
+    expect(email.text).toContain('Tu as jusqu’au 25 décembre à 18 h.');
+    expect(email.html).toContain(
+      'href="https://example.com/p/abc/devine?passer=1"',
+    );
+    expect(email.text).toContain('C’est le seul rappel automatique');
+  });
+
+  it('asks for more guesses from who only guessed their own Santa', () => {
+    const email = buildGuessAutoReminderEmail(
+      { ...game, skipLink: '', played: 4, total: 6, days: 2 },
+      'more',
+      'fr',
+    );
+    expect(email.subject).toBe('Encore quelques pronostics avant la fin ?');
+    expect(email.text).not.toContain('Je passe mon tour');
+  });
+
+  it('tells the organiser who has not played, five days before', () => {
+    const email = buildGuessPointEmail(
+      {
+        ...game,
+        firstName: 'Camille',
+        link: 'https://example.com/admin',
+        played: 3,
+        total: 5,
+        missing: ['Rose', 'Louis'],
+        noEmail: ['Louis'],
+        days: 5,
+        autoIn: 3,
+      },
+      'fr',
+    );
+    expect(email.subject).toBe(
+      'Devine qui : 2 personnes n’ont pas encore joué',
+    );
+    expect(email.text).toContain(
+      'Rose et Louis n’ont pas encore joué ; Louis n’a pas d’adresse email.',
+    );
+    expect(email.text).toContain(
+      'Un rappel automatique partira dans 3 jours à ceux qui ont une adresse.',
+    );
+  });
+
+  it('tells the organiser the guesses are closed', () => {
+    const email = buildGuessEndEmail(
+      {
+        ...game,
+        firstName: 'Camille',
+        link: 'https://example.com/admin',
+        played: 4,
+        total: 5,
+      },
+      'fr',
+    );
+    expect(email.text).toContain('4 personnes sur 5 ont joué.');
+    expect(email.text).toContain('dévoilé tout seul demain à 18 h.');
   });
 });

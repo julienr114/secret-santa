@@ -17,8 +17,11 @@ import {
   type AnswerStatus,
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
-import { playersOf } from '#server/database/guesses';
+import { and, eq } from 'drizzle-orm';
+import { groupMembers } from '#server/database/schema';
+import { gameMembers } from '#server/database/guesses';
 import { gamePossible, guessesOpen } from '#server/utils/guesses';
+import { nudgeTime, playedCount, toRemind } from '#server/utils/nudges';
 
 /**
  * Where the answers of a draw made elsewhere stand (README 22.12): who
@@ -58,7 +61,7 @@ const answersOf = async (
 };
 
 export default defineEventHandler(async (event) => {
-  const { group, db } = await requireGroupAccess(event);
+  const { group, db, user } = await requireGroupAccess(event);
   const edition = await findEdition(db, group.id, getRouterParam(event, 'id'));
   if (!edition) throw notFound('edition_not_found');
   const [participants, cancelled] = await Promise.all([
@@ -70,18 +73,43 @@ export default defineEventHandler(async (event) => {
   const answers = collecting
     ? await answersOf(event, db, edition.id, participants)
     : { participants, answers: null };
-  // « Devine qui » (README 22.17): who has played, never what.
-  const players =
-    edition.guessMode === 'none'
-      ? new Set<string>()
-      : await playersOf(db, edition.id);
+  // « Devine qui » (README 22.17): who has played or passed their turn,
+  // never what.
+  const members =
+    edition.guessMode === 'none' ? [] : await gameMembers(db, edition.id);
+  const players = new Set(members.filter((m) => m.played).map((m) => m.id));
+  const skipped = new Set(members.filter((m) => m.skipped).map((m) => m.id));
+  const count = playedCount(members);
+  const left = toRemind(members).length;
+  const now = nowIso();
+  const open = guessesOpen(edition, now);
+  // « Me tenir au courant » is each organiser's own (Correction 15).
+  const [membership] = await db
+    .select({ guessNews: groupMembers.guessNews })
+    .from(groupMembers)
+    .where(
+      and(
+        eq(groupMembers.groupId, group.id),
+        eq(groupMembers.accountId, user.accountId),
+      ),
+    )
+    .limit(1);
   const guess = {
     mode: edition.guessMode,
     endsAt: edition.guessEndsAt,
     timeZone: edition.guessTimeZone,
-    open: guessesOpen(edition, nowIso()),
-    players: answers.participants.filter((p) => players.has(p.id)).length,
+    open,
+    players: count.played,
+    /** Those who did not pass their turn. */
+    total: count.total,
+    /** Not played, not passed their turn. */
+    left,
+    // The organiser's last reminder; there is no limit (Correction 15).
     reminderSentAt: edition.guessReminderSentAt,
+    autoReminder: edition.guessAutoReminder,
+    news: membership?.guessNews ?? null,
+    // Five days before the end, someone left: the card asks to remind.
+    nudge: open && nudgeTime(edition.guessEndsAt, now, left),
     // The setting is free before the draw; after a draw of three, the
     // game cannot be turned on (Correction 12).
     possible:
@@ -93,7 +121,12 @@ export default defineEventHandler(async (event) => {
     participants: answers.participants.map((p) => ({
       ...p,
       played: players.has(p.id),
-    })) as (Participant & { answerStatus?: AnswerStatus; played: boolean })[],
+      skipped: skipped.has(p.id),
+    })) as (Participant & {
+      answerStatus?: AnswerStatus;
+      played: boolean;
+      skipped: boolean;
+    })[],
     guess,
     answers: answers.answers,
     // Drawn again after a cancelled draw: « Nouveau tirage » is the

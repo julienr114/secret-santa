@@ -16,9 +16,11 @@ withDefaults(
     state: 'todo' | 'done' | 'idle' | 'award';
     /** Its call, or its state. */
     text: string;
+    /** Smaller lines under it (« 4 sur 6 ont joué », « Plus que 3 jours »). */
+    lines?: string[];
     compact?: boolean;
   }>(),
-  { compact: false },
+  { compact: false, lines: () => [] },
 );
 </script>
 
@@ -73,6 +75,12 @@ withDefaults(
         />
         <span>{{ text }}</span>
       </span>
+      <span
+        v-for="line in lines.filter(Boolean)"
+        :key="line"
+        class="text-[13px] leading-[1.35] text-toned"
+        >{{ line }}</span
+      >
     </span>
     <UIcon
       v-if="!compact"

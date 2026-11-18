@@ -30,6 +30,7 @@ const ICONS: Record<string, string> = {
   guesses_closed: 'i-lucide-lock',
   guess_results_ready: 'i-lucide-sparkle',
   guess_reminder_sent: 'i-lucide-bell',
+  guess_auto_reminder_sent: 'i-lucide-bell',
 };
 
 /** Milestones of an edition. */

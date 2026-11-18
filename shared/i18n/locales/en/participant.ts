@@ -98,6 +98,16 @@ export default {
       hintsShort: 'Filled in',
       hintsShortLocked: 'No longer editable',
       game: {
+        skipped: 'Sitting this one out',
+        count: {
+          one: '{count} out of {total} played',
+          other: '{count} out of {total} played',
+        },
+        days: {
+          one: 'One day left',
+          other: 'Only {count} days left',
+        },
+        lastDay: 'Last day',
         play: 'Make your guess',
         played: 'Guess made',
         waiting: 'Answer at the party',
@@ -192,6 +202,42 @@ export default {
     whoGivesMeShort: 'Who gives to you?',
     whoGivesTo: 'Who gives to {name}?',
     myGuess: 'My guess',
+    surprise: 'A surprise awaits the group at the party.',
+    surpriseMore: 'The more of you play, the better it will be.',
+    challenge: {
+      one: 'Last year, {count} person out of {total} guessed their Secret Santa. Beat that.',
+      other:
+        'Last year, {count} people out of {total} guessed their Secret Santa. Beat that.',
+    },
+    challengeNone: 'Last year, nobody guessed their Secret Santa. Beat that.',
+    skip: 'I’ll sit this one out',
+    skippedTitle: 'You’re sitting this one out',
+    skippedBody:
+      'We won’t remind you of the game. You’ll still see the palmarès at the party.',
+    unskip: 'Actually, I’ll play',
+    unskipUntil: 'Possible until {end}.',
+    skipConfirm: 'Sit this one out?',
+    skipConfirmBody:
+      'We won’t remind you of the game again. You can come back until {end}.',
+    skipCancel: 'Actually, no',
+    progress: {
+      one: '{count} guess out of {total}.',
+      other: '{count} guesses out of {total}.',
+    },
+    progressLeft: {
+      one: 'One more and you’ll have done the round: the surprise at the party will be all the better.',
+      other:
+        '{n} more and you’ll have done the round: the surprise at the party will be all the better.',
+    },
+    progressDone:
+      'You’ve done the round: the surprise at the party will be all the better.',
+    inviteTitle: 'And you, who gives you your present?',
+    inviteCount: {
+      one: '{count} out of {total} has already made a guess. Answer at the party.',
+      other:
+        '{count} out of {total} have already made a guess. Answer at the party.',
+    },
+    inviteNone: 'Answer at the party.',
     makeGuess: 'Make my guess',
     changeMind: 'Change my mind',
     secret: 'Nobody sees your guess before the party.',
@@ -214,7 +260,7 @@ export default {
     clear: 'Delete this guess',
     atParty: 'Answer at the party',
     atPartyBody:
-      'The results and the palmarès come when your organizer reveals the draw.',
+      'The results and the surprise come when your organizer reveals the draw.',
     answersTitle: 'Devine qui: the answers',
     answersWaiting: 'The draw is revealed. The answers are waiting for you.',
     answersSeen: 'The draw is revealed. Here is what your guesses were worth.',

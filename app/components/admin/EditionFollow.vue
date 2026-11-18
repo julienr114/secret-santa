@@ -146,10 +146,11 @@ const unfold = (state: FollowState, open: boolean) => {
 };
 // Closing asks for a second tap.
 const confirming = ref(false);
-// « Devine qui » (README 22.17): its card, and the one reminder.
+// « Devine qui » (README 22.17): its card, and the reminders. Those who
+// passed their turn are not reminded (Correction 15).
 const gameOn = computed(() => (props.guess?.mode ?? 'none') !== 'none');
 const notPlayed = computed(() =>
-  props.participants.filter((p) => p.played === false),
+  props.participants.filter((p) => p.played === false && !p.skipped),
 );
 const reminderOpen = ref(false);
 const guessOpen = ref(false);
@@ -397,8 +398,7 @@ const partyTitle = computed(() =>
     :slug="slug"
     :edition-id="editionId"
     :guess="guess"
-    :participants="participants.length"
-    :can-remind="notPlayed.some((p) => p.email)"
+    :can-remind="notPlayed.length > 0"
     :revealed="revealedGame"
     @remind="reminderOpen = true"
     @settings="guessOpen = true"
@@ -417,6 +417,7 @@ const partyTitle = computed(() =>
     :slug="slug"
     :edition-id="editionId"
     :people="notPlayed"
+    :guess="guess"
     :note-position="notePosition ?? 'after'"
     @send="onShareFromReminder"
   />

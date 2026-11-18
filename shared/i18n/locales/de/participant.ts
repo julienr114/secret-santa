@@ -99,6 +99,16 @@ export default {
       hintsShort: 'Ausgefüllt',
       hintsShortLocked: 'Nicht mehr änderbar',
       game: {
+        skipped: 'Du setzt aus',
+        count: {
+          one: '{count} von {total} hat gespielt',
+          other: '{count} von {total} haben gespielt',
+        },
+        days: {
+          one: 'Nur noch ein Tag',
+          other: 'Nur noch {count} Tage',
+        },
+        lastDay: 'Letzter Tag',
         play: 'Gib deinen Tipp ab',
         played: 'Tipp abgegeben',
         waiting: 'Antwort bei der Feier',
@@ -196,6 +206,42 @@ export default {
     whoGivesMeShort: 'Wer beschenkt dich?',
     whoGivesTo: 'Wer beschenkt {name}?',
     myGuess: 'Mein Tipp',
+    surprise: 'Bei der Feier wartet eine Überraschung auf die Gruppe.',
+    surpriseMore: 'Je mehr von euch spielen, desto schöner wird sie.',
+    challenge: {
+      one: 'Letztes Jahr hat {count} von {total} Personen den eigenen Wichtel erraten. Zu schlagen.',
+      other:
+        'Letztes Jahr haben {count} von {total} Personen ihren Wichtel erraten. Zu schlagen.',
+    },
+    challengeNone:
+      'Letztes Jahr hat niemand den eigenen Wichtel erraten. Zu schlagen.',
+    skip: 'Ich setze aus',
+    skippedTitle: 'Du setzt aus',
+    skippedBody:
+      'Wir erinnern dich nicht an das Spiel. Die Rangliste siehst du bei der Feier trotzdem.',
+    unskip: 'Doch, ich spiele',
+    unskipUntil: 'Möglich bis {end}.',
+    skipConfirm: 'Aussetzen?',
+    skipConfirmBody:
+      'Wir erinnern dich nicht mehr an das Spiel. Du kannst bis {end} zurückkommen.',
+    skipCancel: 'Doch nicht',
+    progress: {
+      one: '{count} Tipp von {total}.',
+      other: '{count} Tipps von {total}.',
+    },
+    progressLeft: {
+      one: 'Noch einer, und du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+      other:
+        'Noch {n}, und du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+    },
+    progressDone:
+      'Du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+    inviteTitle: 'Und du: Wer beschenkt dich?',
+    inviteCount: {
+      one: '{count} von {total} hat schon getippt. Antwort bei der Feier.',
+      other: '{count} von {total} haben schon getippt. Antwort bei der Feier.',
+    },
+    inviteNone: 'Antwort bei der Feier.',
     makeGuess: 'Meinen Tipp abgeben',
     changeMind: 'Meine Meinung ändern',
     secret: 'Niemand sieht deinen Tipp vor der Feier.',
@@ -218,7 +264,7 @@ export default {
     clear: 'Diesen Tipp löschen',
     atParty: 'Antwort bei der Feier',
     atPartyBody:
-      'Die Ergebnisse und die Rangliste kommen, wenn dein Organisator die Auslosung aufdeckt.',
+      'Die Ergebnisse und die Überraschung kommen, wenn dein Organisator die Auslosung aufdeckt.',
     answersTitle: 'Devine qui: die Antworten',
     answersWaiting:
       'Die Auslosung ist aufgedeckt. Die Antworten warten auf dich.',

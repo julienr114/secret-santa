@@ -1,26 +1,45 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
 import { NOTE_MAX, addNote } from '#server/utils/messages';
-import type { EditionParticipant } from '~/composables/queries/useGroup';
+import { formatEventDate } from '#server/utils/rules';
+import type {
+  EditionParticipant,
+  GuessSummary,
+} from '~/composables/queries/useGroup';
 import {
   useGuessReminderMutation,
   useMessagesQuery,
 } from '~/composables/queries/useEdition';
 
 // « Rappeler le jeu » (README 22.17, maquette DevineRappel): who has not
-// made a guess yet, the email they will get, a word to add, and one send,
-// once per edition. Who has no address is said, with the button of their
-// row to share their link, as on the follow-up. Never a guess.
+// made a guess yet (never those who passed their turn), the email they
+// will get, a word to add, and the send, as often as wanted (Correction
+// 15), with the date of the last one. Who has no address is said, with
+// the button of their row to share their link; « Écrire au groupe »
+// opens a message for everyone. Never a guess.
 const props = defineProps<{
   slug: string;
   editionId: string;
   /** Those who have not played yet. */
   people: EditionParticipant[];
+  guess: GuessSummary;
   notePosition: 'before' | 'after';
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const emit = defineEmits<{ send: [participationId: string] }>();
-const { t } = useT();
+const { t, locale } = useT();
+const groupOpen = ref(false);
+/** « Dernier rappel : aucun. », or its day. */
+const lastLine = computed(() =>
+  props.guess.reminderSentAt
+    ? t('adminEdition.game.lastOn', {
+        date: formatEventDate(
+          props.guess.reminderSentAt.slice(0, 10),
+          locale.value,
+        ),
+      })
+    : t('adminEdition.game.lastNone'),
+);
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const remind = useGuessReminderMutation(
@@ -196,17 +215,28 @@ const onSend = () =>
           }}</span>
         </span>
       </UButton>
-      <p
-        v-if="unreachable.length > 0"
-        class="text-center text-[13px] leading-[1.4] text-toned"
-      >
-        {{
-          t('adminEdition.game.shareThem', {
-            names: names(unreachable),
-            count: unreachable.length,
-          })
-        }}
+      <UButton
+        block
+        size="xl"
+        variant="outline"
+        icon="i-lucide-message-circle"
+        class="min-h-12 justify-center font-bold"
+        :label="t('adminEdition.game.writeGroup')"
+        data-testid="game-write-group"
+        @click="groupOpen = true"
+      />
+      <p class="text-center text-[13px] leading-[1.4] text-toned">
+        {{ lastLine }}
+        <template v-if="unreachable.length > 0">
+          {{
+            t('adminEdition.game.shareThem', {
+              names: names(unreachable),
+              count: unreachable.length,
+            })
+          }}
+        </template>
       </p>
     </template>
   </UiSheet>
+  <AdminGameGroupSheet v-model:open="groupOpen" :guess="guess" />
 </template>

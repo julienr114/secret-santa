@@ -9,7 +9,9 @@ import { useSetGuessMutation } from '~/composables/queries/useEdition';
 // m'offre ? » or « Toutes les paires », and the end of the guesses on the
 // day of the party, read and saved in this browser's time zone. A change
 // that deletes guesses (back to « Qui m'offre ? », or the game off) asks
-// once more before saving. After a draw of three, only « Aucun pronostic »
+// once more before saving. Two switches, on by default (Correction 15,
+// DevineReglage): « Rappel automatique » (the edition's) and « Me tenir au
+// courant » (the organiser's own). After a draw of three, only « Aucun pronostic »
 // can be chosen, and the sheet says why (Correction 12, DevineReglageTrois).
 const props = defineProps<{
   slug: string;
@@ -39,10 +41,14 @@ const timeOf = (iso: string | null) =>
 const mode = ref<GuessMode>(props.guess.mode);
 const time = ref(timeOf(props.guess.endsAt));
 const confirming = ref(false);
+const autoReminder = ref(props.guess.autoReminder);
+const news = ref(props.guess.news ?? true);
 watch(open, (isOpen) => {
   if (!isOpen) return;
   mode.value = props.guess.mode;
   time.value = timeOf(props.guess.endsAt);
+  autoReminder.value = props.guess.autoReminder;
+  news.value = props.guess.news ?? true;
   confirming.value = false;
   save.reset();
 });
@@ -80,6 +86,8 @@ const onValidate = () => {
           mode: mode.value,
           endsAt: instantOf(props.eventDate, time.value, zone()),
           timeZone: zone(),
+          autoReminder: autoReminder.value,
+          ...(props.guess.news === null ? {} : { news: news.value }),
         },
     {
       onSuccess: () => {
@@ -147,5 +155,44 @@ const onValidate = () => {
     <UiNotice v-else-if="mode !== 'none' && guess.possible" variant="caution">
       {{ t('adminEdition.guess.answersWhen') }}
     </UiNotice>
+    <ul
+      v-if="mode !== 'none' && guess.possible"
+      class="divide-y divide-divider overflow-hidden rounded-xl ring-1 ring-default"
+      data-testid="guess-switches"
+    >
+      <li class="flex min-h-15 items-center gap-3 px-3.5 py-2.5">
+        <span class="flex min-w-0 grow flex-col">
+          <span class="font-semibold">{{
+            t('adminEdition.guess.autoReminder')
+          }}</span>
+          <span class="text-[13px] text-toned">{{
+            t('adminEdition.guess.autoReminderHint')
+          }}</span>
+        </span>
+        <USwitch
+          v-model="autoReminder"
+          size="lg"
+          color="success"
+          :aria-label="t('adminEdition.guess.autoReminder')"
+        />
+      </li>
+      <li
+        v-if="guess.news !== null"
+        class="flex min-h-15 items-center gap-3 px-3.5 py-2.5"
+      >
+        <span class="flex min-w-0 grow flex-col">
+          <span class="font-semibold">{{ t('adminEdition.guess.news') }}</span>
+          <span class="text-[13px] text-toned">{{
+            t('adminEdition.guess.newsHint')
+          }}</span>
+        </span>
+        <USwitch
+          v-model="news"
+          size="lg"
+          color="success"
+          :aria-label="t('adminEdition.guess.news')"
+        />
+      </li>
+    </ul>
   </UiSettingSheet>
 </template>

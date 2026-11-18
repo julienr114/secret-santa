@@ -48,6 +48,71 @@ export default {
     body: 'Rate, wer dich dieses Jahr beschenkt: Du hast bis {guessEnd} Zeit für deinen Tipp. Die Antwort gibt es bei der Feier!',
     subject: '{firstName}, rate, wer dich beschenkt',
   },
+  guessAuto: {
+    subject: 'Nur noch {days} Tage, um zu erraten, wer dich beschenkt',
+    greeting: 'Hallo {firstName},',
+    body: {
+      one: 'Für {editionLabel} ({groupName}) hat schon {count} von {total} Personen getippt. Und du: Wer beschenkt dich?',
+      other:
+        'Für {editionLabel} ({groupName}) haben schon {count} von {total} Personen getippt. Und du: Wer beschenkt dich?',
+    },
+    nobody:
+      'Für {editionLabel} ({groupName}) hat noch niemand getippt. Und du: Wer beschenkt dich?',
+    until:
+      'Du hast Zeit bis {guessEnd}. Antwort bei der Feier, mit einer Überraschung.',
+    cta: 'Meinen Tipp abgeben',
+    skipBefore: 'Keine Lust zu spielen? ',
+    skip: 'Ich setze aus',
+    skipAfter: ', und wir erinnern dich nicht mehr.',
+    once: 'Das ist die einzige automatische Erinnerung, die du bekommst.',
+    signature: 'Under the Tree',
+  },
+  guessMore: {
+    subject: 'Noch ein paar Tipps vor dem Ende?',
+    greeting: 'Hallo {firstName},',
+    body: 'Du hast deinen Tipp zu deinem Wichtel für {editionLabel} ({groupName}) abgegeben. Gut gemacht.',
+    more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung bei der Feier.',
+    cta: 'Weiter tippen',
+  },
+  guessPoint: {
+    subject: {
+      one: 'Devine qui: {count} Person hat noch nicht gespielt',
+      other: 'Devine qui: {count} Personen haben noch nicht gespielt',
+    },
+    greeting: 'Hallo {firstName},',
+    body: 'Für {editionLabel} ({groupName}) haben {played} von {total} Personen getippt.',
+    missing: {
+      one: '{names} hat noch nicht gespielt;',
+      other: '{names} haben noch nicht gespielt;',
+    },
+    noEmail: {
+      one: '{noEmail} hat keine E-Mail-Adresse.',
+      other: '{noEmail} haben keine E-Mail-Adresse.',
+    },
+    closes: 'Die Tipps schließen am {guessEnd}, in {days} Tagen.',
+    auto: {
+      one: 'Morgen geht eine automatische Erinnerung an alle mit Adresse.',
+      other:
+        'In {count} Tagen geht eine automatische Erinnerung an alle mit Adresse.',
+    },
+    cta: 'Jetzt erinnern',
+    off: 'Du kannst diese E-Mails in den Einstellungen des Spiels abschalten.',
+    signature: 'Under the Tree',
+  },
+  guessEnd: {
+    subject: 'Devine qui: Die Tipps sind geschlossen',
+    greeting: 'Hallo {firstName},',
+    body: {
+      one: 'Für {editionLabel} ({groupName}) hat {count} von {total} Personen gespielt. Die Rangliste ist bereit: Sie startet, sobald du die Auslosung aufdeckst.',
+      other:
+        'Für {editionLabel} ({groupName}) haben {count} von {total} Personen gespielt. Die Rangliste ist bereit: Sie startet, sobald du die Auslosung aufdeckst.',
+    },
+    cta: 'Die Auslosung aufdecken',
+    alone:
+      'Wenn du es nicht tust, wird sie morgen um {time} von selbst aufgedeckt.',
+    off: 'Du kannst diese E-Mails in den Einstellungen des Spiels abschalten.',
+    signature: 'Under the Tree',
+  },
   guessResults: {
     subject: 'Die Rangliste von Devine qui ist da',
     greeting: 'Hallo {firstName},',

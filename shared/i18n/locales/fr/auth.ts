@@ -157,6 +157,12 @@ export default {
       openedBody: 'Le tirage n’est plus secret.',
       openedHints: 'Voir ses pistes de cadeaux',
       openedDraw: 'Voir le tirage',
+      guessCount: {
+        one: '{count} sur {total} a déjà joué.',
+        other: '{count} sur {total} ont déjà joué.',
+      },
+      guessDeadline: '{deadline} : réponse à la fête.',
+      guessSkip: 'Je passe mon tour',
       guessTitle: 'Devine qui t’offre ton cadeau',
       guessSanta: 'Un pronostic, jusqu’au {end}. Réponse à la fête.',
       guessAll: 'Des pronostics, jusqu’au {end}. Réponse à la fête.',

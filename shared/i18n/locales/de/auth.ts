@@ -160,6 +160,12 @@ export default {
       openedBody: 'Die Auslosung ist kein Geheimnis mehr.',
       openedHints: 'Die Geschenkhinweise ansehen',
       openedDraw: 'Die Auslosung ansehen',
+      guessCount: {
+        one: '{count} von {total} hat schon gespielt.',
+        other: '{count} von {total} haben schon gespielt.',
+      },
+      guessDeadline: '{deadline}: Antwort bei der Feier.',
+      guessSkip: 'Ich setze aus',
       guessTitle: 'Rate, wer dich beschenkt',
       guessSanta: 'Ein Tipp, bis {end}. Die Antwort bei der Feier.',
       guessAll: 'Tipps, bis {end}. Die Antwort bei der Feier.',

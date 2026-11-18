@@ -5,14 +5,17 @@ import { editions, groups } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { nowIso, secretsOf } from '#server/http/context';
 import { afterReveal, closeGuesses } from '#server/http/guesses';
+import { autoRemind, organizerEnd, organizerPoint } from '#server/http/nudges';
 import { importDataKey } from '#server/utils/crypto';
 import { autoRevealDue } from '#server/utils/guesses';
 
 // « Devine qui » (README 22.17), every 15 minutes (cron in wrangler.toml): the
-// guesses close at the end time, written in the journal; if the organiser
-// has not revealed the draw by the day after the party at that time, it
-// is revealed automatically, as an action of the system, and the results
-// come.
+// guesses close at the end time, written in the journal, and the
+// organisers are told; if the organiser has not revealed the draw by the
+// day after the party at that time, it is revealed automatically, as an
+// action of the system, and the results come. Before the end, the
+// organisers' point five days before and the automatic reminder two days
+// before (Correction 15).
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('cloudflare:scheduled', async ({ env }) => {
     const d1 = (env as { DB?: D1Binding }).DB;
@@ -26,16 +29,21 @@ export default defineNitroPlugin((nitroApp) => {
     await rows.reduce<Promise<void>>(
       (done, edition) =>
         done.then(async () => {
-          if (edition.guessEndsAt && now >= edition.guessEndsAt) {
-            await closeGuesses({ db }, edition, edition.groupId, 'system');
-          }
-          if (!autoRevealDue(edition, now)) return;
           const [group] = await db
             .select()
             .from(groups)
             .where(eq(groups.id, edition.groupId))
             .limit(1);
           if (!group) return;
+          const ctx = { db, dataKey: key.value };
+          if (edition.guessEndsAt && now >= edition.guessEndsAt) {
+            await closeGuesses({ db }, edition, edition.groupId, 'system');
+            await organizerEnd(ctx, edition, group);
+          } else {
+            await organizerPoint(ctx, edition, group, now);
+            await autoRemind(ctx, edition, group, now);
+          }
+          if (!autoRevealDue(edition, now)) return;
           const revealed = await db
             .update(editions)
             .set({ revealedAt: now })

@@ -1,7 +1,8 @@
 import { and, eq, inArray, isNull, ne, type SQLWrapper } from 'drizzle-orm';
 import type { Db } from './client';
-import { editions, guesses, participations } from './schema';
+import { editions, guesses, participations, persons } from './schema';
 import type { Guess } from '#server/utils/guesses';
+import type { GameMember } from '#server/utils/nudges';
 
 // The guesses of « Devine qui » (README 22.17). Never returned to anyone
 // but their author before the reveal; the routes check it.
@@ -148,3 +149,33 @@ export const markResultsSeen = (db: Db, participationId: string, now: string) =>
     .update(participations)
     .set({ guessResultsSeenAt: now })
     .where(eq(participations.id, participationId));
+
+/**
+ * The participants of an edition as the reminders of « Devine qui » see
+ * them (Correction 15): played, only their own Santa, passed their turn.
+ * Never what they guessed.
+ * @param db - The database.
+ * @param editionId - The edition.
+ * @returns One line per participant, with their person and participation.
+ */
+export const gameMembers = async (db: Db, editionId: string) => {
+  const [rows, all] = await Promise.all([
+    db
+      .select({ participation: participations, person: persons })
+      .from(participations)
+      .innerJoin(persons, eq(persons.id, participations.personId))
+      .where(eq(participations.editionId, editionId)),
+    listGuesses(db, editionId),
+  ]);
+  return rows.map(({ participation, person }) => {
+    const own = all.filter((g) => g.guesserId === person.id);
+    const member: GameMember = {
+      id: person.id,
+      email: person.email,
+      played: own.length > 0,
+      ownOnly: own.length > 0 && own.every((g) => g.recipientId === person.id),
+      skipped: Boolean(participation.guessSkippedAt),
+    };
+    return { ...member, participation, person };
+  });
+};

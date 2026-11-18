@@ -46,6 +46,8 @@ export type HomeDrawState = {
     palmares: boolean;
     seen: boolean;
     endsAt: string | null;
+    /** Passed their turn (Correction 15): no more card to play. */
+    skipped?: boolean;
   } | null;
   /** An ISO day, or older free text, or empty. */
   eventDate: string;
@@ -280,13 +282,16 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
         to: `${draw.path}/devine/palmares`,
         dismissKey: null,
       }),
-      ...when(Boolean(draw.game?.open && !draw.game.played), {
-        ...at,
-        kind: 'guess',
-        count: 1,
-        to: `${draw.path}/devine`,
-        dismissKey: `guess:${draw.id}`,
-      }),
+      ...when(
+        Boolean(draw.game?.open && !draw.game.played && !draw.game.skipped),
+        {
+          ...at,
+          kind: 'guess',
+          count: 1,
+          to: `${draw.path}/devine`,
+          dismissKey: `guess:${draw.id}`,
+        },
+      ),
       ...when(draw.status === 'drawn' && draw.receiverHints === 'new', {
         ...at,
         kind: 'readHints',

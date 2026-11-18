@@ -42,6 +42,11 @@ export default {
     guesses_enabled: 'Devine qui: Das Tippspiel ist eröffnet',
     guesses_closed: 'Devine qui: Die Tipps sind geschlossen',
     guess_results_ready: 'Devine qui: Die Rangliste ist da',
+    guess_auto_reminder_sent: {
+      one: 'Devine qui: Eine automatische Erinnerung ging an {count} Person',
+      other:
+        'Devine qui: Eine automatische Erinnerung ging an {count} Personen',
+    },
     guess_reminder_sent: {
       one: 'Der Organisator hat {count} Person an das Spiel erinnert',
       other: 'Der Organisator hat {count} Personen an das Spiel erinnert',

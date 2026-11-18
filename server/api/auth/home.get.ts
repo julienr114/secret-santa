@@ -180,6 +180,9 @@ export default defineEventHandler(async (event) => {
                 seen: Boolean(game.results?.seen),
                 endsAt: game.endsAt,
                 mode: game.mode,
+                skipped: game.skipped,
+                canSkip: game.canSkip,
+                count: game.count,
               }
             : null,
           eventDate: rules.eventDate,

@@ -48,6 +48,69 @@ export default {
     body: 'Devine qui t’offre ton cadeau cette année : tu as jusqu’au {guessEnd} pour faire ton pronostic. Réponse à la fête !',
     subject: '{firstName}, devine qui t’offre ton cadeau',
   },
+  guessAuto: {
+    subject: 'Plus que {days} jours pour deviner qui t’offre ton cadeau',
+    greeting: 'Bonjour {firstName},',
+    body: {
+      one: 'Pour {editionLabel} ({groupName}), {count} personne sur {total} a déjà fait son pronostic. Et toi, qui t’offre ton cadeau ?',
+      other:
+        'Pour {editionLabel} ({groupName}), {count} personnes sur {total} ont déjà fait leur pronostic. Et toi, qui t’offre ton cadeau ?',
+    },
+    nobody:
+      'Pour {editionLabel} ({groupName}), personne n’a encore fait de pronostic. Et toi, qui t’offre ton cadeau ?',
+    until: 'Tu as jusqu’au {guessEnd}. Réponse à la fête, avec une surprise.',
+    cta: 'Faire mon pronostic',
+    skipBefore: 'Pas envie de jouer ? ',
+    skip: 'Je passe mon tour',
+    skipAfter: ', et on ne te le rappellera plus.',
+    once: 'C’est le seul rappel automatique que tu recevras.',
+    signature: 'Under the Tree',
+  },
+  guessMore: {
+    subject: 'Encore quelques pronostics avant la fin ?',
+    greeting: 'Bonjour {firstName},',
+    body: 'Tu as fait ton pronostic sur ton Père Noël pour {editionLabel} ({groupName}). Bien joué.',
+    more: 'Il te reste {days} jours pour deviner aussi qui offre aux autres. Plus il y a de pronostics, plus la surprise de la fête sera belle.',
+    cta: 'Continuer mes pronostics',
+  },
+  guessPoint: {
+    subject: {
+      one: 'Devine qui : {count} personne n’a pas encore joué',
+      other: 'Devine qui : {count} personnes n’ont pas encore joué',
+    },
+    greeting: 'Bonjour {firstName},',
+    body: 'Pour {editionLabel} ({groupName}), {played} personnes sur {total} ont fait un pronostic.',
+    missing: {
+      one: '{names} n’a pas encore joué ;',
+      other: '{names} n’ont pas encore joué ;',
+    },
+    noEmail: {
+      one: '{noEmail} n’a pas d’adresse email.',
+      other: '{noEmail} n’ont pas d’adresse email.',
+    },
+    closes: 'Les pronostics ferment le {guessEnd}, dans {days} jours.',
+    auto: {
+      one: 'Un rappel automatique partira demain à ceux qui ont une adresse.',
+      other:
+        'Un rappel automatique partira dans {count} jours à ceux qui ont une adresse.',
+    },
+    cta: 'Leur rappeler maintenant',
+    off: 'Tu peux couper ces emails dans les réglages du jeu.',
+    signature: 'Under the Tree',
+  },
+  guessEnd: {
+    subject: 'Devine qui : les pronostics sont fermés',
+    greeting: 'Bonjour {firstName},',
+    body: {
+      one: 'Pour {editionLabel} ({groupName}), {count} personne sur {total} a joué. Le palmarès est prêt : il se lance dès que tu dévoiles le tirage.',
+      other:
+        'Pour {editionLabel} ({groupName}), {count} personnes sur {total} ont joué. Le palmarès est prêt : il se lance dès que tu dévoiles le tirage.',
+    },
+    cta: 'Dévoiler le tirage',
+    alone: 'Si tu ne le fais pas, il sera dévoilé tout seul demain à {time}.',
+    off: 'Tu peux couper ces emails dans les réglages du jeu.',
+    signature: 'Under the Tree',
+  },
   guessResults: {
     subject: 'Le palmarès de Devine qui est arrivé',
     greeting: 'Bonjour {firstName},',

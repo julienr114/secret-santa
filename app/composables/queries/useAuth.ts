@@ -105,6 +105,9 @@ export type HomeDraw = {
     seen: boolean;
     endsAt: string | null;
     mode: 'none' | 'santa' | 'all';
+    skipped: boolean;
+    canSkip: boolean;
+    count: { played: number; total: number };
   } | null;
   /** The date of the party: an ISO day, or older free text. */
   eventDate: string;

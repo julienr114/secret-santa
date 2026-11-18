@@ -217,6 +217,17 @@ const tiles = computed(() => {
     },
   ];
 });
+const gameLines = useGameLines();
+/**
+ * « Et toi, qui t'offre ton cadeau ? » under the result (Correction 15),
+ * while the guesses are open and one has neither played nor passed.
+ */
+const gameInvite = computed(() => {
+  const guess = me.value?.guess;
+  return guess && guess.open && !guess.played && !guess.skipped
+    ? guess.count
+    : null;
+});
 /** The tile « Devine qui » (README 22.17), when the game is on. */
 const gameTileView = computed(() => {
   const at = gameTile(me.value?.guess ?? null);
@@ -224,12 +235,19 @@ const gameTileView = computed(() => {
   const STATES = {
     play: 'todo',
     played: 'done',
+    skipped: 'idle',
     waiting: 'idle',
     palmares: 'award',
     answers: 'done',
   } as const;
   const text = t(`participant.home.tiles.game.${at}`);
+  const guess = me.value?.guess;
   return {
+    // While one may still play: the count and the deadline (Correction 15).
+    lines:
+      at === 'play' || at === 'played'
+        ? [gameLines.count(guess?.count), gameLines.deadline(guess?.endsAt)]
+        : [],
     key: 'game',
     to: `/p/${token.value}/devine`,
     icon: 'i-lucide-search',
@@ -506,6 +524,11 @@ const card = computed(() => {
 
       <template v-if="view === 'shown' && reveal">
         <ParticipantRevealCard :token="token" :reveal="reveal" />
+        <ParticipantGameInvite
+          v-if="gameInvite"
+          :token="token"
+          :count="gameInvite"
+        />
         <ParticipantOrganizerNote v-if="note" :text="note" />
         <div class="-mt-2 flex flex-col items-center gap-2">
           <UButton
@@ -698,6 +721,7 @@ const card = computed(() => {
           :title="tile.title"
           :state="tile.state"
           :text="allTiles.length > 1 ? tile.short : tile.text"
+          :lines="'lines' in tile ? tile.lines : []"
           :compact="allTiles.length > 1"
         />
       </div>

@@ -2,8 +2,10 @@
 import {
   useGameQuery,
   useGuessMutation,
+  useSkipGameMutation,
   type GamePayload,
 } from '~/composables/queries/usePersonal';
+import { numberWord } from '#shared/utils/words';
 import type { GuessOption } from '~/components/participant/GuessSheet.vue';
 
 // « Devine qui » (README 22.17) for one participant. Before the party: one
@@ -13,6 +15,9 @@ import type { GuessOption } from '~/components/participant/GuessSheet.vue';
 // revealed, « Devine qui : les réponses » (DevinePalmares,
 // DevinePalmaresVu): the palmarès in images, and one's own guesses,
 // corrected only once the images are seen, or at once if nobody played.
+// Correction 15: the surprise and last year's figure before playing,
+// « 3 pronostics sur 5 » in « Toutes les paires », « Je passe mon tour »
+// (DevinePasse), confirmed when coming from the reminder (`?passer=1`).
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useGameQuery(token);
@@ -58,6 +63,53 @@ const rows = computed(() => {
   }));
 });
 const made = computed(() => game.value?.mine.length ?? 0);
+
+// « Je passe mon tour » and « Finalement, je joue ».
+const skip = useSkipGameMutation(token);
+const { locale } = useT();
+const skipAsked = ref(false);
+onMounted(() => {
+  skipAsked.value = route.query.passer === '1';
+});
+const askSkip = computed({
+  get: () => skipAsked.value && Boolean(game.value?.canSkip),
+  set: (open: boolean) => {
+    skipAsked.value = open;
+  },
+});
+/**
+ * Passes one's turn, or comes back.
+ * @param skipped - Pass (true) or play (false).
+ * @returns Nothing: the mutation reports by itself.
+ */
+const onSkip = (skipped: boolean) =>
+  skip.mutate(skipped, {
+    onSuccess: async () => {
+      skipAsked.value = false;
+      await query.refetch();
+    },
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
+/** « 3 pronostics sur 5 », once one played in « Toutes les paires ». */
+const progress = computed(() => {
+  const g = game.value;
+  if (!g || g.mode !== 'all' || !g.open || made.value === 0) return null;
+  const total = rows.value.length;
+  const left = Math.max(0, total - made.value);
+  return {
+    made: made.value,
+    total,
+    title: t('participant.game.progress', { count: made.value, total }),
+    body:
+      left === 0
+        ? t('participant.game.progressDone')
+        : t('participant.game.progressLeft', {
+            count: left,
+            n: numberWord(left, locale.value),
+          }),
+  };
+});
 /** « Mon Père Noël » then « Les autres » while open; one list once closed. */
 const sections = computed(() =>
   game.value?.open
@@ -305,6 +357,42 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
       </template>
 
       <!-- « Qui m'offre ? », guesses open: one big guess. -->
+      <!-- Passed one's turn, while the guesses are open (DevinePasse). -->
+      <template v-else-if="game.open && game.skipped">
+        <div
+          class="flex min-h-[50dvh] flex-col items-center justify-center gap-4 text-center"
+          data-testid="game-skipped"
+        >
+          <span
+            class="flex size-28 items-center justify-center rounded-full bg-muted text-toned"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-skip-forward" class="size-12" />
+          </span>
+          <h2 class="font-display text-[32px] leading-[1.1] font-bold">
+            {{ t('participant.game.skippedTitle') }}
+          </h2>
+          <p class="max-w-75 text-[15px] leading-[1.45] text-toned">
+            {{ t('participant.game.skippedBody') }}
+          </p>
+        </div>
+        <UiStickyFooter>
+          <UButton
+            block
+            size="xl"
+            variant="outline"
+            class="h-13 justify-center text-[17px] font-bold"
+            :label="t('participant.game.unskip')"
+            :loading="skip.isPending.value"
+            data-testid="game-unskip"
+            @click="onSkip(false)"
+          />
+          <p class="text-center text-[13px] text-toned">
+            {{ t('participant.game.unskipUntil', { end }) }}
+          </p>
+        </UiStickyFooter>
+      </template>
+
       <template v-else-if="game.open && game.mode === 'santa'">
         <div
           class="flex min-h-[50dvh] flex-col items-center justify-center gap-4 text-center"
@@ -342,6 +430,10 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
             >?</span
           >
         </div>
+        <ParticipantGameSurprise
+          v-if="!rows[0]?.guessed"
+          :challenge="game.challenge"
+        />
         <UiStickyFooter>
           <UButton
             block
@@ -359,11 +451,41 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
           <p class="text-center text-[13px] text-toned">
             {{ t('participant.game.secret') }}
           </p>
+          <button
+            v-if="game.canSkip"
+            type="button"
+            class="flex min-h-11 items-center self-center text-sm text-toned underline"
+            data-testid="game-skip"
+            @click="skipAsked = true"
+          >
+            {{ t('participant.game.skip') }}
+          </button>
         </UiStickyFooter>
       </template>
 
       <!-- « Toutes les paires », open; or every mode once closed. -->
       <template v-else>
+        <template v-if="game.open && made === 0">
+          <ParticipantGameSurprise :challenge="game.challenge" />
+        </template>
+        <div
+          v-else-if="progress"
+          class="flex flex-col gap-2.5 rounded-2xl bg-success-tint px-4 py-3.5 text-[15px] leading-[1.45]"
+          data-testid="game-progress"
+        >
+          <p>
+            <strong class="font-bold">{{ progress.title }}</strong>
+            {{ progress.body }}
+          </p>
+          <div role="img" :aria-label="progress.title" class="flex gap-1.5">
+            <span
+              v-for="index in progress.total"
+              :key="index"
+              class="h-1.5 flex-1 rounded-full"
+              :class="index <= progress.made ? 'bg-pine-700' : 'bg-pine-700/25'"
+            />
+          </div>
+        </div>
         <UiCard
           v-if="!game.open"
           padding="lg"
@@ -444,8 +566,43 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
         >
           {{ t('participant.game.count', { count: made }) }}
         </p>
+        <button
+          v-if="game.canSkip && made === 0"
+          type="button"
+          class="flex min-h-11 items-center self-center text-sm text-toned underline"
+          data-testid="game-skip"
+          @click="skipAsked = true"
+        >
+          {{ t('participant.game.skip') }}
+        </button>
       </template>
 
+      <UiSheet
+        v-model:open="askSkip"
+        :title="t('participant.game.skipConfirm')"
+        :description="t('participant.game.skipConfirmBody', { end })"
+        :busy="skip.isPending.value"
+      >
+        <template #footer>
+          <UButton
+            block
+            size="xl"
+            class="min-h-13 justify-center font-bold"
+            :label="t('participant.game.skip')"
+            :loading="skip.isPending.value"
+            data-testid="game-skip-confirm"
+            @click="onSkip(true)"
+          />
+          <UButton
+            block
+            variant="ghost"
+            color="neutral"
+            class="min-h-11.5 justify-center font-semibold"
+            :label="t('participant.game.skipCancel')"
+            @click="askSkip = false"
+          />
+        </template>
+      </UiSheet>
       <ParticipantGuessSheet
         v-model:open="sheetOpen"
         :title="sheetTitle"

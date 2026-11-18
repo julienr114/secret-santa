@@ -200,6 +200,11 @@ describe('gameTile', () => {
     expect(game({ played: true })).toBe('played');
   });
 
+  it('says « Tu passes ton tour » while open', () => {
+    expect(game({ skipped: true })).toBe('skipped');
+    expect(game({ skipped: true, open: false })).toBe('waiting');
+  });
+
   it('waits for the party once closed', () => {
     expect(game({ open: false })).toBe('waiting');
   });

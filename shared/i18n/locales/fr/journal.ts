@@ -39,6 +39,10 @@ export default {
     guesses_enabled: 'Devine qui : le jeu de pronostics est ouvert',
     guesses_closed: 'Devine qui : les pronostics sont fermés',
     guess_results_ready: 'Devine qui : le palmarès est arrivé',
+    guess_auto_reminder_sent: {
+      one: 'Devine qui : un rappel automatique est parti à {count} personne',
+      other: 'Devine qui : un rappel automatique est parti à {count} personnes',
+    },
     guess_reminder_sent: {
       one: "L'organisateur a rappelé le jeu à {count} personne",
       other: "L'organisateur a rappelé le jeu à {count} personnes",

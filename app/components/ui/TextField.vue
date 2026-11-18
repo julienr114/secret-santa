@@ -49,7 +49,7 @@ const model = defineModel<string>({ required: true });
       :rows="rows"
       :maxlength="maxlength"
       autoresize
-      :maxrows="0"
+      :maxrows="6"
       size="xl"
       :placeholder="placeholder"
       class="w-full"

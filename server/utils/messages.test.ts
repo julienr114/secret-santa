@@ -112,9 +112,21 @@ describe('messageTypesFor', () => {
     expect(valueOf(buildMessage('answerReminder', data))).toBe(
       'Léa, le Secret Santa de la famille Martin n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
     );
-    expect(valueOf(buildMessage('answerRequest', data))).toContain(
-      'hors de l’application',
-    );
+    // The request explains the principle: secret answers, hints once all
+    // answered, and the game only when it is on.
+    const request = valueOf(buildMessage('answerRequest', data));
+    expect(request).toContain('hors de l’application');
+    expect(request).toContain('Ta réponse reste secrète');
+    expect(request).toContain('Quand tout le monde a répondu');
+    expect(request).not.toContain('Devine qui');
+    expect(
+      valueOf(
+        buildMessage('answerRequest', {
+          ...data,
+          guessEndsAt: '2026-12-25T17:00:00.000Z',
+        }),
+      ),
+    ).toContain('Devine qui, un jeu de pronostics');
     expect(valueOf(buildEmail('answerCheck', data, 'de')).subject).toBe(
       'Wichteln la famille Martin: Kannst du deine Antwort prüfen, Léa?',
     );

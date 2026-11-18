@@ -31,8 +31,12 @@ export default {
   },
   answerRequest: {
     greeting: 'Hallo {firstName}! 🎁',
-    body: 'Die Wichtel-Auslosung von {groupName} ({editionLabel}) wurde außerhalb der App gemacht.',
-    cta: 'Sag auf deiner Seite, wen du beschenkst, um seine Geschenk-Hinweise zu sehen:',
+    body: 'Die Auslosung beim Wichteln von {groupName} ({editionLabel}) ist schon gemacht, außerhalb der App. Für alles Weitere treffen wir uns in der App.',
+    how: 'So geht’s: Auf deiner Seite sagst du, wen du beschenkst. Deine Antwort bleibt geheim, niemand sonst sieht sie.',
+    hints:
+      'Du kannst schon jetzt deine Geschenk-Hinweise für die Person hinterlassen, die dich beschenkt. Sobald alle geantwortet haben, liest jeder die Hinweise der Person, die er beschenkt: Fehlt eine einzige Antwort, bleiben sie zu.',
+    game: '🔍 Und zum Spaß: Devine qui, ein Tippspiel, bei dem jeder rät, wer ihn beschenkt. Antwort bei der Feier!',
+    cta: 'Dein persönlicher Link, zum Antworten:',
     subject: 'Wichteln {groupName}: Wen beschenkst du, {firstName}?',
   },
   answerReminder: {

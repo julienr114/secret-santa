@@ -31,8 +31,12 @@ export default {
   },
   answerRequest: {
     greeting: 'Hi {firstName}! 🎁',
-    body: 'The Secret Santa draw of {groupName} ({editionLabel}) was made outside the app.',
-    cta: "Say on your page who you're giving a gift to, to see their gift hints:",
+    body: 'The draw of the {groupName} Secret Santa ({editionLabel}) is already done, outside the app. For what comes next, we meet in the app.',
+    how: 'How it works: on your page, you say who you’re giving a gift to. Your answer stays secret, nobody else sees it.',
+    hints:
+      'You can already leave your gift hints for the person giving to you. Once everyone has answered, each of us reads those of the person they give to: a single missing answer keeps them closed.',
+    game: '🔍 And for fun: Devine qui, a guessing game where everyone tries to guess who gives them their present. Answer at the party!',
+    cta: 'Your personal link, to answer:',
     subject: '{groupName} Secret Santa: who are you giving to, {firstName}?',
   },
   answerReminder: {

@@ -31,8 +31,12 @@ export default {
   },
   answerRequest: {
     greeting: 'Salut {firstName} ! 🎁',
-    body: 'Le tirage du Secret Santa de {groupName} ({editionLabel}) a été fait hors de l’application.',
-    cta: 'Dis sur ta page à qui tu offres un cadeau, pour voir ses pistes de cadeaux :',
+    body: 'Le tirage du Secret Santa de {groupName} ({editionLabel}) est déjà fait, hors de l’application. Pour la suite, on se retrouve dans l’application.',
+    how: 'Le principe : sur ta page, tu dis à qui tu offres ton cadeau. Ta réponse reste secrète, personne d’autre ne la voit.',
+    hints:
+      'Tu peux déjà laisser tes pistes de cadeaux pour la personne qui t’offre le tien. Quand tout le monde a répondu, chacun lit celles de la personne à qui il offre : il suffit d’une réponse manquante pour qu’elles restent fermées.',
+    game: '🔍 Et pour s’amuser : Devine qui, un jeu de pronostics où chacun essaie de deviner qui lui offre son cadeau. Réponse à la fête !',
+    cta: 'Ton lien personnel, pour répondre :',
     subject:
       'Secret Santa de {groupName} : à qui offres-tu un cadeau, {firstName} ?',
   },

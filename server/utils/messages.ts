@@ -129,9 +129,15 @@ const TEMPLATES: Record<MessageType, (d: MessageData) => MessageKey[]> = {
   ],
   reminder: () => ['messages.reminder.greeting', 'messages.reminder.cta'],
   redraw: () => ['messages.redraw.greeting', 'messages.redraw.cta'],
-  answerRequest: () => [
+  // The draw was made elsewhere (README 22.12): the principle, the hints
+  // that open once everyone answered, the party, and the game if it is on.
+  answerRequest: (d) => [
     'messages.answerRequest.greeting',
     'messages.answerRequest.body',
+    'messages.answerRequest.how',
+    'messages.answerRequest.hints',
+    ...details(d),
+    ...(d.guessEndsAt ? (['messages.answerRequest.game'] as const) : []),
     'messages.answerRequest.cta',
   ],
   answerReminder: () => [

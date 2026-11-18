@@ -403,5 +403,7 @@ Demandé par Julien le 18 novembre 2026 : « Under the Tree » ne dit rien, et �
 | « Under the Tree » ne signe plus que les emails à l'organisateur | « Under the Tree, l'application de votre Secret Santa » |
 | Côté participant, « tes organisateurs » au pluriel dès qu'il y en a plusieurs | « Tes organisateurs te feront signe » |
 
+**Le message « À qui offres-tu un cadeau ? »** (tirage fait ailleurs) présente le principe : le tirage est déjà fait, chacun dit sur sa page à qui il offre, la réponse reste secrète ; on peut déjà laisser ses pistes, et chacun lit celles de sa personne quand tout le monde a répondu. Il donne le budget et la date, et présente « Devine qui » quand le jeu est actif.
+
 Les lignes du journal (« L'organisateur a envoyé… ») décrivent l'action d'une personne : elles restent au singulier en attendant de nommer qui a fait quoi (plus tard, Correction 17, point 4).
 

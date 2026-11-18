@@ -408,8 +408,16 @@ test('a cancelled draw keeps the gift hints and resets the counters', async ({
 });
 
 test('unknown and regenerated links are refused', async ({ page }) => {
+  // The refusal comes with the page: no skeleton while the browser asks
+  // again, and the page matches what the server sent.
+  const mismatches: string[] = [];
+  page.on('console', (message) => {
+    if (message.text().includes('Hydration')) mismatches.push(message.text());
+  });
   await open(page, `/p/${'x'.repeat(43)}`);
   await expect(heading(page)).toHaveText('Oups, ce lien ne marche plus');
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+  expect(mismatches).toEqual([]);
   await expect(page.getByText("Ce lien n'est plus valable")).toBeVisible();
 
   const old = state.links.Bruno ?? '';

@@ -156,6 +156,9 @@ const usePersonalRead = <T extends { language: Locale }>(
     queryFn: () => fetcher<T>(path()) as Promise<T>,
     enabled: computed(enabled),
     retry: false,
+    // A link the server already refused stays refused: asking again on
+    // mount would show the skeleton instead of « Ce lien ne marche plus ».
+    retryOnMount: false,
     refetchInterval: (q) =>
       refetchInterval?.(q.state.data as T | undefined) ?? false,
   });

@@ -62,8 +62,12 @@ export const canClaim = (
     ? ok(true)
     : fail('person_has_other_email');
 
-/** Where a login may lead back to: an invitation or a personal page. */
-const NEXT_SHAPE = /^\/(rejoindre|p)\/[A-Za-z0-9_-]{16,43}$/;
+/**
+ * Where a login may lead back to: an invitation, a personal page, or a
+ * gift list, maybe with the idea to tick once back (README 22.19).
+ */
+const NEXT_SHAPE =
+  /^\/(rejoindre|p|l)\/[A-Za-z0-9_-]{16,43}(\?cocher=[A-Za-z0-9_-]{16,43})?$/;
 
 /**
  * The page to go back to after logging in, if it is one of ours.

@@ -1,4 +1,9 @@
-import type { ListCard, ListDocument, MemberView } from '#server/http/lists';
+import type {
+  ListCard,
+  ListDocument,
+  MemberView,
+  VisitorDocument,
+} from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import { keys } from './keys';
@@ -136,4 +141,71 @@ export const useUpdateMemberMutation = (id: Id) =>
     (body) => api(`/api/family/${toValue(id)}`, { method: 'PATCH', body }),
     // The member shows on every list: refetch them all.
     () => [keys.family(), keys.lists()],
+  );
+
+// A list by its link (lot 22): ticking, giving with others, off the list.
+type Token = MaybeRefOrGetter<string>;
+const linkKeys = (token: string) => [keys.link(token), keys.lists()];
+
+export const useLinkQuery = (token: Token) =>
+  useApiQuery<VisitorDocument>(
+    () => keys.link(toValue(token)),
+    () => `/api/l/${toValue(token)}`,
+  );
+
+export const useTickMutation = (token: Token) =>
+  useApiMutation<
+    { ok: true; joined: boolean },
+    {
+      ideaId: string;
+      mode?: 'alone' | 'group';
+      anonymous?: boolean;
+      note?: string | null;
+    }
+  >(
+    (body) => api(`/api/l/${toValue(token)}/claims`, { method: 'POST', body }),
+    () => linkKeys(toValue(token)),
+  );
+
+export const useChangeClaimMutation = (token: Token) =>
+  useApiMutation<
+    { ok: true },
+    {
+      ideaId: string;
+      mode?: 'alone' | 'group';
+      anonymous?: boolean;
+      note?: string | null;
+      closed?: boolean;
+    }
+  >(
+    ({ ideaId, ...body }) =>
+      api(`/api/l/${toValue(token)}/claims/${ideaId}`, {
+        method: 'PATCH',
+        body,
+      }),
+    () => linkKeys(toValue(token)),
+  );
+
+export const useUntickMutation = (token: Token) =>
+  useApiMutation<{ ok: true }, string>(
+    (ideaId) =>
+      api(`/api/l/${toValue(token)}/claims/${ideaId}`, { method: 'DELETE' }),
+    () => linkKeys(toValue(token)),
+  );
+
+export const useAddOffListMutation = (token: Token) =>
+  useApiMutation<
+    { ok: true },
+    { listPersonId: string; text: string; anonymous: boolean }
+  >(
+    (body) =>
+      api(`/api/l/${toValue(token)}/off-list`, { method: 'POST', body }),
+    () => linkKeys(toValue(token)),
+  );
+
+export const useRemoveOffListMutation = (token: Token) =>
+  useApiMutation<{ ok: true }, string>(
+    (giftId) =>
+      api(`/api/l/${toValue(token)}/off-list/${giftId}`, { method: 'DELETE' }),
+    () => linkKeys(toValue(token)),
   );

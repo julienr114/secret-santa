@@ -3,7 +3,10 @@ import type { Db } from './client';
 import {
   accounts,
   familyMembers,
+  giftClaims,
   giftListIdeas,
+  giftListVisits,
+  giftOffList,
   giftListPeople,
   giftLists,
   type FamilyMemberRow,
@@ -170,7 +173,13 @@ export const findListByToken = async (
 export type ListPerson = {
   id: string;
   member: FamilyMember;
-  ideas: { id: string; text: string; url: string | null; position: number }[];
+  ideas: {
+    id: string;
+    text: string;
+    url: string | null;
+    position: number;
+    createdAt: string;
+  }[];
 };
 
 /**
@@ -202,7 +211,13 @@ export const peopleOfLists = async (
       member: memberOf(member),
       ideas: ideas
         .filter((idea) => idea.listPersonId === person.id)
-        .map(({ id, text, url, position }) => ({ id, text, url, position })),
+        .map(({ id, text, url, position, createdAt }) => ({
+          id,
+          text,
+          url,
+          position,
+          createdAt,
+        })),
     });
   }
   return byList;
@@ -259,6 +274,9 @@ export const updateList = (
 /** Deletes a list with its people and ideas. */
 export const deleteList = (db: Db, id: string) =>
   db.batch([
+    db.delete(giftClaims).where(eq(giftClaims.listId, id)),
+    db.delete(giftOffList).where(eq(giftOffList.listId, id)),
+    db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
     db.delete(giftListPeople).where(eq(giftListPeople.listId, id)),
     db.delete(giftLists).where(eq(giftLists.id, id)),
@@ -270,14 +288,12 @@ export const deleteList = (db: Db, id: string) =>
  * @param db - The database.
  * @param list - The list.
  * @param memberId - The person.
- * @param plannedIdeaIds - The ideas somebody gives, on any list.
  * @returns The id of their place on the list.
  */
 export const addPersonToList = async (
   db: Db,
   list: GiftListRow,
   memberId: string,
-  plannedIdeaIds: ReadonlySet<string> = new Set(),
 ): Promise<string> => {
   const current = await db
     .select({ position: giftListPeople.position })
@@ -304,6 +320,21 @@ export const addPersonToList = async (
         .from(giftListIdeas)
         .where(eq(giftListIdeas.listPersonId, last.id))
     : [];
+  const plannedIdeaIds = new Set(
+    previous.length > 0
+      ? (
+          await db
+            .select({ ideaId: giftClaims.ideaId })
+            .from(giftClaims)
+            .where(
+              inArray(
+                giftClaims.ideaId,
+                previous.map((idea) => idea.id),
+              ),
+            )
+        ).map((claim) => claim.ideaId)
+      : [],
+  );
   const carried = carriedIdeas(
     previous.map((idea) => ({
       text: idea.text,
@@ -342,8 +373,29 @@ export const findListPerson = async (db: Db, listId: string, id: string) =>
     .get()) ?? null;
 
 /** Takes a person off a list, with their ideas there. */
-export const removePersonFromList = (db: Db, listId: string, id: string) =>
-  db.batch([
+export const removePersonFromList = async (
+  db: Db,
+  listId: string,
+  id: string,
+) => {
+  const ideas = await db
+    .select({ id: giftListIdeas.id })
+    .from(giftListIdeas)
+    .where(
+      and(eq(giftListIdeas.listId, listId), eq(giftListIdeas.listPersonId, id)),
+    );
+  return db.batch([
+    db.delete(giftClaims).where(
+      inArray(
+        giftClaims.ideaId,
+        ideas.map((idea) => idea.id),
+      ),
+    ),
+    db
+      .delete(giftOffList)
+      .where(
+        and(eq(giftOffList.listId, listId), eq(giftOffList.listPersonId, id)),
+      ),
     db
       .delete(giftListIdeas)
       .where(
@@ -356,6 +408,7 @@ export const removePersonFromList = (db: Db, listId: string, id: string) =>
       .delete(giftListPeople)
       .where(and(eq(giftListPeople.listId, listId), eq(giftListPeople.id, id))),
   ]);
+};
 
 /** An idea of a list, or null. */
 export const findIdea = async (db: Db, listId: string, id: string) =>

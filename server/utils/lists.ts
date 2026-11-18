@@ -5,6 +5,7 @@
 // of a line, the sentences of the « Listes » tab, the ideas carried over
 // from one list to the next.
 import { z } from 'zod';
+import type { Avatar } from './avatars';
 
 export const LIST_TITLE_MAX = 80;
 export const LIST_NOTE_MAX = 500;
@@ -172,7 +173,7 @@ export type ClaimMode = 'alone' | 'group';
 export type Claim = {
   accountId: string;
   name: string;
-  avatar: { emoji: string; color: string };
+  avatar: Avatar;
   mode: ClaimMode;
   /** Hidden from the holder: « Anonyme ». */
   anonymous: boolean;
@@ -192,7 +193,7 @@ export type IdeaView =
       mine: boolean;
       /** The viewer proposed it, or took it over: they may close it. */
       leads: boolean;
-      people: { name: string; avatar: { emoji: string; color: string } }[];
+      people: { name: string; avatar: Avatar }[];
     };
 
 /**

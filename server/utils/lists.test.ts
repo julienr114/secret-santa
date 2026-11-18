@@ -19,7 +19,7 @@ import {
 const claim = (over: Partial<Claim>): Claim => ({
   accountId: 'a',
   name: 'Mamie',
-  avatar: { emoji: '🧶', color: 'plum' },
+  avatar: { emoji: '🦊', color: 'plum' },
   mode: 'alone',
   anonymous: false,
   closed: false,

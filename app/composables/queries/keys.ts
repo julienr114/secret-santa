@@ -25,4 +25,5 @@ export const keys = {
   list: (id: string) => ['lists', id] as const,
   family: () => ['family'] as const,
   member: (id: string) => ['family', id] as const,
+  link: (token: string) => ['l', token] as const,
 };

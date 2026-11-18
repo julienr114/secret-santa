@@ -69,6 +69,31 @@ const onNext = (index: number) =>
         :line="`${person.id}:${index}`"
         @next="onNext(index)"
       />
+      <li
+        v-for="gift in person.offList"
+        :key="gift.id"
+        class="flex items-start gap-3 py-2"
+        data-testid="holder-off-list"
+      >
+        <span
+          class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[#a8a29e] text-white"
+          aria-hidden="true"
+        >
+          <UIcon name="i-lucide-check" class="size-3.5" />
+        </span>
+        <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
+          <span class="text-toned line-through">{{
+            t('lists.doc.offList', {
+              text: gift.kind === 'surprise' ? '' : gift.text,
+            })
+          }}</span>
+          <span
+            v-if="gift.kind === 'holder'"
+            class="rounded-full bg-[#ece2cf] px-2 py-0.5 text-xs font-bold text-[#44403c]"
+            >{{ gift.by ?? t('lists.doc.anonymous') }}</span
+          >
+        </p>
+      </li>
       <ListsIdeaLine
         ref="last"
         :list-id="listId"

@@ -1,0 +1,186 @@
+import { expect, test, type APIRequestContext } from '@playwright/test';
+import { apiLogin, hydrated } from './helpers';
+
+// Gift lists, for those who open the link (README 22.19, lot 22): read
+// without an account, tick at once, give with others, something else.
+test.describe.configure({ mode: 'serial' });
+
+const HOLDER = 'link-holder@example.com';
+const MAMIE = 'link-mamie@example.com';
+const TONTON = 'link-tonton@example.com';
+const state: { token: string; listId: string; ideas: Record<string, string> } =
+  { token: '', listId: '', ideas: {} };
+
+const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
+  expect(response.ok(), `${response.url()}: ${response.status()}`).toBe(true);
+  return response.json();
+};
+
+test.beforeAll(async ({ playwright, baseURL }) => {
+  const api = await playwright.request.newContext({ baseURL });
+  await apiLogin(api, HOLDER);
+  await ok(
+    await api.put('/api/auth/profile', {
+      data: { firstName: 'Camille', avatarEmoji: '🦌', avatarColor: 'plum' },
+    }),
+  );
+  const { id } = await ok(
+    await api.post('/api/lists', {
+      data: { icon: { emoji: '❄️', color: 'night' }, title: 'Noël 2026' },
+    }),
+  );
+  const leo = await ok(
+    await api.post(`/api/lists/${id}/people`, {
+      data: {
+        newMember: {
+          firstName: 'Léo',
+          avatar: { emoji: '🚀', color: 'frost' },
+        },
+      },
+    }),
+  );
+  for (const text of ['Circuit de billes', 'Vélo 16 pouces', 'Puzzle']) {
+    const { id: ideaId } = await ok(
+      await api.post(`/api/lists/${id}/ideas`, {
+        data: { listPersonId: leo.id, text },
+      }),
+    );
+    state.ideas[text] = ideaId;
+  }
+  const { token } = await ok(
+    await api.post(`/api/lists/${id}/share`, { data: {} }),
+  );
+  state.token = token;
+  state.listId = id;
+  for (const [email, firstName] of [
+    [MAMIE, 'Mamie'],
+    [TONTON, 'Tonton'],
+  ] as const) {
+    const other = await playwright.request.newContext({ baseURL });
+    await apiLogin(other, email);
+    await other.put('/api/auth/profile', {
+      data: { firstName, avatarEmoji: '🦊', avatarColor: 'brick' },
+    });
+    await other.dispose();
+  }
+  await api.dispose();
+});
+
+test('without an account, the list reads, and a box asks for an address', async ({
+  page,
+}) => {
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Noël 2026');
+  await expect(page.getByTestId('visitor-sentence')).toContainText(
+    'La liste de Camille.',
+  );
+  await page.getByRole('checkbox', { name: /Circuit de billes/ }).click();
+  await expect(page).toHaveURL(/\/connexion\?cocher=/);
+  await expect(page.getByText('« Circuit de billes » t’attend')).toBeVisible();
+  // Back from the magic link, the gift is ticked.
+  await apiLogin(page.request, MAMIE);
+  await page.goto(
+    `/l/${state.token}?cocher=${state.ideas['Circuit de billes']}`,
+  );
+  await hydrated(page);
+  await expect(page.getByTestId('idea-mine')).toContainText(
+    'Tu l’offres · seul, sous ton prénom',
+  );
+});
+
+test('one ticks at once, the other hears it is taken', async ({ page }) => {
+  await apiLogin(page.request, TONTON);
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  // Taken by Mamie: crossed, no name.
+  const taken = page.getByRole('checkbox', { name: /Circuit de billes/ });
+  await expect(taken).toBeDisabled();
+  await expect(page.locator('body')).not.toContainText('Mamie');
+  // Both try the bike: only one has it.
+  await page.getByRole('checkbox', { name: /Vélo 16 pouces/ }).click();
+  await expect(page.getByTestId('idea-mine')).toHaveCount(1);
+  const refused = await page.request.fetch(`/api/l/${state.token}/claims`, {
+    method: 'POST',
+    data: { ideaId: state.ideas['Circuit de billes'] },
+  });
+  expect(refused.status()).toBe(409);
+  // Ticked again: unticked.
+  await page.getByRole('checkbox', { name: /Vélo 16 pouces/ }).click();
+  await expect(page.getByTestId('idea-mine')).toHaveCount(0);
+});
+
+test('a gift given by several: proposed, joined, closed', async ({ page }) => {
+  // Mamie proposes the puzzle to share.
+  await apiLogin(page.request, MAMIE);
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await page.getByRole('checkbox', { name: /Puzzle/ }).click();
+  const puzzle = page.getByTestId('visitor-idea').filter({ hasText: 'Puzzle' });
+  await puzzle.getByRole('button', { name: 'Changer' }).click();
+  const sheet = page.getByTestId('claim-sheet');
+  await sheet.getByText('On l’offre à plusieurs').click();
+  await expect(sheet).toContainText('Ton prénom sera visible');
+  await page.getByLabel(/Un mot pour eux/).fill('Je l’achète, on partage ?');
+  await page.getByTestId('claim-done').click();
+  await expect(puzzle.getByTestId('idea-group')).toContainText('Tu participes');
+
+  // Tonton joins, through the sheet.
+  await apiLogin(page.request, TONTON);
+  await page.reload();
+  await hydrated(page);
+  await expect(puzzle.getByTestId('idea-group')).toContainText(
+    'Mamie l’offre, et propose de partager',
+  );
+  await puzzle.getByRole('button', { name: 'Se joindre' }).click();
+  await expect(page.getByTestId('join-sheet')).toContainText(
+    '« Je l’achète, on partage ? »',
+  );
+  await page.getByTestId('join-confirm').click();
+  await expect(puzzle.getByTestId('idea-group')).toContainText('Mamie et toi');
+  // Only Mamie may close it.
+  const refused = await page.request.patch(
+    `/api/l/${state.token}/claims/${state.ideas.Puzzle}`,
+    { data: { closed: true } },
+  );
+  expect(refused.status()).toBe(403);
+  await apiLogin(page.request, MAMIE);
+  await page.reload();
+  await hydrated(page);
+  await puzzle.getByRole('button', { name: 'Tu participes' }).click();
+  await expect(page.getByTestId('claim-sheet')).toContainText('Tonton');
+  await page.getByRole('switch', { name: 'On est au complet' }).click();
+  await page.getByTestId('claim-done').click();
+  await expect(puzzle).toContainText('Offert à plusieurs · au complet');
+});
+
+test('something else, and what the holder sees', async ({ page }) => {
+  await apiLogin(page.request, TONTON);
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await page.getByRole('link', { name: 'J’offre autre chose à Léo' }).click();
+  await page.getByLabel('Ce que tu offres').fill('un jeu de société');
+  await page.getByTestId('off-list-add').click();
+  await expect(page.getByTestId('off-list')).toContainText(
+    'Tu offres hors liste : un jeu de société',
+  );
+  // The list is in Tonton's tab.
+  await page.goto('/listes');
+  await hydrated(page);
+  const card = page.getByTestId('list-card').filter({ hasText: 'Noël 2026' });
+  await expect(card).toContainText('Liste de Camille');
+  await expect(card).toContainText('Tu offres 2 cadeaux.');
+
+  // The holder sees who gives what.
+  await apiLogin(page.request, HOLDER);
+  await page.goto(`/listes/${state.listId}`);
+  await hydrated(page);
+  await expect(page.getByTestId('idea-who')).toContainText(['Mamie']);
+  await expect(page.locator('body')).toContainText(
+    '3 cadeaux déjà prévus. Toi seul vois les prénoms.',
+  );
+  await expect(page.getByTestId('holder-off-list')).toContainText(
+    'Hors liste : un jeu de société',
+  );
+  await expect(page.getByTestId('holder-off-list')).toContainText('Tonton');
+});

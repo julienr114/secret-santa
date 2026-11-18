@@ -69,6 +69,10 @@ describe('safeNext', () => {
       '/rejoindre/abcdefghijklmnop',
     );
     expect(safeNext(`/p/${'a'.repeat(43)}`)).toBe(`/p/${'a'.repeat(43)}`);
+    // A gift list, maybe with the idea to tick once back (lot 22).
+    const list = `/l/${'b'.repeat(21)}?cocher=${'c'.repeat(21)}`;
+    expect(safeNext(list)).toBe(list);
+    expect(safeNext(`/l/${'b'.repeat(21)}?cocher=x`)).toBeNull();
   });
 
   it('refuses anything else', () => {

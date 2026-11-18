@@ -49,6 +49,8 @@ const STATUS_BY_REASON: Record<string, number> = {
   results_not_revealed: 409,
   list_incomplete: 409,
   list_shared: 409,
+  taken: 409,
+  own_idea: 403,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

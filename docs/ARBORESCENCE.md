@@ -189,3 +189,12 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 | Une personne de ma famille | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Listes | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
 | Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
 | Les questions de ses goûts | `/famille/[id]/question?n=` | Une personne de ma famille | |
+
+### Une liste par son lien (lot 22), avec ou sans compte
+
+| Écran | Adresse | Parent | Panneaux |
+|---|---|---|---|
+| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique) | Listes si connecté ; sinon pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre |
+| Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
+| J'offre autre chose | `/l/[jeton]/hors-liste?pour=` | La liste, par son lien | |
+| Les goûts d'une personne | `/l/[jeton]/gouts/[place]` | La liste, par son lien | |

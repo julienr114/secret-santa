@@ -190,6 +190,13 @@
       "when": 1795031040785,
       "tag": "0026_gift_lists",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "6",
+      "when": 1795032377964,
+      "tag": "0027_gift_claims",
+      "breakpoints": true
     }
   ]
 }

@@ -549,6 +549,80 @@ export const giftListIdeas = sqliteTable(
   (t) => [index('gift_list_ideas_list_idx').on(t.listId)],
 );
 
+// Who gives what on a list (lot 22): one row per account and idea, alone
+// or with others. The one who proposed a group leads it (the oldest row).
+export const giftClaims = sqliteTable(
+  'gift_claims',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    ideaId: text('idea_id')
+      .notNull()
+      .references(() => giftListIdeas.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    mode: text('mode', { enum: ['alone', 'group'] }).notNull(),
+    // Hidden from the holder: « Anonyme ».
+    anonymous: integer('anonymous', { mode: 'boolean' })
+      .notNull()
+      .default(false),
+    // A word for the others of a group.
+    note: text('note'),
+    // On the row of the one who leads a group: nobody may join any more.
+    closed: integer('closed', { mode: 'boolean' }).notNull().default(false),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_claims_idea_account_idx').on(t.ideaId, t.accountId),
+    index('gift_claims_list_idx').on(t.listId),
+  ],
+);
+
+// « J'offre autre chose à Léo »: a gift not on the list, in two words.
+export const giftOffList = sqliteTable(
+  'gift_off_list',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    listPersonId: text('list_person_id')
+      .notNull()
+      .references(() => giftListPeople.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    text: text('text').notNull(),
+    anonymous: integer('anonymous', { mode: 'boolean' })
+      .notNull()
+      .default(false),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('gift_off_list_list_idx').on(t.listId)],
+);
+
+// A list opened while logged in: it shows in the « Listes » tab, with the
+// ideas written since the last visit.
+export const giftListVisits = sqliteTable(
+  'gift_list_visits',
+  {
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    lastSeenAt: text('last_seen_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_list_visits_list_account_idx').on(t.listId, t.accountId),
+    index('gift_list_visits_account_idx').on(t.accountId),
+  ],
+);
+
 export type FamilyMemberRow = typeof familyMembers.$inferSelect;
 export type GiftListRow = typeof giftLists.$inferSelect;
 export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;

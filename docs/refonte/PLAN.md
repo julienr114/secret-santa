@@ -671,16 +671,16 @@ Décidé par Julien le 18 novembre 2026. Fonctionnalité nouvelle, séparée des
 
 Décidé par Julien le 18 novembre 2026. Après le lot 21.
 
-- [ ] **Le cœur, en fonctions pures**, testé avant le reste : cocher, décocher ; proposer à plusieurs, se joindre, se retirer (le cadeau passe au suivant, ou la ligne redevient libre) ; fermer le groupe ; ce que chacun voit d'un cadeau à plusieurs et d'un cadeau hors liste.
-- [ ] **Base** (migration) : qui offre quoi (compte, idée, seul ou à plusieurs, anonyme ou non pour celui qui tient la liste, le mot, le groupe fermé ou non) ; les cadeaux hors liste ; la dernière visite d'un compte sur une liste. Deux comptes ne peuvent pas cocher seuls la même idée : le second reçoit « c'est déjà pris » et la liste se met à jour.
-- [ ] **La page du lien** (`ListeVisiteur`) : lisible sans compte. Les lignes barrées ne disent pas qui offre.
-- [ ] **Sans compte** (`ListeConnexion`) : toucher une case demande l'adresse ; le lien magique ramène sur la liste et le cadeau est coché.
-- [ ] **Cocher sans panneau** (`ListeVisiteurMes`) : la case coche tout de suite ; « Tu l'offres · seul, sous ton prénom · Changer » sous la ligne ; retoucher la case décoche.
-- [ ] **« Changer »** (`ListeReserver`, `ListeReserverPlusieurs`) : seul ou à plusieurs, « Dire à Camille que c'est moi », le mot pour les autres, « Finalement, je ne l'offre plus ».
-- [ ] **À plusieurs** (`ListePlusieursLigne`, `ListeRejoindre`, `ListeRejoindreSept`, `ListePlusieursOuvreur`) : la ligne à 1, à 3, à 7 et au complet ; se joindre passe toujours par le panneau ; « On est au complet » réservé à celui qui a proposé.
-- [ ] **« J'offre autre chose à Léo »** (`ListeHorsListe`).
-- [ ] **L'onglet « Listes »** : une liste ouverte en étant connecté y apparaît, avec « Liste de Mamie » en tête de carte, « Tu offres 2 cadeaux. » ou « Tu n'as encore rien coché. », et la pastille des nouvelles idées depuis ma dernière visite. « Passées » : « Liste de Tonton · tu as offert 1 cadeau ».
-- [ ] Trois langues, guide de style, `tests/e2e`. README 22.19 marqué fait.
+- [x] **Le cœur, en fonctions pures**, testé avant le reste : cocher, décocher ; proposer à plusieurs, se joindre, se retirer (le cadeau passe au suivant, ou la ligne redevient libre) ; fermer le groupe ; ce que chacun voit d'un cadeau à plusieurs et d'un cadeau hors liste.
+- [x] **Base** (migration) : qui offre quoi (compte, idée, seul ou à plusieurs, anonyme ou non pour celui qui tient la liste, le mot, le groupe fermé ou non) ; les cadeaux hors liste ; la dernière visite d'un compte sur une liste. Deux comptes ne peuvent pas cocher seuls la même idée : le second reçoit « c'est déjà pris » et la liste se met à jour.
+- [x] **La page du lien** (`ListeVisiteur`) : lisible sans compte. Les lignes barrées ne disent pas qui offre.
+- [x] **Sans compte** (`ListeConnexion`) : toucher une case demande l'adresse ; le lien magique ramène sur la liste et le cadeau est coché.
+- [x] **Cocher sans panneau** (`ListeVisiteurMes`) : la case coche tout de suite ; « Tu l'offres · seul, sous ton prénom · Changer » sous la ligne ; retoucher la case décoche.
+- [x] **« Changer »** (`ListeReserver`, `ListeReserverPlusieurs`) : seul ou à plusieurs, « Dire à Camille que c'est moi », le mot pour les autres, « Finalement, je ne l'offre plus ».
+- [x] **À plusieurs** (`ListePlusieursLigne`, `ListeRejoindre`, `ListeRejoindreSept`, `ListePlusieursOuvreur`) : la ligne à 1, à 3, à 7 et au complet ; se joindre passe toujours par le panneau ; « On est au complet » réservé à celui qui a proposé.
+- [x] **« J'offre autre chose à Léo »** (`ListeHorsListe`).
+- [x] **L'onglet « Listes »** : une liste ouverte en étant connecté y apparaît, avec « Liste de Mamie » en tête de carte, « Tu offres 2 cadeaux. » ou « Tu n'as encore rien coché. », et la pastille des nouvelles idées depuis ma dernière visite. « Passées » : « Liste de Tonton · tu as offert 1 cadeau ».
+- [x] Trois langues, guide de style, `tests/e2e`. README 22.19 marqué fait.
 
 ### Correction 18 — Rédiger sur une page, plus dans un panneau (README 23.3)
 
@@ -701,6 +701,14 @@ Demandée par Julien le 18 novembre 2026, après le bug du clavier remonté par 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
+
+**Lot 22, les listes, côté de celui qui ouvre le lien (18 novembre 2026).** Choix faits seul :
+- **Pages plutôt que panneaux** (README 23.3) : `ListeConnexion` (deux champs, l'adresse et le prénom) et `ListeHorsListe` (un texte écrit) sont des pages, `/l/[jeton]/connexion` et `/l/[jeton]/hors-liste`. « Changer » et « Se joindre » restent des panneaux : des choix, et au plus un mot court pour les autres.
+- **« Réserver »** encore dans ces maquettes (« pour réserver », « Ajouter et réserver ») : les textes disent « cocher » et « Ajouter ».
+- **« La liste de Camille et Hugo »** (`ListeVisiteur`) : une liste n'a qu'une personne qui la tient ; la page dit « La liste de Camille. »
+- **« Seule Camille sait »** : accordé au féminin dans la maquette ; le texte dit « personne d'autre que Camille », qui ne devine pas le genre.
+- **Celui qui tient la liste coche depuis le lien** de sa liste (`/l/[jeton]`, qu'il ouvre par « Le lien »), sauf ses propres idées ; son document reste fait pour écrire.
+- **Les goûts d'une personne** se lisent depuis le lien (`/l/[jeton]/gouts/…`), sans sa date de naissance : l'âge suffit.
 
 **Lot 21, les listes, côté de celui qui la tient (18 novembre 2026).** Choix faits seul :
 - **« Réserver »** : la maquette `ListePartager` écrit « Réserve ce que tu offres » et « Pour réserver » ; le README (22.19, « Les mots ») l'interdit à l'écran. Le message dit « Coche ce que tu offres », l'aide « Pour cocher ».

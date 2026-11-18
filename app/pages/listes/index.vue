@@ -108,7 +108,7 @@ const pastLine = (card: ListCard) => {
         <NuxtLink
           v-for="card in coming"
           :key="card.id"
-          :to="`/listes/${card.id}`"
+          :to="card.holder ? `/l/${card.holder.token}` : `/listes/${card.id}`"
           class="flex flex-col gap-3 rounded-2xl bg-default p-4 shadow-sm ring-1 ring-default"
           data-testid="list-card"
         >
@@ -199,7 +199,7 @@ const pastLine = (card: ListCard) => {
       >
         <li v-for="card in past" :key="card.id">
           <NuxtLink
-            :to="`/listes/${card.id}`"
+            :to="card.holder ? `/l/${card.holder.token}` : `/listes/${card.id}`"
             class="flex min-h-14 items-center gap-3 px-4 py-2.5"
           >
             <ListsTile :icon="card.icon" size="sm" />

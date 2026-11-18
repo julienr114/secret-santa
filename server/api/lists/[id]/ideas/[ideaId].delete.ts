@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { deleteClaimsOfIdeas } from '#server/database/claims';
 import { findIdea } from '#server/database/lists';
 import { giftListIdeas } from '#server/database/schema';
 import { notFound } from '#server/http/errors';
@@ -14,6 +15,9 @@ export default defineEventHandler(async (event) => {
     getRouterParam(event, 'ideaId') ?? '',
   );
   if (!idea) throw notFound();
-  await db.delete(giftListIdeas).where(eq(giftListIdeas.id, idea.id));
+  await db.batch([
+    deleteClaimsOfIdeas(db, [idea.id]),
+    db.delete(giftListIdeas).where(eq(giftListIdeas.id, idea.id)),
+  ]);
   return { ok: true };
 });

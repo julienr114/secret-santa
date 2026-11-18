@@ -167,6 +167,7 @@ export default {
     mine: 'My guesses',
     choose: '+ Choose',
     changeFor: 'Change the guess for {name}',
+    me: 'Me',
     you: 'you',
     noGuess: 'No guess',
     count: {

@@ -30,8 +30,18 @@ const context = computed(() =>
       ]
     : [],
 );
-const personOf = (id: string | null | undefined) =>
-  game.value?.people.find((p) => p.id === id) ?? null;
+/**
+ * A person of the draw, the player named « Moi » (one may name oneself as
+ * the giver of someone, decided by Julien on 18 November 2026).
+ * @param id - The person.
+ * @returns The person with the name to show, or null.
+ */
+const personOf = (id: string | null | undefined) => {
+  const person = game.value?.people.find((p) => p.id === id) ?? null;
+  return person && person.id === game.value?.me
+    ? { ...person, name: t('participant.game.me') }
+    : person;
+};
 const guessOf = (recipientId: string) =>
   game.value?.mine.find((g) => g.recipientId === recipientId)?.giverId ?? null;
 const endText = useGuessEnd();
@@ -82,8 +92,13 @@ const options = computed<GuessOption[]>(() => {
   const g = game.value;
   const recipient = choosingFor.value;
   if (!g || !recipient) return [];
-  return g.people
-    .filter((p) => p.id !== g.me && p.id !== recipient)
+  // « Moi » first, except on one's own line: nobody gives to themselves.
+  return [
+    ...g.people.filter((p) => p.id === g.me),
+    ...g.people.filter((p) => p.id !== g.me),
+  ]
+    .filter((p) => p.id !== recipient)
+    .map((p) => personOf(p.id)!)
     .map((p) => {
       const elsewhere = g.mine.find(
         (m) => m.giverId === p.id && m.recipientId !== recipient,

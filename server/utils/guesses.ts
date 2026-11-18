@@ -91,8 +91,9 @@ export const moveGuessEnd = (
 
 /**
  * The people one may name as the giver of `recipientId`: everyone but the
- * player and the recipient. In « Qui m'offre ? », only one's own Santa is
- * asked.
+ * recipient, the player too (« Moi »), except on their own line: nobody
+ * gives to themselves (decided by Julien on 18 November 2026). In « Qui
+ * m'offre ? », only one's own Santa is asked.
  * @param p - The mode, the player, the recipient and the participants.
  * @returns The persons, or why the question is not asked.
  */
@@ -107,9 +108,7 @@ export const guessChoices = (p: {
   if (p.mode === 'santa' && p.recipientId !== p.playerId) {
     return fail('invalid_guess');
   }
-  return ok(
-    p.participantIds.filter((id) => id !== p.playerId && id !== p.recipientId),
-  );
+  return ok(p.participantIds.filter((id) => id !== p.recipientId));
 };
 
 /**
@@ -143,9 +142,10 @@ const giverMap = (pairs: Assignment[]) =>
   new Map(pairs.map((p) => [p.receiverId, p.giverId]));
 
 /**
- * The guesses that count: about participants of the draw, never on the
- * line of the person the player gives to (the decoy, README 22.17), and in
- * « Qui m'offre ? » only on one's own Santa.
+ * The guesses that count: about participants of the draw, and in « Qui
+ * m'offre ? » only on one's own Santa. The line of the person the player
+ * gives to counts too: naming oneself there is a right guess (decided by
+ * Julien on 18 November 2026, in place of the decoy that never counted).
  * @param guesses - Every guess.
  * @param pairs - The draw.
  * @param mode - The game.
@@ -163,7 +163,7 @@ export const countedGuesses = (
       receiverOf.has(g.guesserId) &&
       giverOf.has(g.recipientId) &&
       receiverOf.has(g.giverId) &&
-      receiverOf.get(g.guesserId) !== g.recipientId &&
+      g.giverId !== g.recipientId &&
       (mode === 'all' || g.recipientId === g.guesserId),
   );
 };
@@ -285,7 +285,11 @@ export const palmares = (
     return { players, guesses: counted.length, enough, awards: [] };
   }
   const right = counted.filter((g) => isRight(g, pairs));
-  const wrong = counted.filter((g) => !isRight(g, pairs));
+  // Being found by oneself is not being unmasked: the awards about the
+  // Santas leave out the guesses where the player named themselves.
+  const aboutOthers = counted.filter((g) => g.giverId !== g.guesserId);
+  const rightOthers = aboutOthers.filter((g) => isRight(g, pairs));
+  const wrong = aboutOthers.filter((g) => !isRight(g, pairs));
   const unmasked = right
     .filter((g) => g.guesserId === g.recipientId)
     .map((g) => g.guesserId);
@@ -297,8 +301,10 @@ export const palmares = (
           .filter((s) => s.right === top.right && s.made === top.made)
           .map((s) => s.playerId)
       : [];
-  const [transparent, unmaskings] = best(tally(right.map((g) => g.giverId)));
-  const unmaskedGivers = new Set(right.map((g) => g.giverId));
+  const [transparent, unmaskings] = best(
+    tally(rightOthers.map((g) => g.giverId)),
+  );
+  const unmaskedGivers = new Set(rightOthers.map((g) => g.giverId));
   const hidden = pairs
     .map((p) => p.giverId)
     .filter((id) => !unmaskedGivers.has(id));

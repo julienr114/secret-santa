@@ -170,6 +170,7 @@ export default {
     mine: 'Meine Tipps',
     choose: '+ Wählen',
     changeFor: 'Den Tipp für {name} ändern',
+    me: 'Ich',
     you: 'dich',
     noGuess: 'Kein Tipp',
     count: {

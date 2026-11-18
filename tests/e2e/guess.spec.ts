@@ -142,9 +142,14 @@ test('a participant guesses, and a person named twice moves', async ({
   // Her own Santa first: everyone but herself.
   const options = page.getByTestId('guess-options').getByRole('option');
   await expect(options).toHaveCount(4);
-  await expect(options.filter({ hasText: 'Anna' })).toHaveCount(0);
+  await expect(options.filter({ hasText: 'Moi' })).toHaveCount(0);
   await options.first().click();
   await expect(page.getByTestId('guess-count')).toContainText('1 pronostic');
+  // On someone else's line, « Moi » comes first.
+  await page.getByRole('button', { name: '+ Choisir' }).first().click();
+  await expect(options.first()).toContainText('Moi');
+  await expect(options).toHaveCount(4);
+  await page.keyboard.press('Escape');
 
   // Through the route: naming the same person for another line moves it.
   const anna = await ok(await request.get(`/api/p/${state.tokens.Anna}/guess`));
@@ -165,8 +170,8 @@ test('a participant guesses, and a person named twice moves', async ({
   expect(moved.mine).toEqual([
     { recipientId: state.ids[other], giverId: first.giverId },
   ]);
-  // One cannot name oneself.
-  expect((await guess(request, 'Anna', 'Basile', 'Anna')).status()).toBe(400);
+  // One may name oneself (« Moi »), but not on one's own line.
+  expect((await guess(request, 'Anna', 'Anna', 'Anna')).status()).toBe(400);
 });
 
 test('nobody sees anyone else’s guess before the party', async ({

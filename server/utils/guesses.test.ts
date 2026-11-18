@@ -8,6 +8,7 @@ import {
   countedGuesses,
   guessChoices,
   guessesOpen,
+  isRight,
   keepSantaGuesses,
   moveGuessEnd,
   palmares,
@@ -76,15 +77,17 @@ describe('guessesOpen and the reveal', () => {
 });
 
 describe('guessChoices and placeGuess', () => {
-  it('offers everyone but the player and the recipient', () => {
-    expect(
+  it('offers everyone but the recipient, the player too', () => {
+    const ask = (recipientId: string) =>
       guessChoices({
         mode: 'all',
         playerId: 'a',
-        recipientId: 'c',
+        recipientId,
         participantIds: PEOPLE,
-      }),
-    ).toEqual({ ok: true, value: ['b', 'd', 'e', 'f'] });
+      });
+    expect(ask('c')).toEqual({ ok: true, value: ['a', 'b', 'd', 'e', 'f'] });
+    // On one's own line, never oneself.
+    expect(ask('a')).toEqual({ ok: true, value: ['b', 'c', 'd', 'e', 'f'] });
   });
 
   it('asks only for one’s own Santa in « Qui m’offre ? »', () => {
@@ -121,13 +124,15 @@ describe('guessChoices and placeGuess', () => {
 });
 
 describe('countedGuesses', () => {
-  it('never counts the line of the person one gives to (the decoy)', () => {
-    // a gives to b: a's guess about b is a decoy.
-    const guesses = [g('a', 'b', 'c'), g('a', 'c', 'b'), g('a', 'a', 'f')];
-    expect(countedGuesses(guesses, PAIRS, 'all')).toEqual([
-      g('a', 'c', 'b'),
-      g('a', 'a', 'f'),
-    ]);
+  it('counts the line of the person one gives to, oneself named there', () => {
+    // a gives to b: naming oneself on b's line is a right guess.
+    const guesses = [g('a', 'b', 'a'), g('a', 'c', 'b'), g('a', 'a', 'f')];
+    expect(countedGuesses(guesses, PAIRS, 'all')).toEqual(guesses);
+    expect(isRight(g('a', 'b', 'a'), PAIRS)).toBe(true);
+  });
+
+  it('never counts someone giving to themselves', () => {
+    expect(countedGuesses([g('a', 'c', 'c')], PAIRS, 'all')).toEqual([]);
   });
 
   it('counts only one’s own Santa in « Qui m’offre ? »', () => {
@@ -214,12 +219,33 @@ describe('ranking and correctedGuesses', () => {
     ).toEqual(['b', 'a', 'c']);
   });
 
-  it('corrects one player’s guesses, their own Santa first, no decoy', () => {
-    const guesses = [g('a', 'c', 'e'), g('a', 'b', 'c'), g('a', 'a', 'f')];
+  it('corrects one player’s guesses, their own Santa first', () => {
+    const guesses = [g('a', 'c', 'e'), g('a', 'b', 'a'), g('a', 'a', 'f')];
     expect(correctedGuesses('a', guesses, PAIRS, 'all')).toEqual([
       { recipientId: 'a', guessedId: 'f', actualId: 'f', right: true },
       { recipientId: 'c', guessedId: 'e', actualId: 'b', right: false },
+      { recipientId: 'b', guessedId: 'a', actualId: 'a', right: true },
     ]);
+  });
+});
+
+describe('naming oneself (« Moi »)', () => {
+  it('counts for the ranking, never for the awards about the Santas', () => {
+    // Each names themselves on their receiver's line: right, and counted.
+    const guesses = [
+      g('a', 'b', 'a'),
+      g('b', 'c', 'b'),
+      g('c', 'd', 'c'),
+      g('c', 'c', 'b'),
+    ];
+    const result = palmares(guesses, PAIRS, 'all');
+    const byKind = Object.fromEntries(result.awards.map((x) => [x.kind, x]));
+    expect(result.players).toBe(3);
+    // c: 2 right of 2.
+    expect(byKind.detective).toMatchObject({ winners: ['c'], value: 2 });
+    // Only b was unmasked, by c; nobody unmasked themselves.
+    expect(byKind.transparent).toMatchObject({ winners: ['b'], value: 1 });
+    expect(byKind.hidden?.count).toBe(5);
   });
 });
 

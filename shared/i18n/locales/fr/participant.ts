@@ -171,6 +171,7 @@ export default {
     mine: 'Mes pronostics',
     choose: '+ Choisir',
     changeFor: 'Changer le pronostic pour {name}',
+    me: 'Moi',
     you: 'toi',
     noGuess: 'Pas de pronostic',
     count: {

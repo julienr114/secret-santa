@@ -196,7 +196,7 @@ const partyTitle = computed(() =>
     v-if="partyReached"
     :eyebrow="t('adminEdition.screen.now')"
     :title="partyTitle"
-    :help="t('adminEdition.screen.reveal.onlyYou')"
+    :help="t('adminEdition.screen.reveal.wholeGroup')"
     data-testid="action-card"
   >
     <p class="-mt-3 text-sm leading-[1.45] text-toned">

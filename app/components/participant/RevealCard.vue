@@ -5,12 +5,17 @@ import type { Reveal } from '~/composables/queries/usePersonal';
 // receiver's hints. The budget, the date and the organiser's note are on
 // the page itself, in every state (lot 16 bis). Turns
 // over once when it appears.
-defineProps<{ token: string; reveal: Reveal }>();
+defineProps<{
+  token: string;
+  reveal: Reveal;
+  /** The draw is revealed (README 22.18): no turning over, named requests. */
+  open?: boolean;
+}>();
 const { t } = useT();
 </script>
 
 <template>
-  <UiGiftTag class="reveal-card" aria-live="polite">
+  <UiGiftTag :class="open ? '' : 'reveal-card'" aria-live="polite">
     <div class="flex flex-col items-center gap-2 text-center">
       <p class="text-muted">{{ t('participant.reveal.youGiveTo') }}</p>
       <UiAvatar :avatar="reveal.receiver.avatar" size="xl" />
@@ -26,6 +31,7 @@ const { t } = useT();
       <ParticipantGiverHints
         :token="token"
         :reveal="{ ...reveal, hints: reveal.hints }"
+        :named="open"
       />
     </template>
   </UiGiftTag>

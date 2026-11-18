@@ -2,6 +2,38 @@ import type fr from '../fr/participant';
 import type { Dict } from '../../types';
 
 export default {
+  revealed: {
+    bannerTitle: 'The draw is no longer secret.',
+    bannerBy:
+      '{name} revealed it on {date}: everyone can see who gives to whom.',
+    bannerOrganizer:
+      'Your organizer revealed it on {date}: everyone can see who gives to whom.',
+    bannerMe: 'You revealed it on {date}: everyone can see who gives to whom.',
+    journal: 'See the journal',
+    santaTitle: 'Who gives me my present?',
+    santaTitlePast: 'Who gave me my present?',
+    santaShow: 'Tap to see, or keep the surprise',
+    santaShowPast: 'Tap to see',
+    santaHide: 'Tap to hide',
+    santaIs: { before: 'It’s', after: 'who gives you your present.' },
+    santaIsPast: { before: 'It was', after: 'who gave you your present.' },
+    all: 'See the whole draw',
+    allHint: 'Who gives to whom, for the whole group',
+    allHintPast: 'Who gave to whom, in the whole group',
+    gaveTo: 'You gave a present to',
+    afterBody:
+      'The party is over. The draw is revealed: everyone can see who gave to whom.',
+    closedBody: 'This edition is closed. See you next year!',
+    pageTitle: 'Who gives to whom',
+    pageBody:
+      'The draw was revealed on {date}. All participants see this list.',
+    listTitle: {
+      one: 'The draw · {count} participant',
+      other: 'The draw · {count} participants',
+    },
+    you: 'you',
+    givesTo: 'gives to {name}',
+  },
   home: {
     greeting: 'Hi {firstName}!',
     facts: { budget: 'Budget:', party: 'Party on' },
@@ -12,6 +44,7 @@ export default {
       invitation: 'Invitation',
       drawSoon: 'Draw · soon',
       answer: 'Your answer',
+      drawRevealed: 'Draw revealed',
       drawDone: 'Draw done',
       party: 'Party',
       partyIn: {

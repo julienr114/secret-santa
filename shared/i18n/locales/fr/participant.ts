@@ -1,5 +1,38 @@
 // The participant's side: personal page, journal.
 export default {
+  revealed: {
+    bannerTitle: 'Le tirage n’est plus secret.',
+    bannerBy:
+      '{name} l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+    bannerOrganizer:
+      'Ton organisateur l’a dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+    bannerMe:
+      'Tu l’as dévoilé le {date} : tout le monde peut voir qui offre à qui.',
+    journal: 'Voir au journal',
+    santaTitle: 'Qui m’offre mon cadeau ?',
+    santaTitlePast: 'Qui m’a offert mon cadeau ?',
+    santaShow: 'Appuie pour le voir, ou garde la surprise',
+    santaShowPast: 'Appuie pour le voir',
+    santaHide: 'Appuie pour le cacher',
+    santaIs: { before: 'C’est', after: 'qui t’offre ton cadeau.' },
+    santaIsPast: { before: 'C’est', after: 'qui t’a offert ton cadeau.' },
+    all: 'Voir tout le tirage',
+    allHint: 'Qui offre à qui, pour tout le groupe',
+    allHintPast: 'Qui a offert à qui, dans tout le groupe',
+    gaveTo: 'Tu as offert un cadeau à',
+    afterBody:
+      'La fête est passée. Le tirage est dévoilé : tout le monde peut voir qui a offert à qui.',
+    closedBody: 'Cette édition est clôturée. Rendez-vous l’an prochain !',
+    pageTitle: 'Qui offre à qui',
+    pageBody:
+      'Le tirage a été dévoilé le {date}. Tous les participants voient cette liste.',
+    listTitle: {
+      one: 'Le tirage · {count} participant',
+      other: 'Le tirage · {count} participants',
+    },
+    you: 'toi',
+    givesTo: 'offre à {name}',
+  },
   home: {
     greeting: 'Salut {firstName} !',
     facts: { budget: 'Budget :', party: 'Fête le' },
@@ -10,6 +43,7 @@ export default {
       invitation: 'Invitation',
       drawSoon: 'Tirage · bientôt',
       answer: 'Ta réponse',
+      drawRevealed: 'Tirage dévoilé',
       drawDone: 'Tirage fait',
       party: 'Fête',
       partyIn: {

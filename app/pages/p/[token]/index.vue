@@ -12,6 +12,7 @@ import {
 import type { Step } from '~/components/ui/Stepper.vue';
 import {
   useOpenAnswerMutation,
+  useOpenDrawQuery,
   usePersonalQuery,
   useRevealMutation,
   useSaveAnswerMutation,
@@ -26,7 +27,9 @@ import {
 } from '~/composables/queries/useAuth';
 
 // Personal page (README 4.3). Opening it shows nothing secret and counts
-// nothing: the result only appears after the "Découvrir" button.
+// nothing: the result only appears after the "Découvrir" button. Once the
+// organiser has revealed the draw (README 22.18), nothing is secret: the
+// result is open at once, with who gives to them and the whole draw.
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
@@ -54,6 +57,15 @@ watch(
   (phase) => {
     if (phase === 'waiting') reveal.value = null;
   },
+);
+
+/** The draw is revealed: visible to the whole group (README 22.18). */
+const opened = computed(
+  () => Boolean(me.value?.drawRevealed) && me.value?.phase !== 'waiting',
+);
+const openDrawQuery = useOpenDrawQuery(token, () => opened.value);
+const drawn = computed(() =>
+  opened.value ? (openDrawQuery.data.value ?? null) : null,
 );
 
 // Avatar: picked in a bottom sheet on a draft, saved with "Valider";
@@ -244,6 +256,13 @@ const palmaresCard = computed(
 );
 
 const today = new Date().toLocaleDateString('sv-SE');
+/** The party has come, or the edition is closed: the past tense. */
+const after = computed(() => {
+  const state = me.value;
+  if (!state) return false;
+  if (state.phase === 'closed') return true;
+  return isIsoDay(state.eventDate) && today >= state.eventDate;
+});
 /**
  * The words of a step of the timeline.
  * @param step - The step and where it stands.
@@ -253,6 +272,7 @@ const stepLabel = (step: ParticipantStep): string => {
   if (step.key === 'invitation') return t('participant.home.steps.invitation');
   if (step.key === 'draw') {
     if (step.note === 'answer') return t('participant.home.steps.answer');
+    if (opened.value) return t('participant.home.steps.drawRevealed');
     return step.note === 'soon'
       ? t('participant.home.steps.drawSoon')
       : t('participant.home.steps.drawDone');
@@ -277,11 +297,17 @@ const steps = computed<Step[]>(() =>
         me.value.eventDate,
         today,
         Boolean(me.value.answer),
-      ).map((step) => ({
-        label: stepLabel(step),
-        state: step.state,
-        icon: step.note ? STEP_ICONS[step.note] : undefined,
-      }))
+      ).map((step) =>
+        // Revealed, once the party has come: every step is behind
+        // (README 22.18, TirageDevoileApres).
+        view.value === 'openAfter'
+          ? { label: stepLabel(step), state: 'done' as const }
+          : {
+              label: stepLabel(step),
+              state: step.state,
+              icon: step.note ? STEP_ICONS[step.note] : undefined,
+            },
+      )
     : [],
 );
 
@@ -290,6 +316,7 @@ const view = computed(() => {
   const state = me.value;
   if (state?.answer) return 'answer';
   if (!state || state.phase === 'waiting') return 'waiting';
+  if (opened.value) return after.value ? 'openAfter' : 'open';
   if (reveal.value) return 'shown';
   if (state.phase === 'closed') return 'closed';
   return state.revealed ? 'seen' : 'ready';
@@ -308,7 +335,9 @@ const envelope = computed(() =>
  */
 const facts = computed(() => {
   const state = me.value;
-  if (!state || state.phase === 'closed') return [];
+  if (!state || state.phase === 'closed' || view.value === 'openAfter') {
+    return [];
+  }
   const date = isIsoDay(state.eventDate)
     ? new Intl.DateTimeFormat(locale.value, {
         weekday: 'short',
@@ -332,9 +361,11 @@ const facts = computed(() => {
     Boolean(fact),
   );
 });
-/** The organiser's words, not on a closed edition. */
+/** The organiser's words, not on a closed edition nor after the party. */
 const note = computed(() =>
-  me.value && me.value.phase !== 'closed' ? me.value.guardianMessage : '',
+  me.value && me.value.phase !== 'closed' && view.value !== 'openAfter'
+    ? me.value.guardianMessage
+    : '',
 );
 /** No hint from the person they give to, or the edition is closed. */
 const withoutHints = computed(
@@ -466,6 +497,13 @@ const card = computed(() => {
 
       <UiStepper :steps="steps" :label="t('participant.home.steps.label')" />
 
+      <ParticipantRevealedBanner
+        v-if="view === 'open' && drawn"
+        :revealed-at="drawn.revealedAt"
+        :revealed-by="drawn.revealedBy"
+        :journal-path="`/p/${token}/journal`"
+      />
+
       <template v-if="view === 'shown' && reveal">
         <ParticipantRevealCard :token="token" :reveal="reveal" />
         <ParticipantOrganizerNote v-if="note" :text="note" />
@@ -485,6 +523,12 @@ const card = computed(() => {
           </p>
         </div>
       </template>
+      <ParticipantRevealCard
+        v-else-if="view === 'open' && drawn"
+        :token="token"
+        :reveal="drawn"
+        open
+      />
       <UiCard
         v-else-if="palmaresCard"
         padding="lg"
@@ -506,6 +550,7 @@ const card = computed(() => {
           :label="t('participant.game.discover')"
         />
         <button
+          v-if="!opened"
           type="button"
           class="mt-1 flex min-h-11 items-center text-[15px] text-toned underline"
           :disabled="revealMutation.isPending.value"
@@ -519,7 +564,29 @@ const card = computed(() => {
         </button>
       </UiCard>
       <UiCard
-        v-else
+        v-else-if="view === 'openAfter' && drawn"
+        padding="lg"
+        class="flex flex-col items-center gap-2 text-center"
+        data-testid="gave-card"
+      >
+        <p class="text-muted">{{ t('participant.revealed.gaveTo') }}</p>
+        <UiAvatar :avatar="drawn.receiver.avatar" size="xl" />
+        <p
+          class="font-display text-[44px] leading-tight font-bold break-words text-primary"
+          data-testid="receiver"
+        >
+          {{ drawn.receiver.name }}
+        </p>
+        <p class="text-sm text-toned">
+          {{
+            me.phase === 'closed'
+              ? t('participant.revealed.closedBody')
+              : t('participant.revealed.afterBody')
+          }}
+        </p>
+      </UiCard>
+      <UiCard
+        v-else-if="!opened || !drawn"
         padding="lg"
         class="flex flex-col items-center gap-3 text-center"
         data-testid="draw-card"
@@ -583,10 +650,37 @@ const card = computed(() => {
         <p v-if="card.hint" class="text-[13px] text-muted">{{ card.hint }}</p>
       </UiCard>
 
+      <UiCard
+        v-if="view === 'openAfter' && palmaresCard && drawn"
+        padding="md"
+        class="flex items-center gap-4"
+        data-testid="gave-card"
+      >
+        <UiAvatar :avatar="drawn.receiver.avatar" size="lg" />
+        <span class="flex min-w-0 flex-col">
+          <span class="text-sm text-toned">{{
+            t('participant.revealed.gaveTo')
+          }}</span>
+          <span
+            class="font-display text-[28px] leading-tight font-bold break-words text-primary"
+            data-testid="receiver"
+            >{{ drawn.receiver.name }}</span
+          >
+        </span>
+      </UiCard>
+
       <ParticipantOrganizerNote v-if="note && view !== 'shown'" :text="note" />
 
+      <ParticipantDrawLines
+        v-if="(view === 'open' || view === 'openAfter') && drawn"
+        :santa="drawn.santa"
+        :past="after"
+        :all-path="`/p/${token}/tirage`"
+      />
+
+      <!-- Once revealed, the banner leads to the journal: no alert row. -->
       <ParticipantJournalRow
-        v-if="me.journalAlerts > 0"
+        v-if="me.journalAlerts > 0 && !opened"
         :to="`/p/${token}/journal`"
         :alerts="me.journalAlerts"
       />
@@ -608,7 +702,7 @@ const card = computed(() => {
         />
       </div>
       <ParticipantJournalRow
-        v-if="me.journalAlerts === 0"
+        v-if="me.journalAlerts === 0 || opened"
         :to="`/p/${token}/journal`"
         :alerts="0"
       />

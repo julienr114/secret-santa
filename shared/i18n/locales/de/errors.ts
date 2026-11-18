@@ -92,4 +92,5 @@ export default {
     'Die Antworten sind noch nicht vollständig oder passen nicht zusammen.',
   invalid_answer: 'Wähle eine andere Person der Ausgabe.',
   game_needs_four: 'Das Spiel braucht mindestens vier Teilnehmende.',
+  draw_not_revealed: 'Die Auslosung ist noch nicht aufgedeckt.',
 } satisfies Dict<typeof fr>;

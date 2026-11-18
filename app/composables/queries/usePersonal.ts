@@ -51,6 +51,11 @@ export type PersonalState = {
   hasHints: boolean;
   /** Has already discovered their result at least once. */
   revealed: boolean;
+  /**
+   * The organiser revealed the draw: it is visible to the whole group
+   * (README 22.18), read with `useOpenDrawQuery`.
+   */
+  drawRevealed: boolean;
   /** The hints of the person they give to: none, some, or new. */
   receiverHints: GiverHintsState;
   /** « Lui demander des pistes » is still possible. */
@@ -66,7 +71,7 @@ export type PersonalState = {
     endsAt: string | null;
     played: boolean;
     revealed: boolean;
-    /** Three players or more: there are awards and images. */
+    /** Someone played: there is a palmarès, small or full. */
     palmares: boolean;
     seen: boolean;
   } | null;
@@ -124,6 +129,18 @@ export type Reveal = {
   receiverHasEmail: boolean;
   requesterHasEmail: boolean;
   viewCount: number;
+};
+/** A person of a revealed draw. */
+export type DrawPerson = { id: string; name: string; avatar: Avatar };
+/** A revealed draw, for a participant (README 22.18). */
+export type OpenDrawPayload = Reveal & {
+  receiver: DrawPerson;
+  santa: DrawPerson | null;
+  pairs: { giver: DrawPerson; receiver: DrawPerson }[];
+  revealedAt: string;
+  /** Who revealed: themselves, a person by name, or nobody known. */
+  revealedBy: { kind: 'me' } | { kind: 'name'; name: string } | null;
+  language: Locale;
 };
 export type JournalPayload = {
   entries: JournalEntry[];
@@ -187,6 +204,14 @@ export const usePersonalQuery = (token: Token) =>
     () => base(token),
     () => true,
     (data) => (data?.phase === 'closed' ? false : PERSONAL_REFRESH_MS),
+  );
+
+/** The draw, once revealed (README 22.18); not asked before. */
+export const useOpenDrawQuery = (token: Token, enabled: () => boolean) =>
+  usePersonalRead<OpenDrawPayload>(
+    () => keys.draw(toValue(token)),
+    () => `${base(token)}/draw`,
+    enabled,
   );
 
 export const useWishesQuery = (token: Token) =>

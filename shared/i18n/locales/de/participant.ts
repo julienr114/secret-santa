@@ -2,6 +2,39 @@ import type fr from '../fr/participant';
 import type { Dict } from '../../types';
 
 export default {
+  revealed: {
+    bannerTitle: 'Die Auslosung ist kein Geheimnis mehr.',
+    bannerBy:
+      '{name} hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+    bannerOrganizer:
+      'Dein Organisator hat sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+    bannerMe:
+      'Du hast sie am {date} aufgedeckt: Alle sehen, wer wen beschenkt.',
+    journal: 'Im Protokoll ansehen',
+    santaTitle: 'Wer beschenkt mich?',
+    santaTitlePast: 'Wer hat mich beschenkt?',
+    santaShow: 'Tippe, um es zu sehen, oder bewahre die Überraschung',
+    santaShowPast: 'Tippe, um es zu sehen',
+    santaHide: 'Tippe, um es zu verbergen',
+    santaIs: { before: 'Dein Geschenk kommt von', after: '.' },
+    santaIsPast: { before: 'Dein Geschenk kam von', after: '.' },
+    all: 'Die ganze Auslosung ansehen',
+    allHint: 'Wer wen beschenkt, für die ganze Gruppe',
+    allHintPast: 'Wer wen beschenkt hat, in der ganzen Gruppe',
+    gaveTo: 'Du hast beschenkt:',
+    afterBody:
+      'Die Feier ist vorbei. Die Auslosung ist aufgedeckt: Alle sehen, wer wen beschenkt hat.',
+    closedBody: 'Diese Ausgabe ist abgeschlossen. Bis nächstes Jahr!',
+    pageTitle: 'Wer beschenkt wen',
+    pageBody:
+      'Die Auslosung wurde am {date} aufgedeckt. Alle Teilnehmenden sehen diese Liste.',
+    listTitle: {
+      one: 'Die Auslosung · {count} Teilnehmende',
+      other: 'Die Auslosung · {count} Teilnehmende',
+    },
+    you: 'du',
+    givesTo: 'beschenkt {name}',
+  },
   home: {
     greeting: 'Hallo {firstName}!',
     facts: { budget: 'Budget:', party: 'Feier am' },
@@ -12,6 +45,7 @@ export default {
       invitation: 'Einladung',
       drawSoon: 'Auslosung · bald',
       answer: 'Deine Antwort',
+      drawRevealed: 'Auslosung aufgedeckt',
       drawDone: 'Auslosung erfolgt',
       party: 'Fest',
       partyIn: {

@@ -394,7 +394,7 @@ export default {
       action: 'Reveal the results',
       revealing: 'Revealing…',
       closeWithout: 'Close without revealing',
-      onlyYou: 'For now, only you will see who gave to whom.',
+      wholeGroup: 'The whole group will see who gave to whom.',
       trouble: 'If something goes wrong',
       sheetTitle: 'Reveal the results?',
       sheetIntro: 'You are going to see who gave to whom.',
@@ -411,8 +411,8 @@ export default {
       nobodyViewed: 'Nobody has opened it yet.',
       allViewed: 'Everyone has looked at their result',
       allViewedHint: 'Nobody will find out theirs along with the list.',
-      onlyYouTitle: 'Only you will see the list',
-      onlyYouHint: 'The participants do not see it for now.',
+      wholeGroupTitle: 'The whole group will see the list',
+      wholeGroupHint: 'Each participant will see it on their page.',
       final:
         'It is final, and the group’s journal says so. Gift hints can still be changed.',
       notYet: 'Not yet',
@@ -437,7 +437,7 @@ export default {
         one: 'The draw · {count} participant',
         other: 'The draw · {count} participants',
       },
-      pairsFooter: 'For now, only you see this list.',
+      pairsFooter: 'The whole group sees this list, each on their page.',
       closeHint: 'Freezes the edition and the gift hints',
     },
     missingDate: {

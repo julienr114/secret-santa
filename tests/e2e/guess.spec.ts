@@ -220,14 +220,15 @@ test('the reveal brings the palmarès, in images then corrected', async ({
   // No more guesses.
   expect((await guess(request, 'Emma', 'Emma', 'Anna')).status()).toBe(409);
 
+  // Revealed before the party (README 22.18, TirageDevoileAvant): the
+  // result is open, and the palmarès waits in the game's tile.
   await open(page, `/p/${state.tokens.Chloé}`);
-  await expect(page.getByTestId('palmares-card')).toContainText(
-    'Le palmarès de Devine qui est arrivé',
-  );
-  await expect(
-    page.getByTestId('tile').filter({ hasText: 'Devine qui' }),
-  ).toContainText('Le palmarès t’attend');
-  await page.getByRole('link', { name: 'Découvrir le palmarès' }).click();
+  await expect(page.getByTestId('revealed-banner')).toBeVisible();
+  await expect(page.getByTestId('palmares-card')).toHaveCount(0);
+  const tile = page.getByTestId('tile').filter({ hasText: 'Devine qui' });
+  await expect(tile).toContainText('Le palmarès t’attend');
+  await tile.click();
+  await page.getByRole('link', { name: /Découvrir le palmarès/ }).click();
   const stories = page.getByTestId('stories');
   await expect(stories).toHaveAttribute('data-screen', 'opening');
   await expect(stories).toContainText('4 joueurs');

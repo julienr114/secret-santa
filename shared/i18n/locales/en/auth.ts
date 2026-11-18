@@ -156,6 +156,10 @@ export default {
       on: 'party on {date}',
     },
     drawCard: {
+      opened: 'You give a present to {name}',
+      openedBody: 'The draw is no longer secret.',
+      openedHints: 'See their gift hints',
+      openedDraw: 'See the draw',
       guessTitle: "Guess who's giving you a gift",
       guessSanta: 'One guess, until {end}. The answer at the party.',
       guessAll: 'Guesses, until {end}. The answer at the party.',

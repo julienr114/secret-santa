@@ -137,7 +137,7 @@ export default {
       happened: 'The organiser saw who gives to whom, before the party.',
       why: 'Revealing is allowed from the day of the party. Earlier, the organiser has to copy a sentence and accept that the whole group will know.',
       changes:
-        'Your result does not change, and the participants do not see the list. The draw can no longer be cancelled.',
+        'Your result does not change, and the whole group can see who gives to whom. The draw can no longer be cancelled.',
     },
     draw_cancelled: {
       title: 'Draw cancelled',

@@ -87,6 +87,8 @@ export type HomeDraw = {
   step: DrawStep;
   /** The result was seen at least once. */
   revealed: boolean;
+  /** Revealed before the party: who they give to (README 22.18). */
+  opened: { name: string; avatar: Avatar } | null;
   /** The group uses gift hints (README 22.11). */
   hintsOn: boolean;
   /** They left hints. */

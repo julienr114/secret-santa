@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { and, eq, isNull } from 'drizzle-orm';
-import { editions } from '#server/database/schema';
+import { editions, persons } from '#server/database/schema';
+import { findAccountById } from '#server/database/accounts';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, nowIso } from '#server/http/context';
@@ -16,7 +17,10 @@ import { mergeRules } from '#server/utils/rules';
 // the journal for everyone, never saying who gave to whom: from the day
 // of the party a milestone (`draw_revealed`); before it an alert
 // (`results_revealed`, README 22.15), since the secret ends early. The pairs are
-// then read with GET …/results; the edition stays open until closed.
+// then read with GET …/results; the edition stays open until closed. Once
+// revealed, the draw is visible to the whole group (README 22.18): the
+// event keeps the person of the group who revealed, for « Camille l'a
+// dévoilé », never a result.
 const bodySchema = z.object({ early: z.boolean().default(false) });
 
 export default defineEventHandler(async (event) => {
@@ -37,11 +41,22 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'results_already_revealed',
     });
   }
+  const account = await findAccountById(db, user.accountId);
+  const [by] = account
+    ? await db
+        .select({ id: persons.id })
+        .from(persons)
+        .where(
+          and(eq(persons.groupId, group.id), eq(persons.email, account.email)),
+        )
+        .limit(1)
+    : [];
   await recordEvent(db, {
     type: allowed.early ? 'results_revealed' : 'draw_revealed',
     groupId: group.id,
     editionId: edition.id,
     actor: user.role,
+    ...(by ? { meta: { by: by.id } } : {}),
   });
   // « Devine qui » (README 22.17): the guesses close, the results come.
   await afterReveal(

@@ -195,6 +195,8 @@ export default {
     updatedOn: 'Hinweise aktualisiert am {date}',
     none: '{name} hat noch keine Hinweise hinterlassen.',
     ask: 'Um Hinweise bitten',
+    sentEmailNamed: '{name} hat gerade eine E-Mail bekommen.',
+    sentPageNamed: '{name} sieht es auf der eigenen Hinweis-Seite.',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
     sent: 'Anfrage gesendet.',
     sentEmail:
@@ -211,6 +213,9 @@ export default {
       '{name} bekommt eine E-Mail mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     bodyPage:
       '{name} sieht es auf der eigenen Hinweis-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
+    named: 'Dein Name wird genannt',
+    namedHelp:
+      'Die Auslosung ist aufgedeckt: {name} weiß, dass die Anfrage von dir kommt.',
     anonymous: 'Dein Name erscheint nirgends',
     anonymousHelp:
       'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
@@ -247,6 +252,11 @@ export default {
       body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       bodyPortrait:
         'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
+      subjectFrom: '{from} sucht eine Geschenkidee für dich',
+      bodyFrom:
+        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
+      bodyPortraitFrom:
+        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       cta: 'Ein paar Hinweise geben:',
       anonymous: 'Wir verraten dir nicht, wer fragt: Es ist Wichteln.',
       once: 'Du bekommst diese Nachricht nur einmal.',

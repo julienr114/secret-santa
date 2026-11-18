@@ -177,30 +177,37 @@ export const buildHintsRequestEmail = (
     link: string;
     /** Five questions without the precise ideas, six with them. */
     mode: GiftHintsMode;
+    /** Who asks, once the draw is revealed (README 22.18); else nobody. */
+    from?: string | null;
   },
   locale: Locale,
 ): Email =>
   plainEmail({
-    subject: translate(locale, 'hints.email.request.subject'),
+    subject: data.from
+      ? translate(locale, 'hints.email.request.subjectFrom', {
+          from: data.from,
+        })
+      : translate(locale, 'hints.email.request.subject'),
     before: [
       translate(locale, 'hints.email.request.greeting', {
         name: data.firstName,
       }),
       translate(
         locale,
-        data.mode === 'portrait'
-          ? 'hints.email.request.bodyPortrait'
-          : 'hints.email.request.body',
+        `hints.email.request.${data.mode === 'portrait' ? 'bodyPortrait' : 'body'}${data.from ? 'From' : ''}`,
         {
           edition: data.editionLabel,
           group: data.groupName,
+          from: data.from ?? '',
         },
       ),
       translate(locale, 'hints.email.request.cta'),
     ],
     link: data.link,
     after: [
-      translate(locale, 'hints.email.request.anonymous'),
+      ...(data.from
+        ? []
+        : [translate(locale, 'hints.email.request.anonymous')]),
       translate(locale, 'hints.email.request.once'),
     ],
   });

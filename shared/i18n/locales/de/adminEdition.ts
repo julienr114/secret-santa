@@ -406,7 +406,7 @@ export default {
       action: 'Ergebnisse aufdecken',
       revealing: 'Wird aufgedeckt…',
       closeWithout: 'Abschließen, ohne aufzudecken',
-      onlyYou: 'Vorerst siehst nur du, wer wen beschenkt hat.',
+      wholeGroup: 'Die ganze Gruppe sieht, wer wen beschenkt hat.',
       trouble: 'Wenn etwas schiefgeht',
       sheetTitle: 'Ergebnisse aufdecken?',
       sheetIntro: 'Du siehst gleich, wer wen beschenkt hat.',
@@ -423,8 +423,8 @@ export default {
       nobodyViewed: 'Noch niemand hat es geöffnet.',
       allViewed: 'Alle haben ihr Ergebnis angesehen',
       allViewedHint: 'Niemand erfährt das eigene zusammen mit der Liste.',
-      onlyYouTitle: 'Nur du siehst die Liste',
-      onlyYouHint: 'Die Teilnehmenden sehen sie vorerst nicht.',
+      wholeGroupTitle: 'Die ganze Gruppe sieht die Liste',
+      wholeGroupHint: 'Alle Teilnehmenden sehen sie auf ihrer Seite.',
       final:
         'Das ist endgültig, und das Protokoll der Gruppe zeigt es an. Die Geschenk-Hinweise bleiben änderbar.',
       notYet: 'Noch nicht',
@@ -449,7 +449,8 @@ export default {
         one: 'Die Auslosung · {count} Teilnehmer',
         other: 'Die Auslosung · {count} Teilnehmende',
       },
-      pairsFooter: 'Vorerst siehst nur du diese Liste.',
+      pairsFooter:
+        'Die ganze Gruppe sieht diese Liste, jeder auf seiner Seite.',
       closeHint: 'Friert die Ausgabe und die Geschenk-Hinweise ein',
     },
     missingDate: {

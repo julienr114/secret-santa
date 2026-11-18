@@ -5,7 +5,9 @@ import type { HomeDraw } from '~/composables/queries/useAuth';
 // The one draw of an account that only takes part in one, as the top
 // card of its home: its envelope, where it stands, the day of the party
 // (all of it opens the draw), the button of the moment, and « Du nouveau
-// au journal » when an alert waits (README 22.15).
+// au journal » when an alert waits (README 22.15). Once the draw is
+// revealed before the party, who they give to (README 22.18,
+// AccueilDevoileAvant).
 const props = defineProps<{ draw: HomeDraw }>();
 const emit = defineEmits<{ open: [] }>();
 const { t } = useT();
@@ -22,6 +24,8 @@ const palmares = computed(
     props.draw.revealed &&
     Boolean(props.draw.game?.palmares && !props.draw.game.seen),
 );
+/** Revealed before the party, and no palmarès waiting first. */
+const opened = computed(() => (palmares.value ? null : props.draw.opened));
 const guessing = computed(
   () =>
     props.draw.revealed &&
@@ -39,6 +43,12 @@ const envelope = computed(() =>
 /** The line under the title: the party, after the news when there are. */
 const partyLine = computed(() => {
   if (palmares.value) return t('auth.home.drawCard.palmaresBody');
+  if (opened.value) {
+    const when = party.long(props.draw.eventDate);
+    return [t('auth.home.drawCard.openedBody'), when && `${when}.`]
+      .filter(Boolean)
+      .join(' ');
+  }
   if (guessing.value && props.draw.game?.endsAt) {
     const end = endText(props.draw.game.endsAt);
     return props.draw.game.mode === 'santa'
@@ -62,6 +72,16 @@ const state = computed(() => {
       title: t('auth.home.drawCard.palmaresTitle'),
       button: t('auth.home.drawCard.palmaresButton'),
       to: `${draw.path}/devine/palmares`,
+      variant: 'solid' as const,
+    };
+  }
+  if (opened.value) {
+    return {
+      title: t('auth.home.drawCard.opened', { name: opened.value.name }),
+      button: draw.hintsOn
+        ? t('auth.home.drawCard.openedHints')
+        : t('auth.home.drawCard.openedDraw'),
+      to: draw.path,
       variant: 'solid' as const,
     };
   }
@@ -138,6 +158,7 @@ const state = computed(() => {
       @click="emit('open')"
     >
       <UiPodium v-if="palmares" />
+      <UiAvatar v-else-if="opened" :avatar="opened.avatar" size="xl" />
       <UiEnvelope v-else :state="envelope" />
       <span class="text-xs font-bold tracking-wide text-primary-ink uppercase">
         {{ draw.groupName }} · {{ draw.editionLabel }}
@@ -154,7 +175,9 @@ const state = computed(() => {
       :to="state.to"
       block
       size="xl"
-      :icon="newHints || palmares || guessing ? undefined : 'i-lucide-gift'"
+      :icon="
+        newHints || palmares || guessing || opened ? undefined : 'i-lucide-gift'
+      "
       :class="palmares ? 'bg-pine-700 hover:bg-pine-800' : ''"
       :variant="state.variant"
       class="min-h-14 justify-center font-bold"

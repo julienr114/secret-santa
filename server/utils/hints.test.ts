@@ -221,6 +221,13 @@ describe('hint emails', () => {
     ).toContain('cinq questions');
   });
 
+  it('names who asks once the draw is revealed (README 22.18)', () => {
+    const email = buildHintsRequestEmail({ ...data, from: 'Hugo' }, 'fr');
+    expect(email.subject).toBe('Hugo cherche une idée de cadeau pour toi');
+    expect(email.text).toContain('Hugo t’offre un cadeau pour Noël 2026');
+    expect(email.text).not.toContain('On ne te dira pas qui demande');
+  });
+
   it('tells the giver that hints arrived, without naming the receiver', () => {
     const email = buildHintsArrivedEmail(
       { ...data, firstName: 'Camille', link: 'https://example.com/p/xyz' },

@@ -4,6 +4,8 @@ import {
   canReveal,
   envelopeState,
   gameTile,
+  openDraw,
+  revealerFor,
   hintsTile,
   nextStep,
   participantSteps,
@@ -214,5 +216,45 @@ describe('gameTile', () => {
 
   it('is gone when the game is off', () => {
     expect(gameTile(null)).toBeNull();
+  });
+});
+
+describe('openDraw', () => {
+  // a → b → c → d → a.
+  const PAIRS = [
+    { giverId: 'c', receiverId: 'd' },
+    { giverId: 'a', receiverId: 'b' },
+    { giverId: 'd', receiverId: 'a' },
+    { giverId: 'b', receiverId: 'c' },
+  ];
+  it('gives who I give to, who gives to me, and every pair in order', () => {
+    const view = openDraw(PAIRS, 'a', ['a', 'b', 'c', 'd']);
+    expect(view.ok && view.value).toEqual({
+      receiverId: 'b',
+      santaId: 'd',
+      pairs: [
+        { giverId: 'a', receiverId: 'b' },
+        { giverId: 'b', receiverId: 'c' },
+        { giverId: 'c', receiverId: 'd' },
+        { giverId: 'd', receiverId: 'a' },
+      ],
+    });
+  });
+
+  it('refuses someone out of the draw', () => {
+    expect(failureOf(openDraw(PAIRS, 'z', [])).reason).toBe('result_not_found');
+  });
+});
+
+describe('revealerFor', () => {
+  const names = { o: 'Camille' };
+  it('says « Tu », a name, or nobody known', () => {
+    expect(revealerFor('a', 'a', names)).toEqual({ kind: 'me' });
+    expect(revealerFor('o', 'a', names)).toEqual({
+      kind: 'name',
+      name: 'Camille',
+    });
+    expect(revealerFor('x', 'a', names)).toBeNull();
+    expect(revealerFor(null, 'a', names)).toBeNull();
   });
 });

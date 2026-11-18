@@ -657,6 +657,25 @@ const entries = computed(() => [
       >
       <ParticipantJournalRow to="#" :alerts="0" />
       <ParticipantJournalRow to="#" :alerts="1" />
+      <ParticipantRevealedBanner
+        revealed-at="2026-11-18T10:00:00.000Z"
+        :revealed-by="{ kind: 'name', name: 'Camille' }"
+        journal-path="#"
+      />
+      <ParticipantDrawLines
+        :santa="{
+          id: 'hugo',
+          name: 'Hugo',
+          avatar: { emoji: '🐧', color: 'mustard' },
+        }"
+        :past="false"
+        all-path="#"
+      />
+      <code class="text-xs"
+        >ParticipantRevealedBanner et ParticipantDrawLines : un tirage dévoilé
+        (22.18), le bandeau aux couleurs des alertes du journal, puis « Qui
+        m’offre mon cadeau ? », repliée, et « Voir tout le tirage »</code
+      >
     </section>
 
     <section class="flex flex-col gap-3">

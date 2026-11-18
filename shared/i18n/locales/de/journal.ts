@@ -144,7 +144,7 @@ export default {
         'Der Organisator hat gesehen, wer wen beschenkt, noch vor der Feier.',
       why: 'Aufdecken ist ab dem Tag der Feier erlaubt. Früher muss der Organisator einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
       changes:
-        'Dein Ergebnis ändert sich nicht, und die Teilnehmenden sehen die Liste nicht. Die Auslosung kann nicht mehr aufgehoben werden.',
+        'Dein Ergebnis ändert sich nicht, und die ganze Gruppe sieht, wer wen beschenkt. Die Auslosung kann nicht mehr aufgehoben werden.',
     },
     draw_cancelled: {
       title: 'Auslosung abgesagt',

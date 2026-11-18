@@ -141,7 +141,7 @@ export default {
       happened: 'L’organisateur a vu qui offre à qui, avant la fête.',
       why: 'Dévoiler est permis dès le jour de la fête. Plus tôt, l’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
       changes:
-        'Ton résultat ne change pas, et les participants ne voient pas la liste. Le tirage ne peut plus être annulé.',
+        'Ton résultat ne change pas, et tout le groupe peut voir qui offre à qui. Le tirage ne peut plus être annulé.',
     },
     draw_cancelled: {
       title: 'Tirage annulé',

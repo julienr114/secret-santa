@@ -9,10 +9,13 @@ import { giverPortrait, portraitTexts } from '#shared/utils/hints';
 // receiver's answers in sentences (« Inès préfère : »…), their texts,
 // their precise ideas. With no
 // hint at all, « Lui demander des pistes », once per draw: a sheet says
-// what will happen, then the request leaves at once, anonymous.
+// what will happen, then the request leaves at once, anonymous; once the
+// draw is revealed (README 22.18), it says who asks.
 const props = defineProps<{
   token: string;
   reveal: Reveal & { hints: NonNullable<Reveal['hints']> };
+  /** The draw is revealed: the request is no longer anonymous. */
+  named?: boolean;
 }>();
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
@@ -143,8 +146,8 @@ const onSend = () =>
         <strong>{{ t('hints.result.sent') }}</strong>
         {{
           emailed
-            ? t('hints.result.sentEmail', { name })
-            : t('hints.result.sentPage', { name })
+            ? t(`hints.result.sentEmail${named ? 'Named' : ''}`, { name })
+            : t(`hints.result.sentPage${named ? 'Named' : ''}`, { name })
         }}
         {{
           reveal.requesterHasEmail
@@ -166,7 +169,10 @@ const onSend = () =>
         :label="t('hints.result.ask')"
         @click="sheetOpen = true"
       />
-      <p class="-mt-1.5 text-center text-[13px] leading-[1.4] text-toned">
+      <p
+        v-if="!named"
+        class="-mt-1.5 text-center text-[13px] leading-[1.4] text-toned"
+      >
         {{ t('hints.result.askHint') }}
       </p>
     </template>
@@ -184,12 +190,20 @@ const onSend = () =>
       <UiNotice
         variant="checklist"
         :items="[
-          {
-            key: 'anonymous',
-            state: 'ok',
-            title: t('hints.request.anonymous'),
-            detail: t('hints.request.anonymousHelp'),
-          },
+          named
+            ? {
+                key: 'named',
+                state: 'ok',
+                icon: 'i-lucide-eye',
+                title: t('hints.request.named'),
+                detail: t('hints.request.namedHelp', { name }),
+              }
+            : {
+                key: 'anonymous',
+                state: 'ok',
+                title: t('hints.request.anonymous'),
+                detail: t('hints.request.anonymousHelp'),
+              },
           {
             key: 'once',
             state: 'ok',

@@ -197,6 +197,8 @@ export default {
     updatedOn: 'Pistes mises à jour le {date}',
     none: '{name} n’a pas encore laissé de pistes.',
     ask: 'Lui demander des pistes',
+    sentEmailNamed: '{name} vient de recevoir un email.',
+    sentPageNamed: '{name} le verra sur sa page de pistes.',
     askHint: 'Sans dire que ça vient de toi.',
     sent: 'Demande envoyée.',
     sentEmail:
@@ -212,6 +214,9 @@ export default {
       '{name} reçoit un email qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     bodyPage:
       '{name} le verra sur sa page de pistes, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
+    named: 'Ton nom est donné',
+    namedHelp:
+      'Le tirage est dévoilé : {name} saura que la demande vient de toi.',
     anonymous: 'Ton nom n’apparaît nulle part',
     anonymousHelp:
       'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
@@ -249,6 +254,11 @@ export default {
       body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : six questions à choix, trente secondes, et quelques mots si tu veux.',
       bodyPortrait:
         'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : cinq questions à choix, trente secondes, et quelques mots si tu veux.',
+      subjectFrom: '{from} cherche une idée de cadeau pour toi',
+      bodyFrom:
+        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Six questions à choix, trente secondes, et quelques mots si tu veux.',
+      bodyPortraitFrom:
+        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Cinq questions à choix, trente secondes, et quelques mots si tu veux.',
       cta: 'Donner quelques pistes :',
       anonymous: 'On ne te dira pas qui demande : c’est un Secret Santa.',
       once: 'Tu ne recevras ce message qu’une fois.',

@@ -1,6 +1,7 @@
 import { ok, fail, type Result } from './result';
 import type { EditionStatus } from './editions';
 import { daysUntil, isIsoDay } from './rules';
+import type { Assignment } from './draw';
 
 // The participant's side of an edition (README 4.3): what the personal
 // page shows and what the link allows, from the edition status alone.
@@ -194,4 +195,61 @@ export const gameTile = (
   }
   if (game.open) return game.played ? 'played' : 'play';
   return 'waiting';
+};
+
+/** A draw revealed, as a participant reads it (README 22.18). */
+export type OpenDraw = {
+  /** The person they give to, and the one who gives to them. */
+  receiverId: string;
+  santaId: string | null;
+  /** Every pair, in the order of the givers given. */
+  pairs: Assignment[];
+};
+
+/**
+ * A revealed draw for one participant (README 22.18): once revealed, it is
+ * visible to the whole group, so the participant gets who they give to,
+ * who gives to them, and every pair; never before (the route refuses).
+ * @param pairs - The draw.
+ * @param me - The participant's person.
+ * @param order - The persons in the order of the list.
+ * @returns What they see, or why not.
+ */
+export const openDraw = (
+  pairs: Assignment[],
+  me: string,
+  order: string[],
+): Result<OpenDraw> => {
+  const mine = pairs.find((p) => p.giverId === me);
+  if (!mine) return fail('result_not_found');
+  const rank = new Map(order.map((id, i) => [id, i]));
+  return ok({
+    receiverId: mine.receiverId,
+    santaId: pairs.find((p) => p.receiverId === me)?.giverId ?? null,
+    pairs: pairs.toSorted(
+      (a, b) =>
+        (rank.get(a.giverId) ?? Infinity) - (rank.get(b.giverId) ?? Infinity),
+    ),
+  });
+};
+
+/** Who revealed the draw, as the banner says it (README 22.18). */
+export type Revealer = { kind: 'me' } | { kind: 'name'; name: string } | null;
+
+/**
+ * Who revealed, for one participant: themselves (« Tu l'as dévoilé »), a
+ * person of the group by name, or nobody known (« Ton organisateur »).
+ * @param by - The person who revealed, if known.
+ * @param me - The participant's person.
+ * @param names - The names of the group's persons.
+ * @returns Who revealed.
+ */
+export const revealerFor = (
+  by: string | null,
+  me: string,
+  names: Record<string, string>,
+): Revealer => {
+  if (!by) return null;
+  if (by === me) return { kind: 'me' };
+  return names[by] ? { kind: 'name', name: names[by] } : null;
 };

@@ -62,6 +62,7 @@ flowchart LR
     pistes --> question["Une question"]
     page --> devine["Devine qui"]
     devine --> palmares["Palmarès Devine qui<br/><small>images</small>"]
+    page --> tout["Qui offre à qui<br/><small>une fois dévoilé</small>"]
     page --> journal["Journal du groupe"]
   end
   accueil -. "seulement si ouverte depuis l'accueil" .-> page
@@ -140,5 +141,6 @@ Décidée par Julien le 18 novembre 2026.
 | Une question de « Moi et les cadeaux » | `/p/[jeton]/pistes/question?n=` | Mes pistes de cadeaux | |
 | Devine qui (pronostics, puis les réponses) | `/p/[jeton]/devine` | La page du tirage | Choisir un pronostic |
 | Le palmarès de Devine qui (images) | `/p/[jeton]/devine/palmares` | Devine qui (la croix et « Voir tous les résultats ») | |
+| Qui offre à qui (une fois le tirage dévoilé) | `/p/[jeton]/tirage` | La page du tirage | |
 | Journal du groupe | `/p/[jeton]/journal` | La page du tirage | À quoi sert-il ?, une alerte |
 | (ancienne adresse) | `/p/[jeton]/souhaits` | mène à Mes pistes de cadeaux | |

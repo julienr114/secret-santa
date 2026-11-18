@@ -396,7 +396,7 @@ export default {
       action: 'Dévoiler les résultats',
       revealing: 'Dévoilement…',
       closeWithout: 'Clôturer sans dévoiler',
-      onlyYou: 'Pour l’instant, toi seul verras qui a offert à qui.',
+      wholeGroup: 'Tout le groupe verra qui a offert à qui.',
       trouble: 'En cas de pépin',
       sheetTitle: 'Dévoiler les résultats ?',
       sheetIntro: 'Tu vas voir qui a offert à qui.',
@@ -414,8 +414,8 @@ export default {
       allViewed: 'Chacun a consulté son résultat',
       allViewedHint:
         'Personne ne découvrira le sien en même temps que la liste.',
-      onlyYouTitle: 'Toi seul verras la liste',
-      onlyYouHint: 'Les participants ne la voient pas pour l’instant.',
+      wholeGroupTitle: 'Tout le groupe verra la liste',
+      wholeGroupHint: 'Chaque participant la verra sur sa page.',
       final:
         'C’est définitif, et le journal du groupe l’indique. Les pistes de cadeaux restent modifiables.',
       notYet: 'Pas encore',
@@ -440,7 +440,7 @@ export default {
         one: 'Le tirage · {count} participant',
         other: 'Le tirage · {count} participants',
       },
-      pairsFooter: 'Pour l’instant, toi seul vois cette liste.',
+      pairsFooter: 'Tout le groupe voit cette liste, chacun sur sa page.',
       closeHint: 'Fige l’édition et les pistes de cadeaux',
     },
     missingDate: {

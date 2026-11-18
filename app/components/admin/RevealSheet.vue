@@ -188,10 +188,10 @@ watch(open, (isOpen) => {
           </span>
           <div class="flex min-w-0 grow flex-col gap-0.5">
             <p class="text-[15px] font-semibold">
-              {{ t('adminEdition.screen.reveal.onlyYouTitle') }}
+              {{ t('adminEdition.screen.reveal.wholeGroupTitle') }}
             </p>
             <p class="text-[13px] leading-[1.4] text-toned">
-              {{ t('adminEdition.screen.reveal.onlyYouHint') }}
+              {{ t('adminEdition.screen.reveal.wholeGroupHint') }}
             </p>
           </div>
         </li>

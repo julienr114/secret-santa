@@ -17,9 +17,9 @@ import {
   currentEditionSummaries,
   listParticipationsByEmail,
 } from '#server/database/home';
-import { loadDrawContext } from '#server/database/draw';
+import { findRevealedReceiver, loadDrawContext } from '#server/database/draw';
 import { requireAccount } from '#server/http/auth';
-import { dataKeyOf } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { and, inArray } from 'drizzle-orm';
 import { auditLog } from '#server/database/schema';
 import { avatarOf } from '#server/utils/avatars';
@@ -27,7 +27,7 @@ import { ALERT_TYPES, journalSignal } from '#server/utils/audit';
 import { decrypt } from '#server/utils/crypto';
 import { checkFeasibility } from '#server/utils/draw';
 import { nextStep } from '#server/utils/personal';
-import { mergeRules } from '#server/utils/rules';
+import { mergeRules, partyIsOver } from '#server/utils/rules';
 import { answersOfEdition } from '#server/database/answers';
 import { answersCard } from '#server/utils/answers';
 import { gamePayload } from '#server/http/guesses';
@@ -113,6 +113,15 @@ export default defineEventHandler(async (event) => {
                 dataKey,
               )
             : null;
+        // Revealed before the party: nothing is secret, the card says who
+        // they give to (README 22.18, AccueilDevoileAvant).
+        const openedReceiver =
+          dataKey &&
+          edition.status === 'drawn' &&
+          edition.revealedAt &&
+          !partyIsOver(rules.eventDate, nowIso().slice(0, 10))
+            ? await findRevealedReceiver(db, edition.id, person.id, dataKey)
+            : null;
         const token = dataKey
           ? await decrypt(
               { enc: participation.tokenEnc, iv: participation.tokenIv },
@@ -136,6 +145,12 @@ export default defineEventHandler(async (event) => {
           }),
           answer,
           revealed: participation.viewCount > 0,
+          opened: openedReceiver
+            ? {
+                name: openedReceiver.firstName,
+                avatar: avatarOf(openedReceiver),
+              }
+            : null,
           hintsOn: rules.giftHints !== 'none',
           hasHints: withHints.has(participation.id),
           // New hints from the person they give to (lot 16 bis); only

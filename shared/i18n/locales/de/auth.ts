@@ -156,6 +156,10 @@ export default {
       on: 'Fest am {date}',
     },
     drawCard: {
+      opened: 'Du beschenkst {name}',
+      openedBody: 'Die Auslosung ist kein Geheimnis mehr.',
+      openedHints: 'Die Geschenkhinweise ansehen',
+      openedDraw: 'Die Auslosung ansehen',
       guessTitle: 'Rate, wer dich beschenkt',
       guessSanta: 'Ein Tipp, bis {end}. Die Antwort bei der Feier.',
       guessAll: 'Tipps, bis {end}. Die Antwort bei der Feier.',

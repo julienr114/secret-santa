@@ -153,6 +153,10 @@ export default {
       on: 'fête le {date}',
     },
     drawCard: {
+      opened: 'Tu offres un cadeau à {name}',
+      openedBody: 'Le tirage n’est plus secret.',
+      openedHints: 'Voir ses pistes de cadeaux',
+      openedDraw: 'Voir le tirage',
       guessTitle: 'Devine qui t’offre ton cadeau',
       guessSanta: 'Un pronostic, jusqu’au {end}. Réponse à la fête.',
       guessAll: 'Des pronostics, jusqu’au {end}. Réponse à la fête.',

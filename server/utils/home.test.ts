@@ -97,6 +97,16 @@ describe('pickHomeAction, one rank at a time (README 22.10)', () => {
     ).toMatchObject({ kind: 'discover', to: '/p/token1', dismissKey: null });
   });
 
+  it('3. nothing to discover once the organiser revealed the draw', () => {
+    expect(
+      kindOf(
+        home({
+          draws: [draw({ revealed: false, opened: { name: 'Camille' } })],
+        }),
+      ),
+    ).not.toBe('discover');
+  });
+
   it('3 bis. new hints from the person they give to, before anything else of theirs', () => {
     expect(
       pickHomeAction(

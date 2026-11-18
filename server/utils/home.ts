@@ -20,6 +20,11 @@ export type HomeDrawState = {
   status: EditionStatus;
   /** The result was seen at least once. */
   revealed: boolean;
+  /**
+   * The organiser revealed the draw (README 22.18): who they give to, no
+   * longer a secret; null otherwise.
+   */
+  opened?: { name: string } | null;
   /** The group uses gift hints (README 22.11). */
   hintsOn: boolean;
   /** They left hints: an answer, a text or an idea. */
@@ -248,7 +253,8 @@ const participantCandidates = (draws: readonly HomeDrawState[]): Candidate[] =>
   draws.flatMap((draw): Candidate[] => {
     const at = { groupName: draw.groupName, eventDate: draw.eventDate };
     if (draw.status === 'closed') return [];
-    if (draw.status === 'drawn' && !draw.revealed) {
+    // A revealed draw has nothing left to discover (README 22.18).
+    if (draw.status === 'drawn' && !draw.revealed && !draw.opened) {
       return [
         { ...at, kind: 'discover', count: 1, to: draw.path, dismissKey: null },
       ];

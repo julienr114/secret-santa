@@ -19,4 +19,5 @@ export const keys = {
   hints: (token: string) => ['p', token, 'hints'] as const,
   journal: (token: string) => ['p', token, 'journal'] as const,
   game: (token: string) => ['p', token, 'game'] as const,
+  draw: (token: string) => ['p', token, 'draw'] as const,
 };

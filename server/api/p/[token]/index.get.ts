@@ -125,6 +125,8 @@ export default defineEventHandler(async (event) => {
     hintsEditable: canEditHints(edition.status, rules.giftHints).ok,
     hasHints: hintsOn && (await participationHasHints(db, participation.id)),
     revealed,
+    // Revealed by the organiser: visible to the whole group (README 22.18).
+    drawRevealed: Boolean(edition.revealedAt),
     receiverHints: receiver?.state ?? 'none',
     // « Tu pourras lui en demander », while a request is possible.
     canAskHints: canRequestHints({

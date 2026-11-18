@@ -87,4 +87,5 @@ export default {
     'Les réponses ne sont pas encore complètes ou ne vont pas ensemble.',
   invalid_answer: 'Choisis une autre personne de l’édition.',
   game_needs_four: 'Le jeu demande au moins quatre participants.',
+  draw_not_revealed: 'Le tirage n’est pas encore dévoilé.',
 };

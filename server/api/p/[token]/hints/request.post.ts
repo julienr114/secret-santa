@@ -13,12 +13,13 @@ import { buildHintsRequestEmail, canRequestHints } from '#server/utils/hints';
 // « Lui demander des pistes » (README 22.11): once per draw, sent at once.
 // Anonymous: no journal line, nothing for the organiser, and the email
 // does not say who asks. Who asked is not stored either: when the hints
-// arrive, the giver is found again from the draw.
+// arrive, the giver is found again from the draw. Once the draw is
+// revealed (README 22.18), nothing is secret: the email names who asks.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
     await requirePersonalLink(event);
-  // One asks for the person one discovered.
-  if (participation.viewCount === 0) {
+  // One asks for the person one discovered, or that the reveal shows.
+  if (participation.viewCount === 0 && !edition.revealedAt) {
     throw createError({ statusCode: 409, statusMessage: 'result_not_seen' });
   }
   const dataKey = await dataKeyOf(event);
@@ -57,6 +58,7 @@ export default defineEventHandler(async (event) => {
           editionLabel: edition.label,
           groupName: group.name,
           mode: rules.giftHints,
+          from: edition.revealedAt ? person.firstName : null,
         },
         locale,
       ),

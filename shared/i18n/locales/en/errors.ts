@@ -82,4 +82,5 @@ export default {
   answers_not_ready: "The answers aren't complete yet, or don't fit together.",
   invalid_answer: 'Choose another person of the edition.',
   game_needs_four: 'The game needs at least four participants.',
+  draw_not_revealed: 'The draw is not revealed yet.',
 } satisfies Dict<typeof fr>;

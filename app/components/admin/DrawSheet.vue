@@ -13,6 +13,8 @@ const props = defineProps<{
   exclusionCount: number;
   /** First names of active people of the group left out of the edition. */
   missing: string[];
+  /** « Devine qui » is on, and a draw of three turns it off. */
+  gameOff?: boolean;
   loading: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
@@ -103,6 +105,14 @@ const items = computed<NoticeItem[]>(() => [
       </UiNotice>
       <UiNotice variant="info" icon="i-lucide-lock">
         {{ t('adminEdition.screen.drawSheet.final') }}
+      </UiNotice>
+      <UiNotice
+        v-if="gameOff"
+        variant="info"
+        icon="i-lucide-search"
+        data-testid="draw-game-off"
+      >
+        {{ t('adminEdition.screen.drawSheet.gameOff') }}
       </UiNotice>
     </div>
     <template #footer>

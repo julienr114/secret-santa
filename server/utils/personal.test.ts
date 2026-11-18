@@ -202,14 +202,14 @@ describe('gameTile', () => {
     expect(game({ open: false })).toBe('waiting');
   });
 
-  it('offers the palmarès once revealed, then the answers', () => {
+  it('offers the palmarès once revealed, then the answers, if anyone played', () => {
     expect(game({ open: false, revealed: true, palmares: true })).toBe(
       'palmares',
     );
     expect(
       game({ open: false, revealed: true, palmares: true, seen: true }),
     ).toBe('answers');
-    expect(game({ open: false, revealed: true })).toBe('answers');
+    expect(game({ open: false, revealed: true })).toBeNull();
   });
 
   it('is gone when the game is off', () => {

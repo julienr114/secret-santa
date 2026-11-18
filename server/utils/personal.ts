@@ -173,7 +173,7 @@ export type GameTile = 'play' | 'played' | 'waiting' | 'palmares' | 'answers';
 /**
  * The tile « Devine qui » on the page of a draw: a guess to make, made,
  * waiting for the party once closed, then the palmarès to watch (in pine),
- * then the answers.
+ * then the answers; no tile once revealed if nobody played.
  * @param game - The game as the page knows it, or null when it is off.
  * @returns Where the tile stands, or null for no tile.
  */
@@ -187,8 +187,11 @@ export const gameTile = (
   } | null,
 ): GameTile | null => {
   if (!game) return null;
-  if (game.revealed)
-    return game.palmares && !game.seen ? 'palmares' : 'answers';
+  // Nobody played: nothing of the game after the reveal (Correction 12).
+  if (game.revealed) {
+    if (!game.palmares) return null;
+    return game.seen ? 'answers' : 'palmares';
+  }
   if (game.open) return game.played ? 'played' : 'play';
   return 'waiting';
 };

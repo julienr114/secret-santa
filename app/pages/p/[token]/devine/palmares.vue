@@ -13,12 +13,11 @@ const query = useGameQuery(token);
 const seen = useResultsSeenMutation(token);
 const game = computed(() => query.data.value);
 const results = computed(() => game.value?.results ?? null);
-// No palmarès (fewer than three players, or not revealed): the answers
-// page says why.
+// No palmarès (nobody played, or not revealed): the answers page.
 watch(
   () => game.value,
   (value) => {
-    if (value && !value.results?.enough) {
+    if (value && (!value.results || value.results.size === 'none')) {
       void navigateTo(`/p/${token.value}/devine`, { replace: true });
     }
   },
@@ -37,7 +36,7 @@ const onSeen = () => {
     :error="query.error.value"
   >
     <ParticipantStories
-      v-if="game && results?.enough"
+      v-if="game && results && results.size !== 'none'"
       :edition-label="game.editionLabel"
       :people="game.people"
       :players="results.players"
@@ -45,6 +44,7 @@ const onSeen = () => {
       :awards="results.awards"
       :santa="results.santa"
       :unmasked="results.unmasked"
+      :small="results.size === 'small'"
       :first-name="game.firstName"
       :answers-path="`/p/${token}/devine`"
       @seen="onSeen"

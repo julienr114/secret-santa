@@ -10,6 +10,8 @@ const props = defineProps<{
   count: number;
   /** The one whose answer follows from the others, or null. */
   deducedName: string | null;
+  /** « Devine qui » is on, and a draw of three turns it off. */
+  gameOff?: boolean;
   loading: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
@@ -46,6 +48,14 @@ const items = computed<NoticeItem[]>(() =>
       <p class="text-sm leading-[1.5] text-toned">
         {{ t('adminEdition.answers.validate.secret') }}
       </p>
+      <UiNotice
+        v-if="gameOff"
+        variant="info"
+        icon="i-lucide-search"
+        data-testid="draw-game-off"
+      >
+        {{ t('adminEdition.screen.drawSheet.gameOff') }}
+      </UiNotice>
     </div>
     <template #footer>
       <UButton

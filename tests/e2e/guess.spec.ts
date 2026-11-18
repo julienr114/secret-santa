@@ -269,40 +269,166 @@ test('the reveal brings the palmarès, in images then corrected', async ({
   );
 });
 
-test('fewer than three players: no palmarès, and the hour closes it', async ({
-  request,
-}) => {
-  // A group of its own, revealed by the scheduled task.
-  const GROUP = '/api/admin/famille-peu';
-  await ok(
-    await admin().post('/api/admin/groups', { data: { name: 'Famille Peu' } }),
+/**
+ * A group of its own with these people in one edition, and their links.
+ * @param slug - The group's identifier.
+ * @param names - The first names.
+ * @returns The edition's admin path and each one's token.
+ */
+const smallGroup = async (slug: string, names: string[]) => {
+  const group = `/api/admin/${slug}`;
+  const { group: made } = await ok(
+    await admin().post('/api/admin/groups', { data: { name: slug } }),
   );
-  for (const firstName of ['Gil', 'Hana', 'Ivo']) {
-    await ok(await admin().post(`${GROUP}/persons`, { data: { firstName } }));
+  expect(made.slug).toBe(slug);
+  for (const firstName of names) {
+    await ok(await admin().post(`${group}/persons`, { data: { firstName } }));
   }
   const created = await ok(
-    await admin().post(`${GROUP}/editions`, {
-      data: { label: 'Noël peu', year: 2026, eventDate: '2099-12-24' },
+    await admin().post(`${group}/editions`, {
+      data: { label: 'Noël', year: 2026, eventDate: '2099-12-24' },
     }),
   );
-  const base = `${GROUP}/editions/${created.edition.id}`;
-  await ok(await admin().post(`${base}/draw`));
-  // The end of the guesses two days ago: the reveal is due.
+  const base = `${group}/editions/${created.edition.id}`;
+  const { participants } = await ok(await admin().get(base));
+  const { messages } = await ok(
+    await admin().get(`${base}/messages?type=invitation`),
+  );
+  const tokens: Record<string, string> = Object.fromEntries(
+    participants.map((p: { firstName: string; participationId: string }) => [
+      p.firstName,
+      new URL(messages[p.participationId].link).pathname.split('/p/')[1]!,
+    ]),
+  );
+  const ids: Record<string, string> = Object.fromEntries(
+    participants.map((p: { firstName: string; id: string }) => [
+      p.firstName,
+      p.id,
+    ]),
+  );
+  return { group, base, tokens, ids, editionId: created.edition.id };
+};
+const game = (endsAt: string) => ({
+  mode: 'santa',
+  endsAt,
+  timeZone: 'Europe/Paris',
+});
+const DAY = 86_400_000;
+
+test('a draw of three turns the game off, and it stays off', async ({
+  page,
+}) => {
+  const { base, editionId } = await smallGroup('famille-trois', [
+    'Gil',
+    'Hana',
+    'Ivo',
+  ]);
+  // Before the draw, the setting is free.
   await ok(
     await admin().put(`${base}/guess`, {
-      data: {
-        mode: 'santa',
-        endsAt: new Date(Date.now() - 2 * 86_400_000).toISOString(),
-        timeZone: 'Europe/Paris',
-      },
+      data: game(new Date(Date.now() + DAY).toISOString()),
     }),
   );
-  const run = await request.get('/__scheduled?cron=30+*+*+*+*');
+  await apiLogin(page.request, SUPER);
+  await open(page, `/admin/famille-trois/editions/${editionId}`);
+  await page.getByRole('button', { name: 'Lancer le tirage' }).click();
+  // The confirmation says it in one sentence.
+  await expect(page.getByTestId('draw-game-off')).toContainText(
+    'à trois, chacun sait déjà qui lui offre',
+  );
+  await page.getByRole('button', { name: 'Tirer au sort' }).click();
+  await expect(page.getByTestId('draw-sheet')).toHaveCount(0);
+  const { guess } = await ok(await admin().get(base));
+  expect(guess).toMatchObject({ mode: 'none', possible: false });
+  const refused = await admin().put(`${base}/guess`, {
+    data: game(new Date(Date.now() + DAY).toISOString()),
+  });
+  expect(refused.status()).toBe(409);
+  // The setting is greyed, and says why (DevineReglageTrois).
+  await open(page, `/admin/famille-trois/editions/${editionId}/reglages`);
+  await page.getByTestId('setting-guess').click();
+  await expect(page.getByTestId('guess-needs-four')).toHaveText(
+    'À partir de quatre participants. À trois, chacun sait déjà qui lui offre : il n’y a rien à deviner.',
+  );
+  await expect(page.getByRole('radio', { name: /Qui m’offre/ })).toBeDisabled();
+  await expect(
+    page.getByRole('radio', { name: /Aucun pronostic/ }),
+  ).toBeChecked();
+});
+
+test('nobody played: nothing of the game after the reveal', async ({
+  request,
+}) => {
+  const { group, base, tokens } = await smallGroup('famille-personne', [
+    'Jo',
+    'Kim',
+    'Lou',
+    'Max',
+  ]);
+  await ok(await admin().post(`${base}/draw`));
+  // The end of the guesses two days ago: the scheduled task (every 15
+  // minutes) closes them and reveals the draw.
+  await ok(
+    await admin().put(`${base}/guess`, {
+      data: game(new Date(Date.now() - 2 * DAY).toISOString()),
+    }),
+  );
+  const run = await request.get('/__scheduled?cron=*/15+*+*+*+*');
   expect(run.ok()).toBe(true);
   const { edition: done } = await ok(await admin().get(base));
   expect(done.revealedAt).toBeTruthy();
-  const { entries } = await ok(await admin().get(`${GROUP}/journal`));
+  const { entries } = await ok(await admin().get(`${group}/journal`));
   const texts = entries.map((e: { text: string }) => e.text);
   expect(texts).toContain('Devine qui : les pronostics sont fermés');
   expect(texts).not.toContain('Devine qui : le palmarès est arrivé');
+  // No tile, no palmarès on the participant's page.
+  const me = await ok(await request.get(`/api/p/${tokens.Jo}`));
+  expect(me.guess.palmares).toBe(false);
+});
+
+test('one player: the small palmarès, four screens', async ({ page }) => {
+  const { group, base, tokens, ids } = await smallGroup('famille-petit', [
+    'Noé',
+    'Oda',
+    'Pia',
+    'Rob',
+  ]);
+  await ok(await admin().post(`${base}/draw`));
+  await ok(
+    await admin().put(`${base}/guess`, {
+      data: game(new Date(Date.now() + DAY).toISOString()),
+    }),
+  );
+  // Everyone finds out who they give to; Noé alone plays, and names his
+  // own Santa right.
+  const receiverOf: Record<string, string> = {};
+  for (const [name, token] of Object.entries(tokens)) {
+    const { receiver } = await ok(
+      await page.request.post(`/api/p/${token}/reveal`),
+    );
+    receiverOf[name] = receiver.name;
+  }
+  const santa = Object.keys(receiverOf).find((g) => receiverOf[g] === 'Noé')!;
+  await ok(
+    await page.request.put(`/api/p/${tokens.Noé}/guess`, {
+      data: { recipientId: ids.Noé, giverId: ids[santa] },
+    }),
+  );
+  await ok(await admin().post(`${base}/reveal`, { data: { early: true } }));
+  const { entries } = await ok(await admin().get(`${group}/journal`));
+  expect(entries.map((e: { text: string }) => e.text)).toContain(
+    'Devine qui : le palmarès est arrivé',
+  );
+  await open(page, `/p/${tokens.Noé}/devine/palmares`);
+  const stories = page.getByTestId('stories');
+  await expect(stories.getByRole('img', { name: /sur 4$/ })).toBeVisible();
+  // The right side goes on: the suspense, then his Santa.
+  await stories.click({ position: { x: 350, y: 400 } });
+  await stories.click({ position: { x: 350, y: 400 } });
+  await expect(stories).toHaveAttribute('data-screen', 'santa');
+  await expect(stories).toContainText(
+    'Personne d’autre n’a joué, et tu as vu juste.',
+  );
+  await stories.click({ position: { x: 350, y: 400 } });
+  await expect(stories).toHaveAttribute('data-screen', 'end');
 });

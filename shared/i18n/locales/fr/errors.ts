@@ -86,4 +86,5 @@ export default {
   answers_not_ready:
     'Les réponses ne sont pas encore complètes ou ne vont pas ensemble.',
   invalid_answer: 'Choisis une autre personne de l’édition.',
+  game_needs_four: 'Le jeu demande au moins quatre participants.',
 };

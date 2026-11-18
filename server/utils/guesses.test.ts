@@ -5,6 +5,7 @@ import {
   changeGuessMode,
   autoRevealDue,
   correctedGuesses,
+  gamePossible,
   countedGuesses,
   guessChoices,
   guessesOpen,
@@ -12,6 +13,7 @@ import {
   keepSantaGuesses,
   moveGuessEnd,
   palmares,
+  palmaresSize,
   placeGuess,
   ranking,
   type Guess,
@@ -147,12 +149,35 @@ describe('countedGuesses', () => {
 });
 
 describe('palmares', () => {
-  it('has no award with fewer than three players', () => {
+  it('is the small palmarès, without awards, with one or two players', () => {
     const result = palmares([g('a', 'a', 'f'), g('b', 'b', 'a')], PAIRS, 'all');
     expect(result).toEqual({
       players: 2,
       guesses: 2,
-      enough: false,
+      size: 'small',
+      awards: [],
+    });
+  });
+
+  it('is nothing without a player', () => {
+    expect(palmares([], PAIRS, 'all')).toEqual({
+      players: 0,
+      guesses: 0,
+      size: 'none',
+      awards: [],
+    });
+  });
+
+  it('is small in a draw of three, whoever played', () => {
+    const three = [
+      { giverId: 'a', receiverId: 'b' },
+      { giverId: 'b', receiverId: 'c' },
+      { giverId: 'c', receiverId: 'a' },
+    ];
+    const guesses = [g('a', 'a', 'c'), g('b', 'b', 'a'), g('c', 'c', 'b')];
+    expect(palmares(guesses, three, 'santa')).toMatchObject({
+      players: 3,
+      size: 'small',
       awards: [],
     });
   });
@@ -172,7 +197,7 @@ describe('palmares', () => {
     ];
     const result = palmares(guesses, PAIRS, 'all');
     expect(result.players).toBe(3);
-    expect(result.enough).toBe(true);
+    expect(result.size).toBe('full');
     const byKind = Object.fromEntries(result.awards.map((x) => [x.kind, x]));
     expect(byKind.unmasked).toMatchObject({ winners: ['a', 'b'], count: 2 });
     // a: 2 right out of 3 made.
@@ -295,5 +320,21 @@ describe('carriedGame', () => {
         '2026-12-25',
       ),
     ).toEqual(none);
+  });
+});
+
+describe('the game and the size of the draw (Correction 12)', () => {
+  it('needs four participants', () => {
+    expect(gamePossible(3)).toBe(false);
+    expect(gamePossible(4)).toBe(true);
+  });
+
+  it('sizes the palmarès by players and participants', () => {
+    expect(palmaresSize(0, 6)).toBe('none');
+    expect(palmaresSize(1, 6)).toBe('small');
+    expect(palmaresSize(2, 6)).toBe('small');
+    expect(palmaresSize(3, 6)).toBe('full');
+    expect(palmaresSize(3, 3)).toBe('small');
+    expect(palmaresSize(0, 3)).toBe('none');
   });
 });

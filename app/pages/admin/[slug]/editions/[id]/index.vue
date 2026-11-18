@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { fullName } from '#server/utils/people';
+import { gamePossible } from '#server/utils/guesses';
 import { formatEventDate, isIsoDay, partyIsOver } from '#server/utils/rules';
 import {
   useDashboardQuery,
@@ -120,6 +121,12 @@ const exclusionCount = computed(
 );
 
 const drawOpen = ref(false);
+/** The game is on, and this draw of three will turn it off (Correction 12). */
+const gameOff = computed(
+  () =>
+    (edition.data.value?.guess.mode ?? 'none') !== 'none' &&
+    !gamePossible(participants.value.length),
+);
 /**
  * Draws, then closes the sheet with a toast.
  * @returns Nothing: the mutation reports by itself.
@@ -334,7 +341,11 @@ const dateOpen = ref(false);
       >
         <!-- « Devine qui »: once revealed, its palmarès (README 22.17). -->
         <template
-          v-if="edition.data.value && edition.data.value.guess.mode !== 'none'"
+          v-if="
+            edition.data.value &&
+            edition.data.value.guess.mode !== 'none' &&
+            edition.data.value.guess.players > 0
+          "
           #after-pairs
         >
           <AdminGameCard
@@ -443,6 +454,7 @@ const dateOpen = ref(false);
       :avatars="avatars"
       :exclusion-count="exclusionCount"
       :missing="missing"
+      :game-off="gameOff"
       :loading="drawMutation.isPending.value"
       @confirm="runDraw"
     />
@@ -470,6 +482,7 @@ const dateOpen = ref(false);
       v-model:open="validateOpen"
       :count="participants.length"
       :deduced-name="answers?.card === 'oneMissing' ? deducedName : null"
+      :game-off="gameOff"
       :loading="validateAnswers.isPending.value"
       @confirm="onValidateAnswers"
     />

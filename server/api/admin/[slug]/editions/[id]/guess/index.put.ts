@@ -6,13 +6,20 @@ import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { newId, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
-import { GUESS_MODES, changeGuessMode } from '#server/utils/guesses';
+import { listParticipants } from '#server/database/editions';
+import {
+  GUESS_MODES,
+  changeGuessMode,
+  gamePossible,
+} from '#server/utils/guesses';
 
 // « Devine qui » (README 22.17, DevineReglage): the mode, and the end of
 // the guesses on the day of the party, an instant chosen in the
 // organiser's time zone. Going back to « Qui m'offre ? » keeps only the
 // guesses on one's own Santa; turning the game off deletes them all (the
-// screen asks first). Not once the draw is revealed or the edition closed.
+// screen asks first). Not once the draw is revealed or the edition closed,
+// nor turned on after a draw of three (Correction 12): before the draw the
+// setting stays free, the draw turns the game off.
 const bodySchema = z.object({
   mode: z.enum(GUESS_MODES),
   endsAt: z.iso.datetime().optional(),
@@ -27,6 +34,13 @@ export default defineEventHandler(async (event) => {
   const { mode, endsAt, timeZone } = await validatedBody(event, bodySchema);
   if (mode !== 'none' && (!endsAt || !timeZone)) {
     throw createError({ statusCode: 400, statusMessage: 'guess_needs_end' });
+  }
+  if (
+    mode !== 'none' &&
+    edition.status !== 'preparing' &&
+    !gamePossible((await listParticipants(db, edition.id)).length)
+  ) {
+    throw createError({ statusCode: 409, statusMessage: 'game_needs_four' });
   }
   const { kept, lost } = changeGuessMode(
     mode,

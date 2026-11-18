@@ -334,6 +334,8 @@ export default {
       },
     },
     drawSheet: {
+      gameOff:
+        '« Devine qui » wird ausgeschaltet: Zu dritt weiß jeder schon, wer ihn beschenkt.',
       drawing: 'Auslosung läuft…',
       title: 'Auslosung starten?',
       description: 'Ein letzter Blick vor der Auslosung.',
@@ -554,6 +556,9 @@ export default {
       santa: 'Wer beschenkt mich?',
       all: 'Alle Paare',
     },
+    needsFour: 'Ab vier Teilnehmenden.',
+    needsFourWhy:
+      'Zu dritt weiß jeder schon, wer ihn beschenkt: Es gibt nichts zu erraten.',
     modeHint: {
       none: 'Das Spiel ist aus',
       santa: 'Jeder rät seinen eigenen Wichtel',

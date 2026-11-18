@@ -5,7 +5,13 @@
 // parent.
 
 /** One choice of the list. */
-export type Choice<V> = { value: V; label: string; hint?: string };
+export type Choice<V> = {
+  value: V;
+  label: string;
+  hint?: string;
+  /** Shown greyed, not choosable. */
+  disabled?: boolean;
+};
 defineProps<{
   choices: Choice<T>[];
   /** What is chosen: shown above, or read by screen readers only. */
@@ -28,14 +34,18 @@ const name = useId();
       <label
         v-for="choice in choices"
         :key="choice.value"
-        class="flex min-h-14 cursor-pointer items-center gap-3 px-3.5 py-2.5"
-        :class="model === choice.value ? 'bg-primary-tint' : ''"
+        class="flex min-h-14 items-center gap-3 px-3.5 py-2.5"
+        :class="[
+          model === choice.value ? 'bg-primary-tint' : '',
+          choice.disabled ? 'opacity-50' : 'cursor-pointer',
+        ]"
       >
         <input
           v-model="model"
           type="radio"
           :name="name"
           :value="choice.value"
+          :disabled="choice.disabled"
           class="size-5 shrink-0 accent-(--ui-primary)"
         />
         <span class="flex min-w-0 flex-col">

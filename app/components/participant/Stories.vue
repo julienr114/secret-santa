@@ -33,6 +33,8 @@ const props = defineProps<{
   santa: { actualId: string; guessedId: string | null } | null;
   /** How many guessed their own Santa. */
   unmasked: number;
+  /** The small palmarès (Correction 12): one's own Santa, no award. */
+  small?: boolean;
   /** The reader's first name, for « Joyeux Noël » ; none for an organiser. */
   firstName: string | null;
   /** Where « Voir tous les résultats » and the cross lead. */
@@ -177,6 +179,9 @@ const awardView = computed(() => {
   const award = props.awards.find((a) => a.kind === current.award);
   return award ? awardWords(award) : null;
 });
+/** How many played, in the words of the small palmarès. */
+const smallKey = (players: number) =>
+  players <= 1 ? 'alone' : players === 2 ? 'two' : 'three';
 const santaWords = computed(() => {
   const santa = props.santa;
   if (!santa) return null;
@@ -194,10 +199,12 @@ const santaWords = computed(() => {
       ? t('participant.game.story.right', { name: actual?.name ?? '' })
       : t('participant.game.story.was', { name: actual?.name ?? '' }),
     body: right
-      ? t('participant.game.story.rightBody', {
-          count: props.unmasked,
-          total: props.players,
-        })
+      ? props.small
+        ? t(`participant.game.story.rightSmall.${smallKey(props.players)}`)
+        : t('participant.game.story.rightBody', {
+            count: props.unmasked,
+            total: props.players,
+          })
       : guessed
         ? t('participant.game.story.wrongBody', { name: guessed.name })
         : t('participant.game.story.noGuessBody'),

@@ -189,13 +189,10 @@ export default {
     answersWaiting:
       'Die Auslosung ist aufgedeckt. Die Antworten warten auf dich.',
     answersSeen: 'Die Auslosung ist aufgedeckt. Das waren deine Tipps wert.',
-    organizerFew:
-      'Weniger als drei Personen haben gespielt: diesmal keine Rangliste.',
-    answersFew:
-      'Die Auslosung ist aufgedeckt. Ihr wart weniger als drei Spieler: diesmal keine Rangliste, aber das waren deine Tipps wert.',
     discover: 'Die Rangliste entdecken',
     rewatch: 'Die Rangliste noch einmal ansehen',
     palmaresHint: 'Dein Wichtel, der Detektiv, die am besten Versteckten…',
+    palmaresHintSmall: 'Dein Wichtel, endlich enttarnt',
     mineScore: {
       one: 'Meine Tipps · {right} richtig von {count}',
       other: 'Meine Tipps · {right} richtig von {count}',
@@ -274,6 +271,12 @@ export default {
       was: 'Es war {name}.',
       rightBody:
         'Enttarnt. Du gehörst zu den {count} von {total}, die es erraten haben.',
+      rightSmall: {
+        alone: 'Enttarnt. Sonst hat niemand gespielt, und du lagst richtig.',
+        two: 'Enttarnt. Ihr wart zu zweit beim Spielen, und du lagst richtig.',
+        three:
+          'Enttarnt. Ihr wart zu dritt beim Spielen, und du lagst richtig.',
+      },
       wrongBody: 'Daneben: Du hattest {name} gesagt.',
       noGuessBody: 'Du hattest keinen Tipp abgegeben.',
       endEyebrow: 'Das war es für dieses Jahr',

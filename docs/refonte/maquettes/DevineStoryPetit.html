@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Devine qui — petit palmarès</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #a43a2f; color: #fffdf9; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column; padding: 14px 16px 28px">
+  <div role="img" aria-label="Écran 3 sur 4" style="display: flex; gap: 4px"><span style="flex: 1; height: 3px; border-radius: 999px; background: #fffdf9; opacity: 1"></span><span style="flex: 1; height: 3px; border-radius: 999px; background: #fffdf9; opacity: 1"></span><span style="flex: 1; height: 3px; border-radius: 999px; background: #fffdf9; opacity: 1"></span><span style="flex: 1; height: 3px; border-radius: 999px; background: #fffdf9; opacity: 0.3"></span></div>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px">
+    <span style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 16px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Devine qui · Noël 2026</span>
+    <button aria-label="Fermer" style="width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; color: #fffdf9; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center">
+    <p style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #f6d9d3">Ton Père Noël</p>
+    <span aria-hidden="true" style="width: 128px; height: 128px; border-radius: 50%; background: #d6e6ef; box-shadow: 0 0 0 4px rgba(255, 253, 249, 0.9), 0 12px 30px rgba(0, 0, 0, 0.25); display: flex; align-items: center; justify-content: center; font-size: 64px; flex-shrink: 0">🍷</span>
+    <p style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 48px; line-height: 1.08">C’était<br>bien Sacha !</p>
+    <p style="margin: 0; max-width: 300px; font-size: 18px; line-height: 1.4; color: #f6d9d3">Démasqué. Vous étiez deux à jouer, et tu as vu juste.</p>
+  </div>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #f6d9d3">Touche pour continuer</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

@@ -189,13 +189,10 @@ export default {
     answersTitle: 'Devine qui : les réponses',
     answersWaiting: 'Le tirage est dévoilé. Les réponses t’attendent.',
     answersSeen: 'Le tirage est dévoilé. Voici ce que valaient tes pronostics.',
-    organizerFew:
-      'Moins de trois personnes ont joué : pas de palmarès cette fois.',
-    answersFew:
-      'Le tirage est dévoilé. Vous étiez moins de trois à jouer : pas de palmarès cette fois, mais voici ce que valaient tes pronostics.',
     discover: 'Découvrir le palmarès',
     rewatch: 'Revoir le palmarès',
     palmaresHint: 'Ton Père Noël, le détective, les mieux cachés…',
+    palmaresHintSmall: 'Ton Père Noël, enfin démasqué',
     mineScore: {
       one: 'Mes pronostics · {right} bon sur {count}',
       other: 'Mes pronostics · {right} bons sur {count}',
@@ -274,6 +271,11 @@ export default {
       was: 'C’était {name}.',
       rightBody:
         'Démasqué. Tu fais partie des {count} sur {total} qui ont deviné.',
+      rightSmall: {
+        alone: 'Démasqué. Personne d’autre n’a joué, et tu as vu juste.',
+        two: 'Démasqué. Vous étiez deux à jouer, et tu as vu juste.',
+        three: 'Démasqué. Vous étiez trois à jouer, et tu as vu juste.',
+      },
       wrongBody: 'Raté : tu avais dit {name}.',
       noGuessBody: 'Tu n’avais pas fait de pronostic.',
       endEyebrow: 'C’est tout pour cette année',

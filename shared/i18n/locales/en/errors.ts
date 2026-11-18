@@ -81,4 +81,5 @@ export default {
   not_collecting_answers: 'This edition is not collecting answers.',
   answers_not_ready: "The answers aren't complete yet, or don't fit together.",
   invalid_answer: 'Choose another person of the edition.',
+  game_needs_four: 'The game needs at least four participants.',
 } satisfies Dict<typeof fr>;

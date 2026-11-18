@@ -11,8 +11,8 @@ import type { GuessOption } from '~/components/participant/GuessSheet.vue';
 // pair (DevinePaires), the line of the person one gives to drawn like the
 // others; then the guesses closed (DevineFerme). Once the draw is
 // revealed, « Devine qui : les réponses » (DevinePalmares,
-// DevinePalmaresVu, DevinePalmaresPeu): the palmarès in images, and one's
-// own guesses, corrected only once the images are seen.
+// DevinePalmaresVu): the palmarès in images, and one's own guesses,
+// corrected only once the images are seen, or at once if nobody played.
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useGameQuery(token);
@@ -156,7 +156,7 @@ const asMade = computed(() =>
 );
 /** The guesses are corrected once the images are seen, or without them. */
 const corrected = computed(
-  () => Boolean(results.value?.seen) || results.value?.enough === false,
+  () => Boolean(results.value?.seen) || results.value?.size === 'none',
 );
 const rightCount = computed(() => asMade.value.filter((c) => c.right).length);
 type Row = NonNullable<GamePayload['results']>['corrected'][number];
@@ -182,11 +182,9 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
         }}</UiPageTitle>
         <p class="text-[15px] leading-[1.45] text-toned">
           <template v-if="game.revealed">{{
-            results?.enough === false
-              ? t('participant.game.answersFew')
-              : corrected
-                ? t('participant.game.answersSeen')
-                : t('participant.game.answersWaiting')
+            corrected
+              ? t('participant.game.answersSeen')
+              : t('participant.game.answersWaiting')
           }}</template>
           <template v-else-if="!game.open">{{
             t('participant.game.closedSince', { end })
@@ -203,7 +201,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
       <!-- The answers, once the draw is revealed. -->
       <template v-if="game.revealed && results">
         <NuxtLink
-          v-if="results.enough"
+          v-if="results.size !== 'none'"
           :to="`/p/${token}/devine/palmares`"
           class="flex items-center gap-4 rounded-2xl bg-pine-700 px-5 py-4 text-white active:bg-pine-800"
           data-testid="palmares-link"
@@ -221,7 +219,9 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
                 : t('participant.game.discover')
             }}</span>
             <span class="text-sm opacity-90">{{
-              t('participant.game.palmaresHint')
+              results.size === 'small'
+                ? t('participant.game.palmaresHintSmall')
+                : t('participant.game.palmaresHint')
             }}</span>
           </span>
           <UIcon

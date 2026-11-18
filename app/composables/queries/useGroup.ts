@@ -41,6 +41,8 @@ export type GuessSummary = {
   /** How many have played. */
   players: number;
   reminderSentAt: string | null;
+  /** The game can be turned on: before the draw, or four people drawn. */
+  possible: boolean;
 };
 /** Where the answers of a draw made elsewhere stand (README 22.12). */
 export type AnswersSummary = {

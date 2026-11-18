@@ -141,8 +141,8 @@ export default defineEventHandler(async (event) => {
           endsAt: game.endsAt,
           played: game.mine.length > 0,
           revealed: game.revealed,
-          // The palmarès exists (three players or more), and was watched.
-          palmares: Boolean(game.results?.enough),
+          // The palmarès exists (one player at least), and was watched.
+          palmares: Boolean(game.results && game.results.size !== 'none'),
           seen: Boolean(game.results?.seen),
         }
       : null,

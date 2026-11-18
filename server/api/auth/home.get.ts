@@ -161,7 +161,7 @@ export default defineEventHandler(async (event) => {
             ? {
                 open: game.open,
                 played: game.mine.length > 0,
-                palmares: Boolean(game.results?.enough),
+                palmares: Boolean(game.results && game.results.size !== 'none'),
                 seen: Boolean(game.results?.seen),
                 endsAt: game.endsAt,
                 mode: game.mode,

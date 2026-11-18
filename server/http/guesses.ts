@@ -61,7 +61,7 @@ export const closeGuesses = async (
 
 /**
  * What follows the reveal of a draw with « Devine qui » on: the guesses
- * close, and, with three players or more, « le palmarès est arrivé » in
+ * close, and, with one player at least, « le palmarès est arrivé » in
  * the journal and its email, once, to every participant with an address,
  * players or not, without any name. Never twice.
  * @param ctx - The database, the request when there is one, the key.
@@ -90,7 +90,11 @@ export const afterReveal = async (
     listGuesses(ctx.db, edition.id),
     readPairs(ctx.db, edition.id, ctx.dataKey),
   ]);
-  if (!palmares(guesses, pairs, edition.guessMode as GuessMode).enough) return;
+  if (
+    palmares(guesses, pairs, edition.guessMode as GuessMode).size === 'none'
+  ) {
+    return;
+  }
   await recordEvent(ctx.db, {
     type: 'guess_results_ready',
     groupId: group.id,

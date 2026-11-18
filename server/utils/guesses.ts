@@ -13,9 +13,31 @@ export type GuessMode = (typeof GUESS_MODES)[number];
 /** One guess: `guesserId` thinks `giverId` gives to `recipientId` (persons). */
 export type Guess = { guesserId: string; recipientId: string; giverId: string };
 
-/** Fewer players than this: no awards, no images, no email. */
+/** Fewer players than this: the small palmarès, without awards. */
 export const MIN_PLAYERS = 3;
+/**
+ * Fewer participants than this: no game. At three, the draw is a loop and
+ * everyone knows who gives to them (Correction 12).
+ */
+export const MIN_GAME_PARTICIPANTS = 4;
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Whether « Devine qui » makes sense for a draw of this size: four
+ * participants at least. Before the draw the setting stays free; the draw
+ * turns the game off below that.
+ * @param participants - How many take part in the draw.
+ * @returns True when there is something to guess.
+ */
+export const gamePossible = (participants: number): boolean =>
+  participants >= MIN_GAME_PARTICIPANTS;
+
+/** The game's settings of an edition without the game. */
+export const GAME_OFF = {
+  guessMode: 'none',
+  guessEndsAt: null,
+  guessTimeZone: null,
+} as const;
 
 /**
  * Whether guesses can be made or changed now: the game is on, the edition
@@ -251,13 +273,37 @@ export const ranking = (counted: Guess[], pairs: Assignment[]): Standing[] => {
     );
 };
 
+/**
+ * How much of a palmarès there is (Correction 12): nothing without a
+ * player; the small one (the reader's own Santa, no award) with one or two
+ * players, or in a draw of three made before the game needed four; the
+ * full one otherwise.
+ */
+export type PalmaresSize = 'none' | 'small' | 'full';
+
+/**
+ * The size of a palmarès.
+ * @param players - How many made a guess that counts.
+ * @param participants - How many took part in the draw.
+ * @returns Its size.
+ */
+export const palmaresSize = (
+  players: number,
+  participants: number,
+): PalmaresSize =>
+  players === 0
+    ? 'none'
+    : players < MIN_PLAYERS || !gamePossible(participants)
+      ? 'small'
+      : 'full';
+
 /** What the results of a game are, for the images and the answers page. */
 export type Palmares = {
   /** People who made at least one guess that counts. */
   players: number;
   guesses: number;
-  /** Three players at least: awards and images. */
-  enough: boolean;
+  /** Nothing, the small palmarès, or the full one with its awards. */
+  size: PalmaresSize;
   /** In the order of the images; an award without a winner is left out. */
   awards: Award[];
 };
@@ -280,9 +326,9 @@ export const palmares = (
 ): Palmares => {
   const counted = countedGuesses(guesses, pairs, mode);
   const players = new Set(counted.map((g) => g.guesserId)).size;
-  const enough = players >= MIN_PLAYERS;
-  if (!enough) {
-    return { players, guesses: counted.length, enough, awards: [] };
+  const size = palmaresSize(players, pairs.length);
+  if (size !== 'full') {
+    return { players, guesses: counted.length, size, awards: [] };
   }
   const right = counted.filter((g) => isRight(g, pairs));
   // Being found by oneself is not being unmasked: the awards about the
@@ -313,7 +359,7 @@ export const palmares = (
   return {
     players,
     guesses: counted.length,
-    enough,
+    size,
     awards: [
       ...award('unmasked', unmasked, unmasked.length, playersCount),
       ...(mode === 'all'

@@ -9,7 +9,8 @@ import { useSetGuessMutation } from '~/composables/queries/useEdition';
 // m'offre ? » or « Toutes les paires », and the end of the guesses on the
 // day of the party, read and saved in this browser's time zone. A change
 // that deletes guesses (back to « Qui m'offre ? », or the game off) asks
-// once more before saving.
+// once more before saving. After a draw of three, only « Aucun pronostic »
+// can be chosen, and the sheet says why (Correction 12, DevineReglageTrois).
 const props = defineProps<{
   slug: string;
   editionId: string;
@@ -53,6 +54,7 @@ const choices = computed(() =>
     value,
     label: t(`adminEdition.guess.mode.${value}`),
     hint: t(`adminEdition.guess.modeHint.${value}`),
+    disabled: !props.guess.possible && value !== 'none',
   })),
 );
 /** Guesses would be deleted: back to « Qui m'offre ? », or off. */
@@ -109,6 +111,14 @@ const onValidate = () => {
       :choices="choices"
       :label="t('adminEdition.guess.title')"
     />
+    <p
+      v-if="!guess.possible"
+      class="rounded-xl bg-muted px-3.5 py-3 text-[15px] leading-[1.45]"
+      data-testid="guess-needs-four"
+    >
+      <strong class="font-bold">{{ t('adminEdition.guess.needsFour') }}</strong>
+      {{ t('adminEdition.guess.needsFourWhy') }}
+    </p>
     <label v-if="mode !== 'none'" class="flex flex-col gap-2">
       <span class="text-[15px] font-semibold">{{
         t('adminEdition.guess.endLabel', {
@@ -134,7 +144,7 @@ const onValidate = () => {
           : t('adminEdition.guess.lossSanta')
       }}
     </UiNotice>
-    <UiNotice v-else-if="mode !== 'none'" variant="caution">
+    <UiNotice v-else-if="mode !== 'none' && guess.possible" variant="caution">
       {{ t('adminEdition.guess.answersWhen') }}
     </UiNotice>
   </UiSettingSheet>

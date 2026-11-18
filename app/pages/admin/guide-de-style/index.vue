@@ -176,6 +176,17 @@ const yearLabel = computed(
 const loadFailure = { statusCode: 500 };
 const refusal = { statusCode: 403, statusMessage: 'forbidden' };
 const choices = useNotePositionItems();
+/** A choice list with choices greyed (DevineReglageTrois). */
+const gameChoice = ref('none');
+const GAME_CHOICES = [
+  { value: 'none', label: 'Aucun pronostic', hint: 'Le jeu est éteint' },
+  {
+    value: 'santa',
+    label: 'Qui m’offre ?',
+    hint: 'Chacun devine son propre Père Noël',
+    disabled: true,
+  },
+];
 
 const now = new Date();
 /**
@@ -839,6 +850,12 @@ const entries = computed(() => [
         v-model="choice"
         :choices="choices"
         label="UiChoiceList : un choix parmi quelques-uns"
+        titled
+      />
+      <UiChoiceList
+        v-model="gameChoice"
+        :choices="GAME_CHOICES"
+        label="UiChoiceList grisé : « Devine qui » après un tirage à trois"
         titled
       />
       <p class="px-1 text-xs text-muted">

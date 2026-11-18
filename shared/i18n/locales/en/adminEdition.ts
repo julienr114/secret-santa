@@ -324,6 +324,8 @@ export default {
       },
     },
     drawSheet: {
+      gameOff:
+        '« Devine qui » will be turned off: with three, everyone already knows who gives to them.',
       drawing: 'Drawing…',
       title: 'Start the draw?',
       description: 'One last look before drawing.',
@@ -542,6 +544,9 @@ export default {
       santa: 'Who gives to me?',
       all: 'Every pair',
     },
+    needsFour: 'From four participants.',
+    needsFourWhy:
+      'With three, everyone already knows who gives to them: there is nothing to guess.',
     modeHint: {
       none: 'The game is off',
       santa: 'Everyone guesses their own Secret Santa',

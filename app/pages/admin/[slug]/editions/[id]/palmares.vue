@@ -21,12 +21,19 @@ const query = useApiQuery<Results>(
   () => `/api/admin/${slug.value}/editions/${id.value}/guess/results`,
 );
 const results = computed(() => query.data.value);
-const { t } = useT();
+// Nobody played: no palmarès, back to the edition (Correction 12).
+watch(
+  () => results.value?.size,
+  (size) => {
+    if (size === 'none') void navigateTo(editionPath.value, { replace: true });
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
   <ParticipantStories
-    v-if="results?.enough"
+    v-if="results && results.size !== 'none'"
     :edition-label="results.editionLabel"
     :people="results.people"
     :players="results.players"
@@ -34,6 +41,7 @@ const { t } = useT();
     :awards="results.awards"
     :santa="null"
     :unmasked="results.unmasked"
+    :small="results.size === 'small'"
     :first-name="null"
     :answers-path="editionPath"
   />
@@ -41,8 +49,6 @@ const { t } = useT();
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
-    >
-      <p class="text-toned">{{ t('participant.game.organizerFew') }}</p>
-    </AdminQueryState>
+    />
   </AdminScreen>
 </template>

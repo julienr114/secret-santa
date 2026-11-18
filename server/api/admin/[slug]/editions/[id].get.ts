@@ -18,7 +18,7 @@ import {
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
 import { playersOf } from '#server/database/guesses';
-import { guessesOpen } from '#server/utils/guesses';
+import { gamePossible, guessesOpen } from '#server/utils/guesses';
 
 /**
  * Where the answers of a draw made elsewhere stand (README 22.12): who
@@ -82,6 +82,10 @@ export default defineEventHandler(async (event) => {
     open: guessesOpen(edition, nowIso()),
     players: answers.participants.filter((p) => players.has(p.id)).length,
     reminderSentAt: edition.guessReminderSentAt,
+    // The setting is free before the draw; after a draw of three, the
+    // game cannot be turned on (Correction 12).
+    possible:
+      edition.status === 'preparing' || gamePossible(participants.length),
   };
   return {
     edition: publicEdition(edition, participants.length),

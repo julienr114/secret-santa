@@ -10,6 +10,7 @@ import { listExclusions } from './people';
 import { listEditions, listParticipants, type Participant } from './editions';
 import { decrypt, encrypt } from '#server/utils/crypto';
 import { DRAWN_PARTICIPATION } from '#server/utils/editions';
+import { GAME_OFF, gamePossible } from '#server/utils/guesses';
 import type { Assignment, DrawInput } from '#server/utils/draw';
 import {
   applyWaivers,
@@ -236,6 +237,9 @@ export const drawStatements = async (
         status: 'drawn',
         drawnAt: draw.now,
         rulesSnapshot: draw.snapshot,
+        // At three, everyone knows who gives to them: « Devine qui » is
+        // turned off (Correction 12).
+        ...(gamePossible(draw.pairs.length) ? {} : GAME_OFF),
       })
       .where(
         and(eq(editions.id, draw.editionId), eq(editions.status, 'preparing')),

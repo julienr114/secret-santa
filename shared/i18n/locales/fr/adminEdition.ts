@@ -325,6 +325,8 @@ export default {
       },
     },
     drawSheet: {
+      gameOff:
+        '« Devine qui » sera éteint : à trois, chacun sait déjà qui lui offre.',
       drawing: 'Tirage en cours…',
       title: 'Lancer le tirage ?',
       description: "Un dernier coup d'œil avant de tirer au sort.",
@@ -547,6 +549,9 @@ export default {
       santa: 'Qui m’offre ?',
       all: 'Toutes les paires',
     },
+    needsFour: 'À partir de quatre participants.',
+    needsFourWhy:
+      'À trois, chacun sait déjà qui lui offre : il n’y a rien à deviner.',
     modeHint: {
       none: 'Le jeu est éteint',
       santa: 'Chacun devine son propre Père Noël',

@@ -185,12 +185,10 @@ export default {
     answersTitle: 'Devine qui: the answers',
     answersWaiting: 'The draw is revealed. The answers are waiting for you.',
     answersSeen: 'The draw is revealed. Here is what your guesses were worth.',
-    organizerFew: 'Fewer than three people played: no palmarès this time.',
-    answersFew:
-      'The draw is revealed. Fewer than three of you played: no palmarès this time, but here is what your guesses were worth.',
     discover: 'Discover the palmarès',
     rewatch: 'Watch the palmarès again',
     palmaresHint: 'Your Secret Santa, the detective, the best hidden…',
+    palmaresHintSmall: 'Your Secret Santa, unmasked at last',
     mineScore: {
       one: 'My guesses · {right} right out of {count}',
       other: 'My guesses · {right} right out of {count}',
@@ -268,6 +266,11 @@ export default {
       was: 'It was {name}.',
       rightBody:
         "Unmasked. You're one of the {count} out of {total} who guessed.",
+      rightSmall: {
+        alone: 'Unmasked. Nobody else played, and you got it right.',
+        two: 'Unmasked. Two of you played, and you got it right.',
+        three: 'Unmasked. Three of you played, and you got it right.',
+      },
       wrongBody: 'Missed: you said {name}.',
       noGuessBody: "You hadn't made a guess.",
       endEyebrow: "That's all for this year",

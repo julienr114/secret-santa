@@ -150,6 +150,10 @@ export default {
       idea: 'Idée',
       ideaPlaceholder: 'Un livre, des chaussettes…',
       link: 'Lien (facultatif)',
+      linkLabel: 'Lien',
+      optional: '(facultatif)',
+      linkHelp:
+        'Colle l’adresse d’une page : elle s’ouvrira dans un nouvel onglet.',
       remove: 'Supprimer l’idée',
     },
   },

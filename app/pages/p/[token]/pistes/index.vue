@@ -3,11 +3,9 @@ import {
   useCopyHintsMutation,
   useHintsQuery,
   usePersonalQuery,
-  useSaveHintsMutation,
 } from '~/composables/queries/usePersonal';
 import {
   HINT_TEXTS,
-  HINT_TEXT_MAX,
   answeredCount,
   firstUnanswered,
   questionsFor,
@@ -22,7 +20,6 @@ const route = useRoute();
 const token = computed(() => String(route.params.token));
 const query = useHintsQuery(token);
 const personal = usePersonalQuery(token);
-const save = useSaveHintsMutation(token);
 const copy = useCopyHintsMutation(token);
 const { t, tk } = useT();
 const errorMessage = useErrorMessage();
@@ -69,26 +66,9 @@ const startPath = computed(() => {
 const answered = computed(() =>
   hints.value ? answeredCount(hints.value.portrait.answers) > 0 : false,
 );
-// The text being written, in its sheet: kept only with « Valider ».
-const editing = ref<HintText | null>(null);
-const sheetOpen = computed({
-  get: () => editing.value !== null,
-  set: (open) => {
-    if (!open) editing.value = null;
-  },
-});
-const onText = (value: string) => {
-  const key = editing.value;
-  if (!key) return;
-  save.mutate(
-    { texts: { [key]: value || null } },
-    {
-      onSuccess: () => {
-        editing.value = null;
-      },
-    },
-  );
-};
+/** Each text is written on a page of its own (Correction 18). */
+const textPath = (key: HintText) =>
+  `/p/${token.value}/pistes/texte?texte=${key}`;
 const onCopy = () =>
   copy.mutate(undefined, {
     onSuccess: (data) =>
@@ -105,6 +85,8 @@ const TEXT_ICONS: Record<HintText, string> = {
   wouldHelp: 'i-lucide-wrench',
   avoid: 'i-lucide-ban',
 };
+// A string in <component :is> does not resolve global components.
+const NuxtLink = resolveComponent('NuxtLink');
 const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
 </script>
 
@@ -211,11 +193,10 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
           >
             <li v-if="textOf(key)">
               <component
-                :is="editable ? 'button' : 'div'"
-                :type="editable ? 'button' : undefined"
+                :is="editable ? NuxtLink : 'div'"
+                :to="editable ? textPath(key) : undefined"
                 class="flex min-h-15 w-full items-center gap-3 px-4 py-3 text-left"
                 :class="{ 'transition-colors active:bg-muted': editable }"
-                @click="editable && (editing = key)"
               >
                 <span class="min-w-0 grow leading-[1.45] break-words">{{
                   textOf(key)
@@ -232,8 +213,7 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
               :icon="TEXT_ICONS[key]"
               :title="tk(`hints.texts.${key}.empty`)"
               :subtitle="tk(`hints.texts.${key}.placeholder`)"
-              :chevron="true"
-              :on-click="() => (editing = key)"
+              :to="textPath(key)"
             />
           </ul>
         </section>
@@ -250,22 +230,6 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
       <p v-if="editable" class="px-1 text-[13px] leading-[1.4] text-toned">
         {{ t('hints.until') }}
       </p>
-
-      <UiTextSheet
-        v-model:open="sheetOpen"
-        :title="editing ? tk(`hints.texts.${editing}.title`) : ''"
-        :description="editing ? tk(`hints.texts.${editing}.help`) : ''"
-        :label="editing ? tk(`hints.texts.${editing}.title`) : ''"
-        hide-label
-        :value="editing ? (textOf(editing) ?? '') : ''"
-        :maxlength="HINT_TEXT_MAX"
-        :hint="editing ? tk(`hints.texts.${editing}.placeholder`) : ''"
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        :error="save.error.value ? errorMessage(save.error.value) : null"
-        :loading="save.isPending.value"
-        @validate="onText"
-      />
     </div>
   </ParticipantScreen>
 </template>

@@ -152,6 +152,10 @@ export default {
       idea: 'Idee',
       ideaPlaceholder: 'Ein Buch, Socken…',
       link: 'Link (optional)',
+      linkLabel: 'Link',
+      optional: '(optional)',
+      linkHelp:
+        'Füge die Adresse einer Seite ein: Sie öffnet sich in einem neuen Tab.',
       remove: 'Idee löschen',
     },
   },

@@ -193,12 +193,14 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(
     tags.getByRole('link', { name: 'Utile, ou surprenant ?' }),
   ).toBeVisible();
-  // A text, in its sheet, kept with « Valider ».
+  // A text, on a page of its own (README 23.3), kept with « Valider ».
   await page.getByText('Dire ce qui m’occupe').click();
+  await expect(heading(page)).toHaveText('En ce moment');
   await page
     .getByRole('textbox', { name: 'En ce moment' })
     .fill('La course à pied');
   await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   await expect(page.getByText('La course à pied')).toBeVisible();
   // An answer is a fixed value, never text.
   const free = await page.request.patch(`/api/p/${tokenOf('Alice')}/hints`, {
@@ -206,15 +208,16 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   });
   expect(free.status()).toBe(400);
 
-  // Ideas are added from a bottom sheet and saved with "Valider"; closing
-  // the sheet any other way gives the idea up.
+  // Ideas are written on a page of their own (README 23.3), saved with
+  // « Valider »; « Retour » gives the idea up.
   const idea = page.getByLabel('Idée', { exact: true });
-  const link = page.getByLabel('Lien (facultatif)');
+  const link = page.getByLabel(/^Lien/);
   const validate = page.getByRole('button', { name: 'Valider' });
   await page.getByText('Ajouter une idée').click();
+  await expect(heading(page)).toHaveText('Nouvelle idée');
   await idea.fill('Abandonnée');
-  await page.keyboard.press('Escape');
-  await expect(validate).toHaveCount(0);
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   await expect(page.getByText('Abandonnée')).toHaveCount(0);
   await page.getByText('Ajouter une idée').click();
   await idea.fill('Un livre de cuisine');
@@ -228,6 +231,8 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
 
   // Tapping an idea opens it again, to change or delete it.
   await page.getByText('Des chaussette').click();
+  await expect(heading(page)).toHaveText('Modifier l’idée');
+  await expect(idea).toHaveValue('Des chaussette');
   await idea.fill('Des chaussettes');
   await validate.click();
   await expect(page.getByText('Des chaussettes')).toBeVisible();
@@ -235,7 +240,8 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await idea.fill('À supprimer');
   await validate.click();
   await page.getByText('À supprimer').click();
-  await page.getByRole('button', { name: 'Supprimer l’idée' }).click();
+  await page.getByTestId('idea-remove').click();
+  await expect(heading(page)).toHaveText('Mes pistes de cadeaux');
   await expect(page.getByText('À supprimer')).toHaveCount(0);
   await expect(page.getByText('Encore 8 possibles')).toBeVisible();
 

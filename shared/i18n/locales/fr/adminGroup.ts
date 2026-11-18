@@ -163,6 +163,7 @@ export default {
       people: 'Personnages',
       animals: 'Animaux',
       food: 'Gourmandises',
+      drinks: 'Boissons',
       activities: 'Activités',
       decor: 'Décor de Noël',
     },

@@ -97,6 +97,11 @@ export const AVATAR_EMOJIS = [
   '🏔️',
   '🏡',
   '🎊',
+  // Drinks, a family of their own (18 November 2026).
+  '🍵',
+  '🍺',
+  '🥃',
+  '🫗',
 ] as const;
 export type AvatarEmoji = (typeof AVATAR_EMOJIS)[number];
 
@@ -105,6 +110,7 @@ export const AVATAR_GROUP_KEYS = [
   'people',
   'animals',
   'food',
+  'drinks',
   'activities',
   'decor',
 ] as const;
@@ -112,7 +118,7 @@ export type AvatarGroupKey = (typeof AVATAR_GROUP_KEYS)[number];
 
 /**
  * The emojis ranged by family for the choice (18 November 2026): people,
- * animals, food and drinks, activities, then the decor of Christmas. Each
+ * animals, treats, drinks, activities, then the decor of Christmas. Each
  * emoji of AVATAR_EMOJIS is in one family exactly (tested).
  */
 export const AVATAR_GROUPS: Record<AvatarGroupKey, readonly AvatarEmoji[]> = {
@@ -139,7 +145,6 @@ export const AVATAR_GROUPS: Record<AvatarGroupKey, readonly AvatarEmoji[]> = {
   ],
   food: [
     '🍪',
-    '🥛',
     '🍫',
     '🍬',
     '🍭',
@@ -161,12 +166,8 @@ export const AVATAR_GROUPS: Record<AvatarGroupKey, readonly AvatarEmoji[]> = {
     '🧀',
     '🫕',
     '🍗',
-    '🍷',
-    '🥂',
-    '🍾',
-    '☕',
-    '🫖',
   ],
+  drinks: ['🥛', '☕', '🍵', '🫖', '🍷', '🥂', '🍾', '🍺', '🥃', '🫗'],
   activities: [
     '⛸️',
     '🛷',

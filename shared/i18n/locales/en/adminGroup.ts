@@ -162,6 +162,7 @@ export default {
       people: 'Characters',
       animals: 'Animals',
       food: 'Treats',
+      drinks: 'Drinks',
       activities: 'Activities',
       decor: 'Christmas decor',
     },

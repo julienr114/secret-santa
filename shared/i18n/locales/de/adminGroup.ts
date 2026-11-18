@@ -171,6 +171,7 @@ export default {
       people: 'Figuren',
       animals: 'Tiere',
       food: 'Leckereien',
+      drinks: 'Getränke',
       activities: 'Aktivitäten',
       decor: 'Weihnachtsdeko',
     },

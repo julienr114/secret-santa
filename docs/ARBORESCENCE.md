@@ -2,6 +2,73 @@
 
 Ce fichier décrit l'arbre des pages de l'application : qui est le parent de qui, et donc où mène « Retour ». **À tenir à jour à chaque nouvel écran** : une ligne dans le bon tableau, avec son parent, et le `back` de la page qui le dit dans le code.
 
+## Vue d'ensemble
+
+Chaque flèche va d'un écran vers ses enfants ; « Retour » la remonte. Les écrans en pointillés n'ont pas de « Retour » : on y arrive par un lien. Le schéma s'affiche sur GitHub et dans l'aperçu Markdown de VS Code ; les tableaux plus bas donnent les adresses et les panneaux.
+
+```mermaid
+flowchart LR
+  accueil["Accueil<br/><small>/</small>"]
+
+  subgraph entrees ["Liens directs, sans « Retour »"]
+    login["Connexion<br/><small>/login</small>"]:::sans
+    lien["Lien de connexion<br/><small>/login/[jeton]</small>"]:::sans
+    rejoindre["Rejoindre un groupe<br/><small>/rejoindre/[code]</small>"]:::sans
+  end
+
+  accueil --> compte["Mon compte"]
+  accueil --> passes["Tirages passés"]
+
+  subgraph admin ["Administration (super-admin)"]
+    administration["Administration<br/><small>/admin</small>"]
+    administration --> groupes["Tous les groupes"]
+    groupes --> nouveauGroupe["Nouveau groupe"]
+    administration --> comptes["Comptes"]
+    comptes --> unCompte["Un compte"]
+    administration --> guide["Guide de style"]
+  end
+  accueil --> administration
+
+  subgraph groupe ["Un groupe (organisateur)"]
+    leGroupe["Le groupe<br/><small>/admin/[groupe]</small>"]
+    leGroupe --> membres["Membres"]
+    membres --> personne["Une personne"]
+    membres --> nouvellePersonne["Nouvelle personne"]
+    membres --> invitation["Inviter par lien"]
+    leGroupe --> exclusionsGroupe["Exclusions du groupe"]
+    leGroupe --> journalGroupe["Journal du groupe"]
+    leGroupe --> reglagesGroupe["Réglages du groupe"]
+    leGroupe --> nouvelleEdition["Nouvelle édition"]
+  end
+  accueil --> leGroupe
+
+  subgraph edition ["Une édition (organisateur)"]
+    lEdition["L'édition<br/><small>…/editions/[id]</small>"]
+    lEdition --> ajouter["Choisir les participants"]
+    lEdition --> emails["Envoyer par email"]
+    emails --> messagePlusieurs["Personnaliser le message<br/><small>pour plusieurs</small>"]
+    lEdition --> messageUne["Personnaliser le message<br/><small>pour une personne</small>"]
+    lEdition --> reglagesEdition["Réglages de l'édition"]
+    lEdition --> exclusionsEdition["Exclusions de l'édition"]
+    lEdition --> annuler["Annuler le tirage"]
+    lEdition --> voir["Voir un seul résultat"]
+    lEdition --> palmaresOrga["Palmarès Devine qui<br/><small>images</small>"]
+  end
+  leGroupe --> lEdition
+
+  subgraph tirage ["Un tirage (participant, lien personnel)"]
+    page["La page du tirage<br/><small>/p/[jeton]</small>"]
+    page --> pistes["Mes pistes de cadeaux"]
+    pistes --> question["Une question"]
+    page --> devine["Devine qui"]
+    devine --> palmares["Palmarès Devine qui<br/><small>images</small>"]
+    page --> journal["Journal du groupe"]
+  end
+  accueil -. "seulement si ouverte depuis l'accueil" .-> page
+
+  classDef sans stroke-dasharray: 5 5
+```
+
 ## La règle du bouton « Retour »
 
 Décidée par Julien le 18 novembre 2026.

@@ -3,7 +3,7 @@ export default {
     organizerLabel: 'Adresse du premier organisateur',
     title: 'Nouveau groupe',
     nameLabel: 'Nom du groupe',
-    namePlaceholder: 'Famille Rabin',
+    namePlaceholder: 'Famille Martin',
     nameRequired: 'Nom requis',
     submit: 'Créer le groupe',
     created: 'Groupe créé',

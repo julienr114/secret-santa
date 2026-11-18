@@ -161,9 +161,9 @@ describe('describeEvent', () => {
 
 describe('journalEntries', () => {
   const people = [
-    { id: 'p1', firstName: 'Léa', lastName: 'Rabin' },
+    { id: 'p1', firstName: 'Léa', lastName: 'Durand' },
     { id: 'p2', firstName: 'Léa', lastName: 'Martin' },
-    { id: 'p3', firstName: 'Tom', lastName: 'Rabin' },
+    { id: 'p3', firstName: 'Tom', lastName: 'Durand' },
   ];
   const row = (id: string, personId: string, createdAt: string) => ({
     id,
@@ -269,7 +269,7 @@ describe('journalEntries', () => {
     );
     expect(entry).toMatchObject({ messageType: 'drawn', via: 'email' });
     expect(entry?.text).toBe(
-      "L'organisateur a envoyé « Tirage fait » à Léa Rabin par email",
+      "L'organisateur a envoyé « Tirage fait » à Léa Durand par email",
     );
   });
 });

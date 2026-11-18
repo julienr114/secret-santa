@@ -56,7 +56,7 @@ describe('canRemoveOrganizer', () => {
 describe('schemas', () => {
   it('validates slugs and session users', () => {
     expect(slugSchema.safeParse('famille-rabin').success).toBe(true);
-    expect(slugSchema.safeParse('Famille Rabin').success).toBe(false);
+    expect(slugSchema.safeParse('Famille Martin').success).toBe(false);
     expect(slugSchema.safeParse('-a').success).toBe(false);
     expect(
       sessionUserSchema.safeParse({

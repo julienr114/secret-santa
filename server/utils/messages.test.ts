@@ -20,7 +20,7 @@ import { failureOf, valueOf } from '~~/tests/helpers';
 
 const data: MessageData = {
   firstName: 'Léa',
-  groupName: 'la famille Rabin',
+  groupName: 'la famille Martin',
   editionLabel: 'Noël 2026',
   link: 'https://secret-santa.example/p/abc123',
 };
@@ -38,7 +38,7 @@ describe('buildMessage', () => {
 
   it('writes the invitation and the drawn message with budget and date', () => {
     expect(valueOf(buildMessage('invitation', data))).toBe(
-      'Salut Léa ! 🎁\nTu es de la partie : le Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🎁\nTu es de la partie : le Secret Santa de la famille Martin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
       valueOf(
@@ -129,7 +129,7 @@ describe('buildEmail', () => {
       expect(email.subject, type).not.toContain('\n');
       expect(email.text, type).toContain(data.link);
       expect(email.html, type).toContain(`href="${data.link}"`);
-      expect(email.text, type).toContain('la famille Rabin');
+      expect(email.text, type).toContain('la famille Martin');
     });
   });
 
@@ -222,7 +222,7 @@ describe('languages', () => {
     expect(german.split('\n')[0]).toBe('Hallo Léa! 🎁');
     [english, german].forEach((text) => {
       expect(text.split('\n').at(-1)).toBe(data.link);
-      expect(text).toContain('la famille Rabin');
+      expect(text).toContain('la famille Martin');
       expect(text).not.toContain('{');
     });
   });

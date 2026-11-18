@@ -376,7 +376,204 @@ const seedHundred = async (slug: string, name: string, drawn: boolean) => {
   }
 };
 
-const existing = await call<{ groups: { slug: string }[] }>(
+// Lots 17 to 19: one group per state, so that every screen can be
+// opened. Nobody has an address: nothing is ever emailed.
+const SCENARIO_PEOPLE = ['Camille', 'Hugo', 'Inès', 'Louis', 'Rose'];
+type Scenario = {
+  name: string;
+  /** What to do once the group, its five people and its edition exist. */
+  then: (edition: string, token: (name: string) => string) => Promise<void>;
+  /** What the group shows. */
+  shows: string;
+};
+/** A participant's own client: the personal link is their only key. */
+const asParticipant = (token: string) => {
+  const as = client();
+  return <T>(method: string, path: string, body?: unknown) =>
+    as<T>(method, `/api/p/${token}${path}`, body);
+};
+/** The person ids of a draw, by first name, as a participant sees them. */
+const peopleOf = async (token: string) => {
+  const { choices } = await asParticipant(token)<{
+    choices: { id: string; name: string }[];
+  }>('GET', '/answer');
+  return choices;
+};
+/** Says, through a participant's link, who they give to. */
+const answer = async (
+  token: (name: string) => string,
+  giver: string,
+  receiver: string,
+) => {
+  const people = await peopleOf(token(giver));
+  const id = people.find((p) => p.name === receiver)?.id;
+  await asParticipant(token(giver))('PUT', '/answer', { personId: id });
+};
+/** Who gives to whom, found out the only legitimate way. */
+const pairsOf = async (token: (name: string) => string) =>
+  Object.fromEntries(
+    await Promise.all(
+      SCENARIO_PEOPLE.map(async (name) => {
+        const { receiver } = await asParticipant(token(name))<{
+          receiver: { name: string };
+        }>('POST', '/reveal');
+        return [name, receiver.name] as const;
+      }),
+    ),
+  );
+/** `guesser` thinks `giver` gives to `recipient`. */
+const guess = async (
+  token: (name: string) => string,
+  guesser: string,
+  recipient: string,
+  giver: string,
+) => {
+  const game = await asParticipant(token(guesser))<{
+    people: { id: string; name: string }[];
+  }>('GET', '/guess');
+  const id = (name: string) => game.people.find((p) => p.name === name)?.id;
+  await asParticipant(token(guesser))('PUT', '/guess', {
+    recipientId: id(recipient),
+    giverId: id(giver),
+  });
+};
+const GAME_END = {
+  endsAt: '2026-12-25T17:00:00.000Z',
+  timeZone: 'Europe/Paris',
+};
+const SCENARIOS: Scenario[] = [
+  {
+    name: 'Démo ailleurs · conflit',
+    shows: 'tirage fait ailleurs : deux réponses se heurtent, une manque',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/answers/start`);
+      await answer(token, 'Camille', 'Hugo');
+      await answer(token, 'Hugo', 'Louis');
+      await answer(token, 'Inès', 'Louis');
+      await answer(token, 'Rose', 'Camille');
+    },
+  },
+  {
+    name: 'Démo ailleurs · une réponse manque',
+    shows: 'tirage fait ailleurs : il ne manque que Louis, valider sans lui',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/answers/start`);
+      await answer(token, 'Camille', 'Hugo');
+      await answer(token, 'Hugo', 'Louis');
+      await answer(token, 'Inès', 'Rose');
+      await answer(token, 'Rose', 'Camille');
+    },
+  },
+  {
+    name: 'Démo Devine qui · toutes les paires',
+    shows: 'Devine qui ouvert, « Toutes les paires », quelques pronostics',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/draw`);
+      await call('PUT', `${edition}/guess`, { mode: 'all', ...GAME_END });
+      await guess(token, 'Camille', 'Camille', 'Rose');
+      await guess(token, 'Camille', 'Hugo', 'Inès');
+      await guess(token, 'Hugo', 'Hugo', 'Louis');
+    },
+  },
+  {
+    name: 'Démo Devine qui · qui m’offre',
+    shows: 'Devine qui ouvert, « Qui m’offre ? », Camille a parié',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/draw`);
+      await call('PUT', `${edition}/guess`, { mode: 'santa', ...GAME_END });
+      await guess(token, 'Camille', 'Camille', 'Louis');
+    },
+  },
+  {
+    name: 'Démo Devine qui · palmarès',
+    shows: 'tirage dévoilé, le palmarès en images attend tout le monde',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/draw`);
+      await call('PUT', `${edition}/guess`, { mode: 'all', ...GAME_END });
+      const pairs = await pairsOf(token);
+      const santaOf = (name: string) =>
+        Object.keys(pairs).find((giver) => pairs[giver] === name) ?? '';
+      // Some right, some wrong; never on one's own receiver.
+      await guess(token, 'Camille', 'Camille', santaOf('Camille'));
+      await guess(token, 'Hugo', 'Hugo', santaOf('Hugo'));
+      for (const name of ['Inès', 'Louis', 'Rose']) {
+        const wrong = SCENARIO_PEOPLE.find(
+          (p) => p !== name && p !== santaOf(name),
+        );
+        if (wrong) await guess(token, name, name, wrong);
+      }
+      const other = SCENARIO_PEOPLE.find(
+        (p) => p !== 'Camille' && p !== pairs.Camille,
+      );
+      if (other && santaOf(other) !== 'Camille') {
+        await guess(token, 'Camille', other, santaOf(other));
+      }
+      await call('POST', `${edition}/reveal`, { early: true });
+    },
+  },
+  {
+    name: 'Démo Devine qui · moins de trois',
+    shows: 'tirage dévoilé, deux joueurs seulement : pas de palmarès',
+    then: async (edition, token) => {
+      await call('POST', `${edition}/draw`);
+      await call('PUT', `${edition}/guess`, { mode: 'santa', ...GAME_END });
+      await guess(token, 'Camille', 'Camille', 'Hugo');
+      await guess(token, 'Hugo', 'Hugo', 'Camille');
+      await call('POST', `${edition}/reveal`, { early: true });
+    },
+  },
+];
+/** The personal links of every scenario, to print at the end. */
+const scenarioLinks: string[] = [];
+const seedScenarios = async (known: string[]) => {
+  for (const scenario of SCENARIOS) {
+    if (known.includes(scenario.name)) {
+      console.log(`Le groupe « ${scenario.name} » existe déjà.`);
+      continue;
+    }
+    const { group } = await call<{ group: { slug: string } }>(
+      'POST',
+      '/api/admin/groups',
+      { name: scenario.name },
+    );
+    const at = `/api/admin/${group.slug}`;
+    for (const firstName of SCENARIO_PEOPLE) {
+      await call('POST', `${at}/persons`, { firstName });
+    }
+    const { edition } = await call<{ edition: { id: string } }>(
+      'POST',
+      `${at}/editions`,
+      {
+        label: `Noël ${CURRENT_YEAR}`,
+        year: CURRENT_YEAR,
+        eventDate: `${CURRENT_YEAR}-12-25`,
+        budget: '30 €',
+        guardianMessage: 'On ouvre les cadeaux après le dessert !',
+      },
+    );
+    const path = `${at}/editions/${edition.id}`;
+    const { participants } = await call<{
+      participants: { firstName: string; participationId: string }[];
+    }>('GET', path);
+    const { messages } = await call<{
+      messages: Record<string, { link: string }>;
+    }>('GET', `${path}/messages?type=invitation`);
+    const token = (name: string) => {
+      const p = participants.find((x) => x.firstName === name);
+      const link = p ? messages[p.participationId]?.link : undefined;
+      return link ? new URL(link).pathname.split('/p/')[1]! : '';
+    };
+    await scenario.then(path, token);
+    scenarioLinks.push(
+      `  « ${scenario.name} » (${scenario.shows}) : ${BASE}/admin/${group.slug}/editions/${edition.id}`,
+      ...SCENARIO_PEOPLE.map(
+        (name) => `      ${name} : ${BASE}/p/${token(name)}`,
+      ),
+    );
+  }
+};
+
+const existing = await call<{ groups: { slug: string; name: string }[] }>(
   'GET',
   '/api/admin/groups',
 );
@@ -413,6 +610,8 @@ for (const big of BIG) {
   }
 }
 
+await seedScenarios(existing.groups.map((group) => group.name));
+
 if (
   known.accounts.some(
     (account) => account.email === CAMILLE && account.groups.length > 0,
@@ -440,3 +639,7 @@ console.log(
 console.log(
   `  ${CAMILLE} : organise « Famille Camille » (tirage fait) et « Amis de Camille » (invitations), participe aux deux et à « Famille Démo »`,
 );
+if (scenarioLinks.length > 0) {
+  console.log('Lots 17 à 19 (super-admin, puis les liens personnels) :');
+  for (const line of scenarioLinks) console.log(line);
+}

@@ -21,8 +21,9 @@ export default defineAppConfig({
     // corners and home bar while its ground reaches the edge (README 23.3).
     drawer: {
       slots: {
-        content:
-          'max-h-[calc(100dvh-env(safe-area-inset-top)-0.5rem)] rounded-t-[20px] sm:mx-auto sm:max-w-md sm:rounded-t-2xl',
+        // The height, the keyboard and the corners are set by UiSheet, after
+        // the drawer's own direction classes.
+        content: 'sm:mx-auto sm:max-w-md sm:rounded-t-2xl',
         container:
           'min-h-0 gap-4 overflow-hidden px-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]',
         header: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',

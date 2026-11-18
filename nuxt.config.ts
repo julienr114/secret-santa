@@ -96,7 +96,10 @@ export default defineNuxtConfig({
         // bar, sheet and footer keeps its content out of them (README 23.3).
         {
           name: 'viewport',
-          content: 'width=device-width, initial-scale=1, viewport-fit=cover',
+          // Android shrinks the page under its keyboard, so that a bottom
+          // sheet stays above it (iPhone: see useKeyboardInset).
+          content:
+            'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content',
         },
         { name: 'robots', content: 'noindex' },
         { name: 'theme-color', content: '#f7f2e9' },

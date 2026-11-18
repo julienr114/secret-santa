@@ -190,9 +190,17 @@ test('the organiser: the settings, and the message to the group', async ({
 }) => {
   await apiLogin(page.request, SUPER);
   await open(page, `/admin/${SLUG}/editions/${state.editionId}/reglages`);
-  await page.getByTestId('setting-guess').click();
   const switches = page.getByTestId('guess-switches');
-  await expect(switches.getByRole('switch')).toHaveCount(1);
+  // The row may be tapped before the page settles: tap again until the
+  // setting is open.
+  await expect(async () => {
+    if (!(await switches.isVisible())) {
+      await page.getByTestId('setting-guess').click();
+    }
+    await expect(switches.getByRole('switch')).toHaveCount(1, {
+      timeout: 1000,
+    });
+  }).toPass();
   await switches.getByRole('switch', { name: 'Rappel automatique' }).click();
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(page.getByTestId('guess-switches')).toHaveCount(0);
@@ -218,6 +226,9 @@ test('the organiser: the settings, and the message to the group', async ({
   await expect(page).toHaveURL(/vers=groupe/);
   const message = page.getByTestId('game-group-message');
   await expect(message).toContainText('2 sur 4 ont déjà fait leur pronostic.');
+  await expect(message).toContainText(
+    'Le principe : chacun essaie de deviner qui lui offre son cadeau',
+  );
   await expect(message).toContainText(
     'Chacun retrouve le jeu avec son lien personnel.',
   );

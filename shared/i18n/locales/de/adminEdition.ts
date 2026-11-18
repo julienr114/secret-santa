@@ -573,7 +573,11 @@ export default {
         other: '{count} von {total} haben schon getippt.',
       },
       nobody: 'Noch niemand hat getippt.',
-      tail: 'Wer beschenkt wen? Antwort bei der Feier, mit einer Überraschung.',
+      howSanta:
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer ihn beschenkt. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+      howAll:
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen beim eigenen Wichtel. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+      tail: 'Je mehr von euch spielen, desto schöner wird sie.',
       personal: 'Alle finden das Spiel über ihren persönlichen Link.',
       share: 'Teilen',
       copy: 'Nachricht kopieren',

@@ -565,7 +565,11 @@ export default {
         other: '{count} sur {total} ont déjà fait leur pronostic.',
       },
       nobody: 'Personne n’a encore fait de pronostic.',
-      tail: 'Qui offre à qui ? Réponse à la fête, avec une surprise.',
+      howSanta:
+        'Le principe : chacun essaie de deviner qui lui offre son cadeau, sur sa page. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+      howAll:
+        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par son propre Père Noël. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+      tail: 'Plus vous êtes nombreux à jouer, plus elle sera belle.',
       personal: 'Chacun retrouve le jeu avec son lien personnel.',
       share: 'Partager',
       copy: 'Copier le message',

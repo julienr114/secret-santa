@@ -560,7 +560,11 @@ export default {
         other: '{count} out of {total} have already made a guess.',
       },
       nobody: 'Nobody has made a guess yet.',
-      tail: 'Who gives to whom? Answer at the party, with a surprise.',
+      howSanta:
+        'How it works: everyone tries to guess who gives them their present, on their own page. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+      howAll:
+        'How it works: everyone tries to guess who gives to whom, on their own page, starting with their own Secret Santa. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+      tail: 'The more of you play, the better it will be.',
       personal: 'Everyone finds the game with their personal link.',
       share: 'Share',
       copy: 'Copy the message',

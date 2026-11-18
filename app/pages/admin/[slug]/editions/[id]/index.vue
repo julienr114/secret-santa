@@ -344,6 +344,7 @@ const dateOpen = ref(false);
         :date-text="dateText"
         :closing="close.isPending.value"
         :guess="edition.data.value?.guess"
+        :event-date="eventDate"
         :note-position="rules?.messageNotePosition ?? 'after'"
         @send="(pid) => (sendId = pid)"
         @close="onClose"

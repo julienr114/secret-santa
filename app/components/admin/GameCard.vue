@@ -5,8 +5,8 @@ import type { GuessSummary } from '~/composables/queries/useGroup';
 // « Devine qui » on the follow-up of an edition (README 22.17, maquettes
 // DevineSuivi and DevineSuiviRappelFait): how many have played, when the
 // guesses end, and « Envoyer un rappel », once, while someone is left to
-// remind and the guesses are open; then « Rappel envoyé le… ». The card
-// leads to the game's setting. Never a guess.
+// remind and the guesses are open; then « Rappel envoyé le… ». A tap on
+// the card opens the game's setting in its sheet. Never a guess.
 const props = defineProps<{
   slug: string;
   editionId: string;
@@ -17,7 +17,7 @@ const props = defineProps<{
   /** The draw is revealed: the palmarès can be watched. */
   revealed?: boolean;
 }>();
-const emit = defineEmits<{ remind: [] }>();
+const emit = defineEmits<{ remind: []; settings: [] }>();
 const { t, locale } = useT();
 const endText = useGuessEnd();
 
@@ -57,11 +57,24 @@ const line = computed(() =>
         {{ t('adminEdition.game.eyebrow') }}
       </p>
       <h2 class="font-display text-xl leading-[1.2] font-bold">
+        <!-- The game's setting opens at once (asked by Julien on 18
+             November 2026); once revealed, it no longer changes: the
+             settings page shows it. -->
         <NuxtLink
+          v-if="revealed"
           :to="`/admin/${slug}/editions/${editionId}/reglages`"
           class="before:absolute before:inset-0 before:rounded-2xl"
           >{{ t('adminEdition.guess.title') }}</NuxtLink
         >
+        <button
+          v-else
+          type="button"
+          class="text-left before:absolute before:inset-0 before:rounded-2xl"
+          data-testid="game-settings"
+          @click="emit('settings')"
+        >
+          {{ t('adminEdition.guess.title') }}
+        </button>
       </h2>
       <p class="text-sm leading-[1.4] text-toned">{{ line }}</p>
       <NuxtLink

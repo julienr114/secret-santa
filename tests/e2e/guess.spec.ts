@@ -107,6 +107,12 @@ test('the organiser turns « Devine qui » on in the edition settings', async ({
   await expect(card).toContainText('0 sur 5 ont fait un pronostic.');
   await expect(card).toContainText('à 18 h 30');
   await expect(page.getByTestId('settings-row')).toContainText('jeu');
+  // A tap on the card opens the game's setting at once.
+  await page.getByTestId('game-settings').click();
+  await expect(
+    page.getByRole('radio', { name: /Toutes les paires/ }),
+  ).toBeChecked();
+  await page.getByRole('button', { name: 'Annuler' }).click();
   const { entries } = await ok(await admin().get(`${ADMIN}/journal`));
   expect(entries.map((e: { text: string }) => e.text)).toContain(
     'Devine qui : le jeu de pronostics est ouvert',

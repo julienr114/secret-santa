@@ -37,6 +37,8 @@ const props = defineProps<{
   guess?: GuessSummary;
   /** When the draw was revealed, if it was. */
   revealedAt?: string | null;
+  /** The day of the party (ISO), for the game's setting. */
+  eventDate?: string;
   /** Where a word added goes: above or below the message (group rule). */
   notePosition?: 'before' | 'after';
 }>();
@@ -150,6 +152,7 @@ const notPlayed = computed(() =>
   props.participants.filter((p) => p.played === false),
 );
 const reminderOpen = ref(false);
+const guessOpen = ref(false);
 /** The palmarès can be watched once the draw is revealed. */
 const revealedGame = computed(() => Boolean(props.revealedAt));
 /**
@@ -398,6 +401,15 @@ const partyTitle = computed(() =>
     :can-remind="notPlayed.some((p) => p.email)"
     :revealed="revealedGame"
     @remind="reminderOpen = true"
+    @settings="guessOpen = true"
+  />
+  <AdminGuessSheet
+    v-if="guess && gameOn && eventDate"
+    v-model:open="guessOpen"
+    :slug="slug"
+    :edition-id="editionId"
+    :guess="guess"
+    :event-date="eventDate"
   />
   <AdminGameReminderSheet
     v-if="guess && gameOn"

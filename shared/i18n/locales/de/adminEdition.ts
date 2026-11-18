@@ -103,6 +103,9 @@ export default {
     },
   },
   customize: {
+    forReminder:
+      'Die Erinnerung an das Spiel, für alle, die noch nicht gespielt haben',
+    forGroup: 'Die Nachricht für die ganze Gruppe',
     title: 'Nachricht anpassen',
     forOne: 'Für {name}',
     forMany: {
@@ -578,6 +581,13 @@ export default {
       copied: 'Nachricht kopiert',
       help: 'Für WhatsApp, SMS… Die Nachricht nennt niemanden und enthält keinen persönlichen Link.',
     },
+    toEach: 'An alle einzeln, per E-Mail',
+    toGroup: 'An die Gruppe',
+    notPlayedCount: {
+      one: 'Noch nicht gespielt · {count} von {total} ausgewählt',
+      other: 'Noch nicht gespielt · {count} von {total} ausgewählt',
+    },
+    noEmailGroup: 'Keine Adresse? Nimm „An die Gruppe“.',
     reminderSent: {
       one: 'Erinnerung an {count} Person gesendet',
       other: 'Erinnerung an {count} Personen gesendet',

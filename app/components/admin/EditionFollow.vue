@@ -152,20 +152,9 @@ const gameOn = computed(() => (props.guess?.mode ?? 'none') !== 'none');
 const notPlayed = computed(() =>
   props.participants.filter((p) => p.played === false && !p.skipped),
 );
-const reminderOpen = ref(false);
 const guessOpen = ref(false);
 /** The palmarès can be watched once the draw is revealed. */
 const revealedGame = computed(() => Boolean(props.revealedAt));
-/**
- * Closes the reminder, then opens the send sheet of someone without an
- * address.
- * @param participationId - The person.
- * @returns Nothing.
- */
-const onShareFromReminder = (participationId: string) => {
-  reminderOpen.value = false;
-  emit('send', participationId);
-};
 // What used to be « Plus tard, ou en cas de pépin » (README 22.16): the
 // edition's settings on a page of their own, and « Un souci ? » in a sheet.
 const troubleOpen = ref(false);
@@ -400,7 +389,7 @@ const partyTitle = computed(() =>
     :guess="guess"
     :can-remind="notPlayed.length > 0"
     :revealed="revealedGame"
-    @remind="reminderOpen = true"
+    @remind="navigateTo(`/admin/${slug}/editions/${editionId}/rappel`)"
     @settings="guessOpen = true"
   />
   <AdminGuessSheet
@@ -410,16 +399,6 @@ const partyTitle = computed(() =>
     :edition-id="editionId"
     :guess="guess"
     :event-date="eventDate"
-  />
-  <AdminGameReminderSheet
-    v-if="guess && gameOn"
-    v-model:open="reminderOpen"
-    :slug="slug"
-    :edition-id="editionId"
-    :people="notPlayed"
-    :guess="guess"
-    :note-position="notePosition ?? 'after'"
-    @send="onShareFromReminder"
   />
 
   <div class="flex flex-col gap-3">

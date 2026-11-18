@@ -48,6 +48,8 @@ flowchart LR
     lEdition --> emails["Envoyer par email"]
     emails --> messagePlusieurs["Personnaliser le message<br/><small>pour plusieurs</small>"]
     lEdition --> messageUne["Personnaliser le message<br/><small>pour une personne</small>"]
+    lEdition --> rappel["Rappeler le jeu"]
+    rappel --> messageRappel["Personnaliser le message<br/><small>rappel, ou groupe</small>"]
     lEdition --> reglagesEdition["Réglages de l'édition"]
     lEdition --> exclusionsEdition["Exclusions de l'édition"]
     lEdition --> annuler["Annuler le tirage"]
@@ -121,10 +123,11 @@ Décidée par Julien le 18 novembre 2026.
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Nouvelle édition | `/admin/[groupe]/editions/nouvelle` | Le groupe | |
-| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | Le groupe | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Rappeler le jeu, Écrire au groupe, Devine qui |
+| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | Le groupe | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
-| Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs | Langue du message |
+| Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
+| Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
 | Réglages de l'édition | `…/editions/[id]/reglages` | L'édition | Date, budget, petit mot, Devine qui |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |
 | Annuler le tirage | `…/editions/[id]/annuler` | L'édition | |

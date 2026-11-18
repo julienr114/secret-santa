@@ -218,7 +218,7 @@ export default {
     skip: 'Ich setze aus',
     skippedTitle: 'Du setzt aus',
     skippedBody:
-      'Wir erinnern dich nicht an das Spiel. Die Rangliste siehst du bei der Feier trotzdem.',
+      'Wir erinnern dich nicht an das Spiel. Die Überraschung siehst du bei der Feier trotzdem.',
     unskip: 'Doch, ich spiele',
     unskipUntil: 'Möglich bis {end}.',
     skipConfirm: 'Aussetzen?',

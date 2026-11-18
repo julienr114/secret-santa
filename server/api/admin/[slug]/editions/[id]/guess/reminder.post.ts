@@ -18,7 +18,11 @@ import { NOTE_MAX, buildEmail } from '#server/utils/messages';
 // organiser wants (Correction 15), an email to those who have not made a
 // guess yet, have an address and did not pass their turn, with the
 // organiser's word if any. Who has played is known, never what.
-const bodySchema = z.object({ note: z.string().max(NOTE_MAX).default('') });
+const bodySchema = z.object({
+  note: z.string().max(NOTE_MAX).default(''),
+  // Those ticked on « Rappeler le jeu » (Correction 16); all by default.
+  participationIds: z.array(z.string().min(1)).max(100).optional(),
+});
 
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
@@ -31,7 +35,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'email_not_configured',
     });
   }
-  const { note } = await validatedBody(event, bodySchema);
+  const { note, participationIds } = await validatedBody(event, bodySchema);
   const [people, members, rows] = await Promise.all([
     listParticipants(db, edition.id),
     gameMembers(db, edition.id),
@@ -41,7 +45,12 @@ export default defineEventHandler(async (event) => {
       .where(eq(participations.editionId, edition.id)),
   ]);
   const left = new Set(toRemind(members).map((m) => m.id));
-  const targets = people.filter((p) => p.email && left.has(p.id));
+  const targets = people.filter(
+    (p) =>
+      p.email &&
+      left.has(p.id) &&
+      (!participationIds || participationIds.includes(p.participationId)),
+  );
   if (targets.length === 0) {
     throw createError({ statusCode: 409, statusMessage: 'email_missing' });
   }

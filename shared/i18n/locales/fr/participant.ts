@@ -219,7 +219,7 @@ export default {
     skip: 'Je passe mon tour',
     skippedTitle: 'Tu passes ton tour',
     skippedBody:
-      'On ne te rappellera pas le jeu. Tu verras quand même le palmarès à la fête.',
+      'On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête.',
     unskip: 'Finalement, je joue',
     unskipUntil: 'Possible jusqu’au {end}.',
     skipConfirm: 'Passer ton tour ?',

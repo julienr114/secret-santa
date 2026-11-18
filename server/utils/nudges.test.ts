@@ -98,6 +98,15 @@ describe('the automatic reminder', () => {
     ).toBe('done');
   });
 
+  it('still goes up to six hours late, not after', () => {
+    expect(autoReminderDecision(game, '2026-12-23T14:30:00.000Z', at)).toBe(
+      'send',
+    );
+    expect(autoReminderDecision(game, '2026-12-23T15:30:00.000Z', at)).toBe(
+      'missed',
+    );
+  });
+
   it('does not go when off, too late, or right after the organiser', () => {
     const now = '2026-12-23T09:15:00.000Z';
     expect(

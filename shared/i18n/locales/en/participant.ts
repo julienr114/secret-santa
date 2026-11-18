@@ -213,7 +213,7 @@ export default {
     skip: 'I’ll sit this one out',
     skippedTitle: 'You’re sitting this one out',
     skippedBody:
-      'We won’t remind you of the game. You’ll still see the palmarès at the party.',
+      'We won’t remind you of the game. You’ll still see the surprise at the party.',
     unskip: 'Actually, I’ll play',
     unskipUntil: 'Possible until {end}.',
     skipConfirm: 'Sit this one out?',

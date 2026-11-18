@@ -101,6 +101,8 @@ export default {
     },
   },
   customize: {
+    forReminder: 'The game reminder, for those who haven’t played yet',
+    forGroup: 'The message for the whole group',
     title: 'Customise the message',
     forOne: 'For {name}',
     forMany: {
@@ -565,6 +567,13 @@ export default {
       copied: 'Message copied',
       help: 'For WhatsApp, SMS… The message names nobody and holds no personal link.',
     },
+    toEach: 'To each, by email',
+    toGroup: 'To the group',
+    notPlayedCount: {
+      one: 'Not played yet · {count} selected out of {total}',
+      other: 'Not played yet · {count} selected out of {total}',
+    },
+    noEmailGroup: 'No address? Use « To the group ».',
     reminderSent: {
       one: 'Reminder sent to {count} person',
       other: 'Reminder sent to {count} people',

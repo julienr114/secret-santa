@@ -95,7 +95,11 @@ export const useSetGuessMutation = (slug: Ref, id: Ref) =>
     () => groupKeys(slug),
   );
 export const useGuessReminderMutation = (slug: Ref, id: Ref) =>
-  editionAction<{ note: string }>(slug, id, 'guess/reminder');
+  editionAction<{ note: string; participationIds?: string[] }>(
+    slug,
+    id,
+    'guess/reminder',
+  );
 
 export const useAddParticipantMutation = (slug: Ref, id: Ref) =>
   useApiMutation<{ participationId: string }, string>(

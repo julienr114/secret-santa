@@ -199,9 +199,23 @@ test('the organiser: the settings, and the message to the group', async ({
   const { guess } = await ok(await admin().get(state.base));
   expect(guess.autoReminder).toBe(false);
 
+  // « Rappeler le jeu »: a page with a switch (Correction 16).
   await open(page, `/admin/${SLUG}/editions/${state.editionId}`);
   await page.getByTestId('game-remind').click();
-  await page.getByTestId('game-write-group').click();
+  await expect(page).toHaveURL(/\/rappel$/);
+  // Those left to remind: Cy and Dee, not Eli who passed her turn; none
+  // has an address, so nobody is ticked.
+  await expect(page.getByTestId('reminder-count')).toHaveText(
+    'Pas encore joué · 0 sélectionné sur 2',
+  );
+  await expect(page.getByText('Eli')).toHaveCount(0);
+  await expect(
+    page.getByRole('link', { name: "Ajouter l'adresse de Cy" }),
+  ).toBeVisible();
+  await expect(page.getByTestId('game-remind-send')).toBeDisabled();
+
+  await page.getByTestId('reminder-audience').getByText('Au groupe').click();
+  await expect(page).toHaveURL(/vers=groupe/);
   const message = page.getByTestId('game-group-message');
   await expect(message).toContainText('2 sur 4 ont déjà fait leur pronostic.');
   await expect(message).toContainText(
@@ -210,4 +224,12 @@ test('the organiser: the settings, and the message to the group', async ({
   // No personal link, no name.
   await expect(message).not.toContainText('/p/');
   await expect(message).not.toContainText(/Ada|Ben|Cy|Dee|Eli/);
+  // « Personnaliser le message »: a word, kept when coming back.
+  await page.getByRole('link', { name: /Personnaliser le message/ }).click();
+  await page.getByLabel(/Un mot en plus/).fill('On compte sur vous !');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(page).toHaveURL(/vers=groupe/);
+  await expect(page.getByTestId('game-group-message')).toContainText(
+    'On compte sur vous !',
+  );
 });

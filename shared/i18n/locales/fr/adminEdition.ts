@@ -101,6 +101,8 @@ export default {
     },
   },
   customize: {
+    forReminder: 'Le rappel du jeu, pour ceux qui n’ont pas encore joué',
+    forGroup: 'Le message pour tout le groupe',
     title: 'Personnaliser le message',
     forOne: 'Pour {name}',
     forMany: {
@@ -570,6 +572,13 @@ export default {
       copied: 'Message copié',
       help: 'Pour WhatsApp, SMS… Le message ne nomme personne et ne contient aucun lien personnel.',
     },
+    toEach: 'À chacun, par email',
+    toGroup: 'Au groupe',
+    notPlayedCount: {
+      one: 'Pas encore joué · {count} sélectionné sur {total}',
+      other: 'Pas encore joué · {count} sélectionnés sur {total}',
+    },
+    noEmailGroup: 'Sans adresse ? Passe par « Au groupe ».',
     reminderSent: {
       one: 'Rappel envoyé à {count} personne',
       other: 'Rappel envoyé à {count} personnes',

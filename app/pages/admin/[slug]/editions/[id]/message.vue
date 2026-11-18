@@ -20,6 +20,9 @@ import { useMessagesQuery } from '~/composables/queries/useEdition';
 // message, what it will look like, a word to add, and the language for
 // one person (saved on them, as before). « Valider » keeps the choice and
 // goes back; going back without it drops the choice. Nothing is sent here.
+// For « Rappeler le jeu » (Correction 16): the reminder (`?pour=rappel`,
+// previewed for the first one ticked, with their language) or the
+// message to the group (`?pour=groupe`); no « Quel message ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const { t, tk } = useT();
@@ -29,11 +32,17 @@ const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 const who = computed(() => String(route.query.pour ?? ''));
 const many = computed(() => who.value === 'plusieurs');
-/** Where the choice is used: the send sheet, or the email screen. */
+const reminder = computed(() => who.value === 'rappel');
+const group = computed(() => who.value === 'groupe');
+/** Where the choice is used: the send sheet, the email screen, the reminder. */
 const backTo = computed(() =>
-  many.value
-    ? `${editionPath.value}/emails`
-    : `${editionPath.value}?envoyer=${who.value}`,
+  reminder.value
+    ? `${editionPath.value}/rappel`
+    : group.value
+      ? `${editionPath.value}/rappel?vers=groupe`
+      : many.value
+        ? `${editionPath.value}/emails`
+        : `${editionPath.value}?envoyer=${who.value}`,
 );
 const context = useScreenContext(slug, id);
 useHead({ title: () => context.titleOf(t('adminEdition.customize.title')) });
@@ -50,19 +59,35 @@ const participants = computed(() =>
   sortParticipants(edition.data.value?.participants ?? [], status.value),
 );
 const selection = useEmailSelection(id);
+const reminderTicks = useState<string[] | null>(
+  `reminder:${id.value}`,
+  () => null,
+);
+/** Those the reminder is for: not played, not passed their turn. */
+const toRemind = computed(() =>
+  participants.value.filter((p) => p.played === false && !p.skipped),
+);
 /**
  * The person the preview is for: the one, or the first ticked; with
  * nobody ticked (or the page reloaded), the first with an address, or the
  * first of all, as on the email screen, so that it never waits for nobody.
  */
 const person = computed(() =>
-  many.value
-    ? (participants.value.find((p) =>
-        (selection.value ?? []).includes(p.participationId),
-      ) ??
-      participants.value.find((p) => p.email) ??
-      participants.value[0])
-    : participants.value.find((p) => p.participationId === who.value),
+  reminder.value
+    ? (toRemind.value.find((p) =>
+        (
+          reminderTicks.value ?? toRemind.value.map((r) => r.participationId)
+        ).includes(p.participationId),
+      ) ?? toRemind.value[0])
+    : group.value
+      ? undefined
+      : many.value
+        ? (participants.value.find((p) =>
+            (selection.value ?? []).includes(p.participationId),
+          ) ??
+          participants.value.find((p) => p.email) ??
+          participants.value[0])
+        : participants.value.find((p) => p.participationId === who.value),
 );
 const count = computed(() => selection.value?.length ?? 0);
 
@@ -76,6 +101,7 @@ const asked = computed(() => String(route.query.type ?? ''));
  * @returns What was chosen before for the same people, or the default.
  */
 const startType = (): MessageType => {
+  if (reminder.value || group.value) return 'guessReminder';
   if (choice.value?.who === who.value) return choice.value.type;
   const fromList = types.value.find((v) => v === asked.value);
   if (fromList) return fromList;
@@ -105,7 +131,7 @@ watch(
   { immediate: true },
 );
 const tabs = computed(() =>
-  types.value.map((value) => ({
+  (reminder.value || group.value ? [] : types.value).map((value) => ({
     value,
     label: tk(`common.messageType.${value}`),
   })),
@@ -117,10 +143,13 @@ const message = computed(() =>
     ? messages.data.value?.messages[person.value.participationId]
     : undefined,
 );
+const groupText = useGroupReminder();
 const text = computed(() =>
-  message.value
-    ? addNote(message.value.text, note.value, position.value)
-    : undefined,
+  group.value
+    ? groupText(edition.data.value?.guess, note.value)
+    : message.value
+      ? addNote(message.value.text, note.value, position.value)
+      : undefined,
 );
 
 // The language of one person's messages, saved on them.
@@ -170,11 +199,15 @@ const onValidate = () => {
         <UiPageTitle>{{ t('adminEdition.customize.title') }}</UiPageTitle>
         <p class="text-[15px] text-toned">
           {{
-            many
-              ? t('adminEdition.customize.forMany', { count })
-              : t('adminEdition.customize.forOne', {
-                  name: person ? fullName(person) : '',
-                })
+            reminder
+              ? t('adminEdition.customize.forReminder')
+              : group
+                ? t('adminEdition.customize.forGroup')
+                : many
+                  ? t('adminEdition.customize.forMany', { count })
+                  : t('adminEdition.customize.forOne', {
+                      name: person ? fullName(person) : '',
+                    })
           }}
         </p>
       </div>
@@ -190,17 +223,19 @@ const onValidate = () => {
 
       <section class="flex flex-col gap-1.5">
         <UiSectionTitle>{{
-          many
-            ? t('adminEdition.screen.emails.previewFor', {
-                name: person ? fullName(person) : '',
-              })
-            : t('adminEdition.customize.receives', {
-                name: person ? fullName(person) : '',
-              })
+          group
+            ? t('adminEdition.game.message')
+            : many
+              ? t('adminEdition.screen.emails.previewFor', {
+                  name: person ? fullName(person) : '',
+                })
+              : t('adminEdition.customize.receives', {
+                  name: person ? fullName(person) : '',
+                })
         }}</UiSectionTitle>
         <UiMessageBubble
           :text="text"
-          :link="message?.link"
+          :link="group ? undefined : message?.link"
           class="max-w-full"
           :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
           data-testid="customize-preview"
@@ -239,7 +274,7 @@ const onValidate = () => {
         </div>
       </section>
 
-      <UiList v-if="!many && person">
+      <UiList v-if="(!many || reminder) && person">
         <UiListItem
           :title="t('adminEdition.customize.language')"
           :value="tk(`common.language.${person.language}`)"
@@ -248,7 +283,7 @@ const onValidate = () => {
           :on-click="() => (languageOpen = true)"
         />
       </UiList>
-      <p v-else class="text-sm leading-[1.45] text-toned">
+      <p v-else-if="many" class="text-sm leading-[1.45] text-toned">
         {{ t('adminEdition.customize.eachLanguage') }}
       </p>
 

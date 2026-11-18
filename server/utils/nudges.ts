@@ -139,13 +139,20 @@ export type GameReminderState = {
 
 /** Why the automatic reminder does not go, or that it goes. */
 export type AutoReminderDecision =
-  'send' | 'wait' | 'done' | 'off' | 'lateGame' | 'recentManual';
+  'send' | 'wait' | 'done' | 'off' | 'lateGame' | 'recentManual' | 'missed';
+
+/**
+ * How late the automatic reminder may still go, when the scheduled task
+ * was late or down (Correction 16): six hours after its time.
+ */
+export const AUTO_REMINDER_GRACE_HOURS = 6;
 
 /**
  * Whether the automatic reminder goes now (README 22.17): once, at its
  * time; not when turned off, nor when the game was turned on less than
  * three days before the end, nor when the organiser reminded in the last
- * two days. Every answer but `wait` settles it for good.
+ * two days; up to six hours late if the scheduled task was late or down,
+ * never after (`missed`). Every answer but `wait` settles it for good.
  * @param game - The edition's game.
  * @param now - The time now (ISO).
  * @param sendAt - When it is due (`autoReminderAt`).
@@ -167,6 +174,13 @@ export const autoReminderDecision = (
     return 'off';
   }
   if (now < sendAt) return 'wait';
+  // The task was late or down: it still goes within six hours, not after.
+  if (
+    Date.parse(now) - Date.parse(sendAt) >
+    AUTO_REMINDER_GRACE_HOURS * HOUR_MS
+  ) {
+    return 'missed';
+  }
   if (!game.guessAutoReminder) return 'off';
   const end = Date.parse(game.guessEndsAt);
   if (

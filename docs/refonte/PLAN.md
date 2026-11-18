@@ -608,7 +608,7 @@ Demandée par Julien le 18 novembre 2026. Le README 22.17, « Donner envie de jo
 - [x] **Les deux réglages** du jeu, activés par défaut (`DevineReglage`).
 - [x] Journal : le rappel automatique y est inscrit comme une action automatique, sans nom. Trois langues partout. README 22.17 marqué fait pour cette partie, sections 9 à 12 à jour, `tests/e2e`.
 
-### Correction 16 — Les textes : plus clairs, et un ton plus souriant
+### Correction 16 — Les textes au nouveau ton, « Rappeler le jeu » refait, et deux retouches de la Correction 15
 
 Demandée par Julien le 18 novembre 2026. Tout est dans `docs/refonte/TEXTES.md` : la voix (section 1), les mots (sections 2 et 12), puis, fichier par fichier, le texte actuel et le texte proposé. Le document ne liste que ce qui change.
 
@@ -617,6 +617,20 @@ Demandée par Julien le 18 novembre 2026. Tout est dans `docs/refonte/TEXTES.md`
 - [ ] **L'anglais et l'allemand** : `TEXTES.md`, section 13, donne le texte proposé pour chaque clé modifiée, et le tableau des mots dans chaque langue. En anglais, « organizer » partout (les fichiers mélangent « organizer » et « organiser ») et « party », pas « exchange » ; en allemand, « Feier », pas « Bescherung », et « Umschlag », pas « Ergebnis », pour l'état d'une personne. Pour un texte absent de la section 13, suivre l'esprit, pas le mot à mot.
 - [ ] Tout nouveau texte écrit pour les Corrections 13 à 15 suit la voix de `TEXTES.md` ; avant la fête, aucun texte ne nomme un prix ni ne dit « palmarès » aux joueurs (Correction 15).
 - [ ] Les maquettes gardent leurs anciens textes : en cas d'écart, `TEXTES.md` fait foi pour les mots, les maquettes pour la mise en page. Tests et `tests/e2e` mis à jour là où ils lisent un texte.
+
+**« Rappeler le jeu » : une page à deux positions, plus un panneau.** Demandé par Julien le 18 novembre 2026, sur l'écran codé à la Correction 15 : le panneau est trop haut pour un téléphone, ses deux boutons se comprennent mal, et « Ajouter un mot » ne convient pas. Maquettes refaites : `DevineRappel`, `DevineRappelGroupe`, `DevineRappelPersonnaliser`. Le README 22.17 (tableau des rappels) est à jour.
+
+- [x] **Une page**, comme « Envoyer par email » (`SelectionEmail`) : en-tête avec « Annuler », contenu qui défile, bouton fixé en bas.
+- [x] **Un interrupteur à deux positions** en haut : « À chacun, par email » et « Au groupe ». Il remplace les deux boutons empilés.
+- [x] **« À chacun, par email »** : l'aperçu du message, la liste « Pas encore joué » avec une case cochée pour ceux qui ont une adresse et « Ajouter » pour les autres (comme dans `SelectionEmail`, à la place du bouton de partage par ligne), une phrase qui renvoie vers « Au groupe » et donne la date du dernier rappel, puis un seul bouton, « Envoyer {n} email(s) ».
+- [x] **« Au groupe »** : le message, une note qui dit où le coller et qu'il ne nomme personne, puis « Partager » et « Copier le message ».
+- [x] **« Personnaliser le message »** remplace « Ajouter un mot » : un lien sous l'aperçu, qui ouvre l'écran existant de personnalisation (un mot en plus, la langue), sans le choix « Quel message ».
+
+**Deux retouches de la Correction 15**, d'après les réponses de Julien (section 6, « Correction 15 ») :
+
+- [x] **Le rappel automatique tolère un retard** : si la tâche planifiée a eu du retard ou une panne, il part quand même jusqu'à six heures après l'heure prévue ; au-delà, il ne part plus. Les trois cas voulus (coupé, jeu allumé tard, organisateur qui vient de rappeler) ne changent pas. Avec son test.
+- [x] **« Surprise », pas « palmarès »**, dans `DevinePasse` : « On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête. », dans les trois langues. La progression compte bien toutes les lignes (« 3 pronostics sur 6 ») : les maquettes `DevinePairesCourse` et `DevinePasse` sont alignées.
+
 
 ## 6. Questions pour Julien
 
@@ -860,4 +874,15 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 6. **« Me tenir au courant »** n'apparaît qu'aux organisateurs du groupe : un super-admin qui n'en fait pas partie ne voit que « Rappel automatique ».
 7. **Le message au groupe**, au-delà de sept jours, commence par « On joue à Devine qui jusqu'au 25 décembre à 18 h ! » ; dans les sept derniers jours, « Plus que 5 jours… », et « Dernier jour… » le jour même.
 8. **« Tu verras quand même le palmarès à la fête »** (`DevinePasse`) garde le mot « palmarès », comme la maquette, alors que la règle dit de parler de « surprise » aux joueurs avant la fête. À trancher. Le seul autre texte d'avant la fête qui le disait (« Réponse à la fête ») dit maintenant « les résultats et la surprise ».
+
+**Réponses de Julien, 18 novembre 2026, 11 h 17.**
+
+- Point 1 : d'accord, toutes les lignes comptent, « 3 pronostics sur 6 ». Remplir aussi la ligne de la personne à qui on offre protège le secret : une seule ligne vide la désignerait. La maquette `DevinePairesCourse` est corrigée.
+- Point 2 : d'accord. Passer son tour veut dire ne pas jouer.
+- Point 3 : d'accord, et c'est important : les messageries ouvrent parfois les liens toutes seules.
+- Point 4 : d'accord pour les trois cas cités, c'est voulu. **Une tolérance à ajouter** : si la tâche planifiée a simplement eu du retard ou une panne, le rappel part quand même jusqu'à six heures après l'heure prévue ; au-delà, il ne part plus. À faire, avec son test.
+- Point 5 : d'accord.
+- Point 8 : à corriger. Le texte devient « On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête. », dans les trois langues. La maquette `DevinePasse` est corrigée. À faire.
+- Points 6 et 7 : pas encore lus par Julien. Rien à changer en attendant.
+
 

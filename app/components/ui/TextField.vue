@@ -3,7 +3,8 @@
 // une page »): its name in small capitals, « (facultatif) » when it is,
 // the field, then a word of help on the left and the characters used on
 // the right. `multiline` gives a text area that grows; otherwise one line.
-// The texts come from the parent.
+// The default slot goes between the label and the field (ready-made
+// words). The texts come from the parent.
 withDefaults(
   defineProps<{
     id: string;

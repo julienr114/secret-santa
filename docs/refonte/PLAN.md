@@ -641,11 +641,72 @@ Demandée par Julien le 18 novembre 2026 : les messages manquaient de contexte (
 - [x] **Point 3, « tes organisateurs »** : côté participant (page du tirage, jeu, journal, demande de pistes, invitation), le pluriel dès que le groupe a plusieurs organisateurs.
 - [ ] **Point 4, plus tard** : dire qui a fait quoi entre organisateurs (« Dernier rappel le 20 décembre, par Hugo », « Hugo le reçoit aussi » dans les emails d'étape, le prénom dans le journal au lieu de « L'organisateur »). Demande de garder qui a fait l'action.
 
+### Lot 20 — Le choix d'une icône, refait pour beaucoup plus d'icônes (README 22.19)
+
+Décidé par Julien le 18 novembre 2026. Indépendant des listes, sans migration : à faire en premier, les listes s'en servent. Maquette : `PanneauAvatarGrand`, qui remplace `PanneauAvatar`. Le panneau reste bas (Correction 8).
+
+- [ ] **Plus d'icônes, pour tout le monde** : ajouter à `AVATAR_EMOJIS` des symboles qui ne sont pas de Noël, dont une famille « Enfants et jeux ». Chaque emoji reste dans une famille exactement (test existant). Les images viennent du même paquet que le lot 15 ; le test « chaque emoji a son fichier » doit passer.
+- [ ] **Le panneau** : en haut, l'icône en cours, le titre, et un bouton rond « Au hasard » (icône seule, deux flèches croisées, nom accessible « Au hasard ») qui tire un symbole et une couleur. Les symboles sur trois rangées qui défilent de côté ; les familles se suivent dans le défilement, chacune avec son titre au-dessus de ses colonnes ; pas d'onglets. Les couleurs dessous, sur une ligne, sous le titre « Couleur ». « Annuler » et « Valider » comme aujourd'hui.
+- [ ] À l'ouverture, le défilement s'arrête sur le symbole choisi. Rien ne signale les symboles déjà pris par d'autres.
+- [ ] Le composant accepte une forme (ronde ou carrée), une liste de couleurs et une liste de familles : le lot 21 s'en sert pour l'icône d'une liste.
+- [ ] Même sélecteur partout où une icône se choisit. Trois langues pour les titres de familles. Guide de style et `tests/e2e`.
+
+### Lot 21 — Listes de cadeaux : celui qui tient la liste (README 22.19)
+
+Décidé par Julien le 18 novembre 2026. Fonctionnalité nouvelle, séparée des tirages : base, routes, écrans. Le README 22.19 fait foi ; les maquettes `Liste*` se reproduisent à l'identique. À découper en plusieurs commits, les tests avec chaque étape.
+
+- [ ] **Le cœur, en fonctions pures** (`server/utils`), testé avant le reste : si une liste est un brouillon, partagée ou passée ; ce qu'il manque pour la partager ; ce que chacun voit d'une ligne (celui qui tient la liste, celui qui a coché, les autres) ; les phrases de l'onglet (« 9 cadeaux déjà prévus, dont 2 par toi ») ; les idées reprises d'une liste à la suivante.
+- [ ] **Base** (migration) : les personnes de ma famille, rattachées au compte (prénom, icône, infos pratiques, goûts) ; les listes (compte qui la tient, icône et couleur, nom, date, mot, jeton du lien, créé seulement au premier partage) ; les personnes d'une liste, dans l'ordre ; les idées (texte, lien, ordre). Aucune route ne renvoie une liste en brouillon à un autre compte.
+- [ ] **La barre du bas** : deux entrées, « Tirages » et « Listes ». L'onglet « Listes » (`ListesAccueil`, `ListesVide`) : les cartes par date, « Tu tiens cette liste » ou « Brouillon » en tête de carte, « Pour » et les icônes, la phrase du bas, puis « Passées ». Les listes des autres arrivent au lot 22.
+- [ ] **Créer** (`ListeNouvelle`) : « Nouvelle liste » ouvre le document vide, icône tirée au hasard. Pas de formulaire. Un document quitté sans nom ni personne n'est pas gardé.
+- [ ] **L'icône de la liste** (`ListeIcone`) : le sélecteur du lot 20, en tuile carrée, six couleurs pleines, quatre familles de symboles propres aux listes.
+- [ ] **Le document** (`ListeTeneur`) : titre, date et mot modifiables en les touchant ; le mot de départ dans un cadre en pointillés tant qu'il n'a pas été modifié ; effacé, il n'y a plus de mot. Les personnes avec leur icône ronde de 52 px à gauche du prénom et de la ligne d'infos, « ses goûts » vers `ListePersonne`.
+- [ ] **Écrire une idée** (`ListeIdee`) : la ligne vide en fin de chaque personne ; retour valide et passe à la suivante ; barre « Lien », « Supprimer la ligne », « Terminé » au-dessus du clavier ; enregistrement automatique ; une ligne vide disparaît ; une adresse collée devient « lien ». Supprimer une idée déjà cochée demande une confirmation.
+- [ ] **« Ajouter quelqu'un »** : le même bloc dans le brouillon et dans la liste partagée ; les personnes de ma famille pas encore sur la liste, puis « Quelqu'un d'autre » (`ListePersonne`). Ajouter une personne reprend ses idées qui n'ont pas été offertes sur sa liste précédente.
+- [ ] **Le bouton d'état, tout en haut** : « Brouillon · toi seul la vois » et « Partager », puis « Partagée avec la famille » et « Le lien ». `ListePartager` : le lien et le message tout prêt ; s'il manque un nom ou une personne, l'écran le dit et ne crée pas le lien.
+- [ ] **Ce que voit celui qui tient la liste** : le prénom de celui qui a coché, ou « Anonyme » ; « 9 cadeaux déjà prévus. Toi seul vois les prénoms. » Il ne peut pas cocher les idées qui lui sont destinées.
+- [ ] Trois langues, au ton de `docs/refonte/TEXTES.md` : les textes français des maquettes font foi, l'anglais et l'allemand sont à écrire dans ce lot et à ajouter à `TEXTES.md`. Guide de style et `tests/e2e`.
+
+### Lot 22 — Listes de cadeaux : celui qui ouvre le lien (README 22.19)
+
+Décidé par Julien le 18 novembre 2026. Après le lot 21.
+
+- [ ] **Le cœur, en fonctions pures**, testé avant le reste : cocher, décocher ; proposer à plusieurs, se joindre, se retirer (le cadeau passe au suivant, ou la ligne redevient libre) ; fermer le groupe ; ce que chacun voit d'un cadeau à plusieurs et d'un cadeau hors liste.
+- [ ] **Base** (migration) : qui offre quoi (compte, idée, seul ou à plusieurs, anonyme ou non pour celui qui tient la liste, le mot, le groupe fermé ou non) ; les cadeaux hors liste ; la dernière visite d'un compte sur une liste. Deux comptes ne peuvent pas cocher seuls la même idée : le second reçoit « c'est déjà pris » et la liste se met à jour.
+- [ ] **La page du lien** (`ListeVisiteur`) : lisible sans compte. Les lignes barrées ne disent pas qui offre.
+- [ ] **Sans compte** (`ListeConnexion`) : toucher une case demande l'adresse ; le lien magique ramène sur la liste et le cadeau est coché.
+- [ ] **Cocher sans panneau** (`ListeVisiteurMes`) : la case coche tout de suite ; « Tu l'offres · seul, sous ton prénom · Changer » sous la ligne ; retoucher la case décoche.
+- [ ] **« Changer »** (`ListeReserver`, `ListeReserverPlusieurs`) : seul ou à plusieurs, « Dire à Camille que c'est moi », le mot pour les autres, « Finalement, je ne l'offre plus ».
+- [ ] **À plusieurs** (`ListePlusieursLigne`, `ListeRejoindre`, `ListeRejoindreSept`, `ListePlusieursOuvreur`) : la ligne à 1, à 3, à 7 et au complet ; se joindre passe toujours par le panneau ; « On est au complet » réservé à celui qui a proposé.
+- [ ] **« J'offre autre chose à Léo »** (`ListeHorsListe`).
+- [ ] **L'onglet « Listes »** : une liste ouverte en étant connecté y apparaît, avec « Liste de Mamie » en tête de carte, « Tu offres 2 cadeaux. » ou « Tu n'as encore rien coché. », et la pastille des nouvelles idées depuis ma dernière visite. « Passées » : « Liste de Tonton · tu as offert 1 cadeau ».
+- [ ] Trois langues, guide de style, `tests/e2e`. README 22.19 marqué fait.
+
+### Correction 18 — Rédiger sur une page, plus dans un panneau (README 23.3)
+
+Demandée par Julien le 18 novembre 2026, après le bug du clavier remonté par sa famille (le champ d'un panneau du bas disparaissait sous le clavier ; corrigé et déployé). Règle : README 23.3, « Choisir dans un panneau, rédiger sur une page ». Chaque page suit le modèle `DevineRappelPersonnaliser` : le contexte au-dessus du titre, le titre, le champ en haut avec son aide et son compteur, « Valider » fixé en bas, « Retour » qui abandonne. Les textes ne changent pas : `docs/refonte/TEXTES.md` fait foi. Les anciennes maquettes de panneau restent dans le dossier, avec « remplacée par … » dans leur titre.
+
+- [x] **1. Une idée précise** (l'idée, 200 caractères, et un lien) : page `PistesIdee`, ouverte par « Ajouter une idée » ou par une idée de `Pistes`. « Supprimer l'idée » sous les champs. Remplace `SouhaitsIdee`.
+- [x] **2. Les trois textes des pistes** (300 caractères chacun) : une page par texte, `PistesTexteMoment`, `PistesTexteServirait`, `PistesTexteEviter`, ouvertes par leur ligne de `Pistes`. Remplacent `PistesRubrique`.
+- [x] **3. Le petit mot de l'édition** (300 caractères) : page `EditionMot`, ouverte par la ligne « Petit mot » de `EditionReglages`. Dans `EditionNouvelle`, le champ devient une ligne « Petit mot pour les participants » qui ouvre la même page ; ce qui est déjà saisi dans le formulaire est gardé au retour.
+- [x] **4. Le mot du groupe** (500 caractères, et « Où le placer ») : page `GroupeMot`, ouverte par la ligne « Mot ajouté aux messages » de `GroupeReglages`. Remplace `PanneauTexte`.
+- [x] **5. Le message du lien d'invitation** (500 caractères) : page `GroupeInvitationMot`, ouverte par la ligne « Ton mot sur la page » de `GroupeInvitation`.
+- [x] **6. Demander à créer un groupe** (500 caractères) : page `DemandeGroupe`, ouverte par « Demander à créer un groupe » de `AccueilVide`. Le champ en haut, « Pourquoi une demande ? » dessous. Remplace `PanneauDemandeGroupe`.
+- [x] **7. Répondre à une demande de groupe** (super-admin ; un mot de 300 caractères) : page `AdminDemandePage`, ouverte par la demande dans l'administration. Les messages tout prêts au-dessus du champ (`AdminDemandePageMot`), « Si tu acceptes » dessous, « Refuser » et « Accepter » fixés en bas. Remplace `AdminDemande`, `AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`.
+- [x] **Restent des panneaux** : le budget (60 caractères), le nombre de places (`PanneauNombre`), un nom ou un prénom, l'heure de fin de « Devine qui », ajouter un organisateur (`PanneauOrganisateur`), supprimer le groupe (`PanneauSupprimerGroupe`), dévoiler avant la fête. Rien à y changer.
+- [x] README 23.3 à jour, tests e2e à jour.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
+
+**Correction 18, rédiger sur une page (18 novembre 2026).** Choix faits seul :
+- **La page de la demande de groupe porte « Administration » au-dessus de son titre**, comme la maquette `AdminDemandePage`, alors que la règle du contexte (README 23.3) exempte l'administration. La maquette l'emporte ici, puisque « Retour » y ramène.
+- **Le petit mot d'une nouvelle édition** a l'adresse `…/editions/nouvelle/mot` : la même page que celle d'une édition (`…/editions/[id]/mot`), qui écrit alors dans le formulaire gardé (`useNewEditionDraft`) au lieu d'enregistrer. Le formulaire est oublié dès qu'on le quitte ailleurs que vers cette page, ou une fois l'édition créée.
+- **Les réglages du groupe et le lien d'invitation** sont devenus des dossiers (`reglages/index.vue`, `invitation/index.vue`) pour que leurs pages de mot soient en dessous : `/admin/[groupe]/reglages/mot`, `/admin/[groupe]/invitation/mot`. Les adresses existantes ne changent pas.
+- **La demande de groupe** a l'adresse `/demande`. Les lignes et le bouton qui l'ouvraient sont devenus des liens.
 
 **Ce qui reste, à la fin du lot 10 (17 novembre 2026).** Julien a répondu le même jour : les données manquantes sont le lot 11, l'alerte du journal et le mot sur un refus le lot 12, dévoiler les résultats le lot 13 ; ses réponses sont sous chaque question. Plus de question ouverte.
 
@@ -912,3 +973,27 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 3. **Les messages d'erreur** gardent « ton organisateur » : ils ne savent pas de quel groupe il s'agit.
 4. **La forme des objets** : « Secret Santa de {groupe} : … » en français, « {groupe} Secret Santa: … » en anglais, « Wichteln {groupe}: … » en allemand ; pour les emails à l'organisateur, « Devine qui, {groupe} : … ». Le prénom reste dans chaque objet.
 
+### Lots 20 à 22 — listes de cadeaux
+
+Écrits le 18 novembre 2026 à partir des maquettes. Points que Julien n'a pas encore tranchés ; la proposition entre parenthèses est celle que suivent le README 22.19 et les lots, à corriger s'il répond autrement.
+
+1. **Le lien avec un tirage.** Aucun pour l'instant : une liste est séparée des groupes et des éditions. À décider plus tard : montrer à celui qui m'offre, dans un tirage, la liste où je figure.
+2. **Le mot de départ.** **Réponse de Julien, 18 novembre 2026 :** « Quelques idées pour t'éviter de chercher. Coche ce que tu offres, et personne n'aura la même idée. Tu en as une autre ? Elle est la bienvenue. » Les maquettes sont à jour.
+3. **Arrêter de partager** (proposition : pas dans ces lots). Un « Ne plus partager » sur `ListePartager` couperait le lien et remettrait la liste en brouillon, en gardant les cadeaux cochés.
+4. **Celui qui tient la liste ne coche pas ses propres idées** (proposition : oui, pas de case sur ses lignes).
+5. **Rester anonyme** : le prénom est visible de celui qui tient la liste dès qu'on coche, jusqu'à ce qu'on passe par « Changer » (proposition : retenir le dernier choix de chacun pour la fois suivante).
+6. **Un cadeau hors liste** : les autres voient « Un cadeau surprise, hors liste », sans les deux mots (proposition des maquettes). À confirmer : les montrer éviterait mieux les doublons.
+7. **À plusieurs** : seul celui qui a proposé ferme le groupe ; s'il se retire, le cadeau passe au suivant (proposition des maquettes).
+8. **« Au hasard »** tire un symbole et une couleur parmi tous, sans éviter ceux déjà pris (proposition).
+9. **Le bleu nuit** `#2c4a63` des tuiles de liste est hors de la palette de l'application (proposition : on le garde, pour les listes seulement).
+10. **Aucun email** dans ces lots : celui qui tient la liste n'est pas prévenu quand quelqu'un coche.
+11. **La carte d'un brouillon** dans l'onglet « Listes » n'est pas dessinée : même carte, « Brouillon » en tête.
+
+### Correction 18
+
+Écrite le 18 novembre 2026. Choix faits en dessinant, à relire :
+
+1. **Répondre à une demande** : une seule page, avec le mot et « Refuser » / « Accepter » ensemble, plutôt qu'une page pour le mot et un retour à la demande.
+2. **`EditionNouvelle`** : le petit mot quitte le formulaire de création pour une ligne qui ouvre `EditionMot`. Il faut garder le reste du formulaire pendant l'aller-retour.
+3. **Les listes de cadeaux** (lots 21 et 22) respectent déjà la règle : les idées s'écrivent dans le document (`ListeIdee`, `ListeNouvelle`), `ListePersonne` est une page. Leurs panneaux n'ont qu'un champ court : l'adresse email (`ListeConnexion`), le mot pour les autres (`ListeReserverPlusieurs`), le cadeau hors liste (`ListeHorsListe`).
+4. **Les pages des trois textes des pistes** n'ont pas de ligne d'aide sous le champ : l'aide actuelle est déjà la phrase sous le titre.

@@ -57,7 +57,14 @@ export default {
     '🔍 Devine qui, le jeu de pronostics du Secret Santa : qui t’offre ton cadeau ? Tes pronostics jusqu’au {guessEnd}.',
   guessReminder: {
     greeting: 'Salut {firstName} ! 🔍',
-    body: 'Devine qui, le jeu de pronostics du Secret Santa de {groupName} : qui t’offre ton cadeau cette année ? Tu as jusqu’au {guessEnd} pour faire ton pronostic. Réponse à la fête !',
+    body: 'Au Secret Santa de {groupName} ({editionLabel}), on joue à Devine qui, un petit jeu de pronostics.',
+    howSanta:
+      'Le principe : tu essaies de deviner qui t’offre ton cadeau. Un seul pronostic, que tu peux changer jusqu’au {guessEnd}.',
+    howAll:
+      'Le principe : tu essaies de deviner qui offre à qui, à commencer par ton propre Père Noël. Autant de pronostics que tu veux, jusqu’au {guessEnd}.',
+    secret:
+      'Personne ne voit tes pronostics avant la fête. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe : plus vous êtes nombreux à jouer, plus elle sera belle.',
+    cta: 'Ton lien, pour jouer :',
     subject:
       'Secret Santa de {groupName} : devine qui t’offre ton cadeau, {firstName}',
   },

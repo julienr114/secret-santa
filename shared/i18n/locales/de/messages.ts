@@ -56,7 +56,14 @@ export default {
     '🔍 Devine qui, das Tippspiel zum Wichteln: Wer beschenkt dich? Deine Tipps bis {guessEnd}.',
   guessReminder: {
     greeting: 'Hallo {firstName}! 🔍',
-    body: 'Devine qui, das Tippspiel zum Wichteln von {groupName}: Wer beschenkt dich dieses Jahr? Du hast bis {guessEnd} Zeit für deinen Tipp. Antwort bei der Feier!',
+    body: 'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui, ein kleines Tippspiel.',
+    howSanta:
+      'So geht’s: Du versuchst zu erraten, wer dich beschenkt. Ein einziger Tipp, den du bis {guessEnd} ändern kannst.',
+    howAll:
+      'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen bei deinem eigenen Wichtel. So viele Tipps, wie du willst, bis {guessEnd}.',
+    secret:
+      'Niemand sieht deine Tipps vor der Feier. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe: Je mehr von euch spielen, desto schöner wird sie.',
+    cta: 'Dein Link, zum Spielen:',
     subject: 'Wichteln {groupName}: Rate, wer dich beschenkt, {firstName}',
   },
   guessAuto: {

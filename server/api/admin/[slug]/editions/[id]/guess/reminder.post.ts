@@ -73,6 +73,7 @@ export default defineEventHandler(async (event) => {
               link: await personalLink(event, row, dataKey),
               guessEndsAt: edition.guessEndsAt,
               guessTimeZone: edition.guessTimeZone,
+              guessMode: edition.guessMode as 'none' | 'santa' | 'all',
             },
             person.language,
             note,

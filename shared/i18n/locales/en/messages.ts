@@ -57,7 +57,14 @@ export default {
     '🔍 Devine qui, the Secret Santa guessing game: who gives you your present? Your guesses until {guessEnd}.',
   guessReminder: {
     greeting: 'Hi {firstName}! 🔍',
-    body: 'Devine qui, the guessing game of the {groupName} Secret Santa: who gives you your present this year? You have until {guessEnd} to make your guess. Answer at the party!',
+    body: 'In the {groupName} Secret Santa ({editionLabel}), we’re playing Devine qui, a little guessing game.',
+    howSanta:
+      'How it works: you try to guess who gives you your present. One guess, which you can change until {guessEnd}.',
+    howAll:
+      'How it works: you try to guess who gives to whom, starting with your own Secret Santa. As many guesses as you like, until {guessEnd}.',
+    secret:
+      'Nobody sees your guesses before the party. The answers come when the draw is revealed, with a surprise for the group: the more of you play, the better it will be.',
+    cta: 'Your link, to play:',
     subject:
       '{groupName} Secret Santa: guess who gives you your present, {firstName}',
   },

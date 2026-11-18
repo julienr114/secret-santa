@@ -405,5 +405,7 @@ Demandé par Julien le 18 novembre 2026 : « Under the Tree » ne dit rien, et �
 
 **Le message « À qui offres-tu un cadeau ? »** (tirage fait ailleurs) présente le principe : le tirage est déjà fait, chacun dit sur sa page à qui il offre, la réponse reste secrète ; on peut déjà laisser ses pistes, et chacun lit celles de sa personne quand tout le monde a répondu. Il donne le budget et la date, et présente « Devine qui » quand le jeu est actif.
 
+**Le message « Rappeler le jeu »** présente Devine qui : un petit jeu de pronostics au Secret Santa du groupe, son principe selon le mode (« Qui m'offre ? » : un pronostic sur son Père Noël ; « Toutes les paires » : qui offre à qui, autant qu'on veut), la date limite, le secret jusqu'à la fête et la surprise pour le groupe. Jamais un prix nommé.
+
 Les lignes du journal (« L'organisateur a envoyé… ») décrivent l'action d'une personne : elles restent au singulier en attendant de nommer qui a fait quoi (plus tard, Correction 17, point 4).
 

@@ -437,10 +437,22 @@ describe('« Devine qui » in the messages', () => {
     expect(valueOf(buildMessage('drawn', data))).not.toContain('Devine');
   });
 
-  it('writes the reminder as in its mockup', () => {
-    expect(valueOf(buildMessage('guessReminder', game))).toBe(
-      'Salut Léa ! 🔍\nDevine qui, le jeu de pronostics du Secret Santa de la famille Martin : qui t’offre ton cadeau cette année ? Tu as jusqu’au 25 décembre à 18 h pour faire ton pronostic. Réponse à la fête !\nhttps://secret-santa.example/p/abc123',
+  it('presents the game in the reminder, by its mode', () => {
+    expect(
+      valueOf(buildMessage('guessReminder', { ...game, guessMode: 'santa' })),
+    ).toBe(
+      [
+        'Salut Léa ! 🔍',
+        'Au Secret Santa de la famille Martin (Noël 2026), on joue à Devine qui, un petit jeu de pronostics.',
+        'Le principe : tu essaies de deviner qui t’offre ton cadeau. Un seul pronostic, que tu peux changer jusqu’au 25 décembre à 18 h.',
+        'Personne ne voit tes pronostics avant la fête. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe : plus vous êtes nombreux à jouer, plus elle sera belle.',
+        'Ton lien, pour jouer :',
+        'https://secret-santa.example/p/abc123',
+      ].join('\n'),
     );
+    expect(
+      valueOf(buildMessage('guessReminder', { ...game, guessMode: 'all' })),
+    ).toContain('tu essaies de deviner qui offre à qui');
   });
 
   it('announces the results without any name but the reader’s', () => {

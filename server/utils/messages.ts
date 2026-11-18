@@ -90,6 +90,8 @@ export type MessageData = {
    */
   guessEndsAt?: string | null;
   guessTimeZone?: string | null;
+  /** The game's mode, for how it is explained. */
+  guessMode?: 'none' | 'santa' | 'all';
   /**
    * The first name of the organiser who sends it, for the signature of an
    * email; none when unknown (it then signs with the Secret Santa).
@@ -144,9 +146,16 @@ const TEMPLATES: Record<MessageType, (d: MessageData) => MessageKey[]> = {
     'messages.answerReminder.greeting',
     'messages.answerReminder.cta',
   ],
-  guessReminder: () => [
+  // « Devine qui » presented (Correction 17): what it is, how it plays in
+  // this edition's mode, until when, and that it stays secret.
+  guessReminder: (d) => [
     'messages.guessReminder.greeting',
     'messages.guessReminder.body',
+    d.guessMode === 'santa'
+      ? 'messages.guessReminder.howSanta'
+      : 'messages.guessReminder.howAll',
+    'messages.guessReminder.secret',
+    'messages.guessReminder.cta',
   ],
   answerCheck: () => [
     'messages.answerCheck.greeting',

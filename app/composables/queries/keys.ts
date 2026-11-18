@@ -20,4 +20,9 @@ export const keys = {
   journal: (token: string) => ['p', token, 'journal'] as const,
   game: (token: string) => ['p', token, 'game'] as const,
   draw: (token: string) => ['p', token, 'draw'] as const,
+  // Gift lists (README 22.19).
+  lists: () => ['lists'] as const,
+  list: (id: string) => ['lists', id] as const,
+  family: () => ['family'] as const,
+  member: (id: string) => ['family', id] as const,
 };

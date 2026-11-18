@@ -655,17 +655,17 @@ Décidé par Julien le 18 novembre 2026. Indépendant des listes, sans migration
 
 Décidé par Julien le 18 novembre 2026. Fonctionnalité nouvelle, séparée des tirages : base, routes, écrans. Le README 22.19 fait foi ; les maquettes `Liste*` se reproduisent à l'identique. À découper en plusieurs commits, les tests avec chaque étape.
 
-- [ ] **Le cœur, en fonctions pures** (`server/utils`), testé avant le reste : si une liste est un brouillon, partagée ou passée ; ce qu'il manque pour la partager ; ce que chacun voit d'une ligne (celui qui tient la liste, celui qui a coché, les autres) ; les phrases de l'onglet (« 9 cadeaux déjà prévus, dont 2 par toi ») ; les idées reprises d'une liste à la suivante.
-- [ ] **Base** (migration) : les personnes de ma famille, rattachées au compte (prénom, icône, infos pratiques, goûts) ; les listes (compte qui la tient, icône et couleur, nom, date, mot, jeton du lien, créé seulement au premier partage) ; les personnes d'une liste, dans l'ordre ; les idées (texte, lien, ordre). Aucune route ne renvoie une liste en brouillon à un autre compte.
-- [ ] **La barre du bas** : deux entrées, « Tirages » et « Listes ». L'onglet « Listes » (`ListesAccueil`, `ListesVide`) : les cartes par date, « Tu tiens cette liste » ou « Brouillon » en tête de carte, « Pour » et les icônes, la phrase du bas, puis « Passées ». Les listes des autres arrivent au lot 22.
-- [ ] **Créer** (`ListeNouvelle`) : « Nouvelle liste » ouvre le document vide, icône tirée au hasard. Pas de formulaire. Un document quitté sans nom ni personne n'est pas gardé.
-- [ ] **L'icône de la liste** (`ListeIcone`) : le sélecteur du lot 20, en tuile carrée, six couleurs pleines, quatre familles de symboles propres aux listes.
-- [ ] **Le document** (`ListeTeneur`) : titre, date et mot modifiables en les touchant ; le mot de départ dans un cadre en pointillés tant qu'il n'a pas été modifié ; effacé, il n'y a plus de mot. Les personnes avec leur icône ronde de 52 px à gauche du prénom et de la ligne d'infos, « ses goûts » vers `ListePersonne`.
-- [ ] **Écrire une idée** (`ListeIdee`) : la ligne vide en fin de chaque personne ; retour valide et passe à la suivante ; barre « Lien », « Supprimer la ligne », « Terminé » au-dessus du clavier ; enregistrement automatique ; une ligne vide disparaît ; une adresse collée devient « lien ». Supprimer une idée déjà cochée demande une confirmation.
-- [ ] **« Ajouter quelqu'un »** : le même bloc dans le brouillon et dans la liste partagée ; les personnes de ma famille pas encore sur la liste, puis « Quelqu'un d'autre » (`ListePersonne`). Ajouter une personne reprend ses idées qui n'ont pas été offertes sur sa liste précédente.
-- [ ] **Le bouton d'état, tout en haut** : « Brouillon · toi seul la vois » et « Partager », puis « Partagée avec la famille » et « Le lien ». `ListePartager` : le lien et le message tout prêt ; s'il manque un nom ou une personne, l'écran le dit et ne crée pas le lien.
-- [ ] **Ce que voit celui qui tient la liste** : le prénom de celui qui a coché, ou « Anonyme » ; « 9 cadeaux déjà prévus. Toi seul vois les prénoms. » Il ne peut pas cocher les idées qui lui sont destinées.
-- [ ] Trois langues, au ton de `docs/refonte/TEXTES.md` : les textes français des maquettes font foi, l'anglais et l'allemand sont à écrire dans ce lot et à ajouter à `TEXTES.md`. Guide de style et `tests/e2e`.
+- [x] **Le cœur, en fonctions pures** (`server/utils`), testé avant le reste : si une liste est un brouillon, partagée ou passée ; ce qu'il manque pour la partager ; ce que chacun voit d'une ligne (celui qui tient la liste, celui qui a coché, les autres) ; les phrases de l'onglet (« 9 cadeaux déjà prévus, dont 2 par toi ») ; les idées reprises d'une liste à la suivante.
+- [x] **Base** (migration) : les personnes de ma famille, rattachées au compte (prénom, icône, infos pratiques, goûts) ; les listes (compte qui la tient, icône et couleur, nom, date, mot, jeton du lien, créé seulement au premier partage) ; les personnes d'une liste, dans l'ordre ; les idées (texte, lien, ordre). Aucune route ne renvoie une liste en brouillon à un autre compte.
+- [x] **La barre du bas** : deux entrées, « Tirages » et « Listes ». L'onglet « Listes » (`ListesAccueil`, `ListesVide`) : les cartes par date, « Tu tiens cette liste » ou « Brouillon » en tête de carte, « Pour » et les icônes, la phrase du bas, puis « Passées ». Les listes des autres arrivent au lot 22.
+- [x] **Créer** (`ListeNouvelle`) : « Nouvelle liste » ouvre le document vide, icône tirée au hasard. Pas de formulaire. Un document quitté sans nom ni personne n'est pas gardé.
+- [x] **L'icône de la liste** (`ListeIcone`) : le sélecteur du lot 20, en tuile carrée, six couleurs pleines, quatre familles de symboles propres aux listes.
+- [x] **Le document** (`ListeTeneur`) : titre, date et mot modifiables en les touchant ; le mot de départ dans un cadre en pointillés tant qu'il n'a pas été modifié ; effacé, il n'y a plus de mot. Les personnes avec leur icône ronde de 52 px à gauche du prénom et de la ligne d'infos, « ses goûts » vers `ListePersonne`.
+- [x] **Écrire une idée** (`ListeIdee`) : la ligne vide en fin de chaque personne ; retour valide et passe à la suivante ; barre « Lien », « Supprimer la ligne », « Terminé » au-dessus du clavier ; enregistrement automatique ; une ligne vide disparaît ; une adresse collée devient « lien ». Supprimer une idée déjà cochée demande une confirmation.
+- [x] **« Ajouter quelqu'un »** : le même bloc dans le brouillon et dans la liste partagée ; les personnes de ma famille pas encore sur la liste, puis « Quelqu'un d'autre » (`ListePersonne`). Ajouter une personne reprend ses idées qui n'ont pas été offertes sur sa liste précédente.
+- [x] **Le bouton d'état, tout en haut** : « Brouillon · toi seul la vois » et « Partager », puis « Partagée avec la famille » et « Le lien ». `ListePartager` : le lien et le message tout prêt ; s'il manque un nom ou une personne, l'écran le dit et ne crée pas le lien.
+- [x] **Ce que voit celui qui tient la liste** : le prénom de celui qui a coché, ou « Anonyme » ; « 9 cadeaux déjà prévus. Toi seul vois les prénoms. » Il ne peut pas cocher les idées qui lui sont destinées.
+- [x] Trois langues, au ton de `docs/refonte/TEXTES.md` : les textes français des maquettes font foi, l'anglais et l'allemand sont à écrire dans ce lot et à ajouter à `TEXTES.md`. Guide de style et `tests/e2e`.
 
 ### Lot 22 — Listes de cadeaux : celui qui ouvre le lien (README 22.19)
 
@@ -701,6 +701,15 @@ Demandée par Julien le 18 novembre 2026, après le bug du clavier remonté par 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
 
 Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enregistrer » et les deux choix de l'administration ont été validés le 16 novembre 2026.
+
+**Lot 21, les listes, côté de celui qui la tient (18 novembre 2026).** Choix faits seul :
+- **« Réserver »** : la maquette `ListePartager` écrit « Réserve ce que tu offres » et « Pour réserver » ; le README (22.19, « Les mots ») l'interdit à l'écran. Le message dit « Coche ce que tu offres », l'aide « Pour cocher ».
+- **Moi dans ma famille** : celui qui tient la liste y est d'office, depuis son profil (prénom, icône), dès qu'il a un prénom ; sa ligne dit « Moi ».
+- **Créer** : « Nouvelle liste » crée le brouillon aussitôt (icône tirée au hasard) et ouvre son document ; quitté sans nom ni personne, le document le supprime, et l'onglet ne montre jamais un brouillon vide (si la page n'a pas pu le supprimer).
+- **Retirer quelqu'un d'une liste** : aucune maquette ne le montre ; c'est en bas de sa fiche (« ses goûts »), ouverte depuis la liste, avec un second appui. Il reste dans ma famille.
+- **« Répondre aux questions pour lui »** : « pour Léo », pour ne pas deviner le genre.
+- **La carte d'une liste que je tiens** n'a pas encore ma petite icône à côté de « Tu tiens cette liste » (la maquette la montre) ; elle viendra avec le lot 22, qui ajoute celle de « Liste de Mamie ».
+- **Ce que voit celui qui tient la liste** (prénoms, « Anonyme ») est prêt dans le cœur (`ideaView`) ; il s'affichera quand on pourra cocher, au lot 22.
 
 **Correction 18, rédiger sur une page (18 novembre 2026).** Choix faits seul :
 - **La page de la demande de groupe porte « Administration » au-dessus de son titre**, comme la maquette `AdminDemandePage`, alors que la règle du contexte (README 23.3) exempte l'administration. La maquette l'emporte ici, puisque « Retour » y ramène.

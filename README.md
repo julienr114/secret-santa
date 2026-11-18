@@ -1609,7 +1609,7 @@ Les deux lignes sont au passé (« Qui m'a offert mon cadeau ? », « Qui a offe
 
 ### 22.19 Décidé : les listes de cadeaux (18 novembre 2026)
 
-Décidé par Julien le 18 novembre 2026. Pas encore codé : lots 20 à 22 de `docs/refonte/PLAN.md`. Maquettes : `Liste*`, `ListesAccueil`, `ListesVide`, `PanneauAvatarGrand`.
+Décidé par Julien le 18 novembre 2026. Lots 20 à 22 de `docs/refonte/PLAN.md` : le choix d'une icône (lot 20) et le côté de celui qui tient la liste (lot 21) sont faits ; celui qui ouvre le lien reste à faire (lot 22). Tables `family_members`, `gift_lists`, `gift_list_people`, `gift_list_ideas` (migration `0026`), routes `/api/lists`, `/api/family`, cœur `server/utils/lists.ts`, écrans `/listes`, `/listes/[id]`, `/famille/[id]` (`docs/ARBORESCENCE.md`). Maquettes : `Liste*`, `ListesAccueil`, `ListesVide`, `PanneauAvatarGrand`.
 
 **L'idée.** Une famille écrit ses idées de cadeaux pour un événement (Noël, un anniversaire, toute l'année), envoie un lien, et chacun coche ce qu'il offre pour que personne n'ait la même idée. Très utile pour les enfants. Le modèle est une page Notion que Julien tenait à la main : une icône, un titre, un mot, des prénoms, des lignes à cocher. L'écran doit rester un **document**, pas un formulaire : on écrit là où le texte apparaîtra.
 

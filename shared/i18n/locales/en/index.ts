@@ -9,6 +9,7 @@ import adminGroup from './adminGroup';
 import auth from './auth';
 import notify from './notify';
 import hints from './hints';
+import lists from './lists';
 
 export default {
   common,
@@ -22,4 +23,5 @@ export default {
   auth,
   notify,
   hints,
+  lists,
 };

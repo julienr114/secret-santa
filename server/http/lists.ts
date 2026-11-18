@@ -7,6 +7,7 @@ import {
   type FamilyMember,
 } from '#server/database/lists';
 import type { GiftListRow } from '#server/database/schema';
+import type { Avatar } from '#server/utils/avatars';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { nowIso } from '#server/http/context';
@@ -130,8 +131,8 @@ export type ListCard = {
   status: ListStatus;
   createdAt: string;
   /** Null when I hold it; otherwise who does. */
-  holder: { name: string; avatar: { emoji: string; color: string } } | null;
-  people: { firstName: string; avatar: { emoji: string; color: string } }[];
+  holder: { name: string; avatar: Avatar } | null;
+  people: { firstName: string; avatar: Avatar }[];
   sentence: CardSentence;
   /** For the holder: the people without an idea yet. */
   noIdeas: string[];

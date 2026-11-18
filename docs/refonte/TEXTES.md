@@ -409,3 +409,29 @@ Demandé par Julien le 18 novembre 2026 : « Under the Tree » ne dit rien, et �
 
 Les lignes du journal (« L'organisateur a envoyé… ») décrivent l'action d'une personne : elles restent au singulier en attendant de nommer qui a fait quoi (plus tard, Correction 17, point 4).
 
+
+## 16. Les listes de cadeaux (lots 21 et 22)
+
+Les textes français des maquettes `Liste*` font foi ; l'anglais et l'allemand ont été écrits avec le lot 21 (18 novembre 2026). Toutes les clés sont dans `shared/i18n/locales/*/lists.ts`. Les mots : « liste », « idée », « cocher », « c'est pris », « celui qui tient la liste » ; jamais « réserver » à l'écran, jamais « souhait », jamais combien d'idées restent.
+
+| Clé | Français | Anglais | Allemand |
+|---|---|---|---|
+| `home.intro` | Chacun coche ce qu'il offre. | Everyone ticks what they give. | Jeder hakt ab, was er schenkt. |
+| `home.youHold` | Tu tiens cette liste | You hold this list | Du führst diese Liste |
+| `home.listOf` | Liste de {name} | {name}'s list | Liste von {name} |
+| `home.planned` | {count} cadeaux déjà prévus | {count} gifts already planned | {count} Geschenke schon geplant |
+| `home.giving` | Tu offres {count} cadeaux. | You give {count} gifts. | Du schenkst {count} Geschenke. |
+| `home.nothingYet` | Tu n'as encore rien coché. | You haven't ticked anything yet. | Du hast noch nichts abgehakt. |
+| `home.empty.title` | Fini, les cadeaux en double | No more double gifts | Schluss mit doppelten Geschenken |
+| `doc.draft` | Brouillon · toi seul la vois | Draft · only you can see it | Entwurf · nur du siehst ihn |
+| `doc.shared` | Partagée avec la famille | Shared with the family | Mit der Familie geteilt |
+| `doc.noteDefault` | Quelques idées pour t'éviter de chercher. Coche ce que tu offres, et personne n'aura la même idée. Tu en as une autre ? Elle est la bienvenue. | A few ideas to save you the search. Tick what you give, and nobody will have the same idea. Got another one? It's welcome. | Ein paar Ideen, damit du nicht suchen musst. Hak ab, was du schenkst, dann hat niemand dieselbe Idee. Du hast noch eine? Sie ist willkommen. |
+| `doc.plannedHolder` | 9 cadeaux déjà prévus. Toi seul vois les prénoms. | 9 gifts already planned. Only you see the names. | 9 Geschenke schon geplant. Nur du siehst die Namen. |
+| `doc.anotherIdea` | Une autre idée… | Another idea… | Noch eine Idee… |
+| `doc.addSomeone` | Ajouter quelqu'un | Add someone | Jemanden hinzufügen |
+| `doc.offList` | Hors liste : {text} | Not on the list: {text} | Nicht auf der Liste: {text} |
+| `share.message` | 🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n'ait la même idée : | 🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea: | 🎁 Unsere Geschenkliste für {title} ist fertig: {names}. Hak ab, was du schenkst, damit niemand dieselbe Idee hat: |
+| `share.footer` | Fait avec Under the Tree, pour les listes de cadeaux et les Secret Santa en famille. | Made with Under the Tree, for gift lists and family Secret Santas. | Gemacht mit Under the Tree, für Geschenklisten und Wichteln in der Familie. |
+| `person.prefers` | Côté cadeaux, {name} préfère… | When it comes to gifts, {name} prefers… | Bei Geschenken mag {name} lieber… |
+
+**Écart avec la maquette `ListePartager`** : elle écrit « Réserve ce que tu offres » et « Pour réserver, il faut se connecter » ; le README (22.19, « Les mots ») interdit « réserver » à l'écran. Le texte dit « Coche » et « Pour cocher ».

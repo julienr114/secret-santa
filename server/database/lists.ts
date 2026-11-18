@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, inArray, ne } from 'drizzle-orm';
 import type { Db } from './client';
 import {
+  accounts,
   familyMembers,
   giftListIdeas,
   giftListPeople,
@@ -20,6 +21,8 @@ export type FamilyMember = {
   id: string;
   firstName: string;
   avatar: Avatar;
+  /** The holder themself: « Moi ». */
+  isSelf: boolean;
   birthDate: string | null;
   clothingSize: string | null;
   shoeSize: string | null;
@@ -40,6 +43,7 @@ export const memberOf = (row: FamilyMemberRow): FamilyMember => ({
     avatarEmoji: row.avatarEmoji,
     avatarColor: row.avatarColor,
   }),
+  isSelf: row.isSelf,
   birthDate: row.birthDate,
   clothingSize: row.clothingSize,
   shoeSize: row.shoeSize,
@@ -47,18 +51,57 @@ export const memberOf = (row: FamilyMemberRow): FamilyMember => ({
   texts: row.texts ?? {},
 });
 
-/** The people of my family, oldest first. */
+/**
+ * Puts the holder in their own family, from their profile, the first
+ * time (« Moi », README 22.19): nothing until they have a first name.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns Once done.
+ */
+export const ensureSelf = async (db: Db, accountId: string) => {
+  const self = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(
+      and(
+        eq(familyMembers.accountId, accountId),
+        eq(familyMembers.isSelf, true),
+      ),
+    )
+    .get();
+  if (self) return;
+  const account = await db
+    .select()
+    .from(accounts)
+    .where(eq(accounts.id, accountId))
+    .get();
+  if (!account?.firstName) return;
+  const avatar = avatarOf(account);
+  await db.insert(familyMembers).values({
+    id: newId(),
+    accountId,
+    firstName: account.firstName,
+    avatarEmoji: avatar.emoji,
+    avatarColor: avatar.color,
+    isSelf: true,
+    createdAt: nowIso(),
+  });
+};
+
+/** The people of my family, oldest first, myself among them. */
 export const familyOf = async (
   db: Db,
   accountId: string,
-): Promise<FamilyMember[]> =>
-  (
+): Promise<FamilyMember[]> => {
+  await ensureSelf(db, accountId);
+  return (
     await db
       .select()
       .from(familyMembers)
       .where(eq(familyMembers.accountId, accountId))
       .orderBy(asc(familyMembers.createdAt))
   ).map(memberOf);
+};
 
 /** One person of my family, or null when not mine. */
 export const findMember = async (

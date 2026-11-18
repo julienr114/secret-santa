@@ -468,6 +468,8 @@ export const familyMembers = sqliteTable(
     firstName: text('first_name').notNull(),
     avatarEmoji: text('avatar_emoji').notNull(),
     avatarColor: text('avatar_color').notNull(),
+    // The holder themself, made from their profile: « Moi ».
+    isSelf: integer('is_self', { mode: 'boolean' }).notNull().default(false),
     // Practical details: what the family always asks.
     birthDate: text('birth_date'),
     clothingSize: text('clothing_size'),

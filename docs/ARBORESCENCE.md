@@ -19,6 +19,7 @@ flowchart LR
   accueil --> compte["Mon compte"]
   accueil --> passes["Tirages passés"]
   accueil --> demande["Demander à créer un groupe"]
+  accueil --> listes["Listes<br/><small>/listes</small>"]
 
   subgraph admin ["Administration (super-admin)"]
     administration["Administration<br/><small>/admin</small>"]
@@ -76,6 +77,16 @@ flowchart LR
     page --> journal["Journal du groupe"]
   end
   accueil -. "seulement si ouverte depuis l'accueil" .-> page
+
+  subgraph listesCadeaux ["Listes de cadeaux (celui qui tient la liste)"]
+    listes --> uneListe["La liste<br/><small>/listes/[id]</small>"]
+    listes --> nouvelleListe["Nouvelle liste"]
+    uneListe --> partager["Partager la liste"]
+    partager --> messageListe["Personnaliser le message"]
+    uneListe --> membre["Une personne de ma famille<br/><small>/famille/[id]</small>"]
+    membre --> membreTexte["Un texte de ses goûts"]
+    membre --> membreQuestion["Les questions, pour elle"]
+  end
 
   classDef sans stroke-dasharray: 5 5
 ```
@@ -163,3 +174,18 @@ Décidée par Julien le 18 novembre 2026.
 | Qui offre à qui (une fois le tirage dévoilé) | `/p/[jeton]/tirage` | La page du tirage | |
 | Journal du groupe | `/p/[jeton]/journal` | La page du tirage | À quoi sert-il ?, une alerte |
 | (ancienne adresse) | `/p/[jeton]/souhaits` | mène à Mes pistes de cadeaux | |
+
+## Listes de cadeaux (README 22.19)
+
+La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet « Listes ».
+
+| Écran | Adresse | Parent | Panneaux |
+|---|---|---|---|
+| Listes (l'onglet) | `/listes` | — (barre du bas) | |
+| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` | Listes | |
+| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | L'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
+| Partager la liste | `/listes/[id]/partager` | La liste | |
+| Personnaliser le message | `/listes/[id]/message` | Partager la liste | |
+| Une personne de ma famille | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Listes | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
+| Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
+| Les questions de ses goûts | `/famille/[id]/question?n=` | Une personne de ma famille | |

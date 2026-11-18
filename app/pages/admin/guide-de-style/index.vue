@@ -372,6 +372,14 @@ const entries = computed(() => [
         label="UiIconSheet : choisir une icône"
         @click="iconOpen = true"
       />
+      <div class="flex items-center gap-3">
+        <ListsTile :icon="{ emoji: '❄️', color: 'night' }" size="sm" />
+        <ListsTile :icon="{ emoji: '🎂', color: 'mustard' }" />
+        <ListsTile :icon="{ emoji: '🎁', color: 'brick' }" size="lg" />
+        <span class="text-sm text-toned"
+          >ListsTile : l’icône carrée d’une liste</span
+        >
+      </div>
       <AdminAvatarSheet
         v-model:open="iconOpen"
         :initial="iconSample"

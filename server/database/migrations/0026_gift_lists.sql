@@ -4,6 +4,7 @@ CREATE TABLE `family_members` (
 	`first_name` text NOT NULL,
 	`avatar_emoji` text NOT NULL,
 	`avatar_color` text NOT NULL,
+	`is_self` integer DEFAULT false NOT NULL,
 	`birth_date` text,
 	`clothing_size` text,
 	`shoe_size` text,

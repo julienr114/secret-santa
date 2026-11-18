@@ -24,7 +24,7 @@ export default {
     gaveTo: 'Du hast beschenkt:',
     afterBody:
       'Die Feier ist vorbei. Die Auslosung ist aufgedeckt: Alle sehen, wer wen beschenkt hat.',
-    closedBody: 'Diese Ausgabe ist abgeschlossen. Bis nächstes Jahr!',
+    closedBody: 'Für dieses Jahr ist Schluss. Bis nächstes Jahr?',
     pageTitle: 'Wer beschenkt wen',
     pageBody:
       'Die Auslosung wurde am {date} aufgedeckt. Alle Teilnehmenden sehen diese Liste.',
@@ -56,41 +56,42 @@ export default {
       partyOver: 'Fest vorbei',
     },
     waiting: {
-      title: 'Die Auslosung hat noch nicht stattgefunden',
-      body: 'Dein Organisator gibt dir Bescheid. Behalte diesen Link: hier erfährst du, wen du beschenkst.',
+      title: 'Noch ein wenig Geduld',
+      body: 'Die Auslosung steht noch aus. Dein Organisator meldet sich; behalte diesen Link, hier spielt sich alles ab.',
       action: 'Meine Geschenk-Hinweise hinterlassen',
-      hint: 'Hilf in der Zwischenzeit der Person, die dich ziehen wird.',
+      hint: 'Greif in der Zwischenzeit der Person unter die Arme, die dich ziehen wird.',
     },
     ready: {
       title: 'Dein Umschlag wartet auf dich',
-      body: 'Die Auslosung ist erfolgt. Achte darauf, dass niemand auf deinen Bildschirm schaut, bevor du ihn öffnest.',
+      body: 'Die Auslosung ist erfolgt. Schau kurz, ob dir niemand über die Schulter guckt, und öffne ihn dann.',
       bodyHints:
-        'Die Auslosung ist erfolgt, und drinnen warten Geschenk-Hinweise auf dich. Achte darauf, dass niemand auf deinen Bildschirm schaut, bevor du ihn öffnest.',
+        'Die Auslosung ist erfolgt, und drinnen warten Geschenk-Hinweise auf dich. Schau kurz, ob dir niemand über die Schulter guckt, und öffne ihn dann.',
       reveal: 'Erfahren, wen ich beschenke',
       revealing: 'Umschlag wird geöffnet…',
-      hint: 'Dein Ergebnis schließt sich, sobald du die Seite verlässt.',
+      hint: 'Dein Umschlag schließt sich von selbst, sobald du die Seite verlässt.',
     },
     shown: {
-      hide: 'Mein Ergebnis verbergen',
-      hint: 'Es schließt sich von selbst, wenn du die Seite verlässt.',
+      hide: 'Meinen Umschlag schließen',
+      hint: 'Sonst schließt sich dein Umschlag von selbst, wenn du die Seite verlässt.',
     },
     seen: {
-      title: 'Du weißt schon, wen du beschenkst',
-      body: 'Vergessen? Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      title: 'Gedächtnislücke?',
+      body: 'Dein Umschlag ist noch da. Schau kurz, ob dir niemand über die Schulter guckt.',
       bodyHints:
-        'Drinnen warten die Geschenk-Hinweise auf dich. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+        'Dein Umschlag ist noch da, samt Geschenk-Hinweisen. Schau kurz, ob dir niemand über die Schulter guckt.',
       newTitle: 'Neue Hinweise warten auf dich',
       newBody:
-        'Die Person, die du beschenkst, hat seit deinem letzten Besuch welche hinterlassen. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
-      revealWithHints: 'Mein Ergebnis und die Hinweise noch einmal sehen',
-      noHintsYet: 'Noch keine Hinweise. Du kannst darum bitten.',
+        'Die Person, die du beschenkst, hat seit deinem letzten Besuch welche hinterlassen. Schau kurz, ob dir niemand über die Schulter guckt.',
+      revealWithHints: 'Noch einmal sehen, wen ich beschenke, samt Hinweisen',
+      noHintsYet:
+        'Noch keine Hinweise. Du kannst darum bitten, ohne dich zu verraten.',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
     },
     closed: {
       title: 'Das Fest ist vorbei',
-      body: 'Diese Ausgabe ist abgeschlossen. Du kannst noch sehen, wen du beschenkt hast.',
+      body: 'Für dieses Jahr ist Schluss. Du kannst noch sehen, wen du beschenkt hast.',
       bodyNotSeen:
-        'Diese Ausgabe ist abgeschlossen. Du kannst noch erfahren, wen du beschenken solltest.',
+        'Für dieses Jahr ist Schluss. Du kannst noch erfahren, wen du beschenken solltest.',
     },
     tiles: {
       hintsTodo: 'Auszufüllen',
@@ -146,7 +147,7 @@ export default {
     intro: 'Alle sehen dieses Protokoll. Es verrät nie, wer wen beschenkt.',
     allEditions: 'Alle Ausgaben',
     edition: 'Ausgabe',
-    empty: 'Noch nichts zu berichten.',
+    empty: 'Alles ruhig. Ein gutes Zeichen.',
   },
   invalid: { title: 'Hoppla, dieser Link funktioniert nicht mehr' },
   account: {
@@ -163,10 +164,10 @@ export default {
   answer: {
     card: {
       title: 'Wen beschenkst du?',
-      body: 'Die Auslosung fand außerhalb der App statt. Sag es hier, um die Geschenk-Hinweise deiner Person zu sehen. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+      body: 'Die Auslosung fand außerhalb der App statt. Sag hier, wen du beschenkst, um die Geschenk-Hinweise zu sehen. Schau kurz, ob dir niemand über die Schulter guckt.',
       action: 'Sagen, wen ich beschenke',
       hint: 'Deine Antwort bleibt geheim, selbst für den Organisator.',
-      savedTitle: 'Antwort gespeichert',
+      savedTitle: 'Ist notiert',
       savedBody: {
         one: 'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antwort von {total}.',
         other:
@@ -194,7 +195,7 @@ export default {
       yes: 'Ja, es ist {name}',
       other: 'Jemand anderen wählen',
     },
-    saved: 'Antwort gespeichert',
+    saved: 'Ist notiert',
   },
   game: {
     title: 'Devine qui',
@@ -264,7 +265,7 @@ export default {
     clear: 'Diesen Tipp löschen',
     atParty: 'Antwort bei der Feier',
     atPartyBody:
-      'Die Ergebnisse und die Überraschung kommen, wenn dein Organisator die Auslosung aufdeckt.',
+      'Die Antworten kommen, wenn dein Organisator die Auslosung aufdeckt. Mit einer Überraschung.',
     answersTitle: 'Devine qui: die Antworten',
     answersWaiting:
       'Die Auslosung ist aufgedeckt. Die Antworten warten auf dich.',
@@ -416,7 +417,7 @@ export default {
           'Enttarnt. Ihr wart zu dritt beim Spielen, und du lagst richtig.',
       },
       wrongBody: 'Daneben: Du hattest {name} gesagt.',
-      noGuessBody: 'Du hattest keinen Tipp abgegeben.',
+      noGuessBody: 'Du hattest keinen Tipp abgegeben. Nächstes Jahr?',
       endEyebrow: 'Das war es für dieses Jahr',
       endTitle: 'Frohe Weihnachten,\n{name}',
       endTitleAlone: 'Frohe Weihnachten!',

@@ -388,7 +388,7 @@ test('from the day of the party, the organiser reveals who gave to whom', async 
   await card.getByRole('button', { name: 'Dévoiler les résultats' }).click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByTestId('reveal-confirm')).toContainText(
-    '3 personnes n’ont pas consulté leur résultat',
+    '3 personnes n’ont pas ouvert leur enveloppe',
   );
   await sheet.getByRole('button', { name: 'Dévoiler les résultats' }).click();
   await expect(page.getByTestId('revealed-notice')).toContainText(

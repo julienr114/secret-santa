@@ -100,9 +100,7 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   // Link previews must not show a name.
   await expect(page).toHaveTitle('Under the Tree');
   await expect(heading(page)).toHaveText('Salut Alice !');
-  await expect(
-    page.getByText("Le tirage n'a pas encore eu lieu"),
-  ).toBeVisible();
+  await expect(page.getByText('Encore un peu de patience')).toBeVisible();
   // Where the draw stands: invited, the draw soon, then the party.
   const steps = page.getByRole('list', { name: 'Étapes du tirage' });
   await expect(steps).toContainText('Invitation');
@@ -306,18 +304,21 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   await expect(page.getByTestId('receiver')).toHaveCount(0);
   // She has already seen it: the page offers to see it again and says
   // hints are waiting, without any name.
-  await expect(page.getByText('Tu sais déjà à qui tu offres')).toBeVisible();
+  await expect(page.getByText('Un trou de mémoire ?')).toBeVisible();
   await expect(
-    page.getByText('Ses pistes de cadeaux t’attendent à l’intérieur.', {
-      exact: false,
-    }),
+    page.getByText(
+      'Ton enveloppe est toujours là, avec ses pistes de cadeaux.',
+      {
+        exact: false,
+      },
+    ),
   ).toBeVisible();
   await expect(page.locator('main')).not.toContainText(receiver);
   await page
-    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
+    .getByRole('button', { name: 'Revoir à qui j’offre, et ses pistes' })
     .click();
   await expect(page.getByTestId('receiver')).toHaveText(receiver);
-  await page.getByRole('button', { name: 'Cacher mon résultat' }).click();
+  await page.getByRole('button', { name: 'Refermer mon enveloppe' }).click();
   await expect(page.getByTestId('receiver')).toHaveCount(0);
 
   // Everyone can read it in the journal, which never says who gives to whom.
@@ -325,7 +326,7 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   await expect(heading(page)).toHaveText('Journal du groupe');
   // Only the first of her two consultations is there: later ones would
   // let the group match them with other lines.
-  await expect(page.getByText('Alice a découvert son résultat')).toHaveCount(1);
+  await expect(page.getByText('Alice a ouvert son enveloppe')).toHaveCount(1);
   expect((await participantNamed('Alice')).viewCount).toBe(2);
   // Gift hints are no longer journaled (README 22.11).
   await expect(page.getByText(/liste de souhaits|pistes/)).toHaveCount(0);
@@ -344,12 +345,12 @@ test('after the draw: the reveal is explicit, counted and journaled', async ({
   await page.getByTestId('journal-person').click();
   await page.getByRole('option', { name: 'Moi (Alice)' }).click();
   await expect(
-    page.getByText('Tout ce qui touche ton lien et ton résultat.', {
+    page.getByText('Tout ce qui touche ton lien et ton enveloppe.', {
       exact: false,
     }),
   ).toBeVisible();
-  await expect(page.getByText('Tu as découvert ton résultat')).toHaveCount(1);
-  await expect(page.getByText('Alice a découvert son résultat')).toHaveCount(0);
+  await expect(page.getByText('Tu as ouvert ton enveloppe')).toHaveCount(1);
+  await expect(page.getByText('Alice a ouvert son enveloppe')).toHaveCount(0);
 
   // The organiser looks at Bruno's result: on her page, Alice is told
   // there is an alert since she last opened the journal, until she does.
@@ -403,7 +404,7 @@ test('a cancelled draw keeps the gift hints and resets the counters', async ({
     `/admin/${SLUG}/editions/${state.editionId}?envoyer=${participationId}`,
   );
   await expect(page.getByTestId('send-preview')).toContainText(
-    'un nouveau tirage a eu lieu',
+    'Un nouveau tirage a eu lieu',
   );
 });
 
@@ -450,7 +451,9 @@ test('a closed edition is read only', async ({ page }) => {
   await open(page, `/p/${token}/souhaits`);
   await expect(page).toHaveURL(new RegExp(`/p/${token}/pistes$`));
   await expect(
-    page.getByText('Tes pistes ne sont plus modifiables pour cette édition.'),
+    page.getByText(
+      'Tes pistes ne bougent plus : c’est terminé pour cette année.',
+    ),
   ).toBeVisible();
   await expect(page.getByText('Idée de Chloé')).toBeVisible();
   await expect(page.getByText('Ajouter une idée')).toHaveCount(0);

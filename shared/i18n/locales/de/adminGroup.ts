@@ -62,10 +62,10 @@ export default {
       other: 'Feier am {date} · in {count} Tagen',
     },
     viewedOf: {
-      one: '{count} von {total} hat das Ergebnis angesehen',
-      other: '{count} von {total} haben das Ergebnis angesehen',
+      one: '{count} von {total} hat den Umschlag geöffnet',
+      other: '{count} von {total} haben ihren Umschlag geöffnet',
     },
-    viewedLabel: 'Angesehene Ergebnisse',
+    viewedLabel: 'Geöffnete Umschläge',
     toNotify: {
       one: '{count} zu benachrichtigen',
       other: '{count} zu benachrichtigen',
@@ -127,7 +127,7 @@ export default {
     addAnother: 'Hinzufügen und eine weitere anlegen',
     randomIcon: 'Sie bekommt ein zufälliges Symbol und kann es ändern.',
     title: 'Neue Person',
-    added: '{name} hinzugefügt',
+    added: 'Willkommen, {name}',
   },
   person: {
     takesPart: 'macht bei {label} mit',
@@ -196,7 +196,7 @@ export default {
     title: 'Ausschlüsse',
     intro:
       'Personen, die sich nicht gegenseitig ziehen sollen: ein Paar, Geschwister, ein Elternteil und sein Kind …',
-    empty: 'Kein Ausschluss.',
+    empty: 'Kein Ausschluss. Jeder kann jeden ziehen.',
     reciprocal: 'Ziehen sich nicht, in beide Richtungen',
     reciprocalPast: 'Haben sich nicht gezogen, in beide Richtungen',
     oneWay: '{giver} zieht {receiver} nicht',
@@ -229,7 +229,7 @@ export default {
     notifySection: 'Mir per E-Mail schreiben',
     notifyHelp: 'An jeden Organisator, in seiner Sprache.',
     notifyJoined: 'Jemand tritt der Gruppe über den Link bei',
-    notifyAllViewed: 'Alle haben ihre Auslosung angesehen',
+    notifyAllViewed: 'Alle Umschläge sind geöffnet',
     notifyReminder: 'Erinnerung 3 Tage vor der Feier',
     notifyReminderHelp: 'Mit der Liste derer, die noch nicht geöffnet haben',
     drawSection: 'Auslosung',

@@ -127,7 +127,7 @@ test('someone with the link signs up and joins the group', async ({ page }) => {
     await state.api!.get(`${ADMIN}/journal?locale=fr`)
   ).json();
   expect(entries.map((e: { text: string }) => e.text)).toContain(
-    "Zoé rejoint l'édition",
+    'Zoé est de la partie',
   );
 
   // Coming back to the link: already in.

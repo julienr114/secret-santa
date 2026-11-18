@@ -8,15 +8,15 @@ export default {
     next: 'Remember to add them to the current draw and to their exclusions (partner, siblings).',
   },
   allViewed: {
-    subject: 'Everyone has discovered their draw in “{group}”',
-    body: 'For {edition} in “{group}”, every participant now knows who they give to.',
+    subject: 'Every envelope is open in “{group}”',
+    body: 'For {edition} in “{group}”, everyone now knows who they’re giving to. All that’s left is finding the gifts.',
   },
   reminder: {
-    subject: 'The exchange is near in “{group}”',
-    body: 'The exchange of {edition} takes place on {date}.',
+    subject: 'The party is near in “{group}”',
+    body: 'The party for {edition} is on {date}.',
     missing: {
-      one: '{count} person has not discovered their draw yet: {names}.',
-      other: '{count} people have not discovered their draw yet: {names}.',
+      one: '{count} person hasn’t opened their envelope yet: {names}.',
+      other: '{count} people haven’t opened their envelope yet: {names}.',
     },
     next: 'You can send them their link again from the edition.',
   },

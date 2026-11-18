@@ -125,9 +125,7 @@ test('a participant answers on their page, secretly', async ({
     page.getByRole('heading', { name: 'Tu offres un cadeau à Bruno ?' }),
   ).toBeVisible();
   await page.getByTestId('answer-confirm').click();
-  await expect(page.getByTestId('draw-card')).toContainText(
-    'Réponse enregistrée',
-  );
+  await expect(page.getByTestId('draw-card')).toContainText('C’est noté');
   await expect(page.getByTestId('draw-card')).toContainText(
     '1 réponse sur 4 pour l’instant',
   );
@@ -177,9 +175,7 @@ test('two answers that clash name both, with no error for them', async ({
   );
   // Bruno's page says nothing of it.
   await open(page, `/p/${state.tokens.Bruno}`);
-  await expect(page.getByTestId('draw-card')).toContainText(
-    'Réponse enregistrée',
-  );
+  await expect(page.getByTestId('draw-card')).toContainText('C’est noté');
 });
 
 test('the last answer follows from the others, and validates', async ({

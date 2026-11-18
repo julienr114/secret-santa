@@ -32,7 +32,7 @@ export default {
       one: '{names} nimmt noch nicht teil',
       other: '{names} nehmen noch nicht teil',
     },
-    drawDone: 'Auslosung durchgeführt',
+    drawDone: 'Die Lose sind gezogen',
     email: {
       sent: {
         one: '{count} E-Mail gesendet',
@@ -124,7 +124,7 @@ export default {
   },
   cancelDraw: {
     title: 'Auslosung aufheben?',
-    dangerTitle: 'Alle müssen es neu erfahren',
+    dangerTitle: 'Alle bekommen ein neues Ergebnis',
     results: {
       one: 'Das Ergebnis wird gelöscht.',
       other: 'Die {count} Ergebnisse werden gelöscht.',
@@ -243,8 +243,8 @@ export default {
       collapse: 'Liste einklappen',
       series: {
         toNotify: 'Noch nicht gesendet',
-        notOpened: 'Gesendet, noch nicht angesehen',
-        viewed: 'Ergebnis angesehen',
+        notOpened: 'Gesendet, noch nicht geöffnet',
+        viewed: 'Umschlag geöffnet',
       },
       search: 'Einen Vornamen suchen',
       clear: 'Suche leeren',
@@ -300,8 +300,8 @@ export default {
       drawDone: 'Ausgelost',
       party: 'Feiern',
     },
-    partyOn: 'Bescherung am {date}',
-    changeDate: 'Bescherung am {date}. Datum ändern',
+    partyOn: 'Feier am {date}',
+    changeDate: 'Feier am {date}. Datum ändern',
     budget: 'Budget {budget}',
     rules: {
       none: 'Noch keins',
@@ -367,7 +367,7 @@ export default {
     },
     follow: {
       title: 'Sag allen, dass die Auslosung stattgefunden hat',
-      titleDone: 'Alle haben ihren Link',
+      titleDone: 'Alle wissen Bescheid',
       toNotify: 'zu benachrichtigen',
       notOpened: { one: 'noch nicht geöffnet', other: 'noch nicht geöffnet' },
       viewed: { one: 'hat entdeckt', other: 'haben entdeckt' },
@@ -375,13 +375,13 @@ export default {
       help: 'Keine E-Mail-Adresse? Der Knopf jeder Zeile teilt den Link per WhatsApp oder SMS.',
       state: {
         toNotify: 'Noch nicht gesendet',
-        notOpened: 'Gesendet, noch nicht angesehen',
-        viewed: 'Ergebnis angesehen · {count}×',
+        notOpened: 'Gesendet, noch nicht geöffnet',
+        viewed: 'Umschlag geöffnet · {count}×',
       },
       later: 'Später, oder wenn etwas schiefgeht',
       closeRow: 'Ausgabe abschließen',
       closing: 'Wird abgeschlossen…',
-      closeRowLater: 'Möglich nach der Bescherung, am {date}',
+      closeRowLater: 'Möglich nach der Feier, am {date}',
       closeRowHint: 'Die Ausgabe ist dann nur noch lesbar',
       closeConfirm:
         'Nach dem Abschluss ist die Ausgabe nicht mehr änderbar; sie dient nächstes Jahr als Verlauf.',
@@ -390,8 +390,7 @@ export default {
       cancel: 'Auslosung annullieren und neu starten',
       cancelHint: 'Absage, jemand vergessen… im Journal vermerkt',
       listFooter: 'Wer noch zu benachrichtigen ist, steht oben.',
-      noResults:
-        'Niemand, auch der Organisator nicht, sieht hier die Ergebnisse.',
+      noResults: 'Niemand sieht hier die Ergebnisse. Nicht einmal du.',
     },
     reveal: {
       row: 'Ergebnisse aufdecken',
@@ -402,10 +401,10 @@ export default {
       cardHelp:
         'Das ist freiwillig und endgültig. Die Geschenk-Hinweise bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
       viewed: {
-        one: '{count} von {total} hat das eigene Ergebnis angesehen',
-        other: '{count} von {total} haben ihr Ergebnis angesehen',
+        one: '{count} von {total} hat den Umschlag geöffnet',
+        other: '{count} von {total} haben ihren Umschlag geöffnet',
       },
-      viewedLabel: 'Angesehene Ergebnisse',
+      viewedLabel: 'Geöffnete Umschläge',
       action: 'Ergebnisse aufdecken',
       revealing: 'Wird aufgedeckt…',
       closeWithout: 'Abschließen, ohne aufzudecken',
@@ -417,14 +416,14 @@ export default {
       partyDoneOn: 'Sie war für den {date} geplant.',
       partyToday: 'Die Feier ist heute',
       partyTodayOn: 'Sie ist für den {date} geplant.',
-      notViewedOne: '{name} hat das eigene Ergebnis nicht angesehen',
-      notViewedMany: '{count} Personen haben ihr Ergebnis nicht angesehen',
+      notViewedOne: '{name} hat den eigenen Umschlag nicht geöffnet',
+      notViewedMany: '{count} Personen haben ihren Umschlag nicht geöffnet',
       othersViewed: {
         one: 'Die andere Person hat es geöffnet.',
         other: 'Die {count} anderen Teilnehmenden haben es geöffnet.',
       },
       nobodyViewed: 'Noch niemand hat es geöffnet.',
-      allViewed: 'Alle haben ihr Ergebnis angesehen',
+      allViewed: 'Alle Umschläge sind geöffnet',
       allViewedHint: 'Niemand erfährt das eigene zusammen mit der Liste.',
       wholeGroupTitle: 'Die ganze Gruppe sieht die Liste',
       wholeGroupHint: 'Alle Teilnehmenden sehen sie auf ihrer Seite.',
@@ -457,16 +456,16 @@ export default {
       closeHint: 'Friert die Ausgabe und die Geschenk-Hinweise ein',
     },
     missingDate: {
-      title: 'Wann ist die Bescherung?',
+      title: 'Wann ist die Feier?',
       body: 'Ohne Datum haben die Teilnehmenden keinen Countdown, und die Ergebnisse können nicht aufgedeckt werden.',
       validate: 'Bestätigen',
     },
     dateSheet: {
-      title: 'Datum der Bescherung',
+      title: 'Datum der Feier',
       description: 'Der Tag, an dem ihr die Geschenke austauscht.',
       seen: 'Die Teilnehmenden sehen es auf ihrer Seite, mit dem Countdown.',
       journal: 'Die Änderung wird im Journal der Gruppe vermerkt.',
-      saved: 'Datum der Bescherung gespeichert',
+      saved: 'Datum der Feier gespeichert',
     },
     emails: {
       title: 'Per E-Mail senden',
@@ -490,7 +489,7 @@ export default {
       spam: 'E-Mails landen oft im Spam: Erinnere per Telefon, wer seinen Link nicht öffnet.',
     },
     sheet: {
-      sentOn: 'Gesendet am {date}, noch nicht angesehen',
+      sentOn: 'Gesendet am {date}, noch nicht geöffnet',
       customize: 'Nachricht anpassen',
       editMessage: 'Nachricht ändern',
       other: 'Ein anderer Weg, oder ein Problem?',
@@ -726,13 +725,13 @@ export default {
     participants: 'Teilnehmer hinzufügen oder entfernen',
     participantsHint: 'Möglich, solange du nicht bestätigt hast',
     abandon: 'Aufgeben und mit der App auslosen',
-    abandonHint: 'Die Antworten werden gelöscht · protokolliert',
+    abandonHint: 'Die Antworten werden gelöscht · im Journal vermerkt',
     abandonHintShort: 'Die Antworten werden gelöscht',
     abandonConfirm:
       'Alle Antworten löschen und zur Auslosung mit der App zurückkehren?',
     abandonYes: 'Aufgeben',
     abandoned: 'Die Antworten sind gelöscht: Du kannst mit der App auslosen.',
-    secret: 'Niemand, auch nicht der Organisator, sieht, wer wen beschenkt.',
+    secret: 'Niemand sieht, wer wen beschenkt. Nicht einmal du.',
     validate: {
       title: 'Auslosung bestätigen?',
       description:

@@ -59,10 +59,10 @@ export default {
       other: 'Fête le {date} · dans {count} jours',
     },
     viewedOf: {
-      one: '{count} sur {total} a consulté son résultat',
-      other: '{count} sur {total} ont consulté leur résultat',
+      one: '{count} sur {total} a ouvert son enveloppe',
+      other: '{count} sur {total} ont ouvert leur enveloppe',
     },
-    viewedLabel: 'Résultats consultés',
+    viewedLabel: 'Enveloppes ouvertes',
     toNotify: { one: '{count} à prévenir', other: '{count} à prévenir' },
     preparing: {
       one: '{count} participant · le tirage reste à lancer',
@@ -120,7 +120,7 @@ export default {
     addAnother: 'Ajouter, puis en créer une autre',
     randomIcon: 'Une icône lui est donnée au hasard ; elle pourra la changer.',
     title: 'Nouvelle personne',
-    added: '{name} ajouté·e',
+    added: 'Bienvenue à {name}',
   },
   person: {
     takesPart: 'participe à {label}',
@@ -188,7 +188,7 @@ export default {
     title: 'Exclusions',
     intro:
       "Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des frères et sœurs, un parent et son enfant…",
-    empty: 'Aucune exclusion.',
+    empty: 'Aucune exclusion. Tout le monde peut tirer tout le monde.',
     reciprocal: 'Ne se tirent pas, dans les deux sens',
     reciprocalPast: 'Ne se sont pas tirés, dans les deux sens',
     oneWay: '{giver} ne tire pas {receiver}',
@@ -221,7 +221,7 @@ export default {
     notifySection: 'M’écrire par email',
     notifyHelp: 'Envoyé à chaque organisateur, dans sa langue.',
     notifyJoined: 'Quelqu’un rejoint le groupe par le lien',
-    notifyAllViewed: 'Tout le monde a découvert son tirage',
+    notifyAllViewed: 'Toutes les enveloppes sont ouvertes',
     notifyReminder: 'Rappel 3 jours avant la fête',
     notifyReminderHelp: 'Avec la liste de ceux qui n’ont pas encore ouvert',
     drawSection: 'Tirage',

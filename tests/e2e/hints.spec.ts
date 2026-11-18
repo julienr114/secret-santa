@@ -221,7 +221,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await open(page, `/p/${state.tokens[giver]}`);
   await expect(page.getByText('De nouvelles pistes t’attendent')).toBeVisible();
   await page
-    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
+    .getByRole('button', { name: 'Revoir à qui j’offre, et ses pistes' })
     .click();
   await expect(page.getByTestId('hints-new')).toHaveText('Nouveau');
   // The giver reads it in sentences.
@@ -233,14 +233,17 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   );
   // Opened once, they are no longer new.
   await open(page, `/p/${state.tokens[giver]}`);
-  await expect(page.getByText('Tu sais déjà à qui tu offres')).toBeVisible();
+  await expect(page.getByText('Un trou de mémoire ?')).toBeVisible();
   await expect(
-    page.getByText('Ses pistes de cadeaux t’attendent à l’intérieur.', {
-      exact: false,
-    }),
+    page.getByText(
+      'Ton enveloppe est toujours là, avec ses pistes de cadeaux.',
+      {
+        exact: false,
+      },
+    ),
   ).toBeVisible();
   await page
-    .getByRole('button', { name: 'Revoir mon résultat et ses pistes' })
+    .getByRole('button', { name: 'Revoir à qui j’offre, et ses pistes' })
     .click();
   await expect(page.getByTestId('hints-new')).toHaveCount(0);
   // The request is answered: the banner is gone.

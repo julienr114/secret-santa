@@ -5,7 +5,7 @@ export default {
   login: {
     emailLabel: 'Email address',
     emailHelp: 'No password: you get a link valid for 15 minutes.',
-    emailInvalid: 'Invalid email address',
+    emailInvalid: 'This address looks incomplete',
     submit: 'Get a login link',
     sentTitle: 'Check your inbox',
     again: 'Use another address',
@@ -44,7 +44,7 @@ export default {
       },
       palmares: {
         title: 'The Devine qui palmarès is here',
-        body: "Who gave to whom, and who had guessed? Make sure you've opened your gift first.",
+        body: 'Who gave to whom, and who had guessed? Open your gift first.',
         button: 'Discover the palmarès',
       },
       giveAnswer: {
@@ -99,8 +99,8 @@ export default {
         button: 'Read their hints',
       },
       discover: {
-        title: 'The draw is done!',
-        body: 'Your envelope is waiting. Make sure nobody is looking at your screen.',
+        title: 'The names are drawn!',
+        body: 'Your envelope is waiting. Check nobody’s reading over your shoulder.',
         button: 'Find out who I am giving a gift to',
       },
       remind: {
@@ -172,11 +172,11 @@ export default {
       guessButton: 'Make my guess',
       palmaresTitle: 'The Devine qui palmarès is here',
       palmaresBody:
-        "Who gave to whom, and who had guessed? Make sure you've opened your gift first.",
+        'Who gave to whom, and who had guessed? Open your gift first.',
       palmaresButton: 'Discover the palmarès',
       giveAnswer: 'Who are you giving a gift to?',
       answer: "Say who I'm giving to",
-      answerGiven: 'Answer saved',
+      answerGiven: 'Got it',
       partyOn: 'Party on {date}',
       partyOnIn: {
         one: 'Party on {date}, tomorrow',
@@ -186,7 +186,7 @@ export default {
       waiting: 'The draw has not taken place yet',
       addHints: 'The draw hasn’t taken place yet',
       discover: 'Your envelope is waiting',
-      seeAgain: 'You already know who you are giving to',
+      seeAgain: 'Slipped your mind?',
       reveal: 'Find out who I am giving a gift to',
       revealAgain: 'See who I am giving to again',
       newHints: 'New hints for your present',
@@ -196,12 +196,12 @@ export default {
     },
     step: {
       giveAnswer: { state: 'Your answer is expected', action: 'Answer' },
-      answerGiven: { state: 'Answer saved' },
+      answerGiven: { state: 'Got it' },
       addHints: { state: 'Add your hints', action: 'My hints' },
       wait: { state: 'Draw to come' },
-      discover: { state: 'The draw took place', action: 'Discover' },
-      seeAgain: { state: 'You know who you are giving to' },
-      closed: { state: 'Exchange over' },
+      discover: { state: 'Your envelope is waiting', action: 'Discover' },
+      seeAgain: { state: 'Envelope opened' },
+      closed: { state: 'Party over' },
     },
     newHints: 'New hints to read',
     pastDraws: 'Past draws',
@@ -265,7 +265,7 @@ export default {
       lead: 'New in the journal.',
       row: 'New in the journal',
       link_regenerated: 'Your link was renewed on {date}.',
-      result_revealed: 'The organiser looked at a result on {date}.',
+      result_revealed: 'The organizer looked in an envelope on {date}.',
       results_revealed:
         'The results were revealed before the party, on {date}.',
       draw_cancelled: 'The draw was cancelled on {date}.',
@@ -359,8 +359,8 @@ export default {
       drawn: 'drawn',
       none: 'no draw in progress',
       viewed: {
-        one: '{count} of {total} has looked',
-        other: '{count} of {total} have looked',
+        one: '{count} of {total} has opened their envelope',
+        other: '{count} of {total} have opened their envelope',
       },
     },
     role: { organizer: 'Organises', participant: 'Takes part' },
@@ -378,11 +378,11 @@ export default {
     noGroup: 'no group',
     requestsFirst: 'Requests to handle come first, the oldest first.',
     disabledRow: 'Disabled accounts',
-    searchGroups: 'Search a group or an organiser',
+    searchGroups: 'Search a group or an organizer',
     noGroupMatch: 'No group.',
-    noOrganizer: 'No organiser yet',
+    noOrganizer: 'No organizer yet',
     createFor: 'Create a group for someone',
-    createForHint: 'With the address of its organiser',
+    createForHint: 'With the address of its organizer',
     oneOf: 'To handle · 1 of {count}',
     handle: 'Handle',
     note: {
@@ -459,7 +459,7 @@ export default {
   },
   invite: {
     intro: 'You are invited to the Secret Santa',
-    party: 'exchange on {date}',
+    party: 'party on {date}',
     count: {
       one: '{count} person signed up',
       other: '{count} people signed up',
@@ -470,17 +470,17 @@ export default {
     joinGroup: 'Join the group',
     signedAs: 'Logged in as {email}',
     notMe: 'Not me',
-    organiserWord: 'The organiser’s word',
+    organiserWord: 'The organizer’s word',
     welcome: 'Welcome to {group}',
     inDraw: 'You take part in {label}.',
     notDrawnYet:
-      'The draw has not happened yet: your organiser will let you know.',
+      'The draw hasn’t happened yet: your organizer will give you a shout.',
     addLater:
-      'You are in the group. Your organiser will add you to the draw of {label}.',
+      'You are in the group. Your organizer will add you to the draw of {label}.',
     drawnAlready:
       'You are in the group. The draw of {label} is already done: you will be in the next one.',
     nextDraw:
-      'You are in the group. Your organiser will let you know about the next draw.',
+      'You’re in the group. Your organizer will give you a shout for the next draw.',
     meanwhile: 'Meanwhile',
     hints: 'Leave my gift hints',
     seeDraw: 'See my draw',
@@ -489,12 +489,12 @@ export default {
     joining: 'Joining…',
     full: {
       title: 'No place left with this link',
-      body: 'Tell the organiser of {group}: they can open more places or add you themselves.',
+      body: 'Tell the organizer of {group}: they can open more places or add you themselves.',
     },
     expired: {
       title: 'This invitation link is no longer valid',
       titleSince: 'This invitation link has not been valid since {date}',
-      body: 'Tell the organiser of {group}: they can extend it or add you themselves.',
+      body: 'Tell the organizer of {group}: they can extend it or add you themselves.',
     },
     invalid: {
       title: 'This invitation link no longer works',

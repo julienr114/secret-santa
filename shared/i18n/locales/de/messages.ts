@@ -4,26 +4,26 @@ import type { Dict } from '../../types';
 export default {
   invitation: {
     greeting: 'Hallo {firstName}! 🎁',
-    body: 'Du machst beim Wichteln von {groupName} mit ({editionLabel}).',
+    body: 'Du bist dabei: das Wichteln von {groupName} ({editionLabel}).',
     cta: 'Öffne deinen Link und hinterlass ein paar Geschenk-Hinweise:',
     subject: '{firstName}, dein Link für das Wichteln ({editionLabel})',
   },
   drawn: {
-    greeting: '{firstName}, die Auslosung ist erfolgt! 🎁',
+    greeting: '{firstName}, die Lose sind gezogen! 🎁',
     cta: 'Öffne deinen Link, um zu erfahren, wen du beschenkst:',
-    subject: '{firstName}, die Wichtel-Auslosung ist erfolgt',
+    subject: '{firstName}, die Lose sind gezogen: dein Umschlag wartet',
   },
   reminder: {
     greeting:
-      'Kleine Erinnerung, {firstName}: dein Link wartet auf dich, denk daran, ihn zu öffnen.',
+      '{firstName}, dein Umschlag setzt Staub an. Mach ihn schnell auf!',
     cta: 'Dein Link:',
-    subject: '{firstName}, dein Wichtel-Link wartet auf dich',
+    subject: '{firstName}, dein Umschlag wartet immer noch',
   },
   redraw: {
     greeting:
-      '{firstName}, es gab eine neue Auslosung: dein altes Ergebnis gilt nicht mehr.',
+      '{firstName}, die Karten werden neu gemischt. Es gab eine neue Auslosung: vergiss die alte.',
     cta: 'Dein Link bleibt derselbe:',
-    subject: '{firstName}, neue Wichtel-Auslosung',
+    subject: '{firstName}, die Karten werden neu gemischt: neue Auslosung',
   },
   answerRequest: {
     greeting: 'Hallo {firstName}! 🎁',
@@ -38,7 +38,7 @@ export default {
   },
   answerCheck: {
     greeting: '{firstName}, kannst du deine Antwort prüfen? 🎁',
-    body: 'Zwei Antworten beim Wichteln von {groupName} passen nicht zusammen.',
+    body: 'Beim Wichteln von {groupName} hat sich ein Knoten gebildet: zwei Antworten passen nicht zusammen.',
     cta: 'Prüfe, wen du beschenkst, und korrigiere es bei Bedarf:',
     subject: '{firstName}, prüf deine Wichtel-Antwort',
   },
@@ -126,7 +126,7 @@ export default {
   budget: 'Budget: {budget}.',
   eventDate: 'Wir sehen uns am {eventDate}.',
   email: {
-    personal: 'Dieser Link ist persönlich, leite ihn nicht weiter.',
+    personal: 'Dieser Link gehört nur dir: leite ihn nicht weiter.',
     signature: 'Der Organisator des Wichtelns von {groupName}',
   },
 } satisfies Dict<typeof fr>;

@@ -23,7 +23,7 @@ export default {
     gaveTo: 'You gave a present to',
     afterBody:
       'The party is over. The draw is revealed: everyone can see who gave to whom.',
-    closedBody: 'This edition is closed. See you next year!',
+    closedBody: 'That’s a wrap for this year. Same time next year?',
     pageTitle: 'Who gives to whom',
     pageBody:
       'The draw was revealed on {date}. All participants see this list.',
@@ -55,41 +55,42 @@ export default {
       partyOver: 'Party over',
     },
     waiting: {
-      title: 'The draw has not taken place yet',
-      body: 'Your organizer will let you know. Keep this link: this is where you will find out who you are giving a gift to.',
+      title: 'Just a little longer',
+      body: 'The draw hasn’t happened yet. Your organizer will give you a shout; keep this link, this is where it all happens.',
       action: 'Leave my gift hints',
-      hint: 'In the meantime, help the person who will draw your name.',
+      hint: 'In the meantime, give a hand to whoever draws your name.',
     },
     ready: {
       title: 'Your envelope is waiting',
-      body: 'The draw is done. Make sure nobody is looking at your screen before you open it.',
+      body: 'The draw is done. Check nobody’s reading over your shoulder, then open it.',
       bodyHints:
-        'The draw is done, and gift hints are waiting for you inside. Make sure nobody is looking at your screen before you open it.',
+        'The draw is done, and gift hints are waiting inside. Check nobody’s reading over your shoulder, then open it.',
       reveal: 'Find out who I am giving a gift to',
       revealing: 'Opening the envelope…',
-      hint: 'Your result closes as soon as you leave the page.',
+      hint: 'Your envelope closes by itself as soon as you leave the page.',
     },
     shown: {
-      hide: 'Hide my result',
-      hint: 'It closes by itself when you leave the page.',
+      hide: 'Close my envelope',
+      hint: 'Otherwise, your envelope closes by itself when you leave the page.',
     },
     seen: {
-      title: 'You already know who you are giving to',
-      body: 'A memory lapse? Make sure nobody is looking at your screen.',
+      title: 'Slipped your mind?',
+      body: 'Your envelope is still here. Check nobody’s reading over your shoulder.',
       bodyHints:
-        'Their gift hints are waiting for you inside. Make sure nobody is looking at your screen.',
+        'Your envelope is still here, with their gift hints. Check nobody’s reading over your shoulder.',
       newTitle: 'New hints are waiting for you',
       newBody:
-        'The person you give to left some since your last visit. Make sure nobody is looking at your screen.',
-      revealWithHints: 'See my result and their hints again',
-      noHintsYet: 'No hints yet. You can ask them for some.',
+        'The person you’re giving to has left some since your last visit. Check nobody’s reading over your shoulder.',
+      revealWithHints: 'See who I’m giving to, and their hints',
+      noHintsYet:
+        'No hints yet. You can ask for some, without giving yourself away.',
       revealAgain: 'See who I am giving to again',
     },
     closed: {
       title: 'The party is over',
-      body: 'This edition is closed. You can still see who you gave a gift to.',
+      body: 'That’s a wrap for this year. You can still see who you gave a gift to.',
       bodyNotSeen:
-        'This edition is closed. You can still find out who you were giving a gift to.',
+        'That’s a wrap for this year. You can still find out who you were giving a gift to.',
     },
     tiles: {
       hintsTodo: 'To fill in',
@@ -145,7 +146,7 @@ export default {
     intro: 'Everyone can see this journal. It never says who gives to whom.',
     allEditions: 'All editions',
     edition: 'Edition',
-    empty: 'Nothing to report yet.',
+    empty: 'All quiet. That’s a good sign.',
   },
   invalid: { title: 'Oops, this link no longer works' },
   account: {
@@ -161,10 +162,10 @@ export default {
   answer: {
     card: {
       title: 'Who are you giving a gift to?',
-      body: "The draw was made outside the app. Say it here to see their gift hints. Make sure nobody's looking at your screen.",
+      body: 'The draw was made outside the app. Say here who you’re giving to, to see their gift hints. Check nobody’s reading over your shoulder.',
       action: "Say who I'm giving to",
       hint: 'Your answer stays secret, even from the organizer.',
-      savedTitle: 'Answer saved',
+      savedTitle: 'Got it',
       savedBody: {
         one: "You'll see your person's gift hints once everyone has answered. {count} answer out of {total} so far.",
         other:
@@ -190,7 +191,7 @@ export default {
       yes: "Yes, it's {name}",
       other: 'Choose someone else',
     },
-    saved: 'Answer saved',
+    saved: 'Got it',
   },
   game: {
     title: 'Devine qui',
@@ -260,7 +261,7 @@ export default {
     clear: 'Delete this guess',
     atParty: 'Answer at the party',
     atPartyBody:
-      'The results and the surprise come when your organizer reveals the draw.',
+      'The answers come when your organizer reveals the draw. With a surprise.',
     answersTitle: 'Devine qui: the answers',
     answersWaiting: 'The draw is revealed. The answers are waiting for you.',
     answersSeen: 'The draw is revealed. Here is what your guesses were worth.',
@@ -409,7 +410,7 @@ export default {
         three: 'Unmasked. Three of you played, and you got it right.',
       },
       wrongBody: 'Missed: you said {name}.',
-      noGuessBody: "You hadn't made a guess.",
+      noGuessBody: 'You hadn’t made a guess. Next year?',
       endEyebrow: "That's all for this year",
       endTitle: 'Merry Christmas,\n{name}',
       endTitleAlone: 'Merry Christmas!',

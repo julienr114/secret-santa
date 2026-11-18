@@ -109,7 +109,7 @@ describe('describeEvent', () => {
       describeEvent(ev('edition_created', { label: 'Noël 2026' }), { names }),
     ).toBe("L'édition Noël 2026 a été créée");
     expect(describeEvent(ev('participant_added'), { names })).toBe(
-      "Léa rejoint l'édition",
+      'Léa est de la partie',
     );
     expect(
       describeEvent(
@@ -121,7 +121,7 @@ describe('describeEvent', () => {
       "L'organisateur a copié le lien de Léa",
     );
     expect(describeEvent(ev('draw_done', { count: 12 }, null), { names })).toBe(
-      'Le tirage a été effectué pour 12 participants',
+      'Le tirage est fait, pour 12 participants',
     );
     expect(
       describeEvent(
@@ -131,7 +131,7 @@ describe('describeEvent', () => {
     ).toBe('Le tirage a été annulé. Motif : désistement de Tom');
     // Only the first consultation is journaled: no count in the sentence.
     expect(describeEvent(ev('result_viewed', { count: 3 }), { names })).toBe(
-      'Léa a découvert son résultat',
+      'Léa a ouvert son enveloppe',
     );
     expect(
       describeEvent(ev('edition_closed', { label: 'Noël 2026' }, null), {
@@ -205,7 +205,7 @@ describe('journalEntries', () => {
       editionId: 'e1',
       actor: 'participant',
       createdAt: '2026-12-02T10:00:00.000Z',
-      text: 'Tom a découvert son résultat',
+      text: 'Tom a ouvert son enveloppe',
       personId: 'p3',
       messageType: null,
       via: null,
@@ -225,7 +225,7 @@ describe('journalEntries', () => {
     );
     expect(entries.map((e) => e.ownText)).toEqual([
       null,
-      'Tu as découvert ton résultat',
+      'Tu as ouvert ton enveloppe',
     ]);
   });
 
@@ -244,7 +244,7 @@ describe('journalEntries', () => {
       [row('a', 'p2', '2026-12-01T10:00:00.000Z')],
       people,
     );
-    expect(entry?.text).toBe('Léa Martin a découvert son résultat');
+    expect(entry?.text).toBe('Léa Martin a ouvert son enveloppe');
   });
 
   it('never passes meta on', () => {
@@ -283,8 +283,8 @@ describe('describeEvent in other languages', () => {
     );
 
   it('tells a discovered result in each language', () => {
-    expect(viewed(1, 'en')).toBe('Léa discovered their result');
-    expect(viewed(1, 'de')).toBe('Léa hat das eigene Ergebnis entdeckt');
+    expect(viewed(1, 'en')).toBe('Léa opened their envelope');
+    expect(viewed(1, 'de')).toBe('Léa hat den eigenen Umschlag geöffnet');
   });
 
   it('translates every type without leaving a placeholder', () => {

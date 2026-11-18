@@ -31,7 +31,7 @@ export default {
       one: '{names} ne participe pas encore',
       other: '{names} ne participent pas encore',
     },
-    drawDone: 'Tirage effectué',
+    drawDone: 'Les jeux sont faits',
     email: {
       sent: {
         one: '{count} email envoyé',
@@ -121,7 +121,7 @@ export default {
   },
   cancelDraw: {
     title: 'Annuler le tirage ?',
-    dangerTitle: 'Tout le monde devra redécouvrir',
+    dangerTitle: 'Tout le monde recevra un nouveau résultat',
     results: {
       one: 'Le résultat est effacé.',
       other: 'Les {count} résultats sont effacés.',
@@ -237,8 +237,8 @@ export default {
       collapse: 'Replier la liste',
       series: {
         toNotify: 'Pas encore envoyé',
-        notOpened: 'Envoyé, pas encore consulté',
-        viewed: 'Résultat consulté',
+        notOpened: 'Envoyé, pas encore ouvert',
+        viewed: 'Enveloppe ouverte',
       },
       search: 'Chercher un prénom',
       clear: 'Effacer la recherche',
@@ -357,7 +357,7 @@ export default {
     },
     follow: {
       title: 'Préviens chacun que le tirage est fait',
-      titleDone: 'Chacun a reçu son lien',
+      titleDone: 'Tout le monde est prévenu',
       toNotify: 'à prévenir',
       notOpened: { one: 'pas encore ouvert', other: 'pas encore ouverts' },
       viewed: { one: 'a découvert', other: 'ont découvert' },
@@ -365,8 +365,8 @@ export default {
       help: 'Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.',
       state: {
         toNotify: 'Pas encore envoyé',
-        notOpened: 'Envoyé, pas encore consulté',
-        viewed: 'Résultat consulté · {count}×',
+        notOpened: 'Envoyé, pas encore ouvert',
+        viewed: 'Enveloppe ouverte · {count}×',
       },
       later: 'Plus tard, ou en cas de pépin',
       closeRow: "Clôturer l'édition",
@@ -378,9 +378,9 @@ export default {
       revealOne: 'Voir un seul résultat',
       revealOneHint: 'Dernier recours, inscrit au journal',
       cancel: 'Annuler et relancer le tirage',
-      cancelHint: 'Désistement, oubli… journalisé',
+      cancelHint: 'Désistement, oubli… inscrit au journal',
       listFooter: 'Ceux qui restent à prévenir sont en premier.',
-      noResults: 'Personne, organisateur compris, ne voit les résultats ici.',
+      noResults: 'Personne ne voit les résultats ici. Pas même toi.',
     },
     reveal: {
       row: 'Dévoiler les résultats',
@@ -391,10 +391,10 @@ export default {
       cardHelp:
         'C’est facultatif, et définitif. Les pistes de cadeaux restent modifiables tant que l’édition n’est pas clôturée.',
       viewed: {
-        one: '{count} sur {total} a consulté son résultat',
-        other: '{count} sur {total} ont consulté leur résultat',
+        one: '{count} sur {total} a ouvert son enveloppe',
+        other: '{count} sur {total} ont ouvert leur enveloppe',
       },
-      viewedLabel: 'Résultats consultés',
+      viewedLabel: 'Enveloppes ouvertes',
       action: 'Dévoiler les résultats',
       revealing: 'Dévoilement…',
       closeWithout: 'Clôturer sans dévoiler',
@@ -406,14 +406,14 @@ export default {
       partyDoneOn: 'Elle était prévue le {date}.',
       partyToday: 'La fête, c’est aujourd’hui',
       partyTodayOn: 'Elle est prévue le {date}.',
-      notViewedOne: '{name} n’a pas consulté son résultat',
-      notViewedMany: '{count} personnes n’ont pas consulté leur résultat',
+      notViewedOne: '{name} n’a pas ouvert son enveloppe',
+      notViewedMany: '{count} personnes n’ont pas ouvert leur enveloppe',
       othersViewed: {
         one: 'L’autre participant l’a ouvert.',
         other: 'Les {count} autres participants l’ont ouvert.',
       },
       nobodyViewed: 'Personne ne l’a encore ouvert.',
-      allViewed: 'Chacun a consulté son résultat',
+      allViewed: 'Toutes les enveloppes sont ouvertes',
       allViewedHint:
         'Personne ne découvrira le sien en même temps que la liste.',
       wholeGroupTitle: 'Tout le groupe verra la liste',
@@ -479,7 +479,7 @@ export default {
       spam: "Les emails arrivent souvent en spam : relance par téléphone ceux qui n'ouvrent pas leur lien.",
     },
     sheet: {
-      sentOn: 'Envoyé le {date}, pas encore consulté',
+      sentOn: 'Envoyé le {date}, pas encore ouvert',
       customize: 'Personnaliser le message',
       editMessage: 'Modifier le message',
       other: 'Autre moyen, ou un souci ?',
@@ -635,7 +635,7 @@ export default {
     revealEarly: 'Dévoiler avant la fête',
     revealEarlyHint: 'Tout le monde saura qui offre à qui',
     cancel: 'Annuler et relancer le tirage',
-    cancelHint: 'Désistement, erreur… tout le monde retire',
+    cancelHint: 'Désistement, erreur… tout le monde tire à nouveau',
     close: 'Fermer',
   },
   // A draw already made elsewhere (README 22.12, lot 17).
@@ -683,7 +683,7 @@ export default {
         'Tu ne vois pas qui ils ont nommé. Chacun corrige sa réponse lui-même, sur sa page.',
       oneMissingTitle: 'Il ne manque que {name}',
       oneMissingBody:
-        'Les {count} autres réponses vont ensemble. Celle de {name} se déduit : il ne reste qu’une personne que nul n’a nommée.',
+        'Les {count} autres réponses vont ensemble. Celle de {name} se déduit : il ne reste qu’une personne que personne n’a nommée.',
       remind: 'Relancer {name}',
       validateWithout: 'Valider sans attendre {name}',
       oneMissingHelp:
@@ -717,13 +717,13 @@ export default {
     participants: 'Ajouter ou retirer des participants',
     participantsHint: 'Possible tant que tu n’as pas validé',
     abandon: 'Abandonner et tirer avec l’application',
-    abandonHint: 'Les réponses sont effacées · journalisé',
+    abandonHint: 'Les réponses sont effacées · inscrit au journal',
     abandonHintShort: 'Les réponses sont effacées',
     abandonConfirm:
       'Effacer toutes les réponses et revenir au tirage par l’application ?',
     abandonYes: 'Abandonner',
     abandoned: 'Les réponses sont effacées : tu peux tirer avec l’application.',
-    secret: 'Personne, organisateur compris, ne voit qui offre à qui.',
+    secret: 'Personne ne voit qui offre à qui. Pas même toi.',
     validate: {
       title: 'Valider le tirage ?',
       description:

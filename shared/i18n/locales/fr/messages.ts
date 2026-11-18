@@ -4,25 +4,25 @@
 export default {
   invitation: {
     greeting: 'Salut {firstName} ! 🎁',
-    body: 'Tu participes au Secret Santa de {groupName} ({editionLabel}).',
+    body: 'Tu es de la partie : le Secret Santa de {groupName} ({editionLabel}).',
     cta: 'Ouvre ton lien et laisse quelques pistes de cadeaux :',
     subject: '{firstName}, ton lien pour le Secret Santa ({editionLabel})',
   },
   drawn: {
-    greeting: '{firstName}, le tirage est fait ! 🎁',
+    greeting: '{firstName}, les jeux sont faits ! 🎁',
     cta: 'Ouvre ton lien pour découvrir à qui tu offres un cadeau :',
-    subject: '{firstName}, le tirage du Secret Santa est fait',
+    subject: '{firstName}, les jeux sont faits : ton enveloppe t’attend',
   },
   reminder: {
-    greeting: "Petit rappel {firstName} : ton lien t'attend, pense à l'ouvrir.",
+    greeting: '{firstName}, ton enveloppe prend la poussière. Ouvre-la vite !',
     cta: 'Ton lien :',
-    subject: "{firstName}, ton lien du Secret Santa t'attend",
+    subject: '{firstName}, ton enveloppe t’attend toujours',
   },
   redraw: {
     greeting:
-      "{firstName}, un nouveau tirage a eu lieu : ton ancien résultat n'est plus valable.",
+      '{firstName}, on rebat les cartes. Un nouveau tirage a eu lieu : oublie l’ancien.',
     cta: 'Ton lien ne change pas :',
-    subject: '{firstName}, nouveau tirage du Secret Santa',
+    subject: '{firstName}, on rebat les cartes : nouveau tirage',
   },
   answerRequest: {
     greeting: 'Salut {firstName} ! 🎁',
@@ -37,7 +37,7 @@ export default {
   },
   answerCheck: {
     greeting: '{firstName}, peux-tu vérifier ta réponse ? 🎁',
-    body: 'Deux réponses du Secret Santa de {groupName} ne vont pas ensemble.',
+    body: 'Il y a un nœud dans le Secret Santa de {groupName} : deux réponses ne vont pas ensemble.',
     cta: 'Vérifie à qui tu offres un cadeau, et corrige-la si besoin :',
     subject: '{firstName}, vérifie ta réponse pour le Secret Santa',
   },
@@ -123,7 +123,7 @@ export default {
   budget: 'Budget : {budget}.',
   eventDate: 'Rendez-vous le {eventDate}.',
   email: {
-    personal: 'Ce lien est personnel, ne le transfère pas.',
+    personal: 'Ce lien n’est qu’à toi : ne le transfère pas.',
     signature: "L'organisateur du Secret Santa de {groupName}",
   },
 };

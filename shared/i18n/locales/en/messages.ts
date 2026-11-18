@@ -4,26 +4,25 @@ import type { Dict } from '../../types';
 export default {
   invitation: {
     greeting: 'Hi {firstName}! 🎁',
-    body: "You're taking part in the Secret Santa of {groupName} ({editionLabel}).",
+    body: 'You’re in: the Secret Santa of {groupName} ({editionLabel}).',
     cta: 'Open your link and leave a few gift hints:',
     subject: '{firstName}, your link for the Secret Santa ({editionLabel})',
   },
   drawn: {
-    greeting: '{firstName}, the draw is done! 🎁',
+    greeting: '{firstName}, the names are drawn! 🎁',
     cta: 'Open your link to find out who you are giving a gift to:',
-    subject: '{firstName}, the Secret Santa draw is done',
+    subject: '{firstName}, the names are drawn: your envelope is waiting',
   },
   reminder: {
-    greeting:
-      'A quick reminder, {firstName}: your link is waiting, remember to open it.',
+    greeting: '{firstName}, your envelope is gathering dust. Open it soon!',
     cta: 'Your link:',
-    subject: '{firstName}, your Secret Santa link is waiting',
+    subject: '{firstName}, your envelope is still waiting',
   },
   redraw: {
     greeting:
-      '{firstName}, a new draw has taken place: your previous result is no longer valid.',
+      '{firstName}, we’re reshuffling. There’s been a new draw: forget the old one.',
     cta: 'Your link stays the same:',
-    subject: '{firstName}, new Secret Santa draw',
+    subject: '{firstName}, we’re reshuffling: new draw',
   },
   answerRequest: {
     greeting: 'Hi {firstName}! 🎁',
@@ -38,7 +37,7 @@ export default {
   },
   answerCheck: {
     greeting: '{firstName}, could you check your answer? 🎁',
-    body: "Two answers of the Secret Santa of {groupName} don't fit together.",
+    body: 'There’s a knot in the Secret Santa of {groupName}: two answers don’t fit together.',
     cta: "Check who you're giving a gift to, and correct it if needed:",
     subject: '{firstName}, check your Secret Santa answer',
   },
@@ -123,7 +122,7 @@ export default {
   budget: 'Budget: {budget}.',
   eventDate: 'See you on {eventDate}.',
   email: {
-    personal: 'This link is personal, do not forward it.',
+    personal: 'This link is yours alone: don’t forward it.',
     signature: 'The organizer of the Secret Santa of {groupName}',
   },
 } satisfies Dict<typeof fr>;

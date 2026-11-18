@@ -2,7 +2,8 @@
 // what the giver reads, the request and its emails.
 export default {
   title: 'Mes pistes de cadeaux',
-  intro: 'Aide la personne qui t’offre un cadeau. Tout est facultatif.',
+  intro:
+    'Donne un coup de pouce à la personne qui t’offre un cadeau. Tout est facultatif.',
   whoSees:
     'Seule la personne qui t’offre un cadeau les verra, une fois le tirage fait.',
   requested: {
@@ -10,7 +11,7 @@ export default {
     body: 'Six questions à choix suffisent, trente secondes.',
     bodyPortrait: 'Cinq questions à choix suffisent, trente secondes.',
   },
-  readOnly: 'Tes pistes ne sont plus modifiables pour cette édition.',
+  readOnly: 'Tes pistes ne bougent plus : c’est terminé pour cette année.',
   until: 'Tu peux les modifier jusqu’à la fête.',
   start: {
     label: 'Pour commencer',
@@ -180,7 +181,7 @@ export default {
     },
   },
   ideas: {
-    title: 'Une idée précise, si tu sèches',
+    title: 'Une idée précise, au cas où',
     giver: 'Si tu sèches',
     add: 'Ajouter une idée',
     addHint: 'Un objet, avec un lien si tu veux',
@@ -221,7 +222,7 @@ export default {
     anonymousHelp:
       'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
     once: 'Une seule demande par tirage',
-    onceHelp: 'Pas de relance possible : personne n’est harcelé.',
+    onceHelp: 'Pas de relance possible : on ne harcèle personne.',
     send: 'Envoyer la demande',
     sending: 'Envoi de la demande…',
     cancel: 'Pas maintenant',

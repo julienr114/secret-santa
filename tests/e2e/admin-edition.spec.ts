@@ -125,7 +125,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     page.getByRole('button', { name: 'Tirage en cours…' }),
   ).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Pas encore' })).toBeDisabled();
-  await expect(page.getByText('Tirage effectué').first()).toBeVisible();
+  await expect(page.getByText('Les jeux sont faits').first()).toBeVisible();
   await page.unroute('**/draw');
   await expect(
     page.getByText('Préviens chacun que le tirage est fait'),
@@ -165,7 +165,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Préviens chacun').first()).toBeVisible();
   await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toMatch(/^Léa, le tirage est fait/);
+  expect(copied).toMatch(/^Léa, les jeux sont faits/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}/);
   expect(copied).toMatch(/À bientôt !$/);
   // Sent: her sheet offers the reminder, and the other ways and repairs
@@ -174,7 +174,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Renvoyer à Léa').first()).toBeVisible();
   // The header says when the link went, not how.
   await expect(
-    page.getByText(/Envoyé le \d{1,2} \S+, pas encore consulté/),
+    page.getByText(/Envoyé le \d{1,2} \S+, pas encore ouvert/),
   ).toBeVisible();
   await page.getByRole('button', { name: /^Autre moyen, ou un souci/ }).click();
   const repairs = page.getByTestId('troubleshoot');

@@ -185,7 +185,7 @@ test('closed and revealed: the past, no secret', async ({ page }) => {
   await expect(card).toContainText('Tu as offert un cadeau à');
   await expect(card).toContainText(draw.receiver.name);
   await expect(card).toContainText(
-    'Cette édition est clôturée. Rendez-vous l’an prochain !',
+    'C’est terminé pour cette année. À l’an prochain ?',
   );
   await expect(page.getByTestId('santa-line')).toContainText(
     'Qui m’a offert mon cadeau ?',

@@ -68,7 +68,7 @@ test.afterAll(async () => {
 test('messages are written in the language of each person', async () => {
   const greta = await messageOf('Greta');
   expect(greta.language).toBe('de');
-  expect(greta.text).toMatch(/^Hallo Greta! 🎁\nDu machst beim Wichteln/);
+  expect(greta.text).toMatch(/^Hallo Greta! 🎁\nDu bist dabei: das Wichteln/);
   const paul = await messageOf('Paul');
   expect(paul.language).toBe('fr');
   expect(paul.text).toMatch(/^Salut Paul ! 🎁/);
@@ -82,9 +82,7 @@ test('a personal page follows the preferred language, and can change it', async 
   await hydrated(page);
   await expect(heading(page)).toHaveText('Hallo Greta!');
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
-  await expect(
-    page.getByText('Die Auslosung hat noch nicht stattgefunden'),
-  ).toBeVisible();
+  await expect(page.getByText('Noch ein wenig Geduld')).toBeVisible();
 
   await page.getByRole('link', { name: /Protokoll der Gruppe/ }).click();
   await expect(heading(page)).toHaveText('Protokoll der Gruppe');

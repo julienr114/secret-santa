@@ -6,7 +6,7 @@ export default {
     emailLabel: 'E-Mail-Adresse',
     emailHelp:
       'Kein Passwort: Du erhältst einen Link, der 15 Minuten gültig ist.',
-    emailInvalid: 'Ungültige E-Mail-Adresse',
+    emailInvalid: 'Diese Adresse sieht unvollständig aus',
     submit: 'Anmeldelink erhalten',
     sentTitle: 'Schau in dein Postfach',
     again: 'Andere Adresse verwenden',
@@ -99,8 +99,8 @@ export default {
         button: 'Hinweise lesen',
       },
       discover: {
-        title: 'Die Auslosung ist erfolgt!',
-        body: 'Dein Umschlag wartet. Achte darauf, dass niemand auf deinen Bildschirm schaut.',
+        title: 'Die Lose sind gezogen!',
+        body: 'Dein Umschlag wartet. Schau kurz, ob dir niemand über die Schulter guckt.',
         button: 'Erfahren, wen ich beschenke',
       },
       remind: {
@@ -176,7 +176,7 @@ export default {
       palmaresButton: 'Die Rangliste entdecken',
       giveAnswer: 'Wen beschenkst du?',
       answer: 'Sagen, wen ich beschenke',
-      answerGiven: 'Antwort gespeichert',
+      answerGiven: 'Ist notiert',
       partyOn: 'Fest am {date}',
       partyOnIn: {
         one: 'Fest am {date}, morgen',
@@ -186,7 +186,7 @@ export default {
       waiting: 'Die Auslosung hat noch nicht stattgefunden',
       addHints: 'Die Auslosung hat noch nicht stattgefunden',
       discover: 'Dein Umschlag wartet auf dich',
-      seeAgain: 'Du weißt schon, wen du beschenkst',
+      seeAgain: 'Gedächtnislücke?',
       reveal: 'Erfahren, wen ich beschenke',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
       newHints: 'Neue Hinweise für dein Geschenk',
@@ -197,18 +197,18 @@ export default {
     },
     step: {
       giveAnswer: { state: 'Deine Antwort wird erwartet', action: 'Antworten' },
-      answerGiven: { state: 'Antwort gespeichert' },
+      answerGiven: { state: 'Ist notiert' },
       addHints: {
         state: 'Füge deine Hinweise hinzu',
         action: 'Meine Hinweise',
       },
       wait: { state: 'Auslosung steht bevor' },
       discover: {
-        state: 'Die Auslosung hat stattgefunden',
+        state: 'Dein Umschlag wartet',
         action: 'Entdecken',
       },
-      seeAgain: { state: 'Du weißt, wen du beschenkst' },
-      closed: { state: 'Bescherung vorbei' },
+      seeAgain: { state: 'Umschlag geöffnet' },
+      closed: { state: 'Feier vorbei' },
     },
     newHints: 'Neue Hinweise zum Lesen',
     pastDraws: 'Vergangene Auslosungen',
@@ -273,7 +273,8 @@ export default {
       lead: 'Neues im Protokoll.',
       row: 'Neues im Protokoll',
       link_regenerated: 'Dein Link wurde am {date} erneuert.',
-      result_revealed: 'Der Organisator hat am {date} ein Ergebnis angesehen.',
+      result_revealed:
+        'Der Organisator hat am {date} in einen Umschlag geschaut.',
       results_revealed:
         'Die Ergebnisse wurden am {date} vor der Feier aufgedeckt.',
       draw_cancelled: 'Die Auslosung wurde am {date} aufgehoben.',
@@ -367,8 +368,8 @@ export default {
       drawn: 'ausgelost',
       none: 'keine laufende Auslosung',
       viewed: {
-        one: '{count} von {total} hat nachgesehen',
-        other: '{count} von {total} haben nachgesehen',
+        one: '{count} von {total} hat den Umschlag geöffnet',
+        other: '{count} von {total} haben ihren Umschlag geöffnet',
       },
     },
     role: { organizer: 'Organisiert', participant: 'Nimmt teil' },
@@ -470,7 +471,7 @@ export default {
   },
   invite: {
     intro: 'Du bist zum Wichteln eingeladen',
-    party: 'Bescherung am {date}',
+    party: 'Feier am {date}',
     count: {
       one: '{count} Person angemeldet',
       other: '{count} Personen angemeldet',
@@ -484,14 +485,13 @@ export default {
     organiserWord: 'Das Wort des Organisators',
     welcome: 'Willkommen in {group}',
     inDraw: 'Du machst bei {label} mit.',
-    notDrawnYet:
-      'Die Auslosung hat noch nicht stattgefunden: Dein Organisator sagt dir Bescheid.',
+    notDrawnYet: 'Die Auslosung steht noch aus: Dein Organisator meldet sich.',
     addLater:
       'Du gehörst zur Gruppe. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
     drawnAlready:
       'Du gehörst zur Gruppe. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
     nextDraw:
-      'Du gehörst zur Gruppe. Dein Organisator sagt dir bei der nächsten Auslosung Bescheid.',
+      'Du gehörst zur Gruppe. Dein Organisator meldet sich zur nächsten Auslosung.',
     meanwhile: 'In der Zwischenzeit',
     hints: 'Meine Geschenk-Hinweise hinterlassen',
     seeDraw: 'Meine Auslosung ansehen',

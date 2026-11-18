@@ -22,7 +22,7 @@ export default {
     gaveTo: 'Tu as offert un cadeau à',
     afterBody:
       'La fête est passée. Le tirage est dévoilé : tout le monde peut voir qui a offert à qui.',
-    closedBody: 'Cette édition est clôturée. Rendez-vous l’an prochain !',
+    closedBody: 'C’est terminé pour cette année. À l’an prochain ?',
     pageTitle: 'Qui offre à qui',
     pageBody:
       'Le tirage a été dévoilé le {date}. Tous les participants voient cette liste.',
@@ -54,41 +54,42 @@ export default {
       partyOver: 'Fête passée',
     },
     waiting: {
-      title: "Le tirage n'a pas encore eu lieu",
-      body: "Ton organisateur te préviendra. Garde ce lien : c'est ici que tu découvriras à qui tu offres un cadeau.",
+      title: 'Encore un peu de patience',
+      body: 'Le tirage n’est pas encore fait. Ton organisateur te fera signe ; garde ce lien, c’est ici que tout se jouera.',
       action: 'Laisser mes pistes de cadeaux',
-      hint: 'En attendant, aide la personne qui te tirera au sort.',
+      hint: 'En attendant, donne un coup de pouce à la personne qui te tirera au sort.',
     },
     ready: {
       title: "Ton enveloppe t'attend",
-      body: "Le tirage est fait. Assure-toi que personne ne regarde ton écran avant de l'ouvrir.",
+      body: 'Le tirage est fait. Vérifie que personne ne regarde par-dessus ton épaule, puis ouvre-la.',
       bodyHints:
-        'Le tirage est fait, et des pistes de cadeaux t’attendent à l’intérieur. Assure-toi que personne ne regarde ton écran avant de l’ouvrir.',
+        'Le tirage est fait, et des pistes de cadeaux t’attendent à l’intérieur. Vérifie que personne ne regarde par-dessus ton épaule, puis ouvre-la.',
       reveal: "Découvrir à qui j'offre un cadeau",
       revealing: 'Ouverture de l’enveloppe…',
-      hint: 'Ton résultat se referme dès que tu quittes la page.',
+      hint: 'Ton enveloppe se referme toute seule dès que tu quittes la page.',
     },
     shown: {
-      hide: 'Cacher mon résultat',
-      hint: 'Il se referme tout seul quand tu quittes la page.',
+      hide: 'Refermer mon enveloppe',
+      hint: 'Sinon, ton enveloppe se referme toute seule quand tu quittes la page.',
     },
     seen: {
-      title: 'Tu sais déjà à qui tu offres',
-      body: 'Un trou de mémoire ? Assure-toi que personne ne regarde ton écran.',
+      title: 'Un trou de mémoire ?',
+      body: 'Ton enveloppe est toujours là. Vérifie que personne ne regarde par-dessus ton épaule.',
       bodyHints:
-        'Ses pistes de cadeaux t’attendent à l’intérieur. Assure-toi que personne ne regarde ton écran.',
+        'Ton enveloppe est toujours là, avec ses pistes de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
       newTitle: 'De nouvelles pistes t’attendent',
       newBody:
-        'La personne à qui tu offres en a laissé depuis ta dernière visite. Assure-toi que personne ne regarde ton écran.',
-      revealWithHints: 'Revoir mon résultat et ses pistes',
-      noHintsYet: 'Pas encore de pistes. Tu pourras lui en demander.',
+        'La personne à qui tu offres en a laissé depuis ta dernière visite. Vérifie que personne ne regarde par-dessus ton épaule.',
+      revealWithHints: 'Revoir à qui j’offre, et ses pistes',
+      noHintsYet:
+        'Aucune piste pour l’instant. Tu pourras lui en demander, sans te trahir.',
       revealAgain: "Revoir à qui j'offre un cadeau",
     },
     closed: {
       title: 'La fête est passée',
-      body: 'Cette édition est clôturée. Tu peux encore revoir à qui tu as offert un cadeau.',
+      body: 'C’est terminé pour cette année. Tu peux encore revoir à qui tu as offert un cadeau.',
       bodyNotSeen:
-        'Cette édition est clôturée. Tu peux encore découvrir à qui tu offrais un cadeau.',
+        'C’est terminé pour cette année. Tu peux encore découvrir à qui tu offrais un cadeau.',
     },
     tiles: {
       hintsTodo: 'À remplir',
@@ -144,7 +145,7 @@ export default {
     intro: 'Tout le groupe voit ce journal. Il ne dit jamais qui offre à qui.',
     allEditions: 'Toutes les éditions',
     edition: 'Édition',
-    empty: "Rien à signaler pour l'instant.",
+    empty: 'Calme plat. C’est bon signe.',
   },
   invalid: { title: 'Oups, ce lien ne marche plus' },
   account: {
@@ -162,10 +163,10 @@ export default {
   answer: {
     card: {
       title: 'À qui offres-tu un cadeau ?',
-      body: 'Le tirage a été fait hors de l’application. Dis-le ici pour voir ses pistes de cadeaux. Assure-toi que personne ne regarde ton écran.',
+      body: 'Le tirage a été fait hors de l’application. Dis ici à qui tu offres, pour voir ses pistes de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
       action: 'Dire à qui j’offre',
       hint: 'Ta réponse reste secrète, même pour l’organisateur.',
-      savedTitle: 'Réponse enregistrée',
+      savedTitle: 'C’est noté',
       savedBody: {
         one: 'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponse sur {total} pour l’instant.',
         other:
@@ -193,7 +194,7 @@ export default {
       yes: 'Oui, c’est {name}',
       other: 'Choisir quelqu’un d’autre',
     },
-    saved: 'Réponse enregistrée',
+    saved: 'C’est noté',
   },
   // « Devine qui » (README 22.17, lot 19).
   game: {
@@ -266,7 +267,7 @@ export default {
     clear: 'Effacer ce pronostic',
     atParty: 'Réponse à la fête',
     atPartyBody:
-      'Les résultats et la surprise arrivent quand ton organisateur dévoile le tirage.',
+      'Les réponses arrivent quand ton organisateur dévoile le tirage. Avec une surprise.',
     answersTitle: 'Devine qui : les réponses',
     answersWaiting: 'Le tirage est dévoilé. Les réponses t’attendent.',
     answersSeen: 'Le tirage est dévoilé. Voici ce que valaient tes pronostics.',
@@ -417,7 +418,7 @@ export default {
         three: 'Démasqué. Vous étiez trois à jouer, et tu as vu juste.',
       },
       wrongBody: 'Raté : tu avais dit {name}.',
-      noGuessBody: 'Tu n’avais pas fait de pronostic.',
+      noGuessBody: 'Tu n’avais pas fait de pronostic. L’an prochain ?',
       endEyebrow: 'C’est tout pour cette année',
       endTitle: 'Joyeux Noël,\n{name}',
       endTitleAlone: 'Joyeux Noël !',

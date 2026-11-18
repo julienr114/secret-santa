@@ -9,10 +9,10 @@ export default {
   },
   status: {
     preparing: 'En préparation',
-    drawn: 'Tirée',
+    drawn: 'Tirage fait',
     closed: 'Clôturée',
   },
-  badge: { sent: 'envoyé', hints: 'pistes', viewed: 'consulté' },
+  badge: { sent: 'envoyé', hints: 'pistes', viewed: 'enveloppe ouverte' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Tirage fait',

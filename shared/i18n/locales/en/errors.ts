@@ -2,32 +2,37 @@ import type fr from '../fr/errors';
 import type { Dict } from '../../types';
 
 export default {
-  unknown: 'Something went wrong.',
-  other: 'Error: {reason}',
-  validation: 'Check the fields of the form.',
+  unknown: 'Ouch, something got stuck. Try again in a moment.',
+  other: 'Something got stuck ({reason}).',
+  validation: 'Something’s missing: check the fields.',
   unauthorized: 'Log in to continue.',
   forbidden: 'You do not have access to this group.',
-  too_many_attempts: 'Too many attempts, try again in a few minutes.',
+  too_many_attempts: 'Easy now. Try again in a few minutes.',
   slug_taken: 'This group identifier is already taken.',
-  group_not_found: 'Group not found.',
-  person_not_found: 'Person not found.',
+  group_not_found:
+    'Group not found. Reload the page: the list may have changed.',
+  person_not_found:
+    'Person not found. Reload the page: the list may have changed.',
   person_has_participations:
     'This person has already taken part: deactivate them instead.',
-  exclusion_not_found: 'Exclusion not found.',
-  edition_not_found: 'Edition not found.',
+  exclusion_not_found:
+    'Exclusion not found. Reload the page: the list may have changed.',
+  edition_not_found:
+    'Edition not found. Reload the page: the list may have changed.',
   edition_in_progress: 'Close the current edition first.',
   edition_closed: 'This edition is closed.',
-  invalid_rules: 'Invalid rules.',
+  invalid_rules: 'These rules don’t fit together. Check them.',
   results_already_revealed: 'The results are already revealed.',
   results_revealed:
     'The results are revealed: the draw can no longer be cancelled.',
   party_date_missing: 'Add the date of the party first to reveal the results.',
   party_not_reached: 'The party has not happened yet.',
-  invalid_transition: 'This action is not possible at this stage.',
+  invalid_transition:
+    'Too early, or too late: this can’t be done at this stage.',
   no_solution: 'No draw is possible with these rules: relax an exclusion.',
   too_many_participants: 'An edition cannot have more than 100 participants.',
-  too_few_participants: 'At least three participants are needed.',
-  participants_locked: 'The list is locked after the draw.',
+  too_few_participants: 'You need at least three: with two, there’s no secret.',
+  participants_locked: 'The draw is done: the list is set.',
   already_participating: 'This person is already taking part.',
   message_not_available: 'This message does not fit the stage of the edition.',
   email_not_configured:
@@ -35,38 +40,44 @@ export default {
   email_failed:
     'The emails were not sent. Try again, or share the links from your phone.',
   email_missing: 'This person has no email address.',
-  participation_not_found: 'Participant not found.',
+  participation_not_found:
+    'Participant not found. Reload the page: the list may have changed.',
   wrong_confirmation: 'Type the group identifier exactly.',
   wrong_sentence: 'Copy the requested sentence exactly.',
   results_secret: 'Results stay secret until the edition is closed.',
   login_link_invalid: 'This login link is no longer valid: ask for a new one.',
   cannot_remove_self: 'You cannot remove yourself: ask another organizer.',
-  organizer_not_found: 'Organizer not found.',
+  organizer_not_found:
+    'Organizer not found. Reload the page: the list may have changed.',
   link_invalid:
     'This link is no longer valid, ask your organizer for a new one.',
   draw_not_done: 'The draw has not taken place yet.',
   result_not_found:
-    'Your result cannot be found, tell your organizer something is wrong.',
+    'Your envelope can’t be found. Tell your organizer: something’s wrong.',
   gift_hints_disabled: 'This group does not use gift hints.',
   ideas_disabled: 'This group does not use precise ideas.',
   invalid_hints: 'One of your answers could not be saved.',
   hints_already_requested: 'You already asked for hints in this draw.',
   hints_already_given: 'Hints have already arrived.',
-  result_not_seen: 'First discover who you give a present to.',
+  result_not_seen: 'Open your envelope first.',
   no_previous_hints: 'No hints to reuse.',
   too_many_wishes: 'There are too many ideas in your list.',
   invalid_wish:
     'An idea is invalid: 200 characters at most, and a link starting with http:// or https://.',
   group_quota_reached:
     'You cannot create a group for now: ask for one from the home page.',
-  group_request_pending: 'You already have a pending request.',
+  group_request_pending:
+    'You already have a request pending. We’ll get back to you soon.',
   group_request_useless: 'You can already create a group.',
   cannot_disable_self: 'You cannot disable your own account.',
-  account_not_found: 'Account not found.',
-  request_not_found: 'Request not found.',
+  account_not_found:
+    'Account not found. Reload the page: the list may have changed.',
+  request_not_found:
+    'Request not found. Reload the page: the list may have changed.',
   request_decided: 'This request has already been answered.',
   session_current: 'This is the device you are using: log out from the menu.',
-  session_not_found: 'Session not found.',
+  session_not_found:
+    'Session not found. Reload the page: the list may have changed.',
   person_is_organizer:
     'This is an organizer of the group: remove them from the organizers first.',
   invite_invalid:
@@ -81,7 +92,8 @@ export default {
   not_collecting_answers: 'This edition is not collecting answers.',
   answers_not_ready: "The answers aren't complete yet, or don't fit together.",
   invalid_answer: 'Choose another person of the edition.',
-  game_needs_four: 'The game needs at least four participants.',
+  game_needs_four:
+    'The game needs at least four players: with three, there’s nothing to guess.',
   draw_not_revealed: 'The draw is not revealed yet.',
   already_played: 'You already made a guess: take it back first.',
 } satisfies Dict<typeof fr>;

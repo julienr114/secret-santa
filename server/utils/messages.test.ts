@@ -38,7 +38,7 @@ describe('buildMessage', () => {
 
   it('writes the invitation and the drawn message with budget and date', () => {
     expect(valueOf(buildMessage('invitation', data))).toBe(
-      'Salut Léa ! 🎁\nTu participes au Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🎁\nTu es de la partie : le Secret Santa de la famille Rabin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
       valueOf(
@@ -49,14 +49,14 @@ describe('buildMessage', () => {
         }),
       ),
     ).toBe(
-      'Léa, le tirage est fait ! 🎁\nBudget : 20 € max.\nRendez-vous le 24 décembre.\nOuvre ton lien pour découvrir à qui tu offres un cadeau :\nhttps://secret-santa.example/p/abc123',
+      'Léa, les jeux sont faits ! 🎁\nBudget : 20 € max.\nRendez-vous le 24 décembre.\nOuvre ton lien pour découvrir à qui tu offres un cadeau :\nhttps://secret-santa.example/p/abc123',
     );
     expect(valueOf(buildMessage('drawn', data))).not.toContain('Budget');
   });
 
   it('writes a short reminder', () => {
     expect(valueOf(buildMessage('reminder', data))).toContain(
-      "ton lien t'attend",
+      'ton enveloppe prend la poussière',
     );
   });
 
@@ -235,10 +235,12 @@ describe('languages', () => {
         'de',
       ),
     );
-    expect(email.subject).toBe('Léa, die Wichtel-Auslosung ist erfolgt');
+    expect(email.subject).toBe(
+      'Léa, die Lose sind gezogen: dein Umschlag wartet',
+    );
     expect(email.text).toContain('Budget: 20 €.');
     expect(email.text).toContain('Wir sehen uns am 24.12..');
-    expect(email.text).toContain('Dieser Link ist persönlich');
+    expect(email.text).toContain('Dieser Link gehört nur dir');
     expect(email.html).not.toContain('{');
   });
 

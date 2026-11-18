@@ -98,9 +98,7 @@ test('the style guide shows the edition components', async ({ page }) => {
   await expect(signals.first()).toContainText('Ton lien a été régénéré');
   await expect(signals.nth(1)).toContainText('2 alertes');
   const journal = page.getByTestId('journal');
-  await expect(journal).toContainText(
-    '2 personnes ont découvert leur résultat',
-  );
+  await expect(journal).toContainText('2 personnes ont ouvert leur enveloppe');
   await journal.getByRole('button', { name: /^Voir le détail/ }).click();
   // Unfolded, one row per person: their icon and their name.
   await expect(journal).toContainText('Hugo');

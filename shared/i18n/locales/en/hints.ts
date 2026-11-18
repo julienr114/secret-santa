@@ -3,7 +3,7 @@ import type { Dict } from '../../types';
 
 export default {
   title: 'My gift hints',
-  intro: 'Help the person who gives you a present. Everything is optional.',
+  intro: 'Give a hand to the person giving you a gift. Everything is optional.',
   whoSees:
     'Only the person who gives you a present will see them, once the draw is done.',
   requested: {
@@ -11,7 +11,7 @@ export default {
     body: 'Six multiple-choice questions are enough: thirty seconds.',
     bodyPortrait: 'Five multiple-choice questions are enough: thirty seconds.',
   },
-  readOnly: 'Your hints can no longer be changed for this edition.',
+  readOnly: 'Your hints are set: that’s a wrap for this year.',
   until: 'You can change them until the party.',
   start: {
     label: 'To begin',
@@ -179,7 +179,7 @@ export default {
     },
   },
   ideas: {
-    title: 'A precise idea, if you’re stuck',
+    title: 'A specific idea, just in case',
     giver: 'If you’re stuck',
     add: 'Add an idea',
     addHint: 'An item, with a link if you like',
@@ -218,7 +218,7 @@ export default {
     anonymousHelp:
       'Not in the email, not in the journal, not to the organizer.',
     once: 'One request per draw',
-    onceHelp: 'No reminder possible: nobody gets pestered.',
+    onceHelp: 'No reminders: we don’t pester anyone.',
     send: 'Send the request',
     sending: 'Sending the request…',
     cancel: 'Not now',

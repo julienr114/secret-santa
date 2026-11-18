@@ -6,23 +6,23 @@ export default {
   unknown: 'Unbekanntes Ereignis',
   events: {
     edition_created: 'Die Ausgabe {label} wurde erstellt',
-    participant_added: '{name} nimmt an der Ausgabe teil',
-    participant_removed: '{name} verlässt die Ausgabe',
+    participant_added: '{name} ist dabei',
+    participant_removed: '{name} macht nicht mehr mit',
     rules_changed: 'Der Organisator hat die Regeln der Auslosung geändert',
     message_sent: 'Der Organisator hat {what} an {name}{via} gesendet',
     link_copied: 'Der Organisator hat den Link von {name} kopiert',
     link_shared: 'Der Organisator hat den Link von {name} geteilt',
     link_regenerated: 'Der Link von {name} wurde neu erzeugt',
     draw_done: {
-      one: 'Die Auslosung wurde für {count} Teilnehmer durchgeführt',
-      other: 'Die Auslosung wurde für {count} Teilnehmer durchgeführt',
+      one: 'Die Auslosung ist erfolgt, für {count} Teilnehmer',
+      other: 'Die Auslosung ist erfolgt, für {count} Teilnehmer',
     },
     draw_cancelled: 'Die Auslosung wurde aufgehoben. Grund: {reason}',
     results_revealed:
       'Der Organisator hat die Ergebnisse vor der Feier aufgedeckt',
     result_revealed:
       'Der Organisator hat das Ergebnis von {name} eingesehen (Notzugriff)',
-    result_viewed: '{name} hat das eigene Ergebnis entdeckt',
+    result_viewed: '{name} hat den eigenen Umschlag geöffnet',
     avatar_changed: '{name} hat das eigene Symbol geändert',
     language_changed: '{name} hat die eigene Sprache geändert ({language})',
     edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
@@ -69,15 +69,15 @@ export default {
     email: ' per E-Mail',
   },
   own: {
-    participant_added: 'Du nimmst an der Ausgabe teil',
-    participant_removed: 'Du verlässt die Ausgabe',
+    participant_added: 'Du bist dabei',
+    participant_removed: 'Du machst nicht mehr mit',
     message_sent: 'Der Organisator hat dir {what}{via} gesendet',
     link_copied: 'Der Organisator hat deinen Link kopiert',
     link_shared: 'Der Organisator hat deinen Link geteilt',
     link_regenerated: 'Dein Link wurde neu erzeugt',
     result_revealed:
-      'Der Organisator hat dein Ergebnis eingesehen (Notzugriff)',
-    result_viewed: 'Du hast dein Ergebnis entdeckt',
+      'Der Organisator hat in deinen Umschlag geschaut (Notzugriff)',
+    result_viewed: 'Du hast deinen Umschlag geöffnet',
     avatar_changed: 'Du hast dein Symbol geändert',
     language_changed: 'Du hast deine Sprache geändert ({language})',
     answer_given: 'Du hast deine Antwort gegeben',
@@ -96,14 +96,14 @@ export default {
     everyone: 'Alle',
     me: 'Ich ({name})',
     meNote:
-      'Alles, was deinen Link und dein Ergebnis betrifft. Kommt eine Zeile nicht von dir, sag es deinem Organisator.',
+      'Alles, was deinen Link und deinen Umschlag betrifft. Kommt eine Zeile nicht von dir, sag es deinem Organisator.',
   },
   grouped: {
-    result_viewed: '{strong} haben ihr Ergebnis entdeckt',
+    result_viewed: '{strong} haben ihren Umschlag geöffnet',
     message_sent: 'Der Organisator hat {what} an {strong}{via} gesendet',
     link_copied: 'Der Organisator hat {strong} kopiert',
     link_shared: 'Der Organisator hat {strong} geteilt',
-    participant_added: '{strong} sind der Ausgabe beigetreten',
+    participant_added: '{strong} sind dabei',
   },
   groupedCount: {
     result_viewed: { one: '{count} Person', other: '{count} Personen' },
@@ -120,7 +120,7 @@ export default {
       'Damit die Auslosung ehrlich bleibt. Schummeln bleibt möglich, aber man sieht es.',
     notes: 'Es notiert',
     notesBody:
-      'Die Auslosung, jeden gesendeten oder erneuerten Link, jedes entdeckte Ergebnis und jeden Blick des Organisators auf ein Ergebnis.',
+      'Die Auslosung, jeden gesendeten oder erneuerten Link, jeden geöffneten Umschlag und jeden Blick des Organisators in einen Umschlag.',
     never: 'Es verrät nie',
     neverBody: 'Wer wen beschenkt, noch die Geschenk-Hinweise der anderen.',
     who: 'Die ganze Gruppe sieht es',
@@ -136,9 +136,10 @@ export default {
       title: 'Zugriff im Notfall',
       happened:
         'Der Organisator hat nachgesehen, wen {name} beschenkt. Er hat nur dieses eine Ergebnis gesehen.',
-      forOthers: 'Nichts: Dein Ergebnis und deine Liste wurden nicht gesehen.',
+      forOthers:
+        'Nichts: Dein Umschlag und deine Hinweise wurden nicht gesehen.',
       forMe:
-        'Er weiß, wen du beschenkst. Sonst hat es niemand gesehen, und dein Ergebnis ändert sich nicht.',
+        'Er weiß, wen du beschenkst. Sonst hat es niemand gesehen, und dein Umschlag ändert sich nicht.',
       why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
       changes:
         'Die anderen Ergebnisse und die Geschenk-Hinweise wurden nicht gesehen.',
@@ -146,10 +147,10 @@ export default {
     results_revealed: {
       title: 'Ergebnisse vor der Feier aufgedeckt',
       happened:
-        'Der Organisator hat gesehen, wer wen beschenkt, noch vor der Feier.',
+        'Der Organisator hat aufgedeckt, wer wen beschenkt, noch vor der Feier.',
       why: 'Aufdecken ist ab dem Tag der Feier erlaubt. Früher muss der Organisator einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
       changes:
-        'Dein Ergebnis ändert sich nicht, und die ganze Gruppe sieht, wer wen beschenkt. Die Auslosung kann nicht mehr aufgehoben werden.',
+        'Dein Umschlag ändert sich nicht, und die ganze Gruppe sieht, wer wen beschenkt. Die Auslosung kann nicht mehr aufgehoben werden.',
     },
     draw_cancelled: {
       title: 'Auslosung abgesagt',
@@ -157,7 +158,7 @@ export default {
         'Der Organisator hat die Auslosung abgesagt, aus dem oben genannten Grund. Die alten Ergebnisse sind gelöscht.',
       why: 'Eine Absage, ein Vergessener: Lieber neu auslosen als eine falsche Auslosung behalten. Der Grund steht für die ganze Gruppe im Protokoll.',
       changes:
-        'Alle bekommen eine neue Nachricht und entdecken ein neues Ergebnis. Die Links und die Geschenk-Hinweise bleiben gleich.',
+        'Alle bekommen eine neue Nachricht und öffnen einen neuen Umschlag. Die Links und die Geschenk-Hinweise bleiben gleich.',
     },
   },
 } satisfies Dict<typeof fr>;

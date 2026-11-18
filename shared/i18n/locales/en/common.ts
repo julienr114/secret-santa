@@ -12,10 +12,10 @@ export default {
   },
   status: {
     preparing: 'Preparing',
-    drawn: 'Drawn',
+    drawn: 'Draw done',
     closed: 'Closed',
   },
-  badge: { sent: 'sent', hints: 'hints', viewed: 'viewed' },
+  badge: { sent: 'sent', hints: 'hints', viewed: 'envelope opened' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Draw done',

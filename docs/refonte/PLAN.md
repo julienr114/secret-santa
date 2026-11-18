@@ -612,11 +612,11 @@ Demandée par Julien le 18 novembre 2026. Le README 22.17, « Donner envie de jo
 
 Demandée par Julien le 18 novembre 2026. Tout est dans `docs/refonte/TEXTES.md` : la voix (section 1), les mots (sections 2 et 12), puis, fichier par fichier, le texte actuel et le texte proposé. Le document ne liste que ce qui change.
 
-- [ ] **Partie 1, validée** (sections 3 à 5) : `participant.ts`, `messages.ts`, `errors.ts`. Côté participant, « mon enveloppe » remplace « mon résultat », et « c'est terminé pour cette année » remplace « cette édition est clôturée ».
-- [ ] **Parties 2 et 3, validées le 18 novembre à 11 h 10** (sections 6 à 12) : `common.ts`, `notify.ts`, `journal.ts`, `hints.ts`, `auth.ts`, `adminGroup.ts`, `adminEdition.ts`. Sur le suivi de l'organisateur, « Enveloppe ouverte » remplace « Résultat consulté » ; « les résultats » reste pour le tirage entier.
-- [ ] **L'anglais et l'allemand** : `TEXTES.md`, section 13, donne le texte proposé pour chaque clé modifiée, et le tableau des mots dans chaque langue. En anglais, « organizer » partout (les fichiers mélangent « organizer » et « organiser ») et « party », pas « exchange » ; en allemand, « Feier », pas « Bescherung », et « Umschlag », pas « Ergebnis », pour l'état d'une personne. Pour un texte absent de la section 13, suivre l'esprit, pas le mot à mot.
-- [ ] Tout nouveau texte écrit pour les Corrections 13 à 15 suit la voix de `TEXTES.md` ; avant la fête, aucun texte ne nomme un prix ni ne dit « palmarès » aux joueurs (Correction 15).
-- [ ] Les maquettes gardent leurs anciens textes : en cas d'écart, `TEXTES.md` fait foi pour les mots, les maquettes pour la mise en page. Tests et `tests/e2e` mis à jour là où ils lisent un texte.
+- [x] **Partie 1, validée** (sections 3 à 5) : `participant.ts`, `messages.ts`, `errors.ts`. Côté participant, « mon enveloppe » remplace « mon résultat », et « c'est terminé pour cette année » remplace « cette édition est clôturée ».
+- [x] **Parties 2 et 3, validées le 18 novembre à 11 h 10** (sections 6 à 12) : `common.ts`, `notify.ts`, `journal.ts`, `hints.ts`, `auth.ts`, `adminGroup.ts`, `adminEdition.ts`. Sur le suivi de l'organisateur, « Enveloppe ouverte » remplace « Résultat consulté » ; « les résultats » reste pour le tirage entier.
+- [x] **L'anglais et l'allemand** : `TEXTES.md`, section 13, donne le texte proposé pour chaque clé modifiée, et le tableau des mots dans chaque langue. En anglais, « organizer » partout (les fichiers mélangent « organizer » et « organiser ») et « party », pas « exchange » ; en allemand, « Feier », pas « Bescherung », et « Umschlag », pas « Ergebnis », pour l'état d'une personne. Pour un texte absent de la section 13, suivre l'esprit, pas le mot à mot.
+- [x] Tout nouveau texte écrit pour les Corrections 13 à 15 suit la voix de `TEXTES.md` ; avant la fête, aucun texte ne nomme un prix ni ne dit « palmarès » aux joueurs (Correction 15).
+- [x] Les maquettes gardent leurs anciens textes : en cas d'écart, `TEXTES.md` fait foi pour les mots, les maquettes pour la mise en page. Tests et `tests/e2e` mis à jour là où ils lisent un texte.
 
 **« Rappeler le jeu » : une page à deux positions, plus un panneau.** Demandé par Julien le 18 novembre 2026, sur l'écran codé à la Correction 15 : le panneau est trop haut pour un téléphone, ses deux boutons se comprennent mal, et « Ajouter un mot » ne convient pas. Maquettes refaites : `DevineRappel`, `DevineRappelGroupe`, `DevineRappelPersonnaliser`. Le README 22.17 (tableau des rappels) est à jour.
 
@@ -885,4 +885,12 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 - Point 8 : à corriger. Le texte devient « On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête. », dans les trois langues. La maquette `DevinePasse` est corrigée. À faire.
 - Points 6 et 7 : pas encore lus par Julien. Rien à changer en attendant.
 
+### Correction 16
+
+Codée le 18 novembre 2026. Points tranchés seul, à relire :
+
+1. **« Rappeler le jeu »** : l'interrupteur est gardé dans l'adresse (`?vers=groupe`), pour revenir sur « Au groupe » après « Personnaliser le message ». Le mot ajouté pour le groupe et celui pour les emails sont gardés séparément. Dans « Personnaliser » du rappel, la langue est celle de la première personne cochée (comme pour un envoi à une personne) ; pour le groupe, pas de langue.
+2. **Le rappel automatique en retard** : au-delà de six heures après son heure, il est noté comme manqué et ne partira plus.
+3. **Ce que j'ai changé hors de `TEXTES.md`, dans la même voix** : côté participant, les dernières mentions de « ton résultat » dans le journal (l'accès de dernier recours, l'aide « Moi », les explications des alertes, le signal de l'accueil) disent « ton enveloppe » ; le badge « consulté » devient « enveloppe ouverte », et le compte de l'accueil organisateur « ont ouvert leur enveloppe ». Les textes de l'organisateur sur « Voir un seul résultat » gardent « résultat ». En anglais, « organiser » devient « organizer » partout et « The day you exchange the gifts » devient « The day of the party, when gifts are given » ; en allemand, « Bescherung » devient « Feier » partout (date de la fête, clôture), « protokolliert » devient « im Journal vermerkt ».
+4. **`home.drawCard.waiting`** (« Le tirage n'a pas encore eu lieu », carte de l'accueil) n'est pas dans `TEXTES.md` : inchangé.
 

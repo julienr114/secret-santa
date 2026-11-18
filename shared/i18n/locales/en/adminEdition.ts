@@ -32,7 +32,7 @@ export default {
       one: '{names} is not taking part yet',
       other: '{names} are not taking part yet',
     },
-    drawDone: 'Draw done',
+    drawDone: 'The names are drawn',
     email: {
       sent: {
         one: '{count} email sent',
@@ -121,7 +121,7 @@ export default {
   },
   cancelDraw: {
     title: 'Cancel the draw?',
-    dangerTitle: 'Everyone will have to find out again',
+    dangerTitle: 'Everyone will get a new result',
     results: {
       one: 'The result is erased.',
       other: 'The {count} results are erased.',
@@ -236,8 +236,8 @@ export default {
       collapse: 'Fold the list',
       series: {
         toNotify: 'Not sent yet',
-        notOpened: 'Sent, not looked at yet',
-        viewed: 'Result looked at',
+        notOpened: 'Sent, not opened yet',
+        viewed: 'Envelope opened',
       },
       search: 'Search a first name',
       clear: 'Clear the search',
@@ -355,7 +355,7 @@ export default {
     },
     follow: {
       title: 'Let everyone know the draw is done',
-      titleDone: 'Everyone has their link',
+      titleDone: 'Everyone’s been told',
       toNotify: 'to notify',
       notOpened: { one: 'not opened yet', other: 'not opened yet' },
       viewed: { one: 'has discovered', other: 'have discovered' },
@@ -363,8 +363,8 @@ export default {
       help: 'No email address? The button of each row shares the link by WhatsApp or SMS.',
       state: {
         toNotify: 'Not sent yet',
-        notOpened: 'Sent, not viewed yet',
-        viewed: 'Result viewed · {count}×',
+        notOpened: 'Sent, not opened yet',
+        viewed: 'Envelope opened · {count}×',
       },
       later: 'Later, or if something goes wrong',
       closeRow: 'Close the edition',
@@ -376,9 +376,9 @@ export default {
       revealOne: 'See a single result',
       revealOneHint: 'Last resort, written in the journal',
       cancel: 'Cancel and redo the draw',
-      cancelHint: 'Withdrawal, someone forgotten… journaled',
+      cancelHint: 'Withdrawal, someone forgotten… written in the journal',
       listFooter: 'Those still to notify come first.',
-      noResults: 'Nobody, organizer included, sees the results here.',
+      noResults: 'Nobody sees the results here. Not even you.',
     },
     reveal: {
       row: 'Reveal the results',
@@ -389,10 +389,10 @@ export default {
       cardHelp:
         'It is optional, and final. Gift hints can still be changed until the edition is closed.',
       viewed: {
-        one: '{count} of {total} has looked at their result',
-        other: '{count} of {total} have looked at their result',
+        one: '{count} of {total} has opened their envelope',
+        other: '{count} of {total} have opened their envelope',
       },
-      viewedLabel: 'Results looked at',
+      viewedLabel: 'Envelopes opened',
       action: 'Reveal the results',
       revealing: 'Revealing…',
       closeWithout: 'Close without revealing',
@@ -404,14 +404,14 @@ export default {
       partyDoneOn: 'It was planned on {date}.',
       partyToday: 'The party is today',
       partyTodayOn: 'It is planned on {date}.',
-      notViewedOne: '{name} has not looked at their result',
-      notViewedMany: '{count} people have not looked at their result',
+      notViewedOne: '{name} hasn’t opened their envelope',
+      notViewedMany: '{count} people haven’t opened their envelope',
       othersViewed: {
         one: 'The other participant opened it.',
         other: 'The {count} other participants opened it.',
       },
       nobodyViewed: 'Nobody has opened it yet.',
-      allViewed: 'Everyone has looked at their result',
+      allViewed: 'Every envelope is open',
       allViewedHint: 'Nobody will find out theirs along with the list.',
       wholeGroupTitle: 'The whole group will see the list',
       wholeGroupHint: 'Each participant will see it on their page.',
@@ -449,7 +449,7 @@ export default {
     },
     dateSheet: {
       title: 'Date of the party',
-      description: 'The day you exchange the gifts.',
+      description: 'The day of the party, when gifts are given.',
       seen: 'Participants see it on their page, with the countdown.',
       journal: 'The change is written in the group journal.',
       saved: 'Party date saved',
@@ -476,7 +476,7 @@ export default {
       spam: 'Emails often land in spam: remind by phone those who do not open their link.',
     },
     sheet: {
-      sentOn: 'Sent on {date}, not viewed yet',
+      sentOn: 'Sent on {date}, not opened yet',
       customize: 'Customise the message',
       editMessage: 'Edit the message',
       other: 'Another way, or a problem?',
@@ -710,12 +710,12 @@ export default {
     participants: 'Add or remove participants',
     participantsHint: "Possible as long as you haven't validated",
     abandon: 'Give up and draw with the app',
-    abandonHint: 'The answers are deleted · logged',
+    abandonHint: 'The answers are deleted · written in the journal',
     abandonHintShort: 'The answers are deleted',
     abandonConfirm: "Delete all answers and go back to the app's draw?",
     abandonYes: 'Give up',
     abandoned: 'The answers are deleted: you can draw with the app.',
-    secret: 'Nobody, organizer included, sees who gives to whom.',
+    secret: 'Nobody sees who gives to whom. Not even you.',
     validate: {
       title: 'Validate the draw?',
       description:

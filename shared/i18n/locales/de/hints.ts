@@ -3,7 +3,8 @@ import type { Dict } from '../../types';
 
 export default {
   title: 'Meine Geschenk-Hinweise',
-  intro: 'Hilf der Person, die dich beschenkt. Alles ist freiwillig.',
+  intro:
+    'Greif der Person unter die Arme, die dich beschenkt. Alles ist freiwillig.',
   whoSees:
     'Nur die Person, die dich beschenkt, sieht sie, sobald ausgelost ist.',
   requested: {
@@ -11,7 +12,7 @@ export default {
     body: 'Sechs Auswahlfragen reichen, dreißig Sekunden.',
     bodyPortrait: 'Fünf Auswahlfragen reichen, dreißig Sekunden.',
   },
-  readOnly: 'Deine Hinweise lassen sich für diese Ausgabe nicht mehr ändern.',
+  readOnly: 'Deine Hinweise stehen fest: für dieses Jahr ist Schluss.',
   until: 'Du kannst sie bis zur Feier ändern.',
   start: {
     label: 'Zum Anfang',
@@ -179,7 +180,7 @@ export default {
     },
   },
   ideas: {
-    title: 'Eine genaue Idee, falls nichts einfällt',
+    title: 'Eine genaue Idee, für alle Fälle',
     giver: 'Falls nichts einfällt',
     add: 'Idee hinzufügen',
     addHint: 'Ein Ding, gern mit Link',
@@ -220,7 +221,7 @@ export default {
     anonymousHelp:
       'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
     once: 'Eine einzige Anfrage pro Auslosung',
-    onceHelp: 'Keine Erinnerung möglich: Niemand wird bedrängt.',
+    onceHelp: 'Keine Erinnerung möglich: wir bedrängen niemanden.',
     send: 'Anfrage senden',
     sending: 'Anfrage wird gesendet…',
     cancel: 'Nicht jetzt',

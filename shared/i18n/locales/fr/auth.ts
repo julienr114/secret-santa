@@ -3,7 +3,7 @@ export default {
   login: {
     emailLabel: 'Adresse email',
     emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
-    emailInvalid: 'Adresse email invalide',
+    emailInvalid: 'Cette adresse a l’air incomplète',
     submit: 'Recevoir un lien de connexion',
     sentTitle: 'Regarde ta boîte mail',
     again: 'Utiliser une autre adresse',
@@ -41,7 +41,7 @@ export default {
       },
       palmares: {
         title: 'Le palmarès de Devine qui est arrivé',
-        body: 'Qui offrait à qui, et qui avait deviné ? Assure-toi d’avoir ouvert ton cadeau avant.',
+        body: 'Qui offrait à qui, et qui avait deviné ? Ouvre ton cadeau d’abord.',
         button: 'Découvrir le palmarès',
       },
       giveAnswer: {
@@ -96,8 +96,8 @@ export default {
         button: 'Lire ses pistes',
       },
       discover: {
-        title: 'Le tirage est fait !',
-        body: 'Ton enveloppe t’attend. Assure-toi que personne ne regarde ton écran.',
+        title: 'Les jeux sont faits !',
+        body: 'Ton enveloppe t’attend. Vérifie que personne ne regarde par-dessus ton épaule.',
         button: 'Découvrir à qui j’offre un cadeau',
       },
       remind: {
@@ -169,11 +169,11 @@ export default {
       guessButton: 'Faire mon pronostic',
       palmaresTitle: 'Le palmarès de Devine qui est arrivé',
       palmaresBody:
-        'Qui offrait à qui, et qui avait deviné ? Assure-toi d’avoir ouvert ton cadeau avant.',
+        'Qui offrait à qui, et qui avait deviné ? Ouvre ton cadeau d’abord.',
       palmaresButton: 'Découvrir le palmarès',
       giveAnswer: 'À qui offres-tu un cadeau ?',
       answer: 'Dire à qui j’offre',
-      answerGiven: 'Réponse enregistrée',
+      answerGiven: 'C’est noté',
       partyOn: 'Fête le {date}',
       partyOnIn: {
         one: 'Fête le {date}, demain',
@@ -183,7 +183,7 @@ export default {
       waiting: 'Le tirage n’a pas encore eu lieu',
       addHints: 'Le tirage n’a pas encore eu lieu',
       discover: 'Ton enveloppe t’attend',
-      seeAgain: 'Tu sais déjà à qui tu offres',
+      seeAgain: 'Un trou de mémoire ?',
       reveal: 'Découvrir à qui j’offre un cadeau',
       revealAgain: 'Revoir à qui j’offre un cadeau',
       newHints: 'De nouvelles pistes pour ton cadeau',
@@ -193,12 +193,12 @@ export default {
     },
     step: {
       giveAnswer: { state: 'Ta réponse est attendue', action: 'Répondre' },
-      answerGiven: { state: 'Réponse enregistrée' },
+      answerGiven: { state: 'C’est noté' },
       addHints: { state: 'Ajoute tes pistes', action: 'Mes pistes' },
       wait: { state: 'Tirage à venir' },
-      discover: { state: 'Le tirage a eu lieu', action: 'Découvrir' },
-      seeAgain: { state: 'Tu sais à qui tu offres' },
-      closed: { state: 'Échange passé' },
+      discover: { state: 'Ton enveloppe t’attend', action: 'Découvrir' },
+      seeAgain: { state: 'Enveloppe ouverte' },
+      closed: { state: 'Fête passée' },
     },
     newHints: 'De nouvelles pistes à lire',
     pastDraws: 'Tirages passés',
@@ -263,7 +263,7 @@ export default {
       lead: 'Du nouveau au journal.',
       row: 'Du nouveau au journal',
       link_regenerated: 'Ton lien a été régénéré le {date}.',
-      result_revealed: 'L’organisateur a regardé un résultat le {date}.',
+      result_revealed: 'L’organisateur a regardé dans une enveloppe le {date}.',
       results_revealed:
         'Les résultats ont été dévoilés avant la fête, le {date}.',
       draw_cancelled: 'Le tirage a été annulé le {date}.',
@@ -355,8 +355,8 @@ export default {
       drawn: 'tirage fait',
       none: 'pas de tirage en cours',
       viewed: {
-        one: '{count} sur {total} a consulté',
-        other: '{count} sur {total} ont consulté',
+        one: '{count} sur {total} a ouvert son enveloppe',
+        other: '{count} sur {total} ont ouvert leur enveloppe',
       },
     },
     role: { organizer: 'Organise', participant: 'Participe' },
@@ -457,7 +457,7 @@ export default {
   },
   invite: {
     intro: 'Tu es invité au Secret Santa',
-    party: 'échange le {date}',
+    party: 'fête le {date}',
     count: {
       one: '{count} personne inscrite',
       other: '{count} personnes inscrites',
@@ -472,13 +472,13 @@ export default {
     welcome: 'Bienvenue dans {group}',
     inDraw: 'Tu participes à {label}.',
     notDrawnYet:
-      'Le tirage n’a pas encore eu lieu : ton organisateur te préviendra.',
+      'Le tirage n’est pas encore fait : ton organisateur te fera signe.',
     addLater:
       'Tu fais partie du groupe. Ton organisateur t’ajoutera au tirage de {label}.',
     drawnAlready:
       'Tu fais partie du groupe. Le tirage de {label} est déjà fait : tu seras du prochain.',
     nextDraw:
-      'Tu fais partie du groupe. Ton organisateur te préviendra du prochain tirage.',
+      'Tu fais partie du groupe. Ton organisateur te fera signe pour le prochain tirage.',
     meanwhile: 'En attendant',
     hints: 'Laisser mes pistes de cadeaux',
     seeDraw: 'Voir mon tirage',

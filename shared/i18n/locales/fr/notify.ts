@@ -6,16 +6,16 @@ export default {
     next: 'Pense à l’ajouter au tirage en cours et à ses exclusions (couple, fratrie).',
   },
   allViewed: {
-    subject: 'Tout le monde a découvert son tirage dans « {group} »',
-    body: 'Pour {edition} dans « {group} », chaque participant sait maintenant à qui il offre.',
+    subject: 'Toutes les enveloppes sont ouvertes dans « {group} »',
+    body: 'Pour {edition} dans « {group} », chacun sait maintenant à qui il offre. Il ne reste plus qu’à trouver les cadeaux.',
   },
   reminder: {
-    subject: 'L’échange approche dans « {group} »',
-    body: 'L’échange de {edition} a lieu le {date}.',
+    subject: 'La fête approche dans « {group} »',
+    body: 'La fête de {edition} a lieu le {date}.',
     missing: {
-      one: '{count} personne n’a pas encore découvert son tirage : {names}.',
+      one: '{count} personne n’a pas encore ouvert son enveloppe : {names}.',
       other:
-        '{count} personnes n’ont pas encore découvert leur tirage : {names}.',
+        '{count} personnes n’ont pas encore ouvert leur enveloppe : {names}.',
     },
     next: 'Tu peux leur renvoyer leur lien depuis l’édition.',
   },

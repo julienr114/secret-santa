@@ -2,35 +2,40 @@ import type fr from '../fr/errors';
 import type { Dict } from '../../types';
 
 export default {
-  unknown: 'Ein Fehler ist aufgetreten.',
-  other: 'Fehler: {reason}',
-  validation: 'Überprüfe die Felder des Formulars.',
+  unknown: 'Autsch, da hat etwas gehakt. Versuch es gleich noch einmal.',
+  other: 'Da hat etwas gehakt ({reason}).',
+  validation: 'Da fehlt noch etwas: prüfe die Felder.',
   unauthorized: 'Melde dich an, um fortzufahren.',
   forbidden: 'Du hast keinen Zugriff auf diese Gruppe.',
   too_many_attempts:
-    'Zu viele Versuche, probiere es in ein paar Minuten erneut.',
+    'Immer mit der Ruhe. Versuch es in ein paar Minuten noch einmal.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
-  group_not_found: 'Gruppe nicht gefunden.',
-  person_not_found: 'Person nicht gefunden.',
+  group_not_found:
+    'Gruppe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
+  person_not_found:
+    'Person nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   person_has_participations:
     'Diese Person hat bereits teilgenommen: deaktiviere sie stattdessen.',
-  exclusion_not_found: 'Ausschluss nicht gefunden.',
-  edition_not_found: 'Ausgabe nicht gefunden.',
+  exclusion_not_found:
+    'Ausschluss nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
+  edition_not_found:
+    'Ausgabe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   edition_in_progress: 'Schließe zuerst die laufende Ausgabe ab.',
   edition_closed: 'Diese Ausgabe ist abgeschlossen.',
-  invalid_rules: 'Ungültige Regeln.',
+  invalid_rules: 'Diese Regeln passen nicht zusammen. Prüfe sie.',
   results_already_revealed: 'Die Ergebnisse sind bereits aufgedeckt.',
   results_revealed:
     'Die Ergebnisse sind aufgedeckt: Die Auslosung kann nicht mehr aufgehoben werden.',
   party_date_missing:
     'Trag zuerst das Datum der Feier ein, um die Ergebnisse aufzudecken.',
   party_not_reached: 'Die Feier hat noch nicht stattgefunden.',
-  invalid_transition: 'Diese Aktion ist in dieser Phase nicht möglich.',
+  invalid_transition: 'Zu früh oder zu spät: das geht in dieser Phase nicht.',
   no_solution:
     'Mit diesen Regeln ist keine Auslosung möglich: lockere einen Ausschluss.',
   too_many_participants: 'Eine Ausgabe kann höchstens 100 Teilnehmer haben.',
-  too_few_participants: 'Es braucht mindestens drei Teilnehmer.',
-  participants_locked: 'Die Liste ist nach der Auslosung gesperrt.',
+  too_few_participants:
+    'Ihr müsst mindestens zu dritt sein: zu zweit hält kein Geheimnis.',
+  participants_locked: 'Die Auslosung ist erfolgt: die Liste steht fest.',
   already_participating: 'Diese Person nimmt bereits teil.',
   message_not_available: 'Diese Nachricht passt nicht zur Phase der Ausgabe.',
   email_not_configured:
@@ -38,7 +43,8 @@ export default {
   email_failed:
     'Die E-Mails wurden nicht gesendet. Versuche es erneut oder teile die Links von deinem Handy aus.',
   email_missing: 'Diese Person hat keine E-Mail-Adresse.',
-  participation_not_found: 'Teilnehmer nicht gefunden.',
+  participation_not_found:
+    'Teilnehmer nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   wrong_confirmation: 'Gib die Gruppenkennung genau ein.',
   wrong_sentence: 'Schreibe den verlangten Satz genau ab.',
   results_secret:
@@ -47,34 +53,39 @@ export default {
     'Dieser Anmeldelink ist nicht mehr gültig: fordere einen neuen an.',
   cannot_remove_self:
     'Du kannst dich nicht selbst entfernen: bitte einen anderen Organisator.',
-  organizer_not_found: 'Organisator nicht gefunden.',
+  organizer_not_found:
+    'Organisator nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   link_invalid:
     'Dieser Link ist nicht mehr gültig, bitte deinen Organisator um einen neuen.',
   draw_not_done: 'Die Auslosung hat noch nicht stattgefunden.',
   result_not_found:
-    'Dein Ergebnis wurde nicht gefunden, sag deinem Organisator Bescheid.',
+    'Dein Umschlag ist nicht auffindbar. Sag deinem Organisator Bescheid: da stimmt etwas nicht.',
   gift_hints_disabled: 'Diese Gruppe verwendet keine Geschenk-Hinweise.',
   ideas_disabled: 'Diese Gruppe verwendet keine genauen Ideen.',
   invalid_hints: 'Eine deiner Antworten konnte nicht gespeichert werden.',
   hints_already_requested:
     'Du hast für diese Auslosung schon um Hinweise gebeten.',
   hints_already_given: 'Es sind schon Hinweise da.',
-  result_not_seen: 'Finde zuerst heraus, wen du beschenkst.',
+  result_not_seen: 'Öffne zuerst deinen Umschlag.',
   no_previous_hints: 'Keine Hinweise zum Übernehmen.',
   too_many_wishes: 'Deine Liste enthält zu viele Ideen.',
   invalid_wish:
     'Eine Idee ist ungültig: höchstens 200 Zeichen und ein Link, der mit http:// oder https:// beginnt.',
   group_quota_reached:
     'Du kannst im Moment keine Gruppe erstellen: Frag auf der Startseite danach.',
-  group_request_pending: 'Du hast bereits eine offene Anfrage.',
+  group_request_pending:
+    'Du hast bereits eine offene Anfrage. Wir melden uns bald.',
   group_request_useless: 'Du kannst bereits eine Gruppe erstellen.',
   cannot_disable_self: 'Du kannst dein eigenes Konto nicht deaktivieren.',
-  account_not_found: 'Konto nicht gefunden.',
-  request_not_found: 'Anfrage nicht gefunden.',
+  account_not_found:
+    'Konto nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
+  request_not_found:
+    'Anfrage nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   request_decided: 'Diese Anfrage wurde bereits beantwortet.',
   session_current:
     'Das ist das Gerät, das du gerade nutzt: Melde dich über das Menü ab.',
-  session_not_found: 'Sitzung nicht gefunden.',
+  session_not_found:
+    'Sitzung nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   person_is_organizer:
     'Diese Person organisiert die Gruppe: Entferne sie zuerst aus den Organisatoren.',
   invite_invalid:
@@ -91,7 +102,8 @@ export default {
   answers_not_ready:
     'Die Antworten sind noch nicht vollständig oder passen nicht zusammen.',
   invalid_answer: 'Wähle eine andere Person der Ausgabe.',
-  game_needs_four: 'Das Spiel braucht mindestens vier Teilnehmende.',
+  game_needs_four:
+    'Das Spiel braucht mindestens vier: zu dritt gibt es nichts zu erraten.',
   draw_not_revealed: 'Die Auslosung ist noch nicht aufgedeckt.',
   already_played: 'Du hast schon getippt: Nimm den Tipp erst zurück.',
 } satisfies Dict<typeof fr>;

@@ -8,16 +8,16 @@ export default {
     next: 'Denk daran, die Person der laufenden Auslosung und ihren Ausschlüssen (Partner, Geschwister) hinzuzufügen.',
   },
   allViewed: {
-    subject: 'Alle haben ihre Auslosung in „{group}“ entdeckt',
-    body: 'Für {edition} in „{group}“ weiß jetzt jeder, wen er beschenkt.',
+    subject: 'Alle Umschläge in „{group}“ sind geöffnet',
+    body: 'Für {edition} in „{group}“ weiß jetzt jeder, wen er beschenkt. Jetzt fehlen nur noch die Geschenke.',
   },
   reminder: {
-    subject: 'Die Bescherung in „{group}“ naht',
-    body: 'Die Bescherung von {edition} ist am {date}.',
+    subject: 'Die Feier in „{group}“ naht',
+    body: 'Die Feier von {edition} ist am {date}.',
     missing: {
-      one: '{count} Person hat ihre Auslosung noch nicht entdeckt: {names}.',
+      one: '{count} Person hat ihren Umschlag noch nicht geöffnet: {names}.',
       other:
-        '{count} Personen haben ihre Auslosung noch nicht entdeckt: {names}.',
+        '{count} Personen haben ihren Umschlag noch nicht geöffnet: {names}.',
     },
     next: 'Du kannst ihnen ihren Link in der Ausgabe erneut senden.',
   },

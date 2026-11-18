@@ -40,6 +40,7 @@ const model = defineModel<string>({ required: true });
         {{ optional }}</span
       >
     </label>
+    <slot />
     <UTextarea
       v-if="multiline"
       :id="id"

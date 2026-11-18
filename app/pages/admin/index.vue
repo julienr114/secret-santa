@@ -8,7 +8,7 @@ import {
 import { formatDay } from '~/utils/labels';
 
 // The administration, for super-admins only: the oldest request for a
-// group in a card (« Traiter » opens its sheet, where it is accepted or
+// group in a card (« Traiter » opens its page, where it is accepted or
 // refused), laid on a stack when more wait, « À traiter · 1 sur N »; once
 // answered, it leaves and the next one rises in its place. None, a line. Then how full the app is, and
 // the accounts, the groups and the style guide.
@@ -89,14 +89,6 @@ const capacityCaption = computed(() =>
       })
     : t('auth.admin.capacityHint'),
 );
-
-const opened = ref<PendingRequest | null>(null);
-const sheetOpen = computed({
-  get: () => opened.value !== null,
-  set: (value) => {
-    if (!value) opened.value = null;
-  },
-});
 </script>
 
 <template>
@@ -159,7 +151,7 @@ const sheetOpen = computed({
               block
               class="h-12 justify-center text-base font-bold"
               :label="t('auth.admin.handle')"
-              @click="opened = first"
+              :to="`/admin/demandes/${first.id}`"
             />
           </UiCard>
         </UiStack>
@@ -219,13 +211,5 @@ const sheetOpen = computed({
         />
       </UiList>
     </AdminQueryState>
-
-    <AdminRequestSheet
-      v-if="opened && accountOf(opened)"
-      v-model:open="sheetOpen"
-      :account="accountOf(opened)!"
-      :request="opened"
-      :stats="stats"
-    />
   </AdminScreen>
 </template>

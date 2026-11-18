@@ -98,33 +98,34 @@ test('the super-admin sees the request and accepts it', async ({
   await expect(page.getByTestId('home-admin')).toContainText('2');
   await page.getByRole('link', { name: /^Administration/ }).click();
   await expect(heading(page)).toHaveText('Administration');
-  // The oldest request in its card, on a stack: « 1 sur 2 »; its buttons
-  // open the sheet that weighs it against the load of the app.
+  // The oldest request in its card, on a stack: « 1 sur 2 »; « Traiter »
+  // opens its page, which weighs it against the load of the app.
   const card = page.getByTestId('admin-request');
   await expect(card).toContainText('À traiter · 1 sur 2');
   await expect(card).toContainText(NEWCOMER);
   await expect(card).toContainText('Le Noël de ma famille');
-  await card.getByRole('button', { name: 'Traiter' }).click();
-  const sheet = page.getByRole('dialog');
-  await expect(sheet.getByTestId('group-request')).toContainText(
+  await card.getByRole('link', { name: 'Traiter' }).click();
+  await expect(page).toHaveURL(/\/admin\/demandes\//);
+  await expect(page.getByTestId('group-request')).toContainText(
     'Le Noël de ma famille',
   );
-  await expect(sheet.getByTestId('app-load')).toContainText(
+  await expect(page.getByTestId('app-load')).toContainText(
     'couverts par les offres gratuites',
   );
-  await sheet.getByRole('button', { name: 'Accepter' }).click();
+  await page.getByRole('button', { name: 'Accepter' }).click();
+  await expect(page).toHaveURL(/\/admin$/);
   // The next one takes its place; without a name, its address is the
   // title and is not said again under it.
   await expect(card).toContainText('À traiter · 1 demande de groupe');
   await expect(card.getByRole('heading')).toHaveText(LATER);
   await expect(card.getByText(LATER)).toHaveCount(1);
-  await card.getByRole('button', { name: 'Traiter' }).click();
+  await card.getByRole('link', { name: 'Traiter' }).click();
   // A ready-made word goes with the answer.
-  await sheet.getByRole('button', { name: 'C’est complet' }).click();
-  await expect(sheet.getByTestId('request-note')).toHaveValue(
+  await page.getByRole('button', { name: 'C’est complet' }).click();
+  await expect(page.getByLabel(/Un mot en réponse/)).toHaveValue(
     /application est complète/,
   );
-  await sheet.getByRole('button', { name: 'Refuser' }).click();
+  await page.getByRole('button', { name: 'Refuser' }).click();
   await expect(card).toContainText('Aucune demande à traiter');
 
   // The account may now create one group, and waits for nothing.

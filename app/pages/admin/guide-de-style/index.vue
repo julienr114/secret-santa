@@ -82,6 +82,8 @@ const counters = [
   { value: 1, label: 'pas encore ouvert', tone: 'warning' as const },
   { value: 1, label: 'a découvert', tone: 'success' as const },
 ];
+const iconOpen = ref(false);
+const iconSample = ref<Avatar>({ emoji: '🚀', color: 'frost' });
 const crowd: Avatar[] = AVATAR_COLORS.flatMap((color) => [
   { emoji: '🦌', color },
   { emoji: '🍷', color },
@@ -364,6 +366,23 @@ const entries = computed(() => [
           :avatar="{ emoji: '🎄', color }"
         />
       </div>
+      <UButton
+        variant="outline"
+        class="self-start"
+        label="UiIconSheet : choisir une icône"
+        @click="iconOpen = true"
+      />
+      <AdminAvatarSheet
+        v-model:open="iconOpen"
+        :initial="iconSample"
+        title="L’icône de Léo"
+        @validate="
+          (avatar) => {
+            iconSample = avatar;
+            iconOpen = false;
+          }
+        "
+      />
     </section>
 
     <section class="flex flex-col gap-3">

@@ -126,6 +126,14 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Valider' })).toHaveCount(0);
   expect((await participantNamed('Alice')).avatar).toEqual(before);
   await page.getByRole('button', { name: 'Changer mon icône' }).click();
+  // Families beyond Christmas (lot 20), and « Au hasard » draws another
+  // symbol and colour.
+  const sheet = page.getByTestId('avatar-sheet');
+  await expect(sheet.getByText('Enfants et jeux')).toBeVisible();
+  const chosen = sheet.getByRole('radio', { checked: true });
+  const shown = await chosen.first().getAttribute('aria-label');
+  await page.getByRole('button', { name: 'Au hasard' }).click();
+  await expect(chosen.first()).not.toHaveAttribute('aria-label', shown!);
   await page.getByRole('radio', { name: '🦊' }).click();
   await page.getByRole('radio', { name: 'Givre' }).click();
   await page.getByRole('button', { name: 'Valider' }).click();

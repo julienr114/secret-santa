@@ -159,16 +159,19 @@ export default {
   },
   avatar: {
     groups: {
+      kids: 'Kids and games',
       people: 'Characters',
       animals: 'Animals',
       food: 'Treats',
       drinks: 'Drinks',
       activities: 'Activities',
+      nature: 'Nature',
       decor: 'Christmas decor',
     },
     title: 'My icon',
     theirs: 'Their icon',
-    emoji: 'Emoji',
+    emoji: 'Symbol',
+    random: 'Surprise me',
     color: 'Colour',
     colors: {
       brick: 'Brick red',

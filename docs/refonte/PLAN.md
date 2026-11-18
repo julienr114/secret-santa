@@ -645,11 +645,11 @@ Demandée par Julien le 18 novembre 2026 : les messages manquaient de contexte (
 
 Décidé par Julien le 18 novembre 2026. Indépendant des listes, sans migration : à faire en premier, les listes s'en servent. Maquette : `PanneauAvatarGrand`, qui remplace `PanneauAvatar`. Le panneau reste bas (Correction 8).
 
-- [ ] **Plus d'icônes, pour tout le monde** : ajouter à `AVATAR_EMOJIS` des symboles qui ne sont pas de Noël, dont une famille « Enfants et jeux ». Chaque emoji reste dans une famille exactement (test existant). Les images viennent du même paquet que le lot 15 ; le test « chaque emoji a son fichier » doit passer.
-- [ ] **Le panneau** : en haut, l'icône en cours, le titre, et un bouton rond « Au hasard » (icône seule, deux flèches croisées, nom accessible « Au hasard ») qui tire un symbole et une couleur. Les symboles sur trois rangées qui défilent de côté ; les familles se suivent dans le défilement, chacune avec son titre au-dessus de ses colonnes ; pas d'onglets. Les couleurs dessous, sur une ligne, sous le titre « Couleur ». « Annuler » et « Valider » comme aujourd'hui.
-- [ ] À l'ouverture, le défilement s'arrête sur le symbole choisi. Rien ne signale les symboles déjà pris par d'autres.
-- [ ] Le composant accepte une forme (ronde ou carrée), une liste de couleurs et une liste de familles : le lot 21 s'en sert pour l'icône d'une liste.
-- [ ] Même sélecteur partout où une icône se choisit. Trois langues pour les titres de familles. Guide de style et `tests/e2e`.
+- [x] **Plus d'icônes, pour tout le monde** : ajouter à `AVATAR_EMOJIS` des symboles qui ne sont pas de Noël, dont une famille « Enfants et jeux ». Chaque emoji reste dans une famille exactement (test existant). Les images viennent du même paquet que le lot 15 ; le test « chaque emoji a son fichier » doit passer.
+- [x] **Le panneau** : en haut, l'icône en cours, le titre, et un bouton rond « Au hasard » (icône seule, deux flèches croisées, nom accessible « Au hasard ») qui tire un symbole et une couleur. Les symboles sur trois rangées qui défilent de côté ; les familles se suivent dans le défilement, chacune avec son titre au-dessus de ses colonnes ; pas d'onglets. Les couleurs dessous, sur une ligne, sous le titre « Couleur ». « Annuler » et « Valider » comme aujourd'hui.
+- [x] À l'ouverture, le défilement s'arrête sur le symbole choisi. Rien ne signale les symboles déjà pris par d'autres.
+- [x] Le composant accepte une forme (ronde ou carrée), une liste de couleurs et une liste de familles : le lot 21 s'en sert pour l'icône d'une liste.
+- [x] Même sélecteur partout où une icône se choisit. Trois langues pour les titres de familles. Guide de style et `tests/e2e`.
 
 ### Lot 21 — Listes de cadeaux : celui qui tient la liste (README 22.19)
 

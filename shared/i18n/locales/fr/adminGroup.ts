@@ -160,16 +160,19 @@ export default {
   },
   avatar: {
     groups: {
+      kids: 'Enfants et jeux',
       people: 'Personnages',
       animals: 'Animaux',
       food: 'Gourmandises',
       drinks: 'Boissons',
       activities: 'Activités',
+      nature: 'Nature',
       decor: 'Décor de Noël',
     },
     title: 'Mon icône',
     theirs: 'Son icône',
-    emoji: 'Emoji',
+    emoji: 'Symbole',
+    random: 'Au hasard',
     color: 'Couleur',
     colors: {
       brick: 'Rouge brique',

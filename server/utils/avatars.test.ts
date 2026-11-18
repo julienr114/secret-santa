@@ -33,16 +33,16 @@ describe('avatars', () => {
     const first = avatarOf({ id: 'person-1' });
     expect(avatarOf({ id: 'person-1', avatarEmoji: null })).toEqual(first);
     expect(
-      avatarOf({ id: 'person-1', avatarEmoji: '🍕', avatarColor: 'neon' }),
+      avatarOf({ id: 'person-1', avatarEmoji: '🌭', avatarColor: 'neon' }),
     ).toEqual(first);
     expect(AVATAR_EMOJIS).toContain(first.emoji);
     expect(AVATAR_COLORS).toContain(first.color);
   });
 
   it('replaces a stored emoji that is not offered, keeping the colour', () => {
-    expect(AVATAR_EMOJIS).not.toContain('🍕');
+    expect(AVATAR_EMOJIS).not.toContain('🌭');
     expect(
-      avatarOf({ id: 'person-1', avatarEmoji: '🍕', avatarColor: 'plum' }),
+      avatarOf({ id: 'person-1', avatarEmoji: '🌭', avatarColor: 'plum' }),
     ).toEqual({ emoji: avatarOf({ id: 'person-1' }).emoji, color: 'plum' });
   });
 

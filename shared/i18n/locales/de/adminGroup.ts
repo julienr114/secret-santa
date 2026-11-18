@@ -168,16 +168,19 @@ export default {
   },
   avatar: {
     groups: {
+      kids: 'Kinder und Spiele',
       people: 'Figuren',
       animals: 'Tiere',
       food: 'Leckereien',
       drinks: 'Getränke',
       activities: 'Aktivitäten',
+      nature: 'Natur',
       decor: 'Weihnachtsdeko',
     },
     title: 'Mein Symbol',
     theirs: 'Sein Symbol',
-    emoji: 'Emoji',
+    emoji: 'Symbol',
+    random: 'Zufällig',
     color: 'Farbe',
     colors: {
       brick: 'Ziegelrot',

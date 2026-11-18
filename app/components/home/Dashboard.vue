@@ -108,7 +108,6 @@ const requestNote = computed(() => {
     ? t('auth.home.requestPending', { date })
     : t('auth.home.requestRefused', { date });
 });
-const requestOpen = ref(false);
 /** A super-admin finds the administration at the bottom of the home. */
 const isSuper = computed(() => data.value?.role === 'super_admin');
 const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
@@ -227,7 +226,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
             icon="i-lucide-send"
             :title="t('auth.home.organizeOwn')"
             :subtitle="t('auth.home.organizeOwnHint')"
-            :on-click="() => (requestOpen = true)"
+            to="/demande"
           />
           <UiListItem
             v-if="hasPast"
@@ -264,7 +263,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
         <HomeRequestCard
           v-if="!canCreate && requestNote && request"
           :request="request"
-          @again="requestOpen = true"
+          @again="navigateTo('/demande')"
         />
         <UiCard
           v-else
@@ -292,7 +291,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
             icon="i-lucide-send"
             class="min-h-11 justify-center"
             :label="t('auth.home.organize.button')"
-            @click="requestOpen = true"
+            to="/demande"
           />
         </UiCard>
       </template>
@@ -317,7 +316,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
           icon="i-lucide-send"
           :title="t('auth.home.organizeOwn')"
           :subtitle="t('auth.home.organizeOwnHint')"
-          :on-click="() => (requestOpen = true)"
+          to="/demande"
         />
       </UiList>
       <UiList
@@ -349,6 +348,5 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
       v-model:open="avatarOpen"
       :initial="avatar"
     />
-    <HomeRequestSheet v-model:open="requestOpen" />
   </AdminScreen>
 </template>

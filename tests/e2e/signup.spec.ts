@@ -46,11 +46,10 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await apiLogin(page.request, NEWCOMER);
   await page.goto('/');
   await hydrated(page);
-  await page
-    .getByRole('button', { name: 'Demander à créer un groupe' })
-    .click();
-  // Why a request, before saying for whom.
-  await expect(page.getByTestId('request-sheet')).toContainText(
+  await page.getByRole('link', { name: 'Demander à créer un groupe' }).click();
+  // On its own page (README 23.3): the request, then why a request.
+  await expect(page).toHaveURL(/\/demande$/);
+  await expect(page.getByTestId('request-why')).toContainText(
     'Pourquoi une demande ?',
   );
   await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
@@ -63,7 +62,7 @@ test('they ask for a group, once at a time', async ({ page }) => {
     'Le Noël de ma famille',
   );
   await expect(
-    page.getByRole('button', { name: 'Demander à créer un groupe' }),
+    page.getByRole('link', { name: 'Demander à créer un groupe' }),
   ).toHaveCount(0);
 
   const again = await page.request.post('/api/auth/group-requests', {
@@ -226,7 +225,7 @@ test('they create their group, organise it, and the quota is used up', async ({
     0,
   );
   await expect(
-    page.getByRole('button', { name: /Organiser mon propre tirage/ }),
+    page.getByRole('link', { name: /Organiser mon propre tirage/ }),
   ).toBeVisible();
 });
 

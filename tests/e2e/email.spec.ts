@@ -188,8 +188,10 @@ test('a participant logs in with their address and finds their draw', async ({
     /Famille Courrier\s*·\s*Noël courrier/,
   );
   const personal = new URL(page.url()).pathname.replace(/\/pistes$/, '');
-  // Back from the list leads home, where the user came from: no loop
-  // through the draw page.
+  // « Retour » goes up the tree (docs/ARBORESCENCE.md): to the draw
+  // page, then, opened from home, home.
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
 

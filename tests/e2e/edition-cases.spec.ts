@@ -330,6 +330,18 @@ test('a screen reached by its address says where it belongs, and leads back', as
     .getByRole('link', { name: 'cas-contexte' })
     .click();
   await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
+
+  // « Retour » goes up the tree, not back in the history
+  // (docs/ARBORESCENCE.md): the settings of the edition, opened from the
+  // home, go up to the edition, then to the group.
+  await page.goto('/');
+  await hydrated(page);
+  await page.goto(`/admin/cas-contexte/editions/${id}/reglages`);
+  await hydrated(page);
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(page).toHaveURL(new RegExp(`/editions/${id}$`));
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
 });
 
 test.describe('on an iPhone', () => {

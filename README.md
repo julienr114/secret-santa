@@ -630,6 +630,8 @@ Pour limiter les tentatives de connexion admin : `id`, `scope` (slug du groupe o
 
 ## 11. Écrans
 
+L'arbre des écrans, avec le parent de chacun et donc la cible de « Retour », est dans `docs/ARBORESCENCE.md`, à tenir à jour à chaque nouvel écran. « Retour » remonte d'un cran dans cet arbre ; ce n'est pas le retour du navigateur (décidé par Julien le 18 novembre 2026, `useGoBack`, `backMove`).
+
 Tous conçus pour un écran de téléphone en premier (≈ 380 px de large), zones tactiles d'au moins 44 px, une seule colonne. Ils ont été refaits du 15 au 17 novembre 2026 d'après les maquettes de `docs/refonte/maquettes/`, lot par lot ([`docs/refonte/PLAN.md`](docs/refonte/PLAN.md)) ; les composants qu'ils partagent sont en section 23.
 
 ### Côté participant

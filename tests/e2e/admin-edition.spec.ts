@@ -107,7 +107,11 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // Before the draw, a tap on Hugo opens his page in the group.
   await page.getByText('Hugo', { exact: true }).click();
   await expect(page).toHaveURL(/\/personnes\//);
+  // « Retour » goes up the tree: to the members, not to the edition.
   await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(page).toHaveURL(/\/personnes$/);
+  await page.goBack();
+  await page.goBack();
   await hydrated(page);
 
   await page.getByRole('button', { name: 'Lancer le tirage' }).click();

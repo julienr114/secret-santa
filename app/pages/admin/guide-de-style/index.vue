@@ -10,8 +10,9 @@ import { listView } from '#shared/utils/lists';
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk } = useT();
 useHead({ title: () => `Guide de style — ${t('common.appName')}` });
+// Opened from the last row of the administration: its parent.
 const screen = {
-  back: '/',
+  back: '/admin',
 };
 
 /** Surface tokens, by role. */

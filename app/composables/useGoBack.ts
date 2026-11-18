@@ -1,14 +1,18 @@
+import { backMove } from '#shared/utils/navigation';
+
 /**
- * Going back like the browser does, to wherever the user came from (a
- * group may be opened from home, from every group or from an account).
- * When the page was opened directly, there is no such place: the given
- * page stands in for it.
- * @returns A function taking the fallback path.
+ * « Retour »: up to the parent of the screen in the tree of pages
+ * (docs/ARBORESCENCE.md), not back in the browser's history. When the page
+ * before is that parent, the browser goes back, so that the history does
+ * not hold it twice.
+ * @returns A function taking the parent's path (with its query).
  */
 export const useGoBack = () => {
   const router = useRouter();
-  return (fallback: string) => {
+  return (parent: string) => {
     const previous = import.meta.client ? window.history.state?.back : null;
-    return previous ? router.back() : navigateTo(fallback);
+    return backMove(previous, parent) === 'history'
+      ? router.back()
+      : navigateTo(parent);
   };
 };

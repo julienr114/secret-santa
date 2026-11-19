@@ -186,6 +186,7 @@ export type Invitation = {
   state: 'waiting' | 'accepted' | 'declined' | 'expired';
   by: string;
   title: string;
+  icon: { emoji: string; color: string };
   level: HolderLevel;
   expiresAt: string;
   listId?: string;

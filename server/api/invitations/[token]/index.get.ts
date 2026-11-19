@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
     state,
     by: by.firstName ?? by.email.split('@')[0] ?? '',
     title: list.title,
+    icon: { emoji: list.iconEmoji, color: list.iconColor },
     level: invite.level,
     expiresAt: invite.expiresAt,
   };

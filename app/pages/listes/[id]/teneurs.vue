@@ -63,14 +63,17 @@ const waitingLine = (waiting: Invite) => {
     until: day(waiting.expiresAt, !sameMonth),
   });
 };
-const inviteLine = (one: Invite) =>
-  one.state === 'waiting'
-    ? waitingLine(one)
-    : one.state === 'expired'
+/** « Invitation expirée · le 12 novembre », cut after its first words. */
+const endedLine = (one: Invite) => {
+  const [state = '', ...rest] = (
+    one.state === 'expired'
       ? t('lists.holders.expired', { date: day(one.expiresAt) })
       : t('lists.holders.declined', {
           date: day(one.declinedAt ?? one.expiresAt),
-        });
+        })
+  ).split(' · ');
+  return { state, rest: rest.join(' · ') };
+};
 const WHY: Record<string, string> = {
   already_holder: 'lists.holders.alreadyHolder',
   already_invited: 'lists.holders.alreadyInvited',
@@ -108,13 +111,15 @@ const isLastManager = (holder: Holder) =>
   holders.value.filter((one) => one.level === 'manage').length === 1;
 /** What touching the level of a line offers. */
 const menuOf = (holder: Holder) => [
+  // Each on its own, a thin line between them, as in the mockup.
   ...(manages.value
-    ? [
-        (['write', 'manage'] as const).map((level) => ({
+    ? (['write', 'manage'] as const).map((level) => [
+        {
           label: t(`lists.holders.level.${level}`),
           description: t(`lists.holders.levelHelp.${level}`),
-          type: 'checkbox' as const,
-          checked: holder.level === level,
+          // The check leads the level they have; the other keeps its place.
+          icon: 'i-lucide-check',
+          ui: holder.level === level ? {} : { itemLeadingIcon: 'invisible' },
           onSelect: () => {
             if (holder.level === level) return;
             setLevel.mutate(
@@ -122,16 +127,19 @@ const menuOf = (holder: Holder) => [
               { onError },
             );
           },
-        })),
-      ]
+        },
+      ])
     : []),
   [
     {
       label: holder.me
         ? t('lists.holders.leave')
         : t('lists.holders.remove', { name: holder.name }),
-      icon: holder.me ? 'i-lucide-log-out' : 'i-lucide-user-minus',
-      color: 'error' as const,
+      icon: 'i-lucide-check',
+      ui: {
+        itemLeadingIcon: 'invisible',
+        itemLabel: 'text-primary-ink',
+      },
       onSelect: () => onRemove(holder),
     },
   ],
@@ -140,18 +148,29 @@ const inviteMenu = (waiting: Invite) => [
   [
     {
       label: t('lists.holders.cancelInvite'),
-      icon: 'i-lucide-x',
+      ui: { itemLabel: 'text-primary-ink' },
       onSelect: () => cancel.mutate(waiting.id, { onError }),
     },
   ],
 ];
 const menuUi = {
   content:
-    'max-w-[300px] min-w-[250px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
-  item: 'min-h-12 items-center px-3.5 text-base',
-  itemDescription: 'text-[13px] text-toned whitespace-normal',
-  itemLeadingIcon: 'size-5',
+    'w-[300px] rounded-[28px] shadow-[0_12px_28px_rgba(41,37,36,0.18)] ring-1 ring-default',
+  group: 'p-0',
+  item: 'items-start gap-2.5 px-3.5 py-3',
+  itemLabel: 'text-base font-bold',
+  itemDescription: 'text-[13px] leading-[1.4] text-toned whitespace-normal',
+  itemLeadingIcon: 'size-[18px] text-primary-ink',
 };
+/** The level of a line, as a pill to touch. */
+const LEVEL_BUTTON =
+  'flex h-9 shrink-0 items-center gap-1 rounded-full bg-default pr-2 pl-3 text-sm font-bold ring-1 ring-default';
+/** « Renvoyer », « Effacer ». */
+const LINE_BUTTON =
+  'flex h-9 shrink-0 items-center rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default disabled:opacity-50';
+/** The level read, not touched. */
+const LEVEL_BADGE =
+  'shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-bold whitespace-nowrap text-toned';
 
 // « Inviter quelqu'un »: one of my people, by their pill, or an address.
 const chosen = ref<string | 'other' | null>(null);
@@ -218,6 +237,7 @@ const onResend = (expired: Invite) =>
           :title="holder.name"
           :subtitle="holder.me ? t('lists.holders.you') : undefined"
           :avatar="holder.avatar"
+          one-line
           data-testid="holder"
         >
           <template #trailing>
@@ -229,34 +249,38 @@ const onResend = (expired: Invite) =>
             >
               <button
                 type="button"
-                class="flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-toned"
+                :class="LEVEL_BUTTON"
                 :aria-label="t('lists.holders.levelOf', { name: holder.name })"
                 data-testid="holder-level"
               >
                 {{ t(`lists.holders.level.${holder.level}`) }}
-                <UIcon name="i-lucide-chevron-down" class="size-4" />
+                <UIcon name="i-lucide-chevron-down" class="size-4 text-muted" />
               </button>
             </UDropdownMenu>
-            <span
-              v-else
-              class="shrink-0 text-sm font-semibold text-toned"
-              data-testid="holder-level"
-              >{{ t(`lists.holders.level.${holder.level}`) }}</span
-            >
+            <span v-else :class="LEVEL_BADGE" data-testid="holder-level">{{
+              t(`lists.holders.level.${holder.level}`)
+            }}</span>
           </template>
         </UiListItem>
         <UiListItem
           v-for="one in invites"
           :key="one.id"
           :title="one.name ?? one.email"
-          :subtitle="inviteLine(one)"
+          :subtitle="one.state === 'waiting' ? waitingLine(one) : undefined"
           :avatar="one.avatar ?? undefined"
           :icon="one.avatar ? undefined : 'i-lucide-mail'"
           icon-tone="neutral"
-          :class="one.state === 'waiting' ? '' : 'opacity-60'"
+          :muted="one.state !== 'waiting'"
+          one-line
           data-testid="holder-invite"
           :data-state="one.state"
         >
+          <template v-if="one.state !== 'waiting'" #subtitle>
+            <span class="font-bold text-primary-ink">{{
+              endedLine(one).state
+            }}</span>
+            · {{ endedLine(one).rest }}
+          </template>
           <template #trailing>
             <template v-if="one.state === 'waiting'">
               <UDropdownMenu
@@ -267,51 +291,54 @@ const onResend = (expired: Invite) =>
               >
                 <button
                   type="button"
-                  class="flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-toned"
+                  :class="LEVEL_BUTTON"
                   :aria-label="
                     t('lists.holders.levelOf', { name: one.name ?? one.email })
                   "
                   data-testid="invite-level"
                 >
                   {{ t(`lists.holders.level.${one.level}`) }}
-                  <UIcon name="i-lucide-chevron-down" class="size-4" />
+                  <UIcon
+                    name="i-lucide-chevron-down"
+                    class="size-4 text-muted"
+                  />
                 </button>
               </UDropdownMenu>
-              <span v-else class="shrink-0 text-sm font-semibold text-toned">{{
+              <span v-else :class="LEVEL_BADGE">{{
                 t(`lists.holders.level.${one.level}`)
               }}</span>
             </template>
-            <UButton
+            <button
               v-else-if="manages && one.state === 'expired'"
-              variant="outline"
-              color="neutral"
-              class="min-h-11 shrink-0 font-semibold"
-              :loading="resend.isPending.value"
-              :label="t('lists.holders.resend')"
+              type="button"
+              :class="LINE_BUTTON"
+              :disabled="resend.isPending.value"
               data-testid="invite-resend"
               @click="onResend(one)"
-            />
-            <UButton
+            >
+              {{ t('lists.holders.resend') }}
+            </button>
+            <button
               v-else-if="manages"
-              variant="outline"
-              color="neutral"
-              class="min-h-11 shrink-0 font-semibold"
-              :loading="cancel.isPending.value"
-              :label="t('lists.holders.erase')"
+              type="button"
+              :class="LINE_BUTTON"
+              :disabled="cancel.isPending.value"
               data-testid="invite-erase"
               @click="cancel.mutate(one.id, { onError })"
-            />
+            >
+              {{ t('lists.holders.erase') }}
+            </button>
           </template>
         </UiListItem>
       </UiList>
 
       <form
         v-if="manages"
-        class="flex flex-col gap-3"
+        class="flex flex-col gap-3 border-t border-default pt-4"
         data-testid="invite-form"
         @submit.prevent="onInvite"
       >
-        <h2 class="font-display text-[24px] leading-[1.2] font-bold">
+        <h2 class="font-display text-[22px] leading-[1.2] font-bold">
           {{ t('lists.holders.inviteTitle') }}
         </h2>
         <div class="flex flex-wrap gap-2">
@@ -319,11 +346,11 @@ const onResend = (expired: Invite) =>
             v-for="member in suggestions"
             :key="member.memberId"
             type="button"
-            class="flex h-11 items-center gap-2 rounded-full pr-4 pl-1 font-semibold ring-1"
+            class="flex h-11 items-center gap-2 rounded-full pr-3.5 pl-1.5 text-[15px] font-bold"
             :class="
               chosen === member.memberId
-                ? 'bg-primary-tint ring-2 ring-primary'
-                : 'bg-default ring-default'
+                ? 'bg-primary-tint ring-2 ring-primary ring-inset'
+                : 'bg-default ring-1 ring-default ring-inset'
             "
             :aria-pressed="chosen === member.memberId"
             data-testid="invite-pill"
@@ -334,11 +361,11 @@ const onResend = (expired: Invite) =>
           </button>
           <button
             type="button"
-            class="flex h-11 items-center gap-2 rounded-full border border-dashed px-4 font-semibold"
+            class="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[15px] font-bold text-primary-ink"
             :class="
               chosen === 'other'
-                ? 'border-primary bg-primary-tint'
-                : 'border-accented text-toned'
+                ? 'bg-primary-tint ring-2 ring-primary ring-inset'
+                : 'border border-dashed border-accented'
             "
             :aria-pressed="chosen === 'other'"
             data-testid="invite-other"
@@ -364,7 +391,7 @@ const onResend = (expired: Invite) =>
               size="xl"
               :ui="{ base: 'h-12 text-base' }"
             />
-            <p class="text-[13px] text-toned">
+            <p class="text-sm leading-[1.45] text-toned">
               {{ t('lists.holders.emailHelp') }}
             </p>
           </div>
@@ -379,7 +406,7 @@ const onResend = (expired: Invite) =>
             type="submit"
             block
             size="xl"
-            class="h-12 justify-center text-base font-bold"
+            class="h-13 justify-center text-[17px] font-bold"
             :disabled="!ready"
             :loading="invite.isPending.value"
             :label="
@@ -389,7 +416,7 @@ const onResend = (expired: Invite) =>
             "
             data-testid="invite-send"
           />
-          <p class="text-center text-[13px] text-toned">
+          <p class="text-sm leading-[1.45] text-toned">
             {{ t('lists.holders.inviteHelp') }}
           </p>
         </template>

@@ -261,6 +261,8 @@ export default {
     notYou: 'Not {name}? This link is theirs: do not open it in their place.',
     about:
       'Under the Tree is a free app with no ads, for holding gift lists and drawing names among people close to you.',
+    aboutRest:
+      ' is a free app with no ads, for holding gift lists and drawing names among people close to you.',
     expired:
       'This invitation is no longer good. Ask {by} to send it to you again.',
     declined: 'You declined this invitation.',

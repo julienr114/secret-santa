@@ -269,6 +269,8 @@ export default {
       'Du bist nicht {name}? Dieser Link gehört jemand anderem: Öffne ihn nicht an dessen Stelle.',
     about:
       'Under the Tree ist eine kostenlose App ohne Werbung, um Geschenklisten zu führen und unter Nahestehenden auszulosen.',
+    aboutRest:
+      ' ist eine kostenlose App ohne Werbung, um Geschenklisten zu führen und unter Nahestehenden auszulosen.',
     expired:
       'Diese Einladung gilt nicht mehr. Bitte {by}, sie dir erneut zu senden.',
     declined: 'Du hast diese Einladung abgelehnt.',

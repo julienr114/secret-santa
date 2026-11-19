@@ -18,6 +18,10 @@ const props = withDefaults(
     avatar?: Avatar;
     emoji?: string;
     tone?: 'default' | 'danger';
+    /** Something over or set aside: the title is greyed. */
+    muted?: boolean;
+    /** Keeps the title on one line, cut with « … » (an email address). */
+    oneLine?: boolean;
     /** The colour of the round icon: coral for what to do, grey otherwise. */
     iconTone?: 'primary' | 'neutral';
     /** The current value of a setting, shown on the right. */
@@ -38,6 +42,8 @@ const props = withDefaults(
     avatar: undefined,
     emoji: undefined,
     tone: 'default',
+    muted: false,
+    oneLine: false,
     iconTone: 'primary',
     value: undefined,
     label: undefined,
@@ -86,8 +92,11 @@ const NuxtLink = resolveComponent('NuxtLink');
       </span>
       <span class="min-w-0 grow">
         <span
-          class="line-clamp-2 font-semibold"
-          :class="tone === 'danger' ? 'text-error-ink' : ''"
+          class="font-semibold"
+          :class="[
+            oneLine ? 'block truncate' : 'line-clamp-2',
+            tone === 'danger' ? 'text-error-ink' : muted ? 'text-muted' : '',
+          ]"
         >
           {{ title }}
         </span>

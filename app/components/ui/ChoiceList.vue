@@ -32,13 +32,15 @@ const name = useId();
       {{ label }}
     </legend>
     <div
-      class="divide-y divide-divider overflow-hidden rounded-xl bg-default ring-1 ring-default"
+      :class="plain ? 'rounded-[18px]' : 'rounded-xl'"
+      class="divide-y divide-divider overflow-hidden bg-default ring-1 ring-default"
     >
       <label
         v-for="choice in choices"
         :key="choice.value"
-        class="flex min-h-14 items-center gap-3 px-3.5 py-2.5"
+        class="flex min-h-14 gap-3 px-3.5"
         :class="[
+          plain ? 'items-start py-3' : 'items-center py-2.5',
           model === choice.value && !plain ? 'bg-primary-tint' : '',
           choice.disabled ? 'opacity-50' : 'cursor-pointer',
         ]"
@@ -49,13 +51,19 @@ const name = useId();
           :name="name"
           :value="choice.value"
           :disabled="choice.disabled"
-          class="size-5 shrink-0 accent-(--ui-primary)"
+          class="shrink-0 accent-(--ui-primary)"
+          :class="plain ? 'mt-px size-[22px]' : 'size-5'"
         />
         <span class="flex min-w-0 flex-col">
-          <span class="font-semibold">{{ choice.label }}</span>
-          <span v-if="choice.hint" class="text-[13px] text-toned">{{
-            choice.hint
+          <span :class="plain ? 'font-bold' : 'font-semibold'">{{
+            choice.label
           }}</span>
+          <span
+            v-if="choice.hint"
+            class="text-toned"
+            :class="plain ? 'text-sm leading-[1.4]' : 'text-[13px]'"
+            >{{ choice.hint }}</span
+          >
         </span>
       </label>
     </div>

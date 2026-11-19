@@ -135,92 +135,99 @@ const onDecline = () =>
     </UiCard>
     <template v-else>
       <div class="flex flex-col items-center gap-3 pt-2 text-center">
-        <UiAvatar v-if="data.account" :avatar="data.account.avatar" :px="64" />
-        <UiIllusTree v-else :label="t('common.appName')" />
-        <h1
-          class="font-display text-[28px] leading-[1.1] font-bold"
+        <ListsTile :icon="data.icon" size="lg" />
+        <p
+          v-if="data.account"
+          class="flex items-center gap-2 rounded-full bg-default py-1 pr-3.5 pl-1 text-[15px] font-bold ring-1 ring-default"
           data-testid="invitation-title"
         >
+          <UiAvatar :avatar="data.account.avatar" size="sm" />
           {{
-            data.account
-              ? t('lists.invitation.titleNamed', {
-                  name: data.account.name,
-                  by: data.by,
-                })
-              : t('lists.invitation.title', { by: data.by })
+            t('lists.invitation.titleNamed', {
+              name: data.account.name,
+              by: data.by,
+            })
           }}
-        </h1>
-        <p class="text-[17px] font-semibold">
-          {{ t('lists.invitation.list', { title: data.title, by: data.by }) }}
         </p>
+        <p v-else class="text-sm text-toned" data-testid="invitation-title">
+          {{ t('lists.invitation.title', { by: data.by }) }}
+        </p>
+        <h1 class="font-display text-[30px] leading-[1.1] font-bold">
+          {{ t('lists.invitation.list', { title: data.title, by: data.by }) }}
+        </h1>
       </div>
-      <UiCard class="flex flex-col gap-4">
-        <ul class="flex flex-col gap-2 text-[15px] leading-[1.45]">
-          <li class="flex gap-2.5">
-            <UIcon
-              name="i-lucide-check"
-              class="mt-0.5 size-5 shrink-0 text-success"
-            />
-            {{ t('lists.invitation.writes') }}
-          </li>
-          <li class="flex gap-2.5">
-            <UIcon
-              name="i-lucide-check"
-              class="mt-0.5 size-5 shrink-0 text-success"
-            />
-            {{ t('lists.invitation.sees') }}
-          </li>
-          <li
-            class="flex gap-2.5"
-            :class="data.level === 'manage' ? '' : 'text-toned'"
-            data-testid="invitation-managing"
+      <ul class="flex flex-col gap-2.5 text-[15px] leading-[1.45]">
+        <li
+          v-for="line in [
+            t('lists.invitation.writes'),
+            t('lists.invitation.sees'),
+          ]"
+          :key="line"
+          class="flex items-start gap-2.5"
+        >
+          <span
+            class="mt-px flex size-[22px] shrink-0 items-center justify-center rounded-full bg-success-soft text-success-ink"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-check" class="size-3.5" />
+          </span>
+          {{ line }}
+        </li>
+        <li class="flex items-start gap-2.5" data-testid="invitation-managing">
+          <span
+            class="mt-px flex size-[22px] shrink-0 items-center justify-center rounded-full"
+            :class="
+              data.level === 'manage'
+                ? 'bg-success-soft text-success-ink'
+                : 'bg-primary-tint text-primary-ink'
+            "
+            aria-hidden="true"
           >
             <UIcon
-              :name="
-                data.level === 'manage' ? 'i-lucide-check' : 'i-lucide-minus'
-              "
-              class="mt-0.5 size-5 shrink-0"
-              :class="data.level === 'manage' ? 'text-success' : ''"
+              :name="data.level === 'manage' ? 'i-lucide-check' : 'i-lucide-x'"
+              class="size-3.5"
             />
-            {{
-              data.level === 'manage'
-                ? t('lists.invitation.managing', { by: data.by })
-                : t('lists.invitation.notManaging', { by: data.by })
-            }}
-          </li>
-        </ul>
-        <form class="flex flex-col gap-3" @submit.prevent="onAccept">
-          <template v-if="needsName">
-            <div class="flex flex-col gap-1.5">
-              <label for="invitation-name" class="text-[15px] font-semibold">{{
-                t('lists.invitation.firstName')
-              }}</label>
-              <UInput
-                id="invitation-name"
-                v-model="firstName"
-                type="text"
-                autocomplete="given-name"
-                enterkeyhint="done"
-                size="xl"
-                :maxlength="MEMBER_NAME_MAX"
-                :ui="{ base: 'h-12 text-base' }"
-                data-testid="invitation-name"
-              />
-              <p class="text-[13px] text-toned">
-                {{ t('lists.invitation.firstNameHelp') }}
-              </p>
-            </div>
-            <p
-              class="text-[15px] leading-[1.45] break-words text-toned"
-              data-testid="invitation-address"
-            >
-              {{ address.before
-              }}<strong class="font-bold text-highlighted">{{
-                data.email
-              }}</strong
-              >{{ address.after }}
+          </span>
+          {{
+            data.level === 'manage'
+              ? t('lists.invitation.managing', { by: data.by })
+              : t('lists.invitation.notManaging', { by: data.by })
+          }}
+        </li>
+      </ul>
+      <form class="flex flex-col gap-5" @submit.prevent="onAccept">
+        <template v-if="needsName">
+          <div class="flex flex-col gap-1.5">
+            <label for="invitation-name" class="text-[15px] font-semibold">{{
+              t('lists.invitation.firstName')
+            }}</label>
+            <UInput
+              id="invitation-name"
+              v-model="firstName"
+              type="text"
+              autocomplete="given-name"
+              enterkeyhint="done"
+              size="xl"
+              :maxlength="MEMBER_NAME_MAX"
+              :ui="{ base: 'h-12 text-base' }"
+              data-testid="invitation-name"
+            />
+            <p class="text-sm leading-[1.45] text-toned">
+              {{ t('lists.invitation.firstNameHelp') }}
             </p>
-          </template>
+          </div>
+          <p
+            class="text-sm leading-[1.45] break-words text-toned"
+            data-testid="invitation-address"
+          >
+            {{ address.before
+            }}<strong class="font-bold text-highlighted">{{
+              data.email
+            }}</strong
+            >{{ address.after }}
+          </p>
+        </template>
+        <div class="flex flex-col gap-2.5">
           <UButton
             type="submit"
             block
@@ -237,33 +244,35 @@ const onDecline = () =>
           />
           <UButton
             block
-            variant="ghost"
+            variant="outline"
             color="neutral"
-            class="h-12 justify-center text-base font-bold"
+            class="h-12 justify-center bg-default text-base font-bold"
             :disabled="accept.isPending.value"
             :loading="decline.isPending.value"
             :label="t('lists.invitation.decline')"
             data-testid="invitation-decline"
             @click="onDecline"
           />
-          <p v-if="failure" class="text-sm text-error" role="alert">
+          <p v-if="failure" class="text-center text-sm text-error" role="alert">
             {{ errorMessage(failure) }}
           </p>
-        </form>
-        <p
-          v-if="data.account"
-          class="text-[13px] leading-[1.4] text-toned"
-          data-testid="invitation-not-you"
-        >
-          {{ t('lists.invitation.notYou', { name: data.account.name }) }}
-        </p>
-      </UiCard>
+          <p
+            v-if="data.account"
+            class="text-center text-sm leading-[1.45] text-toned"
+            data-testid="invitation-not-you"
+          >
+            {{ t('lists.invitation.notYou', { name: data.account.name }) }}
+          </p>
+        </div>
+      </form>
       <p
         v-if="!data.account"
-        class="rounded-xl bg-muted px-4 py-3 text-[13px] leading-[1.45] text-toned"
+        class="rounded-[18px] bg-muted px-3.5 py-3 text-sm leading-[1.45] text-toned"
         data-testid="invitation-about"
       >
-        {{ t('lists.invitation.about') }}
+        <strong class="font-bold text-highlighted">{{
+          t('common.appName')
+        }}</strong>{{ t('lists.invitation.aboutRest') }}
       </p>
     </template>
   </AuthScreen>

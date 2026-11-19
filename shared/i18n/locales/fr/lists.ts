@@ -267,6 +267,8 @@ export default {
       'Tu n’es pas {name} ? Ce lien est le sien : ne l’ouvre pas à sa place.',
     about:
       'Under the Tree est une application gratuite et sans publicité, pour tenir des listes de cadeaux et faire des tirages au sort entre proches.',
+    aboutRest:
+      ', c’est une application gratuite et sans publicité pour tenir des listes de cadeaux et faire des tirages au sort entre proches.',
     expired:
       'Cette invitation n’est plus valable. Demande à {by} de te la renvoyer.',
     declined: 'Tu as refusé cette invitation.',

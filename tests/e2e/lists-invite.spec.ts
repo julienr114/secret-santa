@@ -199,14 +199,10 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
   const his = camille.getByTestId('holder').filter({ hasText: 'Hugo' });
   await expect(his.getByTestId('holder-level')).toContainText('Aide à écrire');
   await his.getByTestId('holder-level').click();
-  await camille
-    .getByRole('menuitemcheckbox', { name: /Gère la liste/ })
-    .click();
+  await camille.getByRole('menuitem', { name: /Gère la liste/ }).click();
   await expect(his.getByTestId('holder-level')).toContainText('Gère la liste');
   await his.getByTestId('holder-level').click();
-  await camille
-    .getByRole('menuitemcheckbox', { name: /Aide à écrire/ })
-    .click();
+  await camille.getByRole('menuitem', { name: /Aide à écrire/ }).click();
   await expect(his.getByTestId('holder-level')).toContainText('Aide à écrire');
   const last = await camille.request.patch(`${base}/holders/${camilleId}`, {
     data: { level: 'write' },

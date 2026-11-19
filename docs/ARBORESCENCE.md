@@ -81,8 +81,7 @@ flowchart LR
   subgraph listesCadeaux ["Listes de cadeaux (celui qui tient la liste)"]
     listes --> uneListe["La liste<br/><small>/listes/[id]</small>"]
     listes --> nouvelleListe["Nouvelle liste"]
-    uneListe --> partager["Partager la liste"]
-    partager --> messageListe["Personnaliser le message"]
+    uneListe --> messageListe["Personnaliser le message"]
     uneListe --> membre["Une personne de ma famille<br/><small>/famille/[id]</small>"]
     membre --> membreTexte["Un texte de ses goûts"]
     membre --> membreQuestion["Les questions, pour elle"]
@@ -184,8 +183,7 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 | Listes (l'onglet) | `/listes` | — (barre du bas) | |
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` | Listes | |
 | La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | L'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
-| Partager la liste | `/listes/[id]/partager` | La liste | |
-| Personnaliser le message | `/listes/[id]/message` | Partager la liste | |
+| Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Une personne de ma famille | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Listes | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
 | Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
 | Les questions de ses goûts | `/famille/[id]/question?n=` | Une personne de ma famille | |

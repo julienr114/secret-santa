@@ -1656,10 +1656,24 @@ Tout en haut du document, au-dessus de l'icône, un seul bouton dit l'état et s
 
 | État | Le bouton | Le lien public |
 |---|---|---|
-| Brouillon | « Brouillon · toi seul la vois », et « Partager » | N'existe pas |
+| Brouillon | « Partage par lien », l'interrupteur éteint | N'existe pas |
 | Partagée | « Partagée avec la famille », et « Le lien » | Créé au premier partage |
 
 Le bouton mène à `ListePartager` : le lien, et un message tout prêt à coller dans la conversation de la famille, qui dit aussi un mot de l'application. S'il manque un nom ou une personne, cet écran dit ce qui manque au lieu de créer le lien.
+
+#### Publier, partager, dépublier : sur place, en haut du document
+
+**Les mots à l'écran** (19 novembre 2026) : l'interface dit « Partage par lien », « partagée par lien », « Partage par lien arrêté », « Cette liste n'est plus partagée ». « Publier », « publiée », « dépublier » et « brouillon » ne s'affichent plus ; ils restent ci-dessous pour désigner l'état.
+
+Décidé par Julien le 19 novembre 2026 ; remplace « Brouillon, puis partagée : un seul bouton » ci-dessus. Lot 24 bis. **Codé le 19 novembre 2026** : `ListsShareBar` en haut du document, la route `POST /api/lists/[id]/share` avec `ask` (`on`, `off`, `renew`) et la règle `shareChange` ; pas de migration, une liste est partagée tant que `shared_at` est rempli, et son lien est gardé quand le partage s'arrête ; la page `/listes/[id]/partager` a disparu. Maquettes : `ListeTeneur`, `ListeNouvelle` (repliées), `ListeEtatBrouillon`, `ListeEtatPubliee` (dépliées).
+
+- **Publier**, c'est donner un lien public à la liste : toute personne qui a le lien la voit et peut cocher. **Partager**, c'est envoyer ce lien. **Dépublier**, c'est faire que le lien ne marche plus. Les mots « Partagée avec la famille » et « Le lien » disparaissent.
+- **Pas d'écran, pas de panneau : une barre d'une ligne en haut du document, sur le modèle de la barre du mode anonyme** (décidé par Julien le 19 novembre 2026). Bords arrondis ; une icône, l'état, une flèche, et **l'interrupteur « Publier », visible même replié**.
+  - **Un seul titre, « Partage par lien »**, dans les deux états (choisi par Julien le 19 novembre 2026). C'est un nom neutre, comme « Mode anonyme » : ni une action (« Publier la liste », ambigu une fois allumé) ni un état (« Liste publiée », qui se lit comme vrai même éteint ; « Brouillon » et « Publiée », deux titres). L'interrupteur dit oui ou non.
+  - **Pas publiée** : un cadenas, l'interrupteur éteint, pas de flèche : rien à déplier, aucun texte d'explication.
+  - **Publiée** : la barre reste blanche ; seul l'interrupteur est vert (`success`), avec un globe vert et la flèche (décidé par Julien le 19 novembre 2026). Dépliée : le lien et « Copier », une seule phrase (« Toute personne qui a le lien voit la liste et peut cocher. »), un seul bouton « Partager » (feuille de partage, message tout prêt ; « Par email » a été retiré le 19 novembre 2026, la feuille de partage le propose déjà ; sans feuille de partage, le bouton n'est pas affiché), « Personnaliser le message » (une page) et « Changer de lien ». Aucun bouton plein ni rouge dans ce panneau (demandé par Julien le 19 novembre 2026) : « Partager » est un bouton à simple contour neutre (`neutral`, `outline`), sur toute la largeur, l'adresse est en texte foncé, les deux liens du bas en gris souligné.
+  - Toucher l'état ou la flèche déplie ; l'interrupteur publie ou dépublie directement. Dépublier ne demande pas de confirmation : un message « Liste dépubliée » avec « Annuler ». S'il manque un nom ou une personne, l'interrupteur reste éteint quand on le touche, et la barre dit alors ce qui manque, en erreur (décidé par Julien le 19 novembre 2026 : rien n'est écrit avant qu'on essaie).
+- **Dépubliée** : le lien affiche « Cette liste n'est plus publiée » ; la liste sort des listes de ceux qui l'avaient ouverte ; les coches restent ; republier redonne le même lien. Une liste dépubliée redevient un brouillon.
 
 #### Cocher
 
@@ -1711,6 +1725,12 @@ Maquettes : `ListePlusieursLigne`, `ListeReserverPlusieurs`, `ListeRejoindre`, `
 
 `ListeIcone` est le même panneau, à trois différences près : la tuile est carrée, les couleurs sont pleines, les symboles sont ceux des listes.
 
+#### Retirer quelqu'un d'une liste
+
+**L'icône et le prénom d'une personne se changent dans le document**, sans passer par sa fiche (demandé par Julien le 19 novembre 2026) : toucher l'icône ouvre son panneau, toucher le prénom l'écrit sur place (retour ou toucher ailleurs enregistre, vidé il reste comme avant). Le prénom d'une personne reliée à un compte ne se change pas ici : aujourd'hui « Moi », demain les personnes reliées du lot 25.
+
+Demandé par Julien le 19 novembre 2026 : passer par « ses goûts » pour retirer quelqu'un ne se devine pas. **Codé le 19 novembre 2026** (lot 24 bis). Désormais : un bouton « ⋯ » au bout du prénom de chaque personne, pour ceux qui tiennent la liste (maquette `ListePersonneMenu`). Il ouvre un petit menu : « Sa fiche et ses goûts » (la fiche existante) et « Retirer de la liste ». Le lien « ses goûts » disparaît pour eux (il reste pour qui vient par le lien). Retirer est immédiat, avec « {Prénom} retiré de la liste » et « Annuler », quand aucune de ses idées n'est cochée ; sinon un second appui, qui dit combien de cadeaux déjà prévus seront perdus. La personne reste dans ma famille ; ses idées partent avec elle. « Retirer de la liste » reste aussi en bas de sa fiche.
+
 ### 22.20 Décidé : les listes de cadeaux, V2 (19 novembre 2026)
 
 Décidé par Julien le 19 novembre 2026, après la V1 (22.19). Pas encore codé : lots 24 à 27 de `docs/refonte/PLAN.md`. Maquettes : `ListeLiveTeneur`, `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListeNouvelleReprendre`, `ListeReprise`.
@@ -1750,6 +1770,44 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 - Une personne reliée peut **écrire, corriger et supprimer ses propres idées** sur les listes où elle figure (`ListeVueReliee`) : sa section passe en premier, « C'est toi ».
 - Pour le reste, elle voit la liste **comme tout le monde**, l'état de ses propres idées compris. Elle coche comme tout invité, y compris ce qui lui est destiné (22.19, « Personne n'est bloqué sur ses propres idées »).
 - Elle ne tient pas la liste pour autant : elle ne voit pas qui offre quoi.
+
+#### Une liste sans personne
+
+Décidé par Julien le 19 novembre 2026. Lot 27 bis. Maquettes : `ListeNouvelle`, `ListeSansPersonne`, `ListeSansPersonneVisiteur`.
+
+- Pour un mariage, une crémaillère, une naissance : l'événement, puis les idées l'une sous l'autre, sans partie par personne.
+- **Pas d'écran de choix** (décidé par Julien le 19 novembre 2026) : dans le bloc « Ajouter quelqu'un » du document vide, après les prénoms et « Quelqu'un d'autre », une pastille de plus, « Une liste sans personne ». La toucher fait de la liste une liste sans personne. En bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel reste (choisi par Julien le 19 novembre 2026, plutôt qu'un lien « Séparer par personne » ou un menu) : une pastille « Une personne » et la phrase « La liste sera alors rangée par personne. Les idées déjà écrites iront à la première. » Tant que la liste n'est pas publiée.
+- Tout le reste ne change pas : cocher, à plusieurs, « J'offre autre chose », les prénoms visibles de ceux qui tiennent la liste seulement, publier, partager, suivre (on suit alors toute la liste).
+- Pas de bloc « Ajouter quelqu'un », pas de goûts ni de tailles.
+
+#### Relier ses pistes d'un tirage à sa liste de cadeaux
+
+Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `PistesListe`, `PistesListeChoisir`, `PistesResultatListe`, `ListeVisiteurTirage`.
+
+- **Dans « Mes pistes de cadeaux »**, un bloc « Ma liste de cadeaux » : on choisit, par son nom, une des listes qu'on tient, **ou une liste où l'on figure** comme personne reliée à son compte (`PistesListeChoisir`, décidé par Julien le 19 novembre 2026 ; possible une fois le lot 25 fait). Seule une liste publiée peut être reliée ; un brouillon est proposé grisé, « publie-la d'abord ». Une liste entière, pas une partie : on ne cherche pas la personne dedans.
+- **Le Père Noël voit un simple lien** sous son résultat (`PistesResultatListe`) : « Sa liste de cadeaux : Noël 2026 ». Le contenu de la liste n'est jamais recopié dans le tirage. **« Si tu sèches » disparaît** quand une liste est reliée (décidé par Julien le 19 novembre 2026).
+- **Seulement quand les pistes sont en mode complet.** En mode « Portrait seulement » ou sans pistes, pas de bloc ni de lien.
+- **Venu de son tirage, le mode anonyme est activé par défaut** (`ListeVisiteurTirage`, « Le mode anonyme, bien visible ») : la coche dit « Anonyme » à tous, ceux qui tiennent la liste compris. Rien n'est imposé.
+- **Limite acceptée par Julien** : comme pour les pistes, l'heure d'une coche, rapprochée du journal du tirage, peut laisser deviner.
+- Une liste dépubliée : le lien disparaît du résultat. Un lien retiré des pistes : idem.
+
+#### Le mode anonyme, bien visible
+
+Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `ListeVisiteur`, `ListeVisiteurMes` (sous mon prénom), `ListeVisiteurAnonyme` (anonyme), `ListeVisiteurTirage` (activé par défaut, avec un avertissement).
+
+- **En haut d'une liste ouverte par son lien, une barre dit le mode, avant de cocher**, comme une navigation privée. Elle tient sur une ligne, aux bords arrondis comme la partie « Publier » de celui qui tient la liste, et **reste collée en haut** quand on fait défiler la liste.
+  - **Un seul titre, « Mode anonyme »**, et l'interrupteur dit s'il est activé (décidé par Julien le 19 novembre 2026). Désactivé (`ListeVisiteurPrenom`) : barre claire, un œil. Activé (`ListeVisiteurAnonyme`) : barre aubergine foncée (`#5b3a55`), texte blanc, un masque.
+  - **« ? »** déplie l'explication, sur toute la largeur de la barre :
+    - désactivé : « Désactivé : quand tu coches un cadeau, ceux qui tiennent la liste voient ton prénom. Les autres voient seulement que c'est pris. »
+    - activé : « Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ». Le réglage vaut pour toute cette liste. »
+    - venu d'un tirage : une note à part, sous la barre, avec une pointe vers l'interrupteur (demandé par Julien le 19 novembre 2026 : l'avertissement ne fait pas partie de la barre, et ce n'est pas une fenêtre qui bloque). Titre : « On a activé le mode anonyme pour toi ». Texte : « Tu offres un cadeau dans un tirage à quelqu'un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom. » Un seul bouton, « Compris », qui la retire pour de bon sur cette liste. Elle est accrochée à la barre collée en haut : elle survole la liste sans la pousser et reste visible quand on fait défiler, avec derrière elle un halo prune (un voile dégradé sur la liste, plus une ombre prune autour de la note) qui disparaît avec elle. La liste reste utilisable dessous. La barre est la même que partout, repliée.
+  - Aucun prénom dans la barre : on ne sait pas toujours qui tient la liste.
+- **Le mode anonyme est possible tout le temps**, sur n'importe quelle liste, sans rapport avec un tirage.
+- **Seulement pour une personne connectée.** Sans session, pas de barre (`ListeVisiteur`) : toucher une case mène à la connexion de la liste (`ListeConnexion`), où **le prénom devient facultatif** : « Sans prénom, tu coches en anonyme ». Après la connexion, la barre reprend ce choix : anonyme sans prénom, sous mon prénom sinon.
+- **C'est un réglage par liste**, retenu pour la fois suivante. Il vaut pour mes prochaines coches ; « Changer » sous un cadeau reste possible pour une exception. Le choix « Dire à Camille que c'est moi » du panneau « Changer » devient ce même réglage.
+- **Un paramètre dans l'adresse** (`?anonyme`) ouvre la liste en mode anonyme : c'est ce que fait le lien posé dans un tirage.
+- **Activé par défaut, jamais imposé** (décidé par Julien le 19 novembre 2026 : un parent peut offrir un cadeau à son enfant sous son prénom et, comme Père Noël, un autre en anonyme). Quand j'offre un cadeau, dans un tirage pas encore fêté, à quelqu'un qui tient la liste ou qui y figure relié à son compte, le serveur le détecte (il déchiffre le résultat en interne, comme pour « Découvrir ») : la liste s'ouvre en mode anonyme, avec la note d'avertissement sous la barre, sans nommer la personne. L'interrupteur reste libre, et « Changer » sous un cadeau aussi. Le lien posé dans un tirage porte la participation, signée, pour que la détection marche même connecté avec une autre adresse.
+- **Les textes d'une liste ne disent jamais « Père Noël »** (décidé par Julien le 19 novembre 2026) : une liste sert aussi pour un anniversaire, un mariage, une naissance. On dit « la personne qui t'offre un cadeau », ou « tu lui offres un cadeau dans un tirage ». C'est le serveur qui décide, pas le paramètre : le retirer de l'adresse ne change rien.
 
 #### Reprendre une liste
 
@@ -1929,6 +1987,16 @@ Liste de contrôle écrite le 19 novembre 2026, à la demande de Julien. **Ce n'
 | Registre | Aucun | Un document court dans le dépôt : chaque traitement, sa raison, ses données, sa durée |
 
 ### 22.27 Décidé : le tableau de bord du super-admin (19 novembre 2026)
+
+**Revu le 19 novembre 2026, après-midi** (maquettes `Admin`, `AdminOnglet`, `AdminDemandes`). Ce paragraphe l'emporte sur ce qui suit là où ils diffèrent.
+
+- **L'administration n'est que dans son onglet** « Admin », avec sa pastille, sur tous les écrans d'un super-admin : plus de carte sur l'accueil des tirages, plus d'entrée dans le menu.
+- **L'ordre de la page** : « Qui s'en sert », « À traiter et à surveiller », les plafonds, « En cas d'urgence », ce qui tourne tout seul.
+- **« Qui s'en sert »** : quatre tuiles cliquables (comptes, groupes, listes, emails envoyés). Le grand chiffre compte depuis le début ; la ligne dessous suit la période choisie (7 jours, 30 jours, 12 mois).
+- **« À traiter et à surveiller »** : une seule liste. Une pastille, c'est une décision qui attend (demandes, signalements) ; un chiffre, c'est à regarder de temps en temps.
+- **Les demandes** : une file pour les deux sortes, « Un groupe de plus » et « Plus de participants » (lot 34).
+- **Le panneau d'une demande** (`AdminDemande`, `AdminDemandeParticipants`) : ce qu'on sait du compte (ancienneté, groupes, emails envoyés et rejetés, refus, signalements), le plafond accordé, un mot facultatif, « Refuser » et « Accepter ». Il aide à juger de la confiance, plus de la place qui reste.
+- **« En cas d'urgence »** : suspendre les emails, suspendre les inscriptions (lot 38 B).
 
 Demandé par Julien le 19 novembre 2026. Pas encore codé : lot 37. Maquette : `Admin`.
 

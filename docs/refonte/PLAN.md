@@ -761,14 +761,26 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 23 bis, et les Corrections 19 à 21. Restent les lots 24 à 37. Quatre chantiers, indépendants les uns des autres :
+Faits : tout jusqu'au lot 23 bis, et les Corrections 19 à 21. Restent la Correction 22 (un bateau dans les icônes, cinq minutes, à faire quand on veut) la Correction 23 (sécurité, à faire tout de suite) et les lots 24 à 40. Cinq chantiers, indépendants les uns des autres.
+
+**Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
+
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | 24, puis 27, 25, 26 | Non |
-| **Les garde-fous et l'ouverture** | 35, puis 37, puis 34, puis 36 | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
+| **Les listes, V2** | 24 (fait), 24 bis (fait), 27, 27 bis, 27 ter, 25, 26 | Non |
+| **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
+| **L'assistant (MCP)** | 40, après Noël 2026 | Non |
 | **La vitrine** | 33, puis 32 en tout dernier | 33 : ses textes, le service de dons, ses liens. 32 : confirmer la phrase sur l'assistant |
+
+**Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Le lot 24 est codé et ses corrections sont en cours : les finir d'abord. Ensuite, dans cet ordre : les Corrections 23 (sécurité) et 22, puis le lot 24 bis, puis le lot 38 A (le filet de sécurité), relu en entier car il a beaucoup changé cet après-midi, puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
+
+- **Lot 24 bis** : la barre du haut s'appelle « Partage par lien » (plus « Brouillon » ni « Publiée », plus de texte d'explication) ; plus aucun bouton plein ni rouge dans le partage ; le menu « ⋯ » d'une personne, pour la retirer de la liste.
+- **Lot 27 bis** : en bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel, pas de lien « Séparer par personne ».
+- **Lot 27 ter** : le mode anonyme n'est jamais imposé. Il est activé par défaut quand on vient d'un tirage, avec une note d'avertissement accrochée sous la barre (halo prune, « Compris »).
+- **Le lot 36 (données personnelles) passe avant le lot 34** : on n'ouvre pas à tous sans les pages légales ; le lot 39 (signaler, règles d'usage) aussi.
+- **Maquettes périmées à supprimer** de `docs/refonte/maquettes/` et `maquettes-sorbet/` : `ListePartager`, `ListePublier`, `ListePublication`, `ListeDepublier`, `ListeNouvelleForme`, `ListeSansPersonneA`, `ListeSansPersonneB`, `AdminTableau`, `AdminAcces`, `AdminAccesMenu`, `AdminSansDemande`, `AdminPlusieursDemandes`, `AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`, `AdminDemandePage`, `AdminDemandePageMot`.
 
 Trois règles qui traversent les lots :
 
@@ -787,6 +799,43 @@ Décidé par Julien le 19 novembre 2026. Sans migration. Maquettes : `ListeIdee`
 - [x] **La barre d'une ligne** (« Lien », « Supprimer la ligne », « Terminé », `ListsLineBar`) disparaît : c'est elle que ce lot remplace (Correction 19, point 11 de la section 6).
 - [x] Trois langues, `tests/e2e`.
 
+### Correction 22 — Un bateau dans les icônes (demandé par Julien le 19 novembre 2026)
+
+Le frère de Julien fait de la voile, et aucune icône de personne ne s'y prête. **Fait** (19 novembre 2026) : « ⛵ », « 🏊 », « 🎣 », « 🚴 », « 🥾 », après « 🏄 » dans les activités.
+
+- [x] Ajouter le voilier « ⛵ » aux icônes de personne (`server/utils/avatars.ts`) : à la **fin** de `AVATAR_EMOJIS` (les 21 premières servent aux icônes par défaut, leur ordre ne bouge pas) et dans le groupe `activities`, à côté de « 🏄 ».
+- [x] Dans la même passe, les loisirs voisins qui manquent : « 🎣 » (pêche), « 🚴 » (vélo de route), « 🏊 » (natation), « 🥾 » (randonnée). À retirer si la grille des activités dépasse ses colonnes.
+- [x] Le test qui vérifie que chaque icône est dans un groupe, et un seul, passe toujours.
+
+### Correction 23 — Sécurité : ce qui se corrige tout de suite (section 8)
+
+Demandé par Julien le 19 novembre 2026. De petites choses, sans migration ni maquette, à faire avant le lot 24 bis. Le reste est dans les lots 38 A et 38 B.
+
+- [ ] **Les en-têtes des pages de liste par lien** : `/l/**` et `/api/l/**` reçoivent les mêmes que `/p/**` (`no-referrer`, `no-store`, `noindex`), dans `nuxt.config.ts`. Aujourd'hui le lien d'une liste peut partir vers un site tiers quand on ouvre le lien d'une idée.
+- [ ] **`Strict-Transport-Security`** sur toutes les réponses (un an, sous-domaines compris seulement si tous sont en HTTPS).
+- [ ] **Interdire `v-html`** par une règle ESLint (`vue/no-v-html` en erreur). Aucun n'existe aujourd'hui : c'est pour que ça dure.
+- [ ] **`npm audit` dans `ci.yml`**, en échec sur une faille haute ou critique des dépendances de production ; Dependabot (ou l'équivalent) pour les mises à jour.
+- [ ] **Les requêtes qui modifient** (`POST`, `PUT`, `PATCH`, `DELETE`) refusent un en-tête `Origin` qui n'est pas celui de l'application, dans un seul intergiciel. Vérifier qu'un `?next=` après connexion, s'il existe, n'accepte qu'un chemin interne.
+- [ ] **Un test** : `tests/e2e/security.spec.ts` vérifie ces en-têtes sur `/l/…`, et le refus d'une origine étrangère.
+- [ ] **Julien, dix minutes** : la double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin. Rien à coder.
+
+### Lot 24 bis — Listes : l'effacement au clavier, et publier n'est pas partager (README 22.19, 22.20)
+
+Décidé par Julien le 19 novembre 2026, après le lot 24. **Fait** (19 novembre 2026), sans migration. Ce qui a été tranché en codant : section 6, « Lot 24 bis, en codant ». Maquettes : `ListeIdee`, `ListeIdeeLienFait`, `ListeTeneur`, `ListeNouvelle`, `ListeEtatBrouillon`, `ListeEtatPubliee`, `ListeChangerLien`, `ListePartageArrete`, `ListePersonneMenu`, `ListePersonneRetiree`, `ListePersonneRetirer`. Les maquettes `ListePartager`, `ListePublier`, `ListePublication`, `ListeDepublier` sont périmées : les supprimer de `docs/refonte/maquettes/`.
+
+- [x] **Vérifier ce qui est déjà fait** au commit `53ad385` : plus de « Supprimer » sous une ligne, le texte long qui passe à la ligne, les flèches et la tabulation d'une ligne à l'autre. Les maquettes sont maintenant alignées.
+- [x] **L'effacement au clavier** : dans une ligne vide, la touche d'effacement supprime la ligne et place le curseur à la fin de la ligne du dessus, comme dans un document. Sur la dernière ligne vide (« Une autre idée… »), elle remonte seulement. Une idée cochée par quelqu'un : la confirmation habituelle avant de la supprimer. Sur téléphone, la touche d'effacement du clavier fait la même chose.
+- [x] **Une barre d'une ligne en haut du document**, sur le modèle de celle du mode anonyme (README 22.19, « Publier, partager, dépublier ») : icône, le titre fixe « Partage par lien », un nom neutre, ni action ni état (le même publiée ou non, sans texte d'explication ; pas publiée, pas de flèche), et l'interrupteur visible même replié ; toujours sur fond blanc ; une fois publiée, seul l'interrupteur est vert (`success`). Elle se déplie sur place. Pas de page, pas de panneau ; l'ancienne page « Partager » (`/listes/[id]/partager`) disparaît, « Personnaliser le message » reste une page.
+- [x] **L'interrupteur** : allumé, la liste a son lien ; éteint, le partage s'arrête tout de suite, avec « Partage par lien arrêté » et « Annuler ». Grisé, avec la raison, s'il manque un nom ou une personne.
+- [x] **Publiée, dessous** : le lien et « Copier », « Envoyer » (feuille de partage, message tout prêt), « Par email » (`mailto:`, rien n'est envoyé par l'application), « Personnaliser le message », « Changer de lien ». Rien de plein ni de rouge : deux boutons égaux à contour neutre, liens gris (README 22.19).
+- [x] **Retouche du 19 novembre 2026, après essai par Julien : un seul bouton, « Partager »** (maquette `ListeEtatPubliee`). « Par email » disparaît : la feuille de partage du téléphone propose déjà la messagerie, la copie et le reste. « Envoyer » s'appelle « Partager » et prend toute la largeur, à contour neutre. Le lien et « Copier » restent au-dessus. Sans feuille de partage (ordinateur), le bouton « Partager » n'est pas affiché : « Copier » suffit. Vérifier au passage que « Copier » copie bien, avec « Copié » en retour : il ne marchait pas à l'essai.
+- [x] **Partage arrêté** : le lien affiche « Cette liste n'est plus partagée » ; la liste sort des listes de ceux qui l'avaient ouverte ; les coches restent ; rallumer redonne le même lien (sauf si on l'a changé).
+- [x] **« Changer de lien »** (proposition, section 6) : une confirmation sur place, dans la barre, « L'ancien lien ne marchera plus. » avec « Changer » et « Annuler » ; puis le nouveau lien s'affiche. Ceux qui ont un compte et avaient déjà ouvert la liste la gardent.
+- [x] **Retirer quelqu'un sans passer par « ses goûts »** (demandé par Julien le 19 novembre 2026, important) : un bouton « ⋯ » au bout du prénom de chaque personne, pour ceux qui tiennent la liste (maquette `ListePersonneMenu`). Il ouvre un petit menu : « Sa fiche et ses goûts » (la fiche existante) et « Retirer de la liste ». Le lien « ses goûts » disparaît pour eux (il reste pour qui vient par le lien). Retirer est immédiat, avec « {Prénom} retiré de la liste » et « Annuler », quand aucune de ses idées n'est cochée ; sinon un second appui, qui dit combien de cadeaux déjà prévus seront perdus. La personne reste dans ma famille ; ses idées partent avec elle. « Retirer de la liste » reste aussi en bas de sa fiche.
+- [x] **Les idées en retrait sous leur personne** (demandé par Julien le 19 novembre 2026) : la liste des idées d'une personne est décalée de 20 px vers la droite par rapport à son icône, dans le document comme par le lien ; la ligne qu'on écrit garde son fond pleine largeur.
+- [x] **Les mots, à l'écran** : « Partage par lien », « partagée par lien », « plus partagée ». Les mots « publier », « publiée », « dépublier », « brouillon » ne s'affichent plus nulle part (ils restent dans ce plan et dans le code pour désigner l'état).
+- [x] Trois langues, `tests/e2e`.
+
 ### Lot 25 — Listes V2 : à plusieurs, et une personne reliée à son compte (README 22.20)
 
 Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeLiveTeneur` (la ligne « Tu tiens cette liste avec Hugo »).
@@ -803,6 +852,7 @@ Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `ListeTeneu
 
 Décidé par Julien le 19 novembre 2026. Après le lot 25 (la présence en dépend). Maquette : `ListeLiveTeneur`.
 
+- [ ] **Borner ce qui coûte** (section 8.1) : au plus 30 connexions par liste (proposition), fermeture après 30 minutes sans activité, pas de message plus gros que quelques kilo-octets.
 - [ ] **L'objet durable** : un par liste, WebSocket avec hibernation, déclaré dans la configuration de déploiement. Vérifier d'abord dans la documentation Cloudflare que l'offre du compte le permet, et le noter en section 6.
 - [ ] **Le signal** : chaque route qui change une liste prévient l'objet après l'écriture dans D1 ; l'objet envoie « la liste a changé » ; chaque navigateur recharge sa vue par les routes existantes. Aucune donnée de la liste ne passe par le canal.
 - [ ] **Les animations** : une ligne qui apparaît, change, se coche ou disparaît le montre par son mouvement, sans étiquette ni couleur. Respecter « réduire les animations ».
@@ -821,6 +871,33 @@ Décidé par Julien le 19 novembre 2026. Maquettes : `ListeNouvelleReprendre`, `
 - [ ] **« Repartir d'une liste »** dans le document vide, et **« Reprendre cette liste »** sur une liste passée. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
 - [ ] **La marque** : la petite flèche grise au bout de la ligne, visible de ceux qui tiennent la liste seulement, et la phrase d'explication en haut.
 - [ ] Trois langues, `tests/e2e`. README 22.20 marqué fait.
+
+### Lot 27 bis — Une liste sans personne (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Après le lot 24 bis. Maquettes : `ListeNouvelle` (la pastille), `ListeSansPersonne`, `ListeSansPersonneVisiteur`. Points à relire : section 6, « Lot 27 bis ».
+
+- [ ] **Base** : la forme d'une liste, « par personne » (aujourd'hui) ou « une seule liste ». Pour une seule liste, les idées se rattachent à une seule partie cachée, sans membre de la famille : les routes, les coches, les cadeaux à plusieurs et le direct ne changent pas. Si ce modèle ne tient pas, le dire en section 6 avant d'en choisir un autre.
+- [ ] **Pas d'écran de choix** : une pastille « Une liste sans personne » dans le bloc « Ajouter quelqu'un » du document vide, après « Quelqu'un d'autre ». En bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel (pastille « Une personne », phrase « La liste sera alors rangée par personne. Les idées déjà écrites iront à la première. »), tant qu'elle n'est pas publiée ; pas de lien « Séparer par personne », pas de menu. Les idées déjà écrites vont à la première personne ajoutée ; l'inverse n'est possible qu'avec une seule personne sur la liste.
+- [ ] **Le document et la liste par son lien** sans en-tête de personne, sans goûts, sans menu « ⋯ » ; par le lien, et dans le document une fois la liste partagée, sans « Ajouter quelqu'un » ; « J'offre autre chose » une seule fois, en bas.
+- [ ] **Suivre** (lot 29 bis) : une seule cloche, pour toute la liste. **Reprendre** (lot 27) : la forme est reprise.
+- [ ] Trois langues, `tests/e2e`.
+
+### Lot 27 ter — Relier ses pistes d'un tirage à sa liste de cadeaux (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Après les lots 24 bis et 27 bis. Avec migration. Maquettes : `PistesListe`, `PistesListeChoisir`, `PistesResultatListe`, `ListeVisiteurTirage`, `ListeVisiteur`, `ListeVisiteurMes`, `ListeVisiteurPrenom`, `ListeVisiteurAnonyme`.
+
+- [ ] **Base** : sur les pistes d'une participation, la liste reliée (facultatif). Ne peut viser qu'une liste que le compte de la personne tient, ou une liste où elle figure reliée à son compte (lot 25 ; sans lui, seulement les listes qu'elle tient).
+- [ ] **« Ma liste de cadeaux »** dans les pistes (mode complet seulement) : le choix dans un panneau, les listes que je tiens par leur nom ; une liste non publiée est grisée ; « Aucune liste ». Il faut un compte : sans compte, le bloc dit de se connecter.
+- [ ] **Sous le résultat** du Père Noël, avec « Pour t'aider à choisir » : le lien vers la liste, avec son icône et son nom, et « Ce que tu y coches reste anonyme, même pour {prénom} ». Rien du contenu de la liste n'est recopié. Pas de lien si la liste n'est plus publiée.
+- [ ] **La barre du mode anonyme**, en haut de toute liste ouverte par son lien, sur une ligne, collée en haut au défilement (`position: sticky`) (README 22.20, « Le mode anonyme, bien visible ») : sous mon prénom (claire, un œil) ou anonyme (aubergine foncée `#5b3a55`, texte blanc, un masque), avec un interrupteur et « ? » qui déplie l'explication. Aucun prénom dans la barre. Possible sur toute liste, pas seulement depuis un tirage. L'explication dépliée prend toute la largeur de la barre.
+- [ ] **Sans session, pas de barre.** La connexion de la liste (`ListeConnexion`) rend le prénom facultatif : sans prénom, la première coche et le réglage de la liste sont anonymes.
+- [ ] **Les maquettes des écrans d'une personne connectée** ont le menu (burger) en haut à droite à la place de « FR » (Correction 19) : rien à changer dans le code, qui le fait déjà. Un réglage par compte et par liste, retenu. Le choix « Dire à Camille que c'est moi » du panneau « Changer » devient ce réglage.
+- [ ] **`?anonyme` dans l'adresse** ouvre la liste en mode anonyme ; le lien posé sous le résultat d'un tirage le porte.
+- [ ] **Activé par défaut, avec un avertissement, jamais imposé** (README 22.20) : si je suis, dans un tirage pas encore fêté, celui qui offre à quelqu'un qui tient la liste ou qui y est relié, la liste s'ouvre en mode anonyme et une note accrochée sous la barre collée en haut, qui survole la liste avec un halo prune (pas dans la barre, pas une fenêtre qui bloque), m'avertit sans nommer personne ; « Compris » la retire pour de bon sur cette liste. L'interrupteur reste libre. La détection est faite par le serveur (déchiffrement interne du résultat) ; le lien posé dans un tirage porte la participation, signée.
+- [ ] **« Si tu sèches »** ne s'affiche plus sous le résultat quand une liste est reliée.
+- [ ] **Aucun « Père Noël » dans les textes d'une liste** : une liste n'est pas que pour Noël. Relire aussi les textes existants des listes dans les trois langues.
+- [ ] **Les autres règles du secret** : aucune nouveauté (lot 28), aucun email, aucune ligne de journal ne dit qu'un Père Noël a coché ; « Mes listes » de celui qui offre la montre comme toute liste ouverte.
+- [ ] Trois langues, `tests/e2e` (le prénom du Père Noël n'apparaît dans aucune réponse lue par celui qui tient la liste).
 
 ### Lot 28 — Les nouveautés, dans l'application (README 22.22)
 
@@ -917,13 +994,44 @@ Décidé par Julien le 19 novembre 2026. Peut se faire avec le lot 32 ou avant l
 
 Proposé le 19 novembre 2026. **Le principe est acquis** : Julien veut lever les deux limites, accepte une soixantaine d'euros par an, et garde l'application gratuite. **Restent à chiffrer avec lui avant de coder** : les groupes par compte et les plafonds (section 6). **Après le lot 35** (les garde-fous) ; le lot 37 lui donne ses compteurs. Les étapes marquées « Julien » sont des abonnements et des réglages de compte, à faire par lui.
 
+Maquettes : `LimiteGroupes`, `LimiteParticipants`, `DemandePlus`, `AdminDemandes`, `AdminDemandeParticipants`, `Admin`.
+
 - [ ] **Julien** : passer le compte Cloudflare en Workers Paid ; vérifier que le domaine est géré chez Cloudflare ; activer l'envoi d'emails de Cloudflare (en bêta) et laisser poser ses enregistrements DNS.
 - [ ] **L'envoi par deux fournisseurs** (`server/http/email.ts`) : Cloudflare d'abord, Resend en secours si l'envoi échoue ou si le quota du jour de Cloudflare est atteint. Les emails ne changent pas.
-- [ ] **Les groupes sans demande** : le quota par défaut d'un compte passe de 0 à 3 (proposition). La demande reste, pour en avoir davantage. `APP_GROUPS_COMFORT` et ses alertes sont revus.
-- [ ] **Des garde-fous, parce qu'un envoi ouvert à tous attire les abus** : un plafond d'emails par groupe et par jour, un plafond par compte, et un nombre de participants maximal par groupe. Au-delà, l'organisateur partage par son téléphone, ce qui ne coûte rien.
+- [ ] **Les groupes sans demande** (précisé par Julien le 19 novembre 2026) : tout compte peut créer **3 groupes** sans rien demander (le quota par défaut passe de 0 à 3 ; chiffre proposé, Julien hésite entre 2 et 3). La demande existante reste, pour en avoir davantage. `APP_GROUPS_COMFORT` et ses alertes sont revus.
+- [ ] **Les participants par édition, plafonnés de la même façon** (demandé par Julien le 19 novembre 2026 : 100 est énorme) : **30 par défaut** (proposition), au lieu de 100 pour tous. Le plafond est porté par le groupe et réglable par le super-admin ; 100 reste le maximum absolu (`MAX_PARTICIPANTS`). Un groupe qui existait avant ce lot garde 100.
+- [ ] **Une seule demande pour les deux** : la demande actuelle (« créer un groupe ») gagne un second motif, « plus de participants dans {groupe} », avec le nombre voulu et un mot. Même file chez le super-admin, même pastille (lot 37), mêmes emails de réponse. Accepter fixe le nouveau plafond du groupe.
+- [ ] **Dire la limite avant qu'on la touche** : à l'ajout du 31e participant, l'écran dit « Ce groupe peut tirer jusqu'à 30 participants » avec « Demander plus » ; l'erreur `too_many_participants` cite le plafond du groupe, plus « 100 ». Rien n'est perdu : les participants déjà saisis restent.
+- [ ] **Des garde-fous, parce qu'un envoi ouvert à tous attire les abus** : un plafond d'emails par groupe et par jour et un plafond par compte (le nombre de participants est traité plus haut). Au-delà, l'organisateur partage par son téléphone, ce qui ne coûte rien.
 - [ ] **Un plafond de dépense par mois**, réglable par le super-admin : quand les emails du mois l'atteignent, les envois automatiques passent au résumé du matin et le super-admin est prévenu.
 - [ ] **Les compteurs** : ce sont ceux du lot 37 (tableau de bord). S'il n'est pas fait, ce lot les ajoute a minima sur la page du super-admin.
 - [ ] README 7.2, 8, 13.3, 15 et 16 à jour ; `tests` des plafonds.
+
+### Lot 38 A — Durcir : le filet (section 8)
+
+Demandé par Julien le 19 novembre 2026. **À faire tôt : juste après le lot 24 bis**, car les listes sont déjà partagées par lien. Sans dépendance avec les autres lots. Les petites choses sont parties dans la Correction 23 ; ce qui touche à l'argent est dans le lot 38 B.
+
+- [ ] **D'abord vérifier** : relire la section 8 contre le code et cocher ce qui existe déjà. Elle n'est pas un audit. Ce qui s'avère faux ou déjà fait se dit en section 6.
+- [ ] **Le cloisonnement des listes, par un test** comme celui des tirages (`tests/e2e/security.spec.ts`) : un compte B essaie toutes les routes `/api/lists/*` et `/api/family/*` du compte A ; un jeton de liste essaie les idées d'une autre liste ; aucun prénom de qui a coché dans une réponse lue par un visiteur. Corriger ce que le test trouve.
+- [ ] **Limiter le débit des routes publiques** par adresse (`CF-Connecting-IP`), avec la liaison `ratelimits` de Workers : demande de lien de connexion, `/api/l/*` en écriture, `/api/invite/*`, demande de groupe. Réponse 429, message dans les trois langues (maquette `TropDeDemandes`).
+- [ ] **Le lien de connexion**, première cible : au plus 3 par adresse email et par heure, un plafond par adresse IP, un plafond global par jour ; au-delà, la réponse reste la même, aucun email ne part. Lien à usage unique, court.
+- [ ] **Un plafond pour tout ce qui s'écrit en base** : listes par compte, personnes par liste, idées par liste, cadeaux hors liste par visiteur, membres de la famille, lignes de journal par groupe et par jour, sessions par compte. Des chiffres larges, une erreur claire.
+- [ ] **Une politique de contenu stricte (CSP)** : `default-src 'self'`, des scripts limités à l'application (nonce ou empreintes), pas de `unsafe-eval`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`. D'abord en mode rapport pendant une semaine, puis pour de bon.
+- [ ] **Les emails comme porte d'entrée du hameçonnage** : tout texte saisi est échappé (fait pour les messages), jamais rendu cliquable ; un prénom, un nom de groupe ou de liste qui contient une adresse web est refusé. Vérifier SPF, DKIM et DMARC du domaine.
+- [ ] **Les tâches planifiées** : chaque passage traite un nombre borné de lignes et peut être rejoué sans rien envoyer deux fois.
+- [ ] **La clé des résultats et les sauvegardes** : une procédure écrite (README 16) pour exporter la base, garder `NUXT_DATA_KEY` hors de Cloudflare, et la changer. Clé perdue : résultats perdus.
+- [ ] README 8.6 complété.
+
+### Lot 38 B — Durcir : la dépense (section 8.1)
+
+**Juste avant le lot 34**, après le lot 37 dont il utilise le tableau de bord. C'est ce qui rend Workers Paid sans danger. Maquettes : `Admin` (« En cas d'urgence », « À surveiller »), `EnvoiSuspendu`.
+
+- [ ] **Julien, le jour de l'abonnement** : une limite de dépense sur Workers et sur les objets durables (Cloudflare, « Spend Management » : au seuil, les requêtes sont refusées jusqu'au cycle suivant), et une alerte de budget pour tout le compte. Montant proposé : 5 $ par mois au-dessus de l'abonnement.
+- [ ] **Deux interrupteurs d'urgence** pour le super-admin : « Suspendre les emails » et « Suspendre les inscriptions et les nouveaux groupes ». Le premier se déclenche tout seul quand le plafond du mois est atteint (lot 34).
+- [ ] **Savoir qu'on est attaqué** : le tableau de bord compte les refus pour débit, les échecs de connexion, les erreurs 5xx et les signalements du jour ; ils entrent dans la pastille de l'onglet.
+- [ ] **La règle de débit du pare-feu** (une seule sur l'offre gratuite) : sur la demande de lien de connexion, devant le Worker, pour que les requêtes refusées ne soient pas comptées.
+- [ ] **Les connexions en direct** (si le lot 26 est fait) : vérifier la mise en sommeil, le nombre maximal de connexions par liste, la fermeture après inactivité.
+- [ ] `tests` des interrupteurs et des plafonds.
 
 ### Lot 35 — Ne plus recevoir d'emails, et les garde-fous contre les abus (README 22.25)
 
@@ -959,10 +1067,47 @@ Demandé par Julien le 19 novembre 2026. **Après le lot 35** (le pied d'email r
 - [ ] **Les listes** : l'âge plutôt que la date de naissance là où il suffit ; un mot à celui qui partage une liste où figurent des enfants ; une liste par son lien n'est pas lisible par les moteurs de recherche.
 - [ ] **Le registre** : `docs/donnees-personnelles.md`, un tableau des traitements, et la marche à suivre en cas de fuite.
 
+### Lot 39 — Ce que les gens publient : signaler, retirer, les règles d'usage (section 8.5)
+
+Demandé par Julien le 19 novembre 2026 : une liste partagée par lien, un mot d'organisateur, un prénom sont du contenu écrit par des inconnus et hébergé par l'application. **Avant le lot 34** (l'ouverture à tous), après le lot 36 dont il partage les pages. **Textes à faire relire** : ce plan n'est pas un avis juridique. Maquettes (page « Garde-fous et suivi ») : `Signaler`, `SignalerEnvoye`, `AdminSignalements`, `AdminSignalement`, `ModerationEmail`, `ListePartageSuspendu`, `Regles`, `CompteCreerRegles`.
+
+- [ ] **« Signaler »**, en bas de toute page ouverte par un lien (une liste, une page de participant, une invitation) et dans le pied des emails (lot 35 : même file). Sans compte. Un motif à choisir (contenu illégal, harcèlement, données d'un tiers ou d'un enfant, arnaque, autre), un mot libre, une adresse facultative pour la réponse. Accusé de réception si une adresse est donnée.
+- [ ] **La file du super-admin** (lot 37, même pastille) : le contenu signalé, qui l'a écrit, les signalements précédents du même compte. Trois gestes : classer ; **arrêter le partage** de la liste ou couper l'envoi d'emails du groupe ; **suspendre le compte**. Rien n'est effacé sur un simple signalement : le contenu est d'abord rendu inaccessible.
+- [ ] **Dire pourquoi** à celui dont le contenu est retiré : un email et une ligne dans l'application, avec le motif, la règle visée et comment contester (répondre à l'adresse de contact). Dire au signaleur ce qui a été décidé.
+- [ ] **« Les règles d'usage »**, une page publique courte, en trois langues, liée en bas de chaque page et acceptée à la création d'un compte (une phrase avec un lien, pas une case de plus) : à quoi sert l'application ; ce qu'on n'y met pas (rien d'illégal, pas de harcèlement, pas de publicité ni de démarchage, pas de données d'autrui sans son accord, pas de données sensibles) ; n'ajouter que des adresses de gens qu'on connaît ; ce qui arrive en cas d'abus ; le service est gratuit, fourni tel quel, et peut s'arrêter ; comment signaler.
+- [ ] **Un point de contact unique** (l'adresse du lot 36), écrit dans les mentions légales, les règles d'usage et `security.txt`.
+- [ ] **Le journal de modération** : chaque signalement et chaque décision, avec sa date, gardés un an (durée à valider).
+- [ ] **Pas de surveillance automatique des contenus** : on agit sur signalement. Seuls garde-fous automatiques : les plafonds du lot 38 A et le refus d'une adresse web dans un nom.
+- [ ] **Les enfants** : dire dans les règles d'usage à partir de quel âge on peut créer un compte seul (à faire préciser par la relecture) ; une fiche d'enfant est écrite par un parent.
+- [ ] Trois langues, `tests/e2e` (un signalement arrive dans la file ; arrêter le partage rend le lien inaccessible).
+
+### Lot 40 — Brancher un assistant (MCP)
+
+Décidé par Julien le 19 novembre 2026 : lecture et écriture d'un coup ; **jamais aucun résultat de tirage**. **Après Noël 2026**, et après les listes V2 (24 bis à 27 ter, 25), le lot 38 A (limitation de débit, test de cloisonnement) et le lot 36 (la page des données doit en parler). Avec migration. Maquettes (page « Garde-fous et suivi ») : `AssistantAutoriser`, `CompteAssistants`. Points à relire : section 6, « Lot 40 ».
+
+- [ ] **Avant de coder** : relire la documentation de Cloudflare sur les serveurs MCP distants (transport Streamable HTTP, `createMcpHandler`, la bibliothèque Workers OAuth Provider) et la spécification MCP du moment. Le domaine a changé en 2026 ; ce lot décrit le besoin, pas l'API.
+- [ ] **Une route `/mcp` sur le même Worker**, sans état. Chaque outil appelle les fonctions pures et les contrôles d'accès des routes existantes : aucune règle n'est réécrite pour l'assistant.
+- [ ] **L'autorisation** (OAuth, `AssistantAutoriser`) : la personne se connecte comme d'habitude, voit ce que l'assistant demande, coche « Lire » et « Modifier » (les deux cochés par défaut, « Modifier » décochable), lit ce qu'il ne pourra jamais faire et que ce qu'il lit part chez son éditeur. Un jeton par assistant, révocable, jamais le cookie de session.
+- [ ] **Les outils de lecture** : mes listes (celles que je tiens) et leurs idées ; la fiche des personnes de mes listes ; mes pistes ; pour mes groupes, où en est une édition (qui a ouvert son lien, qui a laissé des pistes : oui ou non, jamais le contenu).
+- [ ] **Les outils d'écriture** : ajouter, modifier, retirer une idée sur une liste que je tiens ; modifier mes pistes ; modifier la fiche d'une personne de ma famille. Retirer une idée cochée par quelqu'un est refusé.
+- [ ] **Ce qu'aucun outil ne fait, vérifié par un test** qui parcourt toutes les réponses du serveur MCP : aucune attribution d'un tirage, pas même celle du titulaire ; aucun prénom de qui a coché ; aucun contenu des pistes d'un autre ; aucun envoi d'email ; ni partage, ni tirage, ni suppression de liste, de groupe ou de compte ; rien de l'administration ni de l'accès de dernier recours.
+- [ ] **Les textes écrits par d'autres sont des données** : les idées et les mots lus par l'assistant sont rendus dans un champ distinct, jamais mêlés aux consignes de l'outil, et tronqués à leur longueur maximale.
+- [ ] **« Mes assistants »** dans « Mon compte » (`CompteAssistants`) : la liste, « Débrancher », l'adresse à donner à l'assistant, et ce qu'il a fait depuis 30 jours. Chaque écriture d'un assistant est marquée comme telle.
+- [ ] **Les garde-fous** : limitation de débit par jeton (lot 38 A), un plafond d'écritures par jour, les mêmes plafonds d'objets que pour une personne ; un interrupteur d'urgence « Suspendre les assistants » pour le super-admin (lot 38 B) ; le tableau de bord compte les appels.
+- [ ] **Les données** (lot 36) : « Tes données, en clair » dit qu'un assistant branché reçoit ce qu'il lit, y compris les prénoms et âges de la famille ; « Mes données » liste les assistants.
+- [ ] **La page de présentation** (lot 32) : « Bientôt » devient un vrai bloc, et la phrase « Aucun assistant ne peut savoir qui offre à qui » est vraie par construction.
+- [ ] Trois langues pour les écrans ; les descriptions d'outils en anglais ; `tests/e2e`.
+
 ### Lot 37 — Le tableau de bord du super-admin (README 22.27)
 
 Demandé par Julien le 19 novembre 2026. Utile dès le lot 34 (les plafonds) et le lot 35 (les signalements). Avec migration. Maquette : `Admin` (l'administration et le tableau de bord, fusionnés). Points à relire : section 6, « Lot 37 ».
 
+- [ ] **L'ordre de la page** (demandé par Julien le 19 novembre 2026, maquette `Admin`) : d'abord « Qui s'en sert », puis « À traiter et à surveiller », puis les plafonds, « En cas d'urgence », ce qui tourne tout seul.
+- [ ] **« Qui s'en sert », quatre tuiles cliquables** : comptes (vers la liste des comptes), groupes (vers la liste des groupes), listes, emails envoyés. Le grand chiffre est le total depuis le début ; la ligne dessous suit la période choisie sous les tuiles : 7 jours, 30 jours, 12 mois (pas « Aujourd'hui », trop court pour dire quelque chose). Le bloc « Tout voir » disparaît : les tuiles y mènent.
+- [ ] **« À traiter et à surveiller », une seule liste** : en tête, avec une pastille, ce qui attend une décision (« Demandes », « Signalements ») ; dessous, avec un simple chiffre, ce qu'on regarde de temps en temps (refus pour débit, connexions échouées, adresses qui ont refusé les emails, emails rejetés, erreurs du serveur). La pastille de l'onglet « Admin » est la somme des pastilles. La carte « Demande de groupe à traiter » disparaît.
+- [ ] **Les demandes, repensées** (maquette `AdminDemandes`) : avec le lot 34, tout compte a ses groupes et ses participants sans rien demander ; une demande ne sert plus qu'à en avoir davantage. Une seule file, deux sortes marquées par une étiquette : « Un groupe de plus » et « Plus de participants ». Les traitées restent dessous, avec la décision. Côté demandeur : `LimiteGroupes` et `LimiteParticipants`.
+- [ ] **Le panneau d'une demande, unique pour les deux sortes** (décidé par Julien le 19 novembre 2026 ; maquettes `AdminDemande`, `AdminDemandeParticipants`) : la question n'est plus « ai-je la place ? » mais « puis-je faire confiance à ce compte ? ». De haut en bas : qui, la sorte de demande, ce qui est demandé et son mot ; « Ce qu'on sait de ce compte » (ancienneté, groupes et tirages faits, emails envoyés et rejetés, adresses qui ont refusé ses emails, signalements ; en rouge ce qui inquiète), avec « Voir le compte » ; « Ta réponse » : le plafond accordé, modifiable (on peut accorder moins que demandé), un mot facultatif avec trois mots tout prêts (« C'est d'accord », « D'accord, mais pour moins », « Pas pour l'instant »), « Refuser » et « Accepter ». La jauge « groupes couverts par les offres gratuites » et les mots « C'est complet » et « Entre proches » disparaissent.
+- [ ] **L'administration n'est plus que dans son onglet** (maquette `AdminOnglet`) : ni carte sur l'accueil des tirages, ni entrée dans le menu. L'onglet « Admin », avec sa pastille, est sur tous les écrans d'un super-admin.
 - [ ] **Le cœur, en fonctions pures**, testé d'abord : additionner des compteurs par jour sur une période ; la part d'un plafond ; quand prévenir.
 - [ ] **Base** : des compteurs par jour et par nature (emails envoyés, rejetés, requêtes, personnes actives, erreurs), sans identifiant de personne ; le dernier passage de chaque tâche planifiée et son résultat.
 - [ ] **Compter** aux bons endroits : l'envoi d'emails, les routes, les tâches planifiées. Une personne active se compte une fois par jour, à partir d'une empreinte qui change chaque jour.
@@ -992,7 +1137,7 @@ Rien pour l'instant : le seuil du repli (12), les réglages sans bouton « Enreg
 - **« Réserver »** : la maquette `ListePartager` écrit « Réserve ce que tu offres » et « Pour réserver » ; le README (22.19, « Les mots ») l'interdit à l'écran. Le message dit « Coche ce que tu offres », l'aide « Pour cocher ».
 - **Moi dans ma famille** : celui qui tient la liste y est d'office, depuis son profil (prénom, icône), dès qu'il a un prénom ; sa ligne dit « Moi ».
 - **Créer** : « Nouvelle liste » crée le brouillon aussitôt (icône tirée au hasard) et ouvre son document ; quitté sans nom ni personne, le document le supprime, et l'onglet ne montre jamais un brouillon vide (si la page n'a pas pu le supprimer).
-- **Retirer quelqu'un d'une liste** : aucune maquette ne le montre ; c'est en bas de sa fiche (« ses goûts »), ouverte depuis la liste, avec un second appui. Il reste dans ma famille.
+- **Retirer quelqu'un d'une liste** : d'abord seulement en bas de sa fiche (« ses goûts ») ; depuis le lot 24 bis, par le menu « ⋯ » de la personne (`ListePersonneMenu`). Il reste dans ma famille.
 - **« Répondre aux questions pour lui »** : « pour Léo », pour ne pas deviner le genre.
 - **La carte d'une liste que je tiens** n'a pas encore ma petite icône à côté de « Tu tiens cette liste » (la maquette la montre) ; elle viendra avec le lot 22, qui ajoute celle de « Liste de Mamie ».
 - **Ce que voit celui qui tient la liste** (prénoms, « Anonyme ») est prêt dans le cœur (`ideaView`) ; il s'affichera quand on pourra cocher, au lot 22.
@@ -1387,6 +1532,48 @@ Regardés à l'œil et comparés aux maquettes : la ligne qu'on écrit, l'adress
 
 Au passage : un test du compte lisait un toast par un texte que le toast porte deux fois (son titre et son annonce pour les lecteurs d'écran) ; il échouait selon le moment. Il vise maintenant le titre.
 
+### Lots 24 bis et 27 bis — publier, une liste sans personne
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Republier redonne le même lien**, sauf si on l'a changé (proposition) : ceux qui l'avaient gardé n'ont rien à refaire.
+2. **Une liste dépubliée sort des listes de ceux qui l'avaient ouverte** ; elle y revient si elle est republiée (proposition).
+6. **Dépublier sans confirmation**, avec « Annuler » : c'est la demande de Julien (« juste une case »). Les coches ne sont pas perdues, donc l'erreur se rattrape.
+3. **« Par email » est retiré** (Julien, 19 novembre 2026) : un seul bouton « Partager », la feuille de partage fait le reste.
+4. **Une seule liste, et une partie cachée** pour porter les idées : choix de modèle à confirmer en codant.
+5. **Le choix de la forme** n'est modifiable que tant que la liste n'est pas publiée (proposition).
+7. **« Personnaliser le message » d'une liste** (question ouverte, 19 novembre 2026) : la maquette garde le lien, mais « Partager » ouvre déjà un message qu'on retouche avant de l'envoyer. Proposition : le supprimer. En attendant la réponse de Julien, garder la page existante.
+8. **« Changer de lien »** : la confirmation sur place est une proposition (maquette `ListeChangerLien`).
+9. **Ajouter une personne à une liste sans personne déjà partagée** (question ouverte) : le plan dit non (le bloc disparaît au partage) ; la maquette `ListeSansPersonne` montre pourtant une liste partagée avec le bloc. Suivre le plan.
+10. **Retirer quelqu'un qui a des idées cochées** : le second appui dit combien de cadeaux seront perdus ; ceux qui les avaient cochés ne sont pas prévenus (proposition ; à revoir avec les nouveautés du lot 28).
+
+### Lot 24 bis, en codant
+
+Codé le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Pas de migration** : une liste est partagée tant que `shared_at` est rempli. Arrêter le partage le vide et garde le lien (`share_token`), ce qui redonne le même lien en rallumant. `shared_at` devient donc la date du dernier partage, plus celle du premier.
+2. **Le lien d'une liste plus partagée** répond 410 (et non 404) : la page dit « Cette liste n'est plus partagée. » ; un lien remplacé ou inconnu dit toujours « Ce lien ne marche plus… ».
+3. **Allumer l'interrupteur déplie la barre**, pour montrer le lien tout de suite. Ensuite elle est repliée à chaque ouverture du document.
+4. ~~Interrupteur grisé, avec la raison écrite sous la barre.~~ **Réponse de Julien, 19 novembre 2026 :** la raison n'apparaît qu'en erreur, quand on essaie de partager. L'interrupteur n'est donc plus grisé : touché alors qu'il manque un nom ou une personne, il reste éteint et la barre dit en rouge ce qui manque, jusqu'à ce que ce soit là. Fait.
+5. **« Annuler » après « Retirer de la liste »** : la personne disparaît de l'écran tout de suite, mais le serveur n'est prévenu qu'à la fin du message (6 secondes) ou en quittant le document. « Annuler » ne perd donc rien, ni les idées ni les coches. Si l'onglet est fermé dans ces 6 secondes, la personne n'est pas retirée.
+6. **Le second appui** se fait dans le menu « ⋯ » lui-même : il reste ouvert et affiche « 2 cadeaux déjà prévus seront perdus. », « Retirer », « Annuler ». Les cadeaux hors liste comptent.
+7. **« Copier » ne marchait pas à l'essai** : sur un téléphone qui ouvre le serveur de développement par le wifi (http), le navigateur n'a pas de presse-papiers. « Copier » copie maintenant aussi dans ce cas (`copyText`, par un champ sélectionné hors de l'écran), répond « Copié » dans le bouton pendant deux secondes, et dit quand il n'y arrive pas. Même cause pour « Partager » : la feuille de partage n'existe qu'en https, donc le bouton n'apparaît pas en développement par le wifi ; il apparaît en production.
+8. **Sur l'onglet « Listes »**, une liste que je tiens et qui n'est pas partagée porte « Pas partagée » (à la place de « Brouillon »).
+9. **La touche d'effacement** : la touche « Suppr » d'un ordinateur fait comme elle. Une ligne vide qui garde un lien ne part pas ainsi : « Retirer le lien » d'abord.
+10. **Une liste passée dont on arrête le partage** revient dans « À venir », comme toute liste pas partagée.
+12. **L'icône et le prénom d'une personne dans le document** (demandé par Julien le 19 novembre 2026, après coup) : « sauf s'il est relié à un compte » ne vaut que pour le prénom, et ne concerne aujourd'hui que « Moi » (relier une personne à un compte, c'est le lot 25, qui devra reprendre cette règle). L'icône de « Moi » se change ici comme les autres. Sur la fiche de « Moi », prénom et icône se changent toujours.
+11. **Les maquettes périmées ne sont pas supprimées** : ce sont des fichiers de Julien pas encore commités, je n'y ai pas touché.
+
+### Lot 27 ter — pistes et liste
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Rien n'est imposé** (décidé par Julien le 19 novembre 2026) : le mode anonyme est activé par défaut, avec un avertissement, et reste libre.
+4. **Le mode anonyme est retenu par liste** (proposition) : je le choisis une fois, il reste.
+2. **Une coche anonyme le reste après la fête**, même une fois le tirage dévoilé (proposition) : rien ne la relie au tirage dans la base, sauf ce qu'il faut pour l'anonymat.
+3. **Sans compte, pas de lien possible** : seul quelqu'un qui tient une liste peut la relier.
+5. **Les limites de la détection** : il faut que le destinataire ait un compte dans la liste (un enfant qui n'est qu'un prénom n'est relié à rien : seul le mode choisi à la main protège) ; une coche « Anonyme » pendant un tirage peut laisser deviner que c'est le Père Noël, sans dire qui ; un tirage annulé ou relancé laisse les coches anonymes telles quelles.
+
 ### Lots 28 à 31 — notifications, code, application installée
 
 Écrits le 19 novembre 2026. Points à relire :
@@ -1414,8 +1601,8 @@ Au passage : un test du compte lisait un toast par un texte que le toast porte d
 Écrit le 19 novembre 2026. Points à relire :
 
 1. **Les textes sont une proposition** : ils sont dans la maquette, à relire avant de les traduire.
-2. **« Aucun assistant ne saura qui offre à qui »** : une promesse écrite seul, parce que le secret est la règle de l'application. À confirmer avant de l'afficher.
-3. **Le branchement à un assistant (MCP)** n'est qu'annoncé. Rien n'est conçu : ni ce qu'un assistant pourrait lire ou faire, ni comment il se connecterait au compte.
+2. **« Aucun assistant ne saura qui offre à qui »** : confirmé par Julien le 19 novembre 2026 (lot 40 : aucun outil ne renvoie de résultat, pas même le sien).
+3. **Le branchement à un assistant (MCP)** est conçu dans le lot 40 (19 novembre 2026).
 4. **« Pour organiser un tirage, tu demandes la création de ton groupe »** : la phrase de la maquette date d'avant deux décisions du 19 novembre 2026. L'application est gratuite, et la page le dit ; si le lot 34 est fait, il n'y a plus de demande à faire.
 5. **Les deux maquettes** (téléphone, écran large) ont une hauteur estimée, pas mesurée : elles peuvent laisser un vide en bas ou couper la fin. Les captures y sont des maquettes réduites, donc avec des prénoms de maquette.
 6. **Le bloc « Et aussi » suppose les lots 29 à 31 faits** (résumé du matin, code, application installée).
@@ -1436,7 +1623,8 @@ Au passage : un test du compte lisait un toast par un texte que le toast porte d
 Écrit le 19 novembre 2026. Points à relire :
 
 1. **Le principe est acquis, pas les chiffres** : lever les limites, une soixantaine d'euros par an, gratuit pour tous.
-2. **Trois groupes par compte par défaut** : un chiffre posé seul.
+2. **Trois groupes par compte et trente participants par édition, par défaut** : deux chiffres proposés, à confirmer par Julien (il hésite entre 2 et 3 groupes ; il trouve 100 participants énorme). Des défauts assez larges pour que les demandes restent rares : chaque demande est du travail pour lui, en décembre surtout.
+5. **Le plafond de participants est porté par le groupe**, pas par le compte (proposition) : c'est un groupe qui grandit, et la demande le nomme. Les groupes d'avant le lot gardent 100, pour ne casser aucune édition en cours.
 3. **Les plafonds** (emails par groupe et par jour, participants par groupe, dépense par mois) : à chiffrer ensemble.
 4. **Les prix sont en dollars** et ont été relevés le 19 novembre 2026, en partie sur des comparatifs : à revérifier sur les sites de Cloudflare et de Resend avant de s'abonner.
 
@@ -1454,6 +1642,28 @@ Au passage : un test du compte lisait un toast par un texte que le toast porte d
 8. **La revue des maquettes a porté sur les champs de saisie et les emails** (63 écrans avec un champ, 9 emails), par un script. Les écrans qui affichent des données sans en saisir n'ont pas été relus un par un.
 9. **Les mentions légales** demandent de dire qui édite le site. Ce qu'un particulier doit y écrire, et ce qu'il peut taire, est à faire préciser par la relecture : rien n'est écrit dans la maquette.
 10. **« Aucun email » et le refus par le lien** sont deux choses voisines (lot 35) : le premier règle les emails automatiques de mon compte, le second interdit tout email vers mon adresse. À relire quand les deux existent.
+
+### Lots 38 A, 38 B et 39 — durcir, modérer
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **La liste n'est pas un audit** : elle demande d'abord de vérifier chaque point dans le code.
+2. **La limite de dépense arrête l'application** quand elle est atteinte : choix proposé (une panne plutôt qu'une facture). À quel montant ? Proposition : 5 $ par mois au-dessus de l'abonnement.
+3. **Les chiffres des plafonds** (liens de connexion par heure, objets par liste) sont à poser en codant, larges.
+5. **Les maquettes du lot 39 sont des propositions** dessinées le 19 novembre 2026 ; les textes des règles d'usage et de la décision motivée sont à relire par Julien, puis par un juriste. L'adresse `contact@under-the-tree.party` y est un exemple : elle reste à créer (lot 36). Le lien « Signaler » en bas des pages par lien n'est pas dessiné sur ces pages elles-mêmes.
+6. **Le statut de l'application au regard du règlement européen sur les services numériques** (hébergeur, ou plateforme) et ce qu'un particulier doit écrire dans ses mentions légales alors que le site est aussi sa vitrine et reçoit des dons : à faire trancher par la relecture.
+7. **Suspendre un compte** : ses groupes et ses listes restent lisibles par les autres (proposition), lui ne peut plus rien écrire ni envoyer.
+4. **Un contrôle « je ne suis pas un robot »** (Turnstile de Cloudflare) sur la demande de lien de connexion n'est pas retenu d'emblée : il ajoute un script tiers et une étape. À ressortir si la limitation de débit ne suffit pas.
+
+### Lot 40 — brancher un assistant
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Aucun résultat, pas même le mien** : décidé par Julien. Un assistant ne peut donc pas répondre à « à qui j'offre ? ».
+2. **La liste des outils** est une proposition. Créer une édition ou un groupe n'y est pas : à ajouter si l'usage le demande.
+3. **Les listes où je figure sans les tenir** ne sont pas lisibles par mon assistant (proposition) : seulement celles que je tiens.
+4. **Annuler ce qu'un assistant a écrit** : la maquette le promet « depuis la liste » ; le plus simple est de marquer ses écritures et de s'appuyer sur l'annulation existante. À confirmer en codant.
+5. **« Mon assistant »** est un nom neutre dans les maquettes : aucune marque d'assistant n'y figure, ni sur la page de présentation.
 
 ### Lot 37 — le tableau de bord
 
@@ -1517,7 +1727,7 @@ Répondu le 19 novembre 2026 : l'application s'ouvre à tous (lot 34, avec les g
 Reste ouvert :
 
 1. Quel service de dons ?
-2. Combien de groupes par compte sans demande, et quels plafonds d'emails (lot 34) ?
+2. Confirmer 3 groupes par compte et 30 participants par édition sans demande (lot 34), et chiffrer les plafonds d'emails.
 
 ### 7.6 Avec 100 € par an, dès maintenant (proposition du 19 novembre 2026)
 
@@ -1533,3 +1743,60 @@ Julien peut mettre environ 100 € par an. Ce budget suffit pour lever les deux 
 - **L'autre voie pour les emails** : Amazon SES, autour de 0,10 $ les 1 000 sans abonnement, mais un compte de plus à ouvrir et à faire valider.
 - **Ce qui reste incertain** : l'envoi d'emails de Cloudflare est en bêta, son prix peut changer, son quota de départ par jour n'est pas publié, et sa réputation d'expéditeur est jeune. D'où Resend en secours.
 - **Lever la limite de groupes n'est pas une question d'argent** : c'est un réglage de l'application (le quota par compte, 0 aujourd'hui). Mais ouvrir à tous un service qui écrit à des adresses saisies à la main expose aux abus : les garde-fous du lot 34 vont avec.
+
+## 8. Ce qui peut coûter cher, et ce qui peut casser
+
+Écrit le 19 novembre 2026, à la demande de Julien, qui veut creuser les risques avant d'ouvrir l'application à tous. Ce qui se code est dans le lot 38. **Ce n'est pas un audit** : la liste vient du README (8.6), de `nuxt.config.ts`, de `wrangler.toml` et de la liste des routes. Les prix et les fonctions de Cloudflare ont été relevés ce jour-là : à revérifier.
+
+### 8.1 Les coûts : d'où peut venir une facture
+
+Aujourd'hui, tout est sur des offres gratuites, qui s'arrêtent au lieu de facturer : aucun risque. Le risque commence le jour de Workers Paid (lot 34).
+
+| Risque | Comment ça arrive | Parade |
+|---|---|---|
+| Des requêtes en masse | Un robot, ou quelqu'un qui en veut à l'application, frappe des pages dynamiques | La limite de dépense de Cloudflare sur Workers ; la limitation de débit ; les fichiers statiques ne passent pas par le Worker |
+| Des emails en masse | La demande de lien de connexion écrit à n'importe quelle adresse, sans compte | Plafonds par adresse, par IP et par jour ; interrupteur d'urgence ; crédit par édition (lot 34) |
+| Des écritures en base en boucle | Un bogue dans une tâche planifiée, ou une route publique qui écrit sans limite | Tâches bornées et rejouables ; un plafond par objet ; alerte de budget |
+| Des connexions en direct qui restent ouvertes (lot 26) | Un onglet oublié, un robot | Mise en sommeil des connexions, nombre maximal par liste, fermeture après inactivité |
+| Le journal et la base qui gonflent | Chaque action écrit une ligne ; une liste ouverte à tous peut être remplie | Plafonds ; purge (lot 36) |
+
+- **Une vraie limite de dépense existe chez Cloudflare** pour Workers et pour les objets durables : au seuil, les requêtes sont refusées jusqu'au cycle suivant, et les visiteurs voient une erreur. C'est le bon choix ici : mieux vaut une application arrêtée quelques jours qu'une facture. Elle ne couvre pas encore tous les produits (la base D1 n'était pas citée le 19 novembre 2026) : d'où l'alerte de budget sur tout le compte, et les plafonds dans l'application.
+- **Resend gratuit ne peut pas facturer** : il refuse au-delà de son quota. Le garder en secours ne crée pas de risque.
+- **Les emails de Cloudflare se paient au volume** : c'est le plafond de dépense du lot 34, dans l'application, qui protège.
+- **La règle générale** : tout compteur qu'un inconnu peut faire monter doit avoir un plafond, et tout plafond doit se voir sur le tableau de bord.
+
+### 8.2 Les failles : par ordre de vraisemblance
+
+1. **La prise d'un compte de Julien** (Cloudflare, GitHub, Resend, sa boîte email). Elle donne tout : la base, la clé, le domaine, l'accès de dernier recours. Double authentification partout.
+2. **L'abus des emails** : faire écrire l'application à des inconnus (harcèlement, hameçonnage avec un mot de l'organisateur, réputation du domaine ruinée). Lots 35 et 38.
+3. **Lire ou modifier ce qui est à un autre** (un compte qui devine l'identifiant d'une liste, d'un membre de la famille). Les tirages sont testés ; les listes, plus récentes, pas encore de la même façon.
+4. **L'injection de script (XSS)**. Vue échappe tout texte affiché et aucun `v-html` n'existe : le risque est faible aujourd'hui. Restent les adresses des liens (limitées à `http` et `https`), les emails en HTML (échappés), et l'absence de politique de contenu stricte, qui serait le filet si une faute passait un jour.
+5. **La fuite d'un lien** : un lien de liste ou de participant vaut un mot de passe. Il part dans l'en-tête `Referer` si la page ne l'interdit pas (fait pour `/p`, pas pour `/l`), dans les journaux de Cloudflare (accepté), dans une capture d'écran. D'où « Changer de lien ».
+6. **Une dépendance compromise** : le paquet d'un tiers qui lit les secrets au moment de construire. Verrou, audit, peu de dépendances (neuf aujourd'hui).
+7. **La falsification de requête (CSRF)** : limitée par `SameSite=Lax` et des corps en JSON ; la vérification de `Origin` ferme la porte.
+8. **La perte plutôt que le vol** : la clé des résultats perdue, la base effacée par erreur. Sauvegarde et procédure.
+
+### 8.3 Ce qui est déjà bien
+
+Requêtes paramétrées, entrées validées par Zod, résultats chiffrés, aucune attribution dans les réponses d'administration (testé), limitation des tentatives de connexion par adresse IP réelle, en-têtes contre l'affichage dans un cadre, secrets hors du dépôt, sessions révocables, liens d'idée limités à `http` et `https`.
+
+### 8.4 Ce que ce plan ne couvre pas
+
+Une attaque ciblée par quelqu'un de compétent, et un vrai test d'intrusion. Pour une application gratuite de cette taille, le lot 38 met le niveau au-dessus de l'ordinaire ; il ne remplace pas une revue par un tiers si l'application grandit.
+
+### 8.5 Ce qu'il faut pour publier, côté droit
+
+Écrit le 19 novembre 2026. **Ce n'est pas un avis juridique** : une liste de ce qu'un juriste devra confirmer, avec le lot qui s'en occupe.
+
+| Sujet | Ce qu'il faut | Où |
+|---|---|---|
+| Mentions légales | Qui édite, comment le joindre, qui héberge (Cloudflare). Un particulier non professionnel peut ne publier que les coordonnées de son hébergeur ; à vérifier ici, le site étant aussi une vitrine et recevant des dons | Lot 36 |
+| Données personnelles (RGPD) | La page « Tes données, en clair », les droits (accès, export, suppression), les durées, le registre, la marche à suivre en cas de fuite, les sous-traitants (Cloudflare, Resend) et les transferts hors d'Europe | Lot 36 |
+| Contenu hébergé (règlement européen sur les services numériques) | Un moyen simple de signaler un contenu illicite, un accusé de réception, une décision motivée envoyée à celui dont le contenu est retiré, un point de contact, des règles d'usage qui disent comment on modère | Lot 39 |
+| Règles d'usage | Ce qui est permis, ce qui ne l'est pas, ce qui arrive en cas d'abus, l'absence de garantie | Lot 39 |
+| Emails | Ne pas écrire à qui a refusé ; dire qui a donné l'adresse ; un lien de refus dans chaque email | Lot 35 |
+| Cookies | Un seul cookie, de session, nécessaire au service ; aucun traceur : pas de bandeau à afficher, mais le dire | Lot 36 |
+| Enfants | Des prénoms et des âges d'enfants sont saisis par leurs parents ; l'âge pour créer un compte seul | Lots 36 et 39 |
+| Dons | Ce qu'un particulier doit déclarer | Lot 33, avec un comptable |
+
+Les obligations les plus lourdes du règlement sur les services numériques (rapports, traitement interne des réclamations) visent les plateformes et épargnent les très petites structures ; le signalement et la décision motivée, eux, valent pour tout hébergeur.

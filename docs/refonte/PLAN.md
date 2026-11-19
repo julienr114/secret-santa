@@ -1769,7 +1769,8 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 5. **Un cadeau à plusieurs** : une ligne par personne, « Mamie, le 12 novembre » et « Retirer » ; ma propre coche n'y est pas (elle garde « Changer »). Le bandeau reste déplié après un « Retirer », pour enchaîner. Si celui qui avait proposé le cadeau est retiré, le suivant le mène, et « au complet » est perdu, comme quand il part de lui-même.
 6. **Les deux niveaux décochent** (« Gère la liste » et « Aide à écrire »), comme prévu au lot 25 bis. La personne reliée et le visiteur, non.
 8. **La case déplie aussi le bandeau** (retour de Julien, 19 novembre 2026 : « je ne peux pas le décocher ») : toucher la case d'une idée cochée par quelqu'un d'autre fait comme toucher son prénom. Elle ne décoche pas d'elle-même.
-9. **Un cadeau hors liste** (« Hors liste : … ») ne se retire toujours que par celui qui l'a dit : la correction ne parle que des idées cochées. **Question** : ceux qui tiennent la liste doivent-ils pouvoir le retirer aussi ?
+9. **Un cadeau hors liste ne se décoche pas par ceux qui tiennent la liste** (tranché par Julien le 19 novembre 2026) : seul celui qui l'a ajouté le retire. Le toucher déplie une notice qui le dit : « Ce cadeau n'est pas une idée de ta liste : Tonton l'a ajouté de son côté, et lui seul peut le retirer. » (« quelqu'un » pour un anonyme).
+10. **La barre sombre « … · Annuler »** des maquettes (`ListeDecocheFait`, `ListePersonneRetiree`, `ProcheSupprime`, `ListePartageArrete`) remplace le message blanc à bouton rouge, pour tous les « Annuler » des listes (retour de Julien : « tu n'as pas fait le même que les maquettes »). Le point 3 ci-dessus ne vaut donc plus.
 7. **La nouveauté pour celui qu'on décoche** attend le lot 28. Aujourd'hui il le voit seulement en rouvrant la liste.
 
 ### Lot 27 ter — pistes et liste

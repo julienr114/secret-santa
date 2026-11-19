@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Système de design — les messages après une action</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#c93425}a:hover{color:#c93425}
+</style>
+</helmet>
+<div style="width: 390px; height: 1330px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div><button hidden aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Under the Tree</div>
+    <button aria-label="Langue : français" style="justify-self: end; height: 44px; min-width: 44px; border: 0; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 14px; font-weight: 600">FR</button>
+  </header>
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 16px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Système de design</p><h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Les messages après une action</h1><p style="margin: 0; font-size: 16px; line-height: 1.5">Un bandeau prune foncé, en bas de l’écran, qui dit ce qui vient de se passer et s’en va tout seul.</p></div>
+    <section style="display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">C’est fait, et ça se rattrape</h2><div role="status" style="min-height: 52px; padding: 8px 8px 8px 16px; border-radius: 18px; background: #2b1b3d; color: #ffffff; box-shadow: 0 10px 28px rgba(41, 37, 36, 0.3); display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600"><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span>Coche de Mamie retirée</span></span><button style="min-height: 44px; padding: 0 10px; border: 0; background: transparent; color: #f6c9c0; font-family: inherit; font-size: 15px; font-weight: 700; flex-shrink: 0">Annuler</button></div><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Le cas le plus courant. « Annuler » remet tout comme avant. Reste 6 secondes.</p></section>
+    <section style="display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">C’est fait</h2><div role="status" style="min-height: 52px; padding: 8px 8px 8px 16px; border-radius: 18px; background: #2b1b3d; color: #ffffff; box-shadow: 0 10px 28px rgba(41, 37, 36, 0.3); display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="width: 26px; height: 26px; border-radius: 50%; background: #dcf7ee; color: #0b7a5b; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span>3 emails envoyés</span><span style="font-size: 13px; font-weight: 400; color: #d6cfe0">Inès, Louis et Mamie</span></span></div><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Une pastille verte, un titre, une ligne de détail au plus. Reste 4 secondes.</p></section>
+    <section style="display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Ça n’a pas marché</h2><div role="status" style="min-height: 52px; padding: 8px 8px 8px 16px; border-radius: 18px; background: #2b1b3d; color: #ffffff; box-shadow: 0 10px 28px rgba(41, 37, 36, 0.3); display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="width: 26px; height: 26px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v6M12 17h.01"/></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span>L’envoi n’est pas parti</span><span style="font-size: 13px; font-weight: 400; color: #d6cfe0">Vérifie ta connexion, puis réessaie.</span></span><button aria-label="Fermer" style="width: 44px; height: 44px; border: 0; background: transparent; color: #d6cfe0; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Une pastille corail. Reste jusqu’à ce qu’on le ferme, et dit quoi faire.</p></section>
+    <section style="display: flex; flex-direction: column; gap: 10px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Les règles</h2><ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Pour quoi</strong> : la suite immédiate d’un geste. Jamais pour une information qui doit rester : c’est le rôle des encadrés dans la page.</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Où</strong> : en bas, au-dessus de la barre d’onglets et du bord du téléphone. Jamais par-dessus le clavier ni la ligne qu’on écrit.</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Un seul à la fois</strong> : un nouveau remplace l’ancien.</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Le texte</strong> : ce qui est fait, au passé, sans point. Une ligne ; une seconde, plus claire, si elle aide.</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Une action au plus</strong>, à droite, en rose clair. Pas de bouton « OK ».</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Si ça se rattrape, on ne demande pas « tu es sûr ? »</strong> : on fait, et on propose « Annuler ».</span></li>
+      <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #2b1b3d; margin-top: 8px; flex-shrink: 0"></span><span><strong>Lu à voix haute</strong> par les lecteurs d’écran ; le temps s’arrête tant qu’on le touche.</span></li></ul></section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1330}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

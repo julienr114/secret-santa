@@ -2114,6 +2114,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiChoiceList` | Une valeur parmi quelques-unes, une ligne par choix avec son bouton radio et son aide ; la ligne choisie est teintée. `UiChoiceSheet` s'en sert, un panneau peut l'ajouter sous un champ |
 | `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
 | `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `caution` (bandeau lilas encadré, à savoir), `warning` (encadré avec titre), `danger` (encadré rouge épais, titre avec icône, pour ce qui ne se rattrape pas), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
+| Le message après une action (**décidé le 19 novembre 2026 ; la barre « Annuler » des listes est faite, le reste est la Correction 26**) | Un bandeau prune foncé (`plum-900`), texte blanc, en bas de l'écran. Trois sortes : fait et rattrapable (« … · Annuler », 6 s), fait (pastille verte, 4 s), raté (pastille corail, reste jusqu'à fermeture). Maquette `StyleMessages`. Il remplace le message blanc partout. |
 | `UiEnvelope` | L'enveloppe d'un tirage, selon `envelopeState` : `UiEnvelopePending` (pointillés, horloge), `UiEnvelopeSealed` (papier pêche, cachet de cire corail à l'étoile, brin de sapin et baies lilas), `UiEnvelopeOpened` (ouverte, la carte à l'étoile), `UiEnvelopeLocked` (cadenas). Redessinées au lot 18 d'après les maquettes, une illustration par composant, les couleurs du design system par leurs jetons. Décoratives |
 | `UiEnvelopeSent` | L'enveloppe d'un lien de connexion envoyé, avec sa coche verte (« Regarde ta boîte mail ») |
 | `UiPodium` | Le podium du palmarès de « Devine qui » (lot 19), prêt mais pas encore affiché |
@@ -2163,6 +2164,16 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - **Le contexte d'un écran** (décidé par Julien le 16 novembre 2026) : un écran rattaché à un groupe ou à une édition porte au-dessus de son titre la ligne « {Groupe} · {Édition} » (`UiPageContext`), et son onglet « {Écran} — {Groupe} · {Édition} ». Exceptions : l'écran de l'édition et l'accueil du groupe (leur titre les nomme), les panneaux, le compte et l'administration, le lien invalide. L'envoi par email à plusieurs, à barre de titre, la porte sous son titre, sans lien.
 - **Ce qui n'est qu'au super-admin** sur un écran que tout le monde voit est dans `UiRestricted`, et nulle part ailleurs.
 - Aucun texte en dur dans un écran du produit : tout passe par les dictionnaires (section 21). Seule exception, la page Guide de style, outil du développeur.
+
+#### Les messages après une action (décidé par Julien le 19 novembre 2026, Correction 26)
+
+- **Pour quoi** : la suite immédiate d'un geste. Jamais pour une information qui doit rester : c'est le rôle de `UiNotice`, dans la page.
+- **Où** : en bas, au-dessus de la barre d'onglets et du bord du téléphone. Jamais par-dessus le clavier ni la ligne qu'on écrit.
+- **Un seul à la fois** : un nouveau remplace l'ancien.
+- **Le texte** : ce qui est fait, au passé, sans point. Une ligne ; une seconde, plus claire, si elle aide.
+- **Une action au plus**, à droite. Pas de bouton « OK ».
+- **Si ça se rattrape, on ne demande pas « tu es sûr ? »** : on fait, et on propose « Annuler ». La confirmation est réservée à ce qui ne se rattrape pas.
+- **Lu à voix haute** par les lecteurs d'écran ; le temps s'arrête tant qu'on le touche.
 
 ### 23.4 Reste à faire
 

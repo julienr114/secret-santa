@@ -167,7 +167,7 @@ const onRemove = () =>
           :footer="`${
             member.email
               ? t('lists.person.account.can', { name: member.firstName })
-              : t('lists.person.account.child')
+              : t('lists.person.account.optional', { name: member.firstName })
           } ${t('lists.person.account.whoSees')}`"
           data-testid="member-account"
         >

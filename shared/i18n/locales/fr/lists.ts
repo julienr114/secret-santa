@@ -159,6 +159,7 @@ export default {
     },
   },
   share: {
+    managersOnly: 'Ceux qui gèrent la liste décident du partage.',
     title: 'Partage par lien',
     message:
       '🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n’ait la même idée :',
@@ -186,33 +187,96 @@ export default {
   },
   holders: {
     title: 'Ceux qui tiennent la liste',
-    intro:
-      'Vous êtes à égalité : chacun écrit les idées, partage le lien et voit qui offre quoi.',
     you: 'C’est toi',
-    remove: 'Retirer',
+    remove: 'Retirer {name}',
     leave: 'Ne plus tenir cette liste',
-    invited: 'Invitation du {date} · pas encore venu',
-    inviteLabel: 'Inviter quelqu’un à tenir la liste',
-    emailPlaceholder: 'son@adresse.fr',
-    invite: 'Inviter',
+    level: { manage: 'Gère la liste', write: 'Aide à écrire' },
+    levelHelp: {
+      write: 'Écrit les idées et voit qui offre quoi.',
+      manage: 'En plus : partager, inviter, supprimer la liste.',
+    },
+    levelOf: 'Le niveau de {name}',
+    invited: 'Invitée le {date} · valable jusqu’au {until}',
+    expired: 'Invitation expirée · le {date}',
+    declined: 'A refusé · le {date}',
+    resend: 'Renvoyer',
+    erase: 'Effacer',
+    cancelInvite: 'Annuler l’invitation',
+    inviteTitle: 'Inviter quelqu’un',
+    someoneElse: 'Quelqu’un d’autre',
+    emailLabel: 'Son adresse email',
+    emailHelp:
+      'Elle sert à lui envoyer l’invitation. Il verra que c’est toi qui l’invites.',
+    can: 'Ce qu’il pourra faire',
+    choice: {
+      write: {
+        title: 'Aider à écrire',
+        text: 'Ajoute et corrige les idées de tout le monde, et voit qui offre quoi. Ne peut ni partager la liste, ni inviter, ni la supprimer.',
+      },
+      manage: {
+        title: 'Gérer la liste',
+        text: 'Tout, comme toi : en plus, partager le lien, inviter ou retirer quelqu’un, supprimer la liste.',
+      },
+    },
+    inviteName: 'Inviter {name}',
+    send: 'Envoyer l’invitation',
     inviteHelp:
-      'Il reçoit un email qui dit que c’est toi qui l’invites, et peut refuser. La liste apparaît dans ses listes dès qu’il se connecte.',
+      'Il reçoit un email, et peut refuser. L’invitation vaut 7 jours.',
     seesAll:
       'Ceux qui tiennent la liste voient tout, y compris ce qu’on leur offre s’ils y figurent.',
     alreadyHolder: 'Cette personne tient déjà la liste.',
     alreadyInvited: 'Cette adresse est déjà invitée.',
     invitedDone: 'Invitation envoyée',
+    resent: 'Invitation renvoyée',
     removed: '{name} ne tient plus la liste',
     left: 'Tu ne tiens plus cette liste',
+    lastManager: 'Il faut que quelqu’un gère la liste.',
+    notManager: 'Seuls ceux qui gèrent la liste peuvent faire ça.',
   },
   inviteEmail: {
     subject: '{by} t’invite à tenir la liste « {title} »',
-    intro:
-      '{by} t’invite à tenir avec lui la liste de cadeaux « {title} » sur Under the Tree : écrire les idées, partager le lien, voir qui offre quoi.',
-    action:
-      'Connecte-toi avec cette adresse email, la liste sera dans tes listes :',
-    ignore:
-      'Si tu ne veux pas, ignore cet email : tu pourras aussi quitter la liste une fois connecté.',
+    hello: 'Bonjour,',
+    intro: {
+      write:
+        '{by} t’invite à tenir à ses côtés la liste de cadeaux « {title} » : écrire les idées de tout le monde, et voir qui offre quoi.',
+      manage:
+        '{by} t’invite à tenir à ses côtés la liste de cadeaux « {title} » : écrire les idées de tout le monde, voir qui offre quoi, et la gérer (partager le lien, inviter quelqu’un, la supprimer).',
+    },
+    action: 'Voir l’invitation :',
+    until: 'Elle vaut 7 jours, jusqu’au {date}. Tu peux aussi la refuser.',
+  },
+  invitation: {
+    pageTitle: 'Invitation',
+    title: '{by} t’invite',
+    titleNamed: '{name}, {by} t’invite',
+    list: 'Tenir la liste « {title} » avec {by}',
+    writes: 'Tu ajoutes et corriges les idées de cadeaux de tout le monde.',
+    sees: 'Tu vois qui offre quoi.',
+    notManaging:
+      'Partager la liste, inviter quelqu’un, la supprimer : ça reste à {by}.',
+    managing:
+      'Tu peux partager la liste, inviter quelqu’un et la supprimer, comme {by}.',
+    firstName: 'Ton prénom',
+    firstNameHelp: 'Vu par ceux avec qui tu tiens une liste ou fais un tirage.',
+    address:
+      'Ton compte sera créé à l’adresse {email}, celle où tu as reçu l’invitation. Rien d’autre à remplir.',
+    acceptCreate: 'Accepter, et créer mon compte',
+    accept: 'Accepter l’invitation',
+    decline: 'Non merci',
+    notYou:
+      'Tu n’es pas {name} ? Ce lien est le sien : ne l’ouvre pas à sa place.',
+    about:
+      'Under the Tree est une application gratuite et sans publicité, pour tenir des listes de cadeaux et faire des tirages au sort entre proches.',
+    expired:
+      'Cette invitation n’est plus valable. Demande à {by} de te la renvoyer.',
+    declined: 'Tu as refusé cette invitation.',
+    declinedHelp:
+      '{by} le verra, sans savoir pourquoi. Si tu changes d’avis, demande-lui de t’inviter de nouveau.',
+    accepted: 'Tu as déjà accepté cette invitation.',
+    acceptedHelp: 'Connecte-toi pour ouvrir la liste « {title} ».',
+    login: 'Se connecter',
+    unknown: 'Ce lien d’invitation ne marche plus.',
+    unknownHelp: 'L’invitation a pu être annulée, ou remplacée par une autre.',
   },
   family: {
     title: 'Mes proches',
@@ -254,7 +318,8 @@ export default {
       unlink: 'Ne plus relier',
       label: 'Adresse email de {name}',
       can: 'Sur tes listes, {name} peut écrire ses propres idées. Pour le reste, {name} voit la liste comme tout le monde, sans voir qui offre quoi.',
-      child: 'Pour un enfant, pas besoin de compte : laisse ce champ vide.',
+      optional:
+        'Facultatif. Si {name} a un compte à cette adresse, il pourra écrire ses propres idées sur tes listes.',
       whoSees: 'Seuls ceux qui tiennent tes listes voient cette adresse.',
     },
     context: 'Mes proches',

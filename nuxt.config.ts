@@ -110,6 +110,10 @@ export default defineNuxtConfig({
     // An invitation link is shared, but still no business of search engines.
     '/rejoindre/**': { headers: personalHeaders },
     '/api/invite/**': { headers: personalHeaders },
+    // The link of an invitation to hold a list is worth a login for the
+    // address invited (lot 25 bis).
+    '/invitation/**': { headers: personalHeaders },
+    '/api/invitations/**': { headers: personalHeaders },
     '/api/auth/**': { headers: personalHeaders },
   },
   app: {

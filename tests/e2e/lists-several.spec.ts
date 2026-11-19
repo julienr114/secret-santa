@@ -2,8 +2,8 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { apiLogin, heading, hydrated } from './helpers';
 
 // Gift lists held by several, and a person linked to their own account
-// (README 22.20, lot 25): invited by address, equal to the one who
-// invited; linked, someone writes their own ideas by the link, and
+// (README 22.20, lot 25): invited by address, an invitation still
+// waiting is accepted by coming (its page is in lists-invite.spec); linked, someone writes their own ideas by the link, and
 // nothing else.
 test.describe.configure({ mode: 'serial' });
 
@@ -71,7 +71,7 @@ test.afterAll(async () => {
   await state.hugo?.close();
 });
 
-test('invited by address, Hugo holds the list as an equal', async () => {
+test('invited by address, Hugo holds the list by coming, and manages it', async () => {
   const camille = await as('camille');
   await camille.goto(`/listes/${state.listId}`);
   await hydrated(camille);
@@ -80,9 +80,16 @@ test('invited by address, Hugo holds the list as an equal', async () => {
   await expect(heading(camille)).toHaveText('Ceux qui tiennent la liste');
   await expect(camille.getByTestId('holder')).toHaveCount(1);
   await expect(camille.getByTestId('holder')).toContainText('C’est toi');
-  await camille.getByLabel('Inviter quelqu’un à tenir la liste').fill(HUGO);
-  await camille.getByRole('button', { name: 'Inviter', exact: true }).click();
+  // No address field before « Quelqu'un d'autre » is touched.
+  await expect(camille.getByLabel('Son adresse email')).toHaveCount(0);
+  await camille.getByTestId('invite-other').click();
+  await camille.getByLabel('Son adresse email').fill(HUGO);
+  await camille.getByText('Gérer la liste', { exact: true }).click();
+  await camille.getByRole('button', { name: 'Envoyer l’invitation' }).click();
   await expect(camille.getByTestId('holder-invite')).toContainText(HUGO);
+  await expect(camille.getByTestId('holder-invite')).toContainText(
+    'valable jusqu’au',
+  );
   // The same address is not invited twice.
   const again = await camille.request.post(
     `/api/lists/${state.listId}/holders`,
@@ -116,12 +123,13 @@ test('invited by address, Hugo holds the list as an equal', async () => {
   await expect(camille.getByTestId('holder')).toHaveCount(2);
   await expect(camille.getByTestId('holder-invite')).toHaveCount(0);
 
-  // Anyone takes another off; the last one cannot leave.
+  // Those who manage take another off; the last one cannot leave.
   await camille
     .getByTestId('holder')
     .filter({ hasText: 'Hugo' })
-    .getByRole('button', { name: 'Retirer' })
+    .getByTestId('holder-level')
     .click();
+  await camille.getByRole('menuitem', { name: 'Retirer Hugo' }).click();
   await expect(camille.getByTestId('holder')).toHaveCount(1);
   expect((await hugo.request.get(`/api/lists/${state.listId}`)).status()).toBe(
     404,

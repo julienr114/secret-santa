@@ -154,6 +154,7 @@ export default {
     },
   },
   share: {
+    managersOnly: 'Those who manage the list decide on sharing.',
     title: 'Sharing by link',
     message:
       '🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea:',
@@ -181,32 +182,96 @@ export default {
   },
   holders: {
     title: 'Those who hold the list',
-    intro:
-      'You are equals: each of you writes the ideas, shares the link and sees who gives what.',
     you: 'That’s you',
-    remove: 'Remove',
+    remove: 'Remove {name}',
     leave: 'Stop holding this list',
-    invited: 'Invited on {date} · not come yet',
-    inviteLabel: 'Invite someone to hold the list',
-    emailPlaceholder: 'their@address.com',
-    invite: 'Invite',
+    level: { manage: 'Manages the list', write: 'Helps write' },
+    levelHelp: {
+      write: 'Writes the ideas and sees who gives what.',
+      manage: 'Also: share, invite, delete the list.',
+    },
+    levelOf: '{name}’s level',
+    invited: 'Invited on {date} · good until {until}',
+    expired: 'Invitation expired · on {date}',
+    declined: 'Declined · on {date}',
+    resend: 'Send again',
+    erase: 'Clear',
+    cancelInvite: 'Cancel the invitation',
+    inviteTitle: 'Invite someone',
+    someoneElse: 'Someone else',
+    emailLabel: 'Their email address',
+    emailHelp:
+      'It is used to send them the invitation. They will see that you invite them.',
+    can: 'What they will be able to do',
+    choice: {
+      write: {
+        title: 'Help write',
+        text: 'Adds and corrects everyone’s ideas, and sees who gives what. Cannot share the list, invite, or delete it.',
+      },
+      manage: {
+        title: 'Manage the list',
+        text: 'Everything, like you: also share the link, invite or remove someone, delete the list.',
+      },
+    },
+    inviteName: 'Invite {name}',
+    send: 'Send the invitation',
     inviteHelp:
-      'They get an email saying you invite them, and may decline. The list is among theirs as soon as they log in.',
+      'They get an email, and may decline. The invitation is good for 7 days.',
     seesAll:
       'Those who hold the list see everything, including what they are given if they are on it.',
     alreadyHolder: 'This person already holds the list.',
     alreadyInvited: 'This address is already invited.',
     invitedDone: 'Invitation sent',
+    resent: 'Invitation sent again',
     removed: '{name} no longer holds the list',
     left: 'You no longer hold this list',
+    lastManager: 'Someone has to manage the list.',
+    notManager: 'Only those who manage the list can do that.',
   },
   inviteEmail: {
     subject: '{by} invites you to hold the list “{title}”',
-    intro:
-      '{by} invites you to hold the gift list “{title}” with them on Under the Tree: write the ideas, share the link, see who gives what.',
-    action: 'Log in with this email address, the list will be among yours:',
-    ignore:
-      'If you would rather not, ignore this email: you can also leave the list once logged in.',
+    hello: 'Hello,',
+    intro: {
+      write:
+        '{by} invites you to hold the gift list “{title}” with them: write everyone’s ideas, and see who gives what.',
+      manage:
+        '{by} invites you to hold the gift list “{title}” with them: write everyone’s ideas, see who gives what, and manage it (share the link, invite someone, delete it).',
+    },
+    action: 'See the invitation:',
+    until: 'It is good for 7 days, until {date}. You can also decline it.',
+  },
+  invitation: {
+    pageTitle: 'Invitation',
+    title: '{by} invites you',
+    titleNamed: '{name}, {by} invites you',
+    list: 'Hold the list “{title}” with {by}',
+    writes: 'You add and correct everyone’s gift ideas.',
+    sees: 'You see who gives what.',
+    notManaging:
+      'Sharing the list, inviting someone, deleting it: that stays with {by}.',
+    managing:
+      'You can share the list, invite someone and delete it, like {by}.',
+    firstName: 'Your first name',
+    firstNameHelp: 'Seen by those you hold a list or do a draw with.',
+    address:
+      'Your account will be created at {email}, where you received the invitation. Nothing else to fill in.',
+    acceptCreate: 'Accept, and create my account',
+    accept: 'Accept the invitation',
+    decline: 'No thanks',
+    notYou: 'Not {name}? This link is theirs: do not open it in their place.',
+    about:
+      'Under the Tree is a free app with no ads, for holding gift lists and drawing names among people close to you.',
+    expired:
+      'This invitation is no longer good. Ask {by} to send it to you again.',
+    declined: 'You declined this invitation.',
+    declinedHelp:
+      '{by} will see it, without knowing why. If you change your mind, ask them to invite you again.',
+    accepted: 'You already accepted this invitation.',
+    acceptedHelp: 'Log in to open the list “{title}”.',
+    login: 'Log in',
+    unknown: 'This invitation link no longer works.',
+    unknownHelp:
+      'The invitation may have been cancelled, or replaced by another.',
   },
   family: {
     title: 'My people',
@@ -247,7 +312,8 @@ export default {
       unlink: 'Unlink',
       label: 'Email address of {name}',
       can: 'On your lists, {name} can write their own ideas. For the rest, {name} sees the list like everyone else, without seeing who gives what.',
-      child: 'For a child, no account is needed: leave this field empty.',
+      optional:
+        'Optional. If {name} has an account at this address, they will be able to write their own ideas on your lists.',
       whoSees: 'Only those who hold your lists see this address.',
     },
     context: 'My people',

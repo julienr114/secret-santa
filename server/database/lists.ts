@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull, ne, or } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNull, ne, or } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
@@ -16,6 +16,7 @@ import {
 } from './schema';
 import { newId, nowIso } from '#server/http/context';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
+import type { HolderLevel } from '#server/utils/listAccess';
 import { carriedIdeas } from '#server/utils/lists';
 
 // Gift lists (README 22.19, lot 21). Every query filters on the account
@@ -319,25 +320,31 @@ export const listsHeldBy = async (
       .orderBy(desc(giftLists.createdAt))
   ).map((row) => row.list);
 
+/** A list the account holds, with the level it holds it at, or null. */
+export const findHolding = async (
+  db: Db,
+  accountId: string,
+  id: string,
+): Promise<{ list: GiftListRow; level: HolderLevel } | null> =>
+  (await db
+    .select({ list: giftLists, level: giftListHolders.level })
+    .from(giftListHolders)
+    .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+    .where(
+      and(
+        eq(giftListHolders.listId, id),
+        eq(giftListHolders.accountId, accountId),
+      ),
+    )
+    .get()) ?? null;
+
 /** A list the account holds, or null. */
 export const findHeldList = async (
   db: Db,
   accountId: string,
   id: string,
 ): Promise<GiftListRow | null> =>
-  (
-    await db
-      .select({ list: giftLists })
-      .from(giftListHolders)
-      .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
-      .where(
-        and(
-          eq(giftListHolders.listId, id),
-          eq(giftListHolders.accountId, accountId),
-        ),
-      )
-      .get()
-  )?.list ?? null;
+  (await findHolding(db, accountId, id))?.list ?? null;
 
 /** A shared list, by its link. */
 export const findListByToken = async (
@@ -667,6 +674,7 @@ export type ListHolder = {
   firstName: string | null;
   avatarEmoji: string | null;
   avatarColor: string | null;
+  level: HolderLevel;
   createdAt: string;
 };
 
@@ -695,13 +703,14 @@ export const holdersOfLists = async (
       firstName: account.firstName,
       avatarEmoji: account.avatarEmoji,
       avatarColor: account.avatarColor,
+      level: holder.level,
       createdAt: holder.createdAt,
     });
   }
   return byList;
 };
 
-/** The invitations to hold a list still waiting, oldest first. */
+/** The invitations to hold a list, whatever became of them, oldest first. */
 export const invitesOfList = (db: Db, listId: string) =>
   db
     .select()
@@ -709,20 +718,142 @@ export const invitesOfList = (db: Db, listId: string) =>
     .where(eq(giftListInvites.listId, listId))
     .orderBy(asc(giftListInvites.createdAt));
 
-/** Invites an address to hold a list. */
+/**
+ * Invites an address to hold a list, for 7 days. An older invitation of
+ * the same address, expired, refused or accepted, is replaced.
+ * @param db - The database.
+ * @param invite - The list, the address, who invites, the level given,
+ *   the hash of the token of its link and when it ends.
+ * @returns Once written.
+ */
 export const addInvite = (
   db: Db,
-  invite: { listId: string; email: string; invitedBy: string },
+  invite: {
+    listId: string;
+    email: string;
+    invitedBy: string;
+    level: HolderLevel;
+    tokenHash: string;
+    expiresAt: string;
+  },
+) =>
+  db.batch([
+    db
+      .delete(giftListInvites)
+      .where(
+        and(
+          eq(giftListInvites.listId, invite.listId),
+          eq(giftListInvites.email, invite.email),
+        ),
+      ),
+    db
+      .insert(giftListInvites)
+      .values({ id: newId(), ...invite, createdAt: nowIso() }),
+  ]);
+
+/**
+ * « Renvoyer »: the same invitation, sent again, with a new link and 7
+ * more days.
+ * @param db - The database.
+ * @param id - The invitation.
+ * @param fresh - Who sends it, the hash of the new token, when it ends.
+ * @returns Once written.
+ */
+export const renewInvite = (
+  db: Db,
+  id: string,
+  fresh: { invitedBy: string; tokenHash: string; expiresAt: string },
 ) =>
   db
-    .insert(giftListInvites)
-    .values({ id: newId(), ...invite, createdAt: nowIso() });
+    .update(giftListInvites)
+    .set({ ...fresh, createdAt: nowIso() })
+    .where(eq(giftListInvites.id, id));
 
-/** Cancels an invitation still waiting. */
+/** Cancels or erases an invitation. */
 export const removeInvite = (db: Db, listId: string, id: string) =>
   db
     .delete(giftListInvites)
     .where(and(eq(giftListInvites.id, id), eq(giftListInvites.listId, listId)));
+
+/** Deletes the lines old enough to go by themselves. */
+export const forgetInvites = async (db: Db, ids: readonly string[]) => {
+  if (ids.length === 0) return;
+  await db.delete(giftListInvites).where(inArray(giftListInvites.id, [...ids]));
+};
+
+/** An invitation with its list and who sent it, by the hash of its token. */
+export const findInviteByToken = async (db: Db, tokenHash: string) =>
+  (await db
+    .select({ invite: giftListInvites, list: giftLists, by: accounts })
+    .from(giftListInvites)
+    .innerJoin(giftLists, eq(giftLists.id, giftListInvites.listId))
+    .innerJoin(accounts, eq(accounts.id, giftListInvites.invitedBy))
+    .where(eq(giftListInvites.tokenHash, tokenHash))
+    .get()) ?? null;
+
+/** Still waiting: neither answered nor expired. */
+const stillWaiting = (id: string, now: string) =>
+  and(
+    eq(giftListInvites.id, id),
+    isNull(giftListInvites.acceptedAt),
+    isNull(giftListInvites.declinedAt),
+    gt(giftListInvites.expiresAt, now),
+  );
+
+/**
+ * Accepts an invitation, once: the update only matches an invitation
+ * still waiting, so two answers cannot both win. The account then holds
+ * the list at the level given.
+ * @param db - The database.
+ * @param invite - The invitation.
+ * @param accountId - The account that accepts.
+ * @param now - ISO date.
+ * @returns False when it was answered or expired meanwhile.
+ */
+export const acceptInvite = async (
+  db: Db,
+  invite: { id: string; listId: string; level: HolderLevel },
+  accountId: string,
+  now: string,
+): Promise<boolean> => {
+  const taken = await db
+    .update(giftListInvites)
+    .set({ acceptedAt: now })
+    .where(stillWaiting(invite.id, now))
+    .returning({ id: giftListInvites.id });
+  if (taken.length === 0) return false;
+  await db
+    .insert(giftListHolders)
+    .values({
+      id: newId(),
+      listId: invite.listId,
+      accountId,
+      level: invite.level,
+      createdAt: now,
+    })
+    .onConflictDoNothing();
+  return true;
+};
+
+/**
+ * « Non merci »: the invitation is refused, and its link has acted.
+ * @param db - The database.
+ * @param id - The invitation.
+ * @param now - ISO date.
+ * @returns False when it was answered or expired meanwhile.
+ */
+export const declineInvite = async (
+  db: Db,
+  id: string,
+  now: string,
+): Promise<boolean> =>
+  (
+    await db
+      .update(giftListInvites)
+      .set({ declinedAt: now })
+      .where(stillWaiting(id, now))
+      .returning({ id: giftListInvites.id })
+  ).length > 0;
 
 /** Takes an account off those who hold a list. */
 export const removeHolder = (db: Db, listId: string, accountId: string) =>
@@ -735,36 +866,43 @@ export const removeHolder = (db: Db, listId: string, accountId: string) =>
       ),
     );
 
-/** The invitations waiting for an address. */
+/** Changes the level of one of those who hold a list. */
+export const setHolderLevel = (
+  db: Db,
+  listId: string,
+  accountId: string,
+  level: HolderLevel,
+) =>
+  db
+    .update(giftListHolders)
+    .set({ level })
+    .where(
+      and(
+        eq(giftListHolders.listId, listId),
+        eq(giftListHolders.accountId, accountId),
+      ),
+    );
+
+/** The invitations sent to an address, whatever became of them. */
 export const invitesForEmail = (db: Db, email: string) =>
   db.select().from(giftListInvites).where(eq(giftListInvites.email, email));
 
 /**
- * Turns invitations into lists held: the account holds each list, and
- * the invitations are gone.
+ * Accepts invitations by coming (lot 25): one by one, each only while it
+ * still waits.
  * @param db - The database.
  * @param accountId - The account that accepts by coming.
  * @param invites - The invitations it accepts.
+ * @param now - ISO date.
  * @returns Once done.
  */
 export const acceptInvites = async (
   db: Db,
   accountId: string,
-  invites: readonly { id: string; listId: string }[],
+  invites: readonly { id: string; listId: string; level: HolderLevel }[],
+  now: string,
 ) => {
-  const [first, ...rest] = invites.flatMap((invite) => [
-    db
-      .insert(giftListHolders)
-      .values({
-        id: newId(),
-        listId: invite.listId,
-        accountId,
-        createdAt: nowIso(),
-      })
-      .onConflictDoNothing(),
-    db.delete(giftListInvites).where(eq(giftListInvites.id, invite.id)),
-  ]);
-  if (first) await db.batch([first, ...rest]);
+  for (const invite of invites) await acceptInvite(db, invite, accountId, now);
 };
 
 /**

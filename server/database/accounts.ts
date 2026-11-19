@@ -169,6 +169,22 @@ export const openSession = async (
     .where(and(eq(loginLinks.id, linkId), isNull(loginLinks.usedAt)))
     .returning({ id: loginLinks.id });
   if (consumed.length === 0) return null;
+  return openSessionFor(db, { accountId, userAgent, now });
+};
+
+/**
+ * Opens a session for an account whose address was just proved, by a
+ * login link or by the link of an invitation (lot 25 bis).
+ * @returns The session id.
+ */
+export const openSessionFor = async (
+  db: Db,
+  {
+    accountId,
+    userAgent,
+    now,
+  }: { accountId: string; userAgent: string | null; now: string },
+): Promise<string> => {
   const id = newId();
   await db.batch([
     db.insert(sessions).values({

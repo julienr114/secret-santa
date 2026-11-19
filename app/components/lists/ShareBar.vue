@@ -18,7 +18,10 @@ import { useShareListMutation } from '~/composables/queries/useLists';
 // red. Turned off, sharing stops at once, with « Annuler » in the toast;
 // turned on again, the link is the same. The bar stays stuck under the
 // top bar while the list scrolls.
-const props = defineProps<{ doc: ListDocument }>();
+// Someone who « aide à écrire » (lot 25 bis) reads the bar and touches
+// nothing: the switch says whether the list is shared, greyed, and a line
+// says who decides.
+const props = defineProps<{ doc: ListDocument; readonly?: boolean }>();
 const { t, tk } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
@@ -149,7 +152,7 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
         :class="shared ? 'text-success' : 'text-toned'"
       />
       <button
-        v-if="shared"
+        v-if="shared && !readonly"
         type="button"
         class="flex min-h-11 min-w-0 grow items-center gap-1 text-left text-sm font-bold"
         :aria-expanded="open"
@@ -170,14 +173,21 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
         :model-value="shared"
         color="success"
         size="lg"
-        :disabled="share.isPending.value"
+        :disabled="readonly || share.isPending.value"
         :aria-label="t('lists.share.title')"
         data-testid="share-switch"
         @update:model-value="onSwitch"
       />
     </div>
     <p
-      v-if="blocked && tried"
+      v-if="readonly"
+      class="px-3.5 pb-3 text-[13px] leading-[1.45] text-toned"
+      data-testid="share-readonly"
+    >
+      {{ t('lists.share.managersOnly') }}
+    </p>
+    <p
+      v-else-if="blocked && tried"
       class="px-3.5 pb-3 text-[13px] leading-[1.45] font-medium text-error"
       role="alert"
       data-testid="share-missing"
@@ -185,7 +195,7 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
       {{ missing.map((what) => tk(`lists.share.missing.${what}`)).join(' ') }}
     </p>
     <div
-      v-if="shared && open && url"
+      v-if="shared && open && url && !readonly"
       id="share-panel"
       class="flex flex-col gap-2.5 px-3.5 pb-3.5"
       data-testid="share-panel"

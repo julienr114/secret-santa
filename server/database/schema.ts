@@ -534,6 +534,11 @@ export const giftListHolders = sqliteTable(
     accountId: text('account_id')
       .notNull()
       .references(() => accounts.id),
+    // « Gère la liste » or « Aide à écrire » (lot 25 bis): the two differ
+    // by what they manage, not by what they see.
+    level: text('level', { enum: ['manage', 'write'] })
+      .notNull()
+      .default('manage'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [
@@ -542,8 +547,12 @@ export const giftListHolders = sqliteTable(
   ],
 );
 
-// Invitations to hold a list, waiting, by address (lower case): the list
-// joins those of the invited account the next time it opens its lists.
+// Invitations to hold a list, by address (lower case), one per list and
+// address. Each is good for 7 days, with the link of its email, which
+// acts once (only the hash of its token is kept): accepted, the account
+// holds the list at the level given; refused or expired, the line stays
+// 30 days for those who manage the list. An invitation still waiting is
+// also accepted by coming, logged in with that address (lot 25).
 export const giftListInvites = sqliteTable(
   'gift_list_invites',
   {
@@ -555,11 +564,21 @@ export const giftListInvites = sqliteTable(
     invitedBy: text('invited_by')
       .notNull()
       .references(() => accounts.id),
+    level: text('level', { enum: ['manage', 'write'] })
+      .notNull()
+      .default('write'),
+    // SHA-256 of the token of the link; null for an invitation of before
+    // lot 25 bis, which has no link.
+    tokenHash: text('token_hash'),
+    expiresAt: text('expires_at').notNull().default(''),
+    acceptedAt: text('accepted_at'),
+    declinedAt: text('declined_at'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [
     uniqueIndex('gift_list_invites_list_email_idx').on(t.listId, t.email),
     index('gift_list_invites_email_idx').on(t.email),
+    uniqueIndex('gift_list_invites_token_idx').on(t.tokenHash),
   ],
 );
 

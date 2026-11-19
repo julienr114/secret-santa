@@ -159,6 +159,7 @@ export default {
     },
   },
   share: {
+    managersOnly: 'Über das Teilen entscheiden die, die die Liste verwalten.',
     title: 'Teilen per Link',
     message:
       '🎁 Unsere Geschenkliste für {title} ist fertig: {names}. Hak ab, was du schenkst, damit niemand dieselbe Idee hat:',
@@ -187,33 +188,98 @@ export default {
   },
   holders: {
     title: 'Wer die Liste führt',
-    intro:
-      'Ihr seid gleichberechtigt: Jeder schreibt Ideen auf, teilt den Link und sieht, wer was schenkt.',
     you: 'Das bist du',
-    remove: 'Entfernen',
+    remove: '{name} entfernen',
     leave: 'Diese Liste nicht mehr führen',
-    invited: 'Eingeladen am {date} · noch nicht gekommen',
-    inviteLabel: 'Jemanden einladen, die Liste mitzuführen',
-    emailPlaceholder: 'adresse@beispiel.de',
-    invite: 'Einladen',
+    level: { manage: 'Verwaltet die Liste', write: 'Hilft beim Schreiben' },
+    levelHelp: {
+      write: 'Schreibt die Ideen auf und sieht, wer was schenkt.',
+      manage: 'Dazu: teilen, einladen, die Liste löschen.',
+    },
+    levelOf: 'Die Stufe von {name}',
+    invited: 'Eingeladen am {date} · gültig bis {until}',
+    expired: 'Einladung abgelaufen · am {date}',
+    declined: 'Hat abgelehnt · am {date}',
+    resend: 'Erneut senden',
+    erase: 'Löschen',
+    cancelInvite: 'Einladung zurückziehen',
+    inviteTitle: 'Jemanden einladen',
+    someoneElse: 'Jemand anderes',
+    emailLabel: 'Die E-Mail-Adresse',
+    emailHelp:
+      'An sie geht die Einladung. Die Person sieht, dass du sie einlädst.',
+    can: 'Was die Person tun kann',
+    choice: {
+      write: {
+        title: 'Beim Schreiben helfen',
+        text: 'Schreibt und verbessert die Ideen von allen und sieht, wer was schenkt. Kann die Liste weder teilen noch jemanden einladen noch sie löschen.',
+      },
+      manage: {
+        title: 'Die Liste verwalten',
+        text: 'Alles, wie du: dazu den Link teilen, jemanden einladen oder entfernen, die Liste löschen.',
+      },
+    },
+    inviteName: '{name} einladen',
+    send: 'Einladung senden',
     inviteHelp:
-      'Die Person bekommt eine E-Mail, dass du sie einlädst, und kann ablehnen. Die Liste steht bei ihren Listen, sobald sie sich anmeldet.',
+      'Die Person bekommt eine E-Mail und kann ablehnen. Die Einladung gilt 7 Tage.',
     seesAll:
       'Wer die Liste führt, sieht alles, auch was man ihm schenkt, wenn er darauf steht.',
     alreadyHolder: 'Diese Person führt die Liste schon.',
     alreadyInvited: 'Diese Adresse ist schon eingeladen.',
     invitedDone: 'Einladung gesendet',
+    resent: 'Einladung erneut gesendet',
     removed: '{name} führt die Liste nicht mehr',
     left: 'Du führst diese Liste nicht mehr',
+    lastManager: 'Jemand muss die Liste verwalten.',
+    notManager: 'Das können nur die, die die Liste verwalten.',
   },
   inviteEmail: {
     subject: '{by} lädt dich ein, die Liste „{title}“ mitzuführen',
-    intro:
-      '{by} lädt dich ein, die Geschenkliste „{title}“ auf Under the Tree mitzuführen: Ideen aufschreiben, den Link teilen, sehen, wer was schenkt.',
-    action:
-      'Melde dich mit dieser E-Mail-Adresse an, die Liste steht dann bei deinen Listen:',
-    ignore:
-      'Wenn du nicht möchtest, ignoriere diese E-Mail: Du kannst die Liste auch nach dem Anmelden verlassen.',
+    hello: 'Hallo,',
+    intro: {
+      write:
+        '{by} lädt dich ein, die Geschenkliste „{title}“ mitzuführen: die Ideen von allen aufschreiben und sehen, wer was schenkt.',
+      manage:
+        '{by} lädt dich ein, die Geschenkliste „{title}“ mitzuführen: die Ideen von allen aufschreiben, sehen, wer was schenkt, und sie verwalten (den Link teilen, jemanden einladen, sie löschen).',
+    },
+    action: 'Einladung ansehen:',
+    until: 'Sie gilt 7 Tage, bis zum {date}. Du kannst sie auch ablehnen.',
+  },
+  invitation: {
+    pageTitle: 'Einladung',
+    title: '{by} lädt dich ein',
+    titleNamed: '{name}, {by} lädt dich ein',
+    list: 'Die Liste „{title}“ mit {by} führen',
+    writes: 'Du schreibst und verbesserst die Geschenkideen von allen.',
+    sees: 'Du siehst, wer was schenkt.',
+    notManaging:
+      'Die Liste teilen, jemanden einladen, sie löschen: Das bleibt bei {by}.',
+    managing:
+      'Du kannst die Liste teilen, jemanden einladen und sie löschen, wie {by}.',
+    firstName: 'Dein Vorname',
+    firstNameHelp:
+      'Sehen die, mit denen du eine Liste führst oder eine Auslosung machst.',
+    address:
+      'Dein Konto wird mit der Adresse {email} angelegt, an die die Einladung ging. Sonst ist nichts auszufüllen.',
+    acceptCreate: 'Annehmen und mein Konto anlegen',
+    accept: 'Einladung annehmen',
+    decline: 'Nein danke',
+    notYou:
+      'Du bist nicht {name}? Dieser Link gehört jemand anderem: Öffne ihn nicht an dessen Stelle.',
+    about:
+      'Under the Tree ist eine kostenlose App ohne Werbung, um Geschenklisten zu führen und unter Nahestehenden auszulosen.',
+    expired:
+      'Diese Einladung gilt nicht mehr. Bitte {by}, sie dir erneut zu senden.',
+    declined: 'Du hast diese Einladung abgelehnt.',
+    declinedHelp:
+      '{by} sieht das, ohne den Grund zu erfahren. Wenn du es dir anders überlegst, bitte um eine neue Einladung.',
+    accepted: 'Du hast diese Einladung schon angenommen.',
+    acceptedHelp: 'Melde dich an, um die Liste „{title}“ zu öffnen.',
+    login: 'Anmelden',
+    unknown: 'Dieser Einladungslink funktioniert nicht mehr.',
+    unknownHelp:
+      'Die Einladung wurde vielleicht zurückgezogen oder durch eine andere ersetzt.',
   },
   family: {
     title: 'Meine Leute',
@@ -255,7 +321,8 @@ export default {
       unlink: 'Verknüpfung lösen',
       label: 'E-Mail-Adresse von {name}',
       can: 'Auf deinen Listen kann {name} die eigenen Ideen aufschreiben. Sonst sieht {name} die Liste wie alle anderen, ohne zu sehen, wer was schenkt.',
-      child: 'Für ein Kind braucht es kein Konto: Lass das Feld leer.',
+      optional:
+        'Freiwillig. Wenn {name} ein Konto mit dieser Adresse hat, kann die Person ihre eigenen Ideen auf deinen Listen aufschreiben.',
       whoSees: 'Nur wer deine Listen führt, sieht diese Adresse.',
     },
     context: 'Meine Leute',

@@ -349,6 +349,8 @@ onBeforeRouteLeave((to) => {
     to.path.startsWith('/famille/');
   if (
     current &&
+    // Deleting a list is for those who manage it.
+    current.manages &&
     !within &&
     current.list.status === 'draft' &&
     !isWorthKeeping({
@@ -369,8 +371,12 @@ onBeforeRouteLeave((to) => {
       :skeleton="['card', 'title', 'card']"
     >
       <template v-if="doc && list">
-        <ListsShareBar :doc="doc" />
-        <ListsHoldersLine :list-id="list.id" :holders="doc.holders" />
+        <ListsShareBar :doc="doc" :readonly="!doc.manages" />
+        <ListsHoldersLine
+          v-if="doc.manages || doc.holders.length > 1"
+          :list-id="list.id"
+          :holders="doc.holders"
+        />
 
         <div class="flex flex-col gap-2">
           <button

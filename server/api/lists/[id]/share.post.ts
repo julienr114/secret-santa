@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { peopleOfLists, updateList } from '#server/database/lists';
 import { newId, nowIso } from '#server/http/context';
-import { requireHeldList } from '#server/http/lists';
+import { requireManagedList } from '#server/http/lists';
 import { validatedBody } from '#server/http/validate';
 import { SHARE_ASKS, shareChange, shareMissing } from '#server/utils/lists';
 
@@ -12,7 +12,7 @@ import { SHARE_ASKS, shareChange, shareMissing } from '#server/utils/lists';
 const bodySchema = z.object({ ask: z.enum(SHARE_ASKS).default('on') });
 
 export default defineEventHandler(async (event) => {
-  const { db, list } = await requireHeldList(event);
+  const { db, list } = await requireManagedList(event, 'share');
   const { ask } = await validatedBody(event, bodySchema);
   if (ask !== 'off') {
     const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];

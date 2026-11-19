@@ -6,6 +6,7 @@ import type {
   VisitorDocument,
 } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
+import type { HolderLevel } from '#server/utils/listAccess';
 import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import type { ListOrder } from '#shared/utils/reorder';
@@ -102,10 +103,25 @@ export const useRemovePersonMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
-/** Those who hold a list, and the invitations waiting. */
+/**
+ * Those who hold a list, the invitations (waiting, expired or refused)
+ * and, for those who manage it, my people who could be invited.
+ */
 export type ListHolders = {
+  manages: boolean;
   holders: HolderView[];
-  invites: { id: string; email: string; createdAt: string }[];
+  invites: {
+    id: string;
+    email: string;
+    name: string | null;
+    avatar: Avatar | null;
+    level: HolderLevel;
+    state: 'waiting' | 'expired' | 'declined';
+    sentAt: string;
+    expiresAt: string;
+    declinedAt: string | null;
+  }[];
+  suggestions: { memberId: string; name: string; avatar: Avatar }[];
 };
 const holderKeys = (id: string) => [keys.holders(id), ...listKeys(id)];
 
@@ -115,13 +131,14 @@ export const useHoldersQuery = (id: Id) =>
     () => `/api/lists/${toValue(id)}/holders`,
   );
 
+/** Invites one of my people, or an address, at a level. */
 export const useInviteHolderMutation = (id: Id) =>
-  useApiMutation<{ ok: true }, string>(
-    (email) =>
-      api(`/api/lists/${toValue(id)}/holders`, {
-        method: 'POST',
-        body: { email },
-      }),
+  useApiMutation<
+    { ok: true; devLink?: string },
+    ({ email: string } | { memberId: string }) & { level: HolderLevel }
+  >(
+    (body) =>
+      api(`/api/lists/${toValue(id)}/holders`, { method: 'POST', body }),
     () => holderKeys(toValue(id)),
   );
 
@@ -134,6 +151,17 @@ export const useRemoveHolderMutation = (id: Id) =>
     () => holderKeys(toValue(id)),
   );
 
+export const useHolderLevelMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, { accountId: string; level: HolderLevel }>(
+    ({ accountId, level }) =>
+      api(`/api/lists/${toValue(id)}/holders/${accountId}`, {
+        method: 'PATCH',
+        body: { level },
+      }),
+    () => holderKeys(toValue(id)),
+  );
+
+/** « Annuler l'invitation », or « Effacer » one refused. */
 export const useCancelInviteMutation = (id: Id) =>
   useApiMutation<{ ok: true }, string>(
     (inviteId) =>
@@ -141,6 +169,50 @@ export const useCancelInviteMutation = (id: Id) =>
         method: 'DELETE',
       }),
     () => holderKeys(toValue(id)),
+  );
+
+/** « Renvoyer » an invitation that expired. */
+export const useResendInviteMutation = (id: Id) =>
+  useApiMutation<{ ok: true; devLink?: string }, string>(
+    (inviteId) =>
+      api(`/api/lists/${toValue(id)}/invites/${inviteId}/resend`, {
+        method: 'POST',
+      }),
+    () => holderKeys(toValue(id)),
+  );
+
+/** What the page of an invitation shows. */
+export type Invitation = {
+  state: 'waiting' | 'accepted' | 'declined' | 'expired';
+  by: string;
+  title: string;
+  level: HolderLevel;
+  expiresAt: string;
+  listId?: string;
+  email?: string;
+  account?: { name: string; avatar: Avatar } | null;
+};
+
+export const useInvitationQuery = (token: Id) =>
+  useApiQuery<Invitation>(
+    () => ['invitation', toValue(token)],
+    () => `/api/invitations/${toValue(token)}`,
+  );
+
+export const useAcceptInvitationMutation = (token: Id) =>
+  useApiMutation<{ listId: string }, { firstName?: string; language?: string }>(
+    (body) =>
+      api(`/api/invitations/${toValue(token)}/accept`, {
+        method: 'POST',
+        body,
+      }),
+    () => [['invitation', toValue(token)], keys.lists()],
+  );
+
+export const useDeclineInvitationMutation = (token: Id) =>
+  useApiMutation<{ ok: true }>(
+    () => api(`/api/invitations/${toValue(token)}/decline`, { method: 'POST' }),
+    () => [['invitation', toValue(token)]],
   );
 
 export const useCreateIdeaMutation = (via: Via) =>

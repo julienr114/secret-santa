@@ -8,7 +8,7 @@ import {
 import {
   acceptInvites,
   familyOf,
-  findHeldList,
+  findHolding,
   holdersOfLists,
   invitesForEmail,
   linkMembersOf,
@@ -43,10 +43,13 @@ import {
 } from '#server/utils/lists';
 import {
   canWriteIdeas,
+  holderMay,
   invitesAccepted,
   listRole,
   seesGivers,
+  type HolderLevel,
   type ListRole,
+  type MANAGING,
 } from '#server/utils/listAccess';
 
 // The shell of the gift lists (README 22.19): who may touch a list, and
@@ -66,14 +69,33 @@ export const requireHeldList = async (event: H3Event) => {
   const user = await requireAccount(event);
   const db = useDb(event);
   const id = getRouterParam(event, 'id') ?? '';
-  const held = await findHeldList(db, user.accountId, id);
-  if (held) return { db, user, list: held };
-  // Invited to hold it, and coming straight from the email: the
-  // invitation is accepted by coming.
+  const held = await findHolding(db, user.accountId, id);
+  if (held) return { db, user, ...held };
+  // Invited to hold it, and coming logged in with that address: an
+  // invitation still waiting is accepted by coming.
   await settleArrivals(db, user.accountId);
-  const list = await findHeldList(db, user.accountId, id);
-  if (!list) throw notFound();
-  return { db, user, list };
+  const late = await findHolding(db, user.accountId, id);
+  if (!late) throw notFound();
+  return { db, user, ...late };
+};
+
+/**
+ * The same, for what only « Gère la liste » does (lot 25 bis): sharing,
+ * inviting, changing a level, deleting the list. « Aide à écrire » gets
+ * a 403: they know the list exists.
+ * @param event - The request, with the list's id in its path.
+ * @param action - What is asked.
+ * @returns The database, the account and the list.
+ */
+export const requireManagedList = async (
+  event: H3Event,
+  action: (typeof MANAGING)[number],
+) => {
+  const held = await requireHeldList(event);
+  if (!holderMay(held.level, action)) {
+    throw createError({ statusCode: 403, statusMessage: 'not_manager' });
+  }
+  return held;
 };
 
 /**
@@ -91,13 +113,16 @@ export const settleArrivals = async (db: Db, accountId: string) => {
   const waiting = await invitesForEmail(db, account.email);
   if (waiting.length === 0) return;
   const held = await listsHeldBy(db, accountId);
+  const now = nowIso();
   await acceptInvites(
     db,
     accountId,
-    invitesAccepted(waiting, {
-      email: account.email,
-      heldListIds: held.map((list) => list.id),
-    }),
+    invitesAccepted(
+      waiting,
+      { email: account.email, heldListIds: held.map((list) => list.id) },
+      now,
+    ),
+    now,
   );
 };
 
@@ -157,6 +182,7 @@ export type HolderView = {
   name: string;
   avatar: Avatar;
   me: boolean;
+  level: HolderLevel;
 };
 
 /**
@@ -173,6 +199,7 @@ export const holderView = (
   name: holder.firstName ?? holder.email.split('@')[0] ?? '',
   avatar: avatarOf({ id: holder.accountId, ...holder }),
   me: holder.accountId === accountId,
+  level: holder.level,
 });
 
 /** My own way of giving an idea, for « Changer ». */
@@ -304,6 +331,8 @@ export type ListDocument = {
   family: (MemberView & { lists: number })[];
   /** Those who hold the list, the one looking among them. */
   holders: HolderView[];
+  /** The one looking manages the list: shares, invites, deletes. */
+  manages: boolean;
 };
 
 /**
@@ -329,6 +358,7 @@ export const listDocument = async (
   );
   const today = todayIso();
   const counts = await listCountsOfMembers(db, accountId);
+  const holders = (await holdersOfLists(db, [list.id])).get(list.id) ?? [];
   return {
     list: { ...headOf(list), shareToken: list.shareToken },
     people: lines,
@@ -340,8 +370,9 @@ export const listDocument = async (
         ...memberView(member, today, viewer),
         lists: counts.get(member.id) ?? 0,
       })),
-    holders: ((await holdersOfLists(db, [list.id])).get(list.id) ?? []).map(
-      (holder) => holderView(holder, accountId),
+    holders: holders.map((holder) => holderView(holder, accountId)),
+    manages: holders.some(
+      (holder) => holder.accountId === accountId && holder.level === 'manage',
     ),
   };
 };

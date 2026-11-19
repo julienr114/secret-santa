@@ -1,30 +1,45 @@
 <script setup lang="ts">
+import type { HolderLevel } from '#server/utils/listAccess';
 import {
   useCancelInviteMutation,
+  useHolderLevelMutation,
   useHoldersQuery,
   useInviteHolderMutation,
   useListQuery,
   useRemoveHolderMutation,
+  useResendInviteMutation,
+  type ListHolders,
 } from '~/composables/queries/useLists';
 
-// « Ceux qui tiennent la liste » (lot 25, README 22.20, maquette
-// ListeTeneurs): the accounts that hold a list, all equal, each of whom
-// may take another off, or leave, but the last one; the invitations
-// waiting, each cancelled by « Annuler »; and an address to invite, who
-// gets an email and has the list among theirs once logged in.
+// « Ceux qui tiennent la liste » (lots 25 and 25 bis, README 22.20,
+// maquettes ListeTeneurs, ListeTeneursAdresse, ListeTeneursNiveau). Each
+// line carries its level, « Gère la liste » or « Aide à écrire »: those
+// who manage touch it to change it or to take the person off; the others
+// read it, and may only leave. Then the invitations: waiting (until
+// when), expired (« Renvoyer »), refused (« Effacer »). Under the list,
+// for those who manage, « Inviter quelqu'un »: one row of pills, my
+// people linked to an account then « Quelqu'un d'autre », which alone
+// shows the address field; once someone is chosen, the level (« Aider à
+// écrire » first) and the button, which names the action.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
-const { t, locale } = useT();
+const { t, tk, locale } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const list = useListQuery(id);
 const query = useHoldersQuery(id);
 const invite = useInviteHolderMutation(id);
 const remove = useRemoveHolderMutation(id);
+const setLevel = useHolderLevelMutation(id);
 const cancel = useCancelInviteMutation(id);
+const resend = useResendInviteMutation(id);
+const manages = computed(() => query.data.value?.manages ?? false);
 const holders = computed(() => query.data.value?.holders ?? []);
 const invites = computed(() => query.data.value?.invites ?? []);
+const suggestions = computed(() => query.data.value?.suggestions ?? []);
+type Holder = ListHolders['holders'][number];
+type Invite = ListHolders['invites'][number];
 useHead({
   title: () => `${t('lists.holders.title')} — ${t('common.appName')}`,
 });
@@ -34,37 +49,44 @@ const context = computed(() => [
     ? [{ label: list.data.value.list.title, to: `/listes/${id.value}` }]
     : []),
 ]);
-const day = (iso: string) =>
+const day = (iso: string, month = true) =>
   new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
-    month: 'long',
+    ...(month ? { month: 'long' as const } : {}),
   }).format(new Date(iso));
+/** « Invitée le 18 novembre · valable jusqu'au 25 », the month said once. */
+const waitingLine = (waiting: Invite) => {
+  const sameMonth =
+    waiting.sentAt.slice(0, 7) === waiting.expiresAt.slice(0, 7);
+  return t('lists.holders.invited', {
+    date: day(waiting.sentAt),
+    until: day(waiting.expiresAt, !sameMonth),
+  });
+};
+const inviteLine = (one: Invite) =>
+  one.state === 'waiting'
+    ? waitingLine(one)
+    : one.state === 'expired'
+      ? t('lists.holders.expired', { date: day(one.expiresAt) })
+      : t('lists.holders.declined', {
+          date: day(one.declinedAt ?? one.expiresAt),
+        });
+const WHY: Record<string, string> = {
+  already_holder: 'lists.holders.alreadyHolder',
+  already_invited: 'lists.holders.alreadyInvited',
+  holder_last: 'lists.holders.lastManager',
+  holder_last_manager: 'lists.holders.lastManager',
+  not_manager: 'lists.holders.notManager',
+};
 const onError = (error: unknown) => {
-  const why = (error as { statusMessage?: string }).statusMessage;
+  const why = (error as { statusMessage?: string }).statusMessage ?? '';
   toast.add({
-    title:
-      why === 'already_holder'
-        ? t('lists.holders.alreadyHolder')
-        : why === 'already_invited'
-          ? t('lists.holders.alreadyInvited')
-          : errorMessage(error),
+    title: WHY[why] ? tk(WHY[why]) : errorMessage(error),
     color: 'error',
   });
 };
 
-const email = ref('');
-const onInvite = () => {
-  const address = email.value.trim();
-  if (!address) return;
-  invite.mutate(address, {
-    onSuccess: () => {
-      email.value = '';
-      toast.add({ title: t('lists.holders.invitedDone'), color: 'success' });
-    },
-    onError,
-  });
-};
-const onRemove = (holder: { accountId: string; name: string; me: boolean }) =>
+const onRemove = (holder: Holder) =>
   remove.mutate(holder.accountId, {
     onSuccess: () => {
       toast.add({
@@ -75,6 +97,104 @@ const onRemove = (holder: { accountId: string; name: string; me: boolean }) =>
       // The list I left is no longer mine to open.
       if (holder.me) return navigateTo('/listes', { replace: true });
     },
+    onError,
+  });
+/**
+ * The only one who manages can neither leave nor be brought down: their
+ * level is read, there is nothing to touch.
+ */
+const isLastManager = (holder: Holder) =>
+  holder.level === 'manage' &&
+  holders.value.filter((one) => one.level === 'manage').length === 1;
+/** What touching the level of a line offers. */
+const menuOf = (holder: Holder) => [
+  ...(manages.value
+    ? [
+        (['write', 'manage'] as const).map((level) => ({
+          label: t(`lists.holders.level.${level}`),
+          description: t(`lists.holders.levelHelp.${level}`),
+          type: 'checkbox' as const,
+          checked: holder.level === level,
+          onSelect: () => {
+            if (holder.level === level) return;
+            setLevel.mutate(
+              { accountId: holder.accountId, level },
+              { onError },
+            );
+          },
+        })),
+      ]
+    : []),
+  [
+    {
+      label: holder.me
+        ? t('lists.holders.leave')
+        : t('lists.holders.remove', { name: holder.name }),
+      icon: holder.me ? 'i-lucide-log-out' : 'i-lucide-user-minus',
+      color: 'error' as const,
+      onSelect: () => onRemove(holder),
+    },
+  ],
+];
+const inviteMenu = (waiting: Invite) => [
+  [
+    {
+      label: t('lists.holders.cancelInvite'),
+      icon: 'i-lucide-x',
+      onSelect: () => cancel.mutate(waiting.id, { onError }),
+    },
+  ],
+];
+const menuUi = {
+  content:
+    'max-w-[300px] min-w-[250px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
+  item: 'min-h-12 items-center px-3.5 text-base',
+  itemDescription: 'text-[13px] text-toned whitespace-normal',
+  itemLeadingIcon: 'size-5',
+};
+
+// « Inviter quelqu'un »: one of my people, by their pill, or an address.
+const chosen = ref<string | 'other' | null>(null);
+const email = ref('');
+const level = ref<HolderLevel>('write');
+const chosenMember = computed(() =>
+  suggestions.value.find((member) => member.memberId === chosen.value),
+);
+// Someone invited meanwhile is no longer among the pills.
+watch(suggestions, () => {
+  if (chosen.value !== 'other' && !chosenMember.value) chosen.value = null;
+});
+const levelChoices = computed(() =>
+  (['write', 'manage'] as const).map((value) => ({
+    value,
+    label: t(`lists.holders.choice.${value}.title`),
+    hint: t(`lists.holders.choice.${value}.text`),
+  })),
+);
+const ready = computed(() =>
+  chosen.value === 'other' ? email.value.trim() !== '' : chosen.value !== null,
+);
+const onInvite = () => {
+  if (!ready.value || !chosen.value) return;
+  invite.mutate(
+    chosen.value === 'other'
+      ? { email: email.value.trim(), level: level.value }
+      : { memberId: chosen.value, level: level.value },
+    {
+      onSuccess: () => {
+        chosen.value = null;
+        email.value = '';
+        level.value = 'write';
+        toast.add({ title: t('lists.holders.invitedDone'), color: 'success' });
+      },
+      onError,
+    },
+  );
+};
+const onResend = (expired: Invite) =>
+  resend.mutate(expired.id, {
+    onSuccess: () =>
+      toast.add({ title: t('lists.holders.resent'), color: 'success' }),
     onError,
   });
 </script>
@@ -89,7 +209,6 @@ const onRemove = (holder: { accountId: string; name: string; me: boolean }) =>
       <div class="flex flex-col gap-1">
         <UiPageContext :parts="context" :label="t('common.context')" />
         <UiPageTitle>{{ t('lists.holders.title') }}</UiPageTitle>
-        <p class="text-[15px] text-toned">{{ t('lists.holders.intro') }}</p>
       </div>
 
       <UiList data-testid="holders">
@@ -101,69 +220,178 @@ const onRemove = (holder: { accountId: string; name: string; me: boolean }) =>
           :avatar="holder.avatar"
           data-testid="holder"
         >
-          <template v-if="holders.length > 1" #trailing>
-            <UButton
-              variant="outline"
-              color="neutral"
-              class="min-h-11 font-semibold"
-              :loading="remove.isPending.value"
-              :label="
-                holder.me ? t('lists.holders.leave') : t('lists.holders.remove')
-              "
-              @click="onRemove(holder)"
-            />
+          <template #trailing>
+            <UDropdownMenu
+              v-if="(manages || holder.me) && !isLastManager(holder)"
+              :items="menuOf(holder)"
+              :content="{ align: 'end' }"
+              :ui="menuUi"
+            >
+              <button
+                type="button"
+                class="flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-toned"
+                :aria-label="t('lists.holders.levelOf', { name: holder.name })"
+                data-testid="holder-level"
+              >
+                {{ t(`lists.holders.level.${holder.level}`) }}
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </button>
+            </UDropdownMenu>
+            <span
+              v-else
+              class="shrink-0 text-sm font-semibold text-toned"
+              data-testid="holder-level"
+              >{{ t(`lists.holders.level.${holder.level}`) }}</span
+            >
           </template>
         </UiListItem>
         <UiListItem
-          v-for="waiting in invites"
-          :key="waiting.id"
-          :title="waiting.email"
-          :subtitle="
-            t('lists.holders.invited', { date: day(waiting.createdAt) })
-          "
-          icon="i-lucide-mail"
+          v-for="one in invites"
+          :key="one.id"
+          :title="one.name ?? one.email"
+          :subtitle="inviteLine(one)"
+          :avatar="one.avatar ?? undefined"
+          :icon="one.avatar ? undefined : 'i-lucide-mail'"
           icon-tone="neutral"
+          :class="one.state === 'waiting' ? '' : 'opacity-60'"
           data-testid="holder-invite"
+          :data-state="one.state"
         >
           <template #trailing>
+            <template v-if="one.state === 'waiting'">
+              <UDropdownMenu
+                v-if="manages"
+                :items="inviteMenu(one)"
+                :content="{ align: 'end' }"
+                :ui="menuUi"
+              >
+                <button
+                  type="button"
+                  class="flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-toned"
+                  :aria-label="
+                    t('lists.holders.levelOf', { name: one.name ?? one.email })
+                  "
+                  data-testid="invite-level"
+                >
+                  {{ t(`lists.holders.level.${one.level}`) }}
+                  <UIcon name="i-lucide-chevron-down" class="size-4" />
+                </button>
+              </UDropdownMenu>
+              <span v-else class="shrink-0 text-sm font-semibold text-toned">{{
+                t(`lists.holders.level.${one.level}`)
+              }}</span>
+            </template>
             <UButton
+              v-else-if="manages && one.state === 'expired'"
               variant="outline"
               color="neutral"
-              class="min-h-11 font-semibold"
+              class="min-h-11 shrink-0 font-semibold"
+              :loading="resend.isPending.value"
+              :label="t('lists.holders.resend')"
+              data-testid="invite-resend"
+              @click="onResend(one)"
+            />
+            <UButton
+              v-else-if="manages"
+              variant="outline"
+              color="neutral"
+              class="min-h-11 shrink-0 font-semibold"
               :loading="cancel.isPending.value"
-              :label="t('common.actions.cancel')"
-              @click="cancel.mutate(waiting.id, { onError })"
+              :label="t('lists.holders.erase')"
+              data-testid="invite-erase"
+              @click="cancel.mutate(one.id, { onError })"
             />
           </template>
         </UiListItem>
       </UiList>
 
-      <form class="flex flex-col gap-2" @submit.prevent="onInvite">
-        <label for="holder-email" class="text-[15px] font-semibold">{{
-          t('lists.holders.inviteLabel')
-        }}</label>
-        <div class="flex gap-2">
-          <UInput
-            id="holder-email"
-            v-model="email"
-            type="email"
-            inputmode="email"
-            autocomplete="off"
-            autocapitalize="none"
-            size="xl"
-            class="min-w-0 grow"
-            :placeholder="t('lists.holders.emailPlaceholder')"
-            :ui="{ base: 'h-12 text-base' }"
+      <form
+        v-if="manages"
+        class="flex flex-col gap-3"
+        data-testid="invite-form"
+        @submit.prevent="onInvite"
+      >
+        <h2 class="font-display text-[24px] leading-[1.2] font-bold">
+          {{ t('lists.holders.inviteTitle') }}
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="member in suggestions"
+            :key="member.memberId"
+            type="button"
+            class="flex h-11 items-center gap-2 rounded-full pr-4 pl-1 font-semibold ring-1"
+            :class="
+              chosen === member.memberId
+                ? 'bg-primary-tint ring-2 ring-primary'
+                : 'bg-default ring-default'
+            "
+            :aria-pressed="chosen === member.memberId"
+            data-testid="invite-pill"
+            @click="chosen = member.memberId"
+          >
+            <UiAvatar :avatar="member.avatar" size="sm" />
+            {{ member.name }}
+          </button>
+          <button
+            type="button"
+            class="flex h-11 items-center gap-2 rounded-full border border-dashed px-4 font-semibold"
+            :class="
+              chosen === 'other'
+                ? 'border-primary bg-primary-tint'
+                : 'border-accented text-toned'
+            "
+            :aria-pressed="chosen === 'other'"
+            data-testid="invite-other"
+            @click="chosen = 'other'"
+          >
+            <UIcon name="i-lucide-plus" class="size-4" />
+            {{ t('lists.holders.someoneElse') }}
+          </button>
+        </div>
+        <template v-if="chosen">
+          <div v-if="chosen === 'other'" class="flex flex-col gap-1.5">
+            <label for="holder-email" class="text-[15px] font-semibold">{{
+              t('lists.holders.emailLabel')
+            }}</label>
+            <UInput
+              id="holder-email"
+              v-model="email"
+              type="email"
+              inputmode="email"
+              autocomplete="off"
+              autocapitalize="none"
+              autofocus
+              size="xl"
+              :ui="{ base: 'h-12 text-base' }"
+            />
+            <p class="text-[13px] text-toned">
+              {{ t('lists.holders.emailHelp') }}
+            </p>
+          </div>
+          <UiChoiceList
+            v-model="level"
+            :choices="levelChoices"
+            :label="t('lists.holders.can')"
+            titled
           />
           <UButton
             type="submit"
-            class="h-12 shrink-0 px-5 font-bold"
-            :disabled="!email.trim()"
+            block
+            size="xl"
+            class="h-12 justify-center text-base font-bold"
+            :disabled="!ready"
             :loading="invite.isPending.value"
-            :label="t('lists.holders.invite')"
+            :label="
+              chosenMember
+                ? t('lists.holders.inviteName', { name: chosenMember.name })
+                : t('lists.holders.send')
+            "
+            data-testid="invite-send"
           />
-        </div>
-        <p class="text-sm text-toned">{{ t('lists.holders.inviteHelp') }}</p>
+          <p class="text-center text-[13px] text-toned">
+            {{ t('lists.holders.inviteHelp') }}
+          </p>
+        </template>
       </form>
       <p class="text-sm text-toned">{{ t('lists.holders.seesAll') }}</p>
     </AdminQueryState>

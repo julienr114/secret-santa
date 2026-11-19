@@ -373,6 +373,7 @@ const onResend = (expired: Invite) =>
             :choices="levelChoices"
             :label="t('lists.holders.can')"
             titled
+            plain
           />
           <UButton
             type="submit"

@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T extends string | number">
 // One value among a few, each on its row with a radio and, when it needs
-// one, a word of help; the row chosen is tinted. A title above names the
+// one, a word of help, on a white card; the row chosen is tinted (not
+// when `plain`). A title above names the
 // choice when the list sits under something else. The texts come from the
 // parent.
 
@@ -18,6 +19,8 @@ defineProps<{
   label: string;
   /** Shows the label above the list. */
   titled?: boolean;
+  /** On the page itself: only the radio says what is chosen, no tint. */
+  plain?: boolean;
 }>();
 const model = defineModel<T>({ required: true });
 const name = useId();
@@ -29,14 +32,14 @@ const name = useId();
       {{ label }}
     </legend>
     <div
-      class="divide-y divide-divider overflow-hidden rounded-xl ring-1 ring-default"
+      class="divide-y divide-divider overflow-hidden rounded-xl bg-default ring-1 ring-default"
     >
       <label
         v-for="choice in choices"
         :key="choice.value"
         class="flex min-h-14 items-center gap-3 px-3.5 py-2.5"
         :class="[
-          model === choice.value ? 'bg-primary-tint' : '',
+          model === choice.value && !plain ? 'bg-primary-tint' : '',
           choice.disabled ? 'opacity-50' : 'cursor-pointer',
         ]"
       >

@@ -1738,6 +1738,10 @@ Décidé par Julien le 19 novembre 2026 (Correction 24 du plan). **Codé le 19 n
 
 Supprimer un proche, trois chemins : **la croix de sa pastille** dans « Ajouter quelqu'un », quand il n'est sur aucune liste (immédiat, avec « Annuler » : `ProcheSupprime`) ; « Supprimer de mes proches » dans le menu « ⋯ » d'une personne sur une liste ; le même bouton en bas de sa fiche. Quand il est sur des listes, une page de confirmation dit ce qui part (`FamilleSupprimer`). Retirer quelqu'un d'une liste, lui, le laisse dans mes proches.
 
+#### Réordonner en glissant
+
+Demandé par Julien le 19 novembre 2026 (lot 24 ter). Ceux qui tiennent une liste déplacent les idées, d'une place à l'autre ou d'une personne à l'autre, et les personnes entre elles. Sur téléphone, un appui long soulève la ligne (`ListeGlisser`) : une carte blanche à contour rouge, et un trait rouge là où elle tombera. Sur ordinateur, une poignée au survol, et `Alt` + flèches au clavier. Les coches suivent l'idée. Par le lien, rien ne se déplace.
+
 #### Retirer quelqu'un d'une liste
 
 **L'icône et le prénom d'une personne se changent dans le document**, sans passer par sa fiche (demandé par Julien le 19 novembre 2026) : toucher l'icône ouvre son panneau, toucher le prénom l'écrit sur place (retour ou toucher ailleurs enregistre, vidé il reste comme avant). Le prénom d'une personne reliée à un compte ne se change pas ici : aujourd'hui « Moi », demain les personnes reliées du lot 25. **L'icône de « Moi » est celle du compte** (décidé par Julien le 19 novembre 2026) : changée dans une liste, sur sa fiche ou dans « Mon compte », c'est la même partout.

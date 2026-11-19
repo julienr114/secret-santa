@@ -761,14 +761,14 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 à partir du lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | Correction 24, 24 et 24 bis (faits), puis 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
+| **Les listes, V2** | Correction 24, 24 et 24 bis (faits), puis 24 ter (réordonner en glissant), 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
@@ -879,6 +879,23 @@ Décidé par Julien le 19 novembre 2026. Après le lot 25 (la présence en dépe
 - [ ] **La présence**, entre ceux qui tiennent la liste seulement.
 - [ ] **Sans connexion** : la page se recharge quand elle redevient visible ; rien ne casse.
 - [ ] Tests : les fonctions pures du signal et du blocage ; un test `e2e` à deux navigateurs.
+
+### Lot 24 ter — Listes : réordonner en glissant (README 22.20)
+
+Demandé par Julien le 19 novembre 2026. **Ça doit bien marcher sur téléphone** : c'est le critère du lot. Sans migration (`position` existe sur les idées et sur les personnes d'une liste). Maquette : `ListeGlisser` (la ligne soulevée, et le trait qui montre où elle va tomber). Points à relire : section 6, « Lot 24 ter ».
+
+- [ ] **Le cœur, en fonction pure**, testé d'abord : la nouvelle suite de positions après un déplacement, d'une idée dans sa personne, d'une idée vers une autre personne, d'une personne dans la liste.
+- [ ] **Sur téléphone, un appui long soulève** (environ 350 ms, avec une vibration courte là où le téléphone le permet) : une idée par sa ligne, une personne par son en-tête (icône et prénom). Un appui court garde son rôle : modifier le texte, cocher, ouvrir le menu. Tant que rien n'est soulevé, la page défile normalement ; dès que c'est soulevé, le doigt déplace la ligne et la page ne défile plus que près des bords, toute seule.
+- [ ] **Ce qu'on voit** (`ListeGlisser`) : la ligne soulevée devient une carte blanche, à contour rouge et à ombre, légèrement penchée, avec une poignée à droite ; un trait rouge épais montre où elle tombera ; les autres lignes s'écartent. Une personne soulevée se replie en une ligne (icône, prénom, nombre d'idées) pour pouvoir traverser une longue liste.
+- [ ] **Sur ordinateur** : une poignée apparaît à gauche de la ligne au survol ; on la tire à la souris. Au clavier, dans une ligne : `Alt` + flèche haut ou bas déplace l'idée.
+- [ ] **Une idée peut changer de personne** en la lâchant dans la section d'une autre. La ligne vide « Une autre idée… » reste toujours la dernière de sa section.
+- [ ] **Ce qui suit l'idée** : ses coches, son lien, ceux qui se sont joints. Rien n'est perdu ni prévenu.
+- [ ] **Qui peut** : ceux qui tiennent la liste, partagée ou non. Par le lien, rien ne se déplace.
+- [ ] **Lâcher hors de la liste, ou appuyer sur Échap**, remet tout en place. Après un déplacement, « Annuler » pendant quelques secondes.
+- [ ] **En direct** (lot 26, s'il existe) : l'ordre arrive chez les autres ; une ligne que quelqu'un écrit ne se déplace pas sous ses doigts, le déplacement attend qu'il ait fini.
+- [ ] **Accessibilité** : le déplacement est annoncé (« Livres sur les dinosaures, position 3 sur 5 ») ; les deux gestes ont leur équivalent sans glisser : « Monter » et « Descendre » dans le menu « ⋯ » d'une personne, `Alt` + flèches pour une idée.
+- [ ] **Essayé sur un vrai téléphone**, iPhone et Android : pas de sélection de texte ni de menu du navigateur pendant l'appui long, pas de défilement parasite, le clavier ne s'ouvre pas.
+- [ ] Trois langues, `tests/e2e` (souris et tactile simulé).
 
 ### Lot 27 — Listes V2 : reprendre une liste (README 22.20)
 
@@ -1626,6 +1643,15 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 5. **L'audit des dépendances** : `pnpm audit --prod --audit-level high` dans `ci.yml` (le projet est en pnpm, pas npm). Aujourd'hui il passe : 3 failles connues, 1 faible et 2 modérées, aucune haute. Dependabot : `.github/dependabot.yml`, une fois par semaine, les mises à jour mineures groupées ; il faut que Dependabot soit activé sur le dépôt GitHub pour qu'il ouvre des demandes.
 6. **Le test** est ajouté à `tests/e2e/security.spec.ts`, qui existait déjà.
 7. **Reste à Julien** : la double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin.
+
+### Lot 24 ter — réordonner en glissant
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **L'appui long plutôt qu'une poignée toujours visible** sur téléphone (proposition) : la ligne reste nue, comme dans un document. Si l'appui long se découvre mal à l'essai, afficher la poignée sur la ligne qu'on est en train de modifier.
+2. **Une bibliothèque ou du code maison** : à décider en codant. Le critère est le téléphone ; si une bibliothèque est ajoutée, écrire pourquoi (Correction 23 : aucune dépendance sans raison).
+3. **Changer une idée de personne en la glissant** : proposé d'office. À retirer si c'est une source d'erreurs.
+4. **Une liste sans personne** (lot 27 bis) : seules les idées se déplacent.
 
 ### Lot 27 ter — pistes et liste
 

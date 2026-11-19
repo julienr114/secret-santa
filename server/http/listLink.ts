@@ -5,7 +5,8 @@ import { notFound } from '#server/http/errors';
 
 /**
  * A shared list, by the token of its link; 404 for an unknown or replaced
- * link.
+ * link, 410 for a list whose sharing was stopped (its link is kept for
+ * the day it is shared again).
  * @param event - The request, with the token in its path.
  * @returns The database and the list.
  */
@@ -13,5 +14,8 @@ export const listOfLink = async (event: H3Event) => {
   const db = useDb(event);
   const list = await findListByToken(db, getRouterParam(event, 'token') ?? '');
   if (!list) throw notFound();
+  if (!list.sharedAt) {
+    throw createError({ statusCode: 410, statusMessage: 'list_unshared' });
+  }
   return { db, list };
 };

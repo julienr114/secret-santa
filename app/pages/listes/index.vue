@@ -125,7 +125,7 @@ const pastLine = (card: ListCard) => {
               t('lists.home.listOf', { name: card.holder.name })
             }}</span>
             <span v-else-if="card.status === 'draft'">{{
-              t('lists.home.draft')
+              t('lists.home.notShared')
             }}</span>
             <span v-else>{{ t('lists.home.youHold') }}</span>
           </p>

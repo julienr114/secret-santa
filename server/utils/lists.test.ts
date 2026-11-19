@@ -10,6 +10,7 @@ import {
   listStatus,
   noteOf,
   randomListIcon,
+  shareChange,
   shareMissing,
   sortCards,
   splitIdea,
@@ -44,6 +45,33 @@ describe('lists', () => {
     expect(listStatus({ sharedAt: 'x', eventDate: null }, '2030-01-01')).toBe(
       'shared',
     );
+  });
+
+  it('shares by a link kept from one sharing to the next', () => {
+    const fresh = { token: 'new', now: 'now' };
+    const never = { shareToken: null, sharedAt: null };
+    const shared = { shareToken: 'old', sharedAt: 'then' };
+    const stopped = { shareToken: 'old', sharedAt: null };
+    // The first sharing makes the link.
+    expect(shareChange(never, 'on', fresh)).toEqual({
+      shareToken: 'new',
+      sharedAt: 'now',
+    });
+    // Already shared: nothing moves.
+    expect(shareChange(shared, 'on', fresh)).toEqual(shared);
+    // Stopped: the link is kept; shared again, it is the same one.
+    expect(shareChange(shared, 'off', fresh)).toEqual(stopped);
+    expect(shareChange(stopped, 'on', fresh)).toEqual({
+      shareToken: 'old',
+      sharedAt: 'now',
+    });
+    // Another link, only while the list is shared.
+    expect(shareChange(shared, 'renew', fresh)).toEqual({
+      shareToken: 'new',
+      sharedAt: 'then',
+    });
+    expect(shareChange(stopped, 'renew', fresh)).toEqual(stopped);
+    expect(shareChange(never, 'off', fresh)).toEqual(never);
   });
 
   it('says what is missing to share, and keeps a document with something', () => {

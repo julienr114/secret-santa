@@ -18,7 +18,9 @@ import { asAddress } from '~/utils/ideaLink';
 // joined from here too.
 // Touched, the text turns into a field; the return key saves it and goes
 // to the next line, touching elsewhere saves it too; a line left empty
-// goes. Nothing sits above the keyboard: while one is in the line, its
+// goes, and so does a line with nothing in it when the erase key is
+// pressed again, the caret going up to the line above. Nothing sits above
+// the keyboard: while one is in the line, its
 // actions are under it, as text links. « Ajouter un lien » extends the
 // line with « : » and a field for the address; once set, the address is
 // the word « lien », with « Changer le lien » and « Retirer le lien »
@@ -253,6 +255,27 @@ const rowTop = (at: number): number => {
   return Math.round(range.getBoundingClientRect().top);
 };
 /**
+ * The line above or below this one, of this person or the next.
+ * @param step - -1 for the line above, 1 for the one below.
+ * @returns Its row, or undefined at either end of the document.
+ */
+const neighbour = (step: -1 | 1): HTMLElement | undefined => {
+  if (!row.value) return undefined;
+  const all = [...document.querySelectorAll<HTMLElement>('[data-line]')];
+  return all[all.indexOf(row.value) + step];
+};
+/**
+ * Starts writing another line, from its row.
+ * @param target - The row of the line.
+ */
+const enter = (target: HTMLElement) => {
+  const starter = target.querySelector<HTMLElement>('[data-line-start]');
+  if (starter instanceof HTMLTextAreaElement) starter.focus();
+  else starter?.click();
+};
+/** The line is asking before it goes: the erase key waits. */
+const erasing = ref(false);
+/**
  * The arrows and the tab key: on to the line above or below, of this
  * person or the next, saving this one. An arrow moves in the text first,
  * and only leaves from its first or last row; at either end of the
@@ -269,8 +292,7 @@ const onMove = async (
 ) => {
   const input = field.value;
   if (event.isComposing || !input || !row.value) return;
-  const all = [...document.querySelectorAll<HTMLElement>('[data-line]')];
-  const target = all[all.indexOf(row.value) + step];
+  const target = neighbour(step);
   if (!target) return;
   if (fromEdge) {
     const [caret, edge] =
@@ -281,9 +303,31 @@ const onMove = async (
   }
   event.preventDefault();
   await commit(false);
-  const starter = target.querySelector<HTMLElement>('[data-line-start]');
-  if (starter instanceof HTMLTextAreaElement) starter.focus();
-  else starter?.click();
+  enter(target);
+};
+
+/**
+ * The erase key in a line with nothing in it, as in a document: the line
+ * goes, and the caret is at the end of the one above. The empty line at
+ * the end only goes up. An idea someone ticked asks first, as always.
+ * @param event - The key pressed, or what it was about to erase.
+ * @returns Once the line above has the focus.
+ */
+const onErase = async (event: Event) => {
+  if (!writing.value || erasing.value || draft.value !== '') return;
+  if ('isComposing' in event && event.isComposing) return;
+  if (props.idea?.url) return;
+  event.preventDefault();
+  const target = neighbour(-1);
+  if (props.idea) {
+    erasing.value = true;
+    const sure = view.value.kind === 'free' || (await editing.confirmRemove());
+    erasing.value = false;
+    if (!sure) return;
+    remove.mutate(props.idea.id);
+  }
+  leave();
+  if (target) enter(target);
 };
 
 /**
@@ -310,7 +354,7 @@ const onFocusOut = (event: FocusEvent) => {
     class="flex items-start gap-3 py-2"
     :class="
       writing
-        ? '-mx-4 border-l-[3px] border-primary bg-default pr-4 pl-[13px]'
+        ? '-mr-4 -ml-9 border-l-[3px] border-primary bg-default pr-4 pl-[33px]'
         : ''
     "
     :data-line="line"
@@ -407,6 +451,11 @@ const onFocusOut = (event: FocusEvent) => {
               :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
               data-testid="idea-field"
               data-line-start
+              @keydown.delete="onErase"
+              @beforeinput="
+                ($event as InputEvent).inputType === 'deleteContentBackward' &&
+                onErase($event)
+              "
               @keydown.up="onMove($event, -1, true)"
               @keydown.down="onMove($event, 1, true)"
               @keydown.tab="onMove($event, $event.shiftKey ? -1 : 1, false)"

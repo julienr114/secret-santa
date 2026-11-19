@@ -71,7 +71,7 @@ const onFocusOut = (event: FocusEvent) => {
   <li
     v-if="writing"
     ref="row"
-    class="-mx-4 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4 pl-[13px]"
+    class="-mr-4 -ml-9 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4 pl-[33px]"
     data-testid="off-list-line"
     @focusout="onFocusOut"
   >

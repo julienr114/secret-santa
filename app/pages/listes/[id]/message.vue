@@ -12,7 +12,7 @@ const id = computed(() => String(route.params.id));
 const { t } = useT();
 const goBack = useGoBack();
 const query = useListQuery(id);
-const parent = computed(() => `/listes/${id.value}/partager`);
+const parent = computed(() => `/listes/${id.value}`);
 const { sentence } = useListMessage(id, () => query.data.value, '');
 const draft = ref('');
 watch(

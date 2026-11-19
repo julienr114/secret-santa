@@ -1,9 +1,10 @@
 import type { InjectionKey } from 'vue';
-import type { IdeaLine } from '#server/http/lists';
+import type { IdeaLine, PersonLine } from '#server/http/lists';
 
 // The document of a list writes in place (README 22.19, 22.20): each line
 // has its own actions under it. What a line asks the page, which holds
-// the sheets: a confirmation, and how the holder gives an idea.
+// the sheets: a confirmation, how the holder gives an idea, and a person
+// taken off the list.
 
 export type ListEditing = {
   /** Asks before deleting an idea someone already ticked. */
@@ -12,6 +13,8 @@ export type ListEditing = {
   change: (idea: IdeaLine, forName: string) => void;
   /** « Se joindre » to a gift given by several. */
   join: (idea: IdeaLine, forName: string) => void;
+  /** « Retirer de la liste »: the person goes, with « Annuler ». */
+  removePerson: (person: PersonLine) => void;
 };
 
 export const LIST_EDITING: InjectionKey<ListEditing> = Symbol('list-editing');

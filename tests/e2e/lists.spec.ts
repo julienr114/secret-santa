@@ -25,20 +25,24 @@ test('a list is written in its document, and shared', async ({ page }) => {
   );
   await page.getByRole('link', { name: 'Créer ma première liste' }).click();
   await expect(page).toHaveURL(/\/listes\/[^/]+\?nouvelle=1$/);
-  const listUrl = new URL(page.url()).pathname;
-  await expect(page.getByTestId('list-state')).toContainText(
-    'Brouillon · toi seul la vois',
-  );
+  // « Partage par lien », its switch off: nothing to unfold.
+  const bar = page.getByTestId('share-bar');
+  const toggle = page.getByTestId('share-switch');
+  await expect(bar).toContainText('Partage par lien');
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+  await expect(page.getByTestId('share-title')).toHaveCount(0);
   await expect(page.getByTestId('note-default')).toContainText(
     'Quelques idées pour t’éviter de chercher.',
   );
 
-  // Sharing an empty draft says what is missing.
-  await page.getByTestId('list-state').click();
+  // An empty list cannot be shared: the switch stays off, and only then
+  // does the bar say what is missing.
+  await expect(page.getByTestId('share-missing')).toHaveCount(0);
+  await toggle.click();
   await expect(page.getByTestId('share-missing')).toContainText(
     'Donne un nom à l’événement.',
   );
-  await page.getByRole('link', { name: 'Revenir à la liste' }).click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
 
   // The name, written in place; then someone new, and myself.
   await page.getByTestId('list-title').fill('Noël 2026');
@@ -56,6 +60,29 @@ test('a list is written in its document, and shared', async ({ page }) => {
     page.getByTestId('list-person').filter({ hasText: 'Camille' }),
   ).toContainText('Moi');
 
+  // A first name and an icon change here, by touching them; not the
+  // name of « Moi ».
+  await leo.getByTestId('person-name').click();
+  await page.getByTestId('person-name-field').fill('Léon');
+  await page.getByTestId('person-name-field').press('Enter');
+  const leon = page.getByTestId('list-person').filter({ hasText: 'Léon' });
+  await expect(leon.getByTestId('person-name')).toHaveText('Léon');
+  await leon.getByTestId('person-name').click();
+  await page.getByTestId('person-name-field').fill('Léo');
+  await page.getByTestId('person-name-field').press('Enter');
+  await expect(leo.getByTestId('person-name')).toHaveText('Léo');
+  await expect(
+    page
+      .getByTestId('list-person')
+      .filter({ hasText: 'Camille' })
+      .getByTestId('person-name'),
+  ).toHaveCount(0);
+  await leo.getByTestId('person-icon').click();
+  await expect(page.getByRole('dialog')).toContainText('L’icône de Léo');
+  await page.keyboard.press('Escape');
+  // Touching elsewhere leaves the line being written.
+  const elsewhere = page.getByText('Touche un texte pour le modifier.');
+
   // Ideas: the return key goes on to the next line; an address pasted
   // becomes « lien ».
   await leo.getByPlaceholder('Une idée pour Léo…').click();
@@ -70,7 +97,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('line-actions')).toContainText(
     'Ajouter un lien',
   );
-  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await elsewhere.click();
   await expect(leo.getByTestId('line-actions')).toHaveCount(0);
   await expect(leo.getByRole('link', { name: 'lien' })).toHaveAttribute(
     'href',
@@ -95,7 +122,28 @@ test('a list is written in its document, and shared', async ({ page }) => {
     'Circuit de billes',
   );
   await expect(leo.getByTestId('idea-field').first()).toBeFocused();
-  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await elsewhere.click();
+  // The erase key in a line with nothing in it: the empty line at the end
+  // only goes up; an idea emptied goes, the caret on the line above.
+  await leo.getByPlaceholder('Une autre idée…').click();
+  await page.keyboard.press('Backspace');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Vélo 16 pouces',
+  );
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('À effacer');
+  await page.keyboard.press('Enter');
+  await expect(leo.getByTestId('idea-text')).toHaveCount(3);
+  await page.keyboard.press('Backspace');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue('À effacer');
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.press('Backspace');
+  await page.keyboard.press('Backspace');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Vélo 16 pouces',
+  );
+  await elsewhere.click();
+  await expect(leo.getByTestId('idea-text')).toHaveCount(2);
   // A link written in the line: « : », the address, then the word « lien »
   // with what it can do; taken off again.
   await leo.getByTestId('idea-text').nth(1).click();
@@ -109,7 +157,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
     'Changer le lien',
   );
   await expect(leo.getByTestId('idea-field').first()).toBeFocused();
-  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await elsewhere.click();
   await expect(leo.getByRole('link', { name: 'lien' }).nth(1)).toHaveAttribute(
     'href',
     'https://exemple.fr/velo',
@@ -119,7 +167,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('line-actions')).toContainText(
     'Ajouter un lien',
   );
-  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await elsewhere.click();
   await expect(leo.getByRole('link', { name: 'lien' })).toHaveCount(1);
   // Corrected by touching it; emptied, the line goes.
   await leo.getByTestId('idea-text').nth(1).click();
@@ -129,7 +177,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('idea-text').nth(1)).toHaveText(
     'Vélo 18 pouces',
   );
-  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await elsewhere.click();
   await leo.getByTestId('idea-text').nth(1).click();
   await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.press('Backspace');
@@ -168,7 +216,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await me.getByPlaceholder('Une idée pour Camille…').click();
   await page.keyboard.type('Un bon couteau');
   await page.keyboard.press('Enter');
-  await me.getByRole('heading', { name: 'Camille' }).click();
+  await elsewhere.click();
   await expect(me.getByTestId('idea-text')).toHaveCount(1);
   const mine = me.getByTestId('holder-box').first();
   await mine.click();
@@ -179,7 +227,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await me.getByTestId('idea-text').click();
   await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.press('Backspace');
-  await me.getByRole('heading', { name: 'Camille' }).click();
+  await elsewhere.click();
   await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
   // The bar is on every screen of someone logged in (README 22.21), the
@@ -197,18 +245,69 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByTestId('list-title').click();
   await expect(page.getByTestId('note-add')).toBeVisible();
 
-  // Shared: the link and the message.
-  await page.getByTestId('list-state').click();
-  await expect(heading(page)).toHaveText('Partager la liste');
-  await expect(page.getByTestId('share-message')).toContainText(
-    'Notre liste de cadeaux pour Noël 2026 est prête : Léo et moi.',
+  // « ⋯ » at the end of a first name: taken off the list at once, with
+  // « Annuler »; with a gift already planned, a second tap says what
+  // would be lost.
+  await me.getByTestId('person-menu').click();
+  await page.getByRole('menuitem', { name: 'Retirer de la liste' }).click();
+  await expect(
+    page.getByText('Camille retiré de la liste', { exact: true }),
+  ).toBeVisible();
+  await expect(me).toHaveCount(0);
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(me).toBeVisible();
+  await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'true');
+  await leo.getByTestId('person-menu').click();
+  await page.getByRole('menuitem', { name: 'Retirer de la liste' }).click();
+  await expect(page.getByRole('menu')).toContainText(
+    '1 cadeau déjà prévu sera perdu.',
   );
-  await expect(page.getByTestId('share-message')).toContainText('/l/');
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(new RegExp(`${listUrl}$`));
-  await expect(page.getByTestId('list-state')).toContainText(
-    'Partagée avec la famille',
+  await page.getByRole('menuitem', { name: 'Annuler' }).click();
+  await expect(leo).toBeVisible();
+  await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
+
+  // Shared by its switch: the link unfolds, with the message all ready.
+  await expect(page.getByTestId('share-missing')).toHaveCount(0);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+  const link = page.getByTestId('share-link');
+  await expect(link).toContainText('/l/');
+  // « Copier » answers in place.
+  await page.context().grantPermissions(['clipboard-write']);
+  await page.getByTestId('copy-link').click();
+  await expect(page.getByTestId('copy-link')).toHaveText('Copié');
+  await expect(bar.getByRole('link', { name: 'Par email' })).toHaveCount(0);
+  const first = (await link.textContent()) ?? '';
+  // « Changer de lien », confirmed in place: the old one stops working.
+  await bar.getByRole('button', { name: 'Changer de lien' }).click();
+  await expect(page.getByTestId('share-renew')).toContainText(
+    'L’ancien lien ne marchera plus.',
   );
+  await page
+    .getByTestId('share-renew')
+    .getByRole('button', { name: 'Changer', exact: true })
+    .click();
+  await expect(page.getByTestId('share-renew')).toHaveCount(0);
+  await expect(link).not.toHaveText(first);
+  const second = (await link.textContent()) ?? '';
+  const tokenOf = (shown: string) => shown.split('/l/')[1];
+  expect((await page.request.get(`/api/l/${tokenOf(first)}`)).status()).toBe(
+    404,
+  );
+  // Turned off, sharing stops at once; « Annuler » gives the same link.
+  await toggle.click();
+  await expect(
+    page.getByText('Partage par lien arrêté', { exact: true }),
+  ).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+  expect((await page.request.get(`/api/l/${tokenOf(second)}`)).status()).toBe(
+    410,
+  );
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+  await expect(link).toHaveText(second);
 
   // In the tab.
   await page.goto('/listes');
@@ -225,7 +324,8 @@ test('a person of my family keeps their details from list to list', async ({
   await hydrated(page);
   await page.getByTestId('list-card').first().click();
   const leo = page.getByTestId('list-person').filter({ hasText: 'Léo' });
-  await leo.getByRole('link', { name: 'ses goûts' }).click();
+  await leo.getByTestId('person-menu').click();
+  await page.getByRole('menuitem', { name: 'Sa fiche et ses goûts' }).click();
   await expect(heading(page)).toHaveText('Léo');
   await page.getByTestId('member-shoe').click();
   await page.getByRole('textbox').fill('30');

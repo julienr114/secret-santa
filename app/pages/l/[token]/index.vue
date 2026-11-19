@@ -196,7 +196,7 @@ const onJoin = (idea: IdeaLine, forName: string) => {
             </p>
           </div>
         </header>
-        <ul class="flex flex-col">
+        <ul class="flex flex-col pl-5">
           <ListsVisitorLine
             v-for="idea in person.ideas"
             :key="idea.id"

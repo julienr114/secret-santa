@@ -4,8 +4,9 @@ import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 
 // A screen of a list opened by its link (README 22.19), with or without
 // an account: the light bar of the participants' screens (back, the name
-// of the app, the language, or the menu for someone logged in), then the content, or the loading and
-// unknown-link states. The title stays neutral: messaging apps preview
+// of the app, the language, or the menu for someone logged in), then the
+// content, or the loading and unknown-link states; a list whose sharing
+// was stopped says so. The title stays neutral: messaging apps preview
 // these links.
 defineProps<{
   back?: string;
@@ -61,7 +62,13 @@ useHead({ title: () => t('common.appName') });
         data-testid="list-gone"
       >
         <UiEnvelope state="locked" />
-        <p class="text-muted" role="alert">{{ t('lists.visitor.gone') }}</p>
+        <p class="text-muted" role="alert">
+          {{
+            (error as { statusCode?: number }).statusCode === 410
+              ? t('lists.visitor.unshared')
+              : t('lists.visitor.gone')
+          }}
+        </p>
       </div>
       <UiSkeleton
         v-else-if="pending"

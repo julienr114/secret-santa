@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IdeaLine } from '#server/http/lists';
+import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
   LIST_COLORS,
@@ -11,6 +11,7 @@ import {
 import {
   useDeleteListMutation,
   useListQuery,
+  useRemovePersonMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
 import { LIST_EDITING } from '~/composables/useListEditing';
@@ -18,8 +19,8 @@ import { LIST_SHADES } from '~/utils/listShades';
 
 // The document of a list, for the one who holds it (README 22.19,
 // maquettes ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
-// document, not a form: one button on top says its state and leads to
-// sharing it; then its square tile, its name, its day, the word for the
+// document, not a form: the bar « Partage par lien » on top, with its
+// switch (ListsShareBar); then its square tile, its name, its day, the word for the
 // family, the people and their ideas, « Ajouter quelqu'un ». Every text
 // changes by touching it, and is saved as it is left: no « Enregistrer ».
 // Left without a name and without anyone, a draft is not kept.
@@ -107,7 +108,56 @@ provide(LIST_EDITING, {
   join: (idea, forName) => {
     joining.value = { idea, forName };
   },
+  removePerson: (person) => onRemovePerson(person),
 });
+
+// « Retirer de la liste » (README 22.19): the person goes at once, with
+// « Annuler » in the toast. Nothing is asked of the server before the
+// toast is gone, so that giving up loses nothing: neither their ideas nor
+// what was ticked.
+const UNDO_MS = 6000;
+const toast = useToast();
+const removePerson = useRemovePersonMutation(id);
+const leaving = ref<{ id: string; timer: number } | null>(null);
+const people = computed(() =>
+  (doc.value?.people ?? []).filter((p) => p.id !== leaving.value?.id),
+);
+/** Takes off for good whoever is leaving. */
+const flushRemoval = () => {
+  const gone = leaving.value;
+  if (!gone) return;
+  window.clearTimeout(gone.timer);
+  removePerson.mutate(gone.id, {
+    onSettled: () => {
+      if (leaving.value?.id === gone.id) leaving.value = null;
+    },
+  });
+};
+const onRemovePerson = (person: PersonLine) => {
+  flushRemoval();
+  const toastId = `removed-${person.id}`;
+  leaving.value = {
+    id: person.id,
+    timer: window.setTimeout(flushRemoval, UNDO_MS),
+  };
+  toast.add({
+    id: toastId,
+    title: t('lists.doc.removed', { name: person.member.firstName }),
+    duration: UNDO_MS,
+    actions: [
+      {
+        label: t('common.actions.cancel'),
+        onClick: () => {
+          if (leaving.value?.id !== person.id) return;
+          window.clearTimeout(leaving.value.timer);
+          leaving.value = null;
+          toast.remove(toastId);
+        },
+      },
+    ],
+  });
+};
+onBeforeUnmount(flushRemoval);
 // The sheets of what the holder gives: « Changer » and « Se joindre », the
 // same as by the link (README 22.19). They follow the list as it is
 // refetched.
@@ -155,7 +205,7 @@ const answerConfirm = (ok: boolean) => {
 // A draft left with nothing in it goes, once the list itself is left.
 onBeforeRouteLeave((to) => {
   const current = doc.value;
-  // Its own pages (sharing it, a person's tastes) are still the list.
+  // Its own pages (its message, a person's tastes) are still the list.
   const within =
     to.path.startsWith(`/listes/${id.value}/`) ||
     to.path.startsWith('/famille/');
@@ -181,38 +231,7 @@ onBeforeRouteLeave((to) => {
       :skeleton="['card', 'title', 'card']"
     >
       <template v-if="doc && list">
-        <NuxtLink
-          :to="`/listes/${list.id}/partager`"
-          class="-mt-1 flex min-h-13 items-center gap-2.5 rounded-full bg-default py-1.5 pr-1.5 pl-4 ring-1 ring-default"
-          data-testid="list-state"
-        >
-          <span
-            class="size-2.5 shrink-0 rounded-full"
-            :class="list.status === 'draft' ? 'bg-line-strong' : 'bg-success'"
-            aria-hidden="true"
-          />
-          <span class="grow text-[15px] font-semibold">{{
-            list.status === 'draft'
-              ? t('lists.doc.draft')
-              : list.status === 'past'
-                ? t('lists.doc.past')
-                : t('lists.doc.shared')
-          }}</span>
-          <span
-            v-if="list.status === 'draft'"
-            class="flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 font-bold text-inverted"
-          >
-            <UIcon name="i-lucide-send" class="size-4" />
-            {{ t('lists.doc.share') }}
-          </span>
-          <span
-            v-else
-            class="flex h-10 items-center gap-1 px-3 font-bold text-primary-ink"
-          >
-            {{ t('lists.doc.link') }}
-            <UIcon name="i-lucide-chevron-right" class="size-4" />
-          </span>
-        </NuxtLink>
+        <ListsShareBar :doc="doc" />
 
         <div class="flex flex-col gap-2">
           <button
@@ -241,7 +260,7 @@ onBeforeRouteLeave((to) => {
             :aria-label="t('lists.doc.titleLabel')"
             class="w-full"
             :ui="{
-              base: 'p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
+              base: 'overflow-hidden p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
             }"
             data-testid="list-title"
             @keydown.enter.prevent="($event.target as HTMLElement).blur()"
@@ -263,7 +282,7 @@ onBeforeRouteLeave((to) => {
         <ListsNote :list-id="list.id" :note="list.note" />
 
         <div
-          v-if="doc.people.length > 0"
+          v-if="people.length > 0"
           class="flex flex-col gap-0.5 text-sm text-toned"
         >
           <p v-if="doc.planned > 0">
@@ -273,7 +292,7 @@ onBeforeRouteLeave((to) => {
         </div>
 
         <ListsPersonSection
-          v-for="person in doc.people"
+          v-for="person in people"
           :key="person.id"
           :list-id="list.id"
           :person="person"
@@ -282,7 +301,7 @@ onBeforeRouteLeave((to) => {
         <ListsAddSomeone
           :list-id="list.id"
           :family="doc.family"
-          :on-list="doc.people"
+          :on-list="people"
         />
       </template>
     </AdminQueryState>

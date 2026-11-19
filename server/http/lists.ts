@@ -311,7 +311,9 @@ export const listCards = async (
   visited: readonly { list: GiftListRow; lastSeenAt: string }[],
 ): Promise<ListCard[]> => {
   const others = visited.filter(
-    (v) => v.list.accountId !== accountId && v.list.shareToken,
+    // A list no longer shared leaves the lists of those who opened it,
+    // and comes back with its sharing.
+    (v) => v.list.accountId !== accountId && v.list.sharedAt,
   );
   const all = [...held, ...others.map((v) => v.list)];
   const ids = all.map((l) => l.id);

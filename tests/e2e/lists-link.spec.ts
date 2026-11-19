@@ -210,3 +210,41 @@ test('something else, and what the holder sees', async ({ page }) => {
   );
   await expect(page.getByTestId('holder-off-list')).toContainText('Tonton');
 });
+
+test('sharing stopped: the link says so, the list leaves the tab, the ticks stay', async ({
+  page,
+  playwright,
+  baseURL,
+}) => {
+  // One login each: an address may only ask for so many links.
+  const holder = await playwright.request.newContext({ baseURL });
+  await apiLogin(holder, HOLDER);
+  await ok(
+    await holder.post(`/api/lists/${state.listId}/share`, {
+      data: { ask: 'off' },
+    }),
+  );
+  await apiLogin(page.request, TONTON);
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await expect(page.getByTestId('list-gone')).toContainText(
+    'Cette liste n’est plus partagée.',
+  );
+  await page.goto('/listes');
+  await hydrated(page);
+  await expect(
+    page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }),
+  ).toHaveCount(0);
+
+  // Shared again: the same link, and what was ticked is still there.
+  const again = await ok(
+    await holder.post(`/api/lists/${state.listId}/share`, { data: {} }),
+  );
+  expect(again.token).toBe(state.token);
+  await holder.dispose();
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await expect(page.getByTestId('off-list')).toContainText(
+    'Tu offres hors liste : un jeu de société',
+  );
+});

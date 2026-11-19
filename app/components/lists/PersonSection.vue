@@ -1,16 +1,63 @@
 <script setup lang="ts">
 import type { ListDocument } from '#server/http/lists';
+import type { Avatar } from '#server/utils/avatars';
+import { MEMBER_NAME_MAX } from '#server/utils/lists';
+import { useUpdateMemberMutation } from '~/composables/queries/useLists';
 import type IdeaLine from './IdeaLine.vue';
 
 // A person on a list, as its holder writes it (README 22.19, maquette
 // ListeTeneur): the round icon of 52 px left of the first name and the
-// line of practical details, « ses goûts » to their page, then their
-// ideas and the empty line at the end, « Une autre idée… ».
+// line of practical details, then their ideas, set 20 px in from the
+// icon, and the empty line at the end, « Une autre idée… ». The icon and
+// the first name change here, by touching them, without going to the
+// person's page (asked by Julien, 19 November 2026): the icon in its
+// sheet, the name written in place. The name of a person linked to an
+// account is not mine to change: « Moi » today. At the end
+// of the first name, « ⋯ » (maquette ListePersonneMenu): « Sa fiche et
+// ses goûts », and « Retirer de la liste », at once when nobody ticked
+// any of their ideas, otherwise after a second tap that says how many
+// gifts already planned would be lost.
 const props = defineProps<{
   listId: string;
   person: ListDocument['people'][number];
 }>();
 const { t } = useT();
+const editing = useListEditing();
+const toast = useToast();
+const errorMessage = useErrorMessage();
+const update = useUpdateMemberMutation(() => props.person.member.id);
+const save = (patch: { firstName?: string; avatar?: Avatar }) =>
+  update.mutate(patch, {
+    onError: (error) =>
+      toast.add({ title: errorMessage(error), color: 'error' }),
+  });
+const iconOpen = ref(false);
+const onIcon = (avatar: Avatar) => {
+  iconOpen.value = false;
+  save({ avatar });
+};
+// The first name, written in place: saved as it is left, kept as it was
+// when emptied or given up.
+const naming = ref(false);
+const nameDraft = ref('');
+const nameField = ref<HTMLInputElement | null>(null);
+const startName = async () => {
+  nameDraft.value = props.person.member.firstName;
+  naming.value = true;
+  await nextTick();
+  nameField.value?.focus();
+};
+const saveName = () => {
+  if (!naming.value) return;
+  naming.value = false;
+  const name = nameDraft.value.replace(/\s+/g, ' ').trim();
+  if (name && name !== props.person.member.firstName) {
+    save({ firstName: name });
+  }
+};
+const cancelName = () => {
+  naming.value = false;
+};
 const member = computed(() => props.person.member);
 /** « 6 ans · taille 6 ans, pointure 30 », or « Moi ». */
 const details = computed(() => {
@@ -27,6 +74,58 @@ const details = computed(() => {
     .filter(Boolean)
     .join(' · ');
 });
+/** The gifts already planned for them, lost if they leave the list. */
+const planned = computed(
+  () =>
+    props.person.ideas.filter((idea) => idea.view.kind !== 'free').length +
+    props.person.offList.length,
+);
+const menuOpen = ref(false);
+const confirming = ref(false);
+watch(menuOpen, (open) => {
+  if (!open) confirming.value = false;
+});
+const menu = computed(() =>
+  confirming.value
+    ? [
+        [
+          {
+            type: 'label' as const,
+            label: t('lists.doc.removeLoses', { count: planned.value }),
+          },
+          {
+            label: t('lists.doc.remove'),
+            icon: 'i-lucide-user-minus',
+            color: 'primary' as const,
+            onSelect: () => editing.removePerson(props.person),
+          },
+          { label: t('common.actions.cancel'), icon: 'i-lucide-x' },
+        ],
+      ]
+    : [
+        [
+          {
+            label: t('lists.doc.personPage'),
+            icon: 'i-lucide-user',
+            to: `/famille/${member.value.id}?liste=${props.listId}&place=${props.person.id}`,
+          },
+          {
+            label: t('lists.doc.removeFromList'),
+            icon: 'i-lucide-user-minus',
+            color: 'primary' as const,
+            onSelect: (event: Event) => {
+              if (planned.value === 0) {
+                editing.removePerson(props.person);
+                return;
+              }
+              // The menu stays, and asks again.
+              event.preventDefault();
+              confirming.value = true;
+            },
+          },
+        ],
+      ],
+);
 const lines = ref<InstanceType<typeof IdeaLine>[]>([]);
 const last = ref<InstanceType<typeof IdeaLine> | null>(null);
 /**
@@ -43,22 +142,75 @@ const onNext = (index: number) =>
 <template>
   <section class="flex flex-col gap-1" data-testid="list-person">
     <header class="flex items-center gap-3 pb-1">
-      <UiAvatar :avatar="member.avatar" :px="52" />
-      <div class="flex min-w-0 flex-col">
+      <button
+        type="button"
+        class="relative shrink-0"
+        :aria-label="t('lists.person.icon', { name: member.firstName })"
+        data-testid="person-icon"
+        @click="iconOpen = true"
+      >
+        <UiAvatar :avatar="member.avatar" :px="52" />
+        <!-- The pencil of the list's tile: this icon changes by touching it. -->
+        <span
+          class="absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full bg-default ring-1 ring-default"
+          aria-hidden="true"
+        >
+          <UIcon name="i-lucide-pencil" class="size-3" />
+        </span>
+      </button>
+      <div class="flex min-w-0 grow flex-col">
         <h2 class="font-display text-[28px] leading-[1.1] font-bold">
-          {{ member.firstName }}
-        </h2>
-        <p class="text-sm text-toned">
-          {{ details }}<template v-if="details"> · </template>
-          <NuxtLink
-            :to="`/famille/${member.id}?liste=${listId}&place=${person.id}`"
-            class="text-primary-ink underline"
-            >{{ t('lists.doc.tastes') }}</NuxtLink
+          <input
+            v-if="naming"
+            ref="nameField"
+            v-model="nameDraft"
+            type="text"
+            enterkeyhint="done"
+            :maxlength="MEMBER_NAME_MAX"
+            class="w-full bg-transparent outline-none"
+            :aria-label="t('lists.person.name')"
+            data-testid="person-name-field"
+            @keydown.enter.prevent="saveName"
+            @keydown.esc.prevent="cancelName"
+            @blur="saveName"
+          />
+          <template v-else-if="member.isSelf">{{ member.firstName }}</template>
+          <button
+            v-else
+            type="button"
+            class="text-left"
+            data-testid="person-name"
+            @click="startName"
           >
-        </p>
+            {{ member.firstName }}
+          </button>
+        </h2>
+        <p v-if="details" class="text-sm text-toned">{{ details }}</p>
       </div>
+      <UDropdownMenu
+        v-model:open="menuOpen"
+        :items="menu"
+        :content="{ align: 'end' }"
+        :ui="{
+          content:
+            'max-w-[280px] min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
+          group: 'p-0',
+          label: 'px-3.5 pt-3 pb-1 text-sm font-normal text-default',
+          item: 'min-h-12 items-center px-3.5 text-base',
+          itemLeadingIcon: 'size-5',
+        }"
+      >
+        <UButton
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-ellipsis"
+          class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
+          :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
+          data-testid="person-menu"
+        />
+      </UDropdownMenu>
     </header>
-    <ul class="flex flex-col">
+    <ul class="flex flex-col pl-5">
       <ListsIdeaLine
         v-for="(idea, index) in person.ideas"
         :key="idea.id"
@@ -110,5 +262,11 @@ const onNext = (index: number) =>
         :line="`${person.id}:new`"
       />
     </ul>
+    <AdminAvatarSheet
+      v-model:open="iconOpen"
+      :initial="member.avatar"
+      :title="t('lists.person.icon', { name: member.firstName })"
+      @validate="onIcon"
+    />
   </section>
 </template>

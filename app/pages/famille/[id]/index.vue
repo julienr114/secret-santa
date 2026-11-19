@@ -108,10 +108,18 @@ const onRemove = () =>
         <div class="flex items-center gap-3.5">
           <button
             type="button"
+            class="relative shrink-0"
             :aria-label="t('lists.person.icon', { name: member.firstName })"
             @click="editing = 'icon'"
           >
             <UiAvatar :avatar="member.avatar" :px="64" />
+            <!-- The pencil of the list's tile: the icon changes by touching it. -->
+            <span
+              class="absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
+              aria-hidden="true"
+            >
+              <UIcon name="i-lucide-pencil" class="size-3.5" />
+            </span>
           </button>
           <div class="flex min-w-0 flex-col">
             <p class="text-sm text-toned">{{ t('lists.person.context') }}</p>

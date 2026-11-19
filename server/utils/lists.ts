@@ -86,7 +86,7 @@ export type ListStatus = 'draft' | 'shared' | 'past';
 /**
  * The state of a list.
  * @param list - Its link's date of creation and its day, if any.
- * @param list.sharedAt - When it was first shared, or null.
+ * @param list.sharedAt - Since when it is shared by its link, or null.
  * @param list.eventDate - Its day (YYYY-MM-DD), or null.
  * @param today - Today (YYYY-MM-DD).
  * @returns Draft, shared or past.
@@ -97,6 +97,41 @@ export const listStatus = (
 ): ListStatus => {
   if (!list.sharedAt) return 'draft';
   return list.eventDate && list.eventDate < today ? 'past' : 'shared';
+};
+
+/** What the switch « Partage par lien » asks (README 22.19). */
+export const SHARE_ASKS = ['on', 'off', 'renew'] as const;
+export type ShareAsk = (typeof SHARE_ASKS)[number];
+
+/**
+ * The link of a list after its switch is touched. On: the list is
+ * shared, by the link it already had if it ever had one. Off: the link
+ * stops working at once and is kept, so that sharing again gives the same
+ * one. Renew: another link, only while the list is shared.
+ * @param list - The link and the day of sharing as they stand.
+ * @param list.shareToken - The link, or null before the first sharing.
+ * @param list.sharedAt - Since when it is shared, or null when it is not.
+ * @param ask - What is asked.
+ * @param fresh - A new link and the present time, used when needed.
+ * @param fresh.token - A link nobody has.
+ * @param fresh.now - The present time.
+ * @returns The link and the day of sharing to store.
+ */
+export const shareChange = (
+  list: { shareToken: string | null; sharedAt: string | null },
+  ask: ShareAsk,
+  fresh: { token: string; now: string },
+): { shareToken: string | null; sharedAt: string | null } => {
+  if (ask === 'off') return { shareToken: list.shareToken, sharedAt: null };
+  if (ask === 'renew') {
+    return list.sharedAt
+      ? { shareToken: fresh.token, sharedAt: list.sharedAt }
+      : { shareToken: list.shareToken, sharedAt: null };
+  }
+  return {
+    shareToken: list.shareToken ?? fresh.token,
+    sharedAt: list.sharedAt ?? fresh.now,
+  };
 };
 
 /** What a list lacks to be shared: a name, someone on it. */

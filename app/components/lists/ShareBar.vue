@@ -1,0 +1,242 @@
+<script setup lang="ts">
+import type { ListDocument } from '#server/http/lists';
+import { shareMissing, type ShareAsk } from '#server/utils/lists';
+import { useShareListMutation } from '~/composables/queries/useLists';
+
+// « Partage par lien », the bar on top of the document of a list (README
+// 22.19, maquettes ListeEtatBrouillon, ListeEtatPubliee): one row, an
+// icon, a title that names neither an action nor a state, and the switch,
+// which says whether the list has its link. Not shared: a padlock, nothing
+// to unfold; the switch is off. Turned on while the list has no name or
+// nobody on it, it stays off and the bar says what is missing, as an
+// error, until it is there. Shared: the bar stays white, only the switch
+// and the globe are green; the title unfolds, in place, the link and
+// « Copier », « Partager » (the phone's share sheet, with a ready-made
+// message, shown only where there is one; no « Par email », asked by
+// Julien on 19 November 2026: the share sheet has the mail app too), « Personnaliser le message » and
+// « Changer de lien ». Nothing full nor
+// red. Turned off, sharing stops at once, with « Annuler » in the toast;
+// turned on again, the link is the same.
+const props = defineProps<{ doc: ListDocument }>();
+const { t, tk } = useT();
+const toast = useToast();
+const errorMessage = useErrorMessage();
+const id = computed(() => props.doc.list.id);
+const share = useShareListMutation(id);
+
+const stored = computed(() => props.doc.list.status !== 'draft');
+/** What the switch was just asked, until the list says so itself. */
+const asked = ref<boolean | null>(null);
+const shared = computed(() => asked.value ?? stored.value);
+const missing = computed(() =>
+  shareMissing({
+    title: props.doc.list.title,
+    peopleCount: props.doc.people.length,
+  }),
+);
+const blocked = computed(() => !shared.value && missing.value.length > 0);
+/** The switch was touched while something was missing. */
+const tried = ref(false);
+
+const open = ref(false);
+const confirming = ref(false);
+const url = computed(() =>
+  stored.value && props.doc.list.shareToken && import.meta.client
+    ? `${window.location.origin}/l/${props.doc.list.shareToken}`
+    : '',
+);
+const { whole } = useListMessage(id, () => props.doc, url);
+const send = (ask: ShareAsk, then: () => void) =>
+  share.mutate(
+    { ask },
+    {
+      onSuccess: then,
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
+      onSettled: () => {
+        asked.value = null;
+      },
+    },
+  );
+const turnOn = () => {
+  asked.value = true;
+  send('on', () => {
+    open.value = true;
+  });
+};
+const turnOff = () => {
+  asked.value = false;
+  open.value = false;
+  confirming.value = false;
+  send('off', () =>
+    toast.add({
+      title: t('lists.share.stopped'),
+      actions: [{ label: t('common.actions.cancel'), onClick: turnOn }],
+    }),
+  );
+};
+const onSwitch = (on: boolean) => {
+  if (on && blocked.value) {
+    tried.value = true;
+    return;
+  }
+  tried.value = false;
+  return on ? turnOn() : turnOff();
+};
+const onRenew = () =>
+  send('renew', () => {
+    confirming.value = false;
+    toast.add({ title: t('lists.share.changed'), color: 'success' });
+  });
+
+// « Copier » answers where it was touched: « Copié », for a moment.
+const copied = ref(false);
+const onCopy = async () => {
+  if (!(await copyText(url.value))) {
+    toast.add({ title: t('lists.share.copyFailed'), color: 'error' });
+    return;
+  }
+  copied.value = true;
+  window.setTimeout(() => {
+    copied.value = false;
+  }, 2000);
+};
+// « Partager » only where the device has a share sheet: elsewhere (a
+// computer), « Copier » is enough. The sheet must open right on the tap,
+// before any wait (Safari).
+const canShare = ref(false);
+onMounted(() => {
+  canShare.value = typeof navigator.share === 'function';
+});
+const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
+</script>
+
+<template>
+  <div
+    class="-mt-1 rounded-[24px] bg-default ring-1 ring-default"
+    data-testid="share-bar"
+  >
+    <div class="flex min-h-12 items-center gap-2 pr-2 pl-3.5">
+      <UIcon
+        :name="shared ? 'i-lucide-globe' : 'i-lucide-lock'"
+        class="size-5 shrink-0"
+        :class="shared ? 'text-success' : 'text-toned'"
+      />
+      <button
+        v-if="shared"
+        type="button"
+        class="flex min-h-11 min-w-0 grow items-center gap-1 text-left text-sm font-bold"
+        :aria-expanded="open"
+        aria-controls="share-panel"
+        data-testid="share-title"
+        @click="open = !open"
+      >
+        {{ t('lists.share.title') }}
+        <UIcon
+          :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+          class="size-5 text-toned"
+        />
+      </button>
+      <span v-else class="min-w-0 grow text-sm font-bold">{{
+        t('lists.share.title')
+      }}</span>
+      <USwitch
+        :model-value="shared"
+        color="success"
+        size="lg"
+        :disabled="share.isPending.value"
+        :aria-label="t('lists.share.title')"
+        data-testid="share-switch"
+        @update:model-value="onSwitch"
+      />
+    </div>
+    <p
+      v-if="blocked && tried"
+      class="px-3.5 pb-3 text-[13px] leading-[1.45] font-medium text-error"
+      role="alert"
+      data-testid="share-missing"
+    >
+      {{ missing.map((what) => tk(`lists.share.missing.${what}`)).join(' ') }}
+    </p>
+    <div
+      v-if="shared && open && url"
+      id="share-panel"
+      class="flex flex-col gap-2.5 px-3.5 pb-3.5"
+      data-testid="share-panel"
+    >
+      <div
+        class="flex items-center gap-2.5 rounded-[18px] bg-muted py-2 pr-2 pl-3"
+      >
+        <span
+          class="min-w-0 grow truncate text-[15px] font-semibold select-all"
+          data-testid="share-link"
+          >{{ url.replace(/^https?:\/\//, '') }}</span
+        >
+        <button
+          type="button"
+          class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
+          data-testid="copy-link"
+          @click="onCopy"
+        >
+          <UIcon
+            :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+            class="size-[18px]"
+          />
+          <span aria-live="polite">{{
+            copied ? t('lists.share.copied') : t('lists.share.copy')
+          }}</span>
+        </button>
+      </div>
+      <UButton
+        v-if="canShare"
+        block
+        variant="outline"
+        color="neutral"
+        icon="i-lucide-send"
+        class="h-12 justify-center text-base font-bold"
+        :label="t('lists.share.send')"
+        data-testid="share-send"
+        @click="onSend"
+      />
+      <p class="text-[13px] leading-[1.45] text-toned">
+        {{ t('lists.share.help') }}
+      </p>
+      <div
+        v-if="confirming"
+        class="flex flex-wrap items-center gap-x-4 text-sm"
+        data-testid="share-renew"
+      >
+        <p class="grow">{{ t('lists.share.changeConfirm') }}</p>
+        <button
+          type="button"
+          class="flex min-h-11 items-center font-bold underline underline-offset-2"
+          :disabled="share.isPending.value"
+          @click="onRenew"
+        >
+          {{ t('lists.share.change') }}
+        </button>
+        <button
+          type="button"
+          class="flex min-h-11 items-center font-bold text-toned underline underline-offset-2"
+          @click="confirming = false"
+        >
+          {{ t('common.actions.cancel') }}
+        </button>
+      </div>
+      <p v-else class="flex flex-wrap gap-x-4 text-sm font-bold text-toned">
+        <NuxtLink
+          :to="`/listes/${id}/message`"
+          class="flex min-h-11 items-center underline underline-offset-2"
+          >{{ t('lists.share.personalize') }}</NuxtLink
+        >
+        <button
+          type="button"
+          class="flex min-h-11 items-center underline underline-offset-2"
+          @click="confirming = true"
+        >
+          {{ t('lists.share.changeLink') }}
+        </button>
+      </p>
+    </div>
+  </div>
+</template>

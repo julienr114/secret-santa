@@ -5,6 +5,7 @@ import type {
   VisitorDocument,
 } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
+import type { ShareAsk } from '#server/utils/lists';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -115,7 +116,7 @@ export const useDeleteIdeaMutation = (id: Id) =>
   );
 
 export const useShareListMutation = (id: Id) =>
-  useApiMutation<{ token: string }, { renew?: boolean }>(
+  useApiMutation<{ token: string | null; shared: boolean }, { ask: ShareAsk }>(
     (body) => api(`/api/lists/${toValue(id)}/share`, { method: 'POST', body }),
     () => listKeys(toValue(id)),
   );

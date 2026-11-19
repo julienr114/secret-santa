@@ -1,5 +1,5 @@
 // Gift lists (README 22.19, lots 21 and 22): the « Listes » tab, the
-// document of a list, sharing it, the people of my family. The French
+// document of a list, sharing it, « Mes proches ». The French
 // texts of the maquettes `Liste*` are the reference.
 export default {
   tabs: { draws: 'Tirages', lists: 'Listes', label: 'Sections' },
@@ -50,7 +50,7 @@ export default {
     sent: 'Une liste qu’on t’a envoyée apparaît ici dès que tu ouvres son lien en étant connecté.',
     empty: {
       title: 'Fini, les cadeaux en double',
-      body: 'Écris les idées de cadeaux de ta famille pour Noël ou un anniversaire, partage le lien, et chacun coche ce qu’il offre.',
+      body: 'Écris les idées de cadeaux de tes proches pour Noël ou un anniversaire, partage le lien, et chacun coche ce qu’il offre.',
       create: 'Créer ma première liste',
       sent: 'On t’a envoyé une liste ? Ouvre son lien : elle apparaîtra ici.',
     },
@@ -73,11 +73,11 @@ export default {
     date: 'Date',
     dateHelp: 'Elle range les listes et dit quand une liste est passée.',
     noDate: 'Sans date',
-    noteLabel: 'Ton mot pour la famille',
+    noteLabel: 'Ton mot d’accueil',
     noteDefault:
       'Quelques idées pour t’éviter de chercher. Coche ce que tu offres, et personne n’aura la même idée. Tu en as une autre ? Elle est la bienvenue.',
     noteDefaultHint: 'Un texte de départ : touche-le pour écrire le tien.',
-    noteAdd: 'Ajouter un mot pour la famille',
+    noteAdd: 'Ajouter un mot d’accueil',
     noteHelp: 'Effacé, la liste n’a pas de mot.',
     plannedHolder: {
       one: '{count} cadeau déjà prévu. Toi seul vois les prénoms.',
@@ -154,7 +154,7 @@ export default {
     and: 'et',
     me: 'moi',
     footer:
-      'Fait avec Under the Tree, pour les listes de cadeaux et les Secret Santa en famille.',
+      'Fait avec Under the Tree, pour les listes de cadeaux et les Secret Santa entre proches.',
     personalize: 'Personnaliser le message',
     personalizeHelp: 'Le lien et la dernière phrase restent à la fin.',
     personalizeLabel: 'Le message',
@@ -212,8 +212,7 @@ export default {
     birthValue: '{date} · {age}',
     clothing: 'Taille de vêtements',
     shoe: 'Pointure',
-    practicalHelp:
-      'Ce que la famille demande toujours. Affiché en haut de sa section.',
+    practicalHelp: 'Ce qu’on demande toujours. Affiché en haut de sa section.',
     name: 'Prénom',
     icon: 'L’icône de {name}',
     tastes: 'Ses goûts',

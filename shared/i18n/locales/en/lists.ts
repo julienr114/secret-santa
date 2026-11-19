@@ -45,7 +45,7 @@ export default {
     sent: 'A list someone sent you shows up here as soon as you open its link while logged in.',
     empty: {
       title: 'No more double gifts',
-      body: 'Write down your family’s gift ideas for Christmas or a birthday, share the link, and everyone ticks what they give.',
+      body: 'Write down your people’s gift ideas for Christmas or a birthday, share the link, and everyone ticks what they give.',
       create: 'Create my first list',
       sent: 'Someone sent you a list? Open its link: it will show up here.',
     },
@@ -68,11 +68,11 @@ export default {
     date: 'Date',
     dateHelp: 'It sorts the lists and says when a list is over.',
     noDate: 'No date',
-    noteLabel: 'Your note for the family',
+    noteLabel: 'Your welcome note',
     noteDefault:
       'A few ideas to save you the search. Tick what you give, and nobody will have the same idea. Got another one? It’s welcome.',
     noteDefaultHint: 'A starting text: tap it to write your own.',
-    noteAdd: 'Add a note for the family',
+    noteAdd: 'Add a welcome note',
     noteHelp: 'Erased, the list has no note.',
     plannedHolder: {
       one: '{count} gift already planned. Only you see the names.',
@@ -149,7 +149,7 @@ export default {
     and: 'and',
     me: 'me',
     footer:
-      'Made with Under the Tree, for gift lists and family Secret Santas.',
+      'Made with Under the Tree, for gift lists and Secret Santas with those close to you.',
     personalize: 'Personalise the message',
     personalizeHelp: 'The link and the last sentence stay at the end.',
     personalizeLabel: 'The message',
@@ -206,8 +206,7 @@ export default {
     birthValue: '{date} · {age}',
     clothing: 'Clothing size',
     shoe: 'Shoe size',
-    practicalHelp:
-      'What the family always asks. Shown at the top of their section.',
+    practicalHelp: 'What people always ask. Shown at the top of their section.',
     name: 'First name',
     icon: '{name}’s icon',
     tastes: 'Their tastes',

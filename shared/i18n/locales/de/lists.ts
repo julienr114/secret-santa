@@ -48,7 +48,7 @@ export default {
     sent: 'Eine Liste, die man dir geschickt hat, erscheint hier, sobald du ihren Link angemeldet öffnest.',
     empty: {
       title: 'Schluss mit doppelten Geschenken',
-      body: 'Schreib die Geschenkideen deiner Familie für Weihnachten oder einen Geburtstag auf, teile den Link, und jeder hakt ab, was er schenkt.',
+      body: 'Schreib die Geschenkideen deiner Leute für Weihnachten oder einen Geburtstag auf, teile den Link, und jeder hakt ab, was er schenkt.',
       create: 'Meine erste Liste anlegen',
       sent: 'Man hat dir eine Liste geschickt? Öffne ihren Link: Sie erscheint dann hier.',
     },
@@ -71,12 +71,12 @@ export default {
     date: 'Datum',
     dateHelp: 'Es ordnet die Listen und sagt, wann eine Liste vorbei ist.',
     noDate: 'Ohne Datum',
-    noteLabel: 'Dein Wort an die Familie',
+    noteLabel: 'Dein Willkommenswort',
     noteDefault:
       'Ein paar Ideen, damit du nicht suchen musst. Hak ab, was du schenkst, dann hat niemand dieselbe Idee. Du hast noch eine? Sie ist willkommen.',
     noteDefaultHint:
       'Ein Vorschlag: Tipp ihn an, um deinen eigenen zu schreiben.',
-    noteAdd: 'Ein Wort an die Familie hinzufügen',
+    noteAdd: 'Ein Willkommenswort hinzufügen',
     noteHelp: 'Gelöscht, hat die Liste kein Wort.',
     plannedHolder: {
       one: '{count} Geschenk schon geplant. Nur du siehst die Namen.',
@@ -153,7 +153,7 @@ export default {
     and: 'und',
     me: 'ich',
     footer:
-      'Gemacht mit Under the Tree, für Geschenklisten und Wichteln in der Familie.',
+      'Gemacht mit Under the Tree, für Geschenklisten und Wichteln unter Nahestehenden.',
     personalize: 'Nachricht anpassen',
     personalizeHelp: 'Der Link und der letzte Satz bleiben am Ende.',
     personalizeLabel: 'Die Nachricht',
@@ -212,8 +212,7 @@ export default {
     birthValue: '{date} · {age}',
     clothing: 'Kleidergröße',
     shoe: 'Schuhgröße',
-    practicalHelp:
-      'Was die Familie immer fragt. Oben in ihrem Abschnitt angezeigt.',
+    practicalHelp: 'Was man immer fragt. Oben in ihrem Abschnitt angezeigt.',
     name: 'Vorname',
     icon: 'Symbol von {name}',
     tastes: 'Vorlieben',

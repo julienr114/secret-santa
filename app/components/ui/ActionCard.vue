@@ -3,18 +3,21 @@
 // display font, what shows it (a sentence with a check, counters, a
 // bar) in the default slot, the action in the `action` slot, and a line
 // of help under it, and a last row across the card (`footer`), set apart
-// by a line.
+// by a line. An illustration may head the card (`illustration`).
 defineProps<{
   eyebrow: string;
   title: string;
   help?: string;
-  /** `warning` when something must be fixed first: the label turns mustard. */
+  /** `warning` when something must be fixed first: the label turns lilac. */
   tone?: 'primary' | 'warning';
 }>();
 </script>
 
 <template>
   <UiCard padding="none" class="flex flex-col gap-4 p-5">
+    <div v-if="$slots.illustration" class="-mt-1 -mb-1 flex justify-center">
+      <slot name="illustration" />
+    </div>
     <div class="flex flex-col gap-1">
       <p
         class="text-xs font-bold tracking-[0.04em] uppercase"

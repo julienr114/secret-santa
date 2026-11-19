@@ -243,6 +243,7 @@ const pendingRequests = computed(() => data.value?.pendingRequests ?? 0);
           class="flex flex-col gap-2.5 px-5 py-6"
           data-testid="home-empty"
         >
+          <UiIllusTreeEmpty class="-mt-1 mb-1 self-center" />
           <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
             {{ t('auth.home.empty.title') }}
           </h2>

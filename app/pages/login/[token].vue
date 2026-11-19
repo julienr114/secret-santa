@@ -55,7 +55,7 @@ const onConfirm = () =>
 <template>
   <AuthScreen>
     <div class="flex flex-col items-center gap-2.5 pt-2 text-center">
-      <img src="/favicon.svg" alt="" class="size-16" />
+      <UiIllusTree :label="t('common.appName')" />
       <p
         class="font-display text-[26px] leading-[1.05] font-bold text-primary-ink"
       >

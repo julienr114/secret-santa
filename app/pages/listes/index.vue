@@ -85,7 +85,7 @@ const pastLine = (card: ListCard) => {
           class="flex flex-col items-center gap-3 text-center"
           data-testid="lists-empty"
         >
-          <ListsTile :icon="{ emoji: '🎁', color: 'brick' }" size="lg" />
+          <UiIllusChecklist />
           <h2 class="font-display text-[24px] leading-[1.2] font-bold">
             {{ t('lists.home.empty.title') }}
           </h2>
@@ -109,7 +109,7 @@ const pastLine = (card: ListCard) => {
           v-for="card in coming"
           :key="card.id"
           :to="card.holder ? `/l/${card.holder.token}` : `/listes/${card.id}`"
-          class="flex flex-col gap-3 rounded-2xl bg-default p-4 shadow-sm ring-1 ring-default"
+          class="flex flex-col gap-3 rounded-2xl bg-default p-4 shadow-card"
           data-testid="list-card"
         >
           <p

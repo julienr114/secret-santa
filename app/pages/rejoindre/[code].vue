@@ -129,12 +129,7 @@ const closed = computed(() => {
       data-testid="invite-joined"
     >
       <div class="flex flex-col items-center gap-2 text-center">
-        <span
-          class="flex size-16 items-center justify-center rounded-full bg-success-soft text-success-ink"
-          aria-hidden="true"
-        >
-          <UIcon name="i-lucide-check" class="size-8" />
-        </span>
+        <UiIllusParcels />
         <h1 class="font-display text-[30px] leading-[1.1] font-bold">
           {{ t('auth.invite.welcome', { group: data.groupName }) }}
         </h1>
@@ -204,7 +199,7 @@ const closed = computed(() => {
 
     <template v-else-if="data">
       <div class="flex flex-col items-center gap-2 text-center">
-        <img src="/favicon.svg" alt="" class="size-14" />
+        <UiIllusWreath :label="t('common.appName')" />
         <p class="text-[15px] text-toned">{{ t('auth.invite.intro') }}</p>
         <h1
           class="font-display text-[34px] leading-[1.05] font-bold text-primary-ink"
@@ -218,7 +213,7 @@ const closed = computed(() => {
 
       <figure v-if="data.message" class="flex flex-col gap-1.5">
         <blockquote
-          class="rounded-[16px_16px_16px_4px] bg-muted px-3.5 py-3 leading-[1.45]"
+          class="rounded-bubble rounded-bl-[6px] bg-muted px-3.5 py-3 leading-[1.45]"
           data-testid="invite-words"
         >
           {{ data.message }}

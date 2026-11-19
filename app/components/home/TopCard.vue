@@ -62,6 +62,9 @@ const words = computed(() => {
 
 <template>
   <UiActionCard :eyebrow="eyebrow" :title="words.title" data-testid="top-card">
+    <template v-if="action.kind === 'createGroup'" #illustration>
+      <UiIllusLetter />
+    </template>
     <UiPodium v-if="action.kind === 'palmares'" class="self-center" />
     <UiEnvelope
       v-else-if="
@@ -81,7 +84,7 @@ const words = computed(() => {
         class="min-h-14 justify-center font-bold"
         :class="
           action.kind === 'palmares'
-            ? 'bg-pine-700 hover:bg-pine-800 active:bg-pine-800'
+            ? 'bg-success hover:bg-success-deep active:bg-success-deep'
             : ''
         "
         :label="words.button"

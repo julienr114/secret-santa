@@ -104,6 +104,7 @@ const missingText = computed(() =>
     :title="t('adminEdition.screen.empty.title')"
     data-testid="action-card"
   >
+    <template #illustration><UiIllusSeats /></template>
     <p class="text-sm leading-[1.45] text-toned">
       {{ t('adminEdition.screen.empty.body') }}
     </p>
@@ -135,7 +136,7 @@ const missingText = computed(() =>
   >
     <ul
       v-if="blockedPeople.length"
-      class="divide-y divide-warning-ring rounded-xl bg-warning-tint text-sm leading-[1.45] text-mustard-900 ring-1 ring-warning-ring"
+      class="divide-y divide-warning-ring rounded-xl bg-warning-tint text-sm leading-[1.45] text-warning-ink ring-1 ring-warning-ring"
     >
       <li
         v-for="person in blockedPeople"
@@ -144,7 +145,7 @@ const missingText = computed(() =>
       >
         <UiAvatar v-if="person.avatar" :avatar="person.avatar" size="sm" />
         <span
-          ><strong class="text-mustard-950">{{ person.name }}</strong> :
+          ><strong class="text-alert-ink">{{ person.name }}</strong> :
           {{ person.why }}</span
         >
       </li>

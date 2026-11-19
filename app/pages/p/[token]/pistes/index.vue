@@ -140,6 +140,7 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
         class="flex flex-col gap-3.5 p-5"
         data-testid="hints-start"
       >
+        <div class="-mt-1 -mb-1 flex justify-center"><UiIllusLabel /></div>
         <div class="flex flex-col gap-1">
           <p
             class="text-xs font-bold tracking-[0.04em] text-primary-ink uppercase"

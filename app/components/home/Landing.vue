@@ -23,7 +23,7 @@ const sent = ref(false);
       class="flex max-w-sm grow flex-col justify-center gap-6 py-8"
     >
       <div class="flex flex-col items-center gap-2 text-center">
-        <img src="/favicon.svg" alt="" class="size-16" />
+        <UiIllusTree :label="t('common.appName')" />
         <h1 class="font-display text-4xl font-bold text-primary">
           {{ t('common.appName') }}
         </h1>

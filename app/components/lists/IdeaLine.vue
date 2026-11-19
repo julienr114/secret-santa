@@ -110,6 +110,36 @@ const onBox = () => {
   else if (mine.value) untick.mutate(props.idea.id, { onError });
   else tick.mutate({ ideaId: props.idea.id }, { onError });
 };
+// « Décocher » for someone (Correction 25, maquette ListeDecocher): the
+// first name on a ticked idea is touched, turns dark, and unfolds in the
+// line a light band, « Coché par Mamie, le 12 novembre » and « Décocher »
+// (one row each for a gift given by several, with « Retirer »). No
+// bubble, no question: it acts at once, « Annuler » is the net. An
+// anonymous tick says neither who nor when.
+const { locale } = useT();
+const claims = computed(() =>
+  editing.untickFor ? (props.idea?.claims ?? []) : [],
+);
+const unfolded = ref(false);
+watch(
+  () => claims.value.length,
+  (count) => {
+    if (count === 0) unfolded.value = false;
+  },
+);
+const tickDay = (iso: string) =>
+  new Intl.DateTimeFormat(locale.value, {
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date(iso));
+/** « Coché par » and «, le 12 novembre », around the name in bold. */
+const tickedBy = (claim: { by: string | null; at: string | null }) => {
+  const [before = '', after = ''] = t(
+    view.value.kind === 'group' ? 'lists.doc.joinedBy' : 'lists.doc.tickedBy',
+    { name: '\u0000', date: claim.at ? tickDay(claim.at) : '' },
+  ).split('\u0000');
+  return { before, after };
+};
 /** Who gives it, as the holder reads it. */
 const who = computed(() => {
   const v = view.value;
@@ -579,8 +609,23 @@ const onFocusOut = (event: FocusEvent) => {
           :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a
         >
+        <button
+          v-if="who && claims.length > 0"
+          type="button"
+          class="relative rounded-full px-2 py-0.5 text-xs font-bold no-underline after:absolute after:-inset-x-1 after:-inset-y-3"
+          :class="
+            unfolded ? 'bg-inverted text-inverted' : 'bg-muted text-default'
+          "
+          :aria-expanded="unfolded"
+          :aria-label="t('lists.doc.tickOf', { name: who })"
+          data-testid="idea-who"
+          data-no-drag
+          @click="unfolded = !unfolded"
+        >
+          {{ who }}
+        </button>
         <span
-          v-if="who"
+          v-else-if="who"
           class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default no-underline"
           data-testid="idea-who"
           >{{ who }}</span
@@ -601,6 +646,39 @@ const onFocusOut = (event: FocusEvent) => {
           >{{ t('lists.visitor.joined') }}</span
         >
       </p>
+      <ul
+        v-if="idea && unfolded && claims.length > 0 && !writing"
+        class="mt-1.5 flex flex-col divide-y divide-default rounded-[18px] bg-muted text-sm leading-[1.35] text-toned"
+        data-testid="untick-band"
+        data-no-drag
+      >
+        <li
+          v-for="claim in claims"
+          :key="claim.id"
+          class="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3"
+        >
+          <span v-if="claim.by === null">{{
+            t('lists.doc.tickedAnonymous')
+          }}</span>
+          <span v-else
+            >{{ tickedBy(claim).before
+            }}<strong class="font-bold text-highlighted">{{ claim.by }}</strong
+            >{{ tickedBy(claim).after }}</span
+          >
+          <button
+            type="button"
+            class="min-h-9 shrink-0 rounded-full bg-default px-3 text-sm font-bold text-primary-ink ring-1 ring-default"
+            data-testid="untick-for"
+            @click="editing.untickFor?.(idea, claim)"
+          >
+            {{
+              view.kind === 'group'
+                ? t('lists.doc.removeTick')
+                : t('lists.doc.untick')
+            }}
+          </button>
+        </li>
+      </ul>
       <p
         v-if="idea && mine && !writing"
         class="text-[13px] text-toned"

@@ -33,6 +33,8 @@ export const giverOf = (
 
 /** A claim with who made it. */
 export type ClaimWithGiver = {
+  /** The row itself: names a tick without saying whose it is. */
+  id: string;
   ideaId: string;
   accountId: string;
   mode: ClaimMode;
@@ -56,6 +58,7 @@ export const claimsOfLists = async (
     .innerJoin(accounts, eq(accounts.id, giftClaims.accountId))
     .where(inArray(giftClaims.listId, [...listIds]));
   return rows.map(({ claim, account }) => ({
+    id: claim.id,
     ideaId: claim.ideaId,
     accountId: claim.accountId,
     mode: claim.mode,
@@ -164,6 +167,21 @@ export const leaveClaim = (db: Db, ideaId: string, accountId: string) =>
     .delete(giftClaims)
     .where(
       and(eq(giftClaims.ideaId, ideaId), eq(giftClaims.accountId, accountId)),
+    );
+
+/** Takes one tick off, named by its row, on an idea of a list. */
+export const removeClaim = (
+  db: Db,
+  where: { listId: string; ideaId: string; claimId: string },
+) =>
+  db
+    .delete(giftClaims)
+    .where(
+      and(
+        eq(giftClaims.id, where.claimId),
+        eq(giftClaims.ideaId, where.ideaId),
+        eq(giftClaims.listId, where.listId),
+      ),
     );
 
 /** Says a gift not on the list. */

@@ -354,6 +354,17 @@ export const useUntickMutation = (via: Via) =>
     () => claimKeys(toValue(via)),
   );
 
+/** Those who hold a list take the tick of someone else off an idea. */
+export const useUntickForMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, { ideaId: string; claimId: string }>(
+    ({ ideaId, claimId }) =>
+      api(`/api/lists/${toValue(id)}/claims/${ideaId}`, {
+        method: 'DELETE',
+        query: { claim: claimId },
+      }),
+    () => listKeys(toValue(id)),
+  );
+
 export const useAddOffListMutation = (token: Token) =>
   useApiMutation<
     { ok: true },

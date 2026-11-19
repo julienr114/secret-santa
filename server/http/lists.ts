@@ -28,7 +28,9 @@ import { nowIso } from '#server/http/context';
 import {
   offListView,
   newIdeasSince,
+  removableClaims,
   type OffListView,
+  type RemovableClaim,
 } from '#server/utils/claims';
 import {
   ageOn,
@@ -219,6 +221,11 @@ export type IdeaLine = {
   view: IdeaView;
   /** Mine, when I give it. */
   mine: MyClaim | null;
+  /**
+   * The ticks of others that the one looking may take off (those who
+   * hold the list), each with the line as it would be without it.
+   */
+  claims: (RemovableClaim & { after: IdeaView })[];
   /** The words of each giver of a group, by name, for its sheet. */
   notes: { name: string; avatar: Avatar; note: string | null; me: boolean }[];
 };
@@ -279,6 +286,15 @@ const linesOf = (
               closed: on[0]?.closed ?? false,
             }
           : null,
+        // What those who hold the list may take off for someone, each
+        // with the line as it would be without it.
+        claims: removableClaims(on, sees).map((claim) => ({
+          ...claim,
+          after: ideaView(
+            on.filter((c) => c.id !== claim.id),
+            sees,
+          ),
+        })),
         notes:
           on[0]?.mode === 'group'
             ? on.map((c) => ({

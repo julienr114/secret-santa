@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  mayRemoveClaim,
+  removableClaims,
   canChange,
   canTick,
   leaderAfterLeaving,
@@ -108,5 +110,74 @@ describe('claims', () => {
     ];
     expect(newIdeasSince(ideas, '2026-11-12')).toBe(2);
     expect(newIdeasSince(ideas, null)).toBe(0);
+  });
+});
+
+describe('unticking for someone (Correction 25)', () => {
+  const row = (
+    id: string,
+    accountId: string,
+    over: Partial<{ anonymous: boolean; mode: 'alone' | 'group' }> = {},
+  ) => ({
+    id,
+    accountId,
+    name: accountId,
+    mode: 'alone' as const,
+    anonymous: false,
+    note: null,
+    closed: false,
+    createdAt: `2026-11-12T10:00:0${id}.000Z`,
+    ...over,
+  });
+
+  it('lets those who hold the list take any tick off, the others their own', () => {
+    const mamies = { accountId: 'mamie' };
+    expect(mayRemoveClaim({ accountId: 'camille', holds: true }, mamies)).toBe(
+      true,
+    );
+    expect(mayRemoveClaim({ accountId: 'tonton', holds: false }, mamies)).toBe(
+      false,
+    );
+    expect(mayRemoveClaim({ accountId: 'mamie', holds: false }, mamies)).toBe(
+      true,
+    );
+    expect(mayRemoveClaim({ accountId: null, holds: false }, mamies)).toBe(
+      false,
+    );
+  });
+
+  it('offers the ticks of the others to those who hold the list only', () => {
+    const claims = [row('1', 'mamie'), row('2', 'camille')];
+    expect(
+      removableClaims(claims, { accountId: 'camille', holds: true }),
+    ).toEqual([{ id: '1', by: 'mamie', at: '2026-11-12T10:00:01.000Z' }]);
+    expect(
+      removableClaims(claims, { accountId: 'tonton', holds: false }),
+    ).toEqual([]);
+    expect(removableClaims(claims, { accountId: null, holds: false })).toEqual(
+      [],
+    );
+  });
+
+  it('keeps the secret of an anonymous tick: neither name nor date', () => {
+    expect(
+      removableClaims([row('1', 'mamie', { anonymous: true })], {
+        accountId: 'camille',
+        holds: true,
+      }),
+    ).toEqual([{ id: '1', by: null, at: null }]);
+  });
+
+  it('offers each one of a gift given by several', () => {
+    const claims = [
+      row('1', 'mamie', { mode: 'group' }),
+      row('2', 'camille', { mode: 'group' }),
+      row('3', 'hugo', { mode: 'group' }),
+    ];
+    expect(
+      removableClaims(claims, { accountId: 'camille', holds: true }).map(
+        (claim) => claim.by,
+      ),
+    ).toEqual(['mamie', 'hugo']);
   });
 });

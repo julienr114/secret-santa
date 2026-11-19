@@ -15,6 +15,11 @@ export type ListEditing = {
   join: (idea: IdeaLine, forName: string) => void;
   /** « Retirer de la liste »: the person goes, with « Annuler ». */
   removePerson: (person: PersonLine) => void;
+  /**
+   * « Décocher » for someone (Correction 25): their tick goes at once,
+   * with « Annuler ». Not offered where nobody may (a list by its link).
+   */
+  untickFor?: (idea: IdeaLine, claim: IdeaLine['claims'][number]) => void;
 };
 
 export const LIST_EDITING: InjectionKey<ListEditing> = Symbol('list-editing');

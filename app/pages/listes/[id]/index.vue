@@ -13,6 +13,7 @@ import {
   useListQuery,
   useRemovePersonMutation,
   useReorderMutation,
+  useUntickForMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
 import { LIST_EDITING } from '~/composables/useListEditing';
@@ -121,6 +122,7 @@ provide(LIST_EDITING, {
     joining.value = { idea, forName };
   },
   removePerson: (person) => onRemovePerson(person),
+  untickFor: (idea, claim) => onUntickFor(idea, claim),
 });
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
@@ -137,10 +139,51 @@ const removal = useDelayedRemoval((personId, done) =>
 // once; the list is read again once it is saved.
 const reorder = useReorderMutation(id);
 const wanted = ref<ListOrder | null>(null);
-const people = computed(() => {
-  const there = (doc.value?.people ?? []).filter(
-    (p) => p.id !== removal.leaving.value,
+// « Décocher » for someone (Correction 25, README 22.19, maquettes
+// ListeDecocher, ListeDecocheFait): the tick goes from the screen at
+// once, and from the server only once « Annuler » is gone, so that giving
+// up puts it back exactly as it was (same person, same way, same date),
+// an anonymous one included.
+const untickFor = useUntickForMutation(id);
+const unticking = useDelayedRemoval((key, done) => {
+  const [ideaId = '', claimId = ''] = key.split(':');
+  untickFor.mutate(
+    { ideaId, claimId },
+    {
+      onError: (error) =>
+        toast.add({ title: errorMessage(error), color: 'error' }),
+      onSettled: done,
+    },
   );
+});
+const onUntickFor = (idea: IdeaLine, claim: IdeaLine['claims'][number]) =>
+  unticking.start(
+    `${idea.id}:${claim.id}`,
+    claim.by === null
+      ? t('lists.doc.untickedAnonymous')
+      : t('lists.doc.unticked', { name: claim.by }),
+  );
+/** The line as it will be once the tick that is leaving is gone. */
+const withoutLeaving = (idea: IdeaLine): IdeaLine => {
+  const [ideaId, claimId] = (unticking.leaving.value ?? '').split(':');
+  const leaving =
+    ideaId === idea.id ? idea.claims.find((c) => c.id === claimId) : null;
+  return leaving
+    ? {
+        ...idea,
+        view: leaving.after,
+        claims: idea.claims.filter((c) => c.id !== claimId),
+      }
+    : idea;
+};
+const people = computed(() => {
+  const there = (doc.value?.people ?? [])
+    .filter((p) => p.id !== removal.leaving.value)
+    .map((person) =>
+      unticking.leaving.value
+        ? { ...person, ideas: person.ideas.map(withoutLeaving) }
+        : person,
+    );
   return wanted.value
     ? applyOrder(there, wanted.value, (idea) => idea.id)
     : there;

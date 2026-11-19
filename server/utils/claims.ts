@@ -88,6 +88,58 @@ export const leaderAfterLeaving = (
 ): string | null =>
   ordered(claims).find((c) => c.accountId !== accountId)?.accountId ?? null;
 
+/**
+ * Whether someone may take a tick off (Correction 25, README 22.19):
+ * those who hold the list, anyone's, an anonymous one included; anybody
+ * else, their own only.
+ * @param viewer - Who asks.
+ * @param viewer.accountId - Their account, or null without one.
+ * @param viewer.holds - Whether they hold the list.
+ * @param claim - The tick.
+ * @param claim.accountId - Whose it is.
+ * @returns True when they may.
+ */
+export const mayRemoveClaim = (
+  viewer: { accountId: string | null; holds: boolean },
+  claim: { accountId: string },
+): boolean =>
+  viewer.accountId !== null &&
+  (viewer.holds || claim.accountId === viewer.accountId);
+
+/** A tick of someone else, as those who hold the list may take it off. */
+export type RemovableClaim = {
+  /** What names it to the server: says nothing of whose it is. */
+  id: string;
+  /** Their first name; null for an anonymous one. */
+  by: string | null;
+  /** When it was ticked; null for an anonymous one: no hint. */
+  at: string | null;
+};
+
+/**
+ * The ticks of an idea that the one looking may take off for someone:
+ * every one but their own, for those who hold the list; none for the
+ * others. An anonymous tick keeps its secret: neither name nor date.
+ * @param claims - Who gives the idea, the first first.
+ * @param viewer - Who looks.
+ * @param viewer.accountId - Their account, or null.
+ * @param viewer.holds - Whether they hold the list.
+ * @returns What a line offers to take off.
+ */
+export const removableClaims = (
+  claims: readonly (ClaimRow & { id: string; name: string })[],
+  viewer: { accountId: string | null; holds: boolean },
+): RemovableClaim[] =>
+  viewer.holds
+    ? claims
+        .filter((claim) => claim.accountId !== viewer.accountId)
+        .map((claim) => ({
+          id: claim.id,
+          by: claim.anonymous ? null : claim.name,
+          at: claim.anonymous ? null : claim.createdAt,
+        }))
+    : [];
+
 /** A gift not on the list, as a viewer sees it. */
 export type OffListView =
   | { kind: 'mine'; text: string }

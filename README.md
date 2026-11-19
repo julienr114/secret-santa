@@ -382,10 +382,10 @@ Décidées avec Julien en v2. Elles s'appliquent à tout le code, serveur et cli
 Plus aucun mot de passe. Détail de la conception en 22.5.
 
 - **Compte** : une adresse email. La connexion se fait par **lien magique** : `/login` demande l'adresse, un email apporte un lien `/login/<jeton>`, et un bouton sur cette page ouvre la session.
-- **Lien** : jeton de 256 bits stocké en empreinte SHA-256, **usage unique**, valable **15 minutes** ; en demander un nouveau invalide les précédents ; ouvrir la page ne le consomme pas (seul le bouton le fait) ; même réponse que l'adresse ait un compte ou non ; 5 demandes par heure et par adresse, 20 par heure et par adresse IP.
+- **Lien** : jeton de 256 bits stocké en empreinte SHA-256, **usage unique**, valable **15 minutes** ; en demander un nouveau invalide les précédents ; ouvrir la page ne le consomme pas (seul le bouton le fait) ; même réponse que l'adresse ait un compte ou non ; **3 liens par heure et par adresse, 20 demandes par heure et par adresse IP, 1 000 liens par jour pour toute l'application** (lot 38 A) : un client qui demande trop est refusé (429) ; une adresse qui a reçu assez de liens, ou un jour où l'application en a trop envoyé, reçoit la même réponse que d'habitude et aucun email (`linkVerdict`, `server/utils/limits.ts`).
 - **Session** : une ligne en base (`sessions`), 30 jours, **révocable**. Le cookie scellé (`HttpOnly`, `Secure`, `SameSite=Lax`) ne porte que son identifiant ; elle est vérifiée à chaque requête. Se déconnecter la révoque ; « Mon compte » liste les appareils et permet de tout déconnecter.
 - **Rôle**, recalculé à chaque requête depuis le compte, jamais lu dans le cookie : **super-admin** (indicateur `accounts.is_super_admin`, plusieurs possibles), **organisateur** (au moins un groupe dans `group_members`) ou **membre** (tous les autres : un participant qui se connecte pour retrouver ses tirages). Un membre n'a aucun accès à `/api/admin/*` (403) ni aux écrans `/admin`.
-- **Inscription libre** (14 novembre 2026) : toute adresse valide reçoit un lien ; son compte est créé à la première demande, simple membre, dans la langue du participant qu'un organisateur aurait saisi avec cette adresse. Seul un compte désactivé ne reçoit rien. Garde-fous : 5 demandes par heure et par adresse, 20 par adresse IP.
+- **Inscription libre** (14 novembre 2026) : toute adresse valide reçoit un lien ; son compte est créé à la première demande, simple membre, dans la langue du participant qu'un organisateur aurait saisi avec cette adresse. Seul un compte désactivé ne reçoit rien. Garde-fous : les limites du lien de connexion (ci-dessus).
 - **Quota de groupes** (`accounts.group_quota`, 0 par défaut) : un compte crée un groupe s'il lui reste de la place (groupes créés et encore existants, `groups.created_by`) ; il en devient le premier organisateur. Un super-admin n'a pas de limite.
 - **Demande de groupe** (`group_requests`) : depuis l'accueil, un compte sans place écrit pour qui il veut organiser un tirage ; une seule demande en attente à la fois. Chaque super-admin reçoit un email. Accepter laisse la place pour **un** groupe de plus ; dans les deux cas le demandeur est prévenu par email. Le super-admin peut y ajouter un mot (300 caractères, facultatif), tapé ou tout prêt (« Bienvenue », « C'est complet », « Entre proches ») : colonne `decision_note` (migration `0017`, lot 12), repris dans l'email (« Le mot de l'administrateur : ») et, pour un refus, sur l'accueil du demandeur.
 - **Pages du super-admin** (refaites au lot 9 de la refonte, 17 novembre 2026). Plus de barre du bas : on y entre par la ligne « Administration » en bas de l'accueil (section « Super-admin ») et par le menu, où elle vient en premier ; toutes deux portent le nombre de demandes en attente (`UiCountBadge`).
@@ -425,17 +425,26 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - [x] Toute modification faite avec un lien personnel est journalisée : icône (`avatar_changed`), langue (`language_changed`). Les pistes de cadeaux ne le sont plus depuis le 17 novembre 2026 (22.11, risque accepté).
 - [x] Toutes les entrées validées par Zod ; les champs inconnus sont ignorés.
 - [x] Requêtes paramétrées uniquement (Drizzle).
-- [x] Limitation des tentatives sur la connexion admin, sur l'adresse `CF-Connecting-IP` (un `X-Forwarded-For` forgé ne la contourne plus) ; les échecs périmés sont purgés.
+- [x] Limitation des demandes de lien de connexion, comptées sur l'adresse `CF-Connecting-IP` (un `X-Forwarded-For` forgé ne la contourne pas). *(La ligne d'origine parlait des « tentatives sur la connexion admin » et d'« échecs purgés » : c'était la connexion par mot de passe, disparue le 14 novembre 2026.)*
 - [x] En-têtes de sécurité : sur toutes les pages et réponses `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy` ; en plus sur `/p/*` `no-referrer`, `no-store`, `noindex`.
 - [x] Correction 23 (19 novembre 2026) : `Strict-Transport-Security` (un an) sur toutes les réponses ; les pages et les données d'une liste par son lien (`/l/*`, `/api/l/*`) reçoivent `no-referrer`, `no-store`, `noindex` comme `/p/*` ; une requête qui modifie est refusée (403) quand son en-tête `Origin` vient d'un autre site (`server/middleware/origin.ts`) ; `vue/no-v-html` interdit par ESLint ; `pnpm audit` des dépendances de production dans la CI, et Dependabot.
 - [x] Toutes les routes `/api/admin/*` refusent sans session (401) et hors de son groupe (403).
+- [x] **Lot 38 A (19 novembre 2026), le filet** :
+  - **Les listes sont cloisonnées**, vérifié de l'extérieur par `tests/e2e/lists-isolation.spec.ts` : un autre compte reçoit 404 sur les 22 routes d'une liste et de ses proches (`/api/lists/*`, `/api/family/*`), une requête sans session 401 ; le lien d'une liste n'ouvre ni ne modifie rien d'une autre ; rien de ce que lit un visiteur ne nomme qui a coché ni ce qu'il a annoncé hors liste. Le test n'a rien trouvé à corriger.
+  - **Le débit des routes publiques est limité** par adresse du client (`server/middleware/rate.ts`, liaisons `[[ratelimits]]` de `wrangler.toml`) : 10 par minute pour demander un lien de connexion ou un groupe, confirmer un lien, lire ou utiliser une invitation ; 120 par minute pour écrire sur une liste ouverte par son lien. Au-delà, 429 `too_many_requests`. Cloudflare compte par centre de données et de façon approchée : c'est un filet contre un script, pas un quota exact. Coupé pendant les tests (`NUXT_RATE_LIMITS=off`).
+  - **Des plafonds sur ce qui s'écrit** (`CAPS`, `server/utils/limits.ts`) : 100 listes par compte, 60 personnes et 600 idées par liste, 20 cadeaux hors liste par compte et par liste, 200 proches, 2 000 lignes de journal par groupe et par jour (au-delà, ce qui écrirait une ligne est refusé plutôt que fait sans trace), 20 sessions par compte (la plus ancienne se ferme). Refus 409 `limit_…`, avec un texte dans les trois langues.
+  - **Un nom ne porte pas d'adresse web** (`hasWebAddress`) : prénom, nom, nom de groupe, de tirage ou de liste. Ces textes partent dans des emails, où une messagerie rend cliquable tout ce qui ressemble à une adresse. Refus 400 `web_address`.
+  - **Une politique de contenu stricte, en mode rapport** (`server/plugins/csp.ts`, `server/utils/csp.ts`) : `default-src 'self'`, les scripts de l'application seulement (un nonce par réponse pour ceux écrits dans la page), ni `eval` ni greffon, `base-uri` et `form-action` limités au site. Envoyée en `Content-Security-Policy-Report-Only` : le navigateur ne refuse rien et dit dans sa console ce qu'il aurait refusé. `tests/e2e/csp.spec.ts` ouvre six pages et n'accepte aucune violation ; il a trouvé la bibliothèque de validation (Zod), qui essayait `new Function` : elle est mise en mode sans `eval` dans le navigateur (`nuxt.config.ts`). **Pour l'appliquer pour de bon : `NUXT_CSP_MODE=enforce`** (variable Cloudflare), après une semaine sans alerte.
+  - **Les tâches planifiées sont bornées et rejouables** : le rappel du matin marque l'édition avant d'envoyer (un passage rejoué n'envoie rien deux fois) et envoie au plus 12 rappels par passage ; « Devine qui » s'occupe de 12 jeux par passage, les plus proches de leur fin d'abord (`SCHEDULED`).
+  - **Emails** : SPF (sur `send.under-the-tree.party`) et DKIM (`resend._domainkey`) sont en place, vérifiés le 19 novembre 2026. **DMARC est en observation seulement** (`p=none`) : à passer à `quarantine` par Julien dans le DNS, une fois sûr que rien d'autre n'envoie pour le domaine.
 - [x] Aucune lecture n'écrit : la copie d'un lien, journalisée, est un `POST`.
 - [x] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt.
 
 Limites connues et acceptées :
 - L'organisateur reçoit les liens personnels pour les partager ; il peut donc en ouvrir un. C'est le journal public qui le rend visible (décision d'origine).
 - Les adresses des pages personnelles, jeton compris, apparaissent dans les journaux de requêtes Cloudflare du compte (`[observability]`), lisibles par le seul titulaire du compte.
-- Pas de limitation de débit sur les routes participant : le jeton de 256 bits ne se devine pas ; un détenteur de lien peut seulement gonfler son propre compteur et le journal.
+- Pas de limitation de débit sur les routes participant (`/p/*`) : le jeton de 256 bits ne se devine pas ; un détenteur de lien peut seulement gonfler son propre compteur et le journal, dans la limite de 2 000 lignes par groupe et par jour (lot 38 A).
+- La limitation de débit compte par adresse IP, faute de session sur ces routes : plusieurs personnes derrière la même adresse (une famille sur le même wifi) partagent le même compteur. Les seuils sont larges pour ça.
 
 Trouvé pendant la revue, hors sécurité : D1 limite une requête à 100 paramètres, ce qui faisait échouer la création d'une édition dès 10 personnes et le tirage dès 17 (insertions groupées). Corrigé par une insertion par ligne dans la transaction ; vérifié avec 40 personnes. Une édition est donc limitée à **100 participants** (`MAX_PARTICIPANTS`, refus `too_many_participants` à la création de l'édition et à l'ajout d'un participant), plutôt que de rencontrer la limite comme une erreur de base.
 
@@ -877,13 +886,16 @@ secret-santa/
 | `SUPER_ADMIN_EMAILS` | Adresses qui deviennent super-admins à leur première demande de lien (séparées par des virgules) |
 | `DEV_LOGIN_LINKS` | `true` en développement seulement : le lien de connexion est affiché à l'écran |
 | `LINK_REQUESTS_PER_IP` | Limite horaire de demandes de lien par adresse IP (20 par défaut ; relevée pour les tests) |
+| `LINK_REQUESTS_PER_EMAIL` | Liens envoyés par heure à une même adresse (3 par défaut ; 5 pour les tests) |
+| `RATE_LIMITS` | `off` coupe la limitation de débit des routes publiques : pour les tests seulement |
+| `CSP_MODE` | La politique de contenu : `report` par défaut (le navigateur signale sans refuser), `enforce` pour l'appliquer, `off` |
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 | `RESEND_API_KEY` | Clé d'API Resend pour l'envoi groupé par email (facultative, une clé limitée à l'envoi suffit) |
 | `EMAIL_FROM` | Expéditeur des emails, sur un domaine vérifié chez Resend |
 
-**Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe.
+**Attention :** perdre `DATA_KEY` rend illisibles tous les résultats et tous les liens. La conserver dans un gestionnaire de mots de passe (procédure en section 16).
 
 ---
 
@@ -896,7 +908,7 @@ secret-santa/
 5. Déployer à la main avec `pnpm deploy:prod` (build puis `wrangler deploy`, après `wrangler login`). **Un `git push` ne déploie pas** : Workers Builds n'est pas branché sur le dépôt (constaté le 13 novembre 2026, aucun commit ne porte de déploiement Cloudflare).
 6. Renseigner les variables secrètes dans le tableau de bord Cloudflare.
 7. L'application est servie sur `https://under-the-tree.party` (domaine personnalisé du Worker, déclaré dans `wrangler.toml`) et reste joignable sur `https://secret-santa.julienr114.workers.dev`.
-8. Se connecter en super-admin, créer les deux groupes, définir les mots de passe des organisateurs.
+8. Se connecter en super-admin (lien de connexion), créer les groupes.
 
 **Un onglet resté ouvert après un déploiement** (Correction 11, 17 novembre 2026) : les fichiers de code (`/_nuxt/…`) changent de nom à chaque déploiement et les anciens disparaissent. Pour qu'un onglet ne reste pas sur l'ancienne version, avec des appuis sans effet :
 
@@ -908,6 +920,29 @@ secret-santa/
 Testé par `tests/e2e/deploy.spec.ts`.
 
 Développement local : base D1 locale émulée par Miniflare (`nitro dev`), état dans `.wrangler/state/v3`.
+
+### La clé des résultats et les sauvegardes (lot 38 A, 19 novembre 2026)
+
+**Ce qui est chiffré avec `NUXT_DATA_KEY`** : à qui chacun offre, les liens personnels (pour les renvoyer), les réponses d'un tirage fait ailleurs. Le reste de la base est en clair. **Clé perdue : ces données sont perdues**, sans recours ; les listes de cadeaux, elles, n'en dépendent pas.
+
+**Garder la clé hors de Cloudflare.** Cloudflare ne montre plus un secret une fois enregistré : s'il n'existe que là, on ne peut ni le relire ni le remettre après une erreur.
+
+1. La clé est dans un gestionnaire de mots de passe, avec la date et le nom « Under the Tree, NUXT_DATA_KEY, production ».
+2. Une seconde copie hors ligne (imprimée ou sur une clé USB rangée), pour le jour où le gestionnaire n'est pas accessible.
+3. Jamais dans le dépôt, un message, ni un fichier `.env` synchronisé.
+4. Vérifier une fois par an que la copie est la bonne : exporter la base (ci-dessous), l'importer en local, lancer l'application avec la clé copiée et ouvrir un tirage.
+
+**Exporter la base** (à faire avant chaque migration risquée, et une fois par mois pendant la saison) :
+
+```
+pnpm wrangler d1 export secret-santa --remote --output sauvegardes/secret-santa-AAAA-MM-JJ.sql
+```
+
+Le fichier contient des adresses email et des prénoms : il se range comme la clé, pas dans le dépôt (`sauvegardes/` est à ignorer par git), et se supprime au bout d'un an. Sans la clé, les résultats qu'il contient restent illisibles : **la sauvegarde et la clé ne se rangent pas au même endroit**. D1 garde aussi de son côté un retour en arrière de 30 jours (« Time Travel », `wrangler d1 time-travel`), à vérifier dans l'offre du compte avant d'en dépendre.
+
+**Remettre une sauvegarde** : `pnpm wrangler d1 execute secret-santa --remote --file <fichier>` sur une base vide, puis redéployer avec la même clé.
+
+**Changer la clé : pas possible aujourd'hui sans perdre les résultats.** Il faudrait un script qui déchiffre chaque ligne avec l'ancienne clé et la rechiffre avec la nouvelle, pendant que l'application est arrêtée ; il n'est pas écrit. En attendant, si la clé fuit : régénérer les liens personnels des tirages en cours (chaque organisateur, depuis la page du participant), et tenir pour lus les résultats des tirages non clôturés. À écrire avant l'ouverture à tous (lot 34).
 
 ---
 
@@ -1754,6 +1789,10 @@ Deux niveaux pour ceux qui tiennent une liste : « Gère la liste » (tout, comm
 
 **Codé le 19 novembre 2026** (lot 25 bis, migration `0029_holder_levels`). Dans le code : les règles de `server/utils/listAccess.ts` (`holderMay`, `levelChangeRefusal`, `holderRemovalRefusal`, `inviteState`) ; `requireManagedList` pour ce que seul « Gère la liste » fait (403 sinon) ; la page `/invitation/[jeton]` et ses routes `/api/invitations/[jeton]` (lire, `accept`, `decline`), où le lien, gardé en empreinte, n'agit que par un bouton et une seule fois ; `PATCH /api/lists/[id]/holders/[compte]` pour un niveau, `POST /api/lists/[id]/invites/[invitation]/resend` pour « Renvoyer ». Pas encore affichés : la phrase sur les règles d'usage, « Signaler » et « Ne plus recevoir d'emails » (lots 39, 36 et 35).
 
+#### La fiche d'un proche
+
+Revu par Julien le 19 novembre 2026 (Correction 27). La fiche garde ses lignes (`ListePersonne`) ; chacune ouvre une page, plus aucun panneau ni grand champ de texte. La date de naissance se choisit en trois listes, jour, mois, année, sans calendrier (`ProcheNaissance`). La ou les pointures se choisissent dans une grille (`ProchePointure`). La taille de vêtements et l'adresse sont des champs d'une ligne (`ProcheTaille`, `ProcheAdresse`). Aucune phrase d'aide, ni sur la fiche ni sur ces pages (demandé par Julien). « Supprimer de mes proches » est la ligne rouge du bas. Les trois textes de « Ses goûts » gardent chacun leur page.
+
 #### Retirer quelqu'un d'une liste
 
 **L'icône et le prénom d'une personne se changent dans le document**, sans passer par sa fiche (demandé par Julien le 19 novembre 2026) : toucher l'icône ouvre son panneau, toucher le prénom l'écrit sur place (retour ou toucher ailleurs enregistre, vidé il reste comme avant). Le prénom d'une personne reliée à un compte ne se change pas ici : aujourd'hui « Moi », demain les personnes reliées du lot 25. **L'icône de « Moi » est celle du compte** (décidé par Julien le 19 novembre 2026) : changée dans une liste, sur sa fiche ou dans « Mon compte », c'est la même partout.
@@ -2149,6 +2188,7 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - Une action courte sur un élément s'ouvre dans un **panneau du bas** (`UDrawer`) ; un formulaire long a son propre écran.
 - **Choisir dans un panneau, rédiger sur une page** (décidé par Julien le 18 novembre 2026, après le bug du clavier : sur téléphone, un champ saisi dans un panneau du bas disparaissait sous le clavier). Le panneau remonte maintenant au-dessus du clavier, mais y saisir du texte reste fragile : le clavier prend la moitié de l'écran, le panneau devient étroit et doit défiler, et on peut le fermer par erreur en glissant vers le bas. Correction 18 de `docs/refonte/PLAN.md`.
   - Un panneau du bas sert aux choix (un mode, une date, une langue), aux confirmations, et à **un seul champ court** : un nombre, un nom, une adresse email, un identifiant ou une phrase à recopier.
+  - **Précisé le 19 novembre 2026 au soir (Correction 27)** : un panneau ne sert qu'à choisir et à confirmer. Toute saisie, même d'un mot, a sa page : le contexte, le titre, le champ, une ligne d'aide, « Valider ». Jamais de champ de plusieurs lignes pour une valeur d'un mot. Ce qui se choisit dans une courte liste connue (une pointure) se choisit dans une grille plutôt que de s'écrire. Une date de naissance se choisit en trois listes (jour, mois, année), pas dans un calendrier. **Peu de phrases d'aide** : aucune quand le titre et le champ suffisent ; dans un champ de texte, l'exemple en gris (placeholder) donne l'indication à leur place.
   - Dès qu'on **rédige** (un texte de plus d'une ligne, ou plusieurs champs), c'est une page à part. Le contexte au-dessus du titre, le titre, le champ en haut avec son aide et son compteur de caractères, « Valider » fixé en bas de l'écran, et « Retour » qui abandonne. Le modèle est l'écran « Personnaliser le message » (maquette `DevineRappelPersonnaliser`).
   - **Clavier ouvert** : la règle du 18 novembre 2026 (« Valider » posé sur le clavier, comme dans une messagerie) est **abandonnée** le 19 novembre 2026 : voir « Rien ne se place au-dessus du clavier », plus bas. Le champ grandit toujours jusqu'à six lignes puis défile. Sous un bouton du bas, la place de la barre d'accueil ou 1 rem, pas les deux.
   - Les confirmations d'une action qui ne se rattrape pas (« Supprimer le groupe », « Dévoiler avant la fête ») restent des panneaux, même avec une phrase à recopier : le panneau garde le contexte sous les yeux.

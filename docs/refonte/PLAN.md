@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **À faire maintenant, dans cet ordre : le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **À faire maintenant, dans cet ordre : la Correction 27 (la fiche d'un proche : une page par champ), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -780,7 +780,7 @@ Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le cray
 - **Lot 27 bis** : en bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel, pas de lien « Séparer par personne ».
 - **Lot 27 ter** : le mode anonyme n'est jamais imposé. Il est activé par défaut quand on vient d'un tirage, avec une note d'avertissement accrochée sous la barre (halo prune, « Compris »).
 - **Le lot 36 (données personnelles) passe avant le lot 34** : on n'ouvre pas à tous sans les pages légales ; le lot 39 (signaler, règles d'usage) aussi.
-- **Maquettes périmées à supprimer** de `docs/refonte/maquettes/` et `maquettes-sorbet/` : `ListePartager`, `ListePublier`, `ListePublication`, `ListeDepublier`, `ListeNouvelleForme`, `ListeSansPersonneA`, `ListeSansPersonneB`, `AdminTableau`, `AdminAcces`, `AdminAccesMenu`, `AdminSansDemande`, `AdminPlusieursDemandes`, `AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`, `AdminDemandePage`, `AdminDemandePageMot`.
+- **Maquettes périmées à supprimer** de `docs/refonte/maquettes/` et `maquettes-sorbet/` : `ListePartager`, `ListePublier`, `ListePublication`, `ListeDepublier`, `ListeNouvelleForme`, `ListeSansPersonneA`, `ListeSansPersonneB`, `ListePersonneSaisie`, `ListePersonneEnregistre`, `AdminTableau`, `AdminAcces`, `AdminAccesMenu`, `AdminSansDemande`, `AdminPlusieursDemandes`, `AdminDemandeMot`, `AdminDemandeMotBienvenue`, `AdminDemandeMotProches`, `AdminDemandePage`, `AdminDemandePageMot`.
 
 Trois règles qui traversent les lots :
 
@@ -879,6 +879,25 @@ Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la mi
 - [x] **Accessibilité** : `role="status"` (`alert` pour une erreur) ; le temps s'arrête tant qu'on touche ou survole ; « réduire les animations » respecté.
 - [x] **Le guide de style** de l'application montre les trois sortes ; README 23.2 et 23.3 passent de « à coder » à « fait ».
 - [x] `tests/e2e` (un message avec « Annuler » annule ; une erreur reste).
+
+### Correction 27 — La fiche d'un proche : chaque ligne ouvre une page (README 22.20, 23.3)
+
+Demandé par Julien le 19 novembre 2026 au soir. Aujourd'hui, sur la fiche d'un proche (`app/pages/famille/[id]/index.vue`), le prénom, la taille, la pointure et l'adresse ouvrent chacun un panneau du bas avec un grand champ de texte (`UiTextSheet`), et la date de naissance un calendrier (`AdminDateSheet`). Sans migration (`shoe_size` est déjà un texte). Maquettes : `ListePersonne`, `ProcheNaissance`, `ProchePointure`, `ProcheTaille`, `ProcheAdresse`. Un premier dessin (les champs écrits sur place, dans la fiche) n'a pas été retenu : les maquettes `ListePersonneSaisie` et `ListePersonneEnregistre` sont à supprimer.
+
+- [ ] **La fiche garde ses lignes** (`ListePersonne`) : « Date de naissance », « Taille de vêtements », « Pointure », puis « Son compte » avec « Adresse email » ; chacune montre sa valeur (ou « Aucune ») et un chevron. Toucher une ligne ouvre **une page**, plus aucun panneau.
+- [ ] **Le modèle de ces pages** (README 23.3) : au-dessus du titre, « Mes proches · Léo » ; le titre (« Sa pointure ») ; le champ ; « Valider » dans la page, sous le champ, jamais collé au clavier ; « Retour » abandonne. Valider ramène à la fiche, où la nouvelle valeur s'affiche.
+- [ ] **Date de naissance** (`ProcheNaissance`) : trois listes, « Jour », « Mois », « Année », pas de calendrier. Le mois en toutes lettres ; les années de l'année en cours à il y a 110 ans, la plus récente d'abord ; les jours suivent le mois et l'année. « Effacer la date » sous « Valider ». Une date incomplète ne se valide pas.
+- [ ] **Pointure** (`ProchePointure`) : la page s'appelle « Sa ou ses pointures » (Julien, 19 novembre 2026), et on choisit dans une grille, sans rien écrire. Deux groupes, « Enfant » (16 à 34) et « Ado et adulte » (35 à 50), six par rangée, cases de 44 px. **Une ou plusieurs pointures** : toucher une case la coche, la retoucher la décoche. Enregistré en texte, dans l'ordre croissant : « 30 », « 30 ou 31 », « 30, 31 ou 32 ». « Tout effacer » sous « Valider ». Sur la fiche, la ligne garde le nom « Pointure ». Une pointure déjà saisie hors de la grille (« 30,5 ») reste affichée jusqu'à ce qu'on en choisisse une.
+- [ ] **Taille de vêtements** (`ProcheTaille`) : texte libre (Julien : on peut vouloir dire plusieurs choses), mais **un champ d'une ligne**, jamais un `textarea` ; 40 caractères, compteur.
+- [ ] **Adresse email** (`ProcheAdresse`) : un champ d'une ligne, clavier des adresses, sans majuscule ni correction automatique. Une fois reliée, la page montre l'état et « Ne plus relier » (`ListePersonneCompte`, à aligner).
+- [ ] **Le placeholder fait le travail des phrases d'aide** (Julien, 19 novembre 2026) : puisqu'elles sont parties, l'exemple en gris dans le champ vide est la seule indication. Taille : « 6 ans, M, 38, plutôt grand… » (il montre qu'on peut écrire un âge, une lettre, un chiffre ou une remarque). Adresse : « prenom@exemple.fr ». Il disparaît à la première lettre, n'est jamais enregistré, se traduit dans les trois langues (tailles et domaine adaptés), et garde un contraste lisible (gris `#78716c` au moins). Le champ reste nommé par `aria-label`, le placeholder ne remplace pas le nom.
+- [ ] **Le prénom** se change en le touchant, dans le titre, comme dans la liste (lot 24 bis) : pas de panneau non plus.
+- [ ] **Aucune phrase d'aide** (demandé par Julien le 19 novembre 2026 : il y en avait trop, puis « enlève-les »). Sur la fiche, plus aucune phrase sous les sections (« Ce qu'on demande toujours… », « Les mêmes questions que les pistes… » disparaissent). Sur les quatre pages, rien que le titre, le champ et « Valider » : ni consigne, ni « qui verra ». Le champ de la taille garde son exemple en gris et son compteur. C'est une exception voulue à la règle « qui verra ce que j'écris » (README 23.3) : voir section 6.
+- [ ] **« Supprimer de mes proches »**, tout en bas : la ligne rouge habituelle des actions qui ne se rattrapent pas (pastille rouge clair, corbeille, chevron), comme « Supprimer le groupe ». Pas un lien souligné.
+- [ ] **« Ses goûts » ne change pas** : les quatre préférences dans leur carte, et les trois textes qui ouvrent chacun leur page.
+- [ ] **Vérifier les autres écrans** qui ouvrent un `UiTextSheet` pour une valeur d'un mot, et les lister en section 6 sans les changer.
+- [ ] `UiTextSheet` et `AdminDateSheet` ne sont plus utilisés par cette page ; les supprimer s'ils ne servent plus ailleurs.
+- [ ] Trois langues, `tests/e2e` (choisir deux pointures affiche « 30 ou 31 » sur la fiche, en retoucher une la retire ; une date incomplète ne se valide pas ; « Retour » n'enregistre rien).
 
 ### Lot 25 bis — Tenir une liste à plusieurs : deux niveaux, des proches proposés, et la page d'invitation (README 22.20)
 
@@ -1095,18 +1114,18 @@ Maquettes : `LimiteGroupes`, `LimiteParticipants`, `DemandePlus`, `AdminDemandes
 
 ### Lot 38 A — Durcir : le filet (section 8)
 
-Demandé par Julien le 19 novembre 2026. **À faire tôt : juste après le lot 24 bis**, car les listes sont déjà partagées par lien. Sans dépendance avec les autres lots. Les petites choses sont parties dans la Correction 23 ; ce qui touche à l'argent est dans le lot 38 B.
+Demandé par Julien le 19 novembre 2026. **À faire tôt : juste après le lot 24 bis**, car les listes sont déjà partagées par lien. Sans dépendance avec les autres lots. Les petites choses sont parties dans la Correction 23 ; ce qui touche à l'argent est dans le lot 38 B. **Fait le 19 novembre 2026**, sauf deux lignes laissées ouvertes exprès (la politique de contenu à appliquer pour de bon, le changement de clé) ; ce qui a été trouvé et tranché est en section 6, « Lot 38 A ».
 
-- [ ] **D'abord vérifier** : relire la section 8 contre le code et cocher ce qui existe déjà. Elle n'est pas un audit. Ce qui s'avère faux ou déjà fait se dit en section 6.
-- [ ] **Le cloisonnement des listes, par un test** comme celui des tirages (`tests/e2e/security.spec.ts`) : un compte B essaie toutes les routes `/api/lists/*` et `/api/family/*` du compte A ; un jeton de liste essaie les idées d'une autre liste ; aucun prénom de qui a coché dans une réponse lue par un visiteur. Corriger ce que le test trouve.
-- [ ] **Limiter le débit des routes publiques** par adresse (`CF-Connecting-IP`), avec la liaison `ratelimits` de Workers : demande de lien de connexion, `/api/l/*` en écriture, `/api/invite/*`, demande de groupe. Réponse 429, message dans les trois langues (maquette `TropDeDemandes`).
-- [ ] **Le lien de connexion**, première cible : au plus 3 par adresse email et par heure, un plafond par adresse IP, un plafond global par jour ; au-delà, la réponse reste la même, aucun email ne part. Lien à usage unique, court.
-- [ ] **Un plafond pour tout ce qui s'écrit en base** : listes par compte, personnes par liste, idées par liste, cadeaux hors liste par visiteur, membres de la famille, lignes de journal par groupe et par jour, sessions par compte. Des chiffres larges, une erreur claire.
-- [ ] **Une politique de contenu stricte (CSP)** : `default-src 'self'`, des scripts limités à l'application (nonce ou empreintes), pas de `unsafe-eval`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`. D'abord en mode rapport pendant une semaine, puis pour de bon.
-- [ ] **Les emails comme porte d'entrée du hameçonnage** : tout texte saisi est échappé (fait pour les messages), jamais rendu cliquable ; un prénom, un nom de groupe ou de liste qui contient une adresse web est refusé. Vérifier SPF, DKIM et DMARC du domaine.
-- [ ] **Les tâches planifiées** : chaque passage traite un nombre borné de lignes et peut être rejoué sans rien envoyer deux fois.
-- [ ] **La clé des résultats et les sauvegardes** : une procédure écrite (README 16) pour exporter la base, garder `NUXT_DATA_KEY` hors de Cloudflare, et la changer. Clé perdue : résultats perdus.
-- [ ] README 8.6 complété.
+- [x] **D'abord vérifier** : relire la section 8 contre le code et cocher ce qui existe déjà. Elle n'est pas un audit. Ce qui s'avère faux ou déjà fait se dit en section 6.
+- [x] **Le cloisonnement des listes, par un test** comme celui des tirages (`tests/e2e/security.spec.ts`) : un compte B essaie toutes les routes `/api/lists/*` et `/api/family/*` du compte A ; un jeton de liste essaie les idées d'une autre liste ; aucun prénom de qui a coché dans une réponse lue par un visiteur. Corriger ce que le test trouve.
+- [x] **Limiter le débit des routes publiques** par adresse (`CF-Connecting-IP`), avec la liaison `ratelimits` de Workers : demande de lien de connexion, `/api/l/*` en écriture, `/api/invite/*`, demande de groupe. Réponse 429, message dans les trois langues (maquette `TropDeDemandes`).
+- [x] **Le lien de connexion**, première cible : au plus 3 par adresse email et par heure, un plafond par adresse IP, un plafond global par jour ; au-delà, la réponse reste la même, aucun email ne part. Lien à usage unique, court.
+- [x] **Un plafond pour tout ce qui s'écrit en base** : listes par compte, personnes par liste, idées par liste, cadeaux hors liste par visiteur, membres de la famille, lignes de journal par groupe et par jour, sessions par compte. Des chiffres larges, une erreur claire.
+- [ ] **Une politique de contenu stricte (CSP)** : `default-src 'self'`, des scripts limités à l'application (nonce ou empreintes), pas de `unsafe-eval`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`. D'abord en mode rapport pendant une semaine, puis pour de bon. **Fait en mode rapport** (19 novembre 2026) ; reste à l'appliquer pour de bon, par `NUXT_CSP_MODE=enforce`, après une semaine sans alerte : c'est pourquoi la ligne n'est pas cochée.
+- [x] **Les emails comme porte d'entrée du hameçonnage** : tout texte saisi est échappé (fait pour les messages), jamais rendu cliquable ; un prénom, un nom de groupe ou de liste qui contient une adresse web est refusé. Vérifier SPF, DKIM et DMARC du domaine.
+- [x] **Les tâches planifiées** : chaque passage traite un nombre borné de lignes et peut être rejoué sans rien envoyer deux fois.
+- [ ] **La clé des résultats et les sauvegardes** : une procédure écrite (README 16) pour exporter la base, garder `NUXT_DATA_KEY` hors de Cloudflare, et la changer. Clé perdue : résultats perdus. **La procédure est écrite** (exporter, garder la clé hors de Cloudflare) ; **changer la clé n'est pas possible** sans un script de rechiffrement, qui n'est pas écrit : c'est pourquoi la ligne n'est pas cochée.
+- [x] README 8.6 complété.
 
 ### Lot 38 B — Durcir : la dépense (section 8.1)
 
@@ -1803,6 +1822,17 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 10. **« C'est fait » ne chasse pas un « Annuler »** (vu avec Julien) : un message qui dit seulement que c'est fait attend la fin d'un « Annuler » affiché, au lieu de le remplacer et de valider l'action avant l'heure. Une erreur, elle, s'affiche tout de suite et le remplace. Un second « Annuler » remplace le premier, dont l'action est alors validée.
 11. **Lecteurs d'écran** : seule une erreur interrompt (`role="alert"`) ; les deux autres sortes sont dites poliment. Avant, le composant annonçait tout comme une alerte.
 
+### Correction 27 — la fiche d'un proche
+
+Écrit le 19 novembre 2026 au soir. Points à relire :
+
+1. **Une page par champ** : choisi par Julien, contre un premier dessin où l'on écrivait directement dans la fiche.
+2. **La règle du README 23.3 se précise** : « un seul champ court » restait permis dans un panneau. Désormais un panneau ne sert qu'à choisir et à confirmer ; toute saisie, même d'un mot, a sa page.
+3. **La grille des pointures** va de 16 à 50, pointures européennes, sans demi-pointure (proposition). L'application est en français, anglais et allemand : mêmes pointures dans les trois langues.
+4. **Plusieurs pointures, sans plafond écrit** : Julien a dit « la ou les pointures ». Au-delà de trois, c'est sans doute une erreur : à voir en essayant.
+5. **La date de naissance d'un proche** est une donnée sur quelqu'un d'autre, souvent un enfant : facultative ; ceux qui ouvrent la liste ne voient que l'âge.
+6. **Plus de ligne « qui verra ce que j'écris » sur ces pages** : retirée à la demande de Julien, alors que la règle du README 23.3 et le lot 36 la demandent sous tout champ de donnée personnelle. À trancher avec lui au lot 36 : soit ces pages restent une exception, soit l'information va ailleurs (« Tes données, en clair » le dit déjà pour toute l'application).
+
 ### Lot 27 ter — pistes et liste
 
 Écrit le 19 novembre 2026. Points à relire :
@@ -1893,6 +1923,25 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 6. **Le statut de l'application au regard du règlement européen sur les services numériques** (hébergeur, ou plateforme) et ce qu'un particulier doit écrire dans ses mentions légales alors que le site est aussi sa vitrine et reçoit des dons : à faire trancher par la relecture.
 7. **Suspendre un compte** : ses groupes et ses listes restent lisibles par les autres (proposition), lui ne peut plus rien écrire ni envoyer.
 4. **Un contrôle « je ne suis pas un robot »** (Turnstile de Cloudflare) sur la demande de lien de connexion n'est pas retenu d'emblée : il ajoute un script tiers et une étape. À ressortir si la limitation de débit ne suffit pas.
+
+### Lot 38 A — le filet
+
+Codé le 19 novembre 2026. Ce que la vérification a trouvé, et ce qui a été tranché seul :
+
+1. **La section 8 du README, relue contre le code** : tout ce qui y est coché est vrai, sauf une ligne périmée (« tentatives sur la connexion admin », « échecs purgés » : la connexion par mot de passe a disparu le 14 novembre 2026), réécrite ; et l'étape 8 du déploiement, qui parlait encore de mots de passe. Aucun `console.*` côté serveur, des requêtes paramétrées partout (une seule écrite à la main, paramétrée aussi).
+2. **Le cloisonnement des listes tenait déjà** : le test (22 routes, un autre compte et une requête sans session) n'a rien trouvé à corriger. Il reste comme filet.
+3. **Le lien de connexion répondait 429 à une adresse qui en avait trop demandé** : la réponse changeait donc selon l'adresse. Désormais elle ne change plus : même réponse, aucun email. Seul un client (une adresse IP) qui demande trop est refusé.
+4. **Les chiffres**, tous posés seul : 3 liens par heure et par adresse, 20 demandes par heure et par adresse IP (inchangé), 1 000 liens par jour pour toute l'application ; débit des routes publiques à 10 par minute (demander, invitation) et 120 par minute (écrire par le lien d'une liste) ; 100 listes, 60 personnes et 600 idées par liste, 20 cadeaux hors liste par compte et par liste, 200 proches, 2 000 lignes de journal par groupe et par jour, 20 sessions par compte.
+5. **La limitation de débit compte par adresse IP**, ce que la documentation de Cloudflare déconseille (une adresse peut être partagée) : ces routes n'ont pas de session, il n'y a rien d'autre pour compter. Les seuils sont larges pour qu'une famille sur le même wifi ne les touche pas. Elle compte de façon approchée, par centre de données.
+6. **Pas vérifié en production** : que l'offre gratuite accepte les liaisons `[[ratelimits]]` (la documentation ne le dit pas), et leur comportement réel. Le premier déploiement le dira ; si Cloudflare les refuse, il suffit de retirer les deux blocs de `wrangler.toml` : le code laisse tout passer sans liaison. Dans les tests, la limitation est coupée ; la notice « Trop de demandes » est testée en simulant le refus.
+7. **Le journal plafonné refuse au lieu de se taire** : au-delà de 2 000 lignes par jour dans un groupe, ce qui écrirait une ligne de plus est refusé. Ne plus écrire en silence aurait permis de noyer le journal puis d'agir sans trace.
+8. **Trop de sessions : la plus ancienne se ferme**, sans message.
+9. **Le nom d'un tirage** (« Noël 2026 ») est contrôlé aussi : il part dans les emails comme le nom du groupe. Le contrôle reconnaît « http », « www. » et les fins d'adresse courantes (.com, .fr, .xyz…) ; « J. Martin » ou « St. Nicolas » passent. Il ne s'applique pas aux idées de cadeaux ni au mot d'accueil d'une liste, qui ne partent dans aucun email.
+10. **La politique de contenu garde les styles écrits dans la page** (`style-src 'unsafe-inline'`) : Vue pose des couleurs et des tailles sur les éléments. Les scripts, eux, sont stricts. Pas de point de collecte des rapports : en mode rapport, c'est la console du navigateur qui parle, et le test `csp.spec.ts` qui vérifie. Le test a trouvé Zod, qui essayait `new Function` : réglé.
+11. **Les tâches planifiées** : au plus 12 rappels et 12 jeux par passage, parce qu'un passage a un nombre borné de requêtes à la base sur l'offre gratuite. Au-delà, le reste attend le passage suivant (le lendemain pour un rappel).
+12. **DMARC est en `p=none`** (observation seule) : il ne protège pas encore le domaine contre l'usurpation. **À Julien** de le passer à `quarantine` dans le DNS de Cloudflare.
+13. **Changer la clé des résultats** n'est pas possible sans un script de rechiffrement. **À écrire avant le lot 34.**
+14. **Les routes participant (`/p/*`) ne sont pas limitées en débit**, comme avant : le jeton ne se devine pas.
 
 ### Lot 40 — brancher un assistant
 

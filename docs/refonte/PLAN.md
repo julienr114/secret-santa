@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **À faire maintenant : le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **Le lot 27 (reprendre une liste) est fait** : sa migration `0030_carried_from` est à appliquer avant de déployer. **À faire maintenant : le lot 27 bis (une liste sans personne).** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -969,13 +969,13 @@ Demandé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), sauf la li
 
 ### Lot 27 — Listes V2 : reprendre une liste (README 22.20)
 
-Décidé par Julien le 19 novembre 2026. Maquettes : `ListeNouvelleReprendre`, `ListeReprise`.
+Décidé par Julien le 19 novembre 2026. Maquettes : `ListeNouvelleReprendre`, `ListeReprise`. **Fait** (19 novembre 2026), avec la migration `0030_carried_from` ; ce qui a été tranché seul est en section 6, « Lot 27 ».
 
-- [ ] **Le cœur, en fonction pure** : ce qu'on reprend d'une liste (icône, mot, personnes, idées non cochées) et ce qu'on laisse (cadeaux cochés, hors liste, nom, date).
-- [ ] **Base** : sur une idée, de quelle liste elle a été reprise ; effacé quand on modifie l'idée et pour toutes au premier partage.
-- [ ] **« Repartir d'une liste »** dans le document vide, et **« Reprendre cette liste »** sur une liste passée. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
-- [ ] **La marque** : la petite flèche grise au bout de la ligne, visible de ceux qui tiennent la liste seulement, et la phrase d'explication en haut.
-- [ ] Trois langues, `tests/e2e`. README 22.20 marqué fait.
+- [x] **Le cœur, en fonction pure** : ce qu'on reprend d'une liste (icône, mot, personnes, idées non cochées) et ce qu'on laisse (cadeaux cochés, hors liste, nom, date).
+- [x] **Base** : sur une idée, de quelle liste elle a été reprise ; effacé quand on modifie l'idée et pour toutes au premier partage.
+- [x] **« Repartir d'une liste »** dans le document vide, et **« Reprendre cette liste »** sur une liste passée. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
+- [x] **La marque** : la petite flèche grise au bout de la ligne, visible de ceux qui tiennent la liste seulement, et la phrase d'explication en haut.
+- [x] Trois langues, `tests/e2e`. README 22.20 marqué fait.
 
 ### Lot 27 bis — Une liste sans personne (README 22.20)
 
@@ -1847,6 +1847,22 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 16. **Les valeurs vides** disent « Aucune » pour les trois infos pratiques et l'adresse ; les trois textes de « Ses goûts » gardent « Rien ».
 17. **Trouvé par une capture, corrigé** : en ouvrant directement la page des pointures, celles déjà enregistrées n'étaient pas cochées (la page écrite par le serveur et celle du navigateur ne disaient pas la même chose). Les champs se remplissent maintenant une fois la page dans le navigateur ; un test le vérifie.
 18. **Les autres écrans qui écrivent une valeur courte dans un panneau** (`UiTextSheet`), laissés tels quels comme demandé : le prénom et le nom dans « Mon compte » (`compte.vue`) ; le nom de famille d'une personne d'un groupe (`admin/[slug]/personnes/[id].vue`) ; le budget d'un tirage (`EditionRuleRows`). Et ceux qui choisissent une date dans un calendrier (`AdminDateSheet`) : la date de la fête (`PartyDateSheet`), la date d'une liste (`listes/[id]/index.vue`), la date limite d'un lien d'invitation (`admin/[slug]/invitation/index.vue`). `UiTextSheet` et `AdminDateSheet` servent donc encore : ils ne sont pas supprimés.
+
+### Lot 27 — reprendre une liste
+
+Codé le 19 novembre 2026. Tranché seul, à relire :
+
+1. **On ne repart d'une liste que dans un brouillon vide** (sans personne, jamais partagé) : rien de déjà écrit n'est mélangé avec ce qui arrive. Le bloc « Repartir d'une liste » disparaît dès qu'il y a quelqu'un.
+2. **Le bloc propose les cinq listes les plus récentes** que je tiens et qui ont quelqu'un, brouillons et listes sans nom compris (« Liste sans nom »). La maquette en montre deux.
+3. **Le mot d'accueil** n'est repris que si je l'avais écrit ; le texte de départ, lui, revient tout seul. Un mot que j'avais effacé reste effacé.
+4. **Les personnes sont reprises telles qu'elles sont** dans mes proches (ou ceux d'un autre qui tient la liste) : même fiche, mêmes goûts. Quelqu'un sans idée restante vient quand même.
+5. **« Reprendre cette liste »** n'est que sur le document d'une liste passée (partagée, date dépassée), sous le mot d'accueil. Elle crée un brouillon et l'ouvre. Rien sur la carte de l'onglet « Listes ».
+6. **La marque est l'icône ↺ grise** au bout du texte ; elle disparaît dès que l'idée est modifiée (texte ou lien), et pour toutes au premier partage, avec la phrase du haut. La liste d'origine n'est plus nommée ensuite : rien n'est gardé.
+7. **« Toi seul vois cette marque »** est le texte de la maquette ; en vrai, tous ceux qui tiennent la liste la voient (les deux niveaux). Un visiteur et une personne reliée ne la voient jamais.
+8. **Si la liste d'origine est supprimée** avant le partage, la phrase dit « Reprise d'une autre liste. »
+9. **Seul celui qui tient l'ancienne liste** peut en repartir (les deux niveaux). Y figurer ou l'avoir ouverte par son lien ne suffit pas.
+10. **Quand on ajoute ensuite un proche à la main**, la règle d'avant s'applique toujours : il arrive avec ses idées non offertes de sa dernière liste, sans marque.
+11. **Les plafonds du lot 38 A** valent pour la liste créée (100 listes par compte) ; la reprise elle-même copie au plus ce que l'ancienne liste contenait.
 
 ### Lot 27 ter — pistes et liste
 

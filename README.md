@@ -1885,6 +1885,8 @@ Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `ListeVisiteur`
 
 #### Reprendre une liste
 
+**Fait le 19 novembre 2026** (lot 27, migration `0030_carried_from`). Dans le code : `resumedList`, `resumeSummary`, `canResumeInto` (`server/utils/lists.ts`) ; `POST /api/lists/[id]/resume` dans un brouillon vide, `POST /api/lists` avec `from` pour « Reprendre cette liste », `GET /api/lists/[id]/resumable` pour le bloc ; `gift_lists.carried_from` et `gift_list_ideas.carried_from`, effacés à la modification d'une idée et au premier partage ; `ListsResumeFrom` pour le bloc.
+
 - Dans le document vide d'une nouvelle liste, un bloc **« Repartir d'une liste »** propose mes listes (`ListeNouvelleReprendre`), avec ce qu'on y reprend (« 4 personnes · 6 idées pas encore offertes »). Une liste passée a aussi son bouton « Reprendre cette liste ».
 - **Ce qui est repris** : l'icône, le mot, les personnes, et les idées qui n'avaient pas été cochées. Pas les cadeaux cochés, pas les cadeaux hors liste. Le nom et la date sont à remplir. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
 - **Une marque discrète** (`ListeReprise`) : une idée reprise porte une petite flèche grise en rond au bout de sa ligne, visible de ceux qui tiennent la liste seulement. Une phrase grise l'explique en haut. Pas de bouton pour garder ou retirer : on efface une idée comme n'importe quelle ligne. La marque disparaît quand on modifie l'idée, et pour toutes au premier partage.

@@ -761,14 +761,14 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : la Correction 25 (décocher pour quelqu'un), le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **À faire maintenant, dans cet ordre : le lot 25 bis (niveaux, invitation : Julien est en train d'essayer le partage), la Correction 25 (décocher pour quelqu'un), le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | Correction 24, 24 et 24 bis (faits), puis 24 ter (réordonner en glissant), 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
+| **Les listes, V2** | Correction 24, 24, 24 bis, 24 ter et 25 (faits) ; puis la Correction 25 (décocher pour quelqu'un), 25 bis (niveaux et invitation), 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
@@ -865,6 +865,29 @@ Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la mi
 - [x] **Relier une personne** (`ListePersonneCompte`) : l'adresse sur sa fiche, « Ne plus relier ».
 - [x] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et coche comme lui, y compris ce qui lui est destiné (Correction 20).
 - [x] Trois langues, `tests/e2e`.
+
+### Lot 25 bis — Tenir une liste à plusieurs : deux niveaux, des proches proposés, et la page d'invitation (README 22.20)
+
+Demandé par Julien le 19 novembre 2026 au soir, en essayant le lot 25, et **validé par lui le même soir**, maquettes comprises. Avec migration (le niveau de chacun ; le jeton d'une invitation). Maquettes : `ListeTeneurs`, `ListeTeneursAdresse`, `ListeTeneursNiveau`, `ListeInvitationEmail`, `ListeInvitation`, `ListeInvitationCompte`. Points à relire : section 6, « Lot 25 bis ».
+
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : ce que chaque niveau voit et peut faire ; qui peut changer le niveau de qui ; le dernier qui gère ne peut ni partir ni être rétrogradé.
+- [ ] **Deux niveaux** pour ceux qui tiennent une liste :
+  - **« Gère la liste »** : tout, comme aujourd'hui. En plus de ce que fait « Aide à écrire » : partager ou arrêter le partage, changer de lien, inviter, changer un niveau, retirer quelqu'un de ceux qui tiennent la liste, supprimer la liste.
+  - **« Aide à écrire »** : ajoute, corrige, réordonne les idées et les personnes de toute la liste, coche à son prénom, **voit qui offre quoi** et décoche pour quelqu'un (décidé par Julien le 19 novembre 2026 : rien à cacher à quelqu'un qui aide). Ne partage pas, n'invite pas, ne retire personne de ceux qui tiennent la liste, ne supprime pas la liste. La seule différence entre les deux niveaux est donc ce qu'on peut **gérer**, pas ce qu'on voit.
+  - La personne reliée à son compte (lot 25) reste à part : sa section seulement.
+- [ ] **Ce qui existe** : tous ceux qui tiennent une liste aujourd'hui passent à « Gère la liste » ; celui qui crée une liste la gère.
+- [ ] **Changer un niveau** (`ListeTeneursNiveau`) : chaque ligne porte son niveau ; le toucher ouvre un petit menu, « Aide à écrire », « Gère la liste », chacun avec sa phrase, et « Retirer {Prénom} ». Réservé à ceux qui gèrent ; les autres voient les niveaux sans pouvoir les toucher. La phrase « Vous êtes à égalité » disparaît.
+- [ ] **Inviter, d'une pastille** (`ListeTeneurs`, `ListeTeneursAdresse` ; choisi par Julien le 19 novembre 2026, après avoir essayé une « ligne à écrire » qu'il n'a pas retenue). Sous la liste, « Inviter quelqu'un » : une seule rangée de pastilles, comme « Ajouter quelqu'un » : mes proches reliés à un compte (sauf ceux qui tiennent déjà la liste ou sont invités), puis une pastille en pointillés, « Quelqu'un d'autre ». Toucher un proche le choisit, sans adresse à saisir. Toucher « Quelqu'un d'autre » fait apparaître le champ d'adresse, qui n'est pas affiché avant. Dessous, le niveau (deux choix expliqués, « Aider à écrire » par défaut), puis le bouton : « Inviter {Prénom} », ou « Envoyer l'invitation » pour une adresse. Sans proche relié, la rangée n'a que « Quelqu'un d'autre ».
+- [ ] **La page d'invitation**, ouverte par le lien de l'email (`ListeInvitation`, `ListeInvitationCompte`) : qui invite, à quelle liste, ce que le niveau permet et ne permet pas. Sans compte : un prénom (champ vide, sans texte d'exemple ; dessous, « Vu par ceux avec qui tu tiens une liste ou fais un tirage », car c'est le prénom du compte, pas seulement celui que verra celui qui invite), l'adresse à laquelle le compte sera créé, la phrase sur les règles d'usage, « Accepter, et créer mon compte » : le compte est créé à l'adresse invitée, sans second email, puisque le lien prouve l'adresse. Avec un compte : la page s'adresse à la personne, par l'icône et le prénom de son compte (« Tonton, Camille t'invite »), sans parler de compte ni d'adresse (Julien, 19 novembre 2026) ; « Accepter l'invitation » connecte et ouvre la liste ; sous les boutons, « Tu n'es pas Tonton ? Ce lien est le sien : ne l'ouvre pas à sa place. » « Non merci » refuse l'invitation. En bas : « Signaler » et « Ne plus recevoir d'emails » (lots 39 et 35, quand ils existent).
+- [ ] **Les boutons nomment l'action** (Julien, 19 novembre 2026) : « Accepter l'invitation », ou « Accepter, et créer mon compte » sans compte ; et « Non merci ». Accepter ouvre ensuite la liste. Aucun bouton ne dit « Ouvrir la liste ».
+- [ ] **Le lien d'invitation vaut une connexion pour cette adresse** : à usage unique, valable 7 jours comme l'invitation, jeton de 256 bits gardé en empreinte. Déjà utilisé mais invitation acceptée : la page propose de se connecter normalement. Invitation expirée : voir plus haut.
+- [ ] **Une invitation expire au bout de 7 jours** (demandé par Julien le 19 novembre 2026), elle et son lien ensemble. En attente, sa ligne dit jusqu'à quand : « Invitée le 18 novembre · valable jusqu'au 25 » (`lists.ts`, clé `invited`, à la place de « pas encore venu »). Expirée, la ligne est grisée, « Invitation expirée · le 12 novembre », avec « Renvoyer » : une nouvelle invitation de 7 jours, un nouvel email, le même niveau. Une invitation expirée ne donne plus aucun accès, même connecté avec la bonne adresse ; sa page dit « Cette invitation n'est plus valable. Demande à Camille de te la renvoyer. » Les lignes expirées ou refusées s'effacent d'elles-mêmes après 30 jours (une tâche planifiée, ou à la lecture).
+- [ ] **Un refus se voit** (demandé par Julien le 19 novembre 2026) : « Non merci » sur la page d'invitation garde la ligne dans « Ceux qui tiennent la liste », grisée, avec « A refusé · le 19 novembre » et un bouton « Effacer » (`ListeTeneurs`). On peut réinviter la même personne, ce qui remplace le refus. Celui qui a invité en est prévenu par une nouveauté quand le lot 28 existe. Un refus ne dit jamais pourquoi.
+- [ ] **L'email d'invitation** (`ListeInvitationEmail`) : qui invite, à quelle liste, ce que le niveau permet, un seul lien « Voir l'invitation » qui mène à la page, jusqu'à quand elle vaut, qu'on peut la refuser. Puis **un mot sur l'application** (demandé par Julien le 19 novembre 2026) : « Under the Tree est une application gratuite et sans publicité, pour tenir des listes de cadeaux et faire des tirages au sort entre proches. » Le pied habituel (refuser les emails, signaler, les données). Aucune image. « Une invitation est acceptée en venant » (lot 25) reste vrai pour qui se connecte autrement, tant qu'elle n'a pas expiré.
+- [ ] **Le même mot sur la page d'invitation**, pour qui n'a pas de compte (`ListeInvitation`) : un encadré discret sous les boutons. Pas pour qui a déjà un compte.
+- [ ] **La note « Pour un enfant » de la fiche d'un proche** (`lists.ts`, clé `child` : « Pour un enfant, pas besoin de compte : laisse ce champ vide. ») ne se comprend pas (Julien, 19 novembre 2026) : la retirer. À la place, sous le champ d'adresse tant qu'il est vide : « Facultatif. Si {prénom} a un compte à cette adresse, il pourra écrire ses propres idées sur tes listes. » Rien quand la personne est déjà reliée.
+- [ ] **Une personne reliée à son compte** (question laissée ouverte par le lot 25) : **hors de ce lot.** Relier un proche n'envoie toujours aucun email. À reprendre avec Julien : lui envoyer la même invitation, avec « ta partie de la liste » pour niveau.
+- [ ] Trois langues, `tests/e2e` (un « Aide à écrire » est refusé sur le partage, les invitations, les niveaux et la suppression ; un lien d'invitation ne sert qu'une fois).
 
 ### Lot 26 — Listes V2 : en direct (README 22.20)
 
@@ -1703,6 +1726,19 @@ Codé le 19 novembre 2026. Tranché seul, à relire :
 13. **Supprimer un proche relié** est refusé tant que son compte tient une liste avec moi (la règle de la Correction 24, maintenant branchée) : le bouton « Supprimer de mes proches » n'est alors pas affiché.
 14. **L'adresse d'un proche** n'est montrée qu'à ceux qui tiennent une liste où il figure, et à moi. Elle ne part jamais vers la page d'une liste ouverte par son lien (testé).
 15. **Pas regardé à l'œil** : la vue de la personne reliée (`ListeVueReliee`) ; vérifiée par le test seulement. La page « Ceux qui tiennent la liste » a été comparée à sa maquette.
+
+### Lot 25 bis — niveaux, proches proposés, invitation
+
+Écrit et validé par Julien le 19 novembre 2026 au soir. Ce qui est décidé : deux niveaux qui ne diffèrent que par la gestion ; inviter d'une pastille ; la page d'invitation avec ses boutons « Accepter » ; l'invitation qui vaut 7 jours ; le refus visible ; le mot sur l'application. Points à relire :
+
+1. **Quelqu'un qui tient la liste et y figure voit ce qu'on lui offre**, quel que soit son niveau, comme aujourd'hui (lot 25, point 10). **Question pour Julien, sans réponse** : faut-il lui cacher les prénoms dans sa propre section seulement ? Sinon, inviter son conjoint à tenir la liste de la famille lui dévoile ses cadeaux. Ne rien changer tant qu'il n'a pas répondu.
+2. **« Aider à écrire » par défaut** à l'invitation (proposition) : on donne le moins de pouvoir, et on monte si besoin.
+3. **7 jours pour une invitation, 30 jours avant d'effacer une ligne expirée ou refusée** : deux chiffres posés seul.
+4. **Proposer un proche « qui a un compte »** apprend que cette personne a un compte : la fiche d'un proche le dit déjà.
+5. **Créer un compte par le lien d'invitation** : le lien vaut une connexion. Transféré à quelqu'un d'autre, il lui donnerait le compte, comme tout lien de connexion : d'où l'usage unique, les 7 jours, et la ligne « Tu n'es pas Tonton ? ».
+6. **Un email de plus vers une adresse saisie à la main** : il passera par les contrôles des lots 35 et 38 A. « Renvoyer » compte comme un envoi.
+7. **« Décocher pour quelqu'un » (Correction 25)** est ouvert aux deux niveaux, puisque les deux voient qui offre quoi.
+8. **Les liens « Signaler » et « Ne plus recevoir d'emails »** de la page et de l'email n'existent qu'avec les lots 39 et 35 : ne pas les afficher avant.
 
 ### Lot 27 ter — pistes et liste
 

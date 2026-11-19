@@ -114,16 +114,8 @@ def essais(n,h):
 # les icônes en autocollant dégradé (lot 23 bis) : voir autocollant.py
 from autocollant import tuiles,autocollant
 done=0; soucis=[]
-# une « capture d'écran » : une maquette déjà habillée, réduite dans un cadre de téléphone (page de présentation, lot 32).
-# Dans la source : @@SHOT:Nom:largeur:hauteur@@. Les maquettes qui en contiennent sont habillées en dernier.
-# L'inclinaison, en cinquième champ : R = en perspective, tournée vers la droite ; L = vers la gauche ; r, l = à peine penchée (téléphone) ; 0 ou rien = droite.
-TILT={'R':('rotateY(16deg) rotateX(5deg) rotateZ(-2deg)','-22px 30px 50px rgba(90, 40, 60, 0.26)'),'L':('rotateY(-16deg) rotateX(5deg) rotateZ(2deg)','22px 30px 50px rgba(90, 40, 60, 0.26)'),
-      'r':('rotate(3deg)','0 18px 40px rgba(90, 40, 60, 0.22)'),'l':('rotate(-3deg)','0 18px 40px rgba(90, 40, 60, 0.22)'),'0':('none','0 18px 40px rgba(90, 40, 60, 0.22)')}
-def capture(m):
-    n,w,hh=m.group(1),int(m.group(2)),int(m.group(3)); tr,sh=TILT[m.group(4) or '0']; src=open(os.path.join(OUT,n+'.html'),encoding='utf-8').read()
-    body=src[src.index('<div style="width: 390px'):src.index('</x-dc>')]; k=w/390
-    return (f'<div aria-hidden="true" inert style="flex-shrink: 0; perspective: 1400px"><div style="padding: 8px; border-radius: 34px; background: #2b1b3d; box-shadow: {sh}; transform: {tr}">'
-            f'<div style="width: {w}px; height: {hh}px; overflow: hidden; border-radius: 26px; background: #fff6f1"><div style="width: 390px; transform: scale({k:.4f}); transform-origin: 0 0; text-align: left">{body}</div></div></div></div>')
+# les captures d'écran de la page de présentation (lot 32) : voir capture.py
+import capture as _cap; _cap.OUT=OUT; capture=_cap.capture
 avec=lambda f: '@@SHOT' in open(os.path.join(SRC,f),encoding='utf-8').read()
 for f in sorted((x for x in os.listdir(SRC) if x.endswith('.html')),key=lambda x:(avec(x),x)):
     n=f[:-5]+'.dc.html'; h=open(os.path.join(SRC,f),encoding='utf-8').read()

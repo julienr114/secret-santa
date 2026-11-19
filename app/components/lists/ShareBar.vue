@@ -168,7 +168,7 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
         class="flex items-center gap-2.5 rounded-[18px] bg-muted py-2 pr-2 pl-3"
       >
         <span
-          class="min-w-0 grow truncate text-[15px] font-semibold select-all"
+          class="min-w-0 grow text-[15px] leading-[1.35] font-semibold break-all select-all"
           data-testid="share-link"
           >{{ url.replace(/^https?:\/\//, '') }}</span
         >

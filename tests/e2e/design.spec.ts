@@ -12,6 +12,29 @@ test('the style guide shows the edition components', async ({ page }) => {
     page.getByRole('heading', { level: 1, name: 'Guide de style' }),
   ).toBeVisible();
 
+  // « Sorbet » (README 23.5): the rosy page, Outfit for the titles and DM
+  // Sans for the text, both loaded, and the eight illustrations.
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(255, 246, 241)',
+  );
+  const fonts = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const loaded = [...document.fonts]
+      .filter((font) => font.status === 'loaded')
+      .map((font) => font.family.replaceAll('"', ''));
+    return {
+      title: getComputedStyle(document.querySelector('h1')!).fontFamily,
+      text: getComputedStyle(document.body).fontFamily,
+      loaded,
+    };
+  });
+  expect(fonts.title).toContain('Outfit');
+  expect(fonts.text).toContain('DM Sans');
+  expect(fonts.loaded).toContain('Outfit');
+  expect(fonts.loaded).toContain('DM Sans');
+  await expect(page.getByTestId('illustrations').locator('svg')).toHaveCount(8);
+
   await expect(
     page.getByRole('list', { name: "Étapes de l'édition" }),
   ).toBeVisible();
@@ -102,4 +125,12 @@ test('the style guide shows the edition components', async ({ page }) => {
   await journal.getByRole('button', { name: /^Voir le détail/ }).click();
   // Unfolded, one row per person: their icon and their name.
   await expect(journal).toContainText('Hugo');
+});
+
+test('the screens before logging in wear the tree, by the name of the app', async ({
+  page,
+}) => {
+  await page.goto('/login');
+  await hydrated(page);
+  await expect(page.getByRole('img', { name: 'Under the Tree' })).toBeVisible();
 });

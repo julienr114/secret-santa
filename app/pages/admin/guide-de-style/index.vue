@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+  UiIllusTree,
+  UiIllusTreeEmpty,
+  UiIllusWreath,
+  UiIllusParcels,
+  UiIllusLabel,
+  UiIllusLetter,
+  UiIllusSeats,
+  UiIllusChecklist,
+} from '#components';
 import { AVATAR_COLORS, type Avatar } from '#server/utils/avatars';
 import type { JournalEntry } from '#server/utils/audit';
 import type { NotePosition } from '#server/utils/messages';
@@ -26,9 +36,9 @@ const SURFACES = [
 ];
 /** Meaning colours of the theme. */
 const COLORS = [
-  { name: 'primary', hint: 'Rouge brique : action', class: 'bg-primary' },
-  { name: 'secondary', hint: 'Vert sapin : réussi', class: 'bg-secondary' },
-  { name: 'warning', hint: 'Moutarde : attention', class: 'bg-warning' },
+  { name: 'primary', hint: 'Corail : action', class: 'bg-primary' },
+  { name: 'secondary', hint: 'Menthe foncée : réussi', class: 'bg-secondary' },
+  { name: 'warning', hint: 'Lilas : attention', class: 'bg-warning' },
   { name: 'error', hint: 'Canneberge : danger', class: 'bg-error' },
   { name: 'primary-tint', hint: 'Pavé à faire', class: 'bg-primary-tint' },
   { name: 'primary-soft', hint: 'Halo, bouton rond', class: 'bg-primary-soft' },
@@ -41,6 +51,45 @@ const COLORS = [
     class: 'bg-warning-soft',
   },
   { name: 'error-soft', hint: 'Fond danger', class: 'bg-error-soft' },
+  {
+    name: 'warning-fill',
+    hint: 'Lilas plein : cadeau à plusieurs',
+    class: 'bg-warning-fill',
+  },
+  { name: 'alert', hint: 'Rond d’une alerte du journal', class: 'bg-alert' },
+  { name: 'star', hint: 'Étoile des idées', class: 'bg-star' },
+  {
+    name: 'line-strong',
+    hint: 'Bord marqué, case prise',
+    class: 'bg-line-strong',
+  },
+];
+/** The eight illustrations of « Sorbet », by where they show. */
+const ILLUSTRATIONS = [
+  {
+    is: UiIllusTree,
+    name: 'UiIllusTree',
+    hint: 'Connexion, à la place du logo',
+  },
+  {
+    is: UiIllusTreeEmpty,
+    name: 'UiIllusTreeEmpty',
+    hint: 'Aucun tirage pour l’instant',
+  },
+  {
+    is: UiIllusWreath,
+    name: 'UiIllusWreath',
+    hint: 'Lien d’invitation, à la place du logo',
+  },
+  { is: UiIllusParcels, name: 'UiIllusParcels', hint: 'Groupe rejoint' },
+  {
+    is: UiIllusLabel,
+    name: 'UiIllusLabel',
+    hint: 'Pistes de cadeaux à remplir',
+  },
+  { is: UiIllusLetter, name: 'UiIllusLetter', hint: 'Demande acceptée' },
+  { is: UiIllusSeats, name: 'UiIllusSeats', hint: 'Édition sans participants' },
+  { is: UiIllusChecklist, name: 'UiIllusChecklist', hint: 'Aucune liste' },
 ];
 /** Codes shown by AdminStatusBadge: edition statuses, then participant badges. */
 const STATUSES = ['preparing', 'drawn', 'closed'];
@@ -289,7 +338,10 @@ const entries = computed(() => [
         <UiPageTitle>UiPageTitle : le titre de l'écran</UiPageTitle>
       </div>
       <UiSectionTitle>UiSectionTitle : au-dessus d'un groupe</UiSectionTitle>
-      <p>Texte courant, en Nunito.</p>
+      <h2 class="font-display text-[22px] leading-[1.2] font-semibold">
+        Un titre, en Outfit
+      </h2>
+      <p>Texte courant, en DM Sans.</p>
       <p class="text-sm text-muted">Explication ou aide, en plus discret.</p>
       <UiTextPreview>
         UiTextPreview : un texte tel qu'il a été écrit. Les retours à la ligne
@@ -624,6 +676,18 @@ const entries = computed(() => [
         UiEnvelopeOpened, UiEnvelopeLocked), choisie par UiEnvelope selon
         envelopeState</code
       >
+      <UiSectionTitle>Illustrations (README 23.5)</UiSectionTitle>
+      <ul class="grid grid-cols-2 gap-3" data-testid="illustrations">
+        <li
+          v-for="illustration in ILLUSTRATIONS"
+          :key="illustration.name"
+          class="flex flex-col items-center gap-1 text-center"
+        >
+          <component :is="illustration.is" class="w-full! max-w-46" />
+          <code class="text-xs">{{ illustration.name }}</code>
+          <span class="text-xs text-muted">{{ illustration.hint }}</span>
+        </li>
+      </ul>
       <UiGiftTag>
         <p class="text-center text-muted">
           UiGiftTag : une étiquette cadeau, son contenu dans le slot.
@@ -678,8 +742,8 @@ const entries = computed(() => [
       </div>
       <code class="text-xs"
         >UiTile : une chose à faire sur la page d’un tirage, à faire (cerclée de
-        brique), faite (coche), seulement dite, ou le palmarès qui attend
-        (award, en vert sapin) ; seule, sur toute la largeur, à deux, côte à
+        corail), faite (coche), seulement dite, ou le palmarès qui attend
+        (award, en vert plein) ; seule, sur toute la largeur, à deux, côte à
         côte (compact)</code
       >
       <ParticipantJournalRow to="#" :alerts="0" />
@@ -998,7 +1062,7 @@ const entries = computed(() => [
         </li>
         <li>
           Les écrans nomment un rôle (bg-page, primary), jamais une teinte
-          (kraft-50, brick-600).
+          (peach-50, coral-600).
         </li>
         <li>
           Aucun texte en dur dans un écran du produit : tout passe par les

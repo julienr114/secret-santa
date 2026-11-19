@@ -5,12 +5,17 @@ import { expect, type APIRequestContext, type Page } from '@playwright/test';
 // own super-admin address: an address may only ask for a few links an
 // hour.
 
-/** Waits for Vue to take over the page before interacting with it. */
+/**
+ * Waits for Vue to take over the page before interacting with it: the
+ * application Vue hangs on its root once mounted. (`window.useNuxtApp`
+ * is there earlier, while a field typed in would still lose its text.)
+ */
 export const hydrated = async (page: Page) => {
-  await page.waitForFunction(
-    () =>
-      Boolean((window as { useNuxtApp?: unknown }).useNuxtApp) ||
-      document.querySelector('#__nuxt')?.hasAttribute('data-v-app'),
+  await page.waitForFunction(() =>
+    Boolean(
+      (document.querySelector('#__nuxt') as { __vue_app__?: unknown } | null)
+        ?.__vue_app__,
+    ),
   );
 };
 

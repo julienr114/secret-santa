@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // One thing to do on the page of a draw (README 22.16), as a tile: an
 // icon, its name in the display font, and where it stands. `todo` waits
-// for an action: framed in brick, its call in brick (« À remplir »);
+// for an action: framed in coral, its call in coral (« À remplir »);
 // `done` carries a check and its state; `idle` only tells; `award`, in
 // pine, the colour of the palmarès alone (« Le palmarès t'attend »,
 // README 22.17). Alone, a tile
@@ -35,8 +35,8 @@ withDefaults(
       state === 'todo'
         ? 'ring-2 ring-primary'
         : state === 'award'
-          ? 'ring-2 ring-pine-700'
-          : 'shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5',
+          ? 'ring-2 ring-success'
+          : 'shadow-card',
     ]"
     :data-state="state"
     data-testid="tile"
@@ -47,7 +47,7 @@ withDefaults(
         'bg-primary text-inverted': state === 'todo',
         'bg-success-soft text-success-ink': state === 'done',
         'bg-muted text-toned': state === 'idle',
-        'bg-pine-700 text-white': state === 'award',
+        'bg-success text-white': state === 'award',
       }"
       aria-hidden="true"
     >
@@ -63,7 +63,7 @@ withDefaults(
       <span
         v-if="state === 'todo' || state === 'award'"
         class="text-sm font-bold"
-        :class="state === 'todo' ? 'text-primary-ink' : 'text-pine-700'"
+        :class="state === 'todo' ? 'text-primary-ink' : 'text-success'"
         >{{ text }}</span
       >
       <span v-else class="flex items-start gap-1 text-sm text-toned">

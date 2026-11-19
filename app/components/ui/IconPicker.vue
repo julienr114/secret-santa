@@ -32,7 +32,7 @@ const props = withDefaults(
 const model = defineModel<IconChoice>({ required: true });
 const grid = ref<HTMLElement | null>(null);
 const corner = computed(() =>
-  props.shape === 'round' ? 'rounded-full' : 'rounded-[12px]',
+  props.shape === 'round' ? 'rounded-full' : 'rounded-xl',
 );
 const shade = computed(
   () =>

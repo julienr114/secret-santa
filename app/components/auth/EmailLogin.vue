@@ -142,7 +142,7 @@ const onAgain = () => {
         :class="
           mode === item.value
             ? 'bg-default text-default shadow-sm'
-            : 'text-muted'
+            : 'text-toned'
         "
         @click="mode = item.value"
       >

@@ -42,7 +42,7 @@ const onSave = () =>
 
 <template>
   <form
-    class="flex flex-col gap-1.5 rounded-[10px] bg-muted p-3"
+    class="flex flex-col gap-1.5 rounded-md bg-muted p-3"
     novalidate
     data-testid="email-inline"
     @submit.prevent="onSave"

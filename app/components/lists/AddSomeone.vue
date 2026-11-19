@@ -65,7 +65,7 @@ const onNew = () => {
 
 <template>
   <section
-    class="flex flex-col gap-3 border-t border-[#dccbad] pt-5"
+    class="flex flex-col gap-3 border-t border-default pt-5"
     data-testid="add-someone"
   >
     <h2 class="font-display text-[24px] leading-[1.2] font-bold">
@@ -76,7 +76,7 @@ const onNew = () => {
         v-for="member in family"
         :key="member.id"
         type="button"
-        class="flex h-11 items-center gap-2 rounded-full bg-default pr-4 pl-1 font-semibold ring-1 ring-[#dccbad]"
+        class="flex h-11 items-center gap-2 rounded-full bg-default pr-4 pl-1 font-semibold ring-1 ring-default"
         :disabled="adding !== null"
         @click="onAdd(member.id)"
       >
@@ -85,7 +85,7 @@ const onNew = () => {
       </button>
       <button
         type="button"
-        class="flex h-11 items-center gap-2 rounded-full border border-dashed border-[#d8c49b] px-4 font-semibold text-primary-ink"
+        class="flex h-11 items-center gap-2 rounded-full border border-dashed border-accented px-4 font-semibold text-primary-ink"
         @click="sheetOpen = true"
       >
         <UIcon name="i-lucide-plus" class="size-4" />

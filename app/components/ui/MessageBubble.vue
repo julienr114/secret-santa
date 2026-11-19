@@ -30,7 +30,7 @@ const LINES = ['w-full', 'w-[86%]', 'w-[55%]'];
     v-if="text === undefined"
     aria-busy="true"
     :aria-label="loadingLabel"
-    class="flex w-[92%] flex-col gap-2.5 self-start rounded-2xl rounded-bl-[4px] bg-muted p-3.5"
+    class="flex w-[92%] flex-col gap-2.5 self-start rounded-bubble rounded-bl-[6px] bg-muted p-3.5"
   >
     <span
       v-for="width in LINES"
@@ -41,7 +41,7 @@ const LINES = ['w-full', 'w-[86%]', 'w-[55%]'];
   </div>
   <div
     v-else
-    class="flex max-w-[92%] flex-col gap-1.5 self-start rounded-2xl rounded-bl-[4px] bg-muted px-3.5 py-3 text-[15px] leading-[1.45] break-words"
+    class="flex max-w-[92%] flex-col gap-1.5 self-start rounded-bubble rounded-bl-[6px] bg-muted px-3.5 py-3 text-[15px] leading-[1.45] break-words"
   >
     <p v-if="short" class="line-clamp-2">{{ glimpse }}</p>
     <template v-else>

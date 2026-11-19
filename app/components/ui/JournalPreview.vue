@@ -19,7 +19,7 @@ defineProps<{
     >
       <span
         v-if="icon"
-        class="flex size-8 shrink-0 items-center justify-center rounded-full bg-star text-mustard-950"
+        class="flex size-8 shrink-0 items-center justify-center rounded-full bg-alert text-inverted"
         aria-hidden="true"
       >
         <UIcon :name="icon" class="size-4" />

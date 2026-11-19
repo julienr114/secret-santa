@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // A row of steps joined by a line: done (green, with a check), current
-// (brick, with a halo, `aria-current="step"`) or still to come (empty).
+// (coral, with a halo, `aria-current="step"`) or still to come (empty).
 // Shows where things stand; it is not a navigation.
 
 /** One step and where it stands. */

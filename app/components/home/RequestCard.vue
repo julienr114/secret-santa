@@ -34,7 +34,7 @@ const date = computed(() => formatDay(props.request.createdAt, locale.value));
         {{ t('auth.home.requestSentOn', { date }) }}
       </p>
       <p
-        class="rounded-[10px] bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+        class="rounded-md bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
         data-testid="home-request-message"
       >
         {{ request.message }}
@@ -49,7 +49,7 @@ const date = computed(() => formatDay(props.request.createdAt, locale.value));
           {{ t('auth.home.requestNote') }}
         </p>
         <p
-          class="rounded-[10px] bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+          class="rounded-md bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
           data-testid="home-request-note"
         >
           {{ request.note }}

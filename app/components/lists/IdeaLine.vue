@@ -194,17 +194,17 @@ const onBlur = () => {
       @click="onBox"
     >
       <span
-        class="flex size-[22px] items-center justify-center rounded-[5px]"
+        class="flex size-[22px] items-center justify-center rounded-sm"
         :class="
           !idea
-            ? 'border-[1.5px] border-[#e2d3b6]'
+            ? 'border-[1.5px] border-default'
             : mine
-              ? 'bg-[#2f5d3a] text-white'
+              ? 'bg-success text-white'
               : view.kind === 'group' && !view.closed
-                ? 'bg-[#e6b94a] text-[#292524]'
+                ? 'bg-warning-fill text-highlighted'
                 : taken
-                  ? 'bg-[#a8a29e] text-white'
-                  : 'border-[1.5px] border-[#a8a29e] bg-default'
+                  ? 'bg-line-strong text-highlighted'
+                  : 'border-[1.5px] border-accented bg-default'
         "
         aria-hidden="true"
       >
@@ -265,7 +265,7 @@ const onBlur = () => {
           v-if="who"
           class="rounded-full px-2 py-0.5 text-xs font-bold no-underline"
           :class="
-            mine ? 'bg-[#dcebdc] text-[#244a2e]' : 'bg-[#ece2cf] text-[#44403c]'
+            mine ? 'bg-success-soft text-success-ink' : 'bg-muted text-default'
           "
           data-testid="idea-who"
           >{{ who }}</span

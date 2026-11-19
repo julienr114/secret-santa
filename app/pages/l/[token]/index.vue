@@ -212,8 +212,12 @@ const onJoin = (idea: IdeaLine, forName: string) => {
             data-testid="off-list"
           >
             <span
-              class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-[5px] text-white"
-              :class="gift.kind === 'mine' ? 'bg-[#2f5d3a]' : 'bg-[#a8a29e]'"
+              class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm"
+              :class="
+                gift.kind === 'mine'
+                  ? 'bg-success text-white'
+                  : 'bg-line-strong text-highlighted'
+              "
               aria-hidden="true"
             >
               <UIcon name="i-lucide-check" class="size-3.5" />
@@ -249,7 +253,7 @@ const onJoin = (idea: IdeaLine, forName: string) => {
               data-testid="off-list-action"
             >
               <span
-                class="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] border-[1.5px] border-dashed border-[#d8c49b]"
+                class="flex size-[22px] shrink-0 items-center justify-center rounded-sm border-[1.5px] border-dashed border-accented"
                 aria-hidden="true"
               >
                 <UIcon name="i-lucide-plus" class="size-3.5" />

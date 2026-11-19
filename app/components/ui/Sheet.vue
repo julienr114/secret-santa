@@ -20,7 +20,7 @@ const open = defineModel<boolean>('open', { required: true });
 // keyboard hides (read by every drawer, app.config.ts).
 useKeyboardInset(() => open.value);
 const KEYBOARD_AWARE =
-  'bottom-[var(--sheet-lift,0px)] max-h-[min(calc(100dvh-env(safe-area-inset-top)-0.5rem),calc(var(--sheet-visible,100dvh)-0.5rem))] rounded-t-[20px]';
+  'bottom-[var(--sheet-lift,0px)] max-h-[min(calc(100dvh-env(safe-area-inset-top)-0.5rem),calc(var(--sheet-visible,100dvh)-0.5rem))] rounded-t-3xl';
 </script>
 
 <template>

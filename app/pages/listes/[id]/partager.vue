@@ -111,7 +111,7 @@ const confirming = ref(false);
 
     <template v-else>
       <div
-        class="flex flex-col gap-2 rounded-2xl rounded-bl-[4px] bg-[#f1e8d8] px-4 py-3.5 text-[15px] leading-[1.5]"
+        class="flex flex-col gap-2 rounded-bubble rounded-bl-[6px] bg-muted px-4 py-3.5 text-[15px] leading-[1.5]"
         data-testid="share-message"
       >
         <p class="whitespace-pre-line">{{ sentence }}</p>

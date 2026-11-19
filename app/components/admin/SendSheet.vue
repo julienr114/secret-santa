@@ -377,7 +377,7 @@ watch(
         />
         <div
           v-else-if="!participant.email"
-          class="flex items-center gap-2.5 rounded-[10px] bg-muted px-3 py-2.5"
+          class="flex items-center gap-2.5 rounded-md bg-muted px-3 py-2.5"
           data-testid="no-address"
         >
           <UIcon

@@ -257,7 +257,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
         <NuxtLink
           v-if="results.size !== 'none'"
           :to="`/p/${token}/devine/palmares`"
-          class="flex items-center gap-4 rounded-2xl bg-pine-700 px-5 py-4 text-white active:bg-pine-800"
+          class="flex items-center gap-4 rounded-2xl bg-success px-5 py-4 text-white active:bg-success-deep"
           data-testid="palmares-link"
         >
           <span
@@ -427,7 +427,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
           </template>
           <span
             v-else
-            class="flex size-32 items-center justify-center rounded-full border-2 border-dashed border-envelope-fold font-display text-6xl font-bold text-mustard-700"
+            class="flex size-32 items-center justify-center rounded-full border-2 border-dashed border-envelope-fold font-display text-6xl font-bold text-warning"
             aria-hidden="true"
             >?</span
           >
@@ -484,7 +484,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
               v-for="index in progress.total"
               :key="index"
               class="h-1.5 flex-1 rounded-full"
-              :class="index <= progress.made ? 'bg-pine-700' : 'bg-pine-700/25'"
+              :class="index <= progress.made ? 'bg-success' : 'bg-success/25'"
             />
           </div>
         </div>

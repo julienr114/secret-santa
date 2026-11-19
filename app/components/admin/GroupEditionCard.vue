@@ -86,7 +86,7 @@ const progressLine = computed(() =>
         :max="Math.max(participants.length, 1)"
         color="secondary"
         :aria-label="t('adminGroup.dashboard.viewedLabel')"
-        :ui="{ base: 'h-2 bg-track', indicator: 'bg-pine-600' }"
+        :ui="{ base: 'h-2 bg-track', indicator: 'bg-success' }"
       />
       <p class="text-[13px] text-toned">{{ progressLine }}</p>
     </div>

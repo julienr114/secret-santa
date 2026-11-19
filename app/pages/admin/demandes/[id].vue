@@ -113,7 +113,7 @@ const onDecide = (approve: boolean) =>
       </div>
       <template v-if="request">
         <blockquote
-          class="rounded-[16px_16px_16px_4px] bg-muted px-3.5 py-3 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+          class="rounded-bubble rounded-bl-[6px] bg-muted px-3.5 py-3 text-[15px] leading-[1.45] break-words whitespace-pre-line"
           data-testid="group-request"
         >
           {{ request.message }}

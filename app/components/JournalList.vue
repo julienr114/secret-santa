@@ -4,9 +4,9 @@ import type { JournalDay } from '#shared/utils/journal';
 import type { JournalPersonCard } from '#server/database/journal';
 
 // The public journal (README section 9) as a timeline, newest first, by
-// day. A thin brick thread runs down the left; every line hangs on it
+// day. A thin coral thread runs down the left; every line hangs on it
 // with its icon. Milestones of the edition are white cards, alerts are
-// mustard cards with what they mean, everyday events plain lines, and
+// lilac cards with what they mean, everyday events plain lines, and
 // the repeated ones a line that unfolds. Shared by the participant and
 // the organiser.
 defineProps<{
@@ -81,11 +81,11 @@ const dayLabel = (day: string) =>
               <span
                 class="knot flex items-center justify-center rounded-full"
                 :class="{
-                  'size-10 bg-alert text-alert-ink':
+                  'size-10 bg-alert text-inverted':
                     journalLook(line.entry.type).level === 'alert',
                   'size-10 bg-primary text-white':
                     journalLook(line.entry.type).level === 'milestone',
-                  'size-10 bg-pine-700 text-white':
+                  'size-10 bg-success text-white':
                     journalLook(line.entry.type).level === 'award',
                   'size-8 bg-default text-toned':
                     journalLook(line.entry.type).level === 'line',
@@ -108,8 +108,8 @@ const dayLabel = (day: string) =>
                 journalLook(line.entry.type).level === 'alert'
                   ? 'bg-warning-tint ring-1 ring-warning-ring'
                   : journalLook(line.entry.type).level === 'award'
-                    ? 'bg-success-tint ring-1 ring-pine-300'
-                    : 'bg-default shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
+                    ? 'bg-success shadow-award'
+                    : 'bg-default shadow-card'
               "
             >
               <p
@@ -118,7 +118,7 @@ const dayLabel = (day: string) =>
                   journalLook(line.entry.type).level === 'alert'
                     ? 'text-alert-ink'
                     : journalLook(line.entry.type).level === 'award'
-                      ? 'text-pine-800'
+                      ? 'text-white'
                       : 'text-highlighted'
                 "
               >
@@ -126,7 +126,12 @@ const dayLabel = (day: string) =>
               </p>
               <time
                 :datetime="line.entry.createdAt"
-                class="text-xs text-toned"
+                class="text-xs"
+                :class="
+                  journalLook(line.entry.type).level === 'award'
+                    ? 'text-success-tint'
+                    : 'text-toned'
+                "
                 >{{ timeOf(line.entry.createdAt) }}</time
               >
               <button
@@ -143,7 +148,7 @@ const dayLabel = (day: string) =>
                   palmaresOf?.(line.entry.editionId)
                 "
                 :to="palmaresOf(line.entry.editionId)!"
-                class="flex min-h-8 items-center self-start text-[13px] font-bold text-pine-800 underline underline-offset-2"
+                class="flex min-h-8 items-center self-start text-[13px] font-bold text-white underline underline-offset-2"
                 data-testid="journal-palmares"
                 >{{ t('participant.game.discover') }}</NuxtLink
               >

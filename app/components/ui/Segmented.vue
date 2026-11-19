@@ -15,12 +15,12 @@ const name = useId();
   <div
     role="radiogroup"
     :aria-label="label"
-    class="grid auto-cols-fr grid-flow-col gap-1 rounded-[10px] bg-muted p-1"
+    class="grid auto-cols-fr grid-flow-col gap-1 rounded-md bg-muted p-1"
   >
     <label
       v-for="item in items"
       :key="item.value"
-      class="flex h-10 cursor-pointer items-center justify-center truncate rounded-[7px] px-1 text-sm has-focus-visible:ring-2 has-focus-visible:ring-primary"
+      class="flex h-10 cursor-pointer items-center justify-center truncate rounded-[10px] px-1 text-sm has-focus-visible:ring-2 has-focus-visible:ring-primary"
       :class="
         model === item.value
           ? 'bg-default font-bold text-highlighted shadow-[0_1px_2px_rgba(60,30,10,0.12)]'

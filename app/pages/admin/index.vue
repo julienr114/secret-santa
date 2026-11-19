@@ -143,7 +143,7 @@ const capacityCaption = computed(() =>
               </div>
             </div>
             <p
-              class="rounded-[10px] bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
+              class="rounded-md bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
             >
               {{ first.message }}
             </p>

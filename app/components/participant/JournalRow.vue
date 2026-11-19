@@ -12,7 +12,7 @@ const { t } = useT();
     class="flex min-h-16 items-center gap-3 rounded-2xl px-4 transition-colors"
     :class="
       alerts > 0
-        ? 'bg-warning-tint py-3 text-mustard-950 ring-1 ring-warning-ring'
+        ? 'bg-warning-tint py-3 text-alert-ink ring-1 ring-warning-ring'
         : 'py-2.5 ring-1 ring-default active:bg-muted'
     "
     data-testid="journal-row"
@@ -20,7 +20,7 @@ const { t } = useT();
   >
     <span
       class="flex size-10 shrink-0 items-center justify-center rounded-full"
-      :class="alerts > 0 ? 'bg-alert text-mustard-950' : 'bg-muted text-toned'"
+      :class="alerts > 0 ? 'bg-alert text-inverted' : 'bg-muted text-toned'"
       aria-hidden="true"
     >
       <UIcon name="i-lucide-file-text" class="size-5" />

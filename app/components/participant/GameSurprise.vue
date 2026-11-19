@@ -8,7 +8,7 @@ const { t } = useT();
 
 <template>
   <section
-    class="flex items-start gap-3 rounded-2xl bg-default p-4 shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5"
+    class="flex items-start gap-3 rounded-2xl bg-default p-4 shadow-card"
     data-testid="game-surprise"
   >
     <span

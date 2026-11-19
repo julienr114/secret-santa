@@ -98,7 +98,7 @@ const days = computed(() => {
     view.value === 'essential' ? essentialEvents(ofEdition) : ofEdition;
   return journalDays(groupEvents(shown, dayOf), dayOf);
 });
-/** The classes of a filter pill, brick once it narrows the journal. */
+/** The classes of a filter pill, coral once it narrows the journal. */
 const pill = (narrowed: boolean) => ({
   base: [
     'min-h-11 rounded-full px-3.5 text-sm font-semibold',

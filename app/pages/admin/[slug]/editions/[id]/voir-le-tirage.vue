@@ -122,7 +122,7 @@ const onReveal = () =>
       <template v-if="pair">
         <section
           aria-live="polite"
-          class="flex flex-col items-center gap-4 rounded-2xl bg-default px-5 py-6 text-center shadow-sm ring-1 ring-default"
+          class="flex flex-col items-center gap-4 rounded-2xl bg-default px-5 py-6 text-center shadow-card"
           data-testid="revealed"
         >
           <div class="flex items-center gap-3.5">

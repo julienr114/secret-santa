@@ -11,9 +11,9 @@ const props = withDefaults(
   { size: 'md' },
 );
 const SIZES = {
-  sm: 'size-10 rounded-[10px] text-xl',
-  md: 'size-14 rounded-[14px] text-[28px]',
-  lg: 'size-18 rounded-[16px] text-[36px]',
+  sm: 'size-10 rounded-md text-xl',
+  md: 'size-14 rounded-xl text-[28px]',
+  lg: 'size-18 rounded-2xl text-[36px]',
 };
 const shade = computed(() => listShade(props.icon.color));
 </script>

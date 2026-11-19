@@ -60,7 +60,7 @@ const onJoin = () =>
           </div>
           <span
             v-if="index === 0 && count > 2"
-            class="rounded-full bg-[#ece2cf] px-2 py-0.5 text-xs font-bold"
+            class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold"
             >{{ t('lists.claim.opened') }}</span
           >
         </li>

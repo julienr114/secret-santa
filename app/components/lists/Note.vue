@@ -58,7 +58,7 @@ const onBlur = () => {
   <button
     v-else-if="note.kind === 'default'"
     type="button"
-    class="flex flex-col gap-1.5 rounded-xl border border-dashed border-[#d8c49b] p-3.5 text-left"
+    class="flex flex-col gap-1.5 rounded-xl border border-dashed border-accented p-3.5 text-left"
     data-testid="note-default"
     @click="start"
   >

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// A few short words side by side, each in a kraft pill, wrapping to the
+// A few short words side by side, each in a peach pill, wrapping to the
 // next line: the answers of « Moi et les cadeaux ». A tag with `to` is a
 // link, with a small grey pencil (its 44 px target reaches past the pill
-// without making it look bigger); a `missing` one is dashed in brick,
+// without making it look bigger); a `missing` one is dashed in coral,
 // after a « + », without pencil. The texts
 // come from the parent.
 

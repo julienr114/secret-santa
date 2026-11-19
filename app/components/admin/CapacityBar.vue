@@ -2,7 +2,7 @@
 import { APP_GROUPS_COMFORT } from '#server/utils/quota';
 
 // How full the app is, against the groups the free plans carry: a bar,
-// green, then mustard past four fifths, brick beyond, and a line under it.
+// green, then lilac past four fifths, coral beyond, and a line under it.
 const props = defineProps<{
   /** The groups the bar shows. */
   groups: number;

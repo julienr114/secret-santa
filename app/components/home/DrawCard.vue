@@ -207,7 +207,7 @@ const state = computed(() => {
       :icon="
         newHints || palmares || guessing || opened ? undefined : 'i-lucide-gift'
       "
-      :class="palmares ? 'bg-pine-700 hover:bg-pine-800' : ''"
+      :class="palmares ? 'bg-success hover:bg-success-deep' : ''"
       :variant="state.variant"
       class="min-h-14 justify-center font-bold"
       :label="state.button"

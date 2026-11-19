@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// A count in a brick pill, at the end of a row or of a menu item: how
+// A count in a coral pill, at the end of a row or of a menu item: how
 // many things wait. The words are read out instead of the number.
 defineProps<{
   count: number;

@@ -18,7 +18,7 @@ const props = withDefaults(
     avatar?: Avatar;
     emoji?: string;
     tone?: 'default' | 'danger';
-    /** The colour of the round icon: brick for what to do, grey otherwise. */
+    /** The colour of the round icon: coral for what to do, grey otherwise. */
     iconTone?: 'primary' | 'neutral';
     /** The current value of a setting, shown on the right. */
     value?: string;

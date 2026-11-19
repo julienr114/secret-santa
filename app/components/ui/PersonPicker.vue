@@ -76,7 +76,7 @@ const shown = computed(() =>
               >
                 <mark
                   v-if="part.match && searchable"
-                  class="rounded-sm bg-warning-soft text-inherit"
+                  class="rounded-xs bg-warning-soft text-inherit"
                   >{{ part.text }}</mark
                 >
                 <template v-else>{{ part.text }}</template>

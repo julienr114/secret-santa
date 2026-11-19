@@ -33,7 +33,7 @@ const checked = defineModel<boolean>('checked', { required: true });
       <input
         v-model="checked"
         type="checkbox"
-        class="size-6 shrink-0 accent-primary"
+        class="size-6 shrink-0 tick"
         :aria-label="label"
       />
     </label>

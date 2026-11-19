@@ -29,11 +29,11 @@ const text = computed(() => {
 <template>
   <div
     role="status"
-    class="flex items-start gap-3 rounded-xl bg-mustard-100 px-4 py-3 text-mustard-900"
+    class="flex items-start gap-3 rounded-xl bg-warning-tint px-4 py-3 text-alert-ink"
     data-testid="revealed-banner"
   >
     <span
-      class="flex size-8 shrink-0 items-center justify-center rounded-full bg-alert text-alert-ink"
+      class="flex size-8 shrink-0 items-center justify-center rounded-full bg-alert text-inverted"
       aria-hidden="true"
     >
       <UIcon name="i-lucide-eye" class="size-4.5" />
@@ -43,7 +43,7 @@ const text = computed(() => {
         t('participant.revealed.bannerTitle')
       }}</strong>
       {{ text }}
-      <NuxtLink :to="journalPath" class="font-bold underline">{{
+      <NuxtLink :to="journalPath" class="font-bold text-alert-link underline">{{
         t('participant.revealed.journal')
       }}</NuxtLink>
     </p>

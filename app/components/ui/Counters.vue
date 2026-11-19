@@ -14,17 +14,17 @@ const TONES = {
   primary: {
     tile: 'bg-primary-tint',
     text: 'text-primary-ink',
-    label: 'text-brick-800',
+    label: 'text-primary-ink',
   },
   warning: {
     tile: 'bg-warning-tint',
     text: 'text-warning-ink',
-    label: 'text-mustard-900',
+    label: 'text-warning-ink',
   },
   success: {
     tile: 'bg-success-tint',
     text: 'text-success-ink',
-    label: 'text-pine-800',
+    label: 'text-success-ink',
   },
 };
 </script>
@@ -34,7 +34,7 @@ const TONES = {
     <div
       v-for="item in items"
       :key="item.label"
-      class="flex flex-col-reverse justify-end gap-0.5 rounded-[10px] p-2.5"
+      class="flex flex-col-reverse justify-end gap-0.5 rounded-md p-2.5"
       :class="TONES[item.tone].tile"
     >
       <dt

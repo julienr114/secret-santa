@@ -53,7 +53,20 @@ export default defineNuxtConfig({
     public: { baseUrl: '' },
   },
   css: ['~/assets/css/main.css'],
-  // Light theme only: the art direction is a kraft-paper Christmas card.
+  // Outfit for the titles, DM Sans for the text (README 23.5), with the
+  // only weights the screens use.
+  fonts: {
+    families: [
+      { name: 'Outfit', provider: 'google', weights: [600, 700] },
+      {
+        name: 'DM Sans',
+        provider: 'google',
+        weights: [400, 500, 600, 700],
+        styles: ['normal', 'italic'],
+      },
+    ],
+  },
+  // Light theme only (README 23.5: a dark mode is out of this lot).
   ui: { colorMode: false },
   vite: { plugins: [tailwindcss()] },
   // Strict TypeScript; `pnpm typecheck` (vue-tsc) runs in CI rather than on
@@ -107,7 +120,7 @@ export default defineNuxtConfig({
             'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content',
         },
         { name: 'robots', content: 'noindex' },
-        { name: 'theme-color', content: '#f7f2e9' },
+        { name: 'theme-color', content: '#fff6f1' },
       ],
       // The tab icon: a tree under its star. SVG first, PNG for browsers
       // that do not take SVG icons, and a larger one for phone home screens.

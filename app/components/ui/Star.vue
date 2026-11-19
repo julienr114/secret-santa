@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The four-pointed mustard star before an idea, filled. Decorative.
+// The four-pointed lilac star before an idea, filled. Decorative.
 withDefaults(defineProps<{ size?: number }>(), { size: 14 });
 </script>
 

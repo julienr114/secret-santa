@@ -12,7 +12,7 @@ const checked = defineModel<boolean>({ required: true });
     <input
       v-model="checked"
       type="checkbox"
-      class="mt-px size-5.5 shrink-0 accent-primary"
+      class="mt-px size-5.5 shrink-0 tick"
     />
     {{ label }}
   </label>

@@ -1,13 +1,13 @@
-// Nuxt UI theme: brick red, pine green, mustard, cranberry and warm stone, a Christmas-card
-// palette (see README section 11 and the art direction note).
+// Nuxt UI theme, « Sorbet » (README 23.5): coral, mint, lilac, cranberry
+// and plum.
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'brick',
-      secondary: 'pine',
-      neutral: 'stone',
-      success: 'pine',
-      warning: 'mustard',
+      primary: 'coral',
+      secondary: 'mint',
+      neutral: 'plum',
+      success: 'mint',
+      warning: 'lilac',
       error: 'cranberry',
     },
     button: { defaultVariants: { size: 'lg' } },
@@ -21,9 +21,11 @@ export default defineAppConfig({
     // corners and home bar while its ground reaches the edge (README 23.3).
     drawer: {
       slots: {
+        // The veil behind a sheet (README 23.5).
+        overlay: 'bg-veil/75',
         // The height, the keyboard and the corners are set by UiSheet, after
         // the drawer's own direction classes.
-        content: 'sm:mx-auto sm:max-w-md sm:rounded-t-2xl',
+        content: 'sm:mx-auto sm:max-w-md sm:rounded-t-3xl',
         // At the bottom, the home bar's room or 1 rem, whichever is more,
         // not both (asked by Julien on 18 November 2026); above the
         // keyboard (--sheet-lift), 1 rem.

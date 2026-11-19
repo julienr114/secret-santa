@@ -109,7 +109,7 @@ const shown = useBusy(() => true);
         </div>
       </div>
       <div v-else-if="part === 'journal'" class="flex flex-col gap-5">
-        <USkeleton class="h-12 rounded-[10px] bg-skeleton-soft" />
+        <USkeleton class="h-12 rounded-md bg-skeleton-soft" />
         <div class="flex gap-2">
           <USkeleton class="h-10 w-[110px] rounded-full bg-skeleton-soft" />
           <USkeleton class="h-10 w-[130px] rounded-full bg-skeleton-soft" />

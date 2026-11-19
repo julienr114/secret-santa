@@ -76,7 +76,7 @@ const paragraphs = computed(() =>
     <template #header>
       <div class="flex w-full items-center gap-3">
         <span
-          class="flex size-12 shrink-0 items-center justify-center rounded-full bg-alert text-alert-ink"
+          class="flex size-12 shrink-0 items-center justify-center rounded-full bg-alert text-inverted"
           aria-hidden="true"
         >
           <UIcon :name="journalLook(entry?.type ?? '').icon" class="size-5.5" />

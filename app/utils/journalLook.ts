@@ -1,6 +1,6 @@
 // How each kind of journal event looks: its Lucide icon, and whether it is
-// a milestone of the edition (a white card on a brick knot) or an alert
-// everyone should notice (a mustard card, with what it means).
+// a milestone of the edition (a white card on a coral knot) or an alert
+// everyone should notice (a lilac card, with what it means).
 
 /** The icon of each kind of event. */
 const ICONS: Record<string, string> = {

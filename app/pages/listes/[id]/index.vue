@@ -165,12 +165,12 @@ onBeforeRouteLeave((to) => {
       <template v-if="doc && list">
         <NuxtLink
           :to="`/listes/${list.id}/partager`"
-          class="-mt-1 flex min-h-13 items-center gap-2.5 rounded-full bg-default py-1.5 pr-1.5 pl-4 ring-1 ring-[#dccbad]"
+          class="-mt-1 flex min-h-13 items-center gap-2.5 rounded-full bg-default py-1.5 pr-1.5 pl-4 ring-1 ring-default"
           data-testid="list-state"
         >
           <span
             class="size-2.5 shrink-0 rounded-full"
-            :class="list.status === 'draft' ? 'bg-[#a8a29e]' : 'bg-success'"
+            :class="list.status === 'draft' ? 'bg-line-strong' : 'bg-success'"
             aria-hidden="true"
           />
           <span class="grow text-[15px] font-semibold">{{
@@ -206,7 +206,7 @@ onBeforeRouteLeave((to) => {
           >
             <ListsTile :icon="list.icon" size="lg" />
             <span
-              class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-[#dccbad]"
+              class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-pencil" class="size-3.5" />

@@ -59,7 +59,7 @@ const onRandom = () => {
       <div class="flex w-full items-center gap-3">
         <span
           class="flex size-14 shrink-0 items-center justify-center text-[28px] ring-1"
-          :class="shape === 'round' ? 'rounded-full' : 'rounded-[14px]'"
+          :class="shape === 'round' ? 'rounded-full' : 'rounded-xl'"
           :style="{
             backgroundColor: shade?.bg,
             '--tw-ring-color': shade?.ring,

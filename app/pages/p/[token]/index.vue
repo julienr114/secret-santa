@@ -573,7 +573,7 @@ const card = computed(() => {
           :to="`/p/${token}/devine/palmares`"
           block
           size="xl"
-          class="justify-center bg-pine-700 font-bold hover:bg-pine-800 active:bg-pine-800"
+          class="justify-center bg-success font-bold hover:bg-success-deep active:bg-success-deep"
           :label="t('participant.game.discover')"
         />
         <button

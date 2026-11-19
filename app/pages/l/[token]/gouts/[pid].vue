@@ -54,7 +54,7 @@ const texts = computed(() =>
             <span
               v-for="tag in tags"
               :key="tag"
-              class="rounded-full bg-[#f1e8d8] px-3 py-1.5 text-sm font-semibold ring-1 ring-[#dccbad]"
+              class="rounded-full bg-muted px-3 py-1.5 text-sm font-semibold ring-1 ring-default"
               >{{ tag }}</span
             >
           </div>

@@ -71,11 +71,7 @@ const canAct = computed(
 <template>
   <section
     class="relative flex items-center gap-3.5 rounded-2xl bg-default px-5 py-4"
-    :class="
-      nudge
-        ? 'ring-2 ring-primary'
-        : 'shadow-[0_1px_2px_rgba(60,30,10,0.08)] ring-1 ring-black/5'
-    "
+    :class="nudge ? 'ring-2 ring-primary' : 'shadow-card'"
     data-testid="game-card"
     :data-nudge="nudge || undefined"
   >
@@ -136,7 +132,7 @@ const canAct = computed(
         </p>
         <span
           v-if="revealed"
-          class="flex min-h-9 items-center self-start text-sm font-bold text-pine-800 underline"
+          class="flex min-h-9 items-center self-start text-sm font-bold text-success-ink underline"
           >{{ t('participant.game.discover') }}</span
         >
         <button

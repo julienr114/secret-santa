@@ -80,7 +80,7 @@ const onRetry = async () => {
   <section
     v-if="error"
     role="alert"
-    class="flex flex-col gap-3.5 rounded-2xl bg-default px-5 py-6 shadow-sm ring-1 ring-default"
+    class="flex flex-col gap-3.5 rounded-2xl bg-default px-5 py-6 shadow-card"
     data-testid="query-error"
   >
     <div class="flex items-start gap-3">

@@ -77,15 +77,15 @@ const onGroup = () => {
       @click="onBox"
     >
       <span
-        class="flex size-[22px] items-center justify-center rounded-[5px]"
+        class="flex size-[22px] items-center justify-center rounded-sm"
         :class="
           mineChecked
-            ? 'bg-[#2f5d3a] text-white'
+            ? 'bg-success text-white'
             : openGroup
-              ? 'bg-[#e6b94a] text-[#292524]'
+              ? 'bg-warning-fill text-highlighted'
               : crossed
-                ? 'bg-[#a8a29e] text-white'
-                : 'border-[1.5px] border-[#a8a29e] bg-default'
+                ? 'bg-line-strong text-highlighted'
+                : 'border-[1.5px] border-accented bg-default'
         "
         aria-hidden="true"
       >
@@ -155,8 +155,8 @@ const onGroup = () => {
           class="h-9 shrink-0 rounded-full px-3.5 text-sm font-bold ring-1"
           :class="
             view.mine
-              ? 'bg-[#dcebdc] text-[#244a2e] ring-[#9cc3a3]'
-              : 'bg-[#fbf0cf] text-[#5c4510] ring-[#e6c96a]'
+              ? 'bg-success-soft text-success-ink ring-success'
+              : 'bg-warning-tint text-warning-ink ring-warning-ring'
           "
           @click="onGroup"
         >

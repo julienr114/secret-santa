@@ -979,8 +979,10 @@ const entries = computed(() => [
         titled
       />
       <p class="px-1 text-xs text-muted">
-        UiStickyFooter garde le bouton d'un écran en bas, au-dessus de la barre
-        de l'iPhone (écran « Personnaliser le message »).
+        UiStickyFooter garde le bouton d'un long écran en bas, au-dessus de la
+        barre « Tirages / Listes ». Sur une page où l'on rédige (inline), le
+        bouton est dans la page, à la fin du contenu : rien ne se place
+        au-dessus du clavier.
       </p>
     </section>
 

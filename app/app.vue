@@ -4,8 +4,16 @@ import { de, en, fr } from '@nuxt/ui/locale';
 // Nuxt UI's own texts and the document language follow the interface
 // language (see useT).
 const { locale } = useT();
+// Someone logged in has the bar « Tirages / Listes » on every screen
+// (README 22.21); each screen stops above it (`--tab-bar`, main.css).
+const { loggedIn } = useUserSession();
 const UI_LOCALES = { fr, en, de };
-useHead({ htmlAttrs: { lang: locale } });
+useHead({
+  htmlAttrs: {
+    lang: locale,
+    class: () => (loggedIn.value ? 'has-tab-bar' : ''),
+  },
+});
 </script>
 
 <template>
@@ -13,5 +21,6 @@ useHead({ htmlAttrs: { lang: locale } });
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <UiTabBar v-if="loggedIn" />
   </UApp>
 </template>

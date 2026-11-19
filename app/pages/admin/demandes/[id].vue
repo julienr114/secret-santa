@@ -171,7 +171,7 @@ const onDecide = (approve: boolean) =>
             stats.load === 'ok' ? undefined : t(`auth.admin.load.${stats.load}`)
           "
         />
-        <UiStickyFooter>
+        <UiStickyFooter inline>
           <div class="grid grid-cols-2 gap-2.5">
             <UButton
               block

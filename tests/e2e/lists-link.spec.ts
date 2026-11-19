@@ -75,6 +75,12 @@ test('without an account, the list reads, and a box asks for an address', async 
   await expect(page.getByTestId('visitor-sentence')).toContainText(
     'La liste de Camille.',
   );
+  // Without a session (README 22.21): the language button, no menu, no bar.
+  await expect(
+    page.getByRole('button', { name: 'Changer de langue' }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Menu' })).toHaveCount(0);
+  await expect(page.getByTestId('tab-bar')).toHaveCount(0);
   await page.getByRole('checkbox', { name: /Circuit de billes/ }).click();
   await expect(page).toHaveURL(/\/connexion\?cocher=/);
   await expect(page.getByText('« Circuit de billes » t’attend')).toBeVisible();
@@ -87,6 +93,15 @@ test('without an account, the list reads, and a box asks for an address', async 
   await expect(page.getByTestId('idea-mine')).toContainText(
     'Tu l’offres · seul, sous ton prénom',
   );
+  // Logged in, by the same link: the menu in place of the language, and
+  // the bar, on « Listes ».
+  await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Changer de langue' }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Listes' }),
+  ).toHaveAttribute('aria-current', 'page');
 });
 
 test('one ticks at once, the other hears it is taken', async ({ page }) => {

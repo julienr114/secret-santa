@@ -47,7 +47,7 @@ const onValidate = () => {
         :label="t('lists.share.personalizeLabel')"
         :maxlength="LIST_NOTE_MAX"
       />
-      <UiStickyFooter>
+      <UiStickyFooter inline>
         <UButton
           block
           size="xl"

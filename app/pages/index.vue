@@ -8,10 +8,9 @@ const { loggedIn } = useUserSession();
 <template>
   <div
     v-if="loggedIn"
-    class="min-h-dvh pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
+    class="min-h-dvh pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <HomeDashboard />
-    <UiTabBar />
   </div>
   <HomeLanding v-else />
 </template>

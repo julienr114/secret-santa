@@ -287,7 +287,7 @@ const onValidate = () => {
         {{ t('adminEdition.customize.eachLanguage') }}
       </p>
 
-      <UiStickyFooter>
+      <UiStickyFooter inline>
         <UButton
           block
           size="xl"

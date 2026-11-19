@@ -127,6 +127,15 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
   await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
+  // The bar is on every screen of someone logged in (README 22.21), the
+  // tab of where they are in colour.
+  await expect(
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Listes' }),
+  ).toHaveAttribute('aria-current', 'page');
+  await expect(
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Tirages' }),
+  ).not.toHaveAttribute('aria-current', 'page');
+
   // The word: touched, it is mine; erased, there is none.
   await page.getByTestId('note-default').click();
   await page.getByTestId('note-field').fill('');

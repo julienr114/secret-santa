@@ -87,7 +87,7 @@ const onSend = () =>
       >
         {{ errorMessage(ask.error.value) }}
       </p>
-      <UiStickyFooter>
+      <UiStickyFooter inline>
         <UButton
           block
           size="xl"

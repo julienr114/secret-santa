@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { LOCALES } from '#shared/i18n';
-import { useHomeQuery } from '~/composables/queries/useAuth';
-import {
-  HOME,
-  LOGIN,
-  useLogoutMutation,
-} from '~/composables/queries/useSession';
+import { HOME } from '~/composables/queries/useSession';
 
 // One screen of a logged-in account. One top bar: "Retour" on the left on
 // screens below the home (back to wherever the user came from, or to
 // `back` when the page was opened directly), the logo in the middle (a
-// link to the home) and the menu on the right (language, account, log
-// out); a screen with a `bar` has « Annuler », its title and where it
-// belongs instead. A super-admin's menu opens on « Administration », with
-// the number of requests waiting.
+// link to the home) and the menu on the right (`AppMenu`); a screen with a
+// `bar` has « Annuler », its title and where it belongs instead.
 const props = defineProps<{
   back?: string | null;
   /**
@@ -24,58 +16,9 @@ const props = defineProps<{
   bar?: { title: string; context: string; cancel: string };
 }>();
 
-const { t, tk, locale, setLocale } = useT();
-const { user } = useUserSession();
-const isSuper = computed(() => user.value?.role === 'super_admin');
+const { t } = useT();
 
 const goBack = useGoBack();
-
-const logout = useLogoutMutation();
-const onLogout = () =>
-  logout.mutate(undefined, { onSuccess: () => navigateTo(LOGIN) });
-const home = useHomeQuery(isSuper);
-/** Requests for a group waiting for the super-admin. */
-const pending = computed(() => home.data.value?.pendingRequests ?? 0);
-const languages = computed(() => [
-  { type: 'label' as const, label: t('common.language.label') },
-  ...LOCALES.map((code) => ({
-    label: tk(`common.language.${code}`),
-    type: 'checkbox' as const,
-    checked: code === locale.value,
-    onSelect: () => setLocale(code),
-  })),
-]);
-const account = computed(() => [
-  {
-    label: t('auth.account.title'),
-    icon: 'i-lucide-circle-user',
-    to: '/compte',
-  },
-  {
-    label: t('common.actions.logout'),
-    icon: 'i-lucide-log-out',
-    onSelect: onLogout,
-  },
-]);
-// The super-admin's menu starts with the administration and their
-// account; everyone else's with the language.
-const menu = computed(() =>
-  isSuper.value
-    ? [
-        [
-          {
-            label: t('auth.admin.title'),
-            icon: 'i-lucide-shield',
-            to: '/admin',
-            slot: 'admin' as const,
-            class: 'font-bold',
-          },
-        ],
-        account.value,
-        languages.value,
-      ]
-    : [languages.value, account.value],
-);
 </script>
 
 <template>
@@ -83,7 +26,7 @@ const menu = computed(() =>
        sticky footer rests at the bottom of a short screen; while the
        keyboard is up, the height left above it (useKeyboardInset). -->
   <div
-    class="flex min-h-[calc(var(--keyboard-visible,100dvh)-2rem-env(safe-area-inset-bottom))] flex-col"
+    class="flex min-h-[calc(var(--keyboard-visible,100dvh)-2rem-var(--tab-bar)-env(safe-area-inset-bottom))] flex-col"
   >
     <header
       class="sticky top-0 z-20 border-b border-default bg-page/90 pt-[env(safe-area-inset-top)] backdrop-blur"
@@ -131,36 +74,7 @@ const menu = computed(() =>
           class="truncate font-display text-lg font-bold text-primary"
           >✦ {{ t('common.appName') }}</NuxtLink
         >
-        <UDropdownMenu
-          :items="menu"
-          :content="{ align: 'end' }"
-          :ui="{
-            content:
-              'min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
-            group: 'p-0',
-            label:
-              'px-3.5 pt-3 pb-1 text-xs font-bold tracking-[0.04em] text-toned uppercase',
-            separator: 'mx-0 my-0 bg-divider',
-            item: 'min-h-12 items-center px-3.5 text-base',
-            itemLeadingIcon: 'size-5 text-toned',
-            itemTrailingIcon: 'size-5 text-primary',
-          }"
-        >
-          <template #admin-trailing>
-            <UiCountBadge
-              v-if="pending > 0"
-              :count="pending"
-              :label="t('auth.home.requestsToHandle', { count: pending })"
-            />
-          </template>
-          <UButton
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-menu"
-            class="-mr-2 justify-self-end"
-            :aria-label="t('adminShell.menu')"
-          />
-        </UDropdownMenu>
+        <AppMenu class="-mr-2 justify-self-end" />
       </UContainer>
     </header>
     <UContainer as="main" class="flex w-full max-w-md grow flex-col gap-6 py-5">

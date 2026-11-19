@@ -221,8 +221,6 @@ const pastLine = (card: ListCard) => {
       <p v-if="!empty" class="px-1 text-sm text-toned">
         {{ t('lists.home.sent') }}
       </p>
-      <div class="h-14" aria-hidden="true" />
     </AdminQueryState>
-    <UiTabBar />
   </AdminScreen>
 </template>

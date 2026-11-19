@@ -176,6 +176,15 @@
   --shadow-award: 0 3px 0 var(--color-mint-700);
 }
 
+/* The room the bar « Tirages / Listes » takes at the bottom of a screen:
+   none without a session (README 22.21). */
+:root {
+  --tab-bar: 0px;
+}
+.has-tab-bar {
+  --tab-bar: 3.5rem;
+}
+
 /* Cards, inputs and menus are white on the rosy page. */
 :root {
   --ui-bg: #ffffff;

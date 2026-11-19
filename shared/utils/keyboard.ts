@@ -28,20 +28,3 @@ export const keyboardInset = (v: Viewports) => {
     visible: Math.round(v.visualHeight),
   };
 };
-
-/**
- * How much empty page shows under the end of the content while the
- * keyboard is up: an iPhone lets the page scroll over the whole screen's
- * height, even past a short content (README 23.3).
- * @param v - Where the content ends and the visible part, in the
- *   coordinates of the page's viewport.
- * @param v.contentBottom - The bottom of the last thing on the page.
- * @param v.visualTop - How far down the visible part starts.
- * @param v.visualHeight - The visible part's height.
- * @returns The empty height shown, in pixels (0 when none).
- */
-export const emptyBelow = (v: {
-  contentBottom: number;
-  visualTop: number;
-  visualHeight: number;
-}) => Math.max(0, Math.round(v.visualTop + v.visualHeight - v.contentBottom));

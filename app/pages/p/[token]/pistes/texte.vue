@@ -85,7 +85,7 @@ const onValidate = () =>
     >
       {{ errorMessage(save.error.value) }}
     </p>
-    <UiStickyFooter>
+    <UiStickyFooter inline>
       <UButton
         block
         size="xl"

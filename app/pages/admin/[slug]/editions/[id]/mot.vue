@@ -105,7 +105,7 @@ const onValidate = () => {
       <p v-if="failure" class="text-sm font-medium text-error" role="alert">
         {{ failure }}
       </p>
-      <UiStickyFooter>
+      <UiStickyFooter inline>
         <UButton
           block
           size="xl"

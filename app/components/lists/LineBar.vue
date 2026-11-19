@@ -10,7 +10,7 @@ const inset = useKeyboardInset(() => editing.active.value !== null, 'keyboard');
 <template>
   <div
     v-if="editing.active.value"
-    class="fixed inset-x-0 z-30 border-t border-default bg-default"
+    class="fixed inset-x-0 z-40 border-t border-default bg-default"
     :style="{ bottom: `${inset.lift}px` }"
     role="toolbar"
     :aria-label="t('lists.doc.bar.label')"

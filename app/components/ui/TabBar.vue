@@ -1,15 +1,19 @@
 <script setup lang="ts">
-// The bar at the bottom of the two homes (README 22.19): « Tirages » and
-// « Listes », the one shown in colour. Its ground reaches the edge, its
-// content stops above the home bar.
+// The bar at the bottom of every screen of someone logged in (README
+// 22.21): « Tirages » and « Listes », the one where they are shown in
+// colour. Its ground reaches the edge, its content stops above the home
+// bar. A bottom sheet covers it, and so do the images of the palmarès.
 const { t } = useT();
 const route = useRoute();
 const tabs = computed(() => [
   { to: '/', icon: 'i-lucide-mail', label: t('lists.tabs.draws') },
   { to: '/listes', icon: 'i-lucide-list-checks', label: t('lists.tabs.lists') },
 ]);
-const current = (to: string) =>
-  to === '/' ? route.path === '/' : route.path.startsWith(to);
+/** The screens of the lists: the tab, a list by its link, my family. */
+const inLists = computed(() =>
+  ['/listes', '/l/', '/famille'].some((start) => route.path.startsWith(start)),
+);
+const current = (to: string) => (to === '/listes') === inLists.value;
 </script>
 
 <template>

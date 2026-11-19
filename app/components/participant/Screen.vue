@@ -5,8 +5,9 @@ import { HOME } from '~/composables/queries/useSession';
 import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 
 // One participant screen: a light top bar (back on the left, the name of
-// the app in the middle, language on the right), then the content, or the loading
-// and refused-link states. For someone logged in, the name of the app
+// the app in the middle, the language on the right, or the menu for
+// someone logged in: README 22.21), then the content, or the loading and
+// refused-link states. For someone logged in, the name of the app
 // leads back to their home. The title stays neutral: messaging apps preview
 // these links (README 11).
 const props = defineProps<{
@@ -40,9 +41,12 @@ useHead({ title: () => t('common.appName') });
 // (page, messages and emails); on a refused link it only changes the
 // language of this screen.
 const saveLanguage = useSaveLanguageMutation(() => props.token);
+const onSaveLanguage = (locale: Locale) => {
+  if (!props.error) saveLanguage.mutate(locale);
+};
 const onLanguage = (locale: Locale) => {
   setLocale(locale);
-  if (!props.error) saveLanguage.mutate(locale);
+  onSaveLanguage(locale);
 };
 </script>
 
@@ -51,7 +55,7 @@ const onLanguage = (locale: Locale) => {
        bottom of a short screen; while the keyboard is up, the height left
        above it (useKeyboardInset). -->
   <div
-    class="flex min-h-[var(--keyboard-visible,100dvh)] flex-col pb-[calc(2rem+env(safe-area-inset-bottom))]"
+    class="flex min-h-[var(--keyboard-visible,100dvh)] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <header class="pt-[env(safe-area-inset-top)]">
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
@@ -72,7 +76,16 @@ const onLanguage = (locale: Locale) => {
           class="truncate font-display text-lg font-bold text-primary"
           >✦ {{ t('common.appName') }}</component
         >
-        <LanguageSwitch class="-mr-2 justify-self-end" @change="onLanguage" />
+        <AppMenu
+          v-if="loggedIn"
+          class="-mr-2 justify-self-end"
+          @language="onSaveLanguage"
+        />
+        <LanguageSwitch
+          v-else
+          class="-mr-2 justify-self-end"
+          @change="onLanguage"
+        />
       </UContainer>
     </header>
     <UContainer

@@ -1,14 +1,16 @@
 import type { ListColor } from '#server/utils/lists';
+import { AVATAR_SHADES } from './avatars';
 
-// The six solid colours of a list's square tile (README 22.19): the ground
-// of the tile, and its edge.
+// The colours of a list's square tile (README 23.5, « La forme des
+// icônes »): the six shades of the people, under the six names stored for
+// a list. A list and a person of the same shade differ by their shape.
 export const LIST_SHADES: Record<ListColor, { bg: string; ring: string }> = {
-  pine: { bg: '#274e34', ring: '#1d3b27' },
-  brick: { bg: '#a43a2f', ring: '#8a2f27' },
-  mustard: { bg: '#e6b94a', ring: '#c99a2e' },
-  plum: { bg: '#5b3a55', ring: '#472c42' },
-  night: { bg: '#2c4a63', ring: '#22394d' },
-  kraft: { bg: '#b89565', ring: '#9c7a4c' },
+  pine: AVATAR_SHADES.pine,
+  brick: AVATAR_SHADES.brick,
+  mustard: AVATAR_SHADES.mustard,
+  plum: AVATAR_SHADES.plum,
+  night: AVATAR_SHADES.frost,
+  kraft: AVATAR_SHADES.kraft,
 };
 
 /**

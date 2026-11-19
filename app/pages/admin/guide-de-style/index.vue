@@ -405,12 +405,20 @@ const entries = computed(() => [
 
     <section class="flex flex-col gap-3">
       <UiSectionTitle>Icônes de personne</UiSectionTitle>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3" data-testid="avatar-sizes">
         <UiAvatar :avatar="sample" size="sm" />
         <UiAvatar :avatar="sample" size="md" />
         <UiAvatar :avatar="sample" size="lg" />
         <UiAvatar :avatar="sample" size="xl" />
       </div>
+      <UiCard class="flex items-center gap-3">
+        <UiAvatar :avatar="sample" :px="26" />
+        <span class="grow text-sm text-toned"
+          >Un autocollant : 26 px dans une ligne, sur une carte blanche (px). À
+          plat (flat), le dégradé seul :</span
+        >
+        <UiAvatar :avatar="sample" flat />
+      </UiCard>
       <div class="flex flex-wrap gap-2">
         <UiAvatar
           v-for="color in AVATAR_COLORS"
@@ -429,8 +437,10 @@ const entries = computed(() => [
         <ListsTile :icon="{ emoji: '🎂', color: 'mustard' }" />
         <ListsTile :icon="{ emoji: '🎁', color: 'brick' }" size="lg" />
         <span class="text-sm text-toned"
-          >ListsTile : l’icône carrée d’une liste</span
+          >ListsTile : l’icône carrée d’une liste, penchée ; droite dans un
+          panneau (flat)</span
         >
+        <ListsTile :icon="{ emoji: '🎁', color: 'plum' }" size="sm" flat />
       </div>
       <AdminAvatarSheet
         v-model:open="iconOpen"

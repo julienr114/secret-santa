@@ -256,6 +256,12 @@ test('the reveal brings the palmarès, in images then corrected', async ({
   const turn = ['mustard', 'plum', 'pine', 'brick'];
   expect(looks).toEqual(looks.map((_, i) => turn[i % 4]));
   await expect(stories).toContainText('Joyeux Noël,');
+  // The festive rain behind the last image (lot 23 bis): snowflakes, stars
+  // and confetti, drawn in the browser, nothing to press.
+  const rain = page.getByTestId('festive-rain');
+  await expect(rain).toHaveAttribute('aria-hidden', 'true');
+  await expect(rain.locator('> span')).toHaveCount(47);
+  await expect(rain).toHaveCSS('pointer-events', 'none');
   await page.getByTestId('stories-all').click();
   // Watched: the guesses are corrected, and the button says « Revoir ».
   await expect(page.getByTestId('palmares-link')).toContainText(

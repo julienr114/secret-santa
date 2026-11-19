@@ -111,7 +111,7 @@ const onRemove = () =>
             :aria-label="t('lists.person.icon', { name: member.firstName })"
             @click="editing = 'icon'"
           >
-            <UiAvatar :avatar="member.avatar" class="size-16! text-[32px]!" />
+            <UiAvatar :avatar="member.avatar" :px="64" />
           </button>
           <div class="flex min-w-0 flex-col">
             <p class="text-sm text-toned">{{ t('lists.person.context') }}</p>

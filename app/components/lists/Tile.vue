@@ -1,29 +1,36 @@
 <script setup lang="ts">
 import { listShade } from '~/utils/listShades';
+import { tileSticker } from '~/utils/stickers';
 
-// The icon of a list: its symbol on a square tile of solid colour
-// (README 22.19), as Apple draws it on every device.
+// The icon of a list: its symbol on a square sticker (README 23.5), a
+// gradient, a white edge and a cast shadow, tilted by 3 degrees; as Apple
+// draws the symbol on every device. `flat` keeps it straight, the
+// gradient alone.
 const props = withDefaults(
   defineProps<{
     icon: { emoji: string; color: string };
     size?: 'sm' | 'md' | 'lg';
+    flat?: boolean;
   }>(),
-  { size: 'md' },
+  { size: 'md', flat: false },
 );
 const SIZES = {
-  sm: 'size-10 rounded-md text-xl',
-  md: 'size-14 rounded-xl text-[28px]',
-  lg: 'size-18 rounded-2xl text-[36px]',
+  sm: { class: 'size-10 text-xl', px: 40 },
+  md: { class: 'size-14 text-[28px]', px: 56 },
+  lg: { class: 'size-18 text-[36px]', px: 72 },
 };
-const shade = computed(() => listShade(props.icon.color));
+const style = computed(() =>
+  tileSticker(listShade(props.icon.color), SIZES[props.size].px, props.flat),
+);
 </script>
 
 <template>
   <span
-    class="inline-flex shrink-0 items-center justify-center shadow-[0_1px_2px_rgba(60,30,10,0.12)]"
-    :class="SIZES[size]"
-    :style="{ backgroundColor: shade.bg }"
+    class="inline-flex shrink-0 items-center justify-center"
+    :class="SIZES[size].class"
+    :style="style"
     aria-hidden="true"
+    data-testid="list-tile"
   >
     <UiEmoji :emoji="icon.emoji" />
   </span>

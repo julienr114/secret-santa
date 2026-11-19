@@ -3,7 +3,8 @@ import type { Avatar } from '#server/utils/avatars';
 import { stackOf } from '#shared/utils/lists';
 
 // A few people's icons overlapping, then "+N" for the others. The names
-// are for whoever uses it to say in words, `label` naming the whole.
+// are for whoever uses it to say in words, `label` naming the whole. The
+// gradient alone under their ring: no shadow.
 const props = withDefaults(
   defineProps<{
     avatars: Avatar[];
@@ -23,6 +24,7 @@ const stack = computed(() => stackOf(props.avatars, props.max));
       :key="index"
       :avatar="avatar"
       size="sm"
+      flat
       class="-ml-2 ring-2 ring-default first:ml-0"
     />
     <span

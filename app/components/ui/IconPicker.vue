@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { personSticker, tileSticker } from '~/utils/stickers';
+
 // Choosing an icon: a symbol and a colour (lot 20, maquette
 // PanneauAvatarGrand). The symbols on three rows that scroll sideways,
 // the families one after the other, each under its title, no tabs;
@@ -34,6 +36,15 @@ const grid = ref<HTMLElement | null>(null);
 const corner = computed(() =>
   props.shape === 'round' ? 'rounded-full' : 'rounded-xl',
 );
+/**
+ * The ground of a cell or of a colour, in the grid: the gradient alone,
+ * no edge, no shadow, a tile straight (README 23.5).
+ * @param color - The colour.
+ * @param size - The side of what is drawn, in pixels.
+ * @returns Its style.
+ */
+const ground = (color: IconColor, size: number) =>
+  (props.shape === 'round' ? personSticker : tileSticker)(color, size, true);
 const shade = computed(
   () =>
     props.colors.find((c) => c.key === model.value.color) ?? props.colors[0],
@@ -94,9 +105,7 @@ watch(
                   : 'bg-muted',
               ]"
               :style="
-                model.emoji === emoji && shade
-                  ? { backgroundColor: shade.bg }
-                  : undefined
+                model.emoji === emoji && shade ? ground(shade, 44) : undefined
               "
               @click="model = { ...model, emoji }"
             >
@@ -139,13 +148,9 @@ watch(
               corner,
               model.color === color.key
                 ? 'ring-2 ring-primary ring-offset-2 ring-offset-default'
-                : 'ring-1',
+                : '',
             ]"
-            :style="{
-              backgroundColor: color.bg,
-              '--tw-ring-color':
-                model.color === color.key ? 'var(--ui-primary)' : color.ring,
-            }"
+            :style="ground(color, 32)"
           />
         </button>
       </div>

@@ -239,7 +239,7 @@ watch(
   >
     <template #header>
       <div class="flex w-full items-center gap-3">
-        <UiAvatar :avatar="participant.avatar" class="size-12 text-[22px]" />
+        <UiAvatar :avatar="participant.avatar" :px="48" />
         <div class="flex min-w-0 grow flex-col gap-0.5">
           <h2
             class="truncate font-display text-[22px] leading-[1.15] font-bold"

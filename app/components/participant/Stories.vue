@@ -371,12 +371,13 @@ const santaWords = computed(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex flex-col px-4 pt-[calc(0.875rem+env(safe-area-inset-top))] pb-[calc(1.75rem+env(safe-area-inset-bottom))] select-none"
+    class="fixed inset-0 isolate z-50 flex flex-col px-4 pt-[calc(0.875rem+env(safe-area-inset-top))] pb-[calc(1.75rem+env(safe-area-inset-bottom))] select-none"
     :class="look"
     data-testid="stories"
     :data-screen="screen.kind === 'award' ? screen.award : screen.kind"
     :data-look="lookName"
   >
+    <ParticipantFestiveRain v-if="screen.kind === 'end'" class="-z-10" />
     <div
       role="img"
       :aria-label="
@@ -468,6 +469,7 @@ const santaWords = computed(() => {
         <UiAvatar
           v-if="santaWords.actual"
           :avatar="santaWords.actual.avatar"
+          flat
           size="xl"
           class="size-32! text-6xl! shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
         />
@@ -488,6 +490,7 @@ const santaWords = computed(() => {
         <UiAvatar
           v-if="closeCallView.person"
           :avatar="closeCallView.person.avatar"
+          flat
           size="xl"
           class="size-32! text-6xl! shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
         />
@@ -511,6 +514,7 @@ const santaWords = computed(() => {
             v-for="(person, index) in awardView.people"
             :key="person.id"
             :avatar="person.avatar"
+            flat
             size="xl"
             class="shadow-[0_0_0_4px_rgba(255,253,249,0.9),0_12px_30px_rgba(0,0,0,0.25)]"
             :class="[
@@ -533,6 +537,7 @@ const santaWords = computed(() => {
           >
             <UiAvatar
               :avatar="person.avatar"
+              flat
               size="lg"
               class="shadow-[0_0_0_3px_rgba(255,253,249,0.9)]"
             />

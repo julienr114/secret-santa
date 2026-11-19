@@ -43,7 +43,7 @@ const onNext = (index: number) =>
 <template>
   <section class="flex flex-col gap-1" data-testid="list-person">
     <header class="flex items-center gap-3 pb-1">
-      <UiAvatar :avatar="member.avatar" class="size-[52px]! text-[26px]!" />
+      <UiAvatar :avatar="member.avatar" :px="52" />
       <div class="flex min-w-0 flex-col">
         <h2 class="font-display text-[28px] leading-[1.1] font-bold">
           {{ member.firstName }}

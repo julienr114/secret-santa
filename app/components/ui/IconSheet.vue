@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { personSticker, tileSticker } from '~/utils/stickers';
 import type { IconChoice, IconColor, IconFamily } from './IconPicker.vue';
 
 // Choosing an icon, the same sheet everywhere (lot 20, maquettes
@@ -35,6 +36,12 @@ const shade = computed(
   () =>
     props.colors.find((c) => c.key === draft.value.color) ?? props.colors[0],
 );
+/** The preview: an icon like the others, a sticker of 56 px. */
+const preview = computed(() =>
+  shade.value
+    ? (props.shape === 'round' ? personSticker : tileSticker)(shade.value, 56)
+    : undefined,
+);
 const every = computed(() => props.families.flatMap((f) => f.emojis));
 /** Draws a symbol and a colour, other than the ones shown. */
 const onRandom = () => {
@@ -58,12 +65,9 @@ const onRandom = () => {
     <template #header>
       <div class="flex w-full items-center gap-3">
         <span
-          class="flex size-14 shrink-0 items-center justify-center text-[28px] ring-1"
-          :class="shape === 'round' ? 'rounded-full' : 'rounded-xl'"
-          :style="{
-            backgroundColor: shade?.bg,
-            '--tw-ring-color': shade?.ring,
-          }"
+          class="flex size-14 shrink-0 items-center justify-center text-[28px]"
+          :class="shape === 'round' ? 'rounded-full' : ''"
+          :style="preview"
           aria-hidden="true"
           data-testid="icon-preview"
         >

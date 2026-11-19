@@ -35,6 +35,18 @@ test('the style guide shows the edition components', async ({ page }) => {
   expect(fonts.loaded).toContain('DM Sans');
   await expect(page.getByTestId('illustrations').locator('svg')).toHaveCount(8);
 
+  // The icons are gradient stickers (lot 23 bis): a person a round with a
+  // white edge and a shadow, a list a square that leans.
+  const person = page.getByTestId('avatar-sizes').locator('> span').nth(1);
+  await expect(person).toHaveCSS('background-image', /^linear-gradient/);
+  await expect(person).toHaveCSS(
+    'box-shadow',
+    /rgb\(255, 255, 255\) 0px 0px 0px 2px/,
+  );
+  const tile = page.getByTestId('list-tile').first();
+  await expect(tile).toHaveCSS('background-image', /^linear-gradient/);
+  await expect(tile).not.toHaveCSS('transform', 'none');
+
   await expect(
     page.getByRole('list', { name: "Étapes de l'édition" }),
   ).toBeVisible();

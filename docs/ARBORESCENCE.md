@@ -196,5 +196,4 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 |---|---|---|---|
 | La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique) | Listes si connecté ; sinon pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
-| J'offre autre chose | `/l/[jeton]/hors-liste?pour=` | La liste, par son lien | |
 | Les goûts d'une personne | `/l/[jeton]/gouts/[place]` | La liste, par son lien | |

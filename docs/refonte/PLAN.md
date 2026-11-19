@@ -759,15 +759,33 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 - [x] **Les routes de celui qui tient la liste** (`/api/lists/[id]/claims`) : changer sa façon d'offrir et se joindre, brouillon compris, avec les mêmes fonctions pures que par le lien.
 - [x] Trois langues, `tests/e2e`, README 22.19 marqué fait.
 
+### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
+
+Faits : tout jusqu'au lot 23 bis, et les Corrections 19 à 21. Restent les lots 24 à 37. Quatre chantiers, indépendants les uns des autres :
+
+| Chantier | Ordre | Bloqué par Julien ? |
+|---|---|---|
+| **Les listes, V2** | 24, puis 27, 25, 26 | Non |
+| **Les garde-fous et l'ouverture** | 35, puis 37, puis 34, puis 36 | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
+| **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
+| **La vitrine** | 33, puis 32 en tout dernier | 33 : ses textes, le service de dons, ses liens. 32 : confirmer la phrase sur l'assistant |
+
+Trois règles qui traversent les lots :
+
+- **Tout email nouveau** (lots 25, 29, 29 bis, 30) part par `server/http/email.ts`. Dès que le lot 35 existe, il passe par son contrôle des adresses bloquées ; dès que le lot 36 existe, il porte son pied d'email.
+- **Tout champ nouveau qui reçoit une donnée personnelle** porte la ligne « qui verra ce que j'écris » (README 23.3), sans attendre le lot 36.
+- **Un lot ne promet rien qu'un autre n'a pas encore fait** : s'il dépend d'un lot pas fait, il le dit en section 6 et laisse la partie de côté.
+
 ### Lot 24 — Listes V2 : écrire sur place (README 22.20)
 
-Décidé par Julien le 19 novembre 2026. Sans migration. Maquettes : `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListePlusieursLigne`, `ListeVisiteur`.
+Décidé par Julien le 19 novembre 2026. Sans migration. Maquettes : `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListePlusieursLigne`, `ListeVisiteur`. **Fait** (19 novembre 2026). Ce qui a été tranché en codant : section 6, « Lot 24 ».
 
-- [ ] **Plus de barre au-dessus du clavier** dans le document d'une liste. Sous la ligne qu'on écrit : « Ajouter un lien » et « Supprimer », en liens de texte, visibles tant qu'on est dans la ligne.
-- [ ] **Le lien dans la ligne** : « Ajouter un lien » prolonge la ligne de « : » avec l'invitation « colle ou écris l'adresse », « Annuler » dessous. L'adresse posée devient le mot « lien » ; dessous, « Changer le lien », « Retirer le lien », « Supprimer ». Une idée garde un texte et un lien au plus : le modèle de données ne change pas.
-- [ ] **« J'offre autre chose » sur place** : plus de panneau, une ligne écrite en fin de personne, cochée à mon nom, avec sa phrase et « Supprimer ».
-- [ ] **Des liens de texte** pour « Se joindre » et « Tu participes », zone tactile de 44 px.
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Plus de barre au-dessus du clavier** dans le document d'une liste. Sous la ligne qu'on écrit : « Ajouter un lien » et « Supprimer », en liens de texte, visibles tant qu'on est dans la ligne.
+- [x] **Le lien dans la ligne** : « Ajouter un lien » prolonge la ligne de « : » avec l'invitation « colle ou écris l'adresse », « Annuler » dessous. L'adresse posée devient le mot « lien » ; dessous, « Changer le lien », « Retirer le lien », « Supprimer ». Une idée garde un texte et un lien au plus : le modèle de données ne change pas.
+- [x] **« J'offre autre chose » sur place** : plus de panneau, une ligne écrite en fin de personne, cochée à mon nom, avec sa phrase et « Supprimer ».
+- [x] **Des liens de texte** pour « Se joindre » et « Tu participes », zone tactile de 44 px : déjà le cas dans le document depuis la Correction 21 ; reste la liste par son lien.
+- [x] **La barre d'une ligne** (« Lien », « Supprimer la ligne », « Terminé », `ListsLineBar`) disparaît : c'est elle que ce lot remplace (Correction 19, point 11 de la section 6).
+- [x] Trois langues, `tests/e2e`.
 
 ### Lot 25 — Listes V2 : à plusieurs, et une personne reliée à son compte (README 22.20)
 
@@ -811,7 +829,7 @@ Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `NotifAccue
 - [ ] **L'inventaire d'abord** : la liste de tout ce que l'application envoie ou signale aujourd'hui (`server/utils/notifications.ts`, `server/plugins/reminders.ts`, `server/http/email.ts`, le journal, « À faire maintenant »), classé « ce qui presse » ou « le reste » d'après le README 22.22. Le noter en section 6 pour relecture avant de coder.
 - [ ] **Le cœur, en fonctions pures**, testé d'abord : créer une nouveauté pour un compte ; regrouper celles de même nature au même endroit dans la journée ; ce qui la rend vue ; les compteurs par onglet, par carte, par ligne ; l'oubli à trente jours.
 - [ ] **Base** : les nouveautés (compte, nature, niveau, l'endroit visé, quand, vue ou non). Aucune ne contient ce que son destinataire n'a pas le droit de voir.
-- [ ] **Créer les nouveautés** aux endroits de l'inventaire, pour les seuls comptes.
+- [ ] **Créer les nouveautés** aux endroits de l'inventaire, pour les seuls comptes. **« De nouvelles idées sur une liste »** ne donne ici que des pastilles dans l'application : être prévenu hors de l'application est le lot 29 bis (suivre).
 - [ ] **Les pastilles** : le point sur un onglet de la barre du bas, le compteur ou le point sur une carte, le point dans la marge d'une ligne de liste changée depuis ma dernière visite. Lisibles par un lecteur d'écran.
 - [ ] **« Quoi de neuf »** : la ligne du menu et son compteur, le point sur le bouton du menu, la page par jour. L'ouvrir ne marque rien comme vu.
 - [ ] Mise à jour au retour sur la page ; en direct quand le lot 26 est là.
@@ -823,7 +841,7 @@ Décidé par Julien le 19 novembre 2026. Après le lot 28. Maquettes : `NotifReg
 
 - [ ] **Le cœur, en fonctions pures** : pour une nouveauté et un compte, faut-il un email, lequel, quand (résumé, tout de suite, aucun ; ce qui presse ; déjà vue ; l'attente de dix minutes quand un téléphone est prévenu).
 - [ ] **Le réglage** « Par email » dans « Mon compte », trois choix, « Un résumé le matin » par défaut pour tous les comptes existants.
-- [ ] **Les emails automatiques des comptes passent par cette règle** : ils ne partent plus un par un. Les participants sans compte gardent les emails d'aujourd'hui.
+- [ ] **Les emails automatiques des comptes passent par cette règle** : ils ne partent plus un par un. Les participants sans compte gardent les emails d'aujourd'hui. Aucun email pour de nouvelles idées sur une liste tant que le lot 29 bis n'est pas fait.
 - [ ] **Le résumé** : la tâche planifiée du matin, un email par compte qui a du nouveau pas encore vu, un bloc par tirage ou par liste, en texte seul, dans la langue du compte, avec le lien pour changer le réglage.
 - [ ] **Les emails que l'organisateur envoie à la main** (liens, rappels) ne changent pas.
 - [ ] Trois langues, textes au ton de `docs/refonte/TEXTES.md`, tests.
@@ -866,15 +884,18 @@ Décidé par Julien le 19 novembre 2026. Après les lots 28 et 30. Maquettes : `
 Décidé par Julien le 19 novembre 2026. **À faire en dernier**, après tous les autres lots. Sans migration, sans route d'API. Maquettes : `Landing` (téléphone), `LandingDesktop` (écran large). Points à relire : section 6, « Lot 32 ».
 
 - [ ] **`/` sans session** devient la page de présentation ; avec une session, rien ne change. Les écrans de connexion gardent leurs adresses, « Créer un compte » et « Se connecter » y mènent.
-- [ ] **Les blocs** du tableau du README 22.23, dans l'ordre de la maquette, avec les illustrations existantes (`UiIllusTree`, `UiEnvelopeSealed`, `UiIllusLabel`, `UiPodium`) et, par bloc, une capture d'écran sur un écran large ou une petite icône sur téléphone.
-- [ ] **Une icône par bloc, partout** : une tuile en autocollant à gauche du titre (44 px sur téléphone, 52 px sur un écran large) : ✉️ sur corail pour le tirage, 🏷️ sur ciel pour les pistes, 🕵️ sur lilas pour le jeu, 🎁 sur menthe pour les listes.
+- [ ] **Les blocs** du tableau du README 22.23, dans l'ordre de la maquette, avec le sapin (`UiIllusTree`) en tête de page sur téléphone et, par bloc, une capture d'écran sur un écran large ou une petite icône sur téléphone.
+- [ ] **Une icône par bloc, partout** : une tuile en autocollant, à gauche du titre sur téléphone (44 px), au-dessus du texte sur un écran large (52 px) : ✉️ sur corail pour le tirage, 🏷️ sur ciel pour les pistes, 🕵️ sur lilas pour le jeu, 🎁 sur menthe pour les listes.
 - [ ] **Sur téléphone, pas de capture** : l'icône seule. Les images des captures n'y sont pas chargées.
 - [ ] **L'encadré « Tu as reçu un lien personnel ? »** reste, juste sous les boutons.
+- [ ] **Le bloc « Tes données »** : « En clair, et le moins possible », quatre points et le lien vers « Tes données, en clair » ; une tuile 🔒 sur pêche. Il ne s'affiche que quand le lot 36 est fait : la page ne promet que ce qui existe.
 - [ ] **Le bloc « Bientôt »** : encadré lilas, étiquette « Bientôt », les deux bulles. Aucun lien, aucune marque d'assistant.
 - [ ] **Ne montrer que ce qui existe** : un bloc dont le lot n'est pas fait ne s'affiche pas.
 - [ ] **Sur un écran large** (`LandingDesktop`) : l'en-tête avec « Se connecter » et « Créer un compte » à droite, le titre à gauche de deux captures, les quatre blocs en lignes qui alternent texte et capture, « Et aussi » sur trois colonnes. Une seule page qui s'adapte, pas deux pages.
 - [ ] **Les captures d'écran, sur un écran large seulement** : de vraies captures de l'application, faites par un script à partir des données de démonstration (`scripts/seed-demo.ts`), à 390 px, dans les trois langues, en images légères chargées à la demande. Jamais de données réelles. Écrans : l'enveloppe à ouvrir, les pistes, deux écrans du palmarès de couleurs différentes, une liste par son lien. En haut de page, une capture claire (l'enveloppe) à côté d'une foncée (le palmarès). Dans les maquettes, ce sont les maquettes elles-mêmes, réduites (`@@SHOT` dans `habiller.py`).
-- [ ] **Les captures inclinées** : sur un écran large, en perspective et tournées vers leur texte, en alternance (`rotateY` de 16 degrés d'un côté ou de l'autre, valeurs dans `habiller.py`, `TILT`). L'image elle-même reste droite : c'est le cadre qui s'incline, en CSS.
+- [ ] **Les captures inclinées** : sur un écran large, en perspective et tournées vers leur texte, en alternance (`rotateY` de 16 degrés d'un côté ou de l'autre, valeurs dans `docs/refonte/sorbet/capture.py`, `TILT`).
+- [ ] **Un téléphone dessiné, pas un simple cadre** (`capture.py` fait foi) : tranche en métal, boutons, bord noir, barre d'état, encoche, trait du bas, reflet, ombres en couches ; derrière lui, un halo de la couleur du bloc. Un seul composant, en CSS, qui reçoit l'image. L'image elle-même reste droite : c'est le cadre qui s'incline, en CSS.
+- [ ] **La fin de page dit que c'est gratuit** (décidé par Julien le 19 novembre 2026). La phrase sur la création d'un groupe dépend du lot 34 : s'il est fait, « Un compte suffit, pour une liste comme pour un tirage » ; sinon, celle de la maquette.
 - [ ] **En bas**, « Qui a fait ça, et pourquoi ? » vers la page du lot 33, si elle existe.
 - [ ] **Pour les moteurs de recherche et le partage du lien** : un titre, une description et une image d'aperçu par langue, rendus côté serveur.
 - [ ] Trois langues, `tests/e2e` (sans session : la page ; connecté : l'accueil), README 11 et 22.23 à jour.
@@ -885,10 +906,70 @@ Décidé par Julien le 19 novembre 2026. Peut se faire avec le lot 32 ou avant l
 
 - [ ] **Attendre les textes de Julien** : ceux de la maquette sont un brouillon. Ne rien traduire avant.
 - [ ] **La page `/a-propos`**, publique : l'icône et « Salut, moi c'est Julien », « Pourquoi j'ai fait ça », « Un café ? ».
+- [ ] **« Mon métier »** : il conçoit et développe des applications web, celle-ci est sa vitrine ; deux liens, LinkedIn et GitHub, dont les adresses sont dans la configuration (sans adresse, le lien ne s'affiche pas). Du texte, pas de logo de marque.
+- [ ] **Le code reste privé** : le lien GitHub mène au profil, jamais au dépôt. Vérifier avant la mise en ligne : le dépôt est privé chez GitHub ; aucune adresse du dépôt dans les pages, les emails ni les fichiers servis ; pas de fichiers `.map` du code servis au navigateur.
 - [ ] **Le bouton du café** : un lien vers le service de dons, dans un nouvel onglet (`rel="noopener"`). Son adresse est dans la configuration ; sans adresse, le bloc « Un café ? » ne s'affiche pas. Aucun script ni traceur du service.
 - [ ] **« Écris-moi »** : l'adresse de contact de la configuration ; sans adresse, la ligne ne s'affiche pas.
 - [ ] **Les liens vers la page** : en bas de la page de présentation (lot 32) et dans le menu.
 - [ ] Trois langues, `tests/e2e`, README 11 et 22.24 à jour.
+
+### Lot 34 — Ouvrir les groupes et l'envoi d'emails, avec 100 € par an (section 7.6)
+
+Proposé le 19 novembre 2026. **Le principe est acquis** : Julien veut lever les deux limites, accepte une soixantaine d'euros par an, et garde l'application gratuite. **Restent à chiffrer avec lui avant de coder** : les groupes par compte et les plafonds (section 6). **Après le lot 35** (les garde-fous) ; le lot 37 lui donne ses compteurs. Les étapes marquées « Julien » sont des abonnements et des réglages de compte, à faire par lui.
+
+- [ ] **Julien** : passer le compte Cloudflare en Workers Paid ; vérifier que le domaine est géré chez Cloudflare ; activer l'envoi d'emails de Cloudflare (en bêta) et laisser poser ses enregistrements DNS.
+- [ ] **L'envoi par deux fournisseurs** (`server/http/email.ts`) : Cloudflare d'abord, Resend en secours si l'envoi échoue ou si le quota du jour de Cloudflare est atteint. Les emails ne changent pas.
+- [ ] **Les groupes sans demande** : le quota par défaut d'un compte passe de 0 à 3 (proposition). La demande reste, pour en avoir davantage. `APP_GROUPS_COMFORT` et ses alertes sont revus.
+- [ ] **Des garde-fous, parce qu'un envoi ouvert à tous attire les abus** : un plafond d'emails par groupe et par jour, un plafond par compte, et un nombre de participants maximal par groupe. Au-delà, l'organisateur partage par son téléphone, ce qui ne coûte rien.
+- [ ] **Un plafond de dépense par mois**, réglable par le super-admin : quand les emails du mois l'atteignent, les envois automatiques passent au résumé du matin et le super-admin est prévenu.
+- [ ] **Les compteurs** : ce sont ceux du lot 37 (tableau de bord). S'il n'est pas fait, ce lot les ajoute a minima sur la page du super-admin.
+- [ ] README 7.2, 8, 13.3, 15 et 16 à jour ; `tests` des plafonds.
+
+### Lot 35 — Ne plus recevoir d'emails, et les garde-fous contre les abus (README 22.25)
+
+Décidé par Julien le 19 novembre 2026. **Avant le lot 34** : on n'ouvre pas les groupes à tous sans lui. Avec migration. Maquettes : `StopEmail`, `StopDemande`, `StopConfirme`, `StopSaisie`, `StopEnvoi`. Points à relire : section 6, « Lots 35 et 36 ».
+
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : une adresse est-elle bloquée ; quels emails partent quand même (la connexion demandée par la personne) ; ce qu'un envoi groupé fait d'une adresse bloquée.
+- [ ] **Base** : les adresses bloquées, par empreinte (le poivre du serveur), avec la date et la cause (la personne, un rejet, une plainte) ; les signalements (quel email, quel groupe, quel compte).
+- [ ] **Le lien en bas de chaque email**, signé, sans connexion (`StopEmail`). Il ouvre une page qui pose la question (`StopDemande`) : seul le bouton bloque, jamais l'ouverture du lien, que des messageries suivent toutes seules. Puis « C'est noté » et « Annuler » (`StopConfirme`). L'en-tête de désabonnement en un clic, lui, bloque directement.
+- [ ] **Tous les envois passent par le contrôle** (`server/http/email.ts`) : aucun email vers une adresse bloquée, sauf la connexion.
+- [ ] **L'avertissement à la saisie** d'une adresse bloquée, partout où une adresse se saisit (`StopSaisie`), et dans « Envoyer par email » (`StopEnvoi`). Il dit clairement que la personne l'a demandé ; une adresse bloquée parce qu'elle n'existe pas a sa propre phrase.
+- [ ] **« Signaler cet envoi »** et la vue du super-admin ; couper l'envoi d'emails d'un groupe.
+- [ ] **Les retours du fournisseur** (rejets, plaintes) bloquent l'adresse.
+- [ ] **Le premier email à une adresse** : qui l'a ajoutée, pourquoi, ce qu'on sait d'elle, comment refuser.
+- [ ] **Lever son blocage** dans « Me prévenir ».
+- [ ] **Un seul refus, pas deux réglages** : pour une adresse qui a un compte, « Ne plus recevoir d'emails » met aussi « Par email » sur « Aucun email » (lot 29), et inversement choisir « Aucun email » ne bloque que les emails automatiques : ceux qu'un organisateur envoie à la main restent possibles tant que la personne n'a pas refusé par le lien. Dire la différence dans « Me prévenir ». Si le lot 29 n'est pas fait, seul le blocage existe.
+- [ ] Trois langues, `tests/e2e`, README 13 à jour.
+
+### Lot 36 — Les données personnelles (README 22.26)
+
+Demandé par Julien le 19 novembre 2026. **Après le lot 35** (le pied d'email renvoie à son lien de refus). À faire relire avant de publier les pages. Points à relire : section 6, « Lots 35 et 36 ».
+
+- [ ] **Julien** : décider les durées qui restent (le journal, les empreintes de blocage) ; faire relire la liste du README 22.26 ; créer l'adresse de contact.
+- [ ] **« Tes données, en clair »** (`Confidentialite`) et « Mentions légales », publiques, en trois langues, liées en bas de la page de présentation et de chaque email. Le cap : exemplaire et le plus transparent possible, y compris sur ce qui fâche (la clé sur le serveur, ce que voit l'administrateur). Textes à valider par Julien.
+- [ ] **« Mes données »** dans « Mon compte » (`CompteDonnees`).
+- [ ] **L'accès de dernier recours de l'organisateur**, dit sous « À qui tu offres » de « Tes données, en clair » : un résultat à la fois, lu par tout le groupe dans le journal ; et le dévoilement du tirage à tous. Aucun écran ne dit plus « même l'organisateur ne voit pas » sans cette précision (page de présentation comprise).
+- [ ] **La CNIL**, sur les deux pages : « Si sa réponse ne te convient pas, tu peux saisir la CNIL », avec le lien.
+- [ ] **Qui verra ce que j'écris** (README 23.3) : la ligne sous chaque champ de donnée personnelle. Dans les maquettes : `Connexion`, `ConnexionCreer`, `Rejoindre`, `PersonneNouvelle`, `GroupePersonne`, `EnvoiAjouterEmail`, `ListeTeneurs`, `PistesTexteMoment`, `PistesTexteServirait`, `PistesTexteEviter`, `ListePartager`. **À faire de même, sans maquette retouchée** : `ListeConnexion`, `PanneauOrganisateur`, `GroupeNouveauAdmin`, `ListePersonneCompte`, `AjouterParticipants`, la fiche d'une personne d'une liste (un enfant : prénom, âge, tailles), `DemandeGroupe`, `Compte`. Passer en revue tout champ du code, pas seulement cette liste.
+- [ ] **« Une allergie… »** disparaît de l'exemple du champ « J'évite, ou j'ai déjà » : on n'invite pas à écrire des données de santé.
+- [ ] **Le pied de chaque email** (`StopEmail` pour le modèle) : refuser les emails, « Ce que l'application fait de tes données » ; l'email de connexion dit seulement pourquoi il part.
+- [ ] **« Télécharger mes données »** et **« Supprimer mon compte »** dans « Mon compte ». Supprimer un compte ne casse ni un tirage en cours ni l'historique d'un groupe : dire ce qui est effacé et ce qui est rendu anonyme.
+- [ ] **Le retrait d'une personne sans compte**, sur demande : la marche à suivre pour le super-admin.
+- [ ] **La purge** : une tâche planifiée. Un compte sans visite depuis trois ans reçoit un email qui prévient, puis est supprimé ; des anciens tirages, il ne reste que ce qui sert à la règle « pas la même personne ».
+- [ ] **Les listes** : l'âge plutôt que la date de naissance là où il suffit ; un mot à celui qui partage une liste où figurent des enfants ; une liste par son lien n'est pas lisible par les moteurs de recherche.
+- [ ] **Le registre** : `docs/donnees-personnelles.md`, un tableau des traitements, et la marche à suivre en cas de fuite.
+
+### Lot 37 — Le tableau de bord du super-admin (README 22.27)
+
+Demandé par Julien le 19 novembre 2026. Utile dès le lot 34 (les plafonds) et le lot 35 (les signalements). Avec migration. Maquette : `AdminTableau`. Points à relire : section 6, « Lot 37 ».
+
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : additionner des compteurs par jour sur une période ; la part d'un plafond ; quand prévenir.
+- [ ] **Base** : des compteurs par jour et par nature (emails envoyés, rejetés, requêtes, personnes actives, erreurs), sans identifiant de personne ; le dernier passage de chaque tâche planifiée et son résultat.
+- [ ] **Compter** aux bons endroits : l'envoi d'emails, les routes, les tâches planifiées. Une personne active se compte une fois par jour, à partir d'une empreinte qui change chaque jour.
+- [ ] **La page** `/admin/tableau-de-bord` : la période, « Qui s'en sert », « Les plafonds », « À surveiller », « Ce qui tourne tout seul » ; chaque ligne de « À surveiller » mène à sa liste.
+- [ ] **Prévenir à 70 %** d'un plafond : une nouveauté « qui presse » pour le super-admin (lot 28) ; tant que le lot 28 n'est pas fait, un email au super-admin, une fois par jour au plus.
+- [ ] **La version en ligne** : l'identifiant du commit déployé, inscrit au moment du déploiement.
+- [ ] Aucun outil de mesure extérieur, aucun cookie de plus. Trois langues, tests.
 
 ## 6. Questions pour Julien
 
@@ -1286,6 +1367,23 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 12. **Sur la page d'un tirage, changer de langue par le menu** enregistre toujours la langue du participant, comme le faisait le bouton de langue.
 13. **Pas vérifié sur un vrai téléphone** : le clavier qui passe par-dessus le bouton, et le toucher hors du champ qui ferme le clavier (testé à la souris seulement).
 
+### Lot 24 — écrire sur place
+
+Codé le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Pendant qu'on écrit, le texte d'une idée reste un champ d'une seule ligne** : un texte long y est coupé à droite au lieu de passer à la ligne comme dans `ListeIdeeLienFait`. C'était déjà le cas avant ce lot. Un champ qui grandit avec son texte est possible, à part.
+2. **Pendant qu'on écrit l'adresse**, le texte de l'idée s'affiche tel quel (il ne se modifie plus), suivi de « : » et du champ ; l'adresse passe à la ligne quand le texte ne lui laisse pas 176 px.
+3. **Une adresse tapée sans « https:// »** (« exemple.fr/velo ») est complétée. Ce qui n'est pas une adresse reste dans le champ, avec un message. Quitter la ligne avec une adresse valide dans le champ l'enregistre, comme le texte.
+4. **« Retirer le lien » d'une idée qui n'a pas de texte** supprime l'idée (avec la confirmation habituelle si elle est cochée) : une idée sans texte ni lien n'existe pas.
+5. **« J'offre autre chose »** : le choix « Dire à Camille que c'est moi » a disparu avec la page, comme dans la maquette (« déjà cochée à mon nom ») ; un cadeau hors liste n'est donc plus jamais anonyme pour celui qui tient la liste. Les cadeaux hors liste anonymes déjà enregistrés le restent.
+6. **Un cadeau hors liste déjà dit** garde sa phrase (« Tu offres hors liste : … »), en gras, avec « Supprimer » dessous à la place de « Retirer ». Il ne se corrige pas : on le supprime et on le redit (les routes n'ont que l'ajout et le retrait).
+7. **« Tu participes »**, par le lien, est un texte vert mais reste un bouton : il ouvre toujours « Changer ».
+8. **La hauteur d'un écran ne suit plus le clavier** (`--keyboard-visible`) : plus rien ne s'y pose depuis la Correction 19 et ce lot.
+
+Regardés à l'œil et comparés aux maquettes : la ligne qu'on écrit, l'adresse en cours, le lien posé, le cadeau hors liste sur place. Pas vérifié sur un vrai téléphone.
+
+Au passage : un test du compte lisait un toast par un texte que le toast porte deux fois (son titre et son annonce pour les lecteurs d'écran) ; il échouait selon le moment. Il vise maintenant le titre.
+
 ### Lots 28 à 31 — notifications, code, application installée
 
 Écrits le 19 novembre 2026. Points à relire :
@@ -1315,7 +1413,7 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 1. **Les textes sont une proposition** : ils sont dans la maquette, à relire avant de les traduire.
 2. **« Aucun assistant ne saura qui offre à qui »** : une promesse écrite seul, parce que le secret est la règle de l'application. À confirmer avant de l'afficher.
 3. **Le branchement à un assistant (MCP)** n'est qu'annoncé. Rien n'est conçu : ni ce qu'un assistant pourrait lire ou faire, ni comment il se connecterait au compte.
-4. **« Pour organiser un tirage, tu demandes la création de ton groupe »** : la page ne dit ni que c'est gratuit, ni qui répond à la demande. À décider.
+4. **« Pour organiser un tirage, tu demandes la création de ton groupe »** : la phrase de la maquette date d'avant deux décisions du 19 novembre 2026. L'application est gratuite, et la page le dit ; si le lot 34 est fait, il n'y a plus de demande à faire.
 5. **Les deux maquettes** (téléphone, écran large) ont une hauteur estimée, pas mesurée : elles peuvent laisser un vide en bas ou couper la fin. Les captures y sont des maquettes réduites, donc avec des prénoms de maquette.
 6. **Le bloc « Et aussi » suppose les lots 29 à 31 faits** (résumé du matin, code, application installée).
 
@@ -1326,13 +1424,46 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 1. **Les textes** sont à écrire par Julien.
 2. **Le service de dons** : à choisir (README 22.24 pour les frais relevés).
 3. **L'adresse de contact** : à créer sur le domaine.
-4. **« L'application ne montre aucune publicité »** : vrai aujourd'hui ; la phrase engage pour la suite.
+4. **« L'application ne montre aucune publicité »** : décidé par Julien le 19 novembre 2026 (section 7.3).
 5. **L'icône de Julien** dans la maquette (un Père Noël sur fond ciel) est un choix de dessin, pas le sien.
 6. **Des dons sont un revenu** : comment les déclarer est à voir avec un comptable (section 7.4).
 
-## 7. Tenir la charge, et financer l'application (à décider)
+### Lot 34 — ouvrir les groupes et les emails
 
-Écrit le 19 novembre 2026, à la demande de Julien. **Rien n'est à coder ici tant qu'il n'a pas tranché.** Les chiffres ont été relevés ce jour-là, en partie sur des comparatifs : à revérifier sur les sites officiels avant toute décision.
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Le principe est acquis, pas les chiffres** : lever les limites, une soixantaine d'euros par an, gratuit pour tous.
+2. **Trois groupes par compte par défaut** : un chiffre posé seul.
+3. **Les plafonds** (emails par groupe et par jour, participants par groupe, dépense par mois) : à chiffrer ensemble.
+4. **Les prix sont en dollars** et ont été relevés le 19 novembre 2026, en partie sur des comparatifs : à revérifier sur les sites de Cloudflare et de Resend avant de s'abonner.
+
+### Lots 35 et 36 — ne plus recevoir d'emails, données personnelles
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Dire à l'organisateur qu'une adresse a bloqué l'application**, c'est lui apprendre quelque chose sur cette personne. Julien le veut ; la phrase reste neutre et ne dit ni quand ni pourquoi.
+2. **L'email de connexion part malgré le blocage** (proposition) : la personne vient de le demander.
+3. **Une empreinte plutôt que l'adresse** pour une personne sans compte (proposition).
+4. **Les plafonds plus bas pour un compte récent** : à chiffrer.
+5. **La liste RGPD n'est pas un avis juridique.** Elle a été écrite sans juriste.
+6. **« Celui qui héberge pourrait techniquement lire les résultats »** : écrit sur la page publique par souci de transparence, d'après la décision 5 du README. **Validé par Julien le 19 novembre 2026.**
+7. **Trois ans sans visite, puis le compte est supprimé, après un email qui prévient ; Julien répond sous un mois** : **validé par Julien le 19 novembre 2026.** Restent à décider : la durée du journal et celle des empreintes de blocage.
+8. **La revue des maquettes a porté sur les champs de saisie et les emails** (63 écrans avec un champ, 9 emails), par un script. Les écrans qui affichent des données sans en saisir n'ont pas été relus un par un.
+9. **Les mentions légales** demandent de dire qui édite le site. Ce qu'un particulier doit y écrire, et ce qu'il peut taire, est à faire préciser par la relecture : rien n'est écrit dans la maquette.
+10. **« Aucun email » et le refus par le lien** sont deux choses voisines (lot 35) : le premier règle les emails automatiques de mon compte, le second interdit tout email vers mon adresse. À relire quand les deux existent.
+
+### Lot 37 — le tableau de bord
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Les chiffres de la maquette sont inventés**, pour montrer la forme.
+2. **Les requêtes du jour** : comptées par l'application elle-même ; l'autre voie est de les lire chez Cloudflare, avec une clé d'accès de plus.
+3. **La dépense du mois** est une estimation, calculée à partir des emails envoyés et des prix saisis par le super-admin.
+4. **Pas de courbes** dans cette première version : des chiffres et des jauges. À ajouter si le besoin se confirme.
+
+## 7. Tenir la charge, et financer l'application
+
+Écrit le 19 novembre 2026, à la demande de Julien. Ce qui se code est dans les lots 34, 35 et 37 ; cette section en donne les raisons et les chiffres. Les chiffres ont été relevés ce jour-là, en partie sur des comparatifs : à revérifier sur les sites officiels avant toute décision.
 
 ### 7.1 Ce qui lâche en premier
 
@@ -1349,10 +1480,12 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 
 1. **Mesurer.** Sur la page du super-admin, les compteurs du jour et du mois en face de chaque plafond (emails, requêtes, lignes écrites), et une alerte à 70 %.
 2. **Dépenser moins d'emails.** Le résumé du matin (lot 29) et les notifications du téléphone (lot 31) vont dans ce sens. À ajouter : un envoi groupé qui dépasserait le plafond du jour part en deux fois, et l'organisateur le sait avant d'envoyer.
-3. **Garder la porte.** Le quota de groupes par compte existe déjà (0 par défaut, sur demande) : c'est lui qui règle le débit.
+3. **Garder la porte.** Le quota de groupes par compte existe déjà (0 par défaut, sur demande) : c'est lui qui règle le débit. Le lot 34 propose de l'ouvrir (7.6), avec les garde-fous du lot 35.
 4. **Payer le plus petit palier quand un plafond est atteint**, pas avant : Resend Pro si ce sont les emails, Workers Paid si ce sont les requêtes ou le temps réel. Soit de 5 à 25 $ par mois selon ce qui lâche. À vérifier : peut-on ne payer que de novembre à janvier.
 
 ### 7.3 Financer
+
+**Décidé par Julien le 19 novembre 2026 : l'application reste gratuite.** Elle coûte peu, et elle est aussi sa vitrine de développeur. Les dons restent possibles (lot 33) ; les autres pistes de ce tableau et l'affiliation ne sont pas retenues.
 
 | Voie | Ce que c'est | Pour | Contre |
 |---|---|---|---|
@@ -1360,7 +1493,9 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 | Un prix par groupe et par an | L'organisateur paie une petite somme quand son groupe dépasse une taille | Colle à l'usage, une fois par an ; les participants ne paient jamais | Un paiement à construire, des factures, un statut |
 | Faire payer ce qui coûte | L'envoi par email au-delà d'un seuil ; le partage par le téléphone reste gratuit | Le prix suit la dépense réelle | Plus difficile à expliquer |
 
-Un ordre possible, à discuter : les dons d'abord ; un prix seulement si la dépense du mois dépasse ce que les dons couvrent ; et ce prix porte sur ce qui coûte (les emails, les grands groupes), jamais sur le secret du tirage ni sur une liste simple.
+Ce tableau reste pour mémoire : seule sa première ligne est retenue.
+
+**La publicité : abandonnée par Julien le 19 novembre 2026**, après l'avoir explorée (un soutien affiché, l'affiliation, des idées suggérées, une régie). L'application n'affiche aucune publicité, et le dit.
 
 ### 7.4 Ce qu'un paiement entraîne
 
@@ -1373,7 +1508,24 @@ Un ordre possible, à discuter : les dons d'abord ; un prix seulement si la dép
 
 ### 7.5 Questions pour Julien
 
-1. L'application s'ouvre-t-elle à tous, ou reste-t-elle sur demande ?
-2. Quelle dépense par mois est acceptable avant de demander de l'argent ?
-3. Qu'est-ce qui reste gratuit pour toujours ?
-4. Quel service de dons ?
+Répondu le 19 novembre 2026 : l'application s'ouvre à tous (lot 34, avec les garde-fous du lot 35) ; Julien y met une soixantaine d'euros par an, cent au plus ; tout reste gratuit, sans publicité.
+
+Reste ouvert :
+
+1. Quel service de dons ?
+2. Combien de groupes par compte sans demande, et quels plafonds d'emails (lot 34) ?
+
+### 7.6 Avec 100 € par an, dès maintenant (proposition du 19 novembre 2026)
+
+Julien peut mettre environ 100 € par an. Ce budget suffit pour lever les deux limites, à condition de changer de fournisseur d'emails. Lot 34.
+
+| Poste | Prix relevé | Par an |
+|---|---|---|
+| Workers Paid (Cloudflare) | 5 $ par mois au minimum | 60 $ |
+| Emails par Cloudflare (en bêta, exige Workers Paid) | 3 000 par mois compris, puis 0,35 $ les 1 000 | Quelques dollars : 20 000 emails en décembre coûtent environ 6 $ |
+| Resend, gardé en secours | Offre gratuite | 0 |
+
+- **Pourquoi pas Resend Pro** : 20 $ par mois, soit 240 $ par an, hors budget. Ne le prendre que de novembre à janvier coûterait 60 $ de plus.
+- **L'autre voie pour les emails** : Amazon SES, autour de 0,10 $ les 1 000 sans abonnement, mais un compte de plus à ouvrir et à faire valider.
+- **Ce qui reste incertain** : l'envoi d'emails de Cloudflare est en bêta, son prix peut changer, son quota de départ par jour n'est pas publié, et sa réputation d'expéditeur est jeune. D'où Resend en secours.
+- **Lever la limite de groupes n'est pas une question d'argent** : c'est un réglage de l'application (le quota par compte, 0 aujourd'hui). Mais ouvrir à tous un service qui écrit à des adresses saisies à la main expose aux abus : les garde-fous du lot 34 vont avec.

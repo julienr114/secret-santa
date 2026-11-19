@@ -1641,7 +1641,7 @@ Décidé par Julien le 18 novembre 2026. Lots 20 à 22 de `docs/refonte/PLAN.md`
 
 - **« Nouvelle liste » ouvre le document, encore vide** (`ListeNouvelle`) : une icône tirée au hasard, « Nom de l'événement » en gris avec le curseur dedans, « Ajouter une date », le mot de départ dans un cadre en pointillés, puis le bloc « Ajouter quelqu'un ». Aucun formulaire, aucun bouton « Créer ».
 - **« Ajouter quelqu'un »** est le même bloc dans le brouillon et dans la liste partagée, en bas du document : les personnes de ma famille qui ne sont pas encore sur la liste, en pastilles, puis « Quelqu'un d'autre ». Toucher un prénom l'ajoute, avec ses idées qui n'ont pas été offertes la dernière fois.
-- **Écrire une idée** (`ListeTeneur`, `ListeIdee`) : chaque personne se termine par une ligne vide en gris, « Une autre idée… ». On y écrit directement ; la touche retour valide et passe à la ligne suivante. Au-dessus du clavier : « Lien », « Supprimer la ligne », « Terminé ».
+- **Écrire une idée** (`ListeTeneur`, `ListeIdee`) : chaque personne se termine par une ligne vide en gris, « Une autre idée… ». On y écrit directement ; la touche retour valide et passe à la ligne suivante. Les actions d'une ligne sont sous elle, dans le document, tant qu'on y écrit (22.20, lot 24) : la barre « Lien », « Supprimer la ligne », « Terminé » au-dessus du clavier a disparu.
 - **Tout texte se modifie en le touchant** : le titre, la date, le mot, une idée.
 - **Enregistrement automatique** : pas de bouton « Enregistrer ». Une ligne laissée vide disparaît. Une adresse collée dans une ligne devient le mot « lien ».
 - **Celui qui tient la liste coche dans le document**, sans changer de vue, y compris tant que la liste est un brouillon : la case d'une idée la coche à son prénom, seul ; retouchée, elle décoche. En V2 (22.20), cela vaut pour chacun de ceux qui tiennent la liste.
@@ -1718,6 +1718,8 @@ Décidé par Julien le 19 novembre 2026, après la V1 (22.19). Pas encore codé 
 **Une règle qui ne change pas, et qu'on écrit ici une fois pour toutes : dans une liste, rien n'est une surprise.** Personne ne se voit cacher ce qu'on lui offre, pas même celui qui y figure. La seule chose réservée à ceux qui tiennent la liste, ce sont les prénoms de ceux qui offrent.
 
 #### Écrire sur place, sans rien au-dessus du clavier
+
+**Fait** (lot 24, 19 novembre 2026). Dans le code : `ListsIdeaLine` (la ligne, ses actions et l'adresse), `asAddress` (`app/utils/ideaLink.ts` : une adresse tapée sans « https:// » est complétée, ce qui n'en est pas une est refusé), `ListsOffListLine` (« J'offre autre chose », sur place). `ListsLineBar`, le panneau du lien et la page `/l/[jeton]/hors-liste` ont disparu.
 
 - **Plus de barre collée au clavier** (`ListeIdee`). Sous la ligne qu'on écrit, dans le document, deux petits liens de texte : « Ajouter un lien » et « Supprimer ». Ils apparaissent quand on entre dans la ligne et disparaissent quand on la quitte. La touche retour valide et passe à la ligne suivante ; toucher ailleurs valide aussi.
 - **Le lien reste à part du texte** : une idée a un texte et un lien au plus, qui s'écrit toujours au bout de la ligne par le mot « lien », souligné. « Ajouter un lien » prolonge la ligne de « : », avec le curseur et l'invitation grise « colle ou écris l'adresse » ; dessous, « Annuler » (`ListeIdeeLien`). Une fois l'adresse posée, dessous : « Changer le lien », « Retirer le lien », « Supprimer » (`ListeIdeeLienFait`). Pas de bouton « Coller ».
@@ -1849,18 +1851,19 @@ Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 32 de `docs/refo
 |---|---|
 | L'en-tête | Le sapin, « Under the Tree », « Le Secret Santa de la famille, et les listes de cadeaux qui vont avec. », puis « Créer un compte » et « Se connecter » |
 | Le lien personnel | L'encadré vert d'aujourd'hui : « Tu as reçu un lien personnel ? Ouvre-le directement : il fonctionne sans compte. » |
-| Le tirage | Secret, même pour l'organisateur ; les règles (pas soi-même, pas son conjoint, pas la même personne que les années passées) ; un lien par personne ; le journal que tout le groupe lit |
+| Le tirage | Secret : l'organisateur ne voit pas qui offre à qui, et s'il regarde un résultat en dernier recours, tout le groupe le sait ; les règles (pas soi-même, pas son conjoint, pas la même personne que les années passées) ; un lien par personne ; le journal que tout le groupe lit |
 | Les pistes | Six questions, trente secondes, lues par son Père Noël |
 | Devine qui | Les pronostics, puis le palmarès en images |
 | Les listes | Pas de doublon, le cadeau à plusieurs, la liste tenue à deux et en direct |
 | Et aussi | L'application installée, les notifications et le résumé du matin, la connexion sans mot de passe, la mémoire d'une année sur l'autre, les trois langues |
+| Tes données | « En clair, et le moins possible » : aucune publicité, aucun traceur, aucune revente ; ni mot de passe ni numéro de téléphone ; à chaque écran on sait qui verra ce qu'on écrit ; refuser les emails, télécharger ou supprimer ses données. Un lien vers « Tes données, en clair » (22.26) |
 | Bientôt | L'assistant, voir ci-dessous |
 | La fin | « Prêt pour cette année ? », les deux boutons, et le choix de la langue |
 
 - **« Créer un compte » et « Se connecter »** mènent aux écrans de connexion actuels, qui ne changent pas. La page ne contient plus le champ d'adresse elle-même.
 - **Deux mises en page, une seule page** : sur téléphone (`Landing`), tout s'empile ; sur un écran large (`LandingDesktop`), l'en-tête porte « Se connecter » et « Créer un compte » à droite, le titre est à gauche de deux captures, les quatre blocs alternent texte et capture, « Et aussi » tient sur trois colonnes.
-- **Des captures d'écran, sur un écran large seulement**, chacune dans un cadre de téléphone : l'enveloppe à ouvrir, les pistes, deux écrans du palmarès, une liste. En haut de page, deux captures qui ne se ressemblent pas : une claire (l'enveloppe) et une foncée (le palmarès). Dans les maquettes, ce sont les maquettes elles-mêmes, réduites. Dans l'application, ce sont de vraies captures, faites à partir des données de démonstration : jamais une donnée réelle. **Elles ne sont pas posées à plat** : sur un écran large, chaque téléphone est incliné en perspective et tourné vers son texte, donc une fois d'un côté, une fois de l'autre ; **sur téléphone, pas de capture** (décidé par Julien le 19 novembre 2026).
-- **Une petite icône à gauche du titre de chaque bloc**, sur téléphone comme sur un écran large : une tuile en autocollant (44 px sur téléphone, 52 px sur un écran large), une enveloppe sur corail pour le tirage, une étiquette sur ciel pour les pistes, un détective sur lilas pour le jeu, un cadeau sur menthe pour les listes.
+- **Des captures d'écran, sur un écran large seulement**, chacune dans un cadre de téléphone : l'enveloppe à ouvrir, les pistes, deux écrans du palmarès, une liste. En haut de page, deux captures qui ne se ressemblent pas : une claire (l'enveloppe) et une foncée (le palmarès). Dans les maquettes, ce sont les maquettes elles-mêmes, réduites. Dans l'application, ce sont de vraies captures, faites à partir des données de démonstration : jamais une donnée réelle. **Le téléphone est dessiné, pas un simple cadre** : tranche en métal, boutons sur les côtés, bord noir, barre d'état (l'heure, le réseau, la batterie), encoche, trait du bas, léger reflet sur l'écran, ombres en plusieurs couches, et un halo de la couleur du bloc derrière lui. **Elles ne sont pas posées à plat** : sur un écran large, chaque téléphone est incliné en perspective et tourné vers son texte, donc une fois d'un côté, une fois de l'autre ; **sur téléphone, pas de capture** (décidé par Julien le 19 novembre 2026).
+- **Une petite icône par bloc** : une tuile en autocollant, à gauche du titre sur téléphone (44 px), au-dessus du texte sur un écran large (52 px), une enveloppe sur corail pour le tirage, une étiquette sur ciel pour les pistes, un détective sur lilas pour le jeu, un cadeau sur menthe pour les listes.
 - En bas, « Qui a fait ça, et pourquoi ? » mène à la page de Julien (22.24).
 - **Une personne connectée ne voit jamais cette page** : `/` reste son accueil.
 - **Elle ne promet que ce qui existe.** Un bloc dont le lot n'est pas fait n'est pas affiché.
@@ -1873,9 +1876,66 @@ Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 33 de `docs/refo
 
 - Une page publique, `/a-propos`, où Julien se présente et dit pourquoi il a fait l'application. On y arrive par « Qui a fait ça, et pourquoi ? », en bas de la page de présentation, et par le menu.
 - **Les textes de la maquette sont un brouillon**, écrit à partir de ce que ce README sait de lui (deux familles, des tricheurs, la page de listes qu'il tenait à la main). Julien les réécrit avant qu'on les code.
+- **C'est aussi sa vitrine de développeur** (dit par Julien le 19 novembre 2026) : un bloc « Mon métier » dit ce qu'il fait, que l'application lui sert de vitrine, et donne deux liens, **LinkedIn** et **GitHub**. L'application reste gratuite.
+- **Le code de l'application n'est pas public** et ne doit pas le devenir : le lien GitHub mène au profil de Julien, jamais au dépôt ; aucune page, aucun email, aucun fichier servi ne donne l'adresse du dépôt ; le dépôt reste privé.
 - **« Un café ? »** : un bouton vers un service de dons extérieur, ouvert dans un nouvel onglet. Aucun paiement dans l'application, aucun script du service chargé dans la page.
 - **« Écris-moi »** : une adresse de contact à créer sur le domaine. Jamais l'adresse personnelle de Julien.
 - Le service de dons reste à choisir. Relevé le 19 novembre 2026 sur des comparatifs, à vérifier sur les sites des services : Buy Me a Coffee prend 5 % sur tout, plus les frais de paiement ; Ko-fi ne prend rien sur les dons de son offre gratuite, hors frais de paiement.
+
+### 22.25 Décidé : ne plus recevoir d'emails, et les garde-fous contre les abus (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 35 de `docs/refonte/PLAN.md`, à faire avant d'ouvrir les groupes à tous (lot 34). Maquettes : `StopEmail`, `StopDemande`, `StopConfirme`, `StopSaisie`, `StopEnvoi`.
+
+**L'idée.** L'application écrit à des adresses saisies par quelqu'un d'autre : un organisateur, ou celui qui tient une liste. Chacun doit pouvoir dire non une fois pour toutes, et l'application doit s'en souvenir.
+
+- **« Ne plus recevoir d'emails d'Under the Tree »** : un lien en bas de chaque email, qui marche sans se connecter (`StopEmail`). Il ouvre une page qui pose la question (`StopDemande`) : c'est le bouton « Oui, ne plus m'écrire » qui bloque, pas l'ouverture du lien, parce que des messageries ouvrent les liens toutes seules pour les vérifier. Ensuite « C'est noté », avec « Annuler » (`StopConfirme`). Les messageries qui affichent leur propre bouton de désabonnement déclenchent la même chose.
+- **Ce que ça bloque** : tout email vers cette adresse, de n'importe quel groupe, liste ou organisateur, aujourd'hui et plus tard. **Une seule exception** : l'email de connexion que la personne demande elle-même.
+- **Ce que l'application garde** : pour une adresse sans compte, pas l'adresse en clair, seulement une empreinte qui permet de la reconnaître.
+- **Celui qui saisit une adresse bloquée le voit** (la fiche d'une personne, « Envoyer par email », l'invitation à tenir une liste, une personne reliée à son compte) : « La personne qui a cette adresse a demandé à ne plus recevoir d'emails d'Under the Tree. Tu peux garder l'adresse, mais aucun email ne lui partira. Envoie-lui son lien autrement. » (`StopSaisie`). Le dire clairement, c'est voulu par Julien : celui qui saisit doit comprendre que c'est un choix de la personne, pas une panne. L'envoi groupé la range avec ceux qui n'ont pas d'adresse, sous « A demandé à ne plus recevoir d'emails » (`StopEnvoi`). Rien ne dit quand ni pourquoi. Pour une adresse bloquée parce qu'elle n'existe pas, la phrase est autre : « Cette adresse ne semble pas exister. »
+- **Lever le blocage** : seule la personne le peut, par la page du lien, ou dans « Me prévenir » si elle a un compte.
+- **« Signaler cet envoi »** : un second lien en bas des emails partis à la demande d'un organisateur. Le super-admin voit les signalements par groupe et par compte ; il peut couper l'envoi d'emails d'un groupe ou désactiver un compte.
+- **Les retours du fournisseur d'emails** : une adresse qui n'existe pas, ou une plainte pour courrier indésirable, bloque l'adresse sans attendre.
+- **Le premier email à une adresse** dit toujours qui l'a ajoutée et pourquoi, ce que l'application sait d'elle, et comment refuser.
+- **Des plafonds** (lot 34) : emails par groupe et par jour, par compte ; plus bas pour un compte récent, jusqu'à son premier tirage.
+
+### 22.26 À faire : les données personnelles (RGPD)
+
+Liste de contrôle écrite le 19 novembre 2026, à la demande de Julien. **Ce n'est pas un avis juridique** : à faire relire, et à confronter aux fiches de la CNIL. Lot 36.
+
+**Le cap, fixé par Julien le 19 novembre 2026 : être exemplaire, et le plus transparent possible.** Aller au-delà de ce qui est obligatoire, et le dire avec des mots simples. C'est aussi un argument de la page de présentation (22.23).
+
+- **À chaque endroit où l'on saisit une donnée personnelle, une ligne dit qui la verra et à quoi elle sert** (règle 23.3). Retouché dans les maquettes : `Connexion`, `ConnexionCreer`, `Rejoindre` (mon adresse) ; `PersonneNouvelle`, `GroupePersonne`, `EnvoiAjouterEmail`, `ListeTeneurs` (l'adresse de quelqu'un d'autre : « Elle recevra un email qui dit que c'est toi qui l'as ajoutée. Elle pourra refuser les emails de l'application. ») ; `PistesTexteMoment`, `PistesTexteServirait`, `PistesTexteEviter` (« Seul ton Père Noël lira ces lignes. ») ; `ListePartager` (ce que voit celui qui a le lien).
+- **Ne pas inviter à écrire des données de santé** : l'exemple « Une allergie… » du champ « J'évite, ou j'ai déjà » devient « Ce que tu n'aimes pas, ce que tu as en trop… ».
+- **Le pied de chaque email** : comment refuser les emails, et « Ce que l'application fait de tes données ». L'email de connexion dit seulement qu'il part parce qu'on vient de le demander.
+- **« Tes données, en clair »** (`Confidentialite`), une page publique en langage courant : ce que l'application sait et qui le voit, ligne par ligne ; ce qu'elle ne demande jamais ; les enfants ; les deux prestataires ; les durées ; les droits. **L'accès de dernier recours de l'organisateur y est dit** (demandé par Julien le 19 novembre 2026) : sous « À qui tu offres », la page écrit que l'organisateur ne voit pas les résultats, qu'en dernier recours il peut en regarder un seul à la fois (8.7), que tout le groupe le lit alors dans le journal avec le prénom concerné, et qu'il peut aussi dévoiler le tirage à tous. La page de présentation ne dit donc plus « même l'organisateur ne voit pas », mais « L'organisateur ne voit pas qui offre à qui. S'il regarde un résultat en dernier recours, tout le groupe le sait. » Enfin, les deux pages disent qu'on peut saisir la CNIL si la réponse de Julien ne convient pas. Elle dit aussi ce qui fâche (validé par Julien le 19 novembre 2026) : les résultats sont chiffrés mais la clé est sur le serveur, donc celui qui héberge pourrait techniquement les lire et s'engage à ne pas le faire ; l'administrateur voit les comptes (adresse, groupes, dernière visite).
+- **« Mes données »** (`CompteDonnees`), dans « Mon compte » : ce que l'application sait de moi, télécharger mes données, les emails, supprimer mon compte, avec ce qui est effacé et ce qui reste.
+- **Aucune publicité, aucun traceur, aucune revente** : décidé par Julien le 19 novembre 2026, et écrit tel quel sur la page de présentation et sur « Tes données, en clair ».
+
+| Sujet | Où en est l'application | À faire |
+|---|---|---|
+| Informer ceux qu'un autre a ajoutés | L'email d'envoi ne dit pas tout | Le premier email (22.25) et une page « Confidentialité » : qui est responsable, d'où vient l'adresse, à quoi elle sert, combien de temps, comment refuser |
+| Pages légales | Aucune | « Confidentialité » et « Mentions légales », publiques, liées en bas de la page de présentation et de chaque email |
+| Droit d'accès | Le profil se lit dans l'application | « Télécharger mes données » dans « Mon compte » |
+| Droit à l'effacement | La désactivation par le super-admin | « Supprimer mon compte » ; une demande de retrait pour une personne sans compte |
+| Droit d'opposition | Rien | « Ne plus recevoir d'emails » (22.25) |
+| Durées de conservation | Tout est gardé | **Décidé par Julien le 19 novembre 2026** : un compte sans visite depuis trois ans est supprimé, après un email qui prévient ; des anciens tirages, il ne reste que ce qui sert à la règle « pas la même personne ». Julien répond aux demandes sous un mois. Restent à décider : le journal, les empreintes de blocage |
+| Le moins de données possible | Aucun numéro de téléphone ; résultats chiffrés | Dans les listes : l'âge plutôt que la date de naissance partout où il suffit |
+| Les enfants | Une liste montre un prénom, un âge et des tailles à qui a le lien | Le dire à celui qui tient la liste au moment de partager ; ne pas laisser les moteurs de recherche lire une liste |
+| Ceux qui hébergent | Cloudflare, Resend | Leurs contrats de sous-traitance, où sont les données, les nommer dans « Confidentialité » |
+| Cookies | Un seul, pour la session | Aucun bandeau tant qu'il n'y a aucun traceur : s'y tenir (pas de script tiers, page du café comprise) |
+| Sécurité | Jetons, chiffrement, journal | Une marche à suivre en cas de fuite : qui prévenir, sous quel délai |
+| Registre | Aucun | Un document court dans le dépôt : chaque traitement, sa raison, ses données, sa durée |
+
+### 22.27 Décidé : le tableau de bord du super-admin (19 novembre 2026)
+
+Demandé par Julien le 19 novembre 2026. Pas encore codé : lot 37. Maquette : `AdminTableau`.
+
+- Une page du super-admin, « Tableau de bord », sur une période au choix : aujourd'hui, 7 jours, 30 jours.
+- **Qui s'en sert** : les comptes et les nouveaux, les personnes actives (comptes connectés et liens personnels ouverts), les groupes et les tirages en cours, les listes et celles qui sont partagées.
+- **Les plafonds** : les emails du jour et du mois, les requêtes du jour, la dépense du mois, chacun en face de sa limite. À 70 % d'un plafond, le super-admin est prévenu (une nouveauté « qui presse », 22.22).
+- **À surveiller** : les signalements et les adresses qui ont refusé les emails (22.25), les emails rejetés, les demandes de groupe en attente, les erreurs du serveur. Chaque ligne mène à sa liste.
+- **Ce qui tourne tout seul** : le dernier passage de chaque tâche planifiée et ce qu'elle a fait ; la version en ligne.
+- **Des comptes par jour, jamais qui a fait quoi** : l'application compte elle-même, côté serveur, sans outil de mesure extérieur, sans cookie de plus, sans identifiant de personne. Le journal d'un groupe reste la seule trace nominative, et il appartient au groupe.
 
 ## 23. Design system
 
@@ -1988,6 +2048,7 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
   - Les confirmations d'une action qui ne se rattrape pas (« Supprimer le groupe », « Dévoiler avant la fête ») restent des panneaux, même avec une phrase à recopier : le panneau garde le contexte sous les yeux.
 - Un panneau enregistre avec un bouton « Valider » ; le fermer autrement abandonne. **Un réglage s'enregistre seul** (décidé par Julien le 16 novembre 2026) : à la validation de son panneau, ou dès qu'un interrupteur bascule ; pas de bouton « Enregistrer » en bas de page. La nouvelle valeur s'affiche tout de suite, la ligne montre la roue, et une erreur remet l'ancienne valeur avec un toast (`useRuleSaver` pour les règles du groupe, `useProfileSaver` pour son propre profil, de même pour le lien d'invitation et le quota d'un compte).
 - **Rien ne se place au-dessus du clavier** (décidé par Julien le 19 novembre 2026 : sur téléphone, une barre ou un bouton collé au clavier ne tient pas). Sur une page où l'on rédige, « Valider » est **dans la page**, à la fin du contenu, et non dans une bande collée en bas ; le clavier passe par-dessus, et toucher hors du champ le ferme. Dans une liste, les actions d'une ligne sont dans le document, sous la ligne (22.20). Cela remplace « "Valider" fixé en bas de l'écran » de la règle précédente. **Fait** (Correction 19) : `UiStickyFooter inline` sur les douze pages où l'on rédige ; les pieds collants des écrans où l'on choisit (participants, emails, relance, pronostics) restent collés en bas, sans suivre le clavier.
+- **Qui verra ce que j'écris** (décidé par Julien le 19 novembre 2026) : sous tout champ qui reçoit une donnée personnelle, la mienne ou celle de quelqu'un d'autre, une ligne courte dit qui la verra et à quoi elle sert. Voir 22.26.
 - Une cible tactile fait au moins 44 px.
 - Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.

@@ -1,0 +1,17 @@
+# Updates of the dependencies, once a week (Correction 23): the packages
+# of the application, grouped so that one pull request is enough to read,
+# and the actions of the workflows.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

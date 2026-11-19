@@ -20,6 +20,9 @@ const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  // HTTPS only, for a year. Not the sub-domains: nothing says they all
+  // answer in HTTPS.
+  'Strict-Transport-Security': 'max-age=31536000',
 };
 
 export default defineNuxtConfig({
@@ -98,6 +101,10 @@ export default defineNuxtConfig({
     '/**': { headers: securityHeaders },
     '/p/**': { headers: personalHeaders },
     '/api/p/**': { headers: personalHeaders },
+    // The link of a list is a secret in a URL too (Correction 23): opening
+    // the link of an idea must not send it to that shop in a Referer.
+    '/l/**': { headers: personalHeaders },
+    '/api/l/**': { headers: personalHeaders },
     // A login link is a credential in a URL, like a personal link.
     '/login/**': { headers: personalHeaders },
     // An invitation link is shared, but still no business of search engines.

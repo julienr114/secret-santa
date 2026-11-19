@@ -76,6 +76,10 @@ const tests = {
   },
 };
 
+// No HTML written from a text (Correction 23): none exists, and none may
+// come, since a text someone typed would run as code.
+const noRawHtml = { rules: { 'vue/no-v-html': 'error' } };
+
 // Reference mockups of the redesign: never linted nor reformatted.
 const mockups = { ignores: ['docs/refonte/maquettes/**'] };
 
@@ -84,5 +88,6 @@ export default withNuxt(
   functionalEverywhere,
   pureCore,
   tests,
+  noRawHtml,
   prettier,
 );

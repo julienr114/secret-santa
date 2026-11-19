@@ -256,3 +256,52 @@ test('reading never writes, and pages cannot be framed', async () => {
   expect(personal['referrer-policy']).toBe('no-referrer');
   expect(personal['cache-control']).toContain('no-store');
 });
+
+test('the link of a list leaks nowhere, and another site cannot write', async () => {
+  // A list by its link, page and data (Correction 23): never cached,
+  // never indexed, and its address never sent to the shop of an idea.
+  const { id } = await (
+    await ctx('guardian').post('/api/lists', {
+      data: { icon: { emoji: '❄️', color: 'night' }, title: 'Noël' },
+    })
+  ).json();
+  await ctx('guardian').post(`/api/lists/${id}/people`, {
+    data: {
+      newMember: { firstName: 'Léo', avatar: { emoji: '🚀', color: 'frost' } },
+    },
+  });
+  const { token } = await (
+    await ctx('guardian').post(`/api/lists/${id}/share`, { data: {} })
+  ).json();
+  expect(token).toBeTruthy();
+  for (const path of [`/l/${token}`, `/api/l/${token}`]) {
+    const headers = (await ctx('anonymous').get(path)).headers();
+    expect(headers['referrer-policy'], path).toBe('no-referrer');
+    expect(headers['cache-control'], path).toContain('no-store');
+    expect(headers['x-robots-tag'], path).toBe('noindex');
+  }
+  // HTTPS only, on every answer.
+  for (const path of ['/login', '/api/health']) {
+    const headers = (await ctx('anonymous').get(path)).headers();
+    expect(headers['strict-transport-security'], path).toContain(
+      'max-age=31536000',
+    );
+  }
+  // A write sent from another site is refused before anything else; the
+  // same from the application itself goes on to its usual answer.
+  const foreign = await ctx('guardian').post(`${ADMIN}/persons`, {
+    data: {},
+    headers: { origin: 'https://evil.example' },
+  });
+  expect(foreign.status()).toBe(403);
+  const own = await ctx('guardian').post(`${ADMIN}/persons`, {
+    data: {},
+    headers: { origin: new URL(foreign.url()).origin },
+  });
+  expect(own.status()).not.toBe(403);
+  // Reading from elsewhere stays possible: a link opened from an email.
+  const read = await ctx('anonymous').get('/api/health', {
+    headers: { origin: 'https://evil.example' },
+  });
+  expect(read.ok()).toBe(true);
+});

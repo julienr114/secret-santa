@@ -8,6 +8,7 @@ import type {
 import type { Avatar } from '#server/utils/avatars';
 import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
+import type { ListOrder } from '#shared/utils/reorder';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -171,6 +172,17 @@ export const useDeleteIdeaMutation = (via: Via) =>
     (ideaId) =>
       api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
     () => claimKeys(toValue(via)),
+  );
+
+/** Saves the order of a list: its people, each with their ideas. */
+export const useReorderMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, ListOrder>(
+    (order) =>
+      api(`/api/lists/${toValue(id)}/order`, {
+        method: 'PUT',
+        body: { order },
+      }),
+    () => listKeys(toValue(id)),
   );
 
 export const useShareListMutation = (id: Id) =>

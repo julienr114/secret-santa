@@ -51,6 +51,15 @@ export default {
     },
   },
   doc: {
+    drag: {
+      handle: 'Move: {name}',
+      placed: '{name}, position {position} of {count}',
+      moved: '{name} moved',
+      up: 'Move up',
+      down: 'Move down',
+      ideas: { one: '{count} idea', other: '{count} ideas' },
+      changed: 'The list changed meanwhile: try again.',
+    },
     holdersWith: 'You hold this list with {names}.',
     holdersAlone: 'Hold this list with others',
     personMenu: 'Options for {name}',

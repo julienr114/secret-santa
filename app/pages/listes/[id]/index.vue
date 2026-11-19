@@ -12,10 +12,22 @@ import {
   useDeleteListMutation,
   useListQuery,
   useRemovePersonMutation,
+  useReorderMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
 import { LIST_EDITING } from '~/composables/useListEditing';
 import { LIST_SHADES } from '~/utils/listShades';
+import {
+  applyOrder,
+  moveIdea,
+  movePerson,
+  placeOfIdea,
+  sameOrder,
+  stepIdea,
+  stepPerson,
+  type ListOrder,
+} from '#shared/utils/reorder';
+import type { DropPlace, Lifted } from '~/composables/useListDrag';
 
 // The document of a list, for the one who holds it (README 22.19,
 // maquettes ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
@@ -113,13 +125,172 @@ provide(LIST_EDITING, {
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
 // with « Annuler » in the toast.
+const toast = useToast();
+const errorMessage = useErrorMessage();
 const removePerson = useRemovePersonMutation(id);
 const removal = useDelayedRemoval((personId, done) =>
   removePerson.mutate(personId, { onSettled: done }),
 );
-const people = computed(() =>
-  (doc.value?.people ?? []).filter((p) => p.id !== removal.leaving.value),
-);
+// The order of the list (lot 24 ter, README 22.20): ideas and people
+// move by dragging, a long press on a phone, a handle with a mouse, or
+// from the keyboard and the menu. The screen shows the new order at
+// once; the list is read again once it is saved.
+const reorder = useReorderMutation(id);
+const wanted = ref<ListOrder | null>(null);
+const people = computed(() => {
+  const there = (doc.value?.people ?? []).filter(
+    (p) => p.id !== removal.leaving.value,
+  );
+  return wanted.value
+    ? applyOrder(there, wanted.value, (idea) => idea.id)
+    : there;
+});
+const orderNow = (): ListOrder =>
+  people.value.map((person) => ({
+    id: person.id,
+    ideas: person.ideas.map((idea) => idea.id),
+  }));
+// The order shown stays until the list read again says the same: letting
+// go of it sooner would put the lines back for an instant, and take the
+// line being written from under the keyboard.
+watch(doc, (fresh) => {
+  if (!wanted.value || !fresh) return;
+  const stored = fresh.people.map((person) => ({
+    id: person.id,
+    ideas: person.ideas.map((idea) => idea.id),
+  }));
+  if (sameOrder(stored, wanted.value)) wanted.value = null;
+});
+/** What was just moved, said to screen readers. */
+const announced = ref('');
+const nameOf = (what: Lifted) =>
+  what.kind === 'person'
+    ? (people.value.find((p) => p.id === what.id)?.member.firstName ?? '')
+    : (people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id)
+        ?.text ?? '');
+/**
+ * Shows an order and saves it; « Annuler » puts the one before back.
+ * @param next - The order wanted.
+ * @param what - What moved, to say so; nothing when undoing.
+ */
+const saveOrder = (next: ListOrder, what: Lifted | null) => {
+  const before = orderNow();
+  if (sameOrder(before, next)) return;
+  const name = what ? nameOf(what) : '';
+  wanted.value = next;
+  reorder.mutate(next, {
+    onError: (error) => {
+      wanted.value = null;
+      toast.add({
+        title:
+          (error as { statusMessage?: string }).statusMessage === 'list_changed'
+            ? t('lists.doc.drag.changed')
+            : errorMessage(error),
+        color: 'error',
+      });
+    },
+  });
+  if (!what) return;
+  const place =
+    what.kind === 'idea'
+      ? placeOfIdea(next, what.id)
+      : {
+          index: next.findIndex((section) => section.id === what.id),
+          count: next.length,
+        };
+  announced.value = t('lists.doc.drag.placed', {
+    name,
+    position: (place?.index ?? 0) + 1,
+    count: place?.count ?? 0,
+  });
+  toast.add({
+    id: 'moved',
+    title: t('lists.doc.drag.moved', { name }),
+    duration: 5000,
+    actions: [
+      {
+        label: t('common.actions.cancel'),
+        onClick: () => {
+          toast.remove('moved');
+          saveOrder(before, null);
+        },
+      },
+    ],
+  });
+};
+const board = ref<HTMLElement | null>(null);
+const onDrop = (what: Lifted, place: DropPlace) =>
+  saveOrder(
+    what.kind === 'idea' && place.kind === 'idea'
+      ? moveIdea(orderNow(), what.id, place)
+      : what.kind === 'person' && place.kind === 'person'
+        ? movePerson(orderNow(), what.id, place.index)
+        : orderNow(),
+    what,
+  );
+const onStep = async (what: Lifted, step: -1 | 1) => {
+  saveOrder(
+    what.kind === 'idea'
+      ? stepIdea(orderNow(), what.id, step)
+      : stepPerson(orderNow(), what.id, step),
+    what,
+  );
+  if (what.kind !== 'idea') return;
+  // The line moved under the keyboard, which took the caret from it:
+  // once the move shows and the line has let go, writing goes on in it.
+  await nextTick();
+  window.setTimeout(() => {
+    const start = board.value?.querySelector<HTMLElement>(
+      `[data-drag="idea"][data-drag-id="${what.id}"] [data-line-start]`,
+    );
+    if (start instanceof HTMLTextAreaElement) start.focus();
+    else start?.click();
+  }, 60);
+};
+const dragging = useListDrag(board, { drop: onDrop, step: onStep });
+/** The card under the finger: what it says, and where the list is. */
+const ghost = computed(() => {
+  const what = dragging.lifted.value;
+  const box = board.value?.getBoundingClientRect();
+  if (!what || !box) return null;
+  const person =
+    what.kind === 'person'
+      ? people.value.find((p) => p.id === what.id)
+      : undefined;
+  return {
+    left: box.left,
+    width: box.width,
+    label: nameOf(what),
+    avatar: person?.member.avatar,
+    detail: person
+      ? t('lists.doc.drag.ideas', { count: person.ideas.length })
+      : undefined,
+  };
+});
+/** The people, with the red line where the person lifted would fall. */
+const sections = computed(() => {
+  const place = dragging.drop.value;
+  const lifted = dragging.lifted.value;
+  const at = place?.kind === 'person' ? place.index : -1;
+  const laid = people.value.reduce<{
+    rows: ({ person: PersonLine; index: number } | null)[];
+    others: number;
+  }>(
+    (acc, person, index) => {
+      const isLifted = lifted?.kind === 'person' && lifted.id === person.id;
+      return {
+        rows: [
+          ...acc.rows,
+          ...(!isLifted && acc.others === at ? [null] : []),
+          { person, index },
+        ],
+        others: acc.others + (isLifted ? 0 : 1),
+      };
+    },
+    { rows: [], others: 0 },
+  );
+  return at === laid.others ? [...laid.rows, null] : laid.rows;
+});
 const onRemovePerson = (person: PersonLine) =>
   removal.start(
     person.id,
@@ -259,12 +430,30 @@ onBeforeRouteLeave((to) => {
           <p>{{ t('lists.doc.touchToEdit') }}</p>
         </div>
 
-        <ListsPersonSection
-          v-for="person in people"
-          :key="person.id"
-          :list-id="list.id"
-          :person="person"
-        />
+        <!-- The board: what moves by dragging. A long press must lift a
+             line, not select its text nor open the browser's menu. -->
+        <div
+          ref="board"
+          class="flex flex-col gap-6 select-none [-webkit-touch-callout:none]"
+          data-testid="drag-board"
+        >
+          <template v-for="row in sections" :key="row ? row.person.id : 'drop'">
+            <div
+              v-if="!row"
+              class="-my-2.5 h-1 rounded-full bg-primary"
+              aria-hidden="true"
+              data-testid="drop-line"
+            />
+            <ListsPersonSection
+              v-else
+              :list-id="list.id"
+              :person="row.person"
+              :first="row.index === 0"
+              :last="row.index === people.length - 1"
+            />
+          </template>
+        </div>
+        <p class="sr-only" aria-live="polite">{{ announced }}</p>
 
         <ListsAddSomeone
           :list-id="list.id"
@@ -274,6 +463,7 @@ onBeforeRouteLeave((to) => {
       </template>
     </AdminQueryState>
 
+    <ListsDragGhost v-if="ghost" :y="dragging.pointer.value.y" v-bind="ghost" />
     <AdminDateSheet
       v-if="list"
       v-model:open="dateOpen"

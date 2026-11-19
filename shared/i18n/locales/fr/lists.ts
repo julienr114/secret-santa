@@ -56,6 +56,15 @@ export default {
     },
   },
   doc: {
+    drag: {
+      handle: 'Déplacer : {name}',
+      placed: '{name}, position {position} sur {count}',
+      moved: '{name} déplacé',
+      up: 'Monter',
+      down: 'Descendre',
+      ideas: { one: '{count} idée', other: '{count} idées' },
+      changed: 'La liste a changé entre-temps : réessaie.',
+    },
     holdersWith: 'Tu tiens cette liste avec {names}.',
     holdersAlone: 'Tenir cette liste à plusieurs',
     personMenu: 'Options pour {name}',

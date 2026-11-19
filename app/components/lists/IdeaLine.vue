@@ -26,7 +26,9 @@ import { asAddress } from '~/utils/ideaLink';
 // line with « : » and a field for the address; once set, the address is
 // the word « lien », with « Changer le lien » and « Retirer le lien »
 // under it. No « Supprimer »: a line emptied goes. Without an idea, the empty line at the end,
-// « Une autre idée… », where a new one is written.
+// « Une autre idée… », where a new one is written. Where the list is
+// held, a line moves: lifted by a long press, pulled by its handle with a
+// mouse, or `Alt` + an arrow while it is written (lot 24 ter).
 const props = defineProps<{
   /** Where the list is written: its document, or its link. */
   via: ClaimRoute;
@@ -43,6 +45,14 @@ const props = defineProps<{
 }>();
 const { t } = useT();
 const editing = useListEditing();
+// Moved by dragging, where the list is held (lot 24 ter); not by its link.
+const drag = useListDragging();
+const liftedHere = computed(
+  () =>
+    Boolean(props.idea) &&
+    drag?.lifted.value?.kind === 'idea' &&
+    drag.lifted.value.id === props.idea?.id,
+);
 const via = computed(() => props.via);
 const create = useCreateIdeaMutation(via);
 const update = useUpdateIdeaMutation(via);
@@ -295,6 +305,13 @@ const onMove = async (
 ) => {
   const input = field.value;
   if (event.isComposing || !input || !row.value) return;
+  // `Alt` + an arrow moves the idea itself, one place up or down.
+  if (event.altKey) {
+    if (!fromEdge || !props.idea || !drag) return;
+    event.preventDefault();
+    drag.step({ kind: 'idea', id: props.idea.id }, step);
+    return;
+  }
   const target = neighbour(step);
   if (!target) return;
   if (fromEdge) {
@@ -354,15 +371,32 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="flex scroll-mt-32 items-start gap-3 py-2"
-    :class="
+    class="group relative flex scroll-mt-32 items-start gap-3 py-2"
+    :class="[
       writing
         ? '-mr-4 -ml-9 border-l-[3px] border-primary bg-default pr-4 pl-[33px]'
-        : ''
-    "
+        : '',
+      liftedHere ? 'opacity-30' : '',
+    ]"
     :data-line="line"
+    :data-drag="idea && drag ? 'idea' : undefined"
+    :data-drag-id="idea && drag ? idea.id : undefined"
     @focusout="onFocusOut"
   >
+    <!-- With a mouse, a handle shows on the left as the line is hovered;
+         on a phone a long press lifts the line. -->
+    <button
+      v-if="idea && drag && !writing"
+      type="button"
+      tabindex="-1"
+      class="absolute top-1.5 -left-6 hidden size-7 cursor-grab items-center justify-center rounded-md text-toned group-hover:flex"
+      :aria-label="t('lists.doc.drag.handle', { name: idea.text })"
+      data-testid="drag-handle"
+      data-no-drag
+      @mousedown="drag.grab($event, { kind: 'idea', id: idea.id })"
+    >
+      <UIcon name="i-lucide-grip-vertical" class="size-4" />
+    </button>
     <component
       :is="idea ? 'button' : 'span'"
       v-bind="
@@ -449,7 +483,7 @@ const onFocusOut = (event: FocusEvent) => {
               rows="1"
               enterkeyhint="next"
               :maxlength="200"
-              class="col-start-1 row-start-1 block w-full resize-none overflow-hidden bg-transparent p-0 outline-none placeholder:text-dimmed"
+              class="col-start-1 row-start-1 block w-full resize-none overflow-hidden bg-transparent p-0 outline-none select-text placeholder:text-dimmed"
               :placeholder="placeholder ?? t('lists.doc.anotherIdea')"
               :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
               data-testid="idea-field"
@@ -540,6 +574,7 @@ const onFocusOut = (event: FocusEvent) => {
           :href="idea.url"
           target="_blank"
           rel="noopener noreferrer"
+          draggable="false"
           class="-ml-1 text-primary-ink underline"
           :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a

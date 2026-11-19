@@ -54,6 +54,16 @@ export default {
     },
   },
   doc: {
+    drag: {
+      handle: 'Verschieben: {name}',
+      placed: '{name}, Position {position} von {count}',
+      moved: '{name} verschoben',
+      up: 'Nach oben',
+      down: 'Nach unten',
+      ideas: { one: '{count} Idee', other: '{count} Ideen' },
+      changed:
+        'Die Liste hat sich inzwischen geändert: Versuch es noch einmal.',
+    },
     holdersWith: 'Du führst diese Liste mit {names}.',
     holdersAlone: 'Diese Liste zu mehreren führen',
     personMenu: 'Optionen für {name}',

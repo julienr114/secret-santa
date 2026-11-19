@@ -22,9 +22,56 @@ import { useUpdateMemberMutation } from '~/composables/queries/useLists';
 const props = defineProps<{
   listId: string;
   person: ListDocument['people'][number];
+  /** The first or the last of the list: nowhere to go up, or down. */
+  first?: boolean;
+  last?: boolean;
 }>();
 const { t } = useT();
 const editing = useListEditing();
+// Moved by dragging (lot 24 ter): the person by their header, a long
+// press lifting them folded into one line; their ideas each by its line.
+const drag = useListDragging();
+const liftedHere = computed(
+  () =>
+    drag?.lifted.value?.kind === 'person' &&
+    drag.lifted.value.id === props.person.id,
+);
+type Row =
+  | {
+      kind: 'idea';
+      idea: ListDocument['people'][number]['ideas'][number];
+      index: number;
+    }
+  | { kind: 'drop' };
+/**
+ * The ideas, with the red line where the idea lifted would fall: its
+ * place is counted among the others, the one lifted left out.
+ */
+const rows = computed<Row[]>(() => {
+  const place = drag?.drop.value;
+  const lifted = drag?.lifted.value;
+  const at =
+    place?.kind === 'idea' && place.personId === props.person.id
+      ? place.index
+      : -1;
+  const laid = props.person.ideas.reduce<{ rows: Row[]; others: number }>(
+    (acc, idea, index) => {
+      const isLifted = lifted?.kind === 'idea' && lifted.id === idea.id;
+      return {
+        rows: [
+          ...acc.rows,
+          ...(!isLifted && acc.others === at
+            ? [{ kind: 'drop' as const }]
+            : []),
+          { kind: 'idea' as const, idea, index },
+        ],
+        others: acc.others + (isLifted ? 0 : 1),
+      };
+    },
+    { rows: [], others: 0 },
+  );
+  return at === laid.others ? [...laid.rows, { kind: 'drop' }] : laid.rows;
+});
 const toast = useToast();
 const errorMessage = useErrorMessage();
 const update = useUpdateMemberMutation(() => props.person.member.id);
@@ -111,6 +158,27 @@ const menu = computed(() =>
             icon: 'i-lucide-user',
             to: `/famille/${member.value.id}?liste=${props.listId}&place=${props.person.id}`,
           },
+          // The same as dragging, without dragging.
+          ...(drag && !props.first
+            ? [
+                {
+                  label: t('lists.doc.drag.up'),
+                  icon: 'i-lucide-arrow-up',
+                  onSelect: () =>
+                    drag.step({ kind: 'person', id: props.person.id }, -1),
+                },
+              ]
+            : []),
+          ...(drag && !props.last
+            ? [
+                {
+                  label: t('lists.doc.drag.down'),
+                  icon: 'i-lucide-arrow-down',
+                  onSelect: () =>
+                    drag.step({ kind: 'person', id: props.person.id }, 1),
+                },
+              ]
+            : []),
           {
             label: t('lists.doc.removeFromList'),
             icon: 'i-lucide-user-minus',
@@ -142,8 +210,18 @@ const via = computed(() => ({ listId: props.listId }));
 </script>
 
 <template>
-  <section class="flex flex-col gap-1" data-testid="list-person">
-    <header class="flex items-center gap-3 pb-1">
+  <section
+    class="flex flex-col gap-1"
+    :class="liftedHere ? 'opacity-30' : ''"
+    data-testid="list-person"
+    data-drag-section
+    :data-drag-id="person.id"
+  >
+    <header
+      class="flex items-center gap-3 pb-1"
+      :data-drag="drag ? 'person' : undefined"
+      :data-drag-id="drag ? person.id : undefined"
+    >
       <!-- Someone with an account of their own chooses their icon; « Moi »
            changes mine from here. -->
       <UiAvatar
@@ -178,7 +256,7 @@ const via = computed(() => ({ listId: props.listId }));
             type="text"
             enterkeyhint="done"
             :maxlength="MEMBER_NAME_MAX"
-            class="w-full bg-transparent outline-none"
+            class="w-full bg-transparent outline-none select-text"
             :aria-label="t('lists.person.name')"
             data-testid="person-name-field"
             @keydown.enter.prevent="saveName"
@@ -218,19 +296,31 @@ const via = computed(() => ({ listId: props.listId }));
           class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
           :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
           data-testid="person-menu"
+          data-no-drag
         />
       </UDropdownMenu>
     </header>
-    <ul class="flex flex-col pl-5">
-      <ListsIdeaLine
-        v-for="(idea, index) in person.ideas"
-        :key="idea.id"
-        :via="via"
-        :list-person-id="person.id"
-        :for-name="member.firstName"
-        :idea="idea"
-        :line="`${person.id}:${index}`"
-      />
+    <!-- A person lifted is folded: their ideas wait, out of the way. -->
+    <ul v-show="!liftedHere" class="flex flex-col pl-5">
+      <template
+        v-for="row in rows"
+        :key="row.kind === 'idea' ? row.idea.id : 'drop'"
+      >
+        <li
+          v-if="row.kind === 'drop'"
+          class="my-0.5 h-1 rounded-full bg-primary"
+          aria-hidden="true"
+          data-testid="drop-line"
+        />
+        <ListsIdeaLine
+          v-else
+          :via="via"
+          :list-person-id="person.id"
+          :for-name="member.firstName"
+          :idea="row.idea"
+          :line="`${person.id}:${row.index}`"
+        />
+      </template>
       <li
         v-for="gift in person.offList"
         :key="gift.id"

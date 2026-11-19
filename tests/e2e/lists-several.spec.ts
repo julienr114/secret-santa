@@ -150,12 +150,28 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
   const camille = await as('camille');
   await camille.goto(`/famille/${state.hugoMember}`);
   await hydrated(camille);
+  await expect(camille.getByTestId('member-email')).toContainText('Aucune');
   await camille.getByTestId('member-email').click();
-  await camille.getByRole('textbox').fill(HUGO);
-  await camille.getByRole('button', { name: 'Valider' }).click();
+  // A page of its own (Correction 27): one line, the keyboard of addresses.
+  await expect(heading(camille)).toHaveText('Son adresse email');
+  const field = camille.getByTestId('member-field');
+  await expect(field).toHaveAttribute('placeholder', 'prenom@exemple.fr');
+  await expect(field).toHaveAttribute('inputmode', 'email');
+  await expect(field).toHaveAttribute('autocapitalize', 'none');
+  await expect(camille.getByTestId('member-field-validate')).toBeDisabled();
+  await field.fill(HUGO);
+  await camille.getByTestId('member-field-validate').click();
+  await expect(heading(camille)).toHaveText('Hugo');
+  await expect(camille.getByTestId('member-email')).toContainText(HUGO);
+  // Linked: the page shows where it stands, and « Ne plus relier ».
+  await camille.getByTestId('member-email').click();
   await expect(camille.getByTestId('member-account')).toContainText(
     'Relié à son compte',
   );
+  await expect(camille.getByTestId('member-unlink')).toBeVisible();
+  await expect(camille.getByTestId('member-field')).toHaveCount(0);
+  await camille.getByRole('button', { name: 'Retour' }).click();
+  await expect(heading(camille)).toHaveText('Hugo');
   // His name and icon are his from now on.
   await expect(camille.getByTestId('member-name')).toHaveCount(0);
 

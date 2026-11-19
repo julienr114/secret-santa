@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { shoeSizesShown } from '#shared/utils/memberFields';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
@@ -60,7 +61,11 @@ const details = (person: PersonLine) => {
   const m = person.member;
   const sizes = [
     m.clothingSize ? t('lists.doc.size', { size: m.clothingSize }) : null,
-    m.shoeSize ? t('lists.doc.shoe', { size: m.shoeSize }) : null,
+    m.shoeSize
+      ? t('lists.doc.shoe', {
+          size: shoeSizesShown(m.shoeSize, t('lists.person.field.or')) ?? '',
+        })
+      : null,
   ].filter(Boolean);
   return [
     m.age === null ? null : t('lists.doc.age', { count: m.age }),

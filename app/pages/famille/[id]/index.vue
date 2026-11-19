@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import type { Avatar } from '#server/utils/avatars';
 import { HINT_QUESTIONS, HINT_TEXTS } from '#shared/utils/hints';
-import { MEMBER_FIELD_MAX, MEMBER_NAME_MAX } from '#server/utils/lists';
+import { MEMBER_NAME_MAX } from '#server/utils/lists';
+import { shoeSizesShown } from '#shared/utils/memberFields';
 import {
   useMemberQuery,
   useRemovePersonMutation,
   useUpdateMemberMutation,
 } from '~/composables/queries/useLists';
 
-// A person of my family (README 22.19, maquette ListePersonne): their
-// icon and first name; « Infos pratiques » (birth date, clothing size,
-// shoe size), what the family always asks, shown at the top of their
-// section of a list; « Ses goûts », the same questions as the gift hints
-// of a draw. Each short value in its sheet, saved at once; the texts on
-// their page. « Son compte » (lot 25, maquette ListePersonneCompte): an
-// address links one of my people to their own account, so that they
-// write their own ideas on my lists; then their name and icon are
-// theirs to choose. Opened from a list, « Retirer de la liste » at the bottom;
-// always, « Supprimer de mes proches », which leads to its confirmation
-// (Correction 24).
+// A person of my family (README 22.19, 22.20, Correction 27, maquette
+// ListePersonne): their icon and first name; « Infos pratiques » (birth
+// date, clothing size, shoe size), what the family always asks, shown at
+// the top of their section of a list; « Son compte » (lot 25), the
+// address that links one of my people to their own account; « Ses
+// goûts », the same questions as the gift hints of a draw. Each line
+// shows its value and opens a page of its own: no sheet to write in, and
+// no sentence of help. The icon is chosen in its sheet; the first name
+// is written in place, in the title, as in a list. Opened from a list,
+// « Retirer de la liste » at the bottom; always, « Supprimer de mes
+// proches », the red line of what cannot be taken back, which leads to
+// its confirmation (Correction 24).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
@@ -41,30 +43,35 @@ const back = computed(() =>
 useHead({
   title: () => `${member.value?.firstName ?? ''} — ${t('common.appName')}`,
 });
-const suffix = computed(() =>
-  listId.value ? `?liste=${listId.value}&place=${place.value ?? ''}` : '',
+/** What a page of this person keeps of the list it was opened from. */
+const from = computed(() =>
+  listId.value ? `liste=${listId.value}&place=${place.value ?? ''}` : '',
 );
+const page = (name: string, more = '') =>
+  `/famille/${id.value}/${name}${[more, from.value].some(Boolean) ? `?${[more, from.value].filter(Boolean).join('&')}` : ''}`;
 
 const save = (patch: Parameters<typeof update.mutate>[0]) =>
   update.mutate(patch, {
     onError: (error) => toast.failed(errorMessage(error)),
   });
-const editing = ref<
-  null | 'icon' | 'name' | 'birth' | 'clothing' | 'shoe' | 'email'
->(null);
-const opened = (which: NonNullable<typeof editing.value>) =>
-  computed({
-    get: () => editing.value === which,
-    set: (open) => {
-      editing.value = open ? which : null;
-    },
-  });
-const iconOpen = opened('icon');
-const nameOpen = opened('name');
-const birthOpen = opened('birth');
-const clothingOpen = opened('clothing');
-const shoeOpen = opened('shoe');
-const emailOpen = opened('email');
+const iconOpen = ref(false);
+// The first name, written in place: saved as it is left, kept as it was
+// when emptied or given up.
+const naming = ref(false);
+const nameDraft = ref('');
+const nameField = ref<HTMLInputElement | null>(null);
+const startName = async () => {
+  nameDraft.value = member.value?.firstName ?? '';
+  naming.value = true;
+  await nextTick();
+  nameField.value?.focus();
+};
+const saveName = () => {
+  if (!naming.value) return;
+  naming.value = false;
+  const name = nameDraft.value.replace(/\s+/g, ' ').trim();
+  if (name && name !== member.value?.firstName) save({ firstName: name });
+};
 /** Among my own people, and not « Moi »: I may link them to their account. */
 const linkable = computed(
   () => Boolean(query.data.value?.mine) && !member.value?.isSelf,
@@ -73,13 +80,10 @@ const linkable = computed(
 const theirs = computed(
   () => Boolean(member.value?.linked) && !member.value?.isSelf,
 );
-const close = () => {
-  editing.value = null;
-};
 
 const birthValue = computed(() => {
   const m = member.value;
-  if (!m?.birthDate) return t('lists.person.none');
+  if (!m?.birthDate) return t('lists.person.noValue');
   const date = new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
     month: 'long',
@@ -131,7 +135,7 @@ const onRemove = () =>
             type="button"
             class="relative shrink-0"
             :aria-label="t('lists.person.icon', { name: member.firstName })"
-            @click="editing = 'icon'"
+            @click="iconOpen = true"
           >
             <UiAvatar :avatar="member.avatar" :px="64" />
             <!-- The pencil of the list's tile: the icon changes by touching it. -->
@@ -147,77 +151,67 @@ const onRemove = () =>
               t('lists.person.context')
             }}</NuxtLink>
             <UiPageTitle v-if="theirs">{{ member.firstName }}</UiPageTitle>
+            <UiPageTitle v-else-if="naming">
+              <input
+                ref="nameField"
+                v-model="nameDraft"
+                type="text"
+                enterkeyhint="done"
+                :maxlength="MEMBER_NAME_MAX"
+                class="w-full bg-transparent outline-none"
+                :aria-label="t('lists.person.name')"
+                data-testid="member-name-field"
+                @keydown.enter.prevent="saveName"
+                @keydown.esc.prevent="naming = false"
+                @blur="saveName"
+              />
+            </UiPageTitle>
             <button
               v-else
               type="button"
               class="text-left"
               data-testid="member-name"
-              @click="editing = 'name'"
+              @click="startName"
             >
               <UiPageTitle>{{ member.firstName }}</UiPageTitle>
             </button>
           </div>
         </div>
 
-        <UiList
-          v-if="linkable"
-          :title="t('lists.person.account.title')"
-          :footer="`${
-            member.email
-              ? t('lists.person.account.can', { name: member.firstName })
-              : t('lists.person.account.optional', { name: member.firstName })
-          } ${t('lists.person.account.whoSees')}`"
-          data-testid="member-account"
-        >
-          <UiListItem
-            v-if="!member.email"
-            :title="t('lists.person.account.label', { name: member.firstName })"
-            :value="t('lists.person.account.none')"
-            :on-click="() => (editing = 'email')"
-            data-testid="member-email"
-          />
-          <template v-else>
-            <UiListItem
-              :title="member.email"
-              :subtitle="
-                member.linked
-                  ? t('lists.person.account.linked')
-                  : t('lists.person.account.waiting')
-              "
-              icon="i-lucide-circle-user"
-              :icon-tone="member.linked ? 'primary' : 'neutral'"
-              :on-click="() => (editing = 'email')"
-              data-testid="member-email"
-            />
-            <UiListItem
-              :title="t('lists.person.account.unlink')"
-              :on-click="() => save({ email: null })"
-              data-testid="member-unlink"
-            />
-          </template>
-        </UiList>
-
-        <UiList
-          :title="t('lists.person.practical')"
-          :footer="t('lists.person.practicalHelp')"
-        >
+        <UiList :title="t('lists.person.practical')">
           <UiListItem
             :title="t('lists.person.birth')"
             :value="birthValue"
-            :on-click="() => (editing = 'birth')"
+            :to="page('naissance')"
             data-testid="member-birth"
           />
           <UiListItem
             :title="t('lists.person.clothing')"
-            :value="member.clothingSize ?? t('lists.person.none')"
-            :on-click="() => (editing = 'clothing')"
+            :value="member.clothingSize ?? t('lists.person.noValue')"
+            :to="page('taille')"
             data-testid="member-clothing"
           />
           <UiListItem
             :title="t('lists.person.shoe')"
-            :value="member.shoeSize ?? t('lists.person.none')"
-            :on-click="() => (editing = 'shoe')"
+            :value="
+              shoeSizesShown(member.shoeSize, t('lists.person.field.or')) ??
+              t('lists.person.noValue')
+            "
+            :to="page('pointure')"
             data-testid="member-shoe"
+          />
+        </UiList>
+
+        <UiList
+          v-if="linkable"
+          :title="t('lists.person.account.title')"
+          data-testid="member-account"
+        >
+          <UiListItem
+            :title="t('lists.person.field.emailField')"
+            :value="member.email ?? t('lists.person.noValue')"
+            :to="page('adresse')"
+            data-testid="member-email"
           />
         </UiList>
 
@@ -239,20 +233,20 @@ const onRemove = () =>
               {{ t('lists.person.noAnswer') }}
             </p>
             <NuxtLink
-              :to="`/famille/${id}/question?n=1${listId ? `&liste=${listId}&place=${place ?? ''}` : ''}`"
+              :to="page('question', 'n=1')"
               class="flex min-h-11 items-center text-[15px] font-bold text-primary-ink"
             >
               {{ t('lists.person.answer', { name: member.firstName }) }}
             </NuxtLink>
           </UiCard>
         </section>
-        <UiList :footer="t('lists.person.tastesHelp')">
+        <UiList>
           <UiListItem
             v-for="key in HINT_TEXTS"
             :key="key"
             :title="t(`lists.person.texts.${key}`)"
             :value="member.texts[key] ?? t('lists.person.none')"
-            :to="`/famille/${id}/texte?texte=${key}${suffix ? `&${suffix.slice(1)}` : ''}`"
+            :to="page('texte', `texte=${key}`)"
           />
         </UiList>
 
@@ -301,92 +295,17 @@ const onRemove = () =>
       </template>
     </AdminQueryState>
 
-    <template v-if="member">
-      <AdminAvatarSheet
-        v-model:open="iconOpen"
-        :initial="member.avatar"
-        :title="t('lists.person.icon', { name: member.firstName })"
-        @validate="
-          (avatar: Avatar) => {
-            close();
-            save({ avatar });
-          }
-        "
-      />
-      <UiTextSheet
-        v-model:open="nameOpen"
-        :title="t('lists.person.name')"
-        :label="t('lists.person.name')"
-        :value="member.firstName"
-        :maxlength="MEMBER_NAME_MAX"
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        @validate="
-          (name) => {
-            close();
-            if (name.trim()) save({ firstName: name.trim() });
-          }
-        "
-      />
-      <UiTextSheet
-        v-model:open="emailOpen"
-        :title="t('lists.person.account.title')"
-        :label="t('lists.person.account.label', { name: member.firstName })"
-        :value="member.email ?? ''"
-        :maxlength="254"
-        :hint="t('lists.person.account.whoSees')"
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        @validate="
-          (address) => {
-            close();
-            save({ email: address.trim() || null });
-          }
-        "
-      />
-      <AdminDateSheet
-        v-model:open="birthOpen"
-        :title="t('lists.person.birth')"
-        :label="t('lists.person.birth')"
-        :value="member.birthDate ?? ''"
-        :clear-label="t('lists.person.none')"
-        @validate="
-          (date) => {
-            close();
-            save({ birthDate: date || null });
-          }
-        "
-      />
-      <UiTextSheet
-        v-model:open="clothingOpen"
-        :title="t('lists.person.clothing')"
-        :label="t('lists.person.clothing')"
-        :value="member.clothingSize ?? ''"
-        :maxlength="MEMBER_FIELD_MAX"
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        @validate="
-          (size) => {
-            close();
-            save({ clothingSize: size.trim() || null });
-          }
-        "
-      />
-      <UiTextSheet
-        v-model:open="shoeOpen"
-        :title="t('lists.person.shoe')"
-        :label="t('lists.person.shoe')"
-        :value="member.shoeSize ?? ''"
-        :maxlength="MEMBER_FIELD_MAX"
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        @validate="
-          (size) => {
-            close();
-            save({ shoeSize: size.trim() || null });
-          }
-        "
-      />
-    </template>
+    <AdminAvatarSheet
+      v-if="member"
+      v-model:open="iconOpen"
+      :initial="member.avatar"
+      :title="t('lists.person.icon', { name: member.firstName })"
+      @validate="
+        (avatar: Avatar) => {
+          iconOpen = false;
+          save({ avatar });
+        }
+      "
+    />
   </AdminScreen>
 </template>

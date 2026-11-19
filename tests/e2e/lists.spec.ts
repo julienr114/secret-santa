@@ -327,12 +327,104 @@ test('a person of my family keeps their details from list to list', async ({
   await leo.getByTestId('person-menu').click();
   await page.getByRole('menuitem', { name: 'Sa fiche et ses goûts' }).click();
   await expect(heading(page)).toHaveText('Léo');
+  // No sentence of help on the page (Correction 27): lines, and that is all.
+  await expect(page.locator('body')).not.toContainText('Ce qu’on demande');
+  await expect(page.getByTestId('member-birth')).toContainText('Aucune');
+
+  // Each line opens a page of its own. The shoe size, or sizes: a grid.
   await page.getByTestId('member-shoe').click();
-  await page.getByRole('textbox').fill('30');
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page.getByTestId('member-shoe')).toContainText('30');
+  await expect(heading(page)).toHaveText('Sa ou ses pointures');
+  await expect(page.getByRole('textbox')).toHaveCount(0);
+  const size = (n: number) =>
+    page.getByRole('checkbox', { name: String(n), exact: true });
+  const validate = page.getByTestId('member-field-validate');
+  await expect(validate).toBeDisabled();
+  await size(31).click();
+  await size(30).click();
+  await size(32).click();
+  // Touched again, a size is unticked.
+  await size(32).click();
+  await expect(size(32)).not.toBeChecked();
+  await expect(size(30)).toBeChecked();
+  await validate.click();
+  // Back on the person's page, with the new value, in rising order.
+  await expect(heading(page)).toHaveText('Léo');
+  await expect(page.getByTestId('member-shoe')).toContainText('30 ou 31');
+
+  // Opened again, straight by its address: what is saved is ticked.
+  const here = new URL(page.url());
+  await page.goto(`${here.pathname}/pointure${here.search}`);
+  await hydrated(page);
+  await expect(size(30)).toBeChecked();
+  await expect(size(31)).toBeChecked();
+  await expect(size(32)).not.toBeChecked();
+  await expect(validate).toBeEnabled();
+  await page.getByRole('button', { name: 'Tout effacer' }).click();
+  await expect(page.getByTestId('member-shoe')).toContainText('Aucune');
+  await page.getByTestId('member-shoe').click();
+  await size(30).click();
+  await size(31).click();
+  await validate.click();
+  await expect(page.getByTestId('member-shoe')).toContainText('30 ou 31');
+
+  // The date of birth: three lists, no calendar; incomplete, no « Valider ».
+  await page.getByTestId('member-birth').click();
+  await expect(heading(page)).toHaveText('Sa date de naissance');
+  await page.getByTestId('birth-month').selectOption({ label: 'février' });
+  await page.getByTestId('birth-year').selectOption('2020');
+  await expect(validate).toBeDisabled();
+  // 2020 is a leap year: February has its 29, not a 30.
+  await expect(
+    page.getByTestId('birth-day').locator('option[value="29"]'),
+  ).toHaveCount(1);
+  await expect(
+    page.getByTestId('birth-day').locator('option[value="30"]'),
+  ).toHaveCount(0);
+  await page.getByTestId('birth-day').selectOption('29');
+  // The day follows the year: 2021 has no 29 February.
+  await page.getByTestId('birth-year').selectOption('2021');
+  await expect(page.getByTestId('birth-day')).toHaveValue('');
+  await expect(validate).toBeDisabled();
+  await page.getByTestId('birth-month').selectOption({ label: 'mars' });
+  await page.getByTestId('birth-day').selectOption('14');
+  await page.getByTestId('birth-year').selectOption('2020');
+  await validate.click();
+  await expect(page.getByTestId('member-birth')).toContainText(
+    '14 mars 2020 · 6 ans',
+  );
+  // « Effacer la date » under « Valider ».
+  await page.getByTestId('member-birth').click();
+  await expect(page.getByTestId('birth-day')).toHaveValue('14');
+  await page.getByRole('button', { name: 'Effacer la date' }).click();
+  await expect(page.getByTestId('member-birth')).toContainText('Aucune');
+
+  // The clothing size: one line, its example in grey, its count.
+  await page.getByTestId('member-clothing').click();
+  await expect(heading(page)).toHaveText('Sa taille de vêtements');
+  const field = page.getByTestId('member-field');
+  await expect(field).toHaveAttribute(
+    'placeholder',
+    '6 ans, M, 38, plutôt grand…',
+  );
+  expect(await field.evaluate((el) => el.tagName)).toBe('INPUT');
+  await expect(page.getByTestId('field-count')).toHaveText('0 / 40');
+  await field.fill('6 ans');
+  await expect(page.getByTestId('field-count')).toHaveText('5 / 40');
+  await field.press('Enter');
+  await expect(page.getByTestId('member-clothing')).toContainText('6 ans');
+  // « Retour » gives up what was being written.
+  await page.getByTestId('member-clothing').click();
+  await field.fill('8 ans');
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(leo).toContainText('pointure 30');
+  await expect(page.getByTestId('member-clothing')).toContainText('6 ans');
+
+  // The first name is written in place, in the title.
+  await page.getByTestId('member-name').click();
+  await page.getByTestId('member-name-field').fill('Léo ');
+  await page.getByTestId('member-name-field').press('Enter');
+  await expect(heading(page)).toHaveText('Léo');
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(leo).toContainText('pointure 30 ou 31');
 
   // A new list: Léo comes back with his idea nobody gave.
   await page.goto('/listes/nouvelle');

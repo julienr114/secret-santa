@@ -2,6 +2,7 @@
 import type { ListDocument } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
 import { MEMBER_NAME_MAX } from '#server/utils/lists';
+import { shoeSizesShown } from '#shared/utils/memberFields';
 import { useUpdateMemberMutation } from '~/composables/queries/useLists';
 
 // A person on a list, as its holder writes it (README 22.19, maquette
@@ -112,7 +113,11 @@ const details = computed(() => {
   const m = member.value;
   const sizes = [
     m.clothingSize ? t('lists.doc.size', { size: m.clothingSize }) : null,
-    m.shoeSize ? t('lists.doc.shoe', { size: m.shoeSize }) : null,
+    m.shoeSize
+      ? t('lists.doc.shoe', {
+          size: shoeSizesShown(m.shoeSize, t('lists.person.field.or')) ?? '',
+        })
+      : null,
   ].filter(Boolean);
   return [
     m.isSelf ? t('lists.doc.me') : null,

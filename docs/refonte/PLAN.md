@@ -761,14 +761,14 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **À faire maintenant, dans cet ordre : la Correction 25 (décocher pour quelqu'un), le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **À faire maintenant, dans cet ordre : le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | Correction 24, 24, 24 bis, 24 ter, 25 et 25 bis (faits) ; puis la Correction 25 (décocher pour quelqu'un), 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
+| **Les listes, V2** | Correction 24, 24, 24 bis, 24 ter, 25, 25 bis et la Correction 25 (faits) ; puis 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
@@ -906,16 +906,16 @@ Décidé par Julien le 19 novembre 2026. Après le lot 25 (la présence en dépe
 
 ### Correction 25 — Celui qui tient la liste décoche pour quelqu'un (README 22.19)
 
-Demandé par Julien le 19 novembre 2026 : Mamie a coché, puis dit de vive voix qu'elle ne le prend plus ; il faut pouvoir l'enlever pour elle. Aujourd'hui, celui qui tient une liste ne décoche que ses propres coches (`DELETE /api/lists/[id]/claims/[ideaId]` ne vise que son compte). Sans migration. Maquettes : `ListeDecocher`, `ListeDecocheFait`.
+Demandé par Julien le 19 novembre 2026 : Mamie a coché, puis dit de vive voix qu'elle ne le prend plus ; il faut pouvoir l'enlever pour elle. Aujourd'hui, celui qui tient une liste ne décoche que ses propres coches (`DELETE /api/lists/[id]/claims/[ideaId]` ne vise que son compte). Sans migration. Maquettes : `ListeDecocher`, `ListeDecocheFait`. **Fait** (19 novembre 2026), sauf la nouveauté du lot 28 ; ce qui a été tranché seul est en section 6, « Correction 25 ».
 
-- [ ] **Le cœur, en fonction pure**, testé d'abord : qui peut retirer quelle coche (ceux qui tiennent la liste : toutes ; un visiteur : la sienne seulement, comme aujourd'hui).
-- [ ] **La route** : ceux qui tiennent la liste peuvent retirer la coche d'un autre, en la désignant (pas seulement « la mienne »).
-- [ ] **Dans le document, sans bulle ni question** (dessin revu le 19 novembre 2026, maquettes `ListeDecocher`, `ListeDecocheFait`) : toucher le prénom posé sur une idée cochée (« Mamie », « Anonyme ») déplie, dans la ligne, un bandeau clair : « Coché par Mamie, le 12 novembre » et un bouton « Décocher ». Le prénom touché passe en foncé ; le retoucher replie. « Décocher » agit tout de suite : l'idée redevient libre, et « Coche de Mamie retirée » s'affiche avec « Annuler ». Ma propre coche garde « Tu l'offres · Changer ».
-- [ ] **Une coche anonyme se retire aussi**, sans rien révéler : le bandeau dit « Coché en anonyme », sans date ni indice ; puis « Coche anonyme retirée ». Celui qui tient la liste ne sait toujours pas qui c'était.
-- [ ] **Un cadeau à plusieurs** : le bandeau a une ligne par prénom, chacune avec son « Retirer » ; le dernier retiré rend l'idée libre.
-- [ ] **« Annuler »** remet la coche telle qu'elle était (même personne, même mode, même date). C'est lui le filet : pas de « tu es sûr ? ».
-- [ ] **Celui qu'on décoche le voit** : sa liste « Ce que tu offres » ne compte plus ce cadeau ; quand les nouveautés existent (lot 28), il en reçoit une, « Camille a retiré ta coche sur … », sauf s'il avait coché en anonyme (rien ne doit relier une coche anonyme à une personne).
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Le cœur, en fonction pure**, testé d'abord : qui peut retirer quelle coche (ceux qui tiennent la liste : toutes ; un visiteur : la sienne seulement, comme aujourd'hui).
+- [x] **La route** : ceux qui tiennent la liste peuvent retirer la coche d'un autre, en la désignant (pas seulement « la mienne »).
+- [x] **Dans le document, sans bulle ni question** (dessin revu le 19 novembre 2026, maquettes `ListeDecocher`, `ListeDecocheFait`) : toucher le prénom posé sur une idée cochée (« Mamie », « Anonyme ») déplie, dans la ligne, un bandeau clair : « Coché par Mamie, le 12 novembre » et un bouton « Décocher ». Le prénom touché passe en foncé ; le retoucher replie. « Décocher » agit tout de suite : l'idée redevient libre, et « Coche de Mamie retirée » s'affiche avec « Annuler ». Ma propre coche garde « Tu l'offres · Changer ».
+- [x] **Une coche anonyme se retire aussi**, sans rien révéler : le bandeau dit « Coché en anonyme », sans date ni indice ; puis « Coche anonyme retirée ». Celui qui tient la liste ne sait toujours pas qui c'était.
+- [x] **Un cadeau à plusieurs** : le bandeau a une ligne par prénom, chacune avec son « Retirer » ; le dernier retiré rend l'idée libre.
+- [x] **« Annuler »** remet la coche telle qu'elle était (même personne, même mode, même date). C'est lui le filet : pas de « tu es sûr ? ».
+- [x] **Celui qu'on décoche le voit** : sa liste « Ce que tu offres » ne compte plus ce cadeau ; quand les nouveautés existent (lot 28), il en reçoit une, « Camille a retiré ta coche sur … », sauf s'il avait coché en anonyme (rien ne doit relier une coche anonyme à une personne).
+- [x] Trois langues, `tests/e2e`.
 
 ### Lot 24 ter — Listes : réordonner en glissant (README 22.20)
 
@@ -1757,6 +1757,18 @@ Codé le 19 novembre 2026. Tranché seul, à relire :
 21. **La phrase « Ceux qui tiennent la liste voient tout, y compris ce qu'on leur offre s'ils y figurent. »** reste en bas de la page, bien qu'elle ne soit plus dans la maquette : elle répond à la question du point 1 tant que Julien n'a pas tranché.
 23. **Repris sur les maquettes après le retour de Julien** (« tu n'es pas iso avec la maquette ») : la page d'invitation (la tuile de la liste, la pastille « Tonton, Camille t'invite », le titre « Tenir la liste… », les pastilles vertes et corail, « Non merci » en bouton bordé, pas de carte) et « Ceux qui tiennent la liste » (le niveau en pastille à toucher, en étiquette quand il ne se touche pas ; « A refusé » et « Invitation expirée » en gras corail ; le menu avec la coche à gauche). **Restent différents, parce que le système de design de l'application le veut ainsi** : les boutons et les champs sont en pilule (16 px d'arrondi dans les maquettes), le bouton radio est celui du navigateur à la couleur de l'application.
 22. **Pas testé de bout en bout** : l'expiration (le temps ne passe pas dans les tests `e2e`) ; elle l'est par les tests des fonctions pures. « Là en ce moment » (maquettes) est le lot 26.
+
+### Correction 25 — décocher pour quelqu'un
+
+Codée le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Rien ne part vers le serveur avant la fin de « Annuler »** (6 secondes, comme pour « Retirer de la liste ») : c'est ce qui permet de remettre la coche exactement comme elle était, même anonyme, sans que celui qui tient la liste apprenne qui c'était. Pendant ces 6 secondes, les autres voient encore l'idée cochée. Si on ferme l'onglet ou recharge la page pendant ce temps, la coche reste ; changer de page dans l'application l'envoie.
+2. **La phrase « 2 cadeaux déjà prévus »** en haut du document ne baisse qu'une fois la coche vraiment retirée, 6 secondes après.
+3. **« Annuler » est le message habituel de l'application** (carte blanche, bouton rouge), pas la barre sombre de `ListeDecocheFait` : tous les « Annuler » de l'application sont ainsi.
+4. **Une coche est désignée par son propre identifiant**, qui ne dit rien de son auteur : une coche anonyme part comme les autres. Le bandeau d'une coche anonyme ne reçoit ni prénom ni date du serveur.
+5. **Un cadeau à plusieurs** : une ligne par personne, « Mamie, le 12 novembre » et « Retirer » ; ma propre coche n'y est pas (elle garde « Changer »). Le bandeau reste déplié après un « Retirer », pour enchaîner. Si celui qui avait proposé le cadeau est retiré, le suivant le mène, et « au complet » est perdu, comme quand il part de lui-même.
+6. **Les deux niveaux décochent** (« Gère la liste » et « Aide à écrire »), comme prévu au lot 25 bis. La personne reliée et le visiteur, non.
+7. **La nouveauté pour celui qu'on décoche** attend le lot 28. Aujourd'hui il le voit seulement en rouvrant la liste.
 
 ### Lot 27 ter — pistes et liste
 

@@ -111,7 +111,10 @@ test('the first name unfolds « Décocher », which acts at once, with « Annule
   // Touched again, it folds back.
   await billes.getByTestId('idea-who').click();
   await expect(billes.getByTestId('untick-band')).toHaveCount(0);
-  await billes.getByTestId('idea-who').click();
+  // The box unfolds it too, without unticking by itself.
+  await billes.getByTestId('holder-box').click();
+  await expect(billes.getByTestId('untick-band')).toBeVisible();
+  await expect(billes.getByTestId('idea-who')).toHaveText('Mamie');
   await billes.getByRole('button', { name: 'Décocher' }).click();
   // No question: the idea is free again, and the toast is the net.
   await expect(billes.getByTestId('idea-who')).toHaveCount(0);

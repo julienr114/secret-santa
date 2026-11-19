@@ -96,7 +96,14 @@ const boxActive = computed(
 );
 /** The box: ticks alone, unticks, or opens the sheet of a group. */
 const onBox = () => {
-  if (!props.idea || !boxActive.value) return;
+  if (!props.idea) return;
+  // Ticked by someone else: the box unfolds « Décocher » too, like the
+  // first name (the box is what one reaches for first: Julien, 19
+  // November 2026). It does not untick by itself.
+  if (!boxActive.value) {
+    if (claims.value.length > 0) unfolded.value = !unfolded.value;
+    return;
+  }
   const onError = (error: unknown) =>
     toast.add({
       title:
@@ -438,7 +445,7 @@ const onFocusOut = (event: FocusEvent) => {
               'aria-label': mine
                 ? t('lists.visitor.untick', { idea: idea.text })
                 : t('lists.visitor.tick', { idea: idea.text }),
-              disabled: !boxActive,
+              disabled: !boxActive && claims.length === 0,
             }
           : { 'aria-hidden': 'true' }
       "

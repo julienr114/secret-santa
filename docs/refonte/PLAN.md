@@ -714,15 +714,50 @@ Décidé par Julien le 19 novembre 2026 : nouvelles couleurs, nouvelles polices,
 - [x] **Vérifier** : le contraste du texte sur chaque fond (au moins 4,5 pour 1 pour le texte courant) ; chaque écran à 390 px, car les nouvelles polices peuvent faire passer un titre ou un bouton sur une ligne de plus.
 - [x] Guide de style et `tests/e2e` à jour. README 23.1 réécrit avec les nouveaux jetons, 23.5 marqué fait. `docs/refonte/maquettes-sorbet/` devient la référence : le dire en tête de ce plan.
 
+### Lot 23 bis — Les icônes en autocollant dégradé, et la pluie de fête du palmarès (README 23.5, 22.17)
+
+Décidé par Julien le 19 novembre 2026. Seule l'apparence des icônes de personne et des tuiles de liste change : rien dans la base, aucun texte. Le README 23.5, « La forme des icônes », fait foi, avec `docs/refonte/sorbet/autocollant.py` pour les valeurs. Les maquettes de `docs/refonte/maquettes-sorbet/` ont été refaites avec cette forme. **Fait** (19 novembre 2026). Points à relire : section 6, « Lot 23 bis ».
+
+- [x] **L'icône de personne** (`UiAvatar`, `app/utils/avatars.ts`) : le dégradé à la place du fond uni, le liseré blanc et l'ombre à la place du bord coloré. Le liseré et l'ombre dépendent de la taille : les calculer dans le composant, pas écran par écran.
+- [x] **Les icônes qui se chevauchent** (`UiAvatarStack`) : le dégradé seul, l'anneau actuel, pas d'ombre.
+- [x] **La tuile carrée d'une liste** (`ListsTile`, `app/utils/listShades.ts` ; pas `UiTile`, qui est autre chose) : les six teintes des personnes sous les six noms enregistrés (tableau du README), le dégradé, le liseré, l'ombre, penchée de 3 degrés.
+- [x] **Les panneaux de choix d'icône** (`AdminAvatarSheet`, `UiIconSheet`, `UiIconPicker`) : dans la grille, l'icône choisie garde son anneau, sans liseré ni ombre, et une tuile de liste reste droite ; les pastilles de couleur en dégradé seul.
+- [x] **Le palmarès en images** (`ParticipantStories`) : le dégradé seul ; le liseré clair et l'ombre déjà là restent.
+- [x] **La pluie de fête sur le dernier écran du palmarès** (`DevineStory7`, README 22.17) : flocons de neige, étoiles à quatre branches qui scintillent, quelques confettis, derrière le texte, en boucle. Les dessins, les couleurs, les tailles et les durées sont dans la maquette (classes `utt-p` pour la chute, `utt-tw` pour le scintillement). En CSS seulement, sur `transform` et `opacity`. Les positions sont tirées au hasard dans le navigateur, pas au rendu serveur. Décoratif : `aria-hidden`, aucun appui. Avec « réduire les animations » : rien ne bouge, les dessins restent posés.
+- [x] **Vérifier** : une icône de 26 px dans une ligne (le liseré ne doit pas la noyer) ; une tuile penchée dans une ligne à hauteur fixe (rien ne doit être coupé) ; une icône sur une carte blanche et sur le fond de page.
+- [x] Guide de style et `tests/e2e` à jour, README 23.5 marqué fait.
+
 ### Correction 19 — Rien au-dessus du clavier, et la navigation toujours là (README 23.3, 22.21)
 
-Décidée par Julien le 19 novembre 2026. Indépendante des listes. Maquettes : `NavTirage`, `NavListe`, `NavRedaction`.
+Décidée par Julien le 19 novembre 2026. Indépendante des listes. Maquettes : `NavTirage`, `NavListe`, `NavRedaction`. **Fait** (19 novembre 2026), **sauf l'essai sur un vrai téléphone**, iOS et Android, qui reste à faire par Julien : tout a été vérifié dans Chrome à 390 px, où il n'y a pas de clavier à l'écran.
 
-- [ ] **Les pages où l'on rédige** (celles de la Correction 18) : « Valider » quitte la bande collée en bas et descend dans la page, à la fin du contenu. Le clavier passe par-dessus ; toucher hors du champ ferme le clavier. Vérifier sur un vrai téléphone, iOS et Android.
-- [ ] **Le menu partout**, pour une personne connectée : en haut à droite de chaque écran, à la place du bouton de langue, avec la langue, « Mon compte » et « Se déconnecter ». Y compris sur la page d'un tirage ouverte par le lien personnel, dès qu'il y a une session.
-- [ ] **La barre du bas partout**, pour une personne connectée : « Tirages / Listes », l'onglet actif selon l'écran. Le contenu de chaque page s'arrête au-dessus d'elle (`env(safe-area-inset-bottom)` compris).
-- [ ] **Sans session** : rien ne change. **Exceptions** : le palmarès en images n'a ni menu ni barre ; un panneau du bas recouvre la barre.
-- [ ] README 23.3 et 22.21 à jour, guide de style, `tests/e2e`.
+- [x] **Les pages où l'on rédige** (celles de la Correction 18) : « Valider » quitte la bande collée en bas et descend dans la page, à la fin du contenu. Le clavier passe par-dessus ; toucher hors du champ ferme le clavier. Vérifier sur un vrai téléphone, iOS et Android.
+- [x] **Le menu partout**, pour une personne connectée : en haut à droite de chaque écran, à la place du bouton de langue, avec la langue, « Mon compte » et « Se déconnecter ». Y compris sur la page d'un tirage ouverte par le lien personnel, dès qu'il y a une session.
+- [x] **La barre du bas partout**, pour une personne connectée : « Tirages / Listes », l'onglet actif selon l'écran. Le contenu de chaque page s'arrête au-dessus d'elle (`env(safe-area-inset-bottom)` compris).
+- [x] **Sans session** : rien ne change. **Exceptions** : le palmarès en images n'a ni menu ni barre ; un panneau du bas recouvre la barre.
+- [x] README 23.3 et 22.21 à jour, guide de style, `tests/e2e`.
+
+### Correction 20 — Chacun coche aussi ses propres idées (README 22.19)
+
+Décidée par Julien le 19 novembre 2026 : dans le brouillon de sa liste, il n'a pas pu cocher une idée de sa section « Moi ». Ce blocage disparaît. Sans migration. Indépendante des autres lots. **Fait** (19 novembre 2026) : le champ `tickable` et le refus `own_idea` ont disparu.
+
+- [x] **Le cœur** (`server/utils/claims.ts`, `canTick`) : plus de refus `own_idea`. Les tests de `claims.test.ts` suivent.
+- [x] **Les routes** (`server/http/claims.ts`, `tickIdea`) : plus de recherche « cette idée est-elle pour moi » ; `own_idea` sort de `server/http/errors.ts` s'il ne sert plus ailleurs.
+- [x] **Ce que renvoient les listes** (`server/http/lists.ts`, `tickable`) : toujours vrai ; retirer le champ s'il ne sert plus à rien.
+- [x] **Le document** (`ListsIdeaLine`) et **la liste par son lien** (`ListsVisitorLine`, `/l/[jeton]`) : la case d'une idée de « Moi » répond comme les autres, brouillon compris. Elle s'affiche comme toute idée que j'ai cochée.
+- [x] `tests/e2e` : dans un brouillon, cocher puis décocher une idée de « Moi ».
+- [x] README 22.19 marqué fait.
+
+### Correction 21 — Dans le document, ma coche dit « Tu l'offres · Changer » (README 22.19)
+
+Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne va pas. Celui qui tient la liste retrouve dans son document ce qu'il a par le lien. Sans migration. La ligne à reproduire est celle de `ListeVisiteurMes`. **Fait** (19 novembre 2026). Les deux panneaux (`ListsClaimSheet`, `ListsJoinSheet`) et leurs requêtes servent maintenant aux deux vues (`via`). Se joindre depuis le document n'a pas de test e2e : il faut le cadeau à plusieurs d'un autre compte ; la route et le panneau sont ceux du lien, déjà testés.
+
+- [x] **Plus de pastille « C'est toi »** au bout d'une idée que j'ai cochée (`ListsIdeaLine`). La coche verte et le texte en gras restent. Les pastilles des autres (prénom, « Anonyme ») ne changent pas.
+- [x] **Sous l'idée**, en petit texte gris : « Tu l'offres · seul · Changer », ou « Tu l'offres · à plusieurs · Changer ». Pas de « sous ton prénom » : c'est celui qui tient la liste qui lit les prénoms.
+- [x] **« Changer »** ouvre le panneau de la liste par son lien (`ListsClaimSheet`, maquette `ListeReserver`) : seul ou à plusieurs, le mot pour les autres, fermer le groupe. Sans le choix de rester anonyme.
+- [x] **Se joindre depuis le document** : sur un cadeau à plusieurs encore ouvert, « Se joindre » en lien de texte au bout de la ligne, puis « Tu participes », comme par le lien.
+- [x] **Les routes de celui qui tient la liste** (`/api/lists/[id]/claims`) : changer sa façon d'offrir et se joindre, brouillon compris, avec les mêmes fonctions pures que par le lien.
+- [x] Trois langues, `tests/e2e`, README 22.19 marqué fait.
 
 ### Lot 24 — Listes V2 : écrire sur place (README 22.20)
 
@@ -741,8 +776,9 @@ Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `ListeTeneu
 - [ ] **Le cœur, en fonctions pures**, testé d'abord : qui tient une liste ; ce que voit et peut faire chacun (celui qui tient, la personne reliée, l'invité) ; inviter, accepter, retirer, le dernier qui ne peut pas partir.
 - [ ] **Base** : les comptes qui tiennent une liste (plusieurs par liste, celui qui l'a créée en fait partie comme les autres) ; les invitations en attente, par adresse ; l'adresse d'une personne de la famille et le compte qu'elle rejoint.
 - [ ] **« Ceux qui tiennent la liste »** (`ListeTeneurs`) : la liste, « Retirer », l'invitation par adresse avec son email, « Annuler » une invitation. Tous égaux. Ceux qui tiennent la liste voient tout, y compris ce qu'on leur offre.
+- [ ] **Chacun de ceux qui tiennent la liste coche dans le document**, à son prénom, dès le brouillon, comme le fait déjà celui qui l'a créée (README 22.19, « Créer et écrire »), ses propres idées comprises (Correction 20).
 - [ ] **Relier une personne** (`ListePersonneCompte`) : l'adresse sur sa fiche, « Ne plus relier ».
-- [ ] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et ne coche pas ce qui lui est destiné.
+- [ ] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et coche comme lui, y compris ce qui lui est destiné (Correction 20).
 - [ ] Trois langues, `tests/e2e`.
 
 ### Lot 26 — Listes V2 : en direct (README 22.20)
@@ -767,6 +803,92 @@ Décidé par Julien le 19 novembre 2026. Maquettes : `ListeNouvelleReprendre`, `
 - [ ] **« Repartir d'une liste »** dans le document vide, et **« Reprendre cette liste »** sur une liste passée. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
 - [ ] **La marque** : la petite flèche grise au bout de la ligne, visible de ceux qui tiennent la liste seulement, et la phrase d'explication en haut.
 - [ ] Trois langues, `tests/e2e`. README 22.20 marqué fait.
+
+### Lot 28 — Les nouveautés, dans l'application (README 22.22)
+
+Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `NotifAccueil`, `NotifListe`, `NotifMenu`, `NotifCentre`. Aucun email ne change dans ce lot.
+
+- [ ] **L'inventaire d'abord** : la liste de tout ce que l'application envoie ou signale aujourd'hui (`server/utils/notifications.ts`, `server/plugins/reminders.ts`, `server/http/email.ts`, le journal, « À faire maintenant »), classé « ce qui presse » ou « le reste » d'après le README 22.22. Le noter en section 6 pour relecture avant de coder.
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : créer une nouveauté pour un compte ; regrouper celles de même nature au même endroit dans la journée ; ce qui la rend vue ; les compteurs par onglet, par carte, par ligne ; l'oubli à trente jours.
+- [ ] **Base** : les nouveautés (compte, nature, niveau, l'endroit visé, quand, vue ou non). Aucune ne contient ce que son destinataire n'a pas le droit de voir.
+- [ ] **Créer les nouveautés** aux endroits de l'inventaire, pour les seuls comptes.
+- [ ] **Les pastilles** : le point sur un onglet de la barre du bas, le compteur ou le point sur une carte, le point dans la marge d'une ligne de liste changée depuis ma dernière visite. Lisibles par un lecteur d'écran.
+- [ ] **« Quoi de neuf »** : la ligne du menu et son compteur, le point sur le bouton du menu, la page par jour. L'ouvrir ne marque rien comme vu.
+- [ ] Mise à jour au retour sur la page ; en direct quand le lot 26 est là.
+- [ ] Trois langues, guide de style, `tests/e2e`.
+
+### Lot 29 — « Me prévenir » : le résumé par email, et ce qui presse (README 22.22)
+
+Décidé par Julien le 19 novembre 2026. Après le lot 28. Maquettes : `NotifReglage`, `NotifEmailResume`.
+
+- [ ] **Le cœur, en fonctions pures** : pour une nouveauté et un compte, faut-il un email, lequel, quand (résumé, tout de suite, aucun ; ce qui presse ; déjà vue ; l'attente de dix minutes quand un téléphone est prévenu).
+- [ ] **Le réglage** « Par email » dans « Mon compte », trois choix, « Un résumé le matin » par défaut pour tous les comptes existants.
+- [ ] **Les emails automatiques des comptes passent par cette règle** : ils ne partent plus un par un. Les participants sans compte gardent les emails d'aujourd'hui.
+- [ ] **Le résumé** : la tâche planifiée du matin, un email par compte qui a du nouveau pas encore vu, un bloc par tirage ou par liste, en texte seul, dans la langue du compte, avec le lien pour changer le réglage.
+- [ ] **Les emails que l'organisateur envoie à la main** (liens, rappels) ne changent pas.
+- [ ] Trois langues, textes au ton de `docs/refonte/TEXTES.md`, tests.
+
+### Lot 29 bis — Suivre une liste, ou une personne (README 22.22)
+
+Décidé par Julien le 19 novembre 2026. Après les lots 28 et 29. Avec migration. Maquette : `ListeSuivre`. Points à relire : section 6, « Lot 29 bis ».
+
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : qui suit quoi (une liste entière, ou des personnes d'une liste) ; pour une idée ajoutée ou une personne ajoutée, quels comptes prévenir ; jamais ceux qui tiennent la liste, jamais une liste passée.
+- [ ] **Base** : ce qu'un compte suit (la liste, et la personne de la liste ou rien pour toute la liste).
+- [ ] **La cloche** au bout du nom de chaque personne, sur la liste par son lien (`/l/[jeton]`) : `aria-pressed`, « Suivre Léo » ou « Ne plus suivre Léo », zone de 44 px. La ligne d'état sous le mot de la liste, avec « Suivre toute la liste » ou « Ne plus suivre ».
+- [ ] **Sans compte** : la cloche mène à la connexion de la liste (`/l/[jeton]/connexion`), puis le suivi est posé au retour.
+- [ ] **Les nouveautés** (lot 28) : « de nouvelles idées » n'est créée en nouveauté à prévenir que pour ceux qui suivent ; les pastilles de l'application restent pour toute liste ouverte. Regroupement par personne et par jour.
+- [ ] **« Me prévenir »** : la liste de ce que je suis, avec « Ne plus suivre ». Le lien d'arrêt dans le résumé et dans l'email immédiat.
+- [ ] Trois langues, `tests/e2e`.
+
+### Lot 30 — La connexion par code (README 22.22)
+
+Décidé par Julien le 19 novembre 2026. Indépendant. Maquettes : `ConnexionCode`, `ConnexionCodeEmail`.
+
+- [ ] **Le cœur, en fonctions pures** : créer et vérifier un code (six chiffres, 15 minutes, une fois, cinq essais, lié à l'appareil qui l'a demandé), jamais gardé en clair.
+- [ ] **Base** : les codes, à côté des liens de connexion ; mêmes limites d'envoi.
+- [ ] **Savoir si l'application tourne installée**, et seulement alors : l'écran du code après l'adresse, l'email du code sans lien. Dans un navigateur, rien ne change.
+- [ ] Trois langues, tests, `tests/e2e`.
+
+### Lot 31 — L'application installée et les notifications du téléphone (README 22.22)
+
+Décidé par Julien le 19 novembre 2026. Après les lots 28 et 30. Maquettes : `Installer`, `NotifAutoriser`, `NotifReglage`. À vérifier sur de vrais téléphones, iPhone et Android.
+
+- [ ] **Installable** : le manifeste, les icônes, les couleurs ; un service worker réduit à ce qu'il faut pour les notifications. Pas de mode hors connexion dans ce lot.
+- [ ] **Proposer l'installation** : le panneau des trois gestes sur iPhone, le bouton « Installer » sur Android ; dans « Me prévenir » et une fois sur l'accueil ; jamais dans l'application installée.
+- [ ] **S'abonner** : le panneau `NotifAutoriser` puis la question du téléphone, après un geste ; un abonnement par appareil, retiré quand il ne répond plus ; l'interrupteur « Notifications » de « Me prévenir ».
+- [ ] **Envoyer** : une notification du téléphone par nouveauté, depuis le Worker, sans service tiers ; la toucher ouvre l'écran concerné ; rien dans son texte que le verrouillage du téléphone ne devrait pas montrer (jamais à qui j'offre).
+- [ ] **La pastille sur l'icône** : le nombre de nouveautés pas encore vues.
+- [ ] L'attente de dix minutes du lot 29 s'applique dès qu'un appareil est abonné.
+- [ ] Trois langues, tests. README 22.22 marqué fait.
+
+### Lot 32 — La page de présentation (README 22.23)
+
+Décidé par Julien le 19 novembre 2026. **À faire en dernier**, après tous les autres lots. Sans migration, sans route d'API. Maquettes : `Landing` (téléphone), `LandingDesktop` (écran large). Points à relire : section 6, « Lot 32 ».
+
+- [ ] **`/` sans session** devient la page de présentation ; avec une session, rien ne change. Les écrans de connexion gardent leurs adresses, « Créer un compte » et « Se connecter » y mènent.
+- [ ] **Les blocs** du tableau du README 22.23, dans l'ordre de la maquette, avec les illustrations existantes (`UiIllusTree`, `UiEnvelopeSealed`, `UiIllusLabel`, `UiPodium`) et, par bloc, une capture d'écran sur un écran large ou une petite icône sur téléphone.
+- [ ] **Une icône par bloc, partout** : une tuile en autocollant à gauche du titre (44 px sur téléphone, 52 px sur un écran large) : ✉️ sur corail pour le tirage, 🏷️ sur ciel pour les pistes, 🕵️ sur lilas pour le jeu, 🎁 sur menthe pour les listes.
+- [ ] **Sur téléphone, pas de capture** : l'icône seule. Les images des captures n'y sont pas chargées.
+- [ ] **L'encadré « Tu as reçu un lien personnel ? »** reste, juste sous les boutons.
+- [ ] **Le bloc « Bientôt »** : encadré lilas, étiquette « Bientôt », les deux bulles. Aucun lien, aucune marque d'assistant.
+- [ ] **Ne montrer que ce qui existe** : un bloc dont le lot n'est pas fait ne s'affiche pas.
+- [ ] **Sur un écran large** (`LandingDesktop`) : l'en-tête avec « Se connecter » et « Créer un compte » à droite, le titre à gauche de deux captures, les quatre blocs en lignes qui alternent texte et capture, « Et aussi » sur trois colonnes. Une seule page qui s'adapte, pas deux pages.
+- [ ] **Les captures d'écran, sur un écran large seulement** : de vraies captures de l'application, faites par un script à partir des données de démonstration (`scripts/seed-demo.ts`), à 390 px, dans les trois langues, en images légères chargées à la demande. Jamais de données réelles. Écrans : l'enveloppe à ouvrir, les pistes, deux écrans du palmarès de couleurs différentes, une liste par son lien. En haut de page, une capture claire (l'enveloppe) à côté d'une foncée (le palmarès). Dans les maquettes, ce sont les maquettes elles-mêmes, réduites (`@@SHOT` dans `habiller.py`).
+- [ ] **Les captures inclinées** : sur un écran large, en perspective et tournées vers leur texte, en alternance (`rotateY` de 16 degrés d'un côté ou de l'autre, valeurs dans `habiller.py`, `TILT`). L'image elle-même reste droite : c'est le cadre qui s'incline, en CSS.
+- [ ] **En bas**, « Qui a fait ça, et pourquoi ? » vers la page du lot 33, si elle existe.
+- [ ] **Pour les moteurs de recherche et le partage du lien** : un titre, une description et une image d'aperçu par langue, rendus côté serveur.
+- [ ] Trois langues, `tests/e2e` (sans session : la page ; connecté : l'accueil), README 11 et 22.23 à jour.
+
+### Lot 33 — « Qui a fait ça, et pourquoi ? », et le café (README 22.24)
+
+Décidé par Julien le 19 novembre 2026. Peut se faire avec le lot 32 ou avant lui. Sans migration. Maquette : `APropos`. Points à relire : section 6, « Lot 33 ».
+
+- [ ] **Attendre les textes de Julien** : ceux de la maquette sont un brouillon. Ne rien traduire avant.
+- [ ] **La page `/a-propos`**, publique : l'icône et « Salut, moi c'est Julien », « Pourquoi j'ai fait ça », « Un café ? ».
+- [ ] **Le bouton du café** : un lien vers le service de dons, dans un nouvel onglet (`rel="noopener"`). Son adresse est dans la configuration ; sans adresse, le bloc « Un café ? » ne s'affiche pas. Aucun script ni traceur du service.
+- [ ] **« Écris-moi »** : l'adresse de contact de la configuration ; sans adresse, la ligne ne s'affiche pas.
+- [ ] **Les liens vers la page** : en bas de la page de présentation (lot 32) et dans le menu.
+- [ ] Trois langues, `tests/e2e`, README 11 et 22.24 à jour.
 
 ## 6. Questions pour Julien
 
@@ -1069,7 +1191,7 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 1. **Le lien avec un tirage.** Aucun pour l'instant : une liste est séparée des groupes et des éditions. À décider plus tard : montrer à celui qui m'offre, dans un tirage, la liste où je figure.
 2. **Le mot de départ.** **Réponse de Julien, 18 novembre 2026 :** « Quelques idées pour t'éviter de chercher. Coche ce que tu offres, et personne n'aura la même idée. Tu en as une autre ? Elle est la bienvenue. » Les maquettes sont à jour.
 3. **Arrêter de partager** (proposition : pas dans ces lots). Un « Ne plus partager » sur `ListePartager` couperait le lien et remettrait la liste en brouillon, en gardant les cadeaux cochés.
-4. **Celui qui tient la liste ne coche pas ses propres idées** (proposition : oui, pas de case sur ses lignes).
+4. **Celui qui tient la liste ne coche pas ses propres idées** (proposition : oui, pas de case sur ses lignes). **Tranché par Julien le 19 novembre 2026 : si, il les coche** (Correction 20).
 5. **Rester anonyme** : le prénom est visible de celui qui tient la liste dès qu'on coche, jusqu'à ce qu'on passe par « Changer » (proposition : retenir le dernier choix de chacun pour la fois suivante).
 6. **Un cadeau hors liste** : les autres voient « Un cadeau surprise, hors liste », sans les deux mots (proposition des maquettes). À confirmer : les montrer éviterait mieux les doublons.
 7. **À plusieurs** : seul celui qui a proposé ferme le groupe ; s'il se retire, le cadeau passe au suivant (proposition des maquettes).
@@ -1122,6 +1244,27 @@ Vérifié : la suite e2e (93 tests), et un passage automatique sur 63 écrans à
 
 Au passage : `hydrated` (aide des tests e2e) rendait la main avant que Vue ait pris la page ; retirer l'image du logo a suffi à faire perdre le texte tapé trop tôt. Elle attend maintenant le montage.
 
+### Lot 23 bis — les icônes en autocollant
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Les couleurs des listes deviennent celles des personnes** (proposition, vue sur la planche `StyleIcones`). Une liste et une personne de la même teinte ne se distinguent plus que par la forme : ronde, ou carrée et penchée. Cela règle les points 2 et 21 du lot 23.
+2. **Les noms des couleurs de liste** dans les dictionnaires (sapin, brique, moutarde, prune, bleu nuit, kraft) ne disent plus ce qu'on voit, comme ceux des personnes (point 18 du lot 23). À décider ensemble.
+3. **Sur une carte blanche, le liseré blanc ne se voit pas** : seule l'ombre détache l'icône.
+4. **La tuile penchée** : 3 degrés. À redresser si elle gêne dans une ligne.
+5. **L'ombre des petites icônes** (moins de 36 px) est plus courte : choisi seul.
+6. **Les maquettes refaites n'ont pas été contrôlées à l'œil** : elles sortent du script.
+7. **La pluie de fête** est la même toute l'année (proposition). Des flocons n'ont pas de sens pour un tirage d'été : à revoir si le cas se présente. Le dosage (24 flocons, 11 étoiles, 12 confettis dans la maquette) se règle à l'œil.
+
+**Codé le 19 novembre 2026.** Tranché seul :
+
+8. **Les couleurs de la pluie** viennent des teintes des icônes de personne (bords corail, lilas, menthe, ciel, pêche) et du corail des actions. Les deux bleus pâles de la maquette (`#8fc0f4`, `#b5d6f9`) sont rendus par le bord et le fond du ciel.
+9. **Les places et les rythmes sont tirés au hasard à chaque ouverture**, dans les bornes de la maquette (durées, dérive, rotation, tailles) ; le dosage est le sien (24 flocons, 11 étoiles, 12 confettis).
+10. **Une icône à une taille à part** se demande par `px` (52, 64 et 48 px : la personne d'une liste, sa fiche, le panneau d'envoi) au lieu de classes posées par l'écran, pour que le liseré et l'ombre suivent.
+11. **Les tests unitaires de `app/`** n'étaient pas lancés par `pnpm test` (seulement `server`, `shared`, `tests`) : ils le sont maintenant.
+
+Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blanche (guide de style), les tuiles penchées dans les cartes de l'onglet « Listes » (rien de coupé), le panneau de choix d'icône. **Pas regardés à l'œil** : la pluie de fête et les icônes du palmarès en images (le test e2e vérifie que les 47 dessins sont là, derrière le texte, sans appui).
+
 ### Correction 19 et lots 24 à 27 — navigation et listes V2
 
 Écrits le 19 novembre 2026. Points à relire :
@@ -1130,4 +1273,107 @@ Au passage : `hydrated` (aide des tests e2e) rendait la main avant que Vue ait p
 2. **« Repartir d'une liste »** propose toutes mes listes, en cours ou passées (proposition).
 3. **La ligne bloquée se libère après 30 secondes** sans frappe (proposition).
 4. **Le lot 26 dépend de l'offre Cloudflare** : les objets durables à stockage SQLite sont annoncés sur l'offre gratuite depuis avril 2025 ; à vérifier sur le compte avant de coder.
-5. **L'ordre conseillé** : Correction 19, lot 24, lot 27, lot 25, lot 26. Le lot 23 (Sorbet) se fait à part, quand rien d'autre n'est en cours.
+5. **L'ordre conseillé** : Corrections 20 et 21 (petites), Correction 19, lot 24, lot 27, lot 25, lot 26. Le lot 23 (Sorbet) se fait à part, quand rien d'autre n'est en cours.
+6. **La personne reliée coche aussi ce qui lui est destiné** : c'est la décision de Julien pour celui qui tient la liste (Correction 20), étendue à elle pour garder une seule règle. À confirmer.
+7. **Une idée de « Moi » cochée par moi** dit « Tu l'offres », comme les autres (Correction 21). « Tu te l'offres » serait plus juste : à décider.
+
+**Correction 19, codée le 19 novembre 2026.** Tranché seul :
+
+8. **Les pages où l'on rédige** sont les douze qui ont un champ de texte et un bouton en bas : les sept de la Correction 18, plus « Personnaliser le message » d'un envoi et d'une liste, un texte de la fiche d'une personne, l'adresse email et le cadeau hors liste d'une liste par son lien. Les écrans où l'on choisit dans une longue liste (participants, emails, relance, pronostics) gardent leur bande collée en bas, au-dessus de la barre ; elle ne suit plus le clavier.
+9. **Sur « Demander à créer un groupe »**, le bouton est à la fin du contenu, donc sous « Pourquoi une demande ? », pas juste sous le champ.
+10. **La barre du bas est aussi sur l'administration, « Mon compte » et le lien d'invitation** d'une personne connectée : « sur tous les écrans ». L'onglet « Tirages » y est actif.
+11. **La barre d'une ligne de liste** (« Lien », « Supprimer la ligne », « Terminé ») reste collée en bas tant qu'on écrit, par-dessus la barre « Tirages / Listes » : c'est le lot 24 qui la remplace.
+12. **Sur la page d'un tirage, changer de langue par le menu** enregistre toujours la langue du participant, comme le faisait le bouton de langue.
+13. **Pas vérifié sur un vrai téléphone** : le clavier qui passe par-dessus le bouton, et le toucher hors du champ qui ferme le clavier (testé à la souris seulement).
+
+### Lots 28 à 31 — notifications, code, application installée
+
+Écrits le 19 novembre 2026. Points à relire :
+
+1. **L'heure du résumé** : le matin, à l'heure de Paris pour tout le monde (proposition : 8 h). Un compte n'a pas de fuseau horaire aujourd'hui.
+2. **L'attente avant l'email de ce qui presse**, quand un téléphone est prévenu : dix minutes (proposition).
+3. **« Aucun email » coupe aussi ce qui presse** : seul l'email de connexion reste (décidé en dessinant `NotifReglage`).
+4. **Les participants sans compte** gardent les emails d'aujourd'hui : c'est une raison de plus de les inviter à créer un compte.
+5. **Le texte d'une notification du téléphone** ne doit jamais révéler un secret sur un écran verrouillé : « Ton enveloppe t'attend », jamais un prénom tiré.
+6. **Pas de mode hors connexion** dans le lot 31 : l'application installée a besoin du réseau.
+7. **L'ordre conseillé** : lot 30 (petit, indépendant), lot 28, lot 29, puis lot 31. Les pastilles en direct attendent le lot 26.
+
+### Lot 29 bis — suivre une liste
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Une cloche, pas un mot**, au bout du nom. Validé par Julien le 19 novembre 2026.
+2. **Sans suivre, plus de notification ni d'email pour les nouvelles idées** d'une liste simplement ouverte : seules les pastilles restent. C'est un changement par rapport au lot 28 tel qu'il était écrit.
+3. **Cocher un cadeau ne fait pas suivre** la personne. Validé par Julien le 19 novembre 2026.
+4. **Ceux qui tiennent la liste ne voient pas qui la suit** : pas nécessaire. Validé par Julien le 19 novembre 2026.
+5. **Les idées corrigées** ne préviennent pas : seulement les nouvelles.
+
+### Lot 32 — la page de présentation
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Les textes sont une proposition** : ils sont dans la maquette, à relire avant de les traduire.
+2. **« Aucun assistant ne saura qui offre à qui »** : une promesse écrite seul, parce que le secret est la règle de l'application. À confirmer avant de l'afficher.
+3. **Le branchement à un assistant (MCP)** n'est qu'annoncé. Rien n'est conçu : ni ce qu'un assistant pourrait lire ou faire, ni comment il se connecterait au compte.
+4. **« Pour organiser un tirage, tu demandes la création de ton groupe »** : la page ne dit ni que c'est gratuit, ni qui répond à la demande. À décider.
+5. **Les deux maquettes** (téléphone, écran large) ont une hauteur estimée, pas mesurée : elles peuvent laisser un vide en bas ou couper la fin. Les captures y sont des maquettes réduites, donc avec des prénoms de maquette.
+6. **Le bloc « Et aussi » suppose les lots 29 à 31 faits** (résumé du matin, code, application installée).
+
+### Lot 33 — « Qui a fait ça, et pourquoi ? »
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Les textes** sont à écrire par Julien.
+2. **Le service de dons** : à choisir (README 22.24 pour les frais relevés).
+3. **L'adresse de contact** : à créer sur le domaine.
+4. **« L'application ne montre aucune publicité »** : vrai aujourd'hui ; la phrase engage pour la suite.
+5. **L'icône de Julien** dans la maquette (un Père Noël sur fond ciel) est un choix de dessin, pas le sien.
+6. **Des dons sont un revenu** : comment les déclarer est à voir avec un comptable (section 7.4).
+
+## 7. Tenir la charge, et financer l'application (à décider)
+
+Écrit le 19 novembre 2026, à la demande de Julien. **Rien n'est à coder ici tant qu'il n'a pas tranché.** Les chiffres ont été relevés ce jour-là, en partie sur des comparatifs : à revérifier sur les sites officiels avant toute décision.
+
+### 7.1 Ce qui lâche en premier
+
+| Ressource | Offre gratuite | Ce qui la consomme | Le plus petit palier payant |
+|---|---|---|---|
+| Emails (Resend) | 3 000 par mois, **100 par jour** | Liens de connexion, envois d'un tirage, rappels, résumé du matin (lot 29) | Pro : 20 $ par mois pour 50 000, sans plafond par jour |
+| Requêtes (Workers) | 100 000 par jour, 10 ms de CPU par requête | Chaque page, chaque appel | Workers Paid : 5 $ par mois au minimum, pour tout le compte |
+| Base (D1) | 5 millions de lignes lues et 100 000 écrites par jour, 5 Go | Les listes, le journal | Compris dans Workers Paid |
+| Temps réel (objets durables, lot 26) | 100 000 requêtes par jour | Chaque liste ouverte en direct | Compris dans Workers Paid |
+
+**Le premier mur est le plafond de 100 emails par jour.** Un groupe de 30 personnes dont on envoie les liens par email en prend 30 : quatre groupes le même soir le dépassent. Le README (8) situe déjà la gêne vers 50 groupes pour le plafond du mois.
+
+### 7.2 Monter en charge, par étapes
+
+1. **Mesurer.** Sur la page du super-admin, les compteurs du jour et du mois en face de chaque plafond (emails, requêtes, lignes écrites), et une alerte à 70 %.
+2. **Dépenser moins d'emails.** Le résumé du matin (lot 29) et les notifications du téléphone (lot 31) vont dans ce sens. À ajouter : un envoi groupé qui dépasserait le plafond du jour part en deux fois, et l'organisateur le sait avant d'envoyer.
+3. **Garder la porte.** Le quota de groupes par compte existe déjà (0 par défaut, sur demande) : c'est lui qui règle le débit.
+4. **Payer le plus petit palier quand un plafond est atteint**, pas avant : Resend Pro si ce sont les emails, Workers Paid si ce sont les requêtes ou le temps réel. Soit de 5 à 25 $ par mois selon ce qui lâche. À vérifier : peut-on ne payer que de novembre à janvier.
+
+### 7.3 Financer
+
+| Voie | Ce que c'est | Pour | Contre |
+|---|---|---|---|
+| Les dons | Le bouton du café (lot 33) | Rien à construire, rien à facturer | Irrégulier, ne suit pas l'usage |
+| Un prix par groupe et par an | L'organisateur paie une petite somme quand son groupe dépasse une taille | Colle à l'usage, une fois par an ; les participants ne paient jamais | Un paiement à construire, des factures, un statut |
+| Faire payer ce qui coûte | L'envoi par email au-delà d'un seuil ; le partage par le téléphone reste gratuit | Le prix suit la dépense réelle | Plus difficile à expliquer |
+
+Un ordre possible, à discuter : les dons d'abord ; un prix seulement si la dépense du mois dépasse ce que les dons couvrent ; et ce prix porte sur ce qui coûte (les emails, les grands groupes), jamais sur le secret du tirage ni sur une liste simple.
+
+### 7.4 Ce qu'un paiement entraîne
+
+À voir avec un comptable : ce plan n'est pas un avis juridique ni fiscal.
+
+- Un statut pour encaisser, et la déclaration de ce qui est reçu, dons compris.
+- Des conditions de vente, des mentions légales, une politique de confidentialité à jour, des factures.
+- Un prestataire de paiement, avec ses frais par paiement.
+- Du support : quelqu'un qui paie attend une réponse.
+
+### 7.5 Questions pour Julien
+
+1. L'application s'ouvre-t-elle à tous, ou reste-t-elle sur demande ?
+2. Quelle dépense par mois est acceptable avant de demander de l'argent ?
+3. Qu'est-ce qui reste gratuit pour toujours ?
+4. Quel service de dons ?

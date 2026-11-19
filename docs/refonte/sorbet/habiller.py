@@ -91,8 +91,8 @@ def essais(n,h):
         return h[:b]+'<div style="display: flex; justify-content: center; margin: -4px 0 0">'+illus2.svg(kind,w)+'</div>'+h[b:]
     def taller(h,d):
         m=re.search(r'width: 390px; height: (\d+)px',h); return h.replace(m.group(0),f'width: 390px; height: {int(m.group(1))+d}px',1)
-    if n.startswith('Connexion'):
-        m=re.search(r'<svg role="img" aria-label="Under the Tree" width="64" height="64".*?</svg>',h,flags=re.S); assert m,n
+    m=re.search(r'<svg role="img" aria-label="Under the Tree" width="64" height="64".*?</svg>',h,flags=re.S) if n.startswith('Connexion') else None
+    if m:
         h=taller(h.replace(m.group(0),illus2.svg('connexion',200,'Under the Tree')),76)
     if n in ('Rejoindre.dc.html','RejoindreConnecte.dc.html'):
         m=re.search(r'<svg role="img" aria-label="Under the Tree" width="56" height="56".*?</svg>',h,flags=re.S); assert m,n
@@ -111,9 +111,21 @@ def essais(n,h):
         h=h.replace(m.group(0),illus2.svg('welcome',184))
     # pas d'image dans les emails (Julien, 19 novembre 2026)
     return h
+# les icônes en autocollant dégradé (lot 23 bis) : voir autocollant.py
+from autocollant import tuiles,autocollant
 done=0; soucis=[]
-for f in sorted(os.listdir(SRC)):
-    if not f.endswith('.html'): continue
+# une « capture d'écran » : une maquette déjà habillée, réduite dans un cadre de téléphone (page de présentation, lot 32).
+# Dans la source : @@SHOT:Nom:largeur:hauteur@@. Les maquettes qui en contiennent sont habillées en dernier.
+# L'inclinaison, en cinquième champ : R = en perspective, tournée vers la droite ; L = vers la gauche ; r, l = à peine penchée (téléphone) ; 0 ou rien = droite.
+TILT={'R':('rotateY(16deg) rotateX(5deg) rotateZ(-2deg)','-22px 30px 50px rgba(90, 40, 60, 0.26)'),'L':('rotateY(-16deg) rotateX(5deg) rotateZ(2deg)','22px 30px 50px rgba(90, 40, 60, 0.26)'),
+      'r':('rotate(3deg)','0 18px 40px rgba(90, 40, 60, 0.22)'),'l':('rotate(-3deg)','0 18px 40px rgba(90, 40, 60, 0.22)'),'0':('none','0 18px 40px rgba(90, 40, 60, 0.22)')}
+def capture(m):
+    n,w,hh=m.group(1),int(m.group(2)),int(m.group(3)); tr,sh=TILT[m.group(4) or '0']; src=open(os.path.join(OUT,n+'.html'),encoding='utf-8').read()
+    body=src[src.index('<div style="width: 390px'):src.index('</x-dc>')]; k=w/390
+    return (f'<div aria-hidden="true" inert style="flex-shrink: 0; perspective: 1400px"><div style="padding: 8px; border-radius: 34px; background: #2b1b3d; box-shadow: {sh}; transform: {tr}">'
+            f'<div style="width: {w}px; height: {hh}px; overflow: hidden; border-radius: 26px; background: #fff6f1"><div style="width: 390px; transform: scale({k:.4f}); transform-origin: 0 0; text-align: left">{body}</div></div></div></div>')
+avec=lambda f: '@@SHOT' in open(os.path.join(SRC,f),encoding='utf-8').read()
+for f in sorted((x for x in os.listdir(SRC) if x.endswith('.html')),key=lambda x:(avec(x),x)):
     n=f[:-5]+'.dc.html'; h=open(os.path.join(SRC,f),encoding='utf-8').read()
     try:
         if n.startswith('DevineStory'):
@@ -123,9 +135,10 @@ for f in sorted(os.listdir(SRC)):
             for x,y in [('#e6b94a','#5f37a6'),('#3d2c08','#ffffff'),('#66431d','#e6d6f8'),('#a43a2f','#b92d1f'),('#8a2f27','#c93425'),('#b8483a','#d93a2b'),
                         ('#274e34','#085a43'),('#cfe2d3','#c6f1e2'),('#5b3a55','#2b1b3d'),('#ead2e2','#e6d6f8'),('#fffdf9','#ffffff'),('#f7f2e9','#fff6f1'),
                         ('#dccbad','#ffd9cc'),('#292524','#2b1b3d'),('#57534e','#6b5a7a')]: h=h.replace(x,y)
-            h=skin(h,t); S.update(_S); T.update(_T)
+            h=autocollant(skin(h,t)); S.update(_S); T.update(_T)
         else:
-            h=skin(avatars(journal(essais(n,h))),t).replace('rgba(60, 30, 10,','rgba(90, 40, 60,')
+            h=autocollant(skin(tuiles(avatars(journal(essais(n,h)))),t).replace('rgba(60, 30, 10,','rgba(90, 40, 60,'))
+        h=re.sub(r'@@SHOT:(\w+):(\d+):(\d+)(?::(\w))?@@',capture,h)
     except Exception as e:
         soucis.append((f,repr(e))); continue
     open(os.path.join(OUT,f),'w',encoding='utf-8').write(h); done+=1

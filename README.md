@@ -1559,6 +1559,7 @@ Deux réglages, dans le réglage du jeu, activés par défaut (`DevineReglage`) 
 - Un appui à droite passe au suivant, à gauche revient au précédent ; maintenir l'écran met en pause ; la croix ferme.
 - Si l'appareil demande moins d'animations, rien ne défile tout seul : on avance à l'appui.
 - Un prix sans gagnant est sauté. Le dernier écran propose « Voir tous les résultats » et « Revoir depuis le début ».
+- **Le dernier écran est sous une pluie de fête** (décidé par Julien le 19 novembre 2026, `DevineStory7` ; à faire, lot 23 bis) : des flocons de neige, des étoiles à quatre branches qui scintillent et quelques confettis tombent derrière le texte, en boucle. Une cinquantaine en tout : la moitié de flocons, un quart d'étoiles, un quart de confettis. Flocons en bleus de glace (`#6eb0f2`, `#8fc0f4`, `#b5d6f9`) et lilas `#b993dd` ; étoiles lilas, corail `#ff8478` et menthe `#4fcaa3` ; confettis corail, menthe, lilas et pêche `#f2a65a`. Pas de jaune. La pluie est décorative : elle n'est pas lue par un lecteur d'écran et ne prend aucun appui. Avec « réduire les animations », rien ne bouge : les mêmes dessins, posés sur l'écran.
 - **La page « Devine qui : les réponses »** (`DevinePalmares`) ne liste pas le palmarès : en haut, un bouton « Découvrir le palmarès » qui lance les images ; dessous, mes pronostics tels que je les ai faits, sans correction, pour ne rien gâcher. Une fois les images vues (`DevinePalmaresVu`), le bouton devient « Revoir le palmarès » et mes pronostics sont corrigés. Pas de carte « Tu avais deviné » : c'est le rôle des images. Le palmarès du groupe n'existe qu'en images.
 
 **Partout ailleurs, une invitation** : le journal (`DevineJournal`), l'accueil (`DevineAccueilPalmares`) et la page du tirage (`DevineTiragePalmares`, où c'est l'action principale) disent « le palmarès est arrivé » et lancent les images, sans rien dévoiler. Le vert sapin est la couleur du palmarès, et de lui seul : le fond des images, le bouton « Découvrir le palmarès » partout où il apparaît, et la tuile du jeu quand le palmarès attend. Le reste du jeu garde les couleurs normales de l'application. L'accueil rappelle d'ouvrir son cadeau d'abord. Une fois le palmarès vu, la carte de l'accueil disparaît et les liens mènent au récapitulatif.
@@ -1621,7 +1622,7 @@ Décidé par Julien le 18 novembre 2026. Lots 20 à 22 de `docs/refonte/PLAN.md`
 
 | Rôle | Ce qu'il peut faire |
 |---|---|
-| **Celui qui tient la liste** | N'importe quel compte, sans quota. Il crée la liste, écrit les idées de toutes les personnes, partage le lien. Il voit qui a coché quoi. Il peut cocher lui aussi, sauf les idées qui lui sont destinées |
+| **Celui qui tient la liste** | N'importe quel compte, sans quota. Il crée la liste, écrit les idées de toutes les personnes, partage le lien. Il voit qui a coché quoi. Il peut cocher lui aussi, dans le document où il écrit et dès le brouillon, y compris les idées qui lui sont destinées |
 | **Celui qui ouvre le lien, sans compte** | Il lit toute la liste. Toucher une case lui demande son adresse email (`ListeConnexion`) : le lien magique habituel le ramène sur la liste, et le cadeau est coché |
 | **Celui qui ouvre le lien, connecté** | Il coche, décoche, propose un cadeau à plusieurs, se joint à un cadeau, dit qu'il offre autre chose. La liste apparaît dans son onglet « Listes » dès qu'il l'a ouverte connecté |
 
@@ -1643,6 +1644,9 @@ Décidé par Julien le 18 novembre 2026. Lots 20 à 22 de `docs/refonte/PLAN.md`
 - **Écrire une idée** (`ListeTeneur`, `ListeIdee`) : chaque personne se termine par une ligne vide en gris, « Une autre idée… ». On y écrit directement ; la touche retour valide et passe à la ligne suivante. Au-dessus du clavier : « Lien », « Supprimer la ligne », « Terminé ».
 - **Tout texte se modifie en le touchant** : le titre, la date, le mot, une idée.
 - **Enregistrement automatique** : pas de bouton « Enregistrer ». Une ligne laissée vide disparaît. Une adresse collée dans une ligne devient le mot « lien ».
+- **Celui qui tient la liste coche dans le document**, sans changer de vue, y compris tant que la liste est un brouillon : la case d'une idée la coche à son prénom, seul ; retouchée, elle décoche. En V2 (22.20), cela vaut pour chacun de ceux qui tiennent la liste.
+- **Personne n'est bloqué sur ses propres idées** (décidé par Julien le 19 novembre 2026 ; **fait**, Correction 20). Celui qui tient la liste coche aussi une idée de sa section « Moi » : il se l'offre, ou il l'a déjà. Elle s'affiche comme n'importe quelle idée qu'il a cochée.
+- **Sous une idée que j'ai cochée dans le document** (décidé par Julien le 19 novembre 2026 ; **fait**, Correction 21) : « Tu l'offres · seul · Changer », en petit texte gris, comme par le lien (`ListeVisiteurMes`). La pastille verte « C'est toi » disparaît ; la coche verte et le texte en gras restent. « Changer » ouvre le même panneau que par le lien (`ListeReserver`) pour passer à un cadeau à plusieurs, sans le choix de rester anonyme : c'est celui qui tient la liste qui lit les prénoms. Depuis le document, il peut aussi se joindre à un cadeau à plusieurs.
 - **Une idée déjà cochée** par quelqu'un peut être corrigée ; la supprimer demande une confirmation.
 - Un document quitté sans nom ni personne n'est pas gardé.
 
@@ -1742,7 +1746,7 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 
 - Sur la fiche d'une personne de ma famille (`ListePersonneCompte`), une adresse email la relie à son compte. Pour un enfant, on laisse vide.
 - Une personne reliée peut **écrire, corriger et supprimer ses propres idées** sur les listes où elle figure (`ListeVueReliee`) : sa section passe en premier, « C'est toi ».
-- Pour le reste, elle voit la liste **comme tout le monde**, l'état de ses propres idées compris. Elle ne peut pas cocher ce qui lui est destiné.
+- Pour le reste, elle voit la liste **comme tout le monde**, l'état de ses propres idées compris. Elle coche comme tout invité, y compris ce qui lui est destiné (22.19, « Personne n'est bloqué sur ses propres idées »).
 - Elle ne tient pas la liste pour autant : elle ne voit pas qui offre quoi.
 
 #### Reprendre une liste
@@ -1751,9 +1755,9 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 - **Ce qui est repris** : l'icône, le mot, les personnes, et les idées qui n'avaient pas été cochées. Pas les cadeaux cochés, pas les cadeaux hors liste. Le nom et la date sont à remplir. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
 - **Une marque discrète** (`ListeReprise`) : une idée reprise porte une petite flèche grise en rond au bout de sa ligne, visible de ceux qui tiennent la liste seulement. Une phrase grise l'explique en haut. Pas de bouton pour garder ou retirer : on efface une idée comme n'importe quelle ligne. La marque disparaît quand on modifie l'idée, et pour toutes au premier partage.
 
-### 22.21 Décidé : la navigation toujours là (19 novembre 2026)
+### 22.21 Fait : la navigation toujours là (19 novembre 2026)
 
-Décidé par Julien le 19 novembre 2026. Pas encore codé : Correction 19 de `docs/refonte/PLAN.md`. Maquettes : `NavTirage`, `NavListe`, `NavRedaction`.
+Décidé par Julien le 19 novembre 2026. **Fait** (Correction 19 de `docs/refonte/PLAN.md`). Maquettes : `NavTirage`, `NavListe`, `NavRedaction`. Le menu est `AppMenu`, le même dans tous les cadres d'écran (`AdminScreen`, `ParticipantScreen`, `ListsScreen`, `AuthScreen`) ; la barre `UiTabBar` est posée une fois, dans `app.vue`, et chaque cadre s'arrête au-dessus d'elle (`--tab-bar`). L'onglet « Listes » est actif sur `/listes`, `/l/…` et `/famille/…`, « Tirages » partout ailleurs.
 
 Pour une personne **connectée**, sur tous les écrans, quel que soit le lien par lequel elle est arrivée (son lien personnel de participant compris) :
 
@@ -1763,6 +1767,115 @@ Pour une personne **connectée**, sur tous les écrans, quel que soit le lien pa
 Sans session (lien personnel, lien d'une liste, lien d'invitation) : rien ne change, le bouton de langue reste, pas de barre.
 
 Deux exceptions : le palmarès en images, en plein écran ; et un panneau du bas ouvert, qui recouvre la barre comme le fait le clavier.
+
+### 22.22 Décidé : les notifications, la connexion par code, l'application installée (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : lots 28 à 31 de `docs/refonte/PLAN.md`. Maquettes : `NotifAccueil`, `NotifListe`, `NotifMenu`, `NotifCentre`, `NotifReglage`, `NotifEmailResume`, `ConnexionCode`, `ConnexionCodeEmail`, `Installer`, `NotifAutoriser`.
+
+**L'idée.** Aujourd'hui l'application prévient par email, automatiquement. Demain, chaque compte a ses **nouveautés** : elles se voient d'abord dans l'application, elles peuvent arriver sur le téléphone, et l'email devient le dernier recours, regroupé. Moins d'emails, sans rien manquer.
+
+**Qui est concerné.** Une personne qui a un compte. Un participant qui n'a que son lien personnel, sans compte, garde les emails d'aujourd'hui.
+
+#### Une nouveauté
+
+Quelque chose qui concerne une personne précise, avec l'écran où aller voir. Deux niveaux :
+
+| Niveau | Exemples |
+|---|---|
+| **Ce qui presse** | Ton enveloppe t'attend (le tirage vient d'être fait) ; une invitation, à rejoindre un groupe ou à tenir une liste ; la réponse à une demande de groupe ; quelqu'un te demande des pistes ; pour l'organisateur, le rappel à quelques jours de la fête |
+| **Le reste** | De nouvelles pistes ; le tirage est dévoilé ; le palmarès est arrivé ; une alerte du journal ; quelqu'un a rejoint le groupe ; toutes les enveloppes sont ouvertes ; le point sur « Devine qui » ; quelqu'un a coché sur une liste que je tiens ; quelqu'un se joint à mon cadeau ; de nouvelles idées sur une liste, ou pour une personne, que je suis |
+
+- Les nouveautés de même nature au même endroit se **regroupent** dans la journée : « 2 cadeaux ont été cochés sur ta liste ».
+- Une nouveauté est **vue** quand la personne ouvre ce qu'elle signale. Il n'y a pas de bouton « tout marquer comme lu ».
+- Au bout de trente jours, une nouveauté disparaît.
+
+#### Dans l'application
+
+- **Des pastilles là où ça se passe** (`NotifAccueil`, `NotifListe`) : un point sur l'onglet « Tirages » ou « Listes » de la barre du bas ; « 2 nouveautés » ou un point sur la carte d'un tirage ou d'une liste ; un petit point dans la marge devant une ligne de liste qui a changé depuis ma dernière visite. La pastille s'efface quand on a vu la chose.
+- **« Quoi de neuf », dans le menu** (`NotifMenu`, `NotifCentre`) : première ligne du menu, avec son compteur ; le bouton du menu porte un point quand il y a du nouveau. La page liste les nouveautés par jour (« Aujourd'hui », « Hier », « Cette semaine ») : une icône, ce qui s'est passé, où et quand. Une ligne pas encore vue est en gras, avec un point. Ouvrir cette page ne marque rien comme vu : c'est la même information que les pastilles, en liste.
+- Pas de troisième onglet dans la barre du bas.
+- Quand l'application est ouverte, pastilles et compteur se mettent à jour en direct, par le mécanisme du lot 26 ; sans lui, au retour sur la page.
+
+#### Suivre une liste, ou une seule personne
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 29 bis. Maquette : `ListeSuivre`.
+
+- **Suivre**, c'est demander à être prévenu des nouvelles idées sur une liste qu'on ne tient pas : toute la liste, ou seulement certaines personnes (« je veux savoir quand il y a du nouveau pour Léo »).
+- **Une cloche au bout du nom de chaque personne**, sur la liste ouverte par son lien : vide, je ne la suis pas ; pleine, je la suis. Sous le mot de la liste, une ligne dit où j'en suis (« Tu es prévenu des nouvelles idées pour Léo. ») et propose « Suivre toute la liste ».
+- **Suivre toute la liste** prévient aussi quand une personne y est ajoutée. Suivre une personne ne prévient que de ses idées à elle.
+- **Ce que suivre change** : sans suivre, les nouvelles idées ne se voient que dans l'application, par les pastilles. En suivant, elles arrivent aussi sur le téléphone et dans le résumé par email, selon « Me prévenir ». C'est du niveau « le reste », regroupé dans la journée : « 3 nouvelles idées pour Léo, sur Noël 2026 ».
+- **Sans compte**, toucher une cloche demande l'adresse email, comme pour cocher.
+- **Arrêter** : retoucher la cloche ; un lien dans chaque email ; et la liste de ce que je suis, dans « Me prévenir ».
+- Une liste passée ne prévient plus. Une idée corrigée ou supprimée ne prévient pas.
+- Ceux qui tiennent la liste ne voient pas qui la suit.
+
+#### « Me prévenir » : le téléphone et l'email se règlent à part
+
+Dans « Mon compte » (`NotifReglage`).
+
+| Réglage | Choix |
+|---|---|
+| **Sur ce téléphone** | Un interrupteur « Notifications » : tout de suite, à chaque nouveauté. Par appareil |
+| **Par email** | « Un résumé le matin » (par défaut), « Tout de suite », « Aucun email » |
+
+- **Le résumé** (`NotifEmailResume`) : un seul email par jour, le matin, en texte seul, avec ce qui n'a pas encore été vu, un bloc par tirage ou par liste. Rien à dire, pas d'email.
+- **Ce qui presse**, avec le résumé : l'email part quand même tout de suite, sauf si la nouveauté a déjà été vue. Quand la personne a des notifications sur un téléphone, on attend dix minutes avant d'envoyer cet email.
+- **« Tout de suite »** : un email à chaque nouveauté.
+- **« Aucun email »** : seul l'email de connexion part encore.
+- Les emails n'ont pas d'image (23.5).
+
+#### La connexion par code, dans l'application installée
+
+- Safari et l'application installée ne partagent pas leur session, et un lien reçu par email s'ouvre dans le navigateur : le lien magique ne peut pas connecter l'application installée.
+- **Quand l'application tourne installée** (sur iPhone comme sur Android), on se connecte par un **code à six chiffres** (`ConnexionCode`) : l'adresse, puis six cases, validées au sixième chiffre ; « Renvoyer un code », « Utiliser une autre adresse ».
+- L'email (`ConnexionCodeEmail`) met le code dans son objet et en gros dans le message, sans lien.
+- Le code est valable 15 minutes, ne sert qu'une fois, sur l'appareil qui l'a demandé, cinq essais au plus. Les mêmes limites d'envoi que le lien magique.
+- **Dans un navigateur, rien ne change** : le lien magique, et « Confirmer sur cet appareil ».
+
+#### L'application installée
+
+- L'application devient installable (manifeste, icônes, couleurs de Sorbet).
+- **Proposer l'installation** : dans « Me prévenir », et une fois sur l'accueil d'une personne connectée, sur téléphone, dans un navigateur. Sur iPhone, un panneau explique les trois gestes (`Installer`) ; sur Android, un bouton « Installer » déclenche la proposition du téléphone. Jamais dans l'application déjà installée.
+- **Les notifications du téléphone** : sur iPhone, elles n'existent que dans l'application installée (iOS 16.4 et plus). On les demande par un panneau à nous (`NotifAutoriser`), puis par la question du téléphone, toujours après un geste de la personne. Toucher une notification ouvre l'écran concerné.
+- **La pastille sur l'icône** de l'application montre le nombre de nouveautés pas encore vues, là où le téléphone le permet.
+
+### 22.23 Décidé : la page de présentation (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 32 de `docs/refonte/PLAN.md`, **à faire en dernier**, quand tout ce qu'elle présente existe (lots 23 bis à 31). Maquette : `Landing`.
+
+**L'idée.** Celui qui arrive sur `/` sans session ne voit plus seulement le logo et la connexion : il voit ce que fait l'application. La page se lit d'un trait sur un téléphone, de haut en bas.
+
+| Bloc | Ce qu'il dit |
+|---|---|
+| L'en-tête | Le sapin, « Under the Tree », « Le Secret Santa de la famille, et les listes de cadeaux qui vont avec. », puis « Créer un compte » et « Se connecter » |
+| Le lien personnel | L'encadré vert d'aujourd'hui : « Tu as reçu un lien personnel ? Ouvre-le directement : il fonctionne sans compte. » |
+| Le tirage | Secret, même pour l'organisateur ; les règles (pas soi-même, pas son conjoint, pas la même personne que les années passées) ; un lien par personne ; le journal que tout le groupe lit |
+| Les pistes | Six questions, trente secondes, lues par son Père Noël |
+| Devine qui | Les pronostics, puis le palmarès en images |
+| Les listes | Pas de doublon, le cadeau à plusieurs, la liste tenue à deux et en direct |
+| Et aussi | L'application installée, les notifications et le résumé du matin, la connexion sans mot de passe, la mémoire d'une année sur l'autre, les trois langues |
+| Bientôt | L'assistant, voir ci-dessous |
+| La fin | « Prêt pour cette année ? », les deux boutons, et le choix de la langue |
+
+- **« Créer un compte » et « Se connecter »** mènent aux écrans de connexion actuels, qui ne changent pas. La page ne contient plus le champ d'adresse elle-même.
+- **Deux mises en page, une seule page** : sur téléphone (`Landing`), tout s'empile ; sur un écran large (`LandingDesktop`), l'en-tête porte « Se connecter » et « Créer un compte » à droite, le titre est à gauche de deux captures, les quatre blocs alternent texte et capture, « Et aussi » tient sur trois colonnes.
+- **Des captures d'écran, sur un écran large seulement**, chacune dans un cadre de téléphone : l'enveloppe à ouvrir, les pistes, deux écrans du palmarès, une liste. En haut de page, deux captures qui ne se ressemblent pas : une claire (l'enveloppe) et une foncée (le palmarès). Dans les maquettes, ce sont les maquettes elles-mêmes, réduites. Dans l'application, ce sont de vraies captures, faites à partir des données de démonstration : jamais une donnée réelle. **Elles ne sont pas posées à plat** : sur un écran large, chaque téléphone est incliné en perspective et tourné vers son texte, donc une fois d'un côté, une fois de l'autre ; **sur téléphone, pas de capture** (décidé par Julien le 19 novembre 2026).
+- **Une petite icône à gauche du titre de chaque bloc**, sur téléphone comme sur un écran large : une tuile en autocollant (44 px sur téléphone, 52 px sur un écran large), une enveloppe sur corail pour le tirage, une étiquette sur ciel pour les pistes, un détective sur lilas pour le jeu, un cadeau sur menthe pour les listes.
+- En bas, « Qui a fait ça, et pourquoi ? » mène à la page de Julien (22.24).
+- **Une personne connectée ne voit jamais cette page** : `/` reste son accueil.
+- **Elle ne promet que ce qui existe.** Un bloc dont le lot n'est pas fait n'est pas affiché.
+- **« Bientôt : demande-le à ton assistant préféré »**, dans un encadré lilas à l'étiquette « Bientôt ». L'application se branchera sur l'assistant que chacun utilise déjà, par MCP (Model Context Protocol), le standard qui relie les assistants aux applications. Deux exemples en bulles : « Ajoute un vélo 16 pouces à la liste de Léo. », « Qu'est-ce qu'il reste à offrir à Mamie ? ». Aucune marque d'assistant n'est nommée. Une phrase rappelle que le tirage reste secret : aucun assistant ne saura qui offre à qui. **Ce n'est qu'une annonce** : le branchement lui-même n'est ni conçu ni planifié.
+- Trois langues. La page est publique : elle a un titre, une description et une image d'aperçu pour les moteurs de recherche et le partage du lien.
+
+### 22.24 Décidé : « Qui a fait ça, et pourquoi ? », et le café (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : lot 33 de `docs/refonte/PLAN.md`. Maquette : `APropos`.
+
+- Une page publique, `/a-propos`, où Julien se présente et dit pourquoi il a fait l'application. On y arrive par « Qui a fait ça, et pourquoi ? », en bas de la page de présentation, et par le menu.
+- **Les textes de la maquette sont un brouillon**, écrit à partir de ce que ce README sait de lui (deux familles, des tricheurs, la page de listes qu'il tenait à la main). Julien les réécrit avant qu'on les code.
+- **« Un café ? »** : un bouton vers un service de dons extérieur, ouvert dans un nouvel onglet. Aucun paiement dans l'application, aucun script du service chargé dans la page.
+- **« Écris-moi »** : une adresse de contact à créer sur le domaine. Jamais l'adresse personnelle de Julien.
+- Le service de dons reste à choisir. Relevé le 19 novembre 2026 sur des comparatifs, à vérifier sur les sites des services : Buy Me a Coffee prend 5 % sur tout, plus les frais de paiement ; Ko-fi ne prend rien sur les dons de son offre gratuite, hors frais de paiement.
 
 ## 23. Design system
 
@@ -1824,7 +1937,8 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiStack` | Une carte posée sur une pile : un bord de carte par élément en attente derrière, deux au plus |
 | `UiRestricted` | Ce que seul un super-admin voit sur un écran que tout le monde voit : un cadre en pointillés titré sur sa bordure (bouclier et « Super-admin »), sans phrase d'explication ; `flush` pour des lignes bord à bord |
 | `UiCheckRow` | Une personne à cocher : icône, nom, une ligne dessous (ou l'emplacement `subtitle`, pour une icône), case native de 24 px ; toute la ligne coche |
-| `UiStickyFooter` | La bande blanche collée en bas d'un long écran, avec son action principale ; elle descend jusqu'au bas de la page |
+| `UiStickyFooter` | L'action principale d'un écran, en bas. Sur un long écran où l'on choisit : une bande blanche collée en bas, au-dessus de la barre « Tirages / Listes » quand il y en a une. Sur une page où l'on rédige (`inline`) : dans la page, à la fin du contenu, sans rien au-dessus du clavier ; toucher hors du champ ferme le clavier (`useTapOutsideToBlur`) |
+| `UiTabBar` | La barre du bas d'une personne connectée, sur tous les écrans (22.21) : « Tirages » et « Listes », l'onglet où l'on est en couleur |
 | `UiPointList` | Quelques points, chacun après un petit rond ou son icône ; `tone` colore les marques (rouge pour ce qui se perd, vert pour ce qui reste) |
 | `UiJournalPreview` | « Ce que le groupe lira dans le journal » : la ligne dans une carte blanche, avant l'action qui l'écrit |
 | `UiTagList` | Quelques mots côte à côte, chacun dans une pastille pêche, qui passent à la ligne : les réponses de « Moi et les cadeaux ». Une étiquette peut être un lien (36 px à l'œil, 44 px au doigt) ou, en pointillés corail après un « + », ce qui manque |
@@ -1870,10 +1984,10 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - **Choisir dans un panneau, rédiger sur une page** (décidé par Julien le 18 novembre 2026, après le bug du clavier : sur téléphone, un champ saisi dans un panneau du bas disparaissait sous le clavier). Le panneau remonte maintenant au-dessus du clavier, mais y saisir du texte reste fragile : le clavier prend la moitié de l'écran, le panneau devient étroit et doit défiler, et on peut le fermer par erreur en glissant vers le bas. Correction 18 de `docs/refonte/PLAN.md`.
   - Un panneau du bas sert aux choix (un mode, une date, une langue), aux confirmations, et à **un seul champ court** : un nombre, un nom, une adresse email, un identifiant ou une phrase à recopier.
   - Dès qu'on **rédige** (un texte de plus d'une ligne, ou plusieurs champs), c'est une page à part. Le contexte au-dessus du titre, le titre, le champ en haut avec son aide et son compteur de caractères, « Valider » fixé en bas de l'écran, et « Retour » qui abandonne. Le modèle est l'écran « Personnaliser le message » (maquette `DevineRappelPersonnaliser`).
-  - **Clavier ouvert** (décidé par Julien le 18 novembre 2026, essayé sur iPhone) : Safari et Chrome sur iPhone recouvrent la page au lieu de la réduire. Tant que le clavier est ouvert, « Valider » est posé sur le clavier, comme dans une messagerie ; le champ grandit jusqu'à six lignes puis défile, pour rester au-dessus ; la page ne défile pas au-delà de sa fin (`UiStickyFooter`, `useKeyboardInset`, `emptyBelow`). Sous un bouton du bas, la place de la barre d'accueil ou 1 rem, pas les deux.
+  - **Clavier ouvert** : la règle du 18 novembre 2026 (« Valider » posé sur le clavier, comme dans une messagerie) est **abandonnée** le 19 novembre 2026 : voir « Rien ne se place au-dessus du clavier », plus bas. Le champ grandit toujours jusqu'à six lignes puis défile. Sous un bouton du bas, la place de la barre d'accueil ou 1 rem, pas les deux.
   - Les confirmations d'une action qui ne se rattrape pas (« Supprimer le groupe », « Dévoiler avant la fête ») restent des panneaux, même avec une phrase à recopier : le panneau garde le contexte sous les yeux.
 - Un panneau enregistre avec un bouton « Valider » ; le fermer autrement abandonne. **Un réglage s'enregistre seul** (décidé par Julien le 16 novembre 2026) : à la validation de son panneau, ou dès qu'un interrupteur bascule ; pas de bouton « Enregistrer » en bas de page. La nouvelle valeur s'affiche tout de suite, la ligne montre la roue, et une erreur remet l'ancienne valeur avec un toast (`useRuleSaver` pour les règles du groupe, `useProfileSaver` pour son propre profil, de même pour le lien d'invitation et le quota d'un compte).
-- **Rien ne se place au-dessus du clavier** (décidé par Julien le 19 novembre 2026 : sur téléphone, une barre ou un bouton collé au clavier ne tient pas). Sur une page où l'on rédige, « Valider » est **dans la page**, à la fin du contenu, et non dans une bande collée en bas ; le clavier passe par-dessus, et toucher hors du champ le ferme. Dans une liste, les actions d'une ligne sont dans le document, sous la ligne (22.20). Cela remplace « "Valider" fixé en bas de l'écran » de la règle précédente. Correction 19.
+- **Rien ne se place au-dessus du clavier** (décidé par Julien le 19 novembre 2026 : sur téléphone, une barre ou un bouton collé au clavier ne tient pas). Sur une page où l'on rédige, « Valider » est **dans la page**, à la fin du contenu, et non dans une bande collée en bas ; le clavier passe par-dessus, et toucher hors du champ le ferme. Dans une liste, les actions d'une ligne sont dans le document, sous la ligne (22.20). Cela remplace « "Valider" fixé en bas de l'écran » de la règle précédente. **Fait** (Correction 19) : `UiStickyFooter inline` sur les douze pages où l'on rédige ; les pieds collants des écrans où l'on choisit (participants, emails, relance, pronostics) restent collés en bas, sans suivre le clavier.
 - Une cible tactile fait au moins 44 px.
 - Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
@@ -1939,6 +2053,38 @@ Les six noms enregistrés ne changent pas (`brick`, `pine`, `mustard`, `kraft`, 
 | `kraft` | pêche | `#ffe2c4` | `#f2a65a` |
 | `frost` | ciel | `#cfe6ff` | `#6eb0f2` |
 | `plum` | lilas | `#e6d6f8` | `#b993dd` |
+
+#### La forme des icônes : l'autocollant en dégradé (fait, lot 23 bis)
+
+Décidé par Julien le 19 novembre 2026, sur la planche `StyleIcones` de l'artifact des maquettes (piste 7). Rien ne change dans ce qui est enregistré : mêmes noms de couleur, mêmes symboles. `docs/refonte/sorbet/autocollant.py` fait foi pour les valeurs. Dans le code : `app/utils/stickers.ts` (le liseré, l'ombre et les dégradés, testés), `UiAvatar` (`px` pour une taille à part, `flat` pour le dégradé seul) et `ListsTile` (`flat` : droite, sans liseré ni ombre) ; la pluie de fête du palmarès est `ParticipantFestiveRain`, tirée par `app/utils/festiveRain.ts`.
+
+**Une personne** reste un rond.
+
+- Fond : un dégradé doux, `linear-gradient(150deg, #ffffff 0%, <fond> 42%, <bord> 135%)`, avec le fond et le bord du tableau ci-dessus. Le bord coloré d'1 px disparaît.
+- Un liseré blanc autour : 5 % du diamètre, 2 px au moins.
+- Une ombre portée : `0 3px 8px rgba(90, 40, 60, 0.22)` à partir de 36 px de diamètre, `0 2px 5px rgba(90, 40, 60, 0.2)` en dessous.
+
+**Une liste** reste un carré arrondi. Ses six couleurs pleines laissent la place aux six teintes des personnes, sous les mêmes noms enregistrés.
+
+| Nom enregistré | Avant | Devient |
+|---|---|---|
+| `pine` | sapin | menthe |
+| `brick` | brique | corail |
+| `mustard` | moutarde | citron |
+| `plum` | prune | lilas |
+| `night` | bleu nuit | ciel |
+| `kraft` | kraft | pêche |
+
+- Fond : `linear-gradient(150deg, <fond> 0%, <bord> 110%)`. Coins : 30 % du côté.
+- Le même liseré blanc et la même ombre que pour une personne.
+- La tuile est penchée de 3 degrés vers la gauche (`rotate(-3deg)`).
+
+**Les cas à part**
+
+- Des icônes qui se chevauchent (un groupe, un cadeau à plusieurs) : le dégradé, et l'anneau de la couleur du fond qu'elles ont déjà. Pas d'ombre.
+- Dans la grille d'un panneau de choix d'icône : l'icône choisie garde son anneau corail, sans liseré ni ombre, et une tuile de liste y reste droite. Les pastilles de couleur montrent le dégradé seul. L'aperçu en haut du panneau est une icône comme les autres.
+- Sur le palmarès en images : le dégradé, avec le liseré clair et l'ombre que ces écrans ont déjà.
+- Sur une carte blanche, le liseré ne se voit pas : c'est l'ombre qui détache l'icône.
 
 #### Le palmarès en images
 

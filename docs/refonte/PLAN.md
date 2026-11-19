@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : la Correction 25 (décocher pour quelqu'un), le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -872,30 +872,44 @@ Décidé par Julien le 19 novembre 2026. Après le lot 25 (la présence en dépe
 
 - [ ] **Borner ce qui coûte** (section 8.1) : au plus 30 connexions par liste (proposition), fermeture après 30 minutes sans activité, pas de message plus gros que quelques kilo-octets.
 - [ ] **L'objet durable** : un par liste, WebSocket avec hibernation, déclaré dans la configuration de déploiement. Vérifier d'abord dans la documentation Cloudflare que l'offre du compte le permet, et le noter en section 6.
-- [ ] **Le signal** : chaque route qui change une liste prévient l'objet après l'écriture dans D1 ; l'objet envoie « la liste a changé » ; chaque navigateur recharge sa vue par les routes existantes. Aucune donnée de la liste ne passe par le canal.
+- [ ] **Le signal** : chaque route qui change une liste (une idée, une coche, un « J'offre autre chose » ajouté par le lien, une personne, l'ordre) prévient l'objet après l'écriture dans D1 ; l'objet envoie « la liste a changé » ; chaque navigateur recharge sa vue par les routes existantes. Aucune donnée de la liste ne passe par le canal.
 - [ ] **Les animations** : une ligne qui apparaît, change, se coche ou disparaît le montre par son mouvement, sans étiquette ni couleur. Respecter « réduire les animations ».
-- [ ] **La ligne bloquée** : qui écrit quelle ligne passe par l'objet ; les autres voient son curseur à sa couleur, avec son emoji et son prénom, la ligne ne se touche pas ; libérée à la validation, à la sortie de la ligne, ou après 30 secondes sans frappe.
+- [ ] **La ligne bloquée** : qui écrit quelle ligne passe par l'objet ; les autres voient la ligne teintée à la couleur claire de son icône, dessous en petit son icône et « {Prénom} écrit… », son curseur à sa couleur dans le texte, sans étiquette collée dessus (choisi par Julien le 19 novembre 2026, maquette `ListeLiveTeneur`) ; la ligne ne se touche pas ; libérée à la validation, à la sortie de la ligne, ou après 30 secondes sans frappe.
 - [ ] **Cocher en même temps** : la première écriture gagne, l'autre voit la case passer en « pris », sans message.
-- [ ] **La présence**, entre ceux qui tiennent la liste seulement.
+- [ ] **La présence**, entre ceux qui tiennent la liste seulement. Un visiteur par le lien, avec ou sans compte, n'est jamais montré comme présent ni comme « en train d'écrire » : ce qu'il fait arrive en direct, sans dire qui.
+- [ ] **Le nombre de visiteurs présents** (demandé par Julien le 19 novembre 2026) : ceux qui tiennent la liste voient, près de leur présence, « 2 visiteurs en ce moment », un simple nombre de ceux qui ont la liste ouverte par son lien, avec ou sans compte. Jamais de prénom, jamais d'icône, jamais « vient d'arriver » ni « vient de partir » : le nombre change sans animation. L'objet durable connaît déjà ses connexions : rien de plus à stocker. Les visiteurs, eux, ne voient pas ce nombre (proposition).
 - [ ] **Sans connexion** : la page se recharge quand elle redevient visible ; rien ne casse.
 - [ ] Tests : les fonctions pures du signal et du blocage ; un test `e2e` à deux navigateurs.
 
+### Correction 25 — Celui qui tient la liste décoche pour quelqu'un (README 22.19)
+
+Demandé par Julien le 19 novembre 2026 : Mamie a coché, puis dit de vive voix qu'elle ne le prend plus ; il faut pouvoir l'enlever pour elle. Aujourd'hui, celui qui tient une liste ne décoche que ses propres coches (`DELETE /api/lists/[id]/claims/[ideaId]` ne vise que son compte). Sans migration. Maquettes : `ListeDecocher`, `ListeDecocheFait`.
+
+- [ ] **Le cœur, en fonction pure**, testé d'abord : qui peut retirer quelle coche (ceux qui tiennent la liste : toutes ; un visiteur : la sienne seulement, comme aujourd'hui).
+- [ ] **La route** : ceux qui tiennent la liste peuvent retirer la coche d'un autre, en la désignant (pas seulement « la mienne »).
+- [ ] **Dans le document, sans bulle ni question** (dessin revu le 19 novembre 2026, maquettes `ListeDecocher`, `ListeDecocheFait`) : toucher le prénom posé sur une idée cochée (« Mamie », « Anonyme ») déplie, dans la ligne, un bandeau clair : « Coché par Mamie, le 12 novembre » et un bouton « Décocher ». Le prénom touché passe en foncé ; le retoucher replie. « Décocher » agit tout de suite : l'idée redevient libre, et « Coche de Mamie retirée » s'affiche avec « Annuler ». Ma propre coche garde « Tu l'offres · Changer ».
+- [ ] **Une coche anonyme se retire aussi**, sans rien révéler : le bandeau dit « Coché en anonyme », sans date ni indice ; puis « Coche anonyme retirée ». Celui qui tient la liste ne sait toujours pas qui c'était.
+- [ ] **Un cadeau à plusieurs** : le bandeau a une ligne par prénom, chacune avec son « Retirer » ; le dernier retiré rend l'idée libre.
+- [ ] **« Annuler »** remet la coche telle qu'elle était (même personne, même mode, même date). C'est lui le filet : pas de « tu es sûr ? ».
+- [ ] **Celui qu'on décoche le voit** : sa liste « Ce que tu offres » ne compte plus ce cadeau ; quand les nouveautés existent (lot 28), il en reçoit une, « Camille a retiré ta coche sur … », sauf s'il avait coché en anonyme (rien ne doit relier une coche anonyme à une personne).
+- [ ] Trois langues, `tests/e2e`.
+
 ### Lot 24 ter — Listes : réordonner en glissant (README 22.20)
 
-Demandé par Julien le 19 novembre 2026. **Ça doit bien marcher sur téléphone** : c'est le critère du lot. Sans migration (`position` existe sur les idées et sur les personnes d'une liste). Maquette : `ListeGlisser` (la ligne soulevée, et le trait qui montre où elle va tomber). Points à relire : section 6, « Lot 24 ter ».
+Demandé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), sauf la ligne « En direct » (le lot 26 n'existe pas) et l'essai sur un vrai téléphone, qui revient à Julien. **Ça doit bien marcher sur téléphone** : c'est le critère du lot. Sans migration (`position` existe sur les idées et sur les personnes d'une liste). Maquette : `ListeGlisser` (la ligne soulevée, et le trait qui montre où elle va tomber). Points à relire : section 6, « Lot 24 ter ».
 
-- [ ] **Le cœur, en fonction pure**, testé d'abord : la nouvelle suite de positions après un déplacement, d'une idée dans sa personne, d'une idée vers une autre personne, d'une personne dans la liste.
-- [ ] **Sur téléphone, un appui long soulève** (environ 350 ms, avec une vibration courte là où le téléphone le permet) : une idée par sa ligne, une personne par son en-tête (icône et prénom). Un appui court garde son rôle : modifier le texte, cocher, ouvrir le menu. Tant que rien n'est soulevé, la page défile normalement ; dès que c'est soulevé, le doigt déplace la ligne et la page ne défile plus que près des bords, toute seule.
-- [ ] **Ce qu'on voit** (`ListeGlisser`) : la ligne soulevée devient une carte blanche, à contour rouge et à ombre, légèrement penchée, avec une poignée à droite ; un trait rouge épais montre où elle tombera ; les autres lignes s'écartent. Une personne soulevée se replie en une ligne (icône, prénom, nombre d'idées) pour pouvoir traverser une longue liste.
-- [ ] **Sur ordinateur** : une poignée apparaît à gauche de la ligne au survol ; on la tire à la souris. Au clavier, dans une ligne : `Alt` + flèche haut ou bas déplace l'idée.
-- [ ] **Une idée peut changer de personne** en la lâchant dans la section d'une autre. La ligne vide « Une autre idée… » reste toujours la dernière de sa section.
-- [ ] **Ce qui suit l'idée** : ses coches, son lien, ceux qui se sont joints. Rien n'est perdu ni prévenu.
-- [ ] **Qui peut** : ceux qui tiennent la liste, partagée ou non. Par le lien, rien ne se déplace.
-- [ ] **Lâcher hors de la liste, ou appuyer sur Échap**, remet tout en place. Après un déplacement, « Annuler » pendant quelques secondes.
+- [x] **Le cœur, en fonction pure**, testé d'abord : la nouvelle suite de positions après un déplacement, d'une idée dans sa personne, d'une idée vers une autre personne, d'une personne dans la liste.
+- [x] **Sur téléphone, un appui long soulève** (environ 350 ms, avec une vibration courte là où le téléphone le permet) : une idée par sa ligne, une personne par son en-tête (icône et prénom). Un appui court garde son rôle : modifier le texte, cocher, ouvrir le menu. Tant que rien n'est soulevé, la page défile normalement ; dès que c'est soulevé, le doigt déplace la ligne et la page ne défile plus que près des bords, toute seule.
+- [x] **Ce qu'on voit** (`ListeGlisser`) : la ligne soulevée devient une carte blanche, à contour rouge et à ombre, légèrement penchée, avec une poignée à droite ; un trait rouge épais montre où elle tombera ; les autres lignes s'écartent. Une personne soulevée se replie en une ligne (icône, prénom, nombre d'idées) pour pouvoir traverser une longue liste.
+- [x] **Sur ordinateur** : une poignée apparaît à gauche de la ligne au survol ; on la tire à la souris. Au clavier, dans une ligne : `Alt` + flèche haut ou bas déplace l'idée.
+- [x] **Une idée peut changer de personne** en la lâchant dans la section d'une autre. La ligne vide « Une autre idée… » reste toujours la dernière de sa section.
+- [x] **Ce qui suit l'idée** : ses coches, son lien, ceux qui se sont joints. Rien n'est perdu ni prévenu.
+- [x] **Qui peut** : ceux qui tiennent la liste, partagée ou non. Par le lien, rien ne se déplace.
+- [x] **Lâcher hors de la liste, ou appuyer sur Échap**, remet tout en place. Après un déplacement, « Annuler » pendant quelques secondes.
 - [ ] **En direct** (lot 26, s'il existe) : l'ordre arrive chez les autres ; une ligne que quelqu'un écrit ne se déplace pas sous ses doigts, le déplacement attend qu'il ait fini.
-- [ ] **Accessibilité** : le déplacement est annoncé (« Livres sur les dinosaures, position 3 sur 5 ») ; les deux gestes ont leur équivalent sans glisser : « Monter » et « Descendre » dans le menu « ⋯ » d'une personne, `Alt` + flèches pour une idée.
+- [x] **Accessibilité** : le déplacement est annoncé (« Livres sur les dinosaures, position 3 sur 5 ») ; les deux gestes ont leur équivalent sans glisser : « Monter » et « Descendre » dans le menu « ⋯ » d'une personne, `Alt` + flèches pour une idée.
 - [ ] **Essayé sur un vrai téléphone**, iPhone et Android : pas de sélection de texte ni de menu du navigateur pendant l'appui long, pas de défilement parasite, le clavier ne s'ouvre pas.
-- [ ] Trois langues, `tests/e2e` (souris et tactile simulé).
+- [x] Trois langues, `tests/e2e` (souris et tactile simulé).
 
 ### Lot 27 — Listes V2 : reprendre une liste (README 22.20)
 
@@ -1652,6 +1666,23 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 2. **Une bibliothèque ou du code maison** : à décider en codant. Le critère est le téléphone ; si une bibliothèque est ajoutée, écrire pourquoi (Correction 23 : aucune dépendance sans raison).
 3. **Changer une idée de personne en la glissant** : proposé d'office. À retirer si c'est une source d'erreurs.
 4. **Une liste sans personne** (lot 27 bis) : seules les idées se déplacent.
+
+Codé le 19 novembre 2026. Tranché seul, à relire :
+
+5. **Du code maison, aucune dépendance ajoutée** (`app/composables/useListDrag.ts`, environ 250 lignes). Les bibliothèques de glisser gèrent mal le mélange « appui long sur téléphone, appui court qui garde son rôle, champ de texte dans la ligne » ; ici le besoin est petit (une colonne, des lignes) et le critère est le téléphone. Événements tactiles pour le doigt, événements souris pour la poignée.
+6. **L'appui long : 350 ms**, annulé si le doigt glisse de plus de 10 px (c'est un défilement). Une vibration de 12 ms là où le navigateur le permet (Android ; pas sur iPhone, où Safari ne vibre pas).
+7. **Pas de sélection de texte ni de menu du navigateur** : tout le document de la liste est en `user-select: none` et `-webkit-touch-callout: none` ; seuls les champs où l'on écrit gardent la sélection. Conséquence : dans le document, on ne peut plus sélectionner le texte d'une idée pour le copier sans entrer dans la ligne. Le menu contextuel est annulé pendant l'appui.
+8. **Le clavier ne s'ouvre pas** : le lâcher du doigt est annulé, aucun appui ne suit. Une ligne qu'on est en train d'écrire ne se soulève pas par son champ (on y sélectionne du texte) ; ses voisines, si.
+9. **Le défilement** : une fois la ligne soulevée, la page ne défile plus sous le doigt ; elle défile seule à moins de 72 px du haut ou du bas, plus vite près du bord.
+10. **Lâcher hors de la liste** : au-delà de 48 px au-dessus ou en dessous des personnes, rien ne bouge. Échap aussi.
+11. **« Annuler » pendant 5 secondes** après un déplacement, dans le message « {Texte} déplacé ».
+12. **L'ordre est enregistré en entier** (`PUT /api/lists/[id]/order`), seules les lignes déplacées sont écrites. Si la liste a changé entre-temps (une idée ajoutée ou supprimée par quelqu'un d'autre), rien ne bouge et l'écran dit « La liste a changé entre-temps : réessaie. »
+13. **Les cadeaux hors liste ne se déplacent pas** (remarque de Julien à l'essai) : ce ne sont pas des idées, ils n'ont pas de place enregistrée et restent après les idées de leur personne. Les ranger entre eux demanderait une migration ; les changer de personne changerait à qui le cadeau est destiné. **Question** : faut-il pouvoir les ranger ?
+14. **`Alt` + flèche au bout d'une personne** fait passer l'idée chez la personne du dessus (à la fin) ou du dessous (au début).
+15. **Sur ordinateur, la poignée est à gauche de la ligne**, dans le retrait des idées ; pas de poignée pour une personne : « Monter » et « Descendre » dans son menu « ⋯ », ou l'appui long sur un écran tactile.
+16. **La poignée dans la carte soulevée** est à droite, comme dans la maquette ; les autres lignes s'écartent de la hauteur du trait rouge seulement (4 px), pas d'une ligne entière.
+17. **« En direct »** : pas fait, le lot 26 n'existe pas. À reprendre avec lui.
+18. **Retour de Julien pendant le lot** : « ça fonctionne bien sur mobile ». La ligne « Essayé sur un vrai téléphone » reste à cocher par lui, iPhone et Android.
 
 ### Lot 25
 

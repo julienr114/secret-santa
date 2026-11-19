@@ -1740,7 +1740,11 @@ Supprimer un proche, trois chemins : **la croix de sa pastille** dans « Ajouter
 
 #### Réordonner en glissant
 
-Demandé par Julien le 19 novembre 2026 (lot 24 ter). Ceux qui tiennent une liste déplacent les idées, d'une place à l'autre ou d'une personne à l'autre, et les personnes entre elles. Sur téléphone, un appui long soulève la ligne (`ListeGlisser`) : une carte blanche à contour rouge, et un trait rouge là où elle tombera. Sur ordinateur, une poignée au survol, et `Alt` + flèches au clavier. Les coches suivent l'idée. Par le lien, rien ne se déplace.
+Demandé par Julien le 19 novembre 2026 (lot 24 ter). **Codé le 19 novembre 2026**, sans bibliothèque (`useListDrag`), les règles dans `shared/utils/reorder.ts`, l'ordre enregistré par `PUT /api/lists/[id]/order`. Les cadeaux hors liste ne se déplacent pas. Ceux qui tiennent une liste déplacent les idées, d'une place à l'autre ou d'une personne à l'autre, et les personnes entre elles. Sur téléphone, un appui long soulève la ligne (`ListeGlisser`) : une carte blanche à contour rouge, et un trait rouge là où elle tombera. Sur ordinateur, une poignée au survol, et `Alt` + flèches au clavier. Les coches suivent l'idée. Par le lien, rien ne se déplace.
+
+#### Décocher pour quelqu'un
+
+Demandé par Julien le 19 novembre 2026 (Correction 25). Ceux qui tiennent une liste peuvent retirer la coche d'un autre : toucher le prénom posé sur l'idée déplie, dans la ligne, « Coché par Mamie, le 12 novembre » et un bouton « Décocher » (`ListeDecocher`). Pas de question : « Décocher » agit tout de suite, l'idée redevient libre, et « Coche de Mamie retirée · Annuler » rattrape une erreur (`ListeDecocheFait`). Une coche anonyme se retire de la même façon, sans révéler qui c'était. Un visiteur, lui, ne retire toujours que sa propre coche.
 
 #### Retirer quelqu'un d'une liste
 
@@ -1769,7 +1773,7 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 
 - **Ce qui arrive en direct** : une case cochée ou décochée, quelqu'un qui se joint à un cadeau ou s'en retire, un groupe fermé, une idée ajoutée, corrigée ou supprimée, une personne ajoutée ou retirée, un cadeau hors liste, le titre, la date, le mot.
 - **Comment ça se voit** : par l'animation du changement, et rien d'autre. Pas d'étiquette, pas de surlignage, pas de message.
-- **La ligne que quelqu'un écrit est bloquée pour les autres** (`ListeLiveTeneur`) : on y voit son curseur, à la couleur de son icône, avec son emoji et son prénom collés dessus ; la case est pâlie, la ligne ne se touche pas. Elle se libère quand il valide ou quitte la ligne, et d'office après 30 secondes sans frappe.
+- **La ligne que quelqu'un écrit est bloquée pour les autres** (`ListeLiveTeneur`) : toute la ligne prend une teinte claire de la couleur de son icône, avec dessous, en petit, son icône et « {Prénom} écrit… », et son curseur à sa couleur dans le texte (choisi par Julien le 19 novembre 2026, à la place de l'étiquette collée au curseur) ; la case est pâlie, la ligne ne se touche pas. Elle se libère quand il valide ou quitte la ligne, et d'office après 30 secondes sans frappe.
 - **Deux personnes cochent en même temps** : la première gagne, la case de l'autre passe en « pris », sans message.
 - **La ligne que j'écris ne bouge jamais** sous mes doigts : les changements des autres s'insèrent autour.
 - **Technique** : un objet durable Cloudflare par liste garde les connexions WebSocket (avec hibernation : une liste que personne ne regarde ne coûte rien). D1 reste la seule source de vérité. L'objet n'envoie qu'un signal « la liste a changé », et chaque navigateur recharge alors sa propre vue par les routes existantes : rien de ce qu'une personne n'a pas le droit de voir ne passe par ce canal. Seules exceptions, qui passent par l'objet : qui écrit quelle ligne, et la présence. Sans connexion, la page se recharge quand elle redevient visible.

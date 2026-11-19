@@ -114,6 +114,24 @@ export const useDeleteIdeaMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
+// The holder ticks in the document too, a draft included (README 22.19).
+export const useHolderTickMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (ideaId) =>
+      api(`/api/lists/${toValue(id)}/claims`, {
+        method: 'POST',
+        body: { ideaId },
+      }),
+    () => listKeys(toValue(id)),
+  );
+
+export const useHolderUntickMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (ideaId) =>
+      api(`/api/lists/${toValue(id)}/claims/${ideaId}`, { method: 'DELETE' }),
+    () => listKeys(toValue(id)),
+  );
+
 export const useShareListMutation = (id: Id) =>
   useApiMutation<{ token: string }, { renew?: boolean }>(
     (body) => api(`/api/lists/${toValue(id)}/share`, { method: 'POST', body }),

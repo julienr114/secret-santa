@@ -84,6 +84,7 @@ export default {
     tastesOf: 'Vorlieben von {name}',
     linkWord: 'Link',
     anonymous: 'Anonym',
+    you: 'Das bist du',
     group: 'Gemeinsam geschenkt',
     groupClosed: 'Gemeinsam geschenkt · vollständig',
     offList: 'Nicht auf der Liste: {text}',

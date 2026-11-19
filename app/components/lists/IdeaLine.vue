@@ -3,12 +3,16 @@ import type { IdeaView } from '#server/utils/lists';
 import {
   useCreateIdeaMutation,
   useDeleteIdeaMutation,
+  useHolderTickMutation,
+  useHolderUntickMutation,
   useUpdateIdeaMutation,
 } from '~/composables/queries/useLists';
 
 // One line of a person's ideas, written where it shows (README 22.19,
 // maquettes ListeTeneur and ListeIdee): its box, its text and « lien »,
-// and, for the holder, who gives it. Touched, the text turns into a field;
+// and, for the holder, who gives it. The holder ticks too: the box gives
+// the idea alone, touched again it unticks; never an idea meant for them.
+// Touched, the text turns into a field;
 // the return key saves it and goes to the next line; a line left empty
 // goes. Without an idea, the empty line at the end, « Une autre idée… »,
 // where a new one is written.
@@ -21,6 +25,8 @@ const props = defineProps<{
     text: string;
     url: string | null;
     view: IdeaView;
+    /** Whether the holder may tick it: not one meant for them. */
+    tickable: boolean;
   } | null;
   /** The idea the new line comes after. */
   after?: string | null;
@@ -34,20 +40,44 @@ const editing = useListEditing();
 const create = useCreateIdeaMutation(() => props.listId);
 const update = useUpdateIdeaMutation(() => props.listId);
 const remove = useDeleteIdeaMutation(() => props.listId);
+const tick = useHolderTickMutation(() => props.listId);
+const untick = useHolderUntickMutation(() => props.listId);
+const toast = useToast();
+const errorMessage = useErrorMessage();
 
 const field = ref<HTMLInputElement | null>(null);
 const writing = ref(false);
 const draft = ref('');
 const view = computed(() => props.idea?.view ?? { kind: 'free' as const });
+const mine = computed(() => view.value.kind === 'mine');
 const taken = computed(
   () =>
     view.value.kind === 'taken' ||
-    view.value.kind === 'mine' ||
     (view.value.kind === 'group' && view.value.closed),
 );
+/** Whether the box does something: give it alone, or no longer. */
+const boxActive = computed(
+  () =>
+    Boolean(props.idea?.tickable) && (view.value.kind === 'free' || mine.value),
+);
+/** Ticks the idea for the holder, or unticks it. */
+const onBox = () => {
+  if (!props.idea || !boxActive.value) return;
+  const onError = (error: unknown) =>
+    toast.add({
+      title:
+        (error as { statusMessage?: string }).statusMessage === 'taken'
+          ? t('lists.visitor.takenNow')
+          : errorMessage(error),
+      color: 'error',
+    });
+  if (mine.value) untick.mutate(props.idea.id, { onError });
+  else tick.mutate(props.idea.id, { onError });
+};
 /** Who gives it, as the holder reads it. */
 const who = computed(() => {
   const v = view.value;
+  if (v.kind === 'mine') return t('lists.doc.you');
   if (v.kind === 'taken') return v.by ?? t('lists.doc.anonymous');
   if (v.kind === 'group') return v.people.map((p) => p.name).join(', ');
   return null;
@@ -144,26 +174,52 @@ const onBlur = () => {
     "
     :data-line="line"
   >
-    <span
-      class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-[5px]"
-      :class="
-        !idea
-          ? 'border-[1.5px] border-[#e2d3b6]'
-          : view.kind === 'group' && !view.closed
-            ? 'bg-[#e6b94a] text-[#292524]'
-            : taken
-              ? 'bg-[#a8a29e] text-white'
-              : 'border-[1.5px] border-[#a8a29e] bg-default'
+    <component
+      :is="idea ? 'button' : 'span'"
+      v-bind="
+        idea
+          ? {
+              type: 'button',
+              role: 'checkbox',
+              'aria-checked': mine || taken,
+              'aria-label': mine
+                ? t('lists.visitor.untick', { idea: idea.text })
+                : t('lists.visitor.tick', { idea: idea.text }),
+              disabled: !boxActive,
+            }
+          : { 'aria-hidden': 'true' }
       "
-      aria-hidden="true"
+      class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
+      data-testid="holder-box"
+      @click="onBox"
     >
-      <UIcon
-        v-if="view.kind === 'group' && !view.closed"
-        name="i-lucide-plus"
-        class="size-3.5"
-      />
-      <UIcon v-else-if="taken" name="i-lucide-check" class="size-3.5" />
-    </span>
+      <span
+        class="flex size-[22px] items-center justify-center rounded-[5px]"
+        :class="
+          !idea
+            ? 'border-[1.5px] border-[#e2d3b6]'
+            : mine
+              ? 'bg-[#2f5d3a] text-white'
+              : view.kind === 'group' && !view.closed
+                ? 'bg-[#e6b94a] text-[#292524]'
+                : taken
+                  ? 'bg-[#a8a29e] text-white'
+                  : 'border-[1.5px] border-[#a8a29e] bg-default'
+        "
+        aria-hidden="true"
+      >
+        <UIcon
+          v-if="view.kind === 'group' && !view.closed"
+          name="i-lucide-plus"
+          class="size-3.5"
+        />
+        <UIcon
+          v-else-if="mine || taken"
+          name="i-lucide-check"
+          class="size-3.5"
+        />
+      </span>
+    </component>
     <div class="flex min-w-0 grow flex-col gap-0.5">
       <input
         v-if="writing || !idea"
@@ -187,7 +243,9 @@ const onBlur = () => {
         <button
           type="button"
           class="text-left"
-          :class="taken ? 'text-toned line-through' : ''"
+          :class="
+            taken ? 'text-toned line-through' : mine ? 'font-semibold' : ''
+          "
           data-testid="idea-text"
           @click="start"
         >
@@ -205,7 +263,10 @@ const onBlur = () => {
         >
         <span
           v-if="who"
-          class="rounded-full bg-[#ece2cf] px-2 py-0.5 text-xs font-bold text-[#44403c] no-underline"
+          class="rounded-full px-2 py-0.5 text-xs font-bold no-underline"
+          :class="
+            mine ? 'bg-[#dcebdc] text-[#244a2e]' : 'bg-[#ece2cf] text-[#44403c]'
+          "
           data-testid="idea-who"
           >{{ who }}</span
         >

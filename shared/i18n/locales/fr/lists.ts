@@ -85,6 +85,7 @@ export default {
     tastesOf: 'Les goûts de {name}',
     linkWord: 'lien',
     anonymous: 'Anonyme',
+    you: 'C’est toi',
     group: 'Offert à plusieurs',
     groupClosed: 'Offert à plusieurs · au complet',
     offList: 'Hors liste : {text}',

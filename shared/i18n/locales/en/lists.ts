@@ -80,6 +80,7 @@ export default {
     tastesOf: '{name}’s tastes',
     linkWord: 'link',
     anonymous: 'Anonymous',
+    you: 'That’s you',
     group: 'Given by several',
     groupClosed: 'Given by several · full',
     offList: 'Not on the list: {text}',

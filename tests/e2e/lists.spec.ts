@@ -84,6 +84,16 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
   await expect(leo.getByTestId('idea-text')).toHaveCount(1);
 
+  // The one who holds the list ticks too, even in a draft; touched again,
+  // the box unticks.
+  const box = leo.getByTestId('holder-box').first();
+  await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'true');
+  await expect(leo.getByTestId('idea-who')).toHaveText('C’est toi');
+  await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
+  await expect(leo.getByTestId('idea-who')).toHaveCount(0);
+
   // The word: touched, it is mine; erased, there is none.
   await page.getByTestId('note-default').click();
   await page.getByTestId('note-field').fill('');

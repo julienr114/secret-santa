@@ -427,6 +427,7 @@ Plus aucun mot de passe. Détail de la conception en 22.5.
 - [x] Requêtes paramétrées uniquement (Drizzle).
 - [x] Limitation des tentatives sur la connexion admin, sur l'adresse `CF-Connecting-IP` (un `X-Forwarded-For` forgé ne la contourne plus) ; les échecs périmés sont purgés.
 - [x] En-têtes de sécurité : sur toutes les pages et réponses `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy` ; en plus sur `/p/*` `no-referrer`, `no-store`, `noindex`.
+- [x] Correction 23 (19 novembre 2026) : `Strict-Transport-Security` (un an) sur toutes les réponses ; les pages et les données d'une liste par son lien (`/l/*`, `/api/l/*`) reçoivent `no-referrer`, `no-store`, `noindex` comme `/p/*` ; une requête qui modifie est refusée (403) quand son en-tête `Origin` vient d'un autre site (`server/middleware/origin.ts`) ; `vue/no-v-html` interdit par ESLint ; `pnpm audit` des dépendances de production dans la CI, et Dependabot.
 - [x] Toutes les routes `/api/admin/*` refusent sans session (401) et hors de son groupe (403).
 - [x] Aucune lecture n'écrit : la copie d'un lien, journalisée, est un `POST`.
 - [x] Secrets uniquement dans les variables d'environnement, jamais dans le dépôt.

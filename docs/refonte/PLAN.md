@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 22 et 24. **À faire maintenant : la Correction 23 (sécurité).** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 à partir du lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -812,6 +812,7 @@ Le frère de Julien fait de la voile, et aucune icône de personne ne s'y prête
 Demandé par Julien le 19 novembre 2026 : quelqu'un ajouté par erreur reste proposé dans « Ajouter quelqu'un » pour toujours. Aujourd'hui aucune route ne supprime un membre de la famille (`server/api/family` n'a que la lecture et la modification), et aucune page ne les montre tous. **Fait** (19 novembre 2026), sans migration. Ce qui a été tranché en codant : section 6, « Correction 24 ». Maquettes : `ListeNouvelle` (la croix), `ProcheSupprime`, `ListePersonneMenu`, `Famille`, `FamilleSupprimer`, `ListesAccueil`.
 
 - [x] **Le nom : « Mes proches »**, partout où l'écran disait « ma famille » (décidé par Julien) : la famille, mais aussi les amis et les collègues. Trois langues. Les noms dans le code et la base (`family_members`, `/api/family`) peuvent rester.
+- [ ] **Retouche du 19 novembre 2026, après essai par Julien : plus aucun « famille » dans les textes des listes** (une liste n'est pas forcément pour la famille). Dans `shared/i18n/locales/*/lists.ts` : « Ton mot pour la famille » devient « Ton mot d'accueil » ; « Ajouter un mot pour la famille », « Ajouter un mot d'accueil » ; « les idées de cadeaux de ta famille », « de tes proches » ; « Ce que la famille demande toujours », « Ce qu'on demande toujours » ; le pied du message de partage, « les Secret Santa en famille », « entre proches ». Relire le fichier entier, et les deux autres langues, pour ceux qui auraient échappé.
 - [x] **Le cœur, en fonction pure**, testé d'abord : ce que la suppression emporte (les listes où la personne figure, ses idées, les cadeaux déjà prévus) et quand elle est refusée.
 - [x] **`DELETE /api/family/[id]`** : supprime la personne, sa fiche et ses goûts, et la retire de toutes mes listes avec ses idées et leurs coches. Refusé pour « Moi », et pour une personne reliée à un compte tant qu'elle tient une de mes listes avec moi.
 - [x] **Une croix sur la pastille, dans « Ajouter quelqu'un »** (demandé par Julien : pour se rattraper tout de suite, sans changer de page) : seulement pour un proche qui n'est sur **aucune** de mes listes. La pastille se coupe en deux zones : le prénom ajoute à la liste, la croix supprime. Suppression immédiate, avec « {Prénom} supprimé de tes proches » et « Annuler » (`ProcheSupprime`) : rien d'autre ne part avec lui, puisqu'il n'est sur aucune liste. Une ligne d'aide sous les pastilles quand au moins une a sa croix.
@@ -824,14 +825,14 @@ Demandé par Julien le 19 novembre 2026 : quelqu'un ajouté par erreur reste pro
 
 ### Correction 23 — Sécurité : ce qui se corrige tout de suite (section 8)
 
-Demandé par Julien le 19 novembre 2026. De petites choses, sans migration ni maquette, à faire avant le lot 24 bis. Le reste est dans les lots 38 A et 38 B.
+Demandé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), sauf la ligne qui revient à Julien. Ce qui a été tranché en codant : section 6, « Correction 23 ». De petites choses, sans migration ni maquette, à faire avant le lot 24 bis. Le reste est dans les lots 38 A et 38 B.
 
-- [ ] **Les en-têtes des pages de liste par lien** : `/l/**` et `/api/l/**` reçoivent les mêmes que `/p/**` (`no-referrer`, `no-store`, `noindex`), dans `nuxt.config.ts`. Aujourd'hui le lien d'une liste peut partir vers un site tiers quand on ouvre le lien d'une idée.
-- [ ] **`Strict-Transport-Security`** sur toutes les réponses (un an, sous-domaines compris seulement si tous sont en HTTPS).
-- [ ] **Interdire `v-html`** par une règle ESLint (`vue/no-v-html` en erreur). Aucun n'existe aujourd'hui : c'est pour que ça dure.
-- [ ] **`npm audit` dans `ci.yml`**, en échec sur une faille haute ou critique des dépendances de production ; Dependabot (ou l'équivalent) pour les mises à jour.
-- [ ] **Les requêtes qui modifient** (`POST`, `PUT`, `PATCH`, `DELETE`) refusent un en-tête `Origin` qui n'est pas celui de l'application, dans un seul intergiciel. Vérifier qu'un `?next=` après connexion, s'il existe, n'accepte qu'un chemin interne.
-- [ ] **Un test** : `tests/e2e/security.spec.ts` vérifie ces en-têtes sur `/l/…`, et le refus d'une origine étrangère.
+- [x] **Les en-têtes des pages de liste par lien** : `/l/**` et `/api/l/**` reçoivent les mêmes que `/p/**` (`no-referrer`, `no-store`, `noindex`), dans `nuxt.config.ts`. Aujourd'hui le lien d'une liste peut partir vers un site tiers quand on ouvre le lien d'une idée.
+- [x] **`Strict-Transport-Security`** sur toutes les réponses (un an, sous-domaines compris seulement si tous sont en HTTPS).
+- [x] **Interdire `v-html`** par une règle ESLint (`vue/no-v-html` en erreur). Aucun n'existe aujourd'hui : c'est pour que ça dure.
+- [x] **`npm audit` dans `ci.yml`**, en échec sur une faille haute ou critique des dépendances de production ; Dependabot (ou l'équivalent) pour les mises à jour.
+- [x] **Les requêtes qui modifient** (`POST`, `PUT`, `PATCH`, `DELETE`) refusent un en-tête `Origin` qui n'est pas celui de l'application, dans un seul intergiciel. Vérifier qu'un `?next=` après connexion, s'il existe, n'accepte qu'un chemin interne.
+- [x] **Un test** : `tests/e2e/security.spec.ts` vérifie ces en-têtes sur `/l/…`, et le refus d'une origine étrangère.
 - [ ] **Julien, dix minutes** : la double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin. Rien à coder.
 
 ### Lot 24 bis — Listes : l'effacement au clavier, et publier n'est pas partager (README 22.19, 22.20)
@@ -1613,6 +1614,18 @@ Les deux lignes du lot 24 bis faites dans la même séance :
 
 12. **Le crayon** : « Moi » est la seule personne reliée à un compte aujourd'hui. Dans le document, son icône n'a ni crayon ni action. Sur sa fiche, pas de crayon non plus, mais toucher l'icône ouvre encore le panneau : l'icône de « Moi » dans mes proches est une copie prise à la création, elle ne suit pas « Mon compte », et c'est le seul endroit où la changer. **Question** : faut-il qu'elle suive l'icône du compte ?
 13. **La barre collée** : « Partage par lien » reste sous la barre du haut, avec une ombre légère, et se replie dès qu'on fait défiler de plus de 24 px. **« Mode anonyme » n'existe pas encore** (lot 27 ter) : rien à coller sur la liste ouverte par son lien ; le lot 27 ter devra reprendre la même règle. Une ligne qu'on écrit garde une marge sous la barre quand le navigateur la ramène à l'écran.
+
+### Correction 23
+
+Codée le 19 novembre 2026. Tranché seul, à relire :
+
+1. **`Strict-Transport-Security` sans les sous-domaines** : un an (`max-age=31536000`), sans `includeSubDomains`, faute de savoir si tous les sous-domaines de `under-the-tree.party` répondent en HTTPS. À ajouter le jour où c'est sûr.
+2. **Le refus d'une origine étrangère** (`server/middleware/origin.ts`, règle `isForeignWrite` testée) : une requête qui modifie est refusée (403) quand son en-tête `Origin` n'est ni l'adresse où elle arrive ni l'adresse publique de l'application. Une requête **sans** en-tête `Origin` passe : les scripts et les tests n'en envoient pas, et le cookie de session (`SameSite=Lax`) ne part pas avec une requête venue d'ailleurs.
+3. **`?next=` après connexion** : vérifié, rien à changer. `safeNext` (`server/utils/invite.ts`, déjà testée) n'accepte qu'un chemin interne, côté page comme côté route.
+4. **Un lien de liste inconnu** répond une erreur avec `no-cache` et non `no-store` : il n'y a rien de personnel dans cette réponse. Le test vérifie donc les en-têtes sur une vraie liste partagée.
+5. **L'audit des dépendances** : `pnpm audit --prod --audit-level high` dans `ci.yml` (le projet est en pnpm, pas npm). Aujourd'hui il passe : 3 failles connues, 1 faible et 2 modérées, aucune haute. Dependabot : `.github/dependabot.yml`, une fois par semaine, les mises à jour mineures groupées ; il faut que Dependabot soit activé sur le dépôt GitHub pour qu'il ouvre des demandes.
+6. **Le test** est ajouté à `tests/e2e/security.spec.ts`, qui existait déjà.
+7. **Reste à Julien** : la double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin.
 
 ### Lot 27 ter — pistes et liste
 

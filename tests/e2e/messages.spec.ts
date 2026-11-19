@@ -61,6 +61,20 @@ test('a message is a dark bar, one at a time; « Annuler » undoes, an error sta
     page.locator('[role="alert"][aria-live="assertive"]'),
   ).toHaveCount(0);
   await expect(undo).toHaveCount(0);
+  // The text sits in the middle of the bar's height, not at its top.
+  await page.waitForTimeout(400);
+  const doneBar = await page.locator('li').filter({ has: sent }).boundingBox();
+  const doneText = await page
+    .locator('[data-slot="wrapper"]')
+    .filter({ has: sent })
+    .boundingBox();
+  expect(
+    Math.abs(
+      (doneBar?.y ?? 0) +
+        (doneBar?.height ?? 0) / 2 -
+        ((doneText?.y ?? 0) + (doneText?.height ?? 0) / 2),
+    ),
+  ).toBeLessThan(3);
   // Centred at the bottom: as far from the left edge as from the right.
   const placed = await page.locator('li').filter({ has: sent }).boundingBox();
   const width = page.viewportSize()?.width ?? 0;

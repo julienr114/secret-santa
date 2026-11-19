@@ -330,6 +330,20 @@ export const carriedIdeas = (
     .toSorted((a, b) => a.position - b.position)
     .map(({ text, url }) => ({ text, url }));
 
+/**
+ * Whether a list may be deleted. An empty document goes by itself when
+ * it is left, and only a draft goes that way: a shared list is deleted
+ * on purpose, from its own page, which says first what is lost.
+ * @param list - The list.
+ * @param list.sharedAt - When it was shared, or null.
+ * @param sure - Asked on purpose, after reading what is lost.
+ * @returns True when it may go.
+ */
+export const canDeleteList = (
+  list: { sharedAt: string | null },
+  sure: boolean,
+): boolean => sure || !list.sharedAt;
+
 // --- Taking a list up again (lot 27, README 22.20) ----------------------
 
 /** A person of a list, with their ideas, as taking it up again reads it. */

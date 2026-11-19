@@ -113,6 +113,13 @@ export const useUpdateListMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
+/** « Supprimer la liste », on purpose: any list, shared or not. */
+export const useDeleteListForGoodMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (id) => api(`/api/lists/${id}`, { method: 'DELETE', query: { sure: '1' } }),
+    () => [keys.lists()],
+  );
+
 export const useDeleteListMutation = () =>
   useApiMutation<{ ok: true }, string>(
     (id) => api(`/api/lists/${id}`, { method: 'DELETE' }),

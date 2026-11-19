@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canDeleteList,
   canResumeInto,
   resumeSummary,
   resumedList,
@@ -335,5 +336,18 @@ describe('taking a list up again (lot 27)', () => {
     expect(
       canResumeInto({ sharedAt: '2026-11-19T10:00:00.000Z', peopleCount: 0 }),
     ).toBe(false);
+  });
+});
+
+describe('deleting a list', () => {
+  it('lets a draft go by itself, a shared list only on purpose', () => {
+    expect(canDeleteList({ sharedAt: null }, false)).toBe(true);
+    expect(canDeleteList({ sharedAt: '2026-11-19T10:00:00.000Z' }, false)).toBe(
+      false,
+    );
+    expect(canDeleteList({ sharedAt: '2026-11-19T10:00:00.000Z' }, true)).toBe(
+      true,
+    );
+    expect(canDeleteList({ sharedAt: null }, true)).toBe(true);
   });
 });

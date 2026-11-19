@@ -192,6 +192,26 @@ export default {
       people: 'Add at least one person to the list.',
     },
   },
+  delete: {
+    row: 'Delete the list',
+    title: 'Delete “{title}”?',
+    titleUntitled: 'Delete this list?',
+    ideas: {
+      one: 'Its gift idea is erased.',
+      other: 'Its {count} gift ideas are erased.',
+    },
+    planned: {
+      one: '{count} gift already planned is lost: whoever ticked it is not told.',
+      other:
+        '{count} gifts already planned are lost: those who ticked them are not told.',
+    },
+    link: 'Its link stops working.',
+    holders: 'It also goes for {names}.',
+    people: 'The people stay among “My people”, with their page.',
+    final: 'This cannot be undone.',
+    confirm: 'Delete the list',
+    done: 'List deleted',
+  },
   resume: {
     noIdeas: 'no idea to take up',
     title: 'Start from a list',

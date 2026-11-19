@@ -60,6 +60,11 @@ export default defineAppConfig({
       },
       variants: {
         title: { true: { description: 'mt-0' } },
+        // Whatever the kind, the dot, the text and the cross sit in the
+        // middle of the bar's height (the default pushes them to the top).
+        orientation: {
+          vertical: { root: 'items-center', actions: 'items-center mt-0' },
+        },
       },
     },
   },

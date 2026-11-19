@@ -554,6 +554,17 @@ onBeforeRouteLeave((to) => {
           :family="doc.family"
           :on-list="people"
         />
+        <!-- The red line of what cannot be taken back, for those who
+             manage the list; it leads to the page that says what is lost. -->
+        <UiList v-if="doc.manages">
+          <UiListItem
+            icon="i-lucide-trash-2"
+            tone="danger"
+            :title="t('lists.delete.row')"
+            :to="`/listes/${list.id}/supprimer`"
+            data-testid="list-remove"
+          />
+        </UiList>
       </template>
     </AdminQueryState>
 

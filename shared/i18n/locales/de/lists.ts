@@ -198,6 +198,26 @@ export default {
       people: 'Füge mindestens eine Person zur Liste hinzu.',
     },
   },
+  delete: {
+    row: 'Liste löschen',
+    title: '„{title}“ löschen?',
+    titleUntitled: 'Diese Liste löschen?',
+    ideas: {
+      one: 'Ihre Geschenkidee wird gelöscht.',
+      other: 'Ihre {count} Geschenkideen werden gelöscht.',
+    },
+    planned: {
+      one: '{count} schon geplantes Geschenk geht verloren: Wer es abgehakt hat, erfährt es nicht.',
+      other:
+        '{count} schon geplante Geschenke gehen verloren: Wer sie abgehakt hat, erfährt es nicht.',
+    },
+    link: 'Ihr Link funktioniert nicht mehr.',
+    holders: 'Sie verschwindet auch für {names}.',
+    people: 'Die Personen bleiben bei „Meine Leute“, mit ihrer Seite.',
+    final: 'Das lässt sich nicht rückgängig machen.',
+    confirm: 'Liste löschen',
+    done: 'Liste gelöscht',
+  },
   resume: {
     noIdeas: 'keine Idee zu übernehmen',
     title: 'Von einer Liste ausgehen',

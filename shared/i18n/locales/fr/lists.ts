@@ -197,6 +197,26 @@ export default {
       people: 'Ajoute au moins une personne à la liste.',
     },
   },
+  delete: {
+    row: 'Supprimer la liste',
+    title: 'Supprimer « {title} » ?',
+    titleUntitled: 'Supprimer cette liste ?',
+    ideas: {
+      one: 'Son idée de cadeau est effacée.',
+      other: 'Ses {count} idées de cadeaux sont effacées.',
+    },
+    planned: {
+      one: '{count} cadeau déjà prévu est perdu : celui qui l’avait coché n’est pas prévenu.',
+      other:
+        '{count} cadeaux déjà prévus sont perdus : ceux qui les avaient cochés ne sont pas prévenus.',
+    },
+    link: 'Son lien ne marche plus.',
+    holders: 'Elle disparaît aussi pour {names}.',
+    people: 'Les personnes restent dans « Mes proches », avec leur fiche.',
+    final: 'C’est définitif.',
+    confirm: 'Supprimer la liste',
+    done: 'Liste supprimée',
+  },
   resume: {
     noIdeas: 'aucune idée à reprendre',
     title: 'Repartir d’une liste',

@@ -1,14 +1,15 @@
 import type { AvatarColor } from '#server/utils/avatars';
 
-// Shades of the art direction for avatar circles: soft background, and a
-// border one step darker so the circle reads on white and on kraft. The
-// colour names live in shared/i18n (`adminGroup.avatar.colors.*`).
+// The shades of the avatar circles, « Sorbet » (README 23.5): a soft
+// ground, and an edge a step deeper so the circle reads on white and on
+// the page. The six stored names do not change; they now show as coral,
+// mint, lemon, peach, sky and lilac (`adminGroup.avatar.colors.*`).
 export const AVATAR_SHADES: Record<AvatarColor, { bg: string; ring: string }> =
   {
-    brick: { bg: '#f3d3cc', ring: '#e09e92' },
-    pine: { bg: '#cfe2d3', ring: '#8db898' },
-    mustard: { bg: '#f6e3ad', ring: '#e6b94a' },
-    kraft: { bg: '#ecdfc6', ring: '#cdb48a' },
-    frost: { bg: '#d6e6ef', ring: '#94bbd0' },
-    plum: { bg: '#ead2e2', ring: '#c493b4' },
+    brick: { bg: '#ffd0c8', ring: '#ff8478' },
+    pine: { bg: '#c6f1e2', ring: '#4fcaa3' },
+    mustard: { bg: '#ffe9a8', ring: '#f4b82e' },
+    kraft: { bg: '#ffe2c4', ring: '#f2a65a' },
+    frost: { bg: '#cfe6ff', ring: '#6eb0f2' },
+    plum: { bg: '#e6d6f8', ring: '#b993dd' },
   };

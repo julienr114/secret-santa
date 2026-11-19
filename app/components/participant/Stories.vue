@@ -133,17 +133,15 @@ const fill = (index: number) =>
 
 /** The colours of a screen, by its place (README 22.17). */
 const LOOKS = {
-  pine: 'bg-[#274e34] text-white',
-  brick: 'bg-[#a43a2f] text-white',
-  mustard: 'bg-[#e6b94a] text-[#3a240c]',
-  plum: 'bg-[#5b3a55] text-white',
-  cream: 'bg-[#f7f2e9] text-[#292524]',
+  pine: 'bg-story-mint text-white',
+  brick: 'bg-story-coral text-white',
+  mustard: 'bg-story-violet text-white',
+  plum: 'bg-story-plum text-white',
+  cream: 'bg-story-cream text-highlighted',
 } as const;
 const lookName = computed(() => looks.value[at.value] ?? 'pine');
 const look = computed(() => LOOKS[lookName.value]);
-const dark = computed(
-  () => lookName.value === 'mustard' || lookName.value === 'cream',
-);
+const dark = computed(() => lookName.value === 'cream');
 
 const list = (names: string[]) =>
   new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(names);
@@ -393,11 +391,11 @@ const santaWords = computed(() => {
         v-for="(_, index) in screens"
         :key="index"
         class="h-[3px] flex-1 overflow-hidden rounded-full"
-        :class="dark ? 'bg-[#3a240c]/30' : 'bg-white/30'"
+        :class="dark ? 'bg-shade/30' : 'bg-white/30'"
       >
         <span
           class="block h-full rounded-full"
-          :class="dark ? 'bg-[#3a240c]' : 'bg-white'"
+          :class="dark ? 'bg-shade' : 'bg-white'"
           :style="{ width: `${fill(index) * 100}%` }"
         />
       </span>

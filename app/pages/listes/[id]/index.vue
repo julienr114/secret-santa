@@ -241,7 +241,7 @@ onBeforeRouteLeave((to) => {
             :aria-label="t('lists.doc.titleLabel')"
             class="w-full"
             :ui="{
-              base: 'p-0 font-display text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
+              base: 'p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
             }"
             data-testid="list-title"
             @keydown.enter.prevent="($event.target as HTMLElement).blur()"

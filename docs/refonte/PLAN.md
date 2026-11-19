@@ -961,12 +961,15 @@ Demandé par Julien le 19 novembre 2026. **Après le lot 35** (le pied d'email r
 
 ### Lot 37 — Le tableau de bord du super-admin (README 22.27)
 
-Demandé par Julien le 19 novembre 2026. Utile dès le lot 34 (les plafonds) et le lot 35 (les signalements). Avec migration. Maquette : `AdminTableau`. Points à relire : section 6, « Lot 37 ».
+Demandé par Julien le 19 novembre 2026. Utile dès le lot 34 (les plafonds) et le lot 35 (les signalements). Avec migration. Maquette : `Admin` (l'administration et le tableau de bord, fusionnés). Points à relire : section 6, « Lot 37 ».
 
 - [ ] **Le cœur, en fonctions pures**, testé d'abord : additionner des compteurs par jour sur une période ; la part d'un plafond ; quand prévenir.
 - [ ] **Base** : des compteurs par jour et par nature (emails envoyés, rejetés, requêtes, personnes actives, erreurs), sans identifiant de personne ; le dernier passage de chaque tâche planifiée et son résultat.
 - [ ] **Compter** aux bons endroits : l'envoi d'emails, les routes, les tâches planifiées. Une personne active se compte une fois par jour, à partir d'une empreinte qui change chaque jour.
-- [ ] **La page** `/admin/tableau-de-bord` : la période, « Qui s'en sert », « Les plafonds », « À surveiller », « Ce qui tourne tout seul » ; chaque ligne de « À surveiller » mène à sa liste.
+- [ ] **Une seule page, l'accueil de l'administration** (`/admin`, maquette `Admin`) : la demande à traiter, la période, « Qui s'en sert », « Les plafonds » (à la place de la jauge « Capacité »), « À surveiller », « Ce qui tourne tout seul », puis « Tout voir ». Chaque ligne de « À surveiller » mène à sa liste.
+- [ ] **L'onglet « Admin »** dans la barre du bas, pour le super-admin seulement (README 22.21) : « Tirages / Listes / Admin ». L'entrée « Administration » sort du menu.
+- [ ] **Les pastilles** : sur l'onglet, le nombre de choses à traiter (demandes en attente, signalements pas vus, plafond à 70 %), avec son texte pour lecteur d'écran ; dans la page, la même pastille devant chaque chose à traiter. Elles s'effacent quand c'est traité ou vu. Calculées à la demande, sans attendre le lot 28.
+- [ ] **`docs/refonte/maquettes/AdminTableau.html` est périmé** (remplacé par `Admin`) : le supprimer.
 - [ ] **Prévenir à 70 %** d'un plafond : une nouveauté « qui presse » pour le super-admin (lot 28) ; tant que le lot 28 n'est pas fait, un email au super-admin, une fois par jour au plus.
 - [ ] **La version en ligne** : l'identifiant du commit déployé, inscrit au moment du déploiement.
 - [ ] Aucun outil de mesure extérieur, aucun cookie de plus. Trois langues, tests.
@@ -1371,7 +1374,7 @@ Regardés à l'œil : les quatre tailles et l'icône de 26 px sur une carte blan
 
 Codé le 19 novembre 2026. Tranché seul, à relire :
 
-1. **Pendant qu'on écrit, le texte d'une idée reste un champ d'une seule ligne** : un texte long y est coupé à droite au lieu de passer à la ligne comme dans `ListeIdeeLienFait`. C'était déjà le cas avant ce lot. Un champ qui grandit avec son texte est possible, à part.
+1. ~~Pendant qu'on écrit, le texte d'une idée reste un champ d'une seule ligne.~~ **Réponse de Julien, 19 novembre 2026 :** le texte long passe à la ligne ; le champ grandit avec son texte. Fait. Et « Supprimer » sous la ligne d'une idée ne sert à rien : on efface le texte, la ligne s'en va. Retiré (il reste sous un cadeau hors liste, qui ne se corrige pas) ; les maquettes `ListeIdee` et `ListeIdeeLienFait` le montrent encore.
 2. **Pendant qu'on écrit l'adresse**, le texte de l'idée s'affiche tel quel (il ne se modifie plus), suivi de « : » et du champ ; l'adresse passe à la ligne quand le texte ne lui laisse pas 176 px.
 3. **Une adresse tapée sans « https:// »** (« exemple.fr/velo ») est complétée. Ce qui n'est pas une adresse reste dans le champ, avec un message. Quitter la ligne avec une adresse valide dans le champ l'enregistre, comme le texte.
 4. **« Retirer le lien » d'une idée qui n'a pas de texte** supprime l'idée (avec la confirmation habituelle si elle est cochée) : une idée sans texte ni lien n'existe pas.
@@ -1460,6 +1463,7 @@ Au passage : un test du compte lisait un toast par un texte que le toast porte d
 2. **Les requêtes du jour** : comptées par l'application elle-même ; l'autre voie est de les lire chez Cloudflare, avec une clé d'accès de plus.
 3. **La dépense du mois** est une estimation, calculée à partir des emails envoyés et des prix saisis par le super-admin.
 4. **Pas de courbes** dans cette première version : des chiffres et des jauges. À ajouter si le besoin se confirme.
+5. **Ce qui compte dans la pastille de l'onglet** : demandes en attente, signalements pas vus, plafond passé à 70 %. Pas les erreurs du serveur (proposition).
 
 ## 7. Tenir la charge, et financer l'application
 

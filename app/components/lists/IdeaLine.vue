@@ -21,8 +21,8 @@ import { asAddress } from '~/utils/ideaLink';
 // goes. Nothing sits above the keyboard: while one is in the line, its
 // actions are under it, as text links. « Ajouter un lien » extends the
 // line with « : » and a field for the address; once set, the address is
-// the word « lien », with « Changer le lien », « Retirer le lien » and
-// « Supprimer » under it. Without an idea, the empty line at the end,
+// the word « lien », with « Changer le lien » and « Retirer le lien »
+// under it. No « Supprimer »: a line emptied goes. Without an idea, the empty line at the end,
 // « Une autre idée… », where a new one is written.
 const props = defineProps<{
   listId: string;
@@ -50,12 +50,16 @@ const toast = useToast();
 const errorMessage = useErrorMessage();
 
 const row = ref<HTMLElement | null>(null);
-const field = ref<HTMLInputElement | null>(null);
+const field = ref<HTMLTextAreaElement | null>(null);
+/** The copy of the text under its field, which gives the field its height. */
+const mirror = ref<HTMLElement | null>(null);
 const linkField = ref<HTMLInputElement | null>(null);
 const writing = ref(false);
 /** The address is being written, at the end of the line. */
 const linking = ref(false);
 const draft = ref('');
+/** What is written, on one line: a text pasted may come with line breaks. */
+const written = computed(() => draft.value.replace(/\s+/g, ' ').trim());
 const address = ref('');
 const view = computed(() => props.idea?.view ?? { kind: 'free' as const });
 /** In a gift given by several, with me in it. */
@@ -110,6 +114,8 @@ const start = async () => {
   writing.value = true;
   await nextTick();
   field.value?.focus();
+  // The caret at the end, wherever the line was entered from.
+  field.value?.setSelectionRange(draft.value.length, draft.value.length);
 };
 defineExpose({ start });
 
@@ -139,7 +145,7 @@ const removeIdea = async () => {
  * @returns Once saved.
  */
 const commit = async (next: boolean) => {
-  const text = draft.value.trim();
+  const text = written.value;
   if (props.idea) {
     if (!text && !props.idea.url) await removeIdea();
     else if (text !== props.idea.text) {
@@ -187,7 +193,7 @@ const cancelLink = async () => {
 const saveLink = (): boolean => {
   const url = asAddress(address.value);
   if (!url) return false;
-  const text = draft.value.trim();
+  const text = written.value;
   if (props.idea) {
     update.mutate({
       ideaId: props.idea.id,
@@ -224,7 +230,7 @@ const setLink = async () => {
  */
 const removeLink = async () => {
   if (!props.idea) return;
-  if (!draft.value.trim()) {
+  if (!written.value) {
     leave();
     await removeIdea();
     return;
@@ -233,12 +239,51 @@ const removeLink = async () => {
   field.value?.focus();
 };
 /**
- * « Supprimer »: the whole line.
- * @returns Once done, or given up.
+ * How high the row of a character of the text is, read on its copy.
+ * @param at - The place of the character.
+ * @returns Its top on the screen, 0 when unknown.
  */
-const removeLine = async () => {
-  leave();
-  await removeIdea();
+const rowTop = (at: number): number => {
+  const text = mirror.value?.firstChild;
+  if (!(text instanceof Text)) return 0;
+  const from = Math.min(at, text.length - 1);
+  const range = document.createRange();
+  range.setStart(text, from);
+  range.setEnd(text, from + 1);
+  return Math.round(range.getBoundingClientRect().top);
+};
+/**
+ * The arrows and the tab key: on to the line above or below, of this
+ * person or the next, saving this one. An arrow moves in the text first,
+ * and only leaves from its first or last row; at either end of the
+ * document the key does what it always does.
+ * @param event - The key pressed.
+ * @param step - -1 for the line above, 1 for the one below.
+ * @param fromEdge - Whether the caret must be on the row at that edge.
+ * @returns Once the other line has the focus.
+ */
+const onMove = async (
+  event: KeyboardEvent,
+  step: -1 | 1,
+  fromEdge: boolean,
+) => {
+  const input = field.value;
+  if (event.isComposing || !input || !row.value) return;
+  const all = [...document.querySelectorAll<HTMLElement>('[data-line]')];
+  const target = all[all.indexOf(row.value) + step];
+  if (!target) return;
+  if (fromEdge) {
+    const [caret, edge] =
+      step < 0
+        ? [input.selectionStart, 0]
+        : [input.selectionEnd, input.value.length];
+    if (rowTop(caret) !== rowTop(edge)) return;
+  }
+  event.preventDefault();
+  await commit(false);
+  const starter = target.querySelector<HTMLElement>('[data-line-start]');
+  if (starter instanceof HTMLTextAreaElement) starter.focus();
+  else starter?.click();
 };
 
 /**
@@ -322,7 +367,7 @@ const onFocusOut = (event: FocusEvent) => {
           v-if="writing && linking"
           class="flex flex-wrap items-baseline gap-x-1.5 text-base leading-[1.45]"
         >
-          <span class="break-words">{{ draft.trim() }}</span>
+          <span class="break-words">{{ written }}</span>
           <span aria-hidden="true">:</span>
           <input
             ref="linkField"
@@ -341,29 +386,45 @@ const onFocusOut = (event: FocusEvent) => {
             @keydown.esc.prevent="cancelLink"
           />
         </div>
-        <div v-else class="flex items-baseline gap-x-1.5">
-          <input
-            ref="field"
-            v-model="draft"
-            type="text"
-            enterkeyhint="next"
-            :maxlength="200"
-            class="min-w-0 grow bg-transparent text-base leading-[1.45] outline-none placeholder:text-dimmed"
-            :placeholder="placeholder ?? t('lists.doc.anotherIdea')"
-            :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
-            data-testid="idea-field"
-            @focus="!writing && start()"
-            @keydown.enter.prevent="commit(true)"
-          />
+        <div v-else class="flex items-end gap-x-1.5">
+          <!-- A long text goes on to the next row: the field is as tall as
+               its text, measured by a copy of it under the field. -->
+          <div class="grid min-w-0 grow text-base leading-[1.45]">
+            <span
+              ref="mirror"
+              class="invisible col-start-1 row-start-1 break-words whitespace-pre-wrap"
+              aria-hidden="true"
+              >{{ draft }}&nbsp;</span
+            >
+            <textarea
+              ref="field"
+              v-model="draft"
+              rows="1"
+              enterkeyhint="next"
+              :maxlength="200"
+              class="col-start-1 row-start-1 block w-full resize-none overflow-hidden bg-transparent p-0 outline-none placeholder:text-dimmed"
+              :placeholder="placeholder ?? t('lists.doc.anotherIdea')"
+              :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
+              data-testid="idea-field"
+              data-line-start
+              @keydown.up="onMove($event, -1, true)"
+              @keydown.down="onMove($event, 1, true)"
+              @keydown.tab="onMove($event, $event.shiftKey ? -1 : 1, false)"
+              @focus="!writing && start()"
+              @keydown.enter.prevent="commit(true)"
+            />
+          </div>
           <template v-if="writing && idea?.url">
-            <span aria-hidden="true">:</span>
-            <span class="shrink-0 text-primary underline">{{
-              t('lists.doc.linkWord')
-            }}</span>
+            <span class="text-base leading-[1.45]" aria-hidden="true">:</span>
+            <span
+              class="shrink-0 text-base leading-[1.45] text-primary underline"
+              >{{ t('lists.doc.linkWord') }}</span
+            >
           </template>
         </div>
         <!-- What the line can do, while one is in it. The links keep the
-             focus in the line (no blur before the tap). -->
+             focus in the line (no blur before the tap), and are out of the
+             way of the tab key, which goes from line to line. -->
         <div
           v-if="writing"
           class="flex flex-wrap gap-x-5 text-sm font-bold"
@@ -373,6 +434,7 @@ const onFocusOut = (event: FocusEvent) => {
             v-if="linking"
             type="button"
             class="flex min-h-11 items-center text-toned underline underline-offset-2"
+            tabindex="-1"
             @pointerdown.prevent
             @click="cancelLink"
           >
@@ -382,6 +444,7 @@ const onFocusOut = (event: FocusEvent) => {
             <button
               type="button"
               class="flex min-h-11 items-center text-primary underline underline-offset-2"
+              tabindex="-1"
               @pointerdown.prevent
               @click="startLink"
             >
@@ -393,18 +456,11 @@ const onFocusOut = (event: FocusEvent) => {
               v-if="idea?.url"
               type="button"
               class="flex min-h-11 items-center text-toned underline underline-offset-2"
+              tabindex="-1"
               @pointerdown.prevent
               @click="removeLink"
             >
               {{ t('lists.doc.removeLink') }}
-            </button>
-            <button
-              type="button"
-              class="flex min-h-11 items-center text-toned underline underline-offset-2"
-              @pointerdown.prevent
-              @click="removeLine"
-            >
-              {{ t('lists.doc.removeLine') }}
             </button>
           </template>
         </div>
@@ -421,6 +477,7 @@ const onFocusOut = (event: FocusEvent) => {
             mine ? 'font-semibold' : '',
           ]"
           data-testid="idea-text"
+          data-line-start
           @click="start"
         >
           {{ idea.text

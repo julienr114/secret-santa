@@ -1721,8 +1721,8 @@ Décidé par Julien le 19 novembre 2026, après la V1 (22.19). Pas encore codé 
 
 **Fait** (lot 24, 19 novembre 2026). Dans le code : `ListsIdeaLine` (la ligne, ses actions et l'adresse), `asAddress` (`app/utils/ideaLink.ts` : une adresse tapée sans « https:// » est complétée, ce qui n'en est pas une est refusé), `ListsOffListLine` (« J'offre autre chose », sur place). `ListsLineBar`, le panneau du lien et la page `/l/[jeton]/hors-liste` ont disparu.
 
-- **Plus de barre collée au clavier** (`ListeIdee`). Sous la ligne qu'on écrit, dans le document, deux petits liens de texte : « Ajouter un lien » et « Supprimer ». Ils apparaissent quand on entre dans la ligne et disparaissent quand on la quitte. La touche retour valide et passe à la ligne suivante ; toucher ailleurs valide aussi.
-- **Le lien reste à part du texte** : une idée a un texte et un lien au plus, qui s'écrit toujours au bout de la ligne par le mot « lien », souligné. « Ajouter un lien » prolonge la ligne de « : », avec le curseur et l'invitation grise « colle ou écris l'adresse » ; dessous, « Annuler » (`ListeIdeeLien`). Une fois l'adresse posée, dessous : « Changer le lien », « Retirer le lien », « Supprimer » (`ListeIdeeLienFait`). Pas de bouton « Coller ».
+- **Plus de barre collée au clavier** (`ListeIdee`). Sous la ligne qu'on écrit, dans le document, un petit lien de texte, « Ajouter un lien ». Il apparaît quand on entre dans la ligne et disparaît quand on la quitte. Pas de « Supprimer » (retiré le 19 novembre 2026, à la demande de Julien) : on efface le texte, et la ligne vide disparaît. Un texte long passe à la ligne pendant qu'on l'écrit aussi : le champ grandit avec lui. Au clavier, les flèches haut et bas et la touche Tab (Maj+Tab pour remonter) passent d'une ligne à l'autre, d'une personne à la suivante, en enregistrant ; une flèche ne quitte un texte de plusieurs rangs que depuis son premier ou son dernier rang. La touche retour valide et passe à la ligne suivante ; toucher ailleurs valide aussi.
+- **Le lien reste à part du texte** : une idée a un texte et un lien au plus, qui s'écrit toujours au bout de la ligne par le mot « lien », souligné. « Ajouter un lien » prolonge la ligne de « : », avec le curseur et l'invitation grise « colle ou écris l'adresse » ; dessous, « Annuler » (`ListeIdeeLien`). Une fois l'adresse posée, dessous : « Changer le lien » et « Retirer le lien » (`ListeIdeeLienFait`, qui montre encore « Supprimer »). Pas de bouton « Coller ».
 - **« J'offre autre chose »** n'ouvre plus de panneau (`ListeHorsListe`) : une ligne s'écrit sur place en fin de personne, déjà cochée à mon nom. Dessous : « Camille lira ces mots. Les autres verront seulement "Un cadeau surprise, hors liste". » et « Supprimer ».
 - **Des liens de texte, pas des boutons** : « Se joindre » est un lien souligné au bout de la ligne, comme « Changer » ; « Tu participes » un texte vert en gras. Ces liens gardent une zone tactile d'au moins 44 px de haut.
 
@@ -1769,6 +1769,8 @@ Pour une personne **connectée**, sur tous les écrans, quel que soit le lien pa
 Sans session (lien personnel, lien d'une liste, lien d'invitation) : rien ne change, le bouton de langue reste, pas de barre.
 
 Deux exceptions : le palmarès en images, en plein écran ; et un panneau du bas ouvert, qui recouvre la barre comme le fait le clavier.
+
+**Pour le super-admin, un troisième onglet « Admin »** (décidé par Julien le 19 novembre 2026, lot 37) : « Tirages / Listes / Admin », avec une pastille qui compte ce qui est à traiter. Personne d'autre ne le voit, et l'entrée « Administration » sort du menu. C'est la seule exception à « pas de troisième onglet » (22.22).
 
 ### 22.22 Décidé : les notifications, la connexion par code, l'application installée (19 novembre 2026)
 
@@ -1928,12 +1930,14 @@ Liste de contrôle écrite le 19 novembre 2026, à la demande de Julien. **Ce n'
 
 ### 22.27 Décidé : le tableau de bord du super-admin (19 novembre 2026)
 
-Demandé par Julien le 19 novembre 2026. Pas encore codé : lot 37. Maquette : `AdminTableau`.
+Demandé par Julien le 19 novembre 2026. Pas encore codé : lot 37. Maquette : `Admin`.
 
-- Une page du super-admin, « Tableau de bord », sur une période au choix : aujourd'hui, 7 jours, 30 jours.
+- **L'administration et le tableau de bord ne font qu'une page** (décidé par Julien le 19 novembre 2026) : l'accueil de l'administration, `/admin`, atteint par l'onglet « Admin » de la barre du bas (22.21). De haut en bas : ce qui est à traiter (une demande de groupe, avec « Traiter »), le choix de la période, les quatre blocs ci-dessous, puis « Tout voir » (Comptes, Groupes, Guide de style). L'ancienne jauge « Capacité » est remplacée par « Les plafonds ».
+- **Des pastilles intégrées** : sur l'onglet « Admin », le nombre de choses à traiter (demandes de groupe en attente, signalements pas encore vus, plafond passé à 70 %) ; dans la page, la même pastille pleine devant chaque chose à traiter. Elle s'efface quand la chose est traitée ou vue. Lisible par un lecteur d'écran (« Admin, 3 à traiter »).
+- La période au choix : aujourd'hui, 7 jours, 30 jours.
 - **Qui s'en sert** : les comptes et les nouveaux, les personnes actives (comptes connectés et liens personnels ouverts), les groupes et les tirages en cours, les listes et celles qui sont partagées.
 - **Les plafonds** : les emails du jour et du mois, les requêtes du jour, la dépense du mois, chacun en face de sa limite. À 70 % d'un plafond, le super-admin est prévenu (une nouveauté « qui presse », 22.22).
-- **À surveiller** : les signalements et les adresses qui ont refusé les emails (22.25), les emails rejetés, les demandes de groupe en attente, les erreurs du serveur. Chaque ligne mène à sa liste.
+- **À surveiller** : les signalements et les adresses qui ont refusé les emails (22.25), les emails rejetés, les erreurs du serveur. Chaque ligne mène à sa liste.
 - **Ce qui tourne tout seul** : le dernier passage de chaque tâche planifiée et ce qu'elle a fait ; la version en ligne.
 - **Des comptes par jour, jamais qui a fait quoi** : l'application compte elle-même, côté serveur, sans outil de mesure extérieur, sans cookie de plus, sans identifiant de personne. Le journal d'un groupe reste la seule trace nominative, et il appartient au groupe.
 

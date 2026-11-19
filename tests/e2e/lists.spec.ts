@@ -76,6 +76,26 @@ test('a list is written in its document, and shared', async ({ page }) => {
     'href',
     'https://exemple.fr/billes',
   );
+  // The arrows and the tab key go from line to line, saving on the way.
+  await leo.getByTestId('idea-text').first().click();
+  await page.keyboard.press('ArrowDown');
+  await expect(leo.getByTestId('idea-field').first()).toBeFocused();
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Vélo 16 pouces',
+  );
+  await page.keyboard.press('Tab');
+  await expect(leo.getByTestId('idea-field')).toHaveCount(1);
+  await expect(leo.getByTestId('idea-field')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Vélo 16 pouces',
+  );
+  await page.keyboard.press('ArrowUp');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Circuit de billes',
+  );
+  await expect(leo.getByTestId('idea-field').first()).toBeFocused();
+  await leo.getByRole('heading', { name: 'Léo' }).click();
   // A link written in the line: « : », the address, then the word « lien »
   // with what it can do; taken off again.
   await leo.getByTestId('idea-text').nth(1).click();
@@ -111,7 +131,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   );
   await leo.getByRole('heading', { name: 'Léo' }).click();
   await leo.getByTestId('idea-text').nth(1).click();
-  await leo.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.press('Backspace');
+  await page.keyboard.press('Enter');
   await expect(leo.getByTestId('idea-text')).toHaveCount(1);
 
   // The one who holds the list ticks too, even in a draft: what they give
@@ -155,7 +177,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await mine.click();
   await expect(mine).toHaveAttribute('aria-checked', 'false');
   await me.getByTestId('idea-text').click();
-  await me.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.press('Backspace');
+  await me.getByRole('heading', { name: 'Camille' }).click();
   await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
   // The bar is on every screen of someone logged in (README 22.21), the

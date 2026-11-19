@@ -11,8 +11,9 @@ import type IdeaLine from './IdeaLine.vue';
 // icon, and the empty line at the end, « Une autre idée… ». The icon and
 // the first name change here, by touching them, without going to the
 // person's page (asked by Julien, 19 November 2026): the icon in its
-// sheet (a small round pencil says so), the name written in place.
-// Neither for a person linked to an account, who chooses their own:
+// sheet (a small round pencil says so), the name written in place. The
+// icon of « Moi » is the one of my account: changed here, it changes
+// there. The name of a person linked to an account is not written here:
 // « Moi » today. At the end
 // of the first name, « ⋯ » (maquette ListePersonneMenu): « Sa fiche et
 // ses goûts », « Retirer de cette liste », at once when nobody ticked
@@ -154,16 +155,7 @@ const onNext = (index: number) =>
 <template>
   <section class="flex flex-col gap-1" data-testid="list-person">
     <header class="flex items-center gap-3 pb-1">
-      <!-- The icon of someone with an account is theirs to choose: no
-           pencil, and nothing happens here (« Moi » today). -->
-      <UiAvatar
-        v-if="member.isSelf"
-        :avatar="member.avatar"
-        :px="52"
-        class="shrink-0"
-      />
       <button
-        v-else
         type="button"
         class="relative shrink-0"
         :aria-label="t('lists.person.icon', { name: member.firstName })"

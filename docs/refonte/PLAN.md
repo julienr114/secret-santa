@@ -1612,7 +1612,7 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 
 Les deux lignes du lot 24 bis faites dans la même séance :
 
-12. **Le crayon** : « Moi » est la seule personne reliée à un compte aujourd'hui. Dans le document, son icône n'a ni crayon ni action. Sur sa fiche, pas de crayon non plus, mais toucher l'icône ouvre encore le panneau : l'icône de « Moi » dans mes proches est une copie prise à la création, elle ne suit pas « Mon compte », et c'est le seul endroit où la changer. **Question** : faut-il qu'elle suive l'icône du compte ?
+12. ~~Le crayon : pas sur « Moi », dont l'icône était une copie qui ne suivait pas « Mon compte ».~~ **Réponse de Julien, 19 novembre 2026 :** l'icône de « Moi » suit celle du compte, et la changer change celle du compte. Fait : les deux sont enregistrées ensemble, d'où qu'on la change (`setSelfAvatar`), et une ancienne copie différente est réalignée sur le compte à la prochaine ouverture d'une liste ou de « Mes proches ». « Moi » a donc de nouveau son crayon, dans le document et sur sa fiche. Le prénom de « Moi », lui, ne suit pas celui du compte (pas demandé) et ne se change toujours pas dans le document.
 13. **La barre collée** : « Partage par lien » reste sous la barre du haut, avec une ombre légère, et se replie dès qu'on fait défiler de plus de 24 px. **« Mode anonyme » n'existe pas encore** (lot 27 ter) : rien à coller sur la liste ouverte par son lien ; le lot 27 ter devra reprendre la même règle. Une ligne qu'on écrit garde une marge sous la barre quand le navigateur la ramène à l'écran.
 
 ### Correction 23

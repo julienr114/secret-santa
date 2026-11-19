@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
+import { setSelfAvatar } from '#server/database/lists';
 import { accounts } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { validatedBody } from '#server/http/validate';
@@ -16,9 +17,14 @@ const bodySchema = profileSchema
 export default defineEventHandler(async (event) => {
   const user = await requireAccount(event);
   const profile = await validatedBody(event, bodySchema);
-  await useDb(event)
-    .update(accounts)
-    .set(profile)
-    .where(eq(accounts.id, user.accountId));
+  const db = useDb(event);
+  await db.update(accounts).set(profile).where(eq(accounts.id, user.accountId));
+  // « Moi », among my people, has the icon of the account.
+  if (profile.avatarEmoji !== undefined || profile.avatarColor !== undefined) {
+    await setSelfAvatar(db, user.accountId, {
+      emoji: profile.avatarEmoji,
+      color: profile.avatarColor,
+    });
+  }
   return { ok: true };
 });

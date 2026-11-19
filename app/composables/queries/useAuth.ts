@@ -179,7 +179,8 @@ export type ProfileBody = Partial<{
 export const useSaveProfileMutation = () =>
   useApiMutation<{ ok: true }, ProfileBody>(
     (body) => api('/api/auth/profile', { method: 'PUT', body }),
-    () => [keys.account(), keys.home()],
+    // « Moi », among my people and on my lists, has the account's icon.
+    () => [keys.account(), keys.home(), keys.family(), keys.lists()],
   );
 
 /** Logs one other device of the account out. */

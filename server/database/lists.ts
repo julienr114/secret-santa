@@ -57,13 +57,14 @@ export const memberOf = (row: FamilyMemberRow): FamilyMember => ({
 /**
  * Puts the holder in their own family, from their profile, the first
  * time (« Moi », README 22.19): nothing until they have a first name.
+ * Its icon is the account's, and follows it.
  * @param db - The database.
  * @param accountId - The account.
  * @returns Once done.
  */
 export const ensureSelf = async (db: Db, accountId: string) => {
   const self = await db
-    .select({ id: familyMembers.id })
+    .select()
     .from(familyMembers)
     .where(
       and(
@@ -72,14 +73,27 @@ export const ensureSelf = async (db: Db, accountId: string) => {
       ),
     )
     .get();
-  if (self) return;
   const account = await db
     .select()
     .from(accounts)
     .where(eq(accounts.id, accountId))
     .get();
-  if (!account?.firstName) return;
+  if (!account) return;
   const avatar = avatarOf(account);
+  if (self) {
+    // An icon chosen before the two were tied: the account's wins.
+    if (
+      self.avatarEmoji !== avatar.emoji ||
+      self.avatarColor !== avatar.color
+    ) {
+      await db
+        .update(familyMembers)
+        .set({ avatarEmoji: avatar.emoji, avatarColor: avatar.color })
+        .where(eq(familyMembers.id, self.id));
+    }
+    return;
+  }
+  if (!account.firstName) return;
   await db.insert(familyMembers).values({
     id: newId(),
     accountId,
@@ -89,6 +103,40 @@ export const ensureSelf = async (db: Db, accountId: string) => {
     isSelf: true,
     createdAt: nowIso(),
   });
+};
+
+/**
+ * The icon of an account and of its « Moi » are one (decided by Julien,
+ * 19 November 2026): changed from « Mon compte » or from a list, both
+ * rows take it.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @param avatar - The icon chosen; a part left out stays as it is.
+ * @param avatar.emoji - Its emoji.
+ * @param avatar.color - Its colour.
+ * @returns Once both are saved.
+ */
+export const setSelfAvatar = (
+  db: Db,
+  accountId: string,
+  avatar: { emoji?: string; color?: string },
+) => {
+  const patch = {
+    ...(avatar.emoji === undefined ? {} : { avatarEmoji: avatar.emoji }),
+    ...(avatar.color === undefined ? {} : { avatarColor: avatar.color }),
+  };
+  return db.batch([
+    db.update(accounts).set(patch).where(eq(accounts.id, accountId)),
+    db
+      .update(familyMembers)
+      .set(patch)
+      .where(
+        and(
+          eq(familyMembers.accountId, accountId),
+          eq(familyMembers.isSelf, true),
+        ),
+      ),
+  ]);
 };
 
 /** The people of my family, oldest first, myself among them. */

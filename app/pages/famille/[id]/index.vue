@@ -117,7 +117,6 @@ const onRemove = () =>
             <UiAvatar :avatar="member.avatar" :px="64" />
             <!-- The pencil of the list's tile: the icon changes by touching it. -->
             <span
-              v-if="!member.isSelf"
               class="absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
               aria-hidden="true"
             >

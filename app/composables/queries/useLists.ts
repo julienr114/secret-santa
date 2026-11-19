@@ -158,8 +158,9 @@ export type MemberPatch = {
 export const useUpdateMemberMutation = (id: Id) =>
   useApiMutation<{ ok: true }, MemberPatch>(
     (body) => api(`/api/family/${toValue(id)}`, { method: 'PATCH', body }),
-    // The member shows on every list: refetch them all.
-    () => [keys.family(), keys.lists()],
+    // The member shows on every list: refetch them all. The icon of
+    // « Moi » is the account's too.
+    () => [keys.family(), keys.lists(), keys.account(), keys.home()],
   );
 
 // A list by its link (lot 22): ticking, giving with others, off the list.

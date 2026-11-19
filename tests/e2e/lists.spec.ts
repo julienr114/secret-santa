@@ -410,6 +410,20 @@ test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
   expect((await page.request.delete(`/api/family/${self.id}`)).status()).toBe(
     409,
   );
+  // The icon of « Moi » is the one of the account: changed among my
+  // people, it changes on the account; changed there, it changes here.
+  await page.request.patch(`/api/family/${self.id}`, {
+    data: { avatar: { emoji: '🦊', color: 'brick' } },
+  });
+  const home = await (await page.request.get('/api/auth/home')).json();
+  expect(JSON.stringify(home)).toContain('🦊');
+  await page.request.put('/api/auth/profile', {
+    data: { avatarEmoji: '🦉', avatarColor: 'pine' },
+  });
+  const after = await (await page.request.get('/api/family')).json();
+  expect(
+    after.members.find((m: { isSelf: boolean }) => m.isSelf).avatar,
+  ).toEqual({ emoji: '🦉', color: 'pine' });
   await members.filter({ hasText: 'Camille' }).click();
   await expect(heading(page)).toHaveText('Camille');
   await expect(page.getByTestId('member-remove')).toHaveCount(0);

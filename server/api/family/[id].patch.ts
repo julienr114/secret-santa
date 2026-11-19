@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
-import { findMember } from '#server/database/lists';
+import { findMember, setSelfAvatar } from '#server/database/lists';
 import { familyMembers } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
@@ -37,5 +37,9 @@ export default defineEventHandler(async (event) => {
       ...(body.texts ? { texts: { ...row.texts, ...body.texts } } : {}),
     })
     .where(eq(familyMembers.id, row.id));
+  // The icon of « Moi » is the account's: changed here, it changes there.
+  if (row.isSelf && body.avatar) {
+    await setSelfAvatar(db, user.accountId, body.avatar);
+  }
   return { ok: true };
 });

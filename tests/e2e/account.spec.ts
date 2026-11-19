@@ -174,7 +174,9 @@ test('my account lists the devices, and logging out everywhere closes them all',
     .getByRole('button', { name: /^Déconnecter / })
     .first()
     .click();
-  await expect(page.getByText('Appareil déconnecté')).toBeVisible();
+  await expect(
+    page.getByText('Appareil déconnecté', { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText(/^Vu le /)).toHaveCount(2);
 
   await page.getByText('Déconnecter partout').click();

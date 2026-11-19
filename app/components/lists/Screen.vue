@@ -22,7 +22,7 @@ useHead({ title: () => t('common.appName') });
 
 <template>
   <div
-    class="flex min-h-[var(--keyboard-visible,100dvh)] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
+    class="flex min-h-[100dvh] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <header class="pt-[env(safe-area-inset-top)]">
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">

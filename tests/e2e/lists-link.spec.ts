@@ -173,9 +173,20 @@ test('something else, and what the holder sees', async ({ page }) => {
   await apiLogin(page.request, TONTON);
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
-  await page.getByRole('link', { name: 'J’offre autre chose à Léo' }).click();
-  await page.getByLabel('Ce que tu offres').fill('un jeu de société');
-  await page.getByTestId('off-list-add').click();
+  // Written in place (README 22.20): a line already ticked, who will read
+  // it, « Supprimer »; no sheet, no page.
+  const other = page.getByRole('button', { name: 'J’offre autre chose à Léo' });
+  await other.click();
+  const line = page.getByTestId('off-list-line');
+  await expect(line).toContainText(
+    'Camille lira ces mots. Les autres verront seulement « Un cadeau surprise, hors liste ».',
+  );
+  await line.getByRole('button', { name: 'Supprimer' }).click();
+  await expect(line).toHaveCount(0);
+  await other.click();
+  await page.getByTestId('off-list-field').fill('un jeu de société');
+  await page.getByTestId('off-list-field').press('Enter');
+  await expect(page).toHaveURL(new RegExp(`/l/${state.token}$`));
   await expect(page.getByTestId('off-list')).toContainText(
     'Tu offres hors liste : un jeu de société',
   );

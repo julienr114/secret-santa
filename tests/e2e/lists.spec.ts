@@ -65,13 +65,42 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.keyboard.type('Vélo 16 pouces');
   await page.keyboard.press('Enter');
   await expect(leo.getByTestId('idea-text')).toHaveCount(2);
-  await expect(page.getByTestId('line-bar')).toBeVisible();
-  await page.getByRole('button', { name: 'Terminé' }).click();
-  await expect(page.getByTestId('line-bar')).toHaveCount(0);
+  // Nothing above the keyboard (README 22.20): what the line can do is
+  // under it, while one is in it; touching elsewhere leaves the line.
+  await expect(leo.getByTestId('line-actions')).toContainText(
+    'Ajouter un lien',
+  );
+  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await expect(leo.getByTestId('line-actions')).toHaveCount(0);
   await expect(leo.getByRole('link', { name: 'lien' })).toHaveAttribute(
     'href',
     'https://exemple.fr/billes',
   );
+  // A link written in the line: « : », the address, then the word « lien »
+  // with what it can do; taken off again.
+  await leo.getByTestId('idea-text').nth(1).click();
+  await leo.getByRole('button', { name: 'Ajouter un lien' }).click();
+  const address = leo.getByTestId('idea-link-field');
+  await expect(address).toBeFocused();
+  await expect(leo.getByTestId('line-actions')).toHaveText('Annuler');
+  await address.fill('exemple.fr/velo');
+  await address.press('Enter');
+  await expect(leo.getByTestId('line-actions')).toContainText(
+    'Changer le lien',
+  );
+  await expect(leo.getByTestId('idea-field').first()).toBeFocused();
+  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await expect(leo.getByRole('link', { name: 'lien' }).nth(1)).toHaveAttribute(
+    'href',
+    'https://exemple.fr/velo',
+  );
+  await leo.getByTestId('idea-text').nth(1).click();
+  await leo.getByRole('button', { name: 'Retirer le lien' }).click();
+  await expect(leo.getByTestId('line-actions')).toContainText(
+    'Ajouter un lien',
+  );
+  await leo.getByRole('heading', { name: 'Léo' }).click();
+  await expect(leo.getByRole('link', { name: 'lien' })).toHaveCount(1);
   // Corrected by touching it; emptied, the line goes.
   await leo.getByTestId('idea-text').nth(1).click();
   await page.keyboard.press('ControlOrMeta+a');
@@ -80,8 +109,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('idea-text').nth(1)).toHaveText(
     'Vélo 18 pouces',
   );
+  await leo.getByRole('heading', { name: 'Léo' }).click();
   await leo.getByTestId('idea-text').nth(1).click();
-  await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
+  await leo.getByRole('button', { name: 'Supprimer', exact: true }).click();
   await expect(leo.getByTestId('idea-text')).toHaveCount(1);
 
   // The one who holds the list ticks too, even in a draft: what they give
@@ -116,7 +146,8 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await me.getByPlaceholder('Une idée pour Camille…').click();
   await page.keyboard.type('Un bon couteau');
   await page.keyboard.press('Enter');
-  await page.getByRole('button', { name: 'Terminé' }).click();
+  await me.getByRole('heading', { name: 'Camille' }).click();
+  await expect(me.getByTestId('idea-text')).toHaveCount(1);
   const mine = me.getByTestId('holder-box').first();
   await mine.click();
   await expect(mine).toHaveAttribute('aria-checked', 'true');
@@ -124,7 +155,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await mine.click();
   await expect(mine).toHaveAttribute('aria-checked', 'false');
   await me.getByTestId('idea-text').click();
-  await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
+  await me.getByRole('button', { name: 'Supprimer', exact: true }).click();
   await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
   // The bar is on every screen of someone logged in (README 22.21), the

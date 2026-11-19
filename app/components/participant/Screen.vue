@@ -52,10 +52,9 @@ const onLanguage = (locale: Locale) => {
 
 <template>
   <!-- At least the window's height, so a sticky footer rests at the
-       bottom of a short screen; while the keyboard is up, the height left
-       above it (useKeyboardInset). -->
+       bottom of a short screen. -->
   <div
-    class="flex min-h-[var(--keyboard-visible,100dvh)] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
+    class="flex min-h-[100dvh] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <header class="pt-[env(safe-area-inset-top)]">
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">

@@ -23,10 +23,9 @@ const goBack = useGoBack();
 
 <template>
   <!-- At least the window's height (less the layout's bottom padding), so a
-       sticky footer rests at the bottom of a short screen; while the
-       keyboard is up, the height left above it (useKeyboardInset). -->
+       sticky footer rests at the bottom of a short screen. -->
   <div
-    class="flex min-h-[calc(var(--keyboard-visible,100dvh)-2rem-var(--tab-bar)-env(safe-area-inset-bottom))] flex-col"
+    class="flex min-h-[calc(100dvh-2rem-var(--tab-bar)-env(safe-area-inset-bottom))] flex-col"
   >
     <header
       class="sticky top-0 z-20 border-b border-default bg-page/90 pt-[env(safe-area-inset-top)] backdrop-blur"

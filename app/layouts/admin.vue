@@ -7,7 +7,7 @@
 
 <template>
   <div
-    class="min-h-[var(--keyboard-visible,100dvh)] pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
+    class="min-h-[100dvh] pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <slot />
   </div>

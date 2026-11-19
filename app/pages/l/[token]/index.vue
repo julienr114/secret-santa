@@ -223,15 +223,17 @@ const onJoin = (idea: IdeaLine, forName: string) => {
             >
               <UIcon name="i-lucide-check" class="size-3.5" />
             </span>
-            <p class="grow text-base leading-[1.45]">
+            <div class="flex min-w-0 grow flex-col text-base leading-[1.45]">
               <template v-if="gift.kind === 'mine'">
-                {{ t('lists.visitor.myOffList', { text: gift.text }) }}
+                <span class="font-semibold">{{
+                  t('lists.visitor.myOffList', { text: gift.text })
+                }}</span>
                 <button
                   type="button"
-                  class="ml-1 text-sm font-bold text-primary-ink underline"
+                  class="flex min-h-11 items-center self-start text-sm font-bold text-toned underline underline-offset-2"
                   @click="removeOffList.mutate(gift.id, { onError })"
                 >
-                  {{ t('lists.visitor.removeOffList') }}
+                  {{ t('lists.doc.removeLine') }}
                 </button>
               </template>
               <span
@@ -245,27 +247,14 @@ const onJoin = (idea: IdeaLine, forName: string) => {
               <span v-else class="text-toned line-through">{{
                 t('lists.visitor.surprise')
               }}</span>
-            </p>
+            </div>
           </li>
-          <li>
-            <NuxtLink
-              :to="`/l/${token}/hors-liste?pour=${person.id}`"
-              class="flex min-h-11 items-center gap-3 py-2 font-bold text-primary-ink"
-              data-testid="off-list-action"
-            >
-              <span
-                class="flex size-[22px] shrink-0 items-center justify-center rounded-sm border-[1.5px] border-dashed border-accented"
-                aria-hidden="true"
-              >
-                <UIcon name="i-lucide-plus" class="size-3.5" />
-              </span>
-              {{
-                t('lists.visitor.offListAction', {
-                  name: person.member.firstName,
-                })
-              }}
-            </NuxtLink>
-          </li>
+          <ListsOffListLine
+            :token="token"
+            :list-person-id="person.id"
+            :for-name="person.member.firstName"
+            :holder-name="holder"
+          />
         </ul>
       </section>
     </template>

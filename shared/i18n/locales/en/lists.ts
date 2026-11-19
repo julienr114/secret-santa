@@ -99,17 +99,14 @@ export default {
     remove: 'Remove',
     iconTitle: 'The list’s icon',
     changeIcon: 'Change the icon',
-    bar: {
-      link: 'Link',
-      removeLine: 'Delete the line',
-      done: 'Done',
-      label: 'Line tools',
-    },
-    linkSheet: {
-      title: 'The idea’s link',
-      label: 'Address',
-      remove: 'Remove the link',
-    },
+    addLink: 'Add a link',
+    changeLink: 'Change the link',
+    removeLink: 'Remove the link',
+    removeLine: 'Delete',
+    linkPlaceholder: 'paste or type the address',
+    linkLabel: 'Address of the link',
+    linkInvalid:
+      'This is not an address: it starts with https:// or looks like example.com.',
     confirmRemove: {
       title: 'Delete this idea?',
       body: 'Someone already ticked it: they won’t see it on the list any more.',
@@ -216,7 +213,6 @@ export default {
     joined: 'You’re in',
     surprise: 'A surprise gift, not on the list',
     myOffList: 'You give, not on the list: {text}',
-    removeOffList: 'Remove',
     offListAction: 'I’m giving {name} something else',
     tick: 'I give it: {idea}',
     untick: 'I no longer give it: {idea}',
@@ -278,14 +274,8 @@ export default {
     sent: 'On its way: open the link sent to {email}, from this phone.',
   },
   offList: {
-    title: 'Giving {name} something else?',
-    intro:
-      'Say it in a few words: the others will know a gift is planned, without knowing which.',
-    label: 'What you give',
-    hint: 'Only {name} will read it. The others will see “Not on the list · a surprise gift”.',
-    tellHolder: 'Tell {name} it’s me',
-    tellHolderHelp: 'Otherwise, they will see “Anonymous”.',
-    add: 'Add',
+    inlineHint:
+      '{name} will read these words. The others will only see “A surprise gift, not on the list”.',
   },
   tastes: {
     title: '{name}’s tastes',

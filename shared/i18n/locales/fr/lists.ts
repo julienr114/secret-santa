@@ -104,17 +104,14 @@ export default {
     remove: 'Retirer',
     iconTitle: 'L’icône de la liste',
     changeIcon: 'Changer l’icône',
-    bar: {
-      link: 'Lien',
-      removeLine: 'Supprimer la ligne',
-      done: 'Terminé',
-      label: 'Outils de la ligne',
-    },
-    linkSheet: {
-      title: 'Le lien de l’idée',
-      label: 'Adresse',
-      remove: 'Retirer le lien',
-    },
+    addLink: 'Ajouter un lien',
+    changeLink: 'Changer le lien',
+    removeLink: 'Retirer le lien',
+    removeLine: 'Supprimer',
+    linkPlaceholder: 'colle ou écris l’adresse',
+    linkLabel: 'Adresse du lien',
+    linkInvalid:
+      'Ce n’est pas une adresse : elle commence par https:// ou ressemble à exemple.fr.',
     confirmRemove: {
       title: 'Supprimer cette idée ?',
       body: 'Quelqu’un l’a déjà cochée : il ne la verra plus sur la liste.',
@@ -222,7 +219,6 @@ export default {
     joined: 'Tu participes',
     surprise: 'Un cadeau surprise, hors liste',
     myOffList: 'Tu offres hors liste : {text}',
-    removeOffList: 'Retirer',
     offListAction: 'J’offre autre chose à {name}',
     tick: 'Je l’offre : {idea}',
     untick: 'Je ne l’offre plus : {idea}',
@@ -285,14 +281,8 @@ export default {
     sent: 'C’est parti : ouvre le lien reçu à {email}, depuis ce téléphone.',
   },
   offList: {
-    title: 'Tu offres autre chose à {name} ?',
-    intro:
-      'Dis-le en deux mots : les autres sauront qu’un cadeau est prévu, sans savoir lequel.',
-    label: 'Ce que tu offres',
-    hint: 'Personne d’autre que {name} ne le lira. Les autres verront « Hors liste · un cadeau surprise ».',
-    tellHolder: 'Dire à {name} que c’est moi',
-    tellHolderHelp: 'Sinon, cette personne verra « Anonyme ».',
-    add: 'Ajouter',
+    inlineHint:
+      '{name} lira ces mots. Les autres verront seulement « Un cadeau surprise, hors liste ».',
   },
   tastes: {
     title: 'Les goûts de {name}',

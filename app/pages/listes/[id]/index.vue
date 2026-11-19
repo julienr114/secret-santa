@@ -13,7 +13,7 @@ import {
   useListQuery,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
-import { LIST_EDITING, type LineActions } from '~/composables/useListEditing';
+import { LIST_EDITING } from '~/composables/useListEditing';
 import { LIST_SHADES } from '~/utils/listShades';
 
 // The document of a list, for the one who holds it (README 22.19,
@@ -93,23 +93,13 @@ const onIcon = (icon: { emoji: string; color: string }) => {
   update.mutate({ icon });
 };
 
-// The line being written, the bar above the keyboard, and what it asks.
-// Shallow: the line compares its own actions with the one active.
-const active = shallowRef<LineActions | null>(null);
+// What a line of the document asks the page: a confirmation before
+// deleting an idea someone ticked, and the sheets of what the holder gives.
 const confirm = ref<((ok: boolean) => void) | null>(null);
-const linkAsk = ref<{
-  url: string;
-  answer: (url: string | null | undefined) => void;
-} | null>(null);
 provide(LIST_EDITING, {
-  active,
   confirmRemove: () =>
     new Promise<boolean>((resolve) => {
       confirm.value = resolve;
-    }),
-  askLink: (current) =>
-    new Promise((resolve) => {
-      linkAsk.value = { url: current ?? '', answer: resolve };
     }),
   change: (idea, forName) => {
     changing.value = { idea, forName };
@@ -160,18 +150,6 @@ const confirmOpen = computed({
 const answerConfirm = (ok: boolean) => {
   confirm.value?.(ok);
   confirm.value = null;
-};
-const linkOpen = computed({
-  get: () => linkAsk.value !== null,
-  set: (open) => {
-    if (!open) answerLink(undefined);
-  },
-});
-const linkUrl = computed(() => linkAsk.value?.url ?? '');
-const onLink = (url: string) => answerLink(url.trim() || null);
-const answerLink = (url: string | null | undefined) => {
-  linkAsk.value?.answer(url);
-  linkAsk.value = null;
 };
 
 // A draft left with nothing in it goes, once the list itself is left.
@@ -306,11 +284,9 @@ onBeforeRouteLeave((to) => {
           :family="doc.family"
           :on-list="doc.people"
         />
-        <div class="h-12" aria-hidden="true" />
       </template>
     </AdminQueryState>
 
-    <ListsLineBar />
     <AdminDateSheet
       v-if="list"
       v-model:open="dateOpen"
@@ -367,18 +343,6 @@ onBeforeRouteLeave((to) => {
       :via="via"
       :idea="joining.idea"
       :for-name="joining.forName"
-    />
-    <UiTextSheet
-      v-if="linkAsk"
-      v-model:open="linkOpen"
-      :title="t('lists.doc.linkSheet.title')"
-      :label="t('lists.doc.linkSheet.label')"
-      :value="linkUrl"
-      :maxlength="2000"
-      placeholder="https://…"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="onLink"
     />
   </AdminScreen>
 </template>

@@ -152,11 +152,11 @@ const onGroup = () => {
         <button
           v-if="!view.closed"
           type="button"
-          class="h-9 shrink-0 rounded-full px-3.5 text-sm font-bold ring-1"
+          class="flex min-h-11 shrink-0 items-center text-sm font-bold"
           :class="
             view.mine
-              ? 'bg-success-soft text-success-ink ring-success'
-              : 'bg-warning-tint text-warning-ink ring-warning-ring'
+              ? 'text-success-ink'
+              : 'text-primary underline underline-offset-2'
           "
           @click="onGroup"
         >

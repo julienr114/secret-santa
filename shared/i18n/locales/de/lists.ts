@@ -103,17 +103,14 @@ export default {
     remove: 'Entfernen',
     iconTitle: 'Das Symbol der Liste',
     changeIcon: 'Symbol ändern',
-    bar: {
-      link: 'Link',
-      removeLine: 'Zeile löschen',
-      done: 'Fertig',
-      label: 'Werkzeuge der Zeile',
-    },
-    linkSheet: {
-      title: 'Der Link der Idee',
-      label: 'Adresse',
-      remove: 'Link entfernen',
-    },
+    addLink: 'Link hinzufügen',
+    changeLink: 'Link ändern',
+    removeLink: 'Link entfernen',
+    removeLine: 'Löschen',
+    linkPlaceholder: 'Adresse einfügen oder schreiben',
+    linkLabel: 'Adresse des Links',
+    linkInvalid:
+      'Das ist keine Adresse: Sie beginnt mit https:// oder sieht aus wie beispiel.de.',
     confirmRemove: {
       title: 'Diese Idee löschen?',
       body: 'Jemand hat sie schon abgehakt: Er sieht sie dann nicht mehr auf der Liste.',
@@ -222,7 +219,6 @@ export default {
     joined: 'Du machst mit',
     surprise: 'Ein Überraschungsgeschenk, nicht auf der Liste',
     myOffList: 'Du schenkst, nicht auf der Liste: {text}',
-    removeOffList: 'Entfernen',
     offListAction: 'Ich schenke {name} etwas anderes',
     tick: 'Ich schenke es: {idea}',
     untick: 'Ich schenke es nicht mehr: {idea}',
@@ -285,14 +281,8 @@ export default {
     sent: 'Unterwegs: Öffne den Link, der an {email} ging, auf diesem Telefon.',
   },
   offList: {
-    title: 'Du schenkst {name} etwas anderes?',
-    intro:
-      'Sag es in zwei Worten: Die anderen wissen dann, dass ein Geschenk geplant ist, ohne zu wissen, welches.',
-    label: 'Was du schenkst',
-    hint: 'Nur {name} liest es. Die anderen sehen „Nicht auf der Liste · ein Überraschungsgeschenk“.',
-    tellHolder: '{name} sagen, dass ich es bin',
-    tellHolderHelp: 'Sonst sieht diese Person „Anonym“.',
-    add: 'Hinzufügen',
+    inlineHint:
+      '{name} liest diese Worte. Die anderen sehen nur „Ein Überraschungsgeschenk, nicht auf der Liste“.',
   },
   tastes: {
     title: 'Vorlieben von {name}',

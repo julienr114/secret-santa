@@ -1821,6 +1821,7 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 9. **Sur ordinateur** : centré en bas, 420 px de large, vérifié sur capture.
 10. **« C'est fait » ne chasse pas un « Annuler »** (vu avec Julien) : un message qui dit seulement que c'est fait attend la fin d'un « Annuler » affiché, au lieu de le remplacer et de valider l'action avant l'heure. Une erreur, elle, s'affiche tout de suite et le remplace. Un second « Annuler » remplace le premier, dont l'action est alors validée.
 11. **Lecteurs d'écran** : seule une erreur interrompt (`role="alert"`) ; les deux autres sortes sont dites poliment. Avant, le composant annonçait tout comme une alerte.
+12. **Le contenu d'un message est centré dans la hauteur du bandeau** (retour de Julien, 19 novembre 2026) : un message d'une seule ligne était collé en haut.
 
 ### Correction 27 — la fiche d'un proche
 
@@ -1863,6 +1864,17 @@ Codé le 19 novembre 2026. Tranché seul, à relire :
 9. **Seul celui qui tient l'ancienne liste** peut en repartir (les deux niveaux). Y figurer ou l'avoir ouverte par son lien ne suffit pas.
 10. **Quand on ajoute ensuite un proche à la main**, la règle d'avant s'applique toujours : il arrive avec ses idées non offertes de sa dernière liste, sans marque.
 11. **Les plafonds du lot 38 A** valent pour la liste créée (100 listes par compte) ; la reprise elle-même copie au plus ce que l'ancienne liste contenait.
+
+### Supprimer une liste
+
+Demandé par Julien le 19 novembre 2026 au soir (« on ne peut pas supprimer une liste ? ») : seul un brouillon vide disparaissait de lui-même. Codé le même soir, sans maquette ni migration, sur le modèle de « Supprimer de mes proches » (Correction 24). À relire :
+
+1. **Une ligne rouge « Supprimer la liste » tout en bas du document**, sous « Ajouter quelqu'un », pour ceux qui gèrent la liste seulement (« Aide à écrire » ne la voit pas, et la route le refuse).
+2. **Elle mène à une page** `/listes/[id]/supprimer` qui dit ce qui est perdu avant de supprimer : les idées, les cadeaux déjà prévus (« ceux qui les avaient cochés ne sont pas prévenus »), le lien, « Elle disparaît aussi pour Hugo », et que les personnes restent dans « Mes proches ». Pas de phrase à recopier.
+3. **Pas de « Annuler » après coup** : c'est définitif, comme la suppression d'un proche. La confirmation est donc avant, sur la page.
+4. **Personne n'est prévenu** : ni ceux qui avaient coché, ni les autres qui tiennent la liste. À reprendre avec les nouveautés (lot 28).
+5. **Une liste reprise de celle-ci** (lot 27) dit alors « Reprise d'une autre liste. »
+6. **Pas de suppression depuis l'onglet « Listes »** : seulement depuis le document.
 
 ### Lot 27 ter — pistes et liste
 

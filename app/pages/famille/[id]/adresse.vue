@@ -8,7 +8,9 @@ import {
 // The email address of one of my people (Correction 27, lot 25, maquettes
 // ProcheAdresse, ListePersonneCompte): it links them to their own
 // account, so that they write their own ideas on my lists. One line, the
-// keyboard of addresses, no capital nor correction. Once an address is
+// keyboard of addresses, no capital nor correction; under it, the one
+// sentence of these pages: what the address is for (Julien, 19 November
+// 2026). Once an address is
 // given, the page shows where it stands (linked, or no account at that
 // address yet) and « Ne plus relier ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -66,6 +68,9 @@ const given = (member: MemberView) => Boolean(member.email);
             one-line
           />
         </UiList>
+        <p class="text-sm leading-[1.45] text-toned" data-testid="email-help">
+          {{ t('lists.person.field.emailLinked', { name: member.firstName }) }}
+        </p>
         <UButton
           block
           variant="outline"
@@ -84,23 +89,27 @@ const given = (member: MemberView) => Boolean(member.email);
           {{ unlinkFailure }}
         </p>
       </template>
-      <UInput
-        v-else
-        v-model="draft"
-        type="email"
-        inputmode="email"
-        autocomplete="off"
-        autocapitalize="none"
-        autocorrect="off"
-        spellcheck="false"
-        enterkeyhint="done"
-        size="xl"
-        :maxlength="254"
-        :aria-label="t('lists.person.field.emailField')"
-        :placeholder="t('lists.person.field.emailPlaceholder')"
-        :ui="{ base: 'h-12 text-base placeholder:text-muted' }"
-        data-testid="member-field"
-      />
+      <div v-else class="flex flex-col gap-1.5">
+        <UInput
+          v-model="draft"
+          type="email"
+          inputmode="email"
+          autocomplete="off"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
+          enterkeyhint="done"
+          size="xl"
+          :maxlength="254"
+          :aria-label="t('lists.person.field.emailField')"
+          :placeholder="t('lists.person.field.emailPlaceholder')"
+          :ui="{ base: 'h-12 text-base placeholder:text-muted' }"
+          data-testid="member-field"
+        />
+        <p class="text-sm leading-[1.45] text-toned" data-testid="email-help">
+          {{ t('lists.person.field.emailHelp', { name: member.firstName }) }}
+        </p>
+      </div>
     </template>
   </ListsMemberFieldPage>
 </template>

@@ -351,6 +351,10 @@ export default {
       email: 'E-Mail-Adresse',
       emailField: 'E-Mail-Adresse',
       emailPlaceholder: 'vorname@beispiel.de',
+      emailHelp:
+        'Freiwillig. Mit einem Konto unter dieser Adresse kann {name} die eigenen Ideen auf deinen Listen aufschreiben.',
+      emailLinked:
+        'Auf deinen Listen kann {name} die eigenen Ideen aufschreiben, ohne zu sehen, wer was schenkt.',
       or: 'oder',
       counter: '{count} / {max}',
     },

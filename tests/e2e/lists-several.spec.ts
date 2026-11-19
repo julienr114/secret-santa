@@ -157,6 +157,10 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
   const field = camille.getByTestId('member-field');
   await expect(field).toHaveAttribute('placeholder', 'prenom@exemple.fr');
   await expect(field).toHaveAttribute('inputmode', 'email');
+  // The one sentence of these pages: what the address is for.
+  await expect(camille.getByTestId('email-help')).toHaveText(
+    'Facultatif. Avec un compte à cette adresse, Hugo pourra écrire ses propres idées sur tes listes.',
+  );
   await expect(field).toHaveAttribute('autocapitalize', 'none');
   await expect(camille.getByTestId('member-field-validate')).toBeDisabled();
   await field.fill(HUGO);
@@ -169,6 +173,9 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
     'Relié à son compte',
   );
   await expect(camille.getByTestId('member-unlink')).toBeVisible();
+  await expect(camille.getByTestId('email-help')).toContainText(
+    'Hugo peut écrire ses propres idées, sans voir qui offre quoi.',
+  );
   await expect(camille.getByTestId('member-field')).toHaveCount(0);
   await camille.getByRole('button', { name: 'Retour' }).click();
   await expect(heading(camille)).toHaveText('Hugo');

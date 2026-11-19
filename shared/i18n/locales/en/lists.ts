@@ -342,6 +342,10 @@ export default {
       email: 'Their email address',
       emailField: 'Email address',
       emailPlaceholder: 'firstname@example.com',
+      emailHelp:
+        'Optional. With an account at this address, {name} will be able to write their own ideas on your lists.',
+      emailLinked:
+        'On your lists, {name} can write their own ideas, without seeing who gives what.',
       or: 'or',
       counter: '{count} / {max}',
     },

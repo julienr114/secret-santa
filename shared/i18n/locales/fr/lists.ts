@@ -348,6 +348,10 @@ export default {
       email: 'Son adresse email',
       emailField: 'Adresse email',
       emailPlaceholder: 'prenom@exemple.fr',
+      emailHelp:
+        'Facultatif. Avec un compte à cette adresse, {name} pourra écrire ses propres idées sur tes listes.',
+      emailLinked:
+        'Sur tes listes, {name} peut écrire ses propres idées, sans voir qui offre quoi.',
       or: 'ou',
       counter: '{count} / {max}',
     },

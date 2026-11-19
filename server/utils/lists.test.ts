@@ -8,6 +8,7 @@ import {
   ideaView,
   isWorthKeeping,
   listStatus,
+  memberRemoval,
   noteOf,
   randomListIcon,
   shareChange,
@@ -220,5 +221,42 @@ describe('lists', () => {
     const icon = randomListIcon(() => 0);
     expect(LIST_EMOJIS).toContain(icon.emoji);
     expect(new Set(LIST_EMOJIS).size).toBe(LIST_EMOJIS.length);
+  });
+
+  it('says what deleting a person of « Mes proches » takes, or refuses', () => {
+    const other = { isSelf: false, holdsWithMe: false };
+    // On no list: nothing else goes.
+    expect(memberRemoval(other, [], new Set())).toEqual({
+      allowed: true,
+      lists: [],
+      ideas: 0,
+      planned: 0,
+    });
+    // On lists: they leave each, their ideas go, and the gifts planned
+    // for them are lost, ticked ideas and gifts off the list alike.
+    const places = [
+      {
+        list: { id: 'l1', title: 'Noël 2026' },
+        ideaIds: ['a', 'b', 'c'],
+        offList: 1,
+      },
+      { list: { id: 'l2', title: '' }, ideaIds: ['d'], offList: 0 },
+    ];
+    expect(memberRemoval(other, places, new Set(['a', 'd', 'zzz']))).toEqual({
+      allowed: true,
+      lists: [
+        { id: 'l1', title: 'Noël 2026' },
+        { id: 'l2', title: '' },
+      ],
+      ideas: 4,
+      planned: 3,
+    });
+    // « Moi » stays, and so does whoever holds one of my lists with me.
+    expect(
+      memberRemoval({ isSelf: true, holdsWithMe: false }, places, new Set()),
+    ).toEqual({ allowed: false, why: 'self' });
+    expect(
+      memberRemoval({ isSelf: false, holdsWithMe: true }, [], new Set()),
+    ).toEqual({ allowed: false, why: 'holder' });
   });
 });

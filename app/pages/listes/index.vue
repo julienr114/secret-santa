@@ -69,6 +69,14 @@ const pastLine = (card: ListCard) => {
         <div class="flex flex-col gap-1">
           <UiPageTitle>{{ t('lists.home.title') }}</UiPageTitle>
           <p class="text-[15px] text-toned">{{ t('lists.home.intro') }}</p>
+          <NuxtLink
+            to="/famille"
+            class="flex min-h-11 items-center gap-1 self-start text-[15px] font-bold text-primary-ink"
+            data-testid="family-link"
+          >
+            {{ t('lists.home.family') }}
+            <UIcon name="i-lucide-chevron-right" class="size-4" />
+          </NuxtLink>
         </div>
         <UButton
           v-if="!empty"

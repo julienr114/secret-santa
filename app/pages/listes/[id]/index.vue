@@ -111,53 +111,20 @@ provide(LIST_EDITING, {
   removePerson: (person) => onRemovePerson(person),
 });
 
-// « Retirer de la liste » (README 22.19): the person goes at once, with
-// « Annuler » in the toast. Nothing is asked of the server before the
-// toast is gone, so that giving up loses nothing: neither their ideas nor
-// what was ticked.
-const UNDO_MS = 6000;
-const toast = useToast();
+// « Retirer de cette liste » (README 22.19): the person goes at once,
+// with « Annuler » in the toast.
 const removePerson = useRemovePersonMutation(id);
-const leaving = ref<{ id: string; timer: number } | null>(null);
-const people = computed(() =>
-  (doc.value?.people ?? []).filter((p) => p.id !== leaving.value?.id),
+const removal = useDelayedRemoval((personId, done) =>
+  removePerson.mutate(personId, { onSettled: done }),
 );
-/** Takes off for good whoever is leaving. */
-const flushRemoval = () => {
-  const gone = leaving.value;
-  if (!gone) return;
-  window.clearTimeout(gone.timer);
-  removePerson.mutate(gone.id, {
-    onSettled: () => {
-      if (leaving.value?.id === gone.id) leaving.value = null;
-    },
-  });
-};
-const onRemovePerson = (person: PersonLine) => {
-  flushRemoval();
-  const toastId = `removed-${person.id}`;
-  leaving.value = {
-    id: person.id,
-    timer: window.setTimeout(flushRemoval, UNDO_MS),
-  };
-  toast.add({
-    id: toastId,
-    title: t('lists.doc.removed', { name: person.member.firstName }),
-    duration: UNDO_MS,
-    actions: [
-      {
-        label: t('common.actions.cancel'),
-        onClick: () => {
-          if (leaving.value?.id !== person.id) return;
-          window.clearTimeout(leaving.value.timer);
-          leaving.value = null;
-          toast.remove(toastId);
-        },
-      },
-    ],
-  });
-};
-onBeforeUnmount(flushRemoval);
+const people = computed(() =>
+  (doc.value?.people ?? []).filter((p) => p.id !== removal.leaving.value),
+);
+const onRemovePerson = (person: PersonLine) =>
+  removal.start(
+    person.id,
+    t('lists.doc.removed', { name: person.member.firstName }),
+  );
 // The sheets of what the holder gives: « Changer » and « Se joindre », the
 // same as by the link (README 22.19). They follow the list as it is
 // refetched.

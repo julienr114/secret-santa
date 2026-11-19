@@ -11,12 +11,14 @@ import type IdeaLine from './IdeaLine.vue';
 // icon, and the empty line at the end, « Une autre idée… ». The icon and
 // the first name change here, by touching them, without going to the
 // person's page (asked by Julien, 19 November 2026): the icon in its
-// sheet, the name written in place. The name of a person linked to an
-// account is not mine to change: « Moi » today. At the end
+// sheet (a small round pencil says so), the name written in place.
+// Neither for a person linked to an account, who chooses their own:
+// « Moi » today. At the end
 // of the first name, « ⋯ » (maquette ListePersonneMenu): « Sa fiche et
-// ses goûts », and « Retirer de la liste », at once when nobody ticked
+// ses goûts », « Retirer de cette liste », at once when nobody ticked
 // any of their ideas, otherwise after a second tap that says how many
-// gifts already planned would be lost.
+// gifts already planned would be lost, and « Supprimer de mes proches »,
+// in red, which leads to its confirmation (Correction 24).
 const props = defineProps<{
   listId: string;
   person: ListDocument['people'][number];
@@ -112,7 +114,6 @@ const menu = computed(() =>
           {
             label: t('lists.doc.removeFromList'),
             icon: 'i-lucide-user-minus',
-            color: 'primary' as const,
             onSelect: (event: Event) => {
               if (planned.value === 0) {
                 editing.removePerson(props.person);
@@ -123,6 +124,17 @@ const menu = computed(() =>
               confirming.value = true;
             },
           },
+          // Not « Moi »: they stay among my people.
+          ...(member.value.isSelf
+            ? []
+            : [
+                {
+                  label: t('lists.doc.deleteFromFamily'),
+                  icon: 'i-lucide-trash-2',
+                  color: 'error' as const,
+                  to: `/famille/${member.value.id}/supprimer?liste=${props.listId}`,
+                },
+              ]),
         ],
       ],
 );
@@ -142,7 +154,16 @@ const onNext = (index: number) =>
 <template>
   <section class="flex flex-col gap-1" data-testid="list-person">
     <header class="flex items-center gap-3 pb-1">
+      <!-- The icon of someone with an account is theirs to choose: no
+           pencil, and nothing happens here (« Moi » today). -->
+      <UiAvatar
+        v-if="member.isSelf"
+        :avatar="member.avatar"
+        :px="52"
+        class="shrink-0"
+      />
       <button
+        v-else
         type="button"
         class="relative shrink-0"
         :aria-label="t('lists.person.icon', { name: member.firstName })"

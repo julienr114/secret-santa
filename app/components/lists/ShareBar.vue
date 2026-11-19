@@ -16,7 +16,8 @@ import { useShareListMutation } from '~/composables/queries/useLists';
 // Julien on 19 November 2026: the share sheet has the mail app too), « Personnaliser le message » and
 // « Changer de lien ». Nothing full nor
 // red. Turned off, sharing stops at once, with « Annuler » in the toast;
-// turned on again, the link is the same.
+// turned on again, the link is the same. The bar stays stuck under the
+// top bar while the list scrolls.
 const props = defineProps<{ doc: ListDocument }>();
 const { t, tk } = useT();
 const toast = useToast();
@@ -39,6 +40,31 @@ const blocked = computed(() => !shared.value && missing.value.length > 0);
 const tried = ref(false);
 
 const open = ref(false);
+// The bar stays under the top bar while the list scrolls (lot 24 bis);
+// unfolded, it folds back as soon as one scrolls, so as not to hide the
+// list.
+// Unfolding moves the page by itself (the browser keeps what one was
+// reading in place): only what scrolls after that counts.
+const openedAt = ref<number | null>(null);
+watch(open, (now) => {
+  openedAt.value = null;
+  if (!now) return;
+  window.setTimeout(() => {
+    if (open.value) openedAt.value = window.scrollY;
+  }, 300);
+});
+const onScroll = () => {
+  if (
+    open.value &&
+    openedAt.value !== null &&
+    Math.abs(window.scrollY - openedAt.value) > 24
+  ) {
+    open.value = false;
+    confirming.value = false;
+  }
+};
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }));
+onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 const confirming = ref(false);
 const url = computed(() =>
   stored.value && props.doc.list.shareToken && import.meta.client
@@ -113,7 +139,7 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
 
 <template>
   <div
-    class="-mt-1 rounded-[24px] bg-default ring-1 ring-default"
+    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 rounded-[24px] bg-default shadow-card ring-1 ring-default"
     data-testid="share-bar"
   >
     <div class="flex min-h-12 items-center gap-2 pr-2 pl-3.5">

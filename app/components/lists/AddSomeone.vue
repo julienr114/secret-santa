@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import type { ListDocument } from '#server/http/lists';
 import { freshAvatar } from '#server/utils/avatars';
-import { MEMBER_NAME_MAX } from '#server/utils/lists';
-import { useAddPersonMutation } from '~/composables/queries/useLists';
+import {
+  useAddPersonMutation,
+  useDeleteMemberMutation,
+} from '~/composables/queries/useLists';
 
 // « Ajouter quelqu'un » (README 22.19), the same block in a draft and in a
-// shared list, at the bottom of the document: the people of my family not
-// on the list yet, in pills, then « Quelqu'un d'autre », a first name in a
-// sheet. A name touched joins the list with their ideas nobody gave last
-// time.
+// shared list, at the bottom of the document: my people not on the list
+// yet, in pills, then « Quelqu'un d'autre », a first name in a sheet. A
+// name touched joins the list with their ideas nobody gave last time
+// (nothing says so under the pills: Julien, 19 November 2026).
+// Someone added by mistake goes from here (Correction 24, maquettes
+// ListeNouvelle, ProcheSupprime): the pill of a person who is on none of
+// my lists is cut in two, the first name adds, the cross deletes them
+// from « Mes proches », at once and with « Annuler ». Under the pills,
+// the way to the page « Mes proches ».
 const props = defineProps<{
   listId: string;
   family: ListDocument['family'];
@@ -34,13 +41,7 @@ const onAdd = (memberId: string) => {
   );
 };
 const sheetOpen = ref(false);
-const name = ref('');
-watch(sheetOpen, (open) => {
-  if (open) name.value = '';
-});
-const onNew = () => {
-  const firstName = name.value.trim();
-  if (!firstName) return;
+const onNew = (firstName: string) =>
   add.mutate(
     {
       newMember: {
@@ -60,7 +61,17 @@ const onNew = () => {
       onError,
     },
   );
-};
+
+const remove = useDeleteMemberMutation();
+const removal = useDelayedRemoval((memberId, done) =>
+  remove.mutate(memberId, { onError, onSettled: done }),
+);
+const shown = computed(() =>
+  props.family.filter((member) => member.id !== removal.leaving.value),
+);
+/** Deleted from here: on none of my lists, and not « Moi ». */
+const deletable = (member: ListDocument['family'][number]) =>
+  member.lists === 0 && !member.isSelf;
 </script>
 
 <template>
@@ -72,17 +83,38 @@ const onNew = () => {
       {{ t('lists.doc.addSomeone') }}
     </h2>
     <div class="flex flex-wrap gap-2">
-      <button
-        v-for="member in family"
+      <div
+        v-for="member in shown"
         :key="member.id"
-        type="button"
-        class="flex h-11 items-center gap-2 rounded-full bg-default pr-4 pl-1 font-semibold ring-1 ring-default"
-        :disabled="adding !== null"
-        @click="onAdd(member.id)"
+        class="flex h-11 items-center rounded-full bg-default font-semibold ring-1 ring-default"
+        data-testid="family-pill"
       >
-        <UiAvatar :avatar="member.avatar" size="sm" />
-        {{ member.firstName }}
-      </button>
+        <button
+          type="button"
+          class="flex h-11 items-center gap-2 pl-1"
+          :class="deletable(member) ? 'pr-2' : 'pr-4'"
+          :disabled="adding !== null"
+          @click="onAdd(member.id)"
+        >
+          <UiAvatar :avatar="member.avatar" size="sm" />
+          {{ member.firstName }}
+        </button>
+        <button
+          v-if="deletable(member)"
+          type="button"
+          class="flex h-11 w-10 items-center justify-center rounded-r-full border-l border-default text-toned"
+          :aria-label="t('lists.doc.deleteMember', { name: member.firstName })"
+          data-testid="family-cross"
+          @click="
+            removal.start(
+              member.id,
+              t('lists.doc.memberDeleted', { name: member.firstName }),
+            )
+          "
+        >
+          <UIcon name="i-lucide-x" class="size-4" />
+        </button>
+      </div>
       <button
         type="button"
         class="flex h-11 items-center gap-2 rounded-full border border-dashed border-accented px-4 font-semibold text-primary-ink"
@@ -92,48 +124,22 @@ const onNew = () => {
         {{ t('lists.doc.someoneElse') }}
       </button>
     </div>
-    <p class="text-sm text-toned">
-      {{
-        family.length === 0 && onList.length > 0
-          ? t('lists.doc.allIn')
-          : t('lists.doc.addHint')
-      }}
-    </p>
-    <UiSheet
-      v-model:open="sheetOpen"
-      :title="t('lists.doc.newPerson.title')"
-      :description="t('lists.doc.newPerson.description')"
-    >
-      <form
-        id="new-person-form"
-        class="flex flex-col gap-1.5 py-1"
-        @submit.prevent="onNew"
+    <div class="flex flex-col gap-1 text-sm text-toned">
+      <p v-if="shown.length === 0 && onList.length > 0">
+        {{ t('lists.doc.allIn') }}
+      </p>
+      <NuxtLink
+        to="/famille"
+        class="flex min-h-11 items-center gap-1 self-start font-bold text-primary-ink"
       >
-        <label for="new-person-name" class="text-[15px] font-semibold">{{
-          t('lists.doc.newPerson.label')
-        }}</label>
-        <UInput
-          id="new-person-name"
-          v-model="name"
-          size="xl"
-          :maxlength="MEMBER_NAME_MAX"
-          autocomplete="off"
-          class="w-full"
-          :ui="{ base: 'h-12 text-base' }"
-        />
-      </form>
-      <template #footer>
-        <UButton
-          type="submit"
-          form="new-person-form"
-          block
-          size="xl"
-          class="h-12 justify-center font-bold"
-          :disabled="!name.trim()"
-          :loading="add.isPending.value"
-          :label="t('lists.doc.newPerson.add')"
-        />
-      </template>
-    </UiSheet>
+        {{ t('lists.family.title') }}
+        <UIcon name="i-lucide-chevron-right" class="size-4" />
+      </NuxtLink>
+    </div>
+    <ListsNewPersonSheet
+      v-model:open="sheetOpen"
+      :loading="add.isPending.value"
+      @add="onNew"
+    />
   </section>
 </template>

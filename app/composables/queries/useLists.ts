@@ -5,7 +5,7 @@ import type {
   VisitorDocument,
 } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
-import type { ShareAsk } from '#server/utils/lists';
+import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -121,8 +121,26 @@ export const useShareListMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
+/** A person of « Mes proches », with on how many of my lists they are. */
+export type FamilyEntry = MemberView & { lists: number };
+
+export const useFamilyQuery = () =>
+  useApiQuery<{ members: FamilyEntry[] }>(() => keys.family(), '/api/family');
+
+export const useCreateMemberMutation = () =>
+  useApiMutation<{ id: string }, { firstName: string; avatar: Avatar }>(
+    (body) => api('/api/family', { method: 'POST', body }),
+    () => [keys.family(), keys.lists()],
+  );
+
+export const useDeleteMemberMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (id) => api(`/api/family/${id}`, { method: 'DELETE' }),
+    () => [keys.family(), keys.lists()],
+  );
+
 export const useMemberQuery = (id: Id) =>
-  useApiQuery<{ member: MemberView }>(
+  useApiQuery<{ member: MemberView; removal: MemberRemoval }>(
     () => keys.member(toValue(id)),
     () => `/api/family/${toValue(id)}`,
   );

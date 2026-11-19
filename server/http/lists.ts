@@ -8,6 +8,7 @@ import {
 } from '#server/database/claims';
 import {
   familyOf,
+  listCountsOfMembers,
   findHeldList,
   peopleOfLists,
   type FamilyMember,
@@ -185,8 +186,11 @@ export type ListDocument = {
   planned: number;
   /** Those the holder gives. */
   mine: number;
-  /** The people of the family not on the list yet. */
-  family: MemberView[];
+  /**
+   * My people not on the list yet, each with on how many of my lists
+   * they are: on none, they can be deleted from here.
+   */
+  family: (MemberView & { lists: number })[];
 };
 
 /**
@@ -208,6 +212,7 @@ export const listDocument = async (
     { accountId: list.accountId, holds: true },
   );
   const today = todayIso();
+  const counts = await listCountsOfMembers(db, list.accountId);
   return {
     list: { ...headOf(list), shareToken: list.shareToken },
     people: lines,
@@ -215,7 +220,10 @@ export const listDocument = async (
     mine,
     family: (await familyOf(db, list.accountId))
       .filter((member) => !onList.has(member.id))
-      .map((member) => memberView(member, today)),
+      .map((member) => ({
+        ...memberView(member, today),
+        lists: counts.get(member.id) ?? 0,
+      })),
   };
 };
 

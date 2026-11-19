@@ -6,6 +6,7 @@ export default {
   home: {
     title: 'Listes',
     intro: 'Chacun coche ce qu’il offre.',
+    family: 'Mes proches',
     new: 'Nouvelle liste',
     coming: 'À venir',
     past: 'Passées',
@@ -57,7 +58,10 @@ export default {
   doc: {
     personMenu: 'Options pour {name}',
     personPage: 'Sa fiche et ses goûts',
-    removeFromList: 'Retirer de la liste',
+    removeFromList: 'Retirer de cette liste',
+    deleteFromFamily: 'Supprimer de mes proches',
+    deleteMember: 'Supprimer {name} de mes proches',
+    memberDeleted: '{name} supprimé de tes proches',
     removed: '{name} retiré de la liste',
     removeLoses: {
       one: '{count} cadeau déjà prévu sera perdu.',
@@ -98,12 +102,10 @@ export default {
     ideaLabel: 'Idée pour {name}',
     addSomeone: 'Ajouter quelqu’un',
     someoneElse: 'Quelqu’un d’autre',
-    addHint:
-      'Touche un prénom : il s’ajoute à la liste, avec ses idées qui n’ont pas été offertes la dernière fois.',
-    allIn: 'Toute ta famille est déjà sur la liste.',
+    allIn: 'Tous tes proches sont déjà sur la liste.',
     removePerson: 'Retirer {name} de la liste',
     removePersonConfirm:
-      'Retirer {name} et ses idées de cette liste ? {name} reste dans ta famille.',
+      'Retirer {name} et ses idées de cette liste ? {name} reste dans tes proches.',
     remove: 'Retirer',
     iconTitle: 'L’icône de la liste',
     changeIcon: 'Changer l’icône',
@@ -123,7 +125,7 @@ export default {
     },
     newPerson: {
       title: 'Quelqu’un d’autre',
-      description: 'Il rejoint ta famille, gardée d’une liste à l’autre.',
+      description: 'Il rejoint tes proches, gardés d’une liste à l’autre.',
       label: 'Prénom',
       add: 'Ajouter',
     },
@@ -171,8 +173,40 @@ export default {
       people: 'Ajoute au moins une personne à la liste.',
     },
   },
+  family: {
+    title: 'Mes proches',
+    intro:
+      'Les personnes pour qui tu tiens des listes de cadeaux. Toi seul les vois ici.',
+    onLists: { one: 'sur {count} liste', other: 'sur {count} listes' },
+    onNone: 'sur aucune liste',
+    add: 'Ajouter quelqu’un',
+    help: 'Touche une personne pour changer sa fiche, ou la supprimer.',
+    remove: {
+      title: 'Supprimer {name} ?',
+      noMore: '{name} ne sera plus proposé dans « Ajouter quelqu’un ».',
+      erased: 'Sa fiche et ses goûts sont effacés.',
+      lists: {
+        one: '{name} est sur {count} liste, {titles}.',
+        other: '{name} est sur {count} listes : {titles}.',
+      },
+      listTitle: '« {title} »',
+      ideas: {
+        one: 'Son idée en sort.',
+        other: 'Ses {count} idées en sortent.',
+      },
+      planned: {
+        one: '{count} cadeau déjà prévu est perdu.',
+        other: '{count} cadeaux déjà prévus sont perdus.',
+      },
+      final: 'C’est définitif.',
+      rather:
+        'Pour l’enlever d’une seule liste en le gardant dans tes proches, choisis plutôt « Retirer de cette liste ».',
+      confirm: 'Supprimer {name}',
+    },
+  },
   person: {
-    context: 'Ma famille',
+    context: 'Mes proches',
+    delete: 'Supprimer de mes proches',
     practical: 'Infos pratiques',
     birth: 'Date de naissance',
     birthValue: '{date} · {age}',

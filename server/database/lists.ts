@@ -120,6 +120,117 @@ export const findMember = async (
     )
     .get()) ?? null;
 
+/**
+ * On how many of my lists each person of my family is.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns The count by person; none for someone on no list.
+ */
+export const listCountsOfMembers = async (
+  db: Db,
+  accountId: string,
+): Promise<Map<string, number>> => {
+  const rows = await db
+    .select({ memberId: giftListPeople.memberId })
+    .from(giftListPeople)
+    .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
+    .where(eq(giftLists.accountId, accountId));
+  return rows.reduce(
+    (counts, { memberId }) =>
+      new Map([...counts, [memberId, (counts.get(memberId) ?? 0) + 1]]),
+    new Map<string, number>(),
+  );
+};
+
+/**
+ * Where a person of my family is, on my lists, with what deleting them
+ * would take: their ideas there, the gifts off the list, and which ideas
+ * someone ticked.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @param memberId - The person.
+ * @returns Their places, and the ideas ticked.
+ */
+export const placesOfMember = async (
+  db: Db,
+  accountId: string,
+  memberId: string,
+) => {
+  const rows = await db
+    .select({ person: giftListPeople, list: giftLists })
+    .from(giftListPeople)
+    .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
+    .where(
+      and(
+        eq(giftListPeople.memberId, memberId),
+        eq(giftLists.accountId, accountId),
+      ),
+    )
+    .orderBy(desc(giftLists.createdAt));
+  const personIds = rows.map((row) => row.person.id);
+  if (personIds.length === 0) {
+    return { places: [], claimed: new Set<string>() };
+  }
+  const ideas = await db
+    .select({
+      id: giftListIdeas.id,
+      listPersonId: giftListIdeas.listPersonId,
+    })
+    .from(giftListIdeas)
+    .where(inArray(giftListIdeas.listPersonId, personIds));
+  const offList = await db
+    .select({ listPersonId: giftOffList.listPersonId })
+    .from(giftOffList)
+    .where(inArray(giftOffList.listPersonId, personIds));
+  const ideaIds = ideas.map((idea) => idea.id);
+  const claims =
+    ideaIds.length === 0
+      ? []
+      : await db
+          .select({ ideaId: giftClaims.ideaId })
+          .from(giftClaims)
+          .where(inArray(giftClaims.ideaId, ideaIds));
+  return {
+    places: rows.map(({ person, list }) => ({
+      personId: person.id,
+      list: { id: list.id, title: list.title },
+      ideaIds: ideas
+        .filter((idea) => idea.listPersonId === person.id)
+        .map((idea) => idea.id),
+      offList: offList.filter((gift) => gift.listPersonId === person.id).length,
+    })),
+    claimed: new Set(claims.map((claim) => claim.ideaId)),
+  };
+};
+
+/**
+ * Deletes a person of my family for good: their page and tastes, their
+ * places on my lists, their ideas there and what was ticked.
+ * @param db - The database.
+ * @param memberId - The person.
+ * @param places - Where they are, from `placesOfMember`.
+ * @returns Once done.
+ */
+export const deleteMember = (
+  db: Db,
+  memberId: string,
+  places: readonly { personId: string; ideaIds: readonly string[] }[],
+) => {
+  const personIds = places.map((place) => place.personId);
+  const ideaIds = places.flatMap((place) => place.ideaIds);
+  const gone = db.delete(familyMembers).where(eq(familyMembers.id, memberId));
+  if (personIds.length === 0) return db.batch([gone]);
+  return db.batch([
+    db.delete(giftClaims).where(inArray(giftClaims.ideaId, ideaIds)),
+    db.delete(giftOffList).where(inArray(giftOffList.listPersonId, personIds)),
+    db
+      .delete(giftListIdeas)
+      .where(inArray(giftListIdeas.listPersonId, personIds)),
+    db.delete(giftListPeople).where(inArray(giftListPeople.id, personIds)),
+    gone,
+  ]);
+};
+
 /** Adds a person to my family. */
 export const createMember = async (
   db: Db,

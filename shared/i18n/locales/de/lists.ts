@@ -4,6 +4,7 @@ export default {
   home: {
     title: 'Listen',
     intro: 'Jeder hakt ab, was er schenkt.',
+    family: 'Meine Leute',
     new: 'Neue Liste',
     coming: 'Demnächst',
     past: 'Vorbei',
@@ -55,7 +56,10 @@ export default {
   doc: {
     personMenu: 'Optionen für {name}',
     personPage: 'Seite und Geschmack',
-    removeFromList: 'Von der Liste nehmen',
+    removeFromList: 'Von dieser Liste nehmen',
+    deleteFromFamily: 'Aus meinen Leuten löschen',
+    deleteMember: '{name} aus meinen Leuten löschen',
+    memberDeleted: '{name} aus deinen Leuten gelöscht',
     removed: '{name} von der Liste genommen',
     removeLoses: {
       one: '{count} schon geplantes Geschenk geht verloren.',
@@ -97,12 +101,10 @@ export default {
     ideaLabel: 'Idee für {name}',
     addSomeone: 'Jemanden hinzufügen',
     someoneElse: 'Jemand anderes',
-    addHint:
-      'Tipp einen Namen an: Er kommt auf die Liste, mit seinen Ideen, die letztes Mal niemand geschenkt hat.',
-    allIn: 'Deine ganze Familie steht schon auf der Liste.',
+    allIn: 'Alle deine Leute stehen schon auf der Liste.',
     removePerson: '{name} von der Liste nehmen',
     removePersonConfirm:
-      '{name} und die Ideen von dieser Liste nehmen? {name} bleibt in deiner Familie.',
+      '{name} und die Ideen von dieser Liste nehmen? {name} bleibt bei deinen Leuten.',
     remove: 'Entfernen',
     iconTitle: 'Das Symbol der Liste',
     changeIcon: 'Symbol ändern',
@@ -122,7 +124,7 @@ export default {
     },
     newPerson: {
       title: 'Jemand anderes',
-      description: 'Er kommt in deine Familie, die von Liste zu Liste bleibt.',
+      description: 'Kommt zu deinen Leuten, die von Liste zu Liste bleiben.',
       label: 'Vorname',
       add: 'Hinzufügen',
     },
@@ -171,8 +173,40 @@ export default {
       people: 'Füge mindestens eine Person zur Liste hinzu.',
     },
   },
+  family: {
+    title: 'Meine Leute',
+    intro:
+      'Die Menschen, für die du Geschenklisten führst. Nur du siehst sie hier.',
+    onLists: { one: 'auf {count} Liste', other: 'auf {count} Listen' },
+    onNone: 'auf keiner Liste',
+    add: 'Jemanden hinzufügen',
+    help: 'Tippe auf eine Person, um ihre Seite zu ändern oder sie zu löschen.',
+    remove: {
+      title: '{name} löschen?',
+      noMore: '{name} wird bei „Jemanden hinzufügen“ nicht mehr vorgeschlagen.',
+      erased: 'Seite und Geschmack werden gelöscht.',
+      lists: {
+        one: '{name} steht auf {count} Liste, {titles}.',
+        other: '{name} steht auf {count} Listen: {titles}.',
+      },
+      listTitle: '„{title}“',
+      ideas: {
+        one: 'Die Idee verschwindet von dort.',
+        other: 'Die {count} Ideen verschwinden von dort.',
+      },
+      planned: {
+        one: '{count} schon geplantes Geschenk geht verloren.',
+        other: '{count} schon geplante Geschenke gehen verloren.',
+      },
+      final: 'Das ist endgültig.',
+      rather:
+        'Um die Person nur von einer Liste zu nehmen und bei deinen Leuten zu behalten, wähle lieber „Von dieser Liste nehmen“.',
+      confirm: '{name} löschen',
+    },
+  },
   person: {
-    context: 'Meine Familie',
+    context: 'Meine Leute',
+    delete: 'Aus meinen Leuten löschen',
     practical: 'Praktisches',
     birth: 'Geburtsdatum',
     birthValue: '{date} · {age}',

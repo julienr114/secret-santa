@@ -249,7 +249,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   // « Annuler »; with a gift already planned, a second tap says what
   // would be lost.
   await me.getByTestId('person-menu').click();
-  await page.getByRole('menuitem', { name: 'Retirer de la liste' }).click();
+  await page.getByRole('menuitem', { name: 'Retirer de cette liste' }).click();
   await expect(
     page.getByText('Camille retiré de la liste', { exact: true }),
   ).toBeVisible();
@@ -259,7 +259,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'true');
   await leo.getByTestId('person-menu').click();
-  await page.getByRole('menuitem', { name: 'Retirer de la liste' }).click();
+  await page.getByRole('menuitem', { name: 'Retirer de cette liste' }).click();
   await expect(page.getByRole('menu')).toContainText(
     '1 cadeau déjà prévu sera perdu.',
   );
@@ -362,4 +362,77 @@ test('a document left empty is not kept', async ({ page }) => {
   await apiLogin(page.request, 'list-other@example.com');
   const refused = await page.request.get(`/api/lists/${coming[0].id}`);
   expect(refused.status()).toBe(404);
+});
+
+test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
+  await page.goto('/listes');
+  await hydrated(page);
+  await page.getByTestId('family-link').click();
+  await expect(heading(page)).toHaveText('Mes proches');
+  // Someone added here is on no list yet.
+  await page.getByRole('button', { name: 'Ajouter quelqu’un' }).click();
+  await page.getByLabel('Prénom').fill('Mamie');
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  const members = page.getByTestId('family-member');
+  await expect(members.filter({ hasText: 'Mamie' })).toContainText(
+    'sur aucune liste',
+  );
+  await expect(members.filter({ hasText: 'Léo' })).toContainText(
+    'sur 2 listes',
+  );
+  await expect(members.filter({ hasText: 'Camille' })).toContainText('Moi');
+
+  // In a list, the pill of someone on no list has its cross: deleted at
+  // once, with « Annuler ».
+  await page.goto('/listes');
+  await hydrated(page);
+  await page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }).click();
+  const add = page.getByTestId('add-someone');
+  const mamie = add.getByTestId('family-pill').filter({ hasText: 'Mamie' });
+  await mamie.getByTestId('family-cross').click();
+  await expect(
+    page.getByText('Mamie supprimé de tes proches', { exact: true }),
+  ).toBeVisible();
+  await expect(mamie).toHaveCount(0);
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(mamie).toBeVisible();
+  await mamie.getByTestId('family-cross').click();
+  await expect(mamie).toHaveCount(0);
+  // Leaving the list sends it: Mamie is gone from « Mes proches ».
+  await add.getByRole('link', { name: 'Mes proches' }).click();
+  await expect(heading(page)).toHaveText('Mes proches');
+  await expect(members.filter({ hasText: 'Léo' })).toBeVisible();
+  await expect(members.filter({ hasText: 'Mamie' })).toHaveCount(0);
+
+  // « Moi » cannot be deleted.
+  const family = await (await page.request.get('/api/family')).json();
+  const self = family.members.find((m: { isSelf: boolean }) => m.isSelf);
+  expect((await page.request.delete(`/api/family/${self.id}`)).status()).toBe(
+    409,
+  );
+  await members.filter({ hasText: 'Camille' }).click();
+  await expect(heading(page)).toHaveText('Camille');
+  await expect(page.getByTestId('member-remove')).toHaveCount(0);
+
+  // Someone on lists, from « ⋯ »: a page says what goes with them.
+  await page.goto('/listes');
+  await hydrated(page);
+  await page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }).click();
+  const leo = page.getByTestId('list-person').filter({ hasText: 'Léo' });
+  await leo.getByTestId('person-menu').click();
+  await page
+    .getByRole('menuitem', { name: 'Supprimer de mes proches' })
+    .click();
+  await expect(heading(page)).toHaveText('Supprimer Léo ?');
+  const removal = page.getByTestId('member-removal');
+  await expect(removal).toContainText('Léo est sur 2 listes');
+  await expect(removal).toContainText('« Noël 2026 »');
+  await expect(removal).toContainText('Ses 2 idées en sortent.');
+  await expect(removal).toContainText('C’est définitif.');
+  await page.getByTestId('member-delete').click();
+  await expect(page).toHaveURL(/\/listes\/[^/]+$/);
+  await expect(leo).toHaveCount(0);
+  await expect(
+    add.getByTestId('family-pill').filter({ hasText: 'Léo' }),
+  ).toHaveCount(0);
 });

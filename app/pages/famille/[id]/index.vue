@@ -13,7 +13,9 @@ import {
 // shoe size), what the family always asks, shown at the top of their
 // section of a list; « Ses goûts », the same questions as the gift hints
 // of a draw. Each short value in its sheet, saved at once; the texts on
-// their page. Opened from a list, « Retirer de la liste » at the bottom.
+// their page. Opened from a list, « Retirer de la liste » at the bottom;
+// always, « Supprimer de mes proches », which leads to its confirmation
+// (Correction 24).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
@@ -31,7 +33,7 @@ const query = useMemberQuery(id);
 const update = useUpdateMemberMutation(id);
 const member = computed(() => query.data.value?.member);
 const back = computed(() =>
-  listId.value ? `/listes/${listId.value}` : '/listes',
+  listId.value ? `/listes/${listId.value}` : '/famille',
 );
 useHead({
   title: () => `${member.value?.firstName ?? ''} — ${t('common.appName')}`,
@@ -115,6 +117,7 @@ const onRemove = () =>
             <UiAvatar :avatar="member.avatar" :px="64" />
             <!-- The pencil of the list's tile: the icon changes by touching it. -->
             <span
+              v-if="!member.isSelf"
               class="absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
               aria-hidden="true"
             >
@@ -122,7 +125,9 @@ const onRemove = () =>
             </span>
           </button>
           <div class="flex min-w-0 flex-col">
-            <p class="text-sm text-toned">{{ t('lists.person.context') }}</p>
+            <NuxtLink to="/famille" class="text-sm text-toned">{{
+              t('lists.person.context')
+            }}</NuxtLink>
             <button
               type="button"
               class="text-left"
@@ -224,6 +229,16 @@ const onRemove = () =>
               />
             </div>
           </li>
+        </UiList>
+        <!-- « Moi » stays among my people. -->
+        <UiList v-if="!member.isSelf">
+          <UiListItem
+            icon="i-lucide-trash-2"
+            tone="danger"
+            :title="t('lists.person.delete')"
+            :to="`/famille/${id}/supprimer${listId ? `?liste=${listId}` : ''}`"
+            data-testid="member-remove"
+          />
         </UiList>
       </template>
     </AdminQueryState>

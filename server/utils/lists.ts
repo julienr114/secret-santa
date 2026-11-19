@@ -380,3 +380,56 @@ export const sortCards = <
     .filter((l) => l.status === 'past')
     .toSorted((a, b) => (b.eventDate ?? '').localeCompare(a.eventDate ?? '')),
 });
+
+/** Where a person is on one of my lists, for what deleting them takes. */
+export type MemberPlace = {
+  list: { id: string; title: string };
+  /** Their ideas on this list. */
+  ideaIds: readonly string[];
+  /** The gifts not on the list that someone plans for them. */
+  offList: number;
+};
+
+/** What deleting a person from « Mes proches » takes, or why it cannot. */
+export type MemberRemoval =
+  | { allowed: false; why: 'self' | 'holder' }
+  | {
+      allowed: true;
+      /** The lists they leave. */
+      lists: { id: string; title: string }[];
+      /** Their ideas that go with them. */
+      ideas: number;
+      /** The gifts already planned for them, lost. */
+      planned: number;
+    };
+
+/**
+ * What deleting a person from « Mes proches » takes with them (Correction
+ * 24, README 22.20): their places on my lists, their ideas there, and the
+ * gifts already planned for them, an idea ticked or a gift off the list.
+ * Refused for « Moi », and for a person linked to an account that holds
+ * one of my lists with me.
+ * @param member - Who is deleted.
+ * @param member.isSelf - Whether it is « Moi ».
+ * @param member.holdsWithMe - Whether their account holds a list with me.
+ * @param places - Where they are, on my lists.
+ * @param claimed - The ideas someone ticked.
+ * @returns What goes, or why nothing does.
+ */
+export const memberRemoval = (
+  member: { isSelf: boolean; holdsWithMe: boolean },
+  places: readonly MemberPlace[],
+  claimed: ReadonlySet<string>,
+): MemberRemoval => {
+  if (member.isSelf) return { allowed: false, why: 'self' };
+  if (member.holdsWithMe) return { allowed: false, why: 'holder' };
+  const ideaIds = places.flatMap((place) => place.ideaIds);
+  return {
+    allowed: true,
+    lists: places.map((place) => place.list),
+    ideas: ideaIds.length,
+    planned:
+      ideaIds.filter((id) => claimed.has(id)).length +
+      places.reduce((sum, place) => sum + place.offList, 0),
+  };
+};

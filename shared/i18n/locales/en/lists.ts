@@ -4,6 +4,7 @@ export default {
   home: {
     title: 'Lists',
     intro: 'Everyone ticks what they give.',
+    family: 'My people',
     new: 'New list',
     coming: 'Coming up',
     past: 'Past',
@@ -52,7 +53,10 @@ export default {
   doc: {
     personMenu: 'Options for {name}',
     personPage: 'Their page and tastes',
-    removeFromList: 'Remove from the list',
+    removeFromList: 'Remove from this list',
+    deleteFromFamily: 'Delete from my people',
+    deleteMember: 'Delete {name} from my people',
+    memberDeleted: '{name} deleted from your people',
     removed: '{name} removed from the list',
     removeLoses: {
       one: '{count} gift already planned will be lost.',
@@ -93,12 +97,10 @@ export default {
     ideaLabel: 'Idea for {name}',
     addSomeone: 'Add someone',
     someoneElse: 'Someone else',
-    addHint:
-      'Tap a name: they join the list, with their ideas nobody gave last time.',
-    allIn: 'Your whole family is already on the list.',
+    allIn: 'All your people are already on the list.',
     removePerson: 'Remove {name} from the list',
     removePersonConfirm:
-      'Remove {name} and their ideas from this list? {name} stays in your family.',
+      'Remove {name} and their ideas from this list? {name} stays among your people.',
     remove: 'Remove',
     iconTitle: 'The list’s icon',
     changeIcon: 'Change the icon',
@@ -118,7 +120,7 @@ export default {
     },
     newPerson: {
       title: 'Someone else',
-      description: 'They join your family, kept from one list to the next.',
+      description: 'They join your people, kept from one list to the next.',
       label: 'First name',
       add: 'Add',
     },
@@ -166,8 +168,39 @@ export default {
       people: 'Add at least one person to the list.',
     },
   },
+  family: {
+    title: 'My people',
+    intro: 'The people you hold gift lists for. Only you see them here.',
+    onLists: { one: 'on {count} list', other: 'on {count} lists' },
+    onNone: 'on no list',
+    add: 'Add someone',
+    help: 'Touch a person to change their page, or to delete them.',
+    remove: {
+      title: 'Delete {name}?',
+      noMore: '{name} will no longer be offered in “Add someone”.',
+      erased: 'Their page and tastes are erased.',
+      lists: {
+        one: '{name} is on {count} list, {titles}.',
+        other: '{name} is on {count} lists: {titles}.',
+      },
+      listTitle: '“{title}”',
+      ideas: {
+        one: 'Their idea leaves it.',
+        other: 'Their {count} ideas leave them.',
+      },
+      planned: {
+        one: '{count} gift already planned is lost.',
+        other: '{count} gifts already planned are lost.',
+      },
+      final: 'This cannot be undone.',
+      rather:
+        'To take them off one list only and keep them among your people, choose “Remove from this list” instead.',
+      confirm: 'Delete {name}',
+    },
+  },
   person: {
-    context: 'My family',
+    context: 'My people',
+    delete: 'Delete from my people',
     practical: 'Practical details',
     birth: 'Date of birth',
     birthValue: '{date} · {age}',

@@ -351,7 +351,7 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="flex items-start gap-3 py-2"
+    class="flex scroll-mt-32 items-start gap-3 py-2"
     :class="
       writing
         ? '-mr-4 -ml-9 border-l-[3px] border-primary bg-default pr-4 pl-[33px]'

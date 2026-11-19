@@ -6,7 +6,9 @@ import { keyboardInset } from '#shared/utils/keyboard';
  * at the bottom must rise) and `--{name}-visible` (the height left) on the
  * page. `sheet` while a bottom sheet is open, read by every drawer
  * (app.config.ts); `keyboard` while a page has a sticky footer, read by
- * the footer and the screens' height (README 23.3).
+ * the footer and the screens' height (README 23.3); `message` for the
+ * whole app, read by the messages after an action, which also need
+ * `--message-top`: how far the page was pushed up under the keyboard.
  * Nothing on the server, nothing without `visualViewport`.
  * @param active - Whether to follow it.
  * @param name - The prefix of the two variables.
@@ -14,10 +16,11 @@ import { keyboardInset } from '#shared/utils/keyboard';
  */
 export const useKeyboardInset = (
   active: () => boolean,
-  name: 'sheet' | 'keyboard' = 'sheet',
+  name: 'sheet' | 'keyboard' | 'message' = 'sheet',
 ) => {
   const lift = `--${name}-lift`;
   const visible = `--${name}-visible`;
+  const top = `--${name}-top`;
   const inset = ref({ lift: 0, visible: 0 });
   const read = () => {
     const vv = window.visualViewport;
@@ -31,9 +34,11 @@ export const useKeyboardInset = (
     if (inset.value.lift > 0) {
       root.setProperty(lift, `${inset.value.lift}px`);
       root.setProperty(visible, `${inset.value.visible}px`);
+      root.setProperty(top, `${vv.offsetTop}px`);
     } else {
       root.removeProperty(lift);
       root.removeProperty(visible);
+      root.removeProperty(top);
     }
   };
   const stop = () => {
@@ -42,6 +47,7 @@ export const useKeyboardInset = (
     inset.value = { lift: 0, visible: 0 };
     document.documentElement.style.removeProperty(lift);
     document.documentElement.style.removeProperty(visible);
+    document.documentElement.style.removeProperty(top);
   };
   watch(
     active,

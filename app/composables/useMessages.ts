@@ -9,7 +9,9 @@
 //           on the right, 6 seconds);
 //   failed: it did not work (a coral dot, what to do, a cross: stays
 //           until closed, and is read out at once).
-// One at a time: a new one replaces the old (the toaster, in `app.vue`).
+// One at a time: a new one replaces the old (the toaster, in `app.vue`),
+// but « c'est fait » waits for an « Annuler » to end rather than chase it;
+// what failed shows at once.
 
 /** How long a message that needs no answer stays. */
 const DONE_MS = 4000;
@@ -31,22 +33,42 @@ const dot = (icon: string, tone: string, ink: string) => ({
 export const useMessages = () => {
   const toast = useToast();
   const { t } = useT();
+  /** « Annuler » is on the screen: an action can still be taken back. */
+  const undoShown = () =>
+    toast.toasts.value.some((one) => (one.actions?.length ?? 0) > 0);
+  /**
+   * Shows a message that only says « c'est fait » once no « Annuler »
+   * is on the screen: a new message replaces the old, and replacing an
+   * « Annuler » would settle its action before its time was up.
+   * @param show - Shows the message.
+   */
+  const afterUndo = (show: () => void) => {
+    if (!undoShown()) return show();
+    const stop = watch(toast.toasts, () => {
+      if (undoShown()) return;
+      stop();
+      show();
+    });
+  };
   return {
     /**
      * « C'est fait ».
      * @param title - What was done, in the past, without a full stop.
      * @param detail - One more line, lighter, if it helps.
      */
-    done: (title: string, detail?: string) => {
-      toast.add({
-        title,
-        description: detail,
-        color: 'success',
-        duration: DONE_MS,
-        close: false,
-        avatar: dot('i-lucide-check', 'bg-success-soft', 'text-success-ink'),
-      });
-    },
+    done: (title: string, detail?: string) =>
+      afterUndo(() => {
+        toast.add({
+          title,
+          description: detail,
+          color: 'success',
+          // Read out politely, when the screen reader is free.
+          type: 'background',
+          duration: DONE_MS,
+          close: false,
+          avatar: dot('i-lucide-check', 'bg-success-soft', 'text-success-ink'),
+        });
+      }),
     /**
      * « C'est fait, et ça se rattrape »: no « tu es sûr ? » before, one
      * « Annuler » after.
@@ -65,6 +87,9 @@ export const useMessages = () => {
         ...(options.id ? { id: options.id } : {}),
         title,
         color: 'neutral',
+        type: 'background',
+        // « Annuler » on the right of the text, on the same row.
+        orientation: 'horizontal',
         duration: options.duration ?? UNDO_MS,
         close: false,
         actions: [

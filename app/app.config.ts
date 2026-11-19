@@ -39,12 +39,13 @@ export default defineAppConfig({
       },
     },
     // The messages after an action (README 23.3, Correction 26, maquette
-    // StyleMessages): at the bottom, above the bar of tabs and the edge
-    // of the phone, 420 px wide at most on a computer.
+    // StyleMessages): at the bottom, centred, above the bar of tabs and
+    // the edge of the phone, 420 px wide at most on a computer; at the
+    // top, under the title bar, while the keyboard is open (`app.vue`).
     toaster: {
       slots: {
         viewport:
-          'mb-[calc(var(--tab-bar)+env(safe-area-inset-bottom))] mt-[env(safe-area-inset-top)] sm:w-[420px]',
+          'mb-[calc(var(--tab-bar)+env(safe-area-inset-bottom))] mt-[calc(env(safe-area-inset-top)+3.5rem+var(--message-top,0px))] sm:w-[420px]',
       },
     },
     // One dark plum bar for every one of them: white text, the detail

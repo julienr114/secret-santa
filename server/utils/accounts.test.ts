@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  LINK_REQUESTS_MAX_PER_ACCOUNT,
-  LINK_REQUESTS_MAX_PER_IP,
   LOGIN_LINK_TTL_MS,
   SESSION_TOUCH_MS,
   accountEmailSchema,
   activeSession,
-  canRequestLink,
   deviceLabel,
   isoAfter,
   shouldTouchSession,
@@ -60,34 +57,6 @@ describe('usableLink', () => {
     expect(
       failureOf(usableLink(link, isoAfter(NOW, LOGIN_LINK_TTL_MS))).reason,
     ).toBe('link_expired');
-  });
-});
-
-describe('canRequestLink', () => {
-  it('allows below both limits', () => {
-    expect(canRequestLink({ forAccount: 0, fromIp: 0 }).ok).toBe(true);
-    expect(
-      canRequestLink({
-        forAccount: LINK_REQUESTS_MAX_PER_ACCOUNT - 1,
-        fromIp: LINK_REQUESTS_MAX_PER_IP - 1,
-      }).ok,
-    ).toBe(true);
-  });
-
-  it('refuses at either limit', () => {
-    expect(
-      failureOf(
-        canRequestLink({
-          forAccount: LINK_REQUESTS_MAX_PER_ACCOUNT,
-          fromIp: 0,
-        }),
-      ).reason,
-    ).toBe('too_many_attempts');
-    expect(
-      failureOf(
-        canRequestLink({ forAccount: 0, fromIp: LINK_REQUESTS_MAX_PER_IP }),
-      ).reason,
-    ).toBe('too_many_attempts');
   });
 });
 

@@ -1,6 +1,9 @@
 // Accounts: login by a magic link, sessions (README 22.5).
 export default {
   login: {
+    tooMany: 'Trop de demandes d’un coup.',
+    tooManyHelp:
+      'Attends quelques minutes avant de réessayer. Si tu as déjà demandé un lien, regarde dans tes emails : il est valable 15 minutes.',
     emailLabel: 'Adresse email',
     emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
     emailInvalid: 'Cette adresse a l’air incomplète',

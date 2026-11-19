@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isPlainName, WEB_ADDRESS_REFUSED } from './limits';
 import { ok, fail, type Result } from './result';
 import { LOCALES, localeOf, type Locale } from '#shared/i18n';
 import {
@@ -10,7 +11,16 @@ import {
 
 // People and exclusions of a group (README 6.6, section 10).
 
-export const nameSchema = z.string().trim().min(1).max(60);
+/**
+ * A first or last name. It is printed in emails sent to others: one that
+ * carries a web address is refused (lot 38 A).
+ */
+export const nameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(60)
+  .refine(isPlainName, WEB_ADDRESS_REFUSED);
 /** Optional address: where the link is emailed, and what the person logs in with. */
 export const emailSchema = z
   .string()

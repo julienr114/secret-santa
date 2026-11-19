@@ -7,6 +7,8 @@ import {
   type AuditRow,
 } from '#server/utils/audit';
 import { newId, nowIso } from '#server/http/context';
+import { capRefusal } from '#server/utils/limits';
+import { countJournal } from './caps';
 
 /** Builds and stores a journal event. Invalid events are a programming error. */
 export const recordEvent = async (
@@ -20,6 +22,17 @@ export const recordEvent = async (
       statusMessage: `audit: ${built.details.issues}`,
     });
   }
+  // A wide cap per group and per day (lot 38 A): beyond it, what would
+  // write one more line is refused, rather than done without a trace.
+  const refusal = capRefusal(
+    'journal',
+    await countJournal(
+      db,
+      built.value.groupId,
+      `${built.value.createdAt.slice(0, 10)}T00:00:00.000Z`,
+    ),
+  );
+  if (refusal) throw createError({ statusCode: 429, statusMessage: refusal });
   await db.insert(auditLog).values(built.value);
   return built.value;
 };

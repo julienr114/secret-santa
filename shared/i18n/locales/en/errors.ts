@@ -8,6 +8,17 @@ export default {
   unauthorized: 'Log in to continue.',
   forbidden: 'You do not have access to this group.',
   too_many_attempts: 'Easy now. Try again in a few minutes.',
+  too_many_requests:
+    'Too many requests at once. Wait a few minutes before trying again.',
+  web_address:
+    'A name cannot contain a web address. Remove it, then try again.',
+  limit_lists: 'You already hold a lot of lists. Delete one to create another.',
+  limit_people: 'This list already has a lot of people: no more can be added.',
+  limit_ideas: 'This list already has a lot of ideas: no more can be added.',
+  limit_off_list:
+    'You already announced a lot of gifts off the list here. Remove one to add another.',
+  limit_family: 'You already have a lot of people. Delete one to add another.',
+  limit_journal: 'This group has been very busy today: try again tomorrow.',
   slug_taken: 'This group identifier is already taken.',
   group_not_found:
     'Group not found. Reload the page: the list may have changed.',

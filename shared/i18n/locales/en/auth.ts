@@ -3,6 +3,9 @@ import type { Dict } from '../../types';
 
 export default {
   login: {
+    tooMany: 'Too many requests at once.',
+    tooManyHelp:
+      'Wait a few minutes before trying again. If you already asked for a link, look in your emails: it is good for 15 minutes.',
     emailLabel: 'Email address',
     emailHelp: 'No password: you get a link valid for 15 minutes.',
     emailInvalid: 'This address looks incomplete',

@@ -9,6 +9,22 @@ export default {
   forbidden: 'Du hast keinen Zugriff auf diese Gruppe.',
   too_many_attempts:
     'Immer mit der Ruhe. Versuch es in ein paar Minuten noch einmal.',
+  too_many_requests:
+    'Zu viele Anfragen auf einmal. Warte ein paar Minuten, bevor du es erneut versuchst.',
+  web_address:
+    'Ein Name darf keine Webadresse enthalten. Entferne sie und versuche es erneut.',
+  limit_lists:
+    'Du führst schon sehr viele Listen. Lösche eine, um eine neue anzulegen.',
+  limit_people:
+    'Auf dieser Liste stehen schon sehr viele Personen: Es können keine weiteren dazu.',
+  limit_ideas:
+    'Diese Liste hat schon sehr viele Ideen: Es können keine weiteren dazu.',
+  limit_off_list:
+    'Du hast hier schon sehr viele Geschenke außerhalb der Liste angekündigt. Entferne eines, um ein weiteres hinzuzufügen.',
+  limit_family:
+    'Du hast schon sehr viele Personen. Lösche eine, um eine weitere hinzuzufügen.',
+  limit_journal:
+    'In dieser Gruppe war heute sehr viel los: Versuche es morgen noch einmal.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
   group_not_found:
     'Gruppe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',

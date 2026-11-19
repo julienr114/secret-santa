@@ -25,6 +25,8 @@ test('a message is a dark bar, one at a time; « Annuler » undoes, an error sta
   const height = page.viewportSize()?.height ?? 0;
   expect((box?.y ?? 0) > height / 2).toBe(true);
   // « Annuler » is on the right of the text, on its row.
+  // (Once the bar has finished sliding in: both are measured in turn.)
+  await page.waitForTimeout(400);
   const text = await undo.boundingBox();
   const action = await bar
     .getByRole('button', { name: 'Annuler' })

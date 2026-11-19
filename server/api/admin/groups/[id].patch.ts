@@ -1,3 +1,4 @@
+import { isPlainName, WEB_ADDRESS_REFUSED } from '#server/utils/limits';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
@@ -8,7 +9,14 @@ import { notFound } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 
 // Renames a group. Super-admin only.
-const bodySchema = z.object({ name: z.string().trim().min(1).max(100) });
+const bodySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1)
+    .max(100)
+    .refine(isPlainName, WEB_ADDRESS_REFUSED),
+});
 
 export default defineEventHandler(async (event) => {
   await requireSuperAdmin(event);

@@ -9,8 +9,10 @@ export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 /** A session's "last seen" is refreshed at most this often. */
 export const SESSION_TOUCH_MS = 60 * 60 * 1000;
 
-/** Links one address, or one client, may ask for within the window. */
-export const LINK_REQUESTS_MAX_PER_ACCOUNT = 5;
+/**
+ * Links one client may ask for within the window; the other limits and
+ * the rule are in `limits.ts` (lot 38 A).
+ */
 export const LINK_REQUESTS_MAX_PER_IP = 20;
 export const LINK_REQUESTS_WINDOW_MS = 60 * 60 * 1000;
 
@@ -57,22 +59,6 @@ export const usableLink = (link: LinkLike, now: string): Result<true> => {
   }
   return ok(true);
 };
-
-/**
- * Whether one more link may be requested, given the recent requests.
- * @param recent - How many were asked within the window, for the account
- *   and for the client address.
- * @param maxPerIp - Limit for one client address (raised for the tests).
- * @returns Ok, or `too_many_attempts`.
- */
-export const canRequestLink = (
-  recent: { forAccount: number; fromIp: number },
-  maxPerIp: number = LINK_REQUESTS_MAX_PER_IP,
-): Result<true> =>
-  recent.forAccount >= LINK_REQUESTS_MAX_PER_ACCOUNT ||
-  recent.fromIp >= maxPerIp
-    ? fail('too_many_attempts')
-    : ok(true);
 
 export type SessionLike = { expiresAt: string; revokedAt: string | null };
 export type AccountLike = { disabledAt: string | null };

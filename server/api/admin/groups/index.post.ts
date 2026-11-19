@@ -1,3 +1,4 @@
+import { isPlainName, WEB_ADDRESS_REFUSED } from '#server/utils/limits';
 import { z } from 'zod';
 import { like } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
@@ -20,7 +21,12 @@ import { freeSlug, slugSchema, slugify } from '#server/utils/auth';
 const bodySchema = z.object({
   // Left out by the app: the identifier is then made from the name.
   slug: slugSchema.optional(),
-  name: z.string().trim().min(1).max(100),
+  name: z
+    .string()
+    .trim()
+    .min(1)
+    .max(100)
+    .refine(isPlainName, WEB_ADDRESS_REFUSED),
   organizers: z.array(accountEmailSchema).max(10).default([]),
 });
 

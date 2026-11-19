@@ -1,3 +1,4 @@
+import { isPlainName, WEB_ADDRESS_REFUSED } from './limits';
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
 import { isIsoDay, rulesOverrideSchema, rulesPatchSchema } from './rules';
@@ -20,7 +21,12 @@ export const eventDateSchema = z.iso.date();
  * journal does not say the rules changed right after it was created.
  */
 export const editionInputSchema = z.object({
-  label: z.string().trim().min(1).max(60),
+  label: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .refine(isPlainName, WEB_ADDRESS_REFUSED),
   year: z.number().int().min(2000).max(2100),
   eventDate: eventDateSchema,
   budget: rulesPatchSchema.shape.budget,
@@ -29,7 +35,12 @@ export const editionInputSchema = z.object({
 
 export const editionPatchSchema = z
   .object({
-    label: z.string().trim().min(1).max(60),
+    label: z
+      .string()
+      .trim()
+      .min(1)
+      .max(60)
+      .refine(isPlainName, WEB_ADDRESS_REFUSED),
     rulesOverride: rulesOverrideSchema,
     eventDate: eventDateSchema,
   })

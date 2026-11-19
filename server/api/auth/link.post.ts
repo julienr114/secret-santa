@@ -10,11 +10,8 @@ import {
 import { appUrl, ipHashOf, nowIso, secretsOf } from '#server/http/context';
 import { sendEmails } from '#server/http/email';
 import { validatedBody } from '#server/http/validate';
-import {
-  accountEmailSchema,
-  canRequestLink,
-  superAdminEmails,
-} from '#server/utils/accounts';
+import { accountEmailSchema, superAdminEmails } from '#server/utils/accounts';
+import { LINK_LIMITS, linkVerdict } from '#server/utils/limits';
 import { generateToken, hashToken } from '#server/utils/crypto';
 import { buildLoginEmail } from '#server/utils/loginEmail';
 import { safeNext } from '#server/utils/invite';
@@ -29,7 +26,9 @@ import { nameSchema } from '#server/utils/people';
 // can create no group (README 22.2). It is a super-admin when declared in
 // NUXT_SUPER_ADMIN_EMAILS, and takes the language of the participant an
 // organiser registered with that address, if any. Only a disabled account
-// gets no link.
+// gets no link. Limited (lot 38 A, README 8.4): 3 links per address and
+// per hour, 20 per client address, a cap for the whole app per day; a
+// client is refused, an address is answered the same without an email.
 const bodySchema = z.object({
   email: accountEmailSchema,
   // Where to go back after logging in: an invitation or a personal page.
@@ -52,12 +51,22 @@ export default defineEventHandler(async (event) => {
     ipHash,
     now,
   });
-  if (!canRequestLink(recent, secrets.linkRequestsPerIp).ok) {
+  const verdict = linkVerdict(recent, {
+    perEmail: secrets.linkRequestsPerEmail,
+    perIp: secrets.linkRequestsPerIp,
+    perDay: LINK_LIMITS.perDay,
+  });
+  // A client that asks too much: this says nothing of any address.
+  if (verdict === 'refuse') {
     throw createError({
       statusCode: 429,
-      statusMessage: 'too_many_attempts',
+      statusMessage: 'too_many_requests',
     });
   }
+  setResponseHeader(event, 'Cache-Control', 'no-store');
+  // An address already sent enough links, or a day when the app sent too
+  // many: the same answer, and no email.
+  if (verdict === 'silent') return { ok: true };
 
   const account =
     existing ??

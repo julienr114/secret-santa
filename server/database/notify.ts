@@ -1,4 +1,5 @@
-import { and, asc, count, eq, isNull } from 'drizzle-orm';
+import { SCHEDULED } from '#server/utils/limits';
+import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
@@ -56,4 +57,7 @@ export const editionsToRemind = (db: Db) =>
     .select({ edition: editions, group: groups })
     .from(editions)
     .innerJoin(groups, eq(groups.id, editions.groupId))
-    .where(and(eq(editions.status, 'drawn'), isNull(editions.reminderSentAt)));
+    .where(and(eq(editions.status, 'drawn'), isNull(editions.reminderSentAt)))
+    // Bounded (lot 38 A): the most recent first, where the due ones are.
+    .orderBy(desc(editions.createdAt))
+    .limit(SCHEDULED.remindersRead);

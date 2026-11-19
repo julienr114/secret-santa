@@ -29,6 +29,27 @@ database_name = "secret-santa"
 database_id = "1128fa3f-8afe-48ba-b550-f2fae582a685"
 migrations_dir = "server/database/migrations"
 
+# Limiting how fast the public routes are called (lot 38 A, README 8),
+# per client address: a net against a script, counted roughly and per
+# Cloudflare location. `period` can only be 10 or 60 seconds.
+# Asking for a login link, a group, an invitation: 10 a minute.
+[[ratelimits]]
+name = "RATE_ASK"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 10
+  period = 60
+
+# Writing on a list opened by its link: 120 a minute.
+[[ratelimits]]
+name = "RATE_WRITE"
+namespace_id = "1002"
+
+  [ratelimits.simple]
+  limit = 120
+  period = 60
+
 [vars]
 NUXT_PUBLIC_BASE_URL = "https://under-the-tree.party"
 

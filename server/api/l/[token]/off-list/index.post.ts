@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { addOffList, recordVisit } from '#server/database/claims';
 import { findListPerson } from '#server/database/lists';
+import { countOffList } from '#server/database/caps';
 import { requireAccount } from '#server/http/auth';
+import { requireRoom } from '#server/http/caps';
 import { notFound } from '#server/http/errors';
 import { listOfLink } from '#server/http/listLink';
 import { roleOnList } from '#server/http/lists';
@@ -21,6 +23,7 @@ export default defineEventHandler(async (event) => {
   const { db, list } = await listOfLink(event);
   const body = await validatedBody(event, bodySchema);
   if (!(await findListPerson(db, list.id, body.listPersonId))) throw notFound();
+  await requireRoom('off_list', countOffList(db, list.id, user.accountId));
   await addOffList(db, { listId: list.id, accountId: user.accountId, ...body });
   const { role } = await roleOnList(db, list, user.accountId);
   if (role !== 'holder') await recordVisit(db, list.id, user.accountId);

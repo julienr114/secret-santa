@@ -3,6 +3,8 @@ import {
   createMember,
   findMember,
 } from '#server/database/lists';
+import { countFamily, countPeople } from '#server/database/caps';
+import { requireRoom } from '#server/http/caps';
 import { notFound } from '#server/http/errors';
 import { requireHeldList } from '#server/http/lists';
 import { validatedBody } from '#server/http/validate';
@@ -14,6 +16,10 @@ import { addPersonSchema } from '#server/utils/listSchemas';
 export default defineEventHandler(async (event) => {
   const { db, user, list } = await requireHeldList(event);
   const body = await validatedBody(event, addPersonSchema);
+  await requireRoom('people', countPeople(db, list.id));
+  if ('newMember' in body) {
+    await requireRoom('family', countFamily(db, user.accountId));
+  }
   const memberId =
     'memberId' in body
       ? (await findMember(db, user.accountId, body.memberId))?.id

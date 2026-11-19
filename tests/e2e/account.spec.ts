@@ -207,21 +207,64 @@ test('logging out revokes the session, not only the cookie', async ({
   await Promise.all([api.dispose(), thief.dispose()]);
 });
 
-test('link requests are limited for one address', async ({
+test('an address is sent so many links an hour; beyond, the same answer and no link', async ({
   playwright,
   baseURL,
 }) => {
   const api = await playwright.request.newContext({ baseURL });
+  // Three an hour in production; five on the test server, whose specs
+  // log the same accounts in several times (scripts/e2e-server.sh).
   // One after the other: each request counts those before it.
-  const statuses = await Array.from({ length: 6 }).reduce<Promise<number[]>>(
+  const answers = await Array.from({ length: 7 }).reduce<
+    Promise<Awaited<ReturnType<typeof requestLink>>[]>
+  >(
     async (done) => [
       ...(await done),
-      (await requestLink(api, 'third@example.com')).status,
+      await requestLink(api, 'third@example.com'),
     ],
     Promise.resolve([]),
   );
-  expect(statuses).toEqual([200, 200, 200, 200, 200, 429]);
+  // The answer never changes (lot 38 A): nobody learns from it whether
+  // the address has an account, nor that it was sent enough.
+  expect(answers.map((answer) => answer.status)).toEqual(
+    Array.from({ length: 7 }, () => 200),
+  );
+  // Only the first five carry a link (the test server shows it).
+  expect(answers.map((answer) => Boolean(answer.body.devLink))).toEqual([
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+  ]);
   await api.dispose();
+});
+
+test('a client that asks too much reads why, and what to do', async ({
+  page,
+}) => {
+  // The server refuses this client (429), as the rate limit would.
+  await page.route('**/api/auth/link', (route) =>
+    route.fulfill({
+      status: 429,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        statusCode: 429,
+        statusMessage: 'too_many_requests',
+      }),
+    }),
+  );
+  await page.goto('/login');
+  await hydrated(page);
+  await page.getByLabel('Adresse email').fill('pressee@example.com');
+  await page.getByRole('button', { name: /^Recevoir/ }).click();
+  const notice = page.getByTestId('login-too-many');
+  await expect(notice).toContainText('Trop de demandes d’un coup.');
+  await expect(notice).toContainText(
+    'Si tu as déjà demandé un lien, regarde dans tes emails : il est valable 15 minutes.',
+  );
 });
 
 test('without a session, the home page is the login', async ({ page }) => {

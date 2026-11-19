@@ -31,6 +31,14 @@ const modes = computed(() => [
 const firstName = ref(props.initial?.firstName ?? '');
 const { t } = useT();
 const errorMessage = useErrorMessage();
+/** The request was refused because this client asked too much. */
+const tooMany = computed(() => {
+  const error = request.error.value as {
+    statusCode?: number;
+    data?: { statusCode?: number };
+  } | null;
+  return (error?.data?.statusCode ?? error?.statusCode) === 429;
+});
 const request = useRequestLinkMutation();
 
 const email = ref(props.initial?.email ?? '');
@@ -177,8 +185,18 @@ const onAgain = () => {
         :ui="{ base: 'h-12' }"
       />
     </UFormField>
+    <!-- A client that asks too much (maquette TropDeDemandes): what
+         happened, then what to do. -->
     <UAlert
-      v-if="request.isError.value"
+      v-if="request.isError.value && tooMany"
+      color="error"
+      variant="subtle"
+      :title="t('auth.login.tooMany')"
+      :description="t('auth.login.tooManyHelp')"
+      data-testid="login-too-many"
+    />
+    <UAlert
+      v-else-if="request.isError.value"
       color="error"
       variant="subtle"
       :description="errorMessage(request.error.value)"

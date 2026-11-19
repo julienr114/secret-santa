@@ -49,6 +49,14 @@ export default defineNuxtConfig({
     devLoginLinks: false,
     // Login links one client address may ask for per hour (0: default).
     linkRequestsPerIp: 0,
+    // Login links one address may be sent per hour (0: default, 3).
+    linkRequestsPerEmail: 0,
+    // « off » turns the rate limiting bindings off: the tests only.
+    rateLimits: '',
+    // The content policy of the pages (lot 38 A): « report » (default)
+    // only tells the browser's console what it would refuse, « enforce »
+    // applies it, « off » sends none.
+    cspMode: '',
     resendApiKey: '',
     emailFrom: 'Under the Tree <gardien@under-the-tree.party>',
     // 30 days; each session is also a row that can be revoked.
@@ -120,6 +128,19 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'Under the Tree',
+      // Zod checks its input faster with code it writes at run time, and
+      // first tries `new Function` to see whether it may: under the
+      // content policy of the pages (lot 38 A, README 8) that try is
+      // refused and reported as a breach. In the browser the screens only
+      // check a field or two: the slower path is asked for, before any
+      // schema is built, and nothing is ever evaluated.
+      script: [
+        {
+          key: 'zod-jitless',
+          innerHTML: 'globalThis.__zod_globalConfig={jitless:true}',
+          tagPriority: 'critical',
+        },
+      ],
       meta: [
         // The page runs under the iPhone's rounded corners and home bar; each
         // bar, sheet and footer keeps its content out of them (README 23.3).

@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import type { H3Event } from 'h3';
 import { LINK_REQUESTS_MAX_PER_IP } from '#server/utils/accounts';
 import { importDataKey } from '#server/utils/crypto';
+import { LINK_LIMITS } from '#server/utils/limits';
 
 // Per-request dependencies injected into the pure core.
 
@@ -15,6 +16,10 @@ export type Secrets = {
   superAdminEmails: string;
   devLoginLinks: boolean;
   linkRequestsPerIp: number;
+  /** Links one address may be sent in an hour (raised for the tests). */
+  linkRequestsPerEmail: number;
+  /** The rate limiting bindings are on (off for the tests). */
+  rateLimits: boolean;
   emailFrom: string;
 };
 
@@ -32,6 +37,9 @@ export const secretsOf = (event?: H3Event): Secrets => {
     devLoginLinks: String(config.devLoginLinks) === 'true',
     linkRequestsPerIp:
       Number(config.linkRequestsPerIp) || LINK_REQUESTS_MAX_PER_IP,
+    linkRequestsPerEmail:
+      Number(config.linkRequestsPerEmail) || LINK_LIMITS.perEmail,
+    rateLimits: String(config.rateLimits) !== 'off',
     emailFrom: String(config.emailFrom ?? ''),
   };
 };

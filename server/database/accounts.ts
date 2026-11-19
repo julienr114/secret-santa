@@ -1,7 +1,8 @@
-import { and, eq, gt, isNull, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import type { Db } from './client';
 import { accounts, loginLinks, persons, sessions } from './schema';
 import type { Locale } from '#shared/i18n';
+import { sessionsToClose } from '#server/utils/limits';
 import { newId } from '#server/http/context';
 import {
   LINK_REQUESTS_WINDOW_MS,
@@ -77,7 +78,10 @@ export const findAccountById = async (db: Db, accountId: string) => {
   return account ?? null;
 };
 
-/** Links asked within the window, for the account and from the address. */
+/**
+ * Links asked: within the hour for the account and from the client
+ * address, within the day by everyone.
+ */
 export const recentLinkRequests = async (
   db: Db,
   {
@@ -94,11 +98,14 @@ export const recentLinkRequests = async (
       .where(and(where, gt(loginLinks.createdAt, since)));
     return row?.n ?? 0;
   };
+  const [day] = await db
+    .select({ n: sql<number>`count(*)` })
+    .from(loginLinks)
+    .where(gt(loginLinks.createdAt, isoAfter(now, -24 * 60 * 60 * 1000)));
   return {
-    forAccount: accountId
-      ? await count(eq(loginLinks.accountId, accountId))
-      : 0,
+    forEmail: accountId ? await count(eq(loginLinks.accountId, accountId)) : 0,
     fromIp: await count(eq(loginLinks.ipHash, ipHash)),
+    today: day?.n ?? 0,
   };
 };
 
@@ -185,6 +192,16 @@ export const openSessionFor = async (
     now,
   }: { accountId: string; userAgent: string | null; now: string },
 ): Promise<string> => {
+  // An account keeps so many sessions open (lot 38 A): beyond, the ones
+  // seen longest ago close.
+  const open = await listActiveSessions(db, accountId, now);
+  const closing = sessionsToClose(open);
+  if (closing.length > 0) {
+    await db
+      .update(sessions)
+      .set({ revokedAt: now })
+      .where(inArray(sessions.id, closing));
+  }
   const id = newId();
   await db.batch([
     db.insert(sessions).values({

@@ -1,15 +1,17 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { dbOf, type D1Binding } from '#server/database/client';
 import { editionsToRemind, missingViewers } from '#server/database/notify';
 import { editions } from '#server/database/schema';
 import { appUrl, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
 import { buildReminderEmail, isReminderDue } from '#server/utils/notifications';
+import { SCHEDULED, dueBatch } from '#server/utils/limits';
 import { mergeRules } from '#server/utils/rules';
 
 // Every morning (cron in wrangler.toml): a few days before an exchange,
 // the organisers learn who has not discovered their result yet. Each
-// edition is reminded once; nobody missing, nothing is sent.
+// edition is reminded once; nobody missing, nothing is sent. A run
+// handles a bounded number of editions and can be played again.
 /** The schedule of wrangler.toml every 15 minutes, left to the game. */
 const GAME_CRON = '*/15 * * * *';
 
@@ -22,44 +24,55 @@ export default defineNitroPlugin((nitroApp) => {
     const db = dbOf(d1);
     const now = nowIso();
     const today = now.slice(0, 10);
-    const rows = await editionsToRemind(db);
+    // Bounded (lot 38 A): one run sends so many reminders; the others
+    // wait for the next morning rather than make the run fail half-way.
+    const due = dueBatch(
+      (await editionsToRemind(db)).flatMap(({ edition, group }) => {
+        const rules = mergeRules(group.rules, edition.rulesOverride);
+        return rules.ok ? [{ edition, group, rules: rules.value }] : [];
+      }),
+      ({ edition, rules }) =>
+        isReminderDue(
+          {
+            status: edition.status,
+            eventDate: rules.eventDate,
+            reminderSentAt: edition.reminderSentAt,
+          },
+          today,
+        ),
+      SCHEDULED.remindersPerRun,
+    );
     // One edition after the other: the free plan limits parallel requests.
-    await rows.reduce<Promise<void>>(
-      (done, { edition, group }) =>
+    await due.reduce<Promise<void>>(
+      (done, { edition, group, rules }) =>
         done.then(async () => {
-          const rules = mergeRules(group.rules, edition.rulesOverride);
-          if (!rules.ok) return;
-          const due = isReminderDue(
-            {
-              status: edition.status,
-              eventDate: rules.value.eventDate,
-              reminderSentAt: edition.reminderSentAt,
-            },
-            today,
-          );
-          if (!due) return;
-          const missing = await missingViewers(db, edition.id);
-          if (rules.value.notifyReminder && missing.length > 0) {
-            await notifyOrganizers({ db }, group.id, (locale) =>
-              buildReminderEmail(
-                {
-                  groupName: group.name,
-                  editionLabel: edition.label,
-                  eventDate: rules.value.eventDate,
-                  missing,
-                  link: appUrl(
-                    undefined,
-                    `/admin/${group.slug}/editions/${edition.id}`,
-                  ),
-                },
-                locale,
-              ),
-            );
-          }
-          await db
+          // Marked first, and only once: a run played again, or two at
+          // the same time, never send the same reminder twice.
+          const claimed = await db
             .update(editions)
             .set({ reminderSentAt: now })
-            .where(eq(editions.id, edition.id));
+            .where(
+              and(eq(editions.id, edition.id), isNull(editions.reminderSentAt)),
+            )
+            .returning({ id: editions.id });
+          if (claimed.length === 0) return;
+          const missing = await missingViewers(db, edition.id);
+          if (!rules.notifyReminder || missing.length === 0) return;
+          await notifyOrganizers({ db }, group.id, (locale) =>
+            buildReminderEmail(
+              {
+                groupName: group.name,
+                editionLabel: edition.label,
+                eventDate: rules.eventDate,
+                missing,
+                link: appUrl(
+                  undefined,
+                  `/admin/${group.slug}/editions/${edition.id}`,
+                ),
+              },
+              locale,
+            ),
+          );
         }),
       Promise.resolve(),
     );

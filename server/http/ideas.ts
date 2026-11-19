@@ -1,3 +1,5 @@
+import { countIdeas } from '#server/database/caps';
+import { requireRoom } from '#server/http/caps';
 import type { H3Event } from 'h3';
 import { eq } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
@@ -44,6 +46,7 @@ export const addIdea = async (
   if (!split && !url) {
     throw createError({ statusCode: 400, statusMessage: 'empty_idea' });
   }
+  await requireRoom('ideas', countIdeas(db, list.id));
   const id = await createIdea(
     db,
     list.id,

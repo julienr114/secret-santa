@@ -6,6 +6,21 @@ export default {
   unauthorized: 'Connecte-toi pour continuer.',
   forbidden: "Tu n'as pas accès à ce groupe.",
   too_many_attempts: 'Doucement. Réessaie dans quelques minutes.',
+  too_many_requests:
+    'Trop de demandes d’un coup. Attends quelques minutes avant de réessayer.',
+  web_address:
+    'Un nom ne peut pas contenir d’adresse web. Enlève-la, puis réessaie.',
+  limit_lists:
+    'Tu tiens déjà beaucoup de listes. Supprimes-en une pour en créer une autre.',
+  limit_people:
+    'Cette liste a déjà beaucoup de monde : on ne peut plus en ajouter.',
+  limit_ideas:
+    'Cette liste a déjà beaucoup d’idées : on ne peut plus en ajouter.',
+  limit_off_list:
+    'Tu as déjà annoncé beaucoup de cadeaux hors liste ici. Retires-en un pour en ajouter un autre.',
+  limit_family:
+    'Tu as déjà beaucoup de proches. Supprimes-en un pour en ajouter un autre.',
+  limit_journal: 'Ce groupe a beaucoup bougé aujourd’hui : réessaie demain.',
   slug_taken: 'Cet identifiant de groupe est déjà pris.',
   group_not_found:
     'Groupe introuvable. Recharge la page : la liste a peut-être changé.',

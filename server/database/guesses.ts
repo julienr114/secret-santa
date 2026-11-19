@@ -1,4 +1,13 @@
-import { and, eq, inArray, isNull, ne, type SQLWrapper } from 'drizzle-orm';
+import { SCHEDULED } from '#server/utils/limits';
+import {
+  and,
+  asc,
+  eq,
+  inArray,
+  isNull,
+  ne,
+  type SQLWrapper,
+} from 'drizzle-orm';
 import type { Db } from './client';
 import { editions, guesses, participations, persons } from './schema';
 import type { Guess } from '#server/utils/guesses';
@@ -135,7 +144,11 @@ export const gamesToWatch = (db: Db) =>
         eq(editions.status, 'drawn'),
         isNull(editions.guessResultsSentAt),
       ),
-    );
+    )
+    // Bounded (lot 38 A): the soonest to end first; a game looked after
+    // leaves the set, and the next ones come.
+    .orderBy(asc(editions.guessEndsAt))
+    .limit(SCHEDULED.gamesPerRun);
 
 /**
  * Marks that a participant watched the results.

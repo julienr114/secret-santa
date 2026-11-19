@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **À faire maintenant : le lot 38 A (le filet de sécurité), puis les listes V2 : le lot 24 ter (réordonner en glissant), puis le lot 27.** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -856,15 +856,15 @@ Décidé par Julien le 19 novembre 2026, après le lot 24. **Fait** (19 novembre
 
 ### Lot 25 — Listes V2 : à plusieurs, et une personne reliée à son compte (README 22.20)
 
-Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeLiveTeneur` (la ligne « Tu tiens cette liste avec Hugo »).
+Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la migration `0028_list_holders`, **à appliquer avant de déployer** (`pnpm db:migrate`). Ce qui a été tranché en codant : section 6, « Lot 25 ». Maquettes : `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeLiveTeneur` (la ligne « Tu tiens cette liste avec Hugo »).
 
-- [ ] **Le cœur, en fonctions pures**, testé d'abord : qui tient une liste ; ce que voit et peut faire chacun (celui qui tient, la personne reliée, l'invité) ; inviter, accepter, retirer, le dernier qui ne peut pas partir.
-- [ ] **Base** : les comptes qui tiennent une liste (plusieurs par liste, celui qui l'a créée en fait partie comme les autres) ; les invitations en attente, par adresse ; l'adresse d'une personne de la famille et le compte qu'elle rejoint.
-- [ ] **« Ceux qui tiennent la liste »** (`ListeTeneurs`) : la liste, « Retirer », l'invitation par adresse avec son email, « Annuler » une invitation. Tous égaux. Ceux qui tiennent la liste voient tout, y compris ce qu'on leur offre.
-- [ ] **Chacun de ceux qui tiennent la liste coche dans le document**, à son prénom, dès le brouillon, comme le fait déjà celui qui l'a créée (README 22.19, « Créer et écrire »), ses propres idées comprises (Correction 20).
-- [ ] **Relier une personne** (`ListePersonneCompte`) : l'adresse sur sa fiche, « Ne plus relier ».
-- [ ] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et coche comme lui, y compris ce qui lui est destiné (Correction 20).
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Le cœur, en fonctions pures**, testé d'abord : qui tient une liste ; ce que voit et peut faire chacun (celui qui tient, la personne reliée, l'invité) ; inviter, accepter, retirer, le dernier qui ne peut pas partir.
+- [x] **Base** : les comptes qui tiennent une liste (plusieurs par liste, celui qui l'a créée en fait partie comme les autres) ; les invitations en attente, par adresse ; l'adresse d'une personne de la famille et le compte qu'elle rejoint.
+- [x] **« Ceux qui tiennent la liste »** (`ListeTeneurs`) : la liste, « Retirer », l'invitation par adresse avec son email, « Annuler » une invitation. Tous égaux. Ceux qui tiennent la liste voient tout, y compris ce qu'on leur offre.
+- [x] **Chacun de ceux qui tiennent la liste coche dans le document**, à son prénom, dès le brouillon, comme le fait déjà celui qui l'a créée (README 22.19, « Créer et écrire »), ses propres idées comprises (Correction 20).
+- [x] **Relier une personne** (`ListePersonneCompte`) : l'adresse sur sa fiche, « Ne plus relier ».
+- [x] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et coche comme lui, y compris ce qui lui est destiné (Correction 20).
+- [x] Trois langues, `tests/e2e`.
 
 ### Lot 26 — Listes V2 : en direct (README 22.20)
 
@@ -1652,6 +1652,26 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 2. **Une bibliothèque ou du code maison** : à décider en codant. Le critère est le téléphone ; si une bibliothèque est ajoutée, écrire pourquoi (Correction 23 : aucune dépendance sans raison).
 3. **Changer une idée de personne en la glissant** : proposé d'office. À retirer si c'est une source d'erreurs.
 4. **Une liste sans personne** (lot 27 bis) : seules les idées se déplacent.
+
+### Lot 25
+
+Codé le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Chacun garde ses propres proches.** Une liste tenue à plusieurs peut porter des personnes venues des proches de l'un ou de l'autre : dans « Ajouter quelqu'un », chacun voit ses proches à lui. La fiche d'une personne de la liste (ses tailles, ses goûts) s'ouvre et se modifie pour tous ceux qui tiennent la liste ; la supprimer de « Mes proches » et la relier à son compte restent à celui dont elle est le proche.
+2. **Une invitation est acceptée en venant** : la liste rejoint celles de l'invité dès qu'il ouvre ses listes, ou la liste elle-même par le lien de l'email, connecté avec l'adresse invitée. Pas de bouton « Accepter ».
+3. **« Peut refuser »** : l'email dit d'ignorer le message ; une fois connecté, l'invité peut quitter la liste par « Ne plus tenir cette liste », sur sa propre ligne de « Ceux qui tiennent la liste ». Ce bouton n'est pas dans la maquette `ListeTeneurs` (elle ne montre que « C'est toi ») : il traduit « le dernier ne peut pas se retirer », qui suppose qu'on peut se retirer soi-même. Les boutons « Retirer » disparaissent quand il ne reste qu'une personne.
+4. **Retirer est immédiat, sans confirmation ni « Annuler »** : on peut réinviter. À revoir si ça surprend.
+5. **Celui qui a créé la liste peut être retiré** comme les autres. La liste garde ses personnes, y compris celles qui venaient de ses proches.
+6. **L'email d'invitation** part dans la langue de l'invité s'il a déjà un compte, sinon dans celle de celui qui invite. Si l'envoi échoue, l'invitation reste (elle se voit dans la page, et marchera à la connexion). **Il passera par les contrôles des lots 35 et 36 quand ils existeront** (adresses bloquées, pied d'email).
+7. **Relier un proche n'envoie aucun email.** L'adresse le relie tout de suite si un compte existe à cette adresse ; sinon la fiche dit « Pas encore de compte à cette adresse » et le lien se fait quand ce compte vient. **Question** : faut-il le prévenir par email ?
+8. **Une personne reliée prend l'icône de son compte**, et la garde : ni son prénom ni son icône ne se changent plus par celui qui tient la liste (ni crayon, ni prénom à toucher), comme pour « Moi ». Son prénom, lui, reste celui que j'ai écrit : il ne suit pas son compte.
+9. **La personne reliée voit la liste par son lien**, avec sa section en premier et « C'est toi » ; la liste est dans ses listes dès qu'elle est partagée, avant même de l'avoir ouverte. Une liste pas partagée ne lui apparaît pas. Dans sa section : ses idées à écrire, pas de « J'offre autre chose », pas de lien « ses goûts ».
+10. **Quelqu'un qui tient la liste et y figure** est d'abord quelqu'un qui tient la liste : il voit tout, y compris qui lui offre quoi (README 22.20).
+11. **Par le lien, « La liste de Camille »** nomme le premier de ceux qui la tiennent (celui qui l'a créée tant qu'il est là), pas tous.
+12. **La présence** (« Il est là en ce moment », le point vert) est le lot 26 : la ligne sous la barre dit seulement « Tu tiens cette liste avec Hugo. » Seul, elle dit « Tenir cette liste à plusieurs » : cette entrée n'est dans aucune maquette.
+13. **Supprimer un proche relié** est refusé tant que son compte tient une liste avec moi (la règle de la Correction 24, maintenant branchée) : le bouton « Supprimer de mes proches » n'est alors pas affiché.
+14. **L'adresse d'un proche** n'est montrée qu'à ceux qui tiennent une liste où il figure, et à moi. Elle ne part jamais vers la page d'une liste ouverte par son lien (testé).
+15. **Pas regardé à l'œil** : la vue de la personne reliée (`ListeVueReliee`) ; vérifiée par le test seulement. La page « Ceux qui tiennent la liste » a été comparée à sa maquette.
 
 ### Lot 27 ter — pistes et liste
 

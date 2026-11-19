@@ -1776,12 +1776,16 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 
 #### Tenir une liste à plusieurs
 
+**Codé le 19 novembre 2026** (lot 25) : les tables `gift_list_holders` et `gift_list_invites`, les règles de `server/utils/listAccess.ts`, la page `/listes/[id]/teneurs`, l'email d'invitation (`buildHolderInviteEmail`). Une invitation est acceptée en venant, connecté avec l'adresse invitée. La présence viendra avec le lot 26.
+
 - Une liste peut être tenue par **plusieurs comptes, tous égaux** (`ListeTeneurs`) : chacun écrit, partage, voit qui offre quoi, y compris ce qu'on lui offre s'il y figure.
 - On invite par adresse email ; la liste apparaît dans les listes de l'invité dès qu'il se connecte. Une invitation en attente peut être annulée.
 - Chacun peut en retirer un autre. Le dernier ne peut pas se retirer.
 - **Présence**, entre ceux qui tiennent la liste seulement : sous le bouton d'état, « Tu tiens cette liste avec Hugo. Il est là en ce moment. », un point vert sur son icône. Les invités ne voient jamais qui regarde.
 
 #### Relier une personne à son compte
+
+**Codé le 19 novembre 2026** (lot 25) : `family_members.email` et `linked_account_id`, « Son compte » sur la fiche, les routes `/api/l/[jeton]/ideas` où la personne reliée écrit ses propres idées. Aucun email ne lui part.
 
 - Sur la fiche d'une personne de ma famille (`ListePersonneCompte`), une adresse email la relie à son compte. Pour un enfant, on laisse vide.
 - Une personne reliée peut **écrire, corriger et supprimer ses propres idées** sur les listes où elle figure (`ListeVueReliee`) : sa section passe en premier, « C'est toi ».

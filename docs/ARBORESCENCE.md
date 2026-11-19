@@ -189,6 +189,7 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 | La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | L'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste | `/listes/[id]/teneurs` | La liste | |
+| L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
 | Mes proches | `/famille` | Listes | |
 | Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Mes proches | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
 | Supprimer de mes proches | `/famille/[id]/supprimer` (`?liste=` depuis une liste) | La liste, sinon sa fiche | |

@@ -2,6 +2,7 @@
 import type { IdeaLine } from '#server/http/lists';
 import { LIST_NOTE_MAX } from '#server/utils/lists';
 import {
+  type ClaimRoute,
   useChangeClaimMutation,
   useUntickMutation,
 } from '~/composables/queries/useLists';
@@ -11,20 +12,23 @@ import { ideaShort } from '~/utils/ideaShort';
 // ListeReserverPlusieurs, ListePlusieursOuvreur): alone or with others
 // while nobody else is on it; alone, telling the holder it is me; with
 // others, the word for them, who is in, and « On est au complet » for the
-// one who leads; « Finalement, je ne l'offre plus ».
+// one who leads; « Finalement, je ne l'offre plus ». In the holder's own
+// document, no choice of staying anonymous: they read the names.
 const props = defineProps<{
-  token: string;
+  /** By the link of the list, or in its holder's document. */
+  via: ClaimRoute;
   idea: IdeaLine;
   /** Who receives it. */
   forName: string;
-  holderName: string;
+  /** Who holds the list; none in the holder's own document. */
+  holderName?: string;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
-const change = useChangeClaimMutation(() => props.token);
-const untick = useUntickMutation(() => props.token);
+const change = useChangeClaimMutation(() => props.via);
+const untick = useUntickMutation(() => props.via);
 const mine = computed(() => props.idea.mine);
 const others = computed(() => props.idea.notes.filter((n) => !n.me));
 const mode = ref<'alone' | 'group'>('alone');
@@ -90,7 +94,9 @@ const onDone = () => {
   const body = {
     ideaId: props.idea.id,
     ...(mode.value === was.mode ? {} : { mode: mode.value }),
-    ...(mode.value === 'alone' && tell.value === was.anonymous
+    ...(props.holderName &&
+    mode.value === 'alone' &&
+    tell.value === was.anonymous
       ? { anonymous: !tell.value }
       : {}),
     ...(mode.value === 'group' && note.value.trim() !== (was.note ?? '')
@@ -140,6 +146,7 @@ const onGiveUp = () =>
       />
       <template v-if="mode === 'alone'">
         <div
+          v-if="holderName"
           class="flex items-start gap-3 rounded-xl bg-default p-3.5 ring-1 ring-default"
         >
           <div class="flex grow flex-col gap-0.5">

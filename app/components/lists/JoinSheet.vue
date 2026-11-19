@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { IdeaLine } from '#server/http/lists';
-import { useTickMutation } from '~/composables/queries/useLists';
+import {
+  type ClaimRoute,
+  useTickMutation,
+} from '~/composables/queries/useLists';
 import { ideaShort } from '~/utils/ideaShort';
 
 // « Se joindre » (README 22.19, maquettes ListeRejoindre,
@@ -8,7 +11,8 @@ import { ideaShort } from '~/utils/ideaShort';
 // becomes visible: who is in, with their words, the one who opened it
 // first; « Je participe » or « Pas cette fois ».
 const props = defineProps<{
-  token: string;
+  /** By the link of the list, or in its holder's document. */
+  via: ClaimRoute;
   idea: IdeaLine;
   forName: string;
 }>();
@@ -16,7 +20,7 @@ const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
 const toast = useToast();
 const errorMessage = useErrorMessage();
-const tick = useTickMutation(() => props.token);
+const tick = useTickMutation(() => props.via);
 const count = computed(() => props.idea.notes.length);
 const onJoin = () =>
   tick.mutate(

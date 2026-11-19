@@ -23,8 +23,9 @@ const toast = useToast();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
 const query = useLinkQuery(token);
-const tick = useTickMutation(token);
-const untick = useUntickMutation(token);
+const via = computed(() => ({ token: token.value }));
+const tick = useTickMutation(via);
+const untick = useUntickMutation(via);
 const removeOffList = useRemoveOffListMutation(token);
 const doc = computed(() => query.data.value);
 const holder = computed(() => doc.value?.holder.name ?? '');
@@ -96,7 +97,7 @@ onMounted(async () => {
   const idea = doc.value?.people
     .flatMap((p) => p.ideas)
     .find((i) => i.id === waiting);
-  if (idea?.view.kind === 'free' && idea.tickable) {
+  if (idea?.view.kind === 'free') {
     tick.mutate({ ideaId: idea.id }, { onError });
   }
   router.replace({ query: {} });
@@ -272,7 +273,7 @@ const onJoin = (idea: IdeaLine, forName: string) => {
     <ListsClaimSheet
       v-if="changing && doc"
       v-model:open="changeOpen"
-      :token="token"
+      :via="via"
       :idea="changing.idea"
       :for-name="changing.forName"
       :holder-name="holder"
@@ -280,7 +281,7 @@ const onJoin = (idea: IdeaLine, forName: string) => {
     <ListsJoinSheet
       v-if="joining"
       v-model:open="joinOpen"
-      :token="token"
+      :via="via"
       :idea="joining.idea"
       :for-name="joining.forName"
     />

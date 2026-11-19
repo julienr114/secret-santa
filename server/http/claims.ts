@@ -1,20 +1,22 @@
-import { and, eq } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
-import { claimIfFree, claimsOfLists, joinClaim } from '#server/database/claims';
+import {
+  changeClaim,
+  claimIfFree,
+  claimsOfLists,
+  joinClaim,
+} from '#server/database/claims';
 import { findIdea } from '#server/database/lists';
-import { familyMembers, giftListPeople } from '#server/database/schema';
 import { notFound, unwrap } from '#server/http/errors';
-import { canTick } from '#server/utils/claims';
+import { canChange, canTick, type ClaimChange } from '#server/utils/claims';
 
 /**
  * Ticks an idea of a list for an account (README 22.19): alone, or joining
  * a gift given by several. Two accounts never give the same idea alone:
- * the second one hears « c'est déjà pris » (409). The holder never ticks
- * the ideas meant for them.
+ * the second one hears « c'est déjà pris » (409). Nobody is kept from an
+ * idea meant for them.
  * @param db - The database.
- * @param list - The list, and who holds it.
+ * @param list - The list.
  * @param list.id - Its id.
- * @param list.accountId - The account that holds it.
  * @param accountId - Who ticks.
  * @param how - The idea, and how it is given.
  * @param how.ideaId - The idea.
@@ -25,7 +27,7 @@ import { canTick } from '#server/utils/claims';
  */
 export const tickIdea = async (
   db: Db,
-  list: { id: string; accountId: string },
+  list: { id: string },
   accountId: string,
   how: {
     ideaId: string;
@@ -36,27 +38,10 @@ export const tickIdea = async (
 ): Promise<boolean> => {
   const idea = await findIdea(db, list.id, how.ideaId);
   if (!idea) throw notFound();
-  const forSelf = await db
-    .select({ isSelf: familyMembers.isSelf })
-    .from(giftListPeople)
-    .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
-    .where(
-      and(
-        eq(giftListPeople.id, idea.listPersonId),
-        eq(familyMembers.isSelf, true),
-      ),
-    )
-    .get();
   const claims = (await claimsOfLists(db, [list.id])).filter(
     (c) => c.ideaId === idea.id,
   );
-  const result = unwrap(
-    canTick(
-      claims,
-      accountId,
-      Boolean(forSelf) && list.accountId === accountId,
-    ),
-  );
+  const result = unwrap(canTick(claims, accountId));
   if (result === 'join') {
     await joinClaim(db, {
       listId: list.id,
@@ -76,4 +61,33 @@ export const tickIdea = async (
   });
   if (!written) throw createError({ statusCode: 409, statusMessage: 'taken' });
   return false;
+};
+
+/**
+ * « Changer » (README 22.19): one's own way of giving an idea, alone or
+ * with others, the word for the others, « On est au complet » for the
+ * one who leads.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param accountId - Who changes.
+ * @param ideaId - The idea.
+ * @param change - What changes.
+ * @returns Once written.
+ */
+export const changeIdeaClaim = async (
+  db: Db,
+  listId: string,
+  accountId: string,
+  ideaId: string,
+  change: ClaimChange,
+) => {
+  const claims = (await claimsOfLists(db, [listId])).filter(
+    (c) => c.ideaId === ideaId,
+  );
+  await changeClaim(
+    db,
+    ideaId,
+    accountId,
+    unwrap(canChange(claims, accountId, change)),
+  );
 };

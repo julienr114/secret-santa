@@ -114,24 +114,6 @@ export const useDeleteIdeaMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
-// The holder ticks in the document too, a draft included (README 22.19).
-export const useHolderTickMutation = (id: Id) =>
-  useApiMutation<{ ok: true }, string>(
-    (ideaId) =>
-      api(`/api/lists/${toValue(id)}/claims`, {
-        method: 'POST',
-        body: { ideaId },
-      }),
-    () => listKeys(toValue(id)),
-  );
-
-export const useHolderUntickMutation = (id: Id) =>
-  useApiMutation<{ ok: true }, string>(
-    (ideaId) =>
-      api(`/api/lists/${toValue(id)}/claims/${ideaId}`, { method: 'DELETE' }),
-    () => listKeys(toValue(id)),
-  );
-
 export const useShareListMutation = (id: Id) =>
   useApiMutation<{ token: string }, { renew?: boolean }>(
     (body) => api(`/api/lists/${toValue(id)}/share`, { method: 'POST', body }),
@@ -171,7 +153,17 @@ export const useLinkQuery = (token: Token) =>
     () => `/api/l/${toValue(token)}`,
   );
 
-export const useTickMutation = (token: Token) =>
+/** Where a list is ticked: by its link, or in its holder's document. */
+export type ClaimRoute = { token: string } | { listId: string };
+type Via = MaybeRefOrGetter<ClaimRoute>;
+const claimsUrl = (via: ClaimRoute) =>
+  'token' in via
+    ? `/api/l/${via.token}/claims`
+    : `/api/lists/${via.listId}/claims`;
+const claimKeys = (via: ClaimRoute) =>
+  'token' in via ? linkKeys(via.token) : listKeys(via.listId);
+
+export const useTickMutation = (via: Via) =>
   useApiMutation<
     { ok: true; joined: boolean },
     {
@@ -181,11 +173,11 @@ export const useTickMutation = (token: Token) =>
       note?: string | null;
     }
   >(
-    (body) => api(`/api/l/${toValue(token)}/claims`, { method: 'POST', body }),
-    () => linkKeys(toValue(token)),
+    (body) => api(claimsUrl(toValue(via)), { method: 'POST', body }),
+    () => claimKeys(toValue(via)),
   );
 
-export const useChangeClaimMutation = (token: Token) =>
+export const useChangeClaimMutation = (via: Via) =>
   useApiMutation<
     { ok: true },
     {
@@ -197,18 +189,15 @@ export const useChangeClaimMutation = (token: Token) =>
     }
   >(
     ({ ideaId, ...body }) =>
-      api(`/api/l/${toValue(token)}/claims/${ideaId}`, {
-        method: 'PATCH',
-        body,
-      }),
-    () => linkKeys(toValue(token)),
+      api(`${claimsUrl(toValue(via))}/${ideaId}`, { method: 'PATCH', body }),
+    () => claimKeys(toValue(via)),
   );
 
-export const useUntickMutation = (token: Token) =>
+export const useUntickMutation = (via: Via) =>
   useApiMutation<{ ok: true }, string>(
     (ideaId) =>
-      api(`/api/l/${toValue(token)}/claims/${ideaId}`, { method: 'DELETE' }),
-    () => linkKeys(toValue(token)),
+      api(`${claimsUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
+    () => claimKeys(toValue(via)),
   );
 
 export const useAddOffListMutation = (token: Token) =>

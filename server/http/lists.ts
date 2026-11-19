@@ -88,8 +88,6 @@ export type IdeaLine = {
   mine: MyClaim | null;
   /** The words of each giver of a group, by name, for its sheet. */
   notes: { name: string; avatar: Avatar; note: string | null; me: boolean }[];
-  /** Whether I may tick it: not one meant for me. */
-  tickable: boolean;
 };
 
 /** A person on a list, with their ideas and the gifts not on the list. */
@@ -109,7 +107,6 @@ type Viewer = { accountId: string | null; holds: boolean };
  * @param claims - Who gives each idea of the list.
  * @param offList - The gifts not on the list.
  * @param viewer - Who looks.
- * @param selfIsMe - Whether a person « Moi » of the list is the viewer.
  * @returns The lines, and how many gifts are planned and mine.
  */
 const linesOf = (
@@ -117,7 +114,6 @@ const linesOf = (
   claims: readonly ClaimWithGiver[],
   offList: Awaited<ReturnType<typeof offListOfLists>>,
   viewer: Viewer,
-  selfIsMe: boolean,
 ) => {
   const today = todayIso();
   const claimsOf = (ideaId: string) =>
@@ -153,7 +149,6 @@ const linesOf = (
                 me: c.accountId === viewer.accountId,
               }))
             : [],
-        tickable: !(person.member.isSelf && selfIsMe),
       };
     }),
     offList: offList
@@ -211,7 +206,6 @@ export const listDocument = async (
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
     { accountId: list.accountId, holds: true },
-    true,
   );
   const today = todayIso();
   return {
@@ -261,7 +255,6 @@ export const visitorDocument = async (
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
     { accountId, holds },
-    holds,
   );
   return {
     list: headOf(list),
@@ -346,7 +339,6 @@ export const listCards = async (
       claims,
       offList.filter((g) => g.listId === list.id),
       { accountId, holds },
-      holds,
     );
     const visit = others.find((v) => v.list.id === list.id);
     const holder = holders.get(list.accountId);

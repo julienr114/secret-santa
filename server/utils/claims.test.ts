@@ -20,20 +20,18 @@ const row = (over: Partial<ClaimRow>): ClaimRow => ({
 
 describe('claims', () => {
   it('ticks a free idea, joins an open group, and refuses the rest', () => {
-    expect(canTick([], 'b', false)).toEqual({ ok: true, value: 'alone' });
-    expect(canTick([row({})], 'b', false)).toMatchObject({ reason: 'taken' });
-    expect(canTick([row({ mode: 'group' })], 'b', false)).toEqual({
+    expect(canTick([], 'b')).toEqual({ ok: true, value: 'alone' });
+    expect(canTick([row({})], 'b')).toMatchObject({ reason: 'taken' });
+    expect(canTick([row({ mode: 'group' })], 'b')).toEqual({
       ok: true,
       value: 'join',
     });
-    expect(
-      canTick([row({ mode: 'group', closed: true })], 'b', false),
-    ).toMatchObject({ reason: 'taken' });
-    expect(canTick([row({})], 'a', false)).toMatchObject({
+    expect(canTick([row({ mode: 'group', closed: true })], 'b')).toMatchObject({
+      reason: 'taken',
+    });
+    expect(canTick([row({})], 'a')).toMatchObject({
       reason: 'conflict',
     });
-    // Nobody ticks an idea meant for themself.
-    expect(canTick([], 'b', true)).toMatchObject({ reason: 'own_idea' });
   });
 
   it('switches alone and with others only while nobody else is on it', () => {

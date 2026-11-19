@@ -48,7 +48,7 @@ const groupNames = computed(() => {
 });
 const onBox = () => {
   const v = view.value;
-  if (!props.idea.tickable || crossed.value) return;
+  if (crossed.value) return;
   if (v.kind === 'free') emit('tick');
   else if (v.kind === 'mine') emit('untick');
   else if (v.kind === 'group') onGroup();
@@ -71,7 +71,7 @@ const onGroup = () => {
           ? t('lists.visitor.untick', { idea: idea.text })
           : t('lists.visitor.tick', { idea: idea.text })
       "
-      :disabled="!idea.tickable || crossed"
+      :disabled="crossed"
       class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
       data-testid="idea-box"
       @click="onBox"

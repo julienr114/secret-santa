@@ -22,20 +22,17 @@ export const ordered = <T extends { createdAt: string }>(
 ): T[] => claims.toSorted((a, b) => a.createdAt.localeCompare(b.createdAt));
 
 /**
- * Whether an account may tick an idea: not one meant for themself (the
- * holder, on their own line), not one somebody already gives alone or in
- * a closed group.
+ * Whether an account may tick an idea: not one somebody already gives
+ * alone or in a closed group. Nobody is kept from their own ideas: the
+ * holder ticks one of their « Moi » too (README 22.19).
  * @param claims - Who gives it now.
  * @param accountId - Who asks.
- * @param ownIdea - Whether the idea is for the one who asks.
  * @returns What ticking does: give it alone, or join the group.
  */
 export const canTick = (
   claims: readonly ClaimRow[],
   accountId: string,
-  ownIdea: boolean,
 ): Result<'alone' | 'join'> => {
-  if (ownIdea) return fail('own_idea');
   if (claims.some((c) => c.accountId === accountId)) return fail('conflict');
   const leader = ordered(claims)[0];
   if (!leader) return ok('alone');

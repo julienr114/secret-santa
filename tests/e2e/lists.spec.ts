@@ -84,15 +84,48 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
   await expect(leo.getByTestId('idea-text')).toHaveCount(1);
 
-  // The one who holds the list ticks too, even in a draft; touched again,
-  // the box unticks.
+  // The one who holds the list ticks too, even in a draft: what they give
+  // says so under it, as by the link; touched again, the box unticks.
   const box = leo.getByTestId('holder-box').first();
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'true');
-  await expect(leo.getByTestId('idea-who')).toHaveText('C’est toi');
-  await box.click();
-  await expect(box).toHaveAttribute('aria-checked', 'false');
+  await expect(leo.getByTestId('idea-mine')).toContainText(
+    'Tu l’offres · seul · Changer',
+  );
   await expect(leo.getByTestId('idea-who')).toHaveCount(0);
+  // « Changer »: with others, without the choice of staying anonymous.
+  await leo.getByRole('button', { name: 'Changer' }).click();
+  const sheet = page.getByTestId('claim-sheet');
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole('switch')).toHaveCount(0);
+  await sheet.getByText('On l’offre à plusieurs').click();
+  await page.getByTestId('claim-done').click();
+  await expect(leo.getByTestId('idea-mine')).toContainText(
+    'Tu l’offres · à plusieurs · Changer',
+  );
+  await expect(leo.getByTestId('idea-joined')).toHaveText('Tu participes');
+  // The box of a gift given by several opens its sheet; « Finalement… ».
+  await box.click();
+  await page.getByTestId('claim-give-up').click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
+  await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
+
+  // Nobody is kept from their own ideas: one of « Moi » ticks and unticks
+  // like the others (then goes, for what follows).
+  const me = page.getByTestId('list-person').filter({ hasText: 'Camille' });
+  await me.getByPlaceholder('Une idée pour Camille…').click();
+  await page.keyboard.type('Un bon couteau');
+  await page.keyboard.press('Enter');
+  await page.getByRole('button', { name: 'Terminé' }).click();
+  const mine = me.getByTestId('holder-box').first();
+  await mine.click();
+  await expect(mine).toHaveAttribute('aria-checked', 'true');
+  await expect(me.getByTestId('idea-mine')).toContainText('Tu l’offres · seul');
+  await mine.click();
+  await expect(mine).toHaveAttribute('aria-checked', 'false');
+  await me.getByTestId('idea-text').click();
+  await page.getByRole('button', { name: 'Supprimer la ligne' }).click();
+  await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
   // The word: touched, it is mine; erased, there is none.
   await page.getByTestId('note-default').click();

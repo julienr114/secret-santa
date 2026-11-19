@@ -1,10 +1,8 @@
 import { z } from 'zod';
-import { changeClaim, claimsOfLists } from '#server/database/claims';
 import { requireAccount } from '#server/http/auth';
-import { unwrap } from '#server/http/errors';
+import { changeIdeaClaim } from '#server/http/claims';
 import { listOfLink } from '#server/http/listLink';
 import { validatedBody } from '#server/http/validate';
-import { canChange } from '#server/utils/claims';
 import { LIST_NOTE_MAX } from '#server/utils/lists';
 
 // « Changer » (README 22.19, maquettes ListeReserver,
@@ -24,16 +22,12 @@ const bodySchema = z
 export default defineEventHandler(async (event) => {
   const user = await requireAccount(event);
   const { db, list } = await listOfLink(event);
-  const ideaId = getRouterParam(event, 'ideaId') ?? '';
-  const change = await validatedBody(event, bodySchema);
-  const claims = (await claimsOfLists(db, [list.id])).filter(
-    (c) => c.ideaId === ideaId,
-  );
-  await changeClaim(
+  await changeIdeaClaim(
     db,
-    ideaId,
+    list.id,
     user.accountId,
-    unwrap(canChange(claims, user.accountId, change)),
+    getRouterParam(event, 'ideaId') ?? '',
+    await validatedBody(event, bodySchema),
   );
   return { ok: true };
 });

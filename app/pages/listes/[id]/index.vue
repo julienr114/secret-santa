@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { IdeaLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
   LIST_COLORS,
@@ -110,7 +111,46 @@ provide(LIST_EDITING, {
     new Promise((resolve) => {
       linkAsk.value = { url: current ?? '', answer: resolve };
     }),
+  change: (idea, forName) => {
+    changing.value = { idea, forName };
+  },
+  join: (idea, forName) => {
+    joining.value = { idea, forName };
+  },
 });
+// The sheets of what the holder gives: « Changer » and « Se joindre », the
+// same as by the link (README 22.19). They follow the list as it is
+// refetched.
+const via = computed(() => ({ listId: id.value }));
+const changing = ref<{ idea: IdeaLine; forName: string } | null>(null);
+const joining = ref<{ idea: IdeaLine; forName: string } | null>(null);
+const changeOpen = computed({
+  get: () => changing.value !== null,
+  set: (open) => {
+    if (!open) changing.value = null;
+  },
+});
+const joinOpen = computed({
+  get: () => joining.value !== null,
+  set: (open) => {
+    if (!open) joining.value = null;
+  },
+});
+watch(
+  () => query.data.value,
+  (current) => {
+    const fresh = (ideaId: string) =>
+      current?.people.flatMap((p) => p.ideas).find((i) => i.id === ideaId);
+    if (changing.value) {
+      const idea = fresh(changing.value.idea.id);
+      changing.value = idea?.mine ? { ...changing.value, idea } : null;
+    }
+    if (joining.value) {
+      const idea = fresh(joining.value.idea.id);
+      if (idea) joining.value = { ...joining.value, idea };
+    }
+  },
+);
 const confirmOpen = computed({
   get: () => confirm.value !== null,
   set: (open) => {
@@ -314,6 +354,20 @@ onBeforeRouteLeave((to) => {
         </div>
       </template>
     </UiSheet>
+    <ListsClaimSheet
+      v-if="changing"
+      v-model:open="changeOpen"
+      :via="via"
+      :idea="changing.idea"
+      :for-name="changing.forName"
+    />
+    <ListsJoinSheet
+      v-if="joining"
+      v-model:open="joinOpen"
+      :via="via"
+      :idea="joining.idea"
+      :for-name="joining.forName"
+    />
     <UiTextSheet
       v-if="linkAsk"
       v-model:open="linkOpen"

@@ -1,33 +1,30 @@
 <script setup lang="ts">
-import type { IdeaView } from '#server/utils/lists';
+import type { IdeaLine } from '#server/http/lists';
 import {
   useCreateIdeaMutation,
   useDeleteIdeaMutation,
-  useHolderTickMutation,
-  useHolderUntickMutation,
+  useTickMutation,
+  useUntickMutation,
   useUpdateIdeaMutation,
 } from '~/composables/queries/useLists';
 
 // One line of a person's ideas, written where it shows (README 22.19,
 // maquettes ListeTeneur and ListeIdee): its box, its text and « lien »,
-// and, for the holder, who gives it. The holder ticks too: the box gives
-// the idea alone, touched again it unticks; never an idea meant for them.
-// Touched, the text turns into a field;
-// the return key saves it and goes to the next line; a line left empty
-// goes. Without an idea, the empty line at the end, « Une autre idée… »,
-// where a new one is written.
+// and, for the holder, who gives it. The holder ticks too, their « Moi »
+// included: the box gives the idea alone, touched again it unticks. What
+// they give says so under it, as by the link (maquette ListeVisiteurMes):
+// « Tu l'offres · seul · Changer »; a gift given by several is joined
+// from here too. Touched, the text turns into a field; the return key
+// saves it and goes to the next line; a line left empty goes. Without an
+// idea, the empty line at the end, « Une autre idée… », where a new one
+// is written.
 const props = defineProps<{
   listId: string;
   listPersonId: string;
+  /** Who receives the ideas of this line. */
+  forName: string;
   /** The idea, or null for the empty line at the end. */
-  idea: {
-    id: string;
-    text: string;
-    url: string | null;
-    view: IdeaView;
-    /** Whether the holder may tick it: not one meant for them. */
-    tickable: boolean;
-  } | null;
+  idea: IdeaLine | null;
   /** The idea the new line comes after. */
   after?: string | null;
   placeholder?: string;
@@ -37,11 +34,12 @@ const props = defineProps<{
 const emit = defineEmits<{ next: [] }>();
 const { t } = useT();
 const editing = useListEditing();
+const via = computed(() => ({ listId: props.listId }));
 const create = useCreateIdeaMutation(() => props.listId);
 const update = useUpdateIdeaMutation(() => props.listId);
 const remove = useDeleteIdeaMutation(() => props.listId);
-const tick = useHolderTickMutation(() => props.listId);
-const untick = useHolderUntickMutation(() => props.listId);
+const tick = useTickMutation(via);
+const untick = useUntickMutation(via);
 const toast = useToast();
 const errorMessage = useErrorMessage();
 
@@ -49,18 +47,26 @@ const field = ref<HTMLInputElement | null>(null);
 const writing = ref(false);
 const draft = ref('');
 const view = computed(() => props.idea?.view ?? { kind: 'free' as const });
-const mine = computed(() => view.value.kind === 'mine');
+/** In a gift given by several, with me in it. */
+const inGroup = computed(() => view.value.kind === 'group' && view.value.mine);
+/** What I give, alone or with others: a green tick, the text in bold. */
+const mine = computed(() => view.value.kind === 'mine' || inGroup.value);
+/** A gift given by several that I may still join. */
+const openGroup = computed(
+  () => view.value.kind === 'group' && !view.value.closed && !view.value.mine,
+);
 const taken = computed(
   () =>
     view.value.kind === 'taken' ||
     (view.value.kind === 'group' && view.value.closed),
 );
-/** Whether the box does something: give it alone, or no longer. */
+/** Whether the box does something: give, give up, change or join. */
 const boxActive = computed(
   () =>
-    Boolean(props.idea?.tickable) && (view.value.kind === 'free' || mine.value),
+    Boolean(props.idea) &&
+    (view.value.kind === 'free' || mine.value || openGroup.value),
 );
-/** Ticks the idea for the holder, or unticks it. */
+/** The box: ticks alone, unticks, or opens the sheet of a group. */
 const onBox = () => {
   if (!props.idea || !boxActive.value) return;
   const onError = (error: unknown) =>
@@ -71,13 +77,14 @@ const onBox = () => {
           : errorMessage(error),
       color: 'error',
     });
-  if (mine.value) untick.mutate(props.idea.id, { onError });
-  else tick.mutate(props.idea.id, { onError });
+  if (inGroup.value) editing.change(props.idea, props.forName);
+  else if (openGroup.value) editing.join(props.idea, props.forName);
+  else if (mine.value) untick.mutate(props.idea.id, { onError });
+  else tick.mutate({ ideaId: props.idea.id }, { onError });
 };
 /** Who gives it, as the holder reads it. */
 const who = computed(() => {
   const v = view.value;
-  if (v.kind === 'mine') return t('lists.doc.you');
   if (v.kind === 'taken') return v.by ?? t('lists.doc.anonymous');
   if (v.kind === 'group') return v.people.map((p) => p.name).join(', ');
   return null;
@@ -200,7 +207,7 @@ const onBlur = () => {
             ? 'border-[1.5px] border-default'
             : mine
               ? 'bg-success text-white'
-              : view.kind === 'group' && !view.closed
+              : openGroup
                 ? 'bg-warning-fill text-highlighted'
                 : taken
                   ? 'bg-line-strong text-highlighted'
@@ -208,11 +215,7 @@ const onBlur = () => {
         "
         aria-hidden="true"
       >
-        <UIcon
-          v-if="view.kind === 'group' && !view.closed"
-          name="i-lucide-plus"
-          class="size-3.5"
-        />
+        <UIcon v-if="openGroup" name="i-lucide-plus" class="size-3.5" />
         <UIcon
           v-else-if="mine || taken"
           name="i-lucide-check"
@@ -243,9 +246,10 @@ const onBlur = () => {
         <button
           type="button"
           class="text-left"
-          :class="
-            taken ? 'text-toned line-through' : mine ? 'font-semibold' : ''
-          "
+          :class="[
+            taken && !mine ? 'text-toned line-through' : '',
+            mine ? 'font-semibold' : '',
+          ]"
           data-testid="idea-text"
           @click="start"
         >
@@ -258,20 +262,51 @@ const onBlur = () => {
           target="_blank"
           rel="noopener noreferrer"
           class="-ml-1 text-primary-ink underline"
-          :class="taken ? 'line-through' : ''"
+          :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a
         >
         <span
           v-if="who"
-          class="rounded-full px-2 py-0.5 text-xs font-bold no-underline"
-          :class="
-            mine ? 'bg-success-soft text-success-ink' : 'bg-muted text-default'
-          "
+          class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default no-underline"
           data-testid="idea-who"
           >{{ who }}</span
         >
+        <button
+          v-if="openGroup"
+          type="button"
+          class="font-bold text-primary-ink underline underline-offset-2"
+          data-testid="idea-join"
+          @click="editing.join(idea, forName)"
+        >
+          {{ t('lists.visitor.join') }}
+        </button>
+        <span
+          v-else-if="inGroup"
+          class="text-sm font-bold text-success-ink"
+          data-testid="idea-joined"
+          >{{ t('lists.visitor.joined') }}</span
+        >
       </p>
-      <p v-if="idea && view.kind === 'group'" class="text-[13px] text-toned">
+      <p
+        v-if="idea && mine"
+        class="text-[13px] text-toned"
+        data-testid="idea-mine"
+      >
+        {{ t('lists.visitor.giving') }} ·
+        {{ inGroup ? t('lists.doc.givingGroup') : t('lists.doc.givingAlone') }}
+        ·
+        <button
+          type="button"
+          class="font-bold text-primary-ink underline"
+          @click="editing.change(idea, forName)"
+        >
+          {{ t('lists.visitor.change') }}
+        </button>
+      </p>
+      <p
+        v-else-if="idea && view.kind === 'group'"
+        class="text-[13px] text-toned"
+      >
         {{ view.closed ? t('lists.doc.groupClosed') : t('lists.doc.group') }}
       </p>
     </div>

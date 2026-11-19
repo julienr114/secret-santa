@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **À faire maintenant, dans cet ordre : la Correction 26 (tous les messages en prune foncé, et leurs règles), le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **À faire maintenant, dans cet ordre : le lot 38 A (le filet de sécurité), puis le lot 27.** Restent ensuite les lots 26 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -868,17 +868,17 @@ Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la mi
 
 ### Correction 26 — Tous les messages après une action, en prune foncé, et leurs règles (README 23.2, 23.3)
 
-Demandé par Julien le 19 novembre 2026 au soir : il préfère le bandeau foncé au message blanc. **Une partie est faite** : la barre « … · Annuler » des listes est déjà foncée (`app/utils/undoBar.ts`, commit `21eeccd`). Reste à en faire le message de toute l'application, avec ses règles. Sans migration. Maquette : `StyleMessages` (page « Styles »), et en situation `ListeDecocheFait`, `ListePartageArrete`, `ListePersonneRetiree`, `ProcheSupprime`.
+**Fait** (19 novembre 2026) ; ce qui a été tranché seul est en section 6, « Correction 26 ». Demandé par Julien le 19 novembre 2026 au soir : il préfère le bandeau foncé au message blanc. **Une partie était faite** : la barre « … · Annuler » des listes est déjà foncée (`app/utils/undoBar.ts`, commit `21eeccd`). Reste à en faire le message de toute l'application, avec ses règles. Sans migration. Maquette : `StyleMessages` (page « Styles »), et en situation `ListeDecocheFait`, `ListePartageArrete`, `ListePersonneRetiree`, `ProcheSupprime`.
 
-- [ ] **Un seul réglage pour tous les messages passagers** : le thème du `UToast` de Nuxt UI dans `app.config.ts` (ou un composant `UiToast` si le thème ne suffit pas), et `undoBar` n'en est plus qu'un cas. Aucun écran n'habille plus un message à sa façon.
-- [ ] **Le fond** : prune foncé (`plum-900`, `#2b1b3d`), texte blanc, coins de 14 px, ombre portée, pas de contour. Le détail en `plum-200`. L'action, à droite, en rose clair. Contrastes vérifiés (AA).
-- [ ] **Trois sortes** (`StyleMessages`) : « c'est fait, et ça se rattrape » (le texte et « Annuler », 6 secondes) ; « c'est fait » (pastille verte, un titre, une ligne de détail au plus, 4 secondes) ; « ça n'a pas marché » (pastille corail, ce qu'il faut faire, une croix : reste jusqu'à ce qu'on le ferme).
-- [ ] **Où** : en bas de l'écran, au-dessus de la barre d'onglets et du bord du téléphone ; jamais par-dessus le clavier ni la ligne qu'on écrit ; sur ordinateur, en bas, centré, 420 px au plus.
-- [ ] **Un seul à la fois** : un nouveau remplace l'ancien, sans pile.
-- [ ] **Reprendre tous les messages existants** (`useToast` dans `useShareMessage`, `useProfileSaver`, `useRuleSaver`, `useDecideRequest`, et les autres) : même habillage, même place, textes au passé et sans point.
-- [ ] **Accessibilité** : `role="status"` (`alert` pour une erreur) ; le temps s'arrête tant qu'on touche ou survole ; « réduire les animations » respecté.
-- [ ] **Le guide de style** de l'application montre les trois sortes ; README 23.2 et 23.3 passent de « à coder » à « fait ».
-- [ ] `tests/e2e` (un message avec « Annuler » annule ; une erreur reste).
+- [x] **Un seul réglage pour tous les messages passagers** : le thème du `UToast` de Nuxt UI dans `app.config.ts` (ou un composant `UiToast` si le thème ne suffit pas), et `undoBar` n'en est plus qu'un cas. Aucun écran n'habille plus un message à sa façon.
+- [x] **Le fond** : prune foncé (`plum-900`, `#2b1b3d`), texte blanc, coins de 14 px, ombre portée, pas de contour. Le détail en `plum-200`. L'action, à droite, en rose clair. Contrastes vérifiés (AA).
+- [x] **Trois sortes** (`StyleMessages`) : « c'est fait, et ça se rattrape » (le texte et « Annuler », 6 secondes) ; « c'est fait » (pastille verte, un titre, une ligne de détail au plus, 4 secondes) ; « ça n'a pas marché » (pastille corail, ce qu'il faut faire, une croix : reste jusqu'à ce qu'on le ferme).
+- [x] **Où** : en bas de l'écran, au-dessus de la barre d'onglets et du bord du téléphone ; jamais par-dessus le clavier ni la ligne qu'on écrit ; sur ordinateur, en bas, centré, 420 px au plus.
+- [x] **Un seul à la fois** : un nouveau remplace l'ancien, sans pile.
+- [x] **Reprendre tous les messages existants** (`useToast` dans `useShareMessage`, `useProfileSaver`, `useRuleSaver`, `useDecideRequest`, et les autres) : même habillage, même place, textes au passé et sans point.
+- [x] **Accessibilité** : `role="status"` (`alert` pour une erreur) ; le temps s'arrête tant qu'on touche ou survole ; « réduire les animations » respecté.
+- [x] **Le guide de style** de l'application montre les trois sortes ; README 23.2 et 23.3 passent de « à coder » à « fait ».
+- [x] `tests/e2e` (un message avec « Annuler » annule ; une erreur reste).
 
 ### Lot 25 bis — Tenir une liste à plusieurs : deux niveaux, des proches proposés, et la page d'invitation (README 22.20)
 
@@ -1786,6 +1786,20 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 9. **Un cadeau hors liste ne se décoche pas par ceux qui tiennent la liste** (tranché par Julien le 19 novembre 2026) : seul celui qui l'a ajouté le retire. Le toucher déplie une notice qui le dit : « Ce cadeau n'est pas une idée de ta liste : Tonton l'a ajouté de son côté, et lui seul peut le retirer. » (« quelqu'un » pour un anonyme).
 10. **La barre sombre « … · Annuler »** des maquettes (`ListeDecocheFait`, `ListePersonneRetiree`, `ProcheSupprime`, `ListePartageArrete`) remplace le message blanc à bouton rouge, pour tous les « Annuler » des listes (retour de Julien : « tu n'as pas fait le même que les maquettes »). Le point 3 ci-dessus ne vaut donc plus. Le reste des messages de l'application est la Correction 26.
 7. **La nouveauté pour celui qu'on décoche** attend le lot 28. Aujourd'hui il le voit seulement en rouvrant la liste.
+
+### Correction 26 — les messages après une action
+
+Codée le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Les coins font 18 px**, comme dans `StyleMessages` et les quatre maquettes en situation ; la ligne du plan disait 14 px.
+2. **Plus d'icône propre à chaque message** : « copié », « email envoyé » et les autres avaient chacun la leur ; tous ont maintenant la même pastille verte à coche. Une erreur a la pastille corail à croix.
+3. **Une erreur reste jusqu'à ce qu'on la ferme**, comme demandé ; mais comme il n'y a qu'un message à la fois, le message suivant la remplace.
+4. **Le texte des erreurs n'a pas été réécrit** : ce sont les phrases existantes (`useErrorMessage`), avec leur point, en titre, sans ligne « ce qu'il faut faire » séparée. Les réécrire une par une en « titre + quoi faire » est un travail de textes à part. Les messages « c'est fait » étaient déjà au passé et sans point dans les trois langues.
+5. **Au-dessus du clavier** : le message est en bas, au-dessus de la barre d'onglets ; quand le clavier est ouvert, il reste à cette place (le clavier le recouvre sur iPhone). Il ne passe donc jamais par-dessus la ligne qu'on écrit, mais peut ne pas se voir pendant qu'on écrit. À regarder sur un vrai téléphone.
+6. **Lecteurs d'écran** : c'est le composant de Nuxt UI qui annonce ; une erreur est annoncée tout de suite (`role="alert"`, testé), les autres poliment. Le temps s'arrête au survol et au toucher, et les animations suivent « réduire les animations » : c'est le composant qui le fait, pas vérifié par un test.
+7. **« Déplacé · Annuler »** (lot 24 ter) garde ses 5 secondes ; les autres « Annuler » en ont 6.
+8. **Le « Copié » de la barre de partage** reste dans son bouton (2 secondes) : ce n'est pas un message passager.
+9. **Pas regardé sur ordinateur** : la largeur de 420 px et le centrage sont réglés, vérifiés sur téléphone seulement.
 
 ### Lot 27 ter — pistes et liste
 

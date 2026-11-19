@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Demande de Léa Martin — Administration</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 900px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #dccbad; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div>
+      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 18px; color: #a43a2f">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      Under the Tree
+    </div>
+    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <nav aria-label="Tu es ici" style="margin: -14px 0 -12px; display: flex; align-items: center; gap: 6px; color: #57534e"><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #57534e; text-decoration: none">Administration</a></nav>
+      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Demande de Léa Martin</h1>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #57534e">Envoyée le 14 novembre</p>
+    </div><blockquote style="margin: 0; padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: #f1e8d8; font-size: 15px; line-height: 1.45">Le Noël de ma famille, une douzaine de personnes.</blockquote><div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="r" style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Un mot en réponse <span style="font-weight: 600; text-transform: none; letter-spacing: 0">(facultatif)</span></label>
+      <div role="group" aria-label="Messages tout prêts" style="display: flex; flex-wrap: wrap; gap: 8px"><button aria-pressed="false" style="height: 40px; padding: 0 14px; border: 1px solid #dccbad; border-radius: 999px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 14px; font-weight: 700">Bienvenue</button><button aria-pressed="true" style="height: 40px; padding: 0 14px; border: 1px solid #b8483a; border-radius: 999px; background: #f6e2dd; color: #8a2f27; font-family: inherit; font-size: 14px; font-weight: 700">C’est complet</button><button aria-pressed="false" style="height: 40px; padding: 0 14px; border: 1px solid #dccbad; border-radius: 999px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 14px; font-weight: 700">Entre proches</button></div>
+      <textarea id="r" rows="4" placeholder="Bienvenue ! Dis-moi si tu bloques." style="width: 100%; min-height: 120px; box-sizing: border-box; padding: 12px; border: 1px solid #a8a29e; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 16px; line-height: 1.45; resize: none">Désolé, l’application est complète pour cette année. Retente ta chance l’an prochain !</textarea>
+      <p style="margin: 0; padding: 0 4px; display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #57534e"><span>Ajouté à l’email qui annonce ta réponse.</span><span style="flex-shrink: 0">86 / 300</span></p>
+    </div><div style="display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Si tu acceptes</h2><ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad"><li style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 16px; box-sizing: border-box;"><span style="flex-grow: 1; font-size: 16px; font-weight: 600">Groupes qu’elle peut créer</span><span style="font-size: 15px; color: #78716c">0</span><span aria-hidden="true" style="color: #78716c">→</span><span style="font-size: 16px; font-weight: 700">1</span></li><li style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;"><span style="flex-grow: 1; font-size: 16px; font-weight: 600">Groupes dans l’application</span><span style="font-size: 15px; color: #78716c">4</span><span aria-hidden="true" style="color: #78716c">→</span><span style="font-size: 16px; font-weight: 700">5</span></li></ul><p style="margin: 0; padding: 0 4px; font-size: 13px; color: #57534e">5 sur environ 50 groupes couverts par les offres gratuites.</p></div>
+  </main>
+  <footer style="flex-shrink: 0; background: #fffdf9; border-top: 1px solid #dccbad; padding: 14px 16px 20px">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px"><button style="height: 52px; box-sizing: border-box; border: 1px solid #b8483a; border-radius: 6px; background: transparent; color: #8a2f27; font-family: inherit; font-size: 17px; font-weight: 700">Refuser</button><button style="width: 100%; height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Accepter</button></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

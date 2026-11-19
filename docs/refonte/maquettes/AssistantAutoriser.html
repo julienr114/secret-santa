@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Assistant — l’écran d’autorisation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 900px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div><button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 18px; color: #a43a2f"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Under the Tree</div>
+    <button aria-label="Langue : français" style="justify-self: end; height: 44px; min-width: 44px; border: 0; background: transparent; color: #292524; font-family: inherit; font-size: 14px; font-weight: 600">FR</button>
+  </header>
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 16px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 10px"><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #57534e">Connecté : Camille Morel</p><h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Brancher un assistant ?</h1><p style="margin: 0; font-size: 16px; line-height: 1.5">« Mon assistant » demande à accéder à ton compte Under the Tree.</p></div>
+    <div role="group" aria-label="Ce que tu autorises" style="border: 1px solid #dccbad; border-radius: 12px; overflow: hidden; background: #fffdf9; display: flex; flex-direction: column"><label style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; box-sizing: border-box;"><span role="checkbox" aria-checked="true" style="width: 24px; height: 24px; box-sizing: border-box; border-radius: 6px; border: 2px solid #b8483a; background: #b8483a; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="display: flex; flex-direction: column"><span style="font-weight: 700; font-size: 16px">Lire</span><span style="font-size: 14px; color: #57534e">Tes listes, tes pistes, où en sont tes tirages</span></span></label><label style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; box-sizing: border-box; border-top: 1px solid #e9dcc5;"><span role="checkbox" aria-checked="true" style="width: 24px; height: 24px; box-sizing: border-box; border-radius: 6px; border: 2px solid #b8483a; background: #b8483a; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="display: flex; flex-direction: column"><span style="font-weight: 700; font-size: 16px">Modifier</span><span style="font-size: 14px; color: #57534e">Ajouter et changer des idées sur tes listes, tes pistes</span></span></label></div>
+    <section style="display: flex; flex-direction: column; gap: 10px"><h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Ce qu’il ne pourra jamais faire</h2><ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px"><li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #f6e2dd; color: #8a2f27; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span><strong>Savoir qui offre à qui.</strong> Aucun résultat de tirage ne lui est donné, pas même le tien.</span></li><li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #f6e2dd; color: #8a2f27; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span>Voir qui a coché un cadeau.</span></li><li style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #f6e2dd; color: #8a2f27; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span>Envoyer un email, partager une liste, lancer un tirage, supprimer quoi que ce soit.</span></li></ul></section>
+    <div role="note" style="border-radius: 12px; background: #fbf0cf; border: 1px solid #ebc762; color: #5b430f; padding: 14px; display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.45"><span><strong>Ce qu’il lit part chez son éditeur.</strong> Les prénoms et les âges de ta famille, tes idées de cadeaux : c’est toi qui choisis de les lui confier. Tu peux le débrancher à tout moment dans « Mon compte ».</span></div>
+    <div style="display: flex; flex-direction: column; gap: 10px"><a href="CompteAssistants.dc.html" style="height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">Autoriser</a><a href="#" style="height: 48px; box-sizing: border-box; border: 1px solid #a8a29e; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">Refuser</a></div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #57534e; text-align: center"><a href="Confidentialite.dc.html" style="color: #8a2f27; text-decoration: underline">Tes données, en clair</a></p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

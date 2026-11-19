@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mes pistes — reliées à ma liste de cadeaux</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 1690px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div><button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 18px; color: #a43a2f">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      Under the Tree
+    </div>
+    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 8px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <p style="margin: 0; font-size: 14px; color: #57534e">Famille Camille · Noël 2026</p>
+      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Mes pistes de cadeaux</h1>
+      <p style="margin: 4px 0 0; font-size: 15px; line-height: 1.45; color: #57534e">Aide la personne qui t’offre un cadeau. Tout est facultatif.</p>
+    </div>
+    <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #f0f6f1; color: #223f2d; font-size: 14px; line-height: 1.45">
+      <span aria-hidden="true" style="display: flex; margin-top: 1px; color: #274e34"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+      <span>Seule la personne qui t’offre un cadeau les verra, une fois le tirage fait.</span>
+    </div>
+    <section style="background: #fffdf9; border-radius: 16px; box-shadow: 0 1px 2px rgba(60, 30, 10, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 20px">Ma liste de cadeaux</h2>
+      <a href="PistesListeChoisir.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 56px; text-decoration: none; color: #292524"><span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 11px; background: #2c4a63; box-shadow: 0 2px 6px rgba(60, 30, 10, 0.18); display: flex; align-items: center; justify-content: center; font-size: 23px; line-height: 1; flex-shrink: 0">❄️</span><span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Noël 2026</span><span style="font-size: 14px; color: #57534e">Ta liste, publiée</span></span><span style="font-size: 14px; font-weight: 700; color: #8a2f27">Changer</span></a>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #57534e">La personne qui t’offre un cadeau verra un lien vers elle. Ce qu’elle y coche est anonyme : personne ne saura que c’est elle, pas même toi.</p>
+    </section>
+    <section style="background: #fffdf9; border-radius: 16px; box-shadow: 0 1px 2px rgba(60, 30, 10, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 20px">Côté cadeaux, je préfère…</h2>
+      </div>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px"><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; background: #f1e8d8; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px">un cadeau utile<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a></li><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; background: #f1e8d8; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px">un moment<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a></li><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; background: #f1e8d8; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px">quelque chose à consommer<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a></li><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; border: 1px dashed #b8483a; color: #8a2f27; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px"><span aria-hidden="true">+</span>Pour moi, ou à partager ?</a></li><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; background: #f1e8d8; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px">l’occasion ou le fait main<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a></li><li><a href="PistesQuestionModifier.dc.html" style="min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 999px; background: #f1e8d8; box-shadow: 0 0 0 1px #dccbad; color: #292524; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px">la surprise<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a></li></ul>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">En ce moment</h2>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
+        <li>
+          <a href="PistesTexteMoment.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 12px 16px; box-sizing: border-box; text-decoration: none; color: #292524">
+            <span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45">Je me mets à la course à pied, je lis des BD et je cuisine le dimanche.</span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Ce qui me servirait</h2>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
+        <li>
+          <a href="PistesTexteServirait.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 12px 16px; box-sizing: border-box; text-decoration: none; color: #292524">
+            <span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45">Une bonne lampe de lecture. De quoi ranger mes épices.</span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">J’évite, ou j’ai déjà</h2>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
+        <li>
+          <a href="PistesTexteEviter.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 12px 16px; box-sizing: border-box; text-decoration: none; color: #292524">
+            <span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45">Pas de bougies ni d’alcool. J’ai déjà trop de mugs.</span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Une idée précise, si tu sèches</h2>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
+        <li>
+          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 16px; box-sizing: border-box; text-decoration: none; color: #292524">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="#d9a62e" style="flex-shrink: 0"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 1.35">Un roman policier</span></span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5; text-decoration: none; color: #292524">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="#d9a62e" style="flex-shrink: 0"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 1.35">Un jeu de société pour deux</span><span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #8a2f27; font-weight: 600"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>boutique-jeux.example</span></span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5; text-decoration: none; color: #292524">
+            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e2dd; color: #a43a2f; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+              <span style="font-weight: 600; font-size: 16px">Ajouter une idée</span>
+              <span style="font-size: 14px; line-height: 1.35; color: #57534e">Encore 8 possibles</span>
+            </span>
+            <span style="color: #78716c; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </li>
+      </ul>
+      <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 1.4; color: #57534e">Une idée précise ne gâche rien : beaucoup préfèrent offrir à coup sûr.</p>
+    </section>
+    <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 1.4; color: #57534e">Tu peux les modifier jusqu’à la fête.</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1690}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

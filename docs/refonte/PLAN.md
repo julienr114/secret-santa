@@ -761,20 +761,20 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 23 bis, et les Corrections 19 à 21. Restent la Correction 22 (un bateau dans les icônes, cinq minutes, à faire quand on veut) la Correction 23 (sécurité, à faire tout de suite) et les lots 24 à 40. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis, et les Corrections 19 à 22. **À faire maintenant, dans cet ordre : la Correction 24 (« Mes proches » : voir et supprimer), puis la Correction 23 (sécurité).** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | 24 (fait), 24 bis (fait), 27, 27 bis, 27 ter, 25, 26 | Non |
+| **Les listes, V2** | Correction 24 d'abord ; 24 et 24 bis (faits), puis 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
 | **La vitrine** | 33, puis 32 en tout dernier | 33 : ses textes, le service de dons, ses liens. 32 : confirmer la phrase sur l'assistant |
 
-**Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Le lot 24 est codé et ses corrections sont en cours : les finir d'abord. Ensuite, dans cet ordre : les Corrections 23 (sécurité) et 22, puis le lot 24 bis, puis le lot 38 A (le filet de sécurité), relu en entier car il a beaucoup changé cet après-midi, puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
+**Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Les lots 24 et 24 bis et la Correction 22 sont faits. **La suite, dans cet ordre** : la Correction 24 (« Mes proches » : Julien bute dessus en essayant, elle passe en premier), la Correction 23 (sécurité), la ligne restante du lot 24 bis (le crayon sur l'icône), puis le lot 38 A (le filet de sécurité), puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
 
 - **Lot 24 bis** : la barre du haut s'appelle « Partage par lien » (plus « Brouillon » ni « Publiée », plus de texte d'explication) ; plus aucun bouton plein ni rouge dans le partage ; le menu « ⋯ » d'une personne, pour la retirer de la liste.
 - **Lot 27 bis** : en bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel, pas de lien « Séparer par personne ».
@@ -807,6 +807,21 @@ Le frère de Julien fait de la voile, et aucune icône de personne ne s'y prête
 - [x] Dans la même passe, les loisirs voisins qui manquent : « 🎣 » (pêche), « 🚴 » (vélo de route), « 🏊 » (natation), « 🥾 » (randonnée). À retirer si la grille des activités dépasse ses colonnes.
 - [x] Le test qui vérifie que chaque icône est dans un groupe, et un seul, passe toujours.
 
+### Correction 24 — « Mes proches » : voir tout le monde, et supprimer quelqu'un (README 22.20)
+
+Demandé par Julien le 19 novembre 2026 : quelqu'un ajouté par erreur reste proposé dans « Ajouter quelqu'un » pour toujours. Aujourd'hui aucune route ne supprime un membre de la famille (`server/api/family` n'a que la lecture et la modification), et aucune page ne les montre tous. Sans migration a priori. Maquettes : `ListeNouvelle` (la croix), `ProcheSupprime`, `ListePersonneMenu`, `Famille`, `FamilleSupprimer`, `ListesAccueil`.
+
+- [ ] **Le nom : « Mes proches »**, partout où l'écran disait « ma famille » (décidé par Julien) : la famille, mais aussi les amis et les collègues. Trois langues. Les noms dans le code et la base (`family_members`, `/api/family`) peuvent rester.
+- [ ] **Le cœur, en fonction pure**, testé d'abord : ce que la suppression emporte (les listes où la personne figure, ses idées, les cadeaux déjà prévus) et quand elle est refusée.
+- [ ] **`DELETE /api/family/[id]`** : supprime la personne, sa fiche et ses goûts, et la retire de toutes mes listes avec ses idées et leurs coches. Refusé pour « Moi », et pour une personne reliée à un compte tant qu'elle tient une de mes listes avec moi.
+- [ ] **Une croix sur la pastille, dans « Ajouter quelqu'un »** (demandé par Julien : pour se rattraper tout de suite, sans changer de page) : seulement pour un proche qui n'est sur **aucune** de mes listes. La pastille se coupe en deux zones : le prénom ajoute à la liste, la croix supprime. Suppression immédiate, avec « {Prénom} supprimé de tes proches » et « Annuler » (`ProcheSupprime`) : rien d'autre ne part avec lui, puisqu'il n'est sur aucune liste. Une ligne d'aide sous les pastilles quand au moins une a sa croix.
+- [ ] **Le menu « ⋯ » d'une personne sur une liste** : « Sa fiche et ses goûts », « Retirer de cette liste » (neutre), « Supprimer de mes proches » (rouge), qui mène à la confirmation.
+- [ ] **La confirmation** (`FamilleSupprimer`), une page, pour quelqu'un qui est sur des listes : ce qui part (les listes où il figure, le nombre d'idées et de cadeaux prévus perdus), que c'est définitif, et le rappel de « Retirer de cette liste ».
+- [ ] **La page « Mes proches »** (`Famille`), **dans « Listes »** et pas dans « Mon compte » (décidé par Julien : elle ne sert qu'aux listes de cadeaux) : un lien « Mes proches » sous le titre de l'accueil des listes (`ListesAccueil`) et sous les pastilles de « Ajouter quelqu'un ». Tout le monde, y compris ceux qui ne sont sur aucune liste, avec le nombre de listes ; toucher ouvre la fiche, qui porte « Supprimer de mes proches » en bas ; « Ajouter quelqu'un ».
+- [ ] **L'adresse email d'un proche reste facultative** (décidé par Julien) : elle sert à préparer le lien avec son compte (lot 25), rien d'autre ; aucun email ne lui part tant que le lot 25 n'existe pas.
+- [ ] **Les données** (lot 36) : supprimer un proche efface vraiment ses données ; « Mes données » compte mes proches.
+- [ ] Trois langues, `tests/e2e`.
+
 ### Correction 23 — Sécurité : ce qui se corrige tout de suite (section 8)
 
 Demandé par Julien le 19 novembre 2026. De petites choses, sans migration ni maquette, à faire avant le lot 24 bis. Le reste est dans les lots 38 A et 38 B.
@@ -832,6 +847,7 @@ Décidé par Julien le 19 novembre 2026, après le lot 24. **Fait** (19 novembre
 - [x] **Partage arrêté** : le lien affiche « Cette liste n'est plus partagée » ; la liste sort des listes de ceux qui l'avaient ouverte ; les coches restent ; rallumer redonne le même lien (sauf si on l'a changé).
 - [x] **« Changer de lien »** (proposition, section 6) : une confirmation sur place, dans la barre, « L'ancien lien ne marchera plus. » avec « Changer » et « Annuler » ; puis le nouveau lien s'affiche. Ceux qui ont un compte et avaient déjà ouvert la liste la gardent.
 - [x] **Retirer quelqu'un sans passer par « ses goûts »** (demandé par Julien le 19 novembre 2026, important) : un bouton « ⋯ » au bout du prénom de chaque personne, pour ceux qui tiennent la liste (maquette `ListePersonneMenu`). Il ouvre un petit menu : « Sa fiche et ses goûts » (la fiche existante) et « Retirer de la liste ». Le lien « ses goûts » disparaît pour eux (il reste pour qui vient par le lien). Retirer est immédiat, avec « {Prénom} retiré de la liste » et « Annuler », quand aucune de ses idées n'est cochée ; sinon un second appui, qui dit combien de cadeaux déjà prévus seront perdus. La personne reste dans ma famille ; ses idées partent avec elle. « Retirer de la liste » reste aussi en bas de sa fiche.
+- [ ] **Changer l'icône d'une personne sans compte, depuis la liste et depuis sa fiche** (demandé par Julien à Claude Code le 19 novembre 2026 ; maquettes `ListeTeneur`, `ListePersonne`) : un petit crayon rond, en bas à droite de l'icône, pour ceux qui tiennent la liste. Toucher l'icône ouvre le panneau de choix habituel. Pas de crayon sur une personne reliée à un compte (elle choisit la sienne), ni par le lien.
 - [x] **Les idées en retrait sous leur personne** (demandé par Julien le 19 novembre 2026) : la liste des idées d'une personne est décalée de 20 px vers la droite par rapport à son icône, dans le document comme par le lien ; la ligne qu'on écrit garde son fond pleine largeur.
 - [x] **Les mots, à l'écran** : « Partage par lien », « partagée par lien », « plus partagée ». Les mots « publier », « publiée », « dépublier », « brouillon » ne s'affichent plus nulle part (ils restent dans ce plan et dans le code pour désigner l'état).
 - [x] Trois langues, `tests/e2e`.
@@ -1097,6 +1113,17 @@ Décidé par Julien le 19 novembre 2026 : lecture et écriture d'un coup ; **jam
 - [ ] **Les données** (lot 36) : « Tes données, en clair » dit qu'un assistant branché reçoit ce qu'il lit, y compris les prénoms et âges de la famille ; « Mes données » liste les assistants.
 - [ ] **La page de présentation** (lot 32) : « Bientôt » devient un vrai bloc, et la phrase « Aucun assistant ne peut savoir qui offre à qui » est vraie par construction.
 - [ ] Trois langues pour les écrans ; les descriptions d'outils en anglais ; `tests/e2e`.
+
+### Lot 41 — « Mes proches », plus loin (idées, rien de décidé)
+
+Réflexion du 19 novembre 2026, à reprendre avec Julien avant d'en faire un lot : **rien ici n'est à coder**. Décidé seulement : le nom, « Mes proches » ; la page ne sert qu'aux listes de cadeaux, donc pas de lien avec les participants d'un tirage ; l'adresse d'un proche est facultative.
+
+- **Ce que je lui ai déjà offert** : sur la fiche d'un proche, l'historique de mes coches d'une année sur l'autre. Jamais ce que les autres ont offert.
+- **« Moi », écrit une seule fois** : mes goûts et mes tailles servent à ma section dans chaque liste, et pourraient préremplir mes pistes dans un tirage.
+- **La fiche tenue par la personne elle-même**, quand elle est reliée à son compte (suite du lot 25) : je lis, elle écrit.
+- **Les dates** : l'anniversaire d'un proche approche, « créer une liste ? » (avec les notifications, lots 28 à 31).
+- **L'assistant** (lot 40) : des idées d'après les goûts d'un proche et ce qu'il a déjà reçu.
+- **La limite à garder en tête** : c'est un carnet de données sur des gens qui n'ont rien demandé, dont des enfants. Rien qui ne serve tout de suite, tout s'efface d'un geste, une personne reliée voit sa fiche.
 
 ### Lot 37 — Le tableau de bord du super-admin (README 22.27)
 

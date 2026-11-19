@@ -1725,6 +1725,16 @@ Maquettes : `ListePlusieursLigne`, `ListeReserverPlusieurs`, `ListeRejoindre`, `
 
 `ListeIcone` est le même panneau, à trois différences près : la tuile est carrée, les couleurs sont pleines, les symboles sont ceux des listes.
 
+#### L'icône d'une personne sans compte
+
+Changer l'icône d'une personne sans compte, depuis la liste et depuis sa fiche (demandé par Julien à Claude Code le 19 novembre 2026 ; maquettes `ListeTeneur`, `ListePersonne`) : un petit crayon rond, en bas à droite de l'icône, pour ceux qui tiennent la liste. Toucher l'icône ouvre le panneau de choix habituel. Pas de crayon sur une personne reliée à un compte (elle choisit la sienne), ni par le lien.
+
+#### « Mes proches »
+
+Décidé par Julien le 19 novembre 2026 (Correction 24 du plan). **« Ma famille » s'appelle « Mes proches »** à l'écran : la famille, les amis, les collègues. La page ne sert qu'aux listes de cadeaux : elle est dans « Listes » (un lien sous le titre de l'accueil des listes et sous les pastilles de « Ajouter quelqu'un »), pas dans « Mon compte ». Elle montre tout le monde, même ceux qui ne sont sur aucune liste (`Famille`). L'adresse email d'un proche est facultative et ne sert qu'à préparer le lien avec son compte.
+
+Supprimer un proche, trois chemins : **la croix de sa pastille** dans « Ajouter quelqu'un », quand il n'est sur aucune liste (immédiat, avec « Annuler » : `ProcheSupprime`) ; « Supprimer de mes proches » dans le menu « ⋯ » d'une personne sur une liste ; le même bouton en bas de sa fiche. Quand il est sur des listes, une page de confirmation dit ce qui part (`FamilleSupprimer`). Retirer quelqu'un d'une liste, lui, le laisse dans mes proches.
+
 #### Retirer quelqu'un d'une liste
 
 **L'icône et le prénom d'une personne se changent dans le document**, sans passer par sa fiche (demandé par Julien le 19 novembre 2026) : toucher l'icône ouvre son panneau, toucher le prénom l'écrit sur place (retour ou toucher ailleurs enregistre, vidé il reste comme avant). Le prénom d'une personne reliée à un compte ne se change pas ici : aujourd'hui « Moi », demain les personnes reliées du lot 25.

@@ -191,7 +191,8 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 | Ceux qui tiennent la liste | `/listes/[id]/teneurs` | La liste | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
 | Mes proches | `/famille` | Listes | |
-| Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Mes proches | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
+| Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Mes proches | Son icône |
+| Sa date de naissance, sa taille, sa ou ses pointures, son adresse email | `/famille/[id]/naissance`, `/taille`, `/pointure`, `/adresse` | Un de mes proches | |
 | Supprimer de mes proches | `/famille/[id]/supprimer` (`?liste=` depuis une liste) | La liste, sinon sa fiche | |
 | Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
 | Les questions de ses goûts | `/famille/[id]/question?n=` | Une personne de ma famille | |

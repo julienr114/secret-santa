@@ -1795,11 +1795,13 @@ Codée le 19 novembre 2026. Tranché seul, à relire :
 2. **Plus d'icône propre à chaque message** : « copié », « email envoyé » et les autres avaient chacun la leur ; tous ont maintenant la même pastille verte à coche. Une erreur a la pastille corail à croix.
 3. **Une erreur reste jusqu'à ce qu'on la ferme**, comme demandé ; mais comme il n'y a qu'un message à la fois, le message suivant la remplace.
 4. **Le texte des erreurs n'a pas été réécrit** : ce sont les phrases existantes (`useErrorMessage`), avec leur point, en titre, sans ligne « ce qu'il faut faire » séparée. Les réécrire une par une en « titre + quoi faire » est un travail de textes à part. Les messages « c'est fait » étaient déjà au passé et sans point dans les trois langues.
-5. **Au-dessus du clavier** : le message est en bas, au-dessus de la barre d'onglets ; quand le clavier est ouvert, il reste à cette place (le clavier le recouvre sur iPhone). Il ne passe donc jamais par-dessus la ligne qu'on écrit, mais peut ne pas se voir pendant qu'on écrit. À regarder sur un vrai téléphone.
+5. **Clavier ouvert** (vu avec Julien le 19 novembre 2026) : le message est en bas, centré, au-dessus de la barre d'onglets ; tant que le clavier est ouvert, il passe en haut, sous la barre du titre. En bas, le clavier le cacherait ; juste au-dessus du clavier, il recouvrirait la ligne qu'on écrit. **Pas vérifiable par les tests** (ils n'ont pas de clavier à l'écran) : à regarder sur iPhone et Android.
 6. **Lecteurs d'écran** : c'est le composant de Nuxt UI qui annonce ; une erreur est annoncée tout de suite (`role="alert"`, testé), les autres poliment. Le temps s'arrête au survol et au toucher, et les animations suivent « réduire les animations » : c'est le composant qui le fait, pas vérifié par un test.
 7. **« Déplacé · Annuler »** (lot 24 ter) garde ses 5 secondes ; les autres « Annuler » en ont 6.
 8. **Le « Copié » de la barre de partage** reste dans son bouton (2 secondes) : ce n'est pas un message passager.
-9. **Pas regardé sur ordinateur** : la largeur de 420 px et le centrage sont réglés, vérifiés sur téléphone seulement.
+9. **Sur ordinateur** : centré en bas, 420 px de large, vérifié sur capture.
+10. **« C'est fait » ne chasse pas un « Annuler »** (vu avec Julien) : un message qui dit seulement que c'est fait attend la fin d'un « Annuler » affiché, au lieu de le remplacer et de valider l'action avant l'heure. Une erreur, elle, s'affiche tout de suite et le remplace. Un second « Annuler » remplace le premier, dont l'action est alors validée.
+11. **Lecteurs d'écran** : seule une erreur interrompt (`role="alert"`) ; les deux autres sortes sont dites poliment. Avant, le composant annonçait tout comme une alerte.
 
 ### Lot 27 ter — pistes et liste
 

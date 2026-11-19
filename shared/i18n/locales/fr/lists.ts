@@ -111,6 +111,10 @@ export default {
     removeTick: 'Retirer',
     unticked: 'Coche de {name} retirée',
     untickedAnonymous: 'Coche anonyme retirée',
+    offListNotice:
+      'Ce cadeau n’est pas une idée de ta liste : {name} l’a ajouté de son côté, et lui seul peut le retirer.',
+    offListNoticeAnonymous:
+      'Ce cadeau n’est pas une idée de ta liste : quelqu’un l’a ajouté de son côté, et lui seul peut le retirer.',
     givingAlone: 'seul',
     givingGroup: 'à plusieurs',
     group: 'Offert à plusieurs',

@@ -207,6 +207,10 @@ const menu = computed(() =>
       ],
 );
 const via = computed(() => ({ listId: props.listId }));
+// A gift not on the list cannot be unticked from here (Julien, 19
+// November 2026): touching it says why, under the line, instead of
+// doing nothing.
+const explained = ref<string | null>(null);
 </script>
 
 <template>
@@ -324,26 +328,45 @@ const via = computed(() => ({ listId: props.listId }));
       <li
         v-for="gift in person.offList"
         :key="gift.id"
-        class="flex items-start gap-3 py-2"
+        class="flex flex-col py-2"
         data-testid="holder-off-list"
       >
-        <span
-          class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
-          aria-hidden="true"
+        <button
+          type="button"
+          class="flex items-start gap-3 text-left"
+          :aria-expanded="explained === gift.id"
+          @click="explained = explained === gift.id ? null : gift.id"
         >
-          <UIcon name="i-lucide-check" class="size-3.5" />
-        </span>
-        <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
-          <span class="text-toned line-through">{{
-            t('lists.doc.offList', {
-              text: gift.kind === 'surprise' ? '' : gift.text,
-            })
-          }}</span>
           <span
-            v-if="gift.kind === 'holder'"
-            class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default"
-            >{{ gift.by ?? t('lists.doc.anonymous') }}</span
+            class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
+            aria-hidden="true"
           >
+            <UIcon name="i-lucide-check" class="size-3.5" />
+          </span>
+          <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
+            <span class="text-toned line-through">{{
+              t('lists.doc.offList', {
+                text: gift.kind === 'surprise' ? '' : gift.text,
+              })
+            }}</span>
+            <span
+              v-if="gift.kind === 'holder'"
+              class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default"
+              >{{ gift.by ?? t('lists.doc.anonymous') }}</span
+            >
+          </span>
+        </button>
+        <p
+          v-if="explained === gift.id"
+          class="mt-1.5 ml-[34px] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
+          role="status"
+          data-testid="off-list-notice"
+        >
+          {{
+            gift.kind === 'holder' && gift.by
+              ? t('lists.doc.offListNotice', { name: gift.by })
+              : t('lists.doc.offListNoticeAnonymous')
+          }}
         </p>
       </li>
       <ListsIdeaLine

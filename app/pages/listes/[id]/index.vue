@@ -250,15 +250,10 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
     id: 'moved',
     title: t('lists.doc.drag.moved', { name }),
     duration: 5000,
-    actions: [
-      {
-        label: t('common.actions.cancel'),
-        onClick: () => {
-          toast.remove('moved');
-          saveOrder(before, null);
-        },
-      },
-    ],
+    ...undoBar(t('common.actions.cancel'), () => {
+      toast.remove('moved');
+      saveOrder(before, null);
+    }),
   });
 };
 const board = ref<HTMLElement | null>(null);

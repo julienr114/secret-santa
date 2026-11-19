@@ -209,6 +209,12 @@ test('something else, and what the holder sees', async ({ page }) => {
     'Hors liste : un jeu de société',
   );
   await expect(page.getByTestId('holder-off-list')).toContainText('Tonton');
+  // It cannot be unticked from here: touching it says why.
+  await expect(page.getByTestId('off-list-notice')).toHaveCount(0);
+  await page.getByTestId('holder-off-list').getByRole('button').click();
+  await expect(page.getByTestId('off-list-notice')).toContainText(
+    'Tonton l’a ajouté de son côté, et lui seul peut le retirer.',
+  );
 });
 
 test('sharing stopped: the link says so, the list leaves the tab, the ticks stay', async ({

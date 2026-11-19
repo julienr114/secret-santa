@@ -111,6 +111,10 @@ export default {
     removeTick: 'Entfernen',
     unticked: 'Haken von {name} entfernt',
     untickedAnonymous: 'Anonymer Haken entfernt',
+    offListNotice:
+      'Dieses Geschenk ist keine Idee deiner Liste: {name} hat es selbst hinzugefügt, und nur diese Person kann es entfernen.',
+    offListNoticeAnonymous:
+      'Dieses Geschenk ist keine Idee deiner Liste: Jemand hat es selbst hinzugefügt, und nur diese Person kann es entfernen.',
     givingAlone: 'allein',
     givingGroup: 'zu mehreren',
     group: 'Gemeinsam geschenkt',

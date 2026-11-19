@@ -106,6 +106,10 @@ export default {
     removeTick: 'Remove',
     unticked: '{name}’s tick removed',
     untickedAnonymous: 'Anonymous tick removed',
+    offListNotice:
+      'This gift is not an idea of your list: {name} added it on their side, and only they can remove it.',
+    offListNoticeAnonymous:
+      'This gift is not an idea of your list: someone added it on their side, and only they can remove it.',
     givingAlone: 'alone',
     givingGroup: 'with others',
     group: 'Given by several',

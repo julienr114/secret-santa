@@ -136,6 +136,8 @@
      (a violet knot with a white icon, its text in the darkest lilac, its
      link in the lilac of the texts). */
   --color-thread: var(--color-coral-200);
+  /* « Annuler », on the dark bar that says something was just removed. */
+  --color-undo: var(--color-coral-200);
   --color-alert: var(--color-lilac-600);
   --color-alert-ink: var(--color-lilac-950);
   --color-alert-link: var(--color-lilac-700);

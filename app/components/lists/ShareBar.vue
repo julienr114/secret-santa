@@ -100,7 +100,7 @@ const turnOff = () => {
   send('off', () =>
     toast.add({
       title: t('lists.share.stopped'),
-      actions: [{ label: t('common.actions.cancel'), onClick: turnOn }],
+      ...undoBar(t('common.actions.cancel'), turnOn),
     }),
   );
 };

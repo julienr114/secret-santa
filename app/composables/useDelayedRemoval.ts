@@ -36,17 +36,12 @@ export const useDelayedRemoval = (
       id: toastId,
       title,
       duration: UNDO_MS,
-      actions: [
-        {
-          label: t('common.actions.cancel'),
-          onClick: () => {
-            if (leaving.value?.id !== id) return;
-            window.clearTimeout(leaving.value.timer);
-            leaving.value = null;
-            toast.remove(toastId);
-          },
-        },
-      ],
+      ...undoBar(t('common.actions.cancel'), () => {
+        if (leaving.value?.id !== id) return;
+        window.clearTimeout(leaving.value.timer);
+        leaving.value = null;
+        toast.remove(toastId);
+      }),
     });
   };
   onBeforeUnmount(flush);

@@ -26,6 +26,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-11-13',
   devServer: { port: 4000 },
   devtools: { enabled: true },
+  // Development only: the session cookie is not `Secure`, so that logging in
+  // works over plain HTTP on the local network (a phone on the same wifi).
+  $development: {
+    runtimeConfig: { session: { cookie: { secure: false } } },
+  },
   modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxt/ui'],
   // Secrets come from the environment (NUXT_* variables, Cloudflare secrets
   // in production). See README section 15.

@@ -182,6 +182,12 @@ export const AVATAR_EMOJIS = [
   '🎭',
   '🎤',
   '🥁',
+  // Correction 22 (19 November 2026): sailing, and the pastimes next to it.
+  '⛵',
+  '🎣',
+  '🚴',
+  '🏊',
+  '🥾',
 ] as const;
 export type AvatarEmoji = (typeof AVATAR_EMOJIS)[number];
 
@@ -339,6 +345,11 @@ export const AVATAR_GROUPS: Record<AvatarGroupKey, readonly AvatarEmoji[]> = {
     '✈️',
     '🎾',
     '🏄',
+    '⛵',
+    '🏊',
+    '🎣',
+    '🚴',
+    '🥾',
     '🧗',
     '🎭',
     '🎤',

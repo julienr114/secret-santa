@@ -82,7 +82,10 @@ flowchart LR
     listes --> uneListe["La liste<br/><small>/listes/[id]</small>"]
     listes --> nouvelleListe["Nouvelle liste"]
     uneListe --> messageListe["Personnaliser le message"]
-    uneListe --> membre["Une personne de ma famille<br/><small>/famille/[id]</small>"]
+    listes --> proches["Mes proches<br/><small>/famille</small>"]
+    proches --> membre
+    uneListe --> membre["Un de mes proches<br/><small>/famille/[id]</small>"]
+    membre --> membreSupprimer["Supprimer de mes proches"]
     membre --> membreTexte["Un texte de ses goûts"]
     membre --> membreQuestion["Les questions, pour elle"]
   end
@@ -184,7 +187,9 @@ La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet 
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` | Listes | |
 | La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | L'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
-| Une personne de ma famille | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Listes | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
+| Mes proches | `/famille` | Listes | |
+| Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Mes proches | Son icône, son prénom, sa date de naissance, sa taille, sa pointure |
+| Supprimer de mes proches | `/famille/[id]/supprimer` (`?liste=` depuis une liste) | La liste, sinon sa fiche | |
 | Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
 | Les questions de ses goûts | `/famille/[id]/question?n=` | Une personne de ma famille | |
 

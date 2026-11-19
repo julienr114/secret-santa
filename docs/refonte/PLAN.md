@@ -761,20 +761,20 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis, et les Corrections 19 à 22. **À faire maintenant, dans cet ordre : la Correction 24 (« Mes proches » : voir et supprimer), puis la Correction 23 (sécurité).** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 22 et 24. **À faire maintenant : la Correction 23 (sécurité).** Restent ensuite les lots 25 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
 
 | Chantier | Ordre | Bloqué par Julien ? |
 |---|---|---|
-| **Les listes, V2** | Correction 24 d'abord ; 24 et 24 bis (faits), puis 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
+| **Les listes, V2** | Correction 24, 24 et 24 bis (faits), puis 27, 27 bis, 27 ter, 25, 26 ; 41 plus tard (idées) | Non |
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
 | **La vitrine** | 33, puis 32 en tout dernier | 33 : ses textes, le service de dons, ses liens. 32 : confirmer la phrase sur l'assistant |
 
-**Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Les lots 24 et 24 bis et la Correction 22 sont faits. **La suite, dans cet ordre** : la Correction 24 (« Mes proches » : Julien bute dessus en essayant, elle passe en premier), la Correction 23 (sécurité), la ligne restante du lot 24 bis (le crayon sur l'icône), puis le lot 38 A (le filet de sécurité), puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
+**Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Les lots 24 et 24 bis et la Correction 22 sont faits. **La suite, dans cet ordre** : la Correction 24 (« Mes proches » : Julien bute dessus en essayant, elle passe en premier), la Correction 23 (sécurité), les deux lignes restantes du lot 24 bis (le crayon sur l'icône, les barres collées en haut), puis le lot 38 A (le filet de sécurité), puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
 
 - **Lot 24 bis** : la barre du haut s'appelle « Partage par lien » (plus « Brouillon » ni « Publiée », plus de texte d'explication) ; plus aucun bouton plein ni rouge dans le partage ; le menu « ⋯ » d'une personne, pour la retirer de la liste.
 - **Lot 27 bis** : en bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel, pas de lien « Séparer par personne ».
@@ -809,18 +809,18 @@ Le frère de Julien fait de la voile, et aucune icône de personne ne s'y prête
 
 ### Correction 24 — « Mes proches » : voir tout le monde, et supprimer quelqu'un (README 22.20)
 
-Demandé par Julien le 19 novembre 2026 : quelqu'un ajouté par erreur reste proposé dans « Ajouter quelqu'un » pour toujours. Aujourd'hui aucune route ne supprime un membre de la famille (`server/api/family` n'a que la lecture et la modification), et aucune page ne les montre tous. Sans migration a priori. Maquettes : `ListeNouvelle` (la croix), `ProcheSupprime`, `ListePersonneMenu`, `Famille`, `FamilleSupprimer`, `ListesAccueil`.
+Demandé par Julien le 19 novembre 2026 : quelqu'un ajouté par erreur reste proposé dans « Ajouter quelqu'un » pour toujours. Aujourd'hui aucune route ne supprime un membre de la famille (`server/api/family` n'a que la lecture et la modification), et aucune page ne les montre tous. **Fait** (19 novembre 2026), sans migration. Ce qui a été tranché en codant : section 6, « Correction 24 ». Maquettes : `ListeNouvelle` (la croix), `ProcheSupprime`, `ListePersonneMenu`, `Famille`, `FamilleSupprimer`, `ListesAccueil`.
 
-- [ ] **Le nom : « Mes proches »**, partout où l'écran disait « ma famille » (décidé par Julien) : la famille, mais aussi les amis et les collègues. Trois langues. Les noms dans le code et la base (`family_members`, `/api/family`) peuvent rester.
-- [ ] **Le cœur, en fonction pure**, testé d'abord : ce que la suppression emporte (les listes où la personne figure, ses idées, les cadeaux déjà prévus) et quand elle est refusée.
-- [ ] **`DELETE /api/family/[id]`** : supprime la personne, sa fiche et ses goûts, et la retire de toutes mes listes avec ses idées et leurs coches. Refusé pour « Moi », et pour une personne reliée à un compte tant qu'elle tient une de mes listes avec moi.
-- [ ] **Une croix sur la pastille, dans « Ajouter quelqu'un »** (demandé par Julien : pour se rattraper tout de suite, sans changer de page) : seulement pour un proche qui n'est sur **aucune** de mes listes. La pastille se coupe en deux zones : le prénom ajoute à la liste, la croix supprime. Suppression immédiate, avec « {Prénom} supprimé de tes proches » et « Annuler » (`ProcheSupprime`) : rien d'autre ne part avec lui, puisqu'il n'est sur aucune liste. Une ligne d'aide sous les pastilles quand au moins une a sa croix.
-- [ ] **Le menu « ⋯ » d'une personne sur une liste** : « Sa fiche et ses goûts », « Retirer de cette liste » (neutre), « Supprimer de mes proches » (rouge), qui mène à la confirmation.
-- [ ] **La confirmation** (`FamilleSupprimer`), une page, pour quelqu'un qui est sur des listes : ce qui part (les listes où il figure, le nombre d'idées et de cadeaux prévus perdus), que c'est définitif, et le rappel de « Retirer de cette liste ».
-- [ ] **La page « Mes proches »** (`Famille`), **dans « Listes »** et pas dans « Mon compte » (décidé par Julien : elle ne sert qu'aux listes de cadeaux) : un lien « Mes proches » sous le titre de l'accueil des listes (`ListesAccueil`) et sous les pastilles de « Ajouter quelqu'un ». Tout le monde, y compris ceux qui ne sont sur aucune liste, avec le nombre de listes ; toucher ouvre la fiche, qui porte « Supprimer de mes proches » en bas ; « Ajouter quelqu'un ».
-- [ ] **L'adresse email d'un proche reste facultative** (décidé par Julien) : elle sert à préparer le lien avec son compte (lot 25), rien d'autre ; aucun email ne lui part tant que le lot 25 n'existe pas.
-- [ ] **Les données** (lot 36) : supprimer un proche efface vraiment ses données ; « Mes données » compte mes proches.
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Le nom : « Mes proches »**, partout où l'écran disait « ma famille » (décidé par Julien) : la famille, mais aussi les amis et les collègues. Trois langues. Les noms dans le code et la base (`family_members`, `/api/family`) peuvent rester.
+- [x] **Le cœur, en fonction pure**, testé d'abord : ce que la suppression emporte (les listes où la personne figure, ses idées, les cadeaux déjà prévus) et quand elle est refusée.
+- [x] **`DELETE /api/family/[id]`** : supprime la personne, sa fiche et ses goûts, et la retire de toutes mes listes avec ses idées et leurs coches. Refusé pour « Moi », et pour une personne reliée à un compte tant qu'elle tient une de mes listes avec moi.
+- [x] **Une croix sur la pastille, dans « Ajouter quelqu'un »** (demandé par Julien : pour se rattraper tout de suite, sans changer de page) : seulement pour un proche qui n'est sur **aucune** de mes listes. La pastille se coupe en deux zones : le prénom ajoute à la liste, la croix supprime. Suppression immédiate, avec « {Prénom} supprimé de tes proches » et « Annuler » (`ProcheSupprime`) : rien d'autre ne part avec lui, puisqu'il n'est sur aucune liste. Une ligne d'aide sous les pastilles quand au moins une a sa croix.
+- [x] **Le menu « ⋯ » d'une personne sur une liste** : « Sa fiche et ses goûts », « Retirer de cette liste » (neutre), « Supprimer de mes proches » (rouge), qui mène à la confirmation.
+- [x] **La confirmation** (`FamilleSupprimer`), une page, pour quelqu'un qui est sur des listes : ce qui part (les listes où il figure, le nombre d'idées et de cadeaux prévus perdus), que c'est définitif, et le rappel de « Retirer de cette liste ».
+- [x] **La page « Mes proches »** (`Famille`), **dans « Listes »** et pas dans « Mon compte » (décidé par Julien : elle ne sert qu'aux listes de cadeaux) : un lien « Mes proches » sous le titre de l'accueil des listes (`ListesAccueil`) et sous les pastilles de « Ajouter quelqu'un ». Tout le monde, y compris ceux qui ne sont sur aucune liste, avec le nombre de listes ; toucher ouvre la fiche, qui porte « Supprimer de mes proches » en bas ; « Ajouter quelqu'un ».
+- [x] **L'adresse email d'un proche reste facultative** (décidé par Julien) : elle sert à préparer le lien avec son compte (lot 25), rien d'autre ; aucun email ne lui part tant que le lot 25 n'existe pas.
+- [x] **Les données** (lot 36) : supprimer un proche efface vraiment ses données ; « Mes données » compte mes proches.
+- [x] Trois langues, `tests/e2e`.
 
 ### Correction 23 — Sécurité : ce qui se corrige tout de suite (section 8)
 
@@ -847,7 +847,8 @@ Décidé par Julien le 19 novembre 2026, après le lot 24. **Fait** (19 novembre
 - [x] **Partage arrêté** : le lien affiche « Cette liste n'est plus partagée » ; la liste sort des listes de ceux qui l'avaient ouverte ; les coches restent ; rallumer redonne le même lien (sauf si on l'a changé).
 - [x] **« Changer de lien »** (proposition, section 6) : une confirmation sur place, dans la barre, « L'ancien lien ne marchera plus. » avec « Changer » et « Annuler » ; puis le nouveau lien s'affiche. Ceux qui ont un compte et avaient déjà ouvert la liste la gardent.
 - [x] **Retirer quelqu'un sans passer par « ses goûts »** (demandé par Julien le 19 novembre 2026, important) : un bouton « ⋯ » au bout du prénom de chaque personne, pour ceux qui tiennent la liste (maquette `ListePersonneMenu`). Il ouvre un petit menu : « Sa fiche et ses goûts » (la fiche existante) et « Retirer de la liste ». Le lien « ses goûts » disparaît pour eux (il reste pour qui vient par le lien). Retirer est immédiat, avec « {Prénom} retiré de la liste » et « Annuler », quand aucune de ses idées n'est cochée ; sinon un second appui, qui dit combien de cadeaux déjà prévus seront perdus. La personne reste dans ma famille ; ses idées partent avec elle. « Retirer de la liste » reste aussi en bas de sa fiche.
-- [ ] **Changer l'icône d'une personne sans compte, depuis la liste et depuis sa fiche** (demandé par Julien à Claude Code le 19 novembre 2026 ; maquettes `ListeTeneur`, `ListePersonne`) : un petit crayon rond, en bas à droite de l'icône, pour ceux qui tiennent la liste. Toucher l'icône ouvre le panneau de choix habituel. Pas de crayon sur une personne reliée à un compte (elle choisit la sienne), ni par le lien.
+- [x] **Changer l'icône d'une personne sans compte, depuis la liste et depuis sa fiche** (demandé par Julien à Claude Code le 19 novembre 2026 ; maquettes `ListeTeneur`, `ListePersonne`) : un petit crayon rond, en bas à droite de l'icône, pour ceux qui tiennent la liste. Toucher l'icône ouvre le panneau de choix habituel. Pas de crayon sur une personne reliée à un compte (elle choisit la sienne), ni par le lien.
+- [x] **Les deux barres restent collées en haut quand on fait défiler** (demandé par Julien le 19 novembre 2026) : « Partage par lien » dans le document de celui qui tient la liste, « Mode anonyme » sur la liste ouverte par son lien (`position: sticky`, à 8 px du haut, au-dessus du contenu, une ombre légère). Elles ne sont jamais sur le même écran. Dépliée, une barre se replie dès qu'on fait défiler, pour ne pas masquer la liste ; la note d'avertissement du tirage (lot 27 ter) reste, elle, jusqu'à « Compris ». Rien ne recouvre la ligne qu'on écrit ni le clavier.
 - [x] **Les idées en retrait sous leur personne** (demandé par Julien le 19 novembre 2026) : la liste des idées d'une personne est décalée de 20 px vers la droite par rapport à son icône, dans le document comme par le lien ; la ligne qu'on écrit garde son fond pleine largeur.
 - [x] **Les mots, à l'écran** : « Partage par lien », « partagée par lien », « plus partagée ». Les mots « publier », « publiée », « dépublier », « brouillon » ne s'affichent plus nulle part (ils restent dans ce plan et dans le code pour désigner l'état).
 - [x] Trois langues, `tests/e2e`.
@@ -1590,6 +1591,28 @@ Codé le 19 novembre 2026. Tranché seul, à relire :
 10. **Une liste passée dont on arrête le partage** revient dans « À venir », comme toute liste pas partagée.
 12. **L'icône et le prénom d'une personne dans le document** (demandé par Julien le 19 novembre 2026, après coup) : « sauf s'il est relié à un compte » ne vaut que pour le prénom, et ne concerne aujourd'hui que « Moi » (relier une personne à un compte, c'est le lot 25, qui devra reprendre cette règle). L'icône de « Moi » se change ici comme les autres. Sur la fiche de « Moi », prénom et icône se changent toujours.
 11. **Les maquettes périmées ne sont pas supprimées** : ce sont des fichiers de Julien pas encore commités, je n'y ai pas touché.
+
+### Correction 24
+
+Codée le 19 novembre 2026. Tranché seul, à relire :
+
+1. **Le refus « reliée à un compte qui tient une de mes listes avec moi »** est dans la fonction pure (`memberRemoval`, testée), mais ne peut pas arriver aujourd'hui : relier un proche à un compte et tenir une liste à plusieurs, c'est le lot 25. La route passe toujours « non » ; le lot 25 devra y brancher la vraie réponse.
+2. **L'adresse email d'un proche** : rien à coder. La fiche n'a pas de champ d'adresse aujourd'hui (il arrive avec le lot 25) ; aucun email ne part vers un proche.
+3. **Les données (lot 36)** : supprimer un proche efface vraiment sa ligne, ses places sur mes listes, ses idées, les coches et les cadeaux hors liste (rien n'est gardé). « Mes données » n'existe pas encore : le compte de mes proches y sera à ajouter avec le lot 36.
+4. **« Annuler » après la croix** : comme pour « Retirer de cette liste », le proche disparaît tout de suite de l'écran et le serveur n'est prévenu qu'à la fin du message (6 secondes) ou en quittant l'écran. Onglet fermé avant : il n'est pas supprimé.
+5. **Depuis la fiche, « Supprimer de mes proches » mène toujours à la page de confirmation**, même pour quelqu'un qui n'est sur aucune liste (la page dit alors seulement que sa fiche est effacée et que c'est définitif). La suppression immédiate avec « Annuler » est réservée à la croix.
+6. **La phrase de ce qui part** est en trois phrases courtes plutôt qu'une (« Hugo est sur 1 liste, « Noël 2026 ». Ses 4 idées en sortent. 1 cadeau déjà prévu est perdu. ») et dit le prénom plutôt que « Il » : elle tient ainsi dans les trois langues et pour une femme.
+7. **« Ajouter quelqu'un » sur la page « Mes proches »** a demandé une route de plus, `POST /api/family` : jusque-là un proche ne se créait qu'en l'ajoutant à une liste.
+8. **Le menu « ⋯ » de « Moi »** n'a pas « Supprimer de mes proches », et sa fiche non plus.
+9. **En anglais « My people », en allemand « Meine Leute »** pour « Mes proches » : à relire.
+10. **« Ton mot pour la famille »** (le mot en tête d'une liste) garde son nom : la maquette `ProcheSupprime` le montre encore ainsi, et ce n'est pas la page « Ma famille ».
+11. **« Une liste sans personne »**, visible dans `ProcheSupprime`, est le lot 27 bis : pas fait ici.
+14. **Les deux lignes d'aide sous les pastilles sont retirées** (Julien, 19 novembre 2026 : c'est évident) : « La croix supprime un proche qui n'est sur aucune liste. » et « Touche un prénom : il s'ajoute à la liste, avec ses idées qui n'ont pas été offertes la dernière fois. » Il reste « Tous tes proches sont déjà sur la liste. » quand c'est le cas, et le lien « Mes proches ». Les maquettes `ListeNouvelle` et `ProcheSupprime` la montrent encore.
+
+Les deux lignes du lot 24 bis faites dans la même séance :
+
+12. **Le crayon** : « Moi » est la seule personne reliée à un compte aujourd'hui. Dans le document, son icône n'a ni crayon ni action. Sur sa fiche, pas de crayon non plus, mais toucher l'icône ouvre encore le panneau : l'icône de « Moi » dans mes proches est une copie prise à la création, elle ne suit pas « Mon compte », et c'est le seul endroit où la changer. **Question** : faut-il qu'elle suive l'icône du compte ?
+13. **La barre collée** : « Partage par lien » reste sous la barre du haut, avec une ombre légère, et se replie dès qu'on fait défiler de plus de 24 px. **« Mode anonyme » n'existe pas encore** (lot 27 ter) : rien à coller sur la liste ouverte par son lien ; le lot 27 ter devra reprendre la même règle. Une ligne qu'on écrit garde une marge sous la barre quand le navigateur la ramène à l'écran.
 
 ### Lot 27 ter — pistes et liste
 

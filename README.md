@@ -1663,6 +1663,8 @@ Le bouton mène à `ListePartager` : le lien, et un message tout prêt à coller
 
 #### Publier, partager, dépublier : sur place, en haut du document
 
+Les deux barres restent collées en haut quand on fait défiler (demandé par Julien le 19 novembre 2026) : « Partage par lien » dans le document de celui qui tient la liste, « Mode anonyme » sur la liste ouverte par son lien (`position: sticky`, à 8 px du haut, au-dessus du contenu, une ombre légère). Elles ne sont jamais sur le même écran. Dépliée, une barre se replie dès qu'on fait défiler, pour ne pas masquer la liste ; la note d'avertissement du tirage (lot 27 ter) reste, elle, jusqu'à « Compris ». Rien ne recouvre la ligne qu'on écrit ni le clavier.
+
 **Les mots à l'écran** (19 novembre 2026) : l'interface dit « Partage par lien », « partagée par lien », « Partage par lien arrêté », « Cette liste n'est plus partagée ». « Publier », « publiée », « dépublier » et « brouillon » ne s'affichent plus ; ils restent ci-dessous pour désigner l'état.
 
 Décidé par Julien le 19 novembre 2026 ; remplace « Brouillon, puis partagée : un seul bouton » ci-dessus. Lot 24 bis. **Codé le 19 novembre 2026** : `ListsShareBar` en haut du document, la route `POST /api/lists/[id]/share` avec `ask` (`on`, `off`, `renew`) et la règle `shareChange` ; pas de migration, une liste est partagée tant que `shared_at` est rempli, et son lien est gardé quand le partage s'arrête ; la page `/listes/[id]/partager` a disparu. Maquettes : `ListeTeneur`, `ListeNouvelle` (repliées), `ListeEtatBrouillon`, `ListeEtatPubliee` (dépliées).
@@ -1731,7 +1733,7 @@ Changer l'icône d'une personne sans compte, depuis la liste et depuis sa fiche 
 
 #### « Mes proches »
 
-Décidé par Julien le 19 novembre 2026 (Correction 24 du plan). **« Ma famille » s'appelle « Mes proches »** à l'écran : la famille, les amis, les collègues. La page ne sert qu'aux listes de cadeaux : elle est dans « Listes » (un lien sous le titre de l'accueil des listes et sous les pastilles de « Ajouter quelqu'un »), pas dans « Mon compte ». Elle montre tout le monde, même ceux qui ne sont sur aucune liste (`Famille`). L'adresse email d'un proche est facultative et ne sert qu'à préparer le lien avec son compte.
+Décidé par Julien le 19 novembre 2026 (Correction 24 du plan). **Codé le 19 novembre 2026** : la règle `memberRemoval`, `DELETE /api/family/[id]` et `POST /api/family`, la page `/famille`, la confirmation `/famille/[id]/supprimer`, la croix dans `ListsAddSomeone`. **« Ma famille » s'appelle « Mes proches »** à l'écran : la famille, les amis, les collègues. La page ne sert qu'aux listes de cadeaux : elle est dans « Listes » (un lien sous le titre de l'accueil des listes et sous les pastilles de « Ajouter quelqu'un »), pas dans « Mon compte ». Elle montre tout le monde, même ceux qui ne sont sur aucune liste (`Famille`). L'adresse email d'un proche est facultative et ne sert qu'à préparer le lien avec son compte.
 
 Supprimer un proche, trois chemins : **la croix de sa pastille** dans « Ajouter quelqu'un », quand il n'est sur aucune liste (immédiat, avec « Annuler » : `ProcheSupprime`) ; « Supprimer de mes proches » dans le menu « ⋯ » d'une personne sur une liste ; le même bouton en bas de sa fiche. Quand il est sur des listes, une page de confirmation dit ce qui part (`FamilleSupprimer`). Retirer quelqu'un d'une liste, lui, le laisse dans mes proches.
 

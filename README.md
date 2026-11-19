@@ -1707,30 +1707,98 @@ Maquettes : `ListePlusieursLigne`, `ListeReserverPlusieurs`, `ListeRejoindre`, `
 
 `ListeIcone` est le même panneau, à trois différences près : la tuile est carrée, les couleurs sont pleines, les symboles sont ceux des listes.
 
+### 22.20 Décidé : les listes de cadeaux, V2 (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026, après la V1 (22.19). Pas encore codé : lots 24 à 27 de `docs/refonte/PLAN.md`. Maquettes : `ListeLiveTeneur`, `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListeNouvelleReprendre`, `ListeReprise`.
+
+**Une règle qui ne change pas, et qu'on écrit ici une fois pour toutes : dans une liste, rien n'est une surprise.** Personne ne se voit cacher ce qu'on lui offre, pas même celui qui y figure. La seule chose réservée à ceux qui tiennent la liste, ce sont les prénoms de ceux qui offrent.
+
+#### Écrire sur place, sans rien au-dessus du clavier
+
+- **Plus de barre collée au clavier** (`ListeIdee`). Sous la ligne qu'on écrit, dans le document, deux petits liens de texte : « Ajouter un lien » et « Supprimer ». Ils apparaissent quand on entre dans la ligne et disparaissent quand on la quitte. La touche retour valide et passe à la ligne suivante ; toucher ailleurs valide aussi.
+- **Le lien reste à part du texte** : une idée a un texte et un lien au plus, qui s'écrit toujours au bout de la ligne par le mot « lien », souligné. « Ajouter un lien » prolonge la ligne de « : », avec le curseur et l'invitation grise « colle ou écris l'adresse » ; dessous, « Annuler » (`ListeIdeeLien`). Une fois l'adresse posée, dessous : « Changer le lien », « Retirer le lien », « Supprimer » (`ListeIdeeLienFait`). Pas de bouton « Coller ».
+- **« J'offre autre chose »** n'ouvre plus de panneau (`ListeHorsListe`) : une ligne s'écrit sur place en fin de personne, déjà cochée à mon nom. Dessous : « Camille lira ces mots. Les autres verront seulement "Un cadeau surprise, hors liste". » et « Supprimer ».
+- **Des liens de texte, pas des boutons** : « Se joindre » est un lien souligné au bout de la ligne, comme « Changer » ; « Tu participes » un texte vert en gras. Ces liens gardent une zone tactile d'au moins 44 px de haut.
+
+#### En direct
+
+Seulement dans une liste : le document de celui qui la tient, et la page de celui qui la consulte.
+
+- **Ce qui arrive en direct** : une case cochée ou décochée, quelqu'un qui se joint à un cadeau ou s'en retire, un groupe fermé, une idée ajoutée, corrigée ou supprimée, une personne ajoutée ou retirée, un cadeau hors liste, le titre, la date, le mot.
+- **Comment ça se voit** : par l'animation du changement, et rien d'autre. Pas d'étiquette, pas de surlignage, pas de message.
+- **La ligne que quelqu'un écrit est bloquée pour les autres** (`ListeLiveTeneur`) : on y voit son curseur, à la couleur de son icône, avec son emoji et son prénom collés dessus ; la case est pâlie, la ligne ne se touche pas. Elle se libère quand il valide ou quitte la ligne, et d'office après 30 secondes sans frappe.
+- **Deux personnes cochent en même temps** : la première gagne, la case de l'autre passe en « pris », sans message.
+- **La ligne que j'écris ne bouge jamais** sous mes doigts : les changements des autres s'insèrent autour.
+- **Technique** : un objet durable Cloudflare par liste garde les connexions WebSocket (avec hibernation : une liste que personne ne regarde ne coûte rien). D1 reste la seule source de vérité. L'objet n'envoie qu'un signal « la liste a changé », et chaque navigateur recharge alors sa propre vue par les routes existantes : rien de ce qu'une personne n'a pas le droit de voir ne passe par ce canal. Seules exceptions, qui passent par l'objet : qui écrit quelle ligne, et la présence. Sans connexion, la page se recharge quand elle redevient visible.
+
+#### Tenir une liste à plusieurs
+
+- Une liste peut être tenue par **plusieurs comptes, tous égaux** (`ListeTeneurs`) : chacun écrit, partage, voit qui offre quoi, y compris ce qu'on lui offre s'il y figure.
+- On invite par adresse email ; la liste apparaît dans les listes de l'invité dès qu'il se connecte. Une invitation en attente peut être annulée.
+- Chacun peut en retirer un autre. Le dernier ne peut pas se retirer.
+- **Présence**, entre ceux qui tiennent la liste seulement : sous le bouton d'état, « Tu tiens cette liste avec Hugo. Il est là en ce moment. », un point vert sur son icône. Les invités ne voient jamais qui regarde.
+
+#### Relier une personne à son compte
+
+- Sur la fiche d'une personne de ma famille (`ListePersonneCompte`), une adresse email la relie à son compte. Pour un enfant, on laisse vide.
+- Une personne reliée peut **écrire, corriger et supprimer ses propres idées** sur les listes où elle figure (`ListeVueReliee`) : sa section passe en premier, « C'est toi ».
+- Pour le reste, elle voit la liste **comme tout le monde**, l'état de ses propres idées compris. Elle ne peut pas cocher ce qui lui est destiné.
+- Elle ne tient pas la liste pour autant : elle ne voit pas qui offre quoi.
+
+#### Reprendre une liste
+
+- Dans le document vide d'une nouvelle liste, un bloc **« Repartir d'une liste »** propose mes listes (`ListeNouvelleReprendre`), avec ce qu'on y reprend (« 4 personnes · 6 idées pas encore offertes »). Une liste passée a aussi son bouton « Reprendre cette liste ».
+- **Ce qui est repris** : l'icône, le mot, les personnes, et les idées qui n'avaient pas été cochées. Pas les cadeaux cochés, pas les cadeaux hors liste. Le nom et la date sont à remplir. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
+- **Une marque discrète** (`ListeReprise`) : une idée reprise porte une petite flèche grise en rond au bout de sa ligne, visible de ceux qui tiennent la liste seulement. Une phrase grise l'explique en haut. Pas de bouton pour garder ou retirer : on efface une idée comme n'importe quelle ligne. La marque disparaît quand on modifie l'idée, et pour toutes au premier partage.
+
+### 22.21 Décidé : la navigation toujours là (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026. Pas encore codé : Correction 19 de `docs/refonte/PLAN.md`. Maquettes : `NavTirage`, `NavListe`, `NavRedaction`.
+
+Pour une personne **connectée**, sur tous les écrans, quel que soit le lien par lequel elle est arrivée (son lien personnel de participant compris) :
+
+- **en haut à droite, le menu**, avec ce qu'il contient déjà sur l'accueil : la langue, « Mon compte », « Se déconnecter ». Le bouton de langue à part disparaît ;
+- **en bas, la barre « Tirages / Listes »**, l'onglet actif selon l'endroit où l'on est.
+
+Sans session (lien personnel, lien d'une liste, lien d'invitation) : rien ne change, le bouton de langue reste, pas de barre.
+
+Deux exceptions : le palmarès en images, en plein écran ; et un panneau du bas ouvert, qui recouvre la barre comme le fait le clavier.
+
 ## 23. Design system
 
 Léger, fait le 14 novembre 2026 avant la v2. Nuxt UI 4 fournit les composants de base ; ce qui suit est la couche propre à l'application. Complété par la refonte des écrans (15 au 17 novembre 2026). La page **Guide de style** (`/admin/guide-de-style`, super-admin, dernière ligne de l'administration) montre tout ce qui est décrit ici, et `tests/e2e/design.spec.ts` vérifie qu'elle s'affiche, dans la langue choisie dans le menu.
 
 ### 23.1 Jetons
 
-Définis dans `app/assets/css/main.css`. Les écrans nomment un **rôle**, jamais une teinte.
+Définis dans `app/assets/css/main.css`, aux valeurs du style « Sorbet » (23.5, lot 23). Les écrans nomment un **rôle**, jamais une teinte.
 
 | Jeton | Rôle |
 |---|---|
-| `bg-page` | Fond de page (kraft clair) |
-| `bg-default` | Carte, ligne de liste (blanc cassé, jeton Nuxt UI) |
-| `bg-muted` | Texte cité, aperçu d'un message |
+| `bg-page` | Fond de page (crème rosé) |
+| `bg-default` | Carte, ligne de liste (blanc, jeton Nuxt UI) |
+| `bg-muted` | Texte cité, aperçu d'un message, pastille (pêche clair) |
 | `bg-skeleton`, `bg-skeleton-soft` | Chargement, sur la page et sur une ligne blanche |
 | `bg-track` | Partie vide d'une barre de progression |
-| `bg-divider` | Trait entre deux lignes, entre deux étapes |
-| `envelope`, `envelope-fold`, `star` | Papier kraft de l'enveloppe, son pli, l'étoile moutarde (puces des idées, carte de l'enveloppe ouverte) |
-| `thread`, `alert`, `alert-ink`, `alert-link` | Le fil du journal ; une alerte du journal (rond moutarde, texte et lien dessus). L'utilitaire `knot` entoure un nœud du fil de la couleur de la page |
+| `bg-divider`, `border-default` | Trait entre deux lignes, entre deux étapes ; bord (pêche) |
+| `border-accented`, `line-strong` | Bord marqué : champ, pointillés, case à cocher vide ; en fond, la case que quelqu'un d'autre a cochée |
+| `text-default`, `text-toned`, `text-muted` | Texte (prune), texte secondaire, texte discret (jetons Nuxt UI). `text-muted` ne se pose pas sur un fond doux ou teinté : il n'y atteint pas 4,5 pour 1, on y met `text-toned` |
+| `veil` | Le voile derrière un panneau du bas |
+| `shadow-card` | Le bord pêche de 1,5 px et la bande de 3 px sous une carte ; `shadow-award` la bande verte de l'entrée « palmarès » du journal |
+| `envelope`, `envelope-fold`, `envelope-line`, `shade`, `star`, `star-soft`, `wood` | Les illustrations : le papier, du clair au soutenu, son filet, l'ombre sous les choses, l'étoile lilas (aussi devant une idée précise) et son ton clair, le tronc du sapin |
+| `thread`, `alert`, `alert-ink`, `alert-link` | Le fil du journal ; une alerte du journal (rond violet à l'icône blanche, texte et lien posés sur le fond lilas). L'utilitaire `knot` entoure un nœud du fil de la couleur de la page |
 | `restricted`, `restricted-ring` | Le cadre en pointillés de ce qui n'est qu'au super-admin |
 | `stack`, `stack-back` | Les bords des cartes en attente sous la première d'une pile |
-| `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond le plus clair (pavé, encadré), `soft` un cran plus soutenu (halo, bouton rond à presser, rond d'état, surlignage), `ink` le texte et les icônes posés dessus |
-| `primary` (rouge brique), `secondary` et `success` (vert sapin), `warning` (moutarde), `error` (canneberge) | Action, réussite, attention, danger (`app/app.config.ts`). Attention et danger utilisent une teinte assez sombre pour rester lisibles en texte sur blanc |
+| `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond d'un pavé ou d'un encadré, `soft` celui d'un halo, d'un bouton rond à presser, d'un rond d'état ou d'un surlignage (la même teinte que `tint` dans Sorbet), `ink` le texte et les icônes posés dessus |
+| `primary-deep`, `success-deep`, `error-deep` | Un cran plus foncé : un bouton plein pressé, le texte d'un encadré de danger |
+| `warning-fill` | Le lilas plein de ce qui signale sans texte blanc dessus : la case d'un cadeau à plusieurs |
+| `story-coral`, `story-mint`, `story-violet`, `story-plum`, `story-cream` | Les fonds du palmarès en images, foncés, texte blanc (la crème a un texte prune) |
+| `primary` (corail), `secondary` et `success` (menthe foncée), `warning` (lilas), `error` (canneberge) | Action, réussite, attention, danger (`app/app.config.ts`). `text-primary` est un cran plus foncé que `bg-primary`, pour rester lisible sur la page ; attention et danger utilisent une teinte assez sombre pour rester lisibles en texte sur blanc |
 
-Les teintes brutes (`--color-kraft-*`, `--color-brick-*`, `--color-pine-*`) ne servent qu'à définir ces jetons, et aux couleurs des icônes de personne (`app/utils/avatars.ts`).
+**Polices** : `font-display` (Outfit, 600 et 700) pour les titres, `font-sans` (DM Sans, 400 à 700) pour le texte ; chargées par `@nuxt/fonts` (`fonts` dans `nuxt.config.ts`).
+
+**Coins**, par ce qu'ils arrondissent (les noms sont ceux de Tailwind) : `rounded-sm` 8 px (case à cocher), `rounded-md` 16 px (bouton, champ, zone de texte), `rounded-lg` 14 px (petite tuile), `rounded-xl` 18 px (encadré), `rounded-2xl` 28 px (carte), `rounded-3xl` 32 px (haut d'un panneau), `rounded-bubble` 24 px (bulle de message, coin bas gauche à 6 px).
+
+Les teintes brutes (`--color-coral-*`, `--color-mint-*`, `--color-lilac-*`, `--color-peach-*`, `--color-plum-*`, `--color-cranberry-*`) ne servent qu'à définir ces jetons. Les couleurs des icônes de personne sont dans `app/utils/avatars.ts`, celles des tuiles carrées des listes dans `app/utils/listShades.ts`.
 
 ### 23.2 Composants d'interface (`app/components/ui`)
 
@@ -1739,38 +1807,39 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | Composant | Rôle |
 |---|---|
 | `UiPageTitle` | Le titre d'un écran, un seul par page (`h1`) |
-| `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe, en Nunito même quand c'est un `h2` |
-| `UiCard` | Surface blanche en relief ; `padding` `md`, `lg` ou `none` |
-| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône ronde de 40 px (brique pour ce qui est à faire, grise sinon : `icon-tone="neutral"`, rouge pour `tone="danger"`), emoji ou icône de personne, et un emplacement `trailing` ; le chevron va avec un lien ou une valeur, `chevron` le force (`true`, un bouton qui ouvre un panneau) ou le retire (`false`) ; 60 px de haut, titre en semi-gras, sous-titre en 13 px ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
+| `UiSectionTitle` | Le petit titre en capitales au-dessus d'un groupe, en DM Sans même quand c'est un `h2` |
+| `UiCard` | Surface blanche au bord pêche, une bande pleine dessous (`shadow-card`), coins de 28 px ; `padding` `md`, `lg` ou `none` |
+| `UiList`, `UiListItem` | Liste pleine largeur ; une ligne est un lien (`to`), un bouton (`on-click`) ou un simple affichage, avec icône ronde de 40 px (corail pour ce qui est à faire, grise sinon : `icon-tone="neutral"`, rouge pour `tone="danger"`), emoji ou icône de personne, et un emplacement `trailing` ; le chevron va avec un lien ou une valeur, `chevron` le force (`true`, un bouton qui ouvre un panneau) ou le retire (`false`) ; 60 px de haut, titre en semi-gras, sous-titre en 13 px ; une ligne de réglage montre sa valeur à droite (`value`, avec chevron) ou un interrupteur (`v-model:checked`) |
 | `UiAvatar` | L'icône d'une personne, en quatre tailles : `sm` 32 px, `md` 40 px, `lg` 56 px (en-tête d'une page), `xl` 80 px (résultat, fiche, choix de l'icône). L'emoji est une image (`UiEmoji`), la même sur tous les appareils (lot 15) : le dessin d'Apple, 64 px, copié dans `public/emoji` depuis le paquet de développement `emoji-datasource-apple` par `pnpm emoji:copy` (30 images, une par emoji d'`AVATAR_EMOJIS` ; `emojiImagePath`, `tests/emoji-images.test.ts`). Si l'image ne charge pas, le caractère s'affiche. Ces images restent sous le copyright d'Apple et ne sont pas sous licence libre : choix assumé pour un usage familial ; si l'app s'ouvre plus largement, passer à Noto Emoji (Apache 2.0) ou à Fluent Emoji (MIT) en changeant seulement le dossier des images. Les emails et les messages gardent les caractères |
 | `UiTextPreview` | Un texte tel qu'il a été écrit ou sera envoyé |
 | `UiMessageBubble` | Un message tel que la personne le lira, dans une bulle (92 % de large au plus, coin bas gauche resserré) : ses mots, puis son lien seul sur sa ligne, en gras, sans `https://`, coupé s'il est trop long (`aroundLink`) |
 | `UiSegmented` | Un choix parmi quelques-uns, côte à côte sur une piste grise ; le choix fait est blanc et en gras. Des boutons radio natifs dessous : les flèches changent le choix |
-| `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond brique, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
-| `UiActionCard` | « À faire maintenant » : étiquette en capitales (moutarde avec `tone="warning"`, quand il faut d'abord corriger), titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide |
+| `UiStepper` | Frise d'étapes : faite (rond vert, coche), en cours (rond corail, halo, `aria-current="step"`), à venir (rond vide). Non cliquable |
+| `UiActionCard` | « À faire maintenant » : étiquette en capitales (lilas avec `tone="warning"`, quand il faut d'abord corriger), titre, preuve dans le slot par défaut (phrase, compteurs, barre), action dans le slot `action`, ligne d'aide ; une illustration peut coiffer la carte (emplacement `illustration`) |
 | `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
-| `UiSheet` | Panneau du bas autour de `UDrawer` : titre (Fraunces 22 px), description, corps, pied (action et sortie), en-tête remplaçable ; `busy` l'empêche de se refermer pendant une action ; `ui` ajoute des classes au titre, à la description ou à l'espacement (le panneau du journal, plus serré). Le corps a 4 px de marge en haut et en bas, pour que le cadre d'un encadré collé au bord ne soit pas coupé |
+| `UiSheet` | Panneau du bas autour de `UDrawer` : titre (Outfit 22 px), description, corps, pied (action et sortie), en-tête remplaçable ; `busy` l'empêche de se refermer pendant une action ; `ui` ajoute des classes au titre, à la description ou à l'espacement (le panneau du journal, plus serré). Le corps a 4 px de marge en haut et en bas, pour que le cadre d'un encadré collé au bord ne soit pas coupé |
 | `UiSkeleton` | Un écran qui arrive, en pièces grises à la place et à la taille de ce qu'elles annoncent (dont `journal`, une frise verticale) ; `AdminQueryState` et `ParticipantScreen` s'en servent |
-| `UiCountBadge` | Un nombre dans une pastille brique au bout d'une ligne ou d'un élément de menu (les demandes à traiter), lu en toutes lettres par les lecteurs d'écran |
+| `UiCountBadge` | Un nombre dans une pastille corail au bout d'une ligne ou d'un élément de menu (les demandes à traiter), lu en toutes lettres par les lecteurs d'écran |
 | `UiStack` | Une carte posée sur une pile : un bord de carte par élément en attente derrière, deux au plus |
 | `UiRestricted` | Ce que seul un super-admin voit sur un écran que tout le monde voit : un cadre en pointillés titré sur sa bordure (bouclier et « Super-admin »), sans phrase d'explication ; `flush` pour des lignes bord à bord |
 | `UiCheckRow` | Une personne à cocher : icône, nom, une ligne dessous (ou l'emplacement `subtitle`, pour une icône), case native de 24 px ; toute la ligne coche |
 | `UiStickyFooter` | La bande blanche collée en bas d'un long écran, avec son action principale ; elle descend jusqu'au bas de la page |
 | `UiPointList` | Quelques points, chacun après un petit rond ou son icône ; `tone` colore les marques (rouge pour ce qui se perd, vert pour ce qui reste) |
 | `UiJournalPreview` | « Ce que le groupe lira dans le journal » : la ligne dans une carte blanche, avant l'action qui l'écrit |
-| `UiTagList` | Quelques mots côte à côte, chacun dans une pastille kraft, qui passent à la ligne : les réponses de « Moi et les cadeaux ». Une étiquette peut être un lien (36 px à l'œil, 44 px au doigt) ou, en pointillés brique après un « + », ce qui manque |
-| `UiStar` | L'étoile moutarde à quatre branches, pleine, devant une idée précise |
+| `UiTagList` | Quelques mots côte à côte, chacun dans une pastille pêche, qui passent à la ligne : les réponses de « Moi et les cadeaux ». Une étiquette peut être un lien (36 px à l'œil, 44 px au doigt) ou, en pointillés corail après un « + », ce qui manque |
+| `UiStar` | L'étoile lilas à quatre branches, pleine, devant une idée précise |
 | `UiConfirmBox` | La case « Je comprends que… » à cocher avant une action qui ne se rattrape pas |
 | `UiPageContext` | Où se trouve un écran, en une ligne grise au-dessus du titre : « {Groupe} · {Édition} », chaque morceau un lien de 44 px vers l'accueil du groupe ou l'édition (`useScreenContext`, qui donne aussi le titre de l'onglet, `pageTitle`) |
 | `UiPersonField` | Un champ qui contient une personne (icône et prénom, ou une indication) et ouvre le choix d'une personne |
 | `UiChoiceList` | Une valeur parmi quelques-unes, une ligne par choix avec son bouton radio et son aide ; la ligne choisie est teintée. `UiChoiceSheet` s'en sert, un panneau peut l'ajouter sous un champ |
 | `UiSpinner` | La petite roue (20 px) d'une ligne ou d'un interrupteur qui enregistre, avec son texte pour les lecteurs d'écran ; `UiListItem busy` la met à la place du chevron. Dans un bouton, c'est le `loading` de `UButton`. Elle ne tourne pas si `prefers-reduced-motion` |
-| `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `caution` (bandeau moutarde encadré, à savoir), `warning` (encadré avec titre), `danger` (encadré rouge épais, titre avec icône, pour ce qui ne se rattrape pas), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
-| `UiEnvelope` | L'enveloppe d'un tirage, selon `envelopeState` : `UiEnvelopePending` (pointillés, horloge), `UiEnvelopeSealed` (kraft, cachet de cire brique à l'étoile, brin de sapin et boules), `UiEnvelopeOpened` (ouverte, la carte à l'étoile), `UiEnvelopeLocked` (cadenas). Redessinées au lot 18 d'après les maquettes, une illustration par composant, les couleurs du design system par leurs jetons. Décoratives |
+| `UiNotice` | `info` (ligne discrète), `positive` (bandeau vert), `caution` (bandeau lilas encadré, à savoir), `warning` (encadré avec titre), `danger` (encadré rouge épais, titre avec icône, pour ce qui ne se rattrape pas), `checklist` (lignes validées ou en attention, avec emplacements `trailing` et `detail`) |
+| `UiEnvelope` | L'enveloppe d'un tirage, selon `envelopeState` : `UiEnvelopePending` (pointillés, horloge), `UiEnvelopeSealed` (papier pêche, cachet de cire corail à l'étoile, brin de sapin et baies lilas), `UiEnvelopeOpened` (ouverte, la carte à l'étoile), `UiEnvelopeLocked` (cadenas). Redessinées au lot 18 d'après les maquettes, une illustration par composant, les couleurs du design system par leurs jetons. Décoratives |
 | `UiEnvelopeSent` | L'enveloppe d'un lien de connexion envoyé, avec sa coche verte (« Regarde ta boîte mail ») |
 | `UiPodium` | Le podium du palmarès de « Devine qui » (lot 19), prêt mais pas encore affiché |
-| `UiTile` | Une chose à faire sur la page d'un tirage (22.16) : `todo` cerclée de brique, `done` avec sa coche, `idle` ; seule sur toute la largeur, `compact` à deux |
+| `UiIllusTree`, `UiIllusTreeEmpty`, `UiIllusWreath`, `UiIllusParcels`, `UiIllusLabel`, `UiIllusLetter`, `UiIllusSeats`, `UiIllusChecklist` | Les huit illustrations de Sorbet (23.5, lot 23), une par composant, 184 sur 128, dessinées d'après `docs/refonte/sorbet/illus2.py` dans la manière des enveloppes, couleurs par les jetons : le sapin et ses paquets, le sapin au paquet en pointillés, la couronne, les trois paquets cochés, l'étiquette, la lettre cochée, les places à remplir, la feuille à cocher. Décoratives ; le sapin et la couronne prennent un `label` quand ils remplacent le logo |
+| `UiTile` | Une chose à faire sur la page d'un tirage (22.16) : `todo` cerclée de corail, `done` avec sa coche, `idle` ; seule sur toute la largeur, `compact` à deux |
 | `UiGiftTag` | Carte en forme d'étiquette cadeau, un trou rond en haut au centre, contenu dans le slot |
 | `UiPersonPicker` | Choix d'une personne dans un `UiSheet` ; au-delà de 10, une recherche (`UiSearchField`) sans accents ni casse, lettres trouvées surlignées (`matchesName`, `highlightName`) |
 | `UiSearchField` | Champ de recherche au-dessus d'une liste de plus de 10 personnes : loupe, libellé, croix pour vider. La recherche montre tous les résultats, sans repli |
@@ -1804,6 +1873,7 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
   - **Clavier ouvert** (décidé par Julien le 18 novembre 2026, essayé sur iPhone) : Safari et Chrome sur iPhone recouvrent la page au lieu de la réduire. Tant que le clavier est ouvert, « Valider » est posé sur le clavier, comme dans une messagerie ; le champ grandit jusqu'à six lignes puis défile, pour rester au-dessus ; la page ne défile pas au-delà de sa fin (`UiStickyFooter`, `useKeyboardInset`, `emptyBelow`). Sous un bouton du bas, la place de la barre d'accueil ou 1 rem, pas les deux.
   - Les confirmations d'une action qui ne se rattrape pas (« Supprimer le groupe », « Dévoiler avant la fête ») restent des panneaux, même avec une phrase à recopier : le panneau garde le contexte sous les yeux.
 - Un panneau enregistre avec un bouton « Valider » ; le fermer autrement abandonne. **Un réglage s'enregistre seul** (décidé par Julien le 16 novembre 2026) : à la validation de son panneau, ou dès qu'un interrupteur bascule ; pas de bouton « Enregistrer » en bas de page. La nouvelle valeur s'affiche tout de suite, la ligne montre la roue, et une erreur remet l'ancienne valeur avec un toast (`useRuleSaver` pour les règles du groupe, `useProfileSaver` pour son propre profil, de même pour le lien d'invitation et le quota d'un compte).
+- **Rien ne se place au-dessus du clavier** (décidé par Julien le 19 novembre 2026 : sur téléphone, une barre ou un bouton collé au clavier ne tient pas). Sur une page où l'on rédige, « Valider » est **dans la page**, à la fin du contenu, et non dans une bande collée en bas ; le clavier passe par-dessus, et toucher hors du champ le ferme. Dans une liste, les actions d'une ligne sont dans le document, sous la ligne (22.20). Cela remplace « "Valider" fixé en bas de l'écran » de la règle précédente. Correction 19.
 - Une cible tactile fait au moins 44 px.
 - Une action dangereuse est rouge, en bas de liste, et demande une confirmation (deuxième appui, ou texte à recopier quand elle est irréversible).
 - La ligne « ajouter » est en haut d'une liste de règles (exclusions), en bas d'une liste de personnes.
@@ -1819,3 +1889,85 @@ Accueil (section 11), construit sur `UiActionCard`, `UiEnvelope` et `UiNotice` s
 - **La refonte des interfaces est faite** (lots 0 à 10, 15 au 17 novembre 2026) : le plan coché est dans [`docs/refonte/PLAN.md`](docs/refonte/PLAN.md), les maquettes en HTML dans `docs/refonte/maquettes/`. Ce qui reste est dans sa section 6 : les questions ouvertes (presque toutes des données que les routes ne renvoient pas encore) et les maquettes encore hors périmètre (tirage déjà fait ailleurs, lot 17 ; idées futures).
 - Pas de paquet séparé ni de Storybook tant qu'il n'y a qu'une application.
 
+
+### 23.5 Fait : le style « Sorbet » (19 novembre 2026)
+
+Décidé par Julien le 19 novembre 2026, après des retours de plusieurs personnes : l'interface ne faisait pas assez moderne. **L'ergonomie ne change pas** : mêmes écrans, mêmes blocs, mêmes textes, mêmes tailles de cibles. Seuls changent les couleurs, les polices, les coins, les ombres et les illustrations. **Fait** (lot 23 de `docs/refonte/PLAN.md`, 19 novembre 2026) : les jetons sont décrits en 23.1, ce qui a été tranché en codant est en section 6 du plan.
+
+**Les maquettes.** `docs/refonte/maquettes-sorbet/` contient toutes les maquettes dans le nouveau style. Elles sont **produites** par `docs/refonte/sorbet/habiller.py` à partir de `docs/refonte/maquettes/`, qui reste la source du script : une maquette se modifie dans `maquettes/`, puis on relance le script. Ce script est aussi la référence des valeurs ci-dessous. Le rendu des maquettes habillées n'a pas été contrôlé écran par écran : en cas de doute, la règle de cette section l'emporte sur le fichier.
+
+#### Les couleurs
+
+| Rôle | Avant | Sorbet |
+|---|---|---|
+| Fond de page | kraft clair `#f7f2e9` | crème rosé `#fff6f1` |
+| Carte, ligne de liste | blanc cassé `#fffdf9` | blanc `#ffffff` |
+| Fond doux (texte cité, piste, pastille) | `#f1e8d8` | `#ffeae1` |
+| Trait, bord | `#e9dcc5`, `#dccbad` | pêche `#ffd9cc` |
+| Bord marqué (champ, pointillés) | `#cdb48a`, `#a8a29e` | `#f5b8a5` |
+| Texte | `#292524` | prune `#2b1b3d` |
+| Texte secondaire | `#57534e` | `#6b5a7a` |
+| Texte discret | `#78716c` | `#796987` |
+| Action (`primary`) | brique `#b8483a` | corail `#d93a2b`, foncé `#b92d1f` |
+| Texte et lien d'action | `#8a2f27`, `#a43a2f` | `#c93425` |
+| Fond d'action clair | `#f6e2dd` | `#ffe3de` |
+| Réussite (`success`, `secondary`) | sapin `#2f613f` | menthe foncée `#0b7a5b`, fond `#dcf7ee` |
+| Signalement (`warning`) | moutarde | **lilas** : plein `#b993dd`, fond `#f1e8fc`, bord `#cbb2ee`, texte `#6a3db3` |
+| Danger (`error`) | canneberge | inchangé |
+| Voile derrière un panneau | `#8f877b` | `#a8959d` |
+
+- **Plus de jaune dans l'interface.** Tout ce qui signalait en moutarde passe au lilas : encadrés d'avertissement, étiquettes, cadeau à plusieurs, étoile des idées. Seule exception : le fond « citron » des icônes de personne.
+- **Une alerte du journal**, et le bandeau « Le tirage n'est plus secret » qui prend sa couleur : fond `#f1e8fc`, texte `#3b2463`, rond violet `#7b4bc4` à l'icône blanche, lien `#6a3db3`.
+- **« Devine qui : le palmarès est arrivé »**, dans le journal : vert plein `#0b7a5b`, texte blanc, comme le bouton de la page des réponses.
+- **Contraste** : le corail `#d93a2b` a été choisi pour que le texte blanc d'un bouton reste lisible (4,6 pour 1). Un corail plus vif ne passe pas.
+
+#### Les polices et les formes
+
+- **Titres** : Outfit (600 et 700), à la place de Fraunces. **Texte** : DM Sans (400 à 700), à la place de Nunito.
+- **Coins** : carte 28 px (16 avant) ; bouton, champ, zone de texte 16 px (6 avant) ; encadré 18 px (12) ; petite tuile 14 px (8 à 11) ; case à cocher 8 px (5) ; haut d'un panneau 32 px (20) ; bulle de message 24 px, coin bas gauche 6 px. Les ronds et les pastilles ne changent pas.
+- **Carte** : plus d'ombre floue, un bord pêche de 1,5 px et une bande pleine de 3 px dessous (`0 3px 0 #ffd9cc, 0 0 0 1.5px #ffd9cc`).
+
+#### Les icônes de personne
+
+Les six noms enregistrés ne changent pas (`brick`, `pine`, `mustard`, `kraft`, `frost`, `plum`) : seules leurs teintes changent, donc pas de migration.
+
+| Nom enregistré | Devient | Fond | Bord |
+|---|---|---|---|
+| `brick` | corail | `#ffd0c8` | `#ff8478` |
+| `pine` | menthe | `#c6f1e2` | `#4fcaa3` |
+| `mustard` | citron | `#ffe9a8` | `#f4b82e` |
+| `kraft` | pêche | `#ffe2c4` | `#f2a65a` |
+| `frost` | ciel | `#cfe6ff` | `#6eb0f2` |
+| `plum` | lilas | `#e6d6f8` | `#b993dd` |
+
+#### Le palmarès en images
+
+Il reste **foncé**, texte blanc sur les quatre fonds. La rotation des couleurs (22.17) ne change pas.
+
+| Avant | Sorbet |
+|---|---|
+| Brique | corail foncé `#b92d1f` |
+| Sapin | menthe foncée `#085a43` |
+| Moutarde, texte foncé | violet `#5f37a6`, texte blanc, texte secondaire `#e6d6f8` |
+| Prune | prune nuit `#2b1b3d` |
+
+#### Les illustrations
+
+Même dessin et même manière que les enveloppes du lot 18 : papier en dégradé au filet fin, couture en pointillés, cachet de cire, brins de sapin, baies, étoiles à quatre branches, ombre au sol. Aux couleurs de Sorbet : papier `#ffeae1` vers `#ffd9cc`, filet `#f5b8a5`, cire et ficelle corail `#d93a2b`, sapin `#0b7a5b`, étoiles et baies lilas `#b993dd`. Les enveloppes et le podium existants prennent ces couleurs. Les dessins sont dans `docs/refonte/sorbet/illus.py` (les six du lot 18) et `illus2.py` (les nouveaux).
+
+| Illustration | Où |
+|---|---|
+| Le sapin et ses paquets | À la place du logo, sur les cinq écrans de connexion (`Connexion`, `ConnexionCreer`, `ConnexionEnvoye`, `ConnexionConfirmer`, `ConnexionLienInvalide`) |
+| Le sapin et un paquet en pointillés | `AccueilVide`, au-dessus de « Aucun tirage pour l'instant » |
+| La couronne | À la place du logo, sur le lien d'invitation (`Rejoindre`, `RejoindreConnecte`) |
+| Trois paquets et une coche | `RejoindreFait`, à la place du rond coché |
+| L'étiquette | `PistesVide`, en tête de « Six questions, trente secondes » |
+| La lettre cochée | `AccueilDemandeAcceptee`, en tête de « Ta demande est acceptée » |
+| Les places à remplir | `PreparerVide`, en tête de « Ajoute les participants » |
+| La feuille à cocher | `ListesVide`, à la place de la tuile |
+
+- Une illustration est décorative (`aria-hidden`), sauf quand elle remplace le logo : elle porte alors le nom « Under the Tree ».
+- **Pas d'image dans les emails** : ils restent en texte seul.
+- Pas d'illustration sur les écrans de travail (suivi, réglages, membres).
+
+**Hors de ce lot** : un mode sombre. Une piste a été dessinée (« Sorbet de nuit », dans l'artifact des maquettes), sans décision.

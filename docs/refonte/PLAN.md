@@ -3,7 +3,8 @@
 Écrit le 16 novembre 2026, à partir du canevas de maquettes (97 écrans) et du code à `5f50067`.
 Ce plan est fait pour être exécuté par Claude Code, lot par lot.
 
-- Maquettes : `docs/refonte/maquettes/<Nom>.html` (une par écran, 390 px de large, styles en ligne). Le canevas complet : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns
+- **Depuis le lot 23 (19 novembre 2026), la référence visuelle est `docs/refonte/maquettes-sorbet/<Nom>.html`** : les mêmes écrans dans le style « Sorbet » (README 23.5). Ces fichiers sortent de `docs/refonte/sorbet/habiller.py` : une maquette se modifie toujours dans `docs/refonte/maquettes/`, puis on relance le script. Si une maquette habillée contredit le README 23.5, le README a raison.
+- Maquettes d'origine (ancien style, source du script) : `docs/refonte/maquettes/<Nom>.html` (une par écran, 390 px de large, styles en ligne). Le canevas complet : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns
 - Le statut de chaque écran vient d'une lecture du code et de l'historique Git, pas d'une comparaison visuelle. Les écrans notés « partiel » sont à contrôler en premier dans leur lot.
 
 ## 1. Périmètre
@@ -696,6 +697,77 @@ Demandée par Julien le 18 novembre 2026, après le bug du clavier remonté par 
 - [x] **Restent des panneaux** : le budget (60 caractères), le nombre de places (`PanneauNombre`), un nom ou un prénom, l'heure de fin de « Devine qui », ajouter un organisateur (`PanneauOrganisateur`), supprimer le groupe (`PanneauSupprimerGroupe`), dévoiler avant la fête. Rien à y changer.
 - [x] README 23.3 à jour, tests e2e à jour.
 
+### Lot 23 — Le style « Sorbet » (README 23.5)
+
+Décidé par Julien le 19 novembre 2026 : nouvelles couleurs, nouvelles polices, coins plus ronds, illustrations. **Aucun écran ne change de structure, aucun texte ne change.** Le README 23.5 fait foi, avec `docs/refonte/sorbet/habiller.py` pour les valeurs ; les maquettes de `docs/refonte/maquettes-sorbet/` montrent le résultat attendu, écran par écran. **Fait** (19 novembre 2026), d'un bloc et sans migration. Ce qui a été tranché en codant : section 6, « Lot 23 ».
+
+- [x] **Les jetons** (`app/assets/css/main.css`, `app/app.config.ts`) : les rôles gardent leurs noms, leurs valeurs changent (tableau du README 23.5). Les échelles brutes `brick`, `pine`, `mustard`, `kraft` sont remplacées par corail, menthe, lilas et pêche ; aucun écran ne doit nommer une teinte. `warning` devient le lilas ; `error` ne change pas.
+- [x] **Les polices** : Outfit pour les titres (`--font-serif` change de nom, ce n'est plus une police à empattements), DM Sans pour le texte, chargées comme Fraunces et Nunito aujourd'hui, avec les seules graisses utilisées.
+- [x] **Les coins et la carte** : les rayons du README 23.5 dans les composants `ui/` et dans le thème Nuxt UI (bouton, champ, panneau) ; `UiCard` perd son ombre floue pour le bord et la bande pêche.
+- [x] **Plus de jaune** : `UiNotice` (`caution`, `warning`), `UiActionCard` en `tone="warning"`, `UiStar`, les étiquettes et le cadeau à plusieurs des listes passent au lilas. Les jetons `alert`, `alert-ink`, `alert-link` du journal prennent les valeurs de l'alerte (rond violet à l'icône blanche) ; le bandeau « Le tirage n'est plus secret » les suit.
+- [x] **Le journal** : l'entrée « Devine qui : le palmarès est arrivé » en vert plein, texte blanc.
+- [x] **Les icônes de personne** (`app/utils/avatars.ts`, et côté serveur si les teintes y sont) : les six nouvelles teintes, sous les mêmes noms enregistrés. Les tuiles carrées des listes (`app/utils/listShades.ts`) : voir la section 6.
+- [x] **Le palmarès en images** : les quatre fonds foncés du README 23.5, texte blanc partout ; l'ancien écran moutarde avait un texte foncé, il passe au blanc, barres de progression comprises.
+- [x] **Les illustrations existantes** (`UiEnvelope*`, `UiEnvelopeSent`, `UiPodium`) : mêmes dessins, aux couleurs de Sorbet par les jetons (`envelope`, `envelope-fold`, `star`).
+- [x] **Les huit nouvelles illustrations**, un composant chacune, dessinées d'après `docs/refonte/sorbet/illus2.py` et posées aux endroits du tableau du README 23.5 : le sapin et ses paquets, le sapin au paquet en pointillés, la couronne, les trois paquets cochés, l'étiquette, la lettre cochée, les places à remplir, la feuille à cocher. Le logo reste dans la barre du haut.
+- [x] **Les emails** : rien n'y change, pas d'image.
+- [x] **Vérifier** : le contraste du texte sur chaque fond (au moins 4,5 pour 1 pour le texte courant) ; chaque écran à 390 px, car les nouvelles polices peuvent faire passer un titre ou un bouton sur une ligne de plus.
+- [x] Guide de style et `tests/e2e` à jour. README 23.1 réécrit avec les nouveaux jetons, 23.5 marqué fait. `docs/refonte/maquettes-sorbet/` devient la référence : le dire en tête de ce plan.
+
+### Correction 19 — Rien au-dessus du clavier, et la navigation toujours là (README 23.3, 22.21)
+
+Décidée par Julien le 19 novembre 2026. Indépendante des listes. Maquettes : `NavTirage`, `NavListe`, `NavRedaction`.
+
+- [ ] **Les pages où l'on rédige** (celles de la Correction 18) : « Valider » quitte la bande collée en bas et descend dans la page, à la fin du contenu. Le clavier passe par-dessus ; toucher hors du champ ferme le clavier. Vérifier sur un vrai téléphone, iOS et Android.
+- [ ] **Le menu partout**, pour une personne connectée : en haut à droite de chaque écran, à la place du bouton de langue, avec la langue, « Mon compte » et « Se déconnecter ». Y compris sur la page d'un tirage ouverte par le lien personnel, dès qu'il y a une session.
+- [ ] **La barre du bas partout**, pour une personne connectée : « Tirages / Listes », l'onglet actif selon l'écran. Le contenu de chaque page s'arrête au-dessus d'elle (`env(safe-area-inset-bottom)` compris).
+- [ ] **Sans session** : rien ne change. **Exceptions** : le palmarès en images n'a ni menu ni barre ; un panneau du bas recouvre la barre.
+- [ ] README 23.3 et 22.21 à jour, guide de style, `tests/e2e`.
+
+### Lot 24 — Listes V2 : écrire sur place (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Sans migration. Maquettes : `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListePlusieursLigne`, `ListeVisiteur`.
+
+- [ ] **Plus de barre au-dessus du clavier** dans le document d'une liste. Sous la ligne qu'on écrit : « Ajouter un lien » et « Supprimer », en liens de texte, visibles tant qu'on est dans la ligne.
+- [ ] **Le lien dans la ligne** : « Ajouter un lien » prolonge la ligne de « : » avec l'invitation « colle ou écris l'adresse », « Annuler » dessous. L'adresse posée devient le mot « lien » ; dessous, « Changer le lien », « Retirer le lien », « Supprimer ». Une idée garde un texte et un lien au plus : le modèle de données ne change pas.
+- [ ] **« J'offre autre chose » sur place** : plus de panneau, une ligne écrite en fin de personne, cochée à mon nom, avec sa phrase et « Supprimer ».
+- [ ] **Des liens de texte** pour « Se joindre » et « Tu participes », zone tactile de 44 px.
+- [ ] Trois langues, `tests/e2e`.
+
+### Lot 25 — Listes V2 : à plusieurs, et une personne reliée à son compte (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Avec migration. Maquettes : `ListeTeneurs`, `ListePersonneCompte`, `ListeVueReliee`, `ListeLiveTeneur` (la ligne « Tu tiens cette liste avec Hugo »).
+
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : qui tient une liste ; ce que voit et peut faire chacun (celui qui tient, la personne reliée, l'invité) ; inviter, accepter, retirer, le dernier qui ne peut pas partir.
+- [ ] **Base** : les comptes qui tiennent une liste (plusieurs par liste, celui qui l'a créée en fait partie comme les autres) ; les invitations en attente, par adresse ; l'adresse d'une personne de la famille et le compte qu'elle rejoint.
+- [ ] **« Ceux qui tiennent la liste »** (`ListeTeneurs`) : la liste, « Retirer », l'invitation par adresse avec son email, « Annuler » une invitation. Tous égaux. Ceux qui tiennent la liste voient tout, y compris ce qu'on leur offre.
+- [ ] **Relier une personne** (`ListePersonneCompte`) : l'adresse sur sa fiche, « Ne plus relier ».
+- [ ] **La personne reliée** (`ListeVueReliee`) : la liste apparaît dans ses listes ; sa section en premier, « C'est toi » ; elle écrit, corrige et supprime ses propres idées ; elle voit le reste comme tout invité et ne coche pas ce qui lui est destiné.
+- [ ] Trois langues, `tests/e2e`.
+
+### Lot 26 — Listes V2 : en direct (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Après le lot 25 (la présence en dépend). Maquette : `ListeLiveTeneur`.
+
+- [ ] **L'objet durable** : un par liste, WebSocket avec hibernation, déclaré dans la configuration de déploiement. Vérifier d'abord dans la documentation Cloudflare que l'offre du compte le permet, et le noter en section 6.
+- [ ] **Le signal** : chaque route qui change une liste prévient l'objet après l'écriture dans D1 ; l'objet envoie « la liste a changé » ; chaque navigateur recharge sa vue par les routes existantes. Aucune donnée de la liste ne passe par le canal.
+- [ ] **Les animations** : une ligne qui apparaît, change, se coche ou disparaît le montre par son mouvement, sans étiquette ni couleur. Respecter « réduire les animations ».
+- [ ] **La ligne bloquée** : qui écrit quelle ligne passe par l'objet ; les autres voient son curseur à sa couleur, avec son emoji et son prénom, la ligne ne se touche pas ; libérée à la validation, à la sortie de la ligne, ou après 30 secondes sans frappe.
+- [ ] **Cocher en même temps** : la première écriture gagne, l'autre voit la case passer en « pris », sans message.
+- [ ] **La présence**, entre ceux qui tiennent la liste seulement.
+- [ ] **Sans connexion** : la page se recharge quand elle redevient visible ; rien ne casse.
+- [ ] Tests : les fonctions pures du signal et du blocage ; un test `e2e` à deux navigateurs.
+
+### Lot 27 — Listes V2 : reprendre une liste (README 22.20)
+
+Décidé par Julien le 19 novembre 2026. Maquettes : `ListeNouvelleReprendre`, `ListeReprise`.
+
+- [ ] **Le cœur, en fonction pure** : ce qu'on reprend d'une liste (icône, mot, personnes, idées non cochées) et ce qu'on laisse (cadeaux cochés, hors liste, nom, date).
+- [ ] **Base** : sur une idée, de quelle liste elle a été reprise ; effacé quand on modifie l'idée et pour toutes au premier partage.
+- [ ] **« Repartir d'une liste »** dans le document vide, et **« Reprendre cette liste »** sur une liste passée. La nouvelle liste est un brouillon ; l'ancienne ne change pas.
+- [ ] **La marque** : la petite flèche grise au bout de la ligne, visible de ceux qui tiennent la liste seulement, et la phrase d'explication en haut.
+- [ ] Trois langues, `tests/e2e`. README 22.20 marqué fait.
+
 ## 6. Questions pour Julien
 
 À remplir pendant le travail : donnée manquante, écart entre une maquette et une règle, choix à trancher.
@@ -1014,3 +1086,48 @@ Codée le 18 novembre 2026. Points tranchés seul, à relire :
 2. **`EditionNouvelle`** : le petit mot quitte le formulaire de création pour une ligne qui ouvre `EditionMot`. Il faut garder le reste du formulaire pendant l'aller-retour.
 3. **Les listes de cadeaux** (lots 21 et 22) respectent déjà la règle : les idées s'écrivent dans le document (`ListeIdee`, `ListeNouvelle`), `ListePersonne` est une page. Leurs panneaux n'ont qu'un champ court : l'adresse email (`ListeConnexion`), le mot pour les autres (`ListeReserverPlusieurs`), le cadeau hors liste (`ListeHorsListe`).
 4. **Les pages des trois textes des pistes** n'ont pas de ligne d'aide sous le champ : l'aide actuelle est déjà la phrase sous le titre.
+
+### Lot 23 — le style « Sorbet »
+
+Écrit le 19 novembre 2026. Points à relire :
+
+1. **Le corail** : `#d93a2b`, plus soutenu que celui des premières planches (`#ff5c4d`), pour le contraste du texte blanc des boutons. L'autre voie serait de garder le corail vif avec un texte de bouton prune foncé.
+2. **Les tuiles carrées des listes** : leurs six couleurs pleines n'ont pas été redessinées. Dans les maquettes habillées, sapin, brique et moutarde ont suivi le thème (menthe, corail, lilas) ; prune, bleu nuit et kraft sont restés. À choisir : six couleurs pleines de Sorbet.
+3. **Violet et prune nuit**, deux des quatre couleurs du palmarès, sont de la même famille. Si deux écrans qui se suivent se ressemblent trop : remplacer la prune nuit par un bleu nuit ou un orange brûlé.
+4. **Les maquettes habillées n'ont pas été contrôlées à l'œil** : elles sortent d'un script. Les hauteurs des cadres n'ont pas été recalculées.
+5. **Le mode sombre** : une piste dessinée, aucune décision.
+6. **Le journal vide** n'a pas de maquette, donc pas d'illustration.
+
+**Codé le 19 novembre 2026.** Tranché seul, à relire :
+
+7. **Le texte posé sur un fond corail clair est en corail foncé `#b92d1f`**, pas en `#c93425` comme dans les maquettes : `#c93425` sur `#ffe3de` ne fait que 4,3 pour 1. Les liens et le texte d'action sur la page ou sur blanc restent en `#c93425` (`text-primary`, un cran plus foncé que le bouton `#d93a2b`, qui ne ferait que 4,3 sur la page).
+8. **Le texte discret `#796987` ne passe pas sur un fond doux** (4,3 sur `#ffeae1`, 4,2 sur le lilas clair). Là où il s'y trouvait (l'onglet « Créer un compte » non choisi), c'est le texte secondaire `#6b5a7a`. Un texte d'exemple dans un champ prend aussi `#796987`, au lieu d'un gris plus pâle.
+9. **`tint` et `soft` ont la même teinte** dans chaque famille (`#ffe3de`, `#dcf7ee`, `#f1e8fc`), comme dans `habiller.py`. Un rond `soft` posé dans un pavé `tint` ne s'en détache donc plus.
+10. **La case cochée par quelqu'un d'autre** (listes) : fond pêche `#f5b8a5` comme dans la maquette, mais coche prune au lieu de blanche (le blanc n'y fait que 1,7 pour 1).
+11. **Le voile derrière un panneau** : le code avait un voile blanc à 75 %, pas le gris des anciennes maquettes. Il est maintenant `#a8959d` à 75 %.
+12. **Le sapin garde deux verts** (`#0b7a5b` et `#085a43`) pour l'ombre entre ses étages ; le script les fondait en un seul. Son tronc est violet `#6a3db3`, comme dans les maquettes habillées. Les aiguilles de l'horloge de l'enveloppe en attente passent au même violet (le script les avait laissées brunes).
+13. **Le rabat des enveloppes** est d'une seule teinte (`#ffeae1`), comme dans les maquettes habillées : le dégradé du rabat a disparu avec la palette.
+14. **Dans le journal, l'heure de l'entrée « palmarès »** est en `#dcf7ee` (4,7 pour 1 sur le vert) au lieu de `#d3f3e8` (4,5 tout juste).
+15. **Les coins passent par les noms de Tailwind** (README 23.1) : `rounded-lg` (petite tuile, 14 px) est donc plus petit que `rounded-md` (bouton, 16 px). Les deux cases à cocher natives (`UiCheckRow`, `UiConfirmBox`) sont redessinées pour avoir leurs coins de 8 px (utilitaire `tick`).
+16. **Le grain de papier kraft du fond de page** est retiré : le fond est uni.
+17. **Sur les écrans de connexion et d'invitation**, l'illustration porte le nom « Under the Tree » comme le demande 23.5, et le nom reste écrit dessous : un lecteur d'écran l'entend deux fois.
+18. **Les noms des couleurs d'icône** dans les dictionnaires disent toujours « Rouge brique », « Vert sapin », « Moutarde », « Kraft », « Givre », « Prune » alors qu'on voit corail, menthe, citron, pêche, ciel et lilas. Aucun texte ne devait changer dans ce lot : à décider.
+19. **L'icône de l'onglet et de l'écran d'accueil du téléphone** (`public/favicon.svg`, PNG) garde les anciennes couleurs. Seule la couleur de la barre du navigateur (`theme-color`) a suivi.
+20. **Une pastille « envoyé » reste bleue** (couleur `info` de Nuxt UI) : 23.5 n'en dit rien.
+21. **Les tuiles carrées des listes** (`app/utils/listShades.ts`) n'ont pas été touchées, comme demandé (point 2).
+
+Écarts entre une maquette habillée et la règle : les points 7, 8, 10 et 14 (le contraste l'emporte), et le point 12 pour les aiguilles.
+
+Vérifié : la suite e2e (93 tests), et un passage automatique sur 63 écrans à 390 px avec les données des tests, sans débordement ni texte sous 4,5 pour 1 hors éléments désactivés. Regardés à l'œil : la connexion, le guide de style, une édition tirée, la page d'un tirage dévoilé. **Pas regardés à l'œil** : le palmarès en images, la liste vue par son lien, les panneaux du bas ouverts, les écrans en anglais et en allemand.
+
+Au passage : `hydrated` (aide des tests e2e) rendait la main avant que Vue ait pris la page ; retirer l'image du logo a suffi à faire perdre le texte tapé trop tôt. Elle attend maintenant le montage.
+
+### Correction 19 et lots 24 à 27 — navigation et listes V2
+
+Écrits le 19 novembre 2026. Points à relire :
+
+1. **La famille et les listes tenues à plusieurs** : « ma famille » reste rattachée à un compte. Quand Hugo tient une liste créée par Camille, il y voit les personnes de la liste, mais elles ne s'ajoutent pas à sa propre famille. À décider : une famille commune à ceux qui tiennent des listes ensemble.
+2. **« Repartir d'une liste »** propose toutes mes listes, en cours ou passées (proposition).
+3. **La ligne bloquée se libère après 30 secondes** sans frappe (proposition).
+4. **Le lot 26 dépend de l'offre Cloudflare** : les objets durables à stockage SQLite sont annoncés sur l'offre gratuite depuis avril 2025 ; à vérifier sur le compte avant de coder.
+5. **L'ordre conseillé** : Correction 19, lot 24, lot 27, lot 25, lot 26. Le lot 23 (Sorbet) se fait à part, quand rien d'autre n'est en cours.

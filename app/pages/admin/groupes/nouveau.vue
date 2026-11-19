@@ -24,7 +24,7 @@ const create = useCreateGroupMutation();
 // How many more groups the account may create; nothing without a limit.
 const home = useHomeQuery();
 const groupsLeft = computed(() => home.data.value?.groupsLeft ?? null);
-const toast = useToast();
+const toast = useMessages();
 
 const schema = computed(() =>
   z.object({
@@ -52,11 +52,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
     },
     {
       onSuccess: ({ group }) => {
-        toast.add({
-          title: t('adminGroup.newGroup.created'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
+        toast.done(t('adminGroup.newGroup.created'));
         navigateTo(`/admin/${group.slug}`, { replace: true });
       },
     },

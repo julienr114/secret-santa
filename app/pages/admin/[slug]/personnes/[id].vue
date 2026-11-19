@@ -21,14 +21,13 @@ const errorMessage = useErrorMessage();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
-const toast = useToast();
+const toast = useMessages();
 /**
  * Shows an error in a toast.
  * @param error - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const membersPath = computed(() => `/admin/${slug.value}/personnes`);
 
 const people = usePeopleQuery(slug);
@@ -112,12 +111,7 @@ const onSave = () =>
   update.mutate(
     { id: id.value, ...value.value },
     {
-      onSuccess: () =>
-        toast.add({
-          title: t('adminGroup.person.saved'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        }),
+      onSuccess: () => toast.done(t('adminGroup.person.saved')),
       onError,
     },
   );

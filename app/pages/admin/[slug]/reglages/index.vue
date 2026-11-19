@@ -15,7 +15,7 @@ import {
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk } = useT();
 const route = useRoute();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const context = useScreenContext(slug);
@@ -90,8 +90,7 @@ const onRemove = (accountId: string) =>
     onSettled: () => {
       confirmId.value = null;
     },
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 const deleting = ref(false);
 </script>

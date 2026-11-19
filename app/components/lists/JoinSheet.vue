@@ -18,7 +18,7 @@ const props = defineProps<{
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const tick = useTickMutation(() => props.via);
 const count = computed(() => props.idea.notes.length);
@@ -29,8 +29,7 @@ const onJoin = () =>
       onSuccess: () => {
         open.value = false;
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 </script>

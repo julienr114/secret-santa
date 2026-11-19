@@ -17,7 +17,7 @@ const listId = computed(() =>
   route.query.liste ? String(route.query.liste) : null,
 );
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const query = useMemberQuery(id);
@@ -53,18 +53,16 @@ const onLists = computed(() => {
 const onRemove = () =>
   remove.mutate(id.value, {
     onSuccess: () => {
-      toast.add({
-        title: t('lists.doc.memberDeleted', {
+      toast.done(
+        t('lists.doc.memberDeleted', {
           name: member.value?.firstName ?? '',
         }),
-        color: 'success',
-      });
+      );
       return navigateTo(listId.value ? `/listes/${listId.value}` : '/famille', {
         replace: true,
       });
     },
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 </script>
 

@@ -73,7 +73,7 @@ const drawn = computed(() =>
 // Avatar: picked in a bottom sheet on a draft, saved with "Valider";
 // closing the sheet any other way gives the choice up. The new avatar
 // shows at once and is dropped if the save fails.
-const toast = useToast();
+const toast = useMessages();
 const saveAvatar = useSaveAvatarMutation(token);
 const pickerOpen = ref(false);
 const chosen = ref<Avatar | null>(null);
@@ -99,7 +99,7 @@ const confirmPicker = (next: Avatar) => {
   saveAvatar.mutate(next, {
     onError: (error) => {
       chosen.value = null;
-      toast.add({ title: errorMessage(error), color: 'error' });
+      toast.failed(errorMessage(error));
     },
   });
 };
@@ -109,14 +109,8 @@ const confirmPicker = (next: Avatar) => {
 const claim = useClaimMutation(token);
 const onClaim = () =>
   claim.mutate(undefined, {
-    onSuccess: () =>
-      toast.add({
-        title: t('participant.account.added'),
-        color: 'success',
-        icon: 'i-lucide-check',
-      }),
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onSuccess: () => toast.done(t('participant.account.added')),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 
 // With an address given by the organiser, one tap sends the login link:
@@ -161,8 +155,7 @@ const onAnswer = () =>
       answerChosen.value = data.receiver;
       answerStep.value = data.receiver ? 'confirm' : 'choose';
     },
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 /**
  * Saves their answer, then closes the sheets.
@@ -173,14 +166,9 @@ const onConfirmAnswer = (personId: string) =>
   saveAnswer.mutate(personId, {
     onSuccess: () => {
       answerStep.value = null;
-      toast.add({
-        title: t('participant.answer.saved'),
-        color: 'success',
-        icon: 'i-lucide-check',
-      });
+      toast.done(t('participant.answer.saved'));
     },
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 
 /**

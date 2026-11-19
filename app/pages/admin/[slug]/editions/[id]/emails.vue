@@ -30,7 +30,7 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 const { t, locale } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const context = useScreenContext(slug, id);
@@ -232,18 +232,15 @@ const onSend = () =>
         const names = participants.value
           .filter((p) => isSelected(p.participationId))
           .map(fullName);
-        toast.add({
-          title: t('adminEdition.cockpit.email.sent', { count: sent }),
-          description: left === 0 && sent > 0 ? sentTo(names) : undefined,
-          color: 'success',
-          icon: 'i-lucide-mail-check',
-        });
+        toast.done(
+          t('adminEdition.cockpit.email.sent', { count: sent }),
+          left === 0 && sent > 0 ? sentTo(names) : undefined,
+        );
         choice.value = null;
         ticks.value = null;
         goBack(editionPath.value);
       },
-      onError: (error: unknown) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error: unknown) => toast.failed(errorMessage(error)),
     },
   );
 </script>

@@ -15,15 +15,14 @@ const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 /**
  * Shows an error in a toast.
  * @param error - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const context = useScreenContext(slug, id);
 useHead({
   title: () => context.titleOf(t('adminEdition.screen.prepare.exclusions')),

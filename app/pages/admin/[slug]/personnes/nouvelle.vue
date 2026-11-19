@@ -17,7 +17,7 @@ const { t } = useT();
 const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const route = useRoute();
-const toast = useToast();
+const toast = useMessages();
 const slug = computed(() => String(route.params.slug));
 const create = useCreatePersonMutation(slug);
 const dashboard = useDashboardQuery(slug);
@@ -72,11 +72,7 @@ const onAdd = async (again: boolean) => {
         ticked.value = [...ticked.value, person.id];
       }
     }
-    toast.add({
-      title: t('adminGroup.newPerson.added', { name: fullName(person) }),
-      color: 'success',
-      icon: 'i-lucide-check',
-    });
+    toast.done(t('adminGroup.newPerson.added', { name: fullName(person) }));
     if (again) reset(anyAvatar());
     else
       goBack(

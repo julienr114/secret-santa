@@ -23,7 +23,7 @@ import { useShareListMutation } from '~/composables/queries/useLists';
 // says who decides.
 const props = defineProps<{ doc: ListDocument; readonly?: boolean }>();
 const { t, tk } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const id = computed(() => props.doc.list.id);
 const share = useShareListMutation(id);
@@ -80,8 +80,7 @@ const send = (ask: ShareAsk, then: () => void) =>
     { ask },
     {
       onSuccess: then,
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
       onSettled: () => {
         asked.value = null;
       },
@@ -97,12 +96,7 @@ const turnOff = () => {
   asked.value = false;
   open.value = false;
   confirming.value = false;
-  send('off', () =>
-    toast.add({
-      title: t('lists.share.stopped'),
-      ...undoBar(t('common.actions.cancel'), turnOn),
-    }),
-  );
+  send('off', () => toast.undo(t('lists.share.stopped'), turnOn));
 };
 const onSwitch = (on: boolean) => {
   if (on && blocked.value) {
@@ -115,14 +109,14 @@ const onSwitch = (on: boolean) => {
 const onRenew = () =>
   send('renew', () => {
     confirming.value = false;
-    toast.add({ title: t('lists.share.changed'), color: 'success' });
+    toast.done(t('lists.share.changed'));
   });
 
 // « Copier » answers where it was touched: « Copié », for a moment.
 const copied = ref(false);
 const onCopy = async () => {
   if (!(await copyText(url.value))) {
-    toast.add({ title: t('lists.share.copyFailed'), color: 'error' });
+    toast.failed(t('lists.share.copyFailed'));
     return;
   }
   copied.value = true;

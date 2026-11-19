@@ -18,7 +18,7 @@ const route = useRoute();
 const router = useRouter();
 const id = computed(() => String(route.params.id));
 const { t, tk } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const query = useMemberQuery(id);
@@ -46,8 +46,7 @@ const onAnswer = (answer: HintAnswer) => {
     update.mutate(
       { answers: { [question.value]: answer } },
       {
-        onError: (error) =>
-          toast.add({ title: errorMessage(error), color: 'error' }),
+        onError: (error) => toast.failed(errorMessage(error)),
       },
     );
   }

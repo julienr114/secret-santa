@@ -59,7 +59,7 @@ const update = useUpdateIdeaMutation(via);
 const remove = useDeleteIdeaMutation(via);
 const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 
 const row = ref<HTMLElement | null>(null);
@@ -105,13 +105,11 @@ const onBox = () => {
     return;
   }
   const onError = (error: unknown) =>
-    toast.add({
-      title:
-        (error as { statusMessage?: string }).statusMessage === 'taken'
-          ? t('lists.visitor.takenNow')
-          : errorMessage(error),
-      color: 'error',
-    });
+    toast.failed(
+      (error as { statusMessage?: string }).statusMessage === 'taken'
+        ? t('lists.visitor.takenNow')
+        : errorMessage(error),
+    );
   if (inGroup.value) editing.change(props.idea, props.forName);
   else if (openGroup.value) editing.join(props.idea, props.forName);
   else if (mine.value) untick.mutate(props.idea.id, { onError });
@@ -271,7 +269,7 @@ const saveLink = (): boolean => {
 const setLink = async () => {
   if (!address.value.trim()) return cancelLink();
   if (!saveLink()) {
-    toast.add({ title: t('lists.doc.linkInvalid'), color: 'error' });
+    toast.failed(t('lists.doc.linkInvalid'));
     return;
   }
   await cancelLink();

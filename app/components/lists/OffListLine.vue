@@ -17,7 +17,7 @@ const props = defineProps<{
   holderName: string;
 }>();
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
 const add = useAddOffListMutation(() => props.token);
@@ -49,7 +49,7 @@ const commit = () => {
       },
       onError: (error) => {
         writing.value = true;
-        toast.add({ title: errorMessage(error), color: 'error' });
+        toast.failed(errorMessage(error));
       },
     },
   );

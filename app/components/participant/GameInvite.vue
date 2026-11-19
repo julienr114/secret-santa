@@ -11,14 +11,13 @@ const props = defineProps<{
   count: { played: number; total: number };
 }>();
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const lines = useGameLines();
 const skip = useSkipGameMutation(() => props.token);
 const onSkip = () =>
   skip.mutate(true, {
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 const countLine = computed(
   () =>

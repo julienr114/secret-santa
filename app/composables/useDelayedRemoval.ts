@@ -1,6 +1,3 @@
-/** How long « Annuler » stays, before what was removed goes for good. */
-const UNDO_MS = 6000;
-
 /**
  * Something removed at once on the screen, with « Annuler » in a toast
  * (README 22.19, 22.20): nothing is asked of the server before the toast
@@ -12,8 +9,7 @@ const UNDO_MS = 6000;
 export const useDelayedRemoval = (
   commit: (id: string, done: () => void) => void,
 ) => {
-  const toast = useToast();
-  const { t } = useT();
+  const toast = useMessages();
   const leaving = ref<{ id: string; timer: number } | null>(null);
   const flush = () => {
     const gone = leaving.value;
@@ -32,17 +28,16 @@ export const useDelayedRemoval = (
     flush();
     const toastId = `removed-${id}`;
     leaving.value = { id, timer: window.setTimeout(flush, UNDO_MS) };
-    toast.add({
-      id: toastId,
+    toast.undo(
       title,
-      duration: UNDO_MS,
-      ...undoBar(t('common.actions.cancel'), () => {
+      () => {
         if (leaving.value?.id !== id) return;
         window.clearTimeout(leaving.value.timer);
         leaving.value = null;
         toast.remove(toastId);
-      }),
-    });
+      },
+      { id: toastId },
+    );
   };
   onBeforeUnmount(flush);
   return { leaving: computed(() => leaving.value?.id ?? null), start };

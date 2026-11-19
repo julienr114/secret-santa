@@ -38,11 +38,27 @@ export default defineAppConfig({
         footer: 'shrink-0 px-[max(1rem,env(safe-area-inset-left))]',
       },
     },
-    // Toasts stay clear of the iPhone's notch and home bar.
+    // The messages after an action (README 23.3, Correction 26, maquette
+    // StyleMessages): at the bottom, above the bar of tabs and the edge
+    // of the phone, 420 px wide at most on a computer.
     toaster: {
       slots: {
         viewport:
-          'mb-[env(safe-area-inset-bottom)] mt-[env(safe-area-inset-top)]',
+          'mb-[calc(var(--tab-bar)+env(safe-area-inset-bottom))] mt-[env(safe-area-inset-top)] sm:w-[420px]',
+      },
+    },
+    // One dark plum bar for every one of them: white text, the detail
+    // lighter, a cast shadow, no outline. What differs between the three
+    // kinds is in `useMessages`.
+    toast: {
+      slots: {
+        root: 'min-h-13 items-center gap-3 rounded-[18px] bg-inverted py-2 pr-2 pl-4 shadow-[0_10px_28px_rgba(41,37,36,0.3)] ring-0',
+        title: 'text-[15px] font-semibold text-inverted',
+        description: 'text-[13px] font-normal text-message-detail',
+        actions: 'shrink-0',
+      },
+      variants: {
+        title: { true: { description: 'mt-0' } },
       },
     },
   },

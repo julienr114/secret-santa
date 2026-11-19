@@ -25,7 +25,7 @@ useOrganizersOf(() => query.data.value?.organizers);
 const save = useGuessMutation(token);
 const { t } = useT();
 const organizers = useOrganizers();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 
 const game = computed(() => query.data.value);
@@ -90,8 +90,7 @@ const onSkip = (skipped: boolean) =>
       skipAsked.value = false;
       await query.refetch();
     },
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 /** « 3 pronostics sur 5 », once one played in « Toutes les paires ». */
 const progress = computed(() => {
@@ -191,8 +190,7 @@ const onChoose = (giverId: string | null) => {
         choosingFor.value = null;
         await query.refetch();
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 };

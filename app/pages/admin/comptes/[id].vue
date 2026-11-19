@@ -19,7 +19,7 @@ const route = useRoute();
 const id = computed(() => String(route.params.id));
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 
 const query = useAdminAccountsQuery();
 const account = computed(() =>
@@ -75,8 +75,7 @@ const onQuota = (step: number) => {
       onSettled: () => {
         if (pendingQuota.value === next) pendingQuota.value = null;
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 };
@@ -121,16 +120,11 @@ const setDisabled = (disabled: boolean) =>
     {
       onSuccess: () => {
         confirming.value = false;
-        toast.add({
-          title: disabled
-            ? t('auth.admin.disabledDone')
-            : t('auth.admin.restored'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
+        toast.done(
+          disabled ? t('auth.admin.disabledDone') : t('auth.admin.restored'),
+        );
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 </script>

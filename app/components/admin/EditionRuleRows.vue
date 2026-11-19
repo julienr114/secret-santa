@@ -21,7 +21,7 @@ const props = defineProps<{
 }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 
 const edition = useEditionQuery(
   () => props.slug,
@@ -89,8 +89,7 @@ const onValidate = (rule: Rule, value: string) => {
       },
     },
     {
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
       onSettled: () => {
         pending.value = Object.fromEntries(
           Object.entries(pending.value).filter(([key]) => key !== rule),

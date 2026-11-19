@@ -25,7 +25,7 @@ definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
 const { t, tk, locale } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const list = useListQuery(id);
 const query = useHoldersQuery(id);
@@ -83,20 +83,17 @@ const WHY: Record<string, string> = {
 };
 const onError = (error: unknown) => {
   const why = (error as { statusMessage?: string }).statusMessage ?? '';
-  toast.add({
-    title: WHY[why] ? tk(WHY[why]) : errorMessage(error),
-    color: 'error',
-  });
+  toast.failed(WHY[why] ? tk(WHY[why]) : errorMessage(error));
 };
 
 const onRemove = (holder: Holder) =>
   remove.mutate(holder.accountId, {
     onSuccess: () => {
-      toast.add({
-        title: holder.me
+      toast.done(
+        holder.me
           ? t('lists.holders.left')
           : t('lists.holders.removed', { name: holder.name }),
-      });
+      );
       // The list I left is no longer mine to open.
       if (holder.me) return navigateTo('/listes', { replace: true });
     },
@@ -204,7 +201,7 @@ const onInvite = () => {
         chosen.value = null;
         email.value = '';
         level.value = 'write';
-        toast.add({ title: t('lists.holders.invitedDone'), color: 'success' });
+        toast.done(t('lists.holders.invitedDone'));
       },
       onError,
     },
@@ -212,8 +209,7 @@ const onInvite = () => {
 };
 const onResend = (expired: Invite) =>
   resend.mutate(expired.id, {
-    onSuccess: () =>
-      toast.add({ title: t('lists.holders.resent'), color: 'success' }),
+    onSuccess: () => toast.done(t('lists.holders.resent')),
     onError,
   });
 </script>

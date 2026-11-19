@@ -14,7 +14,7 @@ import {
 export const useRuleSaver = (slug: MaybeRefOrGetter<string>) => {
   const rules = useRulesQuery(slug);
   const update = useUpdateRulesMutation(slug);
-  const toast = useToast();
+  const toast = useMessages();
   const errorMessage = useErrorMessage();
   /** Values chosen and not yet confirmed by the server. */
   const pending = ref<RulesPatch>({});
@@ -37,8 +37,7 @@ export const useRuleSaver = (slug: MaybeRefOrGetter<string>) => {
     };
     update.mutate(patch, {
       onSettled: settle,
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     });
   };
   /**

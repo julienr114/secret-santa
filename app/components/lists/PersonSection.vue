@@ -72,13 +72,12 @@ const rows = computed<Row[]>(() => {
   );
   return at === laid.others ? [...laid.rows, { kind: 'drop' }] : laid.rows;
 });
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const update = useUpdateMemberMutation(() => props.person.member.id);
 const save = (patch: { firstName?: string; avatar?: Avatar }) =>
   update.mutate(patch, {
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 const iconOpen = ref(false);
 const onIcon = (avatar: Avatar) => {

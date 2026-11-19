@@ -34,7 +34,7 @@ useHead({
 });
 const screen = computed(() => ({ back: `/admin/${slug.value}/personnes` }));
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 const mutation = useInviteLinkMutation(slug);
 const opening = useBusy(() => mutation.isPending.value);
 
@@ -118,8 +118,7 @@ const save = (change: Partial<typeof settings.value>) => {
  * @param failure - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (failure: unknown) =>
-  toast.add({ title: errorMessage(failure), color: 'error' });
+const onError = (failure: unknown) => toast.failed(errorMessage(failure));
 const onOpen = () => mutation.mutate({ open: true }, { onError });
 const confirming = ref<null | 'renew' | 'close'>(null);
 const onRenew = () =>
@@ -149,11 +148,7 @@ const onClose = () =>
  */
 const copy = async () => {
   await navigator.clipboard.writeText(message.value);
-  toast.add({
-    title: t('adminEdition.invite.copied'),
-    color: 'success',
-    icon: 'i-lucide-clipboard-check',
-  });
+  toast.done(t('adminEdition.invite.copied'));
 };
 /**
  * Opens the phone's share sheet, or copies where there is none.

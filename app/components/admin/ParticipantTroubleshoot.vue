@@ -15,15 +15,14 @@ const props = defineProps<{
   participant: Participant;
 }>();
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 /**
  * Shows an error in a toast.
  * @param error - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 
 const unsend = useUnsendMutation(() => props.slug);
 const regenerate = useRegenerateMutation(() => props.slug);
@@ -42,11 +41,7 @@ watch(
  */
 const onUnsend = () =>
   unsend.mutate(props.participant.participationId, {
-    onSuccess: () =>
-      toast.add({
-        title: t('adminEdition.participant.unsendDone'),
-        color: 'success',
-      }),
+    onSuccess: () => toast.done(t('adminEdition.participant.unsendDone')),
     onError,
   });
 /**
@@ -57,11 +52,10 @@ const onRegenerate = () =>
   regenerate.mutate(props.participant.participationId, {
     onSuccess: () => {
       confirming.value = false;
-      toast.add({
-        title: t('adminEdition.participant.linkRegenerated'),
-        description: t('adminEdition.participant.linkRegeneratedDescription'),
-        color: 'success',
-      });
+      toast.done(
+        t('adminEdition.participant.linkRegenerated'),
+        t('adminEdition.participant.linkRegeneratedDescription'),
+      );
     },
     onError,
   });

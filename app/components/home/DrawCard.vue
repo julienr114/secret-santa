@@ -40,12 +40,11 @@ const guessing = computed(
 // « Je passe mon tour » (Correction 15, DevineAccueilFin).
 const gameLines = useGameLines();
 const skip = useSkipGameMutation(() => props.draw.path.split('/p/')[1] ?? '');
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const onSkip = () =>
   skip.mutate(true, {
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 const envelope = computed(() =>
   newHints.value || guessing.value

@@ -24,9 +24,8 @@ const props = withDefaults(
 
 const { t } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const toast = useMessages();
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const people = usePeopleQuery(() => props.slug);
 const remove = useDeleteExclusionMutation(() => props.slug);
 

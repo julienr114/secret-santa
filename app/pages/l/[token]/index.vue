@@ -22,7 +22,7 @@ const route = useRoute();
 const router = useRouter();
 const token = computed(() => String(route.params.token));
 const { t, locale } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
 const query = useLinkQuery(token);
@@ -71,13 +71,11 @@ const details = (person: PersonLine) => {
 };
 
 const onError = (error: unknown) =>
-  toast.add({
-    title:
-      (error as { statusMessage?: string }).statusMessage === 'taken'
-        ? t('lists.visitor.takenNow')
-        : errorMessage(error),
-    color: 'error',
-  });
+  toast.failed(
+    (error as { statusMessage?: string }).statusMessage === 'taken'
+      ? t('lists.visitor.takenNow')
+      : errorMessage(error),
+  );
 /**
  * Ticks an idea: at once when logged in, after an address otherwise.
  * @param idea - The idea.

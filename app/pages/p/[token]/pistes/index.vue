@@ -23,7 +23,7 @@ const personal = usePersonalQuery(token);
 const copy = useCopyHintsMutation(token);
 const { t, tk } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 
 const hints = computed(() => query.data.value);
 const editable = computed(() => hints.value?.editable ?? false);
@@ -72,12 +72,8 @@ const textPath = (key: HintText) =>
 const onCopy = () =>
   copy.mutate(undefined, {
     onSuccess: (data) =>
-      toast.add({
-        title: t('hints.copy.done', { edition: data.previousEdition ?? '' }),
-        color: 'success',
-      }),
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+      toast.done(t('hints.copy.done', { edition: data.previousEdition ?? '' })),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 /** The icon of each text while it is empty. */
 const TEXT_ICONS: Record<HintText, string> = {

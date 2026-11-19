@@ -29,7 +29,7 @@ const save = useSaveHintsMutation(token);
 const goBack = useGoBack();
 const { t, tk } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 
 const mode = computed(() => query.data.value?.mode ?? 'full');
 const asked = computed(() => questionsFor(mode.value));
@@ -81,8 +81,7 @@ const onAnswer = (answer: HintAnswer | null) => {
     save.mutate(
       { answers: { [question.value]: answer } },
       {
-        onError: (error) =>
-          toast.add({ title: errorMessage(error), color: 'error' }),
+        onError: (error) => toast.failed(errorMessage(error)),
       },
     );
   }

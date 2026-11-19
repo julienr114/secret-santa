@@ -295,6 +295,10 @@ const entries = computed(() => [
   entry('5', 'message_sent', 300),
   entry('6', 'edition_created', 400),
 ]);
+// The messages after an action (README 23.3): the three kinds, fired
+// for real, since they live at the bottom of the screen.
+const messages = useMessages();
+const undone = ref(0);
 </script>
 
 <template>
@@ -660,6 +664,47 @@ const entries = computed(() => [
         :on-click="() => undefined"
       />
     </UiList>
+
+    <section class="flex flex-col gap-3" data-testid="guide-messages">
+      <UiSectionTitle>Messages après une action (useMessages)</UiSectionTitle>
+      <p class="text-sm text-toned">
+        Un bandeau prune foncé, en bas de l'écran, un seul à la fois. Jamais
+        pour une information qui doit rester : c'est le rôle de UiNotice.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <UButton
+          variant="outline"
+          color="neutral"
+          label="Fait, et ça se rattrape"
+          @click="
+            messages.undo('Coche de Mamie retirée', () => {
+              undone += 1;
+            })
+          "
+        />
+        <UButton
+          variant="outline"
+          color="neutral"
+          label="Fait"
+          @click="messages.done('3 emails envoyés', 'Inès, Louis et Mamie')"
+        />
+        <UButton
+          variant="outline"
+          color="neutral"
+          label="Ça n'a pas marché"
+          @click="
+            messages.failed(
+              'L’envoi n’est pas parti',
+              'Vérifie ta connexion, puis réessaie.',
+            )
+          "
+        />
+      </div>
+      <p class="text-sm text-toned" data-testid="guide-undone">
+        « Annuler » touché {{ undone }} fois. Le premier reste 6 secondes, le
+        deuxième 4, le troisième jusqu'à ce qu'on le ferme.
+      </p>
+    </section>
 
     <section class="flex flex-col gap-3">
       <UiSectionTitle>Page d'un tirage</UiSectionTitle>

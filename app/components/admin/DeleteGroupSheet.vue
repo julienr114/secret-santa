@@ -14,7 +14,7 @@ const props = defineProps<{
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 const remove = useDeleteGroupMutation();
 const busy = useBusy(() => remove.isPending.value);
 const typed = ref('');
@@ -42,11 +42,7 @@ const onDelete = () =>
     { id: props.groupId, confirm: typed.value.trim() },
     {
       onSuccess: () => {
-        toast.add({
-          title: t('adminGroup.dashboard.deleteDone'),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
+        toast.done(t('adminGroup.dashboard.deleteDone'));
         navigateTo('/', { replace: true });
       },
     },

@@ -17,7 +17,18 @@ useHead({
 </script>
 
 <template>
-  <UApp :locale="UI_LOCALES[locale]">
+  <!-- One message at a time, at the bottom, without a progress line
+       (README 23.3): a new one replaces the old. -->
+  <UApp
+    :locale="UI_LOCALES[locale]"
+    :toaster="{
+      position: 'bottom-center',
+      max: 1,
+      expand: false,
+      progress: false,
+      duration: 4000,
+    }"
+  >
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

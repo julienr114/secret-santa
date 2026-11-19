@@ -9,7 +9,7 @@ import { useDecideRequestMutation } from '~/composables/queries/useAdmin';
 export const useDecideRequest = () => {
   const mutation = useDecideRequestMutation();
   const { t } = useT();
-  const toast = useToast();
+  const toast = useMessages();
   const errorMessage = useErrorMessage();
   /**
    * Accepts or refuses a request.
@@ -30,14 +30,11 @@ export const useDecideRequest = () => {
       {
         onSuccess: () => {
           onDone?.();
-          toast.add({
-            title: approve ? t('auth.admin.approved') : t('auth.admin.refused'),
-            color: 'success',
-            icon: 'i-lucide-check',
-          });
+          toast.done(
+            approve ? t('auth.admin.approved') : t('auth.admin.refused'),
+          );
         },
-        onError: (error) =>
-          toast.add({ title: errorMessage(error), color: 'error' }),
+        onError: (error) => toast.failed(errorMessage(error)),
       },
     );
   /**

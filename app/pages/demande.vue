@@ -13,7 +13,7 @@ useHead({
 });
 const screen = { back: '/' };
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 const goBack = useGoBack();
 const ask = useRequestGroupMutation();
 const message = ref('');
@@ -29,11 +29,7 @@ const onSend = () =>
   canSend.value &&
   ask.mutate(message.value.trim(), {
     onSuccess: () => {
-      toast.add({
-        title: t('auth.home.requestSent'),
-        color: 'success',
-        icon: 'i-lucide-check',
-      });
+      toast.done(t('auth.home.requestSent'));
       goBack('/');
     },
   });

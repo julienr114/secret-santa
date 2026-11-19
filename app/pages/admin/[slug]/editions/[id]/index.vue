@@ -26,7 +26,7 @@ const route = useRoute();
 const router = useRouter();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
-const toast = useToast();
+const toast = useMessages();
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();
 /**
@@ -34,8 +34,7 @@ const errorMessage = useErrorMessage();
  * @param error - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 
 const edition = useEditionQuery(slug, id);
 const dashboard = useDashboardQuery(slug);
@@ -135,11 +134,7 @@ const runDraw = () =>
   drawMutation.mutate(undefined, {
     onSuccess: () => {
       drawOpen.value = false;
-      toast.add({
-        title: t('adminEdition.cockpit.drawDone'),
-        icon: 'i-lucide-sparkles',
-        color: 'success',
-      });
+      toast.done(t('adminEdition.cockpit.drawDone'));
     },
     onError,
   });
@@ -186,12 +181,7 @@ const onStartAnswers = () =>
  */
 const onAbandonAnswers = () =>
   abandonAnswers.mutate(undefined, {
-    onSuccess: () =>
-      toast.add({
-        title: t('adminEdition.answers.abandoned'),
-        icon: 'i-lucide-rotate-ccw',
-        color: 'success',
-      }),
+    onSuccess: () => toast.done(t('adminEdition.answers.abandoned')),
     onError,
   });
 const validateOpen = ref(false);
@@ -208,11 +198,7 @@ const onValidateAnswers = () =>
   validateAnswers.mutate(undefined, {
     onSuccess: () => {
       validateOpen.value = false;
-      toast.add({
-        title: t('adminEdition.answers.validate.done'),
-        icon: 'i-lucide-sparkles',
-        color: 'success',
-      });
+      toast.done(t('adminEdition.answers.validate.done'));
     },
     onError,
   });
@@ -229,11 +215,7 @@ const onReveal = (early: boolean) =>
     {
       onSuccess: () => {
         revealOpen.value = false;
-        toast.add({
-          title: t('adminEdition.screen.reveal.done'),
-          icon: 'i-lucide-eye',
-          color: 'success',
-        });
+        toast.done(t('adminEdition.screen.reveal.done'));
       },
       onError,
     },

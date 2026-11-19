@@ -42,7 +42,7 @@ const open = defineModel<boolean>('open', { required: true });
 const emit = defineEmits<{ sent: []; customize: [] }>();
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
 const types = computed(() => messageTypesFor(props.status, props.drawMode));
@@ -112,8 +112,7 @@ const done = () => {
  * @param error - The error of a mutation.
  * @returns Nothing.
  */
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const sharer = useShareMessage(() => props.slug);
 /**
  * Opens the phone's share sheet with the message, then moves on.
@@ -139,11 +138,7 @@ const linkCopied = useLinkCopiedMutation(() => props.slug);
 const onCopyLink = async () => {
   if (!message.value) return;
   await navigator.clipboard.writeText(message.value.link);
-  toast.add({
-    title: t('adminEdition.participant.linkCopied'),
-    color: 'success',
-    icon: 'i-lucide-clipboard-check',
-  });
+  toast.done(t('adminEdition.participant.linkCopied'));
   linkCopied.mutate(props.participant.participationId);
 };
 /**
@@ -161,13 +156,11 @@ const onEmail = () =>
     },
     {
       onSuccess: () => {
-        toast.add({
-          title: t('adminEdition.screen.sheet.emailSent', {
+        toast.done(
+          t('adminEdition.screen.sheet.emailSent', {
             name: fullName(props.participant),
           }),
-          color: 'success',
-          icon: 'i-lucide-mail-check',
-        });
+        );
         done();
       },
       onError,

@@ -20,7 +20,7 @@ const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
-const toast = useToast();
+const toast = useMessages();
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
@@ -119,15 +119,11 @@ const onSave = async () => {
         remove.mutateAsync(participationOf(personId)),
       ),
     );
-    toast.add({
-      title: t('adminEdition.addParticipants.saved', { count: total }),
-      color: 'success',
-      icon: 'i-lucide-check',
-    });
+    toast.done(t('adminEdition.addParticipants.saved', { count: total }));
     ticked.value = null;
     goBack(editionPath.value);
   } catch (error) {
-    toast.add({ title: errorMessage(error), color: 'error' });
+    toast.failed(errorMessage(error));
   } finally {
     saving.value = false;
   }

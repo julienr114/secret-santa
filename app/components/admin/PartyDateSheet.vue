@@ -13,7 +13,7 @@ const props = defineProps<{
 const open = defineModel<boolean>('open', { required: true });
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 const update = useUpdateEditionMutation(() => props.slug);
 const suggestion = computed(() => `${new Date().getFullYear()}-12-25`);
 const error = computed(() =>
@@ -30,12 +30,10 @@ const onValidate = (eventDate: string) =>
     {
       onSuccess: () => {
         open.value = false;
-        toast.add({
-          title: t('adminEdition.screen.dateSheet.saved'),
-          description: formatEventDate(eventDate, locale.value),
-          color: 'success',
-          icon: 'i-lucide-check',
-        });
+        toast.done(
+          t('adminEdition.screen.dateSheet.saved'),
+          formatEventDate(eventDate, locale.value),
+        );
       },
     },
   );

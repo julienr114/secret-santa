@@ -23,10 +23,9 @@ const props = defineProps<{
 }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 const add = useAddPersonMutation(() => props.listId);
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const adding = ref<string | null>(null);
 const onAdd = (memberId: string) => {
   adding.value = memberId;

@@ -9,7 +9,7 @@ import { useMarkSentMutation, type Via } from './queries/useEdition';
  */
 export const useShareMessage = (slug: MaybeRefOrGetter<string>) => {
   const mark = useMarkSentMutation(slug);
-  const toast = useToast();
+  const toast = useMessages();
   const { t } = useT();
   const errorMessage = useErrorMessage();
 
@@ -21,12 +21,10 @@ export const useShareMessage = (slug: MaybeRefOrGetter<string>) => {
       );
     }
     await navigator.clipboard.writeText(text);
-    toast.add({
-      title: t('adminEdition.share.copied'),
-      description: t('adminEdition.share.copiedDescription'),
-      icon: 'i-lucide-clipboard-check',
-      color: 'success',
-    });
+    toast.done(
+      t('adminEdition.share.copied'),
+      t('adminEdition.share.copiedDescription'),
+    );
     return 'copy';
   };
 
@@ -41,8 +39,7 @@ export const useShareMessage = (slug: MaybeRefOrGetter<string>) => {
       mark.mutate(
         { participationId, type, via },
         {
-          onError: (error) =>
-            toast.add({ title: errorMessage(error), color: 'error' }),
+          onError: (error) => toast.failed(errorMessage(error)),
         },
       );
     }
@@ -55,11 +52,7 @@ export const useShareMessage = (slug: MaybeRefOrGetter<string>) => {
   ) => {
     if (!text) return;
     await navigator.clipboard.writeText(text);
-    toast.add({
-      title: t('adminEdition.share.copied'),
-      icon: 'i-lucide-clipboard-check',
-      color: 'success',
-    });
+    toast.done(t('adminEdition.share.copied'));
     mark.mutate({ participationId, type, via: 'copy' });
   };
 

@@ -10,7 +10,7 @@ const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
-const toast = useToast();
+const toast = useMessages();
 const { t, tk } = useT();
 const goBack = useGoBack();
 const errorMessage = useErrorMessage();
@@ -75,11 +75,10 @@ const onCancel = () =>
     { reason: reason.value.trim() },
     {
       onSuccess: () => {
-        toast.add({
-          title: t('adminEdition.cancelDraw.done'),
-          description: t('adminEdition.cancelDraw.doneDescription'),
-          color: 'success',
-        });
+        toast.done(
+          t('adminEdition.cancelDraw.done'),
+          t('adminEdition.cancelDraw.doneDescription'),
+        );
         goBack(editionPath.value);
       },
     },

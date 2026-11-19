@@ -21,7 +21,7 @@ const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 const { t, locale } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const context = useScreenContext(slug, id);
@@ -129,19 +129,16 @@ const onSend = () =>
     { note: noteFor('rappel'), participationIds: selected.value },
     {
       onSuccess: () => {
-        toast.add({
-          title: t('adminEdition.game.reminderSent', {
+        toast.done(
+          t('adminEdition.game.reminderSent', {
             count: selected.value.length,
           }),
-          color: 'success',
-          icon: 'i-lucide-mail-check',
-        });
+        );
         choice.value = null;
         ticks.value = null;
         goBack(editionPath.value);
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 
@@ -151,11 +148,7 @@ const groupMessage = computed(() => groupText(guess.value, noteFor('groupe')));
 /** Copies the message, and says so. */
 const copy = async () => {
   await navigator.clipboard.writeText(groupMessage.value);
-  toast.add({
-    title: t('adminEdition.game.group.copied'),
-    color: 'success',
-    icon: 'i-lucide-check',
-  });
+  toast.done(t('adminEdition.game.group.copied'));
 };
 /** Opens the phone's share sheet, or copies where there is none. */
 const share = async () => {

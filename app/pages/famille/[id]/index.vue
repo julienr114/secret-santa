@@ -29,7 +29,7 @@ const place = computed(() =>
   route.query.place ? String(route.query.place) : null,
 );
 const { t, tk, locale } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const query = useMemberQuery(id);
@@ -47,8 +47,7 @@ const suffix = computed(() =>
 
 const save = (patch: Parameters<typeof update.mutate>[0]) =>
   update.mutate(patch, {
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 const editing = ref<
   null | 'icon' | 'name' | 'birth' | 'clothing' | 'shoe' | 'email'
@@ -106,8 +105,7 @@ const onRemove = () =>
   place.value &&
   remove.mutate(place.value, {
     onSuccess: () => goBack(back.value),
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 </script>
 

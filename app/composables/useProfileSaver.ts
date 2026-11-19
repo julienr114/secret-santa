@@ -26,7 +26,7 @@ type ProfileField = keyof ProfilePatch;
 export const useProfileSaver = () => {
   const account = useAccountQuery();
   const update = useSaveProfileMutation();
-  const toast = useToast();
+  const toast = useMessages();
   const errorMessage = useErrorMessage();
   /** Values chosen and not yet confirmed by the server. */
   const pending = ref<ProfilePatch>({});
@@ -54,8 +54,7 @@ export const useProfileSaver = () => {
     };
     update.mutate(body, {
       onSettled: settle,
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     });
   };
   /**

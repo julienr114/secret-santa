@@ -25,7 +25,7 @@ const props = defineProps<{
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const change = useChangeClaimMutation(() => props.via);
 const untick = useUntickMutation(() => props.via);
@@ -86,8 +86,7 @@ const passes = computed(() => {
     { names: list, next: names[0]! },
   );
 });
-const onError = (error: unknown) =>
-  toast.add({ title: errorMessage(error), color: 'error' });
+const onError = (error: unknown) => toast.failed(errorMessage(error));
 const onDone = () => {
   const was = mine.value;
   if (!was) return;

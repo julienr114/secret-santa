@@ -127,7 +127,7 @@ provide(LIST_EDITING, {
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
 // with « Annuler » in the toast.
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const removePerson = useRemovePersonMutation(id);
 const removal = useDelayedRemoval((personId, done) =>
@@ -150,8 +150,7 @@ const unticking = useDelayedRemoval((key, done) => {
   untickFor.mutate(
     { ideaId, claimId },
     {
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
       onSettled: done,
     },
   );
@@ -224,13 +223,11 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
   reorder.mutate(next, {
     onError: (error) => {
       wanted.value = null;
-      toast.add({
-        title:
-          (error as { statusMessage?: string }).statusMessage === 'list_changed'
-            ? t('lists.doc.drag.changed')
-            : errorMessage(error),
-        color: 'error',
-      });
+      toast.failed(
+        (error as { statusMessage?: string }).statusMessage === 'list_changed'
+          ? t('lists.doc.drag.changed')
+          : errorMessage(error),
+      );
     },
   });
   if (!what) return;
@@ -246,15 +243,14 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
     position: (place?.index ?? 0) + 1,
     count: place?.count ?? 0,
   });
-  toast.add({
-    id: 'moved',
-    title: t('lists.doc.drag.moved', { name }),
-    duration: 5000,
-    ...undoBar(t('common.actions.cancel'), () => {
+  toast.undo(
+    t('lists.doc.drag.moved', { name }),
+    () => {
       toast.remove('moved');
       saveOrder(before, null);
-    }),
-  });
+    },
+    { id: 'moved', duration: 5000 },
+  );
 };
 const board = ref<HTMLElement | null>(null);
 const onDrop = (what: Lifted, place: DropPlace) =>

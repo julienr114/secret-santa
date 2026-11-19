@@ -13,7 +13,7 @@ import {
 // bottom. In « Listes », not in « Mon compte »: it only serves the lists.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
-const toast = useToast();
+const toast = useMessages();
 const errorMessage = useErrorMessage();
 const query = useFamilyQuery();
 const create = useCreateMemberMutation();
@@ -46,8 +46,7 @@ const onNew = (firstName: string) =>
       onSuccess: () => {
         sheetOpen.value = false;
       },
-      onError: (error) =>
-        toast.add({ title: errorMessage(error), color: 'error' }),
+      onError: (error) => toast.failed(errorMessage(error)),
     },
   );
 </script>

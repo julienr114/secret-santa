@@ -16,7 +16,7 @@ import { formatDay } from '~/utils/labels';
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
 const errorMessage = useErrorMessage();
-const toast = useToast();
+const toast = useMessages();
 useHead({ title: () => `${t('auth.account.title')} — ${t('common.appName')}` });
 const screen = computed(() => ({ back: '/' }));
 
@@ -84,14 +84,8 @@ const revokeOne = useRevokeSessionMutation();
  */
 const onRevokeOne = (id: string) =>
   revokeOne.mutate(id, {
-    onSuccess: () =>
-      toast.add({
-        title: t('auth.account.revoked'),
-        color: 'success',
-        icon: 'i-lucide-check',
-      }),
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onSuccess: () => toast.done(t('auth.account.revoked')),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 
 const revokeAll = useRevokeAllMutation();
@@ -105,7 +99,7 @@ const onRevokeAll = () =>
     onSuccess: () => navigateTo(LOGIN, { replace: true }),
     onError: (error) => {
       confirming.value = false;
-      toast.add({ title: errorMessage(error), color: 'error' });
+      toast.failed(errorMessage(error));
     },
   });
 const logout = useLogoutMutation();
@@ -116,8 +110,7 @@ const logout = useLogoutMutation();
 const onLogout = () =>
   logout.mutate(undefined, {
     onSuccess: () => navigateTo(LOGIN, { replace: true }),
-    onError: (error) =>
-      toast.add({ title: errorMessage(error), color: 'error' }),
+    onError: (error) => toast.failed(errorMessage(error)),
   });
 </script>
 

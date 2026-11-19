@@ -56,6 +56,8 @@ export default {
     },
   },
   doc: {
+    holdersWith: 'Tu tiens cette liste avec {names}.',
+    holdersAlone: 'Tenir cette liste à plusieurs',
     personMenu: 'Options pour {name}',
     personPage: 'Sa fiche et ses goûts',
     removeFromList: 'Retirer de cette liste',
@@ -173,6 +175,36 @@ export default {
       people: 'Ajoute au moins une personne à la liste.',
     },
   },
+  holders: {
+    title: 'Ceux qui tiennent la liste',
+    intro:
+      'Vous êtes à égalité : chacun écrit les idées, partage le lien et voit qui offre quoi.',
+    you: 'C’est toi',
+    remove: 'Retirer',
+    leave: 'Ne plus tenir cette liste',
+    invited: 'Invitation du {date} · pas encore venu',
+    inviteLabel: 'Inviter quelqu’un à tenir la liste',
+    emailPlaceholder: 'son@adresse.fr',
+    invite: 'Inviter',
+    inviteHelp:
+      'Il reçoit un email qui dit que c’est toi qui l’invites, et peut refuser. La liste apparaît dans ses listes dès qu’il se connecte.',
+    seesAll:
+      'Ceux qui tiennent la liste voient tout, y compris ce qu’on leur offre s’ils y figurent.',
+    alreadyHolder: 'Cette personne tient déjà la liste.',
+    alreadyInvited: 'Cette adresse est déjà invitée.',
+    invitedDone: 'Invitation envoyée',
+    removed: '{name} ne tient plus la liste',
+    left: 'Tu ne tiens plus cette liste',
+  },
+  inviteEmail: {
+    subject: '{by} t’invite à tenir la liste « {title} »',
+    intro:
+      '{by} t’invite à tenir avec lui la liste de cadeaux « {title} » sur Under the Tree : écrire les idées, partager le lien, voir qui offre quoi.',
+    action:
+      'Connecte-toi avec cette adresse email, la liste sera dans tes listes :',
+    ignore:
+      'Si tu ne veux pas, ignore cet email : tu pourras aussi quitter la liste une fois connecté.',
+  },
   family: {
     title: 'Mes proches',
     intro:
@@ -205,6 +237,17 @@ export default {
     },
   },
   person: {
+    account: {
+      title: 'Son compte',
+      none: 'Aucun',
+      linked: 'Relié à son compte',
+      waiting: 'Pas encore de compte à cette adresse',
+      unlink: 'Ne plus relier',
+      label: 'Adresse email de {name}',
+      can: 'Sur tes listes, {name} peut écrire ses propres idées. Pour le reste, {name} voit la liste comme tout le monde, sans voir qui offre quoi.',
+      child: 'Pour un enfant, pas besoin de compte : laisse ce champ vide.',
+      whoSees: 'Seuls ceux qui tiennent tes listes voient cette adresse.',
+    },
     context: 'Mes proches',
     delete: 'Supprimer de mes proches',
     practical: 'Infos pratiques',
@@ -229,6 +272,11 @@ export default {
     none: 'Rien',
   },
   visitor: {
+    figures:
+      'La liste de {name}. Tu y figures : tu peux écrire tes propres idées.',
+    itsYou: 'C’est toi',
+    ideaForMe: 'Une idée pour moi…',
+    anotherForMe: 'Une autre idée pour moi…',
     holder: 'La liste de {name}.',
     whoSees: 'Personne d’autre que {name} ne voit qui a coché quoi.',
     mine: {

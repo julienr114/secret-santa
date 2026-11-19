@@ -6,6 +6,7 @@ import {
   useTickMutation,
   useUntickMutation,
   useUpdateIdeaMutation,
+  type ClaimRoute,
 } from '~/composables/queries/useLists';
 import { asAddress } from '~/utils/ideaLink';
 
@@ -27,7 +28,8 @@ import { asAddress } from '~/utils/ideaLink';
 // under it. No « Supprimer »: a line emptied goes. Without an idea, the empty line at the end,
 // « Une autre idée… », where a new one is written.
 const props = defineProps<{
-  listId: string;
+  /** Where the list is written: its document, or its link. */
+  via: ClaimRoute;
   listPersonId: string;
   /** Who receives the ideas of this line. */
   forName: string;
@@ -39,13 +41,12 @@ const props = defineProps<{
   /** Where the line is, for « retour » to find the next one. */
   line: string;
 }>();
-const emit = defineEmits<{ next: [] }>();
 const { t } = useT();
 const editing = useListEditing();
-const via = computed(() => ({ listId: props.listId }));
-const create = useCreateIdeaMutation(() => props.listId);
-const update = useUpdateIdeaMutation(() => props.listId);
-const remove = useDeleteIdeaMutation(() => props.listId);
+const via = computed(() => props.via);
+const create = useCreateIdeaMutation(via);
+const update = useUpdateIdeaMutation(via);
+const remove = useDeleteIdeaMutation(via);
 const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
 const toast = useToast();
@@ -162,8 +163,10 @@ const commit = async (next: boolean) => {
     draft.value = '';
   }
   if (next && !props.idea) return;
+  // The return key goes on to the line below.
+  const below = next ? neighbour(1) : undefined;
   leave();
-  if (next) emit('next');
+  if (below) enter(below);
 };
 
 /**

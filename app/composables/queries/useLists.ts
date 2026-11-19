@@ -1,4 +1,5 @@
 import type {
+  HolderView,
   ListCard,
   ListDocument,
   MemberView,
@@ -32,6 +33,25 @@ export const useListQuery = (
   );
 
 const listKeys = (id: string) => [keys.list(id), keys.lists()];
+const linkKeys = (token: string) => [keys.link(token), keys.lists()];
+
+/**
+ * Where a list is ticked and written: by its link, or in the document of
+ * those who hold it.
+ */
+export type ClaimRoute = { token: string } | { listId: string };
+type Via = MaybeRefOrGetter<ClaimRoute>;
+const claimsUrl = (via: ClaimRoute) =>
+  'token' in via
+    ? `/api/l/${via.token}/claims`
+    : `/api/lists/${via.listId}/claims`;
+const claimKeys = (via: ClaimRoute) =>
+  'token' in via ? linkKeys(via.token) : listKeys(via.listId);
+
+const ideasUrl = (via: ClaimRoute) =>
+  'token' in via
+    ? `/api/l/${via.token}/ideas`
+    : `/api/lists/${via.listId}/ideas`;
 
 export const useCreateListMutation = () =>
   useApiMutation<
@@ -81,7 +101,48 @@ export const useRemovePersonMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
-export const useCreateIdeaMutation = (id: Id) =>
+/** Those who hold a list, and the invitations waiting. */
+export type ListHolders = {
+  holders: HolderView[];
+  invites: { id: string; email: string; createdAt: string }[];
+};
+const holderKeys = (id: string) => [keys.holders(id), ...listKeys(id)];
+
+export const useHoldersQuery = (id: Id) =>
+  useApiQuery<ListHolders>(
+    () => keys.holders(toValue(id)),
+    () => `/api/lists/${toValue(id)}/holders`,
+  );
+
+export const useInviteHolderMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (email) =>
+      api(`/api/lists/${toValue(id)}/holders`, {
+        method: 'POST',
+        body: { email },
+      }),
+    () => holderKeys(toValue(id)),
+  );
+
+export const useRemoveHolderMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (accountId) =>
+      api(`/api/lists/${toValue(id)}/holders/${accountId}`, {
+        method: 'DELETE',
+      }),
+    () => holderKeys(toValue(id)),
+  );
+
+export const useCancelInviteMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (inviteId) =>
+      api(`/api/lists/${toValue(id)}/invites/${inviteId}`, {
+        method: 'DELETE',
+      }),
+    () => holderKeys(toValue(id)),
+  );
+
+export const useCreateIdeaMutation = (via: Via) =>
   useApiMutation<
     { id: string },
     {
@@ -91,28 +152,25 @@ export const useCreateIdeaMutation = (id: Id) =>
       after: string | null;
     }
   >(
-    (body) => api(`/api/lists/${toValue(id)}/ideas`, { method: 'POST', body }),
-    () => listKeys(toValue(id)),
+    (body) => api(ideasUrl(toValue(via)), { method: 'POST', body }),
+    () => claimKeys(toValue(via)),
   );
 
-export const useUpdateIdeaMutation = (id: Id) =>
+export const useUpdateIdeaMutation = (via: Via) =>
   useApiMutation<
     { ok: true },
     { ideaId: string; text?: string; url?: string | null }
   >(
     ({ ideaId, ...body }) =>
-      api(`/api/lists/${toValue(id)}/ideas/${ideaId}`, {
-        method: 'PATCH',
-        body,
-      }),
-    () => listKeys(toValue(id)),
+      api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'PATCH', body }),
+    () => claimKeys(toValue(via)),
   );
 
-export const useDeleteIdeaMutation = (id: Id) =>
+export const useDeleteIdeaMutation = (via: Via) =>
   useApiMutation<{ ok: true }, string>(
     (ideaId) =>
-      api(`/api/lists/${toValue(id)}/ideas/${ideaId}`, { method: 'DELETE' }),
-    () => listKeys(toValue(id)),
+      api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
+    () => claimKeys(toValue(via)),
   );
 
 export const useShareListMutation = (id: Id) =>
@@ -140,7 +198,7 @@ export const useDeleteMemberMutation = () =>
   );
 
 export const useMemberQuery = (id: Id) =>
-  useApiQuery<{ member: MemberView; removal: MemberRemoval }>(
+  useApiQuery<{ member: MemberView; mine: boolean; removal: MemberRemoval }>(
     () => keys.member(toValue(id)),
     () => `/api/family/${toValue(id)}`,
   );
@@ -151,6 +209,8 @@ export type MemberPatch = {
   birthDate?: string | null;
   clothingSize?: string | null;
   shoeSize?: string | null;
+  /** The address of their own account; null no longer links them. */
+  email?: string | null;
   answers?: Partial<Record<HintQuestion, HintAnswer | null>>;
   texts?: Partial<Record<HintText, string | null>>;
 };
@@ -165,23 +225,12 @@ export const useUpdateMemberMutation = (id: Id) =>
 
 // A list by its link (lot 22): ticking, giving with others, off the list.
 type Token = MaybeRefOrGetter<string>;
-const linkKeys = (token: string) => [keys.link(token), keys.lists()];
 
 export const useLinkQuery = (token: Token) =>
   useApiQuery<VisitorDocument>(
     () => keys.link(toValue(token)),
     () => `/api/l/${toValue(token)}`,
   );
-
-/** Where a list is ticked: by its link, or in its holder's document. */
-export type ClaimRoute = { token: string } | { listId: string };
-type Via = MaybeRefOrGetter<ClaimRoute>;
-const claimsUrl = (via: ClaimRoute) =>
-  'token' in via
-    ? `/api/l/${via.token}/claims`
-    : `/api/lists/${via.listId}/claims`;
-const claimKeys = (via: ClaimRoute) =>
-  'token' in via ? linkKeys(via.token) : listKeys(via.listId);
 
 export const useTickMutation = (via: Via) =>
   useApiMutation<

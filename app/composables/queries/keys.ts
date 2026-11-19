@@ -23,6 +23,7 @@ export const keys = {
   // Gift lists (README 22.19).
   lists: () => ['lists'] as const,
   list: (id: string) => ['lists', id] as const,
+  holders: (id: string) => ['lists', id, 'holders'] as const,
   family: () => ['family'] as const,
   member: (id: string) => ['family', id] as const,
   link: (token: string) => ['l', token] as const,

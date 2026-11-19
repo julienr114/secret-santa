@@ -1,10 +1,12 @@
-import { and, asc, desc, eq, inArray, ne } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, ne, or } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
   familyMembers,
   giftClaims,
+  giftListHolders,
   giftListIdeas,
+  giftListInvites,
   giftListVisits,
   giftOffList,
   giftListPeople,
@@ -31,6 +33,15 @@ export type FamilyMember = {
   shoeSize: string | null;
   answers: Record<string, string | null>;
   texts: Record<string, string | null>;
+  /** Whose people they are among. Never sent to a screen. */
+  ownerId: string;
+  /** The address given for their own account, or null. */
+  email: string | null;
+  /**
+   * The account this person is: the owner's for « Moi », the one their
+   * address belongs to once linked, null for someone without an account.
+   */
+  accountId: string | null;
 };
 
 /**
@@ -52,6 +63,9 @@ export const memberOf = (row: FamilyMemberRow): FamilyMember => ({
   shoeSize: row.shoeSize,
   answers: row.answers ?? {},
   texts: row.texts ?? {},
+  ownerId: row.accountId,
+  email: row.email,
+  accountId: row.isSelf ? row.accountId : row.linkedAccountId,
 });
 
 /**
@@ -131,9 +145,13 @@ export const setSelfAvatar = (
       .update(familyMembers)
       .set(patch)
       .where(
-        and(
-          eq(familyMembers.accountId, accountId),
-          eq(familyMembers.isSelf, true),
+        or(
+          and(
+            eq(familyMembers.accountId, accountId),
+            eq(familyMembers.isSelf, true),
+          ),
+          // Where others linked this account to one of their people.
+          eq(familyMembers.linkedAccountId, accountId),
         ),
       ),
   ]);
@@ -169,7 +187,7 @@ export const findMember = async (
     .get()) ?? null;
 
 /**
- * On how many of my lists each person of my family is.
+ * On how many lists each of my people is.
  * @param db - The database.
  * @param accountId - The account.
  * @returns The count by person; none for someone on no list.
@@ -181,8 +199,8 @@ export const listCountsOfMembers = async (
   const rows = await db
     .select({ memberId: giftListPeople.memberId })
     .from(giftListPeople)
-    .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
-    .where(eq(giftLists.accountId, accountId));
+    .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
+    .where(eq(familyMembers.accountId, accountId));
   return rows.reduce(
     (counts, { memberId }) =>
       new Map([...counts, [memberId, (counts.get(memberId) ?? 0) + 1]]),
@@ -191,29 +209,19 @@ export const listCountsOfMembers = async (
 };
 
 /**
- * Where a person of my family is, on my lists, with what deleting them
- * would take: their ideas there, the gifts off the list, and which ideas
- * someone ticked.
+ * Where one of my people is, on every list they were put on, with what
+ * deleting them would take: their ideas there, the gifts off the list,
+ * and which ideas someone ticked.
  * @param db - The database.
- * @param accountId - The account.
  * @param memberId - The person.
  * @returns Their places, and the ideas ticked.
  */
-export const placesOfMember = async (
-  db: Db,
-  accountId: string,
-  memberId: string,
-) => {
+export const placesOfMember = async (db: Db, memberId: string) => {
   const rows = await db
     .select({ person: giftListPeople, list: giftLists })
     .from(giftListPeople)
     .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
-    .where(
-      and(
-        eq(giftListPeople.memberId, memberId),
-        eq(giftLists.accountId, accountId),
-      ),
-    )
+    .where(eq(giftListPeople.memberId, memberId))
     .orderBy(desc(giftLists.createdAt));
   const personIds = rows.map((row) => row.person.id);
   if (personIds.length === 0) {
@@ -297,13 +305,19 @@ export const createMember = async (
   return id;
 };
 
-/** The lists an account holds. */
-export const listsHeldBy = (db: Db, accountId: string) =>
-  db
-    .select()
-    .from(giftLists)
-    .where(eq(giftLists.accountId, accountId))
-    .orderBy(desc(giftLists.createdAt));
+/** The lists an account holds, alone or with others. */
+export const listsHeldBy = async (
+  db: Db,
+  accountId: string,
+): Promise<GiftListRow[]> =>
+  (
+    await db
+      .select({ list: giftLists })
+      .from(giftListHolders)
+      .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+      .where(eq(giftListHolders.accountId, accountId))
+      .orderBy(desc(giftLists.createdAt))
+  ).map((row) => row.list);
 
 /** A list the account holds, or null. */
 export const findHeldList = async (
@@ -311,11 +325,19 @@ export const findHeldList = async (
   accountId: string,
   id: string,
 ): Promise<GiftListRow | null> =>
-  (await db
-    .select()
-    .from(giftLists)
-    .where(and(eq(giftLists.id, id), eq(giftLists.accountId, accountId)))
-    .get()) ?? null;
+  (
+    await db
+      .select({ list: giftLists })
+      .from(giftListHolders)
+      .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+      .where(
+        and(
+          eq(giftListHolders.listId, id),
+          eq(giftListHolders.accountId, accountId),
+        ),
+      )
+      .get()
+  )?.list ?? null;
 
 /** A shared list, by its link. */
 export const findListByToken = async (
@@ -394,16 +416,22 @@ export const createList = async (
 ): Promise<string> => {
   const id = newId();
   const now = nowIso();
-  await db.insert(giftLists).values({
-    id,
-    accountId,
-    iconEmoji: list.icon.emoji,
-    iconColor: list.icon.color,
-    title: list.title,
-    eventDate: list.eventDate,
-    createdAt: now,
-    updatedAt: now,
-  });
+  await db.batch([
+    db.insert(giftLists).values({
+      id,
+      accountId,
+      iconEmoji: list.icon.emoji,
+      iconColor: list.icon.color,
+      title: list.title,
+      eventDate: list.eventDate,
+      createdAt: now,
+      updatedAt: now,
+    }),
+    // Whoever creates a list holds it, like those invited later.
+    db
+      .insert(giftListHolders)
+      .values({ id: newId(), listId: id, accountId, createdAt: now }),
+  ]);
   return id;
 };
 
@@ -438,6 +466,8 @@ export const deleteList = (db: Db, id: string) =>
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
     db.delete(giftListPeople).where(eq(giftListPeople.listId, id)),
+    db.delete(giftListInvites).where(eq(giftListInvites.listId, id)),
+    db.delete(giftListHolders).where(eq(giftListHolders.listId, id)),
     db.delete(giftLists).where(eq(giftLists.id, id)),
   ]);
 
@@ -459,17 +489,13 @@ export const addPersonToList = async (
     .from(giftListPeople)
     .where(eq(giftListPeople.listId, list.id));
   const position = Math.max(-1, ...current.map((p) => p.position)) + 1;
-  // Their last place on another list of the same holder.
+  // Their last place on another list.
   const last = await db
     .select({ id: giftListPeople.id })
     .from(giftListPeople)
     .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
     .where(
-      and(
-        eq(giftListPeople.memberId, memberId),
-        eq(giftLists.accountId, list.accountId),
-        ne(giftLists.id, list.id),
-      ),
+      and(eq(giftListPeople.memberId, memberId), ne(giftLists.id, list.id)),
     )
     .orderBy(desc(giftLists.createdAt))
     .get();
@@ -632,4 +658,225 @@ export const createIdea = async (
       ),
   ]);
   return id;
+};
+
+/** One of those who hold a list. */
+export type ListHolder = {
+  accountId: string;
+  email: string;
+  firstName: string | null;
+  avatarEmoji: string | null;
+  avatarColor: string | null;
+  createdAt: string;
+};
+
+/**
+ * Those who hold some lists, the first to hold each first.
+ * @param db - The database.
+ * @param listIds - The lists.
+ * @returns The holders of each list, by list.
+ */
+export const holdersOfLists = async (
+  db: Db,
+  listIds: readonly string[],
+): Promise<Map<string, ListHolder[]>> => {
+  const byList = new Map<string, ListHolder[]>(listIds.map((id) => [id, []]));
+  if (listIds.length === 0) return byList;
+  const rows = await db
+    .select({ holder: giftListHolders, account: accounts })
+    .from(giftListHolders)
+    .innerJoin(accounts, eq(accounts.id, giftListHolders.accountId))
+    .where(inArray(giftListHolders.listId, [...listIds]))
+    .orderBy(asc(giftListHolders.createdAt));
+  for (const { holder, account } of rows) {
+    byList.get(holder.listId)?.push({
+      accountId: account.id,
+      email: account.email,
+      firstName: account.firstName,
+      avatarEmoji: account.avatarEmoji,
+      avatarColor: account.avatarColor,
+      createdAt: holder.createdAt,
+    });
+  }
+  return byList;
+};
+
+/** The invitations to hold a list still waiting, oldest first. */
+export const invitesOfList = (db: Db, listId: string) =>
+  db
+    .select()
+    .from(giftListInvites)
+    .where(eq(giftListInvites.listId, listId))
+    .orderBy(asc(giftListInvites.createdAt));
+
+/** Invites an address to hold a list. */
+export const addInvite = (
+  db: Db,
+  invite: { listId: string; email: string; invitedBy: string },
+) =>
+  db
+    .insert(giftListInvites)
+    .values({ id: newId(), ...invite, createdAt: nowIso() });
+
+/** Cancels an invitation still waiting. */
+export const removeInvite = (db: Db, listId: string, id: string) =>
+  db
+    .delete(giftListInvites)
+    .where(and(eq(giftListInvites.id, id), eq(giftListInvites.listId, listId)));
+
+/** Takes an account off those who hold a list. */
+export const removeHolder = (db: Db, listId: string, accountId: string) =>
+  db
+    .delete(giftListHolders)
+    .where(
+      and(
+        eq(giftListHolders.listId, listId),
+        eq(giftListHolders.accountId, accountId),
+      ),
+    );
+
+/** The invitations waiting for an address. */
+export const invitesForEmail = (db: Db, email: string) =>
+  db.select().from(giftListInvites).where(eq(giftListInvites.email, email));
+
+/**
+ * Turns invitations into lists held: the account holds each list, and
+ * the invitations are gone.
+ * @param db - The database.
+ * @param accountId - The account that accepts by coming.
+ * @param invites - The invitations it accepts.
+ * @returns Once done.
+ */
+export const acceptInvites = async (
+  db: Db,
+  accountId: string,
+  invites: readonly { id: string; listId: string }[],
+) => {
+  const [first, ...rest] = invites.flatMap((invite) => [
+    db
+      .insert(giftListHolders)
+      .values({
+        id: newId(),
+        listId: invite.listId,
+        accountId,
+        createdAt: nowIso(),
+      })
+      .onConflictDoNothing(),
+    db.delete(giftListInvites).where(eq(giftListInvites.id, invite.id)),
+  ]);
+  if (first) await db.batch([first, ...rest]);
+};
+
+/**
+ * Links to an account the people others gave its address for, and gives
+ * them its icon: they are that account from now on.
+ * @param db - The database.
+ * @param account - The account that comes.
+ * @returns Once done.
+ */
+export const linkMembersOf = async (
+  db: Db,
+  account: {
+    id: string;
+    email: string;
+    avatarEmoji: string | null;
+    avatarColor: string | null;
+  },
+) => {
+  const waiting = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(
+      and(
+        eq(familyMembers.email, account.email),
+        isNull(familyMembers.linkedAccountId),
+      ),
+    );
+  if (waiting.length === 0) return;
+  const avatar = avatarOf(account);
+  await db
+    .update(familyMembers)
+    .set({
+      linkedAccountId: account.id,
+      avatarEmoji: avatar.emoji,
+      avatarColor: avatar.color,
+    })
+    .where(
+      inArray(
+        familyMembers.id,
+        waiting.map((member) => member.id),
+      ),
+    );
+};
+
+/**
+ * The shared lists an account figures on, as a person linked to it.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns The lists.
+ */
+export const listsFiguringOn = async (
+  db: Db,
+  accountId: string,
+): Promise<GiftListRow[]> => {
+  const rows = await db
+    .select({ list: giftLists })
+    .from(giftListPeople)
+    .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
+    .innerJoin(giftLists, eq(giftLists.id, giftListPeople.listId))
+    .where(eq(familyMembers.linkedAccountId, accountId));
+  return [...new Map(rows.map((row) => [row.list.id, row.list])).values()];
+};
+
+/**
+ * One of my people, or a person on a list I hold with whoever they
+ * belong to: those who hold a list are equal, their page included.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @param id - The person.
+ * @returns Their row, or null when out of reach.
+ */
+export const findReachableMember = async (
+  db: Db,
+  accountId: string,
+  id: string,
+): Promise<FamilyMemberRow | null> => {
+  const row =
+    (await db
+      .select()
+      .from(familyMembers)
+      .where(eq(familyMembers.id, id))
+      .get()) ?? null;
+  if (!row || row.accountId === accountId) return row;
+  const shared = await db
+    .select({ id: giftListPeople.id })
+    .from(giftListPeople)
+    .innerJoin(
+      giftListHolders,
+      eq(giftListHolders.listId, giftListPeople.listId),
+    )
+    .where(
+      and(
+        eq(giftListPeople.memberId, id),
+        eq(giftListHolders.accountId, accountId),
+      ),
+    )
+    .get();
+  return shared ? row : null;
+};
+
+/**
+ * Whether two accounts hold a list together.
+ * @param db - The database.
+ * @param one - An account.
+ * @param other - Another.
+ * @returns True when at least one list is held by both.
+ */
+export const holdTogether = async (
+  db: Db,
+  one: string,
+  other: string,
+): Promise<boolean> => {
+  const mine = new Set((await listsHeldBy(db, one)).map((list) => list.id));
+  return (await listsHeldBy(db, other)).some((list) => mine.has(list.id));
 };

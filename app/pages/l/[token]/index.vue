@@ -7,6 +7,7 @@ import {
   useTickMutation,
   useUntickMutation,
 } from '~/composables/queries/useLists';
+import { LIST_EDITING } from '~/composables/useListEditing';
 
 // A list by its link (README 22.19, maquettes ListeVisiteur,
 // ListeVisiteurMes, ListePlusieursLigne): readable without an account.
@@ -14,7 +15,9 @@ import {
 // person, their ideas to tick, the gifts not on the list, and « J'offre
 // autre chose à Léo ». Touching a box without an account asks for an
 // address first (`/connexion`), and the gift is ticked on coming back
-// (`?cocher=`).
+// (`?cocher=`). Whoever figures on the list, linked to their account,
+// reads their own section first, « C'est toi », and writes their ideas
+// there.
 const route = useRoute();
 const router = useRouter();
 const token = computed(() => String(route.params.token));
@@ -46,6 +49,7 @@ const sentence = computed(() => {
   const d = doc.value;
   if (!d) return '';
   if (d.holds) return t('lists.visitor.youHold');
+  if (d.figures) return t('lists.visitor.figures', { name: holder.value });
   const head = t('lists.visitor.holder', { name: holder.value });
   return d.mine > 0
     ? `${head} ${t('lists.visitor.mine', { count: d.mine, name: holder.value })}`
@@ -135,6 +139,37 @@ const onJoin = (idea: IdeaLine, forName: string) => {
   if (!loggedIn.value) return onTick(idea);
   joining.value = { idea, forName };
 };
+
+// Someone who figures on the list, linked to their account, writes their
+// own ideas in place (lot 25, maquette ListeVueReliee): the same lines as
+// in the document of those who hold the list, which ask the page for a
+// confirmation and for the sheets.
+const confirm = ref<((ok: boolean) => void) | null>(null);
+provide(LIST_EDITING, {
+  confirmRemove: () =>
+    new Promise<boolean>((resolve) => {
+      confirm.value = resolve;
+    }),
+  change: (idea, forName) => {
+    changing.value = { idea, forName };
+  },
+  join: (idea, forName) => onJoin(idea, forName),
+  // Nobody leaves a list from its link.
+  removePerson: () => undefined,
+});
+const answerConfirm = (ok: boolean) => {
+  confirm.value?.(ok);
+  confirm.value = null;
+};
+const confirmOpen = computed({
+  get: () => confirm.value !== null,
+  set: (open) => {
+    if (!open) answerConfirm(false);
+  },
+});
+/** My own section, where I write. */
+const writes = (person: PersonLine) =>
+  Boolean(doc.value?.figures) && person.mine;
 </script>
 
 <template>
@@ -185,7 +220,14 @@ const onJoin = (idea: IdeaLine, forName: string) => {
             <h2 class="font-display text-[28px] leading-[1.1] font-bold">
               {{ person.member.firstName }}
             </h2>
-            <p class="text-sm text-toned">
+            <p
+              v-if="writes(person)"
+              class="text-sm font-semibold text-primary-ink"
+              data-testid="its-you"
+            >
+              {{ t('lists.visitor.itsYou') }}
+            </p>
+            <p v-else class="text-sm text-toned">
               {{ details(person)
               }}<template v-if="details(person)"> · </template>
               <NuxtLink
@@ -196,7 +238,31 @@ const onJoin = (idea: IdeaLine, forName: string) => {
             </p>
           </div>
         </header>
-        <ul class="flex flex-col pl-5">
+        <ul v-if="writes(person)" class="flex flex-col pl-5">
+          <ListsIdeaLine
+            v-for="(idea, index) in person.ideas"
+            :key="idea.id"
+            :via="via"
+            :list-person-id="person.id"
+            :for-name="person.member.firstName"
+            :idea="idea"
+            :line="`${person.id}:${index}`"
+          />
+          <ListsIdeaLine
+            :via="via"
+            :list-person-id="person.id"
+            :for-name="person.member.firstName"
+            :idea="null"
+            :after="null"
+            :placeholder="
+              person.ideas.length === 0
+                ? t('lists.visitor.ideaForMe')
+                : t('lists.visitor.anotherForMe')
+            "
+            :line="`${person.id}:new`"
+          />
+        </ul>
+        <ul v-else class="flex flex-col pl-5">
           <ListsVisitorLine
             v-for="idea in person.ideas"
             :key="idea.id"
@@ -259,6 +325,29 @@ const onJoin = (idea: IdeaLine, forName: string) => {
       </section>
     </template>
 
+    <UiSheet
+      v-model:open="confirmOpen"
+      :title="t('lists.doc.confirmRemove.title')"
+      :description="t('lists.doc.confirmRemove.body')"
+    >
+      <template #footer>
+        <div class="grid grid-cols-2 gap-2.5">
+          <UButton
+            variant="outline"
+            color="neutral"
+            class="h-12 justify-center font-semibold"
+            :label="t('lists.doc.confirmRemove.keep')"
+            @click="answerConfirm(false)"
+          />
+          <UButton
+            color="error"
+            class="h-12 justify-center font-bold"
+            :label="t('lists.doc.confirmRemove.remove')"
+            @click="answerConfirm(true)"
+          />
+        </div>
+      </template>
+    </UiSheet>
     <ListsClaimSheet
       v-if="changing && doc"
       v-model:open="changeOpen"

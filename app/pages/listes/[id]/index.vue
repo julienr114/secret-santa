@@ -199,6 +199,7 @@ onBeforeRouteLeave((to) => {
     >
       <template v-if="doc && list">
         <ListsShareBar :doc="doc" />
+        <ListsHoldersLine :list-id="list.id" :holders="doc.holders" />
 
         <div class="flex flex-col gap-2">
           <button

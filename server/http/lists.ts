@@ -2,20 +2,26 @@ import type { H3Event } from 'h3';
 import { useDb, type Db } from '#server/database/client';
 import {
   claimsOfLists,
-  giverOf,
   offListOfLists,
   type ClaimWithGiver,
 } from '#server/database/claims';
 import {
+  acceptInvites,
   familyOf,
-  listCountsOfMembers,
   findHeldList,
+  holdersOfLists,
+  invitesForEmail,
+  linkMembersOf,
+  listsHeldBy,
+  listCountsOfMembers,
   peopleOfLists,
   type FamilyMember,
+  type ListHolder,
   type ListPerson,
 } from '#server/database/lists';
-import { accounts, type GiftListRow } from '#server/database/schema';
-import type { Avatar } from '#server/utils/avatars';
+import type { GiftListRow } from '#server/database/schema';
+import { avatarOf, type Avatar } from '#server/utils/avatars';
+import { findAccountById } from '#server/database/accounts';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { nowIso } from '#server/http/context';
@@ -35,7 +41,13 @@ import {
   type IdeaView,
   type ListStatus,
 } from '#server/utils/lists';
-import { eq } from 'drizzle-orm';
+import {
+  canWriteIdeas,
+  invitesAccepted,
+  listRole,
+  seesGivers,
+  type ListRole,
+} from '#server/utils/listAccess';
 
 // The shell of the gift lists (README 22.19): who may touch a list, and
 // what the screens receive, for the one who holds it and for those who
@@ -53,21 +65,114 @@ export const todayIso = (): string => nowIso().slice(0, 10);
 export const requireHeldList = async (event: H3Event) => {
   const user = await requireAccount(event);
   const db = useDb(event);
-  const list = await findHeldList(
-    db,
-    user.accountId,
-    getRouterParam(event, 'id') ?? '',
-  );
+  const id = getRouterParam(event, 'id') ?? '';
+  const held = await findHeldList(db, user.accountId, id);
+  if (held) return { db, user, list: held };
+  // Invited to hold it, and coming straight from the email: the
+  // invitation is accepted by coming.
+  await settleArrivals(db, user.accountId);
+  const list = await findHeldList(db, user.accountId, id);
   if (!list) throw notFound();
   return { db, user, list };
 };
 
-/** A person of the family as a line shows them, with their age. */
-export type MemberView = FamilyMember & { age: number | null };
+/**
+ * What waits for an account when it comes (lot 25): the invitations to
+ * hold a list sent to its address become lists it holds, and the people
+ * others gave its address for become that account.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns Once done.
+ */
+export const settleArrivals = async (db: Db, accountId: string) => {
+  const account = await findAccountById(db, accountId);
+  if (!account) return;
+  await linkMembersOf(db, account);
+  const waiting = await invitesForEmail(db, account.email);
+  if (waiting.length === 0) return;
+  const held = await listsHeldBy(db, accountId);
+  await acceptInvites(
+    db,
+    accountId,
+    invitesAccepted(waiting, {
+      email: account.email,
+      heldListIds: held.map((list) => list.id),
+    }),
+  );
+};
 
-const memberView = (member: FamilyMember, today: string): MemberView => ({
-  ...member,
-  age: member.birthDate ? ageOn(member.birthDate, today) : null,
+/** Who looks at a list, and what they are to it. */
+export type Viewer = { accountId: string | null; role: ListRole };
+
+/**
+ * A person as a screen shows them. What says whose people they are among
+ * and which account they are stays here: the screen only learns whether
+ * they are the one looking (`isSelf`, « Moi », « C'est toi ») and whether
+ * they have an account of their own (`linked`). Their address is for
+ * those who hold the list only.
+ */
+export type MemberView = Omit<
+  FamilyMember,
+  'ownerId' | 'email' | 'accountId' | 'isSelf'
+> & {
+  age: number | null;
+  /** The one looking. */
+  isSelf: boolean;
+  /** Has an account of their own: they choose their name and icon. */
+  linked: boolean;
+  /** Among the people of the one looking: theirs to link, or to delete. */
+  own: boolean;
+  /** The address given for their account; holders only. */
+  email?: string | null;
+};
+
+/**
+ * A person as a viewer sees them.
+ * @param member - The person.
+ * @param today - Today (YYYY-MM-DD), for their age.
+ * @param viewer - Who looks.
+ * @returns What the screen receives.
+ */
+export const memberView = (
+  member: FamilyMember,
+  today: string,
+  viewer: Viewer,
+): MemberView => {
+  const { ownerId, email, accountId, isSelf: _own, ...rest } = member;
+  return {
+    ...rest,
+    age: member.birthDate ? ageOn(member.birthDate, today) : null,
+    isSelf: accountId !== null && accountId === viewer.accountId,
+    linked: accountId !== null,
+    own: ownerId === viewer.accountId,
+    ...(viewer.role === 'holder' || ownerId === viewer.accountId
+      ? { email }
+      : {}),
+  };
+};
+
+/** One of those who hold a list, as the others see them. */
+export type HolderView = {
+  accountId: string;
+  name: string;
+  avatar: Avatar;
+  me: boolean;
+};
+
+/**
+ * One of those who hold a list, for a screen.
+ * @param holder - Their account.
+ * @param accountId - The account looking, or null.
+ * @returns Their name, their icon, and whether they are the one looking.
+ */
+export const holderView = (
+  holder: ListHolder,
+  accountId: string | null,
+): HolderView => ({
+  accountId: holder.accountId,
+  name: holder.firstName ?? holder.email.split('@')[0] ?? '',
+  avatar: avatarOf({ id: holder.accountId, ...holder }),
+  me: holder.accountId === accountId,
 });
 
 /** My own way of giving an idea, for « Changer ». */
@@ -97,10 +202,9 @@ export type PersonLine = {
   member: MemberView;
   ideas: IdeaLine[];
   offList: (OffListView & { id: string })[];
+  /** Whether the one looking may write, correct and delete these ideas. */
+  mine: boolean;
 };
-
-/** Who looks at a list. */
-type Viewer = { accountId: string | null; holds: boolean };
 
 /**
  * The people of a list with their ideas, as a viewer sees them.
@@ -117,13 +221,20 @@ const linesOf = (
   viewer: Viewer,
 ) => {
   const today = todayIso();
+  // What the pure rules of the claims ask: whether the names show.
+  const sees = { accountId: viewer.accountId, holds: seesGivers(viewer.role) };
   const claimsOf = (ideaId: string) =>
     claims
       .filter((c) => c.ideaId === ideaId)
       .toSorted((a, b) => a.createdAt.localeCompare(b.createdAt));
   const lines: PersonLine[] = people.map((person) => ({
     id: person.id,
-    member: memberView(person.member, today),
+    member: memberView(person.member, today, viewer),
+    mine: canWriteIdeas(
+      viewer.role,
+      { linkedAccountId: person.member.accountId },
+      viewer.accountId,
+    ),
     ideas: person.ideas.map((idea) => {
       const on = claimsOf(idea.id);
       const mine = on.find((c) => c.accountId === viewer.accountId);
@@ -131,7 +242,7 @@ const linesOf = (
         id: idea.id,
         text: idea.text,
         url: idea.url,
-        view: ideaView(on, viewer),
+        view: ideaView(on, sees),
         mine: mine
           ? {
               mode: mine.mode,
@@ -154,7 +265,7 @@ const linesOf = (
     }),
     offList: offList
       .filter((gift) => gift.listPersonId === person.id)
-      .map((gift) => ({ id: gift.id, ...offListView(gift, viewer) })),
+      .map((gift) => ({ id: gift.id, ...offListView(gift, sees) })),
   }));
   const ideaIds = new Set(people.flatMap((p) => p.ideas.map((i) => i.id)));
   const onList = claims.filter((c) => ideaIds.has(c.ideaId));
@@ -178,52 +289,60 @@ const headOf = (list: GiftListRow) => ({
   status: listStatus(list, todayIso()),
 });
 
-/** The document of a list, as its holder edits it. */
+/** The document of a list, as those who hold it edit it. */
 export type ListDocument = {
   list: ReturnType<typeof headOf> & { shareToken: string | null };
   people: PersonLine[];
   /** The gifts planned. */
   planned: number;
-  /** Those the holder gives. */
+  /** Those the one looking gives. */
   mine: number;
   /**
-   * My people not on the list yet, each with on how many of my lists
-   * they are: on none, they can be deleted from here.
+   * My people not on the list yet, each with on how many lists they
+   * are: on none, they can be deleted from here.
    */
   family: (MemberView & { lists: number })[];
+  /** Those who hold the list, the one looking among them. */
+  holders: HolderView[];
 };
 
 /**
- * The document of a list for its holder.
+ * The document of a list for one of those who hold it.
  * @param db - The database.
  * @param list - The list.
+ * @param accountId - The holder looking.
  * @returns What the screen shows.
  */
 export const listDocument = async (
   db: Db,
   list: GiftListRow,
+  accountId: string,
 ): Promise<ListDocument> => {
+  const viewer: Viewer = { accountId, role: 'holder' };
   const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
   const onList = new Set(people.map((p) => p.member.id));
   const { lines, planned, mine } = linesOf(
     people,
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
-    { accountId: list.accountId, holds: true },
+    viewer,
   );
   const today = todayIso();
-  const counts = await listCountsOfMembers(db, list.accountId);
+  const counts = await listCountsOfMembers(db, accountId);
   return {
     list: { ...headOf(list), shareToken: list.shareToken },
     people: lines,
     planned,
     mine,
-    family: (await familyOf(db, list.accountId))
+    family: (await familyOf(db, accountId))
       .filter((member) => !onList.has(member.id))
       .map((member) => ({
-        ...memberView(member, today),
+        ...memberView(member, today, viewer),
         lists: counts.get(member.id) ?? 0,
       })),
+    holders: ((await holdersOfLists(db, [list.id])).get(list.id) ?? []).map(
+      (holder) => holderView(holder, accountId),
+    ),
   };
 };
 
@@ -234,9 +353,37 @@ export type VisitorDocument = {
   people: PersonLine[];
   /** Whether I hold it (then I see who gives what). */
   holds: boolean;
+  /** Whether I figure on it, linked to my account: I write my own ideas. */
+  figures: boolean;
   /** Whether I am logged in. */
   loggedIn: boolean;
   mine: number;
+};
+
+/**
+ * What an account is to a list, from who holds it and who is on it.
+ * @param db - The database.
+ * @param list - The list.
+ * @param accountId - The account looking, or null.
+ * @returns Its role, with the holders and the people it was read from.
+ */
+export const roleOnList = async (
+  db: Db,
+  list: GiftListRow,
+  accountId: string | null,
+) => {
+  const holders = (await holdersOfLists(db, [list.id])).get(list.id) ?? [];
+  const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
+  const role = listRole(
+    {
+      holderIds: holders.map((holder) => holder.accountId),
+      linkedIds: people.flatMap((p) =>
+        p.member.accountId ? [p.member.accountId] : [],
+      ),
+    },
+    accountId,
+  );
+  return { role, holders, people };
 };
 
 /**
@@ -251,32 +398,32 @@ export const visitorDocument = async (
   list: GiftListRow,
   accountId: string | null,
 ): Promise<VisitorDocument> => {
-  const holder = await db
-    .select()
-    .from(accounts)
-    .where(eq(accounts.id, list.accountId))
-    .get();
-  const holds = accountId === list.accountId;
-  const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
+  const { role, holders, people } = await roleOnList(db, list, accountId);
   const { lines, mine } = linesOf(
     people,
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
-    { accountId, holds },
+    { accountId, role },
   );
+  const first = holders[0];
+  /** My own section first, for whoever figures on the list. */
+  const rank = (line: PersonLine) => (role === 'linked' && line.mine ? 0 : 1);
   return {
     list: headOf(list),
-    holder: holder
-      ? giverOf(holder)
+    holder: first
+      ? holderView(first, accountId)
       : { name: '', avatar: { emoji: '🎁', color: 'brick' } },
-    // The age is enough: the exact birth date stays with the holder.
-    people: holds
+    // The age is enough: the exact birth date stays with those who hold
+    // the list.
+    people: (role === 'holder'
       ? lines
       : lines.map((line) => ({
           ...line,
           member: { ...line.member, birthDate: null },
-        })),
-    holds,
+        }))
+    ).toSorted((a, b) => rank(a) - rank(b)),
+    holds: role === 'holder',
+    figures: role === 'linked',
     loggedIn: accountId !== null,
     mine,
   };
@@ -317,41 +464,40 @@ export const listCards = async (
   accountId: string,
   held: readonly GiftListRow[],
   visited: readonly { list: GiftListRow; lastSeenAt: string }[],
+  figuring: readonly GiftListRow[] = [],
 ): Promise<ListCard[]> => {
-  const others = visited.filter(
+  const heldIds = new Set(held.map((list) => list.id));
+  const visitedIds = new Set(visited.map((v) => v.list.id));
+  const others = [
+    ...visited,
+    // A list I figure on is in my lists before I ever open it.
+    ...figuring
+      .filter((list) => !visitedIds.has(list.id))
+      .map((list) => ({ list, lastSeenAt: nowIso() })),
+  ].filter(
     // A list no longer shared leaves the lists of those who opened it,
     // and comes back with its sharing.
-    (v) => v.list.accountId !== accountId && v.list.sharedAt,
+    (v) => !heldIds.has(v.list.id) && v.list.sharedAt,
   );
   const all = [...held, ...others.map((v) => v.list)];
   const ids = all.map((l) => l.id);
   const people = await peopleOfLists(db, ids);
   const claims = await claimsOfLists(db, ids);
   const offList = await offListOfLists(db, ids);
-  const holderIds = [...new Set(others.map((v) => v.list.accountId))];
-  const holders = new Map(
-    (
-      await Promise.all(
-        holderIds.map((id) =>
-          db.select().from(accounts).where(eq(accounts.id, id)).get(),
-        ),
-      )
-    )
-      .filter((a) => a !== undefined)
-      .map((a) => [a.id, giverOf(a)]),
-  );
+  const holders = await holdersOfLists(db, ids);
   const today = todayIso();
   return all.map((list) => {
-    const holds = list.accountId === accountId;
+    const holds = heldIds.has(list.id);
     const onList = people.get(list.id) ?? [];
     const { planned, mine } = linesOf(
       onList,
       claims,
       offList.filter((g) => g.listId === list.id),
-      { accountId, holds },
+      { accountId, role: holds ? 'holder' : 'guest' },
     );
     const visit = others.find((v) => v.list.id === list.id);
-    const holder = holders.get(list.accountId);
+    const first = holders.get(list.id)?.[0];
+    const holder = first ? holderView(first, accountId) : undefined;
     return {
       id: list.id,
       icon: { emoji: list.iconEmoji, color: list.iconColor },
@@ -360,7 +506,13 @@ export const listCards = async (
       status: listStatus(list, today),
       createdAt: list.createdAt,
       holder:
-        holds || !holder ? null : { ...holder, token: list.shareToken ?? '' },
+        holds || !holder
+          ? null
+          : {
+              name: holder.name,
+              avatar: holder.avatar,
+              token: list.shareToken ?? '',
+            },
       people: onList.map((p) => ({
         firstName: p.member.firstName,
         avatar: p.member.avatar,

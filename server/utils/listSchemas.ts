@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { avatarColorSchema, avatarEmojiSchema } from './avatars';
+import { emailSchema } from './people';
 import {
   HINT_ANSWERS,
   HINT_QUESTIONS,
@@ -31,6 +32,8 @@ export const memberPatchSchema = z
     birthDate: isoDay.nullable(),
     clothingSize: z.string().trim().max(MEMBER_FIELD_MAX).nullable(),
     shoeSize: z.string().trim().max(MEMBER_FIELD_MAX).nullable(),
+    /** The address of their own account; null no longer links them. */
+    email: emailSchema.nullable(),
     answers: z.partialRecord(
       z.enum(HINT_QUESTIONS),
       z.enum(HINT_ANSWERS).nullable(),

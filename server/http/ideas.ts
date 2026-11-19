@@ -1,0 +1,121 @@
+import type { H3Event } from 'h3';
+import { eq } from 'drizzle-orm';
+import type { Db } from '#server/database/client';
+import { deleteClaimsOfIdeas } from '#server/database/claims';
+import { createIdea, findIdea, findListPerson } from '#server/database/lists';
+import { giftListIdeas, type GiftListRow } from '#server/database/schema';
+import { notFound } from '#server/http/errors';
+import { validatedBody } from '#server/http/validate';
+import { splitIdea } from '#server/utils/lists';
+import { ideaPatchSchema, newIdeaSchema } from '#server/utils/listSchemas';
+
+// Writing the ideas of a list (README 22.19, 22.20), the same for those
+// who hold it, in its document, and for a person linked to their account,
+// by the link, in their own section. `may` says whether the one asking
+// may write for a person of the list.
+
+/** Whether the one asking may write the ideas of a person of the list. */
+type May = (listPersonId: string) => boolean | Promise<boolean>;
+
+/**
+ * A new idea for a person of the list, after another one or last. An
+ * address in the text becomes its link; a line left empty is not kept.
+ * @param event - The request.
+ * @param db - The database.
+ * @param list - The list.
+ * @param may - Who may write for whom.
+ * @returns The id of the idea.
+ */
+export const addIdea = async (
+  event: H3Event,
+  db: Db,
+  list: GiftListRow,
+  may: May,
+) => {
+  const body = await validatedBody(event, newIdeaSchema);
+  if (
+    !(await findListPerson(db, list.id, body.listPersonId)) ||
+    !(await may(body.listPersonId))
+  ) {
+    throw notFound();
+  }
+  const split = splitIdea(body.text);
+  const url = body.url ?? split?.url ?? null;
+  if (!split && !url) {
+    throw createError({ statusCode: 400, statusMessage: 'empty_idea' });
+  }
+  const id = await createIdea(
+    db,
+    list.id,
+    body.listPersonId,
+    { text: split?.text ?? '', url },
+    body.after,
+  );
+  setResponseStatus(event, 201);
+  return { id };
+};
+
+const ideaOf = async (event: H3Event, db: Db, list: GiftListRow, may: May) => {
+  const idea = await findIdea(
+    db,
+    list.id,
+    getRouterParam(event, 'ideaId') ?? '',
+  );
+  if (!idea || !(await may(idea.listPersonId))) throw notFound();
+  return idea;
+};
+
+/**
+ * An idea corrected by touching it, even once ticked; an address pasted
+ * in it becomes its link.
+ * @param event - The request.
+ * @param db - The database.
+ * @param list - The list.
+ * @param may - Who may write for whom.
+ * @returns Once saved.
+ */
+export const changeIdea = async (
+  event: H3Event,
+  db: Db,
+  list: GiftListRow,
+  may: May,
+) => {
+  const idea = await ideaOf(event, db, list, may);
+  const body = await validatedBody(event, ideaPatchSchema);
+  const split = body.text === undefined ? null : splitIdea(body.text);
+  await db
+    .update(giftListIdeas)
+    .set({
+      ...(body.text === undefined ? {} : { text: split?.text ?? '' }),
+      ...(body.url !== undefined
+        ? { url: body.url }
+        : split?.url
+          ? { url: split.url }
+          : {}),
+    })
+    .where(eq(giftListIdeas.id, idea.id));
+  return { ok: true };
+};
+
+/**
+ * An idea deleted, with who gave it. An idea already ticked asks for a
+ * confirmation on the screen first.
+ * @param event - The request.
+ * @param db - The database.
+ * @param list - The list.
+ * @param may - Who may write for whom.
+ * @returns Once deleted.
+ */
+export const dropIdea = async (
+  event: H3Event,
+  db: Db,
+  list: GiftListRow,
+  may: May,
+) => {
+  const idea = await ideaOf(event, db, list, may);
+  await db.batch([
+    deleteClaimsOfIdeas(db, [idea.id]),
+    db.delete(giftListIdeas).where(eq(giftListIdeas.id, idea.id)),
+  ]);
+  return { ok: true };
+};

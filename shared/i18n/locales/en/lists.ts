@@ -51,6 +51,8 @@ export default {
     },
   },
   doc: {
+    holdersWith: 'You hold this list with {names}.',
+    holdersAlone: 'Hold this list with others',
     personMenu: 'Options for {name}',
     personPage: 'Their page and tastes',
     removeFromList: 'Remove from this list',
@@ -168,6 +170,35 @@ export default {
       people: 'Add at least one person to the list.',
     },
   },
+  holders: {
+    title: 'Those who hold the list',
+    intro:
+      'You are equals: each of you writes the ideas, shares the link and sees who gives what.',
+    you: 'That’s you',
+    remove: 'Remove',
+    leave: 'Stop holding this list',
+    invited: 'Invited on {date} · not come yet',
+    inviteLabel: 'Invite someone to hold the list',
+    emailPlaceholder: 'their@address.com',
+    invite: 'Invite',
+    inviteHelp:
+      'They get an email saying you invite them, and may decline. The list is among theirs as soon as they log in.',
+    seesAll:
+      'Those who hold the list see everything, including what they are given if they are on it.',
+    alreadyHolder: 'This person already holds the list.',
+    alreadyInvited: 'This address is already invited.',
+    invitedDone: 'Invitation sent',
+    removed: '{name} no longer holds the list',
+    left: 'You no longer hold this list',
+  },
+  inviteEmail: {
+    subject: '{by} invites you to hold the list “{title}”',
+    intro:
+      '{by} invites you to hold the gift list “{title}” with them on Under the Tree: write the ideas, share the link, see who gives what.',
+    action: 'Log in with this email address, the list will be among yours:',
+    ignore:
+      'If you would rather not, ignore this email: you can also leave the list once logged in.',
+  },
   family: {
     title: 'My people',
     intro: 'The people you hold gift lists for. Only you see them here.',
@@ -199,6 +230,17 @@ export default {
     },
   },
   person: {
+    account: {
+      title: 'Their account',
+      none: 'None',
+      linked: 'Linked to their account',
+      waiting: 'No account at this address yet',
+      unlink: 'Unlink',
+      label: 'Email address of {name}',
+      can: 'On your lists, {name} can write their own ideas. For the rest, {name} sees the list like everyone else, without seeing who gives what.',
+      child: 'For a child, no account is needed: leave this field empty.',
+      whoSees: 'Only those who hold your lists see this address.',
+    },
     context: 'My people',
     delete: 'Delete from my people',
     practical: 'Practical details',
@@ -223,6 +265,10 @@ export default {
     none: 'Nothing',
   },
   visitor: {
+    figures: '{name}’s list. You are on it: you can write your own ideas.',
+    itsYou: 'That’s you',
+    ideaForMe: 'An idea for me…',
+    anotherForMe: 'Another idea for me…',
     holder: '{name}’s list.',
     whoSees: 'Nobody but {name} sees who ticked what.',
     mine: {

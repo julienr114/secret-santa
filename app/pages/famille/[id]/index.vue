@@ -13,7 +13,10 @@ import {
 // shoe size), what the family always asks, shown at the top of their
 // section of a list; « Ses goûts », the same questions as the gift hints
 // of a draw. Each short value in its sheet, saved at once; the texts on
-// their page. Opened from a list, « Retirer de la liste » at the bottom;
+// their page. « Son compte » (lot 25, maquette ListePersonneCompte): an
+// address links one of my people to their own account, so that they
+// write their own ideas on my lists; then their name and icon are
+// theirs to choose. Opened from a list, « Retirer de la liste » at the bottom;
 // always, « Supprimer de mes proches », which leads to its confirmation
 // (Correction 24).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -47,9 +50,9 @@ const save = (patch: Parameters<typeof update.mutate>[0]) =>
     onError: (error) =>
       toast.add({ title: errorMessage(error), color: 'error' }),
   });
-const editing = ref<null | 'icon' | 'name' | 'birth' | 'clothing' | 'shoe'>(
-  null,
-);
+const editing = ref<
+  null | 'icon' | 'name' | 'birth' | 'clothing' | 'shoe' | 'email'
+>(null);
 const opened = (which: NonNullable<typeof editing.value>) =>
   computed({
     get: () => editing.value === which,
@@ -62,6 +65,15 @@ const nameOpen = opened('name');
 const birthOpen = opened('birth');
 const clothingOpen = opened('clothing');
 const shoeOpen = opened('shoe');
+const emailOpen = opened('email');
+/** Among my own people, and not « Moi »: I may link them to their account. */
+const linkable = computed(
+  () => Boolean(query.data.value?.mine) && !member.value?.isSelf,
+);
+/** Has an account of their own: their name and icon are theirs. */
+const theirs = computed(
+  () => Boolean(member.value?.linked) && !member.value?.isSelf,
+);
 const close = () => {
   editing.value = null;
 };
@@ -108,7 +120,16 @@ const onRemove = () =>
     >
       <template v-if="member">
         <div class="flex items-center gap-3.5">
+          <!-- Someone with an account of their own chooses their icon and
+               their name. -->
+          <UiAvatar
+            v-if="theirs"
+            :avatar="member.avatar"
+            :px="64"
+            class="shrink-0"
+          />
           <button
+            v-else
             type="button"
             class="relative shrink-0"
             :aria-label="t('lists.person.icon', { name: member.firstName })"
@@ -127,7 +148,9 @@ const onRemove = () =>
             <NuxtLink to="/famille" class="text-sm text-toned">{{
               t('lists.person.context')
             }}</NuxtLink>
+            <UiPageTitle v-if="theirs">{{ member.firstName }}</UiPageTitle>
             <button
+              v-else
               type="button"
               class="text-left"
               data-testid="member-name"
@@ -137,6 +160,44 @@ const onRemove = () =>
             </button>
           </div>
         </div>
+
+        <UiList
+          v-if="linkable"
+          :title="t('lists.person.account.title')"
+          :footer="`${
+            member.email
+              ? t('lists.person.account.can', { name: member.firstName })
+              : t('lists.person.account.child')
+          } ${t('lists.person.account.whoSees')}`"
+          data-testid="member-account"
+        >
+          <UiListItem
+            v-if="!member.email"
+            :title="t('lists.person.account.label', { name: member.firstName })"
+            :value="t('lists.person.account.none')"
+            :on-click="() => (editing = 'email')"
+            data-testid="member-email"
+          />
+          <template v-else>
+            <UiListItem
+              :title="member.email"
+              :subtitle="
+                member.linked
+                  ? t('lists.person.account.linked')
+                  : t('lists.person.account.waiting')
+              "
+              icon="i-lucide-circle-user"
+              :icon-tone="member.linked ? 'primary' : 'neutral'"
+              :on-click="() => (editing = 'email')"
+              data-testid="member-email"
+            />
+            <UiListItem
+              :title="t('lists.person.account.unlink')"
+              :on-click="() => save({ email: null })"
+              data-testid="member-unlink"
+            />
+          </template>
+        </UiList>
 
         <UiList
           :title="t('lists.person.practical')"
@@ -266,6 +327,22 @@ const onRemove = () =>
           (name) => {
             close();
             if (name.trim()) save({ firstName: name.trim() });
+          }
+        "
+      />
+      <UiTextSheet
+        v-model:open="emailOpen"
+        :title="t('lists.person.account.title')"
+        :label="t('lists.person.account.label', { name: member.firstName })"
+        :value="member.email ?? ''"
+        :maxlength="254"
+        :hint="t('lists.person.account.whoSees')"
+        :validate-label="t('common.actions.validate')"
+        :cancel-label="t('common.actions.cancel')"
+        @validate="
+          (address) => {
+            close();
+            save({ email: address.trim() || null });
           }
         "
       />

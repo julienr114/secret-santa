@@ -1,23 +1,8 @@
-import { eq } from 'drizzle-orm';
-import { deleteClaimsOfIdeas } from '#server/database/claims';
-import { findIdea } from '#server/database/lists';
-import { giftListIdeas } from '#server/database/schema';
-import { notFound } from '#server/http/errors';
+import { dropIdea } from '#server/http/ideas';
 import { requireHeldList } from '#server/http/lists';
 
-// « Supprimer la ligne » (README 22.19). An idea already ticked asks for a
-// confirmation on the screen first.
+// An idea deleted: its line emptied (README 22.19, 22.20). Those who hold the list write for everyone on it.
 export default defineEventHandler(async (event) => {
   const { db, list } = await requireHeldList(event);
-  const idea = await findIdea(
-    db,
-    list.id,
-    getRouterParam(event, 'ideaId') ?? '',
-  );
-  if (!idea) throw notFound();
-  await db.batch([
-    deleteClaimsOfIdeas(db, [idea.id]),
-    db.delete(giftListIdeas).where(eq(giftListIdeas.id, idea.id)),
-  ]);
-  return { ok: true };
+  return dropIdea(event, db, list, () => true);
 });

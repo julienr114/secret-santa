@@ -3,7 +3,6 @@ import type { ListDocument } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
 import { MEMBER_NAME_MAX } from '#server/utils/lists';
 import { useUpdateMemberMutation } from '~/composables/queries/useLists';
-import type IdeaLine from './IdeaLine.vue';
 
 // A person on a list, as its holder writes it (README 22.19, maquette
 // ListeTeneur): the round icon of 52 px left of the first name and the
@@ -13,8 +12,8 @@ import type IdeaLine from './IdeaLine.vue';
 // person's page (asked by Julien, 19 November 2026): the icon in its
 // sheet (a small round pencil says so), the name written in place. The
 // icon of « Moi » is the one of my account: changed here, it changes
-// there. The name of a person linked to an account is not written here:
-// « Moi » today. At the end
+// there. Someone linked to an account of their own (lot 25) chooses
+// their name and their icon: neither changes here. At the end
 // of the first name, « ⋯ » (maquette ListePersonneMenu): « Sa fiche et
 // ses goûts », « Retirer de cette liste », at once when nobody ticked
 // any of their ideas, otherwise after a second tap that says how many
@@ -125,8 +124,8 @@ const menu = computed(() =>
               confirming.value = true;
             },
           },
-          // Not « Moi »: they stay among my people.
-          ...(member.value.isSelf
+          // Not « Moi », who stays, nor someone else's person.
+          ...(member.value.isSelf || !member.value.own
             ? []
             : [
                 {
@@ -139,23 +138,22 @@ const menu = computed(() =>
         ],
       ],
 );
-const lines = ref<InstanceType<typeof IdeaLine>[]>([]);
-const last = ref<InstanceType<typeof IdeaLine> | null>(null);
-/**
- * The return key on a line: on to the next one, the empty line last.
- * @param index - The line left.
- */
-const onNext = (index: number) =>
-  (index + 1 < props.person.ideas.length
-    ? lines.value[index + 1]
-    : last.value
-  )?.start();
+const via = computed(() => ({ listId: props.listId }));
 </script>
 
 <template>
   <section class="flex flex-col gap-1" data-testid="list-person">
     <header class="flex items-center gap-3 pb-1">
+      <!-- Someone with an account of their own chooses their icon; « Moi »
+           changes mine from here. -->
+      <UiAvatar
+        v-if="member.linked && !member.isSelf"
+        :avatar="member.avatar"
+        :px="52"
+        class="shrink-0"
+      />
       <button
+        v-else
         type="button"
         class="relative shrink-0"
         :aria-label="t('lists.person.icon', { name: member.firstName })"
@@ -187,7 +185,7 @@ const onNext = (index: number) =>
             @keydown.esc.prevent="cancelName"
             @blur="saveName"
           />
-          <template v-else-if="member.isSelf">{{ member.firstName }}</template>
+          <template v-else-if="member.linked">{{ member.firstName }}</template>
           <button
             v-else
             type="button"
@@ -227,13 +225,11 @@ const onNext = (index: number) =>
       <ListsIdeaLine
         v-for="(idea, index) in person.ideas"
         :key="idea.id"
-        ref="lines"
-        :list-id="listId"
+        :via="via"
         :list-person-id="person.id"
         :for-name="member.firstName"
         :idea="idea"
         :line="`${person.id}:${index}`"
-        @next="onNext(index)"
       />
       <li
         v-for="gift in person.offList"
@@ -261,8 +257,7 @@ const onNext = (index: number) =>
         </p>
       </li>
       <ListsIdeaLine
-        ref="last"
-        :list-id="listId"
+        :via="via"
         :list-person-id="person.id"
         :for-name="member.firstName"
         :idea="null"

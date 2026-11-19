@@ -4,6 +4,7 @@ import { findListPerson } from '#server/database/lists';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { listOfLink } from '#server/http/listLink';
+import { roleOnList } from '#server/http/lists';
 import { validatedBody } from '#server/http/validate';
 import { IDEA_TEXT_MAX } from '#server/utils/lists';
 
@@ -21,9 +22,8 @@ export default defineEventHandler(async (event) => {
   const body = await validatedBody(event, bodySchema);
   if (!(await findListPerson(db, list.id, body.listPersonId))) throw notFound();
   await addOffList(db, { listId: list.id, accountId: user.accountId, ...body });
-  if (user.accountId !== list.accountId) {
-    await recordVisit(db, list.id, user.accountId);
-  }
+  const { role } = await roleOnList(db, list, user.accountId);
+  if (role !== 'holder') await recordVisit(db, list.id, user.accountId);
   setResponseStatus(event, 201);
   return { ok: true };
 });

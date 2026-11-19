@@ -1,7 +1,8 @@
 import { listDocument, requireHeldList } from '#server/http/lists';
 
-// The document of a list, for the one who holds it (README 22.19).
+// The document of a list, for one of those who hold it (README 22.19,
+// 22.20).
 export default defineEventHandler(async (event) => {
-  const { db, list } = await requireHeldList(event);
-  return listDocument(db, list);
+  const { db, user, list } = await requireHeldList(event);
+  return listDocument(db, list, user.accountId);
 });

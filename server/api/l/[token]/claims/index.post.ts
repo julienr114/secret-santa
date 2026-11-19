@@ -3,6 +3,7 @@ import { recordVisit } from '#server/database/claims';
 import { requireAccount } from '#server/http/auth';
 import { tickIdea } from '#server/http/claims';
 import { listOfLink } from '#server/http/listLink';
+import { roleOnList } from '#server/http/lists';
 import { validatedBody } from '#server/http/validate';
 import { LIST_NOTE_MAX } from '#server/utils/lists';
 
@@ -22,9 +23,8 @@ export default defineEventHandler(async (event) => {
   const { db, list } = await listOfLink(event);
   const body = await validatedBody(event, bodySchema);
   const joined = await tickIdea(db, list, user.accountId, body);
-  if (user.accountId !== list.accountId) {
-    await recordVisit(db, list.id, user.accountId);
-  }
+  const { role } = await roleOnList(db, list, user.accountId);
+  if (role !== 'holder') await recordVisit(db, list.id, user.accountId);
   setResponseStatus(event, 201);
   return { ok: true, joined };
 });

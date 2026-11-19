@@ -481,9 +481,18 @@ export const familyMembers = sqliteTable(
     texts: text('texts', { mode: 'json' }).$type<
       Record<string, string | null>
     >(),
+    // Their own account (lot 25): the address I gave for them, lower
+    // case, and the account it belongs to once it exists. Linked, they
+    // write their own ideas on the lists they are on.
+    email: text('email'),
+    linkedAccountId: text('linked_account_id').references(() => accounts.id),
     createdAt: text('created_at').notNull(),
   },
-  (t) => [index('family_members_account_idx').on(t.accountId)],
+  (t) => [
+    index('family_members_account_idx').on(t.accountId),
+    index('family_members_linked_idx').on(t.linkedAccountId),
+    index('family_members_email_idx').on(t.email),
+  ],
 );
 
 export const giftLists = sqliteTable(
@@ -510,6 +519,48 @@ export const giftLists = sqliteTable(
     updatedAt: text('updated_at').notNull(),
   },
   (t) => [index('gift_lists_account_idx').on(t.accountId)],
+);
+
+// Those who hold a list (lot 25): several accounts, all equal; the one
+// who created it is among them like the others. `gift_lists.account_id`
+// only says who created it.
+export const giftListHolders = sqliteTable(
+  'gift_list_holders',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_list_holders_list_account_idx').on(t.listId, t.accountId),
+    index('gift_list_holders_account_idx').on(t.accountId),
+  ],
+);
+
+// Invitations to hold a list, waiting, by address (lower case): the list
+// joins those of the invited account the next time it opens its lists.
+export const giftListInvites = sqliteTable(
+  'gift_list_invites',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    email: text('email').notNull(),
+    invitedBy: text('invited_by')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_list_invites_list_email_idx').on(t.listId, t.email),
+    index('gift_list_invites_email_idx').on(t.email),
+  ],
 );
 
 // The people on a list, in their order.

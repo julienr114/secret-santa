@@ -17,7 +17,11 @@ import {
 import { newId, nowIso } from '#server/http/context';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import type { HolderLevel } from '#server/utils/listAccess';
-import { carriedIdeas } from '#server/utils/lists';
+import {
+  carriedIdeas,
+  resumedList,
+  type ResumablePerson,
+} from '#server/utils/lists';
 
 // Gift lists (README 22.19, lot 21). Every query filters on the account
 // that holds the list: no route gives a list in draft to another account.
@@ -320,6 +324,13 @@ export const listsHeldBy = async (
       .orderBy(desc(giftLists.createdAt))
   ).map((row) => row.list);
 
+/** A list by its id, whoever holds it, or null. */
+export const findList = async (
+  db: Db,
+  id: string,
+): Promise<GiftListRow | null> =>
+  (await db.select().from(giftLists).where(eq(giftLists.id, id)).get()) ?? null;
+
 /** A list the account holds, with the level it holds it at, or null. */
 export const findHolding = async (
   db: Db,
@@ -367,6 +378,8 @@ export type ListPerson = {
     url: string | null;
     position: number;
     createdAt: string;
+    /** Taken from an old list (lot 27), and not changed since. */
+    carried: boolean;
   }[];
 };
 
@@ -399,12 +412,13 @@ export const peopleOfLists = async (
       member: memberOf(member),
       ideas: ideas
         .filter((idea) => idea.listPersonId === person.id)
-        .map(({ id, text, url, position, createdAt }) => ({
+        .map(({ id, text, url, position, createdAt, carriedFrom }) => ({
           id,
           text,
           url,
           position,
           createdAt,
+          carried: carriedFrom !== null,
         })),
     });
   }
@@ -555,6 +569,137 @@ export const addPersonToList = async (
   ]);
   return id;
 };
+
+/**
+ * The people of some lists with their ideas, each said planned or not,
+ * as taking a list up again reads them (lot 27). Three queries whatever
+ * the number of lists.
+ * @param db - The database.
+ * @param listIds - The lists.
+ * @returns The people of each list, by list.
+ */
+export const resumableOfLists = async (
+  db: Db,
+  listIds: readonly string[],
+): Promise<Map<string, ResumablePerson[]>> => {
+  const byList = new Map<string, ResumablePerson[]>(
+    listIds.map((id) => [id, []]),
+  );
+  if (listIds.length === 0) return byList;
+  const people = await db
+    .select()
+    .from(giftListPeople)
+    .where(inArray(giftListPeople.listId, [...listIds]));
+  const ideas = await db
+    .select()
+    .from(giftListIdeas)
+    .where(inArray(giftListIdeas.listId, [...listIds]));
+  const planned = new Set(
+    (
+      await db
+        .select({ ideaId: giftClaims.ideaId })
+        .from(giftClaims)
+        .where(inArray(giftClaims.listId, [...listIds]))
+    ).map((claim) => claim.ideaId),
+  );
+  for (const person of people) {
+    byList.get(person.listId)?.push({
+      memberId: person.memberId,
+      position: person.position,
+      ideas: ideas
+        .filter((idea) => idea.listPersonId === person.id)
+        .map((idea) => ({
+          text: idea.text,
+          url: idea.url,
+          position: idea.position,
+          planned: planned.has(idea.id),
+        })),
+    });
+  }
+  return byList;
+};
+
+/**
+ * Starts an empty draft from an old list (lot 27, README 22.20): its
+ * icon, its word, its people and the ideas nobody ticked, each marked
+ * as taken from that list. The old list does not change.
+ * @param db - The database.
+ * @param list - The new list, an empty draft.
+ * @param source - The old list.
+ * @returns Once written.
+ */
+export const resumeList = async (
+  db: Db,
+  list: GiftListRow,
+  source: GiftListRow,
+) => {
+  const taken = resumedList({
+    icon: { emoji: source.iconEmoji, color: source.iconColor },
+    note: source.note,
+    noteEdited: source.noteEdited,
+    people: (await resumableOfLists(db, [source.id])).get(source.id) ?? [],
+  });
+  const now = nowIso();
+  const rows = taken.people.map((person, position) => ({
+    id: newId(),
+    position,
+    ...person,
+  }));
+  await db.batch([
+    db
+      .update(giftLists)
+      .set({
+        iconEmoji: taken.icon.emoji,
+        iconColor: taken.icon.color,
+        note: taken.note,
+        noteEdited: taken.noteEdited,
+        carriedFrom: source.id,
+        updatedAt: now,
+      })
+      .where(eq(giftLists.id, list.id)),
+    ...rows.map((person) =>
+      db.insert(giftListPeople).values({
+        id: person.id,
+        listId: list.id,
+        memberId: person.memberId,
+        position: person.position,
+      }),
+    ),
+    ...rows.flatMap((person) =>
+      person.ideas.map((idea, index) =>
+        db.insert(giftListIdeas).values({
+          id: newId(),
+          listId: list.id,
+          listPersonId: person.id,
+          text: idea.text,
+          url: idea.url,
+          position: index,
+          carriedFrom: source.id,
+          createdAt: now,
+        }),
+      ),
+    ),
+  ]);
+};
+
+/**
+ * The marks of a list taken up again go: at its first share, nothing
+ * says any more where the list or its ideas came from.
+ * @param db - The database.
+ * @param listId - The list.
+ * @returns Once erased.
+ */
+export const forgetCarried = (db: Db, listId: string) =>
+  db.batch([
+    db
+      .update(giftLists)
+      .set({ carriedFrom: null })
+      .where(eq(giftLists.id, listId)),
+    db
+      .update(giftListIdeas)
+      .set({ carriedFrom: null })
+      .where(eq(giftListIdeas.listId, listId)),
+  ]);
 
 /** A person's place on a list, or null when not on it. */
 export const findListPerson = async (db: Db, listId: string, id: string) =>

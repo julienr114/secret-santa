@@ -515,6 +515,9 @@ export const giftLists = sqliteTable(
     // The public link, made at the first share; a new one replaces it.
     shareToken: text('share_token').unique(),
     sharedAt: text('shared_at'),
+    // The list this one was started from (lot 27), until it is first
+    // shared. No foreign key: the old list may be deleted meanwhile.
+    carriedFrom: text('carried_from'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
@@ -614,6 +617,9 @@ export const giftListIdeas = sqliteTable(
     text: text('text').notNull(),
     url: text('url'),
     position: integer('position').notNull(),
+    // The list this idea was taken from (lot 27): a mark for those who
+    // hold the list, gone once the idea is changed or the list shared.
+    carriedFrom: text('carried_from'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('gift_list_ideas_list_idx').on(t.listId)],

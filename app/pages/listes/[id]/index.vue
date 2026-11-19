@@ -13,6 +13,7 @@ import {
   useListQuery,
   useRemovePersonMutation,
   useReorderMutation,
+  useCreateListMutation,
   useUntickForMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
@@ -139,6 +140,21 @@ const removal = useDelayedRemoval((personId, done) =>
 // once; the list is read again once it is saved.
 const reorder = useReorderMutation(id);
 const wanted = ref<ListOrder | null>(null);
+// « Reprendre cette liste » (lot 27): a new draft, started from this
+// one, which does not change.
+const again = useCreateListMutation();
+const onAgain = () => {
+  const current = doc.value;
+  if (!current) return;
+  again.mutate(
+    { icon: current.list.icon, from: current.list.id },
+    {
+      onSuccess: ({ id: created }) =>
+        navigateTo(`/listes/${created}?nouvelle=1`),
+      onError: (error) => toast.failed(errorMessage(error)),
+    },
+  );
+};
 // « Décocher » for someone (Correction 25, README 22.19, maquettes
 // ListeDecocher, ListeDecocheFait): the tick goes from the screen at
 // once, and from the server only once « Annuler » is gone, so that giving
@@ -460,6 +476,39 @@ onBeforeRouteLeave((to) => {
 
         <ListsNote :list-id="list.id" :note="list.note" />
 
+        <!-- A list taken up from an old one (lot 27, maquette
+             ListeReprise): where it comes from, and what the mark says. -->
+        <p
+          v-if="doc.resumedFrom"
+          class="text-sm leading-[1.45] text-toned"
+          data-testid="resumed-from"
+        >
+          {{
+            doc.resumedFrom.title
+              ? t('lists.resume.from', { title: doc.resumedFrom.title })
+              : t('lists.resume.fromUntitled')
+          }}
+          {{ t('lists.resume.marksBefore') }}
+          <UIcon
+            name="i-lucide-rotate-ccw"
+            class="inline-block size-3.5 align-[-2px]"
+            aria-hidden="true"
+          />
+          {{ t('lists.resume.marksAfter') }}
+        </p>
+        <!-- A past list is taken up again from here. -->
+        <UButton
+          v-if="list.status === 'past'"
+          variant="outline"
+          color="neutral"
+          icon="i-lucide-rotate-ccw"
+          class="h-12 justify-center self-start px-5 text-base font-bold"
+          :loading="again.isPending.value"
+          :label="t('lists.resume.again')"
+          data-testid="resume-again"
+          @click="onAgain"
+        />
+
         <div
           v-if="people.length > 0"
           class="flex flex-col gap-0.5 text-sm text-toned"
@@ -495,6 +544,11 @@ onBeforeRouteLeave((to) => {
         </div>
         <p class="sr-only" aria-live="polite">{{ announced }}</p>
 
+        <!-- An empty draft may start from another list. -->
+        <ListsResumeFrom
+          v-if="people.length === 0 && list.status === 'draft'"
+          :list-id="list.id"
+        />
         <ListsAddSomeone
           :list-id="list.id"
           :family="doc.family"

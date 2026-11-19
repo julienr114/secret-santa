@@ -25,6 +25,8 @@ export default {
     'Du hast schon sehr viele Personen. Lösche eine, um eine weitere hinzuzufügen.',
   limit_journal:
     'In dieser Gruppe war heute sehr viel los: Versuche es morgen noch einmal.',
+  list_not_empty:
+    'Auf dieser Liste steht schon jemand: Von einer anderen Liste geht man nur in einer leeren aus.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
   group_not_found:
     'Gruppe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',

@@ -21,6 +21,8 @@ export default {
   limit_family:
     'Tu as déjà beaucoup de proches. Supprimes-en un pour en ajouter un autre.',
   limit_journal: 'Ce groupe a beaucoup bougé aujourd’hui : réessaie demain.',
+  list_not_empty:
+    'Cette liste a déjà du monde : on ne repart d’une autre liste que dans une liste vide.',
   slug_taken: 'Cet identifiant de groupe est déjà pris.',
   group_not_found:
     'Groupe introuvable. Recharge la page : la liste a peut-être changé.',

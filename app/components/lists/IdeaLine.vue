@@ -614,6 +614,16 @@ const onFocusOut = (event: FocusEvent) => {
           :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a
         >
+        <!-- Taken from an old list and not changed since (lot 27): a small
+             grey mark, for those who hold the list only. -->
+        <UIcon
+          v-if="idea.carried"
+          name="i-lucide-rotate-ccw"
+          class="size-3.5 shrink-0 text-muted"
+          role="img"
+          :aria-label="t('lists.resume.mark')"
+          data-testid="idea-carried"
+        />
         <button
           v-if="who && claims.length > 0"
           type="button"

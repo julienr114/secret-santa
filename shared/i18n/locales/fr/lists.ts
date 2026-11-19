@@ -197,6 +197,24 @@ export default {
       people: 'Ajoute au moins une personne à la liste.',
     },
   },
+  resume: {
+    noIdeas: 'aucune idée à reprendre',
+    title: 'Repartir d’une liste',
+    untitled: 'Liste sans nom',
+    people: { one: '{count} personne', other: '{count} personnes' },
+    ideas: {
+      one: '{count} idée pas encore offerte',
+      other: '{count} idées pas encore offertes',
+    },
+    help: 'Tu reprends les personnes et les idées qui n’ont pas été cochées. L’ancienne liste ne change pas.',
+    again: 'Reprendre cette liste',
+    from: 'Reprise de {title}.',
+    fromUntitled: 'Reprise d’une autre liste.',
+    marksBefore: 'Les idées marquées',
+    marksAfter:
+      'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque, elle disparaît au partage.',
+    mark: 'Reprise de l’ancienne liste',
+  },
   holders: {
     title: 'Ceux qui tiennent la liste',
     you: 'C’est toi',

@@ -9,6 +9,7 @@ import {
   acceptInvites,
   familyOf,
   findHolding,
+  findList,
   holdersOfLists,
   invitesForEmail,
   linkMembersOf,
@@ -222,6 +223,11 @@ export type IdeaLine = {
   /** Mine, when I give it. */
   mine: MyClaim | null;
   /**
+   * Taken from an old list and not changed since (lot 27): a mark for
+   * those who hold the list only.
+   */
+  carried: boolean;
+  /**
    * The ticks of others that the one looking may take off (those who
    * hold the list), each with the line as it would be without it.
    */
@@ -277,6 +283,7 @@ const linesOf = (
         text: idea.text,
         url: idea.url,
         view: ideaView(on, sees),
+        carried: sees.holds && idea.carried,
         mine: mine
           ? {
               mode: mine.mode,
@@ -349,6 +356,11 @@ export type ListDocument = {
   holders: HolderView[];
   /** The one looking manages the list: shares, invites, deletes. */
   manages: boolean;
+  /**
+   * The list this one was started from (lot 27), until it is shared:
+   * its name, empty when it has none or is gone.
+   */
+  resumedFrom: { title: string } | null;
 };
 
 /**
@@ -390,6 +402,9 @@ export const listDocument = async (
     manages: holders.some(
       (holder) => holder.accountId === accountId && holder.level === 'manage',
     ),
+    resumedFrom: list.carriedFrom
+      ? { title: (await findList(db, list.carriedFrom))?.title ?? '' }
+      : null,
   };
 };
 

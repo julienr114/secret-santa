@@ -211,6 +211,13 @@
       "when": 1795113817283,
       "tag": "0029_holder_levels",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "6",
+      "when": 1795126212624,
+      "tag": "0030_carried_from",
+      "breakpoints": true
     }
   ]
 }

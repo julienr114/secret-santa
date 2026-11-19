@@ -67,6 +67,8 @@ export const newListSchema = z.object({
   icon: listIconSchema,
   title: plainName(LIST_TITLE_MAX).default(''),
   eventDate: isoDay.nullable().default(null),
+  /** « Reprendre cette liste »: the list to start from (lot 27). */
+  from: z.string().min(1).max(40).optional(),
 });
 
 const ideaTextSchema = z.string().trim().max(IDEA_TEXT_MAX);

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canResumeInto,
+  resumeSummary,
+  resumedList,
   LIST_EMOJIS,
   ageOn,
   cardSentence,
@@ -258,5 +261,79 @@ describe('lists', () => {
     expect(
       memberRemoval({ isSelf: false, holdsWithMe: true }, [], new Set()),
     ).toEqual({ allowed: false, why: 'holder' });
+  });
+});
+
+describe('taking a list up again (lot 27)', () => {
+  const idea = (text: string, position: number, planned = false) => ({
+    text,
+    url: null,
+    position,
+    planned,
+  });
+  const source = {
+    icon: { emoji: '❄️', color: 'night' },
+    note: 'Pas de peluches cette année',
+    noteEdited: true,
+    people: [
+      {
+        memberId: 'zoe',
+        position: 1,
+        ideas: [idea('Poupée en tissu', 0), idea('Livres cartonnés', 1, true)],
+      },
+      {
+        memberId: 'leo',
+        position: 0,
+        ideas: [
+          idea('Télescope', 1),
+          idea('Circuit de billes', 2, true),
+          idea('Livres sur les dinosaures', 0),
+        ],
+      },
+      { memberId: 'hugo', position: 2, ideas: [] },
+    ],
+  };
+
+  it('takes the icon, the word, the people in their order and the ideas nobody ticked', () => {
+    const resumed = resumedList(source);
+    expect(resumed.icon).toEqual({ emoji: '❄️', color: 'night' });
+    expect(resumed.note).toBe('Pas de peluches cette année');
+    expect(resumed.people.map((person) => person.memberId)).toEqual([
+      'leo',
+      'zoe',
+      'hugo',
+    ]);
+    expect(resumed.people[0]?.ideas.map((i) => i.text)).toEqual([
+      'Livres sur les dinosaures',
+      'Télescope',
+    ]);
+    expect(resumed.people[1]?.ideas.map((i) => i.text)).toEqual([
+      'Poupée en tissu',
+    ]);
+    // Someone without an idea left still comes.
+    expect(resumed.people[2]?.ideas).toEqual([]);
+  });
+
+  it('leaves the starting word to come by itself', () => {
+    const resumed = resumedList({ ...source, note: null, noteEdited: false });
+    expect(resumed.note).toBeNull();
+    expect(resumed.noteEdited).toBe(false);
+    // A word the holder erased stays erased.
+    expect(
+      resumedList({ ...source, note: null, noteEdited: true }).noteEdited,
+    ).toBe(true);
+  });
+
+  it('counts what it would bring', () => {
+    expect(resumeSummary(source.people)).toEqual({ people: 3, ideas: 3 });
+    expect(resumeSummary([])).toEqual({ people: 0, ideas: 0 });
+  });
+
+  it('only starts an empty draft from another list', () => {
+    expect(canResumeInto({ sharedAt: null, peopleCount: 0 })).toBe(true);
+    expect(canResumeInto({ sharedAt: null, peopleCount: 1 })).toBe(false);
+    expect(
+      canResumeInto({ sharedAt: '2026-11-19T10:00:00.000Z', peopleCount: 0 }),
+    ).toBe(false);
   });
 });

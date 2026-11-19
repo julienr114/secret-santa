@@ -62,10 +62,42 @@ export const useCreateListMutation = () =>
       icon: { emoji: string; color: string };
       title?: string;
       eventDate?: string | null;
+      /** « Reprendre cette liste »: the list to start from. */
+      from?: string;
     }
   >(
     (body) => api('/api/lists', { method: 'POST', body }),
     () => [keys.lists()],
+  );
+
+/** A list one can start from, with what it would bring (lot 27). */
+export type ResumableList = {
+  id: string;
+  icon: { emoji: string; color: string };
+  title: string;
+  people: number;
+  ideas: number;
+};
+
+export const useResumableQuery = (
+  id: Id,
+  enabled: MaybeRefOrGetter<boolean> = true,
+) =>
+  useApiQuery<ResumableList[]>(
+    () => [...keys.list(toValue(id)), 'resumable'],
+    () => `/api/lists/${toValue(id)}/resumable`,
+    enabled,
+  );
+
+/** « Repartir d'une liste », in the empty document of a new list. */
+export const useResumeMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (from) =>
+      api(`/api/lists/${toValue(id)}/resume`, {
+        method: 'POST',
+        body: { from },
+      }),
+    () => listKeys(toValue(id)),
   );
 
 export type ListPatch = {

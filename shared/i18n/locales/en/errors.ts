@@ -19,6 +19,8 @@ export default {
     'You already announced a lot of gifts off the list here. Remove one to add another.',
   limit_family: 'You already have a lot of people. Delete one to add another.',
   limit_journal: 'This group has been very busy today: try again tomorrow.',
+  list_not_empty:
+    'This list already has people on it: one only starts from another list in an empty one.',
   slug_taken: 'This group identifier is already taken.',
   group_not_found:
     'Group not found. Reload the page: the list may have changed.',

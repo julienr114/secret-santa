@@ -198,6 +198,24 @@ export default {
       people: 'Füge mindestens eine Person zur Liste hinzu.',
     },
   },
+  resume: {
+    noIdeas: 'keine Idee zu übernehmen',
+    title: 'Von einer Liste ausgehen',
+    untitled: 'Liste ohne Namen',
+    people: { one: '{count} Person', other: '{count} Personen' },
+    ideas: {
+      one: '{count} noch nicht verschenkte Idee',
+      other: '{count} noch nicht verschenkte Ideen',
+    },
+    help: 'Du übernimmst die Personen und die Ideen, die niemand abgehakt hat. Die alte Liste ändert sich nicht.',
+    again: 'Diese Liste wieder aufnehmen',
+    from: 'Übernommen von {title}.',
+    fromUntitled: 'Übernommen von einer anderen Liste.',
+    marksBefore: 'Die Ideen mit',
+    marksAfter:
+      'wurden nicht verschenkt: Behalte sie oder lösche sie. Nur du siehst diese Markierung, sie verschwindet beim Teilen.',
+    mark: 'Von der alten Liste übernommen',
+  },
   holders: {
     title: 'Wer die Liste führt',
     you: 'Das bist du',

@@ -192,6 +192,24 @@ export default {
       people: 'Add at least one person to the list.',
     },
   },
+  resume: {
+    noIdeas: 'no idea to take up',
+    title: 'Start from a list',
+    untitled: 'Unnamed list',
+    people: { one: '{count} person', other: '{count} people' },
+    ideas: {
+      one: '{count} idea not given yet',
+      other: '{count} ideas not given yet',
+    },
+    help: 'You take up the people and the ideas nobody ticked. The old list does not change.',
+    again: 'Take this list up again',
+    from: 'Taken up from {title}.',
+    fromUntitled: 'Taken up from another list.',
+    marksBefore: 'The ideas marked',
+    marksAfter:
+      'were not given: keep them or erase them. Only you see this mark, and it goes when the list is shared.',
+    mark: 'Taken up from the old list',
+  },
   holders: {
     title: 'Those who hold the list',
     you: 'That’s you',

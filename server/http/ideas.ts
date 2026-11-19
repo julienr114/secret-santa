@@ -89,6 +89,8 @@ export const changeIdea = async (
   await db
     .update(giftListIdeas)
     .set({
+      // Changed, it is no longer the idea taken from an old list (lot 27).
+      carriedFrom: null,
       ...(body.text === undefined ? {} : { text: split?.text ?? '' }),
       ...(body.url !== undefined
         ? { url: body.url }

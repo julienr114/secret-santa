@@ -1,6 +1,7 @@
 import { useDb } from '#server/database/client';
 import { countLists } from '#server/database/caps';
-import { createList } from '#server/database/lists';
+import { createList, findHeldList, resumeList } from '#server/database/lists';
+import { notFound } from '#server/http/errors';
 import { requireRoom } from '#server/http/caps';
 import { requireAccount } from '#server/http/auth';
 import { validatedBody } from '#server/http/validate';
@@ -15,7 +16,16 @@ export default defineEventHandler(async (event) => {
   const body = await validatedBody(event, newListSchema);
   const db = useDb(event);
   await requireRoom('lists', countLists(db, user.accountId));
+  // « Reprendre cette liste » (lot 27): a list I hold, or nothing.
+  const source = body.from
+    ? await findHeldList(db, user.accountId, body.from)
+    : null;
+  if (body.from && !source) throw notFound();
   const id = await createList(db, user.accountId, body);
+  if (source) {
+    const list = await findHeldList(db, user.accountId, id);
+    if (list) await resumeList(db, list, source);
+  }
   setResponseStatus(event, 201);
   return { id };
 });

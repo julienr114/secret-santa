@@ -330,6 +330,79 @@ export const carriedIdeas = (
     .toSorted((a, b) => a.position - b.position)
     .map(({ text, url }) => ({ text, url }));
 
+// --- Taking a list up again (lot 27, README 22.20) ----------------------
+
+/** A person of a list, with their ideas, as taking it up again reads it. */
+export type ResumablePerson = {
+  memberId: string;
+  position: number;
+  ideas: readonly {
+    text: string;
+    url: string | null;
+    position: number;
+    planned: boolean;
+  }[];
+};
+
+/**
+ * What a new list takes from an old one: its icon, its word (only one the
+ * holder wrote: the starting text comes by itself), its people in their
+ * order, and the ideas nobody ticked. What stays behind: the gifts
+ * ticked, the gifts not on the list, the name and the day, which are to
+ * be filled in.
+ * @param source - The old list.
+ * @param source.icon - Its icon.
+ * @param source.note - Its word, or null.
+ * @param source.noteEdited - Whether the holder wrote that word.
+ * @param source.people - Its people, with their ideas.
+ * @returns What the new list starts with.
+ */
+export const resumedList = (source: {
+  icon: { emoji: string; color: string };
+  note: string | null;
+  noteEdited: boolean;
+  people: readonly ResumablePerson[];
+}) => ({
+  icon: source.icon,
+  note: source.noteEdited ? source.note : null,
+  noteEdited: source.noteEdited,
+  people: source.people
+    .toSorted((a, b) => a.position - b.position)
+    .map((person) => ({
+      memberId: person.memberId,
+      ideas: carriedIdeas(person.ideas),
+    })),
+});
+
+/**
+ * What taking a list up again would bring, for its line: « 4 personnes ·
+ * 6 idées pas encore offertes ».
+ * @param people - The people of the old list, with their ideas.
+ * @returns How many people, and how many ideas nobody ticked.
+ */
+export const resumeSummary = (
+  people: readonly ResumablePerson[],
+): { people: number; ideas: number } => ({
+  people: people.length,
+  ideas: people.reduce(
+    (sum, person) => sum + carriedIdeas(person.ideas).length,
+    0,
+  ),
+});
+
+/**
+ * Whether a list can be started from another: only while it is still an
+ * empty draft, so that nothing written is ever mixed with what comes.
+ * @param list - The new list.
+ * @param list.sharedAt - When it was shared, or null.
+ * @param list.peopleCount - How many people are on it.
+ * @returns True for a draft nobody is on.
+ */
+export const canResumeInto = (list: {
+  sharedAt: string | null;
+  peopleCount: number;
+}): boolean => !list.sharedAt && list.peopleCount === 0;
+
 /**
  * How many days until a list's day.
  * @param eventDate - Its day (YYYY-MM-DD).

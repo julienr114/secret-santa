@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { peopleOfLists, updateList } from '#server/database/lists';
+import {
+  forgetCarried,
+  peopleOfLists,
+  updateList,
+} from '#server/database/lists';
 import { newId, nowIso } from '#server/http/context';
 import { requireManagedList } from '#server/http/lists';
 import { validatedBody } from '#server/http/validate';
@@ -32,5 +36,8 @@ export default defineEventHandler(async (event) => {
   if (next.shareToken !== list.shareToken || next.sharedAt !== list.sharedAt) {
     await updateList(db, list.id, next);
   }
+  // Shared for the first time: the marks of a list taken up again go
+  // (lot 27).
+  if (!list.sharedAt && next.sharedAt) await forgetCarried(db, list.id);
   return { token: next.shareToken, shared: next.sharedAt !== null };
 });

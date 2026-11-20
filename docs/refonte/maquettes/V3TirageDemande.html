@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>V3 · organiser un tirage, sur demande</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #dccbad; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div>
+      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #292524; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 18px; color: #a43a2f">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      Under the Tree
+    </div>
+    <button aria-label="Mon compte" aria-haspopup="menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0"><span aria-hidden="true" style="width: 34px; height: 34px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px">🐧</span></button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      
+      <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Organiser un Secret Santa</h1>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #57534e">Un Secret Santa dans « L’anniversaire de Zoé »</p>
+    </div><div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="d" style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">Ta demande</label>
+      <textarea id="d" rows="5" placeholder="Le Noël de ma famille, une douzaine de personnes." style="width: 100%; min-height: 144px; box-sizing: border-box; padding: 12px; border: 1px solid #a8a29e; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 16px; line-height: 1.45; resize: none"></textarea>
+      <p style="margin: 0; padding: 0 4px; display: flex; justify-content: space-between; gap: 12px; font-size: 13px; line-height: 1.4; color: #57534e"><span>Un administrateur te répond par email.</span><span style="flex-shrink: 0">0 / 500</span></p>
+    </div><div style="padding: 14px 16px; border-radius: 12px; background: #f1e8d8; display: flex; flex-direction: column; gap: 4px"><h2 style="margin: 0; font-family: inherit; font-size: 15px; font-weight: 700">Pourquoi une demande ?</h2><p style="margin: 0; font-size: 14px; line-height: 1.45">Under the Tree est en bêta : les Secret Santa se font sur demande, le temps de vérifier que tout fonctionne bien.</p></div>
+  </main>
+  <footer style="flex-shrink: 0; background: #fffdf9; border-top: 1px solid #dccbad; padding: 14px 16px 20px">
+    <button style="width: 100%; height: 52px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Envoyer ma demande</button>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

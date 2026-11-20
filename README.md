@@ -1,5 +1,7 @@
 # Under the Tree — Secret Santa familial
 
+> **Depuis le 20 novembre 2026** : ce document décrit l'application d'aujourd'hui (la V2). La V3 est dans `docs/spec/v3/`, les décisions dans `docs/decisions/`, le travail à faire dans `docs/travail/`, et les règles pour Claude Code dans `CLAUDE.md`.
+
 > Document de passation. Il décrit **ce qui a été décidé** avec Julien (le porteur du projet) et **l'état réel** de l'application. Un agent qui reprend le projet doit pouvoir démarrer avec ce seul fichier.
 >
 > **État au 14 novembre 2026** : l'application est en production sur https://under-the-tree.party (déploiement manuel, `pnpm deploy:prod`). Les étapes 0 à 6 du plan sont terminées, la revue de sécurité de l'étape 7 est faite, le groupe réel « Famille Delacoux » est créé. Reste : accessibilité, seconde famille, première édition réelle (section 17).

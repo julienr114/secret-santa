@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>V3 · accueil d’un compte tout neuf</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#a43a2f}a:hover{color:#8a2f27}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 844px; box-sizing: border-box; background: #f7f2e9; color: #292524; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column">
+  
+  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 18px; color: #a43a2f">Under the Tree</div>
+    <button aria-label="Mon compte" aria-haspopup="menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0"><span aria-hidden="true" style="width: 34px; height: 34px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px">🐧</span></button>
+  </header>
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px; padding: 8px 16px 28px">
+    <div style="display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 0"><h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.1">Bonjour Hugo</h1><p style="margin: 0; font-size: 15px; color: #57534e">Par quoi on commence ?</p></div>
+    <section style="background: #fffdf9; border-radius: 16px; box-shadow: 0 1px 2px rgba(60, 30, 10, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 18px; display: flex; flex-direction: column; gap: 12px"><div style="display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 10px; background: #f1e8d8; color: #57534e; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></svg></span><h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 22px; line-height: 1.2">Un Secret Santa</h2></div><p style="margin: 0; font-size: 15px; line-height: 1.45; color: #57534e">Chacun tire au sort la personne à qui il offre un cadeau.</p><a href="V3FeteNouvelle.dc.html" style="height: 48px; border: 0; border-radius: 6px; background: #b8483a; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center">Organiser un Secret Santa</a></section>
+    <section style="background: #fffdf9; border-radius: 16px; box-shadow: 0 1px 2px rgba(60, 30, 10, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 18px; display: flex; flex-direction: column; gap: 12px"><div style="display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 10px; background: #f1e8fc; color: #5f37a6; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg></span><h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 22px; line-height: 1.2">Une liste de cadeaux</h2></div><p style="margin: 0; font-size: 15px; line-height: 1.45; color: #57534e">Tes idées, que tes proches cochent pour ne pas offrir deux fois la même chose.</p><a href="V3FeteNouvelle.dc.html" style="height: 44px; padding: 0 16px; box-sizing: border-box; border: 1px solid #dccbad; border-radius: 6px; background: #fffdf9; color: #292524; font-family: inherit; font-size: 15px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px">Écrire ma liste</a></section>
+  </main>
+  <nav aria-label="Sections" style="margin-top: auto; position: sticky; bottom: 0; flex-shrink: 0; display: flex; background: #fffdf9; border-top: 1px solid #dccbad"><a href="#" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: #8a2f27; font-size: 12px; font-weight: 700"><span style="position: relative; display: flex"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></span>Accueil</a><a href="V3AccueilPlusOuvert.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: #57534e; font-size: 12px; font-weight: 600"><span style="position: relative; display: flex"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>Créer</a><a href="NotifCentre.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: #57534e; font-size: 12px; font-weight: 600"><span style="position: relative; display: flex"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span aria-hidden="true" style="position: absolute; top: -5px; left: 13px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 999px; background: #b8483a; color: #ffffff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fffdf9">3</span></span>Quoi de neuf<span style="position: absolute; width: 1px; height: 1px; overflow: hidden">, 3 nouveautés</span></a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

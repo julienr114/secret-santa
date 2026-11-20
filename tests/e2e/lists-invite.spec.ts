@@ -129,9 +129,46 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
   await expect(hugo.getByTestId('holders-line')).toContainText(
     'Tu tiens cette liste avec Camille.',
   );
-  // He reads the sharing, and does not touch it.
-  await expect(hugo.getByTestId('share-readonly')).toBeVisible();
-  await expect(hugo.getByTestId('share-switch')).toBeDisabled();
+  // He reads the sharing, and does not touch it (Correction 28,
+  // maquette ListeAideSansPartage): no switch, and the link is not his
+  // to have while the list is not shared.
+  await expect(hugo.getByTestId('share-readonly')).toContainText(
+    'Pas encore activé par Camille',
+  );
+  await expect(hugo.getByTestId('share-switch')).toHaveCount(0);
+  await expect(hugo.getByTestId('share-helper')).toHaveCount(0);
+  const asHugo = () =>
+    context.request
+      .get(`/api/lists/${state.listId}`)
+      .then((answer) => answer.json());
+  expect((await asHugo()).list.shareToken).toBeNull();
+  expect(
+    (
+      await context.request.post(`/api/lists/${state.listId}/share`, {
+        data: {},
+      })
+    ).status(),
+  ).toBe(403);
+  // Camille shares: he may send the link, nothing more (ListeAidePartage).
+  const shared = await (
+    await camille.request.post(`/api/lists/${state.listId}/share`, { data: {} })
+  ).json();
+  await hugo.reload();
+  await hydrated(hugo);
+  await expect(hugo.getByTestId('share-readonly')).toContainText(
+    'Activé par Camille',
+  );
+  await expect(hugo.getByTestId('share-helper')).toHaveText('Partager');
+  await expect(hugo.getByTestId('share-switch')).toHaveCount(0);
+  await expect(hugo.getByTestId('share-panel')).toHaveCount(0);
+  expect((await asHugo()).list.shareToken).toBe(shared.token);
+  // Stopped: the link is no longer sent to him, though it is kept.
+  await camille.request.post(`/api/lists/${state.listId}/share`, {
+    data: { ask: 'off' },
+  });
+  expect((await asHugo()).list.shareToken).toBeNull();
+  await hugo.reload();
+  await hydrated(hugo);
   // He writes everywhere.
   const leo = hugo.getByTestId('list-person').filter({ hasText: 'Léo' });
   await leo.getByPlaceholder('Une idée pour Léo…').click();

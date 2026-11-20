@@ -400,8 +400,16 @@ export const listDocument = async (
   const today = todayIso();
   const counts = await listCountsOfMembers(db, accountId);
   const holders = (await holdersOfLists(db, [list.id])).get(list.id) ?? [];
+  const manages = holders.some(
+    (holder) => holder.accountId === accountId && holder.level === 'manage',
+  );
   return {
-    list: { ...headOf(list), shareToken: list.shareToken },
+    list: {
+      ...headOf(list),
+      // Who helps to write gets the link only while the list is shared:
+      // they may send it, never turn the sharing on (Correction 28).
+      shareToken: manages || list.sharedAt ? list.shareToken : null,
+    },
     people: lines,
     single: isSingleList(people),
     planned,
@@ -413,9 +421,7 @@ export const listDocument = async (
         lists: counts.get(member.id) ?? 0,
       })),
     holders: holders.map((holder) => holderView(holder, accountId)),
-    manages: holders.some(
-      (holder) => holder.accountId === accountId && holder.level === 'manage',
-    ),
+    manages,
     resumedFrom: list.carriedFrom
       ? { title: (await findList(db, list.carriedFrom))?.title ?? '' }
       : null,

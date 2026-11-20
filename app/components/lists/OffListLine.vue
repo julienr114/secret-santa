@@ -78,7 +78,7 @@ const onFocusOut = (event: FocusEvent) => {
     v-if="writing"
     ref="row"
     class="-mr-4 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4"
-    :class="forName ? '-ml-9 pl-[33px]' : '-ml-4 pl-[13px]'"
+    :class="forName ? '-ml-[22px] pl-[19px]' : '-ml-4 pl-[13px]'"
     data-testid="off-list-line"
     @focusout="onFocusOut"
   >

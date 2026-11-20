@@ -18,15 +18,20 @@ import { useShareListMutation } from '~/composables/queries/useLists';
 // red. Turned off, sharing stops at once, with « Annuler » in the toast;
 // turned on again, the link is the same. The bar stays stuck under the
 // top bar while the list scrolls.
-// Someone who « aide à écrire » (lot 25 bis) reads the bar and touches
-// nothing: the switch says whether the list is shared, greyed, and a line
-// says who decides.
+// Someone who « aide à écrire » (lot 25 bis; Correction 28, maquettes
+// ListeAidePartage, ListeAideSansPartage) cannot turn the sharing on, but
+// may send the link once it is: the globe, « Activé par Camille » and a
+// button « Partager » (the phone's share sheet, else the link copied);
+// or the padlock and « Pas encore activé par Camille », nothing to touch.
+// No switch, no « Changer de lien », no « Personnaliser le message ».
 // The name being typed counts at once (`title`): it is saved as it is
 // typed, and the list read again a moment later.
 const props = defineProps<{
   doc: ListDocument;
   readonly?: boolean;
   title?: string;
+  /** Who manages the list, for who only helps to write. */
+  managerName?: string;
 }>();
 const { t, tk } = useT();
 const toast = useMessages();
@@ -138,6 +143,8 @@ onMounted(() => {
   canShare.value = typeof navigator.share === 'function';
 });
 const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
+/** « Partager », for who helps to write: the share sheet, or the link. */
+const onHelperShare = () => (canShare.value ? onSend() : onCopy());
 </script>
 
 <template>
@@ -145,14 +152,48 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
     class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 rounded-[24px] bg-default shadow-card ring-1 ring-default"
     data-testid="share-bar"
   >
-    <div class="flex min-h-12 items-center gap-2 pr-2 pl-3.5">
+    <div
+      v-if="readonly"
+      class="flex min-h-12 items-center gap-2 pr-2 pl-3.5"
+      data-testid="share-readonly"
+    >
+      <UIcon
+        :name="shared ? 'i-lucide-globe' : 'i-lucide-lock'"
+        class="size-5 shrink-0"
+        :class="shared ? 'text-success' : 'text-toned'"
+      />
+      <span class="flex min-h-11 min-w-0 grow flex-col justify-center">
+        <span class="text-sm font-bold">{{ t('lists.share.title') }}</span>
+        <span class="text-[13px] leading-[1.3] text-toned">{{
+          shared
+            ? t('lists.share.onBy', { name: managerName ?? '' })
+            : t('lists.share.offBy', { name: managerName ?? '' })
+        }}</span>
+      </span>
+      <button
+        v-if="shared && url"
+        type="button"
+        class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3.5 text-sm font-bold ring-1 ring-default"
+        data-testid="share-helper"
+        @click="onHelperShare"
+      >
+        <UIcon
+          :name="copied ? 'i-lucide-check' : 'i-lucide-send'"
+          class="size-[18px]"
+        />
+        <span aria-live="polite">{{
+          copied ? t('lists.share.copied') : t('lists.share.send')
+        }}</span>
+      </button>
+    </div>
+    <div v-else class="flex min-h-12 items-center gap-2 pr-2 pl-3.5">
       <UIcon
         :name="shared ? 'i-lucide-globe' : 'i-lucide-lock'"
         class="size-5 shrink-0"
         :class="shared ? 'text-success' : 'text-toned'"
       />
       <button
-        v-if="shared && !readonly"
+        v-if="shared"
         type="button"
         class="flex min-h-11 min-w-0 grow items-center gap-1 text-left text-sm font-bold"
         :aria-expanded="open"
@@ -173,21 +214,14 @@ const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
         :model-value="shared"
         color="success"
         size="lg"
-        :disabled="readonly || share.isPending.value"
+        :disabled="share.isPending.value"
         :aria-label="t('lists.share.title')"
         data-testid="share-switch"
         @update:model-value="onSwitch"
       />
     </div>
     <p
-      v-if="readonly"
-      class="px-3.5 pb-3 text-[13px] leading-[1.45] text-toned"
-      data-testid="share-readonly"
-    >
-      {{ t('lists.share.managersOnly') }}
-    </p>
-    <p
-      v-else-if="blocked && tried"
+      v-if="!readonly && blocked && tried"
       class="px-3.5 pb-3 text-[13px] leading-[1.45] font-medium text-error"
       role="alert"
       data-testid="share-missing"

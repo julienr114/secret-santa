@@ -102,6 +102,8 @@ export default {
     tastes: 'Vorlieben',
     tastesOf: 'Vorlieben von {name}',
     linkWord: 'Link',
+    givenBy: 'Geschenkt von {names}',
+    linkTo: 'Link zu {site}',
     anonymous: 'Anonym',
     tickOf: 'Der Haken von {name}',
     tickedBy: 'Abgehakt von {name}, am {date}',
@@ -171,7 +173,8 @@ export default {
     },
   },
   share: {
-    managersOnly: 'Über das Teilen entscheiden die, die die Liste verwalten.',
+    onBy: 'Von {name} aktiviert',
+    offBy: 'Von {name} noch nicht aktiviert',
     title: 'Teilen per Link',
     message:
       '🎁 Unsere Geschenkliste für {title} ist fertig: {names}. Hak ab, was du schenkst, damit niemand dieselbe Idee hat:',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { asAddress } from './ideaLink';
+import { asAddress, linkHost } from './ideaLink';
 
 describe('asAddress', () => {
   it('keeps an address as pasted', () => {
@@ -20,5 +20,20 @@ describe('asAddress', () => {
     expect(asAddress('velo')).toBeNull();
     expect(asAddress('ftp://exemple.fr')).toBeNull();
     expect(asAddress('javascript:alert(1)')).toBeNull();
+  });
+});
+
+describe('the name of the site a link goes to', () => {
+  it('is its host, without « www. »', () => {
+    expect(linkHost('https://www.lutin-jouets.fr/circuit?ref=1')).toBe(
+      'lutin-jouets.fr',
+    );
+    expect(linkHost('http://maison-fromage.fr')).toBe('maison-fromage.fr');
+    expect(linkHost('https://WWW.Exemple.FR/a')).toBe('exemple.fr');
+  });
+
+  it('is empty for what is not an address', () => {
+    expect(linkHost('pas une adresse')).toBe('');
+    expect(linkHost('')).toBe('');
   });
 });

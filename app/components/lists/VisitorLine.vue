@@ -58,6 +58,7 @@ const onGroup = () => {
   if (view.value.kind === 'group' && view.value.mine) emit('change');
   else emit('join');
 };
+const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
 </script>
 
 <template>
@@ -104,18 +105,23 @@ const onGroup = () => {
             crossed ? 'text-toned line-through' : '',
             mineChecked ? 'font-semibold' : '',
           ]"
-          >{{ idea.text
-          }}<template v-if="idea.url && idea.text">&nbsp;:</template></span
-        >
-        <a
-          v-if="idea.url"
-          :href="idea.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="ml-1 text-primary-ink underline"
-          >{{ t('lists.doc.linkWord') }}</a
+          >{{ idea.text }}</span
         >
       </p>
+      <!-- The link of the idea, a lilac pill under it with the name of
+           its site (Correction 28): never struck through. -->
+      <a
+        v-if="idea.url && host"
+        :href="idea.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="relative -mt-0.5 inline-flex max-w-[190px] items-center gap-1 self-start rounded-full bg-warning-soft py-px pr-2 pl-1.5 text-[13px] font-bold text-alert-ink after:absolute after:inset-x-0 after:-inset-y-3"
+        :aria-label="t('lists.doc.linkTo', { site: host })"
+        data-testid="idea-link"
+      >
+        <UIcon name="i-lucide-link" class="size-3 shrink-0" />
+        <span class="truncate">{{ host }}</span>
+      </a>
       <p
         v-if="view.kind === 'mine'"
         class="text-[13px] text-toned"

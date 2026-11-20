@@ -11,7 +11,8 @@ import {
   type ClaimRoute,
 } from '~/composables/queries/useLists';
 import { AVATAR_SHADES } from '~/utils/avatars';
-import { asAddress } from '~/utils/ideaLink';
+import { giverPills } from '~/utils/givers';
+import { asAddress, linkHost } from '~/utils/ideaLink';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
 // 22.20, maquettes ListeIdee, ListeIdeeLien, ListeIdeeLienFait): its box,
@@ -106,7 +107,8 @@ const onBox = () => {
   // first name (the box is what one reaches for first: Julien, 19
   // November 2026). It does not untick by itself.
   if (!boxActive.value) {
-    if (claims.value.length > 0) unfolded.value = !unfolded.value;
+    const first = claims.value[0];
+    if (first) unfolded.value = unfolded.value ? null : first.id;
     return;
   }
   const onError = (error: unknown) =>
@@ -133,13 +135,33 @@ const { locale } = useT();
 const claims = computed(() =>
   editing.untickFor ? (props.idea?.claims ?? []) : [],
 );
-const unfolded = ref(false);
-watch(
-  () => claims.value.length,
-  (count) => {
-    if (count === 0) unfolded.value = false;
-  },
+/** The tick whose pill was touched: its line is unfolded. */
+const unfolded = ref<string | null>(null);
+const unfoldedClaim = computed(
+  () => claims.value.find((claim) => claim.id === unfolded.value) ?? null,
 );
+watch(unfoldedClaim, (claim) => {
+  if (!claim) unfolded.value = null;
+});
+// Those who give it, one pill each under the idea, after the pill of
+// its link (Correction 28, maquettes ListeTeneur, ListeDecocher): the
+// same row for one first name, for several and for « Anonyme ».
+const pills = computed(() => giverPills(view.value, claims.value));
+const host = computed(() => (props.idea?.url ? linkHost(props.idea.url) : ''));
+/** « Offert par Mamie et Tonton », for a screen reader. */
+const givenBy = computed(() => {
+  const names = pills.value.map(
+    (pill) => pill.name ?? t('lists.doc.anonymous'),
+  );
+  if (names.length === 0) return '';
+  const last = names.at(-1) ?? '';
+  return t('lists.doc.givenBy', {
+    names:
+      names.length === 1
+        ? last
+        : `${names.slice(0, -1).join(', ')} ${t('lists.share.and')} ${last}`,
+  });
+});
 const tickDay = (iso: string) =>
   new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
@@ -153,13 +175,6 @@ const tickedBy = (claim: { by: string | null; at: string | null }) => {
   ).split('\u0000');
   return { before, after };
 };
-/** Who gives it, as the holder reads it. */
-const who = computed(() => {
-  const v = view.value;
-  if (v.kind === 'taken') return v.by ?? t('lists.doc.anonymous');
-  if (v.kind === 'group') return v.people.map((p) => p.name).join(', ');
-  return null;
-});
 
 // Live (lot 26, maquette ListeLiveTeneur): while someone else who holds
 // the list writes this line, it is theirs: tinted with the light colour
@@ -483,7 +498,12 @@ const onFocusOut = (event: FocusEvent) => {
     :class="[
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
       writing
-        ? '-mr-4 -ml-9 border-l-[3px] border-primary bg-default pr-4 pl-[33px]'
+        ? '-mr-4 -ml-[22px] border-l-[3px] border-primary bg-default pr-4 pl-[19px]'
+        : '',
+      // Unfolded to untick for someone (maquette ListeDecocher): the tint
+      // takes the whole line, its box included, which does not move.
+      unfoldedClaim && !writing && !lockedBy
+        ? '-mx-2.5 my-1 rounded-[10px] bg-muted px-2.5 pb-0.5'
         : '',
       liftedHere ? 'opacity-30' : '',
     ]"
@@ -663,92 +683,117 @@ const onFocusOut = (event: FocusEvent) => {
           </template>
         </div>
       </template>
-      <p
-        v-else
-        class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base leading-[1.45]"
-      >
-        <button
-          type="button"
-          class="text-left"
-          :class="[
-            taken && !mine ? 'text-toned line-through' : '',
-            mine ? 'font-semibold' : '',
-          ]"
-          data-testid="idea-text"
-          data-line-start
-          @click="start"
+      <template v-else>
+        <p class="text-base leading-[1.45]">
+          <button
+            type="button"
+            class="text-left"
+            :class="[
+              taken && !mine ? 'text-toned line-through' : '',
+              mine ? 'font-semibold' : '',
+            ]"
+            data-testid="idea-text"
+            data-line-start
+            @click="start"
+          >
+            <span
+              :key="lockedBy ? 'live' : idea.text"
+              :class="settled && !lockedBy ? 'text-changed' : ''"
+              ><template v-if="lockedBy"
+                >{{ lockedBy.text.slice(0, lockedBy.caret)
+                }}<span
+                  class="live-caret"
+                  :style="{
+                    backgroundColor: lockShade?.ring ?? 'currentColor',
+                  }"
+                  aria-hidden="true"
+                  data-testid="live-caret"
+                />{{ lockedBy.text.slice(lockedBy.caret) }}</template
+              ><template v-else>{{ idea.text }}</template></span
+            >
+          </button>
+          <!-- Taken from an old list and not changed since (lot 27): a small
+               grey mark, for those who hold the list only. -->
+          <UIcon
+            v-if="idea.carried"
+            name="i-lucide-rotate-ccw"
+            class="ml-2 inline-block size-3.5 shrink-0 align-[-2px] text-muted"
+            role="img"
+            :aria-label="t('lists.resume.mark')"
+            data-testid="idea-carried"
+          />
+        </p>
+        <!-- Under the idea, aligned to its text: the pill of its link,
+             then those who give it, one pill each. Never struck through. -->
+        <div
+          v-if="!lockedBy && (host || pills.length > 0 || openGroup || inGroup)"
+          class="mt-[3px] flex flex-wrap items-center gap-1"
+          data-testid="idea-pills"
         >
+          <a
+            v-if="idea.url && host"
+            :href="idea.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            draggable="false"
+            class="relative inline-flex max-w-[190px] items-center gap-1 rounded-full bg-warning-soft py-px pr-2 pl-1.5 text-[13px] font-bold text-alert-ink after:absolute after:inset-x-0 after:-inset-y-3"
+            :aria-label="t('lists.doc.linkTo', { site: host })"
+            data-testid="idea-link"
+            data-no-drag
+          >
+            <UIcon name="i-lucide-link" class="size-3 shrink-0" />
+            <span class="truncate">{{ host }}</span>
+          </a>
+          <span v-if="givenBy" class="sr-only">{{ givenBy }}</span>
+          <template v-for="(pill, index) in pills" :key="index">
+            <button
+              v-if="pill.claimId"
+              type="button"
+              class="relative rounded-full px-2 py-px text-[13px] font-bold after:absolute after:inset-x-0 after:-inset-y-3"
+              :class="
+                unfolded === pill.claimId
+                  ? 'bg-inverted text-inverted'
+                  : 'bg-muted text-toned'
+              "
+              :aria-expanded="unfolded === pill.claimId"
+              :aria-label="
+                t('lists.doc.tickOf', {
+                  name: pill.name ?? t('lists.doc.anonymous'),
+                })
+              "
+              data-testid="idea-who"
+              data-no-drag
+              @click="
+                unfolded = unfolded === pill.claimId ? null : pill.claimId
+              "
+            >
+              {{ pill.name ?? t('lists.doc.anonymous') }}
+            </button>
+            <span
+              v-else
+              class="rounded-full bg-muted px-2 py-px text-[13px] font-bold text-toned"
+              aria-hidden="true"
+              data-testid="idea-who"
+              >{{ pill.name ?? t('lists.doc.anonymous') }}</span
+            >
+          </template>
+          <button
+            v-if="openGroup"
+            type="button"
+            class="ml-1 text-sm font-bold text-primary-ink underline underline-offset-2"
+            data-testid="idea-join"
+            @click="editing.join(idea, forName)"
+          >
+            {{ t('lists.visitor.join') }}
+          </button>
           <span
-            :key="lockedBy ? 'live' : idea.text"
-            :class="settled && !lockedBy ? 'text-changed' : ''"
-            ><template v-if="lockedBy"
-              >{{ lockedBy.text.slice(0, lockedBy.caret)
-              }}<span
-                class="live-caret"
-                :style="{ backgroundColor: lockShade?.ring ?? 'currentColor' }"
-                aria-hidden="true"
-                data-testid="live-caret"
-              />{{ lockedBy.text.slice(lockedBy.caret) }}</template
-            ><template v-else>{{ idea.text }}</template></span
-          ><template v-if="idea.url && idea.text">&nbsp;:</template>
-        </button>
-        <a
-          v-if="idea.url"
-          :href="idea.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          draggable="false"
-          class="-ml-1 text-primary-ink underline"
-          :class="taken && !mine ? 'line-through' : ''"
-          >{{ t('lists.doc.linkWord') }}</a
-        >
-        <!-- Taken from an old list and not changed since (lot 27): a small
-             grey mark, for those who hold the list only. -->
-        <UIcon
-          v-if="idea.carried"
-          name="i-lucide-rotate-ccw"
-          class="size-3.5 shrink-0 text-muted"
-          role="img"
-          :aria-label="t('lists.resume.mark')"
-          data-testid="idea-carried"
-        />
-        <button
-          v-if="who && claims.length > 0 && !lockedBy"
-          type="button"
-          class="relative rounded-full px-2 py-0.5 text-xs font-bold no-underline after:absolute after:-inset-x-1 after:-inset-y-3"
-          :class="
-            unfolded ? 'bg-inverted text-inverted' : 'bg-muted text-default'
-          "
-          :aria-expanded="unfolded"
-          :aria-label="t('lists.doc.tickOf', { name: who })"
-          data-testid="idea-who"
-          data-no-drag
-          @click="unfolded = !unfolded"
-        >
-          {{ who }}
-        </button>
-        <span
-          v-else-if="who && !lockedBy"
-          class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default no-underline"
-          data-testid="idea-who"
-          >{{ who }}</span
-        >
-        <button
-          v-if="openGroup && !lockedBy"
-          type="button"
-          class="font-bold text-primary-ink underline underline-offset-2"
-          data-testid="idea-join"
-          @click="editing.join(idea, forName)"
-        >
-          {{ t('lists.visitor.join') }}
-        </button>
-        <span
-          v-else-if="inGroup && !lockedBy"
-          class="text-sm font-bold text-success-ink"
-          data-testid="idea-joined"
-          >{{ t('lists.visitor.joined') }}</span
-        >
-      </p>
+            v-else-if="inGroup"
+            class="ml-1 text-sm font-bold text-success-ink"
+            data-testid="idea-joined"
+            >{{ t('lists.visitor.joined') }}</span
+          >
+        </div>
+      </template>
       <p
         v-if="lockedBy"
         class="flex items-center gap-1.5 text-[13px] text-toned"
@@ -762,39 +807,37 @@ const onFocusOut = (event: FocusEvent) => {
         />
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
-      <ul
-        v-if="idea && unfolded && claims.length > 0 && !writing && !lockedBy"
-        class="mt-1.5 flex flex-col divide-y divide-default rounded-[18px] bg-muted text-sm leading-[1.35] text-toned"
+      <!-- « Coché par Mamie, le 12 novembre » and « Décocher », for the
+           pill touched, without a background of their own. -->
+      <p
+        v-if="idea && unfoldedClaim && !writing && !lockedBy"
+        class="mt-2 flex items-center justify-between gap-3 text-sm leading-[1.35] text-toned"
         data-testid="untick-band"
         data-no-drag
       >
-        <li
-          v-for="claim in claims"
-          :key="claim.id"
-          class="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3"
+        <span v-if="unfoldedClaim.by === null">{{
+          t('lists.doc.tickedAnonymous')
+        }}</span>
+        <span v-else
+          >{{ tickedBy(unfoldedClaim).before
+          }}<strong class="font-bold text-highlighted">{{
+            unfoldedClaim.by
+          }}</strong
+          >{{ tickedBy(unfoldedClaim).after }}</span
         >
-          <span v-if="claim.by === null">{{
-            t('lists.doc.tickedAnonymous')
-          }}</span>
-          <span v-else
-            >{{ tickedBy(claim).before
-            }}<strong class="font-bold text-highlighted">{{ claim.by }}</strong
-            >{{ tickedBy(claim).after }}</span
-          >
-          <button
-            type="button"
-            class="min-h-9 shrink-0 rounded-full bg-default px-3 text-sm font-bold text-primary-ink ring-1 ring-default"
-            data-testid="untick-for"
-            @click="editing.untickFor?.(idea, claim)"
-          >
-            {{
-              view.kind === 'group'
-                ? t('lists.doc.removeTick')
-                : t('lists.doc.untick')
-            }}
-          </button>
-        </li>
-      </ul>
+        <button
+          type="button"
+          class="min-h-9 shrink-0 rounded-full bg-default px-3 text-sm font-bold text-primary-ink ring-1 ring-default"
+          data-testid="untick-for"
+          @click="editing.untickFor?.(idea, unfoldedClaim)"
+        >
+          {{
+            view.kind === 'group'
+              ? t('lists.doc.removeTick')
+              : t('lists.doc.untick')
+          }}
+        </button>
+      </p>
       <p
         v-if="idea && mine && !writing && !lockedBy"
         class="text-[13px] text-toned"
@@ -811,11 +854,15 @@ const onFocusOut = (event: FocusEvent) => {
           {{ t('lists.visitor.change') }}
         </button>
       </p>
+      <!-- The pills say who gives it together; only « au complet » is
+           left to say. -->
       <p
-        v-else-if="idea && view.kind === 'group' && !writing && !lockedBy"
+        v-else-if="
+          idea && view.kind === 'group' && view.closed && !writing && !lockedBy
+        "
         class="text-[13px] text-toned"
       >
-        {{ view.closed ? t('lists.doc.groupClosed') : t('lists.doc.group') }}
+        {{ t('lists.doc.groupClosed') }}
       </p>
     </div>
   </li>

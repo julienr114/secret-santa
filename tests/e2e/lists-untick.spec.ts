@@ -178,22 +178,35 @@ test('each one of a gift given by several has their « Retirer »', async () => 
   test.setTimeout(60_000);
   const page = await document();
   const velo = line(page, 'Vélo 16 pouces');
-  await expect(velo.getByTestId('idea-who')).toHaveText('Mamie, Hugo');
-  await velo.getByTestId('idea-who').click();
-  const rows = velo.getByTestId('untick-band').getByRole('listitem');
-  await expect(rows).toHaveCount(2);
-  await rows
-    .filter({ hasText: 'Mamie' })
-    .getByRole('button', { name: 'Retirer' })
-    .click();
-  await expect(velo.getByTestId('idea-who')).toHaveText('Hugo');
+  // One pill each (Correction 28), and « Offert à plusieurs » is gone:
+  // the pills say it.
+  await expect(velo.getByTestId('idea-who')).toHaveText(['Mamie', 'Hugo']);
+  await expect(velo).not.toContainText('Offert à plusieurs');
+  await expect(velo.getByTestId('idea-pills')).toContainText(
+    'Offert par Mamie et Hugo',
+  );
+  // Each pill unfolds the tick of its own person, and turns dark.
+  const mamie = velo.getByTestId('idea-who').filter({ hasText: 'Mamie' });
+  await velo.getByTestId('idea-who').filter({ hasText: 'Hugo' }).click();
+  await expect(velo.getByTestId('untick-band')).toContainText('Hugo');
+  await mamie.click();
+  await expect(mamie).toHaveAttribute('aria-expanded', 'true');
+  const band = velo.getByTestId('untick-band');
+  await expect(band).toHaveCount(1);
+  await expect(band).toContainText('Mamie');
+  await expect(band).not.toContainText('Hugo');
+  await band.getByRole('button', { name: 'Retirer' }).click();
+  await expect(velo.getByTestId('idea-who')).toHaveText(['Hugo']);
   await expect
     .poll(async () => (await seenBy(state.hugo!, state.ideas.velo)).people, {
       timeout: 12_000,
     })
     .toHaveLength(1);
 
-  // The band stays unfolded; the last one taken off frees the idea.
+  // The line folded back with her pill; the last one taken off frees
+  // the idea.
+  await expect(velo.getByTestId('untick-band')).toHaveCount(0);
+  await velo.getByTestId('idea-who').click();
   await velo.getByRole('button', { name: 'Retirer' }).click();
   await expect(velo.getByTestId('idea-who')).toHaveCount(0);
   await expect

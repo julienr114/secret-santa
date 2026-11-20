@@ -99,10 +99,15 @@ test('a list is written in its document, and shared', async ({ page }) => {
   );
   await elsewhere.click();
   await expect(leo.getByTestId('line-actions')).toHaveCount(0);
-  await expect(leo.getByRole('link', { name: 'lien' })).toHaveAttribute(
-    'href',
-    'https://exemple.fr/billes',
-  );
+  // The link is a lilac pill under the idea, with the name of its site
+  // (Correction 28): no « : lien » in the text any more.
+  const pill = leo.getByTestId('idea-link');
+  await expect(pill).toHaveText('exemple.fr');
+  await expect(pill).toHaveAccessibleName('Lien vers exemple.fr');
+  await expect(pill).toHaveAttribute('href', 'https://exemple.fr/billes');
+  await expect(pill).toHaveAttribute('target', '_blank');
+  await expect(pill).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(leo.getByTestId('idea-text').first()).not.toContainText(':');
   // The arrows and the tab key go from line to line, saving on the way.
   await leo.getByTestId('idea-text').first().click();
   await page.keyboard.press('ArrowDown');

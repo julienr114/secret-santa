@@ -102,6 +102,8 @@ export default {
     tastes: 'ses goûts',
     tastesOf: 'Les goûts de {name}',
     linkWord: 'lien',
+    givenBy: 'Offert par {names}',
+    linkTo: 'Lien vers {site}',
     anonymous: 'Anonyme',
     tickOf: 'La coche de {name}',
     tickedBy: 'Coché par {name}, le {date}',
@@ -171,7 +173,8 @@ export default {
     },
   },
   share: {
-    managersOnly: 'Ceux qui gèrent la liste décident du partage.',
+    onBy: 'Activé par {name}',
+    offBy: 'Pas encore activé par {name}',
     title: 'Partage par lien',
     message:
       '🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n’ait la même idée :',

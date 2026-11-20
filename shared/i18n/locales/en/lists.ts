@@ -97,6 +97,8 @@ export default {
     tastes: 'their tastes',
     tastesOf: '{name}’s tastes',
     linkWord: 'link',
+    givenBy: 'Given by {names}',
+    linkTo: 'Link to {site}',
     anonymous: 'Anonymous',
     tickOf: '{name}’s tick',
     tickedBy: 'Ticked by {name}, on {date}',
@@ -166,7 +168,8 @@ export default {
     },
   },
   share: {
-    managersOnly: 'Those who manage the list decide on sharing.',
+    onBy: 'Turned on by {name}',
+    offBy: 'Not turned on by {name} yet',
     title: 'Sharing by link',
     message:
       '🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea:',

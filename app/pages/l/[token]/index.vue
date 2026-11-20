@@ -255,7 +255,7 @@ const writes = (person: PersonLine) =>
           v-if="writes(person)"
           tag="ul"
           name="line"
-          class="flex flex-col pl-5"
+          class="flex flex-col pl-1.5"
         >
           <ListsIdeaLine
             v-for="(idea, index) in person.ideas"
@@ -286,7 +286,7 @@ const writes = (person: PersonLine) =>
           tag="ul"
           name="line"
           class="flex flex-col"
-          :class="doc.single ? '' : 'pl-5'"
+          :class="doc.single ? '' : 'pl-1.5'"
         >
           <ListsVisitorLine
             v-for="idea in person.ideas"

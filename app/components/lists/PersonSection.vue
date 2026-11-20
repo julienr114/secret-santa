@@ -345,7 +345,7 @@ const explained = ref<string | null>(null);
       tag="ul"
       :name="drag?.lifted.value ? 'none' : 'line'"
       class="flex flex-col"
-      :class="single ? '' : 'pl-5'"
+      :class="single ? '' : 'pl-1.5'"
     >
       <template
         v-for="row in rows"
@@ -384,7 +384,7 @@ const explained = ref<string | null>(null);
           >
             <UIcon name="i-lucide-check" class="size-3.5" />
           </span>
-          <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
+          <span class="flex flex-col items-start text-base leading-[1.45]">
             <span class="text-toned line-through">{{
               t('lists.doc.offList', {
                 text: gift.kind === 'surprise' ? '' : gift.text,
@@ -392,7 +392,7 @@ const explained = ref<string | null>(null);
             }}</span>
             <span
               v-if="gift.kind === 'holder'"
-              class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default"
+              class="mt-[3px] rounded-full bg-muted px-2 py-px text-[13px] font-bold text-toned"
               >{{ gift.by ?? t('lists.doc.anonymous') }}</span
             >
           </span>

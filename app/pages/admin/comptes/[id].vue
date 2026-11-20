@@ -218,7 +218,7 @@ const setDisabled = (disabled: boolean) =>
           <UiListItem
             v-for="group in account.groups"
             :key="group.slug"
-            :to="`/admin/${group.slug}`"
+            :to="`/f/${group.slug}`"
             icon="i-lucide-users"
             icon-tone="neutral"
             :title="group.name"

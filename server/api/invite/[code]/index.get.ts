@@ -11,6 +11,8 @@ import { canJoinGroup } from '#server/utils/invite';
 import { requireInvite } from '#server/http/invite';
 import { mergeRules } from '#server/utils/rules';
 import { organizerCount } from '#server/database/groups';
+import { count, desc, eq } from 'drizzle-orm';
+import { partyYears, persons } from '#server/database/schema';
 
 // What an invitation link shows: the group, its draw in progress if any,
 // whether the link still lets people in (deadline, places), and, for a
@@ -28,9 +30,28 @@ export default defineEventHandler(async (event) => {
     person && edition
       ? await findParticipationOf(db, edition.id, person.id)
       : null;
+  const [[year], [members]] = await Promise.all([
+    db
+      .select({ date: partyYears.date })
+      .from(partyYears)
+      .where(eq(partyYears.partyId, group.id))
+      .orderBy(desc(partyYears.year))
+      .limit(1),
+    db
+      .select({ n: count() })
+      .from(persons)
+      .where(eq(persons.partyId, group.id)),
+  ]);
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return {
     groupName: group.name,
+    // The party (V3FeteRejoindre): its category, its date, its members.
+    party: {
+      category: group.category,
+      iconEmoji: group.iconEmoji,
+      date: year?.date ?? null,
+      members: members?.n ?? 0,
+    },
     message: group.inviteMessage,
     // « ton organisateur » or « tes organisateurs ».
     organizers: await organizerCount(db, group.id),

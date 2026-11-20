@@ -5,6 +5,9 @@ export const keys = {
   adminGroups: () => ['admin', 'groups'] as const,
   group: (slug: string) => ['group', slug] as const,
   dashboard: (slug: string) => ['group', slug, 'dashboard'] as const,
+  // The page of a party (V3, ticket 104), under its group's key.
+  party: (slug: string) => ['group', slug, 'party'] as const,
+  partyCandidates: () => ['parties', 'candidates'] as const,
   people: (slug: string) => ['group', slug, 'people'] as const,
   rules: (slug: string) => ['group', slug, 'rules'] as const,
   editions: (slug: string) => ['group', slug, 'editions'] as const,

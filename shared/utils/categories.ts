@@ -71,3 +71,38 @@ export const partyEmoji = (party: {
   category: PartyCategory;
   iconEmoji: string | null;
 }): string | null => party.iconEmoji ?? CATEGORY_DEFAULTS[party.category].emoji;
+
+/**
+ * The next time a day of the year comes, today included.
+ * @param monthDay - « 12-25 ».
+ * @param today - « 2026-11-20 ».
+ * @returns « 2026-12-25 », or the year after once the day is past.
+ */
+export const nextOccurrence = (monthDay: string, today: string): string => {
+  const year = Number(today.slice(0, 4));
+  const thisYear = `${year}-${monthDay}`;
+  return thisYear >= today ? thisYear : `${year + 1}-${monthDay}`;
+};
+
+/**
+ * What a category fills in « Pour quelle occasion ? » (categories.md):
+ * the date and whether it comes back. A birthday takes the birth date of
+ * the one it is for, when known.
+ * @param category - The category chosen.
+ * @param input - Today, and the birth date of the one it is for, if any.
+ * @returns The date (ISO, or null to enter by hand) and the recurrence.
+ */
+export const newPartyDefaults = (
+  category: PartyCategory,
+  input: { today: string; birthDate?: string | null },
+): { date: string | null; recurring: boolean } => {
+  const defaults = CATEGORY_DEFAULTS[category];
+  const monthDay =
+    category === 'birthday' && input.birthDate
+      ? input.birthDate.slice(5, 10)
+      : defaults.usualDate;
+  return {
+    date: monthDay ? nextOccurrence(monthDay, input.today) : null,
+    recurring: defaults.recurring ?? false,
+  };
+};

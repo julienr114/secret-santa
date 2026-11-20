@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod';
-import { formatEventDate } from '#server/utils/rules';
+import { partyEmoji } from '#shared/utils/categories';
 import { dayAfter } from '#shared/utils/dates';
 import { formatDay } from '~/utils/labels';
 import { useInviteQuery, useJoinMutation } from '~/composables/queries/useAuth';
@@ -13,7 +13,7 @@ import { HOME, useLogoutMutation } from '~/composables/queries/useSession';
 // place left, past its last day, turned off or unknown).
 const route = useRoute();
 const code = computed(() => String(route.params.code));
-const { t, locale } = useT();
+const { t, tk, locale } = useT();
 const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 const invite = useInviteQuery(code);
@@ -23,21 +23,27 @@ const { loggedIn } = useUserSession();
 
 const data = computed(() => invite.data.value);
 const edition = computed(() => data.value?.edition ?? null);
-/** « Noël 2026 · échange le 25 décembre · 5 personnes inscrites ». */
-const editionLine = computed(() =>
-  edition.value
-    ? [
-        edition.value.label,
-        edition.value.eventDate &&
-          t('auth.invite.party', {
-            date: formatEventDate(edition.value.eventDate, locale.value),
-          }),
-        t('auth.invite.count', { count: edition.value.participants }),
-      ]
-        .filter(Boolean)
-        .join(' · ')
-    : null,
-);
+/** « 🎄 Noël · le 25 décembre 2026 · 5 membres » (V3FeteRejoindre). */
+const partyLine = computed(() => {
+  const party = data.value?.party;
+  if (!party) return null;
+  const emoji = partyEmoji(party);
+  return [
+    [emoji, tk(`party.category.${party.category}`)].filter(Boolean).join(' '),
+    party.date &&
+      t('auth.invite.party', {
+        date: new Intl.DateTimeFormat(locale.value, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'UTC',
+        }).format(new Date(`${party.date}T12:00:00Z`)),
+      }),
+    t('party.members', { count: party.members }),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+});
 
 // The first name the group will see, from the profile when it has one.
 const firstName = ref('');
@@ -206,8 +212,8 @@ const closed = computed(() => {
         >
           {{ data.groupName }}
         </h1>
-        <p v-if="editionLine" class="text-[15px] text-toned">
-          {{ editionLine }}
+        <p v-if="partyLine" class="text-[15px] text-toned">
+          {{ partyLine }}
         </p>
       </div>
 

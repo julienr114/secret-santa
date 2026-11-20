@@ -28,7 +28,7 @@ export const useScreenContext = (
     const label = editionId ? edition.data.value?.edition.label : undefined;
     const base = `/admin/${toValue(slug)}`;
     return [
-      ...(group ? [{ label: group, to: base }] : []),
+      ...(group ? [{ label: group, to: `/f/${toValue(slug)}` }] : []),
       ...(label
         ? [{ label, to: `${base}/editions/${toValue(editionId)}` }]
         : []),

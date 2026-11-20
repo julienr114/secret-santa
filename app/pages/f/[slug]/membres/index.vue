@@ -19,7 +19,7 @@ const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.people.title')) });
-const screen = computed(() => ({ back: `/admin/${slug.value}` }));
+const screen = computed(() => ({ back: `/f/${slug.value}` }));
 
 // The invitation link belongs to the group: its state on the row.
 const inviteSummary = computed(() => {
@@ -115,7 +115,7 @@ const view = computed(() =>
           :label="t('adminEdition.screen.lists.search')"
           :clear-label="t('adminEdition.screen.lists.clear')"
         />
-        <UiList :footer="t('adminGroup.people.historyKept')">
+        <UiList>
           <li
             v-if="persons.length > 0 && view.shown.length === 0"
             class="px-4 py-3 text-sm text-muted"
@@ -136,7 +136,7 @@ const view = computed(() =>
             <template #row="{ item: person }">
               <UiListItem
                 :avatar="person.avatar"
-                :to="`/admin/${slug}/personnes/${person.id}`"
+                :to="`/f/${slug}/membres/${person.id}`"
                 :title="fullName(person)"
                 :subtitle="subtitleOf(person)"
                 :class="{ 'opacity-50': !person.active }"
@@ -144,7 +144,7 @@ const view = computed(() =>
             </template>
           </UiFoldedRows>
           <UiListItem
-            :to="`/admin/${slug}/personnes/nouvelle`"
+            :to="`/f/${slug}/membres/nouvelle`"
             icon="i-lucide-user-plus"
             :title="t('adminGroup.people.add')"
           />
@@ -152,7 +152,7 @@ const view = computed(() =>
       </section>
       <UiList :title="t('adminGroup.people.orInvite')">
         <UiListItem
-          :to="`/admin/${slug}/invitation`"
+          :to="`/f/${slug}/invitation`"
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="inviteSummary"

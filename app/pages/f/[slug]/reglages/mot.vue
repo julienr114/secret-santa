@@ -19,7 +19,7 @@ const context = useScreenContext(slug);
 useHead({
   title: () => context.titleOf(t('adminGroup.rules.messageNote')),
 });
-const parent = computed(() => `/admin/${slug.value}/reglages`);
+const parent = computed(() => `/f/${slug.value}/reglages/secret-santa`);
 const screen = computed(() => ({ back: parent.value }));
 
 const rules = useRulesQuery(slug);

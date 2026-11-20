@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { backMove } from './navigation';
+import { backMove, partyPathOf } from './navigation';
 
 describe('backMove', () => {
   it('goes back when the page before is the parent', () => {
@@ -19,5 +19,28 @@ describe('backMove', () => {
         '/admin/famille/editions/e1?envoyer=p1',
       ),
     ).toBe('navigate');
+  });
+});
+
+describe('partyPathOf', () => {
+  it('sends the pages of a group to its party', () => {
+    expect(partyPathOf('/admin/famille')).toBe('/f/famille');
+    expect(partyPathOf('/admin/famille/')).toBe('/f/famille');
+    expect(partyPathOf('/admin/famille/personnes')).toBe('/f/famille/membres');
+    expect(partyPathOf('/admin/famille/personnes/p1')).toBe(
+      '/f/famille/membres/p1',
+    );
+    expect(partyPathOf('/admin/famille/invitation/mot')).toBe(
+      '/f/famille/invitation/mot',
+    );
+    expect(partyPathOf('/admin/famille/reglages')).toBe('/f/famille/reglages');
+  });
+
+  it('leaves the editions, the administration and the rest alone', () => {
+    expect(partyPathOf('/admin/famille/editions/e1')).toBeNull();
+    expect(partyPathOf('/admin')).toBeNull();
+    expect(partyPathOf('/admin/comptes')).toBeNull();
+    expect(partyPathOf('/admin/groupes/nouveau')).toBeNull();
+    expect(partyPathOf('/listes')).toBeNull();
   });
 });

@@ -23,7 +23,7 @@ const create = useCreatePersonMutation(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.newPerson.title')) });
-const screen = computed(() => ({ back: `/admin/${slug.value}/personnes` }));
+const screen = computed(() => ({ back: `/f/${slug.value}/membres` }));
 
 /**
  * A Christmas icon at random; Math.random is fine for a cosmetic default
@@ -78,7 +78,7 @@ const onAdd = async (again: boolean) => {
       goBack(
         asked.value
           ? `/admin/${slug.value}/editions/${asked.value}/ajouter`
-          : `/admin/${slug.value}/personnes`,
+          : `/f/${slug.value}/membres`,
       );
   } catch (error) {
     failure.value = error;

@@ -1,81 +1,95 @@
 <script setup lang="ts">
-import { GIFT_HINTS_MODES } from '#shared/utils/hints';
+import {
+  CATEGORY_DEFAULTS,
+  PARTY_CATEGORIES,
+  type PartyCategory,
+} from '#shared/utils/categories';
+import {
+  birthParts,
+  dateOf,
+  partyYears,
+  type BirthParts,
+} from '#shared/utils/memberFields';
 import {
   useDashboardQuery,
   useOrganizersQuery,
   usePeopleQuery,
   useRemoveOrganizerMutation,
 } from '~/composables/queries/useGroup';
+import {
+  usePartyQuery,
+  useUpdatePartyMutation,
+} from '~/composables/queries/useParty';
 
-// The group's settings, each a row whose value changes in its sheet or
-// with its switch, saved at once (no « Enregistrer »), or written on its
-// own page (the word added to the messages, README 23.3): the draw, the
-// participants, the emails to the organisers, the organisers themselves,
-// and, for the super-admin, deleting the group.
+// The settings of the party (docs/spec/v3/fete.md, maquette
+// V3FeteReglages): only what is its own. Its category, its date, whether
+// it comes back; a row to the settings of its Secret Santa; the email
+// « Quelqu'un rejoint la fête par le lien »; its organisers; deleting it,
+// for the super-admin. Each saved at once (README 23.3).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t, tk } = useT();
+const { t, tk, locale } = useT();
 const route = useRoute();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const context = useScreenContext(slug);
-useHead({ title: () => context.titleOf(t('adminGroup.dashboard.settings')) });
-const screen = computed(() => ({ back: `/admin/${slug.value}` }));
+useHead({ title: () => context.titleOf(t('party.settings')) });
+const screen = computed(() => ({ back: `/f/${slug.value}` }));
 const { user } = useUserSession();
 const isSuper = computed(() => user.value?.role === 'super_admin');
 
-const { rules, shown, save, saving } = useRuleSaver(slug);
+const { shown, save, saving } = useRuleSaver(slug);
+const party = usePartyQuery(slug);
+const update = useUpdatePartyMutation(slug);
 const dashboard = useDashboardQuery(slug);
 const people = usePeopleQuery(slug);
 const organizers = useOrganizersQuery(slug);
 const removeOrganizer = useRemoveOrganizerMutation(slug);
 const group = computed(() => dashboard.data.value?.group);
+const data = computed(() => party.data.value);
 
-const editing = ref<null | 'years' | 'hints'>(null);
-const sheet = (which: 'years' | 'hints') =>
-  computed({
-    get: () => editing.value === which,
-    set: (value) => {
-      editing.value = value ? which : null;
-    },
+/** Saves one setting of the party, a failure told in a toast. */
+const patch = (body: Parameters<typeof update.mutate>[0]) =>
+  update.mutate(body, {
+    onError: (error) => toast.failed(errorMessage(error)),
   });
-const yearsOpen = sheet('years');
-const hintsOpen = sheet('hints');
 
-/** What participants may note for their giver (README 22.11). */
-const hintsChoices = computed(() =>
-  GIFT_HINTS_MODES.map((mode) => ({
-    value: mode,
-    label: tk(`hints.setting.${mode}`),
-    hint: tk(`hints.setting.${mode}Help`),
+// The category, in its sheet.
+const categoryOpen = ref(false);
+const categoryChoices = computed(() =>
+  PARTY_CATEGORIES.map((category) => ({
+    value: category,
+    label: `${CATEGORY_DEFAULTS[category].emoji ?? '✨'} ${tk(`party.category.${category}`)}`,
   })),
 );
 
-/** How far back nobody draws the same person again, as a row says it. */
-const yearsChoices = computed(() => [
-  { value: 0, label: t('adminGroup.rules.previousYears.none') },
-  { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
-  {
-    value: 2,
-    label: t('adminGroup.rules.previousYears.lastYears', { count: 2 }),
-  },
-  {
-    value: 3,
-    label: t('adminGroup.rules.previousYears.lastYears', { count: 3 }),
-    hint: t('adminGroup.rules.previousYears.tight'),
-  },
-]);
-const yearsValue = computed(() => {
-  const years = shown.value.excludePreviousYears ?? 0;
-  return years === 0
-    ? t('adminGroup.rules.previousYears.noneShort')
-    : t('adminGroup.rules.previousYears.short', { count: years });
+// The date, in three lists in its sheet.
+const dateOpen = ref(false);
+const years = partyYears(Number(new Date().toISOString().slice(0, 4)));
+const parts = ref<BirthParts>({ day: null, month: null, year: null });
+const openDate = () => {
+  parts.value = birthParts(data.value?.year?.date ?? null);
+  dateOpen.value = true;
+};
+const dateValue = computed(() => {
+  const date = data.value?.year?.date;
+  if (!date) return undefined;
+  const day = new Intl.DateTimeFormat(locale.value, {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(`${date}T12:00:00Z`));
+  return data.value?.party.recurring
+    ? t('party.reglages.dateValue', { date: day })
+    : t('party.reglages.dateValueOnce', { date: day });
 });
-const noteValue = computed(() =>
-  shown.value.messageNote
-    ? `« ${shown.value.messageNote} »`
-    : t('adminEdition.invite.noWords'),
-);
+const saveDate = () => {
+  const date = dateOf(parts.value);
+  if (!date) return;
+  dateOpen.value = false;
+  patch({ date });
+};
+const santaYear = computed(() => data.value?.secretSantas.at(-1)?.year);
 
 // Organisers: removing asks for a second tap.
 const adding = ref(false);
@@ -102,68 +116,54 @@ const deleting = ref(false);
         :parts="context.parts.value"
         :label="t('common.context')"
       />
-      <UiPageTitle>{{ t('adminGroup.dashboard.settings') }}</UiPageTitle>
+      <UiPageTitle>{{ t('party.settings') }}</UiPageTitle>
     </div>
     <AdminQueryState
-      :pending="rules.isPending.value"
-      :error="rules.error.value"
+      :pending="party.isPending.value"
+      :error="party.error.value"
       :skeleton="['list', 'list']"
       :rows="2"
     >
-      <UiList
-        :title="t('adminGroup.rules.drawSection')"
-        :footer="t('adminGroup.rules.tighter')"
-      >
+      <UiList :title="t('party.reglages.party')" data-testid="party-settings">
         <UiListItem
-          :title="t('adminGroup.rules.excludePreviousYearsShort')"
-          :value="yearsValue"
-          :busy="saving('excludePreviousYears')"
-          :busy-label="t('common.actions.saving')"
-          :on-click="() => (editing = 'years')"
+          v-if="data"
+          :title="t('party.reglages.category')"
+          :value="tk(`party.category.${data.party.category}`)"
+          :emoji="CATEGORY_DEFAULTS[data.party.category].emoji ?? '✨'"
+          :busy="update.isPending.value"
+          :on-click="() => (categoryOpen = true)"
         />
-      </UiList>
-
-      <UiList :title="t('adminGroup.rules.participantsSection')">
         <UiListItem
-          :title="t('hints.setting.title')"
-          :subtitle="tk(`hints.setting.${shown.giftHints ?? 'full'}`)"
+          :title="t('party.reglages.date')"
+          :subtitle="dateValue"
           :chevron="true"
-          :busy="saving('giftHints')"
-          :busy-label="t('common.actions.saving')"
-          :on-click="() => (editing = 'hints')"
-          data-testid="gift-hints-setting"
+          :on-click="openDate"
         />
         <UiListItem
-          :title="t('adminGroup.rules.messageNote')"
-          :value="noteValue"
-          :to="`/admin/${slug}/reglages/mot`"
-          data-testid="group-note"
+          v-if="data"
+          :checked="data.party.recurring"
+          :title="t('party.reglages.recurring')"
+          @update:checked="(on) => patch({ recurring: on })"
         />
       </UiList>
 
-      <UiList
-        :title="t('adminGroup.rules.notifySection')"
-        :footer="t('adminGroup.rules.notifyHelp')"
-        data-testid="notifications"
-      >
+      <UiList :title="t('party.reglages.secretSanta')">
+        <UiListItem
+          :title="
+            santaYear
+              ? t('party.reglages.secretSantaRow', { year: santaYear })
+              : t('party.reglages.secretSantaRowNone')
+          "
+          :to="`/f/${slug}/reglages/secret-santa`"
+        />
+      </UiList>
+
+      <UiList :title="t('party.reglages.email')" data-testid="notifications">
         <UiListItem
           :checked="shown.notifyJoined ?? true"
-          :title="t('adminGroup.rules.notifyJoined')"
+          :title="t('party.reglages.joined')"
           :busy="saving('notifyJoined')"
           @update:checked="(on) => save({ notifyJoined: on })"
-        />
-        <UiListItem
-          :checked="shown.notifyAllViewed ?? true"
-          :title="t('adminGroup.rules.notifyAllViewed')"
-          :busy="saving('notifyAllViewed')"
-          @update:checked="(on) => save({ notifyAllViewed: on })"
-        />
-        <UiListItem
-          :checked="shown.notifyReminder ?? true"
-          :title="t('adminGroup.rules.notifyReminder')"
-          :subtitle="t('adminGroup.rules.notifyReminderHelp')"
-          :busy="saving('notifyReminder')"
-          @update:checked="(on) => save({ notifyReminder: on })"
         />
       </UiList>
 
@@ -236,35 +236,43 @@ const deleting = ref(false);
     </AdminQueryState>
 
     <UiChoiceSheet
-      v-model:open="yearsOpen"
-      :title="t('adminGroup.rules.excludePreviousYearsShort')"
-      :description="t('adminGroup.rules.excludePreviousYearsHelp')"
-      :choices="yearsChoices"
-      :value="shown.excludePreviousYears ?? 0"
+      v-if="data"
+      v-model:open="categoryOpen"
+      :title="t('party.reglages.category')"
+      :choices="categoryChoices"
+      :value="data.party.category"
       :validate-label="t('common.actions.validate')"
       :cancel-label="t('common.actions.cancel')"
       @validate="
-        (years) => {
-          editing = null;
-          save({ excludePreviousYears: years });
+        (category: PartyCategory) => {
+          categoryOpen = false;
+          patch({ category });
         }
       "
     />
-    <UiChoiceSheet
-      v-model:open="hintsOpen"
-      :title="t('hints.setting.title')"
-      :description="t('hints.setting.help')"
-      :choices="hintsChoices"
-      :value="shown.giftHints ?? 'full'"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="
-        (mode) => {
-          editing = null;
-          save({ giftHints: mode });
-        }
-      "
-    />
+    <UiSheet v-model:open="dateOpen" :title="t('party.reglages.date')">
+      <UiDateSelects
+        v-model="parts"
+        :years="years"
+        :label="t('party.reglages.date')"
+        testid="party-date"
+      />
+      <template #footer>
+        <UButton
+          block
+          :disabled="!dateOf(parts)"
+          :label="t('common.actions.validate')"
+          @click="saveDate"
+        />
+        <UButton
+          block
+          color="neutral"
+          variant="ghost"
+          :label="t('common.actions.cancel')"
+          @click="dateOpen = false"
+        />
+      </template>
+    </UiSheet>
     <AdminOrganizerSheet
       v-model:open="adding"
       :slug="slug"

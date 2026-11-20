@@ -198,7 +198,7 @@ export default {
     off: 'Deaktiviert',
     active: 'Aktiv',
     description:
-      'Jeder meldet sich mit seiner E-Mail-Adresse an und tritt der Gruppe bei, und der laufenden Auslosung, solange sie nicht stattgefunden hat.',
+      'Wer sich anmeldet, ist auch beim Wichteln dabei, solange die Auslosung nicht stattgefunden hat.',
     closed: 'Der Link ist deaktiviert: Niemand kann sich anmelden.',
     create: 'Link erstellen',
     shareLink: 'Link teilen',
@@ -207,14 +207,14 @@ export default {
     settings: 'Einstellungen des Links',
     places: 'Freie Plätze',
     placesHelp:
-      'Wie viele Personen über diesen Link noch der Gruppe beitreten können.',
+      'Wie viele Personen über diesen Link noch der Feier beitreten können.',
     placesLeft: {
       one: '{count} freier Platz',
       other: '{count} freie Plätze',
     },
     capacity: {
-      one: 'Die Gruppe kann höchstens noch {count} Person aufnehmen.',
-      other: 'Die Gruppe kann höchstens noch {count} Personen aufnehmen.',
+      one: 'Die Feier kann höchstens noch {count} Person aufnehmen.',
+      other: 'Die Feier kann höchstens noch {count} Personen aufnehmen.',
     },
     fewer: 'Ein Platz weniger',
     more: 'Ein Platz mehr',
@@ -235,7 +235,7 @@ export default {
     closeHint: 'Niemand kann sich mehr anmelden',
     closeConfirm: 'Link deaktivieren? Niemand kann sich mehr anmelden.',
     message: {
-      intro: 'Hallo! Du bist zum Wichteln „{group}“ eingeladen 🎁',
+      intro: 'Hallo! Du bist zur Feier „{group}“ eingeladen 🎁',
       how: 'Melde dich mit deiner E-Mail-Adresse über diesen Link an:',
       until: 'Du hast Zeit bis zum {date}.',
     },

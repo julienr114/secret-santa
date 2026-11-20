@@ -26,7 +26,7 @@ useHead({
   title: () => context.titleOf(t('adminEdition.newEdition.title')),
 });
 const screen = computed(() => ({
-  back: `/admin/${slug.value}`,
+  back: `/f/${slug.value}`,
 }));
 
 const schema = computed(() =>

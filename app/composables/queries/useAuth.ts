@@ -1,3 +1,4 @@
+import type { PartyCategory } from '#shared/utils/categories';
 import type { GiverHintsState } from '#server/utils/hints';
 import type { PublicGroup } from '#server/database/groups';
 import type { HomeEditionState } from '#server/utils/home';
@@ -205,6 +206,13 @@ export const useRevokeAllMutation = () => {
 /** What an invitation link shows. */
 export type InvitePayload = {
   groupName: string;
+  /** The party (V3): its category, the date of its year, its members. */
+  party: {
+    category: PartyCategory;
+    iconEmoji: string | null;
+    date: string | null;
+    members: number;
+  };
   /** How many organisers the group has (« tes organisateurs »). */
   organizers: number;
   /** The organiser's words, if any. */

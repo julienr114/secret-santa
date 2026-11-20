@@ -459,16 +459,12 @@ export default {
     note: "Le mot de l'administrateur :",
   },
   invite: {
-    intro: 'Tu es invité au Secret Santa',
-    party: 'fête le {date}',
-    count: {
-      one: '{count} personne inscrite',
-      other: '{count} personnes inscrites',
-    },
+    intro: 'Tu es invité à la fête',
+    party: 'le {date}',
     nameHelp: 'Le prénom que verront les autres.',
     loginFirst:
-      'Connecte-toi avec ton adresse email pour le rejoindre. Pas encore de compte ? Il se crée tout seul.',
-    joinGroup: 'Rejoindre le groupe',
+      'Connecte-toi avec ton adresse email pour la rejoindre. Pas encore de compte ? Il se crée tout seul.',
+    joinGroup: 'Rejoindre la fête',
     signedAs: 'Connecté avec {email}',
     notMe: 'Ce n’est pas moi',
     organiserWord: {
@@ -483,16 +479,16 @@ export default {
         'Le tirage n’est pas encore fait : tes organisateurs te feront signe.',
     },
     addLater: {
-      one: 'Tu fais partie du groupe. Ton organisateur t’ajoutera au tirage de {label}.',
+      one: 'Tu fais partie de la fête. Ton organisateur t’ajoutera au tirage de {label}.',
       other:
-        'Tu fais partie du groupe. Tes organisateurs t’ajouteront au tirage de {label}.',
+        'Tu fais partie de la fête. Tes organisateurs t’ajouteront au tirage de {label}.',
     },
     drawnAlready:
-      'Tu fais partie du groupe. Le tirage de {label} est déjà fait : tu seras du prochain.',
+      'Tu fais partie de la fête. Le tirage de {label} est déjà fait : tu seras du prochain.',
     nextDraw: {
-      one: 'Tu fais partie du groupe. Ton organisateur te fera signe pour le prochain tirage.',
+      one: 'Tu fais partie de la fête. Ton organisateur te fera signe pour le prochain tirage.',
       other:
-        'Tu fais partie du groupe. Tes organisateurs te feront signe pour le prochain tirage.',
+        'Tu fais partie de la fête. Tes organisateurs te feront signe pour le prochain tirage.',
     },
     meanwhile: 'En attendant',
     hints: 'Laisser mes pistes de cadeaux',

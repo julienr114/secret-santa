@@ -473,16 +473,12 @@ export default {
     note: 'Ein Wort vom Administrator:',
   },
   invite: {
-    intro: 'Du bist zum Wichteln eingeladen',
-    party: 'Feier am {date}',
-    count: {
-      one: '{count} Person angemeldet',
-      other: '{count} Personen angemeldet',
-    },
+    intro: 'Du bist zur Feier eingeladen',
+    party: 'am {date}',
     nameHelp: 'Der Vorname, den die anderen sehen.',
     loginFirst:
       'Melde dich mit deiner E-Mail-Adresse an, um beizutreten. Noch kein Konto? Es wird dabei erstellt.',
-    joinGroup: 'Der Gruppe beitreten',
+    joinGroup: 'Der Feier beitreten',
     signedAs: 'Angemeldet als {email}',
     notMe: 'Das bin nicht ich',
     organiserWord: {
@@ -496,16 +492,16 @@ export default {
       other: 'Die Auslosung steht noch aus: Deine Organisatoren melden sich.',
     },
     addLater: {
-      one: 'Du gehörst zur Gruppe. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+      one: 'Du gehörst zur Feier. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
       other:
-        'Du gehörst zur Gruppe. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
+        'Du gehörst zur Feier. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
     },
     drawnAlready:
-      'Du gehörst zur Gruppe. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
+      'Du gehörst zur Feier. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
     nextDraw: {
-      one: 'Du gehörst zur Gruppe. Dein Organisator meldet sich zur nächsten Auslosung.',
+      one: 'Du gehörst zur Feier. Dein Organisator meldet sich zur nächsten Auslosung.',
       other:
-        'Du gehörst zur Gruppe. Deine Organisatoren melden sich zur nächsten Auslosung.',
+        'Du gehörst zur Feier. Deine Organisatoren melden sich zur nächsten Auslosung.',
     },
     meanwhile: 'In der Zwischenzeit',
     hints: 'Meine Geschenk-Hinweise hinterlassen',

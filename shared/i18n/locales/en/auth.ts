@@ -461,16 +461,12 @@ export default {
     note: 'A word from the administrator:',
   },
   invite: {
-    intro: 'You are invited to the Secret Santa',
-    party: 'party on {date}',
-    count: {
-      one: '{count} person signed up',
-      other: '{count} people signed up',
-    },
+    intro: 'You are invited to the party',
+    party: 'on {date}',
     nameHelp: 'The first name the others will see.',
     loginFirst:
       'Log in with your email address to join. No account yet? It is created on the way.',
-    joinGroup: 'Join the group',
+    joinGroup: 'Join the party',
     signedAs: 'Logged in as {email}',
     notMe: 'Not me',
     organiserWord: {
@@ -485,16 +481,16 @@ export default {
         'The draw hasn’t happened yet: your organizers will give you a shout.',
     },
     addLater: {
-      one: 'You are in the group. Your organizer will add you to the draw of {label}.',
+      one: 'You are in the party. Your organizer will add you to the draw of {label}.',
       other:
-        'You are in the group. Your organizers will add you to the draw of {label}.',
+        'You are in the party. Your organizers will add you to the draw of {label}.',
     },
     drawnAlready:
-      'You are in the group. The draw of {label} is already done: you will be in the next one.',
+      'You are in the party. The draw of {label} is already done: you will be in the next one.',
     nextDraw: {
-      one: 'You’re in the group. Your organizer will give you a shout for the next draw.',
+      one: 'You’re in the party. Your organizer will give you a shout for the next draw.',
       other:
-        'You’re in the group. Your organizers will give you a shout for the next draw.',
+        'You’re in the party. Your organizers will give you a shout for the next draw.',
     },
     meanwhile: 'Meanwhile',
     hints: 'Leave my gift hints',

@@ -3,6 +3,8 @@ import {
   CATEGORY_DEFAULTS,
   PARTY_CATEGORIES,
   categoryOfEmoji,
+  newPartyDefaults,
+  nextOccurrence,
   partyEmoji,
 } from './categories';
 
@@ -38,5 +40,41 @@ describe('categories', () => {
     expect(partyEmoji({ category: 'christmas', iconEmoji: null })).toBe('🎄');
     expect(partyEmoji({ category: 'christmas', iconEmoji: '⭐' })).toBe('⭐');
     expect(partyEmoji({ category: 'other', iconEmoji: null })).toBeNull();
+  });
+});
+
+describe('nextOccurrence', () => {
+  it('gives this year’s day, or next year’s once past', () => {
+    expect(nextOccurrence('12-25', '2026-11-20')).toBe('2026-12-25');
+    expect(nextOccurrence('12-25', '2026-12-25')).toBe('2026-12-25');
+    expect(nextOccurrence('03-14', '2026-11-20')).toBe('2027-03-14');
+  });
+});
+
+describe('newPartyDefaults', () => {
+  const today = '2026-11-20';
+  it('fills Christmas with 25 December, every year', () => {
+    expect(newPartyDefaults('christmas', { today })).toEqual({
+      date: '2026-12-25',
+      recurring: true,
+    });
+  });
+
+  it('fills a birthday with the next birthday of the one it is for', () => {
+    expect(
+      newPartyDefaults('birthday', { today, birthDate: '2022-12-14' }),
+    ).toEqual({ date: '2026-12-14', recurring: true });
+    expect(newPartyDefaults('birthday', { today })).toEqual({
+      date: null,
+      recurring: true,
+    });
+  });
+
+  it('leaves the date to enter for the others, once', () => {
+    expect(newPartyDefaults('wedding', { today })).toEqual({
+      date: null,
+      recurring: false,
+    });
+    expect(newPartyDefaults('other', { today }).recurring).toBe(false);
   });
 });

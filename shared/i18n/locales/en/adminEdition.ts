@@ -193,7 +193,7 @@ export default {
     off: 'Off',
     active: 'On',
     description:
-      'Everyone signs up with their email address and joins the group, and the current draw as long as it has not taken place.',
+      'Those who sign up also join the Secret Santa, as long as the draw has not taken place.',
     closed: 'The link is off: nobody can sign up.',
     create: 'Create the link',
     shareLink: 'Share the link',
@@ -201,14 +201,14 @@ export default {
     copied: 'Message copied',
     settings: 'Link settings',
     places: 'Places left',
-    placesHelp: 'How many people can still join the group with this link.',
+    placesHelp: 'How many people can still join the party with this link.',
     placesLeft: {
       one: '{count} place left',
       other: '{count} places left',
     },
     capacity: {
-      one: 'The group can still take {count} person at most.',
-      other: 'The group can still take {count} people at most.',
+      one: 'The party can still take {count} person at most.',
+      other: 'The party can still take {count} people at most.',
     },
     fewer: 'One place less',
     more: 'One place more',
@@ -228,7 +228,7 @@ export default {
     closeHint: 'Nobody will be able to sign up',
     closeConfirm: 'Turn the link off? Nobody will be able to sign up.',
     message: {
-      intro: 'Hi! You are invited to the Secret Santa “{group}” 🎁',
+      intro: 'Hi! You are invited to the party “{group}” 🎁',
       how: 'Sign up with your email address by opening this link:',
       until: 'You have until {date}.',
     },

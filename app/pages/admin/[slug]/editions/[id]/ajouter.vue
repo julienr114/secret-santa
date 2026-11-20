@@ -55,7 +55,7 @@ const current = computed(() => participants.value.map((p) => p.id));
 const ticked = useChosenParticipants(id);
 const chosen = computed(() => ticked.value ?? current.value);
 onBeforeRouteLeave((to) => {
-  if (!to.path.endsWith('/personnes/nouvelle')) ticked.value = null;
+  if (!to.path.endsWith('/membres/nouvelle')) ticked.value = null;
 });
 /**
  * Whether a member is ticked.
@@ -219,13 +219,13 @@ const onSave = async () => {
 
       <UiList :title="t('adminEdition.addParticipants.someoneNew')">
         <UiListItem
-          :to="`/admin/${slug}/personnes/nouvelle?edition=${id}`"
+          :to="`/f/${slug}/membres/nouvelle?edition=${id}`"
           icon="i-lucide-user-plus"
           :title="t('adminEdition.addParticipants.create')"
           :subtitle="t('adminEdition.addParticipants.createHint')"
         />
         <UiListItem
-          :to="`/admin/${slug}/invitation`"
+          :to="`/f/${slug}/invitation`"
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="t('adminEdition.addParticipants.inviteHint')"

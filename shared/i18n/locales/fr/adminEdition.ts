@@ -193,7 +193,7 @@ export default {
     off: 'Désactivé',
     active: 'Actif',
     description:
-      'Chacun s’inscrit avec son adresse email et rejoint le groupe, et le tirage en cours tant qu’il n’a pas eu lieu.',
+      'Ceux qui s’inscrivent rejoignent aussi le Secret Santa, tant que le tirage n’a pas eu lieu.',
     closed: 'Le lien est désactivé : personne ne peut s’inscrire.',
     create: 'Créer le lien',
     shareLink: 'Partager le lien',
@@ -202,14 +202,14 @@ export default {
     settings: 'Réglages du lien',
     places: 'Places restantes',
     placesHelp:
-      'Combien de personnes peuvent encore rejoindre le groupe par ce lien.',
+      'Combien de personnes peuvent encore rejoindre la fête par ce lien.',
     placesLeft: {
       one: '{count} place restante',
       other: '{count} places restantes',
     },
     capacity: {
-      one: 'Le groupe peut encore accueillir {count} personne au plus.',
-      other: 'Le groupe peut encore accueillir {count} personnes au plus.',
+      one: 'La fête peut encore accueillir {count} personne au plus.',
+      other: 'La fête peut encore accueillir {count} personnes au plus.',
     },
     fewer: 'Une place de moins',
     more: 'Une place de plus',
@@ -229,7 +229,7 @@ export default {
     closeHint: 'Plus personne ne pourra s’inscrire',
     closeConfirm: 'Désactiver le lien ? Plus personne ne pourra s’inscrire.',
     message: {
-      intro: 'Salut ! Tu es invité au Secret Santa « {group} » 🎁',
+      intro: 'Salut ! Tu es invité à la fête « {group} » 🎁',
       how: 'Inscris-toi avec ton adresse email en ouvrant ce lien :',
       until: 'Tu as jusqu’au {date}.',
     },

@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
         {
           groupName: group.name,
           firstName,
-          link: appUrl(event, `/admin/${group.slug}/personnes`),
+          link: appUrl(event, `/f/${group.slug}/membres`),
         },
         locale,
       ),

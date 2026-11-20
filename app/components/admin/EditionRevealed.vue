@@ -69,7 +69,7 @@ const closingShown = useBusy(() => props.closing);
       "
     />
     <UiListItem
-      :to="`/admin/${slug}/journal`"
+      :to="`/f/${slug}/journal`"
       icon="i-lucide-file-text"
       icon-tone="neutral"
       :title="t('adminEdition.screen.closed.journal')"

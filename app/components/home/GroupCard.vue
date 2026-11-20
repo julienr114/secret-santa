@@ -50,7 +50,7 @@ const NuxtLink = resolveComponent('NuxtLink');
 const manageTo = computed(() =>
   props.card.edition
     ? `/admin/${props.card.slug}/editions/${props.card.edition.id}`
-    : `/admin/${props.card.slug}`,
+    : `/f/${props.card.slug}`,
 );
 </script>
 
@@ -58,7 +58,7 @@ const manageTo = computed(() =>
   <UiCard padding="none" class="overflow-hidden" data-testid="group-card">
     <component
       :is="card.slug ? NuxtLink : 'div'"
-      :to="card.slug ? `/admin/${card.slug}` : undefined"
+      :to="card.slug ? `/f/${card.slug}` : undefined"
       class="flex min-h-16 items-center gap-3 px-4 py-3"
     >
       <span class="min-w-0 grow">

@@ -69,7 +69,7 @@ const label = computed(
     t('adminEdition.general.editionFallback'),
 );
 useHead({ title: () => `${label.value} — ${t('common.appName')}` });
-const screen = computed(() => ({ back: `/admin/${slug.value}` }));
+const screen = computed(() => ({ back: `/f/${slug.value}` }));
 const subtitle = computed(() =>
   [
     dashboard.data.value?.group.name,
@@ -408,7 +408,7 @@ const dateOpen = ref(false);
             "
           />
           <UiListItem
-            :to="`/admin/${slug}/journal`"
+            :to="`/f/${slug}/journal`"
             icon="i-lucide-file-text"
             icon-tone="neutral"
             :title="t('adminEdition.screen.closed.journal')"

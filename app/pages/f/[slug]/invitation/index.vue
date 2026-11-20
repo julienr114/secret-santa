@@ -32,7 +32,7 @@ const context = useScreenContext(slug);
 useHead({
   title: () => context.titleOf(t('adminEdition.screen.empty.invite')),
 });
-const screen = computed(() => ({ back: `/admin/${slug.value}/personnes` }));
+const screen = computed(() => ({ back: `/f/${slug.value}/membres` }));
 const errorMessage = useErrorMessage();
 const toast = useMessages();
 const mutation = useInviteLinkMutation(slug);
@@ -254,7 +254,7 @@ const messageValue = computed(() =>
           <UiListItem
             :title="t('adminEdition.invite.messageRow')"
             :value="messageValue"
-            :to="`/admin/${slug}/invitation/mot`"
+            :to="`/f/${slug}/invitation/mot`"
             data-testid="invite-word"
           />
         </UiList>

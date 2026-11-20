@@ -389,7 +389,7 @@ const onSend = () =>
                   </span>
                 </span>
                 <NuxtLink
-                  :to="`/admin/${slug}/personnes/${p.id}`"
+                  :to="`/f/${slug}/membres/${p.id}`"
                   class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
                   :aria-label="
                     t('adminEdition.screen.emails.addEmailLabel', {

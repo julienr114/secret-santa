@@ -32,20 +32,22 @@ flowchart LR
   end
   accueil --> administration
 
-  subgraph groupe ["Un groupe (organisateur)"]
-    leGroupe["Le groupe<br/><small>/admin/[groupe]</small>"]
-    leGroupe --> membres["Membres"]
+  subgraph groupe ["Une fête (ses membres ; l'organisateur en plus)"]
+    leGroupe["La fête<br/><small>/f/[fête]</small>"]
+    leGroupe --> membres["Membres<br/><small>organisateur</small>"]
     membres --> personne["Une personne"]
     membres --> nouvellePersonne["Nouvelle personne"]
     membres --> invitation["Inviter par lien"]
     invitation --> motInvitation["Ton mot sur la page"]
-    leGroupe --> exclusionsGroupe["Exclusions du groupe"]
-    leGroupe --> journalGroupe["Journal du groupe"]
-    leGroupe --> reglagesGroupe["Réglages du groupe"]
-    reglagesGroupe --> motGroupe["Mot ajouté aux messages"]
+    leGroupe --> exclusionsGroupe["Exclusions"]
+    leGroupe --> journalGroupe["Journal"]
+    leGroupe --> reglagesGroupe["Réglages de la fête"]
+    reglagesGroupe --> reglagesSanta["Réglages du Secret Santa"]
+    reglagesSanta --> motGroupe["Mot ajouté aux messages"]
     leGroupe --> nouvelleEdition["Nouvelle édition"]
     nouvelleEdition --> motNouvelle["Petit mot<br/><small>nouvelle édition</small>"]
   end
+  accueil --> nouvelleFete["Pour quelle occasion ?<br/><small>/f/nouvelle</small>"]
   accueil --> leGroupe
 
   subgraph edition ["Une édition (organisateur)"]
@@ -114,7 +116,7 @@ Décidée par Julien le 18 novembre 2026.
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
 | Tirages passés | `/tirages-passes` | Accueil | |
-| Rejoindre un groupe (lien d'invitation) | `/rejoindre/[code]` | — | |
+| Rejoindre une fête (lien d'invitation) | `/rejoindre/[code]` | — | |
 
 ## Administration (super-admin)
 
@@ -128,29 +130,33 @@ Décidée par Julien le 18 novembre 2026.
 | Un compte | `/admin/comptes/[id]` | Comptes | Quota, désactivation |
 | Guide de style | `/admin/guide-de-style` | Administration | |
 
-## Un groupe (organisateur)
+## Une fête (ses membres ; l'organisateur pour le reste)
+
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de la fête (`partyPathOf`, `app/middleware/redirects.global.ts`). Les éditions restent sous `/admin/[groupe]/editions` jusqu'au ticket 105.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Le groupe | `/admin/[groupe]` | Accueil | |
-| Membres | `/admin/[groupe]/personnes` | Le groupe | |
-| Une personne | `/admin/[groupe]/personnes/[id]` | Membres | Mon icône, exclusion |
-| Nouvelle personne | `/admin/[groupe]/personnes/nouvelle` | Membres | |
-| Inviter par lien | `/admin/[groupe]/invitation` | Membres | Places, date limite |
-| Ton mot sur la page | `/admin/[groupe]/invitation/mot` | Inviter par lien | |
-| Exclusions du groupe | `/admin/[groupe]/exclusions` | Le groupe | Ajouter une exclusion |
-| Journal du groupe | `/admin/[groupe]/journal` | Le groupe | À quoi sert-il ?, une alerte |
-| Réglages du groupe | `/admin/[groupe]/reglages` | Le groupe | Chaque réglage sauf le mot, organisateur, suppression du groupe |
-| Mot ajouté aux messages | `/admin/[groupe]/reglages/mot` | Réglages du groupe | |
-| (ancienne adresse) | `/admin/[groupe]/organisateurs` | mène aux Réglages du groupe | |
+| Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/f/nouvelle` | Accueil ; la seconde étape : la première | |
+| La fête | `/f/[fête]` | Accueil | Quitter cette fête |
+| Membres | `/f/[fête]/membres` | La fête | |
+| Une personne | `/f/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
+| Nouvelle personne | `/f/[fête]/membres/nouvelle` | Membres | |
+| Inviter par lien | `/f/[fête]/invitation` | Membres | Places, date limite |
+| Ton mot sur la page | `/f/[fête]/invitation/mot` | Inviter par lien | |
+| Exclusions | `/f/[fête]/exclusions` | La fête | Ajouter une exclusion |
+| Journal | `/f/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
+| Réglages de la fête | `/f/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
+| Réglages du Secret Santa (jusqu'au ticket 105) | `/f/[fête]/reglages/secret-santa` | Réglages de la fête | Chaque réglage sauf le mot |
+| Mot ajouté aux messages | `/f/[fête]/reglages/mot` | Réglages du Secret Santa | |
+| (ancienne adresse) | `/f/[fête]/organisateurs` | mène aux Réglages de la fête | |
 
 ## Une édition (organisateur)
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Nouvelle édition | `/admin/[groupe]/editions/nouvelle` | Le groupe | |
+| Nouvelle édition | `/admin/[groupe]/editions/nouvelle` | La fête | |
 | Petit mot d'une nouvelle édition (gardé dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/mot` | Nouvelle édition | |
-| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | Le groupe | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
+| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |

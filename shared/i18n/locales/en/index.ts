@@ -10,6 +10,7 @@ import auth from './auth';
 import notify from './notify';
 import hints from './hints';
 import lists from './lists';
+import party from './party';
 
 export default {
   common,
@@ -24,4 +25,5 @@ export default {
   notify,
   hints,
   lists,
+  party,
 };

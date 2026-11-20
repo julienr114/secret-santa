@@ -22,8 +22,11 @@ const props = withDefaults(
     muted?: boolean;
     /** Keeps the title on one line, cut with « … » (an email address). */
     oneLine?: boolean;
-    /** The colour of the round icon: coral for what to do, grey otherwise. */
-    iconTone?: 'primary' | 'neutral';
+    /**
+     * The colour of the round icon: coral for what to do, grey otherwise,
+     * lilac for a list (V3).
+     */
+    iconTone?: 'primary' | 'neutral' | 'lilac';
     /** The current value of a setting, shown on the right. */
     value?: string;
     /** The name of the row, when its texts do not say what a tap does. */
@@ -61,6 +64,7 @@ const checked = defineModel<boolean | undefined>('checked', {
 const ICON_TONES = {
   primary: 'bg-primary-soft text-primary',
   neutral: 'bg-muted text-toned',
+  lilac: 'bg-lilac-100 text-lilac-800',
   danger: 'bg-error-soft text-error-ink',
 };
 // A string in <component :is> does not resolve global components.

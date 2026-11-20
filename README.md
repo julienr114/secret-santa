@@ -1866,6 +1866,8 @@ Décidé par Julien le 19 novembre 2026. Lot 27 bis. Maquettes : `ListeNouvelle`
 
 Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `PistesListe`, `PistesListeChoisir`, `PistesResultatListe`, `ListeVisiteurTirage`.
 
+**Fait le 20 novembre 2026** (lot 27 ter, migration `0032_anonymous_mode`). Dans le code : `participations.gift_list_id` ; `PUT /api/p/[jeton]/hints/list` et `GET /api/p/[jeton]/hints/lists` (un compte est demandé) ; `receiverList` (`server/http/hints.ts`) pour le lien sous le résultat ; `ParticipantHintsList` et `ParticipantGiverHints` côté écran.
+
 - **Dans « Mes pistes de cadeaux »**, un bloc « Ma liste de cadeaux » : on choisit, par son nom, une des listes qu'on tient, **ou une liste où l'on figure** comme personne reliée à son compte (`PistesListeChoisir`, décidé par Julien le 19 novembre 2026 ; possible une fois le lot 25 fait). Seule une liste publiée peut être reliée ; un brouillon est proposé grisé, « publie-la d'abord ». Une liste entière, pas une partie : on ne cherche pas la personne dedans.
 - **Le Père Noël voit un simple lien** sous son résultat (`PistesResultatListe`) : « Sa liste de cadeaux : Noël 2026 ». Le contenu de la liste n'est jamais recopié dans le tirage. **« Si tu sèches » disparaît** quand une liste est reliée (décidé par Julien le 19 novembre 2026).
 - **Seulement quand les pistes sont en mode complet.** En mode « Portrait seulement » ou sans pistes, pas de bloc ni de lien.
@@ -1876,6 +1878,8 @@ Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `PistesListe`, 
 #### Le mode anonyme, bien visible
 
 Décidé par Julien le 19 novembre 2026. Lot 27 ter. Maquettes : `ListeVisiteur`, `ListeVisiteurMes` (sous mon prénom), `ListeVisiteurAnonyme` (anonyme), `ListeVisiteurTirage` (activé par défaut, avec un avertissement).
+
+**Fait le 20 novembre 2026** (lot 27 ter). Dans le code : les règles pures dans `server/utils/anonymous.ts` (`settleMode`, `chooseMode`, `drawStillSecret`, la signature de la participation portée par le lien) ; la détection dans `server/database/anonymous.ts` (`givesToSomeoneOn`, seul endroit où un tirage est lu pour une liste, et dont seul oui ou non sort) ; le réglage par compte et par liste sur `gift_list_visits` ; `PUT /api/l/[jeton]/mode` ; `ListsAnonymousBar`. La détection n'est faite qu'une fois par liste : ensuite l'interrupteur est à la personne. Ceux qui tiennent la liste n'ont pas de barre.
 
 - **En haut d'une liste ouverte par son lien, une barre dit le mode, avant de cocher**, comme une navigation privée. Elle tient sur une ligne, aux bords arrondis comme la partie « Publier » de celui qui tient la liste, et **reste collée en haut** quand on fait défiler la liste.
   - **Un seul titre, « Mode anonyme »**, et l'interrupteur dit s'il est activé (décidé par Julien le 19 novembre 2026). Désactivé (`ListeVisiteurPrenom`) : barre claire, un œil. Activé (`ListeVisiteurAnonyme`) : barre aubergine foncée (`#5b3a55`), texte blanc, un masque.

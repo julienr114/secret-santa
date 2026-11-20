@@ -531,7 +531,7 @@ export default {
     title: 'Mode anonyme',
     why: 'Pourquoi ?',
     off: 'Désactivé : quand tu coches un cadeau, ceux qui tiennent la liste voient ton prénom. Les autres voient seulement que c’est pris.',
-    on: 'Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ». Le réglage vaut pour toute cette liste.',
+    on: 'Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ».',
     noticeTitle: 'On a activé le mode anonyme pour toi',
     noticeBody:
       'Tu offres un cadeau dans un tirage à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',

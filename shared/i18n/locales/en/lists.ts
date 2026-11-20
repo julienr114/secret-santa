@@ -522,7 +522,7 @@ export default {
     title: 'Anonymous mode',
     why: 'Why?',
     off: 'Off: when you tick a gift, those who hold the list see your first name. The others only see that it is taken.',
-    on: 'On: when you tick a gift, nobody sees your first name, not even those who hold the list. They see “Anonymous”. The setting holds for this whole list.',
+    on: 'On: when you tick a gift, nobody sees your first name, not even those who hold the list. They see “Anonymous”.',
     noticeTitle: 'We turned anonymous mode on for you',
     noticeBody:
       'You are giving a gift in a draw to someone on this list: your ticks will not say your first name. You can turn it off up there, for instance to also give a gift under your first name.',

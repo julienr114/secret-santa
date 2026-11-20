@@ -534,7 +534,7 @@ export default {
     title: 'Anonymer Modus',
     why: 'Warum?',
     off: 'Aus: Wenn du ein Geschenk abhakst, sehen die, die die Liste führen, deinen Vornamen. Die anderen sehen nur, dass es vergeben ist.',
-    on: 'An: Wenn du ein Geschenk abhakst, sieht niemand deinen Vornamen, auch nicht die, die die Liste führen. Sie sehen „Anonym“. Die Einstellung gilt für diese ganze Liste.',
+    on: 'An: Wenn du ein Geschenk abhakst, sieht niemand deinen Vornamen, auch nicht die, die die Liste führen. Sie sehen „Anonym“.',
     noticeTitle: 'Wir haben den anonymen Modus für dich aktiviert',
     noticeBody:
       'Du schenkst beim Wichteln jemandem von dieser Liste etwas: Deine Häkchen verraten deinen Vornamen nicht. Du kannst ihn oben ausschalten, etwa um auch ein Geschenk unter deinem Vornamen zu machen.',

@@ -192,4 +192,5 @@ Les étapes 4 à 6 se font aussi en SQL (voir « Corrigé en codant »). La comp
 ### Commits
 
 - `773303c` docs : la proposition de schéma.
-- Puis le modèle, la migration et le code serveur, et enfin le script de comparaison, avec ce compte rendu.
+- `b706ae0` feat(db) : le modèle, la migration 0033 et le code serveur.
+- `f594dd3` chore(db) : `pnpm v3:compare`, avec ce compte rendu.

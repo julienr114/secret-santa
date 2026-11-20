@@ -6,10 +6,12 @@ import { shoeSizesShown } from '#shared/utils/memberFields';
 import { AVATAR_SHADES } from '~/utils/avatars';
 import { useUpdateMemberMutation } from '~/composables/queries/useLists';
 
-// A person on a list, as its holder writes it (README 22.19, maquette
-// ListeTeneur): the round icon of 52 px left of the first name and the
-// line of practical details, then their ideas, set 20 px in from the
-// icon, and the empty line at the end, « Une autre idée… ». The icon and
+// A person on a list, as its holder writes it (README 22.19, 22.20,
+// maquettes ListeTeneur, ListeGroupeFil): two columns and a thread
+// (Correction 30). On the left, the round icon of 40 px and the boxes of
+// their ideas, centred under it; on the right, all the text on one edge:
+// the first name, the line of practical details, the paragraph of their
+// tastes, their ideas, and the empty line at the end, « Une autre idée… ». The icon and
 // the first name change here, by touching them, without going to the
 // person's page (asked by Julien, 19 November 2026): the icon in its
 // sheet (a small round pencil says so), the name written in place. The
@@ -246,15 +248,16 @@ const explained = ref<string | null>(null);
 
 <template>
   <section
-    class="flex flex-col gap-1"
+    class="relative flex flex-col gap-0.5"
     :class="liftedHere ? 'opacity-30' : ''"
     data-testid="list-person"
     data-drag-section
     :data-drag-id="person.id"
   >
+    <ListsPersonThread v-if="!single && !liftedHere" />
     <header
       v-if="!single"
-      class="flex items-center gap-3 pb-1"
+      class="flex items-center gap-2.5"
       :data-drag="drag ? 'person' : undefined"
       :data-drag-id="drag ? person.id : undefined"
     >
@@ -263,7 +266,7 @@ const explained = ref<string | null>(null);
       <UiAvatar
         v-if="member.linked && !member.isSelf"
         :avatar="member.avatar"
-        :px="52"
+        :px="40"
         class="shrink-0"
       />
       <button
@@ -274,17 +277,17 @@ const explained = ref<string | null>(null);
         data-testid="person-icon"
         @click="iconOpen = true"
       >
-        <UiAvatar :avatar="member.avatar" :px="52" />
+        <UiAvatar :avatar="member.avatar" :px="40" />
         <!-- The pencil of the list's tile: this icon changes by touching it. -->
         <span
-          class="absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full bg-default ring-1 ring-default"
+          class="absolute -right-1.5 -bottom-1 flex size-5 items-center justify-center rounded-full bg-default ring-1 ring-default"
           aria-hidden="true"
         >
-          <UIcon name="i-lucide-pencil" class="size-3" />
+          <UIcon name="i-lucide-pencil" class="size-2.5" />
         </span>
       </button>
-      <div class="flex min-w-0 grow flex-col">
-        <h2 class="font-display text-[28px] leading-[1.1] font-bold">
+      <div class="flex min-w-0 grow flex-col gap-0.5">
+        <h2 class="font-display text-2xl leading-[1.15] font-bold">
           <ListsLiveLock v-if="nameLock" :by="nameLock" />
           <input
             v-else-if="naming"
@@ -311,7 +314,9 @@ const explained = ref<string | null>(null);
             {{ member.firstName }}
           </button>
         </h2>
-        <p v-if="details" class="text-sm text-toned">{{ details }}</p>
+        <p v-if="details" class="text-sm leading-[1.4] text-toned">
+          {{ details }}
+        </p>
       </div>
       <UDropdownMenu
         v-model:open="menuOpen"
@@ -337,6 +342,8 @@ const explained = ref<string | null>(null);
         />
       </UDropdownMenu>
     </header>
+    <!-- What the others read of their tastes, the same paragraph. -->
+    <ListsPersonTastes v-if="!single && !liftedHere" :member="member" />
     <!-- A person lifted is folded: their ideas wait, out of the way. -->
     <!-- A line that appears, moves or goes shows it by its movement (lot
          26), unless motion is to be reduced; not while one is dragged. -->
@@ -345,7 +352,7 @@ const explained = ref<string | null>(null);
       tag="ul"
       :name="drag?.lifted.value ? 'none' : 'line'"
       class="flex flex-col"
-      :class="single ? '' : 'pl-1.5'"
+      :class="single ? '' : 'person-lines mt-1.5'"
     >
       <template
         v-for="row in rows"
@@ -369,12 +376,12 @@ const explained = ref<string | null>(null);
       <li
         v-for="gift in person.offList"
         :key="gift.id"
-        class="flex flex-col py-[13px]"
+        class="relative flex flex-col py-[13px]"
         data-testid="holder-off-list"
       >
         <button
           type="button"
-          class="flex items-start gap-3 text-left"
+          class="flex items-start gap-[var(--line-gap,12px)] text-left"
           :aria-expanded="explained === gift.id"
           @click="explained = explained === gift.id ? null : gift.id"
         >
@@ -397,7 +404,7 @@ const explained = ref<string | null>(null);
         </button>
         <p
           v-if="explained === gift.id"
-          class="mt-1.5 ml-[34px] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
+          class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
           role="status"
           data-testid="off-list-notice"
         >
@@ -411,7 +418,7 @@ const explained = ref<string | null>(null);
       <li
         v-if="ghost"
         key="ghost"
-        class="-mx-2 flex items-start gap-3 rounded-xl px-2 py-2"
+        class="relative -mx-2 flex items-start gap-[var(--line-gap,12px)] rounded-xl px-2 py-2"
         :style="
           ghostShade
             ? {
@@ -423,7 +430,7 @@ const explained = ref<string | null>(null);
         data-testid="line-ghost"
       >
         <span
-          class="mt-0.5 size-[22px] shrink-0 rounded-sm border-[1.5px] border-accented bg-default opacity-50"
+          class="mt-0.5 size-[22px] shrink-0 rounded-sm border-[1.5px] border-accented bg-default"
           aria-hidden="true"
         />
         <div class="flex min-w-0 grow flex-col gap-0.5">

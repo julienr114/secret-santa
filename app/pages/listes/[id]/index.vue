@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { namesInOne } from '~/utils/givers';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
@@ -124,7 +125,7 @@ provide(LIST_EDITING, {
     joining.value = { idea, forName };
   },
   removePerson: (person) => onRemovePerson(person),
-  untickFor: (idea, claim) => onUntickFor(idea, claim),
+  untickFor: (idea) => onUntickFor(idea),
 });
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
@@ -195,36 +196,38 @@ const onAgain = () => {
 // up puts it back exactly as it was (same person, same way, same date),
 // an anonymous one included.
 const untickFor = useUntickForMutation(id);
-const unticking = useDelayedRemoval((key, done) => {
-  const [ideaId = '', claimId = ''] = key.split(':');
-  untickFor.mutate(
-    { ideaId, claimId },
-    {
-      onError: (error) => toast.failed(errorMessage(error)),
-      onSettled: done,
-    },
-  );
+/** The ticks of an idea that may be taken off, as the list has them now. */
+const claimsOf = (ideaId: string) =>
+  doc.value?.people.flatMap((p) => p.ideas).find((i) => i.id === ideaId)
+    ?.claims ?? [];
+// The whole tick goes (Correction 30): each of a group in turn, once
+// « Annuler » is gone.
+const unticking = useDelayedRemoval((ideaId, done) => {
+  claimsOf(ideaId)
+    .reduce<Promise<unknown>>(
+      (before, claim) =>
+        before.then(() => untickFor.mutateAsync({ ideaId, claimId: claim.id })),
+      Promise.resolve(),
+    )
+    .catch((error: unknown) => toast.failed(errorMessage(error)))
+    .finally(done);
 });
-const onUntickFor = (idea: IdeaLine, claim: IdeaLine['claims'][number]) =>
+const onUntickFor = (idea: IdeaLine) => {
+  const names = idea.claims.flatMap((claim) => (claim.by ? [claim.by] : []));
   unticking.start(
-    `${idea.id}:${claim.id}`,
-    claim.by === null
+    idea.id,
+    names.length === 0
       ? t('lists.doc.untickedAnonymous')
-      : t('lists.doc.unticked', { name: claim.by }),
+      : t('lists.doc.unticked', {
+          name: namesInOne(names, t('lists.share.and')),
+        }),
   );
-/** The line as it will be once the tick that is leaving is gone. */
-const withoutLeaving = (idea: IdeaLine): IdeaLine => {
-  const [ideaId, claimId] = (unticking.leaving.value ?? '').split(':');
-  const leaving =
-    ideaId === idea.id ? idea.claims.find((c) => c.id === claimId) : null;
-  return leaving
-    ? {
-        ...idea,
-        view: leaving.after,
-        claims: idea.claims.filter((c) => c.id !== claimId),
-      }
-    : idea;
 };
+/** The line as it will be once the tick that is leaving is gone. */
+const withoutLeaving = (idea: IdeaLine): IdeaLine =>
+  unticking.leaving.value === idea.id
+    ? { ...idea, view: { kind: 'free' }, claims: [] }
+    : idea;
 const people = computed(() => {
   const there = (doc.value?.people ?? [])
     .filter((p) => p.id !== removal.leaving.value)

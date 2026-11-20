@@ -99,17 +99,11 @@ export default {
     age: { one: '{count} an', other: '{count} ans' },
     size: 'taille {size}',
     shoe: 'pointure {size}',
-    tastes: 'ses goûts',
-    tastesOf: 'Les goûts de {name}',
     givenBy: 'Offert par {names}',
     linkTo: 'Lien vers {site}',
     anonymous: 'Anonyme',
-    tickOf: 'La coche de {name}',
-    tickedBy: 'Coché par {name}, le {date}',
-    joinedBy: '{name}, le {date}',
-    tickedAnonymous: 'Coché en anonyme',
-    untick: 'Décocher',
-    removeTick: 'Retirer',
+    untickFor: 'Décocher : coché par {names}',
+    untickForAnonymous: 'Décocher : coché en anonyme',
     unticked: 'Coche de {name} retirée',
     untickedAnonymous: 'Coche anonyme retirée',
     offListNotice:
@@ -235,6 +229,7 @@ export default {
     firstIdea: 'Une idée…',
     offListAction: 'J’offre autre chose',
     forGiving: 'Tu l’offres',
+    forGivingAnonymous: 'Tu l’offres en anonyme',
     forProposing: 'Tu proposes de partager',
     forLeading: 'C’est toi qui l’as proposé',
     forJoining: 'Un cadeau à plusieurs',
@@ -476,6 +471,7 @@ export default {
     noted: '{idea}, c’est noté',
     together: '{idea}, à plusieurs',
     forGiving: 'Pour {name} · tu l’offres',
+    forGivingAnonymous: 'Pour {name} · tu l’offres en anonyme',
     forProposing: 'Pour {name} · tu proposes de partager',
     forLeading: 'Pour {name} · c’est toi qui l’as proposé',
     forJoining: 'Pour {name}',
@@ -484,14 +480,18 @@ export default {
       other: 'Pour {name} · {count} personnes participent',
     },
     alone: 'Je l’offre seul',
-    aloneHelp: 'Les autres voient seulement que c’est pris',
+    aloneHelp:
+      '{name} sait que c’est toi. Les autres voient seulement que c’est pris.',
+    aloneHelpHolder: 'Les autres voient seulement que c’est pris.',
+    anonymous: 'Je l’offre seul, en anonyme',
+    anonymousHelp: 'Personne ne sait que c’est toi, pas même {name}.',
+    anonymousMode:
+      'Mode anonyme activé. Pour un autre choix, désactive-le en haut de la liste.',
+    anonymousModeJoin:
+      'Mode anonyme activé : te joindre montrerait ton prénom. Désactive-le en haut de la liste pour participer.',
     group: 'On l’offre à plusieurs',
-    groupHelp: 'D’autres pourront se joindre à toi',
+    groupHelp: 'D’autres pourront se joindre à toi, et verront ton prénom.',
     howLabel: 'Comment tu l’offres',
-    tellHolder: 'Dire à {name} que c’est moi',
-    tellHolderHelp:
-      'Cette personne tient la liste. Sinon, elle verra « Anonyme ».',
-    nobodyElse: 'Personne d’autre ne saura que c’est toi.',
     visible: 'Ton prénom sera visible',
     visibleHelp:
       'de ceux qui ouvrent la liste, pour qu’ils puissent se joindre à toi. Vous vous arrangez entre vous pour l’argent.',
@@ -553,8 +553,20 @@ export default {
     inlineHint:
       '{name} lira ces mots. Les autres verront seulement « Un cadeau surprise, hors liste ».',
   },
+  // The note after the first tick (Correction 30).
+  guide: {
+    title: 'C’est noté',
+    body: 'Touche « Tu l’offres » pour proposer de l’offrir à plusieurs, ou passer en anonyme.',
+    bodyAnonymous: 'Touche « Tu l’offres en anonyme » pour changer d’avis.',
+  },
+  // The paragraph of a person's tastes (Correction 30): each text set as
+  // it was written, after a fixed opening; never agreed.
   tastes: {
-    title: 'Les goûts de {name}',
-    none: '{name} n’a encore rien dit de ses goûts.',
+    lately: 'En ce moment, {text}.',
+    wouldHelp: 'Il lui faudrait {text}.',
+    avoid: 'À éviter : {text}.',
+    prefers: 'Côté cadeaux, {name} préfère {choices}.',
+    more: 'Voir plus',
+    less: 'Voir moins',
   },
 };

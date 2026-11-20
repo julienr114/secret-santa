@@ -8,12 +8,15 @@ import {
 } from '~/composables/queries/useLists';
 import { ideaShort } from '~/utils/ideaShort';
 
-// « Changer » (README 22.19, maquettes ListeReserver,
-// ListeReserverPlusieurs, ListePlusieursOuvreur): alone or with others
-// while nobody else is on it; alone, telling the holder it is me; with
-// others, the word for them, who is in, and « On est au complet » for the
-// one who leads; « Finalement, je ne l'offre plus ». In the holder's own
-// document, no choice of staying anonymous: they read the names.
+// The sheet of what I give (README 22.19, Correction 30, maquettes
+// ListeReserverSimple, ListeReserverAnonyme, ListeReserverPlusieurs,
+// ListePlusieursOuvreur): one question, three choices, each saying who
+// knows: « Je l'offre seul », « Je l'offre seul, en anonyme », « On l'offre
+// à plusieurs », while nobody else is on it. With others, the word for
+// them, who is in, and « On est au complet » for the one who leads;
+// « Finalement, je ne l'offre plus ». My « mode anonyme » on, « en
+// anonyme » is chosen and the two others are closed, said under them. In
+// the holder's own document, no anonymous choice: they read the names.
 const props = defineProps<{
   /** By the link of the list, or in its holder's document. */
   via: ClaimRoute;
@@ -22,6 +25,8 @@ const props = defineProps<{
   forName: string;
   /** Who holds the list; none in the holder's own document. */
   holderName?: string;
+  /** My « mode anonyme » is on for this list (lot 27 ter). */
+  anonymousMode?: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
@@ -31,16 +36,23 @@ const change = useChangeClaimMutation(() => props.via);
 const untick = useUntickMutation(() => props.via);
 const mine = computed(() => props.idea.mine);
 const others = computed(() => props.idea.notes.filter((n) => !n.me));
-const mode = ref<'alone' | 'group'>('alone');
-const tell = ref(true);
+type How = 'alone' | 'anonymous' | 'group';
+const how = ref<How>('alone');
+const mode = computed<'alone' | 'group'>(() =>
+  how.value === 'group' ? 'group' : 'alone',
+);
 const note = ref('');
 const closed = ref(false);
 watch(
   open,
   (opened) => {
     if (!opened || !mine.value) return;
-    mode.value = mine.value.mode;
-    tell.value = !mine.value.anonymous;
+    how.value =
+      mine.value.mode === 'group'
+        ? 'group'
+        : mine.value.anonymous || props.anonymousMode
+          ? 'anonymous'
+          : 'alone';
     note.value = mine.value.note ?? '';
     closed.value = mine.value.closed;
   },
@@ -53,6 +65,11 @@ const proposing = computed(
 /** For whom, and how: a list without people names nobody. */
 const subtitle = computed(() => {
   const name = props.forName;
+  if (how.value === 'anonymous') {
+    return name
+      ? t('lists.claim.forGivingAnonymous', { name })
+      : t('lists.single.forGivingAnonymous');
+  }
   if (mode.value === 'alone') {
     return name
       ? t('lists.claim.forGiving', { name })
@@ -72,18 +89,38 @@ const subtitle = computed(() => {
     ? t('lists.claim.forJoining', { name })
     : t('lists.single.forJoining');
 });
-const modes = computed(() => [
-  {
-    value: 'alone' as const,
-    label: t('lists.claim.alone'),
-    hint: t('lists.claim.aloneHelp'),
-  },
-  {
-    value: 'group' as const,
-    label: t('lists.claim.group'),
-    hint: t('lists.claim.groupHelp'),
-  },
-]);
+const choices = computed(() => {
+  const holder = props.holderName;
+  const shut = Boolean(props.anonymousMode);
+  return [
+    {
+      value: 'alone' as const,
+      label: t('lists.claim.alone'),
+      hint: holder
+        ? t('lists.claim.aloneHelp', { name: holder })
+        : t('lists.claim.aloneHelpHolder'),
+      disabled: shut,
+    },
+    // Only where someone else reads the names.
+    ...(holder
+      ? [
+          {
+            value: 'anonymous' as const,
+            label: t('lists.claim.anonymous'),
+            hint: t('lists.claim.anonymousHelp', { name: holder }),
+            icon: 'i-lucide-venetian-mask',
+            incognito: true,
+          },
+        ]
+      : []),
+    {
+      value: 'group' as const,
+      label: t('lists.claim.group'),
+      hint: t('lists.claim.groupHelp'),
+      disabled: shut,
+    },
+  ];
+});
 /** Who takes the gift over when I leave a group I lead. */
 const passes = computed(() => {
   if (!mine.value?.leads || others.value.length === 0) return '';
@@ -106,8 +143,8 @@ const onDone = () => {
     ...(mode.value === was.mode ? {} : { mode: mode.value }),
     ...(props.holderName &&
     mode.value === 'alone' &&
-    tell.value === was.anonymous
-      ? { anonymous: !tell.value }
+    (how.value === 'anonymous') !== was.anonymous
+      ? { anonymous: how.value === 'anonymous' }
       : {}),
     ...(mode.value === 'group' && note.value.trim() !== (was.note ?? '')
       ? { note: note.value.trim() || null }
@@ -150,31 +187,24 @@ const onGiveUp = () =>
     <div class="flex flex-col gap-4 py-1" data-testid="claim-sheet">
       <UiChoiceList
         v-if="others.length === 0"
-        v-model="mode"
-        :choices="modes"
+        v-model="how"
+        :choices="choices"
         :label="t('lists.claim.howLabel')"
+        data-testid="claim-how"
       />
-      <template v-if="mode === 'alone'">
-        <div
-          v-if="holderName"
-          class="flex items-start gap-3 rounded-xl bg-default p-3.5 ring-1 ring-default"
-        >
-          <div class="flex grow flex-col gap-0.5">
-            <p class="font-semibold">
-              {{ t('lists.claim.tellHolder', { name: holderName }) }}
-            </p>
-            <p class="text-[13px] text-toned">
-              {{ t('lists.claim.tellHolderHelp') }}
-            </p>
-          </div>
-          <USwitch
-            v-model="tell"
-            :aria-label="t('lists.claim.tellHolder', { name: holderName })"
-          />
-        </div>
-        <p class="text-sm text-toned">{{ t('lists.claim.nobodyElse') }}</p>
-      </template>
-      <template v-else>
+      <p
+        v-if="anonymousMode && others.length === 0"
+        class="flex items-center gap-2 text-sm leading-[1.4] text-incognito"
+        data-testid="claim-anonymous-mode"
+      >
+        <UIcon
+          name="i-lucide-venetian-mask"
+          class="size-4 shrink-0"
+          aria-hidden="true"
+        />
+        {{ t('lists.claim.anonymousMode') }}
+      </p>
+      <template v-if="mode === 'group'">
         <ul
           v-if="others.length > 0"
           class="divide-y divide-default rounded-xl bg-default ring-1 ring-default"

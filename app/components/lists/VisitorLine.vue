@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>();
 const { t } = useT();
 const view = computed(() => props.idea.view);
-const chips = computed(() => ideaChips(view.value, []));
+const chips = computed(() => ideaChips(view.value));
 const crossed = computed(
   () =>
     view.value.kind === 'taken' ||
@@ -57,16 +57,27 @@ const onBox = () => {
   if (view.value.kind === 'free') emit('tick');
   else if (openGroup.value) emit('join');
 };
+// After the first tick on this device (Correction 30, maquette
+// ListeCocheGuide): the line stays in the light over the veil, its note
+// pointed at « Tu l'offres › ».
+const guide = useTickGuide();
+const guided = computed(
+  () => guide.pointed.value === props.idea.id && chips.value.mine !== null,
+);
+onBeforeUnmount(() => {
+  if (guided.value) guide.understood();
+});
 </script>
 
 <template>
   <li
-    class="relative flex items-start gap-3 py-[13px]"
-    :class="
+    class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
+    :class="[
       chips.mine
         ? '-mx-2.5 rounded-2xl px-2.5 has-[[data-line-button]:active]:bg-muted'
-        : ''
-    "
+        : '',
+      guided ? 'z-50 bg-page' : '',
+    ]"
     data-testid="visitor-idea"
   >
     <!-- An idea I give: the whole line is the button of its sheet. Its
@@ -184,6 +195,24 @@ const onBox = () => {
           >{{ t('lists.visitor.join') }}</UiChip
         >
       </div>
+    </div>
+    <div
+      v-if="guided"
+      class="absolute inset-x-0 top-[calc(100%-6px)] z-10 pl-8"
+      data-testid="tick-notice"
+    >
+      <ListsVeilNote
+        tone="plum"
+        tip="left"
+        name="tick"
+        :title="t('lists.guide.title')"
+        :body="
+          chips.mine === 'anonymous'
+            ? t('lists.guide.bodyAnonymous')
+            : t('lists.guide.body')
+        "
+        @understood="guide.understood()"
+      />
     </div>
   </li>
 </template>

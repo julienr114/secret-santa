@@ -339,6 +339,13 @@ test('from the draw, the list opens in anonymous mode, with a note', async () =>
   await expect(page.getByTestId('idea-mine')).toHaveText(
     'Tu l’offres en anonyme',
   );
+  // The first tick on this device: its note, in the words of the mode
+  // (Correction 30), once the note of the mode is gone.
+  await expect(page.getByTestId('tick-notice')).toContainText(
+    'Touche « Tu l’offres en anonyme » pour changer d’avis.',
+  );
+  await page.getByTestId('tick-understood').click();
+  await expect(page.getByTestId('tick-notice')).toHaveCount(0);
   await page.getByTestId('off-list-action').click();
   await page.getByTestId('off-list-field').fill('Une surprise');
   await page.keyboard.press('Enter');

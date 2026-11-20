@@ -21,6 +21,8 @@ export default {
   limit_journal: 'This group has been very busy today: try again tomorrow.',
   list_not_empty:
     'This list already has people on it: one only starts from another list in an empty one.',
+  anonymous_mode:
+    'Anonymous mode is on: you can only give it alone, anonymously. Turn it off at the top of the list for another choice.',
   list_shared:
     'This list is already shared: it stays without people. Stop sharing it to sort it by person.',
   several_people:

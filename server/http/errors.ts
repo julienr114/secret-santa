@@ -49,6 +49,7 @@ const STATUS_BY_REASON: Record<string, number> = {
   results_not_revealed: 409,
   list_incomplete: 409,
   list_shared: 409,
+  anonymous_mode: 409,
   taken: 409,
 };
 

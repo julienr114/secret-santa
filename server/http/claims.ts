@@ -1,3 +1,4 @@
+import { anonymousRefusal } from '#server/utils/anonymous';
 import type { Db } from '#server/database/client';
 import {
   changeClaim,
@@ -34,6 +35,11 @@ export const tickIdea = async (
     mode: 'alone' | 'group';
     anonymous: boolean;
     note: string | null;
+    /**
+     * My « mode anonyme » is on (Correction 30): joining a gift given by
+     * several, where my name would show, is refused.
+     */
+    anonymousMode?: boolean;
   },
 ): Promise<boolean> => {
   const idea = await findIdea(db, list.id, how.ideaId);
@@ -43,6 +49,9 @@ export const tickIdea = async (
   );
   const result = unwrap(canTick(claims, accountId));
   if (result === 'join') {
+    if (anonymousRefusal(how.anonymousMode ?? false, { joins: true })) {
+      throw createError({ statusCode: 409, statusMessage: 'anonymous_mode' });
+    }
     await joinClaim(db, {
       listId: list.id,
       ideaId: idea.id,

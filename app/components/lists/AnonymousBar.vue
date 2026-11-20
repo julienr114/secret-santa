@@ -116,43 +116,14 @@ const onUnderstood = () => {
       class="absolute inset-x-0 top-full z-10 pt-2.5"
       data-testid="mode-notice"
     >
-      <!-- The veil: over the whole page, out of the column of the list;
-           it goes with the note. Put at the root of the app, which is
-           one layer of its own (`isolate`): the bar, raised, stays over
-           it; from the body it would cover the bar too. -->
-      <ClientOnly>
-        <Teleport to="#__nuxt">
-          <span
-            class="pointer-events-none fixed inset-0 z-40 bg-incognito/35"
-            aria-hidden="true"
-            data-testid="mode-veil"
-          />
-        </Teleport>
-      </ClientOnly>
-      <div
-        class="relative flex flex-col gap-1.5 rounded-[28px] bg-default px-4 pt-3.5 pb-1.5 text-default shadow-[0_0_0_1.5px_var(--color-incognito),0_14px_44px_6px_color-mix(in_srgb,var(--color-incognito)_45%,transparent)]"
-        role="status"
-      >
-        <!-- The tip, towards the switch. -->
-        <span
-          class="absolute -top-[7px] right-[26px] size-3 rotate-45 border-t-[1.5px] border-l-[1.5px] border-incognito bg-default"
-          aria-hidden="true"
-        />
-        <p class="text-[15px] leading-[1.35] font-bold">
-          {{ t('lists.mode.noticeTitle') }}
-        </p>
-        <p class="text-sm leading-[1.45] text-toned">
-          {{ t('lists.mode.noticeBody') }}
-        </p>
-        <button
-          type="button"
-          class="min-h-10 self-end px-1 text-[15px] font-bold text-incognito"
-          data-testid="mode-understood"
-          @click="onUnderstood"
-        >
-          {{ t('lists.mode.understood') }}
-        </button>
-      </div>
+      <ListsVeilNote
+        tone="incognito"
+        tip="right"
+        name="mode"
+        :title="t('lists.mode.noticeTitle')"
+        :body="t('lists.mode.noticeBody')"
+        @understood="onUnderstood"
+      />
     </div>
   </div>
 </template>

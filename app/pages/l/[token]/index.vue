@@ -123,13 +123,26 @@ const onError = (error: unknown) =>
  * @param idea - The idea.
  * @returns Nothing.
  */
+const guide = useTickGuide();
+/**
+ * After a tick of mine: the note on « Tu l'offres › », the first time
+ * on this device, never with the note of the anonymous mode (Correction
+ * 30): that one comes first.
+ * @param ideaId - The idea ticked.
+ */
+const onTicked = (ideaId: string) => {
+  if (!doc.value?.mode?.notice) guide.offer(ideaId);
+};
 const onTick = (idea: IdeaLine) => {
   if (!loggedIn.value) {
     return navigateTo(
       `/l/${token.value}/connexion?cocher=${encodeURIComponent(idea.id)}`,
     );
   }
-  tick.mutate({ ideaId: idea.id }, { onError });
+  tick.mutate(
+    { ideaId: idea.id },
+    { onError, onSuccess: () => onTicked(idea.id) },
+  );
 };
 
 /** The green box of what I give unticks at once, without the sheet. */
@@ -144,7 +157,10 @@ onMounted(async () => {
     .flatMap((p) => p.ideas)
     .find((i) => i.id === waiting);
   if (idea?.view.kind === 'free') {
-    tick.mutate({ ideaId: idea.id }, { onError });
+    tick.mutate(
+      { ideaId: idea.id },
+      { onError, onSuccess: () => onTicked(idea.id) },
+    );
   }
   router.replace({ query: {} });
 });
@@ -256,17 +272,18 @@ const writes = (person: PersonLine) =>
       <section
         v-for="(person, index) in doc.people"
         :key="person.id"
-        class="flex flex-col gap-1"
+        class="relative flex flex-col gap-0.5"
         :class="index > 0 ? 'mt-11' : ''"
         data-testid="visitor-person"
       >
-        <header v-if="!doc.single" class="flex items-center gap-3 pb-1">
-          <UiAvatar
-            :avatar="person.member.avatar"
-            class="size-[52px]! text-[26px]!"
-          />
-          <div class="flex min-w-0 flex-col">
-            <h2 class="font-display text-[28px] leading-[1.1] font-bold">
+        <!-- Two columns and a thread (Correction 30, maquette
+             ListeGroupeFil): the icon and the boxes on the left, all the
+             text on one edge. -->
+        <ListsPersonThread v-if="!doc.single" />
+        <header v-if="!doc.single" class="flex items-center gap-2.5">
+          <UiAvatar :avatar="person.member.avatar" :px="40" class="shrink-0" />
+          <div class="flex min-w-0 flex-col gap-0.5">
+            <h2 class="font-display text-2xl leading-[1.15] font-bold">
               {{ person.member.firstName }}
             </h2>
             <p
@@ -276,22 +293,20 @@ const writes = (person: PersonLine) =>
             >
               {{ t('lists.visitor.itsYou') }}
             </p>
-            <p v-else class="text-sm text-toned">
-              {{ details(person)
-              }}<template v-if="details(person)"> · </template>
-              <NuxtLink
-                :to="`/l/${token}/gouts/${person.id}`"
-                class="text-primary-ink underline"
-                >{{ t('lists.doc.tastes') }}</NuxtLink
-              >
+            <p
+              v-else-if="details(person)"
+              class="text-sm leading-[1.4] text-toned"
+            >
+              {{ details(person) }}
             </p>
           </div>
         </header>
+        <ListsPersonTastes v-if="!doc.single" :member="person.member" />
         <TransitionGroup
           v-if="writes(person)"
           tag="ul"
           name="line"
-          class="flex flex-col pl-1.5"
+          class="person-lines mt-1.5 flex flex-col"
         >
           <ListsIdeaLine
             v-for="(idea, at) in person.ideas"
@@ -322,7 +337,7 @@ const writes = (person: PersonLine) =>
           tag="ul"
           name="line"
           class="flex flex-col"
-          :class="doc.single ? '' : 'pl-1.5'"
+          :class="doc.single ? '' : 'person-lines mt-1.5'"
         >
           <ListsVisitorLine
             v-for="idea in person.ideas"
@@ -336,7 +351,7 @@ const writes = (person: PersonLine) =>
           <li
             v-for="gift in person.offList"
             :key="gift.id"
-            class="flex items-start gap-3 py-[13px]"
+            class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
             data-testid="off-list"
           >
             <span
@@ -417,6 +432,7 @@ const writes = (person: PersonLine) =>
       :idea="changing.idea"
       :for-name="changing.forName"
       :holder-name="holder"
+      :anonymous-mode="doc.mode?.anonymous ?? false"
     />
     <ListsJoinSheet
       v-if="joining"
@@ -424,6 +440,7 @@ const writes = (person: PersonLine) =>
       :via="via"
       :idea="joining.idea"
       :for-name="joining.forName"
+      :anonymous-mode="doc?.mode?.anonymous ?? false"
     />
   </ListsScreen>
 </template>

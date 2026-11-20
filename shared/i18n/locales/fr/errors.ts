@@ -23,6 +23,8 @@ export default {
   limit_journal: 'Ce groupe a beaucoup bougé aujourd’hui : réessaie demain.',
   list_not_empty:
     'Cette liste a déjà du monde : on ne repart d’une autre liste que dans une liste vide.',
+  anonymous_mode:
+    'Mode anonyme activé : tu ne peux l’offrir que seul, en anonyme. Désactive-le en haut de la liste pour un autre choix.',
   list_shared:
     'Cette liste est déjà partagée : elle reste sans personne. Arrête le partage pour la ranger par personne.',
   several_people:

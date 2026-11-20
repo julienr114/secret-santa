@@ -26,6 +26,35 @@ export type ModeSignals = {
   named: boolean;
 };
 
+/** How a tick asks to be given, as far as my mode cares. */
+export type TickWish = {
+  /** Alone, or with others. */
+  mode?: 'alone' | 'group';
+  /** Under my first name (false), or « Anonyme » (true). */
+  anonymous?: boolean;
+  /** Joins a gift others already give together. */
+  joins?: boolean;
+};
+
+/**
+ * Whether my « mode anonyme » forbids a tick (Correction 30): while it is
+ * on, only « Je l'offre seul, en anonyme ». Under my first name, or with
+ * others (proposing or joining, who would read my name), is refused, by
+ * the server as by the screen. What does not choose (a word, « au
+ * complet ») passes.
+ * @param anonymousMode - Whether my mode is on for this list.
+ * @param wish - What the tick asks.
+ * @returns The reason of the refusal, or null.
+ */
+export const anonymousRefusal = (
+  anonymousMode: boolean,
+  wish: TickWish,
+): 'anonymous_mode' | null =>
+  anonymousMode &&
+  (wish.mode === 'group' || wish.anonymous === false || wish.joins === true)
+    ? 'anonymous_mode'
+    : null;
+
 /**
  * My mode on a list, as I open it. A draw found turns it on once, with
  * its note, whatever I had chosen before: after that the switch is mine,

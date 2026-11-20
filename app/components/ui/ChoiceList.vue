@@ -12,6 +12,10 @@ export type Choice<V> = {
   hint?: string;
   /** Shown greyed, not choosable. */
   disabled?: boolean;
+  /** An icon at the end of the row. */
+  icon?: string;
+  /** « En anonyme » (Correction 30): tinted aubergine once chosen. */
+  incognito?: boolean;
 };
 defineProps<{
   choices: Choice<T>[];
@@ -41,7 +45,11 @@ const name = useId();
         class="flex min-h-14 gap-3 px-3.5"
         :class="[
           plain ? 'items-start py-3' : 'items-center py-2.5',
-          model === choice.value && !plain ? 'bg-primary-tint' : '',
+          model === choice.value && !plain
+            ? choice.incognito
+              ? 'bg-incognito-tint'
+              : 'bg-primary-tint'
+            : '',
           choice.disabled ? 'opacity-50' : 'cursor-pointer',
         ]"
       >
@@ -51,10 +59,15 @@ const name = useId();
           :name="name"
           :value="choice.value"
           :disabled="choice.disabled"
-          class="shrink-0 accent-(--ui-primary)"
-          :class="plain ? 'mt-px size-[22px]' : 'size-5'"
+          class="shrink-0"
+          :class="[
+            plain ? 'mt-px size-[22px]' : 'size-5',
+            choice.incognito
+              ? 'accent-(--color-incognito)'
+              : 'accent-(--ui-primary)',
+          ]"
         />
-        <span class="flex min-w-0 flex-col">
+        <span class="flex min-w-0 grow flex-col">
           <span :class="plain ? 'font-bold' : 'font-semibold'">{{
             choice.label
           }}</span>
@@ -65,6 +78,13 @@ const name = useId();
             >{{ choice.hint }}</span
           >
         </span>
+        <UIcon
+          v-if="choice.icon"
+          :name="choice.icon"
+          class="size-5 shrink-0"
+          :class="choice.incognito ? 'text-incognito' : 'text-toned'"
+          aria-hidden="true"
+        />
       </label>
     </div>
   </fieldset>

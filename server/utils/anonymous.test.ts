@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  anonymousRefusal,
   canLinkList,
   chooseMode,
   dismissNotice,
@@ -108,5 +109,25 @@ describe('the participation a link from a draw carries', () => {
     expect(await verifyParticipation('part-1.!!!', 'secret')).toBeNull();
     expect(await verifyParticipation(null, 'secret')).toBeNull();
     expect(await verifyParticipation(text, '')).toBeNull();
+  });
+});
+
+describe('what the anonymous mode forbids', () => {
+  it('lets anything pass while the mode is off', () => {
+    expect(anonymousRefusal(false, { mode: 'group', anonymous: false })).toBe(
+      null,
+    );
+    expect(anonymousRefusal(false, { joins: true })).toBe(null);
+  });
+  it('lets « seul, en anonyme » and what does not choose pass', () => {
+    expect(anonymousRefusal(true, { mode: 'alone', anonymous: true })).toBe(
+      null,
+    );
+    expect(anonymousRefusal(true, {})).toBe(null);
+  });
+  it('refuses my first name, and giving with others', () => {
+    expect(anonymousRefusal(true, { anonymous: false })).toBe('anonymous_mode');
+    expect(anonymousRefusal(true, { mode: 'group' })).toBe('anonymous_mode');
+    expect(anonymousRefusal(true, { joins: true })).toBe('anonymous_mode');
   });
 });

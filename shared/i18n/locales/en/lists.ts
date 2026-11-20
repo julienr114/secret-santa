@@ -94,17 +94,11 @@ export default {
     age: { one: '{count} year old', other: '{count} years old' },
     size: 'size {size}',
     shoe: 'shoe size {size}',
-    tastes: 'their tastes',
-    tastesOf: '{name}’s tastes',
     givenBy: 'Given by {names}',
     linkTo: 'Link to {site}',
     anonymous: 'Anonymous',
-    tickOf: '{name}’s tick',
-    tickedBy: 'Ticked by {name}, on {date}',
-    joinedBy: '{name}, on {date}',
-    tickedAnonymous: 'Ticked anonymously',
-    untick: 'Untick',
-    removeTick: 'Remove',
+    untickFor: 'Untick: ticked by {names}',
+    untickForAnonymous: 'Untick: ticked anonymously',
     unticked: '{name}’s tick removed',
     untickedAnonymous: 'Anonymous tick removed',
     offListNotice:
@@ -230,6 +224,7 @@ export default {
     firstIdea: 'An idea…',
     offListAction: 'I’m giving something else',
     forGiving: 'You give it',
+    forGivingAnonymous: 'You give it anonymously',
     forProposing: 'You offer to share',
     forLeading: 'You proposed it',
     forJoining: 'A gift from several people',
@@ -468,6 +463,7 @@ export default {
     noted: '{idea}: noted',
     together: '{idea}, together',
     forGiving: 'For {name} · you give it',
+    forGivingAnonymous: 'For {name} · you give it anonymously',
     forProposing: 'For {name} · you offer to share',
     forLeading: 'For {name} · you proposed it',
     forJoining: 'For {name}',
@@ -476,13 +472,17 @@ export default {
       other: 'For {name} · {count} people are in',
     },
     alone: 'I give it alone',
-    aloneHelp: 'The others only see that it’s taken',
+    aloneHelp: '{name} knows it’s you. The others only see that it’s taken.',
+    aloneHelpHolder: 'The others only see that it’s taken.',
+    anonymous: 'I give it alone, anonymously',
+    anonymousHelp: 'Nobody knows it’s you, not even {name}.',
+    anonymousMode:
+      'Anonymous mode is on. For another choice, turn it off at the top of the list.',
+    anonymousModeJoin:
+      'Anonymous mode is on: joining would show your first name. Turn it off at the top of the list to take part.',
     group: 'We give it together',
-    groupHelp: 'Others can join you',
+    groupHelp: 'Others can join you, and will see your first name.',
     howLabel: 'How you give it',
-    tellHolder: 'Tell {name} it’s me',
-    tellHolderHelp: 'They hold the list. Otherwise, they will see “Anonymous”.',
-    nobodyElse: 'Nobody else will know it’s you.',
     visible: 'Your first name will be visible',
     visibleHelp:
       'to those who open the list, so that they can join you. You sort out the money between you.',
@@ -543,8 +543,20 @@ export default {
     inlineHint:
       '{name} will read these words. The others will only see “A surprise gift, not on the list”.',
   },
+  // The note after the first tick (Correction 30).
+  guide: {
+    title: 'Noted',
+    body: 'Tap “You give it” to offer to give it with others, or to go anonymous.',
+    bodyAnonymous: 'Tap “You give it anonymously” to change your mind.',
+  },
+  // The paragraph of a person's tastes (Correction 30): each text set as
+  // it was written, after a fixed opening; never agreed.
   tastes: {
-    title: '{name}’s tastes',
-    none: '{name} hasn’t said anything about their tastes yet.',
+    lately: 'These days, {text}.',
+    wouldHelp: 'Something useful: {text}.',
+    avoid: 'Best avoided: {text}.',
+    prefers: 'When it comes to presents, {name} prefers {choices}.',
+    more: 'See more',
+    less: 'See less',
   },
 };

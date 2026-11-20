@@ -17,11 +17,12 @@ import { splitIdea } from '#server/utils/lists';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
 // 22.20, maquettes ListeIdee, ListeIdeeLien, ListeIdeeLienFait): its box,
-// its text and « lien », and, for the holder, who gives it. The holder
+// its text and its link, and, for the holder, who gives it. The holder
 // ticks too, their « Moi » included: the box gives the idea alone,
 // touched again it unticks. What they give says so under it, as by the
-// link: « Tu l'offres · seul · Changer »; a gift given by several is
-// joined from here too.
+// link: « Tu l'offres › », which opens its sheet; a gift given by several
+// is joined from here too. The grey box of someone else's tick unticks it
+// at once, for those who may (Correction 30).
 // Touched, the text turns into a field; the return key saves it and goes
 // to the next line, touching elsewhere saves it too; a line left empty
 // goes, and so does a line with nothing in it when the erase key is
@@ -103,15 +104,16 @@ const boxActive = computed(
     Boolean(props.idea) &&
     (view.value.kind === 'free' || mine.value || openGroup.value),
 );
-/** The box: ticks alone, unticks, or opens the sheet of a group. */
+/**
+ * The box: ticks alone, unticks, or opens the sheet of a group. Ticked by
+ * someone else, for those who may untick for them (Correction 25), it
+ * unticks at once, the whole tick of a group included, with « Annuler »
+ * in the message (Correction 30, maquette ListeDecocherCase).
+ */
 const onBox = () => {
   if (!props.idea || lockedBy.value) return;
-  // Ticked by someone else: the box unfolds « Décocher » too, like the
-  // first name (the box is what one reaches for first: Julien, 19
-  // November 2026). It does not untick by itself.
   if (!boxActive.value) {
-    const first = claims.value[0];
-    if (first) unfolded.value = unfolded.value ? null : first.id;
+    if (claims.value.length > 0) editing.untickFor?.(props.idea);
     return;
   }
   const onError = (error: unknown) =>
@@ -127,31 +129,34 @@ const onBox = () => {
   // 2026); the sheet opens from the pill of my state.
   if (mine.value) untick.mutate(props.idea.id, { onError });
   else if (openGroup.value) editing.join(props.idea, props.forName);
-  else tick.mutate({ ideaId: props.idea.id }, { onError });
+  else {
+    const ideaId = props.idea.id;
+    tick.mutate({ ideaId }, { onError, onSuccess: () => guide.offer(ideaId) });
+  }
 };
-// « Décocher » for someone (Correction 25, maquette ListeDecocher): the
-// first name on a ticked idea is touched, turns dark, and unfolds in the
-// line a light band, « Coché par Mamie, le 12 novembre » and « Décocher »
-// (one row each for a gift given by several, with « Retirer »). No
-// bubble, no question: it acts at once, « Annuler » is the net. An
-// anonymous tick says neither who nor when.
-const { locale } = useT();
+// After the first tick on this device (Correction 30, maquette
+// ListeCocheGuide): the line stays in the light over the veil, its note
+// pointed at « Tu l'offres › ».
+const guide = useTickGuide();
+const guided = computed(
+  () =>
+    Boolean(props.idea) &&
+    guide.pointed.value === props.idea?.id &&
+    mine.value &&
+    !writing.value,
+);
+onBeforeUnmount(() => {
+  if (guided.value) guide.understood();
+});
+/** The ticks of others that the one looking may take off. */
 const claims = computed(() =>
   editing.untickFor ? (props.idea?.claims ?? []) : [],
 );
-/** The tick whose pill was touched: its line is unfolded. */
-const unfolded = ref<string | null>(null);
-const unfoldedClaim = computed(
-  () => claims.value.find((claim) => claim.id === unfolded.value) ?? null,
-);
-watch(unfoldedClaim, (claim) => {
-  if (!claim) unfolded.value = null;
-});
 // Under the idea, aligned to its text (Corrections 28 and 29, maquettes
 // ListeTeneur, ListeDecocher): its link on a line of its own, the name
 // of the site in italics; then one row of pills, the others who give it
 // by first name, my own state in one pill, « Se joindre » last.
-const chips = computed(() => ideaChips(view.value, claims.value));
+const chips = computed(() => ideaChips(view.value, Boolean(editing.untickFor)));
 const host = computed(() => (props.idea?.url ? linkHost(props.idea.url) : ''));
 /** The first names of the others who give it, in one go. */
 const giverNames = computed(() =>
@@ -173,19 +178,15 @@ const joinLabel = computed(() =>
 const givenBy = computed(() =>
   giverNames.value ? t('lists.doc.givenBy', { names: giverNames.value }) : '',
 );
-const tickDay = (iso: string) =>
-  new Intl.DateTimeFormat(locale.value, {
-    day: 'numeric',
-    month: 'long',
-  }).format(new Date(iso));
-/** « Coché par » and «, le 12 novembre », around the name in bold. */
-const tickedBy = (claim: { by: string | null; at: string | null }) => {
-  const [before = '', after = ''] = t(
-    view.value.kind === 'group' ? 'lists.doc.joinedBy' : 'lists.doc.tickedBy',
-    { name: '\u0000', date: claim.at ? tickDay(claim.at) : '' },
-  ).split('\u0000');
-  return { before, after };
-};
+/** « Décocher : coché par Mamie et Tonton », the name of the grey box. */
+const untickForLabel = computed(() => {
+  const names = claims.value.flatMap((claim) => (claim.by ? [claim.by] : []));
+  return names.length > 0
+    ? t('lists.doc.untickFor', {
+        names: namesInOne(names, t('lists.share.and')),
+      })
+    : t('lists.doc.untickForAnonymous');
+});
 
 // Live (lot 26, maquette ListeLiveTeneur): while someone else who holds
 // the list writes this line, it is theirs: tinted with the light colour
@@ -505,7 +506,7 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="group relative flex scroll-mt-32 items-start gap-3 py-[13px]"
+    class="group relative flex scroll-mt-32 items-start gap-[var(--line-gap,12px)] py-[13px]"
     :style="
       lockShade
         ? {
@@ -518,14 +519,10 @@ const onFocusOut = (event: FocusEvent) => {
     :class="[
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
       writing
-        ? '-mr-4 -ml-[22px] border-l-[3px] border-primary bg-default pr-4 pb-2.5 pl-[19px]'
-        : '',
-      // Unfolded to untick for someone (maquette ListeDecocher): the tint
-      // takes the whole line, its box included, which does not move.
-      unfoldedClaim && !writing && !lockedBy
-        ? '-mx-2.5 my-1 rounded-[10px] bg-muted px-2.5 pb-0.5'
+        ? '-mr-4 -ml-[calc(16px_+_var(--line-in,0px))] border-l-[3px] border-primary bg-default pr-4 pb-2.5 pl-[calc(13px_+_var(--line-in,0px))]'
         : '',
       liftedHere ? 'opacity-30' : '',
+      guided ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5' : '',
     ]"
     :data-line="line"
     :data-drag="idea && drag ? 'idea' : undefined"
@@ -558,7 +555,9 @@ const onFocusOut = (event: FocusEvent) => {
                 ? t('lists.visitor.untick', { idea: idea.text })
                 : openGroup
                   ? joinLabel
-                  : t('lists.visitor.tick', { idea: idea.text }),
+                  : taken && claims.length > 0
+                    ? untickForLabel
+                    : t('lists.visitor.tick', { idea: idea.text }),
               disabled: !boxActive && claims.length === 0,
             }
           : { 'aria-hidden': 'true' }
@@ -572,7 +571,7 @@ const onFocusOut = (event: FocusEvent) => {
         class="flex size-[22px] items-center justify-center rounded-sm motion-safe:transition-colors motion-safe:duration-200"
         :class="
           !idea
-            ? 'border-[1.5px] border-default'
+            ? 'border-[1.5px] border-default bg-default'
             : mine
               ? 'bg-success text-white'
               : openGroup
@@ -749,28 +748,13 @@ const onFocusOut = (event: FocusEvent) => {
           data-testid="idea-pills"
         >
           <span v-if="givenBy" class="sr-only">{{ givenBy }}</span>
-          <template v-for="(pill, index) in chips.givers" :key="index">
-            <UiChip
-              v-if="pill.claimId"
-              button
-              :kind="unfolded === pill.claimId ? 'selected' : 'info'"
-              :aria-expanded="unfolded === pill.claimId"
-              :aria-label="
-                t('lists.doc.tickOf', {
-                  name: pill.name ?? t('lists.doc.anonymous'),
-                })
-              "
-              data-testid="idea-who"
-              data-no-drag
-              @click="
-                unfolded = unfolded === pill.claimId ? null : pill.claimId
-              "
-              >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
-            >
-            <UiChip v-else aria-hidden="true" data-testid="idea-who">{{
-              pill.name ?? t('lists.doc.anonymous')
-            }}</UiChip>
-          </template>
+          <UiChip
+            v-for="(pill, index) in chips.givers"
+            :key="index"
+            aria-hidden="true"
+            data-testid="idea-who"
+            >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
+          >
           <UiChip v-if="chips.crowd" icon="i-lucide-users">{{
             t('lists.visitor.groupMany', { count: chips.crowd })
           }}</UiChip>
@@ -821,37 +805,24 @@ const onFocusOut = (event: FocusEvent) => {
         />
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
-      <!-- « Coché par Mamie, le 12 novembre » and « Décocher », for the
-           pill touched, without a background of their own. -->
-      <p
-        v-if="idea && unfoldedClaim && !writing && !lockedBy"
-        class="mt-2 flex items-center justify-between gap-3 text-sm leading-[1.35] text-toned"
-        data-testid="untick-band"
-        data-no-drag
-      >
-        <span v-if="unfoldedClaim.by === null">{{
-          t('lists.doc.tickedAnonymous')
-        }}</span>
-        <span v-else
-          >{{ tickedBy(unfoldedClaim).before
-          }}<strong class="font-bold text-highlighted">{{
-            unfoldedClaim.by
-          }}</strong
-          >{{ tickedBy(unfoldedClaim).after }}</span
-        >
-        <button
-          type="button"
-          class="min-h-9 shrink-0 rounded-full bg-default px-3 text-sm font-bold text-primary-ink ring-1 ring-default"
-          data-testid="untick-for"
-          @click="editing.untickFor?.(idea, unfoldedClaim)"
-        >
-          {{
-            view.kind === 'group'
-              ? t('lists.doc.removeTick')
-              : t('lists.doc.untick')
-          }}
-        </button>
-      </p>
+    </div>
+    <div
+      v-if="guided && idea"
+      class="absolute inset-x-0 top-[calc(100%-6px)] z-10 pl-8"
+      data-testid="tick-notice"
+    >
+      <ListsVeilNote
+        tone="plum"
+        tip="left"
+        name="tick"
+        :title="t('lists.guide.title')"
+        :body="
+          chips.mine === 'anonymous'
+            ? t('lists.guide.bodyAnonymous')
+            : t('lists.guide.body')
+        "
+        @understood="guide.understood()"
+      />
     </div>
   </li>
 </template>

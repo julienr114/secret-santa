@@ -27,6 +27,8 @@ export default {
     'In dieser Gruppe war heute sehr viel los: Versuche es morgen noch einmal.',
   list_not_empty:
     'Auf dieser Liste steht schon jemand: Von einer anderen Liste geht man nur in einer leeren aus.',
+  anonymous_mode:
+    'Anonymer Modus ist an: Du kannst es nur allein und anonym schenken. Schalte ihn oben in der Liste aus, um anders zu wählen.',
   list_shared:
     'Diese Liste ist schon geteilt: Sie bleibt ohne Personen. Beende das Teilen, um sie nach Personen zu ordnen.',
   several_people:

@@ -99,17 +99,11 @@ export default {
     age: { one: '{count} Jahr', other: '{count} Jahre' },
     size: 'Größe {size}',
     shoe: 'Schuhgröße {size}',
-    tastes: 'Vorlieben',
-    tastesOf: 'Vorlieben von {name}',
     givenBy: 'Geschenkt von {names}',
     linkTo: 'Link zu {site}',
     anonymous: 'Anonym',
-    tickOf: 'Der Haken von {name}',
-    tickedBy: 'Abgehakt von {name}, am {date}',
-    joinedBy: '{name}, am {date}',
-    tickedAnonymous: 'Anonym abgehakt',
-    untick: 'Haken entfernen',
-    removeTick: 'Entfernen',
+    untickFor: 'Haken entfernen: abgehakt von {names}',
+    untickForAnonymous: 'Haken entfernen: anonym abgehakt',
     unticked: 'Haken von {name} entfernt',
     untickedAnonymous: 'Anonymer Haken entfernt',
     offListNotice:
@@ -236,6 +230,7 @@ export default {
     firstIdea: 'Eine Idee…',
     offListAction: 'Ich schenke etwas anderes',
     forGiving: 'Du schenkst es',
+    forGivingAnonymous: 'Du schenkst es anonym',
     forProposing: 'Du schlägst vor, zu teilen',
     forLeading: 'Du hast es vorgeschlagen',
     forJoining: 'Ein gemeinsames Geschenk',
@@ -479,6 +474,7 @@ export default {
     noted: '{idea}: notiert',
     together: '{idea}, gemeinsam',
     forGiving: 'Für {name} · du schenkst es',
+    forGivingAnonymous: 'Für {name} · du schenkst es anonym',
     forProposing: 'Für {name} · du schlägst vor, zu teilen',
     forLeading: 'Für {name} · du hast es vorgeschlagen',
     forJoining: 'Für {name}',
@@ -487,13 +483,18 @@ export default {
       other: 'Für {name} · {count} Personen machen mit',
     },
     alone: 'Ich schenke es allein',
-    aloneHelp: 'Die anderen sehen nur, dass es vergeben ist',
+    aloneHelp:
+      '{name} weiß, dass du es bist. Die anderen sehen nur, dass es vergeben ist.',
+    aloneHelpHolder: 'Die anderen sehen nur, dass es vergeben ist.',
+    anonymous: 'Ich schenke es allein, anonym',
+    anonymousHelp: 'Niemand weiß, dass du es bist, nicht einmal {name}.',
+    anonymousMode:
+      'Anonymer Modus ist an. Für eine andere Wahl schalte ihn oben in der Liste aus.',
+    anonymousModeJoin:
+      'Anonymer Modus ist an: Mitmachen würde deinen Vornamen zeigen. Schalte ihn oben in der Liste aus, um mitzumachen.',
     group: 'Wir schenken es gemeinsam',
-    groupHelp: 'Andere können mitmachen',
+    groupHelp: 'Andere können mitmachen und sehen deinen Vornamen.',
     howLabel: 'Wie du es schenkst',
-    tellHolder: '{name} sagen, dass ich es bin',
-    tellHolderHelp: 'Diese Person führt die Liste. Sonst sieht sie „Anonym“.',
-    nobodyElse: 'Sonst erfährt niemand, dass du es bist.',
     visible: 'Dein Vorname wird sichtbar',
     visibleHelp:
       'für alle, die die Liste öffnen, damit sie mitmachen können. Das Geld regelt ihr untereinander.',
@@ -556,8 +557,21 @@ export default {
     inlineHint:
       '{name} liest diese Worte. Die anderen sehen nur „Ein Überraschungsgeschenk, nicht auf der Liste“.',
   },
+  // The note after the first tick (Correction 30).
+  guide: {
+    title: 'Notiert',
+    body: 'Tippe auf „Du schenkst es“, um es gemeinsam mit anderen zu schenken oder anonym zu werden.',
+    bodyAnonymous:
+      'Tippe auf „Du schenkst es anonym“, um es dir anders zu überlegen.',
+  },
+  // The paragraph of a person's tastes (Correction 30): each text set as
+  // it was written, after a fixed opening; never agreed.
   tastes: {
-    title: 'Vorlieben von {name}',
-    none: '{name} hat noch nichts über die eigenen Vorlieben gesagt.',
+    lately: 'Im Moment: {text}.',
+    wouldHelp: 'Nützlich wäre: {text}.',
+    avoid: 'Lieber nicht: {text}.',
+    prefers: 'Bei Geschenken mag {name} lieber {choices}.',
+    more: 'Mehr anzeigen',
+    less: 'Weniger anzeigen',
   },
 };

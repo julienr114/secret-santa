@@ -9,12 +9,15 @@ import { ideaShort } from '~/utils/ideaShort';
 // « Se joindre » (README 22.19, maquettes ListeRejoindre,
 // ListeRejoindreSept): always through this sheet, since my first name
 // becomes visible: who is in, with their words, the one who opened it
-// first; « Je participe » or « Pas cette fois ».
+// first; « Je participe » or « Pas cette fois ». My « mode anonyme » on,
+// joining would show my name: closed, and said (Correction 30).
 const props = defineProps<{
   /** By the link of the list, or in its holder's document. */
   via: ClaimRoute;
   idea: IdeaLine;
   forName: string;
+  /** My « mode anonyme » is on for this list (lot 27 ter). */
+  anonymousMode?: boolean;
 }>();
 const open = defineModel<boolean>('open', { required: true });
 const { t } = useT();
@@ -72,7 +75,19 @@ const onJoin = () =>
           >
         </li>
       </ul>
-      <UiNotice variant="caution" icon="i-lucide-users">
+      <p
+        v-if="anonymousMode"
+        class="flex items-center gap-2 text-sm leading-[1.4] text-incognito"
+        data-testid="join-anonymous-mode"
+      >
+        <UIcon
+          name="i-lucide-venetian-mask"
+          class="size-4 shrink-0"
+          aria-hidden="true"
+        />
+        {{ t('lists.claim.anonymousModeJoin') }}
+      </p>
+      <UiNotice v-else variant="caution" icon="i-lucide-users">
         {{ t('lists.claim.joinVisible') }}
         <strong>{{ t('lists.claim.joinVisibleBold') }}</strong>
         {{ t('lists.claim.joinVisibleEnd') }}
@@ -85,6 +100,7 @@ const onJoin = () =>
           size="xl"
           class="h-12 justify-center font-bold"
           :loading="tick.isPending.value"
+          :disabled="anonymousMode"
           :label="t('lists.claim.participate')"
           data-testid="join-confirm"
           @click="onJoin"

@@ -1,19 +1,12 @@
 import type { IdeaView } from '#server/utils/lists';
-import type { RemovableClaim } from '#server/utils/claims';
 
-/** One of those who give an idea, as a pill under it. */
+/** One of those who give an idea, as a pill under it: information only. */
 export type GiverPill = {
   /** Their first name; null for « Anonyme ». */
   name: string | null;
-  /**
-   * Their tick, when the one looking may take it off (those who hold
-   * the list, and never their own): touching the pill then unfolds
-   * « Décocher ».
-   */
-  claimId: string | null;
 };
 
-/** The row of pills under an idea (Corrections 28 and 29). */
+/** The row of pills under an idea (Corrections 28, 29 and 30). */
 export type IdeaChips = {
   /** The others who give it, one pill each; never the one looking. */
   givers: GiverPill[];
@@ -35,21 +28,17 @@ export const NAMED_GIVERS_MAX = 3;
 
 /**
  * What the row of pills under an idea says (maquettes ListeTeneur,
- * ListeDecocher, ListeVisiteurMes, ListePlusieursLigne), in its order:
- * the others who give it, by first name (or how many, beyond three, for
- * who cannot take a tick off: those who can keep one pill each, since
- * each pill unticks its own person), « Au complet », then my own state
- * in one pill, then « Se joindre ». Each named pill finds its own tick
- * among those that may be taken off, by first name, in the order they
- * were ticked. I am never named: my state says it.
+ * ListeDecocherCase, ListeVisiteurMes, ListePlusieursLigne), in its
+ * order: the others who give it, by first name (how many, beyond three),
+ * « Au complet », then my own state in one pill, then « Se joindre ». The
+ * pills of the others are never touched (Correction 30): their box
+ * unticks. I am never named: my state says it.
  * @param view - What the line says of who gives it.
- * @param claims - The ticks the one looking may take off.
+ * @param seesWho - Whether the one looking is told who ticked (those who
+ *   hold the list): a tick without a name then reads « Anonyme ».
  * @returns The pills of the row.
  */
-export const ideaChips = (
-  view: IdeaView,
-  claims: readonly RemovableClaim[],
-): IdeaChips => {
+export const ideaChips = (view: IdeaView, seesWho = false): IdeaChips => {
   const none = {
     givers: [],
     crowd: null,
@@ -62,30 +51,15 @@ export const ideaChips = (
     return { ...none, mine: view.anonymous ? 'anonymous' : 'alone' };
   }
   if (view.kind === 'taken') {
-    const claimId = claims[0]?.id ?? null;
     // Who does not hold the list reads no name: the box says « pris ».
-    return view.by === null && claimId === null
+    return view.by === null && !seesWho
       ? none
-      : { ...none, givers: [{ name: view.by, claimId }] };
+      : { ...none, givers: [{ name: view.by }] };
   }
   const others = view.people.filter((person) => !person.me);
-  const named = claims.length > 0 || others.length <= NAMED_GIVERS_MAX;
+  const named = others.length <= NAMED_GIVERS_MAX;
   return {
-    givers: named
-      ? others.reduce<{ pills: GiverPill[]; left: RemovableClaim[] }>(
-          (acc, person) => {
-            const at = acc.left.findIndex((claim) => claim.by === person.name);
-            return {
-              pills: [
-                ...acc.pills,
-                { name: person.name, claimId: acc.left[at]?.id ?? null },
-              ],
-              left: acc.left.filter((_, index) => index !== at),
-            };
-          },
-          { pills: [], left: [...claims] },
-        ).pills
-      : [],
+    givers: named ? others.map((person) => ({ name: person.name })) : [],
     crowd: named ? null : view.people.length,
     closed: view.closed,
     mine: view.mine ? 'group' : null,

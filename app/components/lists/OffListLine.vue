@@ -78,8 +78,7 @@ const onFocusOut = (event: FocusEvent) => {
   <li
     v-if="writing"
     ref="row"
-    class="-mr-4 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4"
-    :class="forName ? '-ml-[22px] pl-[19px]' : '-ml-4 pl-[13px]'"
+    class="relative -mr-4 -ml-[calc(16px_+_var(--line-in,0px))] flex items-start gap-[var(--line-gap,12px)] border-l-[3px] border-success bg-default py-2 pr-4 pl-[calc(13px_+_var(--line-in,0px))]"
     data-testid="off-list-line"
     @focusout="onFocusOut"
   >
@@ -127,16 +126,16 @@ const onFocusOut = (event: FocusEvent) => {
       {{ label }}
     </button>
   </li>
-  <li v-else>
+  <li v-else class="relative">
     <button
       type="button"
-      class="flex min-h-11 items-center gap-3 py-2 text-left font-bold text-primary-ink"
+      class="flex min-h-11 items-start gap-[var(--line-gap,12px)] py-[13px] text-left text-base/[22px] font-bold text-primary-ink"
       :disabled="add.isPending.value"
       data-testid="off-list-action"
       @click="start"
     >
       <span
-        class="flex size-[22px] shrink-0 items-center justify-center rounded-sm border-[1.5px] border-dashed border-accented"
+        class="flex size-[22px] shrink-0 items-center justify-center rounded-sm border-[1.5px] border-dashed border-accented bg-page"
         aria-hidden="true"
       >
         <UIcon name="i-lucide-plus" class="size-3.5" />

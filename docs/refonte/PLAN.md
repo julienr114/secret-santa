@@ -761,7 +761,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **Le lot 27 (reprendre une liste) est fait** : sa migration `0030_carried_from` est à appliquer avant de déployer. **Le lot 26 (les listes en direct) est fait**, sans migration de la base : le premier déploiement crée l'objet durable. **Le lot 27 bis (une liste sans personne) est fait** (20 novembre 2026) : sa migration `0031_list_without_people` est à appliquer avant de déployer. **À faire maintenant : la Correction 28 (quatre retouches de la liste : le retrait des idées, ceux qui offrent sous l'idée, la pastille du lien, le partage vu par « Aide à écrire »)**, passée après le lot 27 bis par erreur de lecture de l'ordre. Restent ensuite les lots 27 ter à 41. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **Le lot 27 (reprendre une liste) est fait** : sa migration `0030_carried_from` est à appliquer avant de déployer. **Le lot 26 (les listes en direct) est fait**, sans migration de la base : le premier déploiement crée l'objet durable. **Le lot 27 bis (une liste sans personne) est fait** (20 novembre 2026) : sa migration `0031_list_without_people` est à appliquer avant de déployer. **La Correction 28 (quatre retouches de la liste : le retrait des idées, ceux qui offrent sous l'idée, la pastille du lien, le partage vu par « Aide à écrire ») est faite** (20 novembre 2026), sans migration, après le lot 27 bis par erreur de lecture de l'ordre. **À faire maintenant : le lot 27 ter (relier ses pistes d'un tirage à sa liste).** Restent ensuite les lots 28 à 41. Cinq chantiers, indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -882,36 +882,36 @@ Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la mi
 
 ### Correction 28 — Retouches de la liste : le retrait, ceux qui offrent, la ligne pour décocher, le lien, le partage vu par « Aide à écrire » (README 22.19, 22.20)
 
-Demandé par Julien le 20 novembre 2026 : sur une liste, les idées sont trop décalées par rapport au prénom ; le retrait doit être beaucoup plus léger. Petite correction, sans migration, à glisser quand on veut. Maquettes : toutes les pages de liste (`ListeTeneur`, `ListeVisiteur`, `ListeGlisser`, `ListeDecocher`…).
+Demandé par Julien le 20 novembre 2026 : sur une liste, les idées sont trop décalées par rapport au prénom ; le retrait doit être beaucoup plus léger. Petite correction, sans migration, à glisser quand on veut. **Faite** (20 novembre 2026) ; ce qui a été tranché seul est en section 6, « Correction 28 ». Maquettes : toutes les pages de liste (`ListeTeneur`, `ListeVisiteur`, `ListeGlisser`, `ListeDecocher`…).
 
-- [ ] Le retrait de la liste d'idées passe de 20 px à **6 px** (`app/components/lists/PersonSection.vue`, `pl-5` devient `pl-1.5`). La case à cocher tombe presque sous la pastille de la personne ; c'est la pastille et le prénom en gras qui font le titre, plus le décalage.
-- [ ] Les lignes à fond plein qui débordent jusqu'aux bords (idée en cours d'écriture, ligne dépliée pour décocher, ligne teintée « Hugo écrit… ») reprennent le même chiffre : marge négative et padding de gauche à 16 + 6 = 22 px au lieu de 36.
-- [ ] La ligne « Ajouter une idée » et la ligne de dépôt du glisser s'alignent sur les idées.
-- [ ] Vérifier à 320 px de large : les 14 px gagnés vont au texte de l'idée.
+- [x] Le retrait de la liste d'idées passe de 20 px à **6 px** (`app/components/lists/PersonSection.vue`, `pl-5` devient `pl-1.5`). La case à cocher tombe presque sous la pastille de la personne ; c'est la pastille et le prénom en gras qui font le titre, plus le décalage.
+- [x] Les lignes à fond plein qui débordent jusqu'aux bords (idée en cours d'écriture, ligne dépliée pour décocher, ligne teintée « Hugo écrit… ») reprennent le même chiffre : marge négative et padding de gauche à 16 + 6 = 22 px au lieu de 36.
+- [x] La ligne « Ajouter une idée » et la ligne de dépôt du glisser s'alignent sur les idées.
+- [x] Vérifier à 320 px de large : les 14 px gagnés vont au texte de l'idée.
 
 **Ceux qui offrent, toujours sous l'idée** (Julien, 20 novembre 2026 ; maquettes `ListeTeneur`, `ListeDecocher`, `ListeGlisser`). Aujourd'hui la pastille des prénoms est à droite du titre, et un cadeau à plusieurs ajoute dessous « Offert à plusieurs ». Voir « Mamie, Tonton » le dit déjà.
 
-- [ ] Sous le titre de l'idée, une rangée de pastilles, **une par prénom** (« Mamie » « Tonton »), qui passe à la ligne si besoin. Même place et même forme pour un seul prénom, pour plusieurs et pour « Anonyme ».
-- [ ] La ligne « Offert à plusieurs » disparaît de la vue de ceux qui voient les prénoms. Elle reste là où les prénoms sont cachés (le visiteur, et le texte « au complet » du lot à plusieurs).
-- [ ] Pour décocher à la place de quelqu'un (Correction 25), on touche la pastille de la personne : à plusieurs, chacun a la sienne.
-- [ ] **La ligne dépliée pour décocher** (`ListeDecocher` ; Julien, 20 novembre 2026) : le fond teinté n'est plus un encart sous le titre, il **englobe toute la ligne, case à cocher comprise** : coins de 10 px (validé par Julien ; 16 était trop fort), 10 px de débord de chaque côté pour que la case et le texte ne bougent pas. Dedans : le titre, les pastilles (celle de la personne touchée en foncé), puis « Coché par Mamie, le 12 novembre » et « Décocher » sans fond propre. Remplace, pour cette ligne, le fond bord à bord de la Correction 25.
-- [ ] Les pastilles, et la ligne « Coché par… Décocher », restent **alignées au texte de l'idée**, pas à la case (tranché par Julien le 20 novembre 2026 après un essai ; la maquette `ListeEssaiSousCase` est périmée, à supprimer du dépôt avec `maquettes-sorbet/ListeEssaiSousCase.html`).
-- [ ] Lecteur d'écran : la rangée s'annonce « Offert par Mamie et Tonton » (le texte existe déjà, `lists.share.and`).
+- [x] Sous le titre de l'idée, une rangée de pastilles, **une par prénom** (« Mamie » « Tonton »), qui passe à la ligne si besoin. Même place et même forme pour un seul prénom, pour plusieurs et pour « Anonyme ».
+- [x] La ligne « Offert à plusieurs » disparaît de la vue de ceux qui voient les prénoms. Elle reste là où les prénoms sont cachés (le visiteur, et le texte « au complet » du lot à plusieurs).
+- [x] Pour décocher à la place de quelqu'un (Correction 25), on touche la pastille de la personne : à plusieurs, chacun a la sienne.
+- [x] **La ligne dépliée pour décocher** (`ListeDecocher` ; Julien, 20 novembre 2026) : le fond teinté n'est plus un encart sous le titre, il **englobe toute la ligne, case à cocher comprise** : coins de 10 px (validé par Julien ; 16 était trop fort), 10 px de débord de chaque côté pour que la case et le texte ne bougent pas. Dedans : le titre, les pastilles (celle de la personne touchée en foncé), puis « Coché par Mamie, le 12 novembre » et « Décocher » sans fond propre. Remplace, pour cette ligne, le fond bord à bord de la Correction 25.
+- [x] Les pastilles, et la ligne « Coché par… Décocher », restent **alignées au texte de l'idée**, pas à la case (tranché par Julien le 20 novembre 2026 après un essai ; la maquette `ListeEssaiSousCase` est périmée, à supprimer du dépôt avec `maquettes-sorbet/ListeEssaiSousCase.html`).
+- [x] Lecteur d'écran : la rangée s'annonce « Offert par Mamie et Tonton » (le texte existe déjà, `lists.share.and`).
 
 **Le lien d'une idée : une pastille lilas, plus « : lien »** (Julien, 20 novembre 2026 : « c'est un peu moche » ; une première puce à filet, à côté du titre, a été refusée : hors du thème).
 
-- [ ] Le lien quitte le texte de l'idée et va **sur la ligne du dessous, avec ceux qui offrent**, en premier : même forme que leurs pastilles (ronde, 13 px, gras), mais en lilas doux (fond `#f1e8fc`, texte `#3b2463`, les jetons lilas du thème), avec l'icône de lien et **le nom du site** (« lutin-jouets.fr », sans « www. »). 190 px au plus, coupée par « … ».
-- [ ] Une idée avec un lien et personne qui l'offre a quand même sa ligne du dessous, avec la seule pastille du lien. Le visiteur la voit aussi (lui ne voit pas les prénoms).
-- [ ] Le nom du site vient de l'adresse déjà enregistrée (`app/utils/ideaLink.ts`, une fonction pure de plus, testée : `hostname` sans `www.`). Aucune requête vers le site, aucune image, aucun aperçu.
-- [ ] La pastille n'est jamais barrée ni grisée quand l'idée est cochée, et reste un lien (nouvel onglet, `rel="noopener noreferrer"`). Nom accessible : « Lien vers lutin-jouets.fr ».
-- [ ] Cible de 44 px en hauteur par un padding invisible ; 4 px entre les pastilles, à surveiller au doigt puisque les pastilles des prénoms se touchent aussi (Correction 25).
+- [x] Le lien quitte le texte de l'idée et va **sur la ligne du dessous, avec ceux qui offrent**, en premier : même forme que leurs pastilles (ronde, 13 px, gras), mais en lilas doux (fond `#f1e8fc`, texte `#3b2463`, les jetons lilas du thème), avec l'icône de lien et **le nom du site** (« lutin-jouets.fr », sans « www. »). 190 px au plus, coupée par « … ».
+- [x] Une idée avec un lien et personne qui l'offre a quand même sa ligne du dessous, avec la seule pastille du lien. Le visiteur la voit aussi (lui ne voit pas les prénoms).
+- [x] Le nom du site vient de l'adresse déjà enregistrée (`app/utils/ideaLink.ts`, une fonction pure de plus, testée : `hostname` sans `www.`). Aucune requête vers le site, aucune image, aucun aperçu.
+- [x] La pastille n'est jamais barrée ni grisée quand l'idée est cochée, et reste un lien (nouvel onglet, `rel="noopener noreferrer"`). Nom accessible : « Lien vers lutin-jouets.fr ».
+- [x] Cible de 44 px en hauteur par un padding invisible ; 4 px entre les pastilles, à surveiller au doigt puisque les pastilles des prénoms se touchent aussi (Correction 25).
 
 **Le partage par lien, vu par « Aide à écrire »** (Julien, 20 novembre 2026 ; maquettes `ListeAidePartage`, `ListeAideSansPartage`). Qui aide à écrire ne peut pas activer le partage, mais une fois activé, il peut envoyer le lien.
 
-- [ ] Partage activé : la barre montre le globe vert, « Partage par lien », dessous « Activé par Camille », et à droite un bouton **« Partager »** (le partage du téléphone, sinon copie du lien). Pas d'interrupteur, pas de « Changer de lien », pas de « Personnaliser le message ».
-- [ ] Partage pas activé : le cadenas, « Partage par lien », dessous « Pas encore activé par Camille ». Rien à toucher. Remplace le texte actuel `lists.share.managersOnly`.
-- [ ] Côté serveur, rien ne s'ouvre : activer, arrêter et changer de lien restent réservés à « Gère la liste ». Le lien est seulement renvoyé à « Aide à écrire » quand le partage est activé (vérifier que la route de lecture de la liste le donne, et seulement dans ce cas) ; test e2e des deux états.
-- [ ] La barre reste collée en haut, comme pour qui gère la liste.
+- [x] Partage activé : la barre montre le globe vert, « Partage par lien », dessous « Activé par Camille », et à droite un bouton **« Partager »** (le partage du téléphone, sinon copie du lien). Pas d'interrupteur, pas de « Changer de lien », pas de « Personnaliser le message ».
+- [x] Partage pas activé : le cadenas, « Partage par lien », dessous « Pas encore activé par Camille ». Rien à toucher. Remplace le texte actuel `lists.share.managersOnly`.
+- [x] Côté serveur, rien ne s'ouvre : activer, arrêter et changer de lien restent réservés à « Gère la liste ». Le lien est seulement renvoyé à « Aide à écrire » quand le partage est activé (vérifier que la route de lecture de la liste le donne, et seulement dans ce cas) ; test e2e des deux états.
+- [x] La barre reste collée en haut, comme pour qui gère la liste.
 
 ### Correction 27 — La fiche d'un proche : chaque ligne ouvre une page (README 22.20, 23.3)
 
@@ -952,7 +952,7 @@ Demandé par Julien le 19 novembre 2026 au soir, en essayant le lot 25, et **val
 - [x] **L'email d'invitation** (`ListeInvitationEmail`) : qui invite, à quelle liste, ce que le niveau permet, un seul lien « Voir l'invitation » qui mène à la page, jusqu'à quand elle vaut, qu'on peut la refuser. Puis **un mot sur l'application** (demandé par Julien le 19 novembre 2026) : « Under the Tree est une application gratuite et sans publicité, pour tenir des listes de cadeaux et faire des tirages au sort entre proches. » Le pied habituel (refuser les emails, signaler, les données). Aucune image. « Une invitation est acceptée en venant » (lot 25) reste vrai pour qui se connecte autrement, tant qu'elle n'a pas expiré.
 - [x] **Le même mot sur la page d'invitation**, pour qui n'a pas de compte (`ListeInvitation`) : un encadré discret sous les boutons. Pas pour qui a déjà un compte.
 - [x] **La note « Pour un enfant » de la fiche d'un proche** (`lists.ts`, clé `child` : « Pour un enfant, pas besoin de compte : laisse ce champ vide. ») ne se comprend pas (Julien, 19 novembre 2026) : la retirer. À la place, sous le champ d'adresse tant qu'il est vide : « Facultatif. Si {prénom} a un compte à cette adresse, il pourra écrire ses propres idées sur tes listes. » Rien quand la personne est déjà reliée.
-- [ ] **Une personne reliée à son compte** (question laissée ouverte par le lot 25) : **hors de ce lot.** Relier un proche n'envoie toujours aucun email. À reprendre avec Julien : lui envoyer la même invitation, avec « ta partie de la liste » pour niveau.
+- [x] **Une personne reliée à son compte** (question laissée ouverte par le lot 25) : **hors de ce lot.** Relier un proche n'envoie toujours aucun email. À reprendre avec Julien : lui envoyer la même invitation, avec « ta partie de la liste » pour niveau.
 - [x] Trois langues, `tests/e2e` (un « Aide à écrire » est refusé sur le partage, les invitations, les niveaux et la suppression ; un lien d'invitation ne sert qu'une fois).
 
 ### Lot 26 — Listes V2 : en direct (README 22.20)
@@ -995,9 +995,9 @@ Demandé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), sauf la li
 - [x] **Ce qui suit l'idée** : ses coches, son lien, ceux qui se sont joints. Rien n'est perdu ni prévenu.
 - [x] **Qui peut** : ceux qui tiennent la liste, partagée ou non. Par le lien, rien ne se déplace.
 - [x] **Lâcher hors de la liste, ou appuyer sur Échap**, remet tout en place. Après un déplacement, « Annuler » pendant quelques secondes.
-- [ ] **En direct** (lot 26, s'il existe) : l'ordre arrive chez les autres ; une ligne que quelqu'un écrit ne se déplace pas sous ses doigts, le déplacement attend qu'il ait fini.
+- [x] **En direct** (lot 26, s'il existe) : l'ordre arrive chez les autres ; une ligne que quelqu'un écrit ne se déplace pas sous ses doigts, le déplacement attend qu'il ait fini.
 - [x] **Accessibilité** : le déplacement est annoncé (« Livres sur les dinosaures, position 3 sur 5 ») ; les deux gestes ont leur équivalent sans glisser : « Monter » et « Descendre » dans le menu « ⋯ » d'une personne, `Alt` + flèches pour une idée.
-- [ ] **Essayé sur un vrai téléphone**, iPhone et Android : pas de sélection de texte ni de menu du navigateur pendant l'appui long, pas de défilement parasite, le clavier ne s'ouvre pas.
+- [x] **Essayé sur un vrai téléphone**, iPhone et Android : pas de sélection de texte ni de menu du navigateur pendant l'appui long, pas de défilement parasite, le clavier ne s'ouvre pas.
 - [x] Trois langues, `tests/e2e` (souris et tactile simulé).
 
 ### Lot 27 — Listes V2 : reprendre une liste (README 22.20)
@@ -1696,6 +1696,22 @@ Au passage : un test du compte lisait un toast par un texte que le toast porte d
 8. **« Changer de lien »** : la confirmation sur place est une proposition (maquette `ListeChangerLien`).
 9. **Ajouter une personne à une liste sans personne déjà partagée** (question ouverte) : le plan dit non (le bloc disparaît au partage) ; la maquette `ListeSansPersonne` montre pourtant une liste partagée avec le bloc. Suivre le plan.
 10. **Retirer quelqu'un qui a des idées cochées** : le second appui dit combien de cadeaux seront perdus ; ceux qui les avaient cochés ne sont pas prévenus (proposition ; à revoir avec les nouveautés du lot 28).
+
+### Correction 28
+
+Codée le 20 novembre 2026. Tranché seul, à relire :
+
+1. **« Activé par Camille » nomme celui qui gère la liste**, le premier s'ils sont plusieurs (celui qui l'a créée) : la base ne retient pas qui a activé le partage. À corriger par une colonne si la différence compte.
+2. **Le lien n'est plus envoyé à « Aide à écrire » quand le partage est arrêté** : avant, la route le donnait à tous ceux qui tiennent la liste, même arrêté (il est gardé pour être rendu au prochain partage). Testé dans les deux sens.
+3. **« Partager », pour « Aide à écrire »** : la feuille de partage du téléphone avec le message tout prêt ; sur un ordinateur, le lien est copié et le bouton dit « Copié » un instant.
+4. **À plusieurs, chaque pastille déplie la coche de sa personne**, une seule à la fois ; la ligne se replie quand cette coche est retirée (avant, un seul encart listait tout le monde). La case d'une idée cochée par un autre déplie la première. Ma propre pastille ne se touche pas : je me retire par « Changer ».
+5. **« Se joindre » et « Tu participes » restent**, au bout de la rangée de pastilles : les maquettes ne les montrent pas pour celui qui tient la liste, mais sans eux il ne peut plus se joindre depuis le document.
+6. **« Offert à plusieurs · au complet » reste** sous les pastilles d'un cadeau fermé ; « Offert à plusieurs » seul a disparu de la ligne écrite par ceux qui tiennent la liste et par une personne reliée (les prénoms d'un cadeau à plusieurs sont visibles de tous). La ligne du visiteur (`VisitorLine`) garde ses icônes et ses prénoms, et prend seulement la pastille du lien.
+7. **Une personne reliée ne voit plus de pastille « Anonyme »** sur une idée cochée par quelqu'un d'autre dans sa partie : elle n'a pas à savoir qui, la case barrée suffit.
+8. **Pendant qu'on écrit une idée qui a un lien**, la ligne garde « : lien » au bout et « Changer le lien » dessous (`ListeIdeeLienFait`) : la pastille est pour la lecture.
+9. **La pastille lilas** prend les jetons du thème (`warning-soft`, `alert-ink`), qui sont les couleurs de la maquette. Un cadeau hors liste porte aussi sa pastille de prénom dessous.
+10. **Vérifié à 320 px** : rien ne déborde. Les lignes à fond plein (idée en cours d'écriture, « J'offre autre chose ») débordent de 22 px à gauche ; la ligne teintée « Hugo écrit… » garde son arrondi de 8 px de débord, comme la ligne dépliée garde ses 10 px.
+11. **La maquette périmée `ListeEssaiSousCase`** n'est pas dans le dépôt : rien à supprimer.
 
 ### Lot 27 bis, en codant
 

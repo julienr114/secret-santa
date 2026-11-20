@@ -1,12 +1,7 @@
 import type { PartyCategory } from '#shared/utils/categories';
-import type { GiverHintsState } from '#server/utils/hints';
-import type { PublicGroup } from '#server/database/groups';
-import type { HomeEditionState } from '#server/utils/home';
 import type { EditionStatus } from '#server/utils/editions';
-import type { DrawStep, HomeAnswer } from '#server/utils/personal';
-import type { Role, SessionUser } from '#server/utils/auth';
+import type { SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
-import type { JournalSignal } from '#server/utils/audit';
 import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -73,77 +68,23 @@ export const useConfirmLinkMutation = () => {
   });
 };
 
-/** One draw the account takes part in, opened through its personal link. */
+/** A draw of the account, for « Tirages passés ». */
 export type HomeDraw = {
-  /** Alerts of its journal since the last visit; null when none. */
-  journal: JournalSignal | null;
   id: string;
+  /** The personal page of the draw. */
   path: string;
-  groupId: string;
   groupName: string;
   editionLabel: string;
   year: number;
   status: EditionStatus;
-  /** What the participant has to do next. */
-  step: DrawStep;
-  /** The result was seen at least once. */
-  revealed: boolean;
-  /** Revealed before the party: who they give to (README 22.18). */
-  opened: { name: string; avatar: Avatar } | null;
-  /** The group uses gift hints (README 22.11). */
-  hintsOn: boolean;
-  /** They left hints. */
-  hasHints: boolean;
-  /** The hints of the person they give to: none, some, or new. */
-  receiverHints: GiverHintsState;
-  /** A draw made elsewhere: their answer to give, or given (22.12). */
-  answer: HomeAnswer;
-  /** « Devine qui » (22.17). */
-  game: {
-    open: boolean;
-    played: boolean;
-    palmares: boolean;
-    seen: boolean;
-    endsAt: string | null;
-    mode: 'none' | 'santa' | 'all';
-    skipped: boolean;
-    canSkip: boolean;
-    count: { played: number; total: number };
-  } | null;
-  /** The date of the party: an ISO day, or older free text. */
-  eventDate: string;
-  firstName: string;
-  avatar: Avatar;
-};
-/** Where the account's latest request for a group stands. */
-export type HomeRequest = {
-  status: 'pending' | 'approved' | 'refused';
-  createdAt: string;
-  /** What the account wrote. */
-  message: string;
-  /** The super-admin's word with the answer, if any. */
-  note: string | null;
 };
 export type HomePayload = {
-  role: Role;
-  /** From the profile; null until the account gives one. */
-  firstName: string | null;
-  lastName: string | null;
-  avatar: Avatar;
   draws: HomeDraw[];
-  /** The groups the account organises, with their current edition. */
-  groups: (PublicGroup & { current: HomeEditionState | null })[];
-  canCreateGroup: boolean;
   /** How many more groups the account may create; null without limit. */
   groupsLeft: number | null;
-  request: HomeRequest | null;
-  /** Requests awaiting the super-admin; 0 for everyone else. */
-  pendingRequests: number;
-  /** For a super-admin: who has been waiting the longest, and since when. */
-  oldestRequest: { name: string; since: string } | null;
 };
 
-/** The home of the account: its draws and the groups it manages. */
+/** The draws of the account, and how many more groups it may create. */
 export const useHomeQuery = (enabled: MaybeRefOrGetter<boolean> = true) =>
   useApiQuery<HomePayload>(
     () => keys.home(),

@@ -32,223 +32,18 @@ export default {
       'Du hast einen persönlichen Link erhalten? Öffne ihn direkt: Er funktioniert ohne Konto.',
   },
   home: {
-    title: 'Startseite',
-    hello: 'Hallo {name}',
-    helloNobody: 'Hallo',
-    editAvatar: 'Mein Symbol ändern',
-    now: 'Jetzt zu tun',
-    nowIn: 'Jetzt zu tun · {group}',
-    later: 'Später',
-    action: {
-      guess: {
-        title: 'Rate, wer dich beschenkt',
-        body: 'Ein Tipp vor der Feier, die Antwort bei der Feier.',
-        button: 'Meinen Tipp abgeben',
-      },
-      palmares: {
-        title: 'Die Rangliste von Devine qui ist da',
-        body: 'Wer hat wen beschenkt, und wer hatte es erraten? Öffne zuerst dein Geschenk.',
-        button: 'Die Rangliste entdecken',
-      },
-      giveAnswer: {
-        title: 'Wen beschenkst du?',
-        body: 'Die Auslosung fand außerhalb der App statt: Sag es auf deiner Seite, um die Geschenk-Hinweise deiner Person zu sehen.',
-        button: 'Sagen, wen ich beschenke',
-      },
-      fixAnswers: {
-        title: 'Zwei Antworten passen nicht zusammen',
-        body: 'Bitte die betroffenen Personen, ihre Antwort zu prüfen.',
-        button: 'Ausgabe öffnen',
-      },
-      validateAnswers: {
-        title: 'Die Antworten passen zusammen: Bestätige die Auslosung',
-        body: 'Jeder sieht danach die Geschenk-Hinweise seiner Person.',
-        button: 'Ausgabe öffnen',
-      },
-      askAnswers: {
-        title: 'Frag alle, wen sie beschenken',
-        body: {
-          one: '{count} Antwort erwartet.',
-          other: '{count} Antworten erwartet.',
-        },
-        button: 'Ausgabe öffnen',
-      },
-      notify: {
-        title: 'Sag allen, dass die Auslosung erfolgt ist',
-        body: {
-          one: '{count} Person hat ihren Link noch nicht erhalten.',
-          other: '{count} Personen haben ihren Link noch nicht erhalten.',
-        },
-        button: 'Per E-Mail benachrichtigen',
-      },
-      requests: {
-        title: {
-          one: '{count} Gruppenanfrage zu bearbeiten',
-          other: '{count} Gruppenanfragen zu bearbeiten',
-        },
-        body: 'Einige Konten warten auf deine Antwort, um ihre Auslosung zu organisieren.',
-        who: '{name} wartet seit dem {date} auf deine Antwort.',
-        whoOthers: {
-          one: '{name} wartet seit dem {date} auf deine Antwort. Eine weitere Anfrage wartet auch.',
-          other:
-            '{name} wartet seit dem {date} auf deine Antwort. {count} weitere Anfragen warten auch.',
-        },
-        button: 'Anfragen ansehen',
-        buttonOne: 'Anfrage ansehen',
-      },
-      readHints: {
-        title: 'Neue Hinweise für dein Geschenk',
-        body: 'Die Person, die du beschenkst, hat gerade welche hinterlassen.',
-        button: 'Hinweise lesen',
-      },
-      discover: {
-        title: 'Die Lose sind gezogen!',
-        body: 'Dein Umschlag wartet. Schau kurz, ob dir niemand über die Schulter guckt.',
-        button: 'Erfahren, wen ich beschenke',
-      },
-      remind: {
-        title: {
-          one: '{count} Person hat ihren Link noch nicht geöffnet',
-          other: '{count} Personen haben ihren Link noch nicht geöffnet',
-        },
-        body: 'Das Fest rückt näher: Erinnere sie.',
-        button: 'Erinnern',
-      },
-      fixDraw: {
-        title: 'Die Auslosung ist im Moment nicht möglich',
-        body: 'Die Liste oder die Ausschlüsse verhindern die Auslosung.',
-        button: 'Beheben',
-      },
-      startDraw: {
-        title: 'Prüfe die Liste, dann starte die Auslosung',
-        body: {
-          one: 'Bisher {count} Teilnehmer.',
-          other: 'Bisher {count} Teilnehmer.',
-        },
-        button: 'Ausgabe öffnen',
-      },
-      addHints: {
-        title: 'Hinterlass deine Geschenk-Hinweise',
-        body: 'Sie helfen der Person, die dich gezogen hat.',
-        button: 'Meine Hinweise',
-      },
-      close: {
-        title: 'Das Fest ist vorbei: Schließe die Ausgabe ab',
-        body: 'Die Hinweise werden schreibgeschützt; die Auslosung dient den Ausschlüssen der folgenden Jahre.',
-        button: 'Ausgabe öffnen',
-      },
-      prepare: {
-        title: 'Bereite die Auslosung dieses Jahres vor',
-        body: 'Lege die Ausgabe an und wähle das Datum des Festes.',
-        button: 'Ausgabe anlegen',
-      },
-      createGroup: {
-        title: 'Deine Anfrage wurde angenommen: Lege deine Gruppe an',
-        body: 'Du wirst sie organisieren.',
-        button: 'Meine Gruppe anlegen',
-      },
-      completeProfile: {
-        title: 'Sag uns, wie du heißt',
-        body: 'Dein Vorname wird den Organisatoren deiner Gruppen angezeigt.',
-        button: 'Mein Profil ergänzen',
-      },
-    },
     party: {
       today: 'Fest heute',
       in: { one: 'Fest morgen', other: 'Fest in {count} Tagen' },
       on: 'Fest am {date}',
     },
     drawCard: {
-      opened: 'Du beschenkst {name}',
-      openedBody: 'Die Auslosung ist kein Geheimnis mehr.',
-      openedHints: 'Die Geschenkhinweise ansehen',
-      openedDraw: 'Die Auslosung ansehen',
-      guessCount: {
-        one: '{count} von {total} hat schon gespielt.',
-        other: '{count} von {total} haben schon gespielt.',
-      },
-      guessDeadline: '{deadline}: Antwort bei der Feier.',
-      guessSkip: 'Ich setze aus',
-      guessTitle: 'Rate, wer dich beschenkt',
-      guessSanta: 'Ein Tipp, bis {end}. Die Antwort bei der Feier.',
-      guessAll: 'Tipps, bis {end}. Die Antwort bei der Feier.',
-      guessButton: 'Meinen Tipp abgeben',
-      palmaresTitle: 'Die Rangliste von Devine qui ist da',
-      palmaresBody:
-        'Wer hat wen beschenkt, und wer hatte es erraten? Öffne zuerst dein Geschenk.',
-      palmaresButton: 'Die Rangliste entdecken',
-      giveAnswer: 'Wen beschenkst du?',
-      answer: 'Sagen, wen ich beschenke',
-      answerGiven: 'Ist notiert',
       partyOn: 'Fest am {date}',
       partyOnIn: {
         one: 'Fest am {date}, morgen',
         other: 'Fest am {date}, in {count} Tagen',
       },
       partyToday: 'Fest heute',
-      waiting: 'Die Auslosung hat noch nicht stattgefunden',
-      addHints: 'Die Auslosung hat noch nicht stattgefunden',
-      discover: 'Dein Umschlag wartet auf dich',
-      seeAgain: 'Gedächtnislücke?',
-      reveal: 'Erfahren, wen ich beschenke',
-      revealAgain: 'Noch einmal sehen, wen ich beschenke',
-      newHints: 'Neue Hinweise für dein Geschenk',
-      newHintsBody:
-        'Die Person, die du beschenkst, hat gerade welche hinterlassen.',
-      readHints: 'Hinweise lesen',
-      hints: 'Meine Geschenk-Hinweise hinterlassen',
-    },
-    step: {
-      giveAnswer: { state: 'Deine Antwort wird erwartet', action: 'Antworten' },
-      answerGiven: { state: 'Ist notiert' },
-      addHints: {
-        state: 'Füge deine Hinweise hinzu',
-        action: 'Meine Hinweise',
-      },
-      wait: { state: 'Auslosung steht bevor' },
-      discover: {
-        state: 'Dein Umschlag wartet',
-        action: 'Entdecken',
-      },
-      seeAgain: { state: 'Umschlag geöffnet' },
-      closed: { state: 'Feier vorbei' },
-    },
-    newHints: 'Neue Hinweise zum Lesen',
-    pastDraws: 'Vergangene Auslosungen',
-    organizeOwn: 'Meine eigene Auslosung organisieren',
-    organizeOwnHint: 'Auf Anfrage, während der Beta',
-    myDraws: 'Meine Auslosungen',
-    myGroups: 'Meine Gruppen',
-    organizer: 'Organisator',
-    myDraw: 'Meine Auslosung',
-    manage: 'Auslosung verwalten',
-    editionState: {
-      answers: 'Antworten · {answered} von {count}',
-      idle: 'Keine laufende Auslosung',
-      preparing: {
-        one: 'Vorzubereiten · {count} Teilnehmer',
-        other: 'Vorzubereiten · {count} Teilnehmer',
-      },
-      toNotify: {
-        one: 'Ausgelost · {count} zu benachrichtigen',
-        other: 'Ausgelost · {count} zu benachrichtigen',
-      },
-      drawn: 'Ausgelost · {viewed} von {count} haben nachgesehen',
-      closed: 'Abgeschlossen',
-    },
-    createGroup: 'Eine Gruppe anlegen',
-    groupsLeft: {
-      one: 'Du kannst noch {count} anlegen',
-      other: 'Du kannst noch {count} anlegen',
-    },
-    empty: {
-      title: 'Noch keine Auslosung',
-      body: 'Sobald dich ein Organisator mit dieser E-Mail-Adresse hinzufügt, erscheint deine Auslosung hier.',
-      link: 'Du hast einen persönlichen Link erhalten? Öffne ihn: Du kannst ihn deinem Konto hinzufügen.',
-    },
-    organize: {
-      title: 'Ein Wichteln organisieren',
-      button: 'Eine Gruppe anfragen',
     },
     requestWhy:
       'Under the Tree ist in der Beta: Gruppen werden auf Anfrage angelegt, solange wir prüfen, dass alles gut funktioniert.',
@@ -260,18 +55,10 @@ export default {
     requestPlaceholder: 'Das Weihnachten meiner Familie, etwa zwölf Personen.',
     requestSend: 'Meine Anfrage senden',
     requestSent: 'Anfrage gesendet',
-    requestPending:
-      'Anfrage gesendet am {date}. Du erhältst die Antwort per E-Mail.',
-    requestRefused:
-      'Deine Anfrage vom {date} wurde abgelehnt. Du kannst eine neue stellen.',
     past: {
       title: 'Vergangene Auslosungen',
       empty: 'Noch keine vergangene Auslosung.',
     },
-    requestSentTitle: 'Deine Anfrage ist unterwegs',
-    requestSentOn:
-      'Gesendet am {date}. Ein Administrator liest sie und antwortet dir per E-Mail.',
-    requestNote: 'Ein Wort vom Administrator',
     journalSignal: {
       lead: 'Neues im Protokoll.',
       row: 'Neues im Protokoll',
@@ -282,13 +69,6 @@ export default {
         'Die Ergebnisse wurden am {date} vor der Feier aufgedeckt.',
       draw_cancelled: 'Die Auslosung wurde am {date} aufgehoben.',
       several: '{count} Hinweise seit deinem letzten Besuch.',
-    },
-    requestRefusedTitle: 'Deine Anfrage vom {date} wurde abgelehnt',
-    requestAgain: 'Eine neue Anfrage stellen',
-    adminHint: 'Konten, Gruppen, Anfragen',
-    requestsToHandle: {
-      one: '{count} Anfrage zu bearbeiten',
-      other: '{count} Anfragen zu bearbeiten',
     },
   },
   admin: {

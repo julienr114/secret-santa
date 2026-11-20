@@ -21,44 +21,6 @@ export const canReveal = (status: EditionStatus): Result<true> =>
 export const canEditAvatar = (status: EditionStatus): Result<true> =>
   status === 'closed' ? fail('edition_closed') : ok(true);
 
-/**
- * For a draw made elsewhere (README 22.12): their answer is still to
- * give, or given; null otherwise.
- */
-export type HomeAnswer = 'toGive' | 'given' | null;
-
-export const DRAW_STEPS = [
-  'giveAnswer',
-  'answerGiven',
-  'addHints',
-  'wait',
-  'discover',
-  'seeAgain',
-  'closed',
-] as const;
-export type DrawStep = (typeof DRAW_STEPS)[number];
-
-/**
- * What a participant has to do next, for the home page.
- * @param draw - Status of the edition, whether the result was already
- *   seen, whether the group uses gift hints and whether they left some;
- *   for a draw made elsewhere, whether their answer is still to give.
- * @returns The next step.
- */
-export const nextStep = (draw: {
-  status: EditionStatus;
-  revealed: boolean;
-  hintsOn: boolean;
-  hasHints: boolean;
-  answer?: HomeAnswer;
-}): DrawStep => {
-  if (draw.status === 'closed') return 'closed';
-  if (draw.status === 'drawn') return draw.revealed ? 'seeAgain' : 'discover';
-  if (draw.answer === 'toGive') return 'giveAnswer';
-  if (draw.answer === 'given') return 'answerGiven';
-  return draw.hintsOn && !draw.hasHints ? 'addHints' : 'wait';
-};
-
 /** Where a step of the participant's timeline stands. */
 export type StepState = 'done' | 'current' | 'todo';
 

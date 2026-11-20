@@ -29,216 +29,18 @@ export default {
       'Tu as reçu un lien personnel ? Ouvre-le directement : il fonctionne sans compte.',
   },
   home: {
-    title: 'Accueil',
-    hello: 'Bonjour {name}',
-    helloNobody: 'Bonjour',
-    editAvatar: 'Changer mon icône',
-    now: 'À faire maintenant',
-    nowIn: 'À faire maintenant · {group}',
-    later: 'Plus tard',
-    action: {
-      guess: {
-        title: 'Devine qui t’offre ton cadeau',
-        body: 'Un pronostic avant la fête, et la réponse à la fête.',
-        button: 'Faire mon pronostic',
-      },
-      palmares: {
-        title: 'Le palmarès de Devine qui est arrivé',
-        body: 'Qui offrait à qui, et qui avait deviné ? Ouvre ton cadeau d’abord.',
-        button: 'Découvrir le palmarès',
-      },
-      giveAnswer: {
-        title: 'À qui offres-tu un cadeau ?',
-        body: 'Le tirage a été fait hors de l’application : dis-le sur ta page pour voir ses pistes de cadeaux.',
-        button: 'Dire à qui j’offre',
-      },
-      fixAnswers: {
-        title: 'Deux réponses ne vont pas ensemble',
-        body: 'Demande aux personnes concernées de vérifier leur réponse.',
-        button: 'Ouvrir l’édition',
-      },
-      validateAnswers: {
-        title: 'Les réponses vont ensemble : valide le tirage',
-        body: 'Chacun verra ensuite les pistes de cadeaux de sa personne.',
-        button: 'Ouvrir l’édition',
-      },
-      askAnswers: {
-        title: 'Demande à chacun à qui il offre',
-        body: {
-          one: '{count} réponse attendue.',
-          other: '{count} réponses attendues.',
-        },
-        button: 'Ouvrir l’édition',
-      },
-      notify: {
-        title: 'Préviens chacun que le tirage est fait',
-        body: {
-          one: '{count} personne n’a pas encore reçu son lien.',
-          other: '{count} personnes n’ont pas encore reçu leur lien.',
-        },
-        button: 'Prévenir par email',
-      },
-      requests: {
-        title: {
-          one: '{count} demande de groupe à traiter',
-          other: '{count} demandes de groupe à traiter',
-        },
-        body: 'Des comptes attendent ta réponse pour organiser leur tirage.',
-        who: '{name} attend ta réponse depuis le {date}.',
-        whoOthers: {
-          one: '{name} attend ta réponse depuis le {date}. Une autre demande attend aussi.',
-          other:
-            '{name} attend ta réponse depuis le {date}. {count} autres demandes attendent aussi.',
-        },
-        button: 'Voir les demandes',
-        buttonOne: 'Voir la demande',
-      },
-      readHints: {
-        title: 'De nouvelles pistes pour ton cadeau',
-        body: 'La personne à qui tu offres vient d’en laisser.',
-        button: 'Lire ses pistes',
-      },
-      discover: {
-        title: 'Les jeux sont faits !',
-        body: 'Ton enveloppe t’attend. Vérifie que personne ne regarde par-dessus ton épaule.',
-        button: 'Découvrir à qui j’offre un cadeau',
-      },
-      remind: {
-        title: {
-          one: '{count} personne n’a pas encore ouvert son lien',
-          other: '{count} personnes n’ont pas encore ouvert leur lien',
-        },
-        body: 'La fête approche : relance-les.',
-        button: 'Relancer',
-      },
-      fixDraw: {
-        title: 'Le tirage est impossible pour l’instant',
-        body: 'La liste ou les exclusions empêchent le tirage.',
-        button: 'Corriger',
-      },
-      startDraw: {
-        title: 'Vérifie la liste, puis lance le tirage',
-        body: {
-          one: '{count} participant pour l’instant.',
-          other: '{count} participants pour l’instant.',
-        },
-        button: 'Ouvrir l’édition',
-      },
-      addHints: {
-        title: 'Laisse tes pistes de cadeaux',
-        body: 'Elles aideront la personne qui t’offre un cadeau.',
-        button: 'Mes pistes',
-      },
-      close: {
-        title: 'La fête est passée : clôture l’édition',
-        body: 'Les pistes passent en lecture seule ; le tirage servira aux exclusions des années suivantes.',
-        button: 'Ouvrir l’édition',
-      },
-      prepare: {
-        title: 'Prépare le tirage de cette année',
-        body: 'Crée l’édition et choisis la date de la fête.',
-        button: 'Créer l’édition',
-      },
-      createGroup: {
-        title: 'Ta demande est acceptée : crée ton groupe',
-        body: 'Tu en seras l’organisateur.',
-        button: 'Créer mon groupe',
-      },
-      completeProfile: {
-        title: 'Dis-nous comment tu t’appelles',
-        body: 'Ton prénom s’affiche pour les organisateurs de tes groupes.',
-        button: 'Compléter mon profil',
-      },
-    },
     party: {
       today: 'fête aujourd’hui',
       in: { one: 'fête demain', other: 'fête dans {count} jours' },
       on: 'fête le {date}',
     },
     drawCard: {
-      opened: 'Tu offres un cadeau à {name}',
-      openedBody: 'Le tirage n’est plus secret.',
-      openedHints: 'Voir ses pistes de cadeaux',
-      openedDraw: 'Voir le tirage',
-      guessCount: {
-        one: '{count} sur {total} a déjà joué.',
-        other: '{count} sur {total} ont déjà joué.',
-      },
-      guessDeadline: '{deadline} : réponse à la fête.',
-      guessSkip: 'Je passe mon tour',
-      guessTitle: 'Devine qui t’offre ton cadeau',
-      guessSanta: 'Un pronostic, jusqu’au {end}. Réponse à la fête.',
-      guessAll: 'Des pronostics, jusqu’au {end}. Réponse à la fête.',
-      guessButton: 'Faire mon pronostic',
-      palmaresTitle: 'Le palmarès de Devine qui est arrivé',
-      palmaresBody:
-        'Qui offrait à qui, et qui avait deviné ? Ouvre ton cadeau d’abord.',
-      palmaresButton: 'Découvrir le palmarès',
-      giveAnswer: 'À qui offres-tu un cadeau ?',
-      answer: 'Dire à qui j’offre',
-      answerGiven: 'C’est noté',
       partyOn: 'Fête le {date}',
       partyOnIn: {
         one: 'Fête le {date}, demain',
         other: 'Fête le {date}, dans {count} jours',
       },
       partyToday: 'Fête aujourd’hui',
-      waiting: 'Le tirage n’a pas encore eu lieu',
-      addHints: 'Le tirage n’a pas encore eu lieu',
-      discover: 'Ton enveloppe t’attend',
-      seeAgain: 'Un trou de mémoire ?',
-      reveal: 'Découvrir à qui j’offre un cadeau',
-      revealAgain: 'Revoir à qui j’offre un cadeau',
-      newHints: 'De nouvelles pistes pour ton cadeau',
-      newHintsBody: 'La personne à qui tu offres vient d’en laisser.',
-      readHints: 'Lire ses pistes',
-      hints: 'Laisser mes pistes de cadeaux',
-    },
-    step: {
-      giveAnswer: { state: 'Ta réponse est attendue', action: 'Répondre' },
-      answerGiven: { state: 'C’est noté' },
-      addHints: { state: 'Ajoute tes pistes', action: 'Mes pistes' },
-      wait: { state: 'Tirage à venir' },
-      discover: { state: 'Ton enveloppe t’attend', action: 'Découvrir' },
-      seeAgain: { state: 'Enveloppe ouverte' },
-      closed: { state: 'Fête passée' },
-    },
-    newHints: 'De nouvelles pistes à lire',
-    pastDraws: 'Tirages passés',
-    organizeOwn: 'Organiser mon propre tirage',
-    organizeOwnHint: 'Sur demande, le temps de la bêta',
-    myDraws: 'Mes tirages',
-    myGroups: 'Mes groupes',
-    organizer: 'Organisateur',
-    myDraw: 'Mon tirage',
-    manage: 'Gérer le tirage',
-    editionState: {
-      answers: 'Réponses · {answered} sur {count}',
-      idle: 'Pas de tirage en cours',
-      preparing: {
-        one: 'À préparer · {count} participant',
-        other: 'À préparer · {count} participants',
-      },
-      toNotify: {
-        one: 'Tirage fait · {count} à prévenir',
-        other: 'Tirage fait · {count} à prévenir',
-      },
-      drawn: 'Tirage fait · {viewed} sur {count} ont découvert',
-      closed: 'Clôturé',
-    },
-    createGroup: 'Créer un groupe',
-    groupsLeft: {
-      one: 'Tu peux encore en créer {count}',
-      other: 'Tu peux encore en créer {count}',
-    },
-    empty: {
-      title: 'Aucun tirage pour l’instant',
-      body: 'Dès qu’un organisateur t’ajoute avec cette adresse email, ton tirage apparaît ici.',
-      link: 'Tu as reçu un lien personnel ? Ouvre-le : tu pourras l’ajouter à ton compte.',
-    },
-    organize: {
-      title: 'Organiser un Secret Santa',
-      button: 'Demander à créer un groupe',
     },
     requestWhy:
       'Under the Tree est en bêta : la création de groupes se fait sur demande, le temps de vérifier que tout fonctionne bien.',
@@ -250,18 +52,10 @@ export default {
     requestPlaceholder: 'Le Noël de ma famille, une douzaine de personnes.',
     requestSend: 'Envoyer ma demande',
     requestSent: 'Demande envoyée',
-    requestPending:
-      'Demande envoyée le {date}. Tu recevras la réponse par email.',
-    requestRefused:
-      'Ta demande du {date} a été refusée. Tu peux en faire une autre.',
     past: {
       title: 'Tirages passés',
       empty: 'Aucun tirage passé pour l’instant.',
     },
-    requestSentTitle: 'Ta demande est partie',
-    requestSentOn:
-      'Envoyée le {date}. Un administrateur la lit et te répond par email.',
-    requestNote: 'Le mot de l’administrateur',
     journalSignal: {
       lead: 'Du nouveau au journal.',
       row: 'Du nouveau au journal',
@@ -271,13 +65,6 @@ export default {
         'Les résultats ont été dévoilés avant la fête, le {date}.',
       draw_cancelled: 'Le tirage a été annulé le {date}.',
       several: '{count} alertes depuis ta dernière visite.',
-    },
-    requestRefusedTitle: 'Ta demande du {date} a été refusée',
-    requestAgain: 'Faire une autre demande',
-    adminHint: 'Comptes, groupes, demandes',
-    requestsToHandle: {
-      one: '{count} demande à traiter',
-      other: '{count} demandes à traiter',
     },
   },
   admin: {

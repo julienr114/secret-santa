@@ -7,7 +7,6 @@ import {
   openDraw,
   revealerFor,
   hintsTile,
-  nextStep,
   participantSteps,
   personalPhase,
   PERSONAL_PHASES,
@@ -39,43 +38,6 @@ describe('canEditAvatar', () => {
     expect(canEditAvatar('preparing').ok).toBe(true);
     expect(canEditAvatar('drawn').ok).toBe(true);
     expect(failureOf(canEditAvatar('closed')).reason).toBe('edition_closed');
-  });
-});
-
-describe('nextStep', () => {
-  const draw = {
-    status: 'preparing' as const,
-    revealed: false,
-    hintsOn: true,
-    hasHints: false,
-  };
-
-  it('asks for ideas before the draw, then waits', () => {
-    expect(nextStep(draw)).toBe('addHints');
-    expect(nextStep({ ...draw, hasHints: true })).toBe('wait');
-    expect(nextStep({ ...draw, hintsOn: false })).toBe('wait');
-  });
-
-  it('offers to discover the result, then to see it again', () => {
-    expect(nextStep({ ...draw, status: 'drawn' })).toBe('discover');
-    expect(nextStep({ ...draw, status: 'drawn', revealed: true })).toBe(
-      'seeAgain',
-    );
-  });
-
-  it('asks for their answer to a draw made elsewhere, then says it is given', () => {
-    expect(nextStep({ ...draw, answer: 'toGive' })).toBe('giveAnswer');
-    expect(nextStep({ ...draw, answer: 'given' })).toBe('answerGiven');
-    // Once validated, an ordinary draw.
-    expect(nextStep({ ...draw, status: 'drawn', answer: null })).toBe(
-      'discover',
-    );
-  });
-
-  it('has nothing left to do once closed', () => {
-    expect(nextStep({ ...draw, status: 'closed', revealed: true })).toBe(
-      'closed',
-    );
   });
 });
 

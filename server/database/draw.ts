@@ -4,7 +4,6 @@ import {
   assignments,
   secretSantas,
   participations,
-  persons,
   type SecretSantaRow,
 } from './schema';
 import { listExclusions } from './people';
@@ -153,33 +152,6 @@ export const findReceiverParticipationId = async (
     )
     .limit(1);
   return row?.id ?? null;
-};
-
-/**
- * The person `giverPersonId` gives to, once the draw is revealed (README
- * 22.18): for the home's card « Tu offres un cadeau à… ». Null without a
- * draw, or when it cannot be read.
- */
-export const findRevealedReceiver = async (
-  db: Db,
-  editionId: string,
-  giverPersonId: string,
-  dataKey: CryptoKey,
-) => {
-  const participationId = await findReceiverParticipationId(
-    db,
-    editionId,
-    giverPersonId,
-    dataKey,
-  );
-  if (!participationId) return null;
-  const [row] = await db
-    .select({ person: persons })
-    .from(participations)
-    .innerJoin(persons, eq(persons.id, participations.personId))
-    .where(eq(participations.id, participationId))
-    .limit(1);
-  return row?.person ?? null;
 };
 
 /**

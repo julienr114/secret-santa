@@ -90,27 +90,6 @@ export const listPendingRequests = (db: Db) =>
     .where(eq(groupRequests.status, 'pending'))
     .orderBy(asc(groupRequests.createdAt));
 
-/** How many requests await a decision. */
-export const pendingRequestCount = async (db: Db): Promise<number> => {
-  const [row] = await db
-    .select({ n: count() })
-    .from(groupRequests)
-    .where(eq(groupRequests.status, 'pending'));
-  return row?.n ?? 0;
-};
-
-/** The request waiting the longest, with its account, or null. */
-export const oldestPendingRequest = async (db: Db) => {
-  const [row] = await db
-    .select({ request: groupRequests, account: accounts })
-    .from(groupRequests)
-    .innerJoin(accounts, eq(accounts.id, groupRequests.accountId))
-    .where(eq(groupRequests.status, 'pending'))
-    .orderBy(asc(groupRequests.createdAt))
-    .limit(1);
-  return row ?? null;
-};
-
 /** The super-admins who can act: where a new request is announced. */
 export const listSuperAdmins = (db: Db) =>
   db

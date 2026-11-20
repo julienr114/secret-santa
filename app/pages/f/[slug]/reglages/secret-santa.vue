@@ -13,7 +13,6 @@ const { t, tk } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const context = useScreenContext(slug);
-useHead({ title: () => context.titleOf(title.value) });
 const screen = computed(() => ({ back: `/f/${slug.value}/reglages` }));
 const { rules, shown, save, saving } = useRuleSaver(slug);
 const party = usePartyQuery(slug);
@@ -23,6 +22,7 @@ const title = computed(() =>
     ? t('party.reglages.secretSantaRow', { year: year.value })
     : t('party.reglages.secretSantaRowNone'),
 );
+useHead({ title: () => context.titleOf(title.value) });
 
 const editing = ref<null | 'years' | 'hints'>(null);
 const sheet = (which: 'years' | 'hints') =>
@@ -90,6 +90,11 @@ const noteValue = computed(() =>
         :title="t('adminGroup.rules.drawSection')"
         :footer="t('adminGroup.rules.tighter')"
       >
+        <UiListItem
+          :title="t('adminGroup.exclusions.title')"
+          :to="`/f/${slug}/exclusions`"
+          data-testid="exclusions-row"
+        />
         <UiListItem
           :title="t('adminGroup.rules.excludePreviousYearsShort')"
           :value="yearsValue"

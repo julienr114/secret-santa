@@ -40,14 +40,14 @@ export const loginAsSuper = async (page: Page, email: string) => {
   await expect(heading(page)).toHaveText('Bonjour');
 };
 
-/** Logs an organiser in and opens their group. */
+/** Logs an organiser in and opens their party (the group of before). */
 export const loginAsOrganizer = async (
   page: Page,
   slug: string,
   email: string,
 ) => {
   await apiLogin(page.request, email);
-  await page.goto(`/admin/${slug}`);
+  await page.goto(`/f/${slug}`);
   await hydrated(page);
-  await expect(page).toHaveURL(new RegExp(`/admin/${slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/f/${slug}$`));
 };

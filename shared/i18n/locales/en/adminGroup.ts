@@ -87,7 +87,7 @@ export default {
       one: '{count} no longer takes part',
       other: '{count} no longer take part',
     },
-    deleteGroup: 'Delete the group',
+    deleteGroup: 'Delete the party',
     deleteTitle: 'Delete {name}?',
     deleteConfirmLabel: 'Type the group identifier: {slug}',
     deleteAction: 'Delete for good',

@@ -341,7 +341,7 @@ test('the setting: portrait only, then no hint at all', async ({ page }) => {
 
   // On the settings screen, the row says the value and opens three choices.
   await page.context().addCookies((await admin().storageState()).cookies);
-  await open(page, `/admin/${SLUG}/reglages`);
+  await open(page, `/f/${SLUG}/reglages/secret-santa`);
   const row = page.getByTestId('gift-hints-setting');
   await expect(row).toContainText('Aucune piste');
   await row.click();

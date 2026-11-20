@@ -48,6 +48,9 @@ const listTitle = (list: NonNullable<typeof data.value>['lists'][number]) =>
     ? t('party.lists.mine')
     : t('party.lists.of', { name: list.owner?.firstName ?? '' });
 
+// A string in <component :is> does not resolve global components.
+const NuxtLink = resolveComponent('NuxtLink');
+
 const leaving = ref(false);
 const leave = useLeavePartyMutation(slug);
 const toast = useMessages();
@@ -119,7 +122,7 @@ const onLeave = () =>
         </div>
 
         <component
-          :is="organiser ? 'NuxtLink' : 'div'"
+          :is="organiser ? NuxtLink : 'div'"
           :to="organiser ? `/f/${slug}/membres` : undefined"
           class="flex min-h-14 items-center gap-3 rounded-[28px] bg-default px-3.5 shadow-[0_3px_0_var(--color-peach-200),0_0_0_1.5px_var(--color-peach-200)]"
           data-testid="party-members"

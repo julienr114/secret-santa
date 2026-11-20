@@ -47,16 +47,22 @@ test('the three emails are on by default and can be turned off', async ({
   page,
 }) => {
   await loginAsSuper(page, SUPER);
-  await page.goto(`/admin/${SLUG}/reglages`);
+  // The email of the party on its settings, those of the draw on the
+  // settings of its Secret Santa (ticket 104).
+  await page.goto(`/f/${SLUG}/reglages/secret-santa`);
+  await hydrated(page);
+  await expect(
+    page
+      .getByTestId('notifications')
+      .getByRole('switch', { name: 'Rappel 3 jours avant la fête' }),
+  ).toBeChecked();
+  await page.goto(`/f/${SLUG}/reglages`);
   await hydrated(page);
   const section = page.getByTestId('notifications');
   const joined = section.getByRole('switch', {
-    name: 'Quelqu’un rejoint le groupe par le lien',
+    name: 'Quelqu’un rejoint la fête par le lien',
   });
   await expect(joined).toBeChecked();
-  await expect(
-    section.getByRole('switch', { name: 'Rappel 3 jours avant la fête' }),
-  ).toBeChecked();
   // A switch saves as soon as it is turned: no « Enregistrer ».
   const saved = page.waitForResponse(
     (r) => r.url().endsWith('/rules') && r.request().method() === 'PATCH',

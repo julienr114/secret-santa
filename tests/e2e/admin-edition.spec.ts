@@ -32,7 +32,7 @@ test('super-admin creates a group with its guardian', async ({ page }) => {
     .getByLabel('Adresse du premier organisateur')
     .fill(GROUP.organizer);
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
-  await expect(page).toHaveURL(new RegExp(`/admin/${GROUP.slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/f/${GROUP.slug}$`));
   await expect(heading(page)).toHaveText(GROUP.name);
 });
 
@@ -42,7 +42,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
 
   // People
-  await page.getByRole('link', { name: /^Membres/ }).click();
+  await page.getByTestId('party-members').click();
   for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
     await page.getByRole('link', { name: /^Ajouter une personne/ }).click();
     await page.getByLabel('Prénom').fill(firstName);
@@ -54,9 +54,12 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.locator('main').getByRole('listitem')).toHaveCount(7);
 
   // Léa and Tom must not draw each other (both ways by default), each
-  // picked in a sheet over « Nouvelle exclusion ».
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await page.getByRole('link', { name: /^Exclusions/ }).click();
+  // picked in a sheet over « Nouvelle exclusion ». The exclusions are a
+  // setting of the Secret Santa (ticket 104).
+  await page.goto(`/f/${GROUP.slug}/reglages`);
+  await hydrated(page);
+  await page.getByRole('link', { name: /^Réglages du Secret Santa/ }).click();
+  await page.getByTestId('exclusions-row').click();
   await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
   await page.getByRole('button', { name: /^Qui/ }).click();
   await page.getByRole('option', { name: 'Léa' }).click();
@@ -68,9 +71,10 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: "Ajouter l'exclusion" }).click();
   await expect(page.getByText('Léa et Tom')).toBeVisible();
 
-  // Edition
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await page.getByRole('link', { name: "Créer l'édition" }).click();
+  // Edition, from the party
+  await page.goto(`/f/${GROUP.slug}`);
+  await hydrated(page);
+  await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
   // The party date is required: Christmas Day is offered in one tap.
   await page.getByRole('button', { name: "Créer l'édition" }).click();
   await expect(page.getByText('Choisis la date de la fête')).toBeVisible();
@@ -115,10 +119,10 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   // Before the draw, a tap on Hugo opens his page in the group.
   await page.getByText('Hugo', { exact: true }).click();
-  await expect(page).toHaveURL(/\/personnes\//);
+  await expect(page).toHaveURL(/\/membres\//);
   // « Retour » goes up the tree: to the members, not to the edition.
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(/\/personnes$/);
+  await expect(page).toHaveURL(/\/membres$/);
   await page.goBack();
   await page.goBack();
   await hydrated(page);
@@ -284,9 +288,8 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // The guardian reads the same journal as the participants, from the
   // admin: what was done, never who gives to whom.
-  await page.goto(`/admin/${GROUP.slug}`);
+  await page.goto(`/f/${GROUP.slug}/journal`);
   await hydrated(page);
-  await page.getByRole('link', { name: /^Journal/ }).click();
   await expect(heading(page)).toHaveText('Journal du groupe');
   await expect(
     page.getByText('Le tirage a été annulé. Motif : Test de relance'),
@@ -341,8 +344,8 @@ test('organisers decide who organises with them', async ({
   );
 
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
-  await page.getByRole('link', { name: /^Réglages/ }).click();
-  await expect(heading(page)).toHaveText('Réglages');
+  await page.getByRole('link', { name: 'Réglages de la fête' }).click();
+  await expect(heading(page)).toHaveText('Réglages de la fête');
   const section = page.getByTestId('organizers');
   await expect(section.getByText(GROUP.organizer)).toBeVisible();
   await expect(page.getByText('C’est toi')).toBeVisible();
@@ -400,7 +403,7 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
     .getByLabel('Adresse du premier organisateur')
     .fill('orga-autre@example.com');
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
-  await expect(page).toHaveURL(/\/admin\/autre-famille$/);
+  await expect(page).toHaveURL(/\/f\/autre-famille$/);
 
   await page.context().clearCookies();
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);

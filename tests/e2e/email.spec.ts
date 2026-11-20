@@ -57,7 +57,7 @@ test('the guardian adds addresses and sends to those who have one', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.getByRole('link', { name: /^Membres/ }).click();
+  await page.getByTestId('party-members').click();
   await page.getByText('Ada', { exact: true }).click();
   await page.getByLabel(/^Adresse email/).fill('Ada@Example.com');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
@@ -196,8 +196,16 @@ test('a participant logs in with their address and finds their draw', async ({
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
   expect((await page.request.get(`${ADMIN}/persons`)).status()).toBe(403);
+  // The old address of the group leads to its party, which a member sees
+  // without its settings (ticket 104).
   await page.goto(`/admin/${SLUG}`);
-  await expect(heading(page)).toHaveText('Bonjour');
+  await expect(page).toHaveURL(new RegExp(`/f/${SLUG}$`));
+  await expect(heading(page)).toHaveText('Famille Courrier');
+  await expect(
+    page.getByRole('link', { name: 'Réglages de la fête' }),
+  ).toHaveCount(0);
+  await page.goto('/');
+  await hydrated(page);
 
   // No hint left yet: the card leads straight to the gift hints.
   await draw
@@ -251,7 +259,7 @@ test('the word added to the messages is written on its own page', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.goto(`/admin/${SLUG}/reglages`);
+  await page.goto(`/f/${SLUG}/reglages/secret-santa`);
   await hydrated(page);
   const row = page.getByTestId('group-note');
   await row.click();
@@ -264,7 +272,7 @@ test('the word added to the messages is written on its own page', async ({
   await page.getByLabel(/^Ton mot/).fill('Rendez-vous à 19 h !');
   await page.getByText('Au-dessus du message').click();
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page).toHaveURL(new RegExp(`/${SLUG}/reglages$`));
+  await expect(page).toHaveURL(new RegExp(`/${SLUG}/reglages/secret-santa$`));
   await expect(row).toContainText('Rendez-vous à 19 h !');
   const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
   expect(rules).toMatchObject({
@@ -279,7 +287,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await expect(page.getByText('Supprimer le groupe')).toHaveCount(0);
+  await expect(page.getByText('Supprimer la fête')).toHaveCount(0);
   const refused = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
     { data: { confirm: SLUG } },
@@ -296,7 +304,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   expect(careless.status()).toBe(400);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await page.getByText('Supprimer le groupe').click();
+  await page.getByText('Supprimer la fête').click();
   await expect(
     page.getByRole('button', { name: 'Garder le groupe' }),
   ).toBeVisible();

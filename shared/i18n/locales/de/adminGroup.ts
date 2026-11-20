@@ -94,7 +94,7 @@ export default {
       one: '{count} macht nicht mehr mit',
       other: '{count} machen nicht mehr mit',
     },
-    deleteGroup: 'Gruppe löschen',
+    deleteGroup: 'Feier löschen',
     deleteTitle: '{name} löschen?',
     deleteConfirmLabel: 'Gib die Gruppenkennung ein: {slug}',
     deleteAction: 'Endgültig löschen',

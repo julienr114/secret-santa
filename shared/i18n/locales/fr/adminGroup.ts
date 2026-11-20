@@ -88,7 +88,7 @@ export default {
       one: '{count} ne participe plus',
       other: '{count} ne participent plus',
     },
-    deleteGroup: 'Supprimer le groupe',
+    deleteGroup: 'Supprimer la fête',
     deleteTitle: 'Supprimer {name} ?',
     deleteConfirmLabel: 'Recopie l’identifiant du groupe : {slug}',
     deleteAction: 'Supprimer définitivement',

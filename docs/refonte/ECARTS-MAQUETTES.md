@@ -6,6 +6,24 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## La fête (V3, ticket 104)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Les lignes (Secret Santa, listes) n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (question à la conception). | Julien, 20 novembre 2026 |
+| `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Pas de section « Les années passées » avant le ticket 108. | Julien, 20 novembre 2026 |
+| `V3FeteAnniversaire` | Pas de « · ses 4 ans » après la date : la fête ne sait pas pour quel proche elle est. | Seul |
+| `V3Fete` | Pour un simple membre, la ligne des membres n'ouvre rien (la page des membres est à l'organisateur). | Seul |
+| `V3FeteOrganisateur` | « Un autre Secret Santa » (ou « Organiser un Secret Santa ») n'apparaît que si aucun Secret Santa de la fête n'est en cours, et mène à la création d'édition d'aujourd'hui : plusieurs à la fois viennent avec le ticket 105. Le titre de section est au pluriel pour l'organisateur ou dès deux Secret Santa. | Seul |
+| `V3Fete` | Une ligne de liste s'ouvre sur la page d'aujourd'hui : la mienne dans son document, celle d'un autre par son lien public ; sans lien public, elle ne s'ouvre pas (règles du ticket 106). | Seul |
+| `V3FeteQuitter` | « Elle reste chez Mamie » n'est pas écrit (« chez » ou « dans » : question à la conception). « Tu ne participeras plus à son Secret Santa l'an prochain » ne s'écrit que si la fête a un Secret Santa. Un organisateur ne peut pas quitter la fête. | Seul |
+| `V3FeteNouvelle` | Le nom est proposé pour Noël (« Noël ») et pour un anniversaire (« L'anniversaire de Zoé », « Mon anniversaire » pour soi) ; vide pour les autres catégories. La date est remplie pour Noël et pour l'anniversaire d'un proche dont on connaît la date de naissance. | Seul |
+| `V3FeteMembresReprendre` | Les pastilles des fêtes se cochent : cocher une fête montre et coche ses membres. Le nombre du bouton me compte. « Inviter d'autres personnes » crée la fête et ouvre « Inviter par lien ». Seules les fêtes que j'organise sont proposées. | Seul |
+| `V3FeteNouvelle`, `V3FeteMembresReprendre` | Après « Créer la fête », on arrive sur l'écran d'aujourd'hui de ce qu'on venait créer (création d'une édition, nouvelle liste), sinon sur la fête. | Julien, 20 novembre 2026 |
+| `V3FeteReglages` | La catégorie et la date se changent dans un panneau du bas (comme les autres réglages), pas sur une page. « Réglages du Secret Santa » mène, jusqu'au ticket 105, aux réglages du tirage qui sont encore ceux du groupe (éviter la même personne, pistes, mot ajouté aux messages, emails du tirage). | Seul |
+| `V3FeteInviter` | « Désactiver le lien » garde sa ligne d'aide (« Plus personne ne pourra s'inscrire »). | Seul |
+| `V3FeteRejoindre` | Les états qui suivent (inscrit, lien fermé) gardent leurs écrans d'aujourd'hui, avec « fête » au lieu de « groupe ». | Seul |
+
 ## Les dernières retouches de la liste (Correction 30)
 
 | Maquette | Ce que fait le code | Décidé par |

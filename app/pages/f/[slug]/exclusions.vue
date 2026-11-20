@@ -15,7 +15,9 @@ const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.exclusions.title')) });
-const screen = computed(() => ({ back: `/f/${slug.value}` }));
+const screen = computed(() => ({
+  back: `/f/${slug.value}/reglages/secret-santa`,
+}));
 const years = computed(
   () => dashboard.data.value?.rules.excludePreviousYears ?? 0,
 );
@@ -45,7 +47,7 @@ const years = computed(
         :footer="t('adminGroup.exclusions.untilDraw')"
       >
         <UiListItem
-          :to="`/f/${slug}/reglages`"
+          :to="`/f/${slug}/reglages/secret-santa`"
           icon="i-lucide-history"
           icon-tone="neutral"
           :title="

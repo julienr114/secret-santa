@@ -105,7 +105,7 @@ test('someone with the link signs up and joins the group', async ({ page }) => {
     'Connecté avec zoe-invite@example.com',
   );
   await page.getByLabel('Prénom').fill('Zoé');
-  await page.getByRole('button', { name: 'Rejoindre le groupe' }).click();
+  await page.getByRole('button', { name: 'Rejoindre la fête' }).click();
   // In the group and in the draw being prepared: her draw is one tap away.
   const joined = page.getByTestId('invite-joined');
   await expect(joined).toContainText('Bienvenue dans Famille Invite');

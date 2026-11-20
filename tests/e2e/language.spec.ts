@@ -146,7 +146,7 @@ test('the admin side follows the choice made on the device', async ({
   await page.reload();
   await hydrated(page);
   await expect(page.getByRole('button', { name: 'Menü' })).toBeVisible();
-  await page.getByRole('link', { name: /^Mitglieder/ }).click();
+  await page.getByTestId('party-members').click();
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),
   ).toBeVisible();

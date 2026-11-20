@@ -26,6 +26,7 @@
     "typecheck": "nuxt typecheck",
     "test:e2e": "playwright test",
     "controle": "node --experimental-strip-types --no-warnings scripts/controle.ts",
+    "v3:essai": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/v3-essai.ts",
     "v3:compare": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/v3-compare.ts",
     "emoji:copy": "node --experimental-strip-types scripts/copy-emoji-images.ts",
     "seed:demo": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-demo.ts",

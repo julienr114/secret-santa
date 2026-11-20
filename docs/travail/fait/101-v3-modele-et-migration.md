@@ -24,7 +24,7 @@ Faire tourner l'application d'aujourd'hui, à l'identique pour ses utilisateurs,
 - [x] La reprise des données : chaque groupe devient une fête de catégorie Noël qui revient chaque année ; chaque édition, l'année et son Secret Santa ; chaque liste reliée à un tirage va dans sa fête ; chaque autre liste reçoit sa propre fête (`migration.md`).
 - [x] Les réglages qui ne concernent que le tirage descendent du groupe sur chaque Secret Santa.
 - [x] Le code serveur et les requêtes suivent le nouveau modèle ; les écrans, les adresses et les textes ne changent pas.
-- [ ] Un essai de la migration sur une copie de la base de production, décrit pas à pas dans le compte rendu (c'est Julien qui fournit la copie). **Ouvert : les étapes sont écrites, la copie n'a pas encore été fournie.**
+- [x] Un essai de la migration sur une copie de la base de production, décrit pas à pas dans le compte rendu (c'est Julien qui fournit la copie).
 - [x] Les tests existants passent sans changer ce qu'ils vérifient.
 
 ## Hors périmètre
@@ -178,19 +178,24 @@ Les étapes 4 à 6 se font aussi en SQL (voir « Corrigé en codant »). La comp
 - **Supprimer un groupe** (super-admin) retire ses listes de sa fête. Une liste qui n'était que dans cette fête n'est alors plus dans aucune. C'est rare, et ce sera à reprendre quand la suppression d'une fête sera conçue.
 - **`README.md`, section 10**, décrit encore le modèle de la V2. Je ne l'ai pas touché, parce qu'il décrit l'application publiée.
 
-### L'essai sur une copie de la base de production, pas à pas
+### L'essai sur une copie de la base de production
 
-À faire par Julien. Rien n'écrit à distance : `export` ne fait que lire.
+Fait le 20 novembre 2026 sur l'export de Julien. **Avant** : 2 groupes, 2 éditions, 1 liste. **Après** : 3 fêtes (dont 1 née d'une liste), 3 années, 2 Secret Santa, 1 liste rangée. Aucune différence, aucune clé étrangère cassée.
 
-1. `pnpm wrangler d1 export secret-santa --remote --output=prod.sql`
-2. `mkdir -p .wrangler/essai-v3 && pnpm wrangler d1 execute secret-santa --local --persist-to .wrangler/essai-v3 --file=prod.sql`
-3. Garder la base « avant » : `ls .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/` montre un fichier `<long nom>.sqlite` à côté de `metadata.sqlite`. Le copier : `cp .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/<long nom>.sqlite avant.sqlite`.
-4. `pnpm wrangler d1 migrations apply secret-santa --local --persist-to .wrangler/essai-v3`. La table `d1_migrations` vient avec l'export, donc seule `0033` est appliquée.
-5. `pnpm v3:compare avant.sqlite .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/<long nom>.sqlite`
-6. Supprimer ensuite `prod.sql`, `avant.sqlite` et `.wrangler/essai-v3` : ce sont les données des gens.
+Pour le refaire, juste avant de publier :
+
+1. `pnpm wrangler d1 export secret-santa --remote --output=sauvegardes/prod.sql`
+   - Cette commande ne fait que lire. Mais la base ne répond plus pendant l'export : viser une heure creuse.
+   - Le dossier `sauvegardes/` doit exister. `.gitignore` l'exclut.
+2. `pnpm v3:essai sauvegardes/prod.sql`
+   - La commande charge l'export, applique `0033` comme D1 (une transaction, clés étrangères actives), compare les deux bases, puis supprime ce qu'elle a créé.
+3. Supprimer `sauvegardes/prod.sql` : ce sont les données des gens.
+
+**Corrigé à l'essai.** Les étapes écrites d'abord passaient par `wrangler d1 execute --local --file`. Cette commande refuse un export de D1, qui écrit des lignes vers `persons` avant de créer la table (« no such table: main.persons »). D'où `pnpm v3:essai`, qui charge l'export avec SQLite, clés étrangères coupées le temps du chargement seulement. La migration elle-même passe aussi avec `wrangler d1 migrations apply --local`, essayée sur une copie de la base locale.
 
 ### Commits
 
 - `773303c` docs : la proposition de schéma.
 - `b706ae0` feat(db) : le modèle, la migration 0033 et le code serveur.
 - `f594dd3` chore(db) : `pnpm v3:compare`, avec ce compte rendu.
+- Puis `pnpm v3:essai` et le résultat de l'essai, avec ce ticket rangé dans `fait/`.

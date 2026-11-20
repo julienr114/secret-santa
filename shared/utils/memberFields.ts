@@ -155,10 +155,28 @@ export const birthDateOf = (
   parts: BirthParts,
   today: string,
 ): string | null => {
+  const iso = dateOf(parts);
+  return iso !== null && iso <= today ? iso : null;
+};
+
+/**
+ * The ISO day of three parts, once all are chosen and the day exists.
+ * @param parts - The parts chosen.
+ * @returns « 2026-12-25 », or null.
+ */
+export const dateOf = (parts: BirthParts): string | null => {
   const { day, month, year } = parts;
   if (day === null || month === null || year === null) return null;
   if (day > daysIn(month, year)) return null;
   const pad = (n: number, size: number) => String(n).padStart(size, '0');
-  const iso = `${pad(year, 4)}-${pad(month, 2)}-${pad(day, 2)}`;
-  return iso <= today ? iso : null;
+  return `${pad(year, 4)}-${pad(month, 2)}-${pad(day, 2)}`;
 };
+
+/**
+ * The years of a party's date (docs/spec/v3/regles-d-ecran.md): this
+ * one, and the two after.
+ * @param thisYear - The current year.
+ * @returns Three years, the nearest first.
+ */
+export const partyYears = (thisYear: number): number[] =>
+  range(thisYear, thisYear + 2);

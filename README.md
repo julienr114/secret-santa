@@ -1851,6 +1851,8 @@ Seulement dans une liste : le document de celui qui la tient, et la page de celu
 
 Décidé par Julien le 19 novembre 2026. Lot 27 bis. Maquettes : `ListeNouvelle`, `ListeSansPersonne`, `ListeSansPersonneVisiteur`.
 
+**Fait le 20 novembre 2026** (lot 27 bis). Dans le code : les règles pures `isSingleList`, `singleRefusal` et `addPersonRefusal` (`server/utils/lists.ts`) ; la partie cachée appartient à un proche fictif, un par compte, jamais montré (`family_members.placeholder`, `ensurePlaceholder`) ; `POST /api/lists/[id]/single` ; côté écran `ListsAddSomeone`, `ListsPersonSection` (sans en-tête) et la page par le lien. « Une personne » ouvre le choix habituel des proches ; la première personne ajoutée garde les idées et les coches. Une fois la liste partagée, sa forme ne change plus.
+
 - Pour un mariage, une crémaillère, une naissance : l'événement, puis les idées l'une sous l'autre, sans partie par personne.
 - **Pas d'écran de choix** (décidé par Julien le 19 novembre 2026) : dans le bloc « Ajouter quelqu'un » du document vide, après les prénoms et « Quelqu'un d'autre », une pastille de plus, « Une liste sans personne ». La toucher fait de la liste une liste sans personne. En bas d'une liste sans personne, le bloc « Ajouter quelqu'un » habituel reste (choisi par Julien le 19 novembre 2026, plutôt qu'un lien « Séparer par personne » ou un menu) : une pastille « Une personne » et la phrase « La liste sera alors rangée par personne. Les idées déjà écrites iront à la première. » Tant que la liste n'est pas publiée.
 - Tout le reste ne change pas : cocher, à plusieurs, « J'offre autre chose », les prénoms visibles de ceux qui tiennent la liste seulement, publier, partager, suivre (on suit alors toute la liste).

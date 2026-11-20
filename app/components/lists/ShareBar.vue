@@ -21,7 +21,13 @@ import { useShareListMutation } from '~/composables/queries/useLists';
 // Someone who « aide à écrire » (lot 25 bis) reads the bar and touches
 // nothing: the switch says whether the list is shared, greyed, and a line
 // says who decides.
-const props = defineProps<{ doc: ListDocument; readonly?: boolean }>();
+// The name being typed counts at once (`title`): it is saved as it is
+// typed, and the list read again a moment later.
+const props = defineProps<{
+  doc: ListDocument;
+  readonly?: boolean;
+  title?: string;
+}>();
 const { t, tk } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
@@ -34,7 +40,7 @@ const asked = ref<boolean | null>(null);
 const shared = computed(() => asked.value ?? stored.value);
 const missing = computed(() =>
   shareMissing({
-    title: props.doc.list.title,
+    title: props.title ?? props.doc.list.title,
     peopleCount: props.doc.people.length,
   }),
 );

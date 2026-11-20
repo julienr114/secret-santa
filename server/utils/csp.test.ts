@@ -24,6 +24,13 @@ describe('the content policy', () => {
     }
   });
 
+  it('lets the page connect to its own host only, WebSocket included', () => {
+    expect(policy).toContain("connect-src 'self';");
+    expect(contentPolicy('n', 'exemple.fr')).toContain(
+      "connect-src 'self' wss://exemple.fr ws://exemple.fr;",
+    );
+  });
+
   it('gives each script the nonce, once', () => {
     const html =
       '<script>a()</script><script type="module" src="/x.js"></script><script nonce="old">b()</script><scripty>';

@@ -192,6 +192,17 @@ export default {
       people: 'Add at least one person to the list.',
     },
   },
+  live: {
+    writing: '{name} is writing…',
+    here: {
+      one: '{names} is here right now.',
+      other: '{names} are here right now.',
+    },
+    visitors: {
+      one: '{count} visitor right now',
+      other: '{count} visitors right now',
+    },
+  },
   delete: {
     row: 'Delete the list',
     title: 'Delete “{title}”?',

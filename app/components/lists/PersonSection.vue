@@ -309,7 +309,14 @@ const explained = ref<string | null>(null);
       </UDropdownMenu>
     </header>
     <!-- A person lifted is folded: their ideas wait, out of the way. -->
-    <ul v-show="!liftedHere" class="flex flex-col pl-5">
+    <!-- A line that appears, moves or goes shows it by its movement (lot
+         26), unless motion is to be reduced; not while one is dragged. -->
+    <TransitionGroup
+      v-show="!liftedHere"
+      tag="ul"
+      :name="drag?.lifted.value ? 'none' : 'line'"
+      class="flex flex-col pl-5"
+    >
       <template
         v-for="row in rows"
         :key="row.kind === 'idea' ? row.idea.id : 'drop'"
@@ -374,6 +381,7 @@ const explained = ref<string | null>(null);
         </p>
       </li>
       <ListsIdeaLine
+        key="new"
         :via="via"
         :list-person-id="person.id"
         :for-name="member.firstName"
@@ -386,7 +394,7 @@ const explained = ref<string | null>(null);
         "
         :line="`${person.id}:new`"
       />
-    </ul>
+    </TransitionGroup>
     <AdminAvatarSheet
       v-model:open="iconOpen"
       :initial="member.avatar"

@@ -26,6 +26,10 @@ export default defineNitroPlugin((nitroApp) => {
       body: named(html.body),
       bodyAppend: named(html.bodyAppend),
     });
-    setResponseHeader(event, header, contentPolicy(nonce));
+    setResponseHeader(
+      event,
+      header,
+      contentPolicy(nonce, getRequestURL(event).host),
+    );
   });
 });

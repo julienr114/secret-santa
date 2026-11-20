@@ -198,6 +198,17 @@ export default {
       people: 'Füge mindestens eine Person zur Liste hinzu.',
     },
   },
+  live: {
+    writing: '{name} schreibt…',
+    here: {
+      one: '{names} ist gerade da.',
+      other: '{names} sind gerade da.',
+    },
+    visitors: {
+      one: '{count} Besucher gerade da',
+      other: '{count} Besucher gerade da',
+    },
+  },
   delete: {
     row: 'Liste löschen',
     title: '„{title}“ löschen?',

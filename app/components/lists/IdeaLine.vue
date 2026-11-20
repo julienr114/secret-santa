@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useQueryClient } from '@tanstack/vue-query';
 import type { IdeaLine } from '#server/http/lists';
+import { keys } from '~/composables/queries/keys';
 import {
   useCreateIdeaMutation,
   useDeleteIdeaMutation,
@@ -8,6 +10,7 @@ import {
   useUpdateIdeaMutation,
   type ClaimRoute,
 } from '~/composables/queries/useLists';
+import { AVATAR_SHADES } from '~/utils/avatars';
 import { asAddress } from '~/utils/ideaLink';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
@@ -61,6 +64,8 @@ const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
 const toast = useMessages();
 const errorMessage = useErrorMessage();
+const queryClient = useQueryClient();
+const afterRelease = usePointerHeld();
 
 const row = ref<HTMLElement | null>(null);
 const field = ref<HTMLTextAreaElement | null>(null);
@@ -96,7 +101,7 @@ const boxActive = computed(
 );
 /** The box: ticks alone, unticks, or opens the sheet of a group. */
 const onBox = () => {
-  if (!props.idea) return;
+  if (!props.idea || lockedBy.value) return;
   // Ticked by someone else: the box unfolds « Décocher » too, like the
   // first name (the box is what one reaches for first: Julien, 19
   // November 2026). It does not untick by itself.
@@ -105,11 +110,14 @@ const onBox = () => {
     return;
   }
   const onError = (error: unknown) =>
-    toast.failed(
-      (error as { statusMessage?: string }).statusMessage === 'taken'
-        ? t('lists.visitor.takenNow')
-        : errorMessage(error),
-    );
+    // Ticked by someone else in the same instant: the first wins, and
+    // the box turns to « pris » by itself, without a message (lot 26).
+    (error as { statusMessage?: string }).statusMessage === 'taken'
+      ? void Promise.all([
+          queryClient.invalidateQueries({ queryKey: keys.lists() }),
+          queryClient.invalidateQueries({ queryKey: ['l'] }),
+        ])
+      : toast.failed(errorMessage(error));
   if (inGroup.value) editing.change(props.idea, props.forName);
   else if (openGroup.value) editing.join(props.idea, props.forName);
   else if (mine.value) untick.mutate(props.idea.id, { onError });
@@ -153,11 +161,37 @@ const who = computed(() => {
   return null;
 });
 
+// Live (lot 26, maquette ListeLiveTeneur): while someone else who holds
+// the list writes this line, it is theirs: tinted with the light colour
+// of their icon, their icon and « Hugo écrit… » under it, their caret at
+// its end, and it cannot be touched. It is free again when they validate
+// or leave it, or after 30 seconds without a key. What they type does
+// not travel: the line shows what is saved.
+const live = useListLiveLine();
+const lockedBy = computed(() =>
+  props.idea ? (live?.writingBy(props.idea.id) ?? null) : null,
+);
+const lockShade = computed(() =>
+  lockedBy.value?.avatar ? AVATAR_SHADES[lockedBy.value.avatar.color] : null,
+);
+watch(writing, (on) => {
+  if (!props.idea || !live) return;
+  if (on) live.writing(props.idea.id);
+  else live.idle();
+});
+watch(draft, () => {
+  if (writing.value && props.idea) live?.writing(props.idea.id);
+});
+onBeforeUnmount(() => {
+  if (writing.value && props.idea) live?.idle();
+});
+
 /**
  * Starts writing the line.
  * @returns Once the field has the focus.
  */
 const start = async () => {
+  if (lockedBy.value) return;
   draft.value = props.idea?.text ?? draft.value;
   writing.value = true;
   await nextTick();
@@ -397,9 +431,15 @@ const onFocusOut = (event: FocusEvent) => {
   if (event.target !== field.value && event.target !== linkField.value) return;
   const to = event.relatedTarget;
   if (to instanceof Node && row.value?.contains(to)) return;
-  // An address being written is saved on leaving, like the text.
-  if (linking.value && saveLink()) leave();
-  else commit(false);
+  // Left by touching something else: the line closes once the finger is
+  // up. Closing under the press would move the page, and the touch
+  // would land beside what was aimed at.
+  afterRelease(() => {
+    if (!writing.value) return;
+    // An address being written is saved on leaving, like the text.
+    if (linking.value && saveLink()) leave();
+    else commit(false);
+  });
 };
 </script>
 
@@ -407,7 +447,17 @@ const onFocusOut = (event: FocusEvent) => {
   <li
     ref="row"
     class="group relative flex scroll-mt-32 items-start gap-3 py-2"
+    :style="
+      lockShade
+        ? {
+            backgroundColor: `color-mix(in srgb, ${lockShade.bg} 55%, transparent)`,
+          }
+        : undefined
+    "
+    :aria-busy="lockedBy ? true : undefined"
+    :data-locked="lockedBy ? '' : undefined"
     :class="[
+      lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
       writing
         ? '-mr-4 -ml-9 border-l-[3px] border-primary bg-default pr-4 pl-[33px]'
         : '',
@@ -448,11 +498,12 @@ const onFocusOut = (event: FocusEvent) => {
           : { 'aria-hidden': 'true' }
       "
       class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
+      :class="lockedBy ? 'opacity-50' : ''"
       data-testid="holder-box"
       @click="onBox"
     >
       <span
-        class="flex size-[22px] items-center justify-center rounded-sm"
+        class="flex size-[22px] items-center justify-center rounded-sm motion-safe:transition-colors motion-safe:duration-200"
         :class="
           !idea
             ? 'border-[1.5px] border-default'
@@ -614,6 +665,13 @@ const onFocusOut = (event: FocusEvent) => {
           :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a
         >
+        <!-- Their caret, at their colour, at the end of what is saved. -->
+        <span
+          v-if="lockedBy"
+          class="inline-block h-[1.1em] w-0.5 rounded-full motion-safe:animate-pulse"
+          :style="{ backgroundColor: lockShade?.ring ?? 'currentColor' }"
+          aria-hidden="true"
+        />
         <!-- Taken from an old list and not changed since (lot 27): a small
              grey mark, for those who hold the list only. -->
         <UIcon
@@ -660,6 +718,19 @@ const onFocusOut = (event: FocusEvent) => {
           data-testid="idea-joined"
           >{{ t('lists.visitor.joined') }}</span
         >
+      </p>
+      <p
+        v-if="lockedBy"
+        class="flex items-center gap-1.5 text-[13px] text-toned"
+        data-testid="line-writing"
+      >
+        <UiAvatar
+          v-if="lockedBy.avatar"
+          :avatar="lockedBy.avatar"
+          :px="18"
+          flat
+        />
+        {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
       <ul
         v-if="idea && unfolded && claims.length > 0 && !writing"

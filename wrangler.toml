@@ -50,6 +50,18 @@ namespace_id = "1002"
   limit = 120
   period = 60
 
+# The live lists (lot 26, README 22.20): one Durable Object per list holds
+# its WebSocket connections, with hibernation (a list nobody watches
+# costs nothing). SQLite storage, the only kind the free plan allows; the
+# object stores nothing.
+[[durable_objects.bindings]]
+name = "LIST_ROOM"
+class_name = "ListRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ListRoom"]
+
 [vars]
 NUXT_PUBLIC_BASE_URL = "https://under-the-tree.party"
 

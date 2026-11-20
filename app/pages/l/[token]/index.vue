@@ -8,6 +8,7 @@ import {
   useTickMutation,
   useUntickMutation,
 } from '~/composables/queries/useLists';
+import { keys } from '~/composables/queries/keys';
 import { LIST_EDITING } from '~/composables/useListEditing';
 
 // A list by its link (README 22.19, maquettes ListeVisiteur,
@@ -75,12 +76,18 @@ const details = (person: PersonLine) => {
     .join(' · ');
 };
 
+// Live (lot 26): what the others tick or write arrives by itself. A
+// visitor is never shown as there, nor told who is.
+useListLive(
+  () => `/api/l/${token.value}/live`,
+  () => [keys.link(token.value)],
+);
 const onError = (error: unknown) =>
-  toast.failed(
-    (error as { statusMessage?: string }).statusMessage === 'taken'
-      ? t('lists.visitor.takenNow')
-      : errorMessage(error),
-  );
+  // Ticked by someone else in the same instant: the first wins, and the
+  // box turns to « pris » by itself, without a message (lot 26).
+  (error as { statusMessage?: string }).statusMessage === 'taken'
+    ? void query.refetch()
+    : toast.failed(errorMessage(error));
 /**
  * Ticks an idea: at once when logged in, after an address otherwise.
  * @param idea - The idea.

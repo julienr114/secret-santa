@@ -6,9 +6,12 @@
 /**
  * The policy of a page.
  * @param nonce - The nonce of this answer, carried by its inline scripts.
+ * @param host - The host of the app, for the WebSocket of the live
+ *   lists (lot 26): some browsers do not read « self » as the same host
+ *   over `wss:`.
  * @returns The value of the header.
  */
-export const contentPolicy = (nonce: string): string =>
+export const contentPolicy = (nonce: string, host = ''): string =>
   [
     "default-src 'self'",
     // The app's own files, and its inline scripts by their nonce.
@@ -18,7 +21,9 @@ export const contentPolicy = (nonce: string): string =>
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    host
+      ? `connect-src 'self' wss://${host} ws://${host}`
+      : "connect-src 'self'",
     "manifest-src 'self'",
     "worker-src 'self'",
     "object-src 'none'",

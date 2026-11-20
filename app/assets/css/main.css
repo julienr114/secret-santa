@@ -243,6 +243,29 @@
   }
 }
 
+/* A list watched live (lot 26): a line that appears, moves or goes shows
+   it by its movement, and nothing else. Nothing moves for those who ask
+   for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .line-enter-active,
+  .line-leave-active {
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+  .line-move {
+    transition: transform 0.25s ease;
+  }
+  .line-enter-from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  .line-leave-to {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+
 /* A busy wheel stands still for those who ask for less motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-spin {

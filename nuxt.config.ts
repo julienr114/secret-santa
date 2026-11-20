@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 import { appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -86,6 +87,14 @@ export default defineNuxtConfig({
   // Cloudflare Workers. In dev, Nitro emulates the bindings declared in
   // wrangler.toml through Miniflare (state in .wrangler/state/v3).
   nitro: { preset: 'cloudflare_module' },
+  // The built Worker starts from our own entry, which wraps Nitro's and
+  // exports the Durable Object of the live lists (lot 26). Not in
+  // development, where Nitro runs on Node and has no such object.
+  $production: {
+    nitro: {
+      entry: fileURLToPath(new URL('./server/live/entry.ts', import.meta.url)),
+    },
+  },
   hooks: {
     // The file that tells an open tab a new version is out must be asked
     // again each time (Correction 11). Nitro gives it, through the

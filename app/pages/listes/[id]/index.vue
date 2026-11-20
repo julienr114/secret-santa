@@ -17,6 +17,7 @@ import {
   useUntickForMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
+import { keys } from '~/composables/queries/keys';
 import { LIST_EDITING } from '~/composables/useListEditing';
 import { LIST_SHADES } from '~/utils/listShades';
 import {
@@ -140,6 +141,28 @@ const removal = useDelayedRemoval((personId, done) =>
 // once; the list is read again once it is saved.
 const reorder = useReorderMutation(id);
 const wanted = ref<ListOrder | null>(null);
+// Live (lot 26, README 22.20): what the others do arrives by itself, and
+// those who hold the list see who else is there, and who writes what.
+const live = useListLive(
+  () => `/api/lists/${id.value}/live`,
+  () => [keys.list(id.value)],
+  () => doc.value?.holders.find((holder) => holder.me)?.accountId ?? null,
+);
+/** The others who hold the list and have it open now. */
+const here = computed(() => {
+  const mine = doc.value?.holders.find((holder) => holder.me)?.accountId;
+  return (live.presence.value?.holders ?? []).filter(
+    (holder) => holder.accountId !== mine,
+  );
+});
+const hereNames = computed(() => {
+  const names = here.value.map((holder) => holder.name);
+  return names.length > 1
+    ? `${names.slice(0, -1).join(', ')} ${t('lists.share.and')} ${names.at(-1)}`
+    : (names[0] ?? '');
+});
+const visitors = computed(() => live.presence.value?.visitors ?? 0);
+
 // « Reprendre cette liste » (lot 27): a new draft, started from this
 // one, which does not change.
 const again = useCreateListMutation();
@@ -421,12 +444,32 @@ onBeforeRouteLeave((to) => {
       :skeleton="['card', 'title', 'card']"
     >
       <template v-if="doc && list">
-        <ListsShareBar :doc="doc" :readonly="!doc.manages" />
+        <ListsShareBar :doc="doc" :readonly="!doc.manages" :title="title" />
         <ListsHoldersLine
           v-if="doc.manages || doc.holders.length > 1"
           :list-id="list.id"
           :holders="doc.holders"
         />
+        <!-- Who is there now (lot 26): those who hold the list by their
+             first name, the visitors by their number only. -->
+        <p
+          v-if="here.length > 0 || visitors > 0"
+          class="-mt-2 flex flex-wrap items-center gap-x-2 text-sm text-toned"
+          data-testid="live-presence"
+        >
+          <template v-if="here.length > 0">
+            <span
+              class="size-2 shrink-0 rounded-full bg-success"
+              aria-hidden="true"
+            />
+            <span data-testid="live-here">{{
+              t('lists.live.here', { count: here.length, names: hereNames })
+            }}</span>
+          </template>
+          <span v-if="visitors > 0" data-testid="live-visitors">{{
+            t('lists.live.visitors', { count: visitors })
+          }}</span>
+        </p>
 
         <div class="flex flex-col gap-2">
           <button

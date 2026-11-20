@@ -20,12 +20,12 @@ Faire tourner l'application d'aujourd'hui, à l'identique pour ses utilisateurs,
 ## À faire
 
 - [x] Proposer le schéma avant de l'écrire : les tables, ce qui est renommé, ce qui est nouveau (la catégorie, la date habituelle, la récurrence, l'année d'une fête, plusieurs Secret Santa par année, le rattachement d'une liste à une ou plusieurs fêtes avec sa visibilité par fête : toute la fête, ou celui qui m'a tiré). L'écrire dans le compte rendu de ce ticket et s'arrêter pour que Julien le lise.
-- [ ] Les migrations Drizzle, dans l'ordre, appliquées en local.
-- [ ] La reprise des données : chaque groupe devient une fête de catégorie Noël qui revient chaque année ; chaque édition, l'année et son Secret Santa ; chaque liste reliée à un tirage va dans sa fête ; chaque autre liste reçoit sa propre fête (`migration.md`).
-- [ ] Les réglages qui ne concernent que le tirage descendent du groupe sur chaque Secret Santa.
-- [ ] Le code serveur et les requêtes suivent le nouveau modèle ; les écrans, les adresses et les textes ne changent pas.
-- [ ] Un essai de la migration sur une copie de la base de production, décrit pas à pas dans le compte rendu (c'est Julien qui fournit la copie).
-- [ ] Les tests existants passent sans changer ce qu'ils vérifient.
+- [x] Les migrations Drizzle, dans l'ordre, appliquées en local. J'ai migré une copie de la base locale, pas ta base elle-même : voir le compte rendu.
+- [x] La reprise des données : chaque groupe devient une fête de catégorie Noël qui revient chaque année ; chaque édition, l'année et son Secret Santa ; chaque liste reliée à un tirage va dans sa fête ; chaque autre liste reçoit sa propre fête (`migration.md`).
+- [x] Les réglages qui ne concernent que le tirage descendent du groupe sur chaque Secret Santa.
+- [x] Le code serveur et les requêtes suivent le nouveau modèle ; les écrans, les adresses et les textes ne changent pas.
+- [ ] Un essai de la migration sur une copie de la base de production, décrit pas à pas dans le compte rendu (c'est Julien qui fournit la copie). **Ouvert : les étapes sont écrites, la copie n'a pas encore été fournie.**
+- [x] Les tests existants passent sans changer ce qu'ils vérifient.
 
 ## Hors périmètre
 
@@ -36,10 +36,10 @@ Faire tourner l'application d'aujourd'hui, à l'identique pour ses utilisateurs,
 
 ## C'est fini quand
 
-- [ ] Le schéma proposé a été lu par Julien.
-- [ ] La base locale migrée contient les mêmes groupes, tirages et listes qu'avant, sous leur nouvelle forme ; un script ou un test le compare.
-- [ ] `pnpm test:e2e` passe sans retouche des parcours.
-- [ ] `/controle` passe.
+- [x] Le schéma proposé a été lu par Julien.
+- [x] La base locale migrée contient les mêmes groupes, tirages et listes qu'avant, sous leur nouvelle forme ; un script ou un test le compare.
+- [x] `pnpm test:e2e` passe sans retouche des parcours.
+- [x] `/controle` passe.
 
 ## Compte rendu
 
@@ -107,7 +107,7 @@ Branche `v3/101-modele-et-migration`. Les noms du code sont en anglais : la fêt
    - l'organisateur est le propriétaire ;
    - la visibilité est `party`.
 
-Les étapes 4 à 6 demandent du code : un script `scripts/migrate-v3.ts`, lancé une fois après la migration SQL. Il est rejouable, parce qu'il n'écrit que ce qui manque. Le même script contrôle ensuite que les groupes, les tirages et les listes sont tous là (le critère « un script le compare »).
+Les étapes 4 à 6 se font aussi en SQL (voir « Corrigé en codant »). La comparaison, avant et après, est un script à part.
 
 ### Pour que rien ne change à l'écran
 
@@ -117,11 +117,79 @@ Les étapes 4 à 6 demandent du code : un script `scripts/migrate-v3.ts`, lancé
 - **Les réglages du groupe d'aujourd'hui** écrivent dans `parties.rules` (les valeurs de départ) **et** dans chaque Secret Santa de la fête encore en préparation. Un tirage fait ne change déjà plus ses règles, puisqu'elles sont figées dans `rules_snapshot`. Pour la personne, le résultat est donc le même qu'aujourd'hui.
 - Les adresses ne changent pas : `/admin/[slug]`, `/editions/[id]` et les liens personnels restent tels quels, seule la requête derrière change.
 
-### Ce que je voudrais que tu tranches
+### Tranché par Julien, le 20 novembre 2026
 
-1. Les renommages complets (tables et colonnes) : oui, ou seulement les nouvelles tables ? Le renommage complet touche une centaine de fichiers serveur, de façon mécanique.
-2. La colonne temporaire `parties.from_list`, ou la règle « au moins un Secret Santa, ou aucune liste » sans colonne ?
-3. La catégorie d'une fête née d'une liste, déduite de son icône : d'accord ?
-4. La visibilité `giver` pour une liste reliée à un tirage. C'est ce qui garde le plus près d'aujourd'hui, où seul celui qui me tire voit le lien, en plus du lien public si la liste est partagée.
+1. **Renommer les tables et les colonnes, pour de bon : oui.**
+2. **Colonne temporaire `parties.from_list` : oui.**
+3. **La catégorie se note par un code, pas par un emoji.**
+   - C'est une constante `PARTY_CATEGORIES` (`shared/utils/categories.ts`), qui garde pour chaque code l'emoji et les réglages de départ.
+   - Pas de table : les six catégories sont figées, et leurs libellés sont dans `shared/i18n`.
+   - L'emoji ne sert qu'à deviner la catégorie d'une liste à la migration.
+4. **La visibilité se règle fête par fête, comme le dit la spec.**
+   - « Tout le monde, avec un lien » reste un troisième niveau, sur la liste, toujours possible en plus.
+   - À la migration, une liste reliée à un tirage reçoit `party` si elle a un lien public, sinon `giver`.
 
-Je m'arrête ici, comme le demande le ticket.
+### Corrigé en codant
+
+- **Toute la reprise se fait en SQL, dans une seule migration**, au lieu d'un script TypeScript à lancer après. Ainsi, `wrangler d1 migrations apply` suffit, en local comme à distance, et il n'y a pas d'étape à oublier. La fusion des réglages se fait en JSON dans SQLite ; un test la compare à `mergeRules` sur des cas réels.
+- **`rules_snapshot` ne sert pas à lire les réglages d'un tirage fait** : tout le code relit le groupe, puis la surcharge.
+  - Les réglages du groupe d'aujourd'hui écrivent donc dans `parties.rules` **et dans chaque Secret Santa de la fête**, quel que soit son état.
+  - Les deux écrans touchent des réglages différents : le groupe règle « Éviter la même personne », le mot ajouté aux messages, les emails et les pistes ; l'édition règle le budget, le petit mot et la date. Écrire partout donne donc le même résultat qu'aujourd'hui.
+
+### Fait
+
+- **Le schéma** est dans `server/database/schema.ts`, la migration écrite à la main dans `0033_v3_parties.sql`, avec son instantané Drizzle (`drizzle-kit generate` ne voit plus aucune différence). Les catégories sont dans `shared/utils/categories.ts`.
+- **La reprise** est en SQL, dans la même migration.
+  - Le Secret Santa est refait sous son propre nom, une fois l'ancienne table supprimée. Ainsi, les clés étrangères différées des lignes qui en dépendent sont réglées au moment de l'insertion.
+  - La fusion des réglages suit `mergeRules` : les valeurs nulles sont retirées, l'ancien `wishlist` devient `giftHints`, puis la surcharge de l'édition s'applique par-dessus les réglages du groupe.
+- **Les preuves.**
+  - `server/database/migrations.test.ts` rejoue toutes les migrations sur SQLite en mémoire, clés étrangères actives, dans une transaction comme D1. Il vérifie le schéma contre l'instantané, chaque cas de `migration.md`, l'égalité des réglages et la comparaison ci-dessous.
+  - `pnpm v3:compare avant.sqlite après.sqlite` (`server/database/v3Compare.ts`) compare les groupes, les organisateurs, les éditions (fête, année, état, réglages), les tables qui n'ont fait que changer de colonnes, et les listes.
+  - Lancé sur une copie de la base locale migrée par `wrangler d1 migrations apply --local --persist-to <copie>` : 24 groupes, 26 éditions et 9 listes avant ; 30 fêtes, dont 6 nées d'une liste, 32 années, 26 Secret Santa et 9 listes rangées après. Aucune différence.
+- **Le code serveur** lit et écrit le nouveau modèle. Les réponses d'API, et donc les écrans, gardent leurs noms d'avant.
+  - Une édition se lit par `selectEditions` (`server/database/editions.ts`), qui joint l'année de la fête.
+  - Le journal garde `groupId` et `editionId` dans sa logique pure. `auditInsert` et `loadJournal` font la conversion à l'entrée et à la sortie de la base.
+- **Les fêtes nées d'une liste** sont cachées partout où le code connaît un groupe : rôle d'organisateur, listes de groupes, administration, quota, statistiques (`isGroup`).
+- **Les réglages du groupe** s'écrivent aussi dans chaque Secret Santa de la fête (`rules.patch.ts`). Ceux d'une édition s'écrivent dans son Secret Santa.
+- **Les listes après la migration** (`server/database/listParties.ts`) :
+  - une liste créée reçoit sa fête, avec l'identifiant de la liste ;
+  - un co-teneur qui accepte en devient membre ;
+  - le titre et l'icône suivent ;
+  - une liste reliée à un tirage entre dans la fête de ce tirage, et en sort quand plus personne de cette fête ne la relie ;
+  - une liste supprimée sort de toutes ses fêtes et emporte la sienne.
+- **Les tests** : `pnpm controle` passe (lint, types, 684 tests unitaires) et `pnpm test:e2e` aussi (141 parcours, sans retouche).
+
+### Décidé seul
+
+- **Toute la reprise en SQL**, plutôt qu'un script à lancer après, pour qu'il n'y ait qu'une étape (voir « Corrigé en codant »).
+- **Les réponses d'API gardent leurs champs** (`groupId`, `year`, `rulesOverride`) jusqu'aux écrans de la V3. Le champ `rulesOverride` renvoie désormais tous les réglages du Secret Santa. L'écran les renvoie avec une valeur changée, et le serveur fusionne.
+- **Le prénom d'un membre d'une fête née d'une liste.**
+  - À la migration : celui du profil, sinon celui de la fiche « Moi », sinon vide.
+  - Après la migration : la règle de toujours, `personFromProfile`, qui devine un prénom depuis l'adresse.
+  - Ces fêtes sont cachées ; à revoir avec le ticket 104.
+- **L'adresse d'une fête née d'une liste** est `liste-` suivi de 12 caractères au hasard. Elle n'est montrée nulle part pour l'instant.
+- **Une nouvelle année** (création d'une édition) prend la date habituelle de la fête cette année-là : le 25 décembre pour les groupes d'aujourd'hui.
+- **La date d'une liste** ne suit pas l'année de sa fête quand on la change. Elle n'est lue nulle part avant le ticket 106.
+- **Corrigé en route** : `carriedGame` lisait la date de l'édition précédente dans `rulesOverride`, un champ facultatif que les types ne pouvaient pas signaler. Sans cette correction, « Devine qui » n'aurait plus été repris d'une année sur l'autre. Son test lit maintenant `rules`, et vérifie la même chose.
+
+### Ce qui reste ouvert, ou à savoir
+
+- **Ta base locale n'est pas migrée, exprès.** `pnpm dev` sur `main` ne marcherait plus avec elle. Sur cette branche, lance `pnpm db:migrate:local` ; pour revenir sur `main` ensuite, il faut repartir d'une base vide ou d'une sauvegarde de `.wrangler/state`.
+- **Supprimer un groupe** (super-admin) retire ses listes de sa fête. Une liste qui n'était que dans cette fête n'est alors plus dans aucune. C'est rare, et ce sera à reprendre quand la suppression d'une fête sera conçue.
+- **`README.md`, section 10**, décrit encore le modèle de la V2. Je ne l'ai pas touché, parce qu'il décrit l'application publiée.
+
+### L'essai sur une copie de la base de production, pas à pas
+
+À faire par Julien. Rien n'écrit à distance : `export` ne fait que lire.
+
+1. `pnpm wrangler d1 export secret-santa --remote --output=prod.sql`
+2. `mkdir -p .wrangler/essai-v3 && pnpm wrangler d1 execute secret-santa --local --persist-to .wrangler/essai-v3 --file=prod.sql`
+3. Garder la base « avant » : `ls .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/` montre un fichier `<long nom>.sqlite` à côté de `metadata.sqlite`. Le copier : `cp .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/<long nom>.sqlite avant.sqlite`.
+4. `pnpm wrangler d1 migrations apply secret-santa --local --persist-to .wrangler/essai-v3`. La table `d1_migrations` vient avec l'export, donc seule `0033` est appliquée.
+5. `pnpm v3:compare avant.sqlite .wrangler/essai-v3/v3/d1/miniflare-D1DatabaseObject/<long nom>.sqlite`
+6. Supprimer ensuite `prod.sql`, `avant.sqlite` et `.wrangler/essai-v3` : ce sont les données des gens.
+
+### Commits
+
+- `773303c` docs : la proposition de schéma.
+- Puis le modèle, la migration et le code serveur, et enfin le script de comparaison, avec ce compte rendu.

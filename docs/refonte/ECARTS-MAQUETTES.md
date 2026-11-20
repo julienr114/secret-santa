@@ -35,15 +35,14 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `ListeSansPersonneVisiteur` | À côté de la date, pas de « · la liste de Camille et Hugo » ; la phrase dessous reste « La liste de Camille. Tu offres 1 cadeau : personne d'autre que Camille ne sait que c'est toi. » | Seul |
 | `ListeNouvelleReprendre` | Une liste sans personne s'y lit « Sans personne · 3 idées pas encore offertes », au lieu de « 1 personne · … ». | Seul |
 
-## Les retouches de la liste (Correction 28, première version)
-
-Le plan rouvre cette correction (lien en ligne sous le texte, tout en pastilles pour le visiteur, plus de « Changer », nouvelles tailles) : les lignes ci-dessous disent l'état du code **avant** cette reprise.
+## Les retouches de la liste (Corrections 28 et 29)
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `ListeTeneur`, `ListeDecocher` | Au bout de la rangée de pastilles d'un cadeau à plusieurs, celui qui tient la liste garde « Se joindre » (lien souligné) ou « Tu participes » (texte vert). Les maquettes ne les montrent pas. | Seul |
-| `ListeTeneur` | Un cadeau à plusieurs fermé garde dessous « Offert à plusieurs · au complet ». | Seul |
-| `ListeTeneur`, `ListeVisiteur` | Le lien d'une idée est encore la pastille lilas avec le nom du site (deuxième version, refusée depuis). Pendant qu'on écrit l'idée, la ligne garde « : lien » au bout. | Plan, puis à reprendre |
+| `ListeTeneur`, `ListeDecocher` | La case verte d'une idée que **je** donne, dans le document, ouvre son panneau (plus de « Changer », comme par le lien). La maquette ne montre pas cet état ; la ligne entière n'est pas un bouton dans le document, puisque toucher le texte l'écrit. | Seul |
+| `ListeTeneur` | Dans le document, mon état sous une idée est la même pastille que par le lien (« Tu l'offres », « Tu participes »). | Seul |
+| `ListePlusieursLigne` | Pour ceux qui tiennent la liste, pas de « 7 personnes » : une pastille par prénom, chacune décoche sa personne. | Seul |
+| `ListeIdee`, `ListeIdeeLienFait` | L'adresse se lit sans « https:// ». Le champ du lien n'est pas atteint par la touche Tab (elle va d'une ligne à l'autre). Une adresse fausse est marquée en rouge (filet, icône, texte). | Seul |
 | `ListeAidePartage` | « Activé par Camille » nomme celui qui gère la liste, le premier s'ils sont plusieurs : la base ne retient pas qui a activé le partage. | Seul |
 | `ListeAidePartage` | Sur un ordinateur (pas de feuille de partage), le bouton « Partager » copie le lien et dit « Copié » un instant. | Seul |
 

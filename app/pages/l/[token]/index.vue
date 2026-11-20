@@ -248,7 +248,12 @@ const writes = (person: PersonLine) =>
             </p>
           </div>
         </header>
-        <ul v-if="writes(person)" class="flex flex-col pl-5">
+        <TransitionGroup
+          v-if="writes(person)"
+          tag="ul"
+          name="line"
+          class="flex flex-col pl-5"
+        >
           <ListsIdeaLine
             v-for="(idea, index) in person.ideas"
             :key="idea.id"
@@ -259,6 +264,7 @@ const writes = (person: PersonLine) =>
             :line="`${person.id}:${index}`"
           />
           <ListsIdeaLine
+            key="new"
             :via="via"
             :list-person-id="person.id"
             :for-name="person.member.firstName"
@@ -271,8 +277,8 @@ const writes = (person: PersonLine) =>
             "
             :line="`${person.id}:new`"
           />
-        </ul>
-        <ul v-else class="flex flex-col pl-5">
+        </TransitionGroup>
+        <TransitionGroup v-else tag="ul" name="line" class="flex flex-col pl-5">
           <ListsVisitorLine
             v-for="idea in person.ideas"
             :key="idea.id"
@@ -326,12 +332,13 @@ const writes = (person: PersonLine) =>
             </div>
           </li>
           <ListsOffListLine
+            key="off-list-new"
             :token="token"
             :list-person-id="person.id"
             :for-name="person.member.firstName"
             :holder-name="holder"
           />
-        </ul>
+        </TransitionGroup>
       </section>
     </template>
 

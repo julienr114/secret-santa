@@ -242,6 +242,7 @@ export default {
     mark: 'Taken up from the old list',
   },
   holders: {
+    here: 'Here right now',
     title: 'Those who hold the list',
     you: 'That’s you',
     remove: 'Remove {name}',

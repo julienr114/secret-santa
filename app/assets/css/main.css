@@ -243,6 +243,27 @@
   }
 }
 
+/* The caret of someone else who writes a line of a list, live (lot 26):
+   thin as a real one, at the colour of their icon (set on the element),
+   and it blinks like one, on then off, unless motion is to be reduced. */
+.live-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 1.15em;
+  margin: 0 0.5px;
+  vertical-align: -0.2em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .live-caret {
+    animation: live-caret 1s steps(1) infinite;
+  }
+  @keyframes live-caret {
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
 /* A list watched live (lot 26): a line that appears, moves or goes shows
    it by its movement, and nothing else. Nothing moves for those who ask
    for less motion. */
@@ -255,6 +276,16 @@
   }
   .line-move {
     transition: transform 0.25s ease;
+  }
+  /* A text someone else just changed. */
+  .text-changed {
+    animation: text-changed 0.35s ease;
+  }
+  @keyframes text-changed {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
   }
   .line-enter-from {
     opacity: 0;

@@ -162,6 +162,17 @@ const hereNames = computed(() => {
     : (names[0] ?? '');
 });
 const visitors = computed(() => live.presence.value?.visitors ?? 0);
+// The name of the list, while someone else who holds it writes it.
+const titleActive = ref(false);
+const { lockedBy: titleLock } = useLiveWriting(
+  live,
+  () => 'title',
+  title,
+  titleActive,
+  () =>
+    (titleField.value as { textareaRef?: HTMLTextAreaElement } | null)
+      ?.textareaRef,
+);
 
 // « Reprendre cette liste » (lot 27): a new draft, started from this
 // one, which does not change.
@@ -487,7 +498,14 @@ onBeforeRouteLeave((to) => {
               <UIcon name="i-lucide-pencil" class="size-3.5" />
             </span>
           </button>
+          <ListsLiveLock
+            v-if="titleLock"
+            :by="titleLock"
+            :fallback="t('lists.doc.titlePlaceholder')"
+            class="font-display text-[36px] leading-[1.1] font-bold"
+          />
           <UTextarea
+            v-else
             ref="titleField"
             v-model="title"
             autoresize
@@ -502,7 +520,11 @@ onBeforeRouteLeave((to) => {
             }"
             data-testid="list-title"
             @keydown.enter.prevent="($event.target as HTMLElement).blur()"
-            @blur="saveTitle"
+            @focus="titleActive = true"
+            @blur="
+              titleActive = false;
+              saveTitle();
+            "
           />
           <button
             type="button"

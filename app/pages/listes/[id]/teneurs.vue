@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { keys } from '~/composables/queries/keys';
 import type { HolderLevel } from '#server/utils/listAccess';
 import {
   useCancelInviteMutation,
@@ -29,6 +30,16 @@ const toast = useMessages();
 const errorMessage = useErrorMessage();
 const list = useListQuery(id);
 const query = useHoldersQuery(id);
+// Live (lot 26): who else holds the list and has it open now, and the
+// page follows what the others change.
+const live = useListLive(
+  () => `/api/lists/${id.value}/live`,
+  () => [keys.holders(id.value)],
+);
+const isHere = (accountId: string) =>
+  (live.presence.value?.holders ?? []).some(
+    (holder) => holder.accountId === accountId,
+  );
 const invite = useInviteHolderMutation(id);
 const remove = useRemoveHolderMutation(id);
 const setLevel = useHolderLevelMutation(id);
@@ -231,7 +242,13 @@ const onResend = (expired: Invite) =>
           v-for="holder in holders"
           :key="holder.accountId"
           :title="holder.name"
-          :subtitle="holder.me ? t('lists.holders.you') : undefined"
+          :subtitle="
+            holder.me
+              ? t('lists.holders.you')
+              : isHere(holder.accountId)
+                ? t('lists.holders.here')
+                : undefined
+          "
           :avatar="holder.avatar"
           one-line
           data-testid="holder"

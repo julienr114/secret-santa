@@ -248,6 +248,7 @@ export default {
     mark: 'Von der alten Liste übernommen',
   },
   holders: {
+    here: 'Gerade da',
     title: 'Wer die Liste führt',
     you: 'Das bist du',
     remove: '{name} entfernen',

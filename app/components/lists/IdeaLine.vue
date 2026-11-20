@@ -164,9 +164,10 @@ const who = computed(() => {
 // Live (lot 26, maquette ListeLiveTeneur): while someone else who holds
 // the list writes this line, it is theirs: tinted with the light colour
 // of their icon, their icon and « Hugo écrit… » under it, their caret at
-// its end, and it cannot be touched. It is free again when they validate
-// or leave it, or after 30 seconds without a key. What they type does
-// not travel: the line shows what is saved.
+// its end; it cannot be touched, and nothing to do on it is offered
+// (who gives it, « Se joindre », « Changer »: Julien, 20 November 2026). It is free again when they validate
+// or leave it, or after 30 seconds without a key. What they type
+// shows as they type it (Julien, 20 November 2026).
 const live = useListLiveLine();
 const lockedBy = computed(() =>
   props.idea ? (live?.writingBy(props.idea.id) ?? null) : null,
@@ -174,16 +175,36 @@ const lockedBy = computed(() =>
 const lockShade = computed(() =>
   lockedBy.value?.avatar ? AVATAR_SHADES[lockedBy.value.avatar.color] : null,
 );
+/** What names this line to the others: its idea, or « a new one ». */
+const liveKey = computed(() =>
+  props.idea ? props.idea.id : `new:${props.listPersonId}`,
+);
+/** Says what I am typing: a new line only once it has a letter. */
+const sayWriting = () => {
+  if (!live || !writing.value) return;
+  if (props.idea || draft.value.trim()) {
+    live.writing(
+      liveKey.value,
+      draft.value,
+      field.value?.selectionStart ?? draft.value.length,
+    );
+  } else live.idle();
+};
 watch(writing, (on) => {
-  if (!props.idea || !live) return;
-  if (on) live.writing(props.idea.id);
+  if (!live) return;
+  if (on) sayWriting();
   else live.idle();
 });
-watch(draft, () => {
-  if (writing.value && props.idea) live?.writing(props.idea.id);
-});
+watch(draft, sayWriting);
 onBeforeUnmount(() => {
-  if (writing.value && props.idea) live?.idle();
+  if (writing.value) live?.idle();
+});
+// A text that changes shows it by a short movement, not on arrival.
+const settled = ref(false);
+onMounted(() => {
+  window.setTimeout(() => {
+    settled.value = true;
+  }, 400);
 });
 
 /**
@@ -574,6 +595,8 @@ const onFocusOut = (event: FocusEvent) => {
               :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
               data-testid="idea-field"
               data-line-start
+              @keyup="sayWriting"
+              @click="sayWriting"
               @keydown.delete="onErase"
               @beforeinput="
                 ($event as InputEvent).inputType === 'deleteContentBackward' &&
@@ -652,8 +675,19 @@ const onFocusOut = (event: FocusEvent) => {
           data-line-start
           @click="start"
         >
-          {{ idea.text
-          }}<template v-if="idea.url && idea.text">&nbsp;:</template>
+          <span
+            :key="lockedBy ? 'live' : idea.text"
+            :class="settled && !lockedBy ? 'text-changed' : ''"
+            ><template v-if="lockedBy"
+              >{{ lockedBy.text.slice(0, lockedBy.caret)
+              }}<span
+                class="live-caret"
+                :style="{ backgroundColor: lockShade?.ring ?? 'currentColor' }"
+                aria-hidden="true"
+                data-testid="live-caret"
+              />{{ lockedBy.text.slice(lockedBy.caret) }}</template
+            ><template v-else>{{ idea.text }}</template></span
+          ><template v-if="idea.url && idea.text">&nbsp;:</template>
         </button>
         <a
           v-if="idea.url"
@@ -665,13 +699,6 @@ const onFocusOut = (event: FocusEvent) => {
           :class="taken && !mine ? 'line-through' : ''"
           >{{ t('lists.doc.linkWord') }}</a
         >
-        <!-- Their caret, at their colour, at the end of what is saved. -->
-        <span
-          v-if="lockedBy"
-          class="inline-block h-[1.1em] w-0.5 rounded-full motion-safe:animate-pulse"
-          :style="{ backgroundColor: lockShade?.ring ?? 'currentColor' }"
-          aria-hidden="true"
-        />
         <!-- Taken from an old list and not changed since (lot 27): a small
              grey mark, for those who hold the list only. -->
         <UIcon
@@ -683,7 +710,7 @@ const onFocusOut = (event: FocusEvent) => {
           data-testid="idea-carried"
         />
         <button
-          v-if="who && claims.length > 0"
+          v-if="who && claims.length > 0 && !lockedBy"
           type="button"
           class="relative rounded-full px-2 py-0.5 text-xs font-bold no-underline after:absolute after:-inset-x-1 after:-inset-y-3"
           :class="
@@ -698,13 +725,13 @@ const onFocusOut = (event: FocusEvent) => {
           {{ who }}
         </button>
         <span
-          v-else-if="who"
+          v-else-if="who && !lockedBy"
           class="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-default no-underline"
           data-testid="idea-who"
           >{{ who }}</span
         >
         <button
-          v-if="openGroup"
+          v-if="openGroup && !lockedBy"
           type="button"
           class="font-bold text-primary-ink underline underline-offset-2"
           data-testid="idea-join"
@@ -713,7 +740,7 @@ const onFocusOut = (event: FocusEvent) => {
           {{ t('lists.visitor.join') }}
         </button>
         <span
-          v-else-if="inGroup"
+          v-else-if="inGroup && !lockedBy"
           class="text-sm font-bold text-success-ink"
           data-testid="idea-joined"
           >{{ t('lists.visitor.joined') }}</span
@@ -733,7 +760,7 @@ const onFocusOut = (event: FocusEvent) => {
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
       <ul
-        v-if="idea && unfolded && claims.length > 0 && !writing"
+        v-if="idea && unfolded && claims.length > 0 && !writing && !lockedBy"
         class="mt-1.5 flex flex-col divide-y divide-default rounded-[18px] bg-muted text-sm leading-[1.35] text-toned"
         data-testid="untick-band"
         data-no-drag
@@ -766,7 +793,7 @@ const onFocusOut = (event: FocusEvent) => {
         </li>
       </ul>
       <p
-        v-if="idea && mine && !writing"
+        v-if="idea && mine && !writing && !lockedBy"
         class="text-[13px] text-toned"
         data-testid="idea-mine"
       >
@@ -782,7 +809,7 @@ const onFocusOut = (event: FocusEvent) => {
         </button>
       </p>
       <p
-        v-else-if="idea && view.kind === 'group' && !writing"
+        v-else-if="idea && view.kind === 'group' && !writing && !lockedBy"
         class="text-[13px] text-toned"
       >
         {{ view.closed ? t('lists.doc.groupClosed') : t('lists.doc.group') }}

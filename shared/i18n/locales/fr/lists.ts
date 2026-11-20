@@ -247,6 +247,7 @@ export default {
     mark: 'Reprise de l’ancienne liste',
   },
   holders: {
+    here: 'Là en ce moment',
     title: 'Ceux qui tiennent la liste',
     you: 'C’est toi',
     remove: 'Retirer {name}',

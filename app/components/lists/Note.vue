@@ -23,7 +23,17 @@ const shown = computed(() =>
       ? t('lists.doc.noteDefault')
       : '',
 );
+// Live (lot 26): while someone else who holds the list writes the word,
+// it is theirs.
+const { lockedBy } = useLiveWriting(
+  useListLiveLine(),
+  () => 'note',
+  draft,
+  writing,
+  () => field.value?.textareaRef,
+);
 const start = async () => {
+  if (lockedBy.value) return;
   draft.value = shown.value;
   writing.value = true;
   await nextTick();
@@ -40,7 +50,12 @@ const onBlur = () => {
 </script>
 
 <template>
-  <div v-if="writing" class="flex flex-col gap-1">
+  <ListsLiveLock
+    v-if="lockedBy"
+    :by="lockedBy"
+    class="text-base leading-[1.5]"
+  />
+  <div v-else-if="writing" class="flex flex-col gap-1">
     <UTextarea
       ref="field"
       v-model="draft"

@@ -34,6 +34,9 @@ export default defineNuxtConfig({
   // works over plain HTTP on the local network (a phone on the same wifi).
   $development: {
     runtimeConfig: { session: { cookie: { secure: false } } },
+    // The live lists (lot 26) in development: Nitro takes the WebSocket
+    // itself, and keeps the rooms in memory (`server/routes/live/[id].ts`).
+    nitro: { experimental: { websocket: true } },
   },
   modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxt/ui'],
   // Secrets come from the environment (NUXT_* variables, Cloudflare secrets

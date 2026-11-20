@@ -20,10 +20,12 @@ import { api } from '~/composables/queries/useApi';
 export type ListLive = {
   /** Who else holds the list and has it open, and how many visitors. */
   presence: Readonly<Ref<Presence | null>>;
-  /** Who else writes that line now, or null. */
-  writingBy: (line: string) => LivePerson | null;
-  /** I write that line: said again at each key, at most now and then. */
-  writing: (line: string) => void;
+  /** Who else writes that line now, with what they typed so far. */
+  writingBy: (
+    line: string,
+  ) => (LivePerson & { text: string; caret: number }) | null;
+  /** I write that line: what I typed so far, and where my caret is. */
+  writing: (line: string, text: string, caret: number) => void;
   /** I left the line, or validated it. */
   idle: () => void;
 };
@@ -34,8 +36,8 @@ export const useListLiveLine = (): ListLive | null => inject(LIST_LIVE, null);
 
 /** How long between two tries after a connection lost, at most. */
 const RETRY_MS = [2000, 5000, 15_000, 60_000];
-/** « I write this line » is said again at most this often. */
-const WRITING_EVERY_MS = 5000;
+/** What I type is said at most this often: the others see it grow. */
+const WRITING_EVERY_MS = 200;
 /** « I am still here » is said at most this often. */
 const ACTIVE_EVERY_MS = 5 * 60 * 1000;
 
@@ -65,6 +67,9 @@ export const useListLive = (
     saidWriting: number;
     /** The line I write now, said again when the connection comes back. */
     line: string | null;
+    text: string;
+    caret: number;
+    sendTimer: number;
     lockTimer: number;
     watch: number;
     left: boolean;
@@ -76,6 +81,9 @@ export const useListLive = (
     saidActive: Date.now(),
     saidWriting: 0,
     line: null,
+    text: '',
+    caret: 0,
+    sendTimer: 0,
     lockTimer: 0,
     watch: 0,
     left: false,
@@ -91,7 +99,9 @@ export const useListLive = (
    * @returns False when there is no connection to say it on.
    */
   const say = (
-    message: { t: 'writing'; line: string } | { t: 'idle' | 'active' },
+    message:
+      | { t: 'writing'; line: string; text: string; caret: number }
+      | { t: 'idle' | 'active' },
   ): boolean => {
     if (state.socket?.readyState !== WebSocket.OPEN) return false;
     state.socket.send(JSON.stringify(message));
@@ -119,7 +129,15 @@ export const useListLive = (
     socket.addEventListener('open', () => {
       state.tries = 0;
       // What I was writing while the connection was away is said now.
-      if (state.line && say({ t: 'writing', line: state.line })) {
+      if (
+        state.line &&
+        say({
+          t: 'writing',
+          line: state.line,
+          text: state.text,
+          caret: state.caret,
+        })
+      ) {
         state.saidWriting = Date.now();
       }
     });
@@ -178,6 +196,7 @@ export const useListLive = (
     state.left = true;
     window.clearInterval(state.watch);
     window.clearTimeout(state.lockTimer);
+    window.clearTimeout(state.sendTimer);
     document.removeEventListener('visibilitychange', onBack);
     window.removeEventListener('online', onBack);
     window.removeEventListener('pointerdown', onActivity);
@@ -187,8 +206,10 @@ export const useListLive = (
 
   const idle = () => {
     window.clearTimeout(state.lockTimer);
+    window.clearTimeout(state.sendTimer);
     state.saidWriting = 0;
     state.line = null;
+    state.text = '';
     say({ t: 'idle' });
   };
   const live: ListLive = {
@@ -197,16 +218,34 @@ export const useListLive = (
       presence.value?.writing.find(
         (one) => one.line === line && one.accountId !== myAccountId(),
       ) ?? null,
-    writing: (line) => {
+    writing: (line, text, caret) => {
       // Free again after 30 seconds without a key.
       window.clearTimeout(state.lockTimer);
       state.lockTimer = window.setTimeout(idle, LIVE.lockMs);
-      const now = Date.now();
       const same = state.line === line;
       state.line = line;
-      if (same && now - state.saidWriting < WRITING_EVERY_MS) return;
-      // Kept for the next key, or the connection to come, when not said.
-      if (say({ t: 'writing', line })) state.saidWriting = now;
+      state.text = text;
+      state.caret = caret;
+      const send = () => {
+        window.clearTimeout(state.sendTimer);
+        // Kept for the connection to come, when not said.
+        if (
+          state.line &&
+          say({
+            t: 'writing',
+            line: state.line,
+            text: state.text,
+            caret: state.caret,
+          })
+        ) {
+          state.saidWriting = Date.now();
+        }
+      };
+      const wait = WRITING_EVERY_MS - (Date.now() - state.saidWriting);
+      if (!same || wait <= 0) return send();
+      // Typed fast: the last letters go once the pause is over.
+      window.clearTimeout(state.sendTimer);
+      state.sendTimer = window.setTimeout(send, wait);
     },
     idle,
   };

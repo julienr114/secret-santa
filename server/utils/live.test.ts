@@ -7,9 +7,14 @@ import {
   liveTarget,
   parseMessage,
   presenceOf,
+  roomMessage,
+  roomPresence,
+  roomSignal,
+  roomSweep,
   seatOf,
   signTicket,
   verifyTicket,
+  type Peer,
   type Seat,
 } from './live';
 
@@ -84,7 +89,31 @@ describe('what bounds a list watched live', () => {
     expect(parseMessage('{"t":"writing","line":"abc-123"}')).toEqual({
       t: 'writing',
       line: 'abc-123',
+      text: '',
+      caret: 0,
     });
+    // What is typed travels, cut at the longest text of a list.
+    expect(
+      parseMessage(
+        JSON.stringify({
+          t: 'writing',
+          line: 'new:p1',
+          text: 'x'.repeat(LIVE.maxDraft + 100),
+        }),
+      ),
+    ).toEqual({
+      t: 'writing',
+      line: 'new:p1',
+      text: 'x'.repeat(LIVE.maxDraft),
+      caret: LIVE.maxDraft,
+    });
+    // The caret travels too, kept inside what is typed.
+    expect(
+      parseMessage('{"t":"writing","line":"i","text":"abc","caret":1}'),
+    ).toMatchObject({ caret: 1 });
+    expect(
+      parseMessage('{"t":"writing","line":"i","text":"abc","caret":99}'),
+    ).toMatchObject({ caret: 3 });
     expect(parseMessage('{"t":"idle"}')).toEqual({ t: 'idle' });
     expect(parseMessage('{"t":"active","more":1}')).toEqual({ t: 'active' });
     for (const bad of [
@@ -106,19 +135,36 @@ describe('who writes which line', () => {
   it('locks a line for the one who holds the list and writes it', () => {
     const seat = applyMessage(
       seatOf(hugo, NOW),
-      { t: 'writing', line: 'idea-1' },
+      {
+        t: 'writing',
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
       NOW + 5,
     );
     expect(seat.writing).toBe('idea-1');
     expect(presenceOf([seat], NOW + 10).writing).toEqual([
-      { accountId: 'hugo', name: 'Hugo', avatar: hugo.avatar, line: 'idea-1' },
+      {
+        accountId: 'hugo',
+        name: 'Hugo',
+        avatar: hugo.avatar,
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
     ]);
   });
 
   it('frees it when they validate or leave the line', () => {
     const writing = applyMessage(
       seatOf(hugo, NOW),
-      { t: 'writing', line: 'idea-1' },
+      {
+        t: 'writing',
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
       NOW,
     );
     const done = applyMessage(writing, { t: 'idle' }, NOW + 1000);
@@ -129,7 +175,12 @@ describe('who writes which line', () => {
   it('frees it after 30 seconds without a key pressed', () => {
     const seat = applyMessage(
       seatOf(hugo, NOW),
-      { t: 'writing', line: 'idea-1' },
+      {
+        t: 'writing',
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
       NOW,
     );
     expect(presenceOf([seat], NOW + LIVE.lockMs - 1).writing).toHaveLength(1);
@@ -137,7 +188,12 @@ describe('who writes which line', () => {
     // Another key pressed keeps it.
     const again = applyMessage(
       seat,
-      { t: 'writing', line: 'idea-1' },
+      {
+        t: 'writing',
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
       NOW + LIVE.lockMs - 1,
     );
     expect(presenceOf([again], NOW + LIVE.lockMs).writing).toHaveLength(1);
@@ -146,7 +202,12 @@ describe('who writes which line', () => {
   it('never says a visitor writes', () => {
     const seat = applyMessage(
       seatOf(visitor, NOW),
-      { t: 'writing', line: 'idea-1' },
+      {
+        t: 'writing',
+        line: 'idea-1',
+        text: 'Un télescope pour enf',
+        caret: 21,
+      },
       NOW + 5,
     );
     expect(seat.writing).toBeNull();
@@ -203,6 +264,14 @@ describe('what a write on the app touches', () => {
     });
   });
 
+  it('tells every list of one of my people when their page changes', () => {
+    expect(liveTarget('PATCH', '/api/family/m1', 200)).toEqual({
+      memberId: 'm1',
+    });
+    expect(liveTarget('GET', '/api/family/m1', 200)).toBeNull();
+    expect(liveTarget('POST', '/api/family', 201)).toBeNull();
+  });
+
   it('tells nothing of a reading, a refusal, or anything else', () => {
     expect(liveTarget('GET', '/api/lists/abc', 200)).toBeNull();
     expect(liveTarget('POST', '/api/lists/abc/ideas', 409)).toBeNull();
@@ -210,7 +279,101 @@ describe('what a write on the app touches', () => {
     expect(liveTarget('POST', '/api/lists/abc/live', 200)).toBeNull();
     expect(liveTarget('POST', '/api/l/tok/live', 200)).toBeNull();
     expect(liveTarget('GET', '/api/l/tok', 200)).toBeNull();
-    expect(liveTarget('PATCH', '/api/family/m1', 200)).toBeNull();
     expect(liveTarget('POST', '/api/admin/famille/persons', 201)).toBeNull();
+  });
+});
+
+describe('the room', () => {
+  const peerOf = (who: Parameters<typeof seatOf>[0]) => {
+    const box: { seat: Seat | null; got: string[]; closed: string | null } = {
+      seat: seatOf(who, NOW),
+      got: [],
+      closed: null,
+    };
+    const peer: Peer = {
+      send: (text) => {
+        box.got = [...box.got, text];
+      },
+      close: (_code, reason) => {
+        box.closed = reason;
+        box.seat = null;
+      },
+      seat: () => box.seat,
+      sit: (seat) => {
+        box.seat = seat;
+      },
+    };
+    return { peer, box };
+  };
+
+  it('tells everyone the list changed, and nothing else to a visitor', () => {
+    const a = peerOf(camille);
+    const v = peerOf(visitor);
+    roomSignal([a.peer, v.peer], NOW);
+    expect(a.box.got).toEqual(['{"t":"changed"}']);
+    expect(v.box.got).toEqual(['{"t":"changed"}']);
+    roomPresence([a.peer, v.peer], NOW);
+    expect(a.box.got).toHaveLength(2);
+    expect(v.box.got).toHaveLength(1);
+  });
+
+  it('shows those who hold the list what the other types, as it comes', () => {
+    const a = peerOf(camille);
+    const h = peerOf(hugo);
+    const v = peerOf(visitor);
+    const peers = [a.peer, h.peer, v.peer];
+    roomMessage(
+      peers,
+      h.peer,
+      '{"t":"writing","line":"new:leo","text":"Un tél"}',
+      NOW + 1,
+    );
+    roomMessage(
+      peers,
+      h.peer,
+      '{"t":"writing","line":"new:leo","text":"Un télescope"}',
+      NOW + 2,
+    );
+    const last = JSON.parse(a.box.got.at(-1) ?? '{}');
+    expect(a.box.got).toHaveLength(2);
+    expect(last.writing).toEqual([
+      {
+        accountId: 'hugo',
+        name: 'Hugo',
+        avatar: hugo.avatar,
+        line: 'new:leo',
+        text: 'Un télescope',
+        caret: 12,
+      },
+    ]);
+    // Never to a visitor.
+    expect(v.box.got).toEqual([]);
+    // The same again says nothing new.
+    roomMessage(
+      peers,
+      h.peer,
+      '{"t":"writing","line":"new:leo","text":"Un télescope"}',
+      NOW + 3,
+    );
+    expect(a.box.got).toHaveLength(2);
+  });
+
+  it('closes a connection that says anything else, or stayed idle', () => {
+    const a = peerOf(camille);
+    roomMessage([a.peer], a.peer, '{"t":"hack"}', NOW);
+    expect(a.box.closed).toBe('unexpected');
+    const b = peerOf(hugo);
+    expect(roomSweep([b.peer], NOW + LIVE.idleMs)).toEqual([]);
+    expect(b.box.closed).toBe('idle');
+  });
+
+  it('leaves out the one who is going', () => {
+    const a = peerOf(camille);
+    const h = peerOf(hugo);
+    roomPresence([a.peer, h.peer], NOW, h.peer);
+    expect(JSON.parse(a.box.got[0] ?? '{}').holders).toEqual([
+      { accountId: 'camille', name: 'Camille', avatar: camille.avatar },
+    ]);
+    expect(h.box.got).toEqual([]);
   });
 });

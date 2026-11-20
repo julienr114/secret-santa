@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3';
 import { findAccountById } from '#server/database/accounts';
 import type { Db } from '#server/database/client';
+import { devSignal } from '#server/live/devRooms';
 import { avatarOf } from '#server/utils/avatars';
 import {
   LIVE,
@@ -19,10 +20,21 @@ type Rooms = {
   get: (id: unknown) => Stub;
 };
 
-/** The rooms, where the Worker has them (not in development). */
+/** The rooms of the Worker; none in development. */
 const roomsOf = (event: H3Event): Rooms | null =>
   ((event.context.cloudflare?.env as Record<string, unknown> | undefined)
     ?.LIST_ROOM as Rooms | undefined) ?? null;
+
+/**
+ * The secret that signs the tickets, as the room will read it: from the
+ * bindings of the Worker, or, in development, from the settings.
+ * @param event - The request.
+ * @returns The secret.
+ */
+const secretOf = (event: H3Event): string =>
+  liveSecretOf(
+    event.context.cloudflare?.env as Record<string, unknown> | undefined,
+  ) || String(useRuntimeConfig(event).dataKey ?? '');
 
 /**
  * What a browser needs to watch a list live: where to connect, and a
@@ -44,7 +56,8 @@ export const liveTicket = async (
   role: LiveRole,
   accountId: string | null,
 ) => {
-  if (!roomsOf(event)) return { live: false as const };
+  // In development the rooms are in the memory of the server.
+  if (!import.meta.dev && !roomsOf(event)) return { live: false as const };
   const account =
     role === 'holder' && accountId
       ? await findAccountById(db, accountId)
@@ -58,9 +71,7 @@ export const liveTicket = async (
       avatar: account ? avatarOf(account) : null,
       exp: Date.now() + LIVE.ticketMs,
     },
-    liveSecretOf(
-      event.context.cloudflare?.env as Record<string, unknown> | undefined,
-    ),
+    secretOf(event),
   );
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return { live: true as const, path: `/live/${listId}`, ticket };
@@ -75,6 +86,12 @@ export const liveTicket = async (
  * @returns Once told, or given up.
  */
 export const signalList = async (event: H3Event, listId: string) => {
+  // In development the rooms are in the memory of the server, whatever
+  // bindings the development tools pretend to have.
+  if (import.meta.dev) {
+    devSignal(listId);
+    return;
+  }
   const rooms = roomsOf(event);
   if (!rooms) return;
   try {

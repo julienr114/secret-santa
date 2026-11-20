@@ -3,6 +3,7 @@ import type { ListDocument } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
 import { MEMBER_NAME_MAX } from '#server/utils/lists';
 import { shoeSizesShown } from '#shared/utils/memberFields';
+import { AVATAR_SHADES } from '~/utils/avatars';
 import { useUpdateMemberMutation } from '~/composables/queries/useLists';
 
 // A person on a list, as its holder writes it (README 22.19, maquette
@@ -90,7 +91,17 @@ const onIcon = (avatar: Avatar) => {
 const naming = ref(false);
 const nameDraft = ref('');
 const nameField = ref<HTMLInputElement | null>(null);
+// Live (lot 26): while someone else who holds the list writes this
+// first name, it is theirs.
+const { lockedBy: nameLock } = useLiveWriting(
+  useListLiveLine(),
+  () => `name:${props.person.id}`,
+  nameDraft,
+  naming,
+  () => nameField.value,
+);
 const startName = async () => {
+  if (nameLock.value) return;
   nameDraft.value = props.person.member.firstName;
   naming.value = true;
   await nextTick();
@@ -211,6 +222,14 @@ const menu = computed(() =>
       ],
 );
 const via = computed(() => ({ listId: props.listId }));
+// Live (lot 26, maquette ListeLiveTeneur): the new idea someone else who
+// holds the list is writing for this person shows as they type it, just
+// above « Une autre idée… », tinted with the light colour of their icon.
+const live = useListLiveLine();
+const ghost = computed(() => live?.writingBy(`new:${props.person.id}`) ?? null);
+const ghostShade = computed(() =>
+  ghost.value?.avatar ? AVATAR_SHADES[ghost.value.avatar.color] : null,
+);
 // A gift not on the list cannot be unticked from here (Julien, 19
 // November 2026): touching it says why, under the line, instead of
 // doing nothing.
@@ -257,8 +276,9 @@ const explained = ref<string | null>(null);
       </button>
       <div class="flex min-w-0 grow flex-col">
         <h2 class="font-display text-[28px] leading-[1.1] font-bold">
+          <ListsLiveLock v-if="nameLock" :by="nameLock" />
           <input
-            v-if="naming"
+            v-else-if="naming"
             ref="nameField"
             v-model="nameDraft"
             type="text"
@@ -379,6 +399,44 @@ const explained = ref<string | null>(null);
               : t('lists.doc.offListNoticeAnonymous')
           }}
         </p>
+      </li>
+      <li
+        v-if="ghost"
+        key="ghost"
+        class="-mx-2 flex items-start gap-3 rounded-xl px-2 py-2"
+        :style="
+          ghostShade
+            ? {
+                backgroundColor: `color-mix(in srgb, ${ghostShade.bg} 55%, transparent)`,
+              }
+            : undefined
+        "
+        aria-live="polite"
+        data-testid="line-ghost"
+      >
+        <span
+          class="mt-0.5 size-[22px] shrink-0 rounded-sm border-[1.5px] border-accented bg-default opacity-50"
+          aria-hidden="true"
+        />
+        <div class="flex min-w-0 grow flex-col gap-0.5">
+          <p class="text-base leading-[1.45]">
+            {{ ghost.text.slice(0, ghost.caret)
+            }}<span
+              class="live-caret"
+              :style="{ backgroundColor: ghostShade?.ring ?? 'currentColor' }"
+              aria-hidden="true"
+            />{{ ghost.text.slice(ghost.caret) }}
+          </p>
+          <p class="flex items-center gap-1.5 text-[13px] text-toned">
+            <UiAvatar
+              v-if="ghost.avatar"
+              :avatar="ghost.avatar"
+              :px="18"
+              flat
+            />
+            {{ t('lists.live.writing', { name: ghost.name }) }}
+          </p>
+        </div>
       </li>
       <ListsIdeaLine
         key="new"

@@ -1,15 +1,15 @@
 /* eslint-disable functional/no-classes, functional/no-class-inheritance, functional/no-this-expressions -- Cloudflare asks for a class: a Durable Object extends DurableObject. Everything it decides is in the pure functions of server/utils/live.ts. */
 import { DurableObject } from 'cloudflare:workers';
 import {
-  applyMessage,
   canJoin,
-  isIdle,
   liveSecretOf,
-  parseMessage,
-  presenceOf,
+  roomMessage,
+  roomPresence,
+  roomSignal,
+  roomSweep,
   seatOf,
   verifyTicket,
-  type LiveEvent,
+  type Peer,
   type Seat,
 } from '#server/utils/live';
 
@@ -25,44 +25,17 @@ import {
 /** The path the app calls after a write, from inside the Worker only. */
 export const SIGNAL_PATH = '/signal';
 
+/** A socket of the object, as the room sees a connection. */
+const peerOf = (socket: WebSocket): Peer => ({
+  send: (text) => socket.send(text),
+  close: (code, reason) => socket.close(code, reason),
+  seat: () => socket.deserializeAttachment() as Seat | null,
+  sit: (seat) => socket.serializeAttachment(seat),
+});
+
 export class ListRoom extends DurableObject<Record<string, unknown>> {
-  /** The connections, each with its seat. */
-  private seats(): { socket: WebSocket; seat: Seat }[] {
-    return this.ctx.getWebSockets().flatMap((socket) => {
-      const seat = socket.deserializeAttachment() as Seat | null;
-      return seat ? [{ socket, seat }] : [];
-    });
-  }
-
-  private send(socket: WebSocket, event: LiveEvent) {
-    try {
-      socket.send(JSON.stringify(event));
-    } catch {
-      // Gone meanwhile: its close will come.
-    }
-  }
-
-  /** Closes what was left without activity, and returns who stays. */
-  private sweep(now: number) {
-    return this.seats().filter(({ socket, seat }) => {
-      if (!isIdle(seat, now)) return true;
-      socket.close(1000, 'idle');
-      return false;
-    });
-  }
-
-  /** Tells those who hold the list who is there, and who writes what. */
-  private tellPresence(now: number, without?: WebSocket) {
-    const there = this.sweep(now).filter(({ socket }) => socket !== without);
-    const presence = presenceOf(
-      there.map(({ seat }) => seat),
-      now,
-    );
-    for (const { socket, seat } of there) {
-      if (seat.role === 'holder') {
-        this.send(socket, { t: 'presence', ...presence });
-      }
-    }
+  private peers(): Peer[] {
+    return this.ctx.getWebSockets().map(peerOf);
   }
 
   override async fetch(request: Request): Promise<Response> {
@@ -70,31 +43,27 @@ export class ListRoom extends DurableObject<Record<string, unknown>> {
     const now = Date.now();
     // The app, after a write: everyone reads their own view again.
     if (url.pathname === SIGNAL_PATH && request.method === 'POST') {
-      for (const { socket } of this.sweep(now)) {
-        this.send(socket, { t: 'changed' });
-      }
+      roomSignal(this.peers(), now);
       return new Response(null, { status: 204 });
     }
     if (request.headers.get('upgrade') !== 'websocket') {
       return new Response(null, { status: 426 });
     }
-    const secret = liveSecretOf(this.env);
-    const listId = url.pathname.split('/').at(-1) ?? '';
     const who = await verifyTicket(
       url.searchParams.get('ticket'),
-      secret,
-      listId,
+      liveSecretOf(this.env),
+      url.pathname.split('/').at(-1) ?? '',
       now,
     );
     if (!who) return new Response(null, { status: 403 });
-    if (!canJoin(this.sweep(now).length)) {
+    if (!canJoin(roomSweep(this.peers(), now).length)) {
       return new Response(null, { status: 503 });
     }
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair) as [WebSocket, WebSocket];
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment(seatOf(who, now));
-    this.tellPresence(now);
+    roomPresence(this.peers(), now);
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -102,24 +71,28 @@ export class ListRoom extends DurableObject<Record<string, unknown>> {
     socket: WebSocket,
     raw: string | ArrayBuffer,
   ): Promise<void> {
-    const message = parseMessage(raw);
-    const seat = socket.deserializeAttachment() as Seat | null;
-    // Too big, or not one of ours: this connection has nothing to say.
-    if (!message || !seat) {
-      socket.close(1009, 'unexpected');
-      return;
-    }
-    const now = Date.now();
-    const next = applyMessage(seat, message, now);
-    socket.serializeAttachment(next);
-    if (next.writing !== seat.writing) this.tellPresence(now);
+    const peers = this.ctx.getWebSockets();
+    const all = peers.map(peerOf);
+    roomMessage(
+      all,
+      all[peers.indexOf(socket)] ?? peerOf(socket),
+      raw,
+      Date.now(),
+    );
   }
 
   override async webSocketClose(socket: WebSocket): Promise<void> {
-    this.tellPresence(Date.now(), socket);
+    this.leave(socket);
   }
 
   override async webSocketError(socket: WebSocket): Promise<void> {
-    this.tellPresence(Date.now(), socket);
+    this.leave(socket);
+  }
+
+  /** Someone left: the others who hold the list are told. */
+  private leave(socket: WebSocket) {
+    const peers = this.ctx.getWebSockets();
+    const all = peers.map(peerOf);
+    roomPresence(all, Date.now(), all[peers.indexOf(socket)]);
   }
 }

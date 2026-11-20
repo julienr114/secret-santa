@@ -6,8 +6,10 @@ import { toBase64Url } from './crypto';
 // the only truth: the object only says « the list changed », and each
 // browser reads its own view again by the usual routes, so nothing one
 // may not see ever goes through the channel. Two exceptions, between
-// those who hold the list only: who is there, and who writes which
-// line. Pure: the object (`server/live/room.ts`) only applies what these
+// those who hold the list only, who see everything of it anyway: who is
+// there, and who writes which line, with what they are typing (asked by
+// Julien on 20 November 2026: real time means seeing the other write).
+// Pure: the object (`server/live/room.ts`) only applies what these
 // functions decide.
 
 /** What bounds the cost of a list watched live. */
@@ -20,6 +22,9 @@ export const LIVE = {
   lockMs: 30 * 1000,
   /** A message bigger than this is refused: none needs more. */
   maxMessageBytes: 2048,
+  /** What is being typed, as far as it travels: the longest text of a
+   *  list, its word of welcome. */
+  maxDraft: 500,
   /** How long a ticket to connect is good for. */
   ticketMs: 60 * 1000,
 } as const;
@@ -121,8 +126,11 @@ export const liveSecretOf = (
 export type Seat = LiveWho & {
   /** When they were last active, in milliseconds. */
   seenAt: number;
-  /** The line they write, and when they last pressed a key. */
+  /** The line they write, what they typed, and when they last pressed a key. */
   writing: string | null;
+  draft: string;
+  /** Where their caret is in what they typed. */
+  caret: number;
   writingAt: number;
 };
 
@@ -139,6 +147,8 @@ export const seatOf = (who: LiveWho, now: number): Seat => ({
   avatar: who.avatar,
   seenAt: now,
   writing: null,
+  draft: '',
+  caret: 0,
   writingAt: 0,
 });
 
@@ -148,9 +158,36 @@ export const canJoin = (connections: number): boolean =>
 
 /** What a browser says to the object. */
 export type LiveMessage =
-  { t: 'writing'; line: string } | { t: 'idle' } | { t: 'active' };
+  | { t: 'writing'; line: string; text: string; caret: number }
+  | { t: 'idle' }
+  | { t: 'active' };
 
 const LINE = /^[A-Za-z0-9_:-]{1,64}$/;
+
+/**
+ * « I write this line »: what is typed, cut at the length of an idea,
+ * and the caret, kept inside it (at its end when not said).
+ * @param line - The line.
+ * @param text - What is typed.
+ * @param caret - Where the caret is.
+ * @returns The message.
+ */
+const writingOf = (
+  line: string,
+  text: unknown,
+  caret: unknown,
+): LiveMessage => {
+  const typed = typeof text === 'string' ? text.slice(0, LIVE.maxDraft) : '';
+  return {
+    t: 'writing',
+    line,
+    text: typed,
+    caret:
+      typeof caret === 'number' && Number.isInteger(caret)
+        ? Math.max(0, Math.min(typed.length, caret))
+        : typed.length,
+  };
+};
 
 /**
  * Reads what a browser sent: one of the three messages, small, or
@@ -161,12 +198,17 @@ const LINE = /^[A-Za-z0-9_:-]{1,64}$/;
 export const parseMessage = (raw: unknown): LiveMessage | null => {
   if (typeof raw !== 'string' || raw.length > LIVE.maxMessageBytes) return null;
   try {
-    const data = JSON.parse(raw) as { t?: unknown; line?: unknown };
+    const data = JSON.parse(raw) as {
+      t?: unknown;
+      line?: unknown;
+      text?: unknown;
+      caret?: unknown;
+    };
     if (data.t === 'idle' || data.t === 'active') return { t: data.t };
     return data.t === 'writing' &&
       typeof data.line === 'string' &&
       LINE.test(data.line)
-      ? { t: 'writing', line: data.line }
+      ? writingOf(data.line, data.text, data.caret)
       : null;
   } catch {
     return null;
@@ -189,8 +231,14 @@ export const applyMessage = (
   const active = { ...seat, seenAt: now };
   if (seat.role !== 'holder' || message.t === 'active') return active;
   return message.t === 'writing'
-    ? { ...active, writing: message.line, writingAt: now }
-    : { ...active, writing: null, writingAt: 0 };
+    ? {
+        ...active,
+        writing: message.line,
+        draft: message.text,
+        caret: message.caret,
+        writingAt: now,
+      }
+    : { ...active, writing: null, draft: '', caret: 0, writingAt: 0 };
 };
 
 /** Whether a connection was left without activity for too long. */
@@ -209,8 +257,8 @@ export type Presence = {
   holders: LivePerson[];
   /** How many have it open by its link: a number, never who. */
   visitors: number;
-  /** The lines being written, and by whom. */
-  writing: (LivePerson & { line: string })[];
+  /** The lines being written, by whom, what they typed, their caret. */
+  writing: (LivePerson & { line: string; text: string; caret: number })[];
 };
 
 /**
@@ -243,7 +291,14 @@ export const presenceOf = (seats: readonly Seat[], now: number): Presence => {
     visitors: seats.filter((seat) => seat.role === 'visitor').length,
     writing: people.flatMap((seat) =>
       seat.writing && now - seat.writingAt < LIVE.lockMs
-        ? [{ ...person(seat), line: seat.writing }]
+        ? [
+            {
+              ...person(seat),
+              line: seat.writing,
+              text: seat.draft,
+              caret: seat.caret,
+            },
+          ]
         : [],
     ),
   };
@@ -264,7 +319,7 @@ export const liveTarget = (
   method: string,
   path: string,
   status: number,
-): { listId: string } | { token: string } | null => {
+): { listId: string } | { token: string } | { memberId: string } | null => {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
     return null;
   }
@@ -272,6 +327,104 @@ export const liveTarget = (
   const held = /^\/api\/lists\/([^/]+)(\/.*)?$/.exec(path);
   // Asking for a ticket changes nothing.
   if (held?.[1]) return held[2] === '/live' ? null : { listId: held[1] };
+  // The page of one of my people: their name, icon and sizes show on
+  // every list they are on.
+  const member = /^\/api\/family\/([^/]+)$/.exec(path);
+  if (member?.[1]) return { memberId: member[1] };
   const linked = /^\/api\/l\/([^/]+)\/(.+)$/.exec(path);
   return linked?.[1] && linked[2] !== 'live' ? { token: linked[1] } : null;
+};
+
+// --- The room, whatever holds its connections ---------------------------
+
+/** One connection, as the room sees it: a way to write to it, its seat. */
+export type Peer = {
+  send: (text: string) => void;
+  close: (code: number, reason: string) => void;
+  seat: () => Seat | null;
+  sit: (seat: Seat) => void;
+};
+
+const tell = (peer: Peer, event: LiveEvent) => {
+  try {
+    peer.send(JSON.stringify(event));
+  } catch {
+    // Gone meanwhile: its close will come.
+  }
+};
+
+/**
+ * Closes what was left without activity, and says who stays.
+ * @param peers - The connections of the room.
+ * @param now - The time.
+ * @returns Those still there, each with its seat.
+ */
+export const roomSweep = (peers: readonly Peer[], now: number) =>
+  peers.flatMap((peer) => {
+    const seat = peer.seat();
+    if (!seat) return [];
+    if (!isIdle(seat, now)) return [{ peer, seat }];
+    peer.close(1000, 'idle');
+    return [];
+  });
+
+/**
+ * Tells those who hold the list who is there, and who writes what.
+ * @param peers - The connections of the room.
+ * @param now - The time.
+ * @param without - A connection that is leaving.
+ */
+export const roomPresence = (
+  peers: readonly Peer[],
+  now: number,
+  without?: Peer,
+) => {
+  const there = roomSweep(peers, now).filter(({ peer }) => peer !== without);
+  const presence = presenceOf(
+    there.map(({ seat }) => seat),
+    now,
+  );
+  there
+    .filter(({ seat }) => seat.role === 'holder')
+    .forEach(({ peer }) => tell(peer, { t: 'presence', ...presence }));
+};
+
+/**
+ * The list changed: everyone reads their own view again.
+ * @param peers - The connections of the room.
+ * @param now - The time.
+ */
+export const roomSignal = (peers: readonly Peer[], now: number) => {
+  roomSweep(peers, now).forEach(({ peer }) => tell(peer, { t: 'changed' }));
+};
+
+/**
+ * Something came from a connection: one of the three small messages
+ * changes its seat, anything else closes it.
+ * @param peers - The connections of the room, this one among them.
+ * @param peer - The connection that spoke.
+ * @param raw - What it sent.
+ * @param now - The time.
+ */
+export const roomMessage = (
+  peers: readonly Peer[],
+  peer: Peer,
+  raw: unknown,
+  now: number,
+) => {
+  const message = parseMessage(raw);
+  const seat = peer.seat();
+  if (!message || !seat) {
+    peer.close(1009, 'unexpected');
+    return;
+  }
+  const next = applyMessage(seat, message, now);
+  peer.sit(next);
+  if (
+    next.writing !== seat.writing ||
+    next.draft !== seat.draft ||
+    next.caret !== seat.caret
+  ) {
+    roomPresence(peers, now);
+  }
 };

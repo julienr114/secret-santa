@@ -28,6 +28,12 @@ const open = async (who: 'camille' | 'hugo' | 'mamie', path: string) => {
   await hydrated(page);
   return page;
 };
+/** Puts the caret at the end of the field being written. */
+const toEnd = (page: Page) =>
+  page.evaluate(() => {
+    const field = document.activeElement as HTMLTextAreaElement | null;
+    field?.setSelectionRange(field.value.length, field.value.length);
+  });
 const leo = (page: Page) =>
   page
     .getByTestId('list-person')
@@ -98,10 +104,20 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await expect(mamie.getByTestId('live-presence')).toHaveCount(0);
   await expect(mamie.locator('body')).not.toContainText('en ce moment');
 
-  // Hugo writes an idea: it appears at Camille's, and at Mamie's.
+  // Hugo writes an idea: Camille sees it grow as he types, tinted, with
+  // his name; the visitor sees nothing until it is saved.
   await leo(hugo).getByPlaceholder('Une autre idée…').click();
-  await hugo.keyboard.type('Un télescope');
+  await hugo.keyboard.type('Un tél');
+  const ghost = camille.getByTestId('line-ghost');
+  await expect(ghost).toContainText('Un tél');
+  await expect(ghost).toContainText('Hugo écrit…');
+  await hugo.keyboard.type('escope');
+  await expect(ghost).toContainText('Un télescope');
+  await expect(hugo.getByTestId('line-ghost')).toHaveCount(0);
+  await expect(mamie.locator('body')).not.toContainText('Un tél');
+  // Saved: it is a line of the list, at Camille's and at Mamie's.
   await hugo.keyboard.press('Enter');
+  await expect(ghost).toHaveCount(0);
   await expect(leo(camille).getByTestId('idea-text')).toHaveText([
     'Circuit de billes',
     'Un télescope',
@@ -126,17 +142,76 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await expect(locked).toContainText('Un télescope');
   await expect(camille.getByTestId('line-writing')).toHaveText('Hugo écrit…');
   await expect(locked).toHaveCSS('pointer-events', 'none');
+  // Nothing to do on it is offered meanwhile: neither who gives it, nor
+  // the box.
+  await expect(locked.getByTestId('idea-who')).toHaveCount(0);
   // Not at his own, nor at the visitor's.
   await expect(hugo.locator('[data-locked]')).toHaveCount(0);
   await expect(mamie.locator('body')).not.toContainText('écrit…');
-  // He validates: the line is free again, with what he wrote.
+  // What he types shows at Camille's before he validates.
   await hugo.keyboard.type(' pour enfant');
+  await expect(locked).toContainText('Un télescope pour enfant');
+  // His caret is where he is: three letters back, the text is cut there.
+  for (const _ of [1, 2, 3]) await hugo.keyboard.press('ArrowLeft');
+  await expect
+    .poll(() =>
+      locked.evaluate(
+        (line) =>
+          line.querySelector('[data-testid="live-caret"]')?.nextSibling
+            ?.textContent ?? '',
+      ),
+    )
+    .toBe('ant');
+  await hugo.keyboard.press('End');
+  // He validates: the line is free again, with what he wrote.
   await hugo.keyboard.press('Enter');
   await expect(camille.locator('[data-locked]')).toHaveCount(0);
   await expect(leo(camille).getByTestId('idea-text')).toHaveText([
     'Circuit de billes',
     'Un télescope pour enfant',
   ]);
+
+  // The name of the list, its word and a first name written in place
+  // are locked the same way, and show what is typed.
+  await hugo.getByTestId('list-title').click();
+  await toEnd(hugo);
+  await hugo.keyboard.type(' !');
+  const lock = camille.getByTestId('live-lock');
+  await expect(lock).toContainText('Noël en direct !');
+  await expect(lock).toContainText('Hugo écrit…');
+  await expect(camille.getByTestId('list-title')).toHaveCount(0);
+  await hugo.keyboard.press('Enter');
+  await expect(lock).toHaveCount(0);
+  await expect(camille.getByTestId('list-title')).toHaveValue(
+    'Noël en direct !',
+  );
+  await leo(hugo).getByTestId('person-name').click();
+  await toEnd(hugo);
+  await hugo.keyboard.type('n');
+  await expect(leo(camille).getByTestId('live-lock')).toContainText('Léon');
+  await expect(leo(camille).getByTestId('person-name')).toHaveCount(0);
+  await hugo.keyboard.press('Escape');
+  await expect(camille.getByTestId('live-lock')).toHaveCount(0);
+
+  // The page of one of the people changes: it shows on the list, at
+  // everyone's, without reloading.
+  if (!state.camille) throw new Error('Camille is not logged in');
+  const { people } = await (
+    await state.camille.request.get(`/api/lists/${state.listId}`)
+  ).json();
+  await state.camille.request.patch(`/api/family/${people[0].member.id}`, {
+    data: { clothingSize: '6 ans' },
+  });
+  await expect(leo(hugo)).toContainText('taille 6 ans');
+  await expect(leo(camille)).toContainText('taille 6 ans');
+  await expect(mamie.locator('body')).toContainText('taille 6 ans');
+
+  // « Ceux qui tiennent la liste » says who is there now.
+  const holders = await open('camille', `/listes/${state.listId}/teneurs`);
+  await expect(
+    holders.getByTestId('holder').filter({ hasText: 'Hugo' }),
+  ).toContainText('Là en ce moment');
+  await holders.close();
 
   // Hugo leaves: Camille is alone again; the visitor is still counted.
   await hugo.close();

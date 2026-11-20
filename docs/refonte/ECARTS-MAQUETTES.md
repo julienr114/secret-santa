@@ -6,11 +6,24 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## Les dernières retouches de la liste (Correction 30)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ListeDecocherCase` | Un cadeau à plusieurs **encore ouvert** garde sa case « + » : la case grise ne décoche qu'une coche seule ou un groupe au complet. | Seul (comme la maquette, mais à confirmer) |
+| `ListeDecocherCase` | Le message d'un groupe nomme tout le monde : « Coche de Mamie et Hugo retirée ». | Seul |
+| `ListeGroupeFil`, `ListeGroupeFilDeplie` | La phrase « Il commence à lire tout seul. » n'existe pas (aucun champ ne la porte). « Côté cadeaux, il préfère … » se lit « Côté cadeaux, Léo préfère … plutôt que … » (les phrases déjà écrites pour celui qui offre), puis « Léo aime la surprise. » | Seul |
+| `ListeGroupeFil` | Dans le document de celui qui tient la liste, 64 px entre deux personnes (Correction 29), pas 44. | Seul |
+| `ListeGroupeFil` | Le crayon sur l'icône de 40 px (document) fait 20 px. La case de l'idée qu'un autre écrit n'est plus pâlie, pour couvrir le fil. | Seul |
+| `ListeReserverSimple` | Dans le document de celui qui tient la liste, deux choix seulement (pas « en anonyme »), et « Je l'offre seul » dit « Les autres voient seulement que c'est pris. » | Seul |
+| `ListeRejoindre` | **Un état que la maquette ne montre pas** : en mode anonyme, le panneau « Se joindre » dit « Mode anonyme activé : te joindre montrerait ton prénom. Désactive-le en haut de la liste pour participer. », en aubergine avec le masque, et « Je participe » est grisé. | Seul |
+| `ListeCocheGuide` | La note s'accroche sous la ligne cochée, à 32 px du bord. Elle vient aussi dans le document de celui qui tient la liste, une fois par appareil en tout. | Seul |
+| `ListeJOffreAgir` | Le filet de « Tu l'offres en anonyme › » est un aubergine clair (`#a5809c`). | Seul |
+
 ## Le mode anonyme (lot 27 ter)
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `ListeVisiteurTirage` | **Le voile derrière la note couvre toute la page**, barre du haut et onglets compris, comme derrière un panneau. Il est uni (aubergine `#5b3a55` à 35 %), plus de dégradé qui s'arrête à la colonne de la liste. Seules la barre « Mode anonyme » et la note restent en pleine lumière. | Julien, 20 novembre 2026 (« un peu comme une modale ») |
 | `ListeVisiteurTirage` | Le voile laisse passer les touchers : la liste reste utilisable dessous. Seuls « Compris » ou l'interrupteur le retirent. | Seul |
 | `ListeVisiteurAnonyme` | **L'explication dépliée, mode activé, perd sa dernière phrase** « Le réglage vaut pour toute cette liste. » Elle dit : « Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ». » | Julien, 20 novembre 2026 (« assez évident et bien visible ») |
 | `ListeVisiteurTirage`, `ListeVisiteurAnonyme`, `ListeVisiteurMes` | La phrase sous le mot d'accueil reste « La liste de Camille. … » : un seul prénom, celui du premier qui tient la liste, pas « La liste de Camille et Hugo ». | Seul |
@@ -41,7 +54,6 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `ListeVisiteurToucher`, `ListeTeneur` | **La case verte d'une idée que je donne décoche tout de suite, sans panneau**, par le lien comme dans le document, seul ou à plusieurs. Par le lien, le reste de la ligne ouvre le panneau ; dans le document, c'est la pastille de mon état (« Tu l'offres », « Tu participes »), puisque toucher le texte l'écrit. | Julien, 20 novembre 2026 (la case), seul (la pastille, et le cas à plusieurs) |
 | `ListeTeneur` | Dans le document, mon état sous une idée est la même pastille que par le lien (« Tu l'offres », « Tu participes »). | Seul |
-| `ListePlusieursLigne` | Pour ceux qui tiennent la liste, pas de « 7 personnes » : une pastille par prénom, chacune décoche sa personne. | Seul |
 | `ListeIdee`, `ListeIdeeLienFait` | L'adresse se lit sans « https:// ». Le champ du lien n'est pas atteint par la touche Tab (elle va d'une ligne à l'autre). Une adresse fausse est marquée en rouge (filet, icône, texte). | Seul |
 | `ListeAidePartage` | « Activé par Camille » nomme celui qui gère la liste, le premier s'ils sont plusieurs : la base ne retient pas qui a activé le partage. | Seul |
 | `ListeAidePartage` | Sur un ordinateur (pas de feuille de partage), le bouton « Partager » copie le lien et dit « Copié » un instant. | Seul |

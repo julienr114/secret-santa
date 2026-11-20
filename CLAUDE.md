@@ -25,7 +25,7 @@ Le code de l'application n'est pas public : ne jamais écrire de lien vers ce d�
 
 ## Travailler
 
-- `/ticket` prend le prochain ticket prêt et le mène au bout. `/ticket 103` en prend un précis.
+- `/santa-ticket` prend le prochain ticket prêt et le mène au bout. `/santa-ticket 103` en prend un précis.
 - `/controle` lance les vérifications avant de dire « fini ».
 - `/question` écrit une question pour Julien ou pour la conception, sans rien inventer.
 

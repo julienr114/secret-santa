@@ -1,5 +1,5 @@
 ---
-name: ticket
+name: santa-ticket
 description: Prendre un ticket de docs/travail/a-faire et le mener au bout (lire, coder, tester, ranger, résumer). À utiliser quand on demande d'avancer, de coder la suite, de prendre un ticket ou un numéro de ticket.
 ---
 
@@ -9,7 +9,7 @@ Le mode d'emploi complet est dans `docs/travail/README.md`. Un seul ticket à la
 
 ## 1. Choisir
 
-- Si un numéro est donné (`/ticket 103`), prendre ce ticket dans `docs/travail/a-faire/`.
+- Si un numéro est donné (`/santa-ticket 103`), prendre ce ticket dans `docs/travail/a-faire/`.
 - Sinon, prendre dans `docs/travail/a-faire/` le plus petit numéro dont tous les tickets de la ligne « Dépend de » sont dans `docs/travail/fait/`.
 - Si `docs/travail/en-cours/` contient déjà un ticket, le reprendre d'abord.
 - Si le ticket demandé est dans `a-concevoir/`, ne pas le coder : dire ce qui lui manque (c'est écrit dedans) et s'arrêter.

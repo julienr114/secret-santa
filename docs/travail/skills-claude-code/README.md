@@ -1,16 +1,16 @@
 # Les skills de Claude Code
 
-Les trois procédures de Claude Code pour ce projet : `ticket`, `controle`, `question`.
+Les trois procédures de Claude Code pour ce projet : `santa-ticket`, `controle`, `question`.
 
 ## Les installer
 
 La conception ne peut pas écrire dans `.claude/` depuis sa session : c'est Julien qui les y pose, une fois, depuis la racine du dépôt.
 
 ```
-mkdir -p .claude/skills && cp -R docs/travail/skills-claude-code/ticket docs/travail/skills-claude-code/controle docs/travail/skills-claude-code/question .claude/skills/
+mkdir -p .claude/skills && cp -R docs/travail/skills-claude-code/santa-ticket docs/travail/skills-claude-code/controle docs/travail/skills-claude-code/question .claude/skills/
 ```
 
-Claude Code les voit aussitôt : `/ticket`, `/controle`, `/question`.
+Claude Code les voit aussitôt : `/santa-ticket`, `/controle`, `/question`.
 
 ## Les mettre à jour
 

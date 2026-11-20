@@ -315,8 +315,18 @@ test('from the draw, the list opens in anonymous mode, with a note', async () =>
   await expect(page.locator('body')).not.toContainText('Père Noël');
   // The list stays usable under the note; « Compris » takes it away for
   // good.
+  // Behind it, a veil over the whole page, the top bar and the tabs
+  // included; it lets the touches through, and goes with the note.
+  const veil = page.getByTestId('mode-veil');
+  await expect(veil).toHaveCSS('position', 'fixed');
+  await expect(veil).toHaveCSS('pointer-events', 'none');
+  const box = await veil.boundingBox();
+  const size = page.viewportSize();
+  expect(box?.width).toBe(size?.width);
+  expect(box?.height).toBe(size?.height);
   await page.getByTestId('mode-understood').click();
   await expect(note).toHaveCount(0);
+  await expect(veil).toHaveCount(0);
   await page.getByTestId('mode-why').click();
   await expect(page.getByTestId('mode-explained')).toContainText(
     'Activé : quand tu coches un cadeau, personne ne voit ton prénom',

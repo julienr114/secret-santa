@@ -12,9 +12,13 @@ import {
 // text, a mask. « ? » unfolds what it means, over the whole width. No
 // first name in it: one does not always know who holds the list.
 // When the server turned it on because of a draw, a note hangs under the
-// bar, over the list and without pushing it, with a plum halo: it names
-// nobody, and « Compris » takes it away for good on this list. The
-// switch stays free.
+// bar, over the list and without pushing it: it names nobody, and
+// « Compris » takes it away for good on this list. The switch stays free.
+// Behind the note, a plum veil covers the whole page, the top bar and the
+// tabs included, as behind a sheet (asked by Julien on 20 November 2026:
+// the halo of the mockup stopped at the column of the list); only the
+// bar and its note stay in the light. It lets every touch through: the
+// list stays usable.
 const props = defineProps<{ token: string; mode: NonNullable<ListMode> }>();
 const { t } = useT();
 const toast = useMessages();
@@ -49,12 +53,14 @@ const onUnderstood = () => {
 
 <template>
   <div
-    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 rounded-[24px] motion-safe:transition-colors motion-safe:duration-200"
-    :class="
+    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] -mt-1 rounded-[24px] motion-safe:transition-colors motion-safe:duration-200"
+    :class="[
+      // Over the veil, which is over everything else.
+      notice ? 'z-50' : 'z-10',
       on
         ? 'bg-incognito text-white shadow-[0_4px_14px_color-mix(in_srgb,var(--color-incognito)_30%,transparent)]'
-        : 'bg-default ring-1 ring-default'
-    "
+        : 'bg-default ring-1 ring-default',
+    ]"
     :data-mode="on ? 'anonymous' : 'named'"
     data-testid="mode-bar"
   >
@@ -110,12 +116,19 @@ const onUnderstood = () => {
       class="absolute inset-x-0 top-full z-10 pt-2.5"
       data-testid="mode-notice"
     >
-      <!-- The halo: a plum veil over the list, which goes with the note
-           and lets every touch through. -->
-      <span
-        class="pointer-events-none absolute -inset-x-4 top-1 -z-10 h-[480px] bg-linear-to-b from-incognito/30 via-incognito/20 via-55% to-incognito/0"
-        aria-hidden="true"
-      />
+      <!-- The veil: over the whole page, out of the column of the list;
+           it goes with the note. Put at the root of the app, which is
+           one layer of its own (`isolate`): the bar, raised, stays over
+           it; from the body it would cover the bar too. -->
+      <ClientOnly>
+        <Teleport to="#__nuxt">
+          <span
+            class="pointer-events-none fixed inset-0 z-40 bg-incognito/35"
+            aria-hidden="true"
+            data-testid="mode-veil"
+          />
+        </Teleport>
+      </ClientOnly>
       <div
         class="relative flex flex-col gap-1.5 rounded-[28px] bg-default px-4 pt-3.5 pb-1.5 text-default shadow-[0_0_0_1.5px_var(--color-incognito),0_14px_44px_6px_color-mix(in_srgb,var(--color-incognito)_45%,transparent)]"
         role="status"

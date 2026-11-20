@@ -79,7 +79,7 @@ Fait sur la branche `v3`, après le 101. **Le 104 est passé avant le 103**, dé
 ### Décidé avec Julien (20 novembre 2026)
 
 - L'adresse `/f/[nom]`.
-- Les lignes n'ont que leur titre, en attendant les textes (Q-010).
+- Les lignes n'ont que leur titre, en attendant les textes (Q-006).
 - Pas de « Les années passées » avant le ticket 108.
 - Après « Créer la fête », l'écran d'aujourd'hui de ce qu'on venait créer : une édition (`?pour=secret-santa`), une liste (`?pour=liste`), sinon la fête.
 
@@ -93,7 +93,7 @@ Fait sur la branche `v3`, après le 101. **Le 104 est passé avant le 103**, dé
 
 ### Questions posées
 
-Q-010 (les textes sous les lignes), Q-011 (« Camille te demande ta liste »), Q-012 (« chez » ou « dans »), Q-013 (l'ordre 103 et 104, avec les réponses de Julien à reporter).
+Q-006 (les textes sous les lignes), Q-007 (« Camille te demande ta liste »), Q-008 (« chez » ou « dans »), Q-009 (l'ordre 103 et 104, avec les réponses de Julien à reporter).
 
 ### Commits
 

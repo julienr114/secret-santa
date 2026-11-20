@@ -27,7 +27,8 @@
     "test:e2e": "playwright test",
     "emoji:copy": "node --experimental-strip-types scripts/copy-emoji-images.ts",
     "seed:demo": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-demo.ts",
-    "seed:lists": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-lists.ts"
+    "seed:lists": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-lists.ts",
+    "seed:anonymous": "node --env-file-if-exists=.env --experimental-strip-types scripts/seed-anonymous.ts"
   },
   "dependencies": {
     "@internationalized/date": "3.12.4",

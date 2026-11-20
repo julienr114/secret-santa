@@ -40,12 +40,15 @@ const secretOf = (event: H3Event): string =>
  * What a browser needs to watch a list live: where to connect, and a
  * ticket good for a minute that says what it is to the list. Someone who
  * holds the list is named (their first name and icon, for the others who
- * hold it); a visitor is not, with or without an account.
+ * hold it); so is someone who figures on it and writes their own ideas,
+ * with the parts where they write; a visitor is not, with or without an
+ * account.
  * @param event - The request.
  * @param db - The database.
  * @param listId - The list.
  * @param role - Holds it, or came by its link.
  * @param accountId - The account, when there is one.
+ * @param sections - For who figures on the list, the parts they write in.
  * @returns Where to connect and the ticket, or `live: false` where the
  *   rooms do not exist.
  */
@@ -55,20 +58,22 @@ export const liveTicket = async (
   listId: string,
   role: LiveRole,
   accountId: string | null,
+  sections: readonly string[] = [],
 ) => {
   // In development the rooms are in the memory of the server.
   if (!import.meta.dev && !roomsOf(event)) return { live: false as const };
   const account =
-    role === 'holder' && accountId
+    role !== 'visitor' && accountId
       ? await findAccountById(db, accountId)
       : null;
   const ticket = await signTicket(
     {
       listId,
       role,
-      accountId: role === 'holder' ? accountId : null,
+      accountId: role === 'visitor' ? null : accountId,
       name: account?.firstName ?? account?.email.split('@')[0] ?? '',
       avatar: account ? avatarOf(account) : null,
+      ...(role === 'linked' ? { sections } : {}),
       exp: Date.now() + LIVE.ticketMs,
     },
     secretOf(event),

@@ -11,6 +11,7 @@ test.describe.configure({ mode: 'serial' });
 const CAMILLE = 'live-camille@example.com';
 const HUGO = 'live-hugo@example.com';
 const MAMIE = 'live-mamie@example.com';
+const PAPI = 'live-papi@example.com';
 const state: {
   camille?: BrowserContext;
   hugo?: BrowserContext;
@@ -238,6 +239,26 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await expect(hugo.getByTestId('list-person')).toHaveCount(1);
   await expect(mamie.locator('body')).not.toContainText('Zoé');
 
+  // Camille loses the network: what Hugo does meanwhile is not lost.
+  // Back, her page reads the list again by itself, and is live again.
+  await state.camille.setOffline(true);
+  await leo(hugo).getByPlaceholder('Une autre idée…').click();
+  await hugo.keyboard.type('Pendant la coupure');
+  await hugo.keyboard.press('Enter');
+  await expect(leo(hugo).getByTestId('idea-text')).toHaveCount(3);
+  await expect(leo(camille).getByTestId('idea-text')).toHaveCount(2);
+  await state.camille.setOffline(false);
+  await camille.evaluate(() => window.dispatchEvent(new Event('online')));
+  await expect(leo(camille).getByTestId('idea-text')).toHaveText([
+    'Circuit de billes',
+    'Un télescope pour enfant',
+    'Pendant la coupure',
+  ]);
+  await hugo.keyboard.type('Après le retour');
+  await hugo.keyboard.press('Enter');
+  await expect(leo(camille).getByTestId('idea-text')).toHaveCount(4);
+  await hugo.getByText('Touche un texte pour le modifier.').click();
+
   // Hugo leaves: Camille is alone again; the visitor is still counted.
   await hugo.close();
   await expect(camille.getByTestId('live-here')).toHaveCount(0);
@@ -247,6 +268,90 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await mamie.close();
   await expect(camille.getByTestId('live-presence')).toHaveCount(0);
   await camille.close();
+});
+
+test('who figures on the list and writes by its link is live too', async ({
+  browser,
+}) => {
+  if (!state.camille) throw new Error('not logged in');
+  // Papi figures on the list, linked to his account by his address.
+  const context = await browser.newContext();
+  await apiLogin(context.request, PAPI);
+  await context.request.put('/api/auth/profile', {
+    data: { firstName: 'Papi', avatarEmoji: '🎣', avatarColor: 'pine' },
+  });
+  const person = await (
+    await state.camille.request.post(`/api/lists/${state.listId}/people`, {
+      data: {
+        newMember: {
+          firstName: 'Papi',
+          avatar: { emoji: '🎣', color: 'pine' },
+        },
+      },
+    })
+  ).json();
+  await state.camille.request.patch(`/api/family/${person.memberId}`, {
+    data: { email: PAPI },
+  });
+  const papi = await context.newPage();
+  await papi.goto(`/l/${state.token}`);
+  await hydrated(papi);
+  const camille = await open('camille', `/listes/${state.listId}`);
+  const mine = papi.getByTestId('visitor-person').first();
+  await expect(mine.getByTestId('its-you')).toBeVisible();
+  const his = camille
+    .getByTestId('list-person')
+    .filter({ has: camille.getByRole('heading', { name: 'Papi' }) });
+  // He is counted, never named as there; he learns nothing of who is.
+  await expect(camille.getByTestId('live-visitors')).toHaveText(
+    '1 visiteur en ce moment',
+  );
+  await expect(papi.locator('body')).not.toContainText('en ce moment');
+
+  // He writes an idea: Camille sees it grow, under his name, then saved.
+  await mine.getByPlaceholder('Une idée pour moi…').click();
+  await papi.keyboard.type('Des bottes');
+  const ghost = his.getByTestId('line-ghost');
+  await expect(ghost).toContainText('Des bottes');
+  await expect(ghost).toContainText('Papi écrit…');
+  await papi.keyboard.press('Enter');
+  await expect(ghost).toHaveCount(0);
+  await expect(his.getByTestId('idea-text')).toHaveText(['Des bottes']);
+  await papi.getByTestId('visitor-sentence').click();
+
+  // Camille corrects that line: it is hers at Papi's, who cannot write it.
+  await his.getByTestId('idea-text').click();
+  await camille.keyboard.type(' de pêche');
+  const line = mine.locator('[data-locked]');
+  await expect(line).toContainText('Des bottes de pêche');
+  await expect(line.getByTestId('line-writing')).toHaveText('Camille écrit…');
+  // What she writes elsewhere is not his to know: the title, another part.
+  await camille.keyboard.press('Enter');
+  await expect(mine.locator('[data-locked]')).toHaveCount(0);
+  await expect(mine.getByTestId('idea-text')).toHaveText([
+    'Des bottes de pêche',
+  ]);
+  await camille.getByText('Touche un texte pour le modifier.').click();
+  await leo(camille).getByTestId('idea-text').first().click();
+  await camille.keyboard.type('!');
+  await expect(camille.locator('textarea:focus')).toHaveCount(1);
+  await expect(papi.locator('[data-locked]')).toHaveCount(0);
+  await expect(papi.locator('body')).not.toContainText('Camille écrit');
+  await camille.keyboard.press('Escape');
+
+  // He corrects his line: it is his at Camille's, as he types.
+  await mine.getByTestId('idea-text').click();
+  await papi.keyboard.type(' vertes');
+  const locked = his.locator('[data-locked]');
+  await expect(locked).toContainText('Des bottes de pêche vertes');
+  await expect(locked.getByTestId('line-writing')).toHaveText('Papi écrit…');
+  await papi.keyboard.press('Enter');
+  await expect(his.locator('[data-locked]')).toHaveCount(0);
+  await expect(his.getByTestId('idea-text')).toHaveText([
+    'Des bottes de pêche vertes',
+  ]);
+  await camille.close();
+  await context.close();
 });
 
 test('nobody connects to a room without a ticket of the app', async () => {
@@ -267,6 +372,28 @@ test('nobody connects to a room without a ticket of the app', async () => {
   expect(said.role).toBe('visitor');
   expect(said.accountId).toBeNull();
   expect(said.name).toBe('');
+  // With a ticket, the room answers « are you there? »: a browser can
+  // tell a dead connection from a quiet one.
+  const probe = await state.mamie.newPage();
+  await probe.goto('/login');
+  const answer = await probe.evaluate(
+    ({ path, ticket }) =>
+      new Promise<string>((resolve) => {
+        const scheme = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const socket = new WebSocket(
+          `${scheme}//${location.host}${path}?ticket=${encodeURIComponent(ticket)}`,
+        );
+        socket.addEventListener('open', () => socket.send('ping'));
+        socket.addEventListener('message', (event) => {
+          resolve(String(event.data));
+          socket.close();
+        });
+        socket.addEventListener('error', () => resolve('refused'));
+      }),
+    { path: visitor.path as string, ticket: visitor.ticket as string },
+  );
+  expect(answer).toBe('pong');
+  await probe.close();
   // The room refuses a connection without a ticket, or with one made up.
   const page = await state.mamie.newPage();
   await page.goto('/login');

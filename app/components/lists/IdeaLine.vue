@@ -170,7 +170,9 @@ const who = computed(() => {
 // shows as they type it (Julien, 20 November 2026).
 const live = useListLiveLine();
 const lockedBy = computed(() =>
-  props.idea ? (live?.writingBy(props.idea.id) ?? null) : null,
+  props.idea
+    ? (live?.writingBy(props.idea.id, props.listPersonId) ?? null)
+    : null,
 );
 const lockShade = computed(() =>
   lockedBy.value?.avatar ? AVATAR_SHADES[lockedBy.value.avatar.color] : null,
@@ -187,6 +189,7 @@ const sayWriting = () => {
       liveKey.value,
       draft.value,
       field.value?.selectionStart ?? draft.value.length,
+      props.listPersonId,
     );
   } else live.idle();
 };

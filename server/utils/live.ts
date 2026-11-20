@@ -9,6 +9,10 @@ import { toBase64Url } from './crypto';
 // those who hold the list only, who see everything of it anyway: who is
 // there, and who writes which line, with what they are typing (asked by
 // Julien on 20 November 2026: real time means seeing the other write).
+// Someone who figures on the list and writes their own ideas by its link
+// changes the list too (Julien, the same day): what they write locks
+// the line for those who hold the list, and what is written in their
+// own part locks it for them. Of who is there they learn nothing.
 // Pure: the object (`server/live/room.ts`) only applies what these
 // functions decide.
 
@@ -25,18 +29,33 @@ export const LIVE = {
   /** What is being typed, as far as it travels: the longest text of a
    *  list, its word of welcome. */
   maxDraft: 500,
+  /** The parts of one list a person who figures on it writes in. */
+  maxSections: 8,
   /** How long a ticket to connect is good for. */
   ticketMs: 60 * 1000,
+  /** How often a browser asks the room whether it is still there. */
+  pingMs: 25 * 1000,
+  /** Without an answer for so long, the connection is taken for dead. */
+  pongWaitMs: 10 * 1000,
 } as const;
 
+/**
+ * « Are you there? » and its answer: plain words, not messages of the
+ * list. In production the object answers without waking up.
+ */
+export const PING = 'ping';
+export const PONG = 'pong';
+
 /** What someone is to the list they watch. */
-export type LiveRole = 'holder' | 'visitor';
+export type LiveRole = 'holder' | 'linked' | 'visitor';
 /** Who connects: named only when they hold the list. */
 export type LiveWho = {
   role: LiveRole;
   accountId: string | null;
   name: string;
   avatar: Avatar | null;
+  /** For who figures on the list: the parts where they write. */
+  sections?: readonly string[];
 };
 /** The right to connect to one list, for a minute. */
 export type Ticket = LiveWho & { listId: string; exp: number };
@@ -128,6 +147,10 @@ export type Seat = LiveWho & {
   seenAt: number;
   /** The line they write, what they typed, and when they last pressed a key. */
   writing: string | null;
+  /** The part of the list that line is in, when it is in one. */
+  section: string | null;
+  /** The parts where someone who figures on the list writes. */
+  sections: readonly string[];
   draft: string;
   /** Where their caret is in what they typed. */
   caret: number;
@@ -147,6 +170,8 @@ export const seatOf = (who: LiveWho, now: number): Seat => ({
   avatar: who.avatar,
   seenAt: now,
   writing: null,
+  section: null,
+  sections: (who.sections ?? []).slice(0, LIVE.maxSections),
   draft: '',
   caret: 0,
   writingAt: 0,
@@ -158,7 +183,13 @@ export const canJoin = (connections: number): boolean =>
 
 /** What a browser says to the object. */
 export type LiveMessage =
-  | { t: 'writing'; line: string; text: string; caret: number }
+  | {
+      t: 'writing';
+      line: string;
+      section: string | null;
+      text: string;
+      caret: number;
+    }
   | { t: 'idle' }
   | { t: 'active' };
 
@@ -168,12 +199,14 @@ const LINE = /^[A-Za-z0-9_:-]{1,64}$/;
  * « I write this line »: what is typed, cut at the length of an idea,
  * and the caret, kept inside it (at its end when not said).
  * @param line - The line.
+ * @param section - The part of the list it is in, if any.
  * @param text - What is typed.
  * @param caret - Where the caret is.
  * @returns The message.
  */
 const writingOf = (
   line: string,
+  section: unknown,
   text: unknown,
   caret: unknown,
 ): LiveMessage => {
@@ -181,6 +214,7 @@ const writingOf = (
   return {
     t: 'writing',
     line,
+    section: typeof section === 'string' && LINE.test(section) ? section : null,
     text: typed,
     caret:
       typeof caret === 'number' && Number.isInteger(caret)
@@ -201,6 +235,7 @@ export const parseMessage = (raw: unknown): LiveMessage | null => {
     const data = JSON.parse(raw) as {
       t?: unknown;
       line?: unknown;
+      section?: unknown;
       text?: unknown;
       caret?: unknown;
     };
@@ -208,7 +243,7 @@ export const parseMessage = (raw: unknown): LiveMessage | null => {
     return data.t === 'writing' &&
       typeof data.line === 'string' &&
       LINE.test(data.line)
-      ? writingOf(data.line, data.text, data.caret)
+      ? writingOf(data.line, data.section, data.text, data.caret)
       : null;
   } catch {
     return null;
@@ -216,8 +251,9 @@ export const parseMessage = (raw: unknown): LiveMessage | null => {
 };
 
 /**
- * A seat after a message. Only someone who holds the list is ever said
- * to write: a visitor's « writing » changes nothing but their activity.
+ * A seat after a message. A visitor is never said to write: their
+ * « writing » changes nothing but their activity. Someone who figures on
+ * the list is, in their own parts only.
  * @param seat - The seat.
  * @param message - What they said.
  * @param now - The time.
@@ -229,16 +265,28 @@ export const applyMessage = (
   now: number,
 ): Seat => {
   const active = { ...seat, seenAt: now };
-  if (seat.role !== 'holder' || message.t === 'active') return active;
-  return message.t === 'writing'
+  if (seat.role === 'visitor' || message.t === 'active') return active;
+  const may =
+    message.t === 'writing' &&
+    (seat.role === 'holder' ||
+      (message.section !== null && seat.sections.includes(message.section)));
+  return message.t === 'writing' && may
     ? {
         ...active,
         writing: message.line,
+        section: message.section,
         draft: message.text,
         caret: message.caret,
         writingAt: now,
       }
-    : { ...active, writing: null, draft: '', caret: 0, writingAt: 0 };
+    : {
+        ...active,
+        writing: null,
+        section: null,
+        draft: '',
+        caret: 0,
+        writingAt: 0,
+      };
 };
 
 /** Whether a connection was left without activity for too long. */
@@ -258,21 +306,27 @@ export type Presence = {
   /** How many have it open by its link: a number, never who. */
   visitors: number;
   /** The lines being written, by whom, what they typed, their caret. */
-  writing: (LivePerson & { line: string; text: string; caret: number })[];
+  writing: (LivePerson & {
+    line: string;
+    section: string | null;
+    text: string;
+    caret: number;
+  })[];
 };
 
 /**
  * What those who hold a list are told of who is there: the others who
  * hold it, how many visitors, and which lines are being written (a line
  * nobody typed in for 30 seconds is free again). Visitors are counted,
- * never named, and never said to write.
+ * never named, and never said to write; someone who figures on the list
+ * is counted with them, and named only on the line they write.
  * @param seats - Every connection of the list.
  * @param now - The time.
  * @returns The presence.
  */
 export const presenceOf = (seats: readonly Seat[], now: number): Presence => {
   const people = seats.flatMap((seat) =>
-    seat.role === 'holder' && seat.accountId
+    seat.role !== 'visitor' && seat.accountId
       ? [{ ...seat, accountId: seat.accountId }]
       : [],
   );
@@ -283,18 +337,21 @@ export const presenceOf = (seats: readonly Seat[], now: number): Presence => {
   });
   return {
     holders: people
+      .filter((seat) => seat.role === 'holder')
       .filter(
-        (seat, index) =>
-          people.findIndex((one) => one.accountId === seat.accountId) === index,
+        (seat, index, holders) =>
+          holders.findIndex((one) => one.accountId === seat.accountId) ===
+          index,
       )
       .map(person),
-    visitors: seats.filter((seat) => seat.role === 'visitor').length,
+    visitors: seats.filter((seat) => seat.role !== 'holder').length,
     writing: people.flatMap((seat) =>
       seat.writing && now - seat.writingAt < LIVE.lockMs
         ? [
             {
               ...person(seat),
               line: seat.writing,
+              section: seat.section,
               text: seat.draft,
               caret: seat.caret,
             },
@@ -303,6 +360,28 @@ export const presenceOf = (seats: readonly Seat[], now: number): Presence => {
     ),
   };
 };
+
+/**
+ * What someone who figures on the list learns of it: nobody who is
+ * there, no count, and only the lines of their own parts that someone
+ * else writes.
+ * @param seat - Their seat.
+ * @param presence - What those who hold the list are told.
+ * @returns What they are told.
+ */
+export const presenceForLinked = (
+  seat: Seat,
+  presence: Presence,
+): Presence => ({
+  holders: [],
+  visitors: 0,
+  writing: presence.writing.filter(
+    (one) =>
+      one.section !== null &&
+      seat.sections.includes(one.section) &&
+      one.accountId !== seat.accountId,
+  ),
+});
 
 /** What the object sends: the list changed, or who is there. */
 export type LiveEvent = { t: 'changed' } | ({ t: 'presence' } & Presence);
@@ -384,9 +463,12 @@ export const roomPresence = (
     there.map(({ seat }) => seat),
     now,
   );
-  there
-    .filter(({ seat }) => seat.role === 'holder')
-    .forEach(({ peer }) => tell(peer, { t: 'presence', ...presence }));
+  there.forEach(({ peer, seat }) => {
+    if (seat.role === 'holder') tell(peer, { t: 'presence', ...presence });
+    if (seat.role === 'linked') {
+      tell(peer, { t: 'presence', ...presenceForLinked(seat, presence) });
+    }
+  });
 };
 
 /**
@@ -422,6 +504,7 @@ export const roomMessage = (
   peer.sit(next);
   if (
     next.writing !== seat.writing ||
+    next.section !== seat.section ||
     next.draft !== seat.draft ||
     next.caret !== seat.caret
   ) {

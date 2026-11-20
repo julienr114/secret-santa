@@ -2,6 +2,8 @@ import type { InjectionKey, Ref } from 'vue';
 import { useQueryClient, type QueryKey } from '@tanstack/vue-query';
 import {
   LIVE,
+  PING,
+  PONG,
   type LiveEvent,
   type LivePerson,
   type Presence,
@@ -23,9 +25,16 @@ export type ListLive = {
   /** Who else writes that line now, with what they typed so far. */
   writingBy: (
     line: string,
+    section?: string,
   ) => (LivePerson & { text: string; caret: number }) | null;
-  /** I write that line: what I typed so far, and where my caret is. */
-  writing: (line: string, text: string, caret: number) => void;
+  /** I write that line: what I typed so far, where my caret is, and the
+   *  part of the list the line is in, when it is in one. */
+  writing: (
+    line: string,
+    text: string,
+    caret: number,
+    section?: string,
+  ) => void;
   /** I left the line, or validated it. */
   idle: () => void;
 };
@@ -67,11 +76,17 @@ export const useListLive = (
     saidWriting: number;
     /** The line I write now, said again when the connection comes back. */
     line: string | null;
+    section: string | null;
     text: string;
     caret: number;
     sendTimer: number;
     lockTimer: number;
     watch: number;
+    /** The questions « are you there? », and the wait for their answer. */
+    ping: number;
+    pong: number;
+    /** Connected once already: the next connection is a return. */
+    wasOpen: boolean;
     left: boolean;
   } = {
     socket: null,
@@ -81,11 +96,15 @@ export const useListLive = (
     saidActive: Date.now(),
     saidWriting: 0,
     line: null,
+    section: null,
     text: '',
     caret: 0,
     sendTimer: 0,
     lockTimer: 0,
     watch: 0,
+    ping: 0,
+    pong: 0,
+    wasOpen: false,
     left: false,
   };
 
@@ -100,7 +119,13 @@ export const useListLive = (
    */
   const say = (
     message:
-      | { t: 'writing'; line: string; text: string; caret: number }
+      | {
+          t: 'writing';
+          line: string;
+          section: string | null;
+          text: string;
+          caret: number;
+        }
       | { t: 'idle' | 'active' },
   ): boolean => {
     if (state.socket?.readyState !== WebSocket.OPEN) return false;
@@ -109,6 +134,7 @@ export const useListLive = (
   };
   const close = () => {
     window.clearTimeout(state.retry);
+    window.clearTimeout(state.pong);
     state.socket?.close(1000);
     state.socket = null;
     presence.value = null;
@@ -128,12 +154,16 @@ export const useListLive = (
     state.socket = socket;
     socket.addEventListener('open', () => {
       state.tries = 0;
+      // Back after a cut: what changed meanwhile was never told.
+      if (state.wasOpen) void reload();
+      state.wasOpen = true;
       // What I was writing while the connection was away is said now.
       if (
         state.line &&
         say({
           t: 'writing',
           line: state.line,
+          section: state.section,
           text: state.text,
           caret: state.caret,
         })
@@ -142,12 +172,18 @@ export const useListLive = (
       }
     });
     socket.addEventListener('message', (event) => {
+      // The room is there.
+      if (event.data === PONG) {
+        window.clearTimeout(state.pong);
+        return;
+      }
       const data = JSON.parse(String(event.data)) as LiveEvent;
       if (data.t === 'changed') void reload();
       else presence.value = data;
     });
     socket.addEventListener('close', () => {
       if (state.socket !== socket) return;
+      window.clearTimeout(state.pong);
       state.socket = null;
       presence.value = null;
       if (state.left || document.hidden) return;
@@ -187,6 +223,18 @@ export const useListLive = (
     window.addEventListener('online', onBack);
     window.addEventListener('pointerdown', onActivity, { passive: true });
     window.addEventListener('keydown', onActivity, { passive: true });
+    // A connection can die without saying so (a phone asleep, a network
+    // gone): the room is asked now and then whether it is there, and a
+    // connection that does not answer is dropped, then made again.
+    state.ping = window.setInterval(() => {
+      const socket = state.socket;
+      if (socket?.readyState !== WebSocket.OPEN) return;
+      socket.send(PING);
+      window.clearTimeout(state.pong);
+      state.pong = window.setTimeout(() => {
+        if (state.socket === socket) socket.close();
+      }, LIVE.pongWaitMs);
+    }, LIVE.pingMs);
     // Left open without touching anything for 30 minutes: closed.
     state.watch = window.setInterval(() => {
       if (state.socket && Date.now() - state.lastActive >= LIVE.idleMs) close();
@@ -195,6 +243,7 @@ export const useListLive = (
   onBeforeUnmount(() => {
     state.left = true;
     window.clearInterval(state.watch);
+    window.clearInterval(state.ping);
     window.clearTimeout(state.lockTimer);
     window.clearTimeout(state.sendTimer);
     document.removeEventListener('visibilitychange', onBack);
@@ -209,21 +258,28 @@ export const useListLive = (
     window.clearTimeout(state.sendTimer);
     state.saidWriting = 0;
     state.line = null;
+    state.section = null;
     state.text = '';
     say({ t: 'idle' });
   };
   const live: ListLive = {
     presence,
-    writingBy: (line) =>
+    // A line said to be in a part of the list is locked there only:
+    // someone who figures on the list cannot lock anything else.
+    writingBy: (line, section) =>
       presence.value?.writing.find(
-        (one) => one.line === line && one.accountId !== myAccountId(),
+        (one) =>
+          one.line === line &&
+          one.accountId !== myAccountId() &&
+          (one.section === null || one.section === section),
       ) ?? null,
-    writing: (line, text, caret) => {
+    writing: (line, text, caret, section) => {
       // Free again after 30 seconds without a key.
       window.clearTimeout(state.lockTimer);
       state.lockTimer = window.setTimeout(idle, LIVE.lockMs);
       const same = state.line === line;
       state.line = line;
+      state.section = section ?? null;
       state.text = text;
       state.caret = caret;
       const send = () => {
@@ -234,6 +290,7 @@ export const useListLive = (
           say({
             t: 'writing',
             line: state.line,
+            section: state.section,
             text: state.text,
             caret: state.caret,
           })

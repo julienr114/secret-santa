@@ -10,6 +10,7 @@ import {
   roomMessage,
   roomPresence,
   roomSignal,
+  presenceForLinked,
   roomSweep,
   seatOf,
   signTicket,
@@ -89,6 +90,7 @@ describe('what bounds a list watched live', () => {
     expect(parseMessage('{"t":"writing","line":"abc-123"}')).toEqual({
       t: 'writing',
       line: 'abc-123',
+      section: null,
       text: '',
       caret: 0,
     });
@@ -98,12 +100,14 @@ describe('what bounds a list watched live', () => {
         JSON.stringify({
           t: 'writing',
           line: 'new:p1',
+          section: null,
           text: 'x'.repeat(LIVE.maxDraft + 100),
         }),
       ),
     ).toEqual({
       t: 'writing',
       line: 'new:p1',
+      section: null,
       text: 'x'.repeat(LIVE.maxDraft),
       caret: LIVE.maxDraft,
     });
@@ -138,6 +142,7 @@ describe('who writes which line', () => {
       {
         t: 'writing',
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -150,6 +155,7 @@ describe('who writes which line', () => {
         name: 'Hugo',
         avatar: hugo.avatar,
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -162,6 +168,7 @@ describe('who writes which line', () => {
       {
         t: 'writing',
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -178,6 +185,7 @@ describe('who writes which line', () => {
       {
         t: 'writing',
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -191,6 +199,7 @@ describe('who writes which line', () => {
       {
         t: 'writing',
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -205,6 +214,7 @@ describe('who writes which line', () => {
       {
         t: 'writing',
         line: 'idea-1',
+        section: null,
         text: 'Un télescope pour enf',
         caret: 21,
       },
@@ -213,6 +223,88 @@ describe('who writes which line', () => {
     expect(seat.writing).toBeNull();
     expect(seat.seenAt).toBe(NOW + 5);
     expect(presenceOf([seat], NOW + 5).writing).toEqual([]);
+  });
+});
+
+describe('someone who figures on the list', () => {
+  const papi = {
+    role: 'linked' as const,
+    accountId: 'papi',
+    name: 'Papi',
+    avatar: { emoji: '🎣', color: 'pine' } as const,
+    sections: ['papi-part'],
+  };
+  const writes = (section: string | null, line = 'idea-9') =>
+    applyMessage(
+      seatOf(papi, NOW),
+      { t: 'writing', line, section, text: 'Des bottes', caret: 10 },
+      NOW + 1,
+    );
+
+  it('is said to write a line of their own part, by their name', () => {
+    const presence = presenceOf(
+      [seatOf(camille, NOW), writes('papi-part')],
+      NOW + 1,
+    );
+    expect(presence.writing).toEqual([
+      {
+        accountId: 'papi',
+        name: 'Papi',
+        avatar: papi.avatar,
+        line: 'idea-9',
+        section: 'papi-part',
+        text: 'Des bottes',
+        caret: 10,
+      },
+    ]);
+    // Counted with the visitors, never among those who hold the list.
+    expect(presence.holders.map((h) => h.name)).toEqual(['Camille']);
+    expect(presence.visitors).toBe(1);
+  });
+
+  it('locks nothing outside their part: no other part, no title', () => {
+    expect(writes('leo-part').writing).toBeNull();
+    expect(writes(null, 'title').writing).toBeNull();
+  });
+
+  it('learns only who writes a line of their own part', () => {
+    const mine = seatOf(papi, NOW);
+    const typing = (line: string, section: string | null) =>
+      applyMessage(
+        seatOf(hugo, NOW),
+        { t: 'writing', line, section, text: 'x', caret: 1 },
+        NOW + 1,
+      );
+    const told = (line: string, section: string | null) =>
+      presenceForLinked(
+        mine,
+        presenceOf(
+          [
+            seatOf(camille, NOW),
+            typing(line, section),
+            mine,
+            writes('papi-part'),
+          ],
+          NOW + 1,
+        ),
+      );
+    expect(told('idea-9', 'papi-part')).toEqual({
+      holders: [],
+      visitors: 0,
+      writing: [
+        {
+          accountId: 'hugo',
+          name: 'Hugo',
+          avatar: hugo.avatar,
+          line: 'idea-9',
+          section: 'papi-part',
+          text: 'x',
+          caret: 1,
+        },
+      ],
+    });
+    expect(told('idea-1', 'leo-part').writing).toEqual([]);
+    expect(told('title', null).writing).toEqual([]);
   });
 });
 
@@ -342,6 +434,7 @@ describe('the room', () => {
         name: 'Hugo',
         avatar: hugo.avatar,
         line: 'new:leo',
+        section: null,
         text: 'Un télescope',
         caret: 12,
       },

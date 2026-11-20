@@ -1,6 +1,8 @@
 /* eslint-disable functional/no-classes, functional/no-class-inheritance, functional/no-this-expressions -- Cloudflare asks for a class: a Durable Object extends DurableObject. Everything it decides is in the pure functions of server/utils/live.ts. */
 import { DurableObject } from 'cloudflare:workers';
 import {
+  PING,
+  PONG,
   canJoin,
   liveSecretOf,
   roomMessage,
@@ -34,6 +36,13 @@ const peerOf = (socket: WebSocket): Peer => ({
 });
 
 export class ListRoom extends DurableObject<Record<string, unknown>> {
+  constructor(ctx: DurableObjectState, env: Record<string, unknown>) {
+    super(ctx, env);
+    // « Are you there? » is answered without waking the object up: a
+    // browser learns that its connection died, at no cost here.
+    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG));
+  }
+
   private peers(): Peer[] {
     return this.ctx.getWebSockets().map(peerOf);
   }

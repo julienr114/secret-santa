@@ -5,7 +5,7 @@ import {
   devMessage,
   type DevSocket,
 } from '#server/live/devRooms';
-import { canJoin, seatOf, verifyTicket } from '#server/utils/live';
+import { PING, PONG, canJoin, seatOf, verifyTicket } from '#server/utils/live';
 
 // The WebSocket of a list's room, in development only (`pnpm dev`): the
 // same ticket, the same bounds, the same messages as the Durable Object
@@ -45,6 +45,11 @@ export default defineWebSocketHandler({
     devJoin(listId, peer as unknown as DevSocket, seatOf(who, Date.now()));
   },
   message(peer, message) {
+    // « Are you there? », which the object of production answers itself.
+    if (message.text() === PING) {
+      peer.send(PONG);
+      return;
+    }
     devMessage(
       listOf(peer.request?.url ?? ''),
       peer as unknown as DevSocket,

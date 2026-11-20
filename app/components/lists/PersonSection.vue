@@ -226,7 +226,9 @@ const via = computed(() => ({ listId: props.listId }));
 // holds the list is writing for this person shows as they type it, just
 // above « Une autre idée… », tinted with the light colour of their icon.
 const live = useListLiveLine();
-const ghost = computed(() => live?.writingBy(`new:${props.person.id}`) ?? null);
+const ghost = computed(
+  () => live?.writingBy(`new:${props.person.id}`, props.person.id) ?? null,
+);
 const ghostShade = computed(() =>
   ghost.value?.avatar ? AVATAR_SHADES[ghost.value.avatar.color] : null,
 );

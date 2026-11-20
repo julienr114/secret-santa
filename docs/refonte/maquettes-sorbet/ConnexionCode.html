@@ -1,316 +1,39 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Connexion — le code, dans l’application installée</title>
-    <script src="./support.js"></script>
-  </head>
-  <body>
-    <x-dc>
-      <helmet>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>
-          body {
-            margin: 0;
-          }
-          a {
-            color: #c93425;
-          }
-          a:hover {
-            color: #c93425;
-          }
-        </style>
-      </helmet>
-      <div
-        style="
-          width: 390px;
-          height: 844px;
-          box-sizing: border-box;
-          background: #fff6f1;
-          color: #2b1b3d;
-          font-family: 'DM Sans', system-ui, sans-serif;
-          display: flex;
-          flex-direction: column;
-        "
-      >
-        <header
-          style="
-            height: 56px;
-            flex-shrink: 0;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            padding: 0 12px;
-          "
-        >
-          <div>
-            <button
-              aria-label="Retour"
-              style="
-                width: 44px;
-                height: 44px;
-                border: 0;
-                background: transparent;
-                color: #2b1b3d;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-              "
-            >
-              <svg
-                aria-hidden="true"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="m15 18-6-6 6-6" />
-              </svg>
-            </button>
-          </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              gap: 6px;
-              font-family: 'Outfit', system-ui, sans-serif;
-              font-weight: 700;
-              font-size: 18px;
-              color: #c93425;
-            "
-          >
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
-              /></svg
-            >Under the Tree
-          </div>
-          <button
-            aria-label="Langue : français"
-            style="
-              justify-self: end;
-              height: 44px;
-              min-width: 44px;
-              border: 0;
-              background: transparent;
-              color: #2b1b3d;
-              font-family: inherit;
-              font-size: 14px;
-              font-weight: 600;
-            "
-          >
-            FR
-          </button>
-        </header>
-        <main
-          style="
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding: 8px 16px 24px;
-          "
-        >
-          <div
-            style="
-              display: flex;
-              flex-direction: column;
-              gap: 6px;
-              padding-top: 12px;
-            "
-          >
-            <h1
-              style="
-                margin: 0;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-weight: 700;
-                font-size: 30px;
-                line-height: 1.1;
-              "
-            >
-              Tape ton code
-            </h1>
-            <p
-              style="
-                margin: 0;
-                font-size: 15px;
-                line-height: 1.45;
-                color: #6b5a7a;
-              "
-            >
-              Six chiffres envoyés à
-              <strong style="color: #2b1b3d">hugo-demo@example.com</strong>. Le
-              code est valable 15 minutes.
-            </p>
-          </div>
-          <div
-            role="group"
-            aria-label="Code à six chiffres"
-            style="display: flex; justify-content: space-between"
-          >
-            <span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 1px solid #f5b8a5;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-              >4</span
-            ><span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 1px solid #f5b8a5;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-              >8</span
-            ><span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 1px solid #f5b8a5;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-              >2</span
-            ><span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 2px solid #d93a2b;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-            ></span
-            ><span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 1px solid #f5b8a5;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-            ></span
-            ><span
-              style="
-                width: 46px;
-                height: 58px;
-                box-sizing: border-box;
-                border: 1px solid #f5b8a5;
-                border-radius: 16px;
-                background: #ffffff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-size: 28px;
-                font-weight: 700;
-              "
-            ></span>
-          </div>
-          <p
-            style="
-              margin: 0;
-              font-size: 14px;
-              line-height: 1.45;
-              color: #6b5a7a;
-            "
-          >
-            Il se valide tout seul au sixième chiffre.
-          </p>
-          <div style="display: flex; flex-direction: column; gap: 2px">
-            <a
-              href="#"
-              style="
-                align-self: flex-start;
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                font-size: 15px;
-                font-weight: 700;
-                color: #c93425;
-                text-decoration: none;
-              "
-              >Renvoyer un code</a
-            ><a
-              href="Connexion.dc.html"
-              style="
-                align-self: flex-start;
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                font-size: 15px;
-                font-weight: 600;
-                color: #2b1b3d;
-                text-decoration: none;
-              "
-              >Utiliser une autre adresse</a
-            >
-          </div>
-        </main>
-      </div>
-    </x-dc>
-    <script
-      type="text/x-dc"
-      data-dc-script
-      data-props='{"$preview":{"width":390,"height":1500}}'
-    >
-      class Component extends DCLogic {
-      renderVals() {
-      return {};
-      }
-      }
-    </script>
-  </body>
+<head>
+<meta charset="utf-8">
+<title>Connexion — le code, dans l’application installée</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#c93425}a:hover{color:#c93425}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div><button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Under the Tree</div>
+    <button aria-label="Langue : français" style="justify-self: end; height: 44px; min-width: 44px; border: 0; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 14px; font-weight: 600">FR</button>
+  </header>
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 8px 16px 24px">
+    <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px"><h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Tape ton code</h1><p style="margin: 0; font-size: 15px; line-height: 1.45; color: #6b5a7a">Six chiffres envoyés à <strong style="color: #2b1b3d">hugo-demo@example.com</strong>. Le code est valable 15 minutes.</p></div>
+    <div role="group" aria-label="Code à six chiffres" style="display: flex; justify-content: space-between"><span style="width: 46px; height: 58px; box-sizing: border-box; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700">4</span><span style="width: 46px; height: 58px; box-sizing: border-box; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700">8</span><span style="width: 46px; height: 58px; box-sizing: border-box; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700">2</span><span style="width: 46px; height: 58px; box-sizing: border-box; border: 2px solid #d93a2b; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700"></span><span style="width: 46px; height: 58px; box-sizing: border-box; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700"></span><span style="width: 46px; height: 58px; box-sizing: border-box; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', system-ui, sans-serif; font-size: 28px; font-weight: 700"></span></div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Il se valide tout seul au sixième chiffre.</p>
+    <div style="display: flex; flex-direction: column; gap: 2px"><a href="#" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-size: 15px; font-weight: 700; color: #c93425; text-decoration: none">Renvoyer un code</a><a href="Connexion.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-size: 15px; font-weight: 600; color: #2b1b3d; text-decoration: none">Utiliser une autre adresse</a></div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
 </html>

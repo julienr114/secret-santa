@@ -1,135 +1,44 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Connexion — l’email du code</title>
-    <script src="./support.js"></script>
-  </head>
-  <body>
-    <x-dc>
-      <helmet>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>
-          body {
-            margin: 0;
-          }
-          a {
-            color: #c93425;
-          }
-          a:hover {
-            color: #c93425;
-          }
-        </style>
-      </helmet>
-      <div
-        style="
-          width: 390px;
-          height: 928px;
-          box-sizing: border-box;
-          background: #ffffff;
-          color: #1c1917;
-          font-family:
-            system-ui,
-            -apple-system,
-            'Segoe UI',
-            sans-serif;
-          display: flex;
-          flex-direction: column;
-        "
-      >
-        <div
-          style="
-            padding: 16px;
-            border-bottom: 1px solid #d6d3d1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-          "
-        >
-          <h1
-            style="
-              margin: 0;
-              font-size: 18px;
-              font-weight: 700;
-              line-height: 1.3;
-            "
-          >
-            Ton code Under the Tree : 482 913
-          </h1>
-          <p style="margin: 0; font-size: 13px; color: #6b5a7a">
-            Under the Tree · à hugo-demo@example.com
-          </p>
-        </div>
-        <div
-          style="
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            font-size: 16px;
-            line-height: 1.5;
-          "
-        >
-          <p style="margin: 0">Bonjour,</p>
-          <p style="margin: 0">
-            Voici ton code pour te connecter dans l’application :
-          </p>
-          <p
-            style="
-              margin: 0;
-              font-size: 30px;
-              font-weight: 700;
-              letter-spacing: 0.08em;
-            "
-          >
-            482 913
-          </p>
-          <p style="margin: 0">
-            Il est valable 15 minutes et ne sert qu’une fois, sur le téléphone
-            qui l’a demandé.
-          </p>
-          <p style="margin: 0">Si ce n’est pas toi, ignore ce message.</p>
-          <p style="margin: 0">Under the Tree</p>
-          <div
-            style="
-              margin-top: 8px;
-              padding-top: 14px;
-              border-top: 1px solid #d6d3d1;
-              display: flex;
-              flex-direction: column;
-              gap: 8px;
-              font-size: 13px;
-              line-height: 1.45;
-              color: #6b5a7a;
-            "
-          >
-            <p style="margin: 0">
-              Tu reçois cet email parce que tu viens de le demander.
-            </p>
-            <p style="margin: 0">
-              <a
-                href="Confidentialite.dc.html"
-                style="color: #1d4ed8; text-decoration: underline"
-                >Ce que l’application fait de tes données</a
-              >
-            </p>
-          </div>
-        </div>
-      </div>
-    </x-dc>
-    <script
-      type="text/x-dc"
-      data-dc-script
-      data-props='{"$preview":{"width":390,"height":928}}'
-    >
-      class Component extends DCLogic {
-      renderVals() {
-      return {};
-      }
-      }
-    </script>
-  </body>
+<head>
+<meta charset="utf-8">
+<title>Connexion — l’email du code</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#c93425}a:hover{color:#c93425}
+</style>
+</helmet>
+<div style="width: 390px; height: 928px; box-sizing: border-box; background: #ffffff; color: #1c1917; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; display: flex; flex-direction: column">
+  <div style="padding: 16px; border-bottom: 1px solid #d6d3d1; display: flex; flex-direction: column; gap: 4px">
+    <h1 style="margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3">Ton code Under the Tree : 482 913</h1>
+    <p style="margin: 0; font-size: 13px; color: #6b5a7a">Under the Tree · à hugo-demo@example.com</p>
+  </div>
+  <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px; font-size: 16px; line-height: 1.5">
+    <p style="margin: 0">Bonjour,</p>
+    <p style="margin: 0">Voici ton code pour te connecter dans l’application :</p>
+    <p style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: 0.08em">482 913</p>
+    <p style="margin: 0">Il est valable 15 minutes et ne sert qu’une fois, sur le téléphone qui l’a demandé.</p>
+    <p style="margin: 0">Si ce n’est pas toi, ignore ce message.</p>
+    <p style="margin: 0">Under the Tree</p>
+    <div style="margin-top: 8px; padding-top: 14px; border-top: 1px solid #d6d3d1; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.45; color: #6b5a7a">
+      <p style="margin: 0">Tu reçois cet email parce que tu viens de le demander.</p>
+      <p style="margin: 0"><a href="Confidentialite.dc.html" style="color: #1d4ed8; text-decoration: underline">Ce que l’application fait de tes données</a></p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":928}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
 </html>

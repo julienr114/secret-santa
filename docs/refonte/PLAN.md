@@ -762,7 +762,7 @@ Décidée par Julien le 19 novembre 2026 : la pastille verte « C'est toi » ne 
 
 ### Ce qui reste, et dans quel ordre (relu le 19 novembre 2026)
 
-Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **Le lot 27 (reprendre une liste) est fait** : sa migration `0030_carried_from` est à appliquer avant de déployer. **Le lot 26 (les listes en direct) est fait**, sans migration de la base : le premier déploiement crée l'objet durable. **Le lot 27 bis (une liste sans personne) est fait** (20 novembre 2026) : sa migration `0031_amusing_pete_wisdom` est à appliquer avant de déployer. **La Correction 28 (quatre retouches de la liste : le retrait des idées, ceux qui offrent sous l'idée, la pastille du lien, le partage vu par « Aide à écrire ») est faite** (20 novembre 2026), sans migration, après le lot 27 bis par erreur de lecture de l'ordre. **La Correction 29 (la ligne d'une idée : le lien sous le texte, tout en pastilles, plus de « Changer », plus d'air) est faite** (20 novembre 2026), sans migration. **Le lot 27 ter (relier ses pistes d'un tirage à sa liste, et le mode anonyme) est fait** (20 novembre 2026) : sa migration `0032_anonymous_mode` est à appliquer avant de déployer, après la `0031`. **À faire maintenant : la Correction 29 (la ligne d'une idée : le lien sous le texte, tout en pastilles, plus de « Changer », plus d'air), sans migration.** Le chantier « Les listes, V2 » est terminé, sauf le lot 41 (idées). Restent ensuite les lots 28 à 41 : voir le tableau pour l'ordre de chaque chantier. Cinq chantiers, indépendants les uns des autres.
+Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le crayon, la barre collée), et les Corrections 19 à 24 (de la 23, il reste à Julien la double authentification de ses comptes). **Le lot 25 (à plusieurs, personne reliée) est fait** : sa migration `0028_list_holders` est à appliquer avant de déployer. **Le lot 24 ter (réordonner en glissant) est fait**, sans migration ; il reste à Julien de l'essayer sur iPhone et Android. **Le lot 25 bis (niveaux, pastilles, page d'invitation) est fait** : sa migration `0029_holder_levels` est à appliquer avant de déployer, après la `0028`. **La Correction 25 (décocher pour quelqu'un) est faite**, sans migration. **La Correction 26 (tous les messages en prune foncé, et leurs règles) est faite**, sans migration. **Le lot 38 A (le filet de sécurité) est fait**, sans migration, sauf la politique de contenu à appliquer pour de bon (dans une semaine) et le script de changement de clé. **La Correction 27 (la fiche d'un proche : une page par champ) est faite**, sans migration. **Le lot 27 (reprendre une liste) est fait** : sa migration `0030_carried_from` est à appliquer avant de déployer. **Le lot 26 (les listes en direct) est fait**, sans migration de la base : le premier déploiement crée l'objet durable. **Le lot 27 bis (une liste sans personne) est fait** (20 novembre 2026) : sa migration `0031_amusing_pete_wisdom` est à appliquer avant de déployer. **La Correction 28 (quatre retouches de la liste : le retrait des idées, ceux qui offrent sous l'idée, la pastille du lien, le partage vu par « Aide à écrire ») est faite** (20 novembre 2026), sans migration, après le lot 27 bis par erreur de lecture de l'ordre. **La Correction 29 (la ligne d'une idée : le lien sous le texte, tout en pastilles, plus de « Changer », plus d'air) est faite** (20 novembre 2026), sans migration. **Le lot 27 ter (relier ses pistes d'un tirage à sa liste, et le mode anonyme) est fait** (20 novembre 2026) : sa migration `0032_anonymous_mode` est à appliquer avant de déployer, après la `0031`. Le chantier « Les listes, V2 » est terminé, sauf le lot 41 (idées). Restent ensuite les lots 28 à 41 : voir le tableau pour l'ordre de chaque chantier. **À faire maintenant : la Correction 30 (les dernières retouches de la liste), sans migration, puis Julien publie les listes en direct.** **Ensuite, le prochain gros chantier est le lot 42, la V3** (le groupe devient la fête, les listes appartiennent aux fêtes, un nouvel accueil) : Julien le veut **avant** la page de présentation (lots 32 et 33), le changement d'infrastructure pour passer à l'échelle (lots 34 et 38 B), le nouvel admin (lot 37) et l'application installée (lot 31), puisque la V3 change presque toutes les pages et que ces lots en dépendent (décidé le 20 novembre 2026). Il commence par une séance dédiée avec Julien pour creuser le modèle et les écrans ; ne rien coder de la V3 avant. Les autres chantiers restent indépendants les uns des autres.
 
 **Le cap** (Julien, 19 novembre 2026) : Noël 2026 est une phase d'essai, avec dix à quinze tirages et autant de listes ; l'application doit être au point pour Noël 2027. Rien ne presse donc au point de sortir un lot à moitié : mieux vaut peu de lots bien finis avant les fêtes (la Correction 23, le lot 24 bis, le lot 38 A), et le reste ensuite.
 
@@ -773,6 +773,7 @@ Faits : tout jusqu'au lot 24 bis (ses deux dernières lignes comprises : le cray
 | **Les garde-fous et l'ouverture** | Correction 23 tout de suite ; 38 A juste après le lot 24 bis ; puis 35, 36, 39, 37, 38 B, et 34 en dernier | 34 : s'abonner à Workers Paid, activer l'envoi d'emails de Cloudflare, chiffrer les plafonds. 36 : faire relire, décider deux durées, créer l'adresse de contact |
 | **Les notifications** | 30, puis 28, 29, 29 bis, 31 | Non |
 | **L'assistant (MCP)** | 40, après Noël 2026 | Non |
+| **La V3 : la fête** | Lot 42, après la Correction 30 et la publication des listes ; **avant** les lots 31, 32, 33, 34, 37 et 38 B, qui en dépendent | Oui : une séance dédiée pour creuser le modèle et les écrans avant de coder |
 | **La vitrine** | 33, puis 32 en tout dernier | 33 : ses textes, le service de dons, ses liens. 32 : confirmer la phrase sur l'assistant |
 
 **Pour reprendre après la séance du 19 novembre 2026 (après-midi).** Les lots 24 et 24 bis et la Correction 22 sont faits. **La suite, dans cet ordre** : la Correction 24 (« Mes proches » : Julien bute dessus en essayant, elle passe en premier), la Correction 23 (sécurité), les deux lignes restantes du lot 24 bis (le crayon sur l'icône, les barres collées en haut), puis le lot 38 A (le filet de sécurité), puis 27, 27 bis, 27 ter, 25, 26. Ce qui a changé dans des lots déjà écrits, à relire avant de les coder :
@@ -880,6 +881,66 @@ Décidé par Julien le 19 novembre 2026. **Fait** (19 novembre 2026), avec la mi
 - [x] **Accessibilité** : `role="status"` (`alert` pour une erreur) ; le temps s'arrête tant qu'on touche ou survole ; « réduire les animations » respecté.
 - [x] **Le guide de style** de l'application montre les trois sortes ; README 23.2 et 23.3 passent de « à coder » à « fait ».
 - [x] `tests/e2e` (un message avec « Annuler » annule ; une erreur reste).
+
+### Correction 30 — Les dernières retouches de la liste, avant de publier les listes en direct (README 22.19, 22.20, 23)
+
+Demandé par Julien le 20 novembre 2026, en essayant la liste : « c'est vraiment les derniers petits trucs qui me manquaient » avant de publier une version des listes qui marche bien, avec le temps réel. Six retouches, toutes validées par Julien sur maquette. Sans migration. **Ordre conseillé : 6 d'abord** (il change la mise en page de `PersonSection.vue`, dont les autres dépendent), puis 5, 1, 2, 3, 4. Maquettes (page Listes, au bout de la première rangée, « Avant de publier ») : `ListeDecocherCase`, `ListeReserverSimple`, `ListeReserverAnonyme`, `ListeJOffreAgir`, `ListeCocheGuide`, `ListeGroupeFil`, `ListeGroupeFilDeplie`.
+
+**1. Décocher pour quelqu'un : la case** (`ListeDecocherCase`, puis `ListeDecocheFait` ; retenu par Julien). Aujourd'hui, toucher le prénom (ou « Anonyme ») sous une idée cochée déplie la ligne sur un fond teinté, avec « Coché en anonyme » et un bouton « Décocher » : lourd, et la phrase répète la pastille.
+
+- [ ] **Toucher la case grise décoche tout de suite**, avec le message « Coche de Mamie retirée · Annuler ». C'est le même geste que pour ce que j'offre (la case verte décoche tout de suite).
+- [ ] Les pastilles des prénoms redeviennent de simples informations : on ne les touche plus. Plus de fond teinté, plus de phrase, plus de bouton « Décocher » sous la ligne.
+- [ ] À plusieurs, la case retire toute la coche (tout le groupe) ; « Annuler » la remet telle quelle, avec les mêmes personnes.
+- [ ] Nom accessible de la case : « Décocher : coché par Mamie ». Réservé à ceux qui pouvaient déjà décocher pour quelqu'un (Correction 25).
+- [ ] Maquettes périmées, à supprimer du dépôt : `ListeDecocher`, `ListeDecocherChip`, `ListeDecocherPanneau`.
+
+**2. Le panneau de ce que j'offre, simplifié** (`ListeReserverSimple`, `ListeReserverAnonyme` ; validé par Julien le 20 novembre 2026 : « je valide, c'est très bien »). Julien : « Dire à Camille que c'est moi » et, dessous, « Personne d'autre ne saura que c'est toi », c'est confus. Les deux réglages (seul ou à plusieurs, avec ou sans prénom) deviennent **une seule question, trois choix, et chaque choix dit qui le sait** :
+
+- [ ] « **Je l'offre seul** » : « Camille sait que c'est toi. Les autres voient seulement que c'est pris. »
+- [ ] « **Je l'offre seul, en anonyme** » (le masque) : « Personne ne sait que c'est toi, pas même Camille. »
+- [ ] « **On l'offre à plusieurs** » : « D'autres pourront se joindre à toi, et verront ton prénom. »
+- [ ] L'interrupteur « Dire à Camille que c'est moi » et l'encart « Personne d'autre ne saura que c'est toi. » disparaissent. « Terminé » et « Finalement, je ne l'offre plus » restent.
+- [ ] **En mode anonyme** : « en anonyme » est choisi, les deux autres choix sont grisés, et une seule ligne dessous le dit : « Mode anonyme activé. Pour un autre choix, désactive-le en haut de la liste. » C'est le chemin pour dire qui on est : quitter le mode, puis changer le choix de ce cadeau.
+- [ ] Le serveur refuse aussi « seul sous mon prénom » et « à plusieurs » tant que le mode anonyme est activé (pas seulement l'écran).
+- [ ] Hors du mode anonyme, le choix par défaut reste « Je l'offre seul » (sous mon prénom pour qui tient la liste), et un cadeau coché en anonyme peut passer aux deux autres choix.
+
+**3. « Tu l'offres » montre qu'il se touche** (`ListeJOffreAgir`). Aujourd'hui, la pastille « Tu l'offres » ouvre le panneau, mais rien ne le dit.
+
+- [ ] La pastille de mon état prend un **filet menthe et une petite flèche** (« Tu l'offres › »), retenu par Julien (« l'option A me suffit » : pas de bouton « ⋯ », pas de message la première fois). C'est la règle des pastilles (Correction 29) : une pastille à filet se touche, une pastille pleine informe. Même chose pour « Tu participes » et « Tu l'offres en anonyme » (filet plus clair sur l'aubergine).
+
+**4. Après avoir coché, la première fois : une note sur « Tu l'offres › »** (`ListeCocheGuide` ; retenu par Julien, le message à chaque coche est écarté).
+
+- [ ] **La première fois seulement** qu'on coche (une fois par appareil), une note pointée sur la pastille « Tu l'offres › » : « **C'est noté** », « Touche « Tu l'offres » pour proposer de l'offrir à plusieurs, ou passer en anonyme. » (texte de Julien), et « Compris ». Ensuite, plus rien : la pastille à filet suffit.
+- [ ] **Le voile couvre toute l'application** (Julien), en-tête et barres comprises, comme celui de la note du mode anonyme dans le code (`AnonymousBar.vue` : un voile fixe à la racine de l'app, qui laisse passer les touchers). Seules la ligne cochée et sa note restent dans la lumière. Voile prune foncé à 35 %, pas aubergine (l'aubergine reste au mode anonyme).
+- [ ] Un seul composant pour les deux notes (mode anonyme, première coche) : la note, sa pointe, le voile, « Compris ». Jamais deux notes à la fois : celle du mode anonyme passe d'abord.
+- [ ] En mode anonyme, la pastille s'appelle « Tu l'offres en anonyme », et les autres choix du panneau sont fermés (point 2) : le texte de la note devient « Touche « Tu l'offres en anonyme » pour changer d'avis. »
+- [ ] La maquette `ListeVisiteurTirage` est mise à jour : voile sur toute la page, comme le code. Maquette périmée, à supprimer du dépôt : `ListeCocheNotice`.
+
+**5. « ses goûts » : un petit paragraphe qui présente la personne** (`ListeGroupeFil`, `ListeGroupeFilDeplie` ; retenu par Julien : « j'aime beaucoup la 5 bis » ; le cadre teinté est écarté, « trop de choses », et le panneau aussi : « pas besoin de l'overlay »). Dans la vue du visiteur, « ses goûts » est aujourd'hui un lien rouge souligné au bout de la ligne d'infos.
+
+- [ ] Le lien souligné disparaît de la ligne d'infos (« 6 ans · taille 6 ans, pointure 30 »). Une personne sans âge ni taille n'a plus de ligne d'infos.
+- [ ] Sous l'en-tête de la personne, au-dessus de ses premières idées, **un petit paragraphe dans le texte courant** (15 px, gris-prune, ce qu'elle aime en gras) : « En ce moment, **les dinosaures et les billes**. Il commence à lire tout seul. Il lui faudrait un cartable pour le CP. À éviter : les peluches, il en a trop. Côté cadeaux, il préfère un objet à garder, et il aime être surpris. »
+- [ ] **Trois lignes au plus**, coupées par « … ». Quand le texte dépasse, et seulement là, **un petit « Voir plus »** dessous (13 px, gras, gris-prune, une petite flèche vers le bas, pas de soulignement) **déroule le paragraphe sur place** ; il devient « Voir moins ». Pas de panneau, pas de page (Julien).
+- [ ] « Voir plus » est un bouton (`aria-expanded`), cible de 44 px par un padding invisible ; l'état déroulé ne se garde pas d'une visite à l'autre.
+- [ ] Le paragraphe est composé des rubriques déjà enregistrées, sans nouveau champ ni migration : « En ce moment, … » ; « Il lui faudrait … » ; « À éviter : … » ; « Côté cadeaux, il préfère … ». Une fonction pure, testée ; trois langues, avec des tournures qui tiennent quel que soit ce que la personne a écrit (ne pas accorder, ne pas reformuler : poser le texte tel quel après une amorce fixe).
+- [ ] Pas de goûts écrits : pas de paragraphe. Celui qui tient la liste voit le même paragraphe que les visiteurs (c'est ce que les autres lisent), en plus de son crayon et de son « ⋯ ».
+- [ ] Maquettes périmées, à supprimer du dépôt : `ListeGoutsPistes`, `ListeGoutsCarte`, `ListeGoutsPanneau`, `ListeGoutsParagraphe`.
+
+**6. Grouper par personne : deux colonnes et un fil** (`ListeGroupeFil` ; retenu par Julien : « j'adore le fil, on part sur le fil »). Julien : « ça manque de quelque chose pour vraiment bien grouper par personne », « les trucs à cocher ne tombent pas bien en dessous ». Aujourd'hui, rien ne s'aligne : l'icône de la personne est à gauche, son prénom à 80 px, le paragraphe revient à 16 px, les cases sont à 22 px et le texte des idées à 56 px.
+
+- [ ] **Deux colonnes.** À gauche, l'icône de la personne (40 px au lieu de 52) et les cases, **centrées l'une sous l'autre**. À droite, tout le texte sur un seul bord (à 50 px du bord de la colonne) : le prénom (24 px), les infos, le paragraphe des goûts, le texte des idées, le lien, les pastilles.
+- [ ] **Le fil** : un trait fin (2 px, pêche `--color-line`, bouts arrondis) part du bas de l'icône, descend au centre de la colonne de gauche, **passe derrière chaque case** et s'arrête à la dernière ligne de la personne (« J'offre autre chose à Léo », « Une autre idée… »). Les cases ont un fond plein pour le couvrir (la case pointillée aussi).
+- [ ] Le fil est décoratif (`aria-hidden`) ; il n'apparaît pas pour une personne sans aucune ligne, ni dans une liste sans personne.
+- [ ] La même mise en page pour celui qui tient la liste : l'encart d'écriture, la ligne « Une autre idée… », le crayon sur l'icône, le « ⋯ ». Pendant qu'on glisse une idée ou une personne (lot 24 ter), le fil de la personne soulevée se replie avec elle.
+- [ ] Le texte des idées recule de 10 px (66 au lieu de 56) : vérifier à 320 px de large. L'espace de 44 px entre deux personnes reste.
+- [ ] Maquettes écartées, à supprimer du dépôt : `ListeGroupeColonne`, `ListeGroupeCarte`.
+
+**Pour finir, et publier**
+
+- [ ] Trois langues pour chaque texte nouveau ou changé ; retirer les clés devenues inutiles (« Coché par… », « Coché en anonyme », le bouton « Décocher », « ses goûts »).
+- [ ] Tests : les fonctions pures du paragraphe des goûts ; e2e de la case grise (décocher, « Annuler », à plusieurs), de la pastille qui ouvre le panneau, de la note de première coche (une seule fois, le voile, « Compris »), de « Voir plus » ; axe sur une liste tenue et une liste visitée ; un passage à 320 px de large.
+- [ ] README 22.19, 22.20 et 23 (les deux colonnes et le fil, le paragraphe des goûts, la note et son voile) ; `ECARTS-MAQUETTES.md` ; noter en section 6 ce qui a été tranché seul.
+- [ ] **Puis Julien publie** : les migrations `0028_list_holders`, `0029_holder_levels`, `0030_carried_from`, `0031_amusing_pete_wisdom` et `0032_anonymous_mode` sont à appliquer avant de déployer, dans cet ordre ; le premier déploiement crée l'objet durable des listes en direct (lot 26).
 
 ### Correction 29 — La ligne d'une idée : le lien sous le texte, tout en pastilles, plus de « Changer », plus d'air (README 22.19, 22.20, 23)
 
@@ -1304,6 +1365,53 @@ Demandé par Julien le 19 novembre 2026. Utile dès le lot 34 (les plafonds) et 
 - [ ] **Prévenir à 70 %** d'un plafond : une nouveauté « qui presse » pour le super-admin (lot 28) ; tant que le lot 28 n'est pas fait, un email au super-admin, une fois par jour au plus.
 - [ ] **La version en ligne** : l'identifiant du commit déployé, inscrit au moment du déploiement.
 - [ ] Aucun outil de mesure extérieur, aucun cookie de plus. Trois langues, tests.
+
+### Lot 42 — La V3 : le groupe devient la fête, les listes appartiennent aux fêtes (pour Noël 2027)
+
+**Le prochain gros chantier, après la Correction 30 et la publication des listes** (Julien, 20 novembre 2026). Il passe **avant** la page de présentation (lots 32, 33), le changement d'infrastructure (lots 34, 38 B), le nouvel admin (lot 37) et l'application installée (lot 31) : la V3 change presque toutes les pages (tirage, participant, groupe, journal, administration, emails, listes, compte), et ces lots seraient à refaire s'ils passaient avant. **Il commence par une séance dédiée avec Julien** pour creuser le modèle et les écrans en profondeur : ce qui suit est le point de départ de cette séance, pas une spécification prête à coder. Ne rien coder avant. À découper ensuite en plusieurs lots (modèle et migration ; listes ; accueil et navigation ; création ; administration). Avec migration.
+
+Décidé par Julien le 20 novembre 2026 (« presque une V3 », « on part là-dessus »), après une exploration de l'accueil (pistes A à D, maquettes `AccueilPiste*`, piste B retenue) puis du modèle. Les listes viennent d'être publiées et presque personne ne s'en sert encore : leur modèle peut changer, avec une migration soignée. Maquettes : page Accueil, « V3 · 1 à 10 ».
+
+**Le modèle**
+
+- [ ] **Le groupe devient la fête.** On ne dit plus « groupe », on dit « fête », partout (écrans, emails, textes, administration). Une fête a :
+  - un nom (« Famille Camille »), une **catégorie** (Noël, anniversaire, mariage, naissance, pot de départ, autre), une **date**, et « revient chaque année » ;
+  - des **membres**, comme le groupe aujourd'hui (invitation par lien, organisateurs, exclusions, réglages : tout ce que le groupe porte reste à la fête) ;
+  - ses **tirages**, un par année (les éditions d'aujourd'hui) ;
+  - ses **listes**.
+- [ ] **Les listes appartiennent aux fêtes.** Tout membre d'une fête peut y créer une liste.
+- [ ] **Une liste peut être dans plusieurs fêtes à la fois.** Exemple de Julien : Justine est dans « Noël · famille A » et « Noël · famille B » ; elle fait une liste pour son mari, elle-même et leurs deux enfants, et la met dans les deux fêtes. Chaque fête voit la même liste, avec les mêmes cadeaux cochés (personne n'offre deux fois la même chose, même d'une famille à l'autre).
+- [ ] **Qui voit une liste** : les membres des fêtes où elle est, et / ou **tout le monde avec un lien** (le partage par lien d'aujourd'hui, pour ceux qui ne sont dans aucune de ces fêtes). Une liste ouverte par ce lien ne s'ajoute pas à l'accueil de celui qui l'ouvre (pas de « Reçues par un lien »). À confirmer par Julien : garde-t-on ce « tout le monde avec un lien » ? Le choix se fait à la création et se change depuis la liste (`FeteChoisir`, « Qui verra ta liste ? »).
+- [ ] **La date et la récurrence de la fête remplissent les formulaires** : le titre et la date d'une nouvelle liste, la date d'un nouveau tirage, « Reprendre la liste de l'an dernier » quand la fête revient.
+- [ ] **Le tirage propose la date de la fête, et on peut la changer** (Julien) : d'une année sur l'autre, il y a des petites variations (le 24 au lieu du 25, un week-end).
+- [ ] **La catégorie** se choisit à la création de la fête, en six tuiles, et pré-remplit le reste : le 25 décembre pour Noël, « L'anniversaire de… », « revient chaque année » allumé pour Noël et les anniversaires, éteint pour un mariage, une naissance, un pot de départ (`FeteNouvelle`).
+
+**La migration**
+
+- [ ] Chaque groupe devient une fête de catégorie Noël qui revient chaque année, avec son nom, ses membres, ses organisateurs, ses exclusions, ses réglages ; chaque édition reste un tirage de cette fête, avec sa date.
+- [ ] Les listes existantes : une liste reliée à un tirage (lot 27 ter) va dans la fête de ce tirage ; les autres gardent leur partage par lien, sans fête. À essayer sur une copie de la base de production avant tout.
+- [ ] Les limites du lot 34 : 3 fêtes par compte, 30 membres par fête. L'administration (lot 37) parle de fêtes.
+
+**Les écrans**
+
+- [ ] **L'accueil** (`AccueilFetes2`) : « Bonjour Hugo », puis une section par saison (« Noël 2026 · dans 34 jours » : les fêtes de catégorie Noël de l'année), une carte par fête avec son icône de catégorie, son tirage et les listes de ses membres au même niveau. Une liste dans deux fêtes apparaît dans les deux cartes, avec « aussi chez Mamie ». « Plus tard » pour les autres fêtes ; une fête qui revient apparaît à l'avance (« Reprendre sa liste de l'an dernier ») ; « Les fêtes passées » en dernière ligne, comme les autres (pas de lien de texte souligné, Julien). **Pas de rubrique « Reçues par un lien »** (Julien : « ça n'existe plus ») : une liste qu'on voit, on la voit parce qu'on est dans une de ses fêtes.
+- [ ] **La barre du bas** : « Accueil · Quoi de neuf », avec la pastille des nouveautés sur « Quoi de neuf » ; « Admin » en plus pour le super-admin. Les onglets « Tirages » et « Listes » disparaissent.
+- [ ] **Le menu du compte** : l'icône de la personne connectée remplace le burger (`MenuAvatar`, `MenuAvatarOuvert`, `MenuAvatarListe`) : « Mon compte » en tête avec le prénom et l'adresse, « Langue », « Se déconnecter ». **Peut se faire avant le reste du lot**, sans attendre la V3.
+- [ ] **La page d'une fête** (`FetePage`, l'ancienne page du groupe) : la catégorie, le nom, la date ; les membres et « Inviter » ; le tirage de l'année ; les listes des membres ; « Nouvelle liste » ; les années passées.
+- [ ] **« Nouvelle liste »** : « Qui verra ta liste ? » (`FeteChoisir`), les fêtes dont je suis membre à cocher (une ou plusieurs), et « Tout le monde, avec un lien ». Le même choix depuis la barre de partage d'une liste, qui dit à qui elle est visible.
+- [ ] **« Nouvelle fête »** (l'ancien « Créer un groupe », `FeteNouvelle`) : la catégorie, le nom, la date, « Elle revient chaque année », puis les membres.
+- [ ] **Les réglages d'une fête** (`FeteReglages`) : en tête, « La fête » (catégorie, date, « revient chaque année ») ; puis les réglages du groupe d'aujourd'hui, avec « fête » à la place de « groupe ». **Les membres** (`FeteMembres`) et **inviter par lien** (`FeteInviter`) : les pages du groupe, renommées.
+- [ ] **Le tirage de l'année** (`TirageNouveau`, l'ancienne « Nouvelle édition ») : le champ de la date est déjà rempli avec la date de la fête cette année, et se change ; les membres du tirage précédent sont repris.
+- [ ] **La liste** (`ListeV3`, `ListeV3Nouvelle`) : la barre du haut ne dit plus « Partage par lien » mais **dans quelles fêtes** est la liste (« Famille Camille, Chez Mamie · 21 membres la voient »), avec « Modifier », qui rouvre « Qui verra ta liste ? ». Une nouvelle liste prend le nom et la date de la fête.
+- [ ] Refaire, au moment de lancer, toutes les maquettes qui parlent de groupe (groupe, membres, réglages, administration, emails).
+
+**Questions encore ouvertes**
+
+- [ ] Une liste dans une fête dont je ne suis plus membre : elle en sort, ou elle y reste tant que je ne la retire pas ? (Proposé : elle en sort.)
+- [ ] Un membre d'une fête peut-il retirer la liste de quelqu'un d'autre de cette fête ? (Proposé : seuls les organisateurs de la fête.)
+- [ ] « Le mode anonyme » et « Toi seul vois les prénoms » : ils restent par liste, quelle que soit la fête.
+
+Maquettes périmées par ce lot, à supprimer du dépôt : `FetePartagee`, `FeteAjouterListe`, `FetePartageeAjoutee` (dans `docs/refonte/maquettes/` et `maquettes-sorbet/`), une piste abandonnée (la fête partagée par lien, sans membres).
 
 ## 6. Questions pour Julien
 

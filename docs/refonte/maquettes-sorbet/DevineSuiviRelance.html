@@ -1,1369 +1,163 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Suivi — la relance suggérée</title>
-    <script src="./support.js"></script>
-  </head>
-  <body>
-    <x-dc>
-      <helmet>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>
-          body {
-            margin: 0;
-          }
-          a {
-            color: #c93425;
-          }
-          a:hover {
-            color: #c93425;
-          }
-        </style>
-      </helmet>
-      <div
-        style="
-          width: 390px;
-          height: 1400px;
-          box-sizing: border-box;
-          background: #fff6f1;
-          color: #2b1b3d;
-          font-family: 'DM Sans', system-ui, sans-serif;
-          display: flex;
-          flex-direction: column;
-        "
-      >
-        <header
-          style="
-            height: 56px;
-            flex-shrink: 0;
-            box-sizing: border-box;
-            border-bottom: 1px solid #ffd9cc;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            padding: 0 12px;
-          "
-        >
-          <div>
-            <button
-              aria-label="Retour"
-              style="
-                width: 44px;
-                height: 44px;
-                border: 0;
-                background: transparent;
-                color: #2b1b3d;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-              "
-            >
-              <svg
-                aria-hidden="true"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="m15 18-6-6 6-6" />
-              </svg>
-            </button>
-          </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              gap: 6px;
-              font-family: 'Outfit', system-ui, sans-serif;
-              font-weight: 700;
-              font-size: 18px;
-              color: #c93425;
-            "
-          >
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
-              />
-            </svg>
-            Under the Tree
-          </div>
-          <button
-            aria-label="Menu"
-            style="
-              justify-self: end;
-              width: 44px;
-              height: 44px;
-              border: 0;
-              background: transparent;
-              color: #2b1b3d;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 0;
-            "
-          >
-            <svg
-              aria-hidden="true"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            >
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </header>
+<head>
+<meta charset="utf-8">
+<title>Suivi — la relance suggérée</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#c93425}a:hover{color:#c93425}
+</style>
+</helmet>
+<div style="width: 390px; height: 1400px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #ffd9cc; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
+    <div>
+      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      Under the Tree
+    </div>
+    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </header>
 
-        <main
-          style="
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            padding: 20px 16px 32px;
-          "
-        >
-          <div style="display: flex; flex-direction: column; gap: 4px">
-            <h1
-              style="
-                margin: 0;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-weight: 700;
-                font-size: 30px;
-                line-height: 1.1;
-              "
-            >
-              Noël 2026
-            </h1>
-            <p style="margin: 0; font-size: 15px; color: #6b5a7a">
-              Famille Camille
-            </p>
-            <a
-              href="DateFete.dc.html"
-              aria-label="Fête le 25 décembre. Modifier la date"
-              style="
-                align-self: flex-start;
-                margin-top: 6px;
-                min-height: 44px;
-                box-sizing: border-box;
-                padding: 0 12px;
-                border: 1px solid #ffd9cc;
-                border-radius: 999px;
-                background: #ffffff;
-                color: #2b1b3d;
-                font-size: 15px;
-                font-weight: 600;
-                text-decoration: none;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <svg
-                aria-hidden="true"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
-              Fête le 25 décembre
-              <svg
-                aria-hidden="true"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#6b5a7a"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M17 3a2.800 2.800 0 1 1 4 4L7.500 20.500 2 22l1.500-5.500z"
-                />
-              </svg>
-            </a>
-          </div>
+  <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Noël 2026</h1>
+      <p style="margin: 0; font-size: 15px; color: #6b5a7a">Famille Camille</p>
+      <a href="DateFete.dc.html" aria-label="Fête le 25 décembre. Modifier la date" style="align-self: flex-start; margin-top: 6px; min-height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid #ffd9cc; border-radius: 999px; background: #ffffff; color: #2b1b3d; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Fête le 25 décembre
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b5a7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.800 2.800 0 1 1 4 4L7.500 20.500 2 22l1.500-5.500z"/></svg>
+      </a>
+    </div>
 
-          <ol
-            aria-label="Étapes de l'édition"
-            style="
-              list-style: none;
-              margin: 0;
-              padding: 0;
-              display: grid;
-              grid-template-columns: repeat(3, minmax(0, 1fr));
-            "
-          >
-            <li
-              style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-                position: relative;
-              "
-            >
-              <span
-                aria-hidden="true"
-                style="
-                  position: absolute;
-                  top: 11px;
-                  left: 50%;
-                  width: 100%;
-                  height: 2px;
-                  background: #0b7a5b;
-                "
-              ></span>
-              <span
-                aria-hidden="true"
-                style="
-                  position: relative;
-                  width: 24px;
-                  height: 24px;
-                  border-radius: 50%;
-                  background: #0b7a5b;
-                  color: #ffffff;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
-                ><svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M20 6 9 17l-5-5" /></svg
-              ></span>
-              <span style="font-size: 12px; font-weight: 600; color: #6b5a7a"
-                >Préparer</span
-              >
-            </li>
-            <li
-              aria-current="step"
-              style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-                position: relative;
-              "
-            >
-              <span
-                aria-hidden="true"
-                style="
-                  position: absolute;
-                  top: 11px;
-                  left: 50%;
-                  width: 100%;
-                  height: 2px;
-                  background: #ffd9cc;
-                "
-              ></span>
-              <span
-                aria-hidden="true"
-                style="
-                  position: relative;
-                  width: 24px;
-                  height: 24px;
-                  border-radius: 50%;
-                  background: #d93a2b;
-                  box-shadow: 0 0 0 4px #ffe3de;
-                  color: #ffffff;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 13px;
-                  font-weight: 700;
-                "
-                ><svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
-                  /></svg
-              ></span>
-              <span style="font-size: 12px; font-weight: 700; color: #c93425"
-                >Tirage fait</span
-              >
-            </li>
-            <li
-              style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-                position: relative;
-              "
-            >
-              <span
-                aria-hidden="true"
-                style="
-                  position: relative;
-                  width: 24px;
-                  height: 24px;
-                  box-sizing: border-box;
-                  border-radius: 50%;
-                  background: #fff6f1;
-                  border: 2px solid #ffd9cc;
-                  color: #6b5a7a;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 12px;
-                  font-weight: 700;
-                "
-                >3</span
-              >
-              <span style="font-size: 12px; font-weight: 600; color: #6b5a7a"
-                >Fêter</span
-              >
-            </li>
-          </ol>
+    <ol aria-label="Étapes de l'édition" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))">
+      <li style="display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative">
+        <span aria-hidden="true" style="position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; background: #0b7a5b"></span>
+        <span aria-hidden="true" style="position: relative; width: 24px; height: 24px; border-radius: 50%; background: #0b7a5b; color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span style="font-size: 12px; font-weight: 600; color: #6b5a7a">Préparer</span>
+      </li>
+      <li aria-current="step" style="display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative">
+        <span aria-hidden="true" style="position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; background: #ffd9cc"></span>
+        <span aria-hidden="true" style="position: relative; width: 24px; height: 24px; border-radius: 50%; background: #d93a2b; box-shadow: 0 0 0 4px #ffe3de; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span>
+        <span style="font-size: 12px; font-weight: 700; color: #c93425">Tirage fait</span>
+      </li>
+      <li style="display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative">
+        
+        <span aria-hidden="true" style="position: relative; width: 24px; height: 24px; box-sizing: border-box; border-radius: 50%; background: #fff6f1; border: 2px solid #ffd9cc; color: #6b5a7a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">3</span>
+        <span style="font-size: 12px; font-weight: 600; color: #6b5a7a">Fêter</span>
+      </li>
+    </ol>
 
-          <section
-            style="
-              background: #ffffff;
-              border-radius: 28px;
-              box-shadow:
-                0 3px 0 #ffd9cc,
-                0 0 0 1.5px #ffd9cc;
-              padding: 20px;
-              display: flex;
-              flex-direction: column;
-              gap: 16px;
-            "
-          >
-            <div style="display: flex; flex-direction: column; gap: 4px">
-              <p
-                style="
-                  margin: 0;
-                  font-size: 12px;
-                  font-weight: 700;
-                  letter-spacing: 0.04em;
-                  text-transform: uppercase;
-                  color: #c93425;
-                "
-              >
-                À faire maintenant
-              </p>
-              <h2
-                style="
-                  margin: 0;
-                  font-family: 'Outfit', system-ui, sans-serif;
-                  font-weight: 600;
-                  font-size: 22px;
-                  line-height: 1.2;
-                "
-              >
-                Préviens chacun que le tirage est fait
-              </h2>
-            </div>
-            <dl
-              style="
-                margin: 0;
-                display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 8px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 2px;
-                  padding: 10px;
-                  border-radius: 16px;
-                  background: #ffe3de;
-                "
-              >
-                <dd
-                  style="
-                    margin: 0;
-                    font-family: 'Outfit', system-ui, sans-serif;
-                    font-weight: 700;
-                    font-size: 26px;
-                    line-height: 1;
-                    color: #c93425;
-                  "
-                >
-                  3
-                </dd>
-                <dt
-                  style="
-                    font-size: 12px;
-                    font-weight: 600;
-                    line-height: 1.25;
-                    color: #c93425;
-                  "
-                >
-                  à prévenir
-                </dt>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 2px;
-                  padding: 10px;
-                  border-radius: 16px;
-                  background: #f1e8fc;
-                "
-              >
-                <dd
-                  style="
-                    margin: 0;
-                    font-family: 'Outfit', system-ui, sans-serif;
-                    font-weight: 700;
-                    font-size: 26px;
-                    line-height: 1;
-                    color: #6a3db3;
-                  "
-                >
-                  1
-                </dd>
-                <dt
-                  style="
-                    font-size: 12px;
-                    font-weight: 600;
-                    line-height: 1.25;
-                    color: #6a3db3;
-                  "
-                >
-                  pas encore ouvert
-                </dt>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 2px;
-                  padding: 10px;
-                  border-radius: 16px;
-                  background: #dcf7ee;
-                "
-              >
-                <dd
-                  style="
-                    margin: 0;
-                    font-family: 'Outfit', system-ui, sans-serif;
-                    font-weight: 700;
-                    font-size: 26px;
-                    line-height: 1;
-                    color: #0b7a5b;
-                  "
-                >
-                  1
-                </dd>
-                <dt
-                  style="
-                    font-size: 12px;
-                    font-weight: 600;
-                    line-height: 1.25;
-                    color: #0b7a5b;
-                  "
-                >
-                  a découvert
-                </dt>
-              </div>
-            </dl>
-            <div style="display: flex; flex-direction: column; gap: 4px">
-              <a
-                href="SelectionEmail.dc.html"
-                style="
-                  height: 48px;
-                  border-radius: 16px;
-                  background: #d93a2b;
-                  color: #ffffff;
-                  font-size: 16px;
-                  font-weight: 700;
-                  text-decoration: none;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 8px;
-                "
-              >
-                <svg
-                  aria-hidden="true"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="m22 7-10 6L2 7" />
-                </svg>
-                Prévenir par email
-              </a>
-              <p
-                style="
-                  margin: 0;
-                  font-size: 13px;
-                  line-height: 1.4;
-                  color: #6b5a7a;
-                  text-align: center;
-                "
-              >
-                Sans adresse email ? Le bouton de chaque ligne partage le lien
-                par WhatsApp ou SMS.
-              </p>
-            </div>
-          </section>
-
-          <section style="display: flex; flex-direction: column; gap: 6px">
-            <h2
-              style="
-                margin: 0;
-                padding: 0 4px;
-                font-family: inherit;
-                font-size: 12px;
-                font-weight: 700;
-                letter-spacing: 0.04em;
-                text-transform: uppercase;
-                color: #6b5a7a;
-              "
-            >
-              5 participants
-            </h2>
-            <ul
-              style="
-                list-style: none;
-                margin: 0 -16px;
-                padding: 0;
-                background: #ffffff;
-                border-top: 1px solid #ffd9cc;
-                border-bottom: 1px solid #ffd9cc;
-              "
-            >
-              <li
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffe9a8 42%,
-                      #f4b82e 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🍭</span
-                >
-                <span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                >
-                  <span style="font-weight: 600; font-size: 16px">Inès</span>
-                  <span
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-                      font-size: 13px;
-                      color: #6b5a7a;
-                    "
-                    ><svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#6b5a7a"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-dasharray="3.500 4"
-                    >
-                      <circle cx="12" cy="12" r="9" /></svg
-                    >Pas encore envoyé</span
-                  >
-                </span>
-                <button
-                  aria-label="Envoyer le lien de Inès"
-                  style="
-                    width: 44px;
-                    height: 44px;
-                    border: 0;
-                    border-radius: 50%;
-                    background: #ffe3de;
-                    color: #c93425;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                  "
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" />
-                  </svg>
-                </button>
-              </li>
-              <li
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  border-top: 1px solid #ffd9cc;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffe9a8 42%,
-                      #f4b82e 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🎄</span
-                >
-                <span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                >
-                  <span style="font-weight: 600; font-size: 16px">Louis</span>
-                  <span
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-                      font-size: 13px;
-                      color: #6b5a7a;
-                    "
-                    ><svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#6b5a7a"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-dasharray="3.500 4"
-                    >
-                      <circle cx="12" cy="12" r="9" /></svg
-                    >Pas encore envoyé</span
-                  >
-                </span>
-                <button
-                  aria-label="Envoyer le lien de Louis"
-                  style="
-                    width: 44px;
-                    height: 44px;
-                    border: 0;
-                    border-radius: 50%;
-                    background: #ffe3de;
-                    color: #c93425;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                  "
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" />
-                  </svg>
-                </button>
-              </li>
-              <li
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  border-top: 1px solid #ffd9cc;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #e6d6f8 42%,
-                      #b993dd 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🐧</span
-                >
-                <span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                >
-                  <span style="font-weight: 600; font-size: 16px">Rose</span>
-                  <span
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-                      font-size: 13px;
-                      color: #6b5a7a;
-                    "
-                    ><svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#6b5a7a"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-dasharray="3.500 4"
-                    >
-                      <circle cx="12" cy="12" r="9" /></svg
-                    >Pas encore envoyé</span
-                  >
-                </span>
-                <button
-                  aria-label="Envoyer le lien de Rose"
-                  style="
-                    width: 44px;
-                    height: 44px;
-                    border: 0;
-                    border-radius: 50%;
-                    background: #ffe3de;
-                    color: #c93425;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                  "
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" />
-                  </svg>
-                </button>
-              </li>
-              <li
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  border-top: 1px solid #ffd9cc;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffe9a8 42%,
-                      #f4b82e 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🐧</span
-                >
-                <span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                >
-                  <span style="font-weight: 600; font-size: 16px">Hugo</span>
-                  <span
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-                      font-size: 13px;
-                      color: #6a3db3;
-                    "
-                    ><svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#6a3db3"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 7v5l3 2" /></svg
-                    >Envoyé, pas encore consulté</span
-                  >
-                </span>
-                <button
-                  aria-label="Renvoyer le lien de Hugo"
-                  style="
-                    width: 44px;
-                    height: 44px;
-                    box-sizing: border-box;
-                    border: 1px solid #ffd9cc;
-                    border-radius: 50%;
-                    background: transparent;
-                    color: #6b5a7a;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                  "
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" />
-                  </svg>
-                </button>
-              </li>
-              <li
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  border-top: 1px solid #ffd9cc;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #e6d6f8 42%,
-                      #b993dd 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🦌</span
-                >
-                <span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                >
-                  <span style="font-weight: 600; font-size: 16px">Camille</span>
-                  <span
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-                      font-size: 13px;
-                      color: #6b5a7a;
-                    "
-                    ><svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#0b7a5b"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M20 6 9 17l-5-5" /></svg
-                    >Résultat consulté · 2×</span
-                  >
-                </span>
-                <button
-                  aria-label="Renvoyer le lien de Camille"
-                  style="
-                    width: 44px;
-                    height: 44px;
-                    box-sizing: border-box;
-                    border: 1px solid #ffd9cc;
-                    border-radius: 50%;
-                    background: transparent;
-                    color: #6b5a7a;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0;
-                    flex-shrink: 0;
-                  "
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" />
-                  </svg>
-                </button>
-              </li>
-            </ul>
-            <p
-              style="
-                margin: 0;
-                padding: 0 4px;
-                font-size: 13px;
-                line-height: 1.4;
-                color: #6b5a7a;
-              "
-            >
-              Ceux qui restent à prévenir sont en premier.
-            </p>
-          </section>
-
-          <section
-            style="
-              background: #ffffff;
-              border-radius: 28px;
-              box-shadow: 0 0 0 2px #d93a2b;
-              padding: 16px 20px;
-              display: flex;
-              align-items: center;
-              gap: 14px;
-            "
-          >
-            <span
-              aria-hidden="true"
-              style="
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                background: #ffe3de;
-                color: #c93425;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-              "
-              ><svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path
-                  d="m20 20-3.500-3.500M9 9.500a2.500 2.500 0 0 1 4.200 1.800c0 1.200-1.700 1.700-1.700 2.700M11.500 16h.010"
-                /></svg
-            ></span>
-            <div
-              style="
-                flex-grow: 1;
-                min-width: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 2px;
-              "
-            >
-              <p
-                style="
-                  margin: 0;
-                  font-size: 12px;
-                  font-weight: 700;
-                  letter-spacing: 0.04em;
-                  text-transform: uppercase;
-                  color: #6b5a7a;
-                  color: #c93425;
-                "
-              >
-                Le jeu de cette édition
-              </p>
-              <h2
-                style="
-                  margin: 0;
-                  font-family: 'Outfit', system-ui, sans-serif;
-                  font-weight: 700;
-                  font-size: 20px;
-                  line-height: 1.2;
-                "
-              >
-                Devine qui
-              </h2>
-              <p
-                style="
-                  margin: 0;
-                  font-size: 14px;
-                  line-height: 1.4;
-                  color: #6b5a7a;
-                "
-              >
-                <strong style="font-weight: 700; color: #2b1b3d"
-                  >2 personnes n’ont pas encore joué.</strong
-                >
-                Fin dans 5 jours.
-              </p>
-              <a
-                href="DevineRappel.dc.html"
-                style="
-                  align-self: flex-start;
-                  margin-top: 6px;
-                  height: 40px;
-                  padding: 0 16px;
-                  border-radius: 16px;
-                  background: #d93a2b;
-                  color: #ffffff;
-                  text-decoration: none;
-                  display: flex;
-                  align-items: center;
-                  font-size: 15px;
-                  font-weight: 700;
-                "
-                >Leur rappeler</a
-              >
-            </div>
-            <svg
-              aria-hidden="true"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#796987"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </section>
-          <ul
-            style="
-              list-style: none;
-              margin: 0 -16px;
-              padding: 0;
-              background: #ffffff;
-              border-top: 1px solid #ffd9cc;
-              border-bottom: 1px solid #ffd9cc;
-            "
-          >
-            <li>
-              <a
-                href="PropEditionReglages.dc.html"
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  text-decoration: none;
-                  color: #2b1b3d;
-                "
-                ><span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: #ffeae1;
-                    color: #6b5a7a;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
-                  "
-                  ><svg
-                    aria-hidden="true"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2" />
-                    <circle cx="16" cy="6" r="2" />
-                    <circle cx="8" cy="12" r="2" />
-                    <circle cx="16" cy="18" r="2" /></svg></span
-                ><span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                  ><span style="font-weight: 600; font-size: 16px"
-                    >Réglages de l’édition</span
-                  ><span
-                    style="font-size: 14px; line-height: 1.35; color: #6b5a7a"
-                    >Budget 30 € · petit mot · jeu</span
-                  ></span
-                ><svg
-                  aria-hidden="true"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#796987"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="m9 18 6-6-6-6" /></svg
-              ></a>
-            </li>
-            <li>
-              <a
-                href="Souci.dc.html"
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  min-height: 60px;
-                  padding: 8px 16px;
-                  box-sizing: border-box;
-                  border-top: 1px solid #ffd9cc;
-                  text-decoration: none;
-                  color: #2b1b3d;
-                "
-                ><span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: #ffeae1;
-                    color: #6b5a7a;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
-                  "
-                  ><svg
-                    aria-hidden="true"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="9" />
-                    <path
-                      d="M9.500 9.500a2.500 2.500 0 0 1 4.300 1.700c0 1.300-1.800 1.800-1.800 2.800M12 17h.010"
-                    /></svg></span
-                ><span
-                  style="
-                    flex-grow: 1;
-                    min-width: 0;
-                    display: flex;
-                    flex-direction: column;
-                  "
-                  ><span style="font-weight: 600; font-size: 16px"
-                    >Un souci ?</span
-                  ><span
-                    style="font-size: 14px; line-height: 1.35; color: #6b5a7a"
-                    >Désistement, lien perdu, erreur de tirage</span
-                  ></span
-                ><svg
-                  aria-hidden="true"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#796987"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="m9 18 6-6-6-6" /></svg
-              ></a>
-            </li>
-          </ul>
-          <p
-            style="
-              margin: 0;
-              padding: 0 4px;
-              font-size: 13px;
-              line-height: 1.4;
-              color: #6b5a7a;
-            "
-          >
-            Personne, organisateur compris, ne voit les résultats ici.
-          </p>
-        </main>
+    <section style="background: #ffffff; border-radius: 28px; box-shadow: 0 3px 0 #ffd9cc, 0 0 0 1.5px #ffd9cc; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #c93425">À faire maintenant</p>
+        <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2">Préviens chacun que le tirage est fait</h2>
       </div>
-    </x-dc>
-    <script
-      type="text/x-dc"
-      data-dc-script
-      data-props='{"$preview":{"width":390,"height":1360}}'
-    >
-      class Component extends DCLogic {
-      renderVals() {
-      return {};
-      }
-      }
-    </script>
-  </body>
+      <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 16px; background: #ffe3de">
+          <dd style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1; color: #c93425">3</dd>
+          <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #c93425">à prévenir</dt>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 16px; background: #f1e8fc">
+          <dd style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1; color: #6a3db3">1</dd>
+          <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #6a3db3">pas encore ouvert</dt>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 16px; background: #dcf7ee">
+          <dd style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1; color: #0b7a5b">1</dd>
+          <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #0b7a5b">a découvert</dt>
+        </div>
+      </dl>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <a href="SelectionEmail.dc.html" style="height: 48px; border-radius: 16px; background: #d93a2b; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        Prévenir par email
+      </a>
+      <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #6b5a7a; text-align: center">Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.</p>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">5 participants</h2>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
+        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🍭</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Inès</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b5a7a"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b5a7a" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
+          </span>
+          <button aria-label="Envoyer le lien de Inès" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li>
+        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🎄</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Louis</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b5a7a"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b5a7a" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
+          </span>
+          <button aria-label="Envoyer le lien de Louis" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li>
+        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🐧</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Rose</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b5a7a"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b5a7a" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
+          </span>
+          <button aria-label="Envoyer le lien de Rose" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li>
+        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🐧</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Hugo</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6a3db3"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6a3db3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Envoyé, pas encore consulté</span>
+          </span>
+          <button aria-label="Renvoyer le lien de Hugo" style="width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #ffd9cc; border-radius: 50%; background: transparent; color: #6b5a7a; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li>
+        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🦌</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Camille</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b5a7a"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b7a5b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Résultat consulté · 2×</span>
+          </span>
+          <button aria-label="Renvoyer le lien de Camille" style="width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #ffd9cc; border-radius: 50%; background: transparent; color: #6b5a7a; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li>
+      </ul>
+      <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 1.4; color: #6b5a7a">Ceux qui restent à prévenir sont en premier.</p>
+    </section>
+
+    <section style="background: #ffffff; border-radius: 28px; box-shadow: 0 0 0 2px #d93a2b; padding: 16px 20px; display: flex; align-items: center; gap: 14px">
+      <span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500M9 9.500a2.500 2.500 0 0 1 4.200 1.800c0 1.200-1.700 1.700-1.700 2.700M11.500 16h.010"/></svg></span>
+      <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a; color: #c93425">Le jeu de cette édition</p>
+        <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 20px; line-height: 1.2">Devine qui</h2>
+        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a"><strong style="font-weight: 700; color: #2b1b3d">2 personnes n’ont pas encore joué.</strong> Fin dans 5 jours.</p>
+        <a href="DevineRappel.dc.html" style="align-self: flex-start; margin-top: 6px; height: 40px; padding: 0 16px; border-radius: 16px; background: #d93a2b; color: #ffffff; text-decoration: none; display: flex; align-items: center; font-size: 15px; font-weight: 700">Leur rappeler</a>
+      </div>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#796987" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </section>
+    <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
+      <li><a href="PropEditionReglages.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffeae1; color: #6b5a7a; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px;">Réglages de l’édition</span><span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Budget 30 € · petit mot · jeu</span></span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#796987" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+      <li><a href="Souci.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc; text-decoration: none; color: #2b1b3d"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffeae1; color: #6b5a7a; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.500 9.500a2.500 2.500 0 0 1 4.300 1.700c0 1.300-1.800 1.800-1.800 2.800M12 17h.010"/></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px;">Un souci ?</span><span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Désistement, lien perdu, erreur de tirage</span></span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#796987" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+    </ul>
+    <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 1.4; color: #6b5a7a">Personne, organisateur compris, ne voit les résultats ici.</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1360}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
 </html>

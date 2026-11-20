@@ -1,332 +1,40 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Devine qui — choisir</title>
-    <script src="./support.js"></script>
-  </head>
-  <body>
-    <x-dc>
-      <helmet>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>
-          body {
-            margin: 0;
-          }
-          a {
-            color: #c93425;
-          }
-          a:hover {
-            color: #c93425;
-          }
-        </style>
-      </helmet>
-      <div
-        style="
-          width: 390px;
-          height: 844px;
-          box-sizing: border-box;
-          background: #a8959d;
-          color: #2b1b3d;
-          font-family: 'DM Sans', system-ui, sans-serif;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-        "
-      >
-        <div
-          aria-hidden="true"
-          style="
-            height: 330px;
-            flex-shrink: 0;
-            padding: 20px 16px;
-            box-sizing: border-box;
-            font-family: 'Outfit', system-ui, sans-serif;
-            font-weight: 700;
-            font-size: 30px;
-            color: #6b5661;
-          "
-        >
-          Devine qui
-        </div>
-        <section
-          aria-label="Qui offre à Yanis ?"
-          style="
-            flex-grow: 1;
-            background: #ffffff;
-            border-radius: 32px 32px 0 0;
-            padding: 10px 16px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-          "
-        >
-          <span
-            aria-hidden="true"
-            style="
-              align-self: center;
-              width: 44px;
-              height: 5px;
-              border-radius: 999px;
-              background: #ffd9cc;
-            "
-          ></span>
-          <div style="display: flex; flex-direction: column; gap: 2px">
-            <h1
-              style="
-                margin: 0;
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-weight: 700;
-                font-size: 22px;
-                line-height: 1.15;
-              "
-            >
-              Qui offre à Yanis ?
-            </h1>
-            <p style="margin: 0; font-size: 14px; color: #6b5a7a">
-              Une personne n’offre qu’un cadeau.
-            </p>
-          </div>
-          <ul
-            role="listbox"
-            aria-label="Participants"
-            style="
-              list-style: none;
-              margin: 0;
-              padding: 0;
-              border: 1px solid #ffd9cc;
-              border-radius: 18px;
-              overflow: hidden;
-            "
-          >
-            <li role="option" aria-selected="false">
-              <button
-                style="
-                  width: 100%;
-                  min-height: 56px;
-                  padding: 8px 14px;
-                  box-sizing: border-box;
-                  border: 0;
-                  background: transparent;
-                  color: #2b1b3d;
-                  font-family: inherit;
-                  font-size: 16px;
-                  font-weight: 600;
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  text-align: left;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffe9a8 42%,
-                      #f4b82e 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🐧</span
-                ><span
-                  style="flex-grow: 1; display: flex; flex-direction: column"
-                  >Hugo</span
-                >
-              </button>
-            </li>
-            <li role="option" aria-selected="false">
-              <button
-                style="
-                  width: 100%;
-                  min-height: 56px;
-                  padding: 8px 14px;
-                  box-sizing: border-box;
-                  border: 0;
-                  border-top: 1px solid #ffd9cc;
-                  background: transparent;
-                  color: #2b1b3d;
-                  font-family: inherit;
-                  font-size: 16px;
-                  font-weight: 600;
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  text-align: left;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffd0c8 42%,
-                      #ff8478 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🍭</span
-                ><span
-                  style="flex-grow: 1; display: flex; flex-direction: column"
-                  >Inès</span
-                >
-              </button>
-            </li>
-            <li role="option" aria-selected="false">
-              <button
-                style="
-                  width: 100%;
-                  min-height: 56px;
-                  padding: 8px 14px;
-                  box-sizing: border-box;
-                  border: 0;
-                  border-top: 1px solid #ffd9cc;
-                  background: transparent;
-                  color: #2b1b3d;
-                  font-family: inherit;
-                  font-size: 16px;
-                  font-weight: 600;
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  text-align: left;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #ffe2c4 42%,
-                      #f2a65a 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🌰</span
-                ><span
-                  style="flex-grow: 1; display: flex; flex-direction: column"
-                  >Lou<span
-                    style="font-size: 13px; font-weight: 400; color: #6b5a7a"
-                    >Ton pronostic pour Hugo : le choisir le déplace ici</span
-                  ></span
-                >
-              </button>
-            </li>
-            <li role="option" aria-selected="false">
-              <button
-                style="
-                  width: 100%;
-                  min-height: 56px;
-                  padding: 8px 14px;
-                  box-sizing: border-box;
-                  border: 0;
-                  border-top: 1px solid #ffd9cc;
-                  background: transparent;
-                  color: #2b1b3d;
-                  font-family: inherit;
-                  font-size: 16px;
-                  font-weight: 600;
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  text-align: left;
-                "
-              >
-                <span
-                  aria-hidden="true"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(
-                      150deg,
-                      #ffffff 0%,
-                      #cfe6ff 42%,
-                      #6eb0f2 135%
-                    );
-                    box-shadow:
-                      0 0 0 2px #ffffff,
-                      0 3px 8px rgba(90, 40, 60, 0.22);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                  "
-                  >🍷</span
-                ><span
-                  style="flex-grow: 1; display: flex; flex-direction: column"
-                  >Sacha<span
-                    style="font-size: 13px; font-weight: 400; color: #6b5a7a"
-                    >Ton pronostic pour toi : le choisir le déplace ici</span
-                  ></span
-                >
-              </button>
-            </li>
-          </ul>
-          <a
-            href="#"
-            style="
-              margin-top: auto;
-              min-height: 44px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 15px;
-              font-weight: 600;
-              color: #6b5a7a;
-            "
-            >Effacer ce pronostic</a
-          >
-        </section>
-      </div>
-    </x-dc>
-    <script
-      type="text/x-dc"
-      data-dc-script
-      data-props='{"$preview":{"width":390,"height":844}}'
-    >
-      class Component extends DCLogic {
-      renderVals() {
-      return {};
-      }
-      }
-    </script>
-  </body>
+<head>
+<meta charset="utf-8">
+<title>Devine qui — choisir</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#c93425}a:hover{color:#c93425}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #a8959d; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
+  <div aria-hidden="true" style="height: 330px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; color: #6b5661">Devine qui</div>
+  <section aria-label="Qui offre à Yanis ?" style="flex-grow: 1; background: #ffffff; border-radius: 32px 32px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 16px">
+    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #ffd9cc"></span>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 22px; line-height: 1.15">Qui offre à Yanis ?</h1>
+      <p style="margin: 0; font-size: 14px; color: #6b5a7a">Une personne n’offre qu’un cadeau.</p>
+    </div>
+    <ul role="listbox" aria-label="Participants" style="list-style: none; margin: 0; padding: 0; border: 1px solid #ffd9cc; border-radius: 18px; overflow: hidden">
+      <li role="option" aria-selected="false"><button style="width: 100%; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border: 0; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 12px; text-align: left"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🐧</span><span style="flex-grow: 1; display: flex; flex-direction: column">Hugo</span></button></li><li role="option" aria-selected="false"><button style="width: 100%; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border: 0; border-top: 1px solid #ffd9cc; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 12px; text-align: left"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffd0c8 42%, #ff8478 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🍭</span><span style="flex-grow: 1; display: flex; flex-direction: column">Inès</span></button></li><li role="option" aria-selected="false"><button style="width: 100%; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border: 0; border-top: 1px solid #ffd9cc; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 12px; text-align: left"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe2c4 42%, #f2a65a 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🌰</span><span style="flex-grow: 1; display: flex; flex-direction: column">Lou<span style="font-size: 13px; font-weight: 400; color: #6b5a7a">Ton pronostic pour Hugo : le choisir le déplace ici</span></span></button></li><li role="option" aria-selected="false"><button style="width: 100%; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border: 0; border-top: 1px solid #ffd9cc; background: transparent; color: #2b1b3d; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 12px; text-align: left"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #cfe6ff 42%, #6eb0f2 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🍷</span><span style="flex-grow: 1; display: flex; flex-direction: column">Sacha<span style="font-size: 13px; font-weight: 400; color: #6b5a7a">Ton pronostic pour toi : le choisir le déplace ici</span></span></button></li>
+    </ul>
+    <a href="#" style="margin-top: auto; min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #6b5a7a">Effacer ce pronostic</a>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
 </html>

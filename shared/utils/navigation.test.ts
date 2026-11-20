@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { backMove, partyPathOf } from './navigation';
+import { backMove, partyPathOf, tabOf } from './navigation';
 
 describe('backMove', () => {
   it('goes back when the page before is the parent', () => {
@@ -42,5 +42,23 @@ describe('partyPathOf', () => {
     expect(partyPathOf('/admin/comptes')).toBeNull();
     expect(partyPathOf('/admin/groupes/nouveau')).toBeNull();
     expect(partyPathOf('/listes')).toBeNull();
+  });
+});
+
+describe('tabOf', () => {
+  it('puts every screen under « Accueil », a group included', () => {
+    expect(tabOf('/')).toBe('home');
+    expect(tabOf('/listes/l1')).toBe('home');
+    expect(tabOf('/p/abc')).toBe('home');
+    expect(tabOf('/admin/famille')).toBe('home');
+    expect(tabOf('/admin/famille/editions/e1')).toBe('home');
+  });
+
+  it('gives « Quoi de neuf » and the super-admin’s pages their tab', () => {
+    expect(tabOf('/quoi-de-neuf')).toBe('news');
+    expect(tabOf('/admin')).toBe('admin');
+    expect(tabOf('/admin/comptes')).toBe('admin');
+    expect(tabOf('/admin/groupes/nouveau')).toBe('admin');
+    expect(tabOf('/admin/guide-de-style')).toBe('admin');
   });
 });

@@ -130,22 +130,30 @@ test('the admin side follows the choice made on the device', async ({
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await expect(heading(page)).toHaveText('Famille Polyglotte');
-  // Language and log out live in one menu; the logo is always there.
+  // Language and log out live in one menu, opened by one's icon; the
+  // logo is always there.
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
   await expect(
     page.getByRole('menuitem', { name: 'Se déconnecter' }),
   ).toBeVisible();
-  await page.getByRole('menuitemcheckbox', { name: 'Deutsch' }).click();
-  await expect(page.getByRole('button', { name: 'Menü' })).toBeVisible();
+  await page.getByRole('menuitem', { name: /^Langue/ }).click();
+  const languages = page.getByRole('dialog', { name: 'Langue' });
+  await languages.getByText('Deutsch').click();
+  await languages.getByRole('button', { name: 'Valider' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Mein Konto', exact: true }),
+  ).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   // Remembered across pages and reloads, without changing anyone's
   // preferred language.
   await page.reload();
   await hydrated(page);
-  await expect(page.getByRole('button', { name: 'Menü' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Mein Konto', exact: true }),
+  ).toBeVisible();
   await page.getByTestId('party-members').click();
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),

@@ -42,3 +42,23 @@ export const partyPathOf = (path: string): string | null => {
   const moved = MOVED[page as keyof typeof MOVED];
   return moved ? ['', 'f', slug, moved, ...rest].join('/') : null;
 };
+
+/** The tabs of the bar at the bottom (docs/spec/v3/accueil-et-creation.md). */
+export type Tab = 'home' | 'news' | 'admin';
+
+/** The pages of the super-admin; the editions of a group are under /admin too. */
+const ADMIN_PAGES = NOT_A_GROUP.map((page) => `/admin/${page}`);
+
+/**
+ * The tab a screen belongs to: « Quoi de neuf » and « Admin » own their
+ * pages, every other screen is under « Accueil », a group's pages
+ * included. « Créer » only opens a sheet, and is never the current one.
+ * @param path - The path of the screen.
+ * @returns The tab shown in colour.
+ */
+export const tabOf = (path: string): Tab => {
+  const under = (start: string) =>
+    path === start || path.startsWith(`${start}/`);
+  if (under('/quoi-de-neuf')) return 'news';
+  return path === '/admin' || ADMIN_PAGES.some(under) ? 'admin' : 'home';
+};

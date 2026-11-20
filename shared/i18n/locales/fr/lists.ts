@@ -2,7 +2,6 @@
 // document of a list, sharing it, « Mes proches ». The French
 // texts of the maquettes `Liste*` are the reference.
 export default {
-  tabs: { draws: 'Tirages', lists: 'Listes', label: 'Sections' },
   home: {
     title: 'Listes',
     intro: 'Chacun coche ce qu’il offre.',

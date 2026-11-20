@@ -138,7 +138,7 @@ test('my account lists the devices, and logging out everywhere closes them all',
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
 
-  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Mon compte' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
   await expect(page.getByText(ADMIN_EMAIL)).toBeVisible();

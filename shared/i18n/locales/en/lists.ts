@@ -1,6 +1,5 @@
 // Gift lists (README 22.19, lots 21 and 22). See the French file.
 export default {
-  tabs: { draws: 'Draws', lists: 'Lists', label: 'Sections' },
   home: {
     title: 'Lists',
     intro: 'Everyone ticks what they give.',

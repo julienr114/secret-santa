@@ -1,6 +1,5 @@
 // Gift lists (README 22.19, lots 21 and 22). See the French file.
 export default {
-  tabs: { draws: 'Wichteln', lists: 'Listen', label: 'Bereiche' },
   home: {
     title: 'Listen',
     intro: 'Jeder hakt ab, was er schenkt.',

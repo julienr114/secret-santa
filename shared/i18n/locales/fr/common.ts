@@ -26,6 +26,14 @@ export default {
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },
   },
+  tabs: {
+    home: 'Accueil',
+    create: 'Créer',
+    news: 'Quoi de neuf',
+    admin: 'Admin',
+    label: 'Sections',
+  },
+  create: { title: 'Créer', secretSanta: 'Un Secret Santa', list: 'Une liste' },
   context: 'Tu es ici',
   actions: {
     back: 'Retour',

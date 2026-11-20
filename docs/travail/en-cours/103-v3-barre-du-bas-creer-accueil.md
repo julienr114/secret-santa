@@ -18,9 +18,9 @@ L'accueil montre mes fêtes, avec leurs Secret Santa et les listes de leurs memb
 
 ## À faire
 
-- [ ] La barre du bas : « Accueil », « Créer », « Quoi de neuf » (et « Admin »). Les onglets « Tirages » et « Listes » disparaissent.
-- [ ] Le menu du compte par l'icône de la personne connectée.
-- [ ] Le panneau « Créer » : « Un Secret Santa », « Une liste ».
+- [x] La barre du bas : « Accueil », « Créer », « Quoi de neuf » (et « Admin »). Les onglets « Tirages » et « Listes » disparaissent.
+- [x] Le menu du compte par l'icône de la personne connectée.
+- [x] Le panneau « Créer » : « Un Secret Santa », « Une liste ».
 - [ ] L'accueil : la section « Noël <année> » et son décompte jusqu'au 25 décembre, les cartes de fête dans l'ordre des dates, « Bientôt » (les anniversaires proposés), « Plus tard », « Les fêtes passées », « Ce que j'offre ailleurs ».
 - [ ] L'accueil d'un compte tout neuf : deux cartes.
 - [ ] Les fonctions pures (regroupement par saison, ordre, décompte, anniversaires proposés) dans `shared/utils`, avec leurs tests.

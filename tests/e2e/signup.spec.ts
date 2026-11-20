@@ -55,11 +55,11 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
   // A page where one writes (README 23.3): its action is in the page, at
   // the end of the content, not in a band stuck to the bottom; the bar
-  // « Tirages / Listes » stays, and touching outside the field leaves it.
+  // at the bottom stays, and touching outside the field leaves it.
   await expect(page.getByTestId('inline-footer')).toBeVisible();
   await expect(page.getByTestId('sticky-footer')).toHaveCount(0);
   await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Tirages' }),
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Accueil' }),
   ).toHaveAttribute('aria-current', 'page');
   await page.getByTestId('request-why').click();
   await expect(page.getByLabel('Ta demande')).not.toBeFocused();

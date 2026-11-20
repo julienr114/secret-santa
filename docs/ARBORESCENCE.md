@@ -20,6 +20,7 @@ flowchart LR
   accueil --> passes["Tirages passés"]
   accueil --> demande["Demander à créer un groupe"]
   accueil --> listes["Listes<br/><small>/listes</small>"]
+  accueil --> nouveautes["Quoi de neuf<br/><small>/quoi-de-neuf</small>"]
 
   subgraph admin ["Administration (super-admin)"]
     administration["Administration<br/><small>/admin</small>"]
@@ -110,7 +111,10 @@ Décidée par Julien le 18 novembre 2026.
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-| Accueil, ou connexion sans session | `/` | — | Mon icône |
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau : « Un Secret Santa » et « Une liste » mènent à « Pour quelle occasion ? » (`/f/nouvelle?pour=secret-santa`, `?pour=liste`). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+
+| Accueil, ou connexion sans session | `/` | — (barre du bas) | |
+| Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | Demander à créer un groupe | `/demande` | Accueil | |
 | Connexion | `/login` | — | |
 | Le lien de connexion | `/login/[jeton]` | — | |
@@ -186,7 +190,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 
 ## Listes de cadeaux (README 22.19)
 
-La barre du bas (« Tirages », « Listes ») est sur l'accueil et sur l'onglet « Listes ».
+L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages restent jusqu'au ticket 106.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|

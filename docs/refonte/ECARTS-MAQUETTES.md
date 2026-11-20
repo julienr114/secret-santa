@@ -6,6 +6,14 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## L'accueil, la barre du bas et « Créer » (V3, ticket 103)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `MenuAvatarOuvert` | Le menu n'a pas de ligne « Quoi de neuf » (c'est un onglet ; la spec ne la met pas dans le menu). « Langue » ouvre un panneau du bas avec les trois langues : un menu à côté du menu ne tient pas sur un téléphone. | Seul |
+| `V3AccueilPlusOuvert` | Jusqu'aux tickets 105 et 106, « Un Secret Santa » et « Une liste » ouvrent la création d'une fête, puis l'écran d'aujourd'hui (création d'une édition, nouvelle liste). | Julien, 20 novembre 2026 |
+| `V3Accueil` | « Quoi de neuf » ouvre une page vide jusqu'au ticket 120, sans pastille de nombre. | Julien, 20 novembre 2026 |
+
 ## La fête (V3, ticket 104)
 
 | Maquette | Ce que fait le code | Décidé par |

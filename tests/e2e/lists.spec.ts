@@ -18,8 +18,8 @@ test.beforeEach(async ({ page }) => {
 test('a list is written in its document, and shared', async ({ page }) => {
   await page.goto('/listes');
   await hydrated(page);
-  // The bar of the two homes; no list yet.
-  await expect(page.getByTestId('tab-bar')).toContainText('Tirages');
+  // The bar at the bottom; no list yet.
+  await expect(page.getByTestId('tab-bar')).toContainText('Accueil');
   await expect(page.getByTestId('lists-empty')).toContainText(
     'Fini, les cadeaux en double',
   );
@@ -288,13 +288,13 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await elsewhere.click();
   await expect(me.getByTestId('idea-text')).toHaveCount(0);
 
-  // The bar is on every screen of someone logged in (README 22.21), the
-  // tab of where they are in colour.
+  // The bar is on every screen of someone logged in, a list under
+  // « Accueil » (V3, ticket 103).
   await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Listes' }),
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Accueil' }),
   ).toHaveAttribute('aria-current', 'page');
   await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Tirages' }),
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Quoi de neuf' }),
   ).not.toHaveAttribute('aria-current', 'page');
 
   // The word: touched, it is mine; erased, there is none.

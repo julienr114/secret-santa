@@ -79,7 +79,7 @@ test('without an account, the list reads, and a box asks for an address', async 
   await expect(
     page.getByRole('button', { name: 'Changer de langue' }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Menu' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Mon compte' })).toHaveCount(0);
   await expect(page.getByTestId('tab-bar')).toHaveCount(0);
   await page.getByRole('checkbox', { name: /Circuit de billes/ }).click();
   await expect(page).toHaveURL(/\/connexion\?cocher=/);
@@ -94,13 +94,13 @@ test('without an account, the list reads, and a box asks for an address', async 
   await expect(page.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await expect(page.getByText('Changer', { exact: true })).toHaveCount(0);
   // Logged in, by the same link: the menu in place of the language, and
-  // the bar, on « Listes ».
-  await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
+  // the bar, on « Accueil ».
+  await expect(page.getByRole('button', { name: 'Mon compte' })).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Changer de langue' }),
   ).toHaveCount(0);
   await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Listes' }),
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Accueil' }),
   ).toHaveAttribute('aria-current', 'page');
 });
 

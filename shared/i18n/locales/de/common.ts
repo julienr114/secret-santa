@@ -29,6 +29,18 @@ export default {
   count: {
     participants: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },
   },
+  tabs: {
+    home: 'Start',
+    create: 'Erstellen',
+    news: 'Neuigkeiten',
+    admin: 'Admin',
+    label: 'Bereiche',
+  },
+  create: {
+    title: 'Erstellen',
+    secretSanta: 'Ein Wichteln',
+    list: 'Eine Liste',
+  },
   context: 'Du bist hier',
   actions: {
     back: 'Zurück',

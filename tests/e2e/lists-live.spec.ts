@@ -206,12 +206,37 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await expect(leo(camille)).toContainText('taille 6 ans');
   await expect(mamie.locator('body')).toContainText('taille 6 ans');
 
+  // Hugo changes the first name of his account: Camille reads it on the
+  // line that says who holds the list with her, without reloading.
+  if (!state.hugo) throw new Error('Hugo is not logged in');
+  await state.hugo.request.put('/api/auth/profile', {
+    data: { firstName: 'Hugues' },
+  });
+  await expect(camille.getByTestId('holders-line')).toContainText('Hugues');
+  await state.hugo.request.put('/api/auth/profile', {
+    data: { firstName: 'Hugo' },
+  });
+  await expect(camille.getByTestId('holders-line')).toContainText('Hugo.');
+
   // « Ceux qui tiennent la liste » says who is there now.
   const holders = await open('camille', `/listes/${state.listId}/teneurs`);
   await expect(
     holders.getByTestId('holder').filter({ hasText: 'Hugo' }),
   ).toContainText('Là en ce moment');
   await holders.close();
+
+  // Someone deleted from « Mes proches » leaves the list, at everyone's.
+  const zoe = await (
+    await state.camille.request.post(`/api/lists/${state.listId}/people`, {
+      data: {
+        newMember: { firstName: 'Zoé', avatar: { emoji: '🦄', color: 'plum' } },
+      },
+    })
+  ).json();
+  await expect(hugo.getByTestId('list-person')).toHaveCount(2);
+  await state.camille.request.delete(`/api/family/${zoe.memberId}`);
+  await expect(hugo.getByTestId('list-person')).toHaveCount(1);
+  await expect(mamie.locator('body')).not.toContainText('Zoé');
 
   // Hugo leaves: Camille is alone again; the visitor is still counted.
   await hugo.close();

@@ -102,3 +102,18 @@ export const signalList = async (event: H3Event, listId: string) => {
     // Nothing to do: D1 has the truth.
   }
 };
+
+/**
+ * Tells several lists at once, after the answer: a person who left every
+ * list they were on, an account whose name or icon shows on its lists.
+ * @param event - The request that wrote.
+ * @param listIds - The lists, each told once.
+ */
+export const signalLists = (event: H3Event, listIds: readonly string[]) => {
+  const once = [...new Set(listIds)];
+  event.waitUntil(
+    Promise.all(once.map((listId) => signalList(event, listId))).catch(
+      () => undefined,
+    ),
+  );
+};

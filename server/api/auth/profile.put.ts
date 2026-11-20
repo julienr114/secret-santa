@@ -1,6 +1,11 @@
 import { eq } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
-import { setSelfAvatar } from '#server/database/lists';
+import {
+  listsFiguringOn,
+  listsHeldBy,
+  setSelfAvatar,
+} from '#server/database/lists';
+import { signalLists } from '#server/http/live';
 import { accounts } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { validatedBody } from '#server/http/validate';
@@ -25,6 +30,21 @@ export default defineEventHandler(async (event) => {
       emoji: profile.avatarEmoji,
       color: profile.avatarColor,
     });
+  }
+  // Live (lot 26): my first name and my icon show on the lists I hold
+  // and on those I figure on; they are told.
+  if (
+    profile.firstName !== undefined ||
+    profile.avatarEmoji !== undefined ||
+    profile.avatarColor !== undefined
+  ) {
+    signalLists(
+      event,
+      [
+        ...(await listsHeldBy(db, user.accountId)),
+        ...(await listsFiguringOn(db, user.accountId)),
+      ].map((list) => list.id),
+    );
   }
   return { ok: true };
 });

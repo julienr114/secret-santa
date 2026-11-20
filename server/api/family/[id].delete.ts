@@ -7,6 +7,7 @@ import {
 } from '#server/database/lists';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
+import { signalLists } from '#server/http/live';
 import { memberRemoval } from '#server/utils/lists';
 
 // « Supprimer de mes proches » (Correction 24, README 22.20): the person,
@@ -41,5 +42,11 @@ export default defineEventHandler(async (event) => {
     });
   }
   await deleteMember(db, row.id, places);
+  // Live (lot 26): they leave every list they were on, at everyone's.
+  // Their lists are only known before they go, so it is said from here.
+  signalLists(
+    event,
+    places.map((place) => place.list.id),
+  );
   return { ok: true };
 });

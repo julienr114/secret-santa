@@ -1818,6 +1818,8 @@ Décidé par Julien le 19 novembre 2026, après la V1 (22.19). Pas encore codé 
 
 #### En direct
 
+**Fait le 20 novembre 2026** (lot 26). Dans le code : les règles pures dans `server/utils/live.ts` (le ticket signé, les bornes, la présence, la ligne bloquée, ce qu'une écriture prévient) ; la salle d'une liste, `ListRoom` (`server/live/room.ts`), un objet durable par liste, exporté par `server/live/entry.ts` ; le ticket par `POST /api/lists/[id]/live` et `POST /api/l/[jeton]/live` ; le signal après chaque écriture dans `server/plugins/live.ts` ; côté navigateur `useListLive`. Pas de direct en développement (`pnpm dev`). Ce qui s'écarte de ce paragraphe est en section 6 du plan, « Lot 26 » : le curseur de l'autre est à la fin du texte enregistré, la page par le lien n'a pas les animations, la fiche d'un proche n'arrive pas en direct.
+
 Seulement dans une liste : le document de celui qui la tient, et la page de celui qui la consulte.
 
 - **Ce qui arrive en direct** : une case cochée ou décochée, quelqu'un qui se joint à un cadeau ou s'en retire, un groupe fermé, une idée ajoutée, corrigée ou supprimée, une personne ajoutée ou retirée, un cadeau hors liste, le titre, la date, le mot.

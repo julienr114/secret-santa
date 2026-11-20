@@ -27,6 +27,12 @@ const props = defineProps<{
   /** The first or the last of the list: nowhere to go up, or down. */
   first?: boolean;
   last?: boolean;
+  /**
+   * « Une liste sans personne » (lot 27 bis, maquette ListeSansPersonne):
+   * the only part of the list, which shows no person; its ideas start
+   * at the edge.
+   */
+  single?: boolean;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -247,6 +253,7 @@ const explained = ref<string | null>(null);
     :data-drag-id="person.id"
   >
     <header
+      v-if="!single"
       class="flex items-center gap-3 pb-1"
       :data-drag="drag ? 'person' : undefined"
       :data-drag-id="drag ? person.id : undefined"
@@ -337,7 +344,8 @@ const explained = ref<string | null>(null);
       v-show="!liftedHere"
       tag="ul"
       :name="drag?.lifted.value ? 'none' : 'line'"
-      class="flex flex-col pl-5"
+      class="flex flex-col"
+      :class="single ? '' : 'pl-5'"
     >
       <template
         v-for="row in rows"
@@ -353,7 +361,7 @@ const explained = ref<string | null>(null);
           v-else
           :via="via"
           :list-person-id="person.id"
-          :for-name="member.firstName"
+          :for-name="single ? '' : member.firstName"
           :idea="row.idea"
           :line="`${person.id}:${row.index}`"
         />
@@ -444,13 +452,15 @@ const explained = ref<string | null>(null);
         key="new"
         :via="via"
         :list-person-id="person.id"
-        :for-name="member.firstName"
+        :for-name="single ? '' : member.firstName"
         :idea="null"
         :after="null"
         :placeholder="
-          person.ideas.length === 0
-            ? t('lists.doc.ideaFor', { name: member.firstName })
-            : t('lists.doc.anotherIdea')
+          person.ideas.length > 0
+            ? t('lists.doc.anotherIdea')
+            : single
+              ? t('lists.single.firstIdea')
+              : t('lists.doc.ideaFor', { name: member.firstName })
         "
         :line="`${person.id}:new`"
       />

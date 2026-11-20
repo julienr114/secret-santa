@@ -344,12 +344,65 @@ export const canDeleteList = (
   sure: boolean,
 ): boolean => sure || !list.sharedAt;
 
+// --- A list without people (lot 27 bis, README 22.20) -------------------
+
+/** A part of a list, as its shape is read from it. */
+type Part = { member: { placeholder: boolean } };
+
+/**
+ * Whether a list is « sans personne »: for a wedding, a housewarming,
+ * its ideas one under the other. It then has one part, hidden, which
+ * belongs to nobody.
+ * @param people - The parts of the list.
+ * @returns True for a list without people.
+ */
+export const isSingleList = (people: readonly Part[]): boolean =>
+  people.length === 1 && people[0]?.member.placeholder === true;
+
+/** Why the shape of a list cannot change. */
+export type ShapeRefusal = 'list_shared' | 'several_people';
+
+/**
+ * Why a list cannot become « sans personne », if it cannot: its shape
+ * only changes while it is not shared (those who have its link would
+ * see it turn into something else), and the ideas of several people
+ * cannot be mixed into one list.
+ * @param list - The list.
+ * @param list.sharedAt - When it was shared, or null.
+ * @param list.people - Its parts.
+ * @returns The reason, or null when it may (or already is).
+ */
+export const singleRefusal = (list: {
+  sharedAt: string | null;
+  people: readonly Part[];
+}): ShapeRefusal | null => {
+  if (isSingleList(list.people)) return null;
+  if (list.sharedAt) return 'list_shared';
+  return list.people.length > 1 ? 'several_people' : null;
+};
+
+/**
+ * Why a person cannot be added to a list, if they cannot: a list without
+ * people already shared stays as it is.
+ * @param list - The list.
+ * @param list.sharedAt - When it was shared, or null.
+ * @param list.people - Its parts.
+ * @returns The reason, or null when they may.
+ */
+export const addPersonRefusal = (list: {
+  sharedAt: string | null;
+  people: readonly Part[];
+}): ShapeRefusal | null =>
+  isSingleList(list.people) && list.sharedAt ? 'list_shared' : null;
+
 // --- Taking a list up again (lot 27, README 22.20) ----------------------
 
 /** A person of a list, with their ideas, as taking it up again reads it. */
 export type ResumablePerson = {
   memberId: string;
   position: number;
+  /** The hidden part of a list without people. */
+  placeholder?: boolean;
   ideas: readonly {
     text: string;
     url: string | null;
@@ -390,14 +443,21 @@ export const resumedList = (source: {
 
 /**
  * What taking a list up again would bring, for its line: « 4 personnes ·
- * 6 idées pas encore offertes ».
+ * 6 idées pas encore offertes » ; a list without people says so instead
+ * of « 1 personne ».
  * @param people - The people of the old list, with their ideas.
- * @returns How many people, and how many ideas nobody ticked.
+ * @returns How many people, how many ideas nobody ticked, and whether
+ *   it is a list without people.
  */
 export const resumeSummary = (
   people: readonly ResumablePerson[],
-): { people: number; ideas: number } => ({
+): { people: number; ideas: number; single: boolean } => ({
   people: people.length,
+  single: isSingleList(
+    people.map((person) => ({
+      member: { placeholder: person.placeholder === true },
+    })),
+  ),
   ideas: people.reduce(
     (sum, person) => sum + carriedIdeas(person.ideas).length,
     0,

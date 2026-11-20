@@ -88,7 +88,9 @@ const onRemove = () =>
               {{ t('lists.delete.holders', { names: others }) }}</template
             >
           </p>
-          <p v-if="doc.people.length > 0">{{ t('lists.delete.people') }}</p>
+          <p v-if="doc.people.length > 0 && !doc.single">
+            {{ t('lists.delete.people') }}
+          </p>
           <p class="text-toned">{{ t('lists.delete.final') }}</p>
         </div>
         <div class="flex flex-col gap-2.5">

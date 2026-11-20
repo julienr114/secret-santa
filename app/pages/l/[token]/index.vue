@@ -177,6 +177,9 @@ const confirmOpen = computed({
     if (!open) answerConfirm(false);
   },
 });
+/** For whom a gift is: nobody on a list without people. */
+const nameOf = (person: PersonLine) =>
+  doc.value?.single ? '' : person.member.firstName;
 /** My own section, where I write. */
 const writes = (person: PersonLine) =>
   Boolean(doc.value?.figures) && person.mine;
@@ -221,7 +224,7 @@ const writes = (person: PersonLine) =>
         class="flex flex-col gap-1"
         data-testid="visitor-person"
       >
-        <header class="flex items-center gap-3 pb-1">
+        <header v-if="!doc.single" class="flex items-center gap-3 pb-1">
           <UiAvatar
             :avatar="person.member.avatar"
             class="size-[52px]! text-[26px]!"
@@ -278,15 +281,21 @@ const writes = (person: PersonLine) =>
             :line="`${person.id}:new`"
           />
         </TransitionGroup>
-        <TransitionGroup v-else tag="ul" name="line" class="flex flex-col pl-5">
+        <TransitionGroup
+          v-else
+          tag="ul"
+          name="line"
+          class="flex flex-col"
+          :class="doc.single ? '' : 'pl-5'"
+        >
           <ListsVisitorLine
             v-for="idea in person.ideas"
             :key="idea.id"
             :idea="idea"
             @tick="onTick(idea)"
             @untick="onUntick(idea)"
-            @change="changing = { idea, forName: person.member.firstName }"
-            @join="onJoin(idea, person.member.firstName)"
+            @change="changing = { idea, forName: nameOf(person) }"
+            @join="onJoin(idea, nameOf(person))"
           />
           <li
             v-for="gift in person.offList"
@@ -335,7 +344,7 @@ const writes = (person: PersonLine) =>
             key="off-list-new"
             :token="token"
             :list-person-id="person.id"
-            :for-name="person.member.firstName"
+            :for-name="nameOf(person)"
             :holder-name="holder"
           />
         </TransitionGroup>

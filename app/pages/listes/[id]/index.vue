@@ -604,6 +604,7 @@ onBeforeRouteLeave((to) => {
               :person="row.person"
               :first="row.index === 0"
               :last="row.index === people.length - 1"
+              :single="doc.single"
             />
           </template>
         </div>
@@ -614,10 +615,14 @@ onBeforeRouteLeave((to) => {
           v-if="people.length === 0 && list.status === 'draft'"
           :list-id="list.id"
         />
+        <!-- A list without people keeps the block until it is shared:
+             its shape no longer changes then (lot 27 bis). -->
         <ListsAddSomeone
+          v-if="!(doc.single && list.status !== 'draft')"
           :list-id="list.id"
           :family="doc.family"
           :on-list="people"
+          :single="doc.single"
         />
         <!-- The red line of what cannot be taken back, for those who
              manage the list; it leads to the page that says what is lost. -->

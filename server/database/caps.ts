@@ -55,7 +55,12 @@ export const countFamily = (db: Db, accountId: string) =>
     db
       .select(n)
       .from(familyMembers)
-      .where(eq(familyMembers.accountId, accountId)),
+      .where(
+        and(
+          eq(familyMembers.accountId, accountId),
+          eq(familyMembers.placeholder, false),
+        ),
+      ),
   );
 
 /** The lines written in the journal of a group since a moment. */

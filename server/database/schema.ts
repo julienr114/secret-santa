@@ -470,6 +470,11 @@ export const familyMembers = sqliteTable(
     avatarColor: text('avatar_color').notNull(),
     // The holder themself, made from their profile: « Moi ».
     isSelf: integer('is_self', { mode: 'boolean' }).notNull().default(false),
+    // Nobody: what carries the ideas of « une liste sans personne » (lot
+    // 27 bis), one per account, never shown among anyone's people.
+    placeholder: integer('placeholder', { mode: 'boolean' })
+      .notNull()
+      .default(false),
     // Practical details: what the family always asks.
     birthDate: text('birth_date'),
     clothingSize: text('clothing_size'),

@@ -50,16 +50,27 @@ const short = computed(() => ideaShort(props.idea.text));
 const proposing = computed(
   () => mode.value === 'group' && mine.value?.mode === 'alone',
 );
+/** For whom, and how: a list without people names nobody. */
 const subtitle = computed(() => {
+  const name = props.forName;
   if (mode.value === 'alone') {
-    return t('lists.claim.forGiving', { name: props.forName });
+    return name
+      ? t('lists.claim.forGiving', { name })
+      : t('lists.single.forGiving');
   }
   if (proposing.value) {
-    return t('lists.claim.forProposing', { name: props.forName });
+    return name
+      ? t('lists.claim.forProposing', { name })
+      : t('lists.single.forProposing');
   }
-  return mine.value?.leads
-    ? t('lists.claim.forLeading', { name: props.forName })
-    : t('lists.claim.forJoining', { name: props.forName });
+  if (mine.value?.leads) {
+    return name
+      ? t('lists.claim.forLeading', { name })
+      : t('lists.single.forLeading');
+  }
+  return name
+    ? t('lists.claim.forJoining', { name })
+    : t('lists.single.forJoining');
 });
 const modes = computed(() => [
   {

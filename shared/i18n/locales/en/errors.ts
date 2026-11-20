@@ -21,6 +21,10 @@ export default {
   limit_journal: 'This group has been very busy today: try again tomorrow.',
   list_not_empty:
     'This list already has people on it: one only starts from another list in an empty one.',
+  list_shared:
+    'This list is already shared: it stays without people. Stop sharing it to sort it by person.',
+  several_people:
+    'There are several people on the list: their ideas cannot be mixed.',
   slug_taken: 'This group identifier is already taken.',
   group_not_found:
     'Group not found. Reload the page: the list may have changed.',

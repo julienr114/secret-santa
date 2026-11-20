@@ -53,7 +53,12 @@ const onResume = (from: string) => {
           list.title || t('lists.resume.untitled')
         }}</span>
         <span class="text-[13px] text-toned"
-          >{{ t('lists.resume.people', { count: list.people }) }} ·
+          >{{
+            list.single
+              ? t('lists.single.resume')
+              : t('lists.resume.people', { count: list.people })
+          }}
+          ·
           {{
             list.ideas === 0
               ? t('lists.resume.noIdeas')

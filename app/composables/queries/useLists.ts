@@ -77,6 +77,8 @@ export type ResumableList = {
   title: string;
   people: number;
   ideas: number;
+  /** A list without people (lot 27 bis). */
+  single: boolean;
 };
 
 export const useResumableQuery = (
@@ -133,6 +135,13 @@ export const useAddPersonMutation = (id: Id) =>
   >(
     (body) => api(`/api/lists/${toValue(id)}/people`, { method: 'POST', body }),
     () => [...listKeys(toValue(id)), keys.family()],
+  );
+
+/** « Une liste sans personne » (lot 27 bis). */
+export const useMakeSingleMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, undefined>(
+    () => api(`/api/lists/${toValue(id)}/single`, { method: 'POST' }),
+    () => listKeys(toValue(id)),
   );
 
 export const useRemovePersonMutation = (id: Id) =>

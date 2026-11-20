@@ -11,12 +11,18 @@ import { useAddOffListMutation } from '~/composables/queries/useLists';
 const props = defineProps<{
   token: string;
   listPersonId: string;
-  /** Who receives the gift. */
+  /** Who receives the gift; nobody on a list without people. */
   forName: string;
   /** Who holds the list, and reads these words. */
   holderName: string;
 }>();
 const { t } = useT();
+/** « J'offre autre chose à Léo », or without a name. */
+const label = computed(() =>
+  props.forName
+    ? t('lists.visitor.offListAction', { name: props.forName })
+    : t('lists.single.offListAction'),
+);
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
@@ -71,7 +77,8 @@ const onFocusOut = (event: FocusEvent) => {
   <li
     v-if="writing"
     ref="row"
-    class="-mr-4 -ml-9 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4 pl-[33px]"
+    class="-mr-4 flex items-start gap-3 border-l-[3px] border-success bg-default py-2 pr-4"
+    :class="forName ? '-ml-9 pl-[33px]' : '-ml-4 pl-[13px]'"
     data-testid="off-list-line"
     @focusout="onFocusOut"
   >
@@ -89,7 +96,7 @@ const onFocusOut = (event: FocusEvent) => {
         enterkeyhint="done"
         :maxlength="IDEA_TEXT_MAX"
         class="w-full bg-transparent text-base leading-[1.45] font-semibold outline-none"
-        :aria-label="t('lists.visitor.offListAction', { name: forName })"
+        :aria-label="label"
         data-testid="off-list-field"
         @keydown.enter.prevent="commit"
       />
@@ -106,6 +113,19 @@ const onFocusOut = (event: FocusEvent) => {
       </button>
     </div>
   </li>
+  <!-- On a list without people (maquette ListeSansPersonneVisiteur): a
+       plain link under the ideas, once. -->
+  <li v-else-if="!forName">
+    <button
+      type="button"
+      class="flex min-h-11 items-center text-left text-[15px] font-bold text-primary-ink underline underline-offset-2"
+      :disabled="add.isPending.value"
+      data-testid="off-list-action"
+      @click="start"
+    >
+      {{ label }}
+    </button>
+  </li>
   <li v-else>
     <button
       type="button"
@@ -120,7 +140,7 @@ const onFocusOut = (event: FocusEvent) => {
       >
         <UIcon name="i-lucide-plus" class="size-3.5" />
       </span>
-      {{ t('lists.visitor.offListAction', { name: forName }) }}
+      {{ label }}
     </button>
   </li>
 </template>

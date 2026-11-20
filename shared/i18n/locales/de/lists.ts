@@ -229,6 +229,25 @@ export default {
     confirm: 'Liste löschen',
     done: 'Liste gelöscht',
   },
+  single: {
+    pill: 'Eine Liste ohne Personen',
+    pillHelp:
+      'Für eine Hochzeit oder eine Einweihungsfeier, „Eine Liste ohne Personen“: die Ideen, eine unter der anderen.',
+    onePerson: 'Eine Person',
+    sorted:
+      'Die Liste wird dann nach Personen geordnet. Die schon geschriebenen Ideen gehen an die erste.',
+    firstIdea: 'Eine Idee…',
+    offListAction: 'Ich schenke etwas anderes',
+    forGiving: 'Du schenkst es',
+    forProposing: 'Du schlägst vor, zu teilen',
+    forLeading: 'Du hast es vorgeschlagen',
+    forJoining: 'Ein gemeinsames Geschenk',
+    forMany: {
+      one: '{count} Person macht mit',
+      other: '{count} Personen machen mit',
+    },
+    resume: 'Ohne Personen',
+  },
   resume: {
     noIdeas: 'keine Idee zu übernehmen',
     title: 'Von einer Liste ausgehen',

@@ -223,6 +223,25 @@ export default {
     confirm: 'Delete the list',
     done: 'List deleted',
   },
+  single: {
+    pill: 'A list without people',
+    pillHelp:
+      'For a wedding or a housewarming, “A list without people”: the ideas, one under the other.',
+    onePerson: 'A person',
+    sorted:
+      'The list will then be sorted by person. The ideas already written will go to the first one.',
+    firstIdea: 'An idea…',
+    offListAction: 'I’m giving something else',
+    forGiving: 'You give it',
+    forProposing: 'You offer to share',
+    forLeading: 'You proposed it',
+    forJoining: 'A gift from several people',
+    forMany: {
+      one: '{count} person takes part',
+      other: '{count} people take part',
+    },
+    resume: 'Without people',
+  },
   resume: {
     noIdeas: 'no idea to take up',
     title: 'Start from a list',

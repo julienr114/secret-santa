@@ -27,6 +27,10 @@ export default {
     'In dieser Gruppe war heute sehr viel los: Versuche es morgen noch einmal.',
   list_not_empty:
     'Auf dieser Liste steht schon jemand: Von einer anderen Liste geht man nur in einer leeren aus.',
+  list_shared:
+    'Diese Liste ist schon geteilt: Sie bleibt ohne Personen. Beende das Teilen, um sie nach Personen zu ordnen.',
+  several_people:
+    'Auf der Liste stehen mehrere Personen: Ihre Ideen lassen sich nicht mischen.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
   group_not_found:
     'Gruppe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',

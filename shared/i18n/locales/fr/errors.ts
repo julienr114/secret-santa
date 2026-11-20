@@ -23,6 +23,10 @@ export default {
   limit_journal: 'Ce groupe a beaucoup bougé aujourd’hui : réessaie demain.',
   list_not_empty:
     'Cette liste a déjà du monde : on ne repart d’une autre liste que dans une liste vide.',
+  list_shared:
+    'Cette liste est déjà partagée : elle reste sans personne. Arrête le partage pour la ranger par personne.',
+  several_people:
+    'Il y a plusieurs personnes sur la liste : leurs idées ne peuvent pas être mélangées.',
   slug_taken: 'Cet identifiant de groupe est déjà pris.',
   group_not_found:
     'Groupe introuvable. Recharge la page : la liste a peut-être changé.',

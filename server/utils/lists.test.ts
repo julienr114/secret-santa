@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   canDeleteList,
+  addPersonRefusal,
   canResumeInto,
+  isSingleList,
+  singleRefusal,
   resumeSummary,
   resumedList,
   LIST_EMOJIS,
@@ -326,8 +329,23 @@ describe('taking a list up again (lot 27)', () => {
   });
 
   it('counts what it would bring', () => {
-    expect(resumeSummary(source.people)).toEqual({ people: 3, ideas: 3 });
-    expect(resumeSummary([])).toEqual({ people: 0, ideas: 0 });
+    expect(resumeSummary(source.people)).toEqual({
+      people: 3,
+      ideas: 3,
+      single: false,
+    });
+    expect(resumeSummary([])).toEqual({ people: 0, ideas: 0, single: false });
+    // A list without people says so, instead of « 1 personne ».
+    expect(
+      resumeSummary([
+        {
+          memberId: 'nobody',
+          position: 0,
+          placeholder: true,
+          ideas: [{ text: 'Un robot', url: null, position: 0, planned: false }],
+        },
+      ]),
+    ).toEqual({ people: 1, ideas: 1, single: true });
   });
 
   it('only starts an empty draft from another list', () => {
@@ -349,5 +367,43 @@ describe('deleting a list', () => {
       true,
     );
     expect(canDeleteList({ sharedAt: null }, true)).toBe(true);
+  });
+});
+
+describe('a list without people', () => {
+  const nobody = { member: { placeholder: true } };
+  const leo = { member: { placeholder: false } };
+  const SHARED = '2026-11-20T10:00:00.000Z';
+
+  it('is one hidden part, which belongs to nobody', () => {
+    expect(isSingleList([nobody])).toBe(true);
+    expect(isSingleList([])).toBe(false);
+    expect(isSingleList([leo])).toBe(false);
+    expect(isSingleList([leo, leo])).toBe(false);
+  });
+
+  it('is made from an empty list, or from a list with one person', () => {
+    expect(singleRefusal({ sharedAt: null, people: [] })).toBeNull();
+    expect(singleRefusal({ sharedAt: null, people: [leo] })).toBeNull();
+    // The ideas of several people cannot be mixed.
+    expect(singleRefusal({ sharedAt: null, people: [leo, leo] })).toBe(
+      'several_people',
+    );
+  });
+
+  it('keeps its shape once shared, one way and the other', () => {
+    expect(singleRefusal({ sharedAt: SHARED, people: [leo] })).toBe(
+      'list_shared',
+    );
+    expect(singleRefusal({ sharedAt: SHARED, people: [] })).toBe('list_shared');
+    // Already one: a second tap is nothing.
+    expect(singleRefusal({ sharedAt: SHARED, people: [nobody] })).toBeNull();
+    expect(addPersonRefusal({ sharedAt: SHARED, people: [nobody] })).toBe(
+      'list_shared',
+    );
+    expect(addPersonRefusal({ sharedAt: null, people: [nobody] })).toBeNull();
+    // A list by person takes people shared or not.
+    expect(addPersonRefusal({ sharedAt: SHARED, people: [leo] })).toBeNull();
+    expect(addPersonRefusal({ sharedAt: SHARED, people: [] })).toBeNull();
   });
 });

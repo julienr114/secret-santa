@@ -1,0 +1,1 @@
+ALTER TABLE `family_members` ADD `placeholder` integer DEFAULT false NOT NULL;

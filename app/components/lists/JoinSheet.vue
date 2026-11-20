@@ -39,9 +39,13 @@ const onJoin = () =>
     v-model:open="open"
     :title="t('lists.claim.together', { idea: ideaShort(idea.text) })"
     :description="
-      count > 2
-        ? t('lists.claim.forMany', { name: forName, count })
-        : t('lists.claim.forJoining', { name: forName })
+      !forName
+        ? count > 2
+          ? t('lists.single.forMany', { count })
+          : t('lists.single.forJoining')
+        : count > 2
+          ? t('lists.claim.forMany', { name: forName, count })
+          : t('lists.claim.forJoining', { name: forName })
     "
     :busy="tick.isPending.value"
   >

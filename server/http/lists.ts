@@ -37,6 +37,7 @@ import {
   ageOn,
   cardSentence,
   ideaView,
+  isSingleList,
   listStatus,
   noteOf,
   type CardSentence,
@@ -141,7 +142,7 @@ export type Viewer = { accountId: string | null; role: ListRole };
  */
 export type MemberView = Omit<
   FamilyMember,
-  'ownerId' | 'email' | 'accountId' | 'isSelf'
+  'ownerId' | 'email' | 'accountId' | 'isSelf' | 'placeholder'
 > & {
   age: number | null;
   /** The one looking. */
@@ -166,7 +167,14 @@ export const memberView = (
   today: string,
   viewer: Viewer,
 ): MemberView => {
-  const { ownerId, email, accountId, isSelf: _own, ...rest } = member;
+  const {
+    ownerId,
+    email,
+    accountId,
+    isSelf: _own,
+    placeholder: _nobody,
+    ...rest
+  } = member;
   return {
     ...rest,
     age: member.birthDate ? ageOn(member.birthDate, today) : null,
@@ -343,6 +351,11 @@ const headOf = (list: GiftListRow) => ({
 export type ListDocument = {
   list: ReturnType<typeof headOf> & { shareToken: string | null };
   people: PersonLine[];
+  /**
+   * « Une liste sans personne » (lot 27 bis): its ideas one under the
+   * other, in its only part, which shows no person.
+   */
+  single: boolean;
   /** The gifts planned. */
   planned: number;
   /** Those the one looking gives. */
@@ -390,6 +403,7 @@ export const listDocument = async (
   return {
     list: { ...headOf(list), shareToken: list.shareToken },
     people: lines,
+    single: isSingleList(people),
     planned,
     mine,
     family: (await familyOf(db, accountId))
@@ -413,6 +427,8 @@ export type VisitorDocument = {
   list: ReturnType<typeof headOf>;
   holder: { name: string; avatar: Avatar };
   people: PersonLine[];
+  /** A list without people: its ideas one under the other. */
+  single: boolean;
   /** Whether I hold it (then I see who gives what). */
   holds: boolean;
   /** Whether I figure on it, linked to my account: I write my own ideas. */
@@ -484,6 +500,7 @@ export const visitorDocument = async (
           member: { ...line.member, birthDate: null },
         }))
     ).toSorted((a, b) => rank(a) - rank(b)),
+    single: isSingleList(people),
     holds: role === 'holder',
     figures: role === 'linked',
     loggedIn: accountId !== null,
@@ -502,6 +519,8 @@ export type ListCard = {
   /** Null when I hold it; otherwise who does, and the link to open. */
   holder: { name: string; avatar: Avatar; token: string } | null;
   people: { firstName: string; avatar: Avatar }[];
+  /** A list without people: nobody shows, yet it is not empty. */
+  single: boolean;
   sentence: CardSentence;
   /** For the holder: the people without an idea yet. */
   noIdeas: string[];
@@ -575,14 +594,18 @@ export const listCards = async (
               avatar: holder.avatar,
               token: list.shareToken ?? '',
             },
-      people: onList.map((p) => ({
-        firstName: p.member.firstName,
-        avatar: p.member.avatar,
-      })),
+      // A list without people shows nobody.
+      people: onList
+        .filter((p) => !p.member.placeholder)
+        .map((p) => ({
+          firstName: p.member.firstName,
+          avatar: p.member.avatar,
+        })),
+      single: isSingleList(onList),
       sentence: cardSentence({ planned, mine }, holds),
       noIdeas: holds
         ? onList
-            .filter((p) => p.ideas.length === 0)
+            .filter((p) => p.ideas.length === 0 && !p.member.placeholder)
             .map((p) => p.member.firstName)
         : [],
       planned,

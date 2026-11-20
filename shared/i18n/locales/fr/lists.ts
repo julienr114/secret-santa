@@ -228,6 +228,25 @@ export default {
     confirm: 'Supprimer la liste',
     done: 'Liste supprimée',
   },
+  single: {
+    pill: 'Une liste sans personne',
+    pillHelp:
+      'Pour un mariage ou une crémaillère, « Une liste sans personne » : les idées, l’une sous l’autre.',
+    onePerson: 'Une personne',
+    sorted:
+      'La liste sera alors rangée par personne. Les idées déjà écrites iront à la première.',
+    firstIdea: 'Une idée…',
+    offListAction: 'J’offre autre chose',
+    forGiving: 'Tu l’offres',
+    forProposing: 'Tu proposes de partager',
+    forLeading: 'C’est toi qui l’as proposé',
+    forJoining: 'Un cadeau à plusieurs',
+    forMany: {
+      one: '{count} personne participe',
+      other: '{count} personnes participent',
+    },
+    resume: 'Sans personne',
+  },
   resume: {
     noIdeas: 'aucune idée à reprendre',
     title: 'Repartir d’une liste',

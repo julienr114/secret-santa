@@ -33,6 +33,8 @@ export type FamilyMember = {
   avatar: Avatar;
   /** The holder themself: « Moi ». */
   isSelf: boolean;
+  /** Nobody: what carries the ideas of a list without people. */
+  placeholder: boolean;
   birthDate: string | null;
   clothingSize: string | null;
   shoeSize: string | null;
@@ -63,6 +65,7 @@ export const memberOf = (row: FamilyMemberRow): FamilyMember => ({
     avatarColor: row.avatarColor,
   }),
   isSelf: row.isSelf,
+  placeholder: row.placeholder,
   birthDate: row.birthDate,
   clothingSize: row.clothingSize,
   shoeSize: row.shoeSize,
@@ -172,7 +175,12 @@ export const familyOf = async (
     await db
       .select()
       .from(familyMembers)
-      .where(eq(familyMembers.accountId, accountId))
+      .where(
+        and(
+          eq(familyMembers.accountId, accountId),
+          eq(familyMembers.placeholder, false),
+        ),
+      )
       .orderBy(asc(familyMembers.createdAt))
   ).map(memberOf);
 };
@@ -187,9 +195,89 @@ export const findMember = async (
     .select()
     .from(familyMembers)
     .where(
-      and(eq(familyMembers.id, id), eq(familyMembers.accountId, accountId)),
+      and(
+        eq(familyMembers.id, id),
+        eq(familyMembers.accountId, accountId),
+        eq(familyMembers.placeholder, false),
+      ),
     )
     .get()) ?? null;
+
+/**
+ * What carries the ideas of « une liste sans personne » (lot 27 bis): a
+ * person who is nobody, one per account, made the first time and never
+ * shown among anyone's people. A part of a list needs a person in the
+ * base; this one stands for none.
+ * @param db - The database.
+ * @param accountId - The account the list belongs to.
+ * @returns Its id.
+ */
+export const ensurePlaceholder = async (
+  db: Db,
+  accountId: string,
+): Promise<string> => {
+  const found = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(
+      and(
+        eq(familyMembers.accountId, accountId),
+        eq(familyMembers.placeholder, true),
+      ),
+    )
+    .get();
+  if (found) return found.id;
+  const id = newId();
+  await db.insert(familyMembers).values({
+    id,
+    accountId,
+    firstName: '',
+    avatarEmoji: '🎁',
+    avatarColor: 'brick',
+    placeholder: true,
+    createdAt: nowIso(),
+  });
+  return id;
+};
+
+/**
+ * Makes a list « sans personne »: its ideas one under the other, in one
+ * hidden part. An empty list gets that part; a list with one person
+ * keeps their ideas, which become the list's.
+ * @param db - The database.
+ * @param list - The list.
+ * @param part - The place of its only person, or null when it is empty.
+ * @returns Once done.
+ */
+export const makeListSingle = async (
+  db: Db,
+  list: GiftListRow,
+  part: string | null,
+) => {
+  const memberId = await ensurePlaceholder(db, list.accountId);
+  await (part
+    ? db
+        .update(giftListPeople)
+        .set({ memberId })
+        .where(eq(giftListPeople.id, part))
+    : db
+        .insert(giftListPeople)
+        .values({ id: newId(), listId: list.id, memberId, position: 0 }));
+};
+
+/**
+ * Gives the hidden part of a list without people to a person: the list
+ * is then by person, and the ideas already written are theirs.
+ * @param db - The database.
+ * @param part - The hidden part.
+ * @param memberId - The person.
+ * @returns Once done.
+ */
+export const givePartTo = (db: Db, part: string, memberId: string) =>
+  db
+    .update(giftListPeople)
+    .set({ memberId })
+    .where(eq(giftListPeople.id, part));
 
 /**
  * On how many lists each of my people is.
@@ -587,8 +675,15 @@ export const resumableOfLists = async (
   );
   if (listIds.length === 0) return byList;
   const people = await db
-    .select()
+    .select({
+      id: giftListPeople.id,
+      listId: giftListPeople.listId,
+      memberId: giftListPeople.memberId,
+      position: giftListPeople.position,
+      placeholder: familyMembers.placeholder,
+    })
     .from(giftListPeople)
+    .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
     .where(inArray(giftListPeople.listId, [...listIds]));
   const ideas = await db
     .select()
@@ -606,6 +701,7 @@ export const resumableOfLists = async (
     byList.get(person.listId)?.push({
       memberId: person.memberId,
       position: person.position,
+      placeholder: person.placeholder,
       ideas: ideas
         .filter((idea) => idea.listPersonId === person.id)
         .map((idea) => ({
@@ -1130,6 +1226,8 @@ export const findReachableMember = async (
       .from(familyMembers)
       .where(eq(familyMembers.id, id))
       .get()) ?? null;
+  // Nobody has no page.
+  if (row?.placeholder) return null;
   if (!row || row.accountId === accountId) return row;
   const shared = await db
     .select({ id: giftListPeople.id })

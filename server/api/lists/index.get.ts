@@ -25,7 +25,11 @@ export default defineEventHandler(async (event) => {
   );
   return sortCards(
     cards.filter((card) =>
-      isWorthKeeping({ title: card.title, peopleCount: card.people.length }),
+      isWorthKeeping({
+        title: card.title,
+        // A list without people has its hidden part.
+        peopleCount: card.single ? 1 : card.people.length,
+      }),
     ),
   );
 });

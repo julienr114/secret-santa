@@ -1,7 +1,7 @@
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { editions, participations } from '#server/database/schema';
+import { secretSantas, participations } from '#server/database/schema';
 import { listParticipants } from '#server/database/editions';
 import { gameMembers } from '#server/database/guesses';
 import { toRemind } from '#server/utils/nudges';
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
     db
       .select()
       .from(participations)
-      .where(eq(participations.editionId, edition.id)),
+      .where(eq(participations.secretSantaId, edition.id)),
   ]);
   const left = new Set(toRemind(members).map((m) => m.id));
   const targets = people.filter(
@@ -87,9 +87,9 @@ export default defineEventHandler(async (event) => {
   unwrap(await sendEmails(event, emails));
   // The last reminder, for « Dernier rappel le… » and the automatic one.
   await db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessReminderSentAt: nowIso() })
-    .where(eq(editions.id, edition.id));
+    .where(eq(secretSantas.id, edition.id));
   await recordEvent(db, {
     type: 'guess_reminder_sent',
     groupId: group.id,

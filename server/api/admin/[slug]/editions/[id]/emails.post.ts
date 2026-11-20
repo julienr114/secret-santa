@@ -4,6 +4,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { listParticipants } from '#server/database/editions';
 import { personalLink } from '#server/database/participations';
 import { auditLog, participations } from '#server/database/schema';
+import { auditInsert } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { emailConfigured, sendEmails } from '#server/http/email';
@@ -61,7 +62,7 @@ export default defineEventHandler(async (event) => {
     db
       .select()
       .from(participations)
-      .where(eq(participations.editionId, edition.id)),
+      .where(eq(participations.secretSantaId, edition.id)),
   ]);
   const { targets, withoutEmail, left } = emailTargets(
     people,
@@ -135,7 +136,7 @@ export default defineEventHandler(async (event) => {
           targets.map((p) => p.participationId),
         ),
       ),
-    ...events.map((row) => db.insert(auditLog).values(row)),
+    ...events.map((row) => db.insert(auditLog).values(auditInsert(row))),
   ]);
   return { sent: targets.length, withoutEmail, left };
 });

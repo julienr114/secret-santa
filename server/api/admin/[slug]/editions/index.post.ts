@@ -1,10 +1,13 @@
 import { carriedGame } from '#server/utils/guesses';
 import { eq } from 'drizzle-orm';
-import { editions, participations } from '#server/database/schema';
+import { secretSantas, participations } from '#server/database/schema';
 import {
   listEditions,
   newParticipation,
   publicEdition,
+  secretSantaRow,
+  yearIdFor,
+  type Edition,
 } from '#server/database/editions';
 import { listPeople } from '#server/database/people';
 import { recordEvent } from '#server/database/audit';
@@ -17,6 +20,7 @@ import {
   previousEdition,
 } from '#server/utils/editions';
 import { unwrap } from '#server/http/errors';
+import { mergeRules } from '#server/utils/rules';
 
 // Creates an edition, ready to prepare: links work at once. Its participants start as those of the previous
 // edition who are still active (README 4.2), or every active person for a
@@ -38,7 +42,7 @@ export default defineEventHandler(async (event) => {
         await db
           .select({ personId: participations.personId })
           .from(participations)
-          .where(eq(participations.editionId, previous.id))
+          .where(eq(participations.secretSantaId, previous.id))
       ).map((r) => r.personId)
     : null;
   const people = (await listPeople(db, group.id)).filter(
@@ -47,21 +51,25 @@ export default defineEventHandler(async (event) => {
   unwrap(checkParticipantCount(people.length));
   const game = carriedGame(previous, body.eventDate);
   const createdAt = nowIso();
-  const edition: typeof editions.$inferSelect = {
+  const edition: Edition = {
     id: newId(),
-    groupId: group.id,
+    partyId: group.id,
+    yearId: await yearIdFor(db, group.id, body.year, createdAt),
     label: body.label,
     year: body.year,
     status: 'preparing',
-    // The day of the party belongs to the edition (README 22.9), and so do
-    // a budget and a word given with it.
-    rulesOverride: {
-      eventDate: body.eventDate,
-      ...(body.budget === undefined ? {} : { budget: body.budget }),
-      ...(body.guardianMessage === undefined
-        ? {}
-        : { guardianMessage: body.guardianMessage }),
-    },
+    // Its own rules, starting from the party's (ticket 101). The day of the
+    // party belongs to the edition (README 22.9), and so do a budget and a
+    // word given with it.
+    rules: unwrap(
+      mergeRules(group.rules, {
+        eventDate: body.eventDate,
+        ...(body.budget === undefined ? {} : { budget: body.budget }),
+        ...(body.guardianMessage === undefined
+          ? {}
+          : { guardianMessage: body.guardianMessage }),
+      }),
+    ),
     rulesSnapshot: null,
     historyWaivers: null,
     reminderSentAt: null,
@@ -87,13 +95,13 @@ export default defineEventHandler(async (event) => {
   };
   const rows = await Promise.all(
     people.map((p) =>
-      newParticipation({ editionId: edition.id, personId: p.id }, dataKey),
+      newParticipation({ secretSantaId: edition.id, personId: p.id }, dataKey),
     ),
   );
   // One statement per participant: D1 caps a statement at 100 bound
   // parameters, which a single multi-row insert passes at ten people.
   await db.batch([
-    db.insert(editions).values(edition),
+    db.insert(secretSantas).values(secretSantaRow(edition)),
     ...rows.map((row) => db.insert(participations).values(row)),
   ]);
   await recordEvent(db, {

@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     .from(assignments)
     .where(
       and(
-        eq(assignments.editionId, edition.id),
+        eq(assignments.secretSantaId, edition.id),
         eq(assignments.giverPersonId, person.id),
       ),
     )

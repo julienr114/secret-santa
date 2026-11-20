@@ -384,7 +384,7 @@ export const carriedGame = (
     guessMode: GuessMode;
     guessEndsAt: string | null;
     guessTimeZone: string | null;
-    rulesOverride?: unknown;
+    rules?: unknown;
   } | null,
   eventDate: string,
 ): {
@@ -392,9 +392,8 @@ export const carriedGame = (
   guessEndsAt: string | null;
   guessTimeZone: string | null;
 } => {
-  const previousDate = (
-    previous?.rulesOverride as { eventDate?: unknown } | null
-  )?.eventDate;
+  const previousDate = (previous?.rules as { eventDate?: unknown } | null)
+    ?.eventDate;
   if (
     !previous ||
     previous.guessMode === 'none' ||

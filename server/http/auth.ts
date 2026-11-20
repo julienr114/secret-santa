@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { H3Event } from 'h3';
 import { useDb, type Db } from '#server/database/client';
-import { groups, type GroupRow } from '#server/database/schema';
+import { parties, type PartyRow } from '#server/database/schema';
 import { findSession, touchSession } from '#server/database/accounts';
 import { nowIso } from './context';
 import { activeSession, shouldTouchSession } from '#server/utils/accounts';
@@ -70,7 +70,7 @@ export const requireSuperAdmin = async (event: H3Event): Promise<AdminUser> => {
   return user;
 };
 
-export type GroupContext = { user: AdminUser; group: GroupRow; db: Db };
+export type GroupContext = { user: AdminUser; group: PartyRow; db: Db };
 
 /**
  * Loads the group named in the route (`[slug]`) and checks the session may
@@ -85,8 +85,8 @@ export const requireGroupAccess = async (
   const db = useDb(event);
   const [group] = await db
     .select()
-    .from(groups)
-    .where(eq(groups.slug, slug))
+    .from(parties)
+    .where(eq(parties.slug, slug))
     .limit(1);
   const member =
     Boolean(group) &&

@@ -3,10 +3,10 @@ import { findEdition } from '#server/database/editions';
 import { requireGroupAccess, type GroupContext } from './auth';
 import { notFound, unwrap } from './errors';
 import { mergeRules, type Rules } from '#server/utils/rules';
-import type { EditionRow } from '#server/database/schema';
+import type { SecretSantaRow } from '#server/database/schema';
 
 export type EditionContext = GroupContext & {
-  edition: EditionRow;
+  edition: SecretSantaRow;
   rules: Rules;
 };
 
@@ -21,6 +21,6 @@ export const requireEdition = async (
     getRouterParam(event, 'id'),
   );
   if (!edition) throw notFound('edition_not_found');
-  const rules = unwrap(mergeRules(context.group.rules, edition.rulesOverride));
+  const rules = unwrap(mergeRules(edition.rules));
   return { ...context, edition, rules };
 };

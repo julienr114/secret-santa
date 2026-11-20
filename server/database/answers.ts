@@ -33,7 +33,7 @@ export const findAnswers = async (
       participations,
       eq(participations.id, drawAnswers.participationId),
     )
-    .where(eq(drawAnswers.editionId, editionId));
+    .where(eq(drawAnswers.secretSantaId, editionId));
   const answers = await Promise.all(
     rows.map(async (row) => {
       const receiver = await decrypt(
@@ -84,7 +84,7 @@ export const saveAnswer = async (
   const { enc, iv } = await encrypt(answer.receiverPersonId, dataKey);
   const values = {
     participationId: answer.participationId,
-    editionId: answer.editionId,
+    secretSantaId: answer.editionId,
     receiverEnc: enc,
     receiverIv: iv,
     answeredAt: now,
@@ -105,7 +105,7 @@ export const saveAnswer = async (
  * @returns The statement, for a batch.
  */
 export const deleteAnswersOf = (db: Db, editionId: string) =>
-  db.delete(drawAnswers).where(and(eq(drawAnswers.editionId, editionId)));
+  db.delete(drawAnswers).where(and(eq(drawAnswers.secretSantaId, editionId)));
 
 /**
  * The statement that deletes the answers of some participations, before
@@ -139,7 +139,7 @@ export const editionPersons = async (db: Db, editionId: string) =>
       .select({ person: persons })
       .from(participations)
       .innerJoin(persons, eq(persons.id, participations.personId))
-      .where(eq(participations.editionId, editionId))
+      .where(eq(participations.secretSantaId, editionId))
   ).map((row) => row.person);
 
 /**

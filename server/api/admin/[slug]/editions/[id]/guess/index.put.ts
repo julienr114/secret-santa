@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { and, eq } from 'drizzle-orm';
-import { editions, groupMembers, guesses } from '#server/database/schema';
+import {
+  secretSantas,
+  partyOrganisers,
+  guesses,
+} from '#server/database/schema';
 import { deleteGuessesOf, listGuesses } from '#server/database/guesses';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -56,7 +60,7 @@ export default defineEventHandler(async (event) => {
   const now = nowIso();
   await db.batch([
     db
-      .update(editions)
+      .update(secretSantas)
       .set({
         guessMode: mode,
         guessEndsAt: mode === 'none' ? null : endsAt,
@@ -72,7 +76,7 @@ export default defineEventHandler(async (event) => {
             ? { guessEnabledAt: null }
             : {}),
       })
-      .where(eq(editions.id, edition.id)),
+      .where(eq(secretSantas.id, edition.id)),
     ...(lost > 0
       ? [
           deleteGuessesOf(db, [edition.id]),
@@ -80,7 +84,7 @@ export default defineEventHandler(async (event) => {
           ...kept.map((g) =>
             db.insert(guesses).values({
               id: newId(),
-              editionId: edition.id,
+              secretSantaId: edition.id,
               guesserPersonId: g.guesserId,
               recipientPersonId: g.recipientId,
               giverPersonId: g.giverId,
@@ -93,12 +97,12 @@ export default defineEventHandler(async (event) => {
       ? []
       : [
           db
-            .update(groupMembers)
+            .update(partyOrganisers)
             .set({ guessNews: news })
             .where(
               and(
-                eq(groupMembers.groupId, group.id),
-                eq(groupMembers.accountId, user.accountId),
+                eq(partyOrganisers.partyId, group.id),
+                eq(partyOrganisers.accountId, user.accountId),
               ),
             ),
         ]),

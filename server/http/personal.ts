@@ -22,6 +22,6 @@ export const requirePersonalLink = async (
   const db = useDb(event);
   const row = await findParticipationByTokenHash(db, await hashToken(token));
   if (!row) throw notFound('link_invalid');
-  const rules = unwrap(mergeRules(row.group.rules, row.edition.rulesOverride));
+  const rules = unwrap(mergeRules(row.edition.rules));
   return { db, rules, ...row };
 };

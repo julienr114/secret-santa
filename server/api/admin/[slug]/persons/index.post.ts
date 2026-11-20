@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
   );
   const person = {
     id: newId(),
-    groupId: group.id,
+    partyId: group.id,
     ...body,
     avatarEmoji: avatarEmoji ?? avatar.emoji,
     avatarColor: avatarColor ?? avatar.color,

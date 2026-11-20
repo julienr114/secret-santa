@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     .from(participations)
     .where(
       and(
-        eq(participations.editionId, edition.id),
+        eq(participations.secretSantaId, edition.id),
         eq(participations.personId, person.id),
       ),
     )
@@ -44,10 +44,10 @@ export default defineEventHandler(async (event) => {
   const [size] = await db
     .select({ n: count() })
     .from(participations)
-    .where(eq(participations.editionId, edition.id));
+    .where(eq(participations.secretSantaId, edition.id));
   unwrap(checkParticipantCount((size?.n ?? 0) + 1));
   const row = await newParticipation(
-    { editionId: edition.id, personId: person.id },
+    { secretSantaId: edition.id, personId: person.id },
     await dataKeyOf(event),
   );
   await db.insert(participations).values(row);

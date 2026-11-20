@@ -6,6 +6,8 @@ import { unwrap } from '#server/http/errors';
 import { hintsPayload, linkableLists } from '#server/http/hints';
 import { requirePersonalLink } from '#server/http/personal';
 import { validatedBody } from '#server/http/validate';
+import { nowIso } from '#server/http/context';
+import { syncLinkedList } from '#server/database/listParties';
 import { canLinkList } from '#server/utils/anonymous';
 import { canEditHints } from '#server/utils/hints';
 
@@ -41,6 +43,13 @@ export default defineEventHandler(async (event) => {
     .update(participations)
     .set({ giftListId: listId })
     .where(eq(participations.id, participation.id));
+  // The list goes into the party of the draw (ticket 101).
+  await syncLinkedList(
+    db,
+    { secretSantaId: participation.secretSantaId, listId },
+    participation.giftListId,
+    nowIso(),
+  );
   return hintsPayload(
     { ...ctx, participation: { ...participation, giftListId: listId } },
     user.accountId,

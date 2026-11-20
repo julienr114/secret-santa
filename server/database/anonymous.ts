@@ -3,12 +3,12 @@ import type { Db } from './client';
 import {
   accounts,
   assignments,
-  editions,
+  secretSantas,
   familyMembers,
   giftListHolders,
   giftListPeople,
   giftListVisits,
-  groups,
+  parties,
   participations,
   persons,
 } from './schema';
@@ -113,19 +113,21 @@ export const givesToSomeoneOn = async (
     ? await db
         .select({
           participation: participations,
-          edition: editions,
+          edition: secretSantas,
           person: persons,
-          groupName: groups.name,
-          groupRules: groups.rules,
+          groupName: parties.name,
         })
         .from(participations)
         .innerJoin(persons, eq(persons.id, participations.personId))
-        .innerJoin(editions, eq(editions.id, participations.editionId))
-        .innerJoin(groups, eq(groups.id, editions.groupId))
+        .innerJoin(
+          secretSantas,
+          eq(secretSantas.id, participations.secretSantaId),
+        )
+        .innerJoin(parties, eq(parties.id, secretSantas.partyId))
         .where(eq(participations.id, mine.participationId))
     : [];
   const secret = [...byAddress, ...byLink].filter((row) => {
-    const rules = mergeRules(row.groupRules, row.edition.rulesOverride);
+    const rules = mergeRules(row.edition.rules);
     return drawStillSecret(
       {
         status: row.edition.status,
@@ -146,7 +148,7 @@ export const givesToSomeoneOn = async (
           .from(assignments)
           .where(
             and(
-              eq(assignments.editionId, row.edition.id),
+              eq(assignments.secretSantaId, row.edition.id),
               eq(assignments.giverPersonId, row.person.id),
             ),
           )

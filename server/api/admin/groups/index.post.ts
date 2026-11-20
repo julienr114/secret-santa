@@ -2,7 +2,7 @@ import { isPlainName, WEB_ADDRESS_REFUSED } from '#server/utils/limits';
 import { z } from 'zod';
 import { like } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
-import { groups } from '#server/database/schema';
+import { parties } from '#server/database/schema';
 import { addOrganizer, publicGroup } from '#server/database/groups';
 import { findAccountById } from '#server/database/accounts';
 import { quotaAccountOf } from '#server/database/quota';
@@ -42,19 +42,26 @@ export default defineEventHandler(async (event) => {
   const wanted = body.slug ?? slugify(body.name);
   const taken = (
     await db
-      .select({ slug: groups.slug })
-      .from(groups)
-      .where(like(groups.slug, `${wanted}%`))
+      .select({ slug: parties.slug })
+      .from(parties)
+      .where(like(parties.slug, `${wanted}%`))
   ).map((row) => row.slug);
   if (body.slug && taken.includes(body.slug)) {
     throw createError({ statusCode: 409, statusMessage: 'slug_taken' });
   }
   const slug = freeSlug(wanted, taken);
   const now = nowIso();
-  const group: typeof groups.$inferSelect = {
+  const group: typeof parties.$inferSelect = {
     id: newId(),
     slug,
     name: body.name,
+    // The screens of before make Christmas groups (ticket 101).
+    category: 'christmas',
+    iconEmoji: null,
+    iconColor: null,
+    usualDate: '12-25',
+    recurring: true,
+    fromList: false,
     rules: {},
     inviteCode: null,
     inviteUntil: null,
@@ -63,7 +70,7 @@ export default defineEventHandler(async (event) => {
     createdBy: account.id,
     createdAt: now,
   };
-  await db.insert(groups).values(group);
+  await db.insert(parties).values(group);
   // One after the other: an address given twice must not race itself.
   const organizers = [
     ...(account.isSuperAdmin ? [] : [account.email]),

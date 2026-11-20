@@ -8,7 +8,7 @@ import {
 import { personalPath } from '#server/database/participations';
 import { insertPersonFromAccount } from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
-import { accounts, groups, persons } from '#server/database/schema';
+import { accounts, parties, persons } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { appUrl, dataKeyOf, newId, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
@@ -83,9 +83,9 @@ export default defineEventHandler(async (event) => {
   }
   const path = await pathOf(personId);
   await db
-    .update(groups)
+    .update(parties)
     .set({ invitePlaces: (group.invitePlaces ?? 1) - 1 })
-    .where(eq(groups.id, group.id));
+    .where(eq(parties.id, group.id));
   const rules = mergeRules(group.rules);
   if (rules.ok && rules.value.notifyJoined) {
     await notifyOrganizers({ db, event }, group.id, (locale) =>

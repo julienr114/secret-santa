@@ -39,14 +39,19 @@ export const loadJournal = async (
     db
       .select()
       .from(auditLog)
-      .where(eq(auditLog.groupId, groupId))
+      .where(eq(auditLog.partyId, groupId))
       .orderBy(desc(auditLog.createdAt))
       .limit(JOURNAL_LIMIT),
     listPeople(db, groupId),
     listEditions(db, groupId),
   ]);
   const entries = journalEntries(
-    rows.map((row) => ({ ...row, meta: row.meta as Meta | null })),
+    rows.map(({ partyId, secretSantaId, ...row }) => ({
+      ...row,
+      groupId: partyId,
+      editionId: secretSantaId,
+      meta: row.meta as Meta | null,
+    })),
     people,
     locale,
     me,

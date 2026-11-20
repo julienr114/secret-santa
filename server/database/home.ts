@@ -2,7 +2,14 @@ import { count, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { Db } from './client';
 import { currentEdition, type EditionStatus } from '#server/utils/editions';
 import { mergeRules } from '#server/utils/rules';
-import { editions, groups, participations, persons } from './schema';
+import {
+  partyYears,
+  secretSantas,
+  parties,
+  participations,
+  persons,
+} from './schema';
+import { editionColumns, selectEditions, type Edition } from './editions';
 
 /**
  * The participations of the people registered with an address, in every
@@ -12,17 +19,17 @@ export const listParticipationsByEmail = (db: Db, email: string) =>
   db
     .select({
       participation: participations,
-      edition: editions,
+      edition: editionColumns,
       person: persons,
-      groupName: groups.name,
-      groupRules: groups.rules,
+      groupName: parties.name,
     })
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
-    .innerJoin(editions, eq(editions.id, participations.editionId))
-    .innerJoin(groups, eq(groups.id, editions.groupId))
+    .innerJoin(secretSantas, eq(secretSantas.id, participations.secretSantaId))
+    .innerJoin(partyYears, eq(partyYears.id, secretSantas.yearId))
+    .innerJoin(parties, eq(parties.id, secretSantas.partyId))
     .where(eq(persons.email, email))
-    .orderBy(desc(editions.year), desc(editions.createdAt));
+    .orderBy(desc(partyYears.year), desc(secretSantas.createdAt));
 
 /** Where the current edition of a group stands, for its organiser. */
 export type EditionSummary = {
@@ -43,9 +50,6 @@ export type EditionSummary = {
 /** A group with its rules, as the summaries need it. */
 type GroupWithRules = { id: string; rules: unknown };
 
-/** An edition row, kept to check its draw. */
-type EditionRow = typeof editions.$inferSelect;
-
 /**
  * The current edition of each group, with its counts and its row, by
  * group id. A group with only closed editions has none.
@@ -53,27 +57,22 @@ type EditionRow = typeof editions.$inferSelect;
 export const currentEditionSummaries = async (
   db: Db,
   groupList: readonly GroupWithRules[],
-): Promise<
-  Record<string, { summary: EditionSummary; edition: EditionRow }>
-> => {
+): Promise<Record<string, { summary: EditionSummary; edition: Edition }>> => {
   if (groupList.length === 0) return {};
-  const rows = await db
-    .select()
-    .from(editions)
-    .where(
-      inArray(
-        editions.groupId,
-        groupList.map((group) => group.id),
-      ),
-    );
+  const rows = await selectEditions(db).where(
+    inArray(
+      secretSantas.partyId,
+      groupList.map((group) => group.id),
+    ),
+  );
   const current = groupList.flatMap((group) => {
-    const edition = currentEdition(rows.filter((e) => e.groupId === group.id));
+    const edition = currentEdition(rows.filter((e) => e.partyId === group.id));
     return edition ? [{ group, edition }] : [];
   });
   if (current.length === 0) return {};
   const counts = await db
     .select({
-      editionId: participations.editionId,
+      editionId: participations.secretSantaId,
       participants: count(),
       toNotify: sql<number>`sum(case when ${participations.messageSentAt} is null and ${participations.viewCount} = 0 then 1 else 0 end)`,
       notOpened: sql<number>`sum(case when ${participations.messageSentAt} is not null and ${participations.viewCount} = 0 then 1 else 0 end)`,
@@ -82,15 +81,15 @@ export const currentEditionSummaries = async (
     .from(participations)
     .where(
       inArray(
-        participations.editionId,
+        participations.secretSantaId,
         current.map(({ edition }) => edition.id),
       ),
     )
-    .groupBy(participations.editionId);
+    .groupBy(participations.secretSantaId);
   return Object.fromEntries(
     current.map(({ group, edition }) => {
       const row = counts.find((c) => c.editionId === edition.id);
-      const rules = mergeRules(group.rules, edition.rulesOverride);
+      const rules = mergeRules(edition.rules);
       return [
         group.id,
         {

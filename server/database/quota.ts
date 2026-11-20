@@ -11,13 +11,14 @@ import {
 import type { Db } from './client';
 import {
   accounts,
-  groupMembers,
+  partyOrganisers,
   groupRequests,
-  editions,
-  groups,
+  secretSantas,
+  parties,
   persons,
   type AccountRow,
 } from './schema';
+import { isGroup } from './groups';
 import { groupsByAccount, type AccountGroup } from '#server/utils/overview';
 import type { QuotaAccount } from '#server/utils/quota';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
@@ -29,9 +30,10 @@ const createdCounts = async (db: Db): Promise<Record<string, number>> =>
   Object.fromEntries(
     (
       await db
-        .select({ accountId: groups.createdBy, n: count() })
-        .from(groups)
-        .groupBy(groups.createdBy)
+        .select({ accountId: parties.createdBy, n: count() })
+        .from(parties)
+        .where(isGroup)
+        .groupBy(parties.createdBy)
     ).flatMap((row) => (row.accountId ? [[row.accountId, row.n]] : [])),
   );
 
@@ -42,8 +44,8 @@ export const quotaAccountOf = async (
 ): Promise<QuotaAccount> => {
   const [row] = await db
     .select({ n: count() })
-    .from(groups)
-    .where(eq(groups.createdBy, account.id));
+    .from(parties)
+    .where(and(eq(parties.createdBy, account.id), isGroup));
   return {
     isSuperAdmin: account.isSuperAdmin,
     groupQuota: account.groupQuota,
@@ -120,20 +122,21 @@ export const listSuperAdmins = (db: Db) =>
 const accountGroups = async (
   db: Db,
 ): Promise<Record<string, AccountGroup[]>> => {
-  const columns = { id: groups.id, slug: groups.slug, name: groups.name };
+  const columns = { id: parties.id, slug: parties.slug, name: parties.name };
   const [organized, joined] = await Promise.all([
     db
-      .select({ accountId: groupMembers.accountId, ...columns })
-      .from(groupMembers)
-      .innerJoin(groups, eq(groups.id, groupMembers.groupId))
-      .orderBy(asc(groups.name)),
+      .select({ accountId: partyOrganisers.accountId, ...columns })
+      .from(partyOrganisers)
+      .innerJoin(parties, eq(parties.id, partyOrganisers.partyId))
+      .where(isGroup)
+      .orderBy(asc(parties.name)),
     db
       .select({ accountId: accounts.id, ...columns })
       .from(persons)
       .innerJoin(accounts, eq(accounts.email, persons.email))
-      .innerJoin(groups, eq(groups.id, persons.groupId))
-      .where(eq(persons.active, true))
-      .orderBy(asc(groups.name)),
+      .innerJoin(parties, eq(parties.id, persons.partyId))
+      .where(and(eq(persons.active, true), isGroup))
+      .orderBy(asc(parties.name)),
   ]);
   return groupsByAccount(organized, joined);
 };
@@ -198,11 +201,11 @@ export const listAdminAccounts = async (db: Db): Promise<AdminAccount[]> => {
 
 /** How many groups the app holds, and how many have a draw in progress. */
 export const appStats = async (db: Db) => {
-  const [all] = await db.select({ n: count() }).from(groups);
+  const [all] = await db.select({ n: count() }).from(parties).where(isGroup);
   const [active] = await db
-    .select({ n: countDistinct(editions.groupId) })
-    .from(editions)
-    .where(ne(editions.status, 'closed'));
+    .select({ n: countDistinct(secretSantas.partyId) })
+    .from(secretSantas)
+    .where(ne(secretSantas.status, 'closed'));
   return { groups: all?.n ?? 0, active: active?.n ?? 0 };
 };
 

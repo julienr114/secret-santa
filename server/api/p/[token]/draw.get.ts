@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       .from(auditLog)
       .where(
         and(
-          eq(auditLog.editionId, edition.id),
+          eq(auditLog.secretSantaId, edition.id),
           inArray(auditLog.type, ['results_revealed', 'draw_revealed']),
         ),
       )

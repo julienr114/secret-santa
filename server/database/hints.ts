@@ -11,7 +11,7 @@ import {
 import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
 import type { Db } from './client';
 import {
-  editions,
+  secretSantas,
   giftPortraits,
   hintRequests,
   participations,
@@ -177,18 +177,18 @@ export const findPreviousHints = async (
   const rows = await db
     .select({
       participationId: participations.id,
-      editionLabel: editions.label,
+      editionLabel: secretSantas.label,
     })
     .from(participations)
-    .innerJoin(editions, eq(editions.id, participations.editionId))
+    .innerJoin(secretSantas, eq(secretSantas.id, participations.secretSantaId))
     .where(
       and(
         eq(participations.personId, current.personId),
-        eq(editions.groupId, current.groupId),
-        lt(editions.createdAt, current.editionCreatedAt),
+        eq(secretSantas.partyId, current.groupId),
+        lt(secretSantas.createdAt, current.editionCreatedAt),
       ),
     )
-    .orderBy(desc(editions.createdAt))
+    .orderBy(desc(secretSantas.createdAt))
     .limit(5);
   const withHints = await participationsWithHints(
     db,
@@ -217,7 +217,11 @@ export const insertHintRequest = (
 ) =>
   db
     .insert(hintRequests)
-    .values({ ...request, requestedAt: nowIso() })
+    .values({
+      receiverParticipationId: request.receiverParticipationId,
+      secretSantaId: request.editionId,
+      requestedAt: nowIso(),
+    })
     .onConflictDoNothing();
 
 /** The hints arrived and the one who asked was told: never twice. */
@@ -242,7 +246,7 @@ export const markHintRequestAnswered = (
  * tirage »).
  */
 export const deleteHintRequestsOf = (db: Db, editionId: string) =>
-  db.delete(hintRequests).where(eq(hintRequests.editionId, editionId));
+  db.delete(hintRequests).where(eq(hintRequests.secretSantaId, editionId));
 
 /** Rows whose column is one of the ids, a list or a subquery. */
 const inIds = (column: AnySQLiteColumn, ids: string[] | SQLWrapper) =>

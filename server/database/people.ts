@@ -17,14 +17,14 @@ export const listPeople = (db: Db, groupId: string) =>
   db
     .select()
     .from(persons)
-    .where(eq(persons.groupId, groupId))
+    .where(eq(persons.partyId, groupId))
     .orderBy(persons.firstName);
 
 export const listExclusions = (db: Db, groupId: string) =>
   db
     .select()
     .from(manualExclusions)
-    .where(eq(manualExclusions.groupId, groupId));
+    .where(eq(manualExclusions.partyId, groupId));
 
 export const findPerson = async (
   db: Db,
@@ -35,7 +35,7 @@ export const findPerson = async (
   const [person] = await db
     .select()
     .from(persons)
-    .where(and(eq(persons.groupId, groupId), eq(persons.id, personId)))
+    .where(and(eq(persons.partyId, groupId), eq(persons.id, personId)))
     .limit(1);
   return person ?? null;
 };
@@ -78,7 +78,7 @@ export const insertPersonFromAccount = async (
   return db.insert(persons).values({
     ...self,
     id,
-    groupId,
+    partyId: groupId,
     avatarEmoji: self.avatarEmoji ?? avatar.emoji,
     avatarColor: self.avatarColor ?? avatar.color,
     active: true,

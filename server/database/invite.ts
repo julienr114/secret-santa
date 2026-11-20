@@ -6,8 +6,8 @@ import {
   currentEdition,
 } from '#server/utils/editions';
 import { recordEvent } from './audit';
-import { newParticipation } from './editions';
-import { editions, groups, participations, persons } from './schema';
+import { listEditions, newParticipation, type Edition } from './editions';
+import { parties, participations, persons } from './schema';
 
 // Invitation links of groups (README 22.2).
 
@@ -18,14 +18,11 @@ import { editions, groups, participations, persons } from './schema';
 export const findInvite = async (db: Db, code: string) => {
   const [group] = await db
     .select()
-    .from(groups)
-    .where(eq(groups.inviteCode, code))
+    .from(parties)
+    .where(eq(parties.inviteCode, code))
     .limit(1);
   if (!group) return null;
-  const rows = await db
-    .select()
-    .from(editions)
-    .where(eq(editions.groupId, group.id));
+  const rows = await listEditions(db, group.id);
   return { group, edition: currentEdition(rows) };
 };
 
@@ -38,7 +35,7 @@ export const findPersonByGroupEmail = async (
   const [person] = await db
     .select()
     .from(persons)
-    .where(and(eq(persons.groupId, groupId), eq(persons.email, email)))
+    .where(and(eq(persons.partyId, groupId), eq(persons.email, email)))
     .limit(1);
   return person ?? null;
 };
@@ -54,7 +51,7 @@ export const findParticipationOf = async (
     .from(participations)
     .where(
       and(
-        eq(participations.editionId, editionId),
+        eq(participations.secretSantaId, editionId),
         eq(participations.personId, personId),
       ),
     )
@@ -70,7 +67,7 @@ export const participantCount = async (
   const [row] = await db
     .select({ n: count() })
     .from(participations)
-    .where(eq(participations.editionId, editionId));
+    .where(eq(participations.secretSantaId, editionId));
   return row?.n ?? 0;
 };
 
@@ -89,7 +86,7 @@ export const joinDrawInPreparation = async (
     personId,
     dataKey,
   }: {
-    edition: typeof editions.$inferSelect | null;
+    edition: Edition | null;
     personId: string;
     dataKey: CryptoKey;
   },
@@ -101,13 +98,13 @@ export const joinDrawInPreparation = async (
   const size = await participantCount(db, edition.id);
   if (!checkParticipantCount(size + 1).ok) return null;
   const row = await newParticipation(
-    { editionId: edition.id, personId },
+    { secretSantaId: edition.id, personId },
     dataKey,
   );
   await db.insert(participations).values(row);
   await recordEvent(db, {
     type: 'participant_added',
-    groupId: edition.groupId,
+    groupId: edition.partyId,
     editionId: edition.id,
     personId,
     actor: 'participant',

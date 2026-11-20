@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { and, count, eq } from 'drizzle-orm';
-import { groups, persons } from '#server/database/schema';
+import { parties, persons } from '#server/database/schema';
 import { requireGroupAccess } from '#server/http/auth';
 import { validatedBody } from '#server/http/validate';
 import { MAX_PARTICIPANTS } from '#server/utils/editions';
@@ -27,15 +27,15 @@ export default defineEventHandler(async (event) => {
   const body = await validatedBody(event, bodySchema);
   if (!body.open) {
     await db
-      .update(groups)
+      .update(parties)
       .set({ inviteCode: null, inviteUntil: null, invitePlaces: null })
-      .where(eq(groups.id, group.id));
+      .where(eq(parties.id, group.id));
     return { inviteCode: null };
   }
   const [active] = await db
     .select({ n: count() })
     .from(persons)
-    .where(and(eq(persons.groupId, group.id), eq(persons.active, true)));
+    .where(and(eq(persons.partyId, group.id), eq(persons.active, true)));
   const settings = {
     inviteCode:
       body.renew || !group.inviteCode ? generateInviteCode() : group.inviteCode,
@@ -48,6 +48,6 @@ export default defineEventHandler(async (event) => {
         ? body.message || null
         : (group.inviteMessage ?? null),
   };
-  await db.update(groups).set(settings).where(eq(groups.id, group.id));
+  await db.update(parties).set(settings).where(eq(parties.id, group.id));
   return settings;
 });

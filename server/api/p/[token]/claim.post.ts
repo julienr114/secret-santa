@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   unwrap(
     canUseEmail(
       account.email,
-      await findPersonByGroupEmail(db, person.groupId, account.email),
+      await findPersonByGroupEmail(db, person.partyId, account.email),
       person.id,
     ),
   );

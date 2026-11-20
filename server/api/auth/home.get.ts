@@ -60,14 +60,14 @@ export default defineEventHandler(async (event) => {
   );
   // The alerts of the journals of the draws going on (README 22.15).
   const going = rows.filter((row) => row.edition.status !== 'closed');
-  const groupIds = [...new Set(going.map((row) => row.edition.groupId))];
+  const groupIds = [...new Set(going.map((row) => row.edition.partyId))];
   const alertRows =
     groupIds.length === 0
       ? []
       : await db
           .select({
             id: auditLog.id,
-            groupId: auditLog.groupId,
+            groupId: auditLog.partyId,
             type: auditLog.type,
             personId: auditLog.personId,
             createdAt: auditLog.createdAt,
@@ -75,134 +75,132 @@ export default defineEventHandler(async (event) => {
           .from(auditLog)
           .where(
             and(
-              inArray(auditLog.groupId, groupIds),
+              inArray(auditLog.partyId, groupIds),
               inArray(auditLog.type, ALERT_TYPES),
             ),
           );
   const draws = await Promise.all(
-    rows.map(
-      async ({ participation, edition, person, groupName, groupRules }) => {
-        const merged = mergeRules(groupRules, edition.rulesOverride);
-        const rules = merged.ok
-          ? merged.value
-          : { giftHints: 'none' as const, eventDate: '' };
-        // A draw made elsewhere (README 22.12): is their answer given?
-        const answers =
-          dataKey &&
-          edition.status === 'preparing' &&
-          edition.drawMode === 'elsewhere'
-            ? await answersOfEdition(db, edition.id, dataKey)
-            : null;
-        const answer = answers
-          ? answers.answered.includes(person.id)
-            ? ('given' as const)
-            : ('toGive' as const)
+    rows.map(async ({ participation, edition, person, groupName }) => {
+      const merged = mergeRules(edition.rules);
+      const rules = merged.ok
+        ? merged.value
+        : { giftHints: 'none' as const, eventDate: '' };
+      // A draw made elsewhere (README 22.12): is their answer given?
+      const answers =
+        dataKey &&
+        edition.status === 'preparing' &&
+        edition.drawMode === 'elsewhere'
+          ? await answersOfEdition(db, edition.id, dataKey)
           : null;
-        // « Devine qui » (22.17): a guess to make, or the palmarès.
-        const game =
-          dataKey && edition.guessMode !== 'none' && edition.status === 'drawn'
-            ? await gamePayload(
-                {
-                  db,
-                  edition,
-                  person,
-                  participation,
-                  group: { name: groupName },
-                  rules: { eventDate: rules.eventDate },
-                },
-                dataKey,
-              )
-            : null;
-        // Revealed before the party: nothing is secret, the card says who
-        // they give to (README 22.18, AccueilDevoileAvant).
-        const openedReceiver =
-          dataKey &&
-          edition.status === 'drawn' &&
-          edition.revealedAt &&
-          !partyIsOver(rules.eventDate, nowIso().slice(0, 10))
-            ? await findRevealedReceiver(db, edition.id, person.id, dataKey)
-            : null;
-        const token = dataKey
-          ? await decrypt(
-              { enc: participation.tokenEnc, iv: participation.tokenIv },
+      const answer = answers
+        ? answers.answered.includes(person.id)
+          ? ('given' as const)
+          : ('toGive' as const)
+        : null;
+      // « Devine qui » (22.17): a guess to make, or the palmarès.
+      const game =
+        dataKey && edition.guessMode !== 'none' && edition.status === 'drawn'
+          ? await gamePayload(
+              {
+                db,
+                edition,
+                person,
+                participation,
+                group: { name: groupName },
+                rules: { eventDate: rules.eventDate },
+              },
               dataKey,
             )
           : null;
-        return {
-          id: participation.id,
-          path: token?.ok ? `/p/${token.value}` : null,
-          groupId: edition.groupId,
-          groupName,
-          editionLabel: edition.label,
-          year: edition.year,
+      // Revealed before the party: nothing is secret, the card says who
+      // they give to (README 22.18, AccueilDevoileAvant).
+      const openedReceiver =
+        dataKey &&
+        edition.status === 'drawn' &&
+        edition.revealedAt &&
+        !partyIsOver(rules.eventDate, nowIso().slice(0, 10))
+          ? await findRevealedReceiver(db, edition.id, person.id, dataKey)
+          : null;
+      const token = dataKey
+        ? await decrypt(
+            { enc: participation.tokenEnc, iv: participation.tokenIv },
+            dataKey,
+          )
+        : null;
+      return {
+        id: participation.id,
+        path: token?.ok ? `/p/${token.value}` : null,
+        groupId: edition.partyId,
+        groupName,
+        editionLabel: edition.label,
+        year: edition.year,
+        status: edition.status,
+        step: nextStep({
           status: edition.status,
-          step: nextStep({
-            status: edition.status,
-            revealed: participation.viewCount > 0,
-            hintsOn: rules.giftHints !== 'none',
-            hasHints: withHints.has(participation.id),
-            answer,
-          }),
-          answer,
           revealed: participation.viewCount > 0,
-          opened: openedReceiver
-            ? {
-                name: openedReceiver.firstName,
-                avatar: avatarOf(openedReceiver),
-              }
-            : null,
           hintsOn: rules.giftHints !== 'none',
           hasHints: withHints.has(participation.id),
-          // New hints from the person they give to (lot 16 bis); only
-          // for a draw going on, once they have discovered their result.
-          receiverHints:
-            dataKey &&
-            edition.status === 'drawn' &&
-            participation.viewCount > 0 &&
-            rules.giftHints !== 'none'
-              ? (
-                  await receiverHintsOf(
-                    db,
-                    {
-                      editionId: edition.id,
-                      personId: person.id,
-                      lastViewedAt: participation.lastViewedAt,
-                    },
-                    dataKey,
-                  )
-                ).state
-              : ('none' as const),
-          game: game
-            ? {
-                open: game.open,
-                played: game.mine.length > 0,
-                palmares: Boolean(game.results && game.results.size !== 'none'),
-                seen: Boolean(game.results?.seen),
-                endsAt: game.endsAt,
-                mode: game.mode,
-                skipped: game.skipped,
-                canSkip: game.canSkip,
-                count: game.count,
-              }
-            : null,
-          eventDate: rules.eventDate,
-          firstName: person.firstName,
-          avatar: avatarOf(person),
-          // Alerts since the journal was last opened from this draw; never
-          // opened, since the edition was created, so that a draw cancelled
-          // then made again is still told (decided by Julien on 17 November
-          // 2026).
-          journal:
-            edition.status === 'closed'
-              ? null
-              : journalSignal(
-                  alertRows.filter((row) => row.groupId === edition.groupId),
-                  person.id,
-                  participation.journalSeenAt ?? edition.createdAt,
-                ),
-        };
-      },
-    ),
+          answer,
+        }),
+        answer,
+        revealed: participation.viewCount > 0,
+        opened: openedReceiver
+          ? {
+              name: openedReceiver.firstName,
+              avatar: avatarOf(openedReceiver),
+            }
+          : null,
+        hintsOn: rules.giftHints !== 'none',
+        hasHints: withHints.has(participation.id),
+        // New hints from the person they give to (lot 16 bis); only
+        // for a draw going on, once they have discovered their result.
+        receiverHints:
+          dataKey &&
+          edition.status === 'drawn' &&
+          participation.viewCount > 0 &&
+          rules.giftHints !== 'none'
+            ? (
+                await receiverHintsOf(
+                  db,
+                  {
+                    editionId: edition.id,
+                    personId: person.id,
+                    lastViewedAt: participation.lastViewedAt,
+                  },
+                  dataKey,
+                )
+              ).state
+            : ('none' as const),
+        game: game
+          ? {
+              open: game.open,
+              played: game.mine.length > 0,
+              palmares: Boolean(game.results && game.results.size !== 'none'),
+              seen: Boolean(game.results?.seen),
+              endsAt: game.endsAt,
+              mode: game.mode,
+              skipped: game.skipped,
+              canSkip: game.canSkip,
+              count: game.count,
+            }
+          : null,
+        eventDate: rules.eventDate,
+        firstName: person.firstName,
+        avatar: avatarOf(person),
+        // Alerts since the journal was last opened from this draw; never
+        // opened, since the edition was created, so that a draw cancelled
+        // then made again is still told (decided by Julien on 17 November
+        // 2026).
+        journal:
+          edition.status === 'closed'
+            ? null
+            : journalSignal(
+                alertRows.filter((row) => row.groupId === edition.partyId),
+                person.id,
+                participation.journalSeenAt ?? edition.createdAt,
+              ),
+      };
+    }),
   );
   const managed = await listOrganizedGroups(db, user.accountId);
   const summaries = await currentEditionSummaries(db, managed);
@@ -246,7 +244,7 @@ export default defineEventHandler(async (event) => {
     await Promise.all(
       toCheck.map(async (group) => {
         const { edition } = summaries[group.id]!;
-        const rules = mergeRules(group.rules, edition.rulesOverride);
+        const rules = mergeRules(edition.rules);
         if (!rules.ok || !checkKey) return [group.id, null];
         const { input } = await loadDrawContext(
           db,

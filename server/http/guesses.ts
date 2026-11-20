@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3';
 import { and, eq, isNull } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
-import { editions, participations, persons } from '#server/database/schema';
-import type { EditionRow } from '#server/database/schema';
+import { secretSantas, participations, persons } from '#server/database/schema';
+import type { SecretSantaRow } from '#server/database/schema';
 import { gameMembers, guessesOf, listGuesses } from '#server/database/guesses';
 import { listEditions } from '#server/database/editions';
 import { organizerCount } from '#server/database/groups';
@@ -46,16 +46,21 @@ type Group = { id: string; name: string };
  */
 export const closeGuesses = async (
   ctx: { db: Db },
-  edition: Pick<EditionRow, 'id' | 'guessMode' | 'guessesClosedAt'>,
+  edition: Pick<SecretSantaRow, 'id' | 'guessMode' | 'guessesClosedAt'>,
   groupId: string,
   actor: Actor,
 ) => {
   if (edition.guessMode === 'none' || edition.guessesClosedAt) return;
   const done = await ctx.db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessesClosedAt: nowIso() })
-    .where(and(eq(editions.id, edition.id), isNull(editions.guessesClosedAt)))
-    .returning({ id: editions.id });
+    .where(
+      and(
+        eq(secretSantas.id, edition.id),
+        isNull(secretSantas.guessesClosedAt),
+      ),
+    )
+    .returning({ id: secretSantas.id });
   if (done.length === 0) return;
   await recordEvent(ctx.db, {
     type: 'guesses_closed',
@@ -78,19 +83,22 @@ export const closeGuesses = async (
  */
 export const afterReveal = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   actor: Actor,
 ) => {
   if (edition.guessMode === 'none') return;
   await closeGuesses(ctx, edition, group.id, actor);
   const claimed = await ctx.db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessResultsSentAt: nowIso() })
     .where(
-      and(eq(editions.id, edition.id), isNull(editions.guessResultsSentAt)),
+      and(
+        eq(secretSantas.id, edition.id),
+        isNull(secretSantas.guessResultsSentAt),
+      ),
     )
-    .returning({ id: editions.id });
+    .returning({ id: secretSantas.id });
   if (claimed.length === 0) return;
   const [guesses, pairs] = await Promise.all([
     listGuesses(ctx.db, edition.id),
@@ -111,7 +119,7 @@ export const afterReveal = async (
     .select({ participation: participations, person: persons })
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
-    .where(eq(participations.editionId, edition.id));
+    .where(eq(participations.secretSantaId, edition.id));
   const emails = await Promise.all(
     rows
       .filter(({ person }) => person.email)
@@ -146,10 +154,10 @@ export const afterReveal = async (
  */
 const lastYearChallenge = async (
   db: Db,
-  edition: Pick<EditionRow, 'id' | 'groupId' | 'createdAt'>,
+  edition: Pick<SecretSantaRow, 'id' | 'partyId' | 'createdAt'>,
   dataKey: CryptoKey,
 ) => {
-  const previous = (await listEditions(db, edition.groupId))
+  const previous = (await listEditions(db, edition.partyId))
     .filter(
       (e) =>
         e.id !== edition.id &&
@@ -209,7 +217,7 @@ export const gamePayload = async (
     language: localeOf(person.language),
     groupName: ctx.group.name,
     // « ton organisateur » or « tes organisateurs ».
-    organizers: await organizerCount(db, edition.groupId),
+    organizers: await organizerCount(db, edition.partyId),
     firstName: person.firstName,
     editionLabel: edition.label,
     mode: edition.guessMode as GuessMode,

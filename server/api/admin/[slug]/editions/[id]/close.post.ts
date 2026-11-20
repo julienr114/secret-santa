@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { editions } from '#server/database/schema';
+import { secretSantas } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { nowIso } from '#server/http/context';
@@ -16,9 +16,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'guess_game_on' });
   }
   await db
-    .update(editions)
+    .update(secretSantas)
     .set({ status, closedAt: nowIso() })
-    .where(eq(editions.id, edition.id));
+    .where(eq(secretSantas.id, edition.id));
   await recordEvent(db, {
     type: 'edition_closed',
     groupId: group.id,

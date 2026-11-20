@@ -15,6 +15,12 @@ import {
   type GiftListRow,
 } from './schema';
 import { newId, nowIso } from '#server/http/context';
+import {
+  createOwnParty,
+  deleteListPartyStatements,
+  joinOwnParty,
+  renameOwnParty,
+} from './listParties';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import type { HolderLevel } from '#server/utils/listAccess';
 import {
@@ -541,6 +547,19 @@ export const createList = async (
       .insert(giftListHolders)
       .values({ id: newId(), listId: id, accountId, createdAt: now }),
   ]);
+  // Every list is in a party: until the screens of the V3, its own.
+  await createOwnParty(
+    db,
+    {
+      id,
+      accountId,
+      title: list.title,
+      iconEmoji: list.icon.emoji,
+      iconColor: list.icon.color,
+      eventDate: list.eventDate,
+    },
+    now,
+  );
   return id;
 };
 
@@ -562,14 +581,18 @@ export const updateList = (
     >
   >,
 ) =>
-  db
-    .update(giftLists)
-    .set({ ...patch, updatedAt: nowIso() })
-    .where(eq(giftLists.id, id));
+  Promise.all([
+    db
+      .update(giftLists)
+      .set({ ...patch, updatedAt: nowIso() })
+      .where(eq(giftLists.id, id)),
+    renameOwnParty(db, id, patch),
+  ]);
 
-/** Deletes a list with its people and ideas. */
+/** Deletes a list with its people and ideas, out of every party. */
 export const deleteList = (db: Db, id: string) =>
   db.batch([
+    ...deleteListPartyStatements(db, id),
     db.delete(giftClaims).where(eq(giftClaims.listId, id)),
     db.delete(giftOffList).where(eq(giftOffList.listId, id)),
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
@@ -1073,6 +1096,7 @@ export const acceptInvite = async (
       createdAt: now,
     })
     .onConflictDoNothing();
+  await joinOwnParty(db, invite.listId, accountId, now);
   return true;
 };
 

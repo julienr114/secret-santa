@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { and, eq, isNull } from 'drizzle-orm';
-import { editions, persons } from '#server/database/schema';
+import { secretSantas, persons } from '#server/database/schema';
 import { findAccountById } from '#server/database/accounts';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -26,15 +26,17 @@ const bodySchema = z.object({ early: z.boolean().default(false) });
 export default defineEventHandler(async (event) => {
   const { user, group, db, edition } = await requireEdition(event);
   const { early } = await validatedBody(event, bodySchema);
-  const rules = unwrap(mergeRules(group.rules, edition.rulesOverride));
+  const rules = unwrap(mergeRules(edition.rules));
   const today = nowIso().slice(0, 10);
   const allowed = unwrap(canRevealDraw(edition, rules.eventDate, today, early));
   // Only once: two organisers cannot both reveal.
   const revealed = await db
-    .update(editions)
+    .update(secretSantas)
     .set({ revealedAt: nowIso() })
-    .where(and(eq(editions.id, edition.id), isNull(editions.revealedAt)))
-    .returning({ id: editions.id });
+    .where(
+      and(eq(secretSantas.id, edition.id), isNull(secretSantas.revealedAt)),
+    )
+    .returning({ id: secretSantas.id });
   if (revealed.length === 0) {
     throw createError({
       statusCode: 409,
@@ -47,7 +49,7 @@ export default defineEventHandler(async (event) => {
         .select({ id: persons.id })
         .from(persons)
         .where(
-          and(eq(persons.groupId, group.id), eq(persons.email, account.email)),
+          and(eq(persons.partyId, group.id), eq(persons.email, account.email)),
         )
         .limit(1)
     : [];

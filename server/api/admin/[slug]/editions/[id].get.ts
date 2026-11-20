@@ -18,7 +18,7 @@ import {
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
 import { and, eq } from 'drizzle-orm';
-import { groupMembers } from '#server/database/schema';
+import { partyOrganisers } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
 import { gamePossible, guessesOpen } from '#server/utils/guesses';
 import { nudgeTime, playedCount, toRemind } from '#server/utils/nudges';
@@ -85,12 +85,12 @@ export default defineEventHandler(async (event) => {
   const open = guessesOpen(edition, now);
   // « Me tenir au courant » is each organiser's own (Correction 15).
   const [membership] = await db
-    .select({ guessNews: groupMembers.guessNews })
-    .from(groupMembers)
+    .select({ guessNews: partyOrganisers.guessNews })
+    .from(partyOrganisers)
     .where(
       and(
-        eq(groupMembers.groupId, group.id),
-        eq(groupMembers.accountId, user.accountId),
+        eq(partyOrganisers.partyId, group.id),
+        eq(partyOrganisers.accountId, user.accountId),
       ),
     )
     .limit(1);
@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
   };
   return {
     edition: publicEdition(edition, participants.length),
-    rules: unwrap(mergeRules(group.rules, edition.rulesOverride)),
+    rules: unwrap(mergeRules(edition.rules)),
     participants: answers.participants.map((p) => ({
       ...p,
       played: players.has(p.id),

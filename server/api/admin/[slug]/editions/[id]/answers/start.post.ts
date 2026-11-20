@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { editions } from '#server/database/schema';
+import { secretSantas } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { unwrap } from '#server/http/errors';
@@ -12,9 +12,9 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition } = await requireEdition(event);
   unwrap(answersAllow(edition, 'start'));
   await db
-    .update(editions)
+    .update(secretSantas)
     .set({ drawMode: 'elsewhere' })
-    .where(eq(editions.id, edition.id));
+    .where(eq(secretSantas.id, edition.id));
   await recordEvent(db, {
     type: 'answers_started',
     groupId: group.id,

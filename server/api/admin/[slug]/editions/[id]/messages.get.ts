@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     db
       .select()
       .from(participations)
-      .where(eq(participations.editionId, edition.id)),
+      .where(eq(participations.secretSantaId, edition.id)),
   ]);
   const entries = await Promise.all(
     rows.map(async (row) => {

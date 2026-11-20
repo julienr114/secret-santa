@@ -2,10 +2,10 @@ import { and, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   assignments,
-  editions,
+  secretSantas,
   participations,
   persons,
-  type EditionRow,
+  type SecretSantaRow,
 } from './schema';
 import { listExclusions } from './people';
 import { listEditions, listParticipants, type Participant } from './editions';
@@ -43,7 +43,7 @@ export type DrawContext = {
 export const loadDrawContext = async (
   db: Db,
   groupId: string,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   rules: Rules,
   dataKey: CryptoKey,
 ): Promise<DrawContext> => {
@@ -64,7 +64,7 @@ export const loadDrawContext = async (
       : await db
           .select()
           .from(assignments)
-          .where(inArray(assignments.editionId, pastIds));
+          .where(inArray(assignments.secretSantaId, pastIds));
   const past = await Promise.all(
     rows.map(async (row): Promise<PastAssignment | null> => {
       const receiver = await decrypt(
@@ -73,7 +73,7 @@ export const loadDrawContext = async (
       );
       return receiver.ok
         ? {
-            editionId: row.editionId,
+            editionId: row.secretSantaId,
             giverId: row.giverPersonId,
             receiverId: receiver.value,
           }
@@ -113,7 +113,7 @@ export const loadDrawContext = async (
 };
 
 export const deleteAssignments = (db: Db, editionId: string) =>
-  db.delete(assignments).where(and(eq(assignments.editionId, editionId)));
+  db.delete(assignments).where(and(eq(assignments.secretSantaId, editionId)));
 
 /**
  * The participation of the person `giverPersonId` gives to in an edition,
@@ -131,7 +131,7 @@ export const findReceiverParticipationId = async (
     .from(assignments)
     .where(
       and(
-        eq(assignments.editionId, editionId),
+        eq(assignments.secretSantaId, editionId),
         eq(assignments.giverPersonId, giverPersonId),
       ),
     )
@@ -147,7 +147,7 @@ export const findReceiverParticipationId = async (
     .from(participations)
     .where(
       and(
-        eq(participations.editionId, editionId),
+        eq(participations.secretSantaId, editionId),
         eq(participations.personId, receiverId.value),
       ),
     )
@@ -196,7 +196,7 @@ export const findGiverParticipationId = async (
   const rows = await db
     .select()
     .from(assignments)
-    .where(eq(assignments.editionId, editionId));
+    .where(eq(assignments.secretSantaId, editionId));
   const receivers = await Promise.all(
     rows.map(async (row) => ({
       giverPersonId: row.giverPersonId,
@@ -215,7 +215,7 @@ export const findGiverParticipationId = async (
     .from(participations)
     .where(
       and(
-        eq(participations.editionId, editionId),
+        eq(participations.secretSantaId, editionId),
         eq(participations.personId, giver.giverPersonId),
       ),
     )
@@ -250,7 +250,7 @@ export const drawStatements = async (
       const { enc, iv } = await encrypt(receiverId, dataKey);
       return {
         id: draw.newId(),
-        editionId: draw.editionId,
+        secretSantaId: draw.editionId,
         giverPersonId: giverId,
         receiverEnc: enc,
         receiverIv: iv,
@@ -260,7 +260,7 @@ export const drawStatements = async (
   );
   return [
     db
-      .update(editions)
+      .update(secretSantas)
       .set({
         status: 'drawn',
         drawnAt: draw.now,
@@ -270,7 +270,10 @@ export const drawStatements = async (
         ...(gamePossible(draw.pairs.length) ? {} : GAME_OFF),
       })
       .where(
-        and(eq(editions.id, draw.editionId), eq(editions.status, 'preparing')),
+        and(
+          eq(secretSantas.id, draw.editionId),
+          eq(secretSantas.status, 'preparing'),
+        ),
       ),
     // One statement per assignment: D1 caps a statement at 100 bound
     // parameters, which a single multi-row insert passes at 17 people.
@@ -280,7 +283,7 @@ export const drawStatements = async (
     db
       .update(participations)
       .set({ ...DRAWN_PARTICIPATION })
-      .where(eq(participations.editionId, draw.editionId)),
+      .where(eq(participations.secretSantaId, draw.editionId)),
   ] as const;
 };
 
@@ -300,7 +303,7 @@ export const readPairs = async (
   const rows = await db
     .select()
     .from(assignments)
-    .where(eq(assignments.editionId, editionId));
+    .where(eq(assignments.secretSantaId, editionId));
   const pairs = await Promise.all(
     rows.map(async (row) => {
       const receiver = await decrypt(

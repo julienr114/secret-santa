@@ -16,7 +16,9 @@ export default defineEventHandler(async (event) => {
   ]);
   if (!giver || !receiver) throw notFound('person_not_found');
   const exclusion = { id: newId(), groupId: group.id, ...body };
-  await db.insert(manualExclusions).values(exclusion);
+  await db
+    .insert(manualExclusions)
+    .values({ id: exclusion.id, partyId: group.id, ...body });
   await recordEvent(db, {
     type: 'rules_changed',
     groupId: group.id,

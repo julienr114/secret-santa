@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
     .from(auditLog)
     .where(
       and(
-        eq(auditLog.groupId, group.id),
+        eq(auditLog.partyId, group.id),
         gt(auditLog.createdAt, since),
         inArray(auditLog.type, ALERT_TYPES),
       ),

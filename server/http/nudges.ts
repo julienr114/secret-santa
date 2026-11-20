@@ -2,9 +2,9 @@ import { and, eq, isNull } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import {
   accounts,
-  editions,
-  groupMembers,
-  type EditionRow,
+  secretSantas,
+  partyOrganisers,
+  type SecretSantaRow,
 } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
 import { personalPath } from '#server/database/participations';
@@ -43,10 +43,10 @@ const claim = async (
   column: 'guessAutoReminderSentAt' | 'guessPointSentAt' | 'guessEndSentAt',
 ): Promise<boolean> => {
   const done = await db
-    .update(editions)
+    .update(secretSantas)
     .set({ [column]: nowIso() })
-    .where(and(eq(editions.id, editionId), isNull(editions[column])))
-    .returning({ id: editions.id });
+    .where(and(eq(secretSantas.id, editionId), isNull(secretSantas[column])))
+    .returning({ id: secretSantas.id });
   return done.length > 0;
 };
 
@@ -58,12 +58,12 @@ const newsRecipients = (db: Db, groupId: string) =>
       language: accounts.language,
       firstName: accounts.firstName,
     })
-    .from(groupMembers)
-    .innerJoin(accounts, eq(accounts.id, groupMembers.accountId))
+    .from(partyOrganisers)
+    .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
     .where(
       and(
-        eq(groupMembers.groupId, groupId),
-        eq(groupMembers.guessNews, true),
+        eq(partyOrganisers.partyId, groupId),
+        eq(partyOrganisers.guessNews, true),
         isNull(accounts.disabledAt),
       ),
     );
@@ -82,7 +82,7 @@ const newsRecipients = (db: Db, groupId: string) =>
  */
 export const autoRemind = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   now: string,
 ) => {
@@ -154,7 +154,7 @@ export const autoRemind = async (
  */
 export const organizerPoint = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   now: string,
 ) => {
@@ -217,7 +217,7 @@ export const organizerPoint = async (
  */
 export const organizerEnd = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
 ) => {
   if (edition.guessEndSentAt || edition.revealedAt || !edition.guessEndsAt) {

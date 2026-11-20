@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbOf, type D1Binding } from '#server/database/client';
 import { gamesToWatch } from '#server/database/guesses';
-import { editions, groups } from '#server/database/schema';
+import { secretSantas, parties } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { nowIso, secretsOf } from '#server/http/context';
 import { afterReveal, closeGuesses } from '#server/http/guesses';
@@ -31,13 +31,13 @@ export default defineNitroPlugin((nitroApp) => {
         done.then(async () => {
           const [group] = await db
             .select()
-            .from(groups)
-            .where(eq(groups.id, edition.groupId))
+            .from(parties)
+            .where(eq(parties.id, edition.partyId))
             .limit(1);
           if (!group) return;
           const ctx = { db, dataKey: key.value };
           if (edition.guessEndsAt && now >= edition.guessEndsAt) {
-            await closeGuesses({ db }, edition, edition.groupId, 'system');
+            await closeGuesses({ db }, edition, edition.partyId, 'system');
             await organizerEnd(ctx, edition, group);
           } else {
             await organizerPoint(ctx, edition, group, now);
@@ -45,12 +45,15 @@ export default defineNitroPlugin((nitroApp) => {
           }
           if (!autoRevealDue(edition, now)) return;
           const revealed = await db
-            .update(editions)
+            .update(secretSantas)
             .set({ revealedAt: now })
             .where(
-              and(eq(editions.id, edition.id), isNull(editions.revealedAt)),
+              and(
+                eq(secretSantas.id, edition.id),
+                isNull(secretSantas.revealedAt),
+              ),
             )
-            .returning({ id: editions.id });
+            .returning({ id: secretSantas.id });
           if (revealed.length === 0) return;
           await recordEvent(db, {
             type: 'draw_revealed',

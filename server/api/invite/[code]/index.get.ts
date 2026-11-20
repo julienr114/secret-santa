@@ -18,7 +18,7 @@ import { organizerCount } from '#server/database/groups';
 // if it takes part) and whether it has a first name.
 export default defineEventHandler(async (event) => {
   const { db, edition, group } = await requireInvite(event);
-  const rules = edition ? mergeRules(group.rules, edition.rulesOverride) : null;
+  const rules = edition ? mergeRules(edition.rules) : null;
   const user = await optionalAccount(event);
   const account = user ? await findAccountById(db, user.accountId) : null;
   const person = account

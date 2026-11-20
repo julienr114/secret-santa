@@ -92,21 +92,29 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.keyboard.type('Vélo 16 pouces');
   await page.keyboard.press('Enter');
   await expect(leo.getByTestId('idea-text')).toHaveCount(2);
-  // Nothing above the keyboard (README 22.20): what the line can do is
-  // under it, while one is in it; touching elsewhere leaves the line.
-  await expect(leo.getByTestId('line-actions')).toContainText(
+  // Nothing above the keyboard (README 22.20). While one is in a line,
+  // the field of its link is under the text (Correction 29): « Ajouter un
+  // lien » while empty. Touching elsewhere leaves the line.
+  await expect(leo.getByTestId('idea-link-field')).toHaveAttribute(
+    'placeholder',
     'Ajouter un lien',
   );
+  await expect(
+    leo.getByRole('button', { name: 'Ajouter un lien' }),
+  ).toHaveCount(0);
   await elsewhere.click();
-  await expect(leo.getByTestId('line-actions')).toHaveCount(0);
-  // The link is a lilac pill under the idea, with the name of its site
-  // (Correction 28): no « : lien » in the text any more.
+  await expect(leo.getByTestId('idea-link-row')).toHaveCount(0);
+  // Read, the link has a line of its own under the text, with the name
+  // of its site in italics (Correction 29): neither « : lien » nor a pill.
   const pill = leo.getByTestId('idea-link');
   await expect(pill).toHaveText('exemple.fr');
   await expect(pill).toHaveAccessibleName('Lien vers exemple.fr');
   await expect(pill).toHaveAttribute('href', 'https://exemple.fr/billes');
   await expect(pill).toHaveAttribute('target', '_blank');
   await expect(pill).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(pill).toHaveCSS('font-style', 'italic');
+  await expect(pill).toHaveCSS('font-size', '16px');
+  await expect(pill).toHaveCSS('text-decoration-line', 'none');
   await expect(leo.getByTestId('idea-text').first()).not.toContainText(':');
   // The arrows and the tab key go from line to line, saving on the way.
   await leo.getByTestId('idea-text').first().click();
@@ -149,29 +157,75 @@ test('a list is written in its document, and shared', async ({ page }) => {
   );
   await elsewhere.click();
   await expect(leo.getByTestId('idea-text')).toHaveCount(2);
-  // A link written in the line: « : », the address, then the word « lien »
-  // with what it can do; taken off again.
+  // A link written in its field (maquettes ListeIdee, ListeIdeeLien,
+  // ListeIdeeLienFait): touched, it asks for the address; what is not an
+  // address keeps the field open, marked, and saves nothing.
   await leo.getByTestId('idea-text').nth(1).click();
-  await leo.getByRole('button', { name: 'Ajouter un lien' }).click();
   const address = leo.getByTestId('idea-link-field');
-  await expect(address).toBeFocused();
-  await expect(leo.getByTestId('line-actions')).toHaveText('Annuler');
-  await address.fill('exemple.fr/velo');
-  await address.press('Enter');
-  await expect(leo.getByTestId('line-actions')).toContainText(
-    'Changer le lien',
+  await address.click();
+  await expect(address).toHaveAttribute(
+    'placeholder',
+    'Colle ou écris l’adresse',
   );
+  await expect(address).toHaveAttribute('inputmode', 'url');
+  await expect(address).toHaveAttribute('autocapitalize', 'none');
+  await address.fill('pas une adresse');
+  await address.press('Enter');
+  await expect(address).toBeFocused();
+  await expect(address).toHaveAttribute('aria-invalid', 'true');
+  // The return key saves it and goes back to the text; the line stays.
+  await address.fill('exemple.fr/velo');
+  await expect(address).not.toHaveAttribute('aria-invalid', 'true');
+  await address.press('Enter');
   await expect(leo.getByTestId('idea-field').first()).toBeFocused();
+  await expect(address).toHaveValue('exemple.fr/velo');
   await elsewhere.click();
   await expect(leo.getByRole('link', { name: 'lien' }).nth(1)).toHaveAttribute(
     'href',
     'https://exemple.fr/velo',
   );
+  // Changed in place: the whole address shows, and is saved with the
+  // line when it is left; going from the link to the text keeps it open.
+  await leo.getByTestId('idea-text').nth(1).click();
+  await expect(address).toHaveValue('exemple.fr/velo');
+  await address.fill('exemple.fr/velo-rouge');
+  await leo.getByTestId('idea-field').first().click();
+  await expect(leo.getByTestId('idea-link-row')).toBeVisible();
+  await elsewhere.click();
+  await expect(leo.getByRole('link', { name: 'lien' }).nth(1)).toHaveAttribute(
+    'href',
+    'https://exemple.fr/velo-rouge',
+  );
+  // The cross takes it off.
   await leo.getByTestId('idea-text').nth(1).click();
   await leo.getByRole('button', { name: 'Retirer le lien' }).click();
-  await expect(leo.getByTestId('line-actions')).toContainText(
-    'Ajouter un lien',
+  await expect(address).toHaveValue('');
+  await elsewhere.click();
+  await expect(leo.getByRole('link', { name: 'lien' })).toHaveCount(1);
+  // An address pasted in the text goes at once to the field of the link,
+  // the text keeps the rest.
+  await leo.getByTestId('idea-text').nth(1).click();
+  await leo
+    .getByTestId('idea-field')
+    .first()
+    .evaluate((el: HTMLTextAreaElement) => {
+      el.setSelectionRange(el.value.length, el.value.length);
+      const data = new DataTransfer();
+      data.setData('text/plain', ' : https://exemple.fr/velo-bleu');
+      el.dispatchEvent(
+        new ClipboardEvent('paste', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+  await expect(address).toHaveValue('exemple.fr/velo-bleu');
+  await expect(leo.getByTestId('idea-field').first()).toHaveValue(
+    'Vélo 16 pouces',
   );
+  // Taken off again, for what follows.
+  await leo.getByRole('button', { name: 'Retirer le lien' }).click();
   await elsewhere.click();
   await expect(leo.getByRole('link', { name: 'lien' })).toHaveCount(1);
   // Corrected by touching it; emptied, the line goes.
@@ -190,24 +244,22 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('idea-text')).toHaveCount(1);
 
   // The one who holds the list ticks too, even in a draft: what they give
-  // says so under it, as by the link; touched again, the box unticks.
+  // says so in one pill under it, as by the link (Correction 29).
   const box = leo.getByTestId('holder-box').first();
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'true');
-  await expect(leo.getByTestId('idea-mine')).toContainText(
-    'Tu l’offres · seul · Changer',
-  );
+  await expect(leo.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await expect(leo.getByTestId('idea-who')).toHaveCount(0);
-  // « Changer »: with others, without the choice of staying anonymous.
-  await leo.getByRole('button', { name: 'Changer' }).click();
+  await expect(leo.getByText('Changer', { exact: true })).toHaveCount(0);
+  // No « Changer »: the box of what I give opens its sheet. With others,
+  // without the choice of staying anonymous.
+  await box.click();
   const sheet = page.getByTestId('claim-sheet');
   await expect(sheet).toBeVisible();
   await expect(sheet.getByRole('switch')).toHaveCount(0);
   await sheet.getByText('On l’offre à plusieurs').click();
   await page.getByTestId('claim-done').click();
-  await expect(leo.getByTestId('idea-mine')).toContainText(
-    'Tu l’offres · à plusieurs · Changer',
-  );
+  await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
   await expect(leo.getByTestId('idea-joined')).toHaveText('Tu participes');
   // The box of a gift given by several opens its sheet; « Finalement… ».
   await box.click();
@@ -226,8 +278,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   const mine = me.getByTestId('holder-box').first();
   await mine.click();
   await expect(mine).toHaveAttribute('aria-checked', 'true');
-  await expect(me.getByTestId('idea-mine')).toContainText('Tu l’offres · seul');
+  await expect(me.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await mine.click();
+  await page.getByTestId('claim-give-up').click();
   await expect(mine).toHaveAttribute('aria-checked', 'false');
   await me.getByTestId('idea-text').click();
   await page.keyboard.press('ControlOrMeta+a');
@@ -271,6 +324,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'Annuler' }).click();
   await expect(leo).toBeVisible();
   await box.click();
+  await page.getByTestId('claim-give-up').click();
   await expect(box).toHaveAttribute('aria-checked', 'false');
 
   // Shared by its switch: the link unfolds, with the message all ready.

@@ -146,7 +146,7 @@ test('shared, it shows no person by its link, and keeps its shape', async () => 
     .filter({ hasText: 'Un week-end à la mer' });
   await idea.getByTestId('idea-box').click();
   await expect(idea.getByTestId('idea-mine')).toContainText('Tu l’offres');
-  await idea.getByText('Changer').click();
+  await idea.getByTestId('idea-open').click();
   const sheet = page.getByRole('dialog');
   await expect(sheet).toContainText('Tu l’offres');
   await expect(sheet).not.toContainText('Pour ');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { asAddress, linkHost } from './ideaLink';
+import { asAddress, linkHost, shownAddress } from './ideaLink';
 
 describe('asAddress', () => {
   it('keeps an address as pasted', () => {
@@ -35,5 +35,26 @@ describe('the name of the site a link goes to', () => {
   it('is empty for what is not an address', () => {
     expect(linkHost('pas une adresse')).toBe('');
     expect(linkHost('')).toBe('');
+  });
+});
+
+describe('an address as its field shows it', () => {
+  it('is whole, without « https:// »', () => {
+    expect(shownAddress('https://lutin-jouets.fr/puzzle-100')).toBe(
+      'lutin-jouets.fr/puzzle-100',
+    );
+    expect(shownAddress('https://exemple.fr/')).toBe('exemple.fr');
+    expect(shownAddress('http://exemple.fr/a')).toBe('http://exemple.fr/a');
+    expect(shownAddress('')).toBe('');
+  });
+
+  it('is saved back as it was', () => {
+    for (const url of [
+      'https://lutin-jouets.fr/puzzle-100?ref=1',
+      'https://exemple.fr/',
+      'http://exemple.fr/a',
+    ]) {
+      expect(asAddress(shownAddress(url))).toBe(url);
+    }
   });
 });

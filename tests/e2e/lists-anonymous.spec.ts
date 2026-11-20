@@ -336,7 +336,9 @@ test('from the draw, the list opens in anonymous mode, with a note', async () =>
     .filter({ hasText: 'Un circuit de billes' })
     .getByTestId('idea-box')
     .click();
-  await expect(page.getByTestId('idea-mine')).toContainText('en anonyme');
+  await expect(page.getByTestId('idea-mine')).toHaveText(
+    'Tu l’offres en anonyme',
+  );
   await page.getByTestId('off-list-action').click();
   await page.getByTestId('off-list-field').fill('Une surprise');
   await page.keyboard.press('Enter');
@@ -370,9 +372,7 @@ test('the switch stays free: turned off, the next tick says my name', async () =
     .filter({ hasText: 'Un vélo' })
     .getByTestId('idea-box')
     .click();
-  await expect(page.getByTestId('idea-mine').last()).toContainText(
-    'sous ton prénom',
-  );
+  await expect(page.getByTestId('idea-mine').last()).toHaveText('Tu l’offres');
   // Kept for the next time, and the address no longer turns it on.
   await page.goto(state.path);
   await hydrated(page);

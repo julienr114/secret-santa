@@ -759,6 +759,21 @@ const undone = ref(0);
         >UiTagList : les réponses de « Moi et les cadeaux », en lien, ou en
         pointillés quand il en manque une</code
       >
+      <p class="flex flex-wrap items-center gap-1.5">
+        <UiChip>Mamie</UiChip>
+        <UiChip icon="i-lucide-users">7 personnes</UiChip>
+        <UiChip kind="mine" icon="i-lucide-gift">Tu l’offres</UiChip>
+        <UiChip kind="anonymous" icon="i-lucide-venetian-mask"
+          >Tu l’offres en anonyme</UiChip
+        >
+        <UiChip kind="action" icon="i-lucide-plus" button>Se joindre</UiChip>
+        <UiChip kind="selected" button>Mamie</UiChip>
+      </p>
+      <code class="text-xs"
+        >UiChip : une pastille sous une ligne. Une information (pêche), mon état
+        (menthe, ou aubergine en anonyme), une action (blanche, à filet : la
+        seule qui se touche), et une information touchée (foncée)</code
+      >
       <p class="flex items-center gap-2.5">
         <UiStar />
         <code class="text-xs">UiStar : l’étoile devant une idée précise</code>

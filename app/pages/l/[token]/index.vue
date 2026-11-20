@@ -6,7 +6,6 @@ import {
   useLinkQuery,
   useRemoveOffListMutation,
   useTickMutation,
-  useUntickMutation,
 } from '~/composables/queries/useLists';
 import { keys } from '~/composables/queries/keys';
 import { LIST_EDITING } from '~/composables/useListEditing';
@@ -60,7 +59,6 @@ onMounted(() => {
 });
 const via = computed(() => ({ token: token.value }));
 const tick = useTickMutation(via);
-const untick = useUntickMutation(via);
 const removeOffList = useRemoveOffListMutation(token);
 const doc = computed(() => query.data.value);
 const holder = computed(() => doc.value?.holder.name ?? '');
@@ -131,7 +129,6 @@ const onTick = (idea: IdeaLine) => {
   }
   tick.mutate({ ideaId: idea.id }, { onError });
 };
-const onUntick = (idea: IdeaLine) => untick.mutate(idea.id, { onError });
 
 // Back from the login link: the gift waiting is ticked.
 onMounted(async () => {
@@ -252,9 +249,10 @@ const writes = (person: PersonLine) =>
       </div>
 
       <section
-        v-for="person in doc.people"
+        v-for="(person, index) in doc.people"
         :key="person.id"
         class="flex flex-col gap-1"
+        :class="index > 0 ? 'mt-11' : ''"
         data-testid="visitor-person"
       >
         <header v-if="!doc.single" class="flex items-center gap-3 pb-1">
@@ -291,13 +289,13 @@ const writes = (person: PersonLine) =>
           class="flex flex-col pl-1.5"
         >
           <ListsIdeaLine
-            v-for="(idea, index) in person.ideas"
+            v-for="(idea, at) in person.ideas"
             :key="idea.id"
             :via="via"
             :list-person-id="person.id"
             :for-name="person.member.firstName"
             :idea="idea"
-            :line="`${person.id}:${index}`"
+            :line="`${person.id}:${at}`"
           />
           <ListsIdeaLine
             key="new"
@@ -326,14 +324,13 @@ const writes = (person: PersonLine) =>
             :key="idea.id"
             :idea="idea"
             @tick="onTick(idea)"
-            @untick="onUntick(idea)"
             @change="changing = { idea, forName: nameOf(person) }"
             @join="onJoin(idea, nameOf(person))"
           />
           <li
             v-for="gift in person.offList"
             :key="gift.id"
-            class="flex items-start gap-3 py-2"
+            class="flex items-start gap-3 py-[13px]"
             data-testid="off-list"
           >
             <span

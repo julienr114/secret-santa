@@ -22,3 +22,12 @@ export const asAddress = (written: string): string | null => {
  */
 export const linkHost = (url: string): string =>
   URL.canParse(url) ? new URL(url).hostname.replace(/^www\./i, '') : '';
+
+/**
+ * An address as its field shows it while it is written (Correction 29):
+ * whole, without « https:// », which `asAddress` puts back.
+ * @param url - The address saved.
+ * @returns What the field shows.
+ */
+export const shownAddress = (url: string): string =>
+  url.replace(/^https:\/\//i, '').replace(/^([^/?#]+)\/$/, '$1');

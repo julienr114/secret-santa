@@ -1,76 +1,102 @@
 <script setup lang="ts">
 import type { IdeaLine } from '#server/http/lists';
+import { ideaChips, namesInOne } from '~/utils/givers';
 
-// One idea as those who open the link see it (README 22.19, maquettes
-// ListeVisiteur, ListeVisiteurMes, ListePlusieursLigne). The box ticks at
-// once: alone, under my first name. Mine, it says how I give it and
-// « Changer »; touched again, it unticks. A gift given by several shows
-// the icons and names of those in it, and « Se joindre » or « Tu
-// participes ». Taken by someone else: crossed out, nothing more.
+// One idea as those who open the link see it (README 22.19, Correction
+// 29, maquettes ListeVisiteur, ListeVisiteurMes, ListeVisiteurAnonyme,
+// ListeVisiteurToucher, ListePlusieursLigne). The box of a free idea
+// ticks at once, following my « mode anonyme ». Under the text, the link
+// on a line of its own, then one row of pills and nothing else: no
+// sentence, no underlined link. The others of a gift given by several by
+// first name (« 7 personnes » beyond three), « Au complet », my own state
+// in one pill, « Se joindre » last. No « Changer »: the whole line of an
+// idea I give is the button that opens its sheet (alone or with others,
+// say it is me, « Finalement, je ne l'offre plus »). Taken by someone
+// else: crossed out, nothing more.
 const props = defineProps<{ idea: IdeaLine }>();
 const emit = defineEmits<{
   tick: [];
-  untick: [];
   change: [];
   join: [];
 }>();
 const { t } = useT();
 const view = computed(() => props.idea.view);
+const chips = computed(() => ideaChips(view.value, []));
 const crossed = computed(
   () =>
     view.value.kind === 'taken' ||
-    (view.value.kind === 'group' && view.value.closed),
+    (view.value.kind === 'group' && view.value.closed && !view.value.mine),
 );
-const mineChecked = computed(
-  () =>
-    view.value.kind === 'mine' ||
-    (view.value.kind === 'group' && view.value.mine),
+const openGroup = computed(() => chips.value.join);
+const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
+const names = computed(() =>
+  namesInOne(
+    chips.value.givers.map((pill) => pill.name ?? ''),
+    t('lists.share.and'),
+  ),
 );
-const openGroup = computed(
-  () => view.value.kind === 'group' && !view.value.closed && !view.value.mine,
+/** « Se joindre à Mamie et Tonton pour Vélo 16 pouces ». */
+const joinLabel = computed(() =>
+  names.value
+    ? t('lists.chips.joinWith', { names: names.value, idea: props.idea.text })
+    : t('lists.chips.joinIdea', { idea: props.idea.text }),
 );
-/** The names of a group: « Mamie, Tonton et toi », or « 7 personnes ». */
-const groupNames = computed(() => {
-  const v = view.value;
-  if (v.kind !== 'group') return '';
-  if (v.people.length === 1 && !v.mine) {
-    return t('lists.visitor.groupOne', { name: v.people[0]!.name });
+/** « Circuit de billes, tu l'offres en anonyme : modifier ou ne plus l'offrir ». */
+const mineLabel = computed(() => {
+  const idea = props.idea.text;
+  if (chips.value.mine === 'anonymous') {
+    return t('lists.chips.mineAnonymousLabel', { idea });
   }
-  if (v.people.length > 3) {
-    return t('lists.visitor.groupMany', { count: v.people.length });
-  }
-  const names = props.idea.notes.map((n) =>
-    n.me ? t('lists.visitor.you') : n.name,
-  );
-  return names.length > 1
-    ? `${names.slice(0, -1).join(', ')} ${t('lists.visitor.and')} ${names.at(-1)}`
-    : (names[0] ?? '');
+  return chips.value.mine === 'group'
+    ? t('lists.chips.mineGroupLabel', { idea })
+    : t('lists.chips.mineLabel', { idea });
 });
 const onBox = () => {
-  const v = view.value;
-  if (crossed.value) return;
-  if (v.kind === 'free') emit('tick');
-  else if (v.kind === 'mine') emit('untick');
-  else if (v.kind === 'group') onGroup();
+  if (view.value.kind === 'free') emit('tick');
+  else if (openGroup.value) emit('join');
 };
-/** A gift given by several: mine to change, or one to join. */
-const onGroup = () => {
-  if (view.value.kind === 'group' && view.value.mine) emit('change');
-  else emit('join');
-};
-const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
 </script>
 
 <template>
-  <li class="flex items-start gap-3 py-2" data-testid="visitor-idea">
+  <li
+    class="relative flex items-start gap-3 py-[13px]"
+    :class="
+      chips.mine
+        ? '-mx-2.5 rounded-2xl px-2.5 has-[[data-line-button]:active]:bg-muted'
+        : ''
+    "
+    data-testid="visitor-idea"
+  >
+    <!-- An idea I give: the whole line is the button of its sheet. Its
+         link, above it, stays a link. -->
     <button
+      v-if="chips.mine"
+      type="button"
+      class="absolute inset-0 rounded-2xl"
+      :aria-label="mineLabel"
+      data-line-button
+      data-testid="idea-open"
+      @click="emit('change')"
+    />
+    <span
+      v-if="chips.mine"
+      class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
+      aria-hidden="true"
+      data-testid="idea-box"
+    >
+      <span
+        class="flex size-[22px] items-center justify-center rounded-sm bg-success text-white"
+      >
+        <UIcon name="i-lucide-check" class="size-3.5" />
+      </span>
+    </span>
+    <button
+      v-else
       type="button"
       role="checkbox"
-      :aria-checked="mineChecked || crossed"
+      :aria-checked="crossed"
       :aria-label="
-        mineChecked
-          ? t('lists.visitor.untick', { idea: idea.text })
-          : t('lists.visitor.tick', { idea: idea.text })
+        openGroup ? joinLabel : t('lists.visitor.tick', { idea: idea.text })
       "
       :disabled="crossed"
       class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
@@ -80,94 +106,76 @@ const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
       <span
         class="flex size-[22px] items-center justify-center rounded-sm"
         :class="
-          mineChecked
-            ? 'bg-success text-white'
-            : openGroup
-              ? 'bg-warning-fill text-highlighted'
-              : crossed
-                ? 'bg-line-strong text-highlighted'
-                : 'border-[1.5px] border-accented bg-default'
+          openGroup
+            ? 'bg-warning-fill text-highlighted'
+            : crossed
+              ? 'bg-line-strong text-highlighted'
+              : 'border-[1.5px] border-accented bg-default'
         "
         aria-hidden="true"
       >
         <UIcon v-if="openGroup" name="i-lucide-plus" class="size-3.5" />
-        <UIcon
-          v-else-if="mineChecked || crossed"
-          name="i-lucide-check"
-          class="size-3.5"
-        />
+        <UIcon v-else-if="crossed" name="i-lucide-check" class="size-3.5" />
       </span>
     </button>
-    <div class="flex min-w-0 grow flex-col gap-1">
-      <p class="text-base leading-[1.45]">
-        <span
-          :class="[
-            crossed ? 'text-toned line-through' : '',
-            mineChecked ? 'font-semibold' : '',
-          ]"
-          >{{ idea.text }}</span
-        >
-      </p>
-      <!-- The link of the idea, a lilac pill under it with the name of
-           its site (Correction 28): never struck through. -->
-      <a
-        v-if="idea.url && host"
-        :href="idea.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="relative -mt-0.5 inline-flex max-w-[190px] items-center gap-1 self-start rounded-full bg-warning-soft py-px pr-2 pl-1.5 text-[13px] font-bold text-alert-ink after:absolute after:inset-x-0 after:-inset-y-3"
-        :aria-label="t('lists.doc.linkTo', { site: host })"
-        data-testid="idea-link"
-      >
-        <UIcon name="i-lucide-link" class="size-3 shrink-0" />
-        <span class="truncate">{{ host }}</span>
-      </a>
+    <div class="pointer-events-none flex min-w-0 grow flex-col">
       <p
-        v-if="view.kind === 'mine'"
-        class="text-[13px] text-toned"
-        data-testid="idea-mine"
+        class="text-base/[22px]"
+        :class="[
+          crossed ? 'text-toned line-through' : '',
+          chips.mine ? 'font-semibold' : '',
+        ]"
       >
-        {{ t('lists.visitor.giving') }} ·
-        {{
-          view.anonymous
-            ? t('lists.visitor.aloneAnonymous')
-            : t('lists.visitor.alone')
-        }}
-        ·
-        <button
-          type="button"
-          class="font-bold text-primary-ink underline"
-          @click="emit('change')"
-        >
-          {{ t('lists.visitor.change') }}
-        </button>
+        {{ idea.text }}
       </p>
+      <ListsIdeaLink
+        v-if="idea.url && host"
+        :url="idea.url"
+        :host="host"
+        class="pointer-events-auto"
+      />
       <div
-        v-if="view.kind === 'group'"
-        class="flex items-center gap-2"
+        v-if="
+          chips.givers.length > 0 ||
+          chips.crowd ||
+          chips.closed ||
+          chips.mine ||
+          chips.join
+        "
+        class="mt-1.5 flex flex-wrap items-center gap-1.5"
         data-testid="idea-group"
       >
-        <UiAvatarStack
-          :avatars="view.people.map((p) => p.avatar)"
-          :label="groupNames"
-          :max="3"
-        />
-        <span class="grow text-[13px] leading-[1.35] text-toned">{{
-          view.closed ? t('lists.doc.groupClosed') : groupNames
-        }}</span>
-        <button
-          v-if="!view.closed"
-          type="button"
-          class="flex min-h-11 shrink-0 items-center text-sm font-bold"
-          :class="
-            view.mine
-              ? 'text-success-ink'
-              : 'text-primary underline underline-offset-2'
-          "
-          @click="onGroup"
+        <UiChip
+          v-for="(pill, index) in chips.givers"
+          :key="index"
+          data-testid="idea-who"
+          >{{ pill.name }}</UiChip
         >
-          {{ view.mine ? t('lists.visitor.joined') : t('lists.visitor.join') }}
-        </button>
+        <UiChip v-if="chips.crowd" icon="i-lucide-users">{{
+          t('lists.visitor.groupMany', { count: chips.crowd })
+        }}</UiChip>
+        <UiChip
+          v-if="chips.closed"
+          icon="i-lucide-users"
+          data-testid="idea-closed"
+          >{{ t('lists.chips.closed') }}</UiChip
+        >
+        <ListsMineChip
+          v-if="chips.mine"
+          :state="chips.mine"
+          :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
+        />
+        <UiChip
+          v-if="chips.join"
+          button
+          kind="action"
+          icon="i-lucide-plus"
+          class="pointer-events-auto"
+          :aria-label="joinLabel"
+          data-testid="idea-join"
+          @click="emit('join')"
+          >{{ t('lists.visitor.join') }}</UiChip
+        >
       </div>
     </div>
   </li>

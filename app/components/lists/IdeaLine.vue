@@ -6,13 +6,13 @@ import {
   useCreateIdeaMutation,
   useDeleteIdeaMutation,
   useTickMutation,
-  useUntickMutation,
   useUpdateIdeaMutation,
   type ClaimRoute,
 } from '~/composables/queries/useLists';
 import { AVATAR_SHADES } from '~/utils/avatars';
-import { giverPills } from '~/utils/givers';
-import { asAddress, linkHost } from '~/utils/ideaLink';
+import { ideaChips, namesInOne } from '~/utils/givers';
+import { asAddress, linkHost, shownAddress } from '~/utils/ideaLink';
+import { splitIdea } from '#server/utils/lists';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
 // 22.20, maquettes ListeIdee, ListeIdeeLien, ListeIdeeLienFait): its box,
@@ -62,7 +62,6 @@ const create = useCreateIdeaMutation(via);
 const update = useUpdateIdeaMutation(via);
 const remove = useDeleteIdeaMutation(via);
 const tick = useTickMutation(via);
-const untick = useUntickMutation(via);
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const queryClient = useQueryClient();
@@ -74,8 +73,10 @@ const field = ref<HTMLTextAreaElement | null>(null);
 const mirror = ref<HTMLElement | null>(null);
 const linkField = ref<HTMLInputElement | null>(null);
 const writing = ref(false);
-/** The address is being written, at the end of the line. */
-const linking = ref(false);
+/** The caret is in the field of the link. */
+const linkFocused = ref(false);
+/** What is written in the field of the link is not an address. */
+const linkError = ref(false);
 const draft = ref('');
 /** What is written, on one line: a text pasted may come with line breaks. */
 const written = computed(() => draft.value.replace(/\s+/g, ' ').trim());
@@ -120,9 +121,10 @@ const onBox = () => {
           queryClient.invalidateQueries({ queryKey: ['l'] }),
         ])
       : toast.failed(errorMessage(error));
-  if (inGroup.value) editing.change(props.idea, props.forName);
+  // What I give opens its sheet (Correction 29: no more « Changer »):
+  // alone or with others, and « Finalement, je ne l'offre plus ».
+  if (mine.value) editing.change(props.idea, props.forName);
   else if (openGroup.value) editing.join(props.idea, props.forName);
-  else if (mine.value) untick.mutate(props.idea.id, { onError });
   else tick.mutate({ ideaId: props.idea.id }, { onError });
 };
 // « Décocher » for someone (Correction 25, maquette ListeDecocher): the
@@ -143,25 +145,32 @@ const unfoldedClaim = computed(
 watch(unfoldedClaim, (claim) => {
   if (!claim) unfolded.value = null;
 });
-// Those who give it, one pill each under the idea, after the pill of
-// its link (Correction 28, maquettes ListeTeneur, ListeDecocher): the
-// same row for one first name, for several and for « Anonyme ».
-const pills = computed(() => giverPills(view.value, claims.value));
+// Under the idea, aligned to its text (Corrections 28 and 29, maquettes
+// ListeTeneur, ListeDecocher): its link on a line of its own, the name
+// of the site in italics; then one row of pills, the others who give it
+// by first name, my own state in one pill, « Se joindre » last.
+const chips = computed(() => ideaChips(view.value, claims.value));
 const host = computed(() => (props.idea?.url ? linkHost(props.idea.url) : ''));
+/** The first names of the others who give it, in one go. */
+const giverNames = computed(() =>
+  namesInOne(
+    chips.value.givers.map((pill) => pill.name ?? t('lists.doc.anonymous')),
+    t('lists.share.and'),
+  ),
+);
+/** « Se joindre à Mamie et Tonton pour Vélo 16 pouces ». */
+const joinLabel = computed(() =>
+  giverNames.value
+    ? t('lists.chips.joinWith', {
+        names: giverNames.value,
+        idea: props.idea?.text ?? '',
+      })
+    : t('lists.chips.joinIdea', { idea: props.idea?.text ?? '' }),
+);
 /** « Offert par Mamie et Tonton », for a screen reader. */
-const givenBy = computed(() => {
-  const names = pills.value.map(
-    (pill) => pill.name ?? t('lists.doc.anonymous'),
-  );
-  if (names.length === 0) return '';
-  const last = names.at(-1) ?? '';
-  return t('lists.doc.givenBy', {
-    names:
-      names.length === 1
-        ? last
-        : `${names.slice(0, -1).join(', ')} ${t('lists.share.and')} ${last}`,
-  });
-});
+const givenBy = computed(() =>
+  giverNames.value ? t('lists.doc.givenBy', { names: giverNames.value }) : '',
+);
 const tickDay = (iso: string) =>
   new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
@@ -232,6 +241,8 @@ onMounted(() => {
 const start = async () => {
   if (lockedBy.value) return;
   draft.value = props.idea?.text ?? draft.value;
+  address.value = shownAddress(props.idea?.url ?? '') || address.value;
+  linkError.value = false;
   writing.value = true;
   await nextTick();
   field.value?.focus();
@@ -243,7 +254,8 @@ defineExpose({ start });
 /** Leaves the line: nothing is being written any more. */
 const leave = () => {
   writing.value = false;
-  linking.value = false;
+  linkFocused.value = false;
+  linkError.value = false;
   address.value = '';
 };
 
@@ -261,25 +273,59 @@ const removeIdea = async () => {
 };
 
 /**
- * Saves what was written: a new idea, a change, or nothing.
+ * The link as it would be saved: the address written, null when the
+ * field is empty, and `false` when what is written is not an address.
+ * @returns The address, null, or false.
+ */
+const linkWritten = (): string | null | false => {
+  const typed = address.value.trim();
+  return typed ? (asAddress(typed) ?? false) : null;
+};
+/**
+ * Saves the text and the link of the line together: a new idea, a
+ * change, or nothing. What is not an address is not saved: the link
+ * stays as it was.
+ * @returns False when the idea itself went (nothing left in it).
+ */
+const save = async (): Promise<boolean> => {
+  const text = written.value;
+  const link = linkWritten();
+  if (props.idea) {
+    const url = link === false ? props.idea.url : link;
+    if (!text && !url) {
+      await removeIdea();
+      return false;
+    }
+    const patch = {
+      ...(text === props.idea.text ? {} : { text }),
+      ...(url === props.idea.url ? {} : { url }),
+    };
+    if (Object.keys(patch).length > 0) {
+      update.mutate({ ideaId: props.idea.id, ...patch });
+    }
+    return true;
+  }
+  const url = link || null;
+  if (text || url) {
+    create.mutate({
+      listPersonId: props.listPersonId,
+      text,
+      ...(url ? { url } : {}),
+      after: props.after ?? null,
+    });
+    draft.value = '';
+    address.value = '';
+  }
+  return true;
+};
+/**
+ * Leaves the line, saving it.
  * @param next - Whether to go on to the next line (the return key).
  * @returns Once saved.
  */
 const commit = async (next: boolean) => {
-  const text = written.value;
-  if (props.idea) {
-    if (!text && !props.idea.url) await removeIdea();
-    else if (text !== props.idea.text) {
-      update.mutate({ ideaId: props.idea.id, text });
-    }
-  } else if (text) {
-    create.mutate({
-      listPersonId: props.listPersonId,
-      text,
-      after: props.after ?? null,
-    });
-    draft.value = '';
-  }
+  if (linkWritten() === false) toast.failed(t('lists.doc.linkInvalid'));
+  await save();
   if (next && !props.idea) return;
   // The return key goes on to the line below.
   const below = next ? neighbour(1) : undefined;
@@ -288,78 +334,51 @@ const commit = async (next: boolean) => {
 };
 
 /**
- * « Ajouter un lien », « Changer le lien »: the address is written at the
- * end of the line.
- * @returns Once its field has the focus.
- */
-const startLink = async () => {
-  address.value = props.idea?.url ?? '';
-  linking.value = true;
-  await nextTick();
-  linkField.value?.focus();
-  linkField.value?.select();
-};
-/**
- * « Annuler »: back to the text, the link as it was.
+ * The return key in the field of the link: saved, and back to the text.
+ * What is not an address keeps the field open, marked, and saves
+ * nothing.
  * @returns Once the text has the focus.
  */
-const cancelLink = async () => {
-  linking.value = false;
-  address.value = '';
+const onLinkEnter = async () => {
+  if (linkWritten() === false) {
+    linkError.value = true;
+    return;
+  }
+  if (!(await save())) {
+    leave();
+    return;
+  }
   await nextTick();
   field.value?.focus();
 };
 /**
- * Saves the address written, with the text as it stands.
- * @returns Whether there was an address to save.
+ * An address pasted in the text goes at once to the field of the link,
+ * which is in sight (README 22.20; Correction 29); the text keeps the
+ * rest. Not when the field already has an address: it is not replaced.
+ * @param event - The paste.
  */
-const saveLink = (): boolean => {
-  const url = asAddress(address.value);
-  if (!url) return false;
-  const text = written.value;
-  if (props.idea) {
-    update.mutate({
-      ideaId: props.idea.id,
-      url,
-      ...(text && text !== props.idea.text ? { text } : {}),
-    });
-  } else {
-    create.mutate({
-      listPersonId: props.listPersonId,
-      text,
-      url,
-      after: props.after ?? null,
-    });
-    draft.value = '';
-  }
-  return true;
+const onPaste = (event: ClipboardEvent) => {
+  const pasted = event.clipboardData?.getData('text') ?? '';
+  const input = field.value;
+  if (!input || address.value.trim() || !/https?:\/\//i.test(pasted)) return;
+  const split = splitIdea(
+    `${draft.value.slice(0, input.selectionStart)}${pasted}${draft.value.slice(input.selectionEnd)}`,
+  );
+  if (!split?.url) return;
+  event.preventDefault();
+  draft.value = split.text;
+  address.value = shownAddress(split.url);
 };
 /**
- * The return key in the address: it becomes the word « lien ». Nothing
- * written cancels; what is not an address stays in its field.
- * @returns Once saved, the text back in focus.
+ * The cross « Retirer le lien »: the field is emptied, and saved with
+ * the line.
+ * @returns Once the field has the focus.
  */
-const setLink = async () => {
-  if (!address.value.trim()) return cancelLink();
-  if (!saveLink()) {
-    toast.failed(t('lists.doc.linkInvalid'));
-    return;
-  }
-  await cancelLink();
-};
-/**
- * « Retirer le lien »: the text stays; alone, the idea goes with it.
- * @returns Once done.
- */
-const removeLink = async () => {
-  if (!props.idea) return;
-  if (!written.value) {
-    leave();
-    await removeIdea();
-    return;
-  }
-  update.mutate({ ideaId: props.idea.id, url: null });
-  field.value?.focus();
+const clearLink = async () => {
+  address.value = '';
+  linkError.value = false;
+  await nextTick();
+  linkField.value?.focus();
 };
 /**
  * How high the row of a character of the text is, read on its copy.
@@ -444,7 +463,7 @@ const onMove = async (
 const onErase = async (event: Event) => {
   if (!writing.value || erasing.value || draft.value !== '') return;
   if ('isComposing' in event && event.isComposing) return;
-  if (props.idea?.url) return;
+  if (address.value.trim()) return;
   event.preventDefault();
   const target = neighbour(-1);
   if (props.idea) {
@@ -475,9 +494,8 @@ const onFocusOut = (event: FocusEvent) => {
   // would land beside what was aimed at.
   afterRelease(() => {
     if (!writing.value) return;
-    // An address being written is saved on leaving, like the text.
-    if (linking.value && saveLink()) leave();
-    else commit(false);
+    // The text and the link are saved together.
+    void commit(false);
   });
 };
 </script>
@@ -485,7 +503,7 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="group relative flex scroll-mt-32 items-start gap-3 py-2"
+    class="group relative flex scroll-mt-32 items-start gap-3 py-[13px]"
     :style="
       lockShade
         ? {
@@ -498,7 +516,7 @@ const onFocusOut = (event: FocusEvent) => {
     :class="[
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
       writing
-        ? '-mr-4 -ml-[22px] border-l-[3px] border-primary bg-default pr-4 pl-[19px]'
+        ? '-mr-4 -ml-[22px] border-l-[3px] border-primary bg-default pr-4 pb-2.5 pl-[19px]'
         : '',
       // Unfolded to untick for someone (maquette ListeDecocher): the tint
       // takes the whole line, its box included, which does not move.
@@ -535,8 +553,14 @@ const onFocusOut = (event: FocusEvent) => {
               role: 'checkbox',
               'aria-checked': mine || taken,
               'aria-label': mine
-                ? t('lists.visitor.untick', { idea: idea.text })
-                : t('lists.visitor.tick', { idea: idea.text }),
+                ? chips.mine === 'group'
+                  ? t('lists.chips.mineGroupLabel', { idea: idea.text })
+                  : chips.mine === 'anonymous'
+                    ? t('lists.chips.mineAnonymousLabel', { idea: idea.text })
+                    : t('lists.chips.mineLabel', { idea: idea.text })
+                : openGroup
+                  ? joinLabel
+                  : t('lists.visitor.tick', { idea: idea.text }),
               disabled: !boxActive && claims.length === 0,
             }
           : { 'aria-hidden': 'true' }
@@ -569,122 +593,111 @@ const onFocusOut = (event: FocusEvent) => {
         />
       </span>
     </component>
-    <div class="flex min-w-0 grow flex-col gap-0.5">
+    <div class="flex min-w-0 grow flex-col">
       <template v-if="writing || !idea">
-        <!-- The address is written at the end of the line: the text as it
-             stands, « : », then its field, on the next row when the text
-             leaves it no room. -->
+        <!-- A long text goes on to the next row: the field is as tall as
+             its text, measured by a copy of it under the field. -->
+        <div class="grid min-w-0 text-base/[22px]">
+          <span
+            ref="mirror"
+            class="invisible col-start-1 row-start-1 break-words whitespace-pre-wrap"
+            aria-hidden="true"
+            >{{ draft }}&nbsp;</span
+          >
+          <textarea
+            ref="field"
+            v-model="draft"
+            rows="1"
+            enterkeyhint="next"
+            :maxlength="200"
+            class="col-start-1 row-start-1 block w-full resize-none overflow-hidden bg-transparent p-0 outline-none select-text placeholder:text-dimmed"
+            :placeholder="placeholder ?? t('lists.doc.anotherIdea')"
+            :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
+            data-testid="idea-field"
+            data-line-start
+            @keyup="sayWriting"
+            @click="sayWriting"
+            @keydown.delete="onErase"
+            @beforeinput="
+              ($event as InputEvent).inputType === 'deleteContentBackward' &&
+              onErase($event)
+            "
+            @keydown.up="onMove($event, -1, true)"
+            @keydown.down="onMove($event, 1, true)"
+            @keydown.tab="onMove($event, $event.shiftKey ? -1 : 1, false)"
+            @focus="!writing && start()"
+            @paste="onPaste"
+            @keydown.enter.prevent="commit(true)"
+          />
+        </div>
+        <!-- The link, always there while one is in the line (maquettes
+             ListeIdee, ListeIdeeLien, ListeIdeeLienFait): a field under
+             the text and a thin line. Empty, « Ajouter un lien »; with the
+             caret in it, « Colle ou écris l'adresse »; filled, the whole
+             address and a cross to take it off. Out of the way of the tab
+             key, which goes from line to line. -->
         <div
-          v-if="writing && linking"
-          class="flex flex-wrap items-baseline gap-x-1.5 text-base leading-[1.45]"
+          v-if="writing"
+          class="mt-1.5 flex min-h-8 items-center gap-1.5 border-t pt-1.5 text-sm/[1.4]"
+          :class="linkError ? 'border-error' : 'border-muted'"
+          data-testid="idea-link-row"
         >
-          <span class="break-words">{{ written }}</span>
-          <span aria-hidden="true">:</span>
+          <UIcon
+            name="i-lucide-link"
+            class="size-3.5 shrink-0"
+            :class="
+              linkError
+                ? 'text-error'
+                : linkFocused || address
+                  ? 'text-idea-link'
+                  : 'text-muted'
+            "
+            aria-hidden="true"
+          />
           <input
             ref="linkField"
             v-model="address"
-            type="url"
+            type="text"
             inputmode="url"
             autocapitalize="none"
+            autocorrect="off"
             autocomplete="off"
+            spellcheck="false"
             enterkeyhint="done"
-            :maxlength="2000"
-            class="min-w-44 grow basis-0 bg-transparent text-primary outline-none placeholder:text-dimmed"
-            :placeholder="t('lists.doc.linkPlaceholder')"
-            :aria-label="t('lists.doc.linkLabel')"
-            data-testid="idea-link-field"
-            @keydown.enter.prevent="setLink"
-            @keydown.esc.prevent="cancelLink"
-          />
-        </div>
-        <div v-else class="flex items-end gap-x-1.5">
-          <!-- A long text goes on to the next row: the field is as tall as
-               its text, measured by a copy of it under the field. -->
-          <div class="grid min-w-0 grow text-base leading-[1.45]">
-            <span
-              ref="mirror"
-              class="invisible col-start-1 row-start-1 break-words whitespace-pre-wrap"
-              aria-hidden="true"
-              >{{ draft }}&nbsp;</span
-            >
-            <textarea
-              ref="field"
-              v-model="draft"
-              rows="1"
-              enterkeyhint="next"
-              :maxlength="200"
-              class="col-start-1 row-start-1 block w-full resize-none overflow-hidden bg-transparent p-0 outline-none select-text placeholder:text-dimmed"
-              :placeholder="placeholder ?? t('lists.doc.anotherIdea')"
-              :aria-label="placeholder ?? t('lists.doc.anotherIdea')"
-              data-testid="idea-field"
-              data-line-start
-              @keyup="sayWriting"
-              @click="sayWriting"
-              @keydown.delete="onErase"
-              @beforeinput="
-                ($event as InputEvent).inputType === 'deleteContentBackward' &&
-                onErase($event)
-              "
-              @keydown.up="onMove($event, -1, true)"
-              @keydown.down="onMove($event, 1, true)"
-              @keydown.tab="onMove($event, $event.shiftKey ? -1 : 1, false)"
-              @focus="!writing && start()"
-              @keydown.enter.prevent="commit(true)"
-            />
-          </div>
-          <template v-if="writing && idea?.url">
-            <span class="text-base leading-[1.45]" aria-hidden="true">:</span>
-            <span
-              class="shrink-0 text-base leading-[1.45] text-primary underline"
-              >{{ t('lists.doc.linkWord') }}</span
-            >
-          </template>
-        </div>
-        <!-- What the line can do, while one is in it. The links keep the
-             focus in the line (no blur before the tap), and are out of the
-             way of the tab key, which goes from line to line. -->
-        <div
-          v-if="writing"
-          class="flex flex-wrap gap-x-5 text-sm font-bold"
-          data-testid="line-actions"
-        >
-          <button
-            v-if="linking"
-            type="button"
-            class="flex min-h-11 items-center text-toned underline underline-offset-2"
             tabindex="-1"
+            :maxlength="2000"
+            class="min-w-0 grow bg-transparent outline-none select-text placeholder:text-muted placeholder:italic"
+            :class="linkError ? 'text-error' : ''"
+            :placeholder="
+              linkFocused
+                ? t('lists.doc.linkPlaceholder')
+                : t('lists.doc.addLink')
+            "
+            :aria-label="t('lists.doc.linkLabel')"
+            :aria-invalid="linkError ? true : undefined"
+            data-testid="idea-link-field"
+            @focus="linkFocused = true"
+            @blur="linkFocused = false"
+            @input="linkError = false"
+            @keydown.enter.prevent="onLinkEnter"
+            @keydown.esc.prevent="field?.focus()"
+          />
+          <button
+            v-if="address"
+            type="button"
+            class="-my-1.5 -mr-2 flex size-8 shrink-0 items-center justify-center text-muted"
+            tabindex="-1"
+            :aria-label="t('lists.doc.removeLink')"
+            data-testid="idea-link-remove"
             @pointerdown.prevent
-            @click="cancelLink"
+            @click="clearLink"
           >
-            {{ t('common.actions.cancel') }}
+            <UIcon name="i-lucide-x" class="size-4" />
           </button>
-          <template v-else>
-            <button
-              type="button"
-              class="flex min-h-11 items-center text-primary underline underline-offset-2"
-              tabindex="-1"
-              @pointerdown.prevent
-              @click="startLink"
-            >
-              {{
-                idea?.url ? t('lists.doc.changeLink') : t('lists.doc.addLink')
-              }}
-            </button>
-            <button
-              v-if="idea?.url"
-              type="button"
-              class="flex min-h-11 items-center text-toned underline underline-offset-2"
-              tabindex="-1"
-              @pointerdown.prevent
-              @click="removeLink"
-            >
-              {{ t('lists.doc.removeLink') }}
-            </button>
-          </template>
         </div>
       </template>
       <template v-else>
-        <p class="text-base leading-[1.45]">
+        <p class="text-base/[22px]">
           <button
             type="button"
             class="text-left"
@@ -723,38 +736,26 @@ const onFocusOut = (event: FocusEvent) => {
             data-testid="idea-carried"
           />
         </p>
-        <!-- Under the idea, aligned to its text: the pill of its link,
-             then those who give it, one pill each. Never struck through. -->
+        <ListsIdeaLink v-if="idea.url && host" :url="idea.url" :host="host" />
+        <!-- The row of pills: never struck through. -->
         <div
-          v-if="!lockedBy && (host || pills.length > 0 || openGroup || inGroup)"
-          class="mt-[3px] flex flex-wrap items-center gap-1"
+          v-if="
+            !lockedBy &&
+            (chips.givers.length > 0 ||
+              chips.crowd ||
+              chips.closed ||
+              chips.mine ||
+              chips.join)
+          "
+          class="mt-1.5 flex flex-wrap items-center gap-1.5"
           data-testid="idea-pills"
         >
-          <a
-            v-if="idea.url && host"
-            :href="idea.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            draggable="false"
-            class="relative inline-flex max-w-[190px] items-center gap-1 rounded-full bg-warning-soft py-px pr-2 pl-1.5 text-[13px] font-bold text-alert-ink after:absolute after:inset-x-0 after:-inset-y-3"
-            :aria-label="t('lists.doc.linkTo', { site: host })"
-            data-testid="idea-link"
-            data-no-drag
-          >
-            <UIcon name="i-lucide-link" class="size-3 shrink-0" />
-            <span class="truncate">{{ host }}</span>
-          </a>
           <span v-if="givenBy" class="sr-only">{{ givenBy }}</span>
-          <template v-for="(pill, index) in pills" :key="index">
-            <button
+          <template v-for="(pill, index) in chips.givers" :key="index">
+            <UiChip
               v-if="pill.claimId"
-              type="button"
-              class="relative rounded-full px-2 py-px text-[13px] font-bold after:absolute after:inset-x-0 after:-inset-y-3"
-              :class="
-                unfolded === pill.claimId
-                  ? 'bg-inverted text-inverted'
-                  : 'bg-muted text-toned'
-              "
+              button
+              :kind="unfolded === pill.claimId ? 'selected' : 'info'"
               :aria-expanded="unfolded === pill.claimId"
               :aria-label="
                 t('lists.doc.tickOf', {
@@ -766,31 +767,36 @@ const onFocusOut = (event: FocusEvent) => {
               @click="
                 unfolded = unfolded === pill.claimId ? null : pill.claimId
               "
+              >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
             >
-              {{ pill.name ?? t('lists.doc.anonymous') }}
-            </button>
-            <span
-              v-else
-              class="rounded-full bg-muted px-2 py-px text-[13px] font-bold text-toned"
-              aria-hidden="true"
-              data-testid="idea-who"
-              >{{ pill.name ?? t('lists.doc.anonymous') }}</span
-            >
+            <UiChip v-else aria-hidden="true" data-testid="idea-who">{{
+              pill.name ?? t('lists.doc.anonymous')
+            }}</UiChip>
           </template>
-          <button
-            v-if="openGroup"
-            type="button"
-            class="ml-1 text-sm font-bold text-primary-ink underline underline-offset-2"
-            data-testid="idea-join"
-            @click="editing.join(idea, forName)"
+          <UiChip v-if="chips.crowd" icon="i-lucide-users">{{
+            t('lists.visitor.groupMany', { count: chips.crowd })
+          }}</UiChip>
+          <UiChip
+            v-if="chips.closed"
+            icon="i-lucide-users"
+            data-testid="idea-closed"
+            >{{ t('lists.chips.closed') }}</UiChip
           >
-            {{ t('lists.visitor.join') }}
-          </button>
-          <span
-            v-else-if="inGroup"
-            class="ml-1 text-sm font-bold text-success-ink"
-            data-testid="idea-joined"
-            >{{ t('lists.visitor.joined') }}</span
+          <ListsMineChip
+            v-if="chips.mine"
+            :state="chips.mine"
+            :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
+          />
+          <UiChip
+            v-if="chips.join"
+            button
+            kind="action"
+            icon="i-lucide-plus"
+            :aria-label="joinLabel"
+            data-testid="idea-join"
+            data-no-drag
+            @click="editing.join(idea, forName)"
+            >{{ t('lists.visitor.join') }}</UiChip
           >
         </div>
       </template>
@@ -837,32 +843,6 @@ const onFocusOut = (event: FocusEvent) => {
               : t('lists.doc.untick')
           }}
         </button>
-      </p>
-      <p
-        v-if="idea && mine && !writing && !lockedBy"
-        class="text-[13px] text-toned"
-        data-testid="idea-mine"
-      >
-        {{ t('lists.visitor.giving') }} ·
-        {{ inGroup ? t('lists.doc.givingGroup') : t('lists.doc.givingAlone') }}
-        ·
-        <button
-          type="button"
-          class="font-bold text-primary-ink underline"
-          @click="editing.change(idea, forName)"
-        >
-          {{ t('lists.visitor.change') }}
-        </button>
-      </p>
-      <!-- The pills say who gives it together; only « au complet » is
-           left to say. -->
-      <p
-        v-else-if="
-          idea && view.kind === 'group' && view.closed && !writing && !lockedBy
-        "
-        class="text-[13px] text-toned"
-      >
-        {{ t('lists.doc.groupClosed') }}
       </p>
     </div>
   </li>

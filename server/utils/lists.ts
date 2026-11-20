@@ -228,7 +228,8 @@ export type IdeaView =
       mine: boolean;
       /** The viewer proposed it, or took it over: they may close it. */
       leads: boolean;
-      people: { name: string; avatar: Avatar }[];
+      /** Who gives it together; `me` for the one looking. */
+      people: { name: string; avatar: Avatar; me: boolean }[];
     };
 
 /**
@@ -258,7 +259,11 @@ export const ideaView = (
       closed: leader.closed,
       mine: ordered.some((c) => c.accountId === viewer.accountId),
       leads: leader.accountId === viewer.accountId,
-      people: ordered.map(({ name, avatar }) => ({ name, avatar })),
+      people: ordered.map(({ name, avatar, accountId }) => ({
+        name,
+        avatar,
+        me: accountId === viewer.accountId,
+      })),
     };
   }
   if (leader.accountId === viewer.accountId) {

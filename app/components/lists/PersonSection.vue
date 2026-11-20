@@ -369,7 +369,7 @@ const explained = ref<string | null>(null);
       <li
         v-for="gift in person.offList"
         :key="gift.id"
-        class="flex flex-col py-2"
+        class="flex flex-col py-[13px]"
         data-testid="holder-off-list"
       >
         <button
@@ -384,17 +384,15 @@ const explained = ref<string | null>(null);
           >
             <UIcon name="i-lucide-check" class="size-3.5" />
           </span>
-          <span class="flex flex-col items-start text-base leading-[1.45]">
+          <span class="flex flex-col items-start text-base/[22px]">
             <span class="text-toned line-through">{{
               t('lists.doc.offList', {
                 text: gift.kind === 'surprise' ? '' : gift.text,
               })
             }}</span>
-            <span
-              v-if="gift.kind === 'holder'"
-              class="mt-[3px] rounded-full bg-muted px-2 py-px text-[13px] font-bold text-toned"
-              >{{ gift.by ?? t('lists.doc.anonymous') }}</span
-            >
+            <UiChip v-if="gift.kind === 'holder'" class="mt-1.5">{{
+              gift.by ?? t('lists.doc.anonymous')
+            }}</UiChip>
           </span>
         </button>
         <p

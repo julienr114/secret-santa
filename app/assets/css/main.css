@@ -143,6 +143,9 @@
   /* « Mode anonyme » turned on, on a list opened by its link (lot 27
      ter): a dark aubergine bar, as a private window; its lighter icon. */
   --color-incognito: #5b3a55;
+  /* The link of an idea, on its own line under the text (Correction 29):
+     the name of its site, in italics. */
+  --color-idea-link: var(--color-lilac-800);
   --color-incognito-soft: #ead2e2;
   --color-alert: var(--color-lilac-600);
   --color-alert-ink: var(--color-lilac-950);

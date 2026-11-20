@@ -113,7 +113,14 @@ test('on a phone, a long press lifts a line and drops it elsewhere', async ({
   await page.getByRole('button', { name: 'Annuler' }).click();
   await expect(ideasOf(page, 'Léo')).toHaveText(['Circuit', 'Vélo', 'Puzzle']);
 
-  // An idea, to another person: it changes hands.
+  // An idea, to another person: it changes hands. Both are brought away
+  // from the edges of the screen first, where the page scrolls by itself
+  // under a line lifted (people are further apart since Correction 29).
+  await ideasOf(page, 'Léo')
+    .nth(2)
+    .evaluate((el) =>
+      window.scrollTo(0, window.scrollY + el.getBoundingClientRect().top - 250),
+    );
   const puzzle = await centre(ideasOf(page, 'Léo').nth(2));
   const poupee = await centre(ideasOf(page, 'Zoé').nth(0));
   await touch.drag(puzzle, { x: poupee.x, y: poupee.y - 14 });

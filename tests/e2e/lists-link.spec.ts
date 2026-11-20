@@ -90,9 +90,9 @@ test('without an account, the list reads, and a box asks for an address', async 
     `/l/${state.token}?cocher=${state.ideas['Circuit de billes']}`,
   );
   await hydrated(page);
-  await expect(page.getByTestId('idea-mine')).toContainText(
-    'Tu l’offres · seul, sous ton prénom',
-  );
+  // One pill says it (Correction 29): no sentence, no « Changer ».
+  await expect(page.getByTestId('idea-mine')).toHaveText('Tu l’offres');
+  await expect(page.getByText('Changer', { exact: true })).toHaveCount(0);
   // Logged in, by the same link: the menu in place of the language, and
   // the bar, on « Listes ».
   await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
@@ -120,8 +120,14 @@ test('one ticks at once, the other hears it is taken', async ({ page }) => {
     data: { ideaId: state.ideas['Circuit de billes'] },
   });
   expect(refused.status()).toBe(409);
-  // Ticked again: unticked.
-  await page.getByRole('checkbox', { name: /Vélo 16 pouces/ }).click();
+  // The whole line of what I give is the button of its sheet, where it
+  // is given up (maquettes ListeVisiteurToucher, ListeReserver).
+  await page
+    .getByRole('button', {
+      name: 'Vélo 16 pouces, tu l’offres : modifier ou ne plus l’offrir',
+    })
+    .click();
+  await page.getByTestId('claim-give-up').click();
   await expect(page.getByTestId('idea-mine')).toHaveCount(0);
 });
 
@@ -132,27 +138,35 @@ test('a gift given by several: proposed, joined, closed', async ({ page }) => {
   await hydrated(page);
   await page.getByRole('checkbox', { name: /Puzzle/ }).click();
   const puzzle = page.getByTestId('visitor-idea').filter({ hasText: 'Puzzle' });
-  await puzzle.getByRole('button', { name: 'Changer' }).click();
+  await puzzle.getByTestId('idea-open').click();
   const sheet = page.getByTestId('claim-sheet');
   await sheet.getByText('On l’offre à plusieurs').click();
   await expect(sheet).toContainText('Ton prénom sera visible');
   await page.getByLabel(/Un mot pour eux/).fill('Je l’achète, on partage ?');
   await page.getByTestId('claim-done').click();
-  await expect(puzzle.getByTestId('idea-group')).toContainText('Tu participes');
+  await expect(puzzle.getByTestId('idea-joined')).toHaveText('Tu participes');
 
-  // Tonton joins, through the sheet.
+  // Tonton joins, through the sheet: Mamie by her first name in a pill,
+  // and « Se joindre », the only pill with a line around it.
   await apiLogin(page.request, TONTON);
   await page.reload();
   await hydrated(page);
-  await expect(puzzle.getByTestId('idea-group')).toContainText(
-    'Mamie l’offre, et propose de partager',
+  await expect(puzzle.getByTestId('idea-who')).toHaveText(['Mamie']);
+  await expect(puzzle.locator('img, [data-testid="avatar-stack"]')).toHaveCount(
+    0,
   );
-  await puzzle.getByRole('button', { name: 'Se joindre' }).click();
+  await puzzle
+    .getByRole('button', { name: 'Se joindre à Mamie pour Puzzle' })
+    .last()
+    .click();
   await expect(page.getByTestId('join-sheet')).toContainText(
     '« Je l’achète, on partage ? »',
   );
   await page.getByTestId('join-confirm').click();
-  await expect(puzzle.getByTestId('idea-group')).toContainText('Mamie et toi');
+  // « et toi » is no longer written: « Tu participes » says it.
+  await expect(puzzle.getByTestId('idea-who')).toHaveText(['Mamie']);
+  await expect(puzzle.getByTestId('idea-joined')).toHaveText('Tu participes');
+  await expect(puzzle).not.toContainText('toi');
   // Only Mamie may close it.
   const refused = await page.request.patch(
     `/api/l/${state.token}/claims/${state.ideas.Puzzle}`,
@@ -162,11 +176,11 @@ test('a gift given by several: proposed, joined, closed', async ({ page }) => {
   await apiLogin(page.request, MAMIE);
   await page.reload();
   await hydrated(page);
-  await puzzle.getByRole('button', { name: 'Tu participes' }).click();
+  await puzzle.getByTestId('idea-open').click();
   await expect(page.getByTestId('claim-sheet')).toContainText('Tonton');
   await page.getByRole('switch', { name: 'On est au complet' }).click();
   await page.getByTestId('claim-done').click();
-  await expect(puzzle).toContainText('Offert à plusieurs · au complet');
+  await expect(puzzle.getByTestId('idea-closed')).toHaveText('Au complet');
 });
 
 test('something else, and what the holder sees', async ({ page }) => {

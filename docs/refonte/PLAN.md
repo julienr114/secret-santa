@@ -1711,7 +1711,7 @@ Codée le 20 novembre 2026. Tranché seul, à relire :
 8. **Pendant qu'on écrit une idée qui a un lien**, la ligne garde « : lien » au bout et « Changer le lien » dessous (`ListeIdeeLienFait`) : la pastille est pour la lecture.
 9. **La pastille lilas** prend les jetons du thème (`warning-soft`, `alert-ink`), qui sont les couleurs de la maquette. Un cadeau hors liste porte aussi sa pastille de prénom dessous.
 10. **Vérifié à 320 px** : rien ne déborde. Les lignes à fond plein (idée en cours d'écriture, « J'offre autre chose ») débordent de 22 px à gauche ; la ligne teintée « Hugo écrit… » garde son arrondi de 8 px de débord, comme la ligne dépliée garde ses 10 px.
-11. **La maquette périmée `ListeEssaiSousCase`** n'est pas dans le dépôt : rien à supprimer.
+11. **La maquette périmée `ListeEssaiSousCase`** est supprimée du dépôt, dans `maquettes/` et `maquettes-sorbet/`.
 
 ### Lot 27 bis, en codant
 

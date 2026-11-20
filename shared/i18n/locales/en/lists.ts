@@ -460,6 +460,7 @@ export default {
     myOffList: 'You give, not on the list: {text}',
     offListAction: 'I’m giving {name} something else',
     tick: 'I give it: {idea}',
+    untick: 'I no longer give it: {idea}',
     unshared: 'This list is no longer shared.',
     gone: 'This link no longer works. Ask whoever holds the list for the new one.',
   },

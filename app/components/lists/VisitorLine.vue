@@ -11,11 +11,13 @@ import { ideaChips, namesInOne } from '~/utils/givers';
 // first name (« 7 personnes » beyond three), « Au complet », my own state
 // in one pill, « Se joindre » last. No « Changer »: the whole line of an
 // idea I give is the button that opens its sheet (alone or with others,
-// say it is me, « Finalement, je ne l'offre plus »). Taken by someone
-// else: crossed out, nothing more.
+// say it is me, « Finalement, je ne l'offre plus »); its green box, above
+// that button, unticks at once, without the sheet (asked by Julien on 20
+// November 2026). Taken by someone else: crossed out, nothing more.
 const props = defineProps<{ idea: IdeaLine }>();
 const emit = defineEmits<{
   tick: [];
+  untick: [];
   change: [];
   join: [];
 }>();
@@ -78,18 +80,23 @@ const onBox = () => {
       data-testid="idea-open"
       @click="emit('change')"
     />
-    <span
+    <button
       v-if="chips.mine"
-      class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
-      aria-hidden="true"
+      type="button"
+      role="checkbox"
+      aria-checked="true"
+      :aria-label="t('lists.visitor.untick', { idea: idea.text })"
+      class="relative z-10 -m-2.5 flex size-[42px] shrink-0 items-center justify-center"
       data-testid="idea-box"
+      @click="emit('untick')"
     >
       <span
         class="flex size-[22px] items-center justify-center rounded-sm bg-success text-white"
+        aria-hidden="true"
       >
         <UIcon name="i-lucide-check" class="size-3.5" />
       </span>
-    </span>
+    </button>
     <button
       v-else
       type="button"

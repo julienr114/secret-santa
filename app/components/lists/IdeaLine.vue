@@ -6,6 +6,7 @@ import {
   useCreateIdeaMutation,
   useDeleteIdeaMutation,
   useTickMutation,
+  useUntickMutation,
   useUpdateIdeaMutation,
   type ClaimRoute,
 } from '~/composables/queries/useLists';
@@ -62,6 +63,7 @@ const create = useCreateIdeaMutation(via);
 const update = useUpdateIdeaMutation(via);
 const remove = useDeleteIdeaMutation(via);
 const tick = useTickMutation(via);
+const untick = useUntickMutation(via);
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const queryClient = useQueryClient();
@@ -121,9 +123,9 @@ const onBox = () => {
           queryClient.invalidateQueries({ queryKey: ['l'] }),
         ])
       : toast.failed(errorMessage(error));
-  // What I give opens its sheet (Correction 29: no more « Changer »):
-  // alone or with others, and « Finalement, je ne l'offre plus ».
-  if (mine.value) editing.change(props.idea, props.forName);
+  // What I give unticks at once, without the sheet (Julien, 20 November
+  // 2026); the sheet opens from the pill of my state.
+  if (mine.value) untick.mutate(props.idea.id, { onError });
   else if (openGroup.value) editing.join(props.idea, props.forName);
   else tick.mutate({ ideaId: props.idea.id }, { onError });
 };
@@ -553,11 +555,7 @@ const onFocusOut = (event: FocusEvent) => {
               role: 'checkbox',
               'aria-checked': mine || taken,
               'aria-label': mine
-                ? chips.mine === 'group'
-                  ? t('lists.chips.mineGroupLabel', { idea: idea.text })
-                  : chips.mine === 'anonymous'
-                    ? t('lists.chips.mineAnonymousLabel', { idea: idea.text })
-                    : t('lists.chips.mineLabel', { idea: idea.text })
+                ? t('lists.visitor.untick', { idea: idea.text })
                 : openGroup
                   ? joinLabel
                   : t('lists.visitor.tick', { idea: idea.text }),
@@ -782,10 +780,20 @@ const onFocusOut = (event: FocusEvent) => {
             data-testid="idea-closed"
             >{{ t('lists.chips.closed') }}</UiChip
           >
+          <!-- My state opens the sheet of what I give (no « Changer »):
+               alone or with others. -->
           <ListsMineChip
             v-if="chips.mine"
             :state="chips.mine"
+            button
+            :aria-label="
+              chips.mine === 'group'
+                ? t('lists.chips.mineGroupLabel', { idea: idea.text })
+                : t('lists.chips.mineLabel', { idea: idea.text })
+            "
             :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
+            data-no-drag
+            @click="editing.change(idea, forName)"
           />
           <UiChip
             v-if="chips.join"

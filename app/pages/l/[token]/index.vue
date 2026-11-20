@@ -6,6 +6,7 @@ import {
   useLinkQuery,
   useRemoveOffListMutation,
   useTickMutation,
+  useUntickMutation,
 } from '~/composables/queries/useLists';
 import { keys } from '~/composables/queries/keys';
 import { LIST_EDITING } from '~/composables/useListEditing';
@@ -59,6 +60,7 @@ onMounted(() => {
 });
 const via = computed(() => ({ token: token.value }));
 const tick = useTickMutation(via);
+const untick = useUntickMutation(via);
 const removeOffList = useRemoveOffListMutation(token);
 const doc = computed(() => query.data.value);
 const holder = computed(() => doc.value?.holder.name ?? '');
@@ -129,6 +131,9 @@ const onTick = (idea: IdeaLine) => {
   }
   tick.mutate({ ideaId: idea.id }, { onError });
 };
+
+/** The green box of what I give unticks at once, without the sheet. */
+const onUntick = (idea: IdeaLine) => untick.mutate(idea.id, { onError });
 
 // Back from the login link: the gift waiting is ticked.
 onMounted(async () => {
@@ -324,6 +329,7 @@ const writes = (person: PersonLine) =>
             :key="idea.id"
             :idea="idea"
             @tick="onTick(idea)"
+            @untick="onUntick(idea)"
             @change="changing = { idea, forName: nameOf(person) }"
             @join="onJoin(idea, nameOf(person))"
           />

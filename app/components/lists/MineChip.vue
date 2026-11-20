@@ -3,12 +3,17 @@
 // ListeVisiteurMes, ListeVisiteurAnonyme): « Tu l'offres » with a gift,
 // in mint; « Tu l'offres en anonyme » with a small mask, in aubergine as
 // the bar of the anonymous mode; « Tu participes » with a tick, in mint.
-defineProps<{ state: 'alone' | 'anonymous' | 'group' }>();
+defineProps<{
+  state: 'alone' | 'anonymous' | 'group';
+  /** Touched: it opens the sheet of what I give (in the document). */
+  button?: boolean;
+}>();
 const { t } = useT();
 </script>
 
 <template>
   <UiChip
+    :button="button"
     :kind="state === 'anonymous' ? 'anonymous' : 'mine'"
     :icon="
       state === 'group'

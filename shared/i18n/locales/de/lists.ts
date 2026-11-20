@@ -471,6 +471,7 @@ export default {
     myOffList: 'Du schenkst, nicht auf der Liste: {text}',
     offListAction: 'Ich schenke {name} etwas anderes',
     tick: 'Ich schenke es: {idea}',
+    untick: 'Ich schenke es nicht mehr: {idea}',
     unshared: 'Diese Liste wird nicht mehr geteilt.',
     gone: 'Dieser Link funktioniert nicht mehr. Frag nach dem neuen, wer die Liste führt.',
   },

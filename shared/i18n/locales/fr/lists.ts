@@ -468,6 +468,7 @@ export default {
     myOffList: 'Tu offres hors liste : {text}',
     offListAction: 'J’offre autre chose à {name}',
     tick: 'Je l’offre : {idea}',
+    untick: 'Je ne l’offre plus : {idea}',
     unshared: 'Cette liste n’est plus partagée.',
     gone: 'Ce lien ne marche plus. Demande le nouveau à celui qui tient la liste.',
   },

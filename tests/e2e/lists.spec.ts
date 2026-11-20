@@ -251,9 +251,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await expect(leo.getByTestId('idea-who')).toHaveCount(0);
   await expect(leo.getByText('Changer', { exact: true })).toHaveCount(0);
-  // No « Changer »: the box of what I give opens its sheet. With others,
+  // No « Changer »: the pill of my state opens the sheet. With others,
   // without the choice of staying anonymous.
-  await box.click();
+  await leo.getByTestId('idea-mine').click();
   const sheet = page.getByTestId('claim-sheet');
   await expect(sheet).toBeVisible();
   await expect(sheet.getByRole('switch')).toHaveCount(0);
@@ -261,9 +261,10 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByTestId('claim-done').click();
   await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
   await expect(leo.getByTestId('idea-joined')).toHaveText('Tu participes');
-  // The box of a gift given by several opens its sheet; « Finalement… ».
+  // The green box unticks at once, without the sheet, even in a gift
+  // given by several (Julien, 20 November 2026).
   await box.click();
-  await page.getByTestId('claim-give-up').click();
+  await expect(page.getByTestId('claim-sheet')).toHaveCount(0);
   await expect(box).toHaveAttribute('aria-checked', 'false');
   await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
 
@@ -280,7 +281,6 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(mine).toHaveAttribute('aria-checked', 'true');
   await expect(me.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await mine.click();
-  await page.getByTestId('claim-give-up').click();
   await expect(mine).toHaveAttribute('aria-checked', 'false');
   await me.getByTestId('idea-text').click();
   await page.keyboard.press('ControlOrMeta+a');
@@ -324,7 +324,6 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'Annuler' }).click();
   await expect(leo).toBeVisible();
   await box.click();
-  await page.getByTestId('claim-give-up').click();
   await expect(box).toHaveAttribute('aria-checked', 'false');
 
   // Shared by its switch: the link unfolds, with the message all ready.

@@ -120,14 +120,22 @@ test('one ticks at once, the other hears it is taken', async ({ page }) => {
     data: { ideaId: state.ideas['Circuit de billes'] },
   });
   expect(refused.status()).toBe(409);
-  // The whole line of what I give is the button of its sheet, where it
-  // is given up (maquettes ListeVisiteurToucher, ListeReserver).
+  // The whole line of what I give is the button of its sheet (maquettes
+  // ListeVisiteurToucher, ListeReserver)...
   await page
     .getByRole('button', {
       name: 'Vélo 16 pouces, tu l’offres : modifier ou ne plus l’offrir',
     })
     .click();
-  await page.getByTestId('claim-give-up').click();
+  await expect(page.getByTestId('claim-sheet')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('claim-sheet')).toHaveCount(0);
+  // ...and its green box unticks at once, without the sheet (Julien, 20
+  // November 2026).
+  await page
+    .getByRole('checkbox', { name: 'Je ne l’offre plus : Vélo 16 pouces' })
+    .click();
+  await expect(page.getByTestId('claim-sheet')).toHaveCount(0);
   await expect(page.getByTestId('idea-mine')).toHaveCount(0);
 });
 

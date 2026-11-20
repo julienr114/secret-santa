@@ -163,6 +163,10 @@ export const participations = sqliteTable(
     guessResultsSeenAt: text('guess_results_seen_at'),
     // « Je passe mon tour » (Correction 15): no reminder, out of the counts.
     guessSkippedAt: text('guess_skipped_at'),
+    // « Ma liste de cadeaux », among the hints (lot 27 ter): the gift list
+    // the one who gives to me is shown a link to. No foreign key: the
+    // list may be deleted meanwhile, and the link then shows nowhere.
+    giftListId: text('gift_list_id'),
   },
   (t) => [
     uniqueIndex('participations_edition_person_idx').on(
@@ -697,6 +701,11 @@ export const giftListVisits = sqliteTable(
       .notNull()
       .references(() => accounts.id),
     lastSeenAt: text('last_seen_at').notNull(),
+    // « Mode anonyme » (lot 27 ter): my setting for this list, null until
+    // something decides it; and the note « On a activé le mode anonyme
+    // pour toi », pending until « Compris ».
+    anonymous: integer('anonymous', { mode: 'boolean' }),
+    anonymousNotice: text('anonymous_notice', { enum: ['pending', 'seen'] }),
   },
   (t) => [
     uniqueIndex('gift_list_visits_list_account_idx').on(t.listId, t.accountId),

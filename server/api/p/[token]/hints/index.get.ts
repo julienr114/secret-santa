@@ -1,3 +1,4 @@
+import { optionalAccount } from '#server/http/auth';
 import { requirePersonalLink } from '#server/http/personal';
 import { hintsPayload } from '#server/http/hints';
 
@@ -10,5 +11,5 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'gift_hints_disabled',
     });
   }
-  return hintsPayload(ctx);
+  return hintsPayload(ctx, (await optionalAccount(event))?.accountId ?? null);
 });

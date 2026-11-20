@@ -25,6 +25,8 @@ export default {
     'This list is already shared: it stays without people. Stop sharing it to sort it by person.',
   several_people:
     'There are several people on the list: their ideas cannot be mixed.',
+  list_not_linkable:
+    'This list cannot be linked: it must be published, and yours.',
   slug_taken: 'This group identifier is already taken.',
   group_not_found:
     'Group not found. Reload the page: the list may have changed.',

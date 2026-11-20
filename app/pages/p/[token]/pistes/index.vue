@@ -124,6 +124,13 @@ const textOf = (key: HintText) => hints.value?.portrait.texts[key] ?? null;
         {{ t('hints.whoSees') }}
       </UiNotice>
 
+      <ParticipantHintsList
+        v-if="hints.list"
+        :token="token"
+        :list="hints.list"
+        :editable="editable"
+      />
+
       <UiCard v-if="answered" class="flex flex-col gap-3 px-5 pt-4 pb-5">
         <h2 class="font-display text-xl font-bold">
           {{ t('hints.me.title') }}

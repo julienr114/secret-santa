@@ -2,6 +2,7 @@ import { and, desc, eq, inArray } from 'drizzle-orm';
 import { auditLog, persons } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
 import { giverHints, receiverHintsOf } from '#server/database/hints';
+import { receiverList } from '#server/http/hints';
 import { readPairs } from '#server/database/draw';
 import { requirePersonalLink } from '#server/http/personal';
 import { dataKeyOf } from '#server/http/context';
@@ -108,6 +109,16 @@ export default defineEventHandler(async (event) => {
     budget: rules.budget,
     eventDate: rules.eventDate,
     guardianMessage: rules.guardianMessage,
+    // « Sa liste de cadeaux » (lot 27 ter): a link, nothing of the list.
+    list: hints
+      ? await receiverList(
+          event,
+          db,
+          hints.mode,
+          receiverParticipationId,
+          participation.id,
+        )
+      : null,
     hints: hints && {
       ...hints,
       isNew: false,

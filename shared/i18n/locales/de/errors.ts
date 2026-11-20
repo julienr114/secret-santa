@@ -31,6 +31,8 @@ export default {
     'Diese Liste ist schon geteilt: Sie bleibt ohne Personen. Beende das Teilen, um sie nach Personen zu ordnen.',
   several_people:
     'Auf der Liste stehen mehrere Personen: Ihre Ideen lassen sich nicht mischen.',
+  list_not_linkable:
+    'Diese Liste kann nicht verknüpft werden: Sie muss veröffentlicht sein und dir gehören.',
   slug_taken: 'Diese Gruppenkennung ist bereits vergeben.',
   group_not_found:
     'Gruppe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',

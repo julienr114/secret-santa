@@ -27,7 +27,37 @@ const { t, locale } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
-const query = useLinkQuery(token);
+// What the address carries from a draw (lot 27 ter): `anonyme` asks for
+// the anonymous mode, `p` is the participation of the one who gives,
+// signed. Sent along as they are: the server alone decides. Kept on
+// this phone while one logs in, since the login comes back without them.
+const FROM_KEY = computed(() => `list-from:${token.value}`);
+const fromAddress = () => {
+  const { anonyme, p } = route.query;
+  const params = new URLSearchParams({
+    ...(anonyme === undefined ? {} : { anonyme: '1' }),
+    ...(typeof p === 'string' ? { p } : {}),
+  }).toString();
+  return params ? `?${params}` : '';
+};
+const from = ref(fromAddress());
+const query = useLinkQuery(token, from);
+onMounted(() => {
+  try {
+    if (from.value && !loggedIn.value) {
+      window.sessionStorage.setItem(FROM_KEY.value, from.value);
+      return;
+    }
+    const kept = window.sessionStorage.getItem(FROM_KEY.value);
+    if (!kept || !loggedIn.value) return;
+    window.sessionStorage.removeItem(FROM_KEY.value);
+    if (from.value) return;
+    from.value = kept;
+    void nextTick(() => query.refetch());
+  } catch {
+    // No storage (a private window): the address alone counts.
+  }
+});
 const via = computed(() => ({ token: token.value }));
 const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
@@ -193,6 +223,9 @@ const writes = (person: PersonLine) =>
     :skeleton="['title', 'card', 'list']"
   >
     <template v-if="doc">
+      <!-- Logged in, and not one of those who hold the list: the mode,
+           said before ticking. -->
+      <ListsAnonymousBar v-if="doc.mode" :token="token" :mode="doc.mode" />
       <div class="flex flex-col gap-2">
         <ListsTile :icon="doc.list.icon" size="lg" />
         <h1 class="font-display text-[36px] leading-[1.1] font-bold">

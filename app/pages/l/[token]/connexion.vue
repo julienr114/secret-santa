@@ -80,6 +80,11 @@ const onSend = () =>
           })
         "
       />
+      <!-- The first name is optional (lot 27 ter): without one, the
+           ticks are anonymous. -->
+      <p class="-mt-2 text-sm text-toned" data-testid="login-no-name">
+        {{ t('lists.login.noName') }}
+      </p>
       <p
         v-if="ask.isError.value"
         class="text-sm font-medium text-error"

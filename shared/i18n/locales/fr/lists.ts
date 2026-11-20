@@ -527,7 +527,18 @@ export default {
     participate: 'Je participe',
     notThisTime: 'Pas cette fois',
   },
+  mode: {
+    title: 'Mode anonyme',
+    why: 'Pourquoi ?',
+    off: 'Désactivé : quand tu coches un cadeau, ceux qui tiennent la liste voient ton prénom. Les autres voient seulement que c’est pris.',
+    on: 'Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ». Le réglage vaut pour toute cette liste.',
+    noticeTitle: 'On a activé le mode anonyme pour toi',
+    noticeBody:
+      'Tu offres un cadeau dans un tirage à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',
+    understood: 'Compris',
+  },
   login: {
+    noName: 'Sans prénom, tu coches en anonyme.',
     title: 'Ton adresse email, pour cocher',
     intro:
       'Elle sert à retrouver ce que tu as coché et à le décocher. Pas de mot de passe : tu reçois un lien.',

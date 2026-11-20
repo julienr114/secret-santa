@@ -48,7 +48,8 @@ const commit = () => {
   writing.value = false;
   if (!words) return;
   add.mutate(
-    { listPersonId: props.listPersonId, text: words, anonymous: false },
+    // Under my name or not: my « mode anonyme » for this list decides.
+    { listPersonId: props.listPersonId, text: words },
     {
       onSuccess: () => {
         text.value = '';

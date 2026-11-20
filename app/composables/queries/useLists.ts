@@ -359,10 +359,35 @@ export const useUpdateMemberMutation = (id: Id) =>
 // A list by its link (lot 22): ticking, giving with others, off the list.
 type Token = MaybeRefOrGetter<string>;
 
-export const useLinkQuery = (token: Token) =>
-  useApiQuery<VisitorDocument>(
+/** What the bar « Mode anonyme » shows; null without one. */
+export type ListMode = { anonymous: boolean; notice: boolean } | null;
+/** A list by its link, with my « mode anonyme » on it (lot 27 ter). */
+export type LinkDocument = VisitorDocument & { mode: ListMode };
+
+/**
+ * A list by its link.
+ * @param token - The token of the link.
+ * @param from - What the address carries from a draw (`anonyme`, `p`),
+ *   sent along: the server alone decides what it makes of it.
+ * @returns The query.
+ */
+export const useLinkQuery = (
+  token: Token,
+  from: MaybeRefOrGetter<string> = '',
+) =>
+  useApiQuery<LinkDocument>(
     () => keys.link(toValue(token)),
-    () => `/api/l/${toValue(token)}`,
+    () => `/api/l/${toValue(token)}${toValue(from)}`,
+  );
+
+/** The switch of « Mode anonyme », and « Compris » under its note. */
+export const useListModeMutation = (token: Token) =>
+  useApiMutation<
+    NonNullable<ListMode>,
+    { anonymous: boolean } | { noticeSeen: true }
+  >(
+    (body) => api(`/api/l/${toValue(token)}/mode`, { method: 'PUT', body }),
+    () => [keys.link(toValue(token))],
   );
 
 export const useTickMutation = (via: Via) =>
@@ -416,7 +441,7 @@ export const useUntickForMutation = (id: Id) =>
 export const useAddOffListMutation = (token: Token) =>
   useApiMutation<
     { ok: true },
-    { listPersonId: string; text: string; anonymous: boolean }
+    { listPersonId: string; text: string; anonymous?: boolean }
   >(
     (body) =>
       api(`/api/l/${toValue(token)}/off-list`, { method: 'POST', body }),

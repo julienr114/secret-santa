@@ -1,5 +1,6 @@
 import { recordVisit } from '#server/database/claims';
 import { optionalAccount } from '#server/http/auth';
+import { openMode } from '#server/http/anonymous';
 import { listOfLink } from '#server/http/listLink';
 import {
   roleOnList,
@@ -13,11 +14,21 @@ import {
 export default defineEventHandler(async (event) => {
   const { db, list } = await listOfLink(event);
   const user = await optionalAccount(event);
-  if (user) {
+  /**
+   * « Mode anonyme » (lot 27 ter): the setting of whoever is logged in
+   * and does not hold the list; nothing without a session.
+   */
+  const modeOf = async (accountId: string) => {
     // Someone whose address a holder gave becomes that person by coming.
-    await settleArrivals(db, user.accountId);
-    const { role } = await roleOnList(db, list, user.accountId);
-    if (role !== 'holder') await recordVisit(db, list.id, user.accountId);
-  }
-  return visitorDocument(db, list, user?.accountId ?? null);
+    await settleArrivals(db, accountId);
+    const { role } = await roleOnList(db, list, accountId);
+    if (role === 'holder') return null;
+    await recordVisit(db, list.id, accountId);
+    return openMode(event, db, list, accountId);
+  };
+  const mode = user ? await modeOf(user.accountId) : null;
+  return {
+    ...(await visitorDocument(db, list, user?.accountId ?? null)),
+    mode,
+  };
 });

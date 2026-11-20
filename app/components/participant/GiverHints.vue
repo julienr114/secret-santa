@@ -55,11 +55,18 @@ const updatedOn = computed(() =>
     : '',
 );
 const texts = computed(() => portraitTexts(hints.value.portrait.texts));
+// « Sa liste de cadeaux » (lot 27 ter, maquette PistesResultatListe): a
+// link to the gift list the receiver linked to their hints, which opens
+// in anonymous mode. With it, « Si tu sèches » no longer shows: the list
+// says it better.
+const list = computed(() => props.reveal.list ?? null);
+const ideas = computed(() => (list.value ? [] : hints.value.ideas));
 const empty = computed(
   () =>
+    !list.value &&
     !answered.value &&
     texts.value.length === 0 &&
-    hints.value.ideas.length === 0,
+    ideas.value.length === 0,
 );
 /** Asked now, or earlier in this draw. */
 const requested = computed(
@@ -98,6 +105,28 @@ const onSend = () =>
       </p>
     </div>
     <template v-if="!empty">
+      <!-- Opened as a page of its own, not inside the app: the list is
+           read again from the server, with what the address carries. -->
+      <a
+        v-if="list"
+        :href="list.path"
+        class="flex min-h-15 items-center gap-3 rounded-[18px] bg-muted px-3 py-2"
+        data-testid="giver-list"
+      >
+        <ListsTile :icon="list.icon" size="sm" />
+        <span class="flex min-w-0 grow flex-col">
+          <span class="text-[15px] font-bold break-words">{{
+            t('hints.result.list', { title: list.title })
+          }}</span>
+          <span class="text-[13px] leading-[1.35] text-toned">{{
+            t('hints.result.listHelp')
+          }}</span>
+        </span>
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="size-5 shrink-0 text-muted"
+        />
+      </a>
       <div
         v-if="answered"
         class="flex flex-col gap-1.5 text-[15px] leading-[1.45]"
@@ -130,11 +159,11 @@ const onSend = () =>
         </p>
         <p class="leading-[1.45] break-words">{{ block.text }}</p>
       </div>
-      <div v-if="hints.ideas.length > 0" class="flex flex-col gap-1">
+      <div v-if="ideas.length > 0" class="flex flex-col gap-1">
         <p class="text-xs font-bold tracking-[0.04em] text-toned uppercase">
           {{ t('hints.ideas.giver') }}
         </p>
-        <ParticipantWishList :wishes="hints.ideas" class="mt-1" />
+        <ParticipantWishList :wishes="ideas" class="mt-1" />
       </div>
     </template>
     <UiNotice

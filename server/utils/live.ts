@@ -411,7 +411,10 @@ export const liveTarget = (
   const member = /^\/api\/family\/([^/]+)$/.exec(path);
   if (member?.[1]) return { memberId: member[1] };
   const linked = /^\/api\/l\/([^/]+)\/(.+)$/.exec(path);
-  return linked?.[1] && linked[2] !== 'live' ? { token: linked[1] } : null;
+  // Neither a ticket nor my own « mode anonyme » changes the list.
+  return linked?.[1] && !['live', 'mode'].includes(linked[2] ?? '')
+    ? { token: linked[1] }
+    : null;
 };
 
 // --- The room, whatever holds its connections ---------------------------

@@ -530,7 +530,18 @@ export default {
     participate: 'Ich mache mit',
     notThisTime: 'Diesmal nicht',
   },
+  mode: {
+    title: 'Anonymer Modus',
+    why: 'Warum?',
+    off: 'Aus: Wenn du ein Geschenk abhakst, sehen die, die die Liste führen, deinen Vornamen. Die anderen sehen nur, dass es vergeben ist.',
+    on: 'An: Wenn du ein Geschenk abhakst, sieht niemand deinen Vornamen, auch nicht die, die die Liste führen. Sie sehen „Anonym“. Die Einstellung gilt für diese ganze Liste.',
+    noticeTitle: 'Wir haben den anonymen Modus für dich aktiviert',
+    noticeBody:
+      'Du schenkst beim Wichteln jemandem von dieser Liste etwas: Deine Häkchen verraten deinen Vornamen nicht. Du kannst ihn oben ausschalten, etwa um auch ein Geschenk unter deinem Vornamen zu machen.',
+    understood: 'Verstanden',
+  },
   login: {
+    noName: 'Ohne Vornamen hakst du anonym ab.',
     title: 'Deine E-Mail-Adresse, zum Abhaken',
     intro:
       'Damit findest du wieder, was du abgehakt hast, und kannst es zurücknehmen. Kein Passwort: Du bekommst einen Link.',

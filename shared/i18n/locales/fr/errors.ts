@@ -27,6 +27,8 @@ export default {
     'Cette liste est déjà partagée : elle reste sans personne. Arrête le partage pour la ranger par personne.',
   several_people:
     'Il y a plusieurs personnes sur la liste : leurs idées ne peuvent pas être mélangées.',
+  list_not_linkable:
+    'Cette liste ne peut pas être reliée : elle doit être publiée, et à toi.',
   slug_taken: 'Cet identifiant de groupe est déjà pris.',
   group_not_found:
     'Groupe introuvable. Recharge la page : la liste a peut-être changé.',

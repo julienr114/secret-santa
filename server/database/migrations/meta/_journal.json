@@ -225,6 +225,13 @@
       "when": 1795157319559,
       "tag": "0031_list_without_people",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1795160806588,
+      "tag": "0032_anonymous_mode",
+      "breakpoints": true
     }
   ]
 }

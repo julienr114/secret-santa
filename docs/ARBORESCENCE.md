@@ -114,6 +114,8 @@ Décidée par Julien le 18 novembre 2026.
 La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau : « Un Secret Santa » et « Une liste » mènent à « Pour quelle occasion ? » (`/f/nouvelle?pour=secret-santa`, `?pour=liste`). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
+
+L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/f/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | Demander à créer un groupe | `/demande` | Accueil | |
 | Connexion | `/login` | — | |

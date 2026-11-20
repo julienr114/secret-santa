@@ -175,7 +175,7 @@ test('a participant keeps a draw opened by its personal link in an account', asy
   await expect(card).toHaveCount(0);
   await page.goto('/');
   await hydrated(page);
-  await expect(page.getByTestId('draw-card')).toContainText('Famille Invite');
+  await expect(page.getByTestId('home-party')).toContainText('Famille Invite');
 });
 
 test('with an address already known, one tap sends the login link', async ({

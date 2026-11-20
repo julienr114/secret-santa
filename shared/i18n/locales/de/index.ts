@@ -11,6 +11,7 @@ import notify from './notify';
 import hints from './hints';
 import lists from './lists';
 import party from './party';
+import home from './home';
 
 export default {
   common,
@@ -26,4 +27,5 @@ export default {
   hints,
   lists,
   party,
+  home,
 };

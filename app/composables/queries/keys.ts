@@ -1,6 +1,8 @@
 // Query keys, one place so mutations invalidate the right reads.
 export const keys = {
   home: () => ['home'] as const,
+  // The home of the V3 (ticket 103), under the home's key.
+  homeParties: () => ['home', 'parties'] as const,
   adminAccounts: () => ['admin', 'accounts'] as const,
   adminGroups: () => ['admin', 'groups'] as const,
   group: (slug: string) => ['group', slug] as const,

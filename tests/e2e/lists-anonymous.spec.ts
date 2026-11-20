@@ -84,6 +84,7 @@ const holderView = async () => {
         '/api/lists',
         `/api/l/${state.token}`,
         '/api/auth/home',
+        '/api/home',
       ].map(async (path) => (await api.get(path)).text()),
     )
   ).join('\n');

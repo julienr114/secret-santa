@@ -13,6 +13,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `MenuAvatarOuvert` | Le menu n'a pas de ligne « Quoi de neuf » (c'est un onglet ; la spec ne la met pas dans le menu). « Langue » ouvre un panneau du bas avec les trois langues : un menu à côté du menu ne tient pas sur un téléphone. | Seul |
 | `V3AccueilPlusOuvert` | Jusqu'aux tickets 105 et 106, « Un Secret Santa » et « Une liste » ouvrent la création d'une fête, puis l'écran d'aujourd'hui (création d'une édition, nouvelle liste). | Julien, 20 novembre 2026 |
 | `V3Accueil` | « Quoi de neuf » ouvre une page vide jusqu'au ticket 120, sans pastille de nombre. | Julien, 20 novembre 2026 |
+| `V3Accueil` | Les lignes (Secret Santa, listes) et les deux lignes du bas n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (Q-010). Pas de point rouge avant le ticket 110. | Julien, 20 novembre 2026 |
+| `V3Accueil` | Les icônes des lignes sont les ronds de 40 px de `UiListItem`, pas les carrés de 36 px de la maquette. Un Secret Santa s'appelle « Le Secret Santa », ou par son nom quand la fête en a plusieurs. | Seul |
+| `V3Accueil` | « Nouvelle liste » apparaît dans la carte d'une fête où je n'ai pas de liste. Une ligne de liste sans lien public (celle d'un autre) ne s'ouvre pas, comme sur la page de la fête. | Seul |
+| `V3Accueil` | Une fête qui revient est montrée à sa prochaine date quand son année est passée ; une fête qui ne revient pas quitte l'accueil le lendemain de sa date (Q-009). Toutes les fêtes qui ne sont pas Noël vont sous « Plus tard », même avant Noël (Q-014). Le décompte de Noël disparaît le 25 décembre. | Seul |
+| `V3Accueil` | « Bientôt » ne propose pas mon propre anniversaire, ni celui pour lequel une de mes fêtes « Anniversaire » tombe le même jour. | Seul |
+| `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
+| `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
 ## La fête (V3, ticket 104)
 

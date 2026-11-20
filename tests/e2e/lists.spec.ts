@@ -565,8 +565,8 @@ test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
   await page.request.patch(`/api/family/${self.id}`, {
     data: { avatar: { emoji: '🦊', color: 'brick' } },
   });
-  const home = await (await page.request.get('/api/auth/home')).json();
-  expect(JSON.stringify(home)).toContain('🦊');
+  const account = await (await page.request.get('/api/auth/sessions')).json();
+  expect(account.avatar.emoji).toBe('🦊');
   await page.request.put('/api/auth/profile', {
     data: { avatarEmoji: '🦉', avatarColor: 'pine' },
   });

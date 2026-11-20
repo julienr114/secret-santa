@@ -87,6 +87,12 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 - **Pour** : la conception
 - **Réponse de Julien (20 novembre 2026)** : le 104 passe avant le 103 ; la barre du bas, le menu du compte et le panneau « Créer » du 103 sont gardés de côté et reprendront d'un seul tenant après le 104. « Quoi de neuf » mène à une page vide jusqu'au ticket 120. « Bientôt » propose un anniversaire 60 jours avant. Les dépendances des deux tickets sont à inverser.
 
+### Q-014 — Une fête qui n'est pas Noël et qui vient avant Noël, sur l'accueil (ticket 103)
+
+- **Pour** : la conception
+- **Ce qui bloque** : `V3Accueil` montre la section « Noël 2026 » en haut, puis « Bientôt », puis « Plus tard » avec un anniversaire en février. La spec dit « Plus tard : les autres fêtes, par date ». Rien ne dit où va un anniversaire du 1er décembre, avant les fêtes de Noël : sous « Plus tard » (après Noël, alors qu'il vient avant), ou au-dessus de la section de Noël, sans titre.
+- **En attendant** : toutes les fêtes qui ne sont pas Noël vont sous « Plus tard », par date. Une saison de Noël d'une autre année (Noël 2027) a sa propre section, après celle de l'année.
+
 ## Réponses
 
 Rien pour l'instant. Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN.md`, section 6.

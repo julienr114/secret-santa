@@ -162,19 +162,6 @@ test('the one who revealed reads « Tu l’as dévoilé »', async ({ page }) =>
   );
 });
 
-test('the home says who one gives to', async ({ page }) => {
-  const draw = await ok(
-    await page.request.get(`/api/p/${state.tokens.Hugo}/draw`),
-  );
-  await apiLogin(page.request, HUGO);
-  await open(page, '/');
-  const card = page.getByTestId('draw-card');
-  await expect(card).toContainText(
-    `Tu offres un cadeau à ${draw.receiver.name}`,
-  );
-  await expect(card).toContainText('Le tirage n’est plus secret.');
-});
-
 test('closed and revealed: the past, no secret', async ({ page }) => {
   await ok(await admin().post(`${state.base}/close`));
   const draw = await ok(

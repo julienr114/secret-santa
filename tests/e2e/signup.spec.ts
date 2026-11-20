@@ -28,10 +28,10 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
   await page.getByRole('link', { name: /Mode développement/ }).click();
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(heading(page)).toHaveText('Bonjour');
-  await expect(page.getByTestId('home-organize')).toContainText(
-    'Demander à créer un groupe',
-  );
-  await expect(page.getByTestId('home-admin')).toHaveCount(0);
+  await expect(page.getByText('Par quoi on commence ?')).toBeVisible();
+  await expect(
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Admin' }),
+  ).toHaveCount(0);
 
   const created = await page.request.post('/api/admin/groups', { data: GROUP });
   expect(created.status()).toBe(403);
@@ -44,11 +44,10 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
 
 test('they ask for a group, once at a time', async ({ page }) => {
   await apiLogin(page.request, NEWCOMER);
-  await page.goto('/');
+  // On its own page (README 23.3): the request, then why a request. The
+  // home of the V3 no longer leads to it (requests go with ticket 105).
+  await page.goto('/demande');
   await hydrated(page);
-  await page.getByRole('link', { name: 'Demander à créer un groupe' }).click();
-  // On its own page (README 23.3): the request, then why a request.
-  await expect(page).toHaveURL(/\/demande$/);
   await expect(page.getByTestId('request-why')).toContainText(
     'Pourquoi une demande ?',
   );
@@ -64,16 +63,8 @@ test('they ask for a group, once at a time', async ({ page }) => {
   await page.getByTestId('request-why').click();
   await expect(page.getByLabel('Ta demande')).not.toBeFocused();
   await page.getByRole('button', { name: 'Envoyer ma demande' }).click();
-  await expect(page.getByTestId('home-request')).toContainText(
-    'Ta demande est partie',
-  );
-  // What they wrote, as they wrote it.
-  await expect(page.getByTestId('home-request-message')).toHaveText(
-    'Le Noël de ma famille',
-  );
-  await expect(
-    page.getByRole('link', { name: 'Demander à créer un groupe' }),
-  ).toHaveCount(0);
+  await expect(page.getByText('Demande envoyée')).toBeVisible();
+  await expect(heading(page)).toHaveText('Bonjour');
 
   const again = await page.request.post('/api/auth/group-requests', {
     data: { message: 'Encore' },
@@ -95,18 +86,10 @@ test('the super-admin sees the request and accepts it', async ({
   await later.dispose();
 
   await loginAsSuper(page, SUPER);
-  // The card on top names who has been waiting the longest.
-  const top = page.getByTestId('top-card');
-  await expect(top).toContainText('À faire maintenant · Administration');
-  await expect(top).toContainText(
-    new RegExp(
-      `${NEWCOMER} attend ta réponse depuis le .+\\. Une autre demande attend aussi\\.`,
-    ),
-  );
-  // The administration's row at the bottom of the home counts the
-  // requests awaiting an answer.
-  await expect(page.getByTestId('home-admin')).toContainText('2');
-  await page.getByRole('link', { name: /^Administration/ }).click();
+  await page
+    .getByTestId('tab-bar')
+    .getByRole('link', { name: 'Admin' })
+    .click();
   await expect(heading(page)).toHaveText('Administration');
   // The oldest request in its card, on a stack: « 1 sur 2 »; « Traiter »
   // opens its page, which weighs it against the load of the app.
@@ -154,32 +137,13 @@ test('the super-admin sees the request and accepts it', async ({
   await expect(page.getByTestId('request-row')).toHaveCount(0);
 });
 
-test('the one refused reads the word of the administrator', async ({
-  page,
-}) => {
-  await apiLogin(page.request, LATER);
-  await page.goto('/');
-  await hydrated(page);
-  await expect(page.getByTestId('home-request')).toContainText('refusée');
-  await expect(page.getByTestId('home-request-note')).toHaveText(
-    'Désolé, l’application est complète pour cette année. Retente ta chance l’an prochain !',
-  );
-});
-
 test('they create their group, organise it, and the quota is used up', async ({
   page,
 }) => {
   await apiLogin(page.request, NEWCOMER);
-  await page.goto('/');
+  // Their profile first: who they will be in the group.
+  await page.goto('/compte');
   await hydrated(page);
-  // The card on top says the request was accepted. Put off with "Plus
-  // tard", it gives way to the next one: their profile, who they will be
-  // in the group.
-  const top = page.getByTestId('top-card');
-  await expect(top).toContainText('Ta demande est acceptée');
-  await top.getByRole('button', { name: 'Plus tard' }).click();
-  await expect(top).toContainText('Dis-nous comment tu t’appelles');
-  await top.getByRole('link', { name: 'Compléter mon profil' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
   const firstName = page
     .getByTestId('profile')
@@ -195,8 +159,8 @@ test('they create their group, organise it, and the quota is used up', async ({
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour Nina');
-  await expect(top).toHaveCount(0);
-  await page.getByRole('link', { name: 'Créer un groupe' }).click();
+  await page.goto('/admin/groupes/nouveau');
+  await hydrated(page);
   // Only the name: they organise it, and see how many they may create.
   await expect(page.getByText('Tu en seras l’organisateur.')).toBeVisible();
   await expect(page.getByTestId('groups-left')).toHaveText(
@@ -231,13 +195,7 @@ test('they create their group, organise it, and the quota is used up', async ({
   expect(second.status()).toBe(403);
   await page.goto('/');
   await hydrated(page);
-  await expect(page.getByTestId('home-groups')).toContainText(GROUP.name);
-  await expect(page.getByRole('link', { name: 'Créer un groupe' })).toHaveCount(
-    0,
-  );
-  await expect(
-    page.getByRole('link', { name: /Organiser mon propre tirage/ }),
-  ).toBeVisible();
+  await expect(page.getByTestId('home-party')).toContainText(GROUP.name);
 });
 
 test('the super-admin sees every group, sets a quota and disables an account', async ({

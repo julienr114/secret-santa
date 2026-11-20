@@ -48,6 +48,7 @@ const organiserView = async () => {
     `${ADMIN}/journal`,
     `${ADMIN}/persons`,
     '/api/auth/home',
+    '/api/home',
     '/api/admin/groups',
     '/api/admin/accounts',
   ];
@@ -199,25 +200,8 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page.getByRole('link', { name: 'Commencer' }).click();
   await page.getByTestId('hint-second').click();
   await expect(heading(page)).toHaveText('Un objet, ou un moment ?');
-  // New hints are put forward to the giver (lot 16 bis): on their home,
-  // once logged in with their address…
-  const home = await page
-    .context()
-    .browser()!
-    .newContext({
-      baseURL: page.url().split('/p/')[0],
-    });
-  const giverPage = await home.newPage();
-  await apiLogin(
-    giverPage.request,
-    `${giver.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()}-trefle@example.com`,
-  );
-  await open(giverPage, '/');
-  await expect(giverPage.getByTestId('draw-card')).toContainText(
-    'De nouvelles pistes pour ton cadeau',
-  );
-  await home.close();
-  // …and on the page of the draw, until the result is opened again.
+  // New hints are put forward to the giver (lot 16 bis) on the page of
+  // the draw, until the result is opened again (on the home: ticket 110).
   await open(page, `/p/${state.tokens[giver]}`);
   await expect(page.getByText('De nouvelles pistes t’attendent')).toBeVisible();
   await page

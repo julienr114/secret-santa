@@ -21,7 +21,10 @@ const GROUP = {
 
 test('super-admin creates a group with its guardian', async ({ page }) => {
   await loginAsSuper(page, SUPER);
-  await page.getByRole('link', { name: /^Administration/ }).click();
+  await page
+    .getByTestId('tab-bar')
+    .getByRole('link', { name: 'Admin' })
+    .click();
   await page.getByRole('link', { name: /^Groupes/ }).click();
   await page
     .getByRole('link', { name: /^Créer un groupe pour quelqu’un/ })
@@ -410,7 +413,7 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
   // An organiser only sees their own groups, and the others refuse them.
   await page.goto('/');
   await hydrated(page);
-  await expect(page.getByTestId('home-groups')).toContainText(GROUP.name);
+  await expect(page.getByTestId('home-party')).toContainText(GROUP.name);
   await expect(page.getByText('Autre famille')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Nouveau' })).toHaveCount(0);
   await page.goto('/admin/autre-famille/personnes');

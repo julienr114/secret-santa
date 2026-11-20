@@ -171,14 +171,16 @@ test('a participant logs in with their address and finds their draw', async ({
   const personId = (await person.json()).person.id;
 
   // The address is known through the person: it gets a link and a home,
-  // empty as long as she takes part in no edition.
+  // where the party is, without a Secret Santa as long as she takes part
+  // in no edition.
   await apiLogin(page.request, email);
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour');
-  await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
-  await expect(page.getByTestId('home-organize')).toContainText(
-    'Demander à créer un groupe',
+  const card = page.getByTestId('home-party');
+  await expect(card).toContainText('Famille Courrier');
+  await expect(card.getByRole('link', { name: 'Le Secret Santa' })).toHaveCount(
+    0,
   );
 
   const added = await api.post(
@@ -188,10 +190,9 @@ test('a participant logs in with their address and finds their draw', async ({
   expect(added.ok()).toBe(true);
   await page.reload();
   await hydrated(page);
-  // Her only draw is the card of the home: where it stands, what to do.
-  const draw = page.getByTestId('draw-card');
-  await expect(draw).toContainText('Famille Courrier · Noël courrier');
-  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
+  // Her Secret Santa is a line of the party's card.
+  const santa = card.getByRole('link', { name: 'Le Secret Santa' });
+  await expect(santa).toBeVisible();
 
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
@@ -207,39 +208,12 @@ test('a participant logs in with their address and finds their draw', async ({
   await page.goto('/');
   await hydrated(page);
 
-  // No hint left yet: the card leads straight to the gift hints.
-  await draw
-    .getByRole('link', { name: 'Laisser mes pistes de cadeaux' })
-    .click();
-  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}\/pistes$/);
-  // Opened from home, the page says which draw it belongs to.
-  await expect(page.getByRole('navigation', { name: 'Tu es ici' })).toHaveText(
-    /Famille Courrier\s*·\s*Noël courrier/,
-  );
-  const personal = new URL(page.url()).pathname.replace(/\/pistes$/, '');
-  // « Retour » goes up the tree (docs/ARBORESCENCE.md): to the draw
-  // page, then, opened from home, home.
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(new RegExp(`${personal}$`));
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(heading(page)).toHaveText('Bonjour');
-
-  // With a precise idea left, the card waits for the draw, and opens it.
-  await page.request.put(`/api${personal}/wishes`, {
-    data: { wishes: [{ label: 'Un livre' }] },
-  });
-  await page.reload();
-  await hydrated(page);
-  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
-  await expect(
-    draw.getByRole('link', { name: 'Laisser mes pistes de cadeaux' }),
-  ).toHaveCount(0);
   // A second organiser: the page now speaks of « tes organisateurs ».
   await api.post(`${ADMIN}/organizers`, {
     data: { email: 'second-courrier@example.com' },
   });
-  await draw.getByRole('link', { name: /Famille Courrier/ }).click();
-  await expect(page).toHaveURL(new RegExp(`${personal}$`));
+  await santa.click();
+  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}$/);
   await expect(page.getByText('Dana')).toBeVisible();
   await expect(
     page.getByText(/Tes organisateurs te feront signe/),

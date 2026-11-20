@@ -65,24 +65,24 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 - **Les choix** : A, 14 jours après sa date ; B, jusqu'à ce que son Secret Santa soit clôturé, et 3 jours s'il n'y en a pas ; C, le lendemain.
 - **Ce que la conception ferait** : A. Une règle que tout le monde comprend, qui laisse passer les fêtes de fin d'année.
 
-### Q-006 — Les textes sous les lignes de l'accueil et de la page d'une fête (tickets 103, 104)
+### Q-010 — Les textes sous les lignes de l'accueil et de la page d'une fête (tickets 103, 104)
 
 - **Pour** : la conception
 - **Ce qui bloque** : les sous-titres d'état des lignes (Secret Santa : « Tu sais à qui tu offres · tu l'organises », « Fait · 6 sur 8 ont découvert » ; listes : « Tu offres 2 cadeaux · 1 nouvelle idée », « Léo, Zoé et moi · aussi chez Mamie » ; « Les fêtes passées » ; « Ce que j'offre ailleurs »). Pour chaque cas, il faut le texte, la règle qui le choisit et ce qui le remplit.
 - **En attendant** : les lignes n'ont que leur titre (décidé par Julien le 20 novembre 2026).
 
-### Q-007 — « Camille te demande ta liste » (tickets 103, 104)
+### Q-011 — « Camille te demande ta liste » (tickets 103, 104)
 
 - **Pour** : la conception
 - **Ce qui bloque** : aujourd'hui, « Lui demander des pistes » est toujours anonyme : celui qui demande n'est jamais nommé. Cette ligne nomme Camille. Est-ce une autre chose (une relance de l'organisateur), ou faut-il l'enlever ?
 
-### Q-008 — « chez Mamie » ou « dans Famille Camille » (tickets 103, 104)
+### Q-012 — « chez Mamie » ou « dans Famille Camille » (tickets 103, 104)
 
 - **Pour** : la conception
 - **Ce qui bloque** : le nom d'une fête est libre ; « Elle reste chez Mamie » (`V3FeteQuitter`) et « aussi dans Famille Camille » (`V3Accueil`) ne disent pas quand écrire « chez » ou « dans », ni quoi écrire pour trois fêtes ou plus, ni en anglais et en allemand.
 - **En attendant** : la phrase n'est pas écrite.
 
-### Q-009 — L'ordre des tickets 103 et 104
+### Q-013 — L'ordre des tickets 103 et 104
 
 - **Pour** : la conception
 - **Réponse de Julien (20 novembre 2026)** : le 104 passe avant le 103 ; la barre du bas, le menu du compte et le panneau « Créer » du 103 sont gardés de côté et reprendront d'un seul tenant après le 104. « Quoi de neuf » mène à une page vide jusqu'au ticket 120. « Bientôt » propose un anniversaire 60 jours avant. Les dépendances des deux tickets sont à inverser.

@@ -1,89 +1,504 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Groupe — exclusions</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
-  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #ffd9cc; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
-    <div>
-      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425">
-      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      Under the Tree
-    </div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <title>Groupe — exclusions</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 844px;
+          box-sizing: border-box;
+          background: #fff6f1;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <header
+          style="
+            height: 56px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-bottom: 1px solid #ffd9cc;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 12px;
+          "
+        >
+          <div>
+            <button
+              aria-label="Retour"
+              style="
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: #2b1b3d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 18px;
+              color: #c93425;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
+              />
+            </svg>
+            Under the Tree
+          </div>
+          <button
+            aria-label="Menu"
+            style="
+              justify-self: end;
+              width: 44px;
+              height: 44px;
+              border: 0;
+              background: transparent;
+              color: #2b1b3d;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
 
-  <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px">
-    <div style="display: flex; flex-direction: column; gap: 4px">
-      <nav aria-label="Tu es ici" style="margin: -14px 0 -12px; display: flex; align-items: center; gap: 6px; color: #6b5a7a"><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #6b5a7a; text-decoration: none">Famille Camille</a></nav>
-      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Exclusions</h1>
-    </div>
-    
-    <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #6b5a7a">Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des frères et sœurs, un parent et son enfant…</p>
-    <section style="display: flex; flex-direction: column; gap: 6px">
-      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
-        <li>
-          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Ajouter une exclusion</span>
-              
-            </span>
-            <span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 4px 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc">
-          <span aria-hidden="true" style="display: flex; flex-shrink: 0"><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🦌</span><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; margin-left: -10px; outline: 2px solid #ffffff">🐧</span></span>
-          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-            <span style="font-weight: 600; font-size: 16px">Camille et Hugo</span>
-            <span style="font-size: 14px; color: #6b5a7a">Ne se tirent pas, dans les deux sens</span>
-          </span>
-          <button aria-label="Retirer l'exclusion Camille et Hugo" style="width: 44px; height: 44px; border: 0; background: transparent; color: #6b5a7a; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-        </li>
-      </ul>
-    </section>
-    <section style="display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Appliqué automatiquement</h2>
-      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
-        <li>
-          <a href="GroupeReglages.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffeae1; color: #6b5a7a; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.700L3 8M3 3v5h5"/></svg></span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Pas la même personne que l’an dernier</span>
-              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Se règle dans les réglages du groupe</span>
-            </span>
-            <span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-          </a>
-        </li>
-      </ul>
-      <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 1.4; color: #6b5a7a">Les exclusions se modifient jusqu’au tirage. Ensuite, l’édition garde celles qui ont servi.</p>
-    </section>
-  </main>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+        <main
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 20px 16px 32px;
+          "
+        >
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <nav
+              aria-label="Tu es ici"
+              style="
+                margin: -14px 0 -12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #6b5a7a;
+              "
+            >
+              <a
+                href="#"
+                style="
+                  min-height: 44px;
+                  display: flex;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b5a7a;
+                  text-decoration: none;
+                "
+                >Famille Camille</a
+              >
+            </nav>
+            <h1
+              style="
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 30px;
+                line-height: 1.1;
+              "
+            >
+              Exclusions
+            </h1>
+          </div>
+
+          <p
+            style="
+              margin: 0;
+              font-size: 15px;
+              line-height: 1.45;
+              color: #6b5a7a;
+            "
+          >
+            Les personnes qui ne doivent pas se tirer l'une l'autre : un couple,
+            des frères et sœurs, un parent et son enfant…
+          </p>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <ul
+              style="
+                list-style: none;
+                margin: 0 -16px;
+                padding: 0;
+                background: #ffffff;
+                border-top: 1px solid #ffd9cc;
+                border-bottom: 1px solid #ffd9cc;
+              "
+            >
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                    color: #2b1b3d;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: #ffe3de;
+                      color: #c93425;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 5v14M5 12h14" /></svg
+                  ></span>
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                  >
+                    <span style="font-weight: 600; font-size: 16px"
+                      >Ajouter une exclusion</span
+                    >
+                  </span>
+                  <span style="color: #796987; display: flex; flex-shrink: 0"
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" /></svg
+                  ></span>
+                </a>
+              </li>
+              <li
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  min-height: 60px;
+                  padding: 8px 4px 8px 16px;
+                  box-sizing: border-box;
+                  border-top: 1px solid #ffd9cc;
+                "
+              >
+                <span aria-hidden="true" style="display: flex; flex-shrink: 0"
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #e6d6f8 42%,
+                        #b993dd 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 16px;
+                      flex-shrink: 0;
+                    "
+                    >🦌</span
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #ffe9a8 42%,
+                        #f4b82e 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 16px;
+                      flex-shrink: 0;
+                      margin-left: -10px;
+                      outline: 2px solid #ffffff;
+                    "
+                    >🐧</span
+                  ></span
+                >
+                <span
+                  style="
+                    flex-grow: 1;
+                    min-width: 0;
+                    display: flex;
+                    flex-direction: column;
+                  "
+                >
+                  <span style="font-weight: 600; font-size: 16px"
+                    >Camille et Hugo</span
+                  >
+                  <span style="font-size: 14px; color: #6b5a7a"
+                    >Ne se tirent pas, dans les deux sens</span
+                  >
+                </span>
+                <button
+                  aria-label="Retirer l'exclusion Camille et Hugo"
+                  style="
+                    width: 44px;
+                    height: 44px;
+                    border: 0;
+                    background: transparent;
+                    color: #6b5a7a;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    flex-shrink: 0;
+                  "
+                >
+                  <svg
+                    aria-hidden="true"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                </button>
+              </li>
+            </ul>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h2
+              style="
+                margin: 0;
+                padding: 0 4px;
+                font-family: inherit;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #6b5a7a;
+              "
+            >
+              Appliqué automatiquement
+            </h2>
+            <ul
+              style="
+                list-style: none;
+                margin: 0 -16px;
+                padding: 0;
+                background: #ffffff;
+                border-top: 1px solid #ffd9cc;
+                border-bottom: 1px solid #ffd9cc;
+              "
+            >
+              <li>
+                <a
+                  href="GroupeReglages.dc.html"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                    color: #2b1b3d;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: #ffeae1;
+                      color: #6b5a7a;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 12a9 9 0 1 0 3-6.700L3 8M3 3v5h5" /></svg
+                  ></span>
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                  >
+                    <span style="font-weight: 600; font-size: 16px"
+                      >Pas la même personne que l’an dernier</span
+                    >
+                    <span
+                      style="font-size: 14px; line-height: 1.35; color: #6b5a7a"
+                      >Se règle dans les réglages du groupe</span
+                    >
+                  </span>
+                  <span style="color: #796987; display: flex; flex-shrink: 0"
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" /></svg
+                  ></span>
+                </a>
+              </li>
+            </ul>
+            <p
+              style="
+                margin: 0;
+                padding: 0 4px;
+                font-size: 13px;
+                line-height: 1.4;
+                color: #6b5a7a;
+              "
+            >
+              Les exclusions se modifient jusqu’au tirage. Ensuite, l’édition
+              garde celles qui ont servi.
+            </p>
+          </section>
+        </main>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":844}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

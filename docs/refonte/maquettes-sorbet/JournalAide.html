@@ -1,60 +1,307 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Journal — à quoi sert-il</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 900px; box-sizing: border-box; background: #a8959d; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
-  <div aria-hidden="true" style="flex-grow: 1; padding: 20px 16px; box-sizing: border-box; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; color: #6b5661">Journal du groupe</div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Journal — à quoi sert-il</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 900px;
+          box-sizing: border-box;
+          background: #a8959d;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        "
+      >
+        <div
+          aria-hidden="true"
+          style="
+            flex-grow: 1;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            font-family: 'Outfit', system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #6b5661;
+          "
+        >
+          Journal du groupe
+        </div>
 
-  <section aria-label="À quoi sert le journal ?" style="background: #ffffff; border-radius: 32px 32px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 14px">
-    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #ffd9cc"></span>
-    <div style="display: flex; flex-direction: column; gap: 4px">
-      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">À quoi sert le journal ?</h1>
-      <p style="margin: 0; font-size: 15px; line-height: 1.4; color: #6b5a7a">À garder le tirage honnête. Tricher reste possible, mais ça se voit.</p>
-    </div>
-    <div style="display: flex; align-items: flex-start; gap: 12px">
-      <span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg></span>
-      <div style="display: flex; flex-direction: column; gap: 1px">
-        <h2 style="margin: 0; font-family: inherit; font-size: 15px; line-height: 1.4; font-weight: 700">Il note</h2>
-        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a">Le tirage, chaque lien envoyé ou régénéré, chaque résultat découvert, et tout accès de l’organisateur à un résultat.</p>
+        <section
+          aria-label="À quoi sert le journal ?"
+          style="
+            background: #ffffff;
+            border-radius: 32px 32px 0 0;
+            padding: 10px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          "
+        >
+          <span
+            aria-hidden="true"
+            style="
+              align-self: center;
+              width: 44px;
+              height: 5px;
+              border-radius: 999px;
+              background: #ffd9cc;
+            "
+          ></span>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <h1
+              style="
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 24px;
+                line-height: 1.15;
+              "
+            >
+              À quoi sert le journal ?
+            </h1>
+            <p
+              style="
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.4;
+                color: #6b5a7a;
+              "
+            >
+              À garder le tirage honnête. Tricher reste possible, mais ça se
+              voit.
+            </p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #ffe3de;
+                color: #c93425;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              "
+              ><svg
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"
+                /></svg
+            ></span>
+            <div style="display: flex; flex-direction: column; gap: 1px">
+              <h2
+                style="
+                  margin: 0;
+                  font-family: inherit;
+                  font-size: 15px;
+                  line-height: 1.4;
+                  font-weight: 700;
+                "
+              >
+                Il note
+              </h2>
+              <p
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  line-height: 1.4;
+                  color: #6b5a7a;
+                "
+              >
+                Le tirage, chaque lien envoyé ou régénéré, chaque résultat
+                découvert, et tout accès de l’organisateur à un résultat.
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #dcf7ee;
+                color: #0b7a5b;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              "
+              ><svg
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="4" y="11" width="16" height="10" rx="2" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg
+            ></span>
+            <div style="display: flex; flex-direction: column; gap: 1px">
+              <h2
+                style="
+                  margin: 0;
+                  font-family: inherit;
+                  font-size: 15px;
+                  line-height: 1.4;
+                  font-weight: 700;
+                "
+              >
+                Il ne dit jamais
+              </h2>
+              <p
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  line-height: 1.4;
+                  color: #6b5a7a;
+                "
+              >
+                Qui offre à qui, ni les pistes de cadeaux de chacun.
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #ffeae1;
+                color: #6b5a7a;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              "
+              ><svg
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path
+                  d="M22 21v-2a4 4 0 0 0-3-3.870M16 3.130a4 4 0 0 1 0 7.750"
+                /></svg
+            ></span>
+            <div style="display: flex; flex-direction: column; gap: 1px">
+              <h2
+                style="
+                  margin: 0;
+                  font-family: inherit;
+                  font-size: 15px;
+                  line-height: 1.4;
+                  font-weight: 700;
+                "
+              >
+                Tout le groupe le voit
+              </h2>
+              <p
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  line-height: 1.4;
+                  color: #6b5a7a;
+                "
+              >
+                Participants et organisateur, avec les mêmes lignes.
+              </p>
+            </div>
+          </div>
+          <p
+            style="
+              margin: 0;
+              padding: 10px 12px;
+              border-radius: 18px;
+              background: #f1e8fc;
+              box-shadow: 0 0 0 1px #cbb2ee;
+              color: #6a3db3;
+              font-size: 14px;
+              line-height: 1.4;
+            "
+          >
+            Une ligne te concerne et ne vient pas de toi ? Préviens ton
+            organisateur : il peut régénérer ton lien.
+          </p>
+          <a
+            href="Journal.dc.html"
+            style="
+              height: 52px;
+              border-radius: 16px;
+              background: #d93a2b;
+              color: #ffffff;
+              font-size: 17px;
+              font-weight: 700;
+              text-decoration: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+            >J’ai compris</a
+          >
+        </section>
       </div>
-    </div>
-    <div style="display: flex; align-items: flex-start; gap: 12px">
-      <span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #dcf7ee; color: #0b7a5b; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-      <div style="display: flex; flex-direction: column; gap: 1px">
-        <h2 style="margin: 0; font-family: inherit; font-size: 15px; line-height: 1.4; font-weight: 700">Il ne dit jamais</h2>
-        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a">Qui offre à qui, ni les pistes de cadeaux de chacun.</p>
-      </div>
-    </div>
-    <div style="display: flex; align-items: flex-start; gap: 12px">
-      <span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #ffeae1; color: #6b5a7a; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.870M16 3.130a4 4 0 0 1 0 7.750"/></svg></span>
-      <div style="display: flex; flex-direction: column; gap: 1px">
-        <h2 style="margin: 0; font-family: inherit; font-size: 15px; line-height: 1.4; font-weight: 700">Tout le groupe le voit</h2>
-        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a">Participants et organisateur, avec les mêmes lignes.</p>
-      </div>
-    </div>
-    <p style="margin: 0; padding: 10px 12px; border-radius: 18px; background: #f1e8fc; box-shadow: 0 0 0 1px #cbb2ee; color: #6a3db3; font-size: 14px; line-height: 1.4">Une ligne te concerne et ne vient pas de toi ? Préviens ton organisateur : il peut régénérer ton lien.</p>
-    <a href="Journal.dc.html" style="height: 52px; border-radius: 16px; background: #d93a2b; color: #ffffff; font-size: 17px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center">J’ai compris</a>
-  </section>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":900}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

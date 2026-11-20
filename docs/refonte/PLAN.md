@@ -2014,7 +2014,8 @@ Codé le 20 novembre 2026, puis repris le même jour après l'essai de Julien (�
 
 Codée le 20 novembre 2026. Tranché seul, à relire :
 
-1. **Dans le document de celui qui tient la liste aussi, plus de « Changer »** : la case verte d'une idée que j'offre ouvre le panneau (avant, elle décochait d'un coup). La ligne entière n'est pas le bouton, comme par le lien : dans le document, toucher le texte l'écrit.
+1. **Dans le document de celui qui tient la liste aussi, plus de « Changer »** : c'est la pastille de mon état (« Tu l'offres », « Tu participes ») qui ouvre le panneau. La ligne entière n'est pas le bouton, comme par le lien : dans le document, toucher le texte l'écrit.
+1 bis. **La case verte décoche tout de suite, sans panneau** (Julien, 20 novembre 2026, en essayant : par le lien, toucher la coche ne faisait rien, la ligne-bouton passait dessous). Par le lien comme dans le document ; **tranché seul** : aussi pour un cadeau à plusieurs, où elle me retire du groupe. Pas de « Annuler » : on recoche.
 2. **Mon état est la même pastille dans le document** : « Tu l'offres », « Tu participes ». « seul » et « à plusieurs » ne sont plus écrits, les pastilles des autres le disent.
 3. **« 7 personnes » au-delà de trois autres, seulement pour qui ne peut pas décocher** : ceux qui tiennent la liste gardent une pastille par prénom, puisque chacune décoche sa personne (Correction 25).
 4. **« À plusieurs » et « Pris à l'instant »**, cités dans les familles, ne servent pas : les prénoms disent qu'un cadeau est à plusieurs, et une case prise à l'instant passe en « pris » toute seule (lot 26).

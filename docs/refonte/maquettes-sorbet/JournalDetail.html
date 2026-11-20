@@ -1,46 +1,204 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Journal — détail d'un événement</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #a8959d; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
-  <div aria-hidden="true" style="height: 230px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; color: #6b5661">Journal du groupe</div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Journal — détail d'un événement</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 844px;
+          box-sizing: border-box;
+          background: #a8959d;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        "
+      >
+        <div
+          aria-hidden="true"
+          style="
+            height: 230px;
+            flex-shrink: 0;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            font-family: 'Outfit', system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #6b5661;
+          "
+        >
+          Journal du groupe
+        </div>
 
-  <section aria-label="Accès de dernier recours" style="flex-grow: 1; background: #ffffff; border-radius: 32px 32px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 16px">
-    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #ffd9cc"></span>
-    <div style="display: flex; align-items: center; gap: 12px">
-      <span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; background: #7b4bc4; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.500 12S6 5 12 5s9.500 7 9.500 7-3.500 7-9.500 7-9.500-7-9.500-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
-      <div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 22px; line-height: 1.15">Accès de dernier recours</h1><p style="margin: 0; font-size: 14px; color: #6b5a7a">Dimanche 15 novembre à 14:02</p></div>
-    </div>
-    <p style="margin: 0; padding: 12px 14px; border-radius: 18px; background: #f1e8fc; box-shadow: 0 0 0 1px #cbb2ee; font-family: 'Outfit', system-ui, sans-serif; font-weight: 600; font-size: 16px; line-height: 1.35; color: #3b2463">L’organisateur a consulté le résultat de Hugo</p>
-    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5">
-      <p style="margin: 0"><strong>Ce qui s’est passé.</strong> L’organisateur a regardé à qui Hugo offre un cadeau. Il n’a vu que ce résultat-là.</p>
-      <p style="margin: 0"><strong>Pourquoi c’est permis.</strong> En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tout le groupe le sache.</p>
-      <p style="margin: 0"><strong>Ce que ça change pour toi.</strong> Rien : ton résultat et ta liste n’ont pas été vus.</p>
-    </div>
-    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px">
-      <a href="Journal.dc.html" style="height: 52px; border-radius: 16px; background: #d93a2b; color: #ffffff; font-size: 17px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center">J’ai compris</a>
-    </div>
-  </section>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+        <section
+          aria-label="Accès de dernier recours"
+          style="
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 32px 32px 0 0;
+            padding: 10px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          "
+        >
+          <span
+            aria-hidden="true"
+            style="
+              align-self: center;
+              width: 44px;
+              height: 5px;
+              border-radius: 999px;
+              background: #ffd9cc;
+            "
+          ></span>
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: #7b4bc4;
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              "
+              ><svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M2.500 12S6 5 12 5s9.500 7 9.500 7-3.500 7-9.500 7-9.500-7-9.500-7z"
+                />
+                <circle cx="12" cy="12" r="3" /></svg
+            ></span>
+            <div style="display: flex; flex-direction: column; gap: 2px">
+              <h1
+                style="
+                  margin: 0;
+                  font-family: 'Outfit', system-ui, sans-serif;
+                  font-weight: 700;
+                  font-size: 22px;
+                  line-height: 1.15;
+                "
+              >
+                Accès de dernier recours
+              </h1>
+              <p style="margin: 0; font-size: 14px; color: #6b5a7a">
+                Dimanche 15 novembre à 14:02
+              </p>
+            </div>
+          </div>
+          <p
+            style="
+              margin: 0;
+              padding: 12px 14px;
+              border-radius: 18px;
+              background: #f1e8fc;
+              box-shadow: 0 0 0 1px #cbb2ee;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 600;
+              font-size: 16px;
+              line-height: 1.35;
+              color: #3b2463;
+            "
+          >
+            L’organisateur a consulté le résultat de Hugo
+          </p>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              font-size: 15px;
+              line-height: 1.5;
+            "
+          >
+            <p style="margin: 0">
+              <strong>Ce qui s’est passé.</strong> L’organisateur a regardé à
+              qui Hugo offre un cadeau. Il n’a vu que ce résultat-là.
+            </p>
+            <p style="margin: 0">
+              <strong>Pourquoi c’est permis.</strong> En cas de doute ou de
+              désaccord, il faut pouvoir vérifier. L’organisateur doit recopier
+              une phrase et accepter que tout le groupe le sache.
+            </p>
+            <p style="margin: 0">
+              <strong>Ce que ça change pour toi.</strong> Rien : ton résultat et
+              ta liste n’ont pas été vus.
+            </p>
+          </div>
+          <div
+            style="
+              margin-top: auto;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            "
+          >
+            <a
+              href="Journal.dc.html"
+              style="
+                height: 52px;
+                border-radius: 16px;
+                background: #d93a2b;
+                color: #ffffff;
+                font-size: 17px;
+                font-weight: 700;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >J’ai compris</a
+            >
+          </div>
+        </section>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":844}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

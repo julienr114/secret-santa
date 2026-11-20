@@ -1,142 +1,933 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Édition — choisir les participants</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 1180px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
-  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #ffd9cc; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
-    <div>
-      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425">
-      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      Under the Tree
-    </div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <title>Édition — choisir les participants</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 1180px;
+          box-sizing: border-box;
+          background: #fff6f1;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <header
+          style="
+            height: 56px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-bottom: 1px solid #ffd9cc;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 12px;
+          "
+        >
+          <div>
+            <button
+              aria-label="Retour"
+              style="
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: #2b1b3d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 18px;
+              color: #c93425;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
+              />
+            </svg>
+            Under the Tree
+          </div>
+          <button
+            aria-label="Menu"
+            style="
+              justify-self: end;
+              width: 44px;
+              height: 44px;
+              border: 0;
+              background: transparent;
+              color: #2b1b3d;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
 
-  <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px; flex-grow: 1">
-    <div style="display: flex; flex-direction: column; gap: 4px">
-      <nav aria-label="Tu es ici" style="margin: -14px 0 -12px; display: flex; align-items: center; gap: 6px; color: #6b5a7a"><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #6b5a7a; text-decoration: none">Famille Camille</a><span aria-hidden="true">·</span><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #6b5a7a; text-decoration: none">Noël 2026</a></nav>
-      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Choisir les participants</h1>
-      <p style="margin: 0; font-size: 15px; color: #6b5a7a">Coche ceux qui participent.</p>
-    </div>
-    <section style="display: flex; flex-direction: column; gap: 6px">
-      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px">
-        <h2 style="margin: 0; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">8 membres du groupe</h2>
-        <button style="min-height: 44px; padding: 0; border: 0; background: transparent; color: #c93425; font-family: inherit; font-size: 14px; font-weight: 700">Tout cocher</button>
+        <main
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 20px 16px 32px;
+            flex-grow: 1;
+          "
+        >
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <nav
+              aria-label="Tu es ici"
+              style="
+                margin: -14px 0 -12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #6b5a7a;
+              "
+            >
+              <a
+                href="#"
+                style="
+                  min-height: 44px;
+                  display: flex;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b5a7a;
+                  text-decoration: none;
+                "
+                >Famille Camille</a
+              ><span aria-hidden="true">·</span
+              ><a
+                href="#"
+                style="
+                  min-height: 44px;
+                  display: flex;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b5a7a;
+                  text-decoration: none;
+                "
+                >Noël 2026</a
+              >
+            </nav>
+            <h1
+              style="
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 30px;
+                line-height: 1.1;
+              "
+            >
+              Choisir les participants
+            </h1>
+            <p style="margin: 0; font-size: 15px; color: #6b5a7a">
+              Coche ceux qui participent.
+            </p>
+          </div>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 4px;
+              "
+            >
+              <h2
+                style="
+                  margin: 0;
+                  font-family: inherit;
+                  font-size: 12px;
+                  font-weight: 700;
+                  letter-spacing: 0.04em;
+                  text-transform: uppercase;
+                  color: #6b5a7a;
+                "
+              >
+                8 membres du groupe
+              </h2>
+              <button
+                style="
+                  min-height: 44px;
+                  padding: 0;
+                  border: 0;
+                  background: transparent;
+                  color: #c93425;
+                  font-family: inherit;
+                  font-size: 14px;
+                  font-weight: 700;
+                "
+              >
+                Tout cocher
+              </button>
+            </div>
+            <ul
+              style="
+                list-style: none;
+                margin: 0 -16px;
+                padding: 0;
+                background: #ffffff;
+                border-top: 1px solid #ffd9cc;
+                border-bottom: 1px solid #ffd9cc;
+              "
+            >
+              <li>
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #e6d6f8 42%,
+                        #b993dd 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🦌</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px"
+                      >Camille</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >camille-demo@example.com</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #ffe9a8 42%,
+                        #f4b82e 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🐧</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Hugo</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >hugo-demo@example.com</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #ffe9a8 42%,
+                        #f4b82e 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🍭</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Inès</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >ines-demo@example.com</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #cfe6ff 42%,
+                        #6eb0f2 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🧣</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Léa</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >lea-demo@example.com</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #ffe9a8 42%,
+                        #f4b82e 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🎄</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Louis</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >louis-demo@example.com</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #c6f1e2 42%,
+                        #4fcaa3 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🕯️</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px"
+                      >Mamie Jo</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >A participé à Noël 2025</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #e6d6f8 42%,
+                        #b993dd 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🐧</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Rose</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >Pas d’adresse email</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    checked
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+              <li style="border-top: 1px solid #ffd9cc">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: linear-gradient(
+                        150deg,
+                        #ffffff 0%,
+                        #ffe2c4 42%,
+                        #f2a65a 135%
+                      );
+                      box-shadow:
+                        0 0 0 2px #ffffff,
+                        0 3px 8px rgba(90, 40, 60, 0.22);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 18px;
+                      flex-shrink: 0;
+                    "
+                    >🍪</span
+                  >
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                    ><span style="font-weight: 600; font-size: 16px">Zoé</span
+                    ><span style="font-size: 13px; color: #6b5a7a"
+                      >Pas d’adresse email</span
+                    ></span
+                  >
+                  <input
+                    type="checkbox"
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      margin: 0;
+                      accent-color: #d93a2b;
+                      flex-shrink: 0;
+                    "
+                  />
+                </label>
+              </li>
+            </ul>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h2
+              style="
+                margin: 0;
+                padding: 0 4px;
+                font-family: inherit;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #6b5a7a;
+              "
+            >
+              Quelqu’un de nouveau
+            </h2>
+            <ul
+              style="
+                list-style: none;
+                margin: 0 -16px;
+                padding: 0;
+                background: #ffffff;
+                border-top: 1px solid #ffd9cc;
+                border-bottom: 1px solid #ffd9cc;
+              "
+            >
+              <li>
+                <a
+                  href="PersonneNouvelle.dc.html"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                    color: #2b1b3d;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: #ffe3de;
+                      color: #c93425;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M19 8v6M22 11h-6" /></svg
+                  ></span>
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                  >
+                    <span style="font-weight: 600; font-size: 16px"
+                      >Créer une personne</span
+                    >
+                    <span
+                      style="font-size: 14px; line-height: 1.35; color: #6b5a7a"
+                      >Elle rejoint le groupe et cette édition</span
+                    >
+                  </span>
+                  <span style="color: #796987; display: flex; flex-shrink: 0"
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" /></svg
+                  ></span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="GroupeInvitation.dc.html"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-height: 60px;
+                    padding: 8px 16px;
+                    box-sizing: border-box;
+                    border-top: 1px solid #ffd9cc;
+                    text-decoration: none;
+                    color: #2b1b3d;
+                  "
+                >
+                  <span
+                    aria-hidden="true"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      background: #ffe3de;
+                      color: #c93425;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"
+                      /></svg
+                  ></span>
+                  <span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                    "
+                  >
+                    <span style="font-weight: 600; font-size: 16px"
+                      >Inviter par lien</span
+                    >
+                    <span
+                      style="font-size: 14px; line-height: 1.35; color: #6b5a7a"
+                      >Chacun s’inscrit lui-même</span
+                    >
+                  </span>
+                  <span style="color: #796987; display: flex; flex-shrink: 0"
+                    ><svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" /></svg
+                  ></span>
+                </a>
+              </li>
+            </ul>
+          </section>
+        </main>
+        <footer
+          style="
+            flex-shrink: 0;
+            background: #ffffff;
+            border-top: 1px solid #ffd9cc;
+            padding: 14px 16px 20px;
+          "
+        >
+          <button
+            style="
+              width: 100%;
+              height: 52px;
+              border: 0;
+              border-radius: 16px;
+              background: #d93a2b;
+              color: #ffffff;
+              font-family: inherit;
+              font-size: 17px;
+              font-weight: 700;
+            "
+          >
+            Enregistrer · 6 participants
+          </button>
+        </footer>
       </div>
-      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
-        <li>
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🦌</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Camille</span><span style="font-size: 13px; color: #6b5a7a">camille-demo@example.com</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🐧</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Hugo</span><span style="font-size: 13px; color: #6b5a7a">hugo-demo@example.com</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🍭</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Inès</span><span style="font-size: 13px; color: #6b5a7a">ines-demo@example.com</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #cfe6ff 42%, #6eb0f2 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🧣</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Léa</span><span style="font-size: 13px; color: #6b5a7a">lea-demo@example.com</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🎄</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Louis</span><span style="font-size: 13px; color: #6b5a7a">louis-demo@example.com</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #c6f1e2 42%, #4fcaa3 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🕯️</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Mamie Jo</span><span style="font-size: 13px; color: #6b5a7a">A participé à Noël 2025</span></span>
-            <input type="checkbox" style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🐧</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Rose</span><span style="font-size: 13px; color: #6b5a7a">Pas d’adresse email</span></span>
-            <input type="checkbox" checked style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-        <li style="border-top: 1px solid #ffd9cc">
-          <label style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe2c4 42%, #f2a65a 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🍪</span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 16px">Zoé</span><span style="font-size: 13px; color: #6b5a7a">Pas d’adresse email</span></span>
-            <input type="checkbox" style="width: 24px; height: 24px; margin: 0; accent-color: #d93a2b; flex-shrink: 0">
-          </label>
-        </li>
-      </ul>
-    </section>
-    <section style="display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Quelqu’un de nouveau</h2>
-      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
-        <li>
-          <a href="PersonneNouvelle.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Créer une personne</span>
-              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Elle rejoint le groupe et cette édition</span>
-            </span>
-            <span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-          </a>
-        </li>
-        <li>
-          <a href="GroupeInvitation.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc; text-decoration: none; color: #2b1b3d">
-            <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ffe3de; color: #c93425; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Inviter par lien</span>
-              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Chacun s’inscrit lui-même</span>
-            </span>
-            <span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-          </a>
-        </li>
-      </ul>
-    </section>
-  </main>
-  <footer style="flex-shrink: 0; background: #ffffff; border-top: 1px solid #ffd9cc; padding: 14px 16px 20px">
-    <button style="width: 100%; height: 52px; border: 0; border-radius: 16px; background: #d93a2b; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700">Enregistrer · 6 participants</button>
-  </footer>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":1180}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

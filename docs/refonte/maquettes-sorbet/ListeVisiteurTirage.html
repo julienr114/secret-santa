@@ -1,74 +1,1443 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Listes — ouverte depuis un tirage : cocher en anonyme</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 1680px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
-  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
-    <div><button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
-    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Under the Tree</div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-  </header>
-  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 8px 16px 24px">
-    <div data-mode="anonyme" style="position: sticky; top: 8px; z-index: 2; border-radius: 24px; background: #5b3a55; color: #ffffff; box-shadow: 0 4px 14px rgba(91, 58, 85, 0.3)"><label style="min-height: 48px; padding: 0 8px 0 14px; display: flex; align-items: center; gap: 8px"><span style="display: flex; color: #ffffff"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10c0-1.700 1.300-3 3-3h12c1.700 0 3 1.300 3 3v1c0 2.800-2.200 5-5 5-1.600 0-2.600-.900-3.200-2-.300-.500-.600-.800-.800-.800s-.500.300-.800.800C10.600 15.100 9.600 16 8 16c-2.800 0-5-2.200-5-5z"/><circle cx="8" cy="11" r="1.300"/><circle cx="16" cy="11" r="1.300"/></svg></span><span style="flex-grow: 1; font-size: 14px; font-weight: 700">Mode anonyme</span><button aria-expanded="false" aria-label="Pourquoi ?" style="width: 36px; height: 36px; border: 0; background: transparent; color: #ead2e2; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.500 9a2.500 2.500 0 1 1 3.500 2.300c-.600.300-1 .900-1 1.600V14M12 17h.01"/></svg></button><span role="switch" aria-checked="true" aria-label="Mode anonyme" style="width: 48px; height: 28px; border-radius: 999px; background: #ffffff; position: relative; flex-shrink: 0;"><span style="position: absolute; top: 3px; left: 23px; width: 22px; height: 22px; border-radius: 50%; background: #5b3a55; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25)"></span></span></label><div data-note="tirage" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1; padding-top: 10px"><span aria-hidden="true" style="position: absolute; top: 4px; left: -16px; right: -16px; height: 480px; z-index: -1; background: linear-gradient(to bottom, rgba(91, 58, 85, 0.3), rgba(91, 58, 85, 0.22) 55%, rgba(91, 58, 85, 0)); pointer-events: none"></span><div role="status" style="position: relative; padding: 14px 16px 6px; border-radius: 28px; background: #ffffff; color: #2b1b3d; box-shadow: 0 0 0 1.5px #5b3a55, 0 14px 44px 6px rgba(91, 58, 85, 0.45); display: flex; flex-direction: column; gap: 6px"><span aria-hidden="true" style="position: absolute; top: -7px; right: 26px; width: 12px; height: 12px; background: #ffffff; border-left: 1.5px solid #5b3a55; border-top: 1.5px solid #5b3a55; transform: rotate(45deg)"></span><p style="margin: 0; font-size: 15px; font-weight: 700; line-height: 1.35; color: #2b1b3d">On a activé le mode anonyme pour toi</p><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Tu offres un cadeau dans un tirage à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.</p><button style="align-self: flex-end; min-height: 40px; padding: 0 4px; border: 0; background: transparent; color: #5b3a55; font-family: inherit; font-size: 15px; font-weight: 700">Compris</button></div></div></div>
-    <div style="display: flex; flex-direction: column; gap: 10px">
-      <span aria-hidden="true" style="width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(150deg, #cfe6ff 0%, #6eb0f2 110%); box-shadow: 0 0 0 4px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); transform: rotate(-3deg); display: flex; align-items: center; justify-content: center; font-size: 37px; line-height: 1; flex-shrink: 0">❄️</span>
-      <h1 style="margin: 4px 0 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 34px; line-height: 1.1">Noël 2026</h1><p style="margin: 0; font-size: 15px; line-height: 1.4; color: #6b5a7a">Le 25 décembre</p>
-      <p style="margin: 0; font-size: 16px; line-height: 1.5">Quelques idées pour t’éviter de chercher. Coche ce que tu offres, et personne n’aura la même idée. Tu en as une autre ? Elle est la bienvenue.</p><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">La liste de Camille et Hugo. Tu offres 2 cadeaux.</p>
-    </div><section style="display: flex; flex-direction: column; gap: 2px">
-      <div style="display: flex; align-items: center; gap: 12px">
-        <span aria-hidden="true" style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #cfe6ff 42%, #6eb0f2 135%); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 23px; flex-shrink: 0">🚀</span>
-        <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
-          <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1.15">Léo</h2>
-          <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a">6 ans · taille 6 ans, pointure 30 · <a href="ListePersonne.dc.html" style="color: #c93425; text-decoration: underline">ses goûts</a></p>
-        </div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Listes — ouverte depuis un tirage : cocher en anonyme</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 1680px;
+          box-sizing: border-box;
+          background: #fff6f1;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <header
+          style="
+            height: 56px;
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 12px;
+          "
+        >
+          <div>
+            <button
+              aria-label="Retour"
+              style="
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: #2b1b3d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 18px;
+              color: #c93425;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
+              /></svg
+            >Under the Tree
+          </div>
+          <button
+            aria-label="Menu"
+            style="
+              justify-self: end;
+              width: 44px;
+              height: 44px;
+              border: 0;
+              background: transparent;
+              color: #2b1b3d;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
+        <main
+          style="
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 8px 16px 24px;
+          "
+        >
+          <div
+            data-mode="anonyme"
+            style="
+              position: sticky;
+              top: 8px;
+              z-index: 2;
+              border-radius: 24px;
+              background: #5b3a55;
+              color: #ffffff;
+              box-shadow: 0 4px 14px rgba(91, 58, 85, 0.3);
+            "
+          >
+            <label
+              style="
+                min-height: 48px;
+                padding: 0 8px 0 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+              ><span style="display: flex; color: #ffffff"
+                ><svg
+                  aria-hidden="true"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 10c0-1.700 1.300-3 3-3h12c1.700 0 3 1.300 3 3v1c0 2.800-2.200 5-5 5-1.600 0-2.600-.900-3.200-2-.300-.500-.600-.800-.800-.800s-.500.300-.800.800C10.600 15.100 9.600 16 8 16c-2.800 0-5-2.200-5-5z"
+                  />
+                  <circle cx="8" cy="11" r="1.300" />
+                  <circle cx="16" cy="11" r="1.300" /></svg></span
+              ><span style="flex-grow: 1; font-size: 14px; font-weight: 700"
+                >Mode anonyme</span
+              ><button
+                aria-expanded="false"
+                aria-label="Pourquoi ?"
+                style="
+                  width: 36px;
+                  height: 36px;
+                  border: 0;
+                  background: transparent;
+                  color: #ead2e2;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 0;
+                "
+              >
+                <svg
+                  aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path
+                    d="M9.500 9a2.500 2.500 0 1 1 3.500 2.300c-.600.300-1 .900-1 1.600V14M12 17h.01"
+                  />
+                </svg></button
+              ><span
+                role="switch"
+                aria-checked="true"
+                aria-label="Mode anonyme"
+                style="
+                  width: 48px;
+                  height: 28px;
+                  border-radius: 999px;
+                  background: #ffffff;
+                  position: relative;
+                  flex-shrink: 0;
+                "
+                ><span
+                  style="
+                    position: absolute;
+                    top: 3px;
+                    left: 23px;
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 50%;
+                    background: #5b3a55;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+                  "
+                ></span></span
+            ></label>
+            <div
+              data-note="tirage"
+              style="
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                z-index: 1;
+                padding-top: 10px;
+              "
+            >
+              <span
+                aria-hidden="true"
+                style="
+                  position: absolute;
+                  top: 4px;
+                  left: -16px;
+                  right: -16px;
+                  height: 480px;
+                  z-index: -1;
+                  background: linear-gradient(
+                    to bottom,
+                    rgba(91, 58, 85, 0.3),
+                    rgba(91, 58, 85, 0.22) 55%,
+                    rgba(91, 58, 85, 0)
+                  );
+                  pointer-events: none;
+                "
+              ></span>
+              <div
+                role="status"
+                style="
+                  position: relative;
+                  padding: 14px 16px 6px;
+                  border-radius: 28px;
+                  background: #ffffff;
+                  color: #2b1b3d;
+                  box-shadow:
+                    0 0 0 1.5px #5b3a55,
+                    0 14px 44px 6px rgba(91, 58, 85, 0.45);
+                  display: flex;
+                  flex-direction: column;
+                  gap: 6px;
+                "
+              >
+                <span
+                  aria-hidden="true"
+                  style="
+                    position: absolute;
+                    top: -7px;
+                    right: 26px;
+                    width: 12px;
+                    height: 12px;
+                    background: #ffffff;
+                    border-left: 1.5px solid #5b3a55;
+                    border-top: 1.5px solid #5b3a55;
+                    transform: rotate(45deg);
+                  "
+                ></span>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 15px;
+                    font-weight: 700;
+                    line-height: 1.35;
+                    color: #2b1b3d;
+                  "
+                >
+                  On a activé le mode anonyme pour toi
+                </p>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    line-height: 1.45;
+                    color: #6b5a7a;
+                  "
+                >
+                  Tu offres un cadeau dans un tirage à quelqu’un de cette liste
+                  : tes coches ne diront pas ton prénom. Tu peux le désactiver
+                  là-haut, par exemple pour offrir aussi un cadeau sous ton
+                  prénom.
+                </p>
+                <button
+                  style="
+                    align-self: flex-end;
+                    min-height: 40px;
+                    padding: 0 4px;
+                    border: 0;
+                    background: transparent;
+                    color: #5b3a55;
+                    font-family: inherit;
+                    font-size: 15px;
+                    font-weight: 700;
+                  "
+                >
+                  Compris
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 72px;
+                height: 72px;
+                border-radius: 22px;
+                background: linear-gradient(150deg, #cfe6ff 0%, #6eb0f2 110%);
+                box-shadow:
+                  0 0 0 4px #ffffff,
+                  0 3px 8px rgba(90, 40, 60, 0.22);
+                transform: rotate(-3deg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 37px;
+                line-height: 1;
+                flex-shrink: 0;
+              "
+              >❄️</span
+            >
+            <h1
+              style="
+                margin: 4px 0 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 34px;
+                line-height: 1.1;
+              "
+            >
+              Noël 2026
+            </h1>
+            <p
+              style="
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.4;
+                color: #6b5a7a;
+              "
+            >
+              Le 25 décembre
+            </p>
+            <p style="margin: 0; font-size: 16px; line-height: 1.5">
+              Quelques idées pour t’éviter de chercher. Coche ce que tu offres,
+              et personne n’aura la même idée. Tu en as une autre ? Elle est la
+              bienvenue.
+            </p>
+            <p
+              style="
+                margin: 0;
+                font-size: 14px;
+                line-height: 1.45;
+                color: #6b5a7a;
+              "
+            >
+              La liste de Camille et Hugo. Tu offres 2 cadeaux.
+            </p>
+          </div>
+          <section style="display: flex; flex-direction: column; gap: 2px">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span
+                aria-hidden="true"
+                style="
+                  width: 52px;
+                  height: 52px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #cfe6ff 42%,
+                    #6eb0f2 135%
+                  );
+                  box-shadow:
+                    0 0 0 3px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 23px;
+                  flex-shrink: 0;
+                "
+                >🚀</span
+              >
+              <div
+                style="
+                  min-width: 0;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 2px;
+                "
+              >
+                <h2
+                  style="
+                    margin: 0;
+                    font-family: 'Outfit', system-ui, sans-serif;
+                    font-weight: 700;
+                    font-size: 26px;
+                    line-height: 1.15;
+                  "
+                >
+                  Léo
+                </h2>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    color: #6b5a7a;
+                  "
+                >
+                  6 ans · taille 6 ans, pointure 30 ·
+                  <a
+                    href="ListePersonne.dc.html"
+                    style="color: #c93425; text-decoration: underline"
+                    >ses goûts</a
+                  >
+                </p>
+              </div>
+            </div>
+            <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
+              <li>
+                <a
+                  href="ListeReserver.dc.html"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      background: #0b7a5b;
+                      color: #ffffff;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m5 12 5 5 9-10" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d; font-weight: 600"
+                      >Circuit de billes, le grand modèle</span
+                    ><span
+                      data-lien="3"
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        margin-top: 1px;
+                        font-size: 16px;
+                        line-height: 22px;
+                        font-style: italic;
+                        font-weight: 400;
+                        color: #5f37a6;
+                        text-decoration: none;
+                      "
+                      ><svg
+                        aria-hidden="true"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="flex-shrink: 0"
+                      >
+                        <path
+                          d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"
+                        />
+                        <path
+                          d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"
+                        /></svg
+                      ><span
+                        style="
+                          min-width: 0;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                        "
+                        >lutin-jouets.fr</span
+                      ></span
+                    ><span
+                      data-par="1"
+                      style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 6px;
+                        margin-top: 6px;
+                        text-decoration: none;
+                      "
+                      ><span
+                        data-chip="anonyme"
+                        style="
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 4px;
+                          font-size: 12px;
+                          line-height: 20px;
+                          font-weight: 600;
+                          letter-spacing: 0.01em;
+                          border-radius: 999px;
+                          text-decoration: none;
+                          white-space: nowrap;
+                          color: #ffffff;
+                          background: #5b3a55;
+                          padding: 1px 9px 1px 7px;
+                        "
+                        ><svg
+                          aria-hidden="true"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          style="flex-shrink: 0"
+                        >
+                          <path
+                            d="M2.500 9.500c0-1.500 1-2.500 2.500-2.500 2.500 0 4.500 1.500 7 1.500s4.500-1.500 7-1.500c1.500 0 2.500 1 2.500 2.500 0 4.500-2.500 7.500-5.500 7.500-2 0-2.700-1.800-4-1.800s-2 1.800-4 1.800c-3 0-5.500-3-5.500-7.500z"
+                          />
+                          <path d="M7 11.500h2.500M14.500 11.500H17" /></svg
+                        >Tu l’offres en anonyme</span
+                      ></span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      background: #f5b8a5;
+                      color: #ffffff;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m5 12 5 5 9-10" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #796987; text-decoration: line-through"
+                      >Déguisement de pompier (taille 6 ans)</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="ListeRejoindre.dc.html"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      background: #0b7a5b;
+                      color: #ffffff;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m5 12 5 5 9-10" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 6px;
+                    "
+                    ><span
+                      style="
+                        font-size: 16px;
+                        line-height: 1.45;
+                        color: #2b1b3d;
+                        font-weight: 600;
+                      "
+                      >Vélo 16 pouces</span
+                    ><span
+                      data-par="1"
+                      style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 6px;
+                        text-decoration: none;
+                      "
+                      ><span
+                        data-chip="info"
+                        style="
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 4px;
+                          font-size: 12px;
+                          line-height: 20px;
+                          font-weight: 600;
+                          letter-spacing: 0.01em;
+                          border-radius: 999px;
+                          text-decoration: none;
+                          white-space: nowrap;
+                          color: #6b5a7a;
+                          background: #ffeae1;
+                          padding: 1px 9px;
+                        "
+                        >Mamie</span
+                      ><span
+                        data-chip="info"
+                        style="
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 4px;
+                          font-size: 12px;
+                          line-height: 20px;
+                          font-weight: 600;
+                          letter-spacing: 0.01em;
+                          border-radius: 999px;
+                          text-decoration: none;
+                          white-space: nowrap;
+                          color: #6b5a7a;
+                          background: #ffeae1;
+                          padding: 1px 9px;
+                        "
+                        >Tonton</span
+                      ><span
+                        data-chip="etat"
+                        style="
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 4px;
+                          font-size: 12px;
+                          line-height: 20px;
+                          font-weight: 600;
+                          letter-spacing: 0.01em;
+                          border-radius: 999px;
+                          text-decoration: none;
+                          white-space: nowrap;
+                          color: #0b7a5b;
+                          background: #dcefe0;
+                          padding: 1px 9px 1px 7px;
+                        "
+                        ><svg
+                          aria-hidden="true"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          style="flex-shrink: 0"
+                        >
+                          <path d="m5 12.500 4.500 4.500L19 7.500" /></svg
+                        >Tu participes</span
+                      ></span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px solid #f5b8a5;
+                      background: #ffffff;
+                    "
+                  ></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d"
+                      >Livres sur les dinosaures (il les a presque tous,
+                      demandez-nous)</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      background: #f5b8a5;
+                      color: #ffffff;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m5 12 5 5 9-10" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #796987; text-decoration: line-through"
+                      >Un cadeau surprise, hors liste</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="ListeHorsListe.dc.html"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px dashed #f5b8a5;
+                      color: #c93425;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 5v14M5 12h14" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #c93425; font-weight: 700"
+                      >J’offre autre chose à Léo</span
+                    ></span
+                  ></a
+                >
+              </li>
+            </ul>
+          </section>
+          <section
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              margin-top: 44px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span
+                aria-hidden="true"
+                style="
+                  width: 52px;
+                  height: 52px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #e6d6f8 42%,
+                    #b993dd 135%
+                  );
+                  box-shadow:
+                    0 0 0 3px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 23px;
+                  flex-shrink: 0;
+                "
+                >🦄</span
+              >
+              <div
+                style="
+                  min-width: 0;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 2px;
+                "
+              >
+                <h2
+                  style="
+                    margin: 0;
+                    font-family: 'Outfit', system-ui, sans-serif;
+                    font-weight: 700;
+                    font-size: 26px;
+                    line-height: 1.15;
+                  "
+                >
+                  Zoé
+                </h2>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    color: #6b5a7a;
+                  "
+                >
+                  3 ans · taille 3 ans ·
+                  <a
+                    href="ListePersonne.dc.html"
+                    style="color: #c93425; text-decoration: underline"
+                    >ses goûts</a
+                  >
+                </p>
+              </div>
+            </div>
+            <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px solid #f5b8a5;
+                      background: #ffffff;
+                    "
+                  ></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d">Poupée en tissu</span></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      background: #f5b8a5;
+                      color: #ffffff;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m5 12 5 5 9-10" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #796987; text-decoration: line-through"
+                      >Draisienne</span
+                    ><span
+                      data-lien="3"
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        margin-top: 1px;
+                        font-size: 16px;
+                        line-height: 22px;
+                        font-style: italic;
+                        font-weight: 400;
+                        color: #5f37a6;
+                        text-decoration: none;
+                      "
+                      ><svg
+                        aria-hidden="true"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="flex-shrink: 0"
+                      >
+                        <path
+                          d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"
+                        />
+                        <path
+                          d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"
+                        /></svg
+                      ><span
+                        style="
+                          min-width: 0;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                        "
+                        >petit-velo.fr</span
+                      ></span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px solid #f5b8a5;
+                      background: #ffffff;
+                    "
+                  ></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d"
+                      >Des livres cartonnés, toujours</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="ListeHorsListe.dc.html"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px dashed #f5b8a5;
+                      color: #c93425;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 5v14M5 12h14" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #c93425; font-weight: 700"
+                      >J’offre autre chose à Zoé</span
+                    ></span
+                  ></a
+                >
+              </li>
+            </ul>
+          </section>
+          <section
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              margin-top: 44px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span
+                aria-hidden="true"
+                style="
+                  width: 52px;
+                  height: 52px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #e6d6f8 42%,
+                    #b993dd 135%
+                  );
+                  box-shadow:
+                    0 0 0 3px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 23px;
+                  flex-shrink: 0;
+                "
+                >🦌</span
+              >
+              <div
+                style="
+                  min-width: 0;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 2px;
+                "
+              >
+                <h2
+                  style="
+                    margin: 0;
+                    font-family: 'Outfit', system-ui, sans-serif;
+                    font-weight: 700;
+                    font-size: 26px;
+                    line-height: 1.15;
+                  "
+                >
+                  Camille
+                </h2>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    color: #6b5a7a;
+                  "
+                >
+                  <a
+                    href="ListePersonne.dc.html"
+                    style="color: #c93425; text-decoration: underline"
+                    >ses goûts</a
+                  >
+                </p>
+              </div>
+            </div>
+            <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px solid #f5b8a5;
+                      background: #ffffff;
+                    "
+                  ></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d"
+                      >Un bon couteau de cuisine</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px solid #f5b8a5;
+                      background: #ffffff;
+                    "
+                  ></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #2b1b3d"
+                      >Une carte cadeau pour un week-end</span
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="ListeHorsListe.dc.html"
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: 44px;
+                    padding: 13px 0;
+                    box-sizing: border-box;
+                    text-decoration: none;
+                  "
+                  ><span
+                    aria-hidden="true"
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      box-sizing: border-box;
+                      border-radius: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      margin-top: 1px;
+                      border: 2px dashed #f5b8a5;
+                      color: #c93425;
+                    "
+                    ><svg
+                      aria-hidden="true"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 5v14M5 12h14" /></svg></span
+                  ><span
+                    style="
+                      flex-grow: 1;
+                      min-width: 0;
+                      font-size: 16px;
+                      line-height: 1.45;
+                    "
+                    ><span style="color: #c93425; font-weight: 700"
+                      >J’offre autre chose à Camille</span
+                    ></span
+                  ></a
+                >
+              </li>
+            </ul>
+          </section>
+        </main>
       </div>
-      <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
-        <li><a href="ListeReserver.dc.html" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #0b7a5b; color: #ffffff"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d; font-weight: 600">Circuit de billes, le grand modèle</span><span data-lien="3" style="display: flex; align-items: center; gap: 6px; margin-top: 1px; font-size: 16px; line-height: 22px; font-style: italic; font-weight: 400; color: #5f37a6; text-decoration: none"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">lutin-jouets.fr</span></span><span data-par="1" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; text-decoration: none"><span data-chip="anonyme" style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 20px; font-weight: 600; letter-spacing: 0.01em; border-radius: 999px; text-decoration: none; white-space: nowrap; color: #ffffff; background: #5b3a55; padding: 1px 9px 1px 7px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M2.500 9.500c0-1.500 1-2.500 2.500-2.500 2.500 0 4.500 1.500 7 1.500s4.500-1.500 7-1.500c1.500 0 2.500 1 2.500 2.500 0 4.500-2.500 7.500-5.500 7.500-2 0-2.700-1.800-4-1.800s-2 1.800-4 1.800c-3 0-5.500-3-5.500-7.500z"/><path d="M7 11.500h2.500M14.500 11.500H17"/></svg>Tu l’offres en anonyme</span></span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #f5b8a5; color: #ffffff"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #796987; text-decoration: line-through">Déguisement de pompier (taille 6 ans)</span></span></a></li><li><a href="ListeRejoindre.dc.html" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #0b7a5b; color: #ffffff"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 16px; line-height: 1.45; color: #2b1b3d; font-weight: 600">Vélo 16 pouces</span><span data-par="1" style="display: flex; flex-wrap: wrap; gap: 6px; text-decoration: none"><span data-chip="info" style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 20px; font-weight: 600; letter-spacing: 0.01em; border-radius: 999px; text-decoration: none; white-space: nowrap; color: #6b5a7a; background: #ffeae1; padding: 1px 9px">Mamie</span><span data-chip="info" style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 20px; font-weight: 600; letter-spacing: 0.01em; border-radius: 999px; text-decoration: none; white-space: nowrap; color: #6b5a7a; background: #ffeae1; padding: 1px 9px">Tonton</span><span data-chip="etat" style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 20px; font-weight: 600; letter-spacing: 0.01em; border-radius: 999px; text-decoration: none; white-space: nowrap; color: #0b7a5b; background: #dcefe0; padding: 1px 9px 1px 7px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="m5 12.500 4.500 4.500L19 7.500"/></svg>Tu participes</span></span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px solid #f5b8a5; background: #ffffff"></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d">Livres sur les dinosaures (il les a presque tous, demandez-nous)</span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #f5b8a5; color: #ffffff"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #796987; text-decoration: line-through">Un cadeau surprise, hors liste</span></span></a></li><li><a href="ListeHorsListe.dc.html" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px dashed #f5b8a5; color: #c93425"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #c93425; font-weight: 700">J’offre autre chose à Léo</span></span></a></li>
-      </ul>
-    </section><section style="display: flex; flex-direction: column; gap: 2px; margin-top: 44px">
-      <div style="display: flex; align-items: center; gap: 12px">
-        <span aria-hidden="true" style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 23px; flex-shrink: 0">🦄</span>
-        <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
-          <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1.15">Zoé</h2>
-          <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a">3 ans · taille 3 ans · <a href="ListePersonne.dc.html" style="color: #c93425; text-decoration: underline">ses goûts</a></p>
-        </div>
-      </div>
-      <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
-        <li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px solid #f5b8a5; background: #ffffff"></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d">Poupée en tissu</span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #f5b8a5; color: #ffffff"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #796987; text-decoration: line-through">Draisienne</span><span data-lien="3" style="display: flex; align-items: center; gap: 6px; margin-top: 1px; font-size: 16px; line-height: 22px; font-style: italic; font-weight: 400; color: #5f37a6; text-decoration: none"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">petit-velo.fr</span></span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px solid #f5b8a5; background: #ffffff"></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d">Des livres cartonnés, toujours</span></span></a></li><li><a href="ListeHorsListe.dc.html" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px dashed #f5b8a5; color: #c93425"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #c93425; font-weight: 700">J’offre autre chose à Zoé</span></span></a></li>
-      </ul>
-    </section><section style="display: flex; flex-direction: column; gap: 2px; margin-top: 44px">
-      <div style="display: flex; align-items: center; gap: 12px">
-        <span aria-hidden="true" style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 23px; flex-shrink: 0">🦌</span>
-        <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
-          <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 26px; line-height: 1.15">Camille</h2>
-          <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #6b5a7a"><a href="ListePersonne.dc.html" style="color: #c93425; text-decoration: underline">ses goûts</a></p>
-        </div>
-      </div>
-      <ul style="list-style: none; margin: 6px 0 0; padding: 0 0 0 6px">
-        <li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px solid #f5b8a5; background: #ffffff"></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d">Un bon couteau de cuisine</span></span></a></li><li><a href="#" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px solid #f5b8a5; background: #ffffff"></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #2b1b3d">Une carte cadeau pour un week-end</span></span></a></li><li><a href="ListeHorsListe.dc.html" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 13px 0; box-sizing: border-box; text-decoration: none"><span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 2px dashed #f5b8a5; color: #c93425"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span style="flex-grow: 1; min-width: 0; font-size: 16px; line-height: 1.45"><span style="color: #c93425; font-weight: 700">J’offre autre chose à Camille</span></span></a></li>
-      </ul>
-    </section>
-  </main>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1854}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":1854}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

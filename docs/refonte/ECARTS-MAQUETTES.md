@@ -39,7 +39,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `ListeTeneur`, `ListeDecocher` | La case verte d'une idée que **je** donne, dans le document, ouvre son panneau (plus de « Changer », comme par le lien). La maquette ne montre pas cet état ; la ligne entière n'est pas un bouton dans le document, puisque toucher le texte l'écrit. | Seul |
+| `ListeVisiteurToucher`, `ListeTeneur` | **La case verte d'une idée que je donne décoche tout de suite, sans panneau**, par le lien comme dans le document, seul ou à plusieurs. Par le lien, le reste de la ligne ouvre le panneau ; dans le document, c'est la pastille de mon état (« Tu l'offres », « Tu participes »), puisque toucher le texte l'écrit. | Julien, 20 novembre 2026 (la case), seul (la pastille, et le cas à plusieurs) |
 | `ListeTeneur` | Dans le document, mon état sous une idée est la même pastille que par le lien (« Tu l'offres », « Tu participes »). | Seul |
 | `ListePlusieursLigne` | Pour ceux qui tiennent la liste, pas de « 7 personnes » : une pastille par prénom, chacune décoche sa personne. | Seul |
 | `ListeIdee`, `ListeIdeeLienFait` | L'adresse se lit sans « https:// ». Le champ du lien n'est pas atteint par la touche Tab (elle va d'une ligne à l'autre). Une adresse fausse est marquée en rouge (filet, icône, texte). | Seul |

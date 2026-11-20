@@ -1,36 +1,279 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Mes pistes — choisir la liste</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #a8959d; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
-  <div aria-hidden="true" style="height: 300px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; color: #6b5661">Mes pistes</div>
-  <section aria-label="Ma liste de cadeaux" style="flex-grow: 1; background: #ffffff; border-radius: 32px 32px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 16px">
-    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #ffd9cc"></span>
-    <h2 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2">Quelle liste ?</h2>
-    <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Les listes que tu tiens, et celles où tu figures. Seule une liste publiée peut être reliée.</p>
-    <div><label style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 0; border-top: 1px solid #ffd9cc;"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(150deg, #cfe6ff 0%, #6eb0f2 110%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); transform: rotate(-3deg); display: flex; align-items: center; justify-content: center; font-size: 21px; line-height: 1; flex-shrink: 0">❄️</span><span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Noël 2026</span><span style="font-size: 14px; color: #6b5a7a">Ta liste · publiée</span></span><input type="radio" name="l" checked  style="width: 22px; height: 22px; accent-color: #d93a2b"></label><label style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 0; border-top: 1px solid #ffd9cc;"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(150deg, #c6f1e2 0%, #4fcaa3 110%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); transform: rotate(-3deg); display: flex; align-items: center; justify-content: center; font-size: 21px; line-height: 1; flex-shrink: 0">🎄</span><span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Noël chez Mamie</span><span style="font-size: 14px; color: #6b5a7a">La liste de Mamie · tu y figures</span></span><input type="radio" name="l"   style="width: 22px; height: 22px; accent-color: #d93a2b"></label><label style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 0; border-top: 1px solid #ffd9cc; opacity: 0.55;"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(150deg, #ffd0c8 0%, #ff8478 110%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); transform: rotate(-3deg); display: flex; align-items: center; justify-content: center; font-size: 21px; line-height: 1; flex-shrink: 0">🎂</span><span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Mes 40 ans</span><span style="font-size: 14px; color: #6b5a7a">Brouillon : publie-la d’abord</span></span><input type="radio" name="l"  disabled style="width: 22px; height: 22px; accent-color: #d93a2b"></label><label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: 1px solid #ffd9cc"><span style="flex-grow: 1; font-size: 16px; font-weight: 600">Aucune liste</span><input type="radio" name="l" style="width: 22px; height: 22px; accent-color: #d93a2b"></label></div>
-    <button style="height: 52px; border: 0; border-radius: 16px; background: #d93a2b; color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto">Valider</button>
-  </section>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mes pistes — choisir la liste</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 844px;
+          box-sizing: border-box;
+          background: #a8959d;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        "
+      >
+        <div
+          aria-hidden="true"
+          style="
+            height: 300px;
+            flex-shrink: 0;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            font-family: 'Outfit', system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #6b5661;
+          "
+        >
+          Mes pistes
+        </div>
+        <section
+          aria-label="Ma liste de cadeaux"
+          style="
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 32px 32px 0 0;
+            padding: 10px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          "
+        >
+          <span
+            aria-hidden="true"
+            style="
+              align-self: center;
+              width: 44px;
+              height: 5px;
+              border-radius: 999px;
+              background: #ffd9cc;
+            "
+          ></span>
+          <h2
+            style="
+              margin: 0;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 22px;
+              line-height: 1.2;
+            "
+          >
+            Quelle liste ?
+          </h2>
+          <p
+            style="
+              margin: 0;
+              font-size: 14px;
+              line-height: 1.45;
+              color: #6b5a7a;
+            "
+          >
+            Les listes que tu tiens, et celles où tu figures. Seule une liste
+            publiée peut être reliée.
+          </p>
+          <div>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 64px;
+                padding: 8px 0;
+                border-top: 1px solid #ffd9cc;
+              "
+              ><span
+                aria-hidden="true"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 12px;
+                  background: linear-gradient(150deg, #cfe6ff 0%, #6eb0f2 110%);
+                  box-shadow:
+                    0 0 0 2px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  transform: rotate(-3deg);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 21px;
+                  line-height: 1;
+                  flex-shrink: 0;
+                "
+                >❄️</span
+              ><span style="flex-grow: 1; display: flex; flex-direction: column"
+                ><span style="font-size: 16px; font-weight: 700">Noël 2026</span
+                ><span style="font-size: 14px; color: #6b5a7a"
+                  >Ta liste · publiée</span
+                ></span
+              ><input
+                type="radio"
+                name="l"
+                checked
+                style="
+                  width: 22px;
+                  height: 22px;
+                  accent-color: #d93a2b;
+                " /></label
+            ><label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 64px;
+                padding: 8px 0;
+                border-top: 1px solid #ffd9cc;
+              "
+              ><span
+                aria-hidden="true"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 12px;
+                  background: linear-gradient(150deg, #c6f1e2 0%, #4fcaa3 110%);
+                  box-shadow:
+                    0 0 0 2px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  transform: rotate(-3deg);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 21px;
+                  line-height: 1;
+                  flex-shrink: 0;
+                "
+                >🎄</span
+              ><span style="flex-grow: 1; display: flex; flex-direction: column"
+                ><span style="font-size: 16px; font-weight: 700"
+                  >Noël chez Mamie</span
+                ><span style="font-size: 14px; color: #6b5a7a"
+                  >La liste de Mamie · tu y figures</span
+                ></span
+              ><input
+                type="radio"
+                name="l"
+                style="
+                  width: 22px;
+                  height: 22px;
+                  accent-color: #d93a2b;
+                " /></label
+            ><label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 64px;
+                padding: 8px 0;
+                border-top: 1px solid #ffd9cc;
+                opacity: 0.55;
+              "
+              ><span
+                aria-hidden="true"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 12px;
+                  background: linear-gradient(150deg, #ffd0c8 0%, #ff8478 110%);
+                  box-shadow:
+                    0 0 0 2px #ffffff,
+                    0 3px 8px rgba(90, 40, 60, 0.22);
+                  transform: rotate(-3deg);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 21px;
+                  line-height: 1;
+                  flex-shrink: 0;
+                "
+                >🎂</span
+              ><span style="flex-grow: 1; display: flex; flex-direction: column"
+                ><span style="font-size: 16px; font-weight: 700"
+                  >Mes 40 ans</span
+                ><span style="font-size: 14px; color: #6b5a7a"
+                  >Brouillon : publie-la d’abord</span
+                ></span
+              ><input
+                type="radio"
+                name="l"
+                disabled
+                style="
+                  width: 22px;
+                  height: 22px;
+                  accent-color: #d93a2b;
+                " /></label
+            ><label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 56px;
+                border-top: 1px solid #ffd9cc;
+              "
+              ><span style="flex-grow: 1; font-size: 16px; font-weight: 600"
+                >Aucune liste</span
+              ><input
+                type="radio"
+                name="l"
+                style="width: 22px; height: 22px; accent-color: #d93a2b"
+            /></label>
+          </div>
+          <button
+            style="
+              height: 52px;
+              border: 0;
+              border-radius: 16px;
+              background: #d93a2b;
+              color: #ffffff;
+              font-family: inherit;
+              font-size: 17px;
+              font-weight: 700;
+              text-decoration: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              margin-top: auto;
+            "
+          >
+            Valider
+          </button>
+        </section>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":844}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

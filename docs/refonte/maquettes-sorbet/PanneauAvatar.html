@@ -1,43 +1,826 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Panneau — mon icône</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #a8959d; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end">
-  <div aria-hidden="true" style="height: 470px; flex-shrink: 0; padding: 20px 16px; box-sizing: border-box; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; color: #6b5661">Bonjour Hugo</div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Panneau — mon icône</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 844px;
+          box-sizing: border-box;
+          background: #a8959d;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        "
+      >
+        <div
+          aria-hidden="true"
+          style="
+            height: 470px;
+            flex-shrink: 0;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            font-family: 'Outfit', system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #6b5661;
+          "
+        >
+          Bonjour Hugo
+        </div>
 
-  <section aria-label="Mon icône" style="flex-grow: 1; background: #ffffff; border-radius: 32px 32px 0 0; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 14px">
-    <span aria-hidden="true" style="align-self: center; width: 44px; height: 5px; border-radius: 999px; background: #ffd9cc"></span>
-    <div style="display: flex; align-items: center; gap: 12px">
-      <span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0">🐧</span>
-      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 22px; line-height: 1.15">Mon icône</h1>
-    </div>
-    <div role="radiogroup" aria-label="Emoji" style="margin: 0 -16px; padding: 4px 16px; display: grid; grid-template-rows: repeat(3, 44px); grid-auto-flow: column; grid-auto-columns: 44px; gap: 6px 7px; overflow-x: auto"><button role="radio" aria-checked="false" aria-label="🎅" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🎅</button><button role="radio" aria-checked="false" aria-label="🤶" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🤶</button><button role="radio" aria-checked="false" aria-label="🧝" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🧝</button><button role="radio" aria-checked="false" aria-label="🦌" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🦌</button><button role="radio" aria-checked="false" aria-label="⛄" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">⛄</button><button role="radio" aria-checked="false" aria-label="🎄" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🎄</button><button role="radio" aria-checked="false" aria-label="🎁" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🎁</button><button role="radio" aria-checked="false" aria-label="🌟" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🌟</button><button role="radio" aria-checked="false" aria-label="❄️" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">❄️</button><button role="radio" aria-checked="false" aria-label="🍪" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍪</button><button role="radio" aria-checked="false" aria-label="🥛" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🥛</button><button role="radio" aria-checked="false" aria-label="🧦" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🧦</button><button role="radio" aria-checked="false" aria-label="🧣" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🧣</button><button role="radio" aria-checked="false" aria-label="🧤" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🧤</button><button role="radio" aria-checked="false" aria-label="🍬" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍬</button><button role="radio" aria-checked="false" aria-label="🍭" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍭</button><button role="radio" aria-checked="false" aria-label="🎀" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🎀</button><button role="radio" aria-checked="true" aria-label="🐧" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #d93a2b; font-size: 21px">🐧</button><button role="radio" aria-checked="false" aria-label="🦊" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🦊</button><button role="radio" aria-checked="false" aria-label="🦉" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🦉</button><button role="radio" aria-checked="false" aria-label="🍫" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍫</button><button role="radio" aria-checked="false" aria-label="🥨" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🥨</button><button role="radio" aria-checked="false" aria-label="🍷" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍷</button><button role="radio" aria-checked="false" aria-label="🌰" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🌰</button><button role="radio" aria-checked="false" aria-label="🍎" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍎</button><button role="radio" aria-checked="false" aria-label="🍊" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🍊</button><button role="radio" aria-checked="false" aria-label="🫕" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🫕</button><button role="radio" aria-checked="false" aria-label="🎠" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🎠</button><button role="radio" aria-checked="false" aria-label="⛸️" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">⛸️</button><button role="radio" aria-checked="false" aria-label="🛷" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #ffeae1; font-size: 21px">🛷</button></div>
-    <div role="radiogroup" aria-label="Couleur" style="display: flex; justify-content: space-between"><button role="radio" aria-checked="false" aria-label="Rouge brique" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffd0c8 42%, #ff8478 135%); box-shadow: none"></span></button><button role="radio" aria-checked="false" aria-label="Vert sapin" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #c6f1e2 42%, #4fcaa3 135%); box-shadow: none"></span></button><button role="radio" aria-checked="true" aria-label="Moutarde" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #d93a2b"></span></button><button role="radio" aria-checked="false" aria-label="Kraft" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe2c4 42%, #f2a65a 135%); box-shadow: none"></span></button><button role="radio" aria-checked="false" aria-label="Givre" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #cfe6ff 42%, #6eb0f2 135%); box-shadow: none"></span></button><button role="radio" aria-checked="false" aria-label="Prune" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #e6d6f8 42%, #b993dd 135%); box-shadow: none"></span></button></div>
-    <div style="margin-top: auto; display: grid; grid-template-columns: 1fr 2fr; gap: 10px">
-      <a href="AccueilPlusieurs.dc.html" style="height: 48px; border: 1px solid #ffd9cc; box-sizing: border-box; border-radius: 16px; color: #2b1b3d; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Annuler</a>
-      <button style="height: 48px; border: 0; border-radius: 16px; background: #d93a2b; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700">Valider</button>
-    </div>
-  </section>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+        <section
+          aria-label="Mon icône"
+          style="
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 32px 32px 0 0;
+            padding: 10px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          "
+        >
+          <span
+            aria-hidden="true"
+            style="
+              align-self: center;
+              width: 44px;
+              height: 5px;
+              border-radius: 999px;
+              background: #ffd9cc;
+            "
+          ></span>
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: linear-gradient(
+                  150deg,
+                  #ffffff 0%,
+                  #ffe9a8 42%,
+                  #f4b82e 135%
+                );
+                box-shadow:
+                  0 0 0 2px #ffffff,
+                  0 3px 8px rgba(90, 40, 60, 0.22);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                flex-shrink: 0;
+              "
+              >🐧</span
+            >
+            <h1
+              style="
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 22px;
+                line-height: 1.15;
+              "
+            >
+              Mon icône
+            </h1>
+          </div>
+          <div
+            role="radiogroup"
+            aria-label="Emoji"
+            style="
+              margin: 0 -16px;
+              padding: 4px 16px;
+              display: grid;
+              grid-template-rows: repeat(3, 44px);
+              grid-auto-flow: column;
+              grid-auto-columns: 44px;
+              gap: 6px 7px;
+              overflow-x: auto;
+            "
+          >
+            <button
+              role="radio"
+              aria-checked="false"
+              aria-label="🎅"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🎅</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🤶"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🤶</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🧝"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🧝</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🦌"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🦌</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="⛄"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              ⛄</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🎄"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🎄</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🎁"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🎁</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🌟"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🌟</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="❄️"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              ❄️</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍪"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍪</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🥛"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🥛</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🧦"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🧦</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🧣"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🧣</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🧤"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🧤</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍬"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍬</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍭"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍭</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🎀"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🎀</button
+            ><button
+              role="radio"
+              aria-checked="true"
+              aria-label="🐧"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: linear-gradient(
+                  150deg,
+                  #ffffff 0%,
+                  #ffe9a8 42%,
+                  #f4b82e 135%
+                );
+                box-shadow:
+                  0 0 0 2px #ffffff,
+                  0 0 0 4px #d93a2b;
+                font-size: 21px;
+              "
+            >
+              🐧</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🦊"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🦊</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🦉"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🦉</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍫"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍫</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🥨"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🥨</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍷"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍷</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🌰"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🌰</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍎"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍎</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🍊"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🍊</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🫕"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🫕</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🎠"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🎠</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="⛸️"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              ⛸️</button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="🛷"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: #ffeae1;
+                font-size: 21px;
+              "
+            >
+              🛷
+            </button>
+          </div>
+          <div
+            role="radiogroup"
+            aria-label="Couleur"
+            style="display: flex; justify-content: space-between"
+          >
+            <button
+              role="radio"
+              aria-checked="false"
+              aria-label="Rouge brique"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #ffd0c8 42%,
+                    #ff8478 135%
+                  );
+                  box-shadow: none;
+                "
+              ></span></button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="Vert sapin"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #c6f1e2 42%,
+                    #4fcaa3 135%
+                  );
+                  box-shadow: none;
+                "
+              ></span></button
+            ><button
+              role="radio"
+              aria-checked="true"
+              aria-label="Moutarde"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #ffe9a8 42%,
+                    #f4b82e 135%
+                  );
+                  box-shadow:
+                    0 0 0 2px #ffffff,
+                    0 0 0 4px #d93a2b;
+                "
+              ></span></button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="Kraft"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #ffe2c4 42%,
+                    #f2a65a 135%
+                  );
+                  box-shadow: none;
+                "
+              ></span></button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="Givre"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #cfe6ff 42%,
+                    #6eb0f2 135%
+                  );
+                  box-shadow: none;
+                "
+              ></span></button
+            ><button
+              role="radio"
+              aria-checked="false"
+              aria-label="Prune"
+              style="
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  background: linear-gradient(
+                    150deg,
+                    #ffffff 0%,
+                    #e6d6f8 42%,
+                    #b993dd 135%
+                  );
+                  box-shadow: none;
+                "
+              ></span>
+            </button>
+          </div>
+          <div
+            style="
+              margin-top: auto;
+              display: grid;
+              grid-template-columns: 1fr 2fr;
+              gap: 10px;
+            "
+          >
+            <a
+              href="AccueilPlusieurs.dc.html"
+              style="
+                height: 48px;
+                border: 1px solid #ffd9cc;
+                box-sizing: border-box;
+                border-radius: 16px;
+                color: #2b1b3d;
+                font-size: 16px;
+                font-weight: 600;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >Annuler</a
+            >
+            <button
+              style="
+                height: 48px;
+                border: 0;
+                border-radius: 16px;
+                background: #d93a2b;
+                color: #ffffff;
+                font-family: inherit;
+                font-size: 16px;
+                font-weight: 700;
+              "
+            >
+              Valider
+            </button>
+          </div>
+        </section>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":844}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

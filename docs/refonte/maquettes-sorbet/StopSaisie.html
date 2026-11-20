@@ -1,39 +1,295 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Emails — une adresse qui ne reçoit pas d’emails, à la saisie</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
-  <header style="height: 56px; flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
-    <div><button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></div>
-    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Under the Tree</div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-  </header>
-  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; padding: 16px 16px 24px">
-    <div style="display: flex; align-items: center; gap: 14px"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(90, 40, 60, 0.22); display: flex; align-items: center; justify-content: center; font-size: 25px; flex-shrink: 0">🐧</span><div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Hugo</h1><p style="margin: 0; font-size: 14px; line-height: 1.45; color: #6b5a7a">Famille Camille</p></div></div>
-    <div style="display: flex; flex-direction: column; gap: 6px"><label for="e" style="font-size: 15px; font-weight: 600">Adresse email</label><input id="e" type="email" value="hugo-demo@example.com" style="height: 48px; box-sizing: border-box; padding: 0 12px; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; color: #2b1b3d; font-family: inherit; font-size: 16px"></div>
-    <div role="status" style="border-radius: 18px; background: #f1e8fc; border: 1px solid #cbb2ee; color: #6a3db3; padding: 14px; display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.45"><span aria-hidden="true" style="display: flex; flex-shrink: 0; margin-top: 1px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7M4 20 20 4"/></svg></span><span><strong>La personne qui a cette adresse a demandé à ne plus recevoir d’emails d’Under the Tree.</strong> Tu peux garder l’adresse, mais aucun email ne lui partira. Envoie-lui son lien autrement.</span></div>
-    <a href="#" style="height: 48px; box-sizing: border-box; border: 1px solid #d93a2b; border-radius: 16px; background: transparent; color: #c93425; font-family: inherit; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>Partager son lien</a>
-  </main>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Emails — une adresse qui ne reçoit pas d’emails, à la saisie</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 844px;
+          box-sizing: border-box;
+          background: #fff6f1;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <header
+          style="
+            height: 56px;
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 12px;
+          "
+        >
+          <div>
+            <button
+              aria-label="Retour"
+              style="
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: #2b1b3d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 18px;
+              color: #c93425;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
+              /></svg
+            >Under the Tree
+          </div>
+          <button
+            aria-label="Menu"
+            style="
+              justify-self: end;
+              width: 44px;
+              height: 44px;
+              border: 0;
+              background: transparent;
+              color: #2b1b3d;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
+        <main
+          style="
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 16px 16px 24px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span
+              aria-hidden="true"
+              style="
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: linear-gradient(
+                  150deg,
+                  #ffffff 0%,
+                  #ffe9a8 42%,
+                  #f4b82e 135%
+                );
+                box-shadow:
+                  0 0 0 3px #ffffff,
+                  0 3px 8px rgba(90, 40, 60, 0.22);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 25px;
+                flex-shrink: 0;
+              "
+              >🐧</span
+            >
+            <div style="display: flex; flex-direction: column; gap: 2px">
+              <h1
+                style="
+                  margin: 0;
+                  font-family: 'Outfit', system-ui, sans-serif;
+                  font-weight: 700;
+                  font-size: 30px;
+                  line-height: 1.1;
+                "
+              >
+                Hugo
+              </h1>
+              <p
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  line-height: 1.45;
+                  color: #6b5a7a;
+                "
+              >
+                Famille Camille
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="e" style="font-size: 15px; font-weight: 600"
+              >Adresse email</label
+            ><input
+              id="e"
+              type="email"
+              value="hugo-demo@example.com"
+              style="
+                height: 48px;
+                box-sizing: border-box;
+                padding: 0 12px;
+                border: 1px solid #f5b8a5;
+                border-radius: 16px;
+                background: #ffffff;
+                color: #2b1b3d;
+                font-family: inherit;
+                font-size: 16px;
+              "
+            />
+          </div>
+          <div
+            role="status"
+            style="
+              border-radius: 18px;
+              background: #f1e8fc;
+              border: 1px solid #cbb2ee;
+              color: #6a3db3;
+              padding: 14px;
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+              font-size: 15px;
+              line-height: 1.45;
+            "
+          >
+            <span
+              aria-hidden="true"
+              style="display: flex; flex-shrink: 0; margin-top: 1px"
+              ><svg
+                aria-hidden="true"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 7 9-7M4 20 20 4" /></svg></span
+            ><span
+              ><strong
+                >La personne qui a cette adresse a demandé à ne plus recevoir
+                d’emails d’Under the Tree.</strong
+              >
+              Tu peux garder l’adresse, mais aucun email ne lui partira.
+              Envoie-lui son lien autrement.</span
+            >
+          </div>
+          <a
+            href="#"
+            style="
+              height: 48px;
+              box-sizing: border-box;
+              border: 1px solid #d93a2b;
+              border-radius: 16px;
+              background: transparent;
+              color: #c93425;
+              font-family: inherit;
+              font-size: 16px;
+              font-weight: 700;
+              text-decoration: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+            ><svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" /></svg
+            >Partager son lien</a
+          >
+        </main>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":844}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

@@ -1,74 +1,472 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Édition — annuler le tirage</title>
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0}
-a{color:#c93425}a:hover{color:#c93425}
-</style>
-</helmet>
-<div style="width: 390px; height: 1090px; box-sizing: border-box; background: #fff6f1; color: #2b1b3d; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
-  <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; border-bottom: 1px solid #ffd9cc; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 12px">
-    <div>
-      <button aria-label="Retour" style="width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #c93425">
-      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      Under the Tree
-    </div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <title>Édition — annuler le tirage</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #c93425;
+          }
+          a:hover {
+            color: #c93425;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 390px;
+          height: 1090px;
+          box-sizing: border-box;
+          background: #fff6f1;
+          color: #2b1b3d;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <header
+          style="
+            height: 56px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-bottom: 1px solid #ffd9cc;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 12px;
+          "
+        >
+          <div>
+            <button
+              aria-label="Retour"
+              style="
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: #2b1b3d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-family: 'Outfit', system-ui, sans-serif;
+              font-weight: 700;
+              font-size: 18px;
+              color: #c93425;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"
+              />
+            </svg>
+            Under the Tree
+          </div>
+          <button
+            aria-label="Menu"
+            style="
+              justify-self: end;
+              width: 44px;
+              height: 44px;
+              border: 0;
+              background: transparent;
+              color: #2b1b3d;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            "
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
 
-  <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px">
-    <div style="display: flex; flex-direction: column; gap: 4px">
-      <nav aria-label="Tu es ici" style="margin: -14px 0 -12px; display: flex; align-items: center; gap: 6px; color: #6b5a7a"><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #6b5a7a; text-decoration: none">Famille Camille</a><span aria-hidden="true">·</span><a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #6b5a7a; text-decoration: none">Noël 2026</a></nav>
-      <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1">Annuler le tirage ?</h1>
-    </div>
-    <div role="alert" style="border: 2px solid #b3243f; border-radius: 18px; background: #fdf2f4; padding: 14px; display: flex; flex-direction: column; gap: 10px; color: #6b1c2e">
-      <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'Outfit', system-ui, sans-serif; font-size: 19px; font-weight: 700; line-height: 1.2"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.300 3.900 1.800 18a2 2 0 0 0 1.700 3h17a2 2 0 0 0 1.700-3L13.700 3.900a2 2 0 0 0-3.400 0zM12 9v4M12 17h.010"/></svg>Tout le monde devra redécouvrir</p>
-      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.4"><li style="display: flex; align-items: flex-start; gap: 8px"><span aria-hidden="true" style="width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: #961d35; flex-shrink: 0"></span><span>Les 5 résultats sont effacés. 2 personnes avaient déjà découvert le leur.</span></li><li style="display: flex; align-items: flex-start; gap: 8px"><span aria-hidden="true" style="width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: #961d35; flex-shrink: 0"></span><span>La liste des participants redevient modifiable.</span></li><li style="display: flex; align-items: flex-start; gap: 8px"><span aria-hidden="true" style="width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: #961d35; flex-shrink: 0"></span><span>Après le nouveau tirage, il faudra prévenir chacun avec le message « Nouveau tirage ».</span></li></ul>
-    </div>
-    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; color: #6b5a7a">
-      <li style="display: flex; gap: 10px"><span aria-hidden="true" style="color: #0b7a5b; display: flex; margin-top: 2px"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Les liens personnels restent valables.</li>
-      <li style="display: flex; gap: 10px"><span aria-hidden="true" style="color: #0b7a5b; display: flex; margin-top: 2px"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Les pistes de cadeaux sont conservées.</li>
-    </ul>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <label for="why" style="font-size: 15px; font-weight: 600">Motif</label>
-      <input id="why" type="text" value="Désistement de Louis" style="height: 48px; box-sizing: border-box; padding: 0 12px; border: 2px solid #d93a2b; border-radius: 16px; background: #ffffff; color: #2b1b3d; font-family: inherit; font-size: 16px">
-      <p style="margin: 0; font-size: 13px; color: #6b5a7a">Affiché dans le journal, visible de tout le groupe.</p>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Ce que le groupe lira dans le journal</p>
-      <p style="margin: 0; padding: 12px 14px; border-radius: 18px; background: #ffffff; box-shadow: 0 0 0 1px #ffd9cc; font-family: 'Outfit', system-ui, sans-serif; font-weight: 600; font-size: 16px; line-height: 1.35">Le tirage a été annulé. Motif : Désistement de Louis</p>
-    </div>
-    <label style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; font-size: 15px; line-height: 1.4">
-      <input type="checkbox" style="width: 22px; height: 22px; margin: 1px 0 0; accent-color: #d93a2b; flex-shrink: 0">
-      Je comprends que les résultats actuels seront perdus
-    </label>
-    <div style="display: flex; flex-direction: column; gap: 8px">
-      <a href="Suivi.dc.html" style="height: 52px; border-radius: 16px; background: #0b7a5b; color: #ffffff; font-size: 17px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center">Garder ce tirage</a>
-      <button disabled style="width: 100%; height: 48px; box-sizing: border-box; border: 1px solid #f6c3cc; border-radius: 16px; background: transparent; color: #b3243f; opacity: 0.55; font-family: inherit; font-size: 16px; font-weight: 700">Annuler le tirage</button>
-    </div>
-  </main>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1090}}'>
-class Component extends DCLogic {
-renderVals() {
-return {};
-}
-}
-</script>
-</body>
+        <main
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 20px 16px 32px;
+          "
+        >
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <nav
+              aria-label="Tu es ici"
+              style="
+                margin: -14px 0 -12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #6b5a7a;
+              "
+            >
+              <a
+                href="#"
+                style="
+                  min-height: 44px;
+                  display: flex;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b5a7a;
+                  text-decoration: none;
+                "
+                >Famille Camille</a
+              ><span aria-hidden="true">·</span
+              ><a
+                href="#"
+                style="
+                  min-height: 44px;
+                  display: flex;
+                  align-items: center;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b5a7a;
+                  text-decoration: none;
+                "
+                >Noël 2026</a
+              >
+            </nav>
+            <h1
+              style="
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 30px;
+                line-height: 1.1;
+              "
+            >
+              Annuler le tirage ?
+            </h1>
+          </div>
+          <div
+            role="alert"
+            style="
+              border: 2px solid #b3243f;
+              border-radius: 18px;
+              background: #fdf2f4;
+              padding: 14px;
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              color: #6b1c2e;
+            "
+          >
+            <p
+              style="
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-size: 19px;
+                font-weight: 700;
+                line-height: 1.2;
+              "
+            >
+              <svg
+                aria-hidden="true"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10.300 3.900 1.800 18a2 2 0 0 0 1.700 3h17a2 2 0 0 0 1.700-3L13.700 3.900a2 2 0 0 0-3.400 0zM12 9v4M12 17h.010"
+                /></svg
+              >Tout le monde devra redécouvrir
+            </p>
+            <ul
+              style="
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                font-size: 14px;
+                line-height: 1.4;
+              "
+            >
+              <li style="display: flex; align-items: flex-start; gap: 8px">
+                <span
+                  aria-hidden="true"
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    margin-top: 8px;
+                    border-radius: 50%;
+                    background: #961d35;
+                    flex-shrink: 0;
+                  "
+                ></span
+                ><span
+                  >Les 5 résultats sont effacés. 2 personnes avaient déjà
+                  découvert le leur.</span
+                >
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 8px">
+                <span
+                  aria-hidden="true"
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    margin-top: 8px;
+                    border-radius: 50%;
+                    background: #961d35;
+                    flex-shrink: 0;
+                  "
+                ></span
+                ><span>La liste des participants redevient modifiable.</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 8px">
+                <span
+                  aria-hidden="true"
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    margin-top: 8px;
+                    border-radius: 50%;
+                    background: #961d35;
+                    flex-shrink: 0;
+                  "
+                ></span
+                ><span
+                  >Après le nouveau tirage, il faudra prévenir chacun avec le
+                  message « Nouveau tirage ».</span
+                >
+              </li>
+            </ul>
+          </div>
+          <ul
+            style="
+              list-style: none;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+              font-size: 14px;
+              line-height: 1.45;
+              color: #6b5a7a;
+            "
+          >
+            <li style="display: flex; gap: 10px">
+              <span
+                aria-hidden="true"
+                style="color: #0b7a5b; display: flex; margin-top: 2px"
+                ><svg
+                  aria-hidden="true"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" /></svg></span
+              >Les liens personnels restent valables.
+            </li>
+            <li style="display: flex; gap: 10px">
+              <span
+                aria-hidden="true"
+                style="color: #0b7a5b; display: flex; margin-top: 2px"
+                ><svg
+                  aria-hidden="true"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" /></svg></span
+              >Les pistes de cadeaux sont conservées.
+            </li>
+          </ul>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="why" style="font-size: 15px; font-weight: 600"
+              >Motif</label
+            >
+            <input
+              id="why"
+              type="text"
+              value="Désistement de Louis"
+              style="
+                height: 48px;
+                box-sizing: border-box;
+                padding: 0 12px;
+                border: 2px solid #d93a2b;
+                border-radius: 16px;
+                background: #ffffff;
+                color: #2b1b3d;
+                font-family: inherit;
+                font-size: 16px;
+              "
+            />
+            <p style="margin: 0; font-size: 13px; color: #6b5a7a">
+              Affiché dans le journal, visible de tout le groupe.
+            </p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <p
+              style="
+                margin: 0;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #6b5a7a;
+              "
+            >
+              Ce que le groupe lira dans le journal
+            </p>
+            <p
+              style="
+                margin: 0;
+                padding: 12px 14px;
+                border-radius: 18px;
+                background: #ffffff;
+                box-shadow: 0 0 0 1px #ffd9cc;
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 1.35;
+              "
+            >
+              Le tirage a été annulé. Motif : Désistement de Louis
+            </p>
+          </div>
+          <label
+            style="
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+              min-height: 44px;
+              font-size: 15px;
+              line-height: 1.4;
+            "
+          >
+            <input
+              type="checkbox"
+              style="
+                width: 22px;
+                height: 22px;
+                margin: 1px 0 0;
+                accent-color: #d93a2b;
+                flex-shrink: 0;
+              "
+            />
+            Je comprends que les résultats actuels seront perdus
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <a
+              href="Suivi.dc.html"
+              style="
+                height: 52px;
+                border-radius: 16px;
+                background: #0b7a5b;
+                color: #ffffff;
+                font-size: 17px;
+                font-weight: 700;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >Garder ce tirage</a
+            >
+            <button
+              disabled
+              style="
+                width: 100%;
+                height: 48px;
+                box-sizing: border-box;
+                border: 1px solid #f6c3cc;
+                border-radius: 16px;
+                background: transparent;
+                color: #b3243f;
+                opacity: 0.55;
+                font-family: inherit;
+                font-size: 16px;
+                font-weight: 700;
+              "
+            >
+              Annuler le tirage
+            </button>
+          </div>
+        </main>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":390,"height":1090}}'
+    >
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
 </html>

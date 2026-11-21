@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  accountKey,
+  giversPlan,
+  ideaWho,
+  listCandidates,
+  sameGivers,
+  sameWritten,
+  ticksToLink,
+  writtenKey,
+  type WhoClaim,
   mayRemoveClaim,
   removableClaims,
   canChange,
@@ -179,5 +188,181 @@ describe('unticking for someone (Correction 25)', () => {
         (claim) => claim.by,
       ),
     ).toEqual(['mamie', 'hugo']);
+  });
+});
+
+const who = (over: Partial<WhoClaim>): WhoClaim => ({
+  ...row({}),
+  id: 'c1',
+  key: 'a:a',
+  name: 'Mamie',
+  notedBy: null,
+  notedByName: null,
+  ...over,
+});
+
+describe('cocher pour quelqu’un', () => {
+  const holder = { accountId: 'me', holds: true };
+
+  it('opens the sheet for those who hold the list only, never on an anonymous tick', () => {
+    expect(ideaWho([who({})], { accountId: 'b', holds: false })).toBeNull();
+    expect(ideaWho([], holder)).toBeNull();
+    expect(ideaWho([who({ anonymous: true })], holder)).toBeNull();
+    expect(
+      ideaWho(
+        [
+          who({ mode: 'group' }),
+          who({ id: 'c2', key: 'a:x', anonymous: true }),
+        ],
+        holder,
+      ),
+    ).toBeNull();
+  });
+
+  it('says who ticked, who noted, who proposed, and when', () => {
+    expect(ideaWho([who({})], holder)).toEqual({
+      keys: ['a:a'],
+      mode: 'alone',
+      closed: false,
+      trace: { kind: 'ticked', by: 'Mamie', at: '2026-11-18T10:00:00Z' },
+    });
+    expect(
+      ideaWho([who({ key: 'a:me', name: 'Camille' })], holder)?.trace,
+    ).toMatchObject({ kind: 'ticked', by: null });
+    expect(
+      ideaWho([who({ notedBy: 'me', notedByName: 'Camille' })], holder)?.trace,
+    ).toMatchObject({ kind: 'noted', by: null });
+    expect(
+      ideaWho([who({ notedBy: 'h', notedByName: 'Hugo' })], holder)?.trace,
+    ).toMatchObject({ kind: 'noted', by: 'Hugo' });
+    const group = ideaWho(
+      [
+        who({
+          id: 'c2',
+          key: 'g:t',
+          name: 'Tata',
+          mode: 'group',
+          createdAt: '2026-11-19',
+        }),
+        who({ mode: 'group', closed: true }),
+      ],
+      holder,
+    );
+    expect(group).toMatchObject({
+      keys: ['a:a', 'g:t'],
+      mode: 'group',
+      closed: true,
+      trace: { kind: 'proposed', by: 'Mamie' },
+    });
+  });
+
+  it('offers me, those who hold the list, those who ticked, the names written, once each', () => {
+    const candidates = listCandidates({
+      viewer: { accountId: 'me', name: 'Camille', avatar: null },
+      holders: [
+        {
+          accountId: 'me',
+          name: 'Camille',
+          avatar: { emoji: '🦌', color: 'brick' },
+        },
+        {
+          accountId: 'h',
+          name: 'Hugo',
+          avatar: { emoji: '🐧', color: 'brick' },
+        },
+      ],
+      claims: [
+        who({ key: 'a:h', name: 'Hugo', createdAt: '2026-11-10' }),
+        who({ id: 'c2', key: 'a:t', name: 'Tonton', createdAt: '2026-11-12' }),
+        who({ id: 'c3', key: 'a:m', name: 'Mamie', createdAt: '2026-11-11' }),
+        who({ id: 'c4', key: 'a:x', name: 'Secret', anonymous: true }),
+        who({ id: 'c5', key: 'g:p', name: 'Parrain' }),
+        who({ id: 'c6', key: 'a:m', name: 'Mamie', createdAt: '2026-11-13' }),
+      ],
+      written: [
+        { id: 't', name: 'Tata', email: null },
+        { id: 'p', name: 'Parrain', email: 'parrain@example.com' },
+      ],
+    });
+    expect(candidates.map((c) => [c.key, c.kind])).toEqual([
+      ['a:me', 'me'],
+      ['a:h', 'holder'],
+      ['a:m', 'ticker'],
+      ['a:t', 'ticker'],
+      ['g:t', 'written'],
+      ['g:p', 'written'],
+    ]);
+    expect(candidates.at(-1)?.email).toBe('parrain@example.com');
+  });
+
+  it('puts someone in my place, alone', () => {
+    expect(giversPlan([who({ key: 'a:me' })], ['a:m'], 'alone')).toEqual({
+      ok: true,
+      value: { remove: ['c1'], keep: [], add: ['a:m'], leader: 'a:m' },
+    });
+  });
+
+  it('keeps the place of who stays in a gift given by several, and adds the others after', () => {
+    const current = [
+      who({ id: 'c2', key: 'a:t', mode: 'group', createdAt: '2026-11-19' }),
+      who({ key: 'a:m', mode: 'group' }),
+    ];
+    expect(giversPlan(current, ['g:p', 'a:t', 'g:p'], 'group')).toEqual({
+      ok: true,
+      value: { remove: ['c1'], keep: ['c2'], add: ['g:p'], leader: 'a:t' },
+    });
+  });
+
+  it('refuses nobody, several for one person, and an anonymous tick', () => {
+    expect(giversPlan([who({})], [], 'alone')).toMatchObject({
+      reason: 'empty',
+    });
+    expect(giversPlan([], ['a:a', 'a:b'], 'alone')).toMatchObject({
+      reason: 'several',
+    });
+    expect(
+      giversPlan([who({ anonymous: true })], ['a:me'], 'alone'),
+    ).toMatchObject({ reason: 'anonymous' });
+  });
+
+  it('sees when someone ticked or unticked while the sheet was open', () => {
+    expect(sameGivers([{ key: 'a:a' }], ['a:a'])).toBe(true);
+    expect(sameGivers([], [])).toBe(true);
+    expect(sameGivers([{ key: 'a:a' }], [])).toBe(false);
+    expect(sameGivers([{ key: 'a:a' }], ['a:b'])).toBe(false);
+  });
+
+  it('finds a first name already written, by its name and its address', () => {
+    const written = [
+      { id: 't', name: 'Tata', email: null },
+      { id: 'p', name: 'Parrain', email: 'p@example.com' },
+    ];
+    expect(sameWritten(written, { name: ' tata ', email: null })?.id).toBe('t');
+    expect(
+      sameWritten(written, { name: 'Tata', email: 't@example.com' }),
+    ).toBeUndefined();
+    expect(
+      sameWritten(written, { name: 'Parrain', email: 'p@example.com' })?.id,
+    ).toBe('p');
+  });
+
+  it('gives an account the ticks kept for its address, unless it already gives the idea', () => {
+    const waiting = [
+      { id: '1', ideaId: 'velo' },
+      { id: '2', ideaId: 'livre' },
+      { id: '3', ideaId: 'velo' },
+    ];
+    expect(ticksToLink(waiting, new Set(['livre']))).toEqual({
+      take: [{ id: '1', ideaId: 'velo' }],
+      drop: [
+        { id: '2', ideaId: 'livre' },
+        { id: '3', ideaId: 'velo' },
+      ],
+    });
+  });
+
+  it('names accounts and first names apart', () => {
+    expect(accountKey('x')).toBe('a:x');
+    expect(writtenKey('x')).toBe('g:x');
   });
 });

@@ -2,7 +2,9 @@ import type { H3Event } from 'h3';
 import { useDb, type Db } from '#server/database/client';
 import {
   claimsOfLists,
+  linkWrittenGiversOf,
   offListOfLists,
+  writtenGiversOf,
   type ClaimWithGiver,
 } from '#server/database/claims';
 import {
@@ -27,9 +29,13 @@ import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { nowIso } from '#server/http/context';
 import {
+  ideaWho,
+  listCandidates,
   offListView,
   newIdeasSince,
   removableClaims,
+  type Candidate,
+  type IdeaWho,
   type OffListView,
   type RemovableClaim,
 } from '#server/utils/claims';
@@ -114,6 +120,9 @@ export const settleArrivals = async (db: Db, accountId: string) => {
   const account = await findAccountById(db, accountId);
   if (!account) return;
   await linkMembersOf(db, account);
+  // A tick noted for its address by those who hold a list becomes its own
+  // (« Cocher pour quelqu'un »).
+  await linkWrittenGiversOf(db, account);
   const waiting = await invitesForEmail(db, account.email);
   if (waiting.length === 0) return;
   const held = await listsHeldBy(db, accountId);
@@ -241,7 +250,17 @@ export type IdeaLine = {
    */
   claims: (RemovableClaim & { after: IdeaView })[];
   /** The words of each giver of a group, by name, for its sheet. */
-  notes: { name: string; avatar: Avatar; note: string | null; me: boolean }[];
+  notes: {
+    name: string;
+    avatar: Avatar | null;
+    note: string | null;
+    me: boolean;
+  }[];
+  /**
+   * Who gives it, for the sheet « Qui l'offre ? » of those who hold the
+   * list; null when it does not open (free, or an anonymous tick).
+   */
+  who: IdeaWho | null;
 };
 
 /** A person on a list, with their ideas and the gifts not on the list. */
@@ -291,6 +310,7 @@ const linesOf = (
         text: idea.text,
         url: idea.url,
         view: ideaView(on, sees),
+        who: ideaWho(on, sees),
         carried: sees.holds && idea.carried,
         mine: mine
           ? {
@@ -374,6 +394,12 @@ export type ListDocument = {
    * its name, empty when it has none or is gone.
    */
   resumedFrom: { title: string } | null;
+  /**
+   * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
+   * me, those who hold the list with me, those who ticked on it without
+   * being anonymous, the first names written on it.
+   */
+  candidates: Candidate[];
 };
 
 /**
@@ -391,9 +417,10 @@ export const listDocument = async (
   const viewer: Viewer = { accountId, role: 'holder' };
   const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
   const onList = new Set(people.map((p) => p.member.id));
+  const claims = await claimsOfLists(db, [list.id]);
   const { lines, planned, mine } = linesOf(
     people,
-    await claimsOfLists(db, [list.id]),
+    claims,
     await offListOfLists(db, [list.id]),
     viewer,
   );
@@ -425,7 +452,38 @@ export const listDocument = async (
     resumedFrom: list.carriedFrom
       ? { title: (await findList(db, list.carriedFrom))?.title ?? '' }
       : null,
+    candidates: await candidatesOf(db, list.id, accountId, holders, claims),
   };
+};
+
+/**
+ * Who the sheet « Qui l'offre ? » offers on a list, for one who holds it.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param accountId - The one who holds it and looks.
+ * @param holders - Those who hold it.
+ * @param claims - Its ticks.
+ * @returns Each one once, in the order of the sheet.
+ */
+export const candidatesOf = async (
+  db: Db,
+  listId: string,
+  accountId: string,
+  holders: readonly ListHolder[],
+  claims: readonly ClaimWithGiver[],
+): Promise<Candidate[]> => {
+  const views = holders.map((holder) => holderView(holder, accountId));
+  const me = views.find((holder) => holder.me);
+  return listCandidates({
+    viewer: {
+      accountId,
+      name: me?.name ?? '',
+      avatar: me?.avatar ?? null,
+    },
+    holders: views,
+    claims,
+    written: await writtenGiversOf(db, listId),
+  });
 };
 
 /** A list as those who open its link see it. */

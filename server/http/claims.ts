@@ -1,14 +1,27 @@
 import { anonymousRefusal } from '#server/utils/anonymous';
 import type { Db } from '#server/database/client';
 import {
+  addWrittenGiver,
   changeClaim,
   claimIfFree,
   claimsOfLists,
   joinClaim,
+  saveGivers,
+  writtenGiversOf,
 } from '#server/database/claims';
-import { findIdea } from '#server/database/lists';
+import { findIdea, holdersOfLists } from '#server/database/lists';
 import { notFound, unwrap } from '#server/http/errors';
-import { canChange, canTick, type ClaimChange } from '#server/utils/claims';
+import { candidatesOf } from '#server/http/lists';
+import {
+  canChange,
+  canTick,
+  giversPlan,
+  sameGivers,
+  sameWritten,
+  writtenKey,
+  type ClaimChange,
+  type GiverKey,
+} from '#server/utils/claims';
 
 /**
  * Ticks an idea of a list for an account (README 22.19): alone, or joining
@@ -99,4 +112,92 @@ export const changeIdeaClaim = async (
     accountId,
     unwrap(canChange(claims, accountId, change)),
   );
+};
+
+/**
+ * « Qui l'offre ? » (21 November 2026): saves who gives an idea, as one of
+ * those who hold the list said. Refused on an anonymous tick, without a
+ * word of whose it is (409 `anonymous`), and when someone ticked or
+ * unticked since the sheet opened (409 `list_changed`). A first name
+ * written again is the one already written; an address is kept as it is
+ * written, and never looked up among the accounts: nothing tells whether
+ * it has one. No email, no notice.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param accountId - The one who holds it.
+ * @param ideaId - The idea.
+ * @param body - Who gives it, from whom.
+ * @param body.from - Who the sheet showed as giving it.
+ * @param body.givers - Who should, in the order chosen.
+ * @param body.mode - One person, or several.
+ * @param body.closed - « On est au complet ».
+ * @returns Once written.
+ */
+export const setIdeaGivers = async (
+  db: Db,
+  listId: string,
+  accountId: string,
+  ideaId: string,
+  body: {
+    from: readonly string[];
+    givers: readonly (
+      { key: string } | { name: string; email: string | null }
+    )[];
+    mode: 'alone' | 'group';
+    closed: boolean;
+  },
+) => {
+  const idea = await findIdea(db, listId, ideaId);
+  if (!idea) throw notFound();
+  const all = await claimsOfLists(db, [listId]);
+  const current = all.filter((claim) => claim.ideaId === idea.id);
+  if (current.some((claim) => claim.anonymous)) {
+    throw createError({ statusCode: 409, statusMessage: 'anonymous' });
+  }
+  if (!sameGivers(current, body.from)) {
+    throw createError({ statusCode: 409, statusMessage: 'list_changed' });
+  }
+  const holders = (await holdersOfLists(db, [listId])).get(listId) ?? [];
+  const offered = new Set(
+    (await candidatesOf(db, listId, accountId, holders, all)).map(
+      (candidate) => candidate.key,
+    ),
+  );
+  const written = await writtenGiversOf(db, listId);
+  const keys: GiverKey[] = [];
+  for (const giver of body.givers) {
+    if ('key' in giver) {
+      const key = giver.key as GiverKey;
+      if (!offered.has(key)) throw notFound('giver_not_found');
+      keys.push(key);
+      continue;
+    }
+    const known = sameWritten(written, giver);
+    keys.push(
+      writtenKey(
+        known?.id ??
+          (await addWrittenGiver(db, {
+            listId,
+            name: giver.name,
+            email: giver.email,
+            addedBy: accountId,
+          })),
+      ),
+    );
+  }
+  const plan = unwrap(giversPlan(current, keys, body.mode));
+  await saveGivers(db, {
+    listId,
+    ideaId: idea.id,
+    by: accountId,
+    mode: body.mode,
+    closed: body.closed,
+    remove: plan.remove,
+    keep: plan.keep.map((id) => ({
+      id,
+      key: current.find((claim) => claim.id === id)!.key,
+    })),
+    add: plan.add,
+    leader: plan.leader,
+  });
 };

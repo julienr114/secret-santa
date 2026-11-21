@@ -208,7 +208,8 @@ export type ClaimMode = 'alone' | 'group';
 export type Claim = {
   accountId: string;
   name: string;
-  avatar: Avatar;
+  /** Null for a first name written by those who hold the list. */
+  avatar: Avatar | null;
   mode: ClaimMode;
   /** Hidden from the holder: « Anonyme ». */
   anonymous: boolean;
@@ -229,7 +230,7 @@ export type IdeaView =
       /** The viewer proposed it, or took it over: they may close it. */
       leads: boolean;
       /** Who gives it together; `me` for the one looking. */
-      people: { name: string; avatar: Avatar; me: boolean }[];
+      people: { name: string; avatar: Avatar | null; me: boolean }[];
     };
 
 /**

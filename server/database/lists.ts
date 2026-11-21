@@ -4,6 +4,8 @@ import {
   accounts,
   familyMembers,
   giftClaims,
+  giftGiverClaims,
+  giftListGivers,
   giftListHolders,
   giftListIdeas,
   giftListInvites,
@@ -332,13 +334,7 @@ export const placesOfMember = async (db: Db, memberId: string) => {
     .from(giftOffList)
     .where(inArray(giftOffList.listPersonId, personIds));
   const ideaIds = ideas.map((idea) => idea.id);
-  const claims =
-    ideaIds.length === 0
-      ? []
-      : await db
-          .select({ ideaId: giftClaims.ideaId })
-          .from(giftClaims)
-          .where(inArray(giftClaims.ideaId, ideaIds));
+  const claimed = await claimedIdeas(db, ideaIds);
   return {
     places: rows.map(({ person, list }) => ({
       personId: person.id,
@@ -348,8 +344,34 @@ export const placesOfMember = async (db: Db, memberId: string) => {
         .map((idea) => idea.id),
       offList: offList.filter((gift) => gift.listPersonId === person.id).length,
     })),
-    claimed: new Set(claims.map((claim) => claim.ideaId)),
+    claimed,
   };
+};
+
+/**
+ * The ideas someone gives, among some: by an account, or by a first
+ * name written for them (« Cocher pour quelqu'un »).
+ * @param db - The database.
+ * @param ideaIds - The ideas.
+ * @returns Those given.
+ */
+export const claimedIdeas = async (
+  db: Db,
+  ideaIds: readonly string[],
+): Promise<Set<string>> => {
+  if (ideaIds.length === 0) return new Set();
+  const ids = [...ideaIds];
+  const [byAccounts, byNames] = await Promise.all([
+    db
+      .select({ ideaId: giftClaims.ideaId })
+      .from(giftClaims)
+      .where(inArray(giftClaims.ideaId, ids)),
+    db
+      .select({ ideaId: giftGiverClaims.ideaId })
+      .from(giftGiverClaims)
+      .where(inArray(giftGiverClaims.ideaId, ids)),
+  ]);
+  return new Set([...byAccounts, ...byNames].map((claim) => claim.ideaId));
 };
 
 /**
@@ -371,6 +393,7 @@ export const deleteMember = (
   if (personIds.length === 0) return db.batch([gone]);
   return db.batch([
     db.delete(giftClaims).where(inArray(giftClaims.ideaId, ideaIds)),
+    db.delete(giftGiverClaims).where(inArray(giftGiverClaims.ideaId, ideaIds)),
     db.delete(giftOffList).where(inArray(giftOffList.listPersonId, personIds)),
     db
       .delete(giftListIdeas)
@@ -571,6 +594,8 @@ export const updateList = (
 export const deleteList = (db: Db, id: string) =>
   db.batch([
     db.delete(giftClaims).where(eq(giftClaims.listId, id)),
+    db.delete(giftGiverClaims).where(eq(giftGiverClaims.listId, id)),
+    db.delete(giftListGivers).where(eq(giftListGivers.listId, id)),
     db.delete(giftOffList).where(eq(giftOffList.listId, id)),
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
@@ -614,20 +639,9 @@ export const addPersonToList = async (
         .from(giftListIdeas)
         .where(eq(giftListIdeas.listPersonId, last.id))
     : [];
-  const plannedIdeaIds = new Set(
-    previous.length > 0
-      ? (
-          await db
-            .select({ ideaId: giftClaims.ideaId })
-            .from(giftClaims)
-            .where(
-              inArray(
-                giftClaims.ideaId,
-                previous.map((idea) => idea.id),
-              ),
-            )
-        ).map((claim) => claim.ideaId)
-      : [],
+  const plannedIdeaIds = await claimedIdeas(
+    db,
+    previous.map((idea) => idea.id),
   );
   const carried = carriedIdeas(
     previous.map((idea) => ({
@@ -689,13 +703,9 @@ export const resumableOfLists = async (
     .select()
     .from(giftListIdeas)
     .where(inArray(giftListIdeas.listId, [...listIds]));
-  const planned = new Set(
-    (
-      await db
-        .select({ ideaId: giftClaims.ideaId })
-        .from(giftClaims)
-        .where(inArray(giftClaims.listId, [...listIds]))
-    ).map((claim) => claim.ideaId),
+  const planned = await claimedIdeas(
+    db,
+    ideas.map((idea) => idea.id),
   );
   for (const person of people) {
     byList.get(person.listId)?.push({
@@ -821,6 +831,12 @@ export const removePersonFromList = async (
     db.delete(giftClaims).where(
       inArray(
         giftClaims.ideaId,
+        ideas.map((idea) => idea.id),
+      ),
+    ),
+    db.delete(giftGiverClaims).where(
+      inArray(
+        giftGiverClaims.ideaId,
         ideas.map((idea) => idea.id),
       ),
     ),

@@ -659,10 +659,69 @@ export const giftClaims = sqliteTable(
     // On the row of the one who leads a group: nobody may join any more.
     closed: integer('closed', { mode: 'boolean' }).notNull().default(false),
     createdAt: text('created_at').notNull(),
+    // « Cocher pour quelqu'un » (21 November 2026): the one who holds the
+    // list who noted it for this account; null when they ticked it
+    // themselves.
+    notedBy: text('noted_by').references(() => accounts.id),
+    // The first name written for them, kept once a tick noted for an
+    // address became theirs: those who hold the list go on reading it.
+    giverName: text('giver_name'),
   },
   (t) => [
     uniqueIndex('gift_claims_idea_account_idx').on(t.ideaId, t.accountId),
     index('gift_claims_list_idx').on(t.listId),
+  ],
+);
+
+// « Cocher pour quelqu'un » (21 November 2026): a first name written by
+// one of those who hold a list, with an address or without, for someone
+// the app does not know. Offered again on this list. With an address, it
+// becomes that account at its first coming, its ticks with it.
+export const giftListGivers = sqliteTable(
+  'gift_list_givers',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    name: text('name').notNull(),
+    email: text('email'),
+    addedBy: text('added_by')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    index('gift_list_givers_list_idx').on(t.listId),
+    index('gift_list_givers_email_idx').on(t.email),
+  ],
+);
+
+// What a first name written gives: the same as a tick, without an account.
+export const giftGiverClaims = sqliteTable(
+  'gift_giver_claims',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    ideaId: text('idea_id')
+      .notNull()
+      .references(() => giftListIdeas.id),
+    giverId: text('giver_id')
+      .notNull()
+      .references(() => giftListGivers.id),
+    mode: text('mode', { enum: ['alone', 'group'] }).notNull(),
+    note: text('note'),
+    closed: integer('closed', { mode: 'boolean' }).notNull().default(false),
+    notedBy: text('noted_by')
+      .notNull()
+      .references(() => accounts.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_giver_claims_idea_giver_idx').on(t.ideaId, t.giverId),
+    index('gift_giver_claims_list_idx').on(t.listId),
   ],
 );
 

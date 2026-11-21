@@ -39,6 +39,8 @@ const saved = computed(
   () => new Set(options.value.filter((o) => o.checked).map((o) => o.id)),
 );
 const ticked = ref<Set<string>>(new Set());
+/** The events ticked for « Celui qui m'a tiré » only (ticket 107). */
+const givers = ref<Set<string>>(new Set());
 const isPublic = ref(false);
 // What the list holds, each time the sheet opens.
 watch(
@@ -46,14 +48,28 @@ watch(
   (data) => {
     if (!data) return;
     ticked.value = new Set(saved.value);
+    givers.value = new Set(
+      data.options.filter((o) => o.giver).map((o) => o.id),
+    );
     isPublic.value = data.isPublic;
   },
   { immediate: true },
 );
-const ask = (over: { parties?: Set<string>; isPublic?: boolean } = {}) => ({
-  parties: [...(over.parties ?? ticked.value)],
-  isPublic: over.isPublic ?? isPublic.value,
-});
+const ask = (
+  over: {
+    parties?: Set<string>;
+    givers?: Set<string>;
+    isPublic?: boolean;
+  } = {},
+) => {
+  const all = over.parties ?? ticked.value;
+  const only = over.givers ?? givers.value;
+  return {
+    parties: [...all].filter((id) => !only.has(id)),
+    givers: [...all].filter((id) => only.has(id)),
+    isPublic: over.isPublic ?? isPublic.value,
+  };
+};
 
 /** A narrower sharing waiting for its confirmation. */
 const narrowing = ref<{
@@ -87,11 +103,16 @@ const onToggle = async (option: SharingOption) => {
     ticked.value = next;
     return;
   }
+  // Already kept for the one who drew me: nobody else loses it.
+  if (givers.value.has(option.id)) {
+    ticked.value = next;
+    return;
+  }
   checking.value = true;
   try {
     const { members, claimers } = await sharingImpact(props.listId, {
       ...ask({ parties: next }),
-      from: [...ticked.value],
+      from: ask().parties,
     });
     if (members === 0 && claimers === 0) {
       ticked.value = next;
@@ -106,6 +127,54 @@ const onToggle = async (option: SharingOption) => {
       ].filter((line): line is string => Boolean(line)),
       apply: () => {
         ticked.value = next;
+      },
+    };
+  } catch (error) {
+    toast.failed(errorMessage(error));
+  } finally {
+    checking.value = false;
+  }
+};
+
+/**
+ * « Tous les membres » or « Celui qui m'a tiré » in an event where I take
+ * part in a Secret Santa; keeping it for the one who drew me asks first,
+ * like unticking, when its members saw it.
+ * @param option - The event.
+ * @param giverOnly - True for « Celui qui m'a tiré ».
+ * @returns Once done or asked.
+ */
+const onAudience = async (option: SharingOption, giverOnly: boolean) => {
+  const next = new Set(givers.value);
+  if (!giverOnly) {
+    next.delete(option.id);
+    givers.value = next;
+    return;
+  }
+  next.add(option.id);
+  if (!saved.value.has(option.id) || option.giver) {
+    givers.value = next;
+    return;
+  }
+  checking.value = true;
+  try {
+    const { members, claimers } = await sharingImpact(props.listId, {
+      ...ask({ givers: next }),
+      from: ask().parties,
+    });
+    if (members === 0 && claimers === 0) {
+      givers.value = next;
+      return;
+    }
+    narrowing.value = {
+      title: t('lists.sharing.narrow.title', { name: option.name }),
+      lines: [
+        t('lists.sharing.narrow.members', { count: members }),
+        claimers > 0 &&
+          t('lists.sharing.narrow.claimersOf', { count: claimers }),
+      ].filter((line): line is string => Boolean(line)),
+      apply: () => {
+        givers.value = next;
       },
     };
   } catch (error) {
@@ -248,6 +317,37 @@ const onRenew = () =>
               />
             </span>
           </button>
+          <div
+            v-if="option.drawn && ticked.has(option.id)"
+            role="radiogroup"
+            :aria-label="
+              t('lists.sharing.audienceLabel', { name: option.name })
+            "
+            class="flex flex-wrap gap-2 pr-4 pb-3.5 pl-16"
+          >
+            <button
+              v-for="choice in [false, true]"
+              :key="String(choice)"
+              type="button"
+              role="radio"
+              :aria-checked="givers.has(option.id) === choice"
+              :disabled="checking"
+              class="h-10 rounded-full px-3.5 text-sm font-bold"
+              :class="
+                givers.has(option.id) === choice
+                  ? 'bg-lilac-100 ring-2 ring-primary'
+                  : 'bg-default ring-1 ring-default'
+              "
+              :data-testid="`sharing-audience-${option.slug}-${choice ? 'giver' : 'all'}`"
+              @click="onAudience(option, choice)"
+            >
+              {{
+                choice
+                  ? t('lists.sharing.giverOnly')
+                  : t('lists.sharing.allMembers')
+              }}
+            </button>
+          </div>
         </li>
         <li :class="{ 'border-t border-default': options.length > 0 }">
           <NuxtLink

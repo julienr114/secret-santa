@@ -7,6 +7,7 @@ import {
   exists,
   inArray,
   isNotNull,
+  ne,
   or,
 } from 'drizzle-orm';
 import type { Db } from './client';
@@ -20,8 +21,10 @@ import {
   giftOffList,
   parties,
   partyOrganisers,
+  participations,
   partyYears,
   persons,
+  secretSantas,
 } from './schema';
 import { newId } from '#server/http/context';
 import type { Audience } from '#server/utils/listSharing';
@@ -108,8 +111,13 @@ export type SharingOption = {
   emoji: string | null;
   /** Its active members. */
   members: number;
-  /** Shared there with all its members. */
+  /** Shared there: with all its members, or the one who drew me. */
   checked: boolean;
+  /** Only the one who drew me sees it there (ticket 107). */
+  giver: boolean;
+  /** I take part there in a Secret Santa not closed: « Celui qui m'a
+   * tiré » may be chosen. */
+  drawn: boolean;
 };
 
 /**
@@ -295,8 +303,28 @@ export const sharingOptions = async (
       .groupBy(persons.partyId),
   ]);
   const members = new Map(counts.map((row) => [row.partyId, row.n]));
-  const checked = new Set(
-    shared.filter((row) => row.visibility === 'party').map((row) => row.id),
+  const checked = new Set(shared.map((row) => row.id));
+  const givers = new Set(
+    shared.filter((row) => row.visibility === 'giver').map((row) => row.id),
+  );
+  const drawn = new Set(
+    (
+      await db
+        .select({ partyId: secretSantas.partyId })
+        .from(participations)
+        .innerJoin(persons, eq(persons.id, participations.personId))
+        .innerJoin(
+          secretSantas,
+          eq(secretSantas.id, participations.secretSantaId),
+        )
+        .where(
+          and(
+            inArray(secretSantas.partyId, ids),
+            eq(persons.email, account.email),
+            ne(secretSantas.status, 'closed'),
+          ),
+        )
+    ).map((row) => row.partyId),
   );
   return rows
     .map((party) => ({
@@ -307,19 +335,21 @@ export const sharingOptions = async (
       emoji: partyEmoji(party),
       members: members.get(party.id) ?? 0,
       checked: checked.has(party.id),
+      giver: givers.has(party.id),
+      drawn: drawn.has(party.id),
     }))
     .toSorted((a, b) => a.name.localeCompare(b.name));
 };
 
 /**
- * Saves « Qui verra ta liste ? »: the events shared with all their
- * members, and whether it is public. « Celui qui m'a tiré » in an event
- * left unticked stays (ticket 107); its own event, which holds only its
- * holders, too.
+ * Saves « Qui verra ta liste ? »: the events ticked, for all their
+ * members or only for the one who drew me (ticket 107), and whether it is
+ * public. Its own event, which holds only its holders, stays.
  * @param db - The database.
  * @param list - The list, with since when it is public.
  * @param sharing - What is asked.
- * @param sharing.partyIds - The events ticked.
+ * @param sharing.partyIds - The events ticked for all their members.
+ * @param sharing.giverIds - The events ticked for the one who drew me.
  * @param sharing.isPublic - « Tout le monde, avec le lien ».
  * @param now - ISO date.
  * @returns Once saved.
@@ -327,13 +357,20 @@ export const sharingOptions = async (
 export const saveSharing = async (
   db: Db,
   list: { id: string; sharedAt: string | null },
-  sharing: { partyIds: readonly string[]; isPublic: boolean },
+  sharing: {
+    partyIds: readonly string[];
+    giverIds?: readonly string[];
+    isPublic: boolean;
+  },
   now: string,
 ) => {
   const shared = await sharedEventsOf(db, list.id);
-  const wanted = new Set(sharing.partyIds);
+  const wanted = new Map<string, 'party' | 'giver'>([
+    ...(sharing.giverIds ?? []).map((id) => [id, 'giver'] as const),
+    ...sharing.partyIds.map((id) => [id, 'party'] as const),
+  ]);
   const dropped = shared
-    .filter((row) => row.visibility === 'party' && !wanted.has(row.id))
+    .filter((row) => !wanted.has(row.id))
     .map((row) => row.id);
   const sharedAt = sharing.isPublic ? (list.sharedAt ?? now) : null;
   await db.batch([
@@ -349,19 +386,19 @@ export const saveSharing = async (
           inArray(giftListParties.partyId, dropped.length ? dropped : ['']),
         ),
       ),
-    ...[...wanted].map((partyId) =>
+    ...[...wanted].map(([partyId, visibility]) =>
       db
         .insert(giftListParties)
         .values({
           id: newId(),
           listId: list.id,
           partyId,
-          visibility: 'party',
+          visibility,
           createdAt: now,
         })
         .onConflictDoUpdate({
           target: [giftListParties.listId, giftListParties.partyId],
-          set: { visibility: 'party' },
+          set: { visibility },
         }),
     ),
   ]);

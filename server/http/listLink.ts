@@ -2,7 +2,13 @@ import type { H3Event } from 'h3';
 import { useDb } from '#server/database/client';
 import { findAccountById } from '#server/database/accounts';
 import { findHolding, findListByToken } from '#server/database/lists';
-import { memberWhereShared } from '#server/database/listSharing';
+import { drewHolderWhere } from '#server/database/anonymous';
+import {
+  memberWhereShared,
+  sharedEventsOf,
+} from '#server/database/listSharing';
+import { dataKeyOf, secretsOf } from '#server/http/context';
+import { verifyParticipation } from '#server/utils/anonymous';
 import { optionalAccount, requireAccount } from '#server/http/auth';
 import { roleOnList, settleArrivals } from '#server/http/lists';
 import { canWriteIdeas, listArrival } from '#server/utils/listAccess';
@@ -10,7 +16,9 @@ import { canWriteIdeas, listArrival } from '#server/utils/listAccess';
 /**
  * A list by the token of its link, for whoever may get in (docs/spec/v3/
  * listes.md, « Arriver par le lien »): those who hold it, the members of
- * an event it is shared in, everyone once it is public. Anyone else gets
+ * an event it is shared in, the one who drew a holder where it is kept
+ * for that one (by their account, or the participation their link
+ * vouched for), everyone once it is public. Anyone else gets
  * the same refusal whether the list exists or not, so that a link says
  * nothing: 401 `list_login` without a session, 403 `list_not_shared`
  * with one.
@@ -32,11 +40,32 @@ export const listOfLink = async (event: H3Event) => {
     !holder &&
     (await memberWhereShared(db, list.id, account)),
   );
+  const giver =
+    list && !holder && !member && !list.sharedAt
+      ? await drewHolderWhere(
+          db,
+          list.id,
+          (await sharedEventsOf(db, list.id))
+            .filter((row) => row.visibility === 'giver')
+            .map((row) => row.id),
+          {
+            email: account?.email ?? '',
+            participationId: await verifyParticipation(
+              typeof getQuery(event).p === 'string'
+                ? String(getQuery(event).p)
+                : null,
+              secretsOf(event).dataKey,
+            ),
+          },
+          await dataKeyOf(event),
+        )
+      : false;
   const arrival = listArrival({
     loggedIn: Boolean(account),
     holder,
     isPublic: Boolean(list?.sharedAt),
     member,
+    giver,
   });
   if (list && arrival === 'open') return { db, list };
   throw account

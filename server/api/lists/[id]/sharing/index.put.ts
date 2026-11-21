@@ -12,6 +12,8 @@ import { validatedBody } from '#server/http/validate';
 // on the screen; their ticks stay.
 const bodySchema = z.object({
   parties: z.array(z.string().min(1).max(40)).max(100),
+  /** The events ticked for « Celui qui m'a tiré » (ticket 107). */
+  givers: z.array(z.string().min(1).max(40)).max(100).default([]),
   isPublic: z.boolean(),
 });
 
@@ -20,21 +22,30 @@ export default defineEventHandler(async (event) => {
   const body = await validatedBody(event, bodySchema);
   const account = await findAccountById(db, user.accountId);
   if (!account) throw createError({ statusCode: 401 });
-  const offered = new Set(
-    (await sharingOptions(db, list.id, account)).map((option) => option.id),
+  const options = await sharingOptions(db, list.id, account);
+  const offered = new Set(options.map((option) => option.id));
+  const drawn = new Set(
+    options.filter((option) => option.drawn).map((option) => option.id),
   );
-  if (body.parties.some((id) => !offered.has(id))) {
+  if (
+    body.parties.some((id) => !offered.has(id)) ||
+    body.givers.some((id) => !drawn.has(id) && !offered.has(id))
+  ) {
     throw createError({ statusCode: 403, statusMessage: 'forbidden' });
   }
   await saveSharing(
     db,
     list,
-    { partyIds: body.parties, isPublic: body.isPublic },
+    {
+      partyIds: body.parties,
+      giverIds: body.givers.filter((id) => !body.parties.includes(id)),
+      isPublic: body.isPublic,
+    },
     nowIso(),
   );
   // Shared for the first time: the marks of a list taken up again go
   // (lot 27).
-  if (body.parties.length > 0 || body.isPublic) {
+  if (body.parties.length > 0 || body.givers.length > 0 || body.isPublic) {
     await forgetCarried(db, list.id);
   }
   return { ok: true };

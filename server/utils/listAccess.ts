@@ -264,15 +264,18 @@ export const invitesAccepted = <
 /**
  * What someone arriving on the address of a list gets (docs/spec/v3/
  * listes.md, « Arriver par le lien »): in, when they hold it, when it is
- * public, or when they are a member of an event it is shared in; else a
- * page that says nothing of the list, asking to log in first when they
- * are not.
+ * public, when they are a member of an event it is shared in, or when
+ * they drew one of its holders where it is kept for that one (ticket
+ * 107); else a page that says nothing of the list, asking to log in first
+ * when they are not.
  * @param arrival - Who arrives, and the stage of the list's sharing.
  * @param arrival.loggedIn - Whether they have a session.
  * @param arrival.holder - Whether they hold the list.
  * @param arrival.isPublic - Whether the list is public.
  * @param arrival.member - Whether they are a member of an event it is
  * shared in.
+ * @param arrival.giver - Whether they drew one of its holders, in an
+ * event where it is kept for the one who drew.
  * @returns `open`, `login` (log in to try) or `closed`.
  */
 export const listArrival = (arrival: {
@@ -280,7 +283,10 @@ export const listArrival = (arrival: {
   holder: boolean;
   isPublic: boolean;
   member: boolean;
+  giver: boolean;
 }): 'open' | 'login' | 'closed' => {
-  if (arrival.isPublic || arrival.holder || arrival.member) return 'open';
+  if (arrival.isPublic || arrival.holder || arrival.member || arrival.giver) {
+    return 'open';
+  }
   return arrival.loggedIn ? 'closed' : 'login';
 };

@@ -89,6 +89,8 @@ describe('« Qui verra ta liste ? »', () => {
         emoji: '🎄',
         members: 2,
         checked: false,
+        giver: false,
+        drawn: false,
       },
       {
         id: 'p1',
@@ -98,6 +100,8 @@ describe('« Qui verra ta liste ? »', () => {
         emoji: '🎄',
         members: 3,
         checked: true,
+        giver: false,
+        drawn: false,
       },
     ]);
   });

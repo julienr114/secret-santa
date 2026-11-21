@@ -200,11 +200,15 @@ describe('listArrival', () => {
     holder: false,
     isPublic: false,
     member: false,
+    giver: false,
   };
 
   it('opens to those who hold it, to members where it is shared, to all when public', () => {
     expect(listArrival({ ...nobody, holder: true })).toBe('open');
     expect(listArrival({ ...nobody, member: true })).toBe('open');
+    expect(listArrival({ ...nobody, loggedIn: false, giver: true })).toBe(
+      'open',
+    );
     expect(listArrival({ ...nobody, loggedIn: false, isPublic: true })).toBe(
       'open',
     );

@@ -321,7 +321,12 @@ export const useShareListMutation = (id: Id) =>
 /** « Qui verra ta liste ? » (ticket 106): the events offered, and the link. */
 export type ListSharing = { options: SharingOption[]; isPublic: boolean };
 /** A sharing asked for: the events ticked, and « Tout le monde ». */
-export type SharingAsk = { parties: string[]; isPublic: boolean };
+export type SharingAsk = {
+  parties: string[];
+  /** The events kept for « Celui qui m'a tiré » (ticket 107). */
+  givers?: string[];
+  isPublic: boolean;
+};
 
 export const useListSharingQuery = (
   id: Id,

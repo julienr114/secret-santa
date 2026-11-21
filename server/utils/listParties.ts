@@ -40,18 +40,6 @@ export const ownPartyOf = (list: ListForParty, now: string) => ({
 });
 
 /**
- * How a list linked to a draw is seen in the draw's event: by all its
- * members once it is public, else only by the one who drew its holder
- * (decided by Julien on 20 November 2026). Every list has its link since
- * ticket 106: what counts is whether it is public.
- * @param list - Since when it is public, if it is.
- * @returns The visibility.
- */
-export const linkedVisibility = (list: {
-  sharedAt: string | null;
-}): ListVisibility => (list.sharedAt === null ? 'giver' : 'party');
-
-/**
  * The address of a party made for a list: never asked, never shown yet.
  * @param bytes - Random bytes.
  * @returns « liste- » and their hex.

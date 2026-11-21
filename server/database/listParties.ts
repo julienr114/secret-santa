@@ -2,19 +2,15 @@ import { and, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   giftListParties,
-  giftLists,
   parties,
-  participations,
   partyOrganisers,
   partyYears,
   persons,
-  secretSantas,
 } from './schema';
 import { findAccountById } from './accounts';
 import { insertPersonFromAccount } from './people';
 import { newId } from '#server/http/context';
 import {
-  linkedVisibility,
   listPartySlug,
   ownPartyOf,
   type ListForParty,
@@ -130,72 +126,4 @@ export const deleteListPartyStatements = (db: Db, listId: string) => {
     db.delete(partyYears).where(eq(partyYears.partyId, ownId)),
     db.delete(parties).where(own),
   ] as const;
-};
-
-/**
- * Puts a list linked to a draw in the draw's party, or takes it out when
- * no participation of that party links it any more.
- * @param db - The database.
- * @param input - The Secret Santa and the list linked, or null.
- * @param previousListId - The list linked before, if any.
- * @param now - ISO date.
- * @returns Once done.
- */
-export const syncLinkedList = async (
-  db: Db,
-  input: { secretSantaId: string; listId: string | null },
-  previousListId: string | null,
-  now: string,
-) => {
-  const [santa] = await db
-    .select({ partyId: secretSantas.partyId })
-    .from(secretSantas)
-    .where(eq(secretSantas.id, input.secretSantaId))
-    .limit(1);
-  if (!santa) return;
-  if (input.listId) {
-    const [list] = await db
-      .select({ sharedAt: giftLists.sharedAt })
-      .from(giftLists)
-      .where(eq(giftLists.id, input.listId))
-      .limit(1);
-    if (list) {
-      await db
-        .insert(giftListParties)
-        .values({
-          id: newId(),
-          listId: input.listId,
-          partyId: santa.partyId,
-          visibility: linkedVisibility(list),
-          createdAt: now,
-        })
-        .onConflictDoNothing();
-    }
-  }
-  if (previousListId && previousListId !== input.listId) {
-    const [still] = await db
-      .select({ id: participations.id })
-      .from(participations)
-      .innerJoin(
-        secretSantas,
-        eq(secretSantas.id, participations.secretSantaId),
-      )
-      .where(
-        and(
-          eq(secretSantas.partyId, santa.partyId),
-          eq(participations.giftListId, previousListId),
-        ),
-      )
-      .limit(1);
-    if (!still) {
-      await db
-        .delete(giftListParties)
-        .where(
-          and(
-            eq(giftListParties.listId, previousListId),
-            eq(giftListParties.partyId, santa.partyId),
-          ),
-        );
-    }
-  }
 };

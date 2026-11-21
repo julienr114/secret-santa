@@ -64,3 +64,16 @@ export const tabOf = (path: string): Tab => {
   if (under('/quoi-de-neuf')) return 'news';
   return path === '/admin' || ADMIN_PAGES.some(under) ? 'admin' : 'home';
 };
+
+/**
+ * Where the old addresses of the gift hints lead (ticket 107,
+ * docs/spec/v3/navigation.md, « Les anciennes adresses »): « Mes pistes »
+ * and its pages, and « Mes souhaits » before it, to my list from my
+ * Secret Santa.
+ * @param path - The path asked for.
+ * @returns The new path, or null when it did not move.
+ */
+export const hintsPathOf = (path: string): string | null => {
+  const match = /^\/p\/([^/]+)\/(pistes|souhaits)(\/.*)?$/.exec(path);
+  return match ? `/p/${match[1]}/liste` : null;
+};

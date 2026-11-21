@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { linkedVisibility, listPartySlug, ownPartyOf } from './listParties';
+import { listPartySlug, ownPartyOf } from './listParties';
 
 const NOW = '2026-11-20T10:00:00.000Z';
 
@@ -37,15 +37,6 @@ describe('ownPartyOf', () => {
     );
     expect(party.category).toBe('other');
     expect(year).toEqual({ year: 2026, date: null });
-  });
-});
-
-describe('linkedVisibility', () => {
-  it('opens a public list to the party, keeps the others for the giver', () => {
-    expect(linkedVisibility({ sharedAt: '2026-11-21T10:00:00.000Z' })).toBe(
-      'party',
-    );
-    expect(linkedVisibility({ sharedAt: null })).toBe('giver');
   });
 });
 

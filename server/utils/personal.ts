@@ -111,25 +111,6 @@ export const envelopeState = (
   return revealed ? 'opened' : 'sealed';
 };
 
-/**
- * The tile « Mes pistes de cadeaux » on the page of a draw (README 22.16):
- * waiting for hints while they can be left, done once some are, and gone
- * when the group has none, or the edition is closed without any (decided
- * by Julien on 17 November 2026).
- * @param p - The group's setting, whether they left hints, whether they
- *   can still change them.
- * @returns `todo`, `done`, or null for no tile.
- */
-export const hintsTile = (p: {
-  giftHints: string;
-  hasHints: boolean;
-  hintsEditable: boolean;
-}): 'todo' | 'done' | null => {
-  if (p.giftHints === 'none') return null;
-  if (p.hasHints) return 'done';
-  return p.hintsEditable ? 'todo' : null;
-};
-
 /** Where the tile « Devine qui » stands (README 22.17). */
 export type GameTile =
   'play' | 'played' | 'skipped' | 'waiting' | 'palmares' | 'answers';

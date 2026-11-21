@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { backMove, partyPathOf, tabOf } from './navigation';
+import { backMove, hintsPathOf, partyPathOf, tabOf } from './navigation';
 
 describe('backMove', () => {
   it('goes back when the page before is the parent', () => {
@@ -67,5 +67,19 @@ describe('tabOf', () => {
     expect(tabOf('/admin/comptes')).toBe('admin');
     expect(tabOf('/admin/groupes/nouveau')).toBe('admin');
     expect(tabOf('/admin/guide-de-style')).toBe('admin');
+  });
+});
+
+describe('hintsPathOf', () => {
+  it('sends « Mes pistes », its pages and « Mes souhaits » to my list', () => {
+    expect(hintsPathOf('/p/abc/pistes')).toBe('/p/abc/liste');
+    expect(hintsPathOf('/p/abc/pistes/question')).toBe('/p/abc/liste');
+    expect(hintsPathOf('/p/abc/souhaits')).toBe('/p/abc/liste');
+  });
+
+  it('leaves the rest of the personal page alone', () => {
+    expect(hintsPathOf('/p/abc')).toBeNull();
+    expect(hintsPathOf('/p/abc/journal')).toBeNull();
+    expect(hintsPathOf('/p/abc/pistesx')).toBeNull();
   });
 });

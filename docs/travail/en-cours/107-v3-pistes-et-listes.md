@@ -59,7 +59,7 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
   - connecté avec mon adresse, ma liste pour l'événement s'ouvre, créée réservée à celui qui m'a tiré, sans brouillon entre les deux ;
   - sinon, « Ton adresse email, pour écrire ta liste », confirmée par le lien reçu.
 - **La migration `0037_v3_hints_to_lists`**, appliquée en local seulement, testée sur des données d'essai :
-  - le portrait remplit la fiche « Moi » vide (voir Q-019) ;
+  - le portrait remplit la fiche « Moi » vide (Q-019, confirmé par Julien) ;
   - les idées d'un Secret Santa pas clôturé vont dans une liste de la personne, réservée à celui qui l'a tirée ;
   - sans compte, rien n'est créé.
 - **Disparus** :
@@ -75,6 +75,6 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 
 **Questions** :
 - Q-018 : le compte créé à la première idée ; ce ticket reste en cours pour ce point.
-- Q-019 : faut-il vraiment déplacer le portrait vers la fiche « Moi », lue plus largement ? À trancher avant de publier la migration.
+- Q-019 : déplacer le portrait vers la fiche « Moi », lue plus largement. Réponse de Julien : oui, les goûts sont communs à toutes les listes ; la migration reste telle quelle.
 
 **Hors de ce ticket** : « Quelqu'un te demande des idées » sur l'accueil et dans le menu du compte, c'est le texte des lignes (ticket 112) et « Quoi de neuf » (ticket 120).

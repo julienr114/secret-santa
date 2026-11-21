@@ -14,6 +14,9 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. La première idée crée le compte, mais la session ne s'ouvre qu'en confirmant l'adresse par le lien reçu (comme `V3ListeAdresse` le fait pour qui n'a pas d'adresse). Plus sûr, une étape de plus, et l'idée attend la confirmation.
 - **Ce que je ferais** : A. Le compte neuf ne donne accès à rien de plus que le lien lui-même, et le message de `V3ListeCompteCree` ne dit pas « confirme ton adresse ». Un compte qui existe déjà n'est jamais ouvert par un lien personnel.
 
+
+## Réponses
+
 ### Q-019 — Les goûts d'un Secret Santa vont dans la fiche « Moi » : ils seront lus plus largement qu'avant (ticket 107)
 
 - **Pour** : Julien
@@ -24,8 +27,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. Ne rien migrer des goûts : celui qui a tiré lit encore l'ancien portrait de cette année, en lecture seule ; la fiche « Moi » se remplit à la main.
   - C. Migrer, mais prévenir la personne à sa prochaine visite (« Tes goûts de Secret Santa sont maintenant sur ta fiche »).
 - **Ce que je ferais** : B, l'application se veut exemplaire sur les données : on ne publie pas plus largement ce que quelqu'un a écrit pour une seule personne. La migration ne déplacerait alors que les idées, qui restent réservées à celui qui a tiré.
-
-## Réponses
+- **Réponse de Julien (21 novembre 2026)** : A. « Les goûts devraient être cross-list » : ils sont ceux de la personne, les mêmes sur toutes les listes où elle figure. Le portrait des pistes va dans la fiche « Moi », comme la migration `0037` le fait.
 
 Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN.md`, section 6.
 
@@ -143,4 +145,4 @@ Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN
 - **En attendant** : rien ne change dans le code : il rejoint le plus récent qui n'est pas clôturé, s'il est encore en préparation.
 - **Les choix** : A, aucun : l'organisateur l'ajoute lui-même là où il faut ; B, tous ceux en préparation ; C, le plus récent, comme aujourd'hui.
 - **Ce que je ferais** : A dès qu'il y en a deux, C quand il n'y en a qu'un : on ne met personne chez « les enfants » sans le savoir.
-- **Réponse de la conception (21 novembre 2026)** : ce que tu ferais. Un seul Secret Santa en préparation cette année : il le rejoint. Plusieurs : aucun, l'organisateur le coche dans « Choisir les participants ». Deux textes de plus : la page d'arrivée dit « Ton organisateur te dira à quel Secret Santa tu participes. », sans la ligne « Voir mon tirage » ; le message qui prévient l'organisateur finit par « À ajouter à un Secret Santa. » Décision : `docs/decisions/2026-11-21-rejoindre-avec-plusieurs-secret-santa.md`. Spec : `docs/spec/v3/fete.md` (« Inviter, rejoindre »). À coder : ticket 115.
+- **Réponse de Julien (21 novembre 2026)**, contre celle de la conception : la question ne se pose plus, parce que **le lien d'invitation est celui d'un Secret Santa, pas celui d'un événement**. On s'inscrit à un Secret Santa, et du coup à son événement ; chaque Secret Santa a son lien. Décision : `docs/decisions/2026-11-21-le-lien-d-invitation-est-celui-d-un-secret-santa.md`. Spec : `docs/spec/v3/secret-santa.md` (« Inviter par lien »), `docs/spec/v3/fete.md` (« Inviter, rejoindre »). Maquettes à jour : `V3FeteInviter`, `V3FeteRejoindre`, `RejoindreConnecte`, `V3FeteMembres`, `V3FeteReglages`, `V3TirageReglages`. À coder : ticket 116. D'ici là, ton choix d'attente tient.

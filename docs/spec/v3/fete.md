@@ -19,6 +19,8 @@ Une fête « pour quelqu'un » (un anniversaire) montre d'abord sa liste ; un Se
 
 Une liste réservée à celui qui m'a tiré n'apparaît pas ici pour les autres membres (`listes.md`).
 
+Le titre et le texte de chaque ligne : `lignes.md`.
+
 ## Les réglages de la fête
 
 Maquette : `V3FeteReglages`. Seulement ce qui est à elle :
@@ -50,7 +52,7 @@ Maquettes : `V3FeteInviter`, `V3FeteRejoindre`.
 
 Maquette : `V3FeteQuitter`. Avant de quitter, l'écran dit ce qui sort et ce qui reste :
 
-- mes listes sortent de cette fête (et restent dans les autres) ;
+- mes listes sortent de cette fête : « Ta liste sortira de cette fête. Elle reste dans tes autres fêtes. » Si elle n'était que dans celle-ci, elle reçoit une fête à elle, où je suis seul : « Ta liste sortira de cette fête. Toi seul la verras, tant que tu ne l'as pas mise ailleurs. » Si je n'ai pas de liste ici, la ligne n'est pas écrite ;
 - les cadeaux que j'ai cochés restent prévus ;
 - je ne participerai plus à son Secret Santa l'an prochain.
 

@@ -29,3 +29,4 @@ Au 20 novembre 2026 au soir, `a-dessiner/` est vide.
 | D10 | La page de présentation et les occasions (les textes) | 125 |
 | D11 | Les emails relus, la règle de leurs objets | 110 |
 | D12 | « Qui verra ta liste ? » rouvert par « Modifier », retirer sa liste d'une fête | 106 |
+| D13 | Le texte sous chaque ligne, le nom d'une fête dans une phrase, l'accueil dans l'ordre des dates | 112 |

@@ -18,6 +18,7 @@ Ce que l'application doit être. Un fichier par domaine, pas d'historique ici : 
 | `v3/categories.md` | Les six catégories et ce que chacune remplit |
 | `v3/vocabulaire.md` | Les mots qu'on écrit, ceux qu'on n'écrit plus |
 | `v3/accueil-et-creation.md` | L'accueil, la barre du bas, « Créer », « Pour quelle occasion ? », le jeu sur l'accueil, les fêtes passées |
+| `v3/lignes.md` | Le titre et le texte de chaque ligne de l'accueil et d'une fête, le point rouge, le nom d'une fête dans une phrase |
 | `v3/fete.md` | La page d'une fête, ses membres (30 au plus), ses réglages, inviter, rejoindre, quitter, une année passée |
 | `v3/secret-santa.md` | Créer un Secret Santa, ses réglages, la limite, le résultat |
 | `v3/listes.md` | Les listes dans les fêtes, qui les voit, la fin des « pistes de cadeaux » |

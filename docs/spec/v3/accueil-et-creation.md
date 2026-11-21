@@ -1,7 +1,7 @@
 # L'accueil, la barre du bas et « Créer »
 
 Décisions : `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`, `2026-11-20-un-onglet-creer.md`.
-Maquettes : `V3Accueil`, `V3AccueilVide`, `V3AccueilAnnee`, `V3AccueilJeu`, `V3FetesPassees`, `V3QuoiDeNeuf`, `V3AccueilPlusOuvert`, `V3FeteNouvelle`, `V3FeteMembresReprendre`, `MenuAvatar`, `MenuAvatarOuvert`.
+Maquettes : `V3Accueil`, `V3AccueilAvantNoel`, `V3AccueilVide`, `V3AccueilAnnee`, `V3AccueilJeu`, `V3FetesPassees`, `V3QuoiDeNeuf`, `V3AccueilPlusOuvert`, `V3FeteNouvelle`, `V3FeteMembresReprendre`, `MenuAvatar`, `MenuAvatarOuvert`.
 
 ## La barre du bas
 
@@ -56,8 +56,10 @@ Maquette : `V3Accueil`.
   - Le décompte du titre ne dépend d'aucune fête : il compte jusqu'au **25 décembre à minuit**, toujours.
   - Dans la section, les fêtes sont dans l'ordre des dates, la plus proche en haut.
 - **Une carte par fête** : l'emoji de sa catégorie, son nom, sa date, une flèche (l'en-tête ouvre la fête) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux fêtes apparaît dans les deux cartes (« aussi chez Mamie »).
-- **« Bientôt »** : avec la date de naissance d'un proche, l'accueil propose à l'avance « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli.
-- **« Plus tard »** : les autres fêtes, par date.
+- **L'ordre est celui des dates** (`2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`) : la section de Noël est posée à la place de sa première fête ; **une fête qui vient avant est au-dessus, sans titre** ; ce qui vient après est sous « Plus tard ». Sans section de Noël à venir : des cartes sans titre, puis « Bientôt ».
+- **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes fêtes couvre déjà.
+- **« Plus tard »** : les fêtes qui viennent après la saison de Noël, par date.
+- **Le titre et le texte de chaque ligne** : `lignes.md`.
 - En bas, deux lignes : **« Les fêtes passées »** et **« Ce que j'offre ailleurs »** (`listes.md`).
 
 L'accueil fait office de calendrier : pas d'écran à part. Pas de rubrique « Reçues par un lien ». Pas de bouton « Nouvelle liste » ni « Nouvelle fête » en bas de page.

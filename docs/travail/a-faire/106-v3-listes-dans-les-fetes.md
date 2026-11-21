@@ -1,5 +1,7 @@
 # 106 — V3 : les listes dans les fêtes
 
+> **NE PAS COMMENCER (21 novembre 2026).** Julien a changé le modèle du partage d'une liste (réponse à Q-006 dans `docs/travail/questions.md`) : brouillon au départ, un lien toujours là, l'accès décidé à l'arrivée sur l'adresse. La conception réécrit la spec et ce ticket ; cette ligne partira quand ce sera fait.
+
 - **Dépend de** : 101, 104
 - **Migration** : non (le rattachement des listes aux fêtes vient du ticket 101)
 - **Maquettes** : `V3ListeQui`, `V3Liste`, `V3ListeNouvelle`, `V3ListePublique`, `V3ListeMembre`, `V3OffreAilleurs`, `V3ListeQuiLien`, `V3ListeLienChanger`, `ListeAidePartage`, `ListeGroupeFil`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `ListeTeneurs`

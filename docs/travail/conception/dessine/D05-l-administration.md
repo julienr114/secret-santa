@@ -15,7 +15,7 @@
 - `V3AdminCompte` : « Secret Santa · Peut en organiser 3 · 2 en cours », avec le moins et le plus ; puis ses fêtes.
 - `V3TiragePause` : ce que voit quelqu'un qui veut organiser un Secret Santa quand ils sont suspendus.
 
-## Décidé seul
+## Décidé seul, puis confirmé par Julien le 21 novembre 2026 (Q-007)
 
 - **L'interrupteur est une pause, pas le retour des demandes** (Q-007). La décision disait « un interrupteur permet de rallumer la demande » ; une pause évite de garder en vie tous les écrans de demande pour un cas qui n'arrivera peut-être jamais.
 - **Le super-admin peut changer la limite d'un compte** (Q-007) : le réglage existait pour les groupes, il sert maintenant aux Secret Santa. La limite de départ reste 3.

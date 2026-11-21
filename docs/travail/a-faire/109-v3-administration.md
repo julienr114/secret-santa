@@ -13,6 +13,7 @@ Le super-admin n'a plus de demande à traiter. Il voit des fêtes et des comptes
 - `docs/spec/v3/administration.md`
 - `docs/spec/v3/modele.md` (« Les limites »)
 - `docs/decisions/2026-11-20-plus-de-demande-limite-de-trois.md`
+- `docs/decisions/2026-11-21-une-pause-pas-des-demandes.md`
 - L'ancien lot 37 (ticket 127), pour le tableau de bord
 
 ## À faire
@@ -26,7 +27,7 @@ Le super-admin n'a plus de demande à traiter. Il voit des fêtes et des comptes
 ## Hors périmètre
 
 - Les signalements : inchangés.
-- Le reste du tableau de bord (les plafonds, ce qui tourne tout seul) : ticket 127.
+- Le reste du tableau de bord (les plafonds, ce qui tourne tout seul) : ticket 127. Ce ticket ne l'attend pas.
 
 ## C'est fini quand
 
@@ -34,12 +35,6 @@ Le super-admin n'a plus de demande à traiter. Il voit des fêtes et des comptes
 - [ ] Changer la limite d'un compte à 4 lui permet un quatrième Secret Santa.
 - [ ] Les quatre maquettes `V3*` sont reproduites.
 - [ ] `/controle` passe.
-
-## Ce qui manque
-
-- **Q-007** : une pause plutôt que le retour des demandes, et le réglage de la limite par compte. Les maquettes montrent ce que la conception propose ; la décision du 20 novembre disait « rallumer la demande ».
-- À fondre avec le tableau de bord du super-admin (ticket 127) ou à faire avant : à voir avec Q-004.
-- Dès que Q-007 a sa réponse, ce ticket passe dans `a-faire/`.
 
 ## Compte rendu
 

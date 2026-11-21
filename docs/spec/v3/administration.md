@@ -1,6 +1,6 @@
 # L'administration
 
-Décision : `2026-11-20-plus-de-demande-limite-de-trois.md`.
+Décisions : `2026-11-20-plus-de-demande-limite-de-trois.md`, `2026-11-21-une-pause-pas-des-demandes.md`.
 Maquettes : `V3Admin`, `V3AdminComptes`, `V3AdminCompte`, `V3TiragePause`, et celles d'avant qui restent : `AdminGroupes` (les fêtes), `AdminSignalements`, `AdminSignalement`, `AdminOnglet`.
 
 C'est l'administration d'aujourd'hui (README, section 12), moins les demandes.
@@ -26,4 +26,4 @@ Maquettes : `V3AdminComptes`, `V3AdminCompte`.
 - La liste ne met plus rien « à traiter ». Un compte à sa limite le dit (« à sa limite de Secret Santa »).
 - La fiche d'un compte : **« Secret Santa · Peut en organiser 3 · 2 en cours · il lui en reste 1 »**, avec le moins et le plus (c'est le réglage qui servait aux groupes) ; puis ses fêtes, avec son rôle. « Désactiver le compte » ne change pas.
 
-Pause ou demande, et le réglage par compte : `docs/travail/questions.md`, Q-007.
+La pause plutôt que les demandes, et le réglage par compte : décidés par Julien le 21 novembre 2026 (`docs/decisions/2026-11-21-une-pause-pas-des-demandes.md`).

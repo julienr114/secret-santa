@@ -2,11 +2,12 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · La fête ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-46 maquettes, dans l'ordre du canevas (une rangée par sujet). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+47 maquettes, dans l'ordre du canevas (une rangée par sujet). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
 | `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas | 103 |
+| `V3AccueilAvantNoel` | Accueil · une fête qui n’est pas Noël et qui vient avant : elle est au-dessus de la saison de Noël, sans titre ; l’accueil suit les dates | 112 |
 | `V3AccueilVide` | Accueil · un compte tout neuf : un Secret Santa ou une liste ; on ne parle pas de « fête », c’est leur première étape | 103 |
 | `V3AccueilAnnee` | Accueil · l’année suivante (fin octobre 2027) : « Préparer Noël 2027 », « Reprendre ma liste de l’an dernier » | 108 |
 | `V3AccueilPlusOuvert` | Accueil · l’onglet « Créer » touché : un Secret Santa ou une liste ; la fête est la première étape des deux | 103 |

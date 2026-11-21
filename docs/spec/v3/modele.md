@@ -63,7 +63,7 @@ Les deux tables ne fusionnent pas. La page « Mes proches » ne change pas.
 - **3 Secret Santa par compte**, ceux qu'il organise et qui ne sont pas finis. Pas de demande à un administrateur. Le super-admin peut changer ce nombre pour un compte (`administration.md`).
 - **30 membres par fête** (`fete.md`, « 30 membres au plus »).
 - Les garde-fous des emails ne changent pas.
-- En cas d'abus, le super-admin peut **suspendre les nouveaux Secret Santa** ; l'interrupteur est éteint. (La décision du 20 novembre disait « remettre la demande » : une pause est proposée à la place, `docs/travail/questions.md`, Q-007.)
+- En cas d'abus, le super-admin peut **suspendre les nouveaux Secret Santa** ; l'interrupteur est éteint. (`docs/decisions/2026-11-21-une-pause-pas-des-demandes.md` : pas de retour des demandes.)
 
 Créer une liste, et la fête qui va avec, est libre pour tout compte.
 

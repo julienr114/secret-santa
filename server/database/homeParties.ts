@@ -97,7 +97,7 @@ export const loadHome = async (
   const ids = [...new Set([...mine.map((row) => row.partyId), ...organises])];
   if (ids.length === 0) return { parties: [], people };
 
-  const [rows, years, santas, links] = await Promise.all([
+  const [rows, years, santas, shares, made] = await Promise.all([
     db.select().from(parties).where(inArray(parties.id, ids)),
     db
       .select({
@@ -130,7 +130,29 @@ export const loadHome = async (
       .innerJoin(giftLists, eq(giftLists.id, giftListParties.listId))
       .where(inArray(giftListParties.partyId, ids))
       .orderBy(asc(giftListParties.createdAt)),
+    // The lists made for these events (ticket 106): their holders see
+    // them there, even as drafts.
+    db
+      .select({
+        id: giftLists.id,
+        partyId: giftLists.partyId,
+        accountId: giftLists.accountId,
+        shareToken: giftLists.shareToken,
+      })
+      .from(giftLists)
+      .where(inArray(giftLists.partyId, ids))
+      .orderBy(asc(giftLists.createdAt)),
   ]);
+  // One row per list and event: shared there, else made for there.
+  const links = [
+    ...shares,
+    ...made.flatMap((list) =>
+      list.partyId &&
+      !shares.some((row) => row.id === list.id && row.partyId === list.partyId)
+        ? [{ ...list, partyId: list.partyId, visibility: 'made' as const }]
+        : [],
+    ),
+  ];
   const listIds = [...new Set(links.map((list) => list.id))];
   const ownerIds = [...new Set(links.map((list) => list.accountId))];
   const [held, owners, taking] = await Promise.all([
@@ -239,9 +261,7 @@ export const loadHome = async (
               ownerName: person?.firstName ?? owner?.firstName ?? null,
               to: myLists.has(list.id)
                 ? `/listes/${list.id}`
-                : list.shareToken
-                  ? `/l/${list.shareToken}`
-                  : null,
+                : `/l/${list.shareToken}?depuis=${party.slug}`,
             };
           }),
       };

@@ -83,7 +83,7 @@ export const loadPartyPage = async (
   },
 ): Promise<PartyPage> => {
   const { party, account, role, me, dataKey } = input;
-  const [[year], people, santas, links] = await Promise.all([
+  const [[year], people, santas, shares, made] = await Promise.all([
     db
       .select({
         id: partyYears.id,
@@ -121,7 +121,25 @@ export const loadPartyPage = async (
       .innerJoin(giftLists, eq(giftLists.id, giftListParties.listId))
       .where(eq(giftListParties.partyId, party.id))
       .orderBy(asc(giftListParties.createdAt)),
+    // The lists made for it (ticket 106): their holders see them here,
+    // even as drafts.
+    db
+      .select({
+        id: giftLists.id,
+        accountId: giftLists.accountId,
+        shareToken: giftLists.shareToken,
+      })
+      .from(giftLists)
+      .where(eq(giftLists.partyId, party.id))
+      .orderBy(asc(giftLists.createdAt)),
   ]);
+  // One row per list: shared here, else made for here.
+  const links = [
+    ...shares,
+    ...made
+      .filter((list) => !shares.some((row) => row.id === list.id))
+      .map((list) => ({ ...list, visibility: 'made' as const })),
+  ];
   const held = new Set(
     links.length === 0
       ? []
@@ -232,9 +250,7 @@ export const loadPartyPage = async (
             : null,
           to: held.has(list.id)
             ? `/listes/${list.id}`
-            : list.shareToken
-              ? `/l/${list.shareToken}`
-              : null,
+            : `/l/${list.shareToken}?depuis=${party.slug}`,
         };
       }),
   };

@@ -537,9 +537,15 @@ export const giftLists = sqliteTable(
     noteEdited: integer('note_edited', { mode: 'boolean' })
       .notNull()
       .default(false),
-    // The public link, made at the first share; a new one replaces it.
+    // Its link, from its creation (ticket 106): whoever arrives on it gets
+    // in or not by the stage of its sharing. A new one replaces it.
     shareToken: text('share_token').unique(),
+    // Public since (« Tout le monde, avec le lien »), or null.
     sharedAt: text('shared_at'),
+    // The occasion it was made for (ticket 106): its card shows the list
+    // to those who hold it, even as a draft. The events it is shared in
+    // are in gift_list_parties. No foreign key: the event may go first.
+    partyId: text('party_id'),
     // The list this one was started from (lot 27), until it is first
     // shared. No foreign key: the old list may be deleted meanwhile.
     carriedFrom: text('carried_from'),

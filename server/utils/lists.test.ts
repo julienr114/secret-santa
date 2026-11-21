@@ -17,6 +17,7 @@ import {
   listStatus,
   memberRemoval,
   noteOf,
+  listIconOfParty,
   randomListIcon,
   shareChange,
   shareMissing,
@@ -405,5 +406,16 @@ describe('a list without people', () => {
     // A list by person takes people shared or not.
     expect(addPersonRefusal({ sharedAt: SHARED, people: [leo] })).toBeNull();
     expect(addPersonRefusal({ sharedAt: SHARED, people: [] })).toBeNull();
+  });
+});
+
+describe('listIconOfParty', () => {
+  it('takes the icon of the event, and draws what a list may not carry', () => {
+    expect(listIconOfParty({ emoji: '🎄', color: 'pine' }, () => 0)).toEqual({
+      emoji: '🎄',
+      color: 'pine',
+    });
+    const drawn = listIconOfParty({ emoji: '🛸', color: null }, () => 0);
+    expect(drawn).toEqual(randomListIcon(() => 0));
   });
 });

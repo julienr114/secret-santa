@@ -527,6 +527,8 @@ export const createList = async (
     icon: { emoji: string; color: string };
     title: string;
     eventDate: string | null;
+    /** The event it is made for (ticket 106), if any. */
+    partyId?: string;
   },
 ): Promise<string> => {
   const id = newId();
@@ -539,6 +541,10 @@ export const createList = async (
       iconColor: list.icon.color,
       title: list.title,
       eventDate: list.eventDate,
+      // Its link from the start, and its occasion: the event it is made
+      // for, else its own (ticket 106).
+      shareToken: newId(),
+      partyId: list.partyId ?? id,
       createdAt: now,
       updatedAt: now,
     }),
@@ -547,7 +553,9 @@ export const createList = async (
       .insert(giftListHolders)
       .values({ id: newId(), listId: id, accountId, createdAt: now }),
   ]);
-  // Every list is in a party: until the screens of the V3, its own.
+  // A list made for an event is a draft in it, shared nowhere yet;
+  // without one, it has a party of its own, as on the screens of before.
+  if (list.partyId) return id;
   await createOwnParty(
     db,
     {

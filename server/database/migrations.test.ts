@@ -428,3 +428,62 @@ UPDATE accounts SET group_quota = 5 WHERE id = 'a1';
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });
+
+describe('the sharing of a list by stages (ticket 106)', () => {
+  const SHARING = '0036_v3_list_sharing.sql';
+  const db = v2();
+  // l2 is shared by link; l3, whose sharing was stopped, is linked to the
+  // draw of « Famille » for Inès.
+  db.exec(`
+UPDATE gift_lists SET shared_at = '${NOW}' WHERE id = 'l2';
+UPDATE participations SET gift_list_id = 'l3' WHERE id = 'pa2';
+`);
+  files
+    .filter((file) => file >= V3 && file <= SHARING)
+    .forEach((file) => apply(db, file));
+  const rows = (list: string) =>
+    all(
+      db,
+      'SELECT party_id AS party, visibility FROM gift_list_parties WHERE list_id = ? ORDER BY party_id',
+      list,
+    );
+
+  it('gives every list its link, and keeps the links already sent', () => {
+    expect(
+      one(db, 'SELECT count(*) AS n FROM gift_lists WHERE share_token IS NULL')
+        .n,
+    ).toBe(0);
+    expect(
+      one(db, "SELECT share_token AS t FROM gift_lists WHERE id = 'l2'").t,
+    ).toBe('tok2');
+  });
+
+  it('gives each list its occasion: its own event, or its draw’s', () => {
+    const occasion = (id: string) =>
+      one(db, 'SELECT party_id AS p FROM gift_lists WHERE id = ?', id).p;
+    expect(['g1', 'g2']).toContain(occasion('l1'));
+    expect(occasion('l2')).toBe('g2');
+    expect(occasion('l3')).toBe('g1');
+    expect(occasion('l4')).toBe('l4');
+  });
+
+  it('keeps a shared list public and in its event; an unshared one is a draft', () => {
+    expect(rows('l2')).toEqual([{ party: 'g2', visibility: 'party' }]);
+    expect(rows('l3')).toEqual([]);
+    expect(
+      one(db, "SELECT shared_at AS s FROM gift_lists WHERE id = 'l3'").s,
+    ).toBeNull();
+  });
+
+  it('keeps « celui qui m’a tiré », and a list’s own event', () => {
+    expect(rows('l1')).toEqual([
+      { party: 'g1', visibility: 'giver' },
+      { party: 'g2', visibility: 'giver' },
+    ]);
+    expect(rows('l4')).toEqual([{ party: 'l4', visibility: 'party' }]);
+  });
+
+  it('leaves no foreign key broken', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+  });
+});

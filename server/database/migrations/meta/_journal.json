@@ -253,6 +253,13 @@
       "when": 1795281988242,
       "tag": "0035_v3_switches",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1795288730588,
+      "tag": "0036_v3_list_sharing",
+      "breakpoints": true
     }
   ]
 }

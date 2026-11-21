@@ -23,6 +23,8 @@ import {
 import type { GiftListRow } from '#server/database/schema';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
+import { membersSeeing, sharedEventsOf } from '#server/database/listSharing';
+import { listStage, type ListStage } from '#server/utils/listSharing';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { nowIso } from '#server/http/context';
@@ -369,6 +371,8 @@ export type ListDocument = {
   holders: HolderView[];
   /** The one looking manages the list: shares, invites, deletes. */
   manages: boolean;
+  /** What its top bar says of its sharing (ticket 106). */
+  sharing: SharingSummary;
   /**
    * The list this one was started from (lot 27), until it is shared:
    * its name, empty when it has none or is gone.
@@ -383,6 +387,46 @@ export type ListDocument = {
  * @param accountId - The holder looking.
  * @returns What the screen shows.
  */
+/** The stage of a list's sharing, as its top bar says it. */
+export type SharingSummary = {
+  stage: ListStage;
+  /** The events it is shared in, all members or the one who drew. */
+  events: string[];
+  /** How many members of these events see it, its holders aside. */
+  members: number;
+};
+
+/**
+ * What the top bar of a list says of its sharing (docs/spec/v3/listes.md,
+ * « La barre du haut d'une liste »).
+ * @param db - The database.
+ * @param list - The list.
+ * @param holders - Those who hold it.
+ * @returns The stage, the events and how many see it.
+ */
+const sharingSummary = async (
+  db: Db,
+  list: GiftListRow,
+  holders: readonly { email: string }[],
+): Promise<SharingSummary> => {
+  const events = await sharedEventsOf(db, list.id);
+  const all = events.filter((row) => row.visibility === 'party');
+  const stage = listStage({
+    isPublic: list.sharedAt !== null,
+    parties: all.length,
+    givers: events.length - all.length,
+  });
+  return {
+    stage,
+    events: (stage === 'giver' ? events : all).map((row) => row.name),
+    members: await membersSeeing(
+      db,
+      all.map((row) => row.id),
+      holders.map((holder) => holder.email),
+    ),
+  };
+};
+
 export const listDocument = async (
   db: Db,
   list: GiftListRow,
@@ -406,10 +450,11 @@ export const listDocument = async (
   return {
     list: {
       ...headOf(list),
-      // Who helps to write gets the link only while the list is shared:
-      // they may send it, never turn the sharing on (Correction 28).
-      shareToken: manages || list.sharedAt ? list.shareToken : null,
+      // Every list has its link, which its holders copy at any time;
+      // who gets in is decided on arrival (ticket 106).
+      shareToken: list.shareToken,
     },
+    sharing: await sharingSummary(db, list, holders),
     people: lines,
     single: isSingleList(people),
     planned,

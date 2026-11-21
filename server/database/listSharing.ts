@@ -1,0 +1,356 @@
+import { and, count, desc, eq, exists, inArray, or } from 'drizzle-orm';
+import type { Db } from './client';
+import {
+  accounts,
+  giftClaims,
+  giftListParties,
+  giftLists,
+  giftOffList,
+  parties,
+  partyOrganisers,
+  partyYears,
+  persons,
+} from './schema';
+import { newId } from '#server/http/context';
+import type { Audience } from '#server/utils/listSharing';
+import { partyEmoji, type PartyCategory } from '#shared/utils/categories';
+
+// The sharing of a list by stages (docs/spec/v3/listes.md, ticket 106):
+// draft, the members of one or several events, public. Who gets in is
+// decided on arrival on its address.
+
+/**
+ * Whether an account is a member, or an organiser, of an event the list
+ * is shared in with all its members.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param account - Its id and its address.
+ * @param account.id - The account.
+ * @param account.email - Its address, as the members carry it.
+ * @returns True when one of these events opens the list to them.
+ */
+export const memberWhereShared = async (
+  db: Db,
+  listId: string,
+  account: { id: string; email: string },
+): Promise<boolean> => {
+  const member = db
+    .select({ id: persons.id })
+    .from(persons)
+    .where(
+      and(
+        eq(persons.partyId, giftListParties.partyId),
+        eq(persons.email, account.email),
+        eq(persons.active, true),
+      ),
+    );
+  const organiser = db
+    .select({ id: partyOrganisers.partyId })
+    .from(partyOrganisers)
+    .where(
+      and(
+        eq(partyOrganisers.partyId, giftListParties.partyId),
+        eq(partyOrganisers.accountId, account.id),
+      ),
+    );
+  const [found] = await db
+    .select({ id: giftListParties.id })
+    .from(giftListParties)
+    .where(
+      and(
+        eq(giftListParties.listId, listId),
+        eq(giftListParties.visibility, 'party'),
+        or(exists(member), exists(organiser)),
+      ),
+    )
+    .limit(1);
+  return Boolean(found);
+};
+
+/**
+ * The date of an event's latest year: what a list made for it takes.
+ * @param db - The database.
+ * @param party - The event.
+ * @param party.id - Its id.
+ * @returns The ISO day, or null when its year has none.
+ */
+export const occasionDate = async (
+  db: Db,
+  party: { id: string },
+): Promise<string | null> => {
+  const [year] = await db
+    .select({ date: partyYears.date })
+    .from(partyYears)
+    .where(eq(partyYears.partyId, party.id))
+    .orderBy(desc(partyYears.year))
+    .limit(1);
+  return year?.date ?? null;
+};
+
+/** An event the list is shared in, or may be, as « Qui verra ta liste ? » shows it. */
+export type SharingOption = {
+  id: string;
+  slug: string;
+  name: string;
+  category: PartyCategory;
+  emoji: string | null;
+  /** Its active members. */
+  members: number;
+  /** Shared there with all its members. */
+  checked: boolean;
+};
+
+/**
+ * The events a list is shared in (its own aside), with how.
+ * @param db - The database.
+ * @param listId - The list.
+ * @returns One row per event.
+ */
+export const sharedEventsOf = (db: Db, listId: string) =>
+  db
+    .select({
+      id: parties.id,
+      name: parties.name,
+      visibility: giftListParties.visibility,
+    })
+    .from(giftListParties)
+    .innerJoin(parties, eq(parties.id, giftListParties.partyId))
+    .where(
+      and(eq(giftListParties.listId, listId), eq(parties.fromList, false)),
+    );
+
+/**
+ * Who gets in under a sharing, holders aside: the addresses of the active
+ * members of the events, their organisers, or everyone.
+ * @param db - The database.
+ * @param partyIds - The events shared with all their members.
+ * @param isPublic - Whether anyone with the link gets in.
+ * @returns The audience.
+ */
+export const audienceOf = async (
+  db: Db,
+  partyIds: readonly string[],
+  isPublic: boolean,
+): Promise<Audience> => {
+  if (partyIds.length === 0) {
+    return { isPublic, emails: new Set(), accountIds: new Set() };
+  }
+  const [members, organisers] = await Promise.all([
+    db
+      .select({ email: persons.email })
+      .from(persons)
+      .where(
+        and(inArray(persons.partyId, [...partyIds]), eq(persons.active, true)),
+      ),
+    db
+      .select({ id: partyOrganisers.accountId })
+      .from(partyOrganisers)
+      .where(inArray(partyOrganisers.partyId, [...partyIds])),
+  ]);
+  return {
+    isPublic,
+    emails: new Set(members.flatMap((m) => (m.email ? [m.email] : []))),
+    accountIds: new Set(organisers.map((o) => o.id)),
+  };
+};
+
+/**
+ * Those who ticked or offered something on a list.
+ * @param db - The database.
+ * @param listId - The list.
+ * @returns Their accounts, once each.
+ */
+export const claimersOf = async (db: Db, listId: string) => {
+  const rows = await db
+    .selectDistinct({ id: accounts.id, email: accounts.email })
+    .from(accounts)
+    .where(
+      or(
+        exists(
+          db
+            .select({ id: giftClaims.id })
+            .from(giftClaims)
+            .where(
+              and(
+                eq(giftClaims.listId, listId),
+                eq(giftClaims.accountId, accounts.id),
+              ),
+            ),
+        ),
+        exists(
+          db
+            .select({ id: giftOffList.id })
+            .from(giftOffList)
+            .where(
+              and(
+                eq(giftOffList.listId, listId),
+                eq(giftOffList.accountId, accounts.id),
+              ),
+            ),
+        ),
+      ),
+    );
+  return rows;
+};
+
+/**
+ * How many people see a list through its events: their active members,
+ * once each, its holders aside.
+ * @param db - The database.
+ * @param partyIds - The events shared with all their members.
+ * @param holderEmails - The addresses of its holders.
+ * @returns The count.
+ */
+export const membersSeeing = async (
+  db: Db,
+  partyIds: readonly string[],
+  holderEmails: readonly string[],
+): Promise<number> => {
+  if (partyIds.length === 0) return 0;
+  const rows = await db
+    .select({ id: persons.id, email: persons.email })
+    .from(persons)
+    .where(
+      and(inArray(persons.partyId, [...partyIds]), eq(persons.active, true)),
+    );
+  const people = new Set(
+    rows
+      .filter((row) => !row.email || !holderEmails.includes(row.email))
+      .map((row) => row.email ?? row.id),
+  );
+  return people.size;
+};
+
+/**
+ * The events « Qui verra ta liste ? » offers: those I belong to, and
+ * those the list is already shared in, each with its members.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param account - Me.
+ * @param account.id - My account.
+ * @param account.email - My address.
+ * @returns The events, by name.
+ */
+export const sharingOptions = async (
+  db: Db,
+  listId: string,
+  account: { id: string; email: string },
+): Promise<SharingOption[]> => {
+  const shared = await sharedEventsOf(db, listId);
+  const mine = await db
+    .select({ id: parties.id })
+    .from(parties)
+    .where(
+      and(
+        eq(parties.fromList, false),
+        or(
+          exists(
+            db
+              .select({ id: persons.id })
+              .from(persons)
+              .where(
+                and(
+                  eq(persons.partyId, parties.id),
+                  eq(persons.email, account.email),
+                  eq(persons.active, true),
+                ),
+              ),
+          ),
+          exists(
+            db
+              .select({ id: partyOrganisers.partyId })
+              .from(partyOrganisers)
+              .where(
+                and(
+                  eq(partyOrganisers.partyId, parties.id),
+                  eq(partyOrganisers.accountId, account.id),
+                ),
+              ),
+          ),
+        ),
+      ),
+    );
+  const ids = [
+    ...new Set([...mine.map((p) => p.id), ...shared.map((p) => p.id)]),
+  ];
+  if (ids.length === 0) return [];
+  const [rows, counts] = await Promise.all([
+    db.select().from(parties).where(inArray(parties.id, ids)),
+    db
+      .select({ partyId: persons.partyId, n: count() })
+      .from(persons)
+      .where(and(inArray(persons.partyId, ids), eq(persons.active, true)))
+      .groupBy(persons.partyId),
+  ]);
+  const members = new Map(counts.map((row) => [row.partyId, row.n]));
+  const checked = new Set(
+    shared.filter((row) => row.visibility === 'party').map((row) => row.id),
+  );
+  return rows
+    .map((party) => ({
+      id: party.id,
+      slug: party.slug,
+      name: party.name,
+      category: party.category,
+      emoji: partyEmoji(party),
+      members: members.get(party.id) ?? 0,
+      checked: checked.has(party.id),
+    }))
+    .toSorted((a, b) => a.name.localeCompare(b.name));
+};
+
+/**
+ * Saves « Qui verra ta liste ? »: the events shared with all their
+ * members, and whether it is public. « Celui qui m'a tiré » in an event
+ * left unticked stays (ticket 107); its own event, which holds only its
+ * holders, too.
+ * @param db - The database.
+ * @param list - The list, with since when it is public.
+ * @param sharing - What is asked.
+ * @param sharing.partyIds - The events ticked.
+ * @param sharing.isPublic - « Tout le monde, avec le lien ».
+ * @param now - ISO date.
+ * @returns Once saved.
+ */
+export const saveSharing = async (
+  db: Db,
+  list: { id: string; sharedAt: string | null },
+  sharing: { partyIds: readonly string[]; isPublic: boolean },
+  now: string,
+) => {
+  const shared = await sharedEventsOf(db, list.id);
+  const wanted = new Set(sharing.partyIds);
+  const dropped = shared
+    .filter((row) => row.visibility === 'party' && !wanted.has(row.id))
+    .map((row) => row.id);
+  const sharedAt = sharing.isPublic ? (list.sharedAt ?? now) : null;
+  await db.batch([
+    db
+      .update(giftLists)
+      .set({ sharedAt, updatedAt: now })
+      .where(eq(giftLists.id, list.id)),
+    db
+      .delete(giftListParties)
+      .where(
+        and(
+          eq(giftListParties.listId, list.id),
+          inArray(giftListParties.partyId, dropped.length ? dropped : ['']),
+        ),
+      ),
+    ...[...wanted].map((partyId) =>
+      db
+        .insert(giftListParties)
+        .values({
+          id: newId(),
+          listId: list.id,
+          partyId,
+          visibility: 'party',
+          createdAt: now,
+        })
+        .onConflictDoUpdate({
+          target: [giftListParties.listId, giftListParties.partyId],
+          set: { visibility: 'party' },
+        }),
+    ),
+  ]);
+};

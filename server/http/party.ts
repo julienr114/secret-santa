@@ -34,18 +34,19 @@ const forbidden = () =>
   createError({ statusCode: 403, statusMessage: 'forbidden' });
 
 /**
- * Loads the party named in the route (`[slug]`) for a logged-in account.
- * @param event - The request.
+ * The party of an address, for a logged-in account that may open it.
+ * @param db - The database.
+ * @param user - Who asks.
+ * @param slug - The address of the party.
  * @param need - `organiser` for what only organisers do.
- * @returns The party, my role and my person.
+ * @returns The party, my role and my person; 403 otherwise.
  */
-export const requireParty = async (
-  event: H3Event,
+export const partyFor = async (
+  db: Db,
+  user: SessionUser,
+  slug: string,
   need: PartyRole = 'member',
-): Promise<PartyContext> => {
-  const user = await requireAccount(event);
-  const db = useDb(event);
-  const slug = getRouterParam(event, 'slug') ?? '';
+): Promise<Omit<PartyContext, 'db' | 'user'>> => {
   const [party] = await db
     .select()
     .from(parties)
@@ -69,5 +70,26 @@ export const requireParty = async (
   if (!role || (need === 'organiser' && role !== 'organiser')) {
     throw forbidden();
   }
-  return { user, account, party, role, me: me ?? null, db };
+  return { account, party, role, me: me ?? null };
+};
+
+/**
+ * Loads the party named in the route (`[slug]`) for a logged-in account.
+ * @param event - The request.
+ * @param need - `organiser` for what only organisers do.
+ * @returns The party, my role and my person.
+ */
+export const requireParty = async (
+  event: H3Event,
+  need: PartyRole = 'member',
+): Promise<PartyContext> => {
+  const user = await requireAccount(event);
+  const db = useDb(event);
+  const found = await partyFor(
+    db,
+    user,
+    getRouterParam(event, 'slug') ?? '',
+    need,
+  );
+  return { ...found, user, db };
 };

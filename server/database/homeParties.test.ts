@@ -107,7 +107,12 @@ describe('loadHome', () => {
     const famille = home.parties.find((party) => party.slug === 'famille')!;
     expect(famille.lists).toEqual([
       { id: 'lh', mine: true, ownerName: 'Hugo', to: '/listes/lh' },
-      { id: 'lc', mine: false, ownerName: 'Mamie Camille', to: '/l/tokc' },
+      {
+        id: 'lc',
+        mine: false,
+        ownerName: 'Mamie Camille',
+        to: '/l/tokc?depuis=famille',
+      },
     ]);
   });
 

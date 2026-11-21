@@ -155,7 +155,7 @@ export const syncLinkedList = async (
   if (!santa) return;
   if (input.listId) {
     const [list] = await db
-      .select({ shareToken: giftLists.shareToken })
+      .select({ sharedAt: giftLists.sharedAt })
       .from(giftLists)
       .where(eq(giftLists.id, input.listId))
       .limit(1);

@@ -80,6 +80,25 @@ export const randomListIcon = (random: (n: number) => number): ListIcon => ({
   color: LIST_COLORS[random(LIST_COLORS.length)]!,
 });
 
+/**
+ * The icon of a list made for an event (ticket 106): the event's, as far
+ * as a list may carry it; what it may not, chosen at random.
+ * @param party - The emoji and the colour of the event, if any.
+ * @param party.emoji - Its emoji, or null.
+ * @param party.color - Its colour, or null.
+ * @param random - A random integer below its argument.
+ * @returns The icon.
+ */
+export const listIconOfParty = (
+  party: { emoji: string | null; color: string | null },
+  random: (n: number) => number,
+): ListIcon => {
+  const fallback = randomListIcon(random);
+  const emoji = LIST_EMOJIS.find((e) => e === party.emoji);
+  const color = LIST_COLORS.find((c) => c === party.color);
+  return { emoji: emoji ?? fallback.emoji, color: color ?? fallback.color };
+};
+
 /** A draft only its holder sees; shared once its link exists; past after its day. */
 export type ListStatus = 'draft' | 'shared' | 'past';
 

@@ -69,6 +69,8 @@ export const newListSchema = z.object({
   eventDate: isoDay.nullable().default(null),
   /** « Reprendre cette liste »: the list to start from (lot 27). */
   from: z.string().min(1).max(40).optional(),
+  /** The address of the event it is made for (ticket 106). */
+  party: z.string().min(1).max(80).optional(),
 });
 
 const ideaTextSchema = z.string().trim().max(IDEA_TEXT_MAX);

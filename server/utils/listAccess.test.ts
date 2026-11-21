@@ -10,6 +10,7 @@ import {
   inviteForgotten,
   inviteLinkUsable,
   inviteRefusal,
+  listArrival,
   inviteState,
   invitesAccepted,
   levelChangeRefusal,
@@ -190,5 +191,27 @@ describe('who may do what on a list', () => {
     expect(inviteForgotten(declined, '2026-12-18T10:00:00.000Z')).toBe(true);
     expect(inviteForgotten(accepted, '2026-12-18T10:00:00.000Z')).toBe(true);
     expect(INVITE_KEEP_MS).toBe(30 * 24 * 60 * 60 * 1000);
+  });
+});
+
+describe('listArrival', () => {
+  const nobody = {
+    loggedIn: true,
+    holder: false,
+    isPublic: false,
+    member: false,
+  };
+
+  it('opens to those who hold it, to members where it is shared, to all when public', () => {
+    expect(listArrival({ ...nobody, holder: true })).toBe('open');
+    expect(listArrival({ ...nobody, member: true })).toBe('open');
+    expect(listArrival({ ...nobody, loggedIn: false, isPublic: true })).toBe(
+      'open',
+    );
+  });
+
+  it('asks to log in first, and closes to an account it is not shared with', () => {
+    expect(listArrival({ ...nobody, loggedIn: false })).toBe('login');
+    expect(listArrival(nobody)).toBe('closed');
   });
 });

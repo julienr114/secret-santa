@@ -42,8 +42,10 @@ describe('ownPartyOf', () => {
 
 describe('linkedVisibility', () => {
   it('opens a public list to the party, keeps the others for the giver', () => {
-    expect(linkedVisibility({ shareToken: 'abc' })).toBe('party');
-    expect(linkedVisibility({ shareToken: null })).toBe('giver');
+    expect(linkedVisibility({ sharedAt: '2026-11-21T10:00:00.000Z' })).toBe(
+      'party',
+    );
+    expect(linkedVisibility({ sharedAt: null })).toBe('giver');
   });
 });
 

@@ -80,3 +80,4 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `ListeCocherPour` | Personne de coché alors que seule ma coche était là : l'idée est décochée tout de suite, sans « Annuler », comme la case verte (aucun texte prévu pour « ta coche retirée »). Avec la coche d'un autre, « Coche de Mamie retirée · Annuler ». | Seul |
 | `ListeCocherPour` | Un cadeau à plusieurs noté par celui qui tient la liste dit « Noté par toi » plutôt que « Proposé par » : la trace dit qui l'a écrit. | Seul |
 | `ListeCocherPourAutre` | Une adresse qui n'en est pas une marque le champ en rouge, sans phrase ; « Ajouter » reste grisé tant que le prénom est vide. Un prénom écrit à nouveau, avec la même adresse ou sans, est celui déjà écrit. | Seul |
+| `ListeCocherPourAutre` | « Avec son adresse, cette personne retrouvera ce cadeau en se connectant. » au lieu de « il retrouvera » : l'application ne connaît pas le genre. | Julien, 22 novembre 2026 |

@@ -548,7 +548,7 @@ export default {
       email: 'Son adresse email',
       emailPlaceholder: 'prenom@exemple.fr',
       emailHelp:
-        'Avec son adresse, il retrouvera ce cadeau en se connectant. Aucun email ne lui est envoyé.',
+        'Avec son adresse, cette personne retrouvera ce cadeau en se connectant. Aucun email ne lui est envoyé.',
       add: 'Ajouter',
     },
   },

@@ -214,7 +214,7 @@ test('a first name written: those who hold the list read it, nobody else', async
   await other.getByLabel('Son prénom').fill('Tata');
   await expect(
     other.getByText(
-      'Avec son adresse, il retrouvera ce cadeau en se connectant. Aucun email ne lui est envoyé.',
+      'Avec son adresse, cette personne retrouvera ce cadeau en se connectant. Aucun email ne lui est envoyé.',
     ),
   ).toBeVisible();
   await other.getByRole('button', { name: 'Ajouter' }).click();

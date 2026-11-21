@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { ideaChips, namesInOne } from './givers';
+import {
+  firstChosen,
+  ideaChips,
+  namesInOne,
+  sheetPeople,
+  touchGiver,
+  traceDay,
+} from './givers';
 
 const avatar = { emoji: '🦌', color: 'plum' } as const;
 const group = (
@@ -95,6 +102,50 @@ describe('several first names as one reads them', () => {
     expect(namesInOne(['Mamie', 'Tonton'], 'et')).toBe('Mamie et Tonton');
     expect(namesInOne(['Mamie', 'Tonton', 'Hugo'], 'and')).toBe(
       'Mamie, Tonton and Hugo',
+    );
+  });
+});
+
+describe('the sheet « Qui l’offre ? »', () => {
+  const person = (key: string, kind: string) => ({ key, kind });
+  const candidates = [
+    person('a:me', 'me'),
+    person('a:h', 'holder'),
+    person('a:m', 'ticker'),
+    person('a:t', 'ticker'),
+    person('g:p', 'written'),
+  ];
+
+  it('shows me, who gives it now, then the others, then the names just written', () => {
+    expect(
+      sheetPeople(
+        candidates,
+        ['a:t', 'a:me', 'g:p'],
+        [person('n:0', 'written')],
+      ).map((row) => row.key),
+    ).toEqual(['a:me', 'a:t', 'g:p', 'a:h', 'a:m', 'n:0']);
+    expect(sheetPeople(candidates, []).map((row) => row.key)).toEqual(
+      candidates.map((row) => row.key),
+    );
+  });
+
+  it('puts the one touched in place of the one before, or in and out for several', () => {
+    expect(touchGiver(['a:me'], 'a:m', 'alone')).toEqual(['a:m']);
+    expect(touchGiver(['a:m'], 'a:t', 'group')).toEqual(['a:m', 'a:t']);
+    expect(touchGiver(['a:m', 'a:t'], 'a:m', 'group')).toEqual(['a:t']);
+  });
+
+  it('keeps only the first chosen, as the rows show them, back to one person', () => {
+    expect(firstChosen(['a:t', 'a:m'], ['a:me', 'a:m', 'a:t'])).toEqual([
+      'a:m',
+    ]);
+    expect(firstChosen([], ['a:me'])).toEqual([]);
+  });
+
+  it('says today, or the day', () => {
+    expect(traceDay('2026-11-21T09:00:00.000Z', '2026-11-21')).toBe('today');
+    expect(traceDay('2026-11-12T09:00:00.000Z', '2026-11-21')).toBe(
+      '2026-11-12',
     );
   });
 });

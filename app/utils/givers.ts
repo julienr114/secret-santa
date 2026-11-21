@@ -79,3 +79,75 @@ export const namesInOne = (names: readonly string[], and: string): string => {
     ? `${names.slice(0, -1).join(', ')} ${and} ${last}`
     : last;
 };
+
+/**
+ * Those the sheet « Qui l'offre ? » shows, in its order (21 November
+ * 2026): « Moi », those who give the idea now, then the others as the list
+ * offers them, and last the first names written in the sheet, not saved
+ * yet. Each once.
+ * @param candidates - Who the list offers, « Moi » first.
+ * @param giving - The keys of who gives the idea now, the first first.
+ * @param written - The first names written in the sheet.
+ * @returns The rows.
+ */
+export const sheetPeople = <C extends { key: string; kind: string }>(
+  candidates: readonly C[],
+  giving: readonly string[],
+  written: readonly C[] = [],
+): C[] => {
+  const me = candidates.filter((candidate) => candidate.kind === 'me');
+  const now = giving.flatMap((key) =>
+    candidates.filter(
+      (candidate) => candidate.key === key && candidate.kind !== 'me',
+    ),
+  );
+  const rest = candidates.filter(
+    (candidate) => candidate.kind !== 'me' && !giving.includes(candidate.key),
+  );
+  return [...me, ...now, ...rest, ...written];
+};
+
+/**
+ * Who is chosen once a row is touched: one person, the one touched in
+ * place of the one before; several, the one touched in or out.
+ * @param chosen - Who is chosen.
+ * @param key - The row touched.
+ * @param mode - One person, or several.
+ * @returns Who is chosen after.
+ */
+export const touchGiver = (
+  chosen: readonly string[],
+  key: string,
+  mode: 'alone' | 'group',
+): string[] => {
+  if (mode === 'alone') return [key];
+  return chosen.includes(key)
+    ? chosen.filter((other) => other !== key)
+    : [...chosen, key];
+};
+
+/**
+ * Who stays chosen when « Une personne » is chosen again: the first of
+ * them, as the rows show them.
+ * @param chosen - Who is chosen.
+ * @param rows - The keys of the rows, in their order.
+ * @returns At most one.
+ */
+export const firstChosen = (
+  chosen: readonly string[],
+  rows: readonly string[],
+): string[] => {
+  const first = rows.find((key) => chosen.includes(key));
+  return first ? [first] : [];
+};
+
+/**
+ * When a tick was made, as its trace says it: today, or its day.
+ * @param at - When (ISO).
+ * @param today - Today (YYYY-MM-DD, UTC like `at`).
+ * @returns `today`, or the day (YYYY-MM-DD).
+ */
+export const traceDay = (at: string, today: string): string | 'today' => {
+  const day = at.slice(0, 10);
+  return day === today ? 'today' : day;
+};

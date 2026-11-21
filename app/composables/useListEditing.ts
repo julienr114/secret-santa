@@ -21,6 +21,12 @@ export type ListEditing = {
    * where nobody may (a list by its link).
    */
   untickFor?: (idea: IdeaLine) => void;
+  /**
+   * « Qui l'offre ? » (21 November 2026): who gives an idea, said by those
+   * who hold the list; opened by my state or by the first names under it.
+   * Only in the document.
+   */
+  who?: (idea: IdeaLine, forName: string) => void;
 };
 
 export const LIST_EDITING: InjectionKey<ListEditing> = Symbol('list-editing');

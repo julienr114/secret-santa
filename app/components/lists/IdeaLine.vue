@@ -174,6 +174,18 @@ const joinLabel = computed(() =>
       })
     : t('lists.chips.joinIdea', { idea: props.idea?.text ?? '' }),
 );
+/**
+ * « Qui l'offre ? » (21 November 2026): for those who hold the list, the
+ * first names under an idea someone gives are touched, and so is my
+ * state; not an anonymous tick (nobody knows whose it is).
+ */
+const whoOpens = computed(() => Boolean(editing.who && props.idea?.who));
+/** My state opens « Qui l'offre ? » where it may, the sheet of what I give otherwise. */
+const onMine = () => {
+  if (!props.idea) return;
+  if (whoOpens.value) editing.who?.(props.idea, props.forName);
+  else editing.change(props.idea, props.forName);
+};
 /** « Offert par Mamie et Tonton », for a screen reader. */
 const givenBy = computed(() =>
   giverNames.value ? t('lists.doc.givenBy', { names: giverNames.value }) : '',
@@ -747,17 +759,53 @@ const onFocusOut = (event: FocusEvent) => {
           class="mt-1.5 flex flex-wrap items-center gap-1.5"
           data-testid="idea-pills"
         >
-          <span v-if="givenBy" class="sr-only">{{ givenBy }}</span>
-          <UiChip
-            v-for="(pill, index) in chips.givers"
-            :key="index"
-            aria-hidden="true"
-            data-testid="idea-who"
-            >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
+          <span v-if="givenBy && !whoOpens" class="sr-only">{{ givenBy }}</span>
+          <!-- For those who hold the list, the first names are touched
+               together: a line around each, the arrow on the last
+               (maquette ListeCocherPourLigne). -->
+          <button
+            v-if="whoOpens && (chips.givers.length > 0 || chips.crowd)"
+            type="button"
+            class="relative flex flex-wrap items-center gap-1.5 text-left after:absolute after:inset-x-0 after:-inset-y-[11px]"
+            data-testid="idea-givers"
+            data-no-drag
+            @click="editing.who?.(idea, forName)"
           >
-          <UiChip v-if="chips.crowd" icon="i-lucide-users">{{
-            t('lists.visitor.groupMany', { count: chips.crowd })
-          }}</UiChip>
+            <UiChip
+              v-for="(pill, index) in chips.givers"
+              :key="index"
+              :ringed="index < chips.givers.length - 1"
+              :opens="index === chips.givers.length - 1"
+              aria-hidden="true"
+              data-testid="idea-who"
+              >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
+            >
+            <UiChip
+              v-if="chips.crowd"
+              icon="i-lucide-users"
+              opens
+              aria-hidden="true"
+              >{{
+                t('lists.visitor.groupMany', { count: chips.crowd })
+              }}</UiChip
+            >
+            <span class="sr-only"
+              >{{ givenBy }}
+              {{ t('lists.who.change', { idea: idea.text }) }}</span
+            >
+          </button>
+          <template v-else>
+            <UiChip
+              v-for="(pill, index) in chips.givers"
+              :key="index"
+              aria-hidden="true"
+              data-testid="idea-who"
+              >{{ pill.name ?? t('lists.doc.anonymous') }}</UiChip
+            >
+            <UiChip v-if="chips.crowd" icon="i-lucide-users">{{
+              t('lists.visitor.groupMany', { count: chips.crowd })
+            }}</UiChip>
+          </template>
           <UiChip
             v-if="chips.closed"
             icon="i-lucide-users"
@@ -777,7 +825,7 @@ const onFocusOut = (event: FocusEvent) => {
             "
             :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
             data-no-drag
-            @click="editing.change(idea, forName)"
+            @click="onMine"
           />
           <UiChip
             v-if="chips.join"

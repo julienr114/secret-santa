@@ -1,7 +1,7 @@
 # Les listes
 
 Décisions : `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
-Maquettes : `V3ListeQui`, `V3ListeQuiSecret`, `V3Liste`, `V3ListeSecret`, `V3ListeNouvelle`, `V3ListePublique`, `V3ListeMembre`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
+Maquettes : `V3ListeQui`, `V3ListeQuiSecret`, `V3Liste`, `V3ListeSecret`, `V3ListeNouvelle`, `V3ListePublique`, `V3ListeMembre`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeReprise`.
 
 Le dessin d'une liste (les lignes, les coches, le mode anonyme, le fil, « ses goûts ») ne change pas : c'est celui de la Correction 30 de l'ancien plan et du README 22.19 à 22.21. Change où elle vit et qui la voit.
 
@@ -16,7 +16,9 @@ Maquette : `V3ListeQui`. C'est la première étape d'une nouvelle liste, et l'é
 - **« Une autre occasion »** : crée une fête (`accueil-et-creation.md`).
 - **« Tout le monde, avec un lien »** : un interrupteur, en plus des fêtes. La liste devient publique.
 
-Peut-on décocher une fête pour en retirer sa liste sans la supprimer : `docs/travail/questions.md`, Q-002.
+### Rouvert par « Modifier »
+
+Maquettes : `V3ListeQuiModifier`, `V3ListeQuiRetirer`. Le même écran, avec « Enregistrer ». Décocher une fête en retire la liste (il doit en rester une, ou le lien public), après une confirmation qui dit ce que ça fait : « Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. Les 2 cadeaux qu'ils ont cochés restent prévus. » · « Annuler » · « Retirer ». Ceux qui avaient coché retrouvent ce qu'ils offrent dans « Ce que j'offre ailleurs ». C'est le choix A de Q-002 (`docs/travail/questions.md`), dessiné en attendant la réponse.
 
 ## La barre du haut d'une liste
 
@@ -27,10 +29,29 @@ Elle ne dit plus « Partage par lien ». Elle dit où est la liste, avec « Modi
 | Dans des fêtes (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » |
 | Réservée à celui qui m'a tiré (`V3ListeSecret`) | « Famille Camille » · « Seul celui qui m'a tiré la voit » |
 | Publique (`V3ListePublique`) | « Publique, avec un lien » · « Et dans la fête … » ; dessous, le lien et « Partager » |
+| Pour celui qui aide à la tenir (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille », **sans « Modifier »** : celui qui « aide à écrire » ne choisit pas qui la voit ; celui qui « gère la liste » le peut, comme celui qui l'a créée (`ListeTeneurs`) |
+
+Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre depuis le 20 novembre 2026.
+
+Une liste n'a pas de brouillon : elle est dans sa fête dès sa création, et ses membres la voient, même vide. À confirmer : `docs/travail/questions.md`, Q-006.
+
+### Le lien d'une liste publique
+
+Maquettes : `V3ListeQuiLien`, `V3ListeLienChanger`. La barre ne garde que le lien et « Partager ». Le reste est derrière « Modifier », dans « Qui verra ta liste ? », sous l'interrupteur « Tout le monde, avec un lien » :
+
+- le lien, et « Copier » ;
+- « Le message qui accompagne le lien » (la page `PersonnaliserMessage` d'aujourd'hui) ;
+- « Changer de lien », qui dit d'abord ce que ça fait : « L'ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste. » · « Annuler » · « Changer ».
+
+Éteindre l'interrupteur arrête le lien ; la liste reste dans ses fêtes.
 
 ## Une nouvelle liste
 
 Maquette : `V3ListeNouvelle`. Son nom, sa date et son icône viennent de la fête (et de sa catégorie) : on ne les redemande pas.
+
+## La liste reprise de l'an dernier
+
+Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans la même fête : le nom, la date et l'icône viennent de la fête. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
 
 ## La liste d'un autre membre
 

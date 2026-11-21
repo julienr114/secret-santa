@@ -16,6 +16,12 @@ Vaut pour les écrans, les emails, les notifications, le journal et l'administra
 | a rempli ses pistes (suivi de l'organisateur) | « a écrit sa liste », sans jamais en montrer le contenu |
 | demande de groupe, demander à créer | rien : il n'y a plus de demande |
 
+## Quand « le groupe » voulait dire les gens
+
+« Tout le groupe le saura » devient « Tous les membres le sauront » ; « Ce que le groupe lira » devient « Ce que les membres liront » ; « Au groupe » (envoyer à tous) devient « À tous ». On ne dit pas « la fête lira ».
+
+« La conversation du groupe », sur WhatsApp, reste telle quelle : ce n'est pas un groupe de l'application.
+
 ## « Tirage » reste pour le geste
 
 « Tirage fait », « On fait le tirage dimanche », « tant que le tirage n'a pas eu lieu », « Tout le monde a découvert son tirage », « tirer au sort ».
@@ -27,6 +33,18 @@ Vaut pour les écrans, les emails, les notifications, le journal et l'administra
 - En allemand, « Wichteln » reste le mot du Secret Santa.
 
 ## « Fête », le moins possible
+
+### « Devine qui » hors de Noël
+
+Les écrans sont les mêmes ; chaque texte a sa variante sans « Père Noël » :
+
+| À Noël | Ailleurs |
+|---|---|
+| Mon Père Noël, Ton Père Noël | Celui qui m'offre, Celui qui t'offre |
+| Chacun devine son propre Père Noël | Chacun devine qui lui offre |
+| Ils avaient deviné leur Père Noël | Ils avaient deviné qui leur offrait |
+| Cité 6 fois comme Père Noël | Cité 6 fois, à tort |
+| Les Pères Noël étaient bien cachés | Tout le monde était bien caché |
 
 On ne dit pas « créer une fête » : on demande « Pour quelle occasion ? », et la ligne qui en crée une dit « Une autre occasion ». Le mot « fête » ne s'écrit que là où il faut un nom commun : « Quitter cette fête », « Les fêtes passées », « Réglages de la fête », « Toute la fête ».
 

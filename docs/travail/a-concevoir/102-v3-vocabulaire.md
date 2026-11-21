@@ -33,7 +33,7 @@ Plus un seul « groupe », « édition » ni « tirage » pour désigner la chos
 ## Ce qui manque
 
 - La réponse à Q-001 : « fête » ou « événement » pour le nom commun.
-- Une relecture des emails et des notifications avec les nouveaux mots (ticket 110), pour ne pas traduire deux fois.
+- Les maquettes d'avant sont passées aux mots de la V3 (20 novembre 2026, `docs/spec/v3/maquettes.md`) : elles donnent le texte français de chaque écran. Il ne manque plus que la réponse à Q-001 pour poser ce ticket dans `a-faire/`.
 
 ## Compte rendu
 

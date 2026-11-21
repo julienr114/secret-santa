@@ -2,7 +2,7 @@
 
 - **Dépend de** : 105, 106
 - **Migration** : oui
-- **Maquettes** : `V3TirageVersListe`, `V3ListeSurligne`, `V3ListeQuiSecret`, `V3ListeSecret`, `V3ListeCompteCree`, `V3ListeAdresse`
+- **Maquettes** : `V3TirageVersListe`, `V3ListeSurligne`, `V3ListeQuiSecret`, `V3ListeSecret`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3TirageNouvelles`, `PistesResultatVide`, `PistesDemander`, `PistesResultatDemande`, `PistesEmail`
 
 ## Objectif
 
@@ -26,6 +26,8 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 - [ ] La migration : `giftPortraits` vers la fiche « Moi », `wishes` vers les idées d'une liste réservée à celui qui a tiré.
 - [ ] Le suivi de l'organisateur : « a écrit sa liste ».
 - [ ] Suppression de la page « Mes pistes », du réglage « Pistes de cadeaux » et de leurs textes.
+- [ ] « Lui demander des idées » : l'email invite à écrire sa liste ; la demande s'affiche toujours sans prénom (« Quelqu'un te demande des idées »).
+- [ ] La ligne de la liste dit quand elle a de nouvelles idées depuis ma dernière visite (`V3TirageNouvelles`).
 
 ## Hors périmètre
 

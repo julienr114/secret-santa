@@ -1,7 +1,7 @@
 # L'accueil, la barre du bas et « Créer »
 
 Décisions : `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`, `2026-11-20-un-onglet-creer.md`.
-Maquettes : `V3Accueil`, `V3AccueilVide`, `V3AccueilAnnee`, `V3AccueilPlusOuvert`, `V3FeteNouvelle`, `V3FeteMembresReprendre`, `MenuAvatar`, `MenuAvatarOuvert`.
+Maquettes : `V3Accueil`, `V3AccueilVide`, `V3AccueilAnnee`, `V3AccueilJeu`, `V3FetesPassees`, `V3QuoiDeNeuf`, `V3AccueilPlusOuvert`, `V3FeteNouvelle`, `V3FeteMembresReprendre`, `MenuAvatar`, `MenuAvatarOuvert`.
 
 ## La barre du bas
 
@@ -79,3 +79,35 @@ Maquette : `V3AccueilAnnee`. Deux mois avant la date d'une fête qui revient :
 - chacun voit « Reprendre ma liste de l'an dernier ».
 
 Une fête qui ne revient pas passe dans « Les fêtes passées » après sa date.
+
+La liste reprise : `listes.md`, « La liste reprise de l'an dernier ».
+
+## Le jeu, sur l'accueil
+
+Maquette : `V3AccueilJeu`. Il n'y a pas de grande carte en haut de l'accueil pour le jeu ou le dévoilement : tout tient dans la carte de la fête, par une ligne et un point rouge.
+
+- **« Devine qui » ouvert** : une ligne « Devine qui · À toi de jouer · jusqu'au 25 décembre à 18 h », avec le point rouge tant que je n'ai pas joué. Elle mène au pronostic.
+- **Le Secret Santa dévoilé** : sa ligne dit « Dévoilé · qui a offert à qui », avec le point rouge tant que je ne l'ai pas ouvert.
+- **Le palmarès** : « Devine qui · Le palmarès est là », pareil.
+- **Jamais un résultat de tirage sur l'accueil** : la ligne d'un Secret Santa tiré dit « Tu sais à qui tu offres », sans prénom.
+- Une fête reste sur l'accueil quelque temps après sa date, pour le dévoilement et le palmarès. Combien de temps : `docs/travail/questions.md`, Q-009.
+
+## « Quoi de neuf »
+
+Maquette : `V3QuoiDeNeuf` (remplace `NotifCentre`).
+
+- **Une section par fête**, avec l'emoji de sa catégorie ; la fête qui a la nouveauté la plus récente est en haut. Dans une section, du plus récent au plus ancien.
+- Une liste publique où j'ai coché, sans être membre de sa fête, a sa section à elle, au nom de l'occasion.
+- Une ligne est en gras, avec un point rouge, tant que je n'ai pas ouvert ce qu'elle signale. C'est le même point que sur l'accueil : **il s'éteint quand j'ouvre la chose**, pas quand j'ouvre « Quoi de neuf ».
+- Les nouveautés d'une liste qui est dans deux fêtes n'apparaissent qu'une fois, sous celle dont la date est la plus proche.
+- Une demande d'idées est anonyme ici aussi : « Quelqu'un te demande des idées de cadeaux », jamais un prénom.
+- En bas, une ligne « Choisir ce qui me prévient » ; dessous, « Tout s'efface au bout de trente jours ». Pas de phrase d'introduction.
+
+## Les fêtes passées
+
+Maquette : `V3FetesPassees`. La ligne du bas de l'accueil dit la plus récente et le compte (« Les 6 ans de Léo et 4 autres »).
+
+- Une section par année, la plus récente en haut.
+- Une ligne par fête : l'emoji de sa catégorie, son nom, sa date, et ce que j'y ai fait (« tu offrais à Zoé », « tu as offert 3 cadeaux », « 8 cadeaux offerts » si c'était pour quelqu'un de mes proches).
+- Une fête qui revient y laisse une ligne par année ; la ligne ouvre cette année-là (`fete.md`, « Une année passée »).
+- « Tu offrais à Zoé » est mon propre résultat, pour une fête finie : il peut s'écrire ici, pas sur l'accueil.

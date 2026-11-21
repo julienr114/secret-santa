@@ -2,7 +2,7 @@
 
 - **Dépend de** : 101, 104
 - **Migration** : oui
-- **Maquettes** : `V3TirageQuelleFete`, `V3TirageNouveau`, `V3TirageReglages`, `V3TirageLimite`, `V3TirageNeutre`, `ProcheNaissance`
+- **Maquettes** : `V3TirageQuelleFete`, `V3TirageNouveau`, `V3TirageReglages`, `V3TirageLimite`, `V3TirageNeutre`, `V3FeteMembresComplet`, `RejoindreFerme`, `ProcheNaissance`
 
 ## Objectif
 
@@ -24,8 +24,10 @@ Organiser un Secret Santa ne demande plus rien à personne. On le crée depuis �
 - [ ] Plusieurs Secret Santa la même année dans une fête : « Un autre Secret Santa ».
 - [ ] Les réglages du Secret Santa (le tirage au sort, Devine qui, les messages, les emails).
 - [ ] La limite : 3 Secret Santa par compte, 30 membres par fête, vérifiée côté serveur ; l'écran de la limite.
-- [ ] La fin des demandes : les écrans de demande et d'administration des demandes disparaissent ; les demandes en attente sont acceptées par la migration ; un interrupteur côté serveur, éteint, permet de les rallumer.
+- [ ] Une fête complète (`docs/spec/v3/fete.md`, « 30 membres au plus ») : l'état à la place d'« Ajouter une personne », le lien d'invitation en pause tout seul, `RejoindreFerme` pour celui qui l'ouvre.
+- [ ] La fin des demandes : les écrans de demande et d'administration des demandes disparaissent ; les demandes en attente sont acceptées par la migration ; l'interrupteur d'urgence est au ticket 109 (pause ou demande : Q-007).
 - [ ] Le résultat hors d'une fête de catégorie Noël : sans « Père Noël ».
+- [ ] « Devine qui » hors d'une fête de catégorie Noël : les variantes sans « Père Noël » (`docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël »).
 
 ## Hors périmètre
 
@@ -37,7 +39,8 @@ Organiser un Secret Santa ne demande plus rien à personne. On le crée depuis �
 
 - [ ] Un compte sans aucun droit particulier crée un Secret Santa de bout en bout.
 - [ ] Le quatrième est refusé par le serveur et montre `V3TirageLimite`.
-- [ ] Les cinq maquettes sont reproduites.
+- [ ] Les maquettes du ticket sont reproduites.
+- [ ] Le trente et unième membre est refusé par le serveur ; l'organisateur voit `V3FeteMembresComplet`.
 - [ ] `/controle` passe.
 
 ## Compte rendu

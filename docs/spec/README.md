@@ -17,11 +17,12 @@ Ce que l'application doit être. Un fichier par domaine, pas d'historique ici : 
 | `v3/modele.md` | La fête, l'année, le Secret Santa, les listes, les membres, qui voit quoi, les limites |
 | `v3/categories.md` | Les six catégories et ce que chacune remplit |
 | `v3/vocabulaire.md` | Les mots qu'on écrit, ceux qu'on n'écrit plus |
-| `v3/accueil-et-creation.md` | L'accueil, la barre du bas, « Créer », « Pour quelle occasion ? » |
-| `v3/fete.md` | La page d'une fête, ses membres, ses réglages, inviter, rejoindre, quitter |
+| `v3/accueil-et-creation.md` | L'accueil, la barre du bas, « Créer », « Pour quelle occasion ? », le jeu sur l'accueil, les fêtes passées |
+| `v3/fete.md` | La page d'une fête, ses membres (30 au plus), ses réglages, inviter, rejoindre, quitter, une année passée |
 | `v3/secret-santa.md` | Créer un Secret Santa, ses réglages, la limite, le résultat |
 | `v3/listes.md` | Les listes dans les fêtes, qui les voit, la fin des « pistes de cadeaux » |
 | `v3/regles-d-ecran.md` | Les règles communes à tous les écrans (dates, lignes, phrases) |
+| `v3/administration.md` | L'administration sans les demandes, les limites, « Suspendre les nouveaux Secret Santa » |
 | `v3/migration.md` | Ce que deviennent les données d'aujourd'hui |
 | `v3/maquettes.md` | L'index des maquettes de la V3, et celles qui sont périmées |
 

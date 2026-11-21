@@ -77,17 +77,17 @@ Maquettes : `V3ListeFermee`, `V3ListeFermeeConnecte`.
 
 ## La liste reprise de l'an dernier
 
-Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans la même fête : le nom, la date et l'icône viennent de la fête. **Elle naît en brouillon**, le temps du tri. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
+Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans le même événement : le nom, la date et l'icône viennent de l'événement. **Elle naît en brouillon**, le temps du tri. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
 
 ## La liste d'un autre membre
 
-Maquette : `V3ListeMembre`. Elle s'ouvre depuis la fête, sans lien. Une pastille en haut porte l'emoji et le nom de la fête, et y ramène.
+Maquette : `V3ListeMembre`. Elle s'ouvre depuis l'événement, sans lien. Une pastille en haut porte l'emoji et le nom de l'événement, et y ramène.
 
 ## La fin des « pistes de cadeaux »
 
 « Mes pistes » n'est plus un objet. Il n'y a qu'un endroit où écrire ses goûts (sa fiche « Moi ») et ses idées (sa liste), et celui qui m'a tiré les voit (`secret-santa.md`).
 
-- **Une liste réservée à celui qui m'a tiré** garde la confidentialité des pistes d'aujourd'hui : lui seul la voit. Elle n'apparaît pas dans les listes de la fête pour les autres membres ; il y arrive par sa carte de résultat, en mode anonyme.
+- **Une liste réservée à celui qui m'a tiré** garde la confidentialité des pistes d'aujourd'hui : lui seul la voit. Elle n'apparaît pas dans les listes de l'événement pour les autres membres ; il y arrive par sa carte de résultat, en mode anonyme.
 - **L'organisateur n'a plus de réglage « Pistes de cadeaux »** : tout est disponible, chacun en fait ce qu'il veut. Son suivi dit « a écrit sa liste », sans jamais en montrer le contenu.
 
 ### Sans compte
@@ -101,7 +101,7 @@ Un participant arrivé par son lien personnel n'a pas forcément de compte.
 
 Maquette : `V3OffreAilleurs`. Une ligne en bas de l'accueil.
 
-- Elle ne montre que les listes publiques **où j'ai coché quelque chose** sans être membre d'une de leurs fêtes : l'invité d'un mariage retrouve ce qu'il offre.
+- Elle ne montre que les listes publiques **où j'ai coché quelque chose** sans être membre d'un de leurs événements : l'invité d'un mariage retrouve ce qu'il offre.
 - Une liste qui cesse d'être publique en disparaît (Q-003) : pas de liste fermée gardée pour mémoire.
 - Ouvrir un lien sans rien cocher ne laisse aucune trace.
 - Il n'y a pas de rubrique « Reçues par un lien ».

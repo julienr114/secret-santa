@@ -13,7 +13,7 @@ C'est l'« édition » d'aujourd'hui : le tirage, ses règles, le suivi de l'org
 | Ligne | Valeur de départ |
 |---|---|
 | Nom | « Noël 2027 » (la catégorie et l'année) |
-| Date de la fête | la date de la fête cette année-là |
+| Date de l'événement | la date de l'événement cette année-là |
 | Budget | celui du Secret Santa précédent |
 | Devine qui | celui du Secret Santa précédent, sinon « Aucun pronostic » |
 | Petit mot pour les participants | « Aucun » |
@@ -36,7 +36,7 @@ Ces réglages sont recopiés du Secret Santa précédent quand on prépare celui
 
 ## La limite
 
-3 Secret Santa par compte, 30 membres par fête (`modele.md`). Pas de demande.
+3 Secret Santa par compte, 30 membres par événement (`modele.md`). Pas de demande.
 
 Arrivé à la limite, « Créer › Un Secret Santa » montre (`V3TirageLimite`) : « Tu organises déjà 3 Secret Santa », « C'est le maximum pour un compte. », et les trois.
 
@@ -46,7 +46,7 @@ Maquettes : `V3TirageVersListe`, `V3TirageNeutre`.
 
 La carte « Tu offres un cadeau à Inès », puis « Pour t'aider à choisir » :
 
-- une ligne **« La liste de cadeaux d'Inès »**, avec « Le mode anonyme y sera activé pour toi. ». On ne dit pas dans quelle fête est la liste ;
+- une ligne **« La liste de cadeaux d'Inès »**, avec « Le mode anonyme y sera activé pour toi. ». On ne dit pas dans quel événement est la liste ;
 - ses goûts : ce qu'elle préfère, « En ce moment », « Ce qui lui servirait », « À éviter ». Ils viennent de sa fiche « Moi » dans « Mes proches ».
 
 Si la personne n'a rien écrit : « Lui demander des idées », anonyme, comme aujourd'hui (`PistesResultatVide`, `PistesDemander`, `PistesResultatDemande`). L'email qu'elle reçoit (`PistesEmail`) l'invite à écrire sa liste : « Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes. » · « Écrire ma liste ». Partout où cette demande s'affiche (accueil, « Quoi de neuf », menu du compte), elle dit « Quelqu'un te demande des idées », jamais un prénom.
@@ -55,7 +55,7 @@ Quand sa liste a bougé depuis ma dernière visite, la ligne de sa liste le dit 
 
 Plus bas, pour moi : une ligne **« Ma liste de cadeaux »**, avec son état (« Vue seulement par celui qui m'a tiré »).
 
-Hors d'une fête de catégorie Noël, la page ne dit jamais « Père Noël » (`vocabulaire.md`).
+Hors d'un événement de catégorie Noël, la page ne dit jamais « Père Noël » (`vocabulaire.md`).
 
 ## Du résultat à la liste
 
@@ -65,7 +65,7 @@ Celui qui m'a tiré arrive sur **la liste entière**, et **la page s'ouvre calé
 
 ## Les objets des emails
 
-L'objet d'un email nomme la fête : « Famille Camille : ton enveloppe t'attend ». Quand la fête a plusieurs Secret Santa la même année, il ajoute le nom du Secret Santa entre parenthèses : « Famille Camille (les enfants) : ton enveloppe t'attend ». Le mot « Secret Santa » n'a pas besoin d'être dans l'objet.
+L'objet d'un email nomme l'événement : « Famille Camille : ton enveloppe t'attend ». Quand l'événement a plusieurs Secret Santa la même année, il ajoute le nom du Secret Santa entre parenthèses : « Famille Camille (les enfants) : ton enveloppe t'attend ». Le mot « Secret Santa » n'a pas besoin d'être dans l'objet.
 
 ## Ce qui disparaît
 

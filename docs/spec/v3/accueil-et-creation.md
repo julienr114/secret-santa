@@ -22,43 +22,43 @@ L'onglet ouvre un panneau du bas, « Créer », de deux lignes sans sous-titre :
 1. **Un Secret Santa**
 2. **Une liste**
 
-On ne propose pas « Un événement » : la fête est la première étape des deux.
+On ne propose pas « Un événement » : l'événement est la première étape des deux.
 
 ### Première étape d'un Secret Santa : « Pour quelle occasion ? »
 
-Maquette : `V3TirageQuelleFete`. Un seul choix (un Secret Santa est dans une seule fête) :
+Maquette : `V3TirageQuelleFete`. Un seul choix (un Secret Santa est dans un seul événement) :
 
-- une des fêtes **que j'organise** ; une fête qui a déjà son Secret Santa de l'année reste proposée, ce sera un autre ;
-- « Une autre occasion », qui crée une fête.
+- un des événements **que j'organise** ; un événement qui a déjà son Secret Santa de l'année reste proposé, ce sera un autre ;
+- « Une autre occasion », qui crée un événement.
 
-Les fêtes où je ne suis que membre ne sont pas proposées. Arrivé à la limite de 3 : `secret-santa.md`.
+Les événements où je ne suis que membre ne sont pas proposées. Arrivé à la limite de 3 : `secret-santa.md`.
 
 ### Première étape d'une liste : « Qui verra ta liste ? »
 
-Maquette : `V3ListeQui`. Voir `listes.md`. La ligne « Une autre occasion » crée une fête.
+Maquette : `V3ListeQui`. Voir `listes.md`. La ligne « Une autre occasion » crée un événement.
 
-### « Une autre occasion » : l'écran où une fête se crée
+### « Une autre occasion » : l'écran où un événement se crée
 
 Maquettes : `V3FeteNouvelle` (titre : « Pour quelle occasion ? »), `V3FeteMembresReprendre`.
 
 1. La catégorie, en six tuiles : elle remplit le reste (`categories.md`).
 2. Le nom, la date (trois listes, `regles-d-ecran.md`), « Elle revient chaque année ».
-3. Les membres : « Reprendre les membres de » (on coche qui), pour ne pas réinviter les mêmes personnes à chaque occasion. « Inviter d'autres personnes » se fait par un lien, une fois la fête créée.
+3. Les membres : « Reprendre les membres de » (on coche qui), pour ne pas réinviter les mêmes personnes à chaque occasion. « Inviter d'autres personnes » se fait par un lien, une fois l'événement créé.
 
-Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. Si on s'arrête après cette étape, la fête existe : on peut y inviter.
+Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. Si on s'arrête après cette étape, l'événement existe : on peut y inviter.
 
 ## L'accueil
 
 Maquette : `V3Accueil`.
 
 - « Bonjour Hugo ».
-- **Une section par saison de Noël** : « Noël 2026 · dans 35 jours ». C'est la catégorie qui regroupe : toutes mes fêtes de catégorie Noël de la même année vont sous ce titre, quel que soit leur nom. **Aucune autre catégorie n'est regroupée.**
-  - Le décompte du titre ne dépend d'aucune fête : il compte jusqu'au **25 décembre à minuit**, toujours.
-  - Dans la section, les fêtes sont dans l'ordre des dates, la plus proche en haut.
-- **Une carte par fête** : l'emoji de sa catégorie, son nom, sa date, une flèche (l'en-tête ouvre la fête) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux fêtes apparaît dans les deux cartes (« aussi chez Mamie »).
-- **L'ordre est celui des dates** (`2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`) : la section de Noël est posée à la place de sa première fête ; **une fête qui vient avant est au-dessus, sans titre** ; ce qui vient après est sous « Plus tard ». Sans section de Noël à venir : des cartes sans titre, puis « Bientôt ».
-- **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes fêtes couvre déjà.
-- **« Plus tard »** : les fêtes qui viennent après la saison de Noël, par date.
+- **Une section par saison de Noël** : « Noël 2026 · dans 35 jours ». C'est la catégorie qui regroupe : tous mes événements de catégorie Noël de la même année vont sous ce titre, quel que soit leur nom. **Aucune autre catégorie n'est regroupée.**
+  - Le décompte du titre ne dépend d'aucun événement : il compte jusqu'au **25 décembre à minuit**, toujours.
+  - Dans la section, les événements sont dans l'ordre des dates, le plus proche en haut.
+- **Une carte par événement** : l'emoji de sa catégorie, son nom, sa date, une flèche (l'en-tête ouvre l'événement) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux événements apparaît dans les deux cartes (« aussi chez Mamie »).
+- **L'ordre est celui des dates** (`2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`) : la section de Noël est posée à la place de son premier événement ; **un événement qui vient avant est au-dessus, sans titre** ; ce qui vient après est sous « Plus tard ». Sans section de Noël à venir : des cartes sans titre, puis « Bientôt ».
+- **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes événements couvre déjà.
+- **« Plus tard »** : les événements qui viennent après la saison de Noël, par date.
 - **Le titre et le texte de chaque ligne** : `lignes.md`.
 - En bas, deux lignes : **« Les événements passés »** et **« Ce que j'offre ailleurs »** (`listes.md`).
 
@@ -75,41 +75,49 @@ Les deux mènent à « Pour quelle occasion ? » (les catégories).
 
 ## L'année suivante
 
-Maquette : `V3AccueilAnnee`. Deux mois avant la date d'une fête qui revient :
+Maquette : `V3AccueilAnnee`. Deux mois avant la date d'un événement qui revient :
 
-- l'organisateur voit « Préparer Noël 2027 » sur la carte de la fête. Un toucher recrée **autant de Secret Santa que l'an dernier**, chacun avec ses participants, ses réglages et la mémoire de ses tirages passés (Q-008). Rien n'est tiré ni envoyé : ils sont « à préparer ». L'organisateur **supprime** celui qui ne sert plus (« Supprimer ce Secret Santa », dans ses réglages, tant qu'il n'est pas tiré) ; un nouveau membre de la fête n'est ajouté d'office à aucun ;
+- l'organisateur voit « Préparer Noël 2027 » sur la carte de l'événement. Un toucher recrée **autant de Secret Santa que l'an dernier**, chacun avec ses participants, ses réglages et la mémoire de ses tirages passés (Q-008). Rien n'est tiré ni envoyé : ils sont « à préparer ». L'organisateur **supprime** celui qui ne sert plus (« Supprimer ce Secret Santa », dans ses réglages, tant qu'il n'est pas tiré) ; un nouveau membre de l'événement n'est ajouté d'office à aucun ;
 - chacun voit « Reprendre ma liste de l'an dernier ».
 
-Une fête qui ne revient pas passe dans « Les événements passés » après sa date.
+Un événement qui ne revient pas passe dans « Les événements passés » après sa date.
 
 La liste reprise : `listes.md`, « La liste reprise de l'an dernier ».
 
 ## Le jeu, sur l'accueil
 
-Maquette : `V3AccueilJeu`. Il n'y a pas de grande carte en haut de l'accueil pour le jeu ou le dévoilement : tout tient dans la carte de la fête, par une ligne et un point rouge.
+Maquette : `V3AccueilJeu`. Il n'y a pas de grande carte en haut de l'accueil pour le jeu ou le dévoilement : tout tient dans la carte de l'événement, par une ligne et un point rouge.
 
 - **« Devine qui » ouvert** : une ligne « Devine qui · À toi de jouer · jusqu'au 25 décembre à 18 h », avec le point rouge tant que je n'ai pas joué. Elle mène au pronostic.
 - **Le Secret Santa dévoilé** : sa ligne dit « Dévoilé · qui a offert à qui », avec le point rouge tant que je ne l'ai pas ouvert.
 - **Le palmarès** : « Devine qui · Le palmarès est là », pareil.
 - **Jamais un résultat de tirage sur l'accueil** : la ligne d'un Secret Santa tiré dit « Tu sais à qui tu offres », sans prénom.
-- **Après la date** (Q-009) : une fête reste sur l'accueil tant que son Secret Santa n'est pas clôturé, **14 jours au plus** après sa date ; 3 jours si elle n'a pas de Secret Santa. Elle garde sa place dans l'ordre des dates, donc en haut. Ensuite elle part dans « Les événements passés », ou passe à sa date de l'année suivante si elle revient.
+- **Après la date** (Q-009) : un événement reste sur l'accueil tant que son Secret Santa n'est pas clôturé, **14 jours au plus** après sa date ; 3 jours s'il n'a pas de Secret Santa. Il garde sa place dans l'ordre des dates, donc en haut. Ensuite il part dans « Les événements passés », ou passe à sa date de l'année suivante s'il revient.
 
 ## « Quoi de neuf »
 
 Maquette : `V3QuoiDeNeuf` (remplace `NotifCentre`).
 
-- **Une section par fête**, avec l'emoji de sa catégorie ; la fête qui a la nouveauté la plus récente est en haut. Dans une section, du plus récent au plus ancien.
-- Une liste publique où j'ai coché, sans être membre de sa fête, a sa section à elle, au nom de l'occasion.
+- **Une section par événement**, avec l'emoji de sa catégorie ; l'événement qui a la nouveauté la plus récente est en haut. Dans une section, du plus récent au plus ancien.
+- Une liste publique où j'ai coché, sans être membre de son événement, a sa section à elle, au nom de l'occasion.
 - Une ligne est en gras, avec un point rouge, tant que je n'ai pas ouvert ce qu'elle signale. C'est le même point que sur l'accueil : **il s'éteint quand j'ouvre la chose**, pas quand j'ouvre « Quoi de neuf ».
-- Les nouveautés d'une liste qui est dans deux fêtes n'apparaissent qu'une fois, sous celle dont la date est la plus proche.
+- Les nouveautés d'une liste qui est dans deux événements n'apparaissent qu'une fois, sous celui dont la date est la plus proche.
 - Une demande d'idées est anonyme ici aussi : « Quelqu'un te demande des idées de cadeaux », jamais un prénom.
 - En bas, une ligne « Choisir ce qui me prévient » ; dessous, « Tout s'efface au bout de trente jours ». Pas de phrase d'introduction.
 
-## Les fêtes passées
+### Hors de l'application
+
+Les règles de ce qui prévient hors de l'application restent celles du README 22.22. La V3 y change trois choses :
+
+- **le résumé du matin** range ses nouveautés comme « Quoi de neuf » : un bloc par événement, au nom de l'événement ;
+- **suivre une liste** est possible sur toute liste que je peux ouvrir sans la tenir ; je ne suis plus prévenu dès que je n'ai plus le droit de l'ouvrir ;
+- **aucun texte envoyé** (email, résumé, notification du téléphone) ne dit à qui j'offre ni qui me demande des idées.
+
+## Les événements passés
 
 Maquette : `V3FetesPassees`. La ligne du bas de l'accueil dit la plus récente et le compte (« Les 6 ans de Léo et 4 autres »).
 
 - Une section par année, la plus récente en haut.
-- Une ligne par fête : l'emoji de sa catégorie, son nom, sa date, et ce que j'y ai fait (« tu offrais à Zoé », « tu as offert 3 cadeaux », « 8 cadeaux offerts » si c'était pour quelqu'un de mes proches).
-- Une fête qui revient y laisse une ligne par année ; la ligne ouvre cette année-là (`fete.md`, « Une année passée »).
-- « Tu offrais à Zoé » est mon propre résultat, pour une fête finie : il peut s'écrire ici, pas sur l'accueil.
+- Une ligne par événement : l'emoji de sa catégorie, son nom, sa date, et ce que j'y ai fait (« tu offrais à Zoé », « tu as offert 3 cadeaux », « 8 cadeaux offerts » si c'était pour quelqu'un de mes proches).
+- Un événement qui revient y laisse une ligne par année ; la ligne ouvre cette année-là (`fete.md`, « Une année passée »).
+- « Tu offrais à Zoé » est mon propre résultat, pour un événement fini : il peut s'écrire ici, pas sur l'accueil.

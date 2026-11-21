@@ -11,7 +11,7 @@ Celui du lot 32 : il est écrit dans `docs/refonte/PLAN.md`, section « Lot 32 �
 
 - Le 20 novembre 2026 au soir : l'accroche devient « Le Secret Santa et les listes de cadeaux, pour toutes les occasions. », une ligne dit qu'on invite ses proches une fois, et l'image du résultat est celle de la V3 (ticket de conception D10).
 - **Une relecture après la V3.** Ce lot a été écrit pour l'application d'avant : il parle de groupes, d'éditions, de tirages et de pistes, et ses écrans passent par des pages que la V3 change. Avant de le coder, la conception le réécrit ici comme un vrai ticket (`docs/travail/MODELE-TICKET.md`), avec ses maquettes mises à jour, et le pose dans `a-faire/`.
-- Le 20 novembre 2026, le paragraphe sur les idées a été réécrit (plus de « six questions », plus de « Père Noël ») : ticket de conception D07. Reste à montrer les fêtes et les occasions : D10.
+- Le 20 novembre 2026, le paragraphe sur les idées a été réécrit (plus de « six questions », plus de « Père Noël ») : ticket de conception D07. Reste à montrer les événements et les occasions : D10.
 - L'ordre entre ces lots n'est pas arrêté : voir `docs/travail/questions.md`, Q-004.
 
 ## Ne pas coder depuis ce fichier

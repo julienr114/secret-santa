@@ -3,26 +3,26 @@
 Réponse aux questions Q-010 et Q-012 (21 novembre 2026). Décision : `2026-11-21-le-nom-d-une-fete-dans-une-phrase.md`.
 Maquettes : `V3Accueil`, `V3AccueilJeu`, `V3AccueilAnnee`, `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnneePassee`, `V3FetesPassees`.
 
-Sur l'accueil et sur la page d'une fête, chaque Secret Santa et chaque liste est une ligne : un titre, un texte dessous, parfois un point rouge. Ce fichier dit quoi écrire, et quand.
+Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque liste est une ligne : un titre, un texte dessous, parfois un point rouge. Ce fichier dit quoi écrire, et quand.
 
 ## Les règles communes
 
 - **Le texte dit un état, jamais un mode d'emploi.** Un seul état, deux au plus, séparés par « · ».
 - **Pour chaque ligne, les cas sont dans l'ordre : le premier qui s'applique est écrit.**
 - **Le point rouge** accompagne les cas marqués ●. Il s'éteint quand j'ouvre la chose (`accueil-et-creation.md`, « Quoi de neuf »).
-- **Aucun résultat de tirage**, ni sur l'accueil ni sur la page d'une fête. Seule exception : mon propre résultat, pour une année finie, dans les pages des fêtes passées.
+- **Aucun résultat de tirage**, ni sur l'accueil ni sur la page d'un événement. Seule exception : mon propre résultat, pour une année finie, dans les pages des événements passés.
 - **Aucun prénom dans une demande d'idées** : elle est anonyme.
 - Les nombres s'accordent (« 1 cadeau », « 2 cadeaux », « 1 nouvelle idée », « 3 nouvelles idées ») dans les trois langues.
 - Une ligne sans rien à dire n'a que son titre.
 
 ## La ligne d'un Secret Santa
 
-**Titre** : « Le Secret Santa » s'il est le seul de la fête cette année ; sinon son nom (« Les enfants »).
+**Titre** : « Le Secret Santa » s'il est le seul de l'événement cette année ; sinon son nom (« Les enfants »).
 
 **Qui voit quoi** :
 
 - Sur l'accueil, la ligne me parle comme participant si je participe ; elle ouvre ma page. Si je l'organise sans participer, elle parle à l'organisateur et ouvre le suivi.
-- Sur la page d'une fête, un organisateur voit le texte de l'organisateur, et la ligne ouvre le suivi ; un membre voit le texte du participant, et la ligne ouvre sa page.
+- Sur la page d'un événement, un organisateur voit le texte de l'organisateur, et la ligne ouvre le suivi ; un membre voit le texte du participant, et la ligne ouvre sa page.
 - Je ne participe pas et je ne l'organise pas : la ligne n'est pas montrée.
 
 **Le texte du participant** :
@@ -92,27 +92,27 @@ Une liste qui vient d'être créée n'a pas de texte à elle : ses idées sont n
 
 « Depuis ma dernière visite » se compte comme aujourd'hui pour les listes (la date de ma dernière ouverture de cette liste).
 
-## Le nom d'une fête dans un texte
+## Le nom d'un événement dans un texte
 
-Le nom d'une fête est libre : « Chez Mamie », « Famille Camille », « Les 40 ans de Tonton ». On ne peut pas savoir s'il faut « chez », « dans » ou « à ». Donc :
+Le nom d'un événement est libre : « Chez Mamie », « Famille Camille », « Les 40 ans de Tonton ». On ne peut pas savoir s'il faut « chez », « dans » ou « à ». Donc :
 
-- **On ne colle jamais une préposition devant le nom d'une fête.**
-- Dans un texte sous une ligne : deux-points. « aussi : Chez Mamie » pour une autre fête ; **à partir de deux autres, on compte** : « aussi dans 2 autres événements ».
-- Dans une phrase : le nom entre guillemets, derrière un mot qui ne change pas. « Quitter « Famille Camille » ? », « Retirer ta liste de « Chez Mamie » ? », « Et dans la fête « Notre mariage » ».
+- **On ne colle jamais une préposition devant le nom d'un événement.**
+- Dans un texte sous une ligne : deux-points. « aussi : Chez Mamie » pour un autre événement ; **à partir de deux autres, on compte** : « aussi dans 2 autres événements ».
+- Dans une phrase : le nom entre guillemets, derrière un mot qui ne change pas. « Quitter « Famille Camille » ? », « Retirer ta liste de « Chez Mamie » ? », « Et dans l'événement « Notre mariage » ».
 - Quand la phrase n'a pas besoin du nom, on ne le met pas : « Elle reste dans tes autres événements. »
 
 Les trois langues suivent la même forme : « also: Chez Mamie », « also in 2 other events » ; « auch: Chez Mamie », « auch in 2 weiteren Events ». Le nom commun est « événement » (`vocabulaire.md`).
 
 ## Les deux lignes du bas de l'accueil
 
-- **« Les événements passés »** : montrée dès qu'il y en a une. Texte : le nom de la plus récente, puis le compte des autres : « Les 6 ans de Léo », « Les 6 ans de Léo et 1 autre », « Les 6 ans de Léo et 4 autres ». Une fête qui revient compte une fois par année passée.
-- **« Ce que j'offre ailleurs »** : montrée dès qu'il y a une liste publique où j'ai coché sans être membre de sa fête. Une liste : « Le mariage de Karim et Sofia · 1 cadeau ». Plusieurs : « 3 listes · 5 cadeaux ».
+- **« Les événements passés »** : montrée dès qu'il y en a un. Texte : le nom du plus récent, puis le compte des autres : « Les 6 ans de Léo », « Les 6 ans de Léo et 1 autre », « Les 6 ans de Léo et 4 autres ». Un événement qui revient compte une fois par année passée.
+- **« Ce que j'offre ailleurs »** : montrée dès qu'il y a une liste publique où j'ai coché sans être membre de son événement. Une liste : « Le mariage de Karim et Sofia · 1 cadeau ». Plusieurs : « 3 listes · 5 cadeaux ».
 
-## Les lignes des fêtes passées
+## Les lignes des événements passés
 
-Sur la page d'une fête, « Les années passées » : le titre est le nom de l'année (« Noël 2025 » ; pour une fête faite pour un proche dont on connaît la naissance, « Ses 3 ans »).
+Sur la page d'un événement, « Les années passées » : le titre est le nom de l'année (« Noël 2025 » ; pour un événement fait pour un proche dont on connaît la naissance, « Ses 3 ans »).
 
-Dans « Les événements passés » : le titre est le nom de la fête, sous l'année ; le texte commence par la date (« 25 décembre »).
+Dans « Les événements passés » : le titre est le nom de l'événement, sous l'année ; le texte commence par la date (« 25 décembre »).
 
 Le texte, le premier qui s'applique :
 
@@ -123,7 +123,7 @@ Le texte, le premier qui s'applique :
 | J'y tenais une liste | « 8 cadeaux offerts » |
 | Sinon | rien |
 
-## Les autres lignes de la page d'une fête
+## Les autres lignes de la page d'un événement
 
 - **Les membres** : « 12 membres », et « Inviter » pour un organisateur.
 - **« Quitter cet événement »** : pas de texte dessous. Ce que ça fait est dit dans le panneau, avant le geste.

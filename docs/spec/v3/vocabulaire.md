@@ -68,7 +68,7 @@ On ne dit pas « créer un événement » : on demande « Pour quelle occasion ?
 
 En anglais « event », en allemand « Event ».
 
-**Le reste de cette spec, écrit le 20 novembre, dit encore « fête »** (jusqu'au nom du fichier `fete.md`) : lire « événement ». La reprise des fichiers et des maquettes est le ticket de conception D15.
+Le reste de cette spec dit « événement » depuis le 21 novembre 2026. Seuls des noms n'ont pas bougé, parce qu'ils sont cités partout : le fichier `fete.md`, les maquettes `V3Fete…`, et dans le code `party`.
 
 ## Ce qui ne change pas
 

@@ -12,8 +12,8 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3AccueilAnnee` | Accueil · l’année suivante (fin octobre 2027) : « Préparer Noël 2027 », « Reprendre ma liste de l’an dernier » | 108 |
 | `V3AccueilPlusOuvert` | Accueil · l’onglet « Créer » touché : un Secret Santa ou une liste ; la fête est la première étape des deux | 103 |
 | `V3FetesPassees` | Accueil · « Les événements passés » : par année, la plus récente en haut ; une fête qui revient y laisse une ligne par année | 108 |
-| `V3AccueilJeu` | Accueil · le 22 décembre : « Devine qui » ouvert dans une fête, un Secret Santa dévoilé et son palmarès dans une autre ; aucun résultat de tirage sur l’accueil | 110 |
-| `V3QuoiDeNeuf` | « Quoi de neuf » · regroupé par fête, la plus récente en haut ; une liste publique où j’ai coché a sa section | 110 |
+| `V3AccueilJeu` | Accueil · le 22 décembre : « Devine qui » ouvert dans une fête, un Secret Santa dévoilé et son palmarès dans une autre ; aucun résultat de tirage sur l’accueil | 112 |
+| `V3QuoiDeNeuf` | « Quoi de neuf » · regroupé par fête, la plus récente en haut ; une liste publique où j’ai coché a sa section | 120 |
 | `V3TirageQuelleFete` | Secret Santa · première étape : « Pour quelle occasion ? », une fête que j’organise ou une autre occasion | 105 |
 | `V3Fete` | Événement · vue par un membre : ses membres, son Secret Santa, les listes, les années passées, « Quitter » | 104 |
 | `V3FeteOrganisateur` | Événement · vue par son organisateur : « Inviter », les réglages, « Un autre Secret Santa » | 104 |

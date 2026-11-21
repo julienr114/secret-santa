@@ -12,7 +12,7 @@
 
 ## Ce qui n'est pas fait, et c'est dit
 
-- **Le texte courant de la spec** (les phrases qui expliquent, pas celles qui citent l'écran) dit encore « fête », jusqu'au nom du fichier `fete.md`. `vocabulaire.md` le dit en toutes lettres : lire « événement ». Le reprendre demande de réaccorder chaque phrase ; à faire fichier par fichier, quand on y repasse.
+- Le texte courant de la spec et des tickets à faire a été repris le soir même, phrase par phrase pour les accords. Restent des noms : le fichier `fete.md`, les maquettes `V3Fete…`, `party` dans le code.
 - Les balises `<title>` des maquettes (invisibles à l'écran) et leurs noms de fichiers gardent « fête ».
 - « Anniversaires et fêtes », le nom d'une famille d'icônes dans `ListeIcone`, reste : ce n'est pas la chose.
 

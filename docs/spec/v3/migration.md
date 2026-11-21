@@ -6,15 +6,15 @@ Décisions : `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-li
 
 ## Les groupes
 
-- Chaque groupe devient **une fête de catégorie Noël qui revient chaque année**, avec son nom, ses membres, ses organisateurs, ses exclusions et ses réglages.
-- Chaque édition devient **l'année de la fête et son Secret Santa**, avec sa date.
+- Chaque groupe devient **un événement de catégorie Noël qui revient chaque année**, avec son nom, ses membres, ses organisateurs, ses exclusions et ses réglages.
+- Chaque édition devient **l'année de l'événement et son Secret Santa**, avec sa date.
 - Les réglages du groupe qui ne concernent que le tirage (éviter la même personne, le mot ajouté aux messages, les emails du tirage) descendent sur chaque Secret Santa (`secret-santa.md`).
 
 ## Les listes
 
-- Une liste reliée à un tirage (`participations.giftListId`) va dans la fête de ce tirage.
-- **Chaque autre liste reçoit sa propre fête**, créée à la migration avec son nom, sa date et son icône. Son seul membre est son propriétaire ; ses co-teneurs en deviennent membres.
-- Une liste partagée par lien reste publique (« tout le monde avec un lien ») dans sa fête.
+- Une liste reliée à un tirage (`participations.giftListId`) va dans l'événement de ce tirage.
+- **Chaque autre liste reçoit son propre événement**, créé à la migration avec son nom, sa date et son icône. Son seul membre est son propriétaire ; ses co-teneurs en deviennent membres.
+- Une liste partagée par lien reste publique (« tout le monde avec un lien ») dans son événement.
 - Les coches faites par lien restent : elles alimentent « Ce que j'offre ailleurs ».
 
 ## Les pistes de cadeaux
@@ -22,7 +22,7 @@ Décisions : `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-li
 Aujourd'hui, la même chose existe trois fois : les goûts dans `giftPortraits` et dans `familyMembers.answers/texts` ; les idées dans `wishes` et dans `giftListIdeas`.
 
 - `giftPortraits` va dans la fiche « Moi » (`familyMembers`, `isSelf`) du compte de la personne. Si les deux existent, la plus récente gagne.
-- `wishes` va dans `giftListIdeas`, dans une liste de la personne placée dans la fête du tirage et **réservée à celui qui l'a tirée** : personne ne voit après la migration ce qu'il ne voyait pas avant.
+- `wishes` va dans `giftListIdeas`, dans une liste de la personne placée dans l'événement du tirage et **réservée à celui qui l'a tirée** : personne ne voit après la migration ce qu'il ne voyait pas avant.
 - Pour une personne sans compte, les pistes des années passées restent en lecture seule pour celui qui l'avait tirée ; rien n'est créé à sa place.
 
 ## Les demandes

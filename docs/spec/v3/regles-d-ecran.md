@@ -8,7 +8,7 @@ S'ajoutent au design system (README, section 23), sans le remplacer.
 Aucune phrase écrite pour expliquer l'écran à celui qui l'a conçu. Ne reste que ce qui sert à la personne, là où elle est :
 
 - **un état** : « Réservé au super-admin », « Seul celui qui m'a tiré la voit » ;
-- **une conséquence, avant un geste qu'on ne rattrape pas** : ce qui sort et ce qui reste quand on quitte une fête, « L'ancien ne marchera plus » ;
+- **une conséquence, avant un geste qu'on ne rattrape pas** : ce qui sort et ce qui reste quand on quitte un événement, « L'ancien ne marchera plus » ;
 - **une information sur ses données** : le compte qui vient d'être créé, « Tes données, en clair ».
 
 Ce qui ne s'écrit pas : « Chaque réglage s'enregistre dès qu'il est validé », « Envoyé à chaque organisateur, dans sa langue », un sous-titre qui redit le titre d'une ligne, la raison d'une valeur déjà visible (« Repris de Noël 2026 »).
@@ -30,13 +30,13 @@ Toute date se choisit avec **trois listes du téléphone**, côte à côte : « 
 - Le mois en toutes lettres.
 - Les années : de l'année en cours à dans deux ans.
 - Les jours suivent le mois et l'année.
-- Les trois listes arrivent déjà remplies par la catégorie (Noël : le 25 décembre) ou par la date de la fête.
+- Les trois listes arrivent déjà remplies par la catégorie (Noël : le 25 décembre) ou par la date de l'événement.
 
-Pas de calendrier dessiné : `AdminDateField` et son `UCalendar` en panneau du bas sont remplacés, pour la date d'une fête, d'un Secret Santa et d'une liste. Pas de `<input type="date">` : sur les téléphones, il ouvre un calendrier.
+Pas de calendrier dessiné : `AdminDateField` et son `UCalendar` en panneau du bas sont remplacés, pour la date d'un événement, d'un Secret Santa et d'une liste. Pas de `<input type="date">` : sur les téléphones, il ouvre un calendrier.
 
 ## L'en-tête d'une carte se touche
 
-Sur l'accueil, l'en-tête d'une carte de fête ouvre la fête : il porte la même flèche que les lignes du dessous, après la date.
+Sur l'accueil, l'en-tête d'une carte d'événement ouvre l'événement : il porte la même flèche que les lignes du dessous, après la date.
 
 ## Ce qui reste vrai
 

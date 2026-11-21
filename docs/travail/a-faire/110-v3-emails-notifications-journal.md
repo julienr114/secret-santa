@@ -2,11 +2,11 @@
 
 - **Dépend de** : 102, 107
 - **Migration** : non
-- **Maquettes** : `PistesEmail`, `ModerationEmail`, `NotifEmailResume`, `NotifReglage`, `NotifAutoriser`, `DevineEmailRappelAuto`, `DevineEmailRappelEncore`, `DevineEmailPalmares`, `DevineEmailOrgaPoint`, `DevineEmailOrgaFin`, `ListeInvitationEmail`, `Journal`
+- **Maquettes** : `PistesEmail`, `ModerationEmail`, `DevineEmailRappelAuto`, `DevineEmailRappelEncore`, `DevineEmailPalmares`, `DevineEmailOrgaPoint`, `DevineEmailOrgaFin`, `ListeInvitationEmail`, `Journal`
 
 ## Objectif
 
-Tout ce qui s'écrit hors des écrans principaux suit la V3 : l'objet d'un email nomme l'événement, une demande d'idées ne nomme jamais personne, l'email qui la porte invite à écrire sa liste, et le résumé du matin range ses nouveautés par événement.
+Tout ce qui s'écrit hors des écrans principaux suit la V3 : l'objet d'un email nomme l'événement, une demande d'idées ne nomme jamais personne, l'email qui la porte invite à écrire sa liste.
 
 ## À lire d'abord
 
@@ -21,14 +21,12 @@ Tout ce qui s'écrit hors des écrans principaux suit la V3 : l'objet d'un email
 - [ ] L'email de demande d'idées (`PistesEmail`) : « Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes. » · « Écrire ma liste ». Le lien ouvre la liste réservée à celui qui a tiré (ticket 107).
 - [ ] La demande d'idées ne nomme personne, nulle part : notifications, résumé, journal. « Quelqu'un te demande des idées de cadeaux ».
 - [ ] L'email de modération (`ModerationEmail`) : c'est le lien public qui est arrêté ; la liste reste partagée dans ses événements.
-- [ ] Le résumé du matin (`NotifEmailResume`) : une section par événement, au nom de l'événement ; une liste publique où j'ai coché a la sienne.
-- [ ] Les notifications poussées et leurs réglages (`NotifReglage`, `NotifAutoriser`) : « une demande d'idées », jamais « des pistes ».
 - [ ] Le journal : « Journal de l'événement », et ses lignes sans « groupe », « édition » ni « pistes ».
 - [ ] Les emails de « Devine qui » hors d'un événement de catégorie Noël : les variantes sans « Père Noël ».
 
 ## Hors périmètre
 
-- La page « Quoi de neuf » et les points rouges (ticket 120, sur la maquette `V3QuoiDeNeuf`).
+- La page « Quoi de neuf » et les points rouges (ticket 120), le résumé du matin (121), les notifications du téléphone (124) : ils n'existent pas encore.
 - Les lignes de l'accueil (ticket 112).
 - Le mot envoyé le jour de la bascule (ticket 113).
 

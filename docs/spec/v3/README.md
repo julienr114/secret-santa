@@ -1,11 +1,11 @@
-# La V3 : tout est dans une fête
+# La V3 : tout est dans un événement
 
 Pour Noël 2027. Décisions : `docs/decisions/` (toutes celles du 20 novembre 2026).
 
 ## L'idée
 
-1. **Le groupe devient la fête.** Une fête, c'est une occasion et les gens qui la partagent : « Noël chez Mamie », « Les 40 ans de Tonton ».
-2. **Dans une fête, il y a des Secret Santa et des listes de cadeaux**, au même niveau.
+1. **Le groupe devient l'événement.** Un événement, c'est une occasion et les gens qui la partagent : « Noël chez Mamie », « Les 40 ans de Tonton ».
+2. **Dans un événement, il y a des Secret Santa et des listes de cadeaux**, au même niveau.
 3. **On ne crée jamais « un événement »** : on crée un Secret Santa ou une liste, et la première étape demande pour quelle occasion.
 4. **Une catégorie** (Noël, Anniversaire, Naissance, Mariage, Crémaillère, Autre) remplit les réglages de départ. Elle n'interdit rien.
 5. **Les « pistes de cadeaux » n'existent plus** : celui qui m'a tiré au sort voit mes goûts et ma liste.

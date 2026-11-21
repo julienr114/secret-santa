@@ -33,7 +33,7 @@ Le jour même, par Julien (Claude Code ne publie pas et ne déploie pas) :
 
 Après :
 
-- [ ] Le mot part avec le résumé du matin suivant, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours.
+- [ ] Le mot part par un email simple, le lendemain matin, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours. (Le résumé du matin et « Quoi de neuf » n'existent pas encore : tickets 120 et 121.)
 - [ ] Surveiller une journée le tableau de bord (erreurs du serveur, emails rejetés).
 
 ## Le mot aux utilisateurs

@@ -18,7 +18,7 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 ## À faire
 
 - [ ] « Celui qui m'a tiré » dans « Qui verra ta liste ? », avec son choix par défaut selon d'où l'on vient.
-- [ ] Une liste réservée à celui qui m'a tiré : lui seul la lit, elle n'apparaît pas dans la fête.
+- [ ] Une liste réservée à celui qui m'a tiré : lui seul la lit, elle n'apparaît pas dans l'événement.
 - [ ] La carte du résultat : mes goûts viennent de la fiche « Moi », une ligne mène à la liste ; « Lui demander des idées ».
 - [ ] L'arrivée sur la liste : la liste entière, calée sur la partie de la personne tirée, mode anonyme activé.
 - [ ] Le compte créé à la première chose écrite, et son message.

@@ -4,15 +4,15 @@ Décision : `2026-11-20-les-categories.md`.
 
 ## Le principe
 
-Une catégorie ne donne que des **réglages de départ**. Elle n'interdit rien (toute fête peut avoir un Secret Santa et des listes), tout reste modifiable, et on peut en changer ensuite.
+Une catégorie ne donne que des **réglages de départ**. Elle n'interdit rien (tout événement peut avoir un Secret Santa et des listes), tout reste modifiable, et on peut en changer ensuite.
 
 ## Ce qu'elle remplit
 
-- l'icône de la fête et **celle de ses listes** ;
+- l'icône de l'événement et **celle de ses listes** ;
 - le nom proposé ;
 - la date ;
 - « revient chaque année » ;
-- ce que la fête propose en premier ;
+- ce que l'événement propose en premier ;
 - la forme de la liste (par personne, ou sans personne) ;
 - « tout le monde avec un lien » suggéré ou non ;
 - le mot d'accueil de départ d'une liste (un texte par catégorie) ;
@@ -38,4 +38,4 @@ L'écran « Pour quelle occasion ? » propose « Pour qui ? » parmi mes proches
 
 ## L'emoji et l'icône au trait
 
-L'emoji d'une catégorie est réservé à **une fête précise**. Quand on parle d'un Secret Santa ou d'une liste en général (le panneau « Créer », l'accueil d'un compte tout neuf), on montre une icône au trait dans un carré teinté.
+L'emoji d'une catégorie est réservé à **un événement précise**. Quand on parle d'un Secret Santa ou d'une liste en général (le panneau « Créer », l'accueil d'un compte tout neuf), on montre une icône au trait dans un carré teinté.

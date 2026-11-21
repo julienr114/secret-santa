@@ -1,4 +1,4 @@
-import { findAccountById } from '#server/database/accounts';
+import { adoptPersonAvatar, findAccountById } from '#server/database/accounts';
 import { findPersonByGroupEmail } from '#server/database/invite';
 import { createList } from '#server/database/lists';
 import { myListFor, occasionDate } from '#server/database/listSharing';
@@ -39,6 +39,8 @@ export default defineEventHandler(async (event) => {
       .set({ email: account.email })
       .where(eq(persons.id, person.id));
   }
+  // An account with no face of its own takes the one of the Secret Santa.
+  await adoptPersonAvatar(db, account, person);
   const id = await myListFor(
     db,
     account.id,

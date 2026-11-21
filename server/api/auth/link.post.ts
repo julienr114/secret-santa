@@ -1,3 +1,4 @@
+import { avatarOf } from '#server/utils/avatars';
 import { z } from 'zod';
 import { useDb } from '#server/database/client';
 import {
@@ -68,13 +69,16 @@ export default defineEventHandler(async (event) => {
   // many: the same answer, and no email.
   if (verdict === 'silent') return { ok: true };
 
+  // A new account takes the face it had in a Secret Santa, if any.
+  const person = existing ? null : await findPersonByEmail(db, email);
   const account =
     existing ??
     (await createAccount(db, {
       email,
       isSuperAdmin: declared,
-      language: localeOf((await findPersonByEmail(db, email))?.language),
+      language: localeOf(person?.language),
       firstName: firstName ?? null,
+      avatar: person ? avatarOf(person) : null,
       now,
     }));
   if (account.disabledAt) return { ok: true };

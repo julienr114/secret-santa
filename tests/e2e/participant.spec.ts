@@ -189,6 +189,11 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   );
   await expect(page.getByTestId('list-title')).toHaveValue('Famille Lutins');
   const listId = page.url().split('/listes/')[1] ?? '';
+  // Her account keeps the face she had in the Secret Santa: 🦊 on frost.
+  const family = await ok(await page.request.get('/api/family'));
+  expect(
+    family.members.find((m: { isSelf: boolean }) => m.isSelf)?.avatar,
+  ).toEqual({ emoji: '🦊', color: 'frost' });
   // Coming back gives the same list.
   const again = await ok(
     await page.request.post(`/api/p/${tokenOf('Alice')}/list`),

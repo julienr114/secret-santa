@@ -21,6 +21,18 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
+## Le partage d'une liste (V3, ticket 106)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeQui`, `V3ListeQuiModifier` | Pas de choix « Tous les membres » / « Celui qui m'a tiré » sous un événement coché : il vient avec le ticket 107 ; un événement coché l'est pour tous ses membres. Les événements sont rangés par nom. | Seul |
+| `V3ListeQuiRetirer` | La confirmation compte les membres de l'événement retiré qui perdent vraiment la liste (ni ceux qui la tiennent, ni ceux qui la gardent par un autre événement), et ceux qui ont coché parmi tous ceux qui la perdent. Si personne ne la perd, pas de confirmation. Pour « Tout le monde », un titre (« Retirer « Tout le monde, avec le lien » ? ») que la spec ne donne pas, et pas de confirmation si personne n'a coché. | Seul |
+| `V3ListeLienChanger` | « Changer de lien » se confirme dans un panneau par-dessus « Qui verra ta liste ? » ; le nouveau lien vaut tout de suite, sans « Enregistrer ». | Seul |
+| `V3Liste` | Une liste partagée dans des événements où personne d'autre n'est membre dit « Personne d'autre ne la voit ». « Celui qui m'a tiré » (liste liée aux pistes avant la V3) dit le nom de l'événement et « Seul celui qui t'a tiré la voit ». | Seul |
+| `V3ListeFermee`, `V3ListeFermeeConnecte` | Un lien inconnu ou remplacé reçoit la même page qu'une liste fermée : la page ne dit pas si la liste existe. | Seul |
+| `V3OffreAilleurs` | La ligne « Ce que j'offre ailleurs » apparaît aussi sur l'accueil sans aucun événement (`V3AccueilVide`), dès qu'il y a une liste : l'invité d'un mariage n'est membre d'aucun événement. | Seul |
+| `V3ListeOccasion` | La ligne d'un événement dit la catégorie et le jour de son année (« Noël · 25 décembre ») ; sans jour, la catégorie seule. | Seul |
+
 ## Les mots (V3, ticket 102)
 
 | Maquette | Ce que fait le code | Décidé par |

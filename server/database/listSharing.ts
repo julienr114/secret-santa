@@ -1,8 +1,20 @@
-import { and, count, desc, eq, exists, inArray, or } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  exists,
+  inArray,
+  isNotNull,
+  or,
+} from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
   giftClaims,
+  giftListHolders,
+  giftListIdeas,
   giftListParties,
   giftLists,
   giftOffList,
@@ -115,9 +127,9 @@ export const sharedEventsOf = (db: Db, listId: string) =>
     })
     .from(giftListParties)
     .innerJoin(parties, eq(parties.id, giftListParties.partyId))
-    .where(
-      and(eq(giftListParties.listId, listId), eq(parties.fromList, false)),
-    );
+    .where(and(eq(giftListParties.listId, listId), eq(parties.fromList, false)))
+    // In the order they were shared in; saved together, by name.
+    .orderBy(asc(giftListParties.createdAt), asc(parties.name));
 
 /**
  * Who gets in under a sharing, holders aside: the addresses of the active
@@ -354,3 +366,116 @@ export const saveSharing = async (
     ),
   ]);
 };
+
+/** A public list where I offer something, as « Ce que j'offre ailleurs » shows it. */
+export type ElsewhereList = {
+  token: string;
+  title: string;
+  iconEmoji: string;
+  iconColor: string;
+  eventDate: string | null;
+  /** What I offer there: the ideas I ticked, the gifts I added. */
+  gifts: string[];
+};
+
+/**
+ * « Ce que j'offre ailleurs » (docs/spec/v3/listes.md, V3OffreAilleurs):
+ * the public lists where I ticked or offered something without holding
+ * them nor being a member of an event they are shared in. A list that
+ * stops being public leaves it.
+ * @param db - The database.
+ * @param account - Me.
+ * @param account.id - My account.
+ * @param account.email - My address.
+ * @returns The lists, the nearest day first.
+ */
+export const elsewhereOf = async (
+  db: Db,
+  account: { id: string; email: string },
+): Promise<ElsewhereList[]> => {
+  const [claimed, offered] = await Promise.all([
+    db
+      .select({ list: giftLists, text: giftListIdeas.text })
+      .from(giftClaims)
+      .innerJoin(giftLists, eq(giftLists.id, giftClaims.listId))
+      .innerJoin(giftListIdeas, eq(giftListIdeas.id, giftClaims.ideaId))
+      .where(
+        and(
+          eq(giftClaims.accountId, account.id),
+          isNotNull(giftLists.sharedAt),
+        ),
+      ),
+    db
+      .select({ list: giftLists, text: giftOffList.text })
+      .from(giftOffList)
+      .innerJoin(giftLists, eq(giftLists.id, giftOffList.listId))
+      .where(
+        and(
+          eq(giftOffList.accountId, account.id),
+          isNotNull(giftLists.sharedAt),
+        ),
+      ),
+  ]);
+  const byList = [...claimed, ...offered].reduce<
+    Map<string, { list: typeof giftLists.$inferSelect; gifts: string[] }>
+  >((acc, row) => {
+    const entry = acc.get(row.list.id) ?? { list: row.list, gifts: [] };
+    return acc.set(row.list.id, {
+      ...entry,
+      gifts: [...entry.gifts, row.text],
+    });
+  }, new Map());
+  const held = new Set(
+    (
+      await db
+        .select({ listId: giftListHolders.listId })
+        .from(giftListHolders)
+        .where(eq(giftListHolders.accountId, account.id))
+    ).map((row) => row.listId),
+  );
+  const kept = await Promise.all(
+    [...byList.values()].map(async (entry) =>
+      held.has(entry.list.id) ||
+      (await memberWhereShared(db, entry.list.id, account))
+        ? null
+        : entry,
+    ),
+  );
+  return kept
+    .flatMap((entry) =>
+      entry?.list.shareToken
+        ? [
+            {
+              token: entry.list.shareToken,
+              title: entry.list.title,
+              iconEmoji: entry.list.iconEmoji,
+              iconColor: entry.list.iconColor,
+              eventDate: entry.list.eventDate,
+              gifts: entry.gifts,
+            },
+          ]
+        : [],
+    )
+    .toSorted((a, b) =>
+      (a.eventDate ?? '9999').localeCompare(b.eventDate ?? '9999'),
+    );
+};
+
+/**
+ * The active members of some events.
+ * @param db - The database.
+ * @param partyIds - The events.
+ * @returns Their ids and addresses.
+ */
+export const membersOf = async (db: Db, partyIds: readonly string[]) =>
+  partyIds.length === 0
+    ? []
+    : db
+        .select({ id: persons.id, email: persons.email })
+        .from(persons)
+        .where(
+          and(
+            inArray(persons.partyId, [...partyIds]),
+            eq(persons.active, true),
+          ),
+        );

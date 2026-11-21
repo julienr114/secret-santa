@@ -163,8 +163,11 @@ test('an empty new list starts from an old one', async () => {
           .title,
     )
     .toBe('Noël 2026');
-  await page.getByTestId('share-switch').click();
-  await expect(page.getByTestId('share-panel')).toBeVisible();
+  await page.getByTestId('share-open').click();
+  const sheet = page.getByRole('dialog', { name: 'Qui verra ta liste ?' });
+  await sheet.getByTestId('sharing-everyone').getByRole('switch').click();
+  await sheet.getByTestId('sharing-save').click();
+  await expect(page.getByTestId('share-stage')).toContainText('Publique');
   await expect(page.getByTestId('idea-carried')).toHaveCount(0);
   await expect(page.getByTestId('resumed-from')).toHaveCount(0);
   await page.close();

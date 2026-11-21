@@ -152,13 +152,20 @@ const chosen = computed(() =>
 const create = useCreatePartyMutation();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
-/** Where to go once created: what the creation was for, else the party. */
-const after = (slug: string, invite: boolean) => {
-  if (invite) return `/e/${slug}/invitation`;
+const { createFor, shareInto } = useListOccasion();
+/**
+ * Where to go once created: what the creation was for, else the party.
+ * For a list: the new list, made for it; or, from « Qui verra ta liste ? »,
+ * back to the list, now shared in it (ticket 106).
+ */
+const after = async (slug: string, invite: boolean) => {
+  if (invite) return navigateTo(`/e/${slug}/invitation`);
   if (route.query.pour === 'secret-santa') {
-    return `/admin/${slug}/editions/nouvelle`;
+    return navigateTo(`/admin/${slug}/editions/nouvelle`);
   }
-  return route.query.pour === 'liste' ? '/listes/nouvelle' : `/e/${slug}`;
+  if (route.query.pour !== 'liste') return navigateTo(`/e/${slug}`);
+  const list = typeof route.query.liste === 'string' ? route.query.liste : '';
+  return list ? shareInto(list, slug) : createFor(slug);
 };
 const submit = (invite = false) => {
   if (!ready.value || !form.value.category || !date.value) return;
@@ -173,7 +180,7 @@ const submit = (invite = false) => {
     {
       onSuccess: async ({ slug }) => {
         form.value = blank();
-        await navigateTo(after(slug, invite));
+        await after(slug, invite);
       },
       onError: (error) => toast.failed(errorMessage(error)),
     },

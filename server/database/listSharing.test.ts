@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { testDb } from '../../tests/d1';
 import {
   claimersOf,
+  elsewhereOf,
   memberWhereShared,
   membersSeeing,
   saveSharing,
@@ -129,5 +130,28 @@ describe('« Qui verra ta liste ? »', () => {
       'ah',
       'al',
     ]);
+  });
+});
+
+describe('« Ce que j’offre ailleurs »', () => {
+  it('shows a public list where I ticked without being a member, and drops it once not public', async () => {
+    const { db, sqlite } = testDb();
+    sqlite.exec(SETUP);
+    sqlite.exec(`UPDATE gift_lists SET shared_at = '${NOW}' WHERE id = 'l1';`);
+    const lea = { id: 'al', email: 'lea@x.fr' };
+    expect(await elsewhereOf(db, lea)).toEqual([
+      {
+        token: 'tok1',
+        title: 'Noël 2026',
+        iconEmoji: '🎄',
+        iconColor: 'pine',
+        eventDate: null,
+        gifts: ['Un livre'],
+      },
+    ]);
+    // Hugo is a member of « Famille Camille », where it is shared.
+    expect(await elsewhereOf(db, { id: 'ah', email: 'hugo@x.fr' })).toEqual([]);
+    sqlite.exec(`UPDATE gift_lists SET shared_at = NULL WHERE id = 'l1';`);
+    expect(await elsewhereOf(db, lea)).toEqual([]);
   });
 });

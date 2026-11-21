@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { listStage, losingClaimers, type Audience } from './listSharing';
+import {
+  listStage,
+  losingClaimers,
+  losingMembers,
+  type Audience,
+} from './listSharing';
 
 const audience = (over: Partial<Audience> = {}): Audience => ({
   isPublic: false,
@@ -43,5 +48,27 @@ describe('losingClaimers', () => {
     expect(
       losingClaimers([lea, tom], [], audience({ isPublic: true }), audience()),
     ).toBe(2);
+  });
+});
+
+describe('losingMembers', () => {
+  it('counts the members who lose it, once each, holders and those still in aside', () => {
+    const members = [
+      { id: 'p1', email: 'me@x.fr' },
+      { id: 'p2', email: 'hugo@x.fr' },
+      { id: 'p3', email: 'hugo@x.fr' },
+      { id: 'p4', email: null },
+      { id: 'p5', email: 'tom@x.fr' },
+    ];
+    expect(
+      losingMembers(
+        members,
+        ['me@x.fr'],
+        audience({ emails: new Set(['tom@x.fr']) }),
+      ),
+    ).toBe(2);
+    expect(
+      losingMembers(members, ['me@x.fr'], audience({ isPublic: true })),
+    ).toBe(0);
   });
 });

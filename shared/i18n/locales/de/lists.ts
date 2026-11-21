@@ -160,9 +160,6 @@ export default {
     },
   },
   share: {
-    onBy: 'Von {name} aktiviert',
-    offBy: 'Von {name} noch nicht aktiviert',
-    title: 'Teilen per Link',
     message:
       '🎁 Unsere Geschenkliste für {title} ist fertig: {names}. Hak ab, was du schenkst, damit niemand dieselbe Idee hat:',
     and: 'und',
@@ -172,20 +169,76 @@ export default {
     personalize: 'Nachricht anpassen',
     personalizeHelp: 'Der Link und der letzte Satz bleiben am Ende.',
     personalizeLabel: 'Die Nachricht',
-    copy: 'Kopieren',
-    send: 'Teilen',
     copyFailed:
       'Kopieren geht hier nicht: Markiere den Link, um ihn zu kopieren.',
     copied: 'Kopiert',
-    help: 'Wer den Link hat, sieht die Liste und kann abhaken.',
-    changeLink: 'Link ändern',
-    changeConfirm: 'Der alte Link funktioniert dann nicht mehr.',
-    change: 'Ändern',
     changed: 'Neuer Link erstellt',
-    stopped: 'Teilen per Link beendet',
-    missing: {
-      title: 'Gib dem Anlass einen Namen.',
-      people: 'Füge mindestens eine Person zur Liste hinzu.',
+  },
+  elsewhere: {
+    title: 'Was ich anderswo schenke',
+    gifts: { one: '{count} Geschenk', other: '{count} Geschenke' },
+    lists: { one: '{count} Liste', other: '{count} Listen' },
+    line: 'Am {date} · du schenkst: {gifts}',
+    lineNoDate: 'Du schenkst: {gifts}',
+  },
+  sharing: {
+    draft: 'Entwurf',
+    draftHint: 'Nur du siehst sie',
+    public: 'Öffentlich',
+    publicHint: 'Alle mit dem Link sehen sie',
+    giverHint: 'Nur wer dich gezogen hat, sieht sie',
+    members: {
+      one: '{count} Mitglied sieht sie',
+      other: '{count} Mitglieder sehen sie',
+    },
+    nobody: 'Sonst sieht sie niemand',
+    chosenBy: 'gewählt von {name}',
+    share: 'Teilen',
+    edit: 'Ändern',
+    copyLink: 'Link kopieren',
+    title: 'Wer sieht deine Liste?',
+    eventLine: {
+      one: '{category} · {count} Mitglied',
+      other: '{category} · {count} Mitglieder',
+    },
+    otherOccasion: 'Ein anderer Anlass',
+    everyone: 'Alle, mit dem Link',
+    copy: 'Kopieren',
+    message: 'Die Nachricht zum Link',
+    changeLink: 'Link ändern',
+    save: 'Speichern',
+    saved: 'Freigabe gespeichert',
+    renew: {
+      title: 'Link ändern?',
+      body: 'Der alte Link funktioniert nicht mehr: Du musst den neuen schicken. Wer schon ein Geschenk abgehakt hat, behält die Liste.',
+      submit: 'Ändern',
+    },
+    narrow: {
+      title: 'Deine Liste aus „{name}“ nehmen?',
+      everyoneTitle: '„Alle, mit dem Link“ entfernen?',
+      members: {
+        one: 'Sein Mitglied sieht sie nicht mehr.',
+        other: 'Seine {count} Mitglieder sehen sie nicht mehr.',
+      },
+      claimersOf: {
+        one: '{count} von ihnen hat ein Geschenk abgehakt und kann die Liste nicht mehr öffnen. Das Geschenk bleibt vorgesehen.',
+        other:
+          '{count} von ihnen haben ein Geschenk abgehakt und können die Liste nicht mehr öffnen. Ihre Geschenke bleiben vorgesehen.',
+      },
+      claimers: {
+        one: '{count} Person hat ein Geschenk abgehakt und kann die Liste nicht mehr öffnen. Das Geschenk bleibt vorgesehen.',
+        other:
+          '{count} Personen haben ein Geschenk abgehakt und können die Liste nicht mehr öffnen. Ihre Geschenke bleiben vorgesehen.',
+      },
+      submit: 'Entfernen',
+    },
+    closed: {
+      loginTitle: 'Diese Liste ist nicht für alle offen',
+      loginBody:
+        'Wenn sie mit dir geteilt wurde, melde dich an, um sie zu öffnen.',
+      login: 'Anmelden',
+      title: 'Diese Liste ist nicht mit dir geteilt',
+      body: 'Bitte die Person, die dir den Link geschickt hat, sie für dich zu öffnen.',
     },
   },
   live: {
@@ -465,7 +518,6 @@ export default {
     offListAction: 'Ich schenke {name} etwas anderes',
     tick: 'Ich schenke es: {idea}',
     untick: 'Ich schenke es nicht mehr: {idea}',
-    unshared: 'Diese Liste wird nicht mehr geteilt.',
     gone: 'Dieser Link funktioniert nicht mehr. Frag nach dem neuen, wer die Liste führt.',
   },
   claim: {

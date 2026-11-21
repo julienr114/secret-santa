@@ -7,6 +7,7 @@ import {
 } from '#shared/utils/homeParties';
 import { nextOccurrence } from '#shared/utils/categories';
 import { useHomePartiesQuery } from '~/composables/queries/useHome';
+import { useElsewhereQuery } from '~/composables/queries/useLists';
 
 // The home of a logged-in account (docs/spec/v3/accueil-et-creation.md,
 // V3Accueil and V3AccueilVide): a section per season of Christmas, with
@@ -14,6 +15,20 @@ import { useHomePartiesQuery } from '~/composables/queries/useHome';
 // « Plus tard », my other parties; then « Les fêtes passées » and « Ce que
 // j'offre ailleurs ». A new account sees two cards instead.
 const { t } = useT();
+// « Ce que j'offre ailleurs » (ticket 106), shown once I offer something
+// on a public list of an event I am not in: « Le mariage de Karim et
+// Sofia · 1 cadeau », or « 3 listes · 5 cadeaux » (docs/spec/v3/lignes.md).
+const elsewhere = useElsewhereQuery();
+const elsewhereLine = computed(() => {
+  const lists = elsewhere.data.value?.lists ?? [];
+  const gifts = t('lists.elsewhere.gifts', {
+    count: lists.reduce((sum, list) => sum + list.gifts.length, 0),
+  });
+  if (lists.length === 0) return '';
+  return lists.length === 1
+    ? `${lists[0]?.title ?? ''} · ${gifts}`
+    : `${t('lists.elsewhere.lists', { count: lists.length })} · ${gifts}`;
+});
 const home = useHomePartiesQuery();
 useHead({ title: () => `${t('home.title')} — ${t('common.appName')}` });
 const today = new Date().toLocaleDateString('sv-SE');
@@ -97,6 +112,18 @@ const greeting = computed(() =>
             :label="t(`home.empty.${card}.button`)"
           />
         </UiCard>
+        <!-- Invited to a wedding without being in any event: what I offer
+             there is found all the same (ticket 106). -->
+        <UiList v-if="elsewhereLine" class="mt-2.5">
+          <UiListItem
+            to="/offert-ailleurs"
+            icon="i-lucide-gift"
+            icon-tone="neutral"
+            :title="t('home.elsewhere')"
+            :subtitle="elsewhereLine"
+            data-testid="home-elsewhere"
+          />
+        </UiList>
       </template>
 
       <template v-else>
@@ -158,10 +185,13 @@ const greeting = computed(() =>
             :title="t('home.past')"
           />
           <UiListItem
-            to="/listes"
+            v-if="elsewhereLine"
+            to="/offert-ailleurs"
             icon="i-lucide-gift"
             icon-tone="neutral"
             :title="t('home.elsewhere')"
+            :subtitle="elsewhereLine"
+            data-testid="home-elsewhere"
           />
         </UiList>
       </template>

@@ -1,4 +1,8 @@
 import type {
+  ElsewhereList,
+  SharingOption,
+} from '#server/database/listSharing';
+import type {
   HolderView,
   ListCard,
   ListDocument,
@@ -64,10 +68,12 @@ export const useCreateListMutation = () =>
       eventDate?: string | null;
       /** « Reprendre cette liste »: the list to start from. */
       from?: string;
+      /** The address of the event it is made for (ticket 106). */
+      party?: string;
     }
   >(
     (body) => api('/api/lists', { method: 'POST', body }),
-    () => [keys.lists()],
+    () => [keys.lists(), keys.home()],
   );
 
 /** A list one can start from, with what it would bring (lot 27). */
@@ -310,6 +316,52 @@ export const useShareListMutation = (id: Id) =>
   useApiMutation<{ token: string | null; shared: boolean }, { ask: ShareAsk }>(
     (body) => api(`/api/lists/${toValue(id)}/share`, { method: 'POST', body }),
     () => listKeys(toValue(id)),
+  );
+
+/** « Qui verra ta liste ? » (ticket 106): the events offered, and the link. */
+export type ListSharing = { options: SharingOption[]; isPublic: boolean };
+/** A sharing asked for: the events ticked, and « Tout le monde ». */
+export type SharingAsk = { parties: string[]; isPublic: boolean };
+
+export const useListSharingQuery = (
+  id: Id,
+  enabled: MaybeRefOrGetter<boolean>,
+) =>
+  useApiQuery<ListSharing>(
+    () => keys.sharing(toValue(id)),
+    () => `/api/lists/${toValue(id)}/sharing`,
+    enabled,
+  );
+
+export const useSaveSharingMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, SharingAsk>(
+    (body) => api(`/api/lists/${toValue(id)}/sharing`, { method: 'PUT', body }),
+    () => [...listKeys(toValue(id)), keys.sharing(toValue(id)), keys.home()],
+  );
+
+/**
+ * How many who ticked would lose the list with a narrower sharing.
+ * @param id - The list.
+ * @param ask - The sharing asked for.
+ * @returns The count.
+ */
+export const sharingImpact = (
+  id: string,
+  ask: SharingAsk & { from?: string[] },
+) =>
+  api<{ members: number; claimers: number }>(
+    `/api/lists/${id}/sharing/impact`,
+    {
+      method: 'POST',
+      body: ask,
+    },
+  );
+
+/** « Ce que j'offre ailleurs » (ticket 106). */
+export const useElsewhereQuery = () =>
+  useApiQuery<{ lists: ElsewhereList[] }>(
+    () => keys.elsewhere(),
+    () => '/api/lists/elsewhere',
   );
 
 /** A person of « Mes proches », with on how many of my lists they are. */

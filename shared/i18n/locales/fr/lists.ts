@@ -160,9 +160,6 @@ export default {
     },
   },
   share: {
-    onBy: 'Activé par {name}',
-    offBy: 'Pas encore activé par {name}',
-    title: 'Partage par lien',
     message:
       '🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n’ait la même idée :',
     and: 'et',
@@ -172,19 +169,74 @@ export default {
     personalize: 'Personnaliser le message',
     personalizeHelp: 'Le lien et la dernière phrase restent à la fin.',
     personalizeLabel: 'Le message',
-    copy: 'Copier',
-    send: 'Partager',
     copyFailed: 'Copie impossible ici : sélectionne le lien pour le copier.',
     copied: 'Copié',
-    help: 'Toute personne qui a le lien voit la liste et peut cocher.',
-    changeLink: 'Changer de lien',
-    changeConfirm: 'L’ancien lien ne marchera plus.',
-    change: 'Changer',
     changed: 'Nouveau lien créé',
-    stopped: 'Partage par lien arrêté',
-    missing: {
-      title: 'Donne un nom à l’événement.',
-      people: 'Ajoute au moins une personne à la liste.',
+  },
+  elsewhere: {
+    title: 'Ce que j’offre ailleurs',
+    gifts: { one: '{count} cadeau', other: '{count} cadeaux' },
+    lists: { one: '{count} liste', other: '{count} listes' },
+    line: 'Le {date} · tu offres : {gifts}',
+    lineNoDate: 'Tu offres : {gifts}',
+  },
+  sharing: {
+    draft: 'Brouillon',
+    draftHint: 'Toi seul la vois',
+    public: 'Publique',
+    publicHint: 'Toute personne qui a le lien la voit',
+    giverHint: 'Seul celui qui t’a tiré la voit',
+    members: {
+      one: '{count} membre la voit',
+      other: '{count} membres la voient',
+    },
+    nobody: 'Personne d’autre ne la voit',
+    chosenBy: 'choisi par {name}',
+    share: 'Partager',
+    edit: 'Modifier',
+    copyLink: 'Copier le lien',
+    title: 'Qui verra ta liste ?',
+    eventLine: {
+      one: '{category} · {count} membre',
+      other: '{category} · {count} membres',
+    },
+    otherOccasion: 'Une autre occasion',
+    everyone: 'Tout le monde, avec le lien',
+    copy: 'Copier',
+    message: 'Le message qui accompagne le lien',
+    changeLink: 'Changer de lien',
+    save: 'Enregistrer',
+    saved: 'Partage enregistré',
+    renew: {
+      title: 'Changer de lien ?',
+      body: 'L’ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste.',
+      submit: 'Changer',
+    },
+    narrow: {
+      title: 'Retirer ta liste de « {name} » ?',
+      everyoneTitle: 'Retirer « Tout le monde, avec le lien » ?',
+      members: {
+        one: 'Son membre ne la verra plus.',
+        other: 'Ses {count} membres ne la verront plus.',
+      },
+      claimersOf: {
+        one: '{count} d’entre eux a coché un cadeau et ne pourra plus ouvrir la liste. Son cadeau reste prévu.',
+        other:
+          '{count} d’entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus.',
+      },
+      claimers: {
+        one: '{count} personne a coché un cadeau et ne pourra plus ouvrir la liste. Son cadeau reste prévu.',
+        other:
+          '{count} personnes ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus.',
+      },
+      submit: 'Retirer',
+    },
+    closed: {
+      loginTitle: 'Cette liste n’est pas ouverte à tout le monde',
+      loginBody: 'Si elle a été partagée avec toi, connecte-toi pour l’ouvrir.',
+      login: 'Se connecter',
+      title: 'Cette liste n’est pas partagée avec toi',
+      body: 'Demande à la personne qui t’a envoyé le lien de te l’ouvrir.',
     },
   },
   live: {
@@ -464,7 +516,6 @@ export default {
     offListAction: 'J’offre autre chose à {name}',
     tick: 'Je l’offre : {idea}',
     untick: 'Je ne l’offre plus : {idea}',
-    unshared: 'Cette liste n’est plus partagée.',
     gone: 'Ce lien ne marche plus. Demande le nouveau à celui qui tient la liste.',
   },
   claim: {

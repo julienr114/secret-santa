@@ -67,3 +67,29 @@ export const losingClaimers = (
       reaches(before, account) &&
       !reaches(after, account),
   ).length;
+
+/**
+ * How many members of the events a list leaves would lose it: their
+ * active members, once each, but its holders and those who keep another
+ * way in.
+ * @param members - The members of the events left: their address, or
+ * their id without one.
+ * @param holderEmails - The addresses of those who hold the list.
+ * @param after - The sharing asked for.
+ * @returns How many would lose it.
+ */
+export const losingMembers = (
+  members: readonly { id: string; email: string | null }[],
+  holderEmails: readonly string[],
+  after: Audience,
+): number =>
+  new Set(
+    members
+      .filter(
+        (member) =>
+          !after.isPublic &&
+          !(member.email && holderEmails.includes(member.email)) &&
+          !(member.email && after.emails.has(member.email)),
+      )
+      .map((member) => member.email ?? member.id),
+  ).size;

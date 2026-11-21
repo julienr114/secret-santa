@@ -111,11 +111,11 @@ Décidée par Julien le 18 novembre 2026.
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/e/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/e/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/e/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » change le panneau en son « Pour quelle occasion ? » (ticket 106) : un de mes événements crée la liste pour lui et l'ouvre (`/listes/[id]`) ; « Une autre occasion », ou aucun événement à moi, mène à `/e/nouvelle?pour=liste`, qui crée l'événement puis la liste. « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/e/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/e/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
-L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
+L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
@@ -196,8 +196,9 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages rest
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Listes (l'onglet) | `/listes` | — (barre du bas) | |
-| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` | Listes | |
-| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | L'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
+| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Listes | |
+| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
+| Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste | `/listes/[id]/teneurs` | La liste | |
 | Supprimer la liste | `/listes/[id]/supprimer` | La liste | |
@@ -213,6 +214,6 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages rest
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique) | Listes si connecté ; sinon pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre |
+| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Listes si connecté ; sinon pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi » |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
 | Les goûts d'une personne | `/l/[jeton]/gouts/[place]` | La liste, par son lien | |

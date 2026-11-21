@@ -80,7 +80,7 @@ const onSecretSanta = (to: string | null) => {
       />
       <UiAddRow
         v-if="!hasMine"
-        to="/listes/nouvelle"
+        :to="`/listes/nouvelle?pour=${party.slug}`"
         :label="t('party.lists.new')"
       />
     </ul>

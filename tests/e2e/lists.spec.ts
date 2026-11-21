@@ -25,24 +25,18 @@ test('a list is written in its document, and shared', async ({ page }) => {
   );
   await page.getByRole('link', { name: 'Créer ma première liste' }).click();
   await expect(page).toHaveURL(/\/listes\/[^/]+\?nouvelle=1$/);
-  // « Partage par lien », its switch off: nothing to unfold.
+  // A new list is a draft: the bar says so, and has its link already
+  // (docs/spec/v3/listes.md, ticket 106).
   const bar = page.getByTestId('share-bar');
-  const toggle = page.getByTestId('share-switch');
-  await expect(bar).toContainText('Partage par lien');
-  await expect(toggle).toHaveAttribute('aria-checked', 'false');
-  await expect(page.getByTestId('share-title')).toHaveCount(0);
+  await expect(page.getByTestId('share-stage')).toContainText('Brouillon');
+  await expect(page.getByTestId('share-stage')).toContainText(
+    'Toi seul la vois',
+  );
+  await expect(page.getByTestId('share-open')).toHaveText('Partager');
+  await expect(page.getByTestId('share-link')).toContainText('/l/');
   await expect(page.getByTestId('note-default')).toContainText(
     'Quelques idées pour t’éviter de chercher.',
   );
-
-  // An empty list cannot be shared: the switch stays off, and only then
-  // does the bar say what is missing.
-  await expect(page.getByTestId('share-missing')).toHaveCount(0);
-  await toggle.click();
-  await expect(page.getByTestId('share-missing')).toContainText(
-    'Donne un nom à l’événement.',
-  );
-  await expect(toggle).toHaveAttribute('aria-checked', 'false');
 
   // The name, written in place; then someone new, and myself.
   await page.getByTestId('list-title').fill('Noël 2026');
@@ -326,46 +320,40 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'false');
 
-  // Shared by its switch: the link unfolds, with the message all ready.
-  await expect(page.getByTestId('share-missing')).toHaveCount(0);
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+  // « Partager »: « Qui verra ta liste ? », and « Tout le monde, avec le
+  // lien » makes it public.
+  await page.getByTestId('share-open').click();
+  const sharing = page.getByRole('dialog', { name: 'Qui verra ta liste ?' });
+  await sharing.getByTestId('sharing-everyone').getByRole('switch').click();
+  await sharing.getByTestId('sharing-save').click();
+  await expect(sharing).toBeHidden();
+  await expect(page.getByTestId('share-stage')).toContainText('Publique');
+  await expect(page.getByTestId('share-open')).toHaveText('Modifier');
   const link = page.getByTestId('share-link');
   await expect(link).toContainText('/l/');
-  // « Copier » answers in place.
+  // « Copier le lien » answers in place.
   await page.context().grantPermissions(['clipboard-write']);
   await page.getByTestId('copy-link').click();
   await expect(page.getByTestId('copy-link')).toHaveText('Copié');
   await expect(bar.getByRole('link', { name: 'Par email' })).toHaveCount(0);
   const first = (await link.textContent()) ?? '';
-  // « Changer de lien », confirmed in place: the old one stops working.
-  await bar.getByRole('button', { name: 'Changer de lien' }).click();
-  await expect(page.getByTestId('share-renew')).toContainText(
-    'L’ancien lien ne marchera plus.',
-  );
-  await page
-    .getByTestId('share-renew')
-    .getByRole('button', { name: 'Changer', exact: true })
-    .click();
-  await expect(page.getByTestId('share-renew')).toHaveCount(0);
+  // « Changer de lien », confirmed first: the old one stops working.
+  await page.getByTestId('share-open').click();
+  await sharing.getByTestId('sharing-renew').click();
+  const renew = page.getByRole('dialog', { name: 'Changer de lien ?' });
+  await expect(renew).toContainText('L’ancien lien ne marchera plus');
+  await renew.getByRole('button', { name: 'Changer', exact: true }).click();
+  await expect(renew).toBeHidden();
+  await sharing.getByTestId('sharing-save').click();
   await expect(link).not.toHaveText(first);
   const second = (await link.textContent()) ?? '';
   const tokenOf = (shown: string) => shown.split('/l/')[1];
   expect((await page.request.get(`/api/l/${tokenOf(first)}`)).status()).toBe(
-    404,
+    403,
   );
-  // Turned off, sharing stops at once; « Annuler » gives the same link.
-  await toggle.click();
-  await expect(
-    page.getByText('Partage par lien arrêté', { exact: true }),
-  ).toBeVisible();
-  await expect(toggle).toHaveAttribute('aria-checked', 'false');
   expect((await page.request.get(`/api/l/${tokenOf(second)}`)).status()).toBe(
-    410,
+    200,
   );
-  await page.getByRole('button', { name: 'Annuler' }).click();
-  await expect(toggle).toHaveAttribute('aria-checked', 'true');
-  await expect(link).toHaveText(second);
 
   // In the tab.
   await page.goto('/listes');

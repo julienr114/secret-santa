@@ -121,9 +121,9 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
   await expect(
     page.getByRole('link', { name: 'Les événements passés' }),
   ).toBeVisible();
-  await expect(
-    page.getByRole('link', { name: 'Ce que j’offre ailleurs' }),
-  ).toBeVisible();
+  // « Ce que j'offre ailleurs » waits for a public list where I offer
+  // something (ticket 106).
+  await expect(page.getByTestId('home-elsewhere')).toHaveCount(0);
 
   // « Préparer » opens « Pour quelle occasion ? » already filled.
   await soon.getByRole('link', { name: 'Préparer' }).click();

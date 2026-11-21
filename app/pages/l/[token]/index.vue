@@ -9,6 +9,8 @@ import {
   useUntickMutation,
 } from '~/composables/queries/useLists';
 import { keys } from '~/composables/queries/keys';
+import { usePartyQuery } from '~/composables/queries/useParty';
+import { partyEmoji } from '#shared/utils/categories';
 import { LIST_EDITING } from '~/composables/useListEditing';
 
 // A list by its link (README 22.19, maquettes ListeVisiteur,
@@ -22,6 +24,18 @@ import { LIST_EDITING } from '~/composables/useListEditing';
 // there.
 const route = useRoute();
 const router = useRouter();
+// Opened from an event (V3ListeMembre): a pill with its emoji and its
+// name leads back to it.
+const depuis = computed(() =>
+  typeof route.query.depuis === 'string' ? route.query.depuis : '',
+);
+const fromParty = usePartyQuery(depuis, () => depuis.value !== '');
+const fromChip = computed(() => {
+  const party = fromParty.data.value?.party;
+  return party
+    ? { name: party.name, emoji: partyEmoji(party), to: `/e/${depuis.value}` }
+    : null;
+});
 const token = computed(() => String(route.params.token));
 const { t, locale } = useT();
 const toast = useMessages();
@@ -241,6 +255,15 @@ const writes = (person: PersonLine) =>
     :skeleton="['title', 'card', 'list']"
   >
     <template v-if="doc">
+      <NuxtLink
+        v-if="fromChip"
+        :to="fromChip.to"
+        class="flex h-9 items-center gap-1.5 self-start rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
+        data-testid="list-from-party"
+        ><UiEmoji v-if="fromChip.emoji" :emoji="fromChip.emoji" />{{
+          fromChip.name
+        }}</NuxtLink
+      >
       <!-- Logged in, and not one of those who hold the list: the mode,
            said before ticking. -->
       <ListsAnonymousBar v-if="doc.mode" :token="token" :mode="doc.mode" />

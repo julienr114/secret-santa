@@ -155,9 +155,6 @@ export default {
     },
   },
   share: {
-    onBy: 'Turned on by {name}',
-    offBy: 'Not turned on by {name} yet',
-    title: 'Sharing by link',
     message:
       '🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea:',
     and: 'and',
@@ -167,19 +164,74 @@ export default {
     personalize: 'Personalise the message',
     personalizeHelp: 'The link and the last sentence stay at the end.',
     personalizeLabel: 'The message',
-    copy: 'Copy',
-    send: 'Share',
     copyFailed: 'Could not copy here: select the link to copy it.',
     copied: 'Copied',
-    help: 'Anyone with the link sees the list and can tick.',
-    changeLink: 'Change the link',
-    changeConfirm: 'The old link will stop working.',
-    change: 'Change',
     changed: 'New link created',
-    stopped: 'Sharing by link stopped',
-    missing: {
-      title: 'Give the event a name.',
-      people: 'Add at least one person to the list.',
+  },
+  elsewhere: {
+    title: 'What I’m giving elsewhere',
+    gifts: { one: '{count} gift', other: '{count} gifts' },
+    lists: { one: '{count} list', other: '{count} lists' },
+    line: '{date} · you give: {gifts}',
+    lineNoDate: 'You give: {gifts}',
+  },
+  sharing: {
+    draft: 'Draft',
+    draftHint: 'Only you see it',
+    public: 'Public',
+    publicHint: 'Anyone with the link sees it',
+    giverHint: 'Only the one who drew you sees it',
+    members: {
+      one: '{count} member sees it',
+      other: '{count} members see it',
+    },
+    nobody: 'Nobody else sees it',
+    chosenBy: 'chosen by {name}',
+    share: 'Share',
+    edit: 'Edit',
+    copyLink: 'Copy the link',
+    title: 'Who will see your list?',
+    eventLine: {
+      one: '{category} · {count} member',
+      other: '{category} · {count} members',
+    },
+    otherOccasion: 'Another occasion',
+    everyone: 'Everyone, with the link',
+    copy: 'Copy',
+    message: 'The message that goes with the link',
+    changeLink: 'Change the link',
+    save: 'Save',
+    saved: 'Sharing saved',
+    renew: {
+      title: 'Change the link?',
+      body: 'The old link will stop working: you will have to send the new one. Those who already ticked a gift keep the list.',
+      submit: 'Change',
+    },
+    narrow: {
+      title: 'Take your list out of “{name}”?',
+      everyoneTitle: 'Remove “Everyone, with the link”?',
+      members: {
+        one: 'Its member will no longer see it.',
+        other: 'Its {count} members will no longer see it.',
+      },
+      claimersOf: {
+        one: '{count} of them ticked a gift and will no longer open the list. Their gift is still planned.',
+        other:
+          '{count} of them ticked a gift and will no longer open the list. Their gifts are still planned.',
+      },
+      claimers: {
+        one: '{count} person ticked a gift and will no longer open the list. Their gift is still planned.',
+        other:
+          '{count} people ticked a gift and will no longer open the list. Their gifts are still planned.',
+      },
+      submit: 'Remove',
+    },
+    closed: {
+      loginTitle: 'This list is not open to everyone',
+      loginBody: 'If it was shared with you, log in to open it.',
+      login: 'Log in',
+      title: 'This list is not shared with you',
+      body: 'Ask the person who sent you the link to open it to you.',
     },
   },
   live: {
@@ -455,7 +507,6 @@ export default {
     offListAction: 'I’m giving {name} something else',
     tick: 'I give it: {idea}',
     untick: 'I no longer give it: {idea}',
-    unshared: 'This list is no longer shared.',
     gone: 'This link no longer works. Ask whoever holds the list for the new one.',
   },
   claim: {

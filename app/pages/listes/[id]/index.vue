@@ -35,9 +35,10 @@ import type { DropPlace, Lifted } from '~/composables/useListDrag';
 
 // The document of a list, for the one who holds it (README 22.19,
 // maquettes ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
-// document, not a form: the bar « Partage par lien » on top, with its
-// switch (ListsShareBar); then its square tile, its name, its day, the word for the
-// family, the people and their ideas, « Ajouter quelqu'un ». Every text
+// document, not a form: the bar of its sharing on top, its stage and its
+// link (ListsShareBar, ticket 106); then its square tile, its name, its
+// day, the word for the family, the people and their ideas, « Ajouter
+// quelqu'un ». Every text
 // changes by touching it, and is saved as it is left: no « Enregistrer ».
 // Left without a name and without anyone, a draft is not kept.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -461,7 +462,6 @@ onBeforeRouteLeave((to) => {
         <ListsShareBar
           :doc="doc"
           :readonly="!doc.manages"
-          :title="title"
           :manager-name="
             doc.holders.find((holder) => holder.level === 'manage')?.name
           "

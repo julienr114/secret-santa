@@ -7,10 +7,14 @@ import { api, useApiMutation, useApiQuery } from './useApi';
 // leaving it.
 
 /** The page of a party, for a member or an organiser. */
-export const usePartyQuery = (slug: MaybeRefOrGetter<string>) =>
+export const usePartyQuery = (
+  slug: MaybeRefOrGetter<string>,
+  enabled: MaybeRefOrGetter<boolean> = true,
+) =>
   useApiQuery<PartyPage>(
     () => keys.party(toValue(slug)),
     () => `/api/parties/${toValue(slug)}`,
+    enabled,
   );
 
 export type PartyCandidates = {

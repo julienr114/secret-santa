@@ -3,20 +3,26 @@ import { randomListIcon } from '#server/utils/lists';
 import { useCreateListMutation } from '~/composables/queries/useLists';
 
 // « Nouvelle liste » (README 22.19, maquette ListeNouvelle): no form, no
-// « Créer » button. A draft is made at once, with an icon drawn at random,
-// and its document opens, the cursor in its name. Left without a name and
-// without anyone, the document deletes it.
+// « Créer » button. A draft is made at once and its document opens. From
+// an event (`?pour=`, ticket 106), it takes the event's name, date and
+// icon; otherwise an icon drawn at random, the cursor in its name, and
+// left without a name and without anyone, the document deletes it.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const create = useCreateListMutation();
 const failure = ref<unknown>(null);
+const route = useRoute();
+const party =
+  typeof route.query.pour === 'string' ? route.query.pour : undefined;
 onMounted(() =>
   create.mutate(
-    { icon: randomListIcon((n) => Math.floor(Math.random() * n)) },
+    { icon: randomListIcon((n) => Math.floor(Math.random() * n)), party },
     {
       onSuccess: ({ id }) =>
-        navigateTo(`/listes/${id}?nouvelle=1`, { replace: true }),
+        navigateTo(party ? `/listes/${id}` : `/listes/${id}?nouvelle=1`, {
+          replace: true,
+        }),
       onError: (error) => {
         failure.value = error;
       },

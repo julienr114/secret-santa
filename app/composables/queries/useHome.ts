@@ -9,10 +9,13 @@ import { useApiQuery } from './useApi';
 export type HomePartiesPayload = HomeData & { firstName: string | null };
 
 /** My parties, their Secret Santas and lists, and my people. */
-export const useHomePartiesQuery = () =>
+export const useHomePartiesQuery = (
+  enabled: MaybeRefOrGetter<boolean> = true,
+) =>
   useApiQuery<HomePartiesPayload>(
     () => keys.homeParties(),
     () => '/api/home',
+    enabled,
   );
 
 /**

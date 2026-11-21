@@ -5,8 +5,11 @@ import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 // A screen of a list opened by its link (README 22.19), with or without
 // an account: the light bar of the participants' screens (back, the name
 // of the app, the language, or the menu for someone logged in), then the
-// content, or the loading and unknown-link states; a list whose sharing
-// was stopped says so. The title stays neutral: messaging apps preview
+// content, or the loading state. A list that is not open to whoever
+// arrives says so without a word of the list (docs/spec/v3/listes.md,
+// « Arriver par le lien »): logged out, « Se connecter », which comes back
+// here (V3ListeFermee); logged in, ask whoever sent the link
+// (V3ListeFermeeConnecte). The title stays neutral: messaging apps preview
 // these links.
 defineProps<{
   back?: string;
@@ -18,6 +21,12 @@ const { t, setLocale } = useT();
 const { loggedIn } = useUserSession();
 const goBack = useGoBack();
 const NuxtLink = resolveComponent('NuxtLink');
+const route = useRoute();
+/** Which refusal: log in first, not shared, or anything else. */
+const refusal = (error: unknown) => {
+  const code = (error as { statusCode?: number }).statusCode;
+  return code === 401 ? 'login' : code === 403 ? 'closed' : 'gone';
+};
 useHead({ title: () => t('common.appName') });
 </script>
 
@@ -57,17 +66,39 @@ useHead({ title: () => t('common.appName') });
       class="flex w-full max-w-md grow flex-col gap-6 pt-4 pb-5"
     >
       <div
-        v-if="error"
+        v-if="error && refusal(error) !== 'gone'"
+        class="flex flex-col gap-4 pt-2"
+        :data-testid="`list-${refusal(error)}`"
+      >
+        <UiPageTitle>{{
+          refusal(error) === 'login'
+            ? t('lists.sharing.closed.loginTitle')
+            : t('lists.sharing.closed.title')
+        }}</UiPageTitle>
+        <p class="text-[15px] leading-[1.45] text-toned" role="alert">
+          {{
+            refusal(error) === 'login'
+              ? t('lists.sharing.closed.loginBody')
+              : t('lists.sharing.closed.body')
+          }}
+        </p>
+        <UButton
+          v-if="refusal(error) === 'login'"
+          block
+          size="xl"
+          class="h-13 justify-center text-[17px] font-bold"
+          :to="`/login?next=${encodeURIComponent(route.fullPath)}`"
+          :label="t('lists.sharing.closed.login')"
+        />
+      </div>
+      <div
+        v-else-if="error"
         class="flex flex-col items-center gap-3 py-12 text-center"
         data-testid="list-gone"
       >
         <UiEnvelope state="locked" />
         <p class="text-muted" role="alert">
-          {{
-            (error as { statusCode?: number }).statusCode === 410
-              ? t('lists.visitor.unshared')
-              : t('lists.visitor.gone')
-          }}
+          {{ t('lists.visitor.gone') }}
         </p>
       </div>
       <UiSkeleton

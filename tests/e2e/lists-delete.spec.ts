@@ -99,10 +99,11 @@ test('a list is deleted on purpose, after reading what is lost', async ({
   await expect(
     page.getByTestId('list-card').filter({ hasText: 'Noël à effacer' }),
   ).toHaveCount(0);
-  // Gone for everyone, its link with it.
+  // Gone for everyone, its link with it: the link answers as for a list
+  // not shared with you, saying nothing (ticket 106).
   expect((await api.get(`/api/lists/${id}`)).status()).toBe(404);
   expect((await hugo.request.get(`/api/lists/${id}`)).status()).toBe(404);
-  expect((await mamie.request.get(`/api/l/${token}`)).status()).toBe(404);
+  expect((await mamie.request.get(`/api/l/${token}`)).status()).toBe(403);
   // Léo stays among Camille's people.
   const family = await (await api.get('/api/family')).text();
   expect(family).toContain('Léo');

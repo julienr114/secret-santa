@@ -239,7 +239,7 @@ test('something else, and what the holder sees', async ({ page }) => {
   );
 });
 
-test('sharing stopped: the link says so, the list leaves the tab, the ticks stay', async ({
+test('no longer public: the link says nothing of the list, the ticks stay', async ({
   page,
   playwright,
   baseURL,
@@ -248,15 +248,29 @@ test('sharing stopped: the link says so, the list leaves the tab, the ticks stay
   const holder = await playwright.request.newContext({ baseURL });
   await apiLogin(holder, HOLDER);
   await ok(
-    await holder.post(`/api/lists/${state.listId}/share`, {
-      data: { ask: 'off' },
+    await holder.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], isPublic: false },
     }),
   );
+  // Logged out: log in first, if it was shared with you (V3ListeFermee).
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await expect(page.getByTestId('list-login')).toContainText(
+    'Cette liste n’est pas ouverte à tout le monde',
+  );
+  await expect(page.getByTestId('list-login')).not.toContainText('Noël 2026');
+  await expect(
+    page.getByRole('link', { name: 'Se connecter' }),
+  ).toHaveAttribute(
+    'href',
+    `/login?next=${encodeURIComponent(`/l/${state.token}`)}`,
+  );
+  // Logged in: not shared with you (V3ListeFermeeConnecte).
   await apiLogin(page.request, TONTON);
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
-  await expect(page.getByTestId('list-gone')).toContainText(
-    'Cette liste n’est plus partagée.',
+  await expect(page.getByTestId('list-closed')).toContainText(
+    'Cette liste n’est pas partagée avec toi',
   );
   await page.goto('/listes');
   await hydrated(page);
@@ -264,11 +278,12 @@ test('sharing stopped: the link says so, the list leaves the tab, the ticks stay
     page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }),
   ).toHaveCount(0);
 
-  // Shared again: the same link, and what was ticked is still there.
-  const again = await ok(
-    await holder.post(`/api/lists/${state.listId}/share`, { data: {} }),
+  // Public again: the same link, and what was ticked is still there.
+  await ok(
+    await holder.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], isPublic: true },
+    }),
   );
-  expect(again.token).toBe(state.token);
   await holder.dispose();
   await page.goto(`/l/${state.token}`);
   await hydrated(page);

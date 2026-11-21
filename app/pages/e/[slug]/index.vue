@@ -191,7 +191,7 @@ const onLeave = () =>
                 {{ t('party.lists.none') }}
               </p>
               <UButton
-                to="/listes/nouvelle"
+                :to="`/listes/nouvelle?pour=${slug}`"
                 color="neutral"
                 variant="outline"
                 icon="i-lucide-plus"
@@ -212,7 +212,10 @@ const onLeave = () =>
                 :title="listTitle(list)"
                 :to="list.to ?? undefined"
               />
-              <UiAddRow to="/listes/nouvelle" :label="t('party.lists.new')" />
+              <UiAddRow
+                :to="`/listes/nouvelle?pour=${slug}`"
+                :label="t('party.lists.new')"
+              />
             </ul>
           </section>
         </div>

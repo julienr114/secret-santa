@@ -4,6 +4,11 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+
+## Réponses
+
 ### Q-018 — Le compte créé « à la première chose écrite » depuis un lien personnel : peut-on ouvrir une session sur la foi du lien, et si un compte existe déjà ? (ticket 107)
 
 - **Pour** : Julien
@@ -13,9 +18,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. La première idée écrite crée le compte **et ouvre une session** sur ce compte neuf, sans rien d'autre à faire. Si un compte existe déjà pour l'adresse, pas de session : « Connecte-toi pour écrire ta liste » et un lien envoyé à l'adresse. Simple pour la personne ; quelqu'un à qui on a transféré le lien entre dans un compte neuf qui ne contient que ce que le lien montrait déjà.
   - B. La première idée crée le compte, mais la session ne s'ouvre qu'en confirmant l'adresse par le lien reçu (comme `V3ListeAdresse` le fait pour qui n'a pas d'adresse). Plus sûr, une étape de plus, et l'idée attend la confirmation.
 - **Ce que je ferais** : A. Le compte neuf ne donne accès à rien de plus que le lien lui-même, et le message de `V3ListeCompteCree` ne dit pas « confirme ton adresse ». Un compte qui existe déjà n'est jamais ouvert par un lien personnel.
-
-
-## Réponses
+- **Réponse de Julien (21 novembre 2026)** : A. La première idée écrite depuis un lien personnel crée le compte et ouvre sa session, avec le message de `V3ListeCompteCree`. Un compte qui existe déjà pour l'adresse n'est jamais ouvert par le lien : on lui envoie un lien de connexion.
 
 ### Q-019 — Les goûts d'un Secret Santa vont dans la fiche « Moi » : ils seront lus plus largement qu'avant (ticket 107)
 

@@ -3,6 +3,10 @@ import type { Dict } from '../../types';
 
 export default {
   myList: {
+    ideaLabel: 'A gift idea',
+    add: 'Add',
+    accountNote:
+      'An account will be created with your address {email}, to find your list again.',
     title: 'Your email address, to write your list',
     label: 'Your email address',
     submit: 'Confirm',

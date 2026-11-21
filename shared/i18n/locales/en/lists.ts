@@ -175,6 +175,11 @@ export default {
     line: '{date} · you give: {gifts}',
     lineNoDate: 'You give: {gifts}',
   },
+  accountCreated: {
+    title: 'It’s saved',
+    body: 'An account was created with your address, to find your list again.',
+    ok: 'Got it',
+  },
   sharing: {
     draft: 'Draft',
     draftHint: 'Only you see it',

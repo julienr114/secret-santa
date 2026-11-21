@@ -1,6 +1,10 @@
 // The participant's side: personal page, journal.
 export default {
   myList: {
+    ideaLabel: 'Une idée de cadeau',
+    add: 'Ajouter',
+    accountNote:
+      'Un compte sera créé avec ton adresse {email}, pour retrouver ta liste.',
     title: 'Ton adresse email, pour écrire ta liste',
     label: 'Ton adresse email',
     submit: 'Valider',

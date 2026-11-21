@@ -25,6 +25,8 @@ export type PersonalState = {
   linked: 'mine' | 'free' | 'other' | null;
   /** Their own address, offered for an account while logged out. */
   email: string | null;
+  /** That address already has an account (Q-018). */
+  emailHasAccount: boolean;
   firstName: string;
   language: Locale;
   avatar: Avatar;

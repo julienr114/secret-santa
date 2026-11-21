@@ -180,6 +180,11 @@ export default {
     line: 'Le {date} · tu offres : {gifts}',
     lineNoDate: 'Tu offres : {gifts}',
   },
+  accountCreated: {
+    title: 'C’est enregistré',
+    body: 'Un compte a été créé avec ton adresse, pour retrouver ta liste.',
+    ok: 'Compris',
+  },
   sharing: {
     draft: 'Brouillon',
     draftHint: 'Toi seul la vois',

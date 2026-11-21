@@ -11,7 +11,7 @@ import {
 import { dataKeyOf } from '#server/http/context';
 import { requirePersonalLink } from '#server/http/personal';
 import { optionalAccount } from '#server/http/auth';
-import { findAccountById } from '#server/database/accounts';
+import { findAccountByEmail, findAccountById } from '#server/database/accounts';
 import { avatarOf } from '#server/utils/avatars';
 import { ALERT_TYPES, unseenAlerts } from '#server/utils/audit';
 import { localeOf } from '#shared/i18n';
@@ -124,6 +124,12 @@ export default defineEventHandler(async (event) => {
     // Their own address, if the organiser gave one: to create an account
     // without typing it.
     email: linked === null ? (person.email ?? null) : null,
+    // Whether that address already has an account (Q-018): the first idea
+    // then asks to log in, never opens it.
+    emailHasAccount:
+      linked === null && person.email
+        ? Boolean(await findAccountByEmail(db, person.email))
+        : false,
     firstName: person.firstName,
     language: localeOf(person.language),
     avatar: avatarOf(person),

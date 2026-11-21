@@ -25,7 +25,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `V3ListeCompteCree` | Pas de compte créé à la première idée : en attendant Q-018, aller à sa liste depuis son Secret Santa demande une session, ouverte par le lien reçu à son adresse. | Seul, en attendant Q-018 |
+| `V3ListeCompteCree` | Aucune maquette ne dessine où s'écrit la première idée sans compte : une page « Ma liste de cadeaux » avec un champ, « Ajouter », et « Un compte sera créé avec ton adresse… ». Le message « C'est enregistré » s'ouvre ensuite sur la liste. Une adresse qui a déjà un compte passe par le lien de connexion. | Seul (le principe : Julien, Q-018) |
 | `V3ListeAdresse` | La phrase « Tes données, en clair » n'a pas de lien : la page n'existe pas encore (ticket 131). L'adresse donnée par l'organisateur est déjà remplie. | Seul |
 | `V3TirageVersListe` | « Ma liste de cadeaux » est la tuile de la page du tirage d'avant, avec le stade de ma liste (« Vue seulement par celui qui m'a tiré », « Pas encore écrite »…), et non une ligne sous la carte ; elle disparaît une fois le Secret Santa clôturé. | Seul |
 | `V3TirageVersListe` | La ligne de sa liste mène à une liste qu'elle tient et que je peux ouvrir : réservée à celui qui l'a tirée ou à tous les membres dans cet événement, ou publique ; la plus récemment modifiée. Sans compte, ses pistes d'avant la V3 restent, en lecture seule. | Seul |

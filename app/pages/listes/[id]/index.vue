@@ -76,6 +76,15 @@ onMounted(async () => {
   }
 });
 
+// The account just made by the first idea (Q-018, V3ListeCompteCree):
+// said once, then gone from the address.
+const accountMade = ref(route.query.compte === '1');
+const onAccountSeen = () => {
+  accountMade.value = false;
+  const { compte: _seen, ...rest } = route.query;
+  void navigateTo({ query: rest }, { replace: true });
+};
+
 // The day.
 const dateOpen = ref(false);
 const dateLine = computed(() =>
@@ -706,5 +715,22 @@ onBeforeRouteLeave((to) => {
       :idea="joining.idea"
       :for-name="joining.forName"
     />
+    <UiSheet
+      :open="accountMade"
+      :title="t('lists.accountCreated.title')"
+      :description="t('lists.accountCreated.body')"
+      @update:open="(open) => !open && onAccountSeen()"
+    >
+      <template #footer>
+        <UButton
+          block
+          size="xl"
+          class="h-13 justify-center text-[17px] font-bold"
+          :label="t('lists.accountCreated.ok')"
+          data-testid="account-created-ok"
+          @click="onAccountSeen"
+        />
+      </template>
+    </UiSheet>
   </AdminScreen>
 </template>

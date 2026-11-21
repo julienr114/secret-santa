@@ -181,6 +181,11 @@ export default {
     line: 'Am {date} · du schenkst: {gifts}',
     lineNoDate: 'Du schenkst: {gifts}',
   },
+  accountCreated: {
+    title: 'Gespeichert',
+    body: 'Mit deiner Adresse wurde ein Konto erstellt, damit du deine Liste wiederfindest.',
+    ok: 'Verstanden',
+  },
   sharing: {
     draft: 'Entwurf',
     draftHint: 'Nur du siehst sie',

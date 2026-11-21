@@ -487,3 +487,84 @@ UPDATE participations SET gift_list_id = 'l3' WHERE id = 'pa2';
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });
+
+describe('the gift hints become the list (ticket 107)', () => {
+  const HINTS = '0037_v3_hints_to_lists.sql';
+  const db = v2();
+  // Camille, with an account, left a portrait and two ideas in « Les
+  // enfants 2026 », still being prepared; Inès, without one, an idea in
+  // « Noël 2026 ».
+  db.exec(`
+INSERT INTO participations (id, edition_id, person_id, token_hash, token_enc, token_iv) VALUES
+  ('pa5', 'e3', 'p1', 'h5', 'x', 'x');
+INSERT INTO gift_portraits (participation_id, useful_or_surprising, lately, updated_at) VALUES
+  ('pa5', 'first', 'La course à pied', '${NOW}');
+INSERT INTO wishes (id, participation_id, position, label, url, created_at) VALUES
+  ('w1', 'pa5', 0, 'Une lampe de lecture', NULL, '${NOW}'),
+  ('w2', 'pa5', 1, 'Des épices', 'https://epices.example', '${NOW}'),
+  ('w3', 'pa2', 0, 'Un livre', NULL, '${NOW}');
+`);
+  const ideasBefore = all(db, 'SELECT label FROM wishes ORDER BY id');
+  files
+    .filter((file) => file >= V3 && file <= HINTS)
+    .forEach((file) => apply(db, file));
+
+  it('puts the portrait on the « Moi » card of the account', () => {
+    const card = one(
+      db,
+      "SELECT answers, texts FROM family_members WHERE account_id = 'a1' AND is_self = 1",
+    );
+    expect(JSON.parse(String(card.answers)).usefulOrSurprising).toBe('first');
+    expect(JSON.parse(String(card.texts)).lately).toBe('La course à pied');
+  });
+
+  it('puts the ideas on a list kept for the one who drew, in the draw’s event', () => {
+    const [list] = all(
+      db,
+      "SELECT l.id, l.title, l.party_id FROM gift_lists l JOIN participations p ON p.gift_list_id = l.id WHERE p.id = 'pa5'",
+    );
+    expect(list).toMatchObject({ title: 'Famille', party_id: 'g1' });
+    expect(
+      all(
+        db,
+        'SELECT party_id AS party, visibility FROM gift_list_parties WHERE list_id = ?',
+        String(list?.id),
+      ),
+    ).toEqual([{ party: 'g1', visibility: 'giver' }]);
+    expect(
+      all(
+        db,
+        'SELECT text, url FROM gift_list_ideas WHERE list_id = ? ORDER BY position',
+        String(list?.id),
+      ),
+    ).toEqual([
+      { text: 'Une lampe de lecture', url: null },
+      { text: 'Des épices', url: 'https://epices.example' },
+    ]);
+    // Nobody else sees it: not public, in no event for all its members.
+    expect(
+      one(
+        db,
+        'SELECT shared_at AS s FROM gift_lists WHERE id = ?',
+        String(list?.id),
+      ).s,
+    ).toBeNull();
+  });
+
+  it('creates nothing for a person without an account; the hints stay', () => {
+    expect(all(db, 'SELECT label FROM wishes ORDER BY id')).toEqual(
+      ideasBefore,
+    );
+    expect(
+      one(db, "SELECT gift_list_id AS l FROM participations WHERE id = 'pa2'")
+        .l,
+    ).toBeNull();
+  });
+
+  it('leaves no foreign key broken, nor its working tables', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+    expect(
+      all(db, "SELECT name FROM sqlite_master WHERE name LIKE '_v3_hint%'"),
+    ).toEqual([]);
+  });
+});

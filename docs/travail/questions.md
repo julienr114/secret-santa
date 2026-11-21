@@ -14,6 +14,17 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. La première idée crée le compte, mais la session ne s'ouvre qu'en confirmant l'adresse par le lien reçu (comme `V3ListeAdresse` le fait pour qui n'a pas d'adresse). Plus sûr, une étape de plus, et l'idée attend la confirmation.
 - **Ce que je ferais** : A. Le compte neuf ne donne accès à rien de plus que le lien lui-même, et le message de `V3ListeCompteCree` ne dit pas « confirme ton adresse ». Un compte qui existe déjà n'est jamais ouvert par un lien personnel.
 
+### Q-019 — Les goûts d'un Secret Santa vont dans la fiche « Moi » : ils seront lus plus largement qu'avant (ticket 107)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien dans le code ; la migration `0037_v3_hints_to_lists` est écrite comme la spec le dit, appliquée en local seulement. La réponse compte avant de la publier.
+- **Ce qu'on a trouvé** : `docs/spec/v3/migration.md`, « Les pistes de cadeaux » : « `giftPortraits` va dans la fiche « Moi » ». Or les goûts de la fiche « Moi » s'affichent sur chaque liste où la personne figure (« ses goûts », `PersonTastes`), y compris une liste publique. Aujourd'hui, ce portrait n'est lu que par celui qui a tiré la personne. Le critère du ticket (« personne ne voit une idée qu'il ne voyait pas avant ») parle des idées, pas des goûts.
+- **Les choix** :
+  - A. Comme la spec : le portrait remplit la fiche « Moi » (seulement si elle est vide), et se lit partout où sont lus ses goûts.
+  - B. Ne rien migrer des goûts : celui qui a tiré lit encore l'ancien portrait de cette année, en lecture seule ; la fiche « Moi » se remplit à la main.
+  - C. Migrer, mais prévenir la personne à sa prochaine visite (« Tes goûts de Secret Santa sont maintenant sur ta fiche »).
+- **Ce que je ferais** : B, l'application se veut exemplaire sur les données : on ne publie pas plus largement ce que quelqu'un a écrit pour une seule personne. La migration ne déplacerait alors que les idées, qui restent réservées à celui qui a tiré.
+
 ## Réponses
 
 Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN.md`, section 6.

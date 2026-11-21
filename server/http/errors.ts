@@ -23,6 +23,7 @@ const STATUS_BY_REASON: Record<string, number> = {
   result_not_seen: 409,
   email_failed: 502,
   secret_santa_limit_reached: 403,
+  secret_santa_paused: 403,
   too_many_members: 409,
   cannot_disable_self: 409,
   session_current: 409,

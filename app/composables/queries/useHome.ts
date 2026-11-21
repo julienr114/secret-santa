@@ -15,8 +15,12 @@ export const useHomePartiesQuery = () =>
     () => '/api/home',
   );
 
-/** What « Créer › Un Secret Santa » shows: my parties, or my limit. */
+/**
+ * What « Créer › Un Secret Santa » shows: my parties, my limit, or the
+ * pause of new Secret Santa.
+ */
 export type NewSecretSantaPayload = {
+  paused: boolean;
   limitReached: boolean;
   parties: OrganisedParty[];
   secretSantas: Awaited<ReturnType<typeof listOrganisedSecretSantas>>;

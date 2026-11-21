@@ -15,7 +15,8 @@ import { usePartyQuery } from '~/composables/queries/useParty';
 // champs »). The values start from the party and from the previous
 // Secret Santa. Below, who is taken over, then « Créer le Secret Santa »;
 // the participants are adjusted on the next screen. An account at its
-// limit is sent to the screen of the limit.
+// limit is sent to the screen of the limit, anyone to the screen of the
+// pause while new Secret Santa are paused.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const { t, tk, locale } = useT();
@@ -51,11 +52,14 @@ useHead({
 });
 const screen = computed(() => ({ back: `/f/${slug.value}` }));
 
-// At the limit, nothing to fill: its own screen says why.
+// Paused, or at the limit, nothing to fill: its own screen says why.
 watch(
-  () => limit.data.value?.limitReached,
-  (reached) => {
-    if (reached) navigateTo('/secret-santa/limite', { replace: true });
+  () => limit.data.value,
+  (data) => {
+    if (data?.paused) navigateTo('/secret-santa/pause', { replace: true });
+    else if (data?.limitReached) {
+      navigateTo('/secret-santa/limite', { replace: true });
+    }
   },
   { immediate: true },
 );

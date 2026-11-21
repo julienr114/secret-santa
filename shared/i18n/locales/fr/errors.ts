@@ -94,6 +94,8 @@ export default {
     'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',
   secret_santa_limit_reached:
     'Tu organises déjà 3 Secret Santa : c’est le maximum pour un compte.',
+  secret_santa_paused:
+    'Les nouveaux Secret Santa sont en pause. Ceux qui existent continuent.',
   too_many_members: 'La fête est complète : 30 membres, c’est le maximum.',
   cannot_disable_self: 'Tu ne peux pas désactiver ton propre compte.',
   account_not_found:

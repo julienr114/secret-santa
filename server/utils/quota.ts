@@ -35,14 +35,22 @@ export const remainingSecretSantas = (account: QuotaAccount): number =>
     : Math.max(0, account.secretSantaLimit - account.organisedCount);
 
 /**
- * Whether the account may organise one more Secret Santa now.
+ * Whether the account may organise one more Secret Santa now. While the
+ * super-admin has paused new Secret Santa, nobody may, a super-admin
+ * neither: the switch says « les nouveaux ».
  * @param account - Its flag, limit and Secret Santa in progress.
- * @returns Ok, or `secret_santa_limit_reached`.
+ * @param paused - Whether new Secret Santa are paused.
+ * @returns Ok, `secret_santa_paused` or `secret_santa_limit_reached`.
  */
-export const canOrganiseSecretSanta = (account: QuotaAccount): Result<true> =>
-  remainingSecretSantas(account) > 0
+export const canOrganiseSecretSanta = (
+  account: QuotaAccount,
+  paused = false,
+): Result<true> => {
+  if (paused) return fail('secret_santa_paused');
+  return remainingSecretSantas(account) > 0
     ? ok(true)
     : fail('secret_santa_limit_reached');
+};
 
 /**
  * A super-admin may disable any account but their own: a slip would lock

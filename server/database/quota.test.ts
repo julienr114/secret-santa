@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { testDb } from '../../tests/d1';
-import { listOrganisedSecretSantas, quotaAccountOf } from './quota';
+import { appStats, listOrganisedSecretSantas, quotaAccountOf } from './quota';
 
 // The limit of 3 Secret Santa on a real database (ticket 105): what it
 // counts is every Secret Santa not closed in a party the account
@@ -75,5 +75,25 @@ describe('the Secret Santa an account organises', () => {
         partySlug: 'amis',
       },
     ]);
+  });
+});
+
+describe('what the dashboard counts', () => {
+  it('counts the parties, the Secret Santa in progress, the full parties', async () => {
+    const { db, sqlite } = testDb();
+    sqlite.exec(SETUP);
+    // 30 active members in « Famille », 29 and one gone in « Amis ».
+    sqlite.exec(`
+      WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < 30)
+      INSERT INTO persons (id, party_id, first_name, active, created_at)
+      SELECT 'p' || i, 'p', 'P' || i, 1, '${NOW}' FROM n
+      UNION ALL
+      SELECT 'q' || i, 'q', 'Q' || i, i < 30, '${NOW}' FROM n;
+    `);
+    expect(await appStats(db)).toEqual({
+      groups: 2,
+      active: 3,
+      fullParties: 1,
+    });
   });
 });

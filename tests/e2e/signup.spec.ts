@@ -158,20 +158,20 @@ test('they create their group and organise up to 3 Secret Santa', async ({
   await expect(page.getByTestId('home-party')).toContainText(GROUP.name);
 });
 
-test('the super-admin sees every group, sets a limit and disables an account', async ({
+test('the super-admin sees every party, sets a limit and disables an account', async ({
   page,
 }) => {
   await loginAsSuper(page, SUPER);
   await page.goto('/admin/groupes');
   await hydrated(page);
-  await expect(heading(page)).toHaveText('Groupes');
+  await expect(heading(page)).toHaveText('Fêtes');
   await expect(page.getByText(GROUP.name)).toBeVisible();
   // Each line: who organises it, its members, where its draw stands.
   await expect(
     page.getByTestId('groups').getByRole('link', { name: GROUP.name }),
   ).toContainText('Nina · 1 membre · à préparer');
   // The search finds a group by its organiser too.
-  await page.getByLabel('Chercher un groupe ou un organisateur').fill('Nina');
+  await page.getByLabel('Chercher une fête ou un organisateur').fill('Nina');
   await expect(page.getByTestId('groups')).toContainText(GROUP.name);
 
   // The identifier comes from the name; a name used twice is numbered.
@@ -182,12 +182,16 @@ test('the super-admin sees every group, sets a limit and disables an account', a
 
   await page.goto('/admin/comptes');
   await hydrated(page);
-  // A row opens the account's page: its groups with their link, its
-  // limit changed at once; its profile is read, not edited.
+  // At its limit, the account says so on the list (V3AdminComptes).
+  await expect(
+    page.getByTestId('accounts').getByRole('link', { name: /Nina/ }),
+  ).toContainText('à sa limite de Secret Santa');
+  // A row opens the account's page (V3AdminCompte): its limit changed at
+  // once, its parties with their link; its profile is read, not edited.
   await page.getByTestId('accounts').getByText('Nina').click();
-  await expect(page.getByRole('link', { name: GROUP.name })).toContainText(
-    'Organise · 1 membre · à préparer',
-  );
+  await expect(
+    page.getByTestId('account-parties').getByRole('link', { name: GROUP.name }),
+  ).toContainText('Organise · 1 membre · Secret Santa à préparer');
   await expect(page.getByTestId('quota')).toHaveText('3');
   await expect(page.getByText('3 en cours · il lui en reste 0')).toBeVisible();
   await page.getByRole('button', { name: 'Un Secret Santa de plus' }).click();
@@ -216,9 +220,17 @@ test('the super-admin sees every group, sets a limit and disables an account', a
   });
   expect(self.status()).toBe(409);
 
-  // Disabling closes the sessions at once and stops the login links.
+  // At 4, a fourth Secret Santa is allowed, and a fifth refused.
   const victim = await page.context().browser()!.newContext();
   await apiLogin(victim.request, NEWCOMER);
+  const another = (label: string) =>
+    victim.request.post(`/api/admin/${GROUP.slug}/editions`, {
+      data: { label, year: 2026, eventDate: '2026-12-25' },
+    });
+  expect((await another('Les voisins')).status()).toBe(201);
+  expect((await another('Un de trop')).status()).toBe(403);
+
+  // Disabling closes the sessions at once and stops the login links.
   expect((await victim.request.get('/api/auth/home')).status()).toBe(200);
   const disabled = await page.request.patch(
     `/api/admin/accounts/${idOf(NEWCOMER)}`,
@@ -240,4 +252,85 @@ test('the super-admin sees every group, sets a limit and disables an account', a
   await expect(heading(page)).toHaveText('Comptes désactivés');
   await page.getByTestId('accounts').getByText('Nina').click();
   await expect(page.getByText('Réactiver le compte')).toBeVisible();
+});
+
+test('the super-admin pauses new Secret Santa; lists may still be created', async ({
+  page,
+  browser,
+}) => {
+  await loginAsSuper(page, SUPER);
+  await page.goto('/admin');
+  await hydrated(page);
+  // What to watch: numbers, nothing waits (V3Admin).
+  await expect(page.getByTestId('watch-at-limit')).toContainText(
+    'Comptes à leur limite de Secret Santa',
+  );
+  await expect(page.getByTestId('watch-full-parties')).toContainText(
+    'Fêtes à 30 membres',
+  );
+  const pause = page
+    .getByTestId('pause-secret-santas')
+    .getByRole('switch', { name: /Suspendre les nouveaux Secret Santa/ });
+  await expect(pause).not.toBeChecked();
+  const saved = page.waitForResponse(
+    (r) => r.url().endsWith('/api/admin/switches') && r.ok(),
+  );
+  await pause.click();
+  await saved;
+  await expect(pause).toBeChecked();
+  const other = await browser.newContext();
+  try {
+    const organiser = await other.newPage();
+    await apiLogin(organiser.request, 'en-pause@example.com');
+    const party = await organiser.request.post('/api/admin/groups', {
+      data: { name: 'Fête en pause' },
+    });
+    expect(party.ok()).toBe(true);
+    const { slug } = (await party.json()).group;
+    // The server refuses a new Secret Santa, to a super-admin too.
+    const refused = await organiser.request.post(
+      `/api/admin/${slug}/editions`,
+      { data: { label: 'Noël', year: 2026, eventDate: '2026-12-25' } },
+    );
+    expect(refused.status()).toBe(403);
+    expect((await refused.json()).statusMessage).toBe('secret_santa_paused');
+    const superRefused = await page.request.post(
+      `/api/admin/${slug}/editions`,
+      { data: { label: 'Noël', year: 2026, eventDate: '2026-12-25' } },
+    );
+    expect(superRefused.status()).toBe(403);
+    // « Créer › Un Secret Santa » shows the pause (V3TiragePause).
+    await organiser.goto('/');
+    await hydrated(organiser);
+    await organiser
+      .getByTestId('tab-bar')
+      .getByRole('button', { name: 'Créer' })
+      .click();
+    await organiser.getByTestId('create-secret-santa').click();
+    await expect(organiser).toHaveURL(/\/secret-santa\/pause$/);
+    await expect(heading(organiser)).toHaveText(
+      'Les nouveaux Secret Santa sont en pause',
+    );
+    await expect(
+      organiser.getByText(
+        'Ceux qui existent continuent. Reviens dans quelques jours.',
+      ),
+    ).toBeVisible();
+    // The form of a new one sends there too.
+    await organiser.goto(`/admin/${slug}/editions/nouvelle`);
+    await expect(organiser).toHaveURL(/\/secret-santa\/pause$/);
+    // A list may still be created.
+    const list = await organiser.request.post('/api/lists', {
+      data: { icon: { emoji: '🎄', color: 'pine' } },
+    });
+    expect(list.ok()).toBe(true);
+  } finally {
+    await other.close();
+    await state.admin?.patch('/api/admin/switches', {
+      data: { newSecretSantas: false },
+    });
+  }
+  await page.reload();
+  await hydrated(page);
+  await expect(pause).not.toBeChecked();
 });

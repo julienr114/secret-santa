@@ -12,11 +12,11 @@ import {
 import { formatDay } from '~/utils/labels';
 
 // Super-admin only: one account, read and not edited (its profile is its
-// own, decided on 16 November 2026). Who it is and its last visit; its
-// groups: how many Secret Santa it may organise at once, changed with
-// « moins » and « plus » and shown at once (docs/spec/v3/administration.md),
-// the groups it organises (members, draw) and those it takes part in;
-// then its access.
+// own, decided on 16 November 2026), V3AdminCompte. Who it is and its last
+// visit; how many Secret Santa it may organise at once, changed with
+// « moins » and « plus » and shown at once (docs/spec/v3/administration.md);
+// its parties, with its role, and for those it organises their members
+// and their Secret Santa; then its access.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
@@ -91,19 +91,21 @@ const quotaLine = computed(() => {
     .join(' · ');
 });
 
-const { membersPart, drawPart } = useGroupLine();
+const { membersPart } = useGroupLine();
 /**
- * The line under one of its groups.
- * @param group - The group.
- * @returns « Organise · 5 membres · tirage fait », or « Participe ».
+ * The line under one of its parties.
+ * @param group - The party.
+ * @returns « Organise · 5 membres · Secret Santa tiré », or « Membre ».
  */
 const groupLine = (group: AdminAccountGroup) =>
   group.role === 'organizer'
     ? [
         t('auth.admin.role.organizer'),
         membersPart(group.members),
-        drawPart(group.draw),
-      ].join(' · ')
+        group.draw && t(`auth.admin.santa.${group.draw.status}`),
+      ]
+        .filter(Boolean)
+        .join(' · ')
     : t('auth.admin.role.participant');
 // Disabling asks for a second tap; restoring does not.
 const confirming = ref(false);
@@ -159,7 +161,7 @@ const setDisabled = (disabled: boolean) =>
           </div>
         </div>
 
-        <UiList :title="t('auth.admin.groupsShort')">
+        <UiList :title="t('auth.admin.secretSantaSection')">
           <UiListItem
             :title="t('auth.admin.mayOrganise', { count: quota })"
             :subtitle="quotaLine"
@@ -197,6 +199,13 @@ const setDisabled = (disabled: boolean) =>
               </div>
             </template>
           </UiListItem>
+        </UiList>
+
+        <UiList
+          v-if="account.groups.length > 0"
+          :title="t('auth.admin.groupsShort')"
+          data-testid="account-parties"
+        >
           <UiListItem
             v-for="group in account.groups"
             :key="group.slug"

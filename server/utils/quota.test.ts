@@ -45,6 +45,16 @@ describe('canOrganiseSecretSanta', () => {
     ).toBe('secret_santa_limit_reached');
   });
 
+  it('refuses everyone while new Secret Santa are paused', () => {
+    expect(failureOf(canOrganiseSecretSanta(member, true)).reason).toBe(
+      'secret_santa_paused',
+    );
+    expect(
+      failureOf(canOrganiseSecretSanta({ ...member, isSuperAdmin: true }, true))
+        .reason,
+    ).toBe('secret_santa_paused');
+  });
+
   it('always allows a super-admin', () => {
     expect(
       canOrganiseSecretSanta({

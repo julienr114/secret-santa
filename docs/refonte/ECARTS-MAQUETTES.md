@@ -21,6 +21,15 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
+## L'administration (V3, ticket 109)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3Admin` | Seules les parties du ticket 109 sont là : « À traiter et à surveiller » n'a que « Comptes à leur limite de Secret Santa » et « Fêtes à 30 membres » (sans « Signalements » ni les autres chiffres), « En cas d'urgence » que « Suspendre les nouveaux Secret Santa ». Le haut reste celui d'avant (la carte « Capacité », puis « Tout voir » : Comptes, Fêtes, Guide de style) jusqu'au ticket 127 ; pas de section « Outils » ni de note sous les interrupteurs. L'onglet « Admin » n'a pas de pastille : il n'y a pas encore de signalements. | Seul |
+| `V3Admin` | « Comptes à leur limite » mène aux comptes, « Fêtes à 30 membres » aux fêtes, sans filtre : la maquette ne dit pas où ils mènent. Un compte désactivé ne compte pas parmi ceux à leur limite. | Seul |
+| `V3TiragePause` | Pendant la pause, un super-admin ne peut pas non plus créer de Secret Santa : l'interrupteur dit « les nouveaux ». Le formulaire d'un nouveau Secret Santa mène aussi à cet écran. | Seul |
+| `V3AdminCompte` | Le rôle dit « Organise » et non « Organisatrice » (l'application ne connaît pas le genre). | Seul |
+
 ## Le Secret Santa (V3, ticket 105)
 
 | Maquette | Ce que fait le code | Décidé par |

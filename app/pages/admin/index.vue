@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { APP_GROUPS_COMFORT } from '#server/utils/quota';
-import { useAdminAccountsQuery } from '~/composables/queries/useAdmin';
+import { APP_GROUPS_COMFORT, remainingSecretSantas } from '#server/utils/quota';
+import {
+  useAdminAccountsQuery,
+  useSwitchMutation,
+} from '~/composables/queries/useAdmin';
 
-// The administration, for super-admins only: how full the app is, then
-// the accounts, the groups and the style guide. There is no request to
-// answer any more (ticket 105).
+// The administration, for super-admins only (docs/spec/v3/administration.md,
+// V3Admin): how full the app is, the accounts, the parties and the style
+// guide; then what to watch, numbers and not badges since nothing waits
+// (the accounts at their limit of Secret Santa, the parties at 30
+// members); then « Suspendre les nouveaux Secret Santa ». No request to
+// answer any more. The rest of V3Admin comes with ticket 127.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 useHead({ title: () => `${t('auth.admin.title')} — ${t('common.appName')}` });
@@ -14,8 +20,44 @@ const query = useAdminAccountsQuery();
 const accounts = computed(() => query.data.value?.accounts ?? []);
 const stats = computed(
   () =>
-    query.data.value?.stats ?? { groups: 0, active: 0, load: 'ok' as const },
+    query.data.value?.stats ?? {
+      groups: 0,
+      active: 0,
+      fullParties: 0,
+      load: 'ok' as const,
+    },
 );
+const atLimit = computed(
+  () =>
+    accounts.value.filter(
+      (account) => !account.disabled && remainingSecretSantas(account) === 0,
+    ).length,
+);
+const errorMessage = useErrorMessage();
+const toast = useMessages();
+const switches = useSwitchMutation();
+/** The switch as just tapped, until the server has it. */
+const pausing = ref<boolean | null>(null);
+const paused = computed(
+  () => pausing.value ?? query.data.value?.switches.newSecretSantas ?? false,
+);
+/**
+ * Pauses new Secret Santa, or lets them be created again.
+ * @param on - True to pause them.
+ * @returns Nothing: errors are told in a toast.
+ */
+const onPause = (on: boolean) => {
+  pausing.value = on;
+  switches.mutate(
+    { newSecretSantas: on },
+    {
+      onSettled: () => {
+        pausing.value = null;
+      },
+      onError: (error) => toast.failed(errorMessage(error)),
+    },
+  );
+};
 const disabledCount = computed(
   () => accounts.value.filter((account) => account.disabled).length,
 );
@@ -87,6 +129,32 @@ const groupsLine = computed(() =>
           icon-tone="neutral"
           :title="t('auth.admin.styleGuide')"
           :subtitle="t('auth.admin.styleGuideHint')"
+        />
+      </UiList>
+
+      <UiList :title="t('auth.admin.watch')" data-testid="watch">
+        <UiListItem
+          to="/admin/comptes"
+          :title="t('auth.admin.atLimitCount')"
+          :value="String(atLimit)"
+          data-testid="watch-at-limit"
+        />
+        <UiListItem
+          to="/admin/groupes"
+          :title="t('auth.admin.fullParties')"
+          :value="String(stats.fullParties)"
+          data-testid="watch-full-parties"
+        />
+      </UiList>
+
+      <UiList :title="t('auth.admin.emergency')">
+        <UiListItem
+          :checked="paused"
+          :title="t('auth.admin.pauseSecretSantas')"
+          :subtitle="t('auth.admin.pauseSecretSantasHelp')"
+          :busy="switches.isPending.value"
+          data-testid="pause-secret-santas"
+          @update:checked="(on) => onPause(Boolean(on))"
         />
       </UiList>
     </AdminQueryState>

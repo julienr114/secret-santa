@@ -402,6 +402,15 @@ export const accounts = sqliteTable('accounts', {
   disabledAt: text('disabled_at'),
 });
 
+// The super-admin's emergency switches (docs/spec/v3/administration.md,
+// « En cas d'urgence »), one row per switch once it has been touched: off
+// without a row. Only « Suspendre les nouveaux Secret Santa » for now.
+export const appSwitches = sqliteTable('app_switches', {
+  name: text('name', { enum: ['new_secret_santas'] }).primaryKey(),
+  on: integer('on', { mode: 'boolean' }).notNull().default(false),
+  updatedAt: text('updated_at').notNull(),
+});
+
 export const loginLinks = sqliteTable(
   'login_links',
   {

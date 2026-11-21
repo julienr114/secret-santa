@@ -35,6 +35,10 @@ export default {
     whichParty: 'La fête du Secret Santa',
     otherOccasion: 'Une autre occasion',
     already: 'déjà un Secret Santa cette année',
+    paused: {
+      title: 'Les nouveaux Secret Santa sont en pause',
+      text: 'Ceux qui existent continuent. Reviens dans quelques jours.',
+    },
     limit: {
       title: 'Tu organises déjà {count} Secret Santa',
       text: 'C’est le maximum pour un compte.',

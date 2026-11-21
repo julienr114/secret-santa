@@ -36,6 +36,10 @@ export default {
     whichParty: 'Das Fest des Wichtelns',
     otherOccasion: 'Ein anderer Anlass',
     already: 'dieses Jahr schon ein Wichteln',
+    paused: {
+      title: 'Neue Wichteln sind pausiert',
+      text: 'Die bestehenden laufen weiter. Schau in ein paar Tagen wieder vorbei.',
+    },
     limit: {
       title: 'Du organisierst schon {count} Wichteln',
       text: 'Mehr geht mit einem Konto nicht.',

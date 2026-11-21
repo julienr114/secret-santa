@@ -25,9 +25,9 @@ test('super-admin creates a group with its guardian', async ({ page }) => {
     .getByTestId('tab-bar')
     .getByRole('link', { name: 'Admin' })
     .click();
-  await page.getByRole('link', { name: /^Groupes/ }).click();
+  await page.getByRole('link', { name: /^Fêtes \d/ }).click();
   await page
-    .getByRole('link', { name: /^Créer un groupe pour quelqu’un/ })
+    .getByRole('link', { name: /^Créer une fête pour quelqu’un/ })
     .click();
   await expect(heading(page)).toHaveText('Nouveau groupe');
   await page.getByLabel('Nom du groupe').fill(GROUP.name);

@@ -13,6 +13,7 @@ import { listPeople } from '#server/database/people';
 import { findAccountById } from '#server/database/accounts';
 import { quotaAccountOf } from '#server/database/quota';
 import { recordEvent } from '#server/database/audit';
+import { isSwitchOn } from '#server/database/switches';
 import { requireGroupAccess } from '#server/http/auth';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
@@ -30,7 +31,8 @@ import { canOrganiseSecretSanta } from '#server/utils/quota';
 // first edition. Each gets a personal link right away. No request to
 // anyone: an account organises up to its limit of Secret Santa in progress
 // (3 by default, docs/spec/v3/secret-santa.md), and a party may have
-// several in the same year.
+// several in the same year. While the super-admin pauses new Secret
+// Santa, none is created (docs/spec/v3/administration.md).
 export default defineEventHandler(async (event) => {
   const { user, group, db } = await requireGroupAccess(event);
   const body = await validatedBody(event, editionInputSchema);
@@ -39,7 +41,12 @@ export default defineEventHandler(async (event) => {
   if (!account) {
     throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
-  unwrap(canOrganiseSecretSanta(await quotaAccountOf(db, account)));
+  unwrap(
+    canOrganiseSecretSanta(
+      await quotaAccountOf(db, account),
+      await isSwitchOn(db, 'new_secret_santas'),
+    ),
+  );
   const existing = await listEditions(db, group.id);
   const previous = previousEdition(existing, body.year);
   const previousIds = previous

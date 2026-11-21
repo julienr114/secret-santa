@@ -1,4 +1,4 @@
-import { and, asc, count, countDistinct, eq, ne } from 'drizzle-orm';
+import { and, asc, count, eq, ne } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
@@ -13,6 +13,7 @@ import { isGroup } from './groups';
 import { groupsByAccount, type AccountGroup } from '#server/utils/overview';
 import type { QuotaAccount } from '#server/utils/quota';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
+import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
 
 // The limit of Secret Santa per account (docs/spec/v3/modele.md).
 
@@ -144,12 +145,24 @@ export const listAdminAccounts = async (db: Db): Promise<AdminAccount[]> => {
   }));
 };
 
-/** How many groups the app holds, and how many have a draw in progress. */
+/**
+ * What the dashboard counts: the parties, the Secret Santa in progress,
+ * and the parties at 30 active members.
+ */
 export const appStats = async (db: Db) => {
   const [all] = await db.select({ n: count() }).from(parties).where(isGroup);
   const [active] = await db
-    .select({ n: countDistinct(secretSantas.partyId) })
+    .select({ n: count() })
     .from(secretSantas)
-    .where(ne(secretSantas.status, 'closed'));
-  return { groups: all?.n ?? 0, active: active?.n ?? 0 };
+    .where(inProgress);
+  const members = await db
+    .select({ n: count() })
+    .from(persons)
+    .where(eq(persons.active, true))
+    .groupBy(persons.partyId);
+  return {
+    groups: all?.n ?? 0,
+    active: active?.n ?? 0,
+    fullParties: members.filter((row) => row.n >= MAX_PARTY_MEMBERS).length,
+  };
 };

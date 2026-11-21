@@ -7,13 +7,17 @@ import { api, useApiMutation, useApiQuery } from './useApi';
 
 // The super-admin's pages: accounts and every group (README 22.2).
 
-/** How loaded the app is, to weigh a new group. */
+/** How loaded the app is, to weigh a new party. */
 export type AppStats = {
   groups: number;
-  /** Groups with a draw in progress. */
+  /** The Secret Santa in progress. */
   active: number;
+  /** The parties at 30 active members. */
+  fullParties: number;
   load: 'ok' | 'near' | 'over';
 };
+/** The emergency switches, on or off. */
+export type AppSwitches = { newSecretSantas: boolean };
 /** An account as the admin sees it; `me` marks the logged-in one. */
 /** A group of an account, with its members and its draw in progress. */
 export type AdminAccountGroup = AdminAccount['groups'][number] & GroupOverview;
@@ -24,11 +28,12 @@ export type AdminAccountRow = Omit<AdminAccount, 'groups'> & {
 /** A group of the app, with its members and its draw in progress. */
 export type AdminGroupRow = PublicGroup & GroupOverview;
 
-/** Every account, and how loaded the app is. */
+/** Every account, how loaded the app is, and the emergency switches. */
 export const useAdminAccountsQuery = () =>
   useApiQuery<{
     accounts: AdminAccountRow[];
     stats: AppStats;
+    switches: AppSwitches;
   }>(
     () => keys.adminAccounts(),
     () => '/api/admin/accounts',
@@ -51,6 +56,13 @@ export const useUpdateAccountMutation = () =>
     ({ id, ...body }) =>
       api(`/api/admin/accounts/${id}`, { method: 'PATCH', body }),
     () => [keys.adminAccounts()],
+  );
+
+/** Turns an emergency switch on or off. */
+export const useSwitchMutation = () =>
+  useApiMutation<{ ok: true }, AppSwitches>(
+    (body) => api('/api/admin/switches', { method: 'PATCH', body }),
+    () => [keys.adminAccounts(), keys.newSecretSanta()],
   );
 
 /** Every group of the app. */

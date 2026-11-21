@@ -9,8 +9,9 @@ import { useNewSecretSantaQuery } from '~/composables/queries/useHome';
 // « Un Secret Santa » turns the sheet into its own « Pour quelle
 // occasion ? » (V3TirageQuelleFete): one of the parties I organise, or
 // « Une autre occasion », which creates a party. At my limit, the screen
-// of the limit instead (V3TirageLimite); organising none yet, the
-// creation of a party straight away.
+// of the limit instead (V3TirageLimite), and while the super-admin pauses
+// new Secret Santa, the screen of the pause (V3TiragePause); organising
+// none yet, the creation of a party straight away.
 const open = defineModel<boolean>('open', { required: true });
 const { t, tk } = useT();
 const NEW_PARTY = '/f/nouvelle?pour=secret-santa';
@@ -42,12 +43,13 @@ const go = async (to: string) => {
   open.value = false;
   await navigateTo(to);
 };
-// Nothing to choose: at the limit, or without a party of mine.
+// Nothing to choose: paused, at the limit, or without a party of mine.
 watch(
   () => (step.value === 'occasion' ? query.data.value : undefined),
   async (data) => {
     if (!data) return;
-    if (data.limitReached) await go('/secret-santa/limite');
+    if (data.paused) await go('/secret-santa/pause');
+    else if (data.limitReached) await go('/secret-santa/limite');
     else if (data.parties.length === 0) await go(NEW_PARTY);
     else choice.value = data.parties[0]?.slug ?? OTHER;
   },

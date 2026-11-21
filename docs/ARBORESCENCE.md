@@ -19,12 +19,13 @@ flowchart LR
   accueil --> compte["Mon compte"]
   accueil --> passes["Tirages passés"]
   accueil --> limite["La limite de Secret Santa<br/><small>/secret-santa/limite</small>"]
+  accueil --> pause["Les nouveaux Secret Santa en pause<br/><small>/secret-santa/pause</small>"]
   accueil --> listes["Listes<br/><small>/listes</small>"]
   accueil --> nouveautes["Quoi de neuf<br/><small>/quoi-de-neuf</small>"]
 
   subgraph admin ["Administration (super-admin)"]
     administration["Administration<br/><small>/admin</small>"]
-    administration --> groupes["Tous les groupes"]
+    administration --> groupes["Toutes les fêtes"]
     groupes --> nouveauGroupe["Nouveau groupe"]
     administration --> comptes["Comptes"]
     comptes --> unCompte["Un compte"]
@@ -110,13 +111,14 @@ Décidée par Julien le 18 novembre 2026.
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/f/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/f/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/f/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite`. Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/f/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/f/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/f/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
 L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/f/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
+| Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
 | Connexion | `/login` | — | |
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
@@ -127,8 +129,8 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; 
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Administration | `/admin` | Accueil | |
-| Tous les groupes | `/admin/groupes` | Administration | |
+| Administration | `/admin` | Accueil | « Suspendre les nouveaux Secret Santa » |
+| Toutes les fêtes | `/admin/groupes` | Administration | |
 | Nouveau groupe | `/admin/groupes/nouveau` | Tous les groupes (super-admin), sinon Accueil | |
 | Comptes | `/admin/comptes` | Administration ; les comptes désactivés : Comptes | |
 | Un compte | `/admin/comptes/[id]` | Comptes | Limite de Secret Santa, désactivation |

@@ -6,8 +6,9 @@ import { usePersonalQuery } from '~/composables/queries/usePersonal';
 // « Ma liste de cadeaux », from my Secret Santa (ticket 107): logged in
 // with my address, my list for the event opens at once, kept for the one
 // who drew me (V3ListeQuiSecret). With the address the organiser gave and
-// no account yet, the first idea makes the account, opens its session and
-// the list (Q-018, V3ListeCompteCree). Otherwise the address first
+// no account yet, the first thing written, an idea or a taste (« En ce
+// moment »), makes the account, opens its session and the list (Q-018,
+// V3ListeCompteCree). Otherwise the address first
 // (V3ListeAdresse): one to type, or the known one when it already has an
 // account, confirmed by the link it receives, which brings back here.
 const route = useRoute();
@@ -55,6 +56,11 @@ const firstIdea = computed(
   () => Boolean(me.value?.email) && !me.value?.emailHasAccount,
 );
 const idea = ref('');
+/** « En ce moment », a taste of the « Moi » card: it counts too. */
+const lately = ref('');
+const written = computed(() =>
+  Boolean(idea.value.trim() || lately.value.trim()),
+);
 const { fetch: refreshSession } = useUserSession();
 /**
  * Writes the first idea: the account, its session and the list are made,
@@ -66,7 +72,10 @@ const onFirstIdea = async () => {
   try {
     const { id } = await api<{ id: string }>(
       `/api/p/${token.value}/first-idea`,
-      { method: 'POST', body: { text: idea.value.trim() } },
+      {
+        method: 'POST',
+        body: { text: idea.value.trim(), lately: lately.value.trim() },
+      },
     );
     await refreshSession();
     await navigateTo(`/listes/${id}?compte=1`, { replace: true });
@@ -112,11 +121,19 @@ const onSend = () =>
         :maxlength="200"
         :label="t('participant.myList.ideaLabel')"
       />
+      <UiTextField
+        id="list-first-taste"
+        v-model="lately"
+        multiline
+        :maxlength="300"
+        :label="t('hints.texts.lately.title')"
+        :placeholder="t('hints.texts.lately.placeholder')"
+      />
       <UButton
         block
         size="xl"
         class="h-13 justify-center text-[17px] font-bold"
-        :disabled="!idea.trim()"
+        :disabled="!written"
         :label="t('participant.myList.add')"
         @click="onFirstIdea"
       />

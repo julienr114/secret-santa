@@ -22,24 +22,32 @@ import { avatarOf } from '#server/utils/avatars';
 import { IDEA_TEXT_MAX, listIconOfParty } from '#server/utils/lists';
 import { partyEmoji } from '#shared/utils/categories';
 import { localeOf } from '#shared/i18n';
+import { HINT_TEXT_MAX } from '#shared/utils/hints';
 
-// The first idea written from a personal link, without an account
+// The first thing written from a personal link, without an account
 // (docs/spec/v3/listes.md, « Sans compte », V3ListeCompteCree; Q-018,
-// answered by Julien on 21 November 2026): it makes the account with the
-// address the organiser gave, opens its session, and makes the list for
-// the event, kept for the one who drew them, with the idea on it. Never
+// answered by Julien on 21 November 2026): an idea, a taste (« En ce
+// moment »), or both. It makes the account with the address the organiser
+// gave, opens its session, and makes the list for the event, kept for the
+// one who drew them, with the idea on it; the taste goes on the « Moi »
+// card. Never
 // an account that already exists: that one logs in by its own link. Not
 // at the opening of the link: only what is written makes an account.
-const bodySchema = z.object({
-  text: z.string().trim().min(1).max(IDEA_TEXT_MAX),
-});
+// The first thing written (« un goût, une idée »): an idea for the list,
+// « En ce moment » for the « Moi » card, or both.
+const bodySchema = z
+  .object({
+    text: z.string().trim().max(IDEA_TEXT_MAX).default(''),
+    lately: z.string().trim().max(HINT_TEXT_MAX).default(''),
+  })
+  .refine((body) => body.text || body.lately, 'nothing written');
 
 const refuse = (statusMessage: string) =>
   createError({ statusCode: 409, statusMessage });
 
 export default defineEventHandler(async (event) => {
   const { db, person, group } = await requirePersonalLink(event);
-  const { text } = await validatedBody(event, bodySchema);
+  const { text, lately } = await validatedBody(event, bodySchema);
   if (await optionalAccount(event)) throw refuse('already_logged_in');
   if (!person.email) throw refuse('email_needed');
   if (await findAccountByEmail(db, person.email)) {
@@ -57,7 +65,7 @@ export default defineEventHandler(async (event) => {
   });
   await ensureSelf(db, account.id);
   const [self] = await db
-    .select({ id: familyMembers.id })
+    .select({ id: familyMembers.id, texts: familyMembers.texts })
     .from(familyMembers)
     .where(
       and(
@@ -85,7 +93,16 @@ export default defineEventHandler(async (event) => {
   const list = await findList(db, listId);
   if (list && self) {
     const listPersonId = await addPersonToList(db, list, self.id);
-    await createIdea(db, listId, listPersonId, { text, url: null }, null);
+    if (text) {
+      await createIdea(db, listId, listPersonId, { text, url: null }, null);
+    }
+  }
+  // Their tastes are theirs, the same on every list: on the « Moi » card.
+  if (self && lately) {
+    await db
+      .update(familyMembers)
+      .set({ texts: { ...(self.texts ?? {}), lately } })
+      .where(eq(familyMembers.id, self.id));
   }
   const sessionId = await openSessionFor(db, {
     accountId: account.id,

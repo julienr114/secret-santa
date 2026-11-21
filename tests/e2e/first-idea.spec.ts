@@ -13,6 +13,7 @@ const SLUG = 'famille-premiere-idee';
 const ADMIN = `/api/admin/${SLUG}`;
 const NEW = 'romane-premiere-idee@example.com';
 const KNOWN = 'olga-premiere-idee@example.com';
+const TASTE = 'sacha-premiere-idee@example.com';
 
 const state: { admin?: APIRequestContext; links: Record<string, string> } = {
   links: {},
@@ -35,6 +36,7 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     ['Romane', NEW],
     ['Olga', KNOWN],
     ['Paul', null],
+    ['Sacha', TASTE],
   ] as const) {
     await ok(
       await admin().post(`${ADMIN}/persons`, {
@@ -134,4 +136,21 @@ test('an address with an account is never opened by the link', async ({
   await page.goto(`${state.links.Paul}/liste`);
   await hydrated(page);
   await expect(page.getByTestId('list-address')).toBeVisible();
+});
+
+test('a taste is a first thing written too: it goes on the « Moi » card', async ({
+  page,
+}) => {
+  await page.goto(`${state.links.Sacha}/liste`);
+  await hydrated(page);
+  await page.getByLabel('En ce moment').fill('Je me mets à la poterie');
+  await page.getByRole('button', { name: 'Ajouter' }).click();
+  await expect(page).toHaveURL(/\/listes\/[^/?]+\?compte=1$/);
+  await expect(
+    page.getByRole('dialog', { name: 'C’est enregistré' }),
+  ).toBeVisible();
+  // The same tastes on every list: those of the « Moi » card.
+  const family = await ok(await page.request.get('/api/family'));
+  const self = family.members.find((m: { isSelf: boolean }) => m.isSelf);
+  expect(self.texts.lately).toBe('Je me mets à la poterie');
 });

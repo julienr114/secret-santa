@@ -77,6 +77,22 @@ const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
 const removeOffList = useRemoveOffListMutation(token);
 const doc = computed(() => query.data.value);
+// From a result (ticket 107, V3ListeSurligne): the page opens on the part
+// of the person drawn, just under the bar of the anonymous mode, once.
+const scrolledTo = ref(false);
+watch(
+  () => Boolean(doc.value),
+  async (ready) => {
+    const who = route.query.personne;
+    if (!ready || scrolledTo.value || typeof who !== 'string') return;
+    scrolledTo.value = true;
+    await nextTick();
+    document
+      .getElementById(`personne-${who}`)
+      ?.scrollIntoView({ block: 'start' });
+  },
+  { immediate: true },
+);
 const holder = computed(() => doc.value?.holder.name ?? '');
 
 const noteText = computed(() => {
@@ -294,8 +310,9 @@ const writes = (person: PersonLine) =>
 
       <section
         v-for="(person, index) in doc.people"
+        :id="`personne-${person.member.id}`"
         :key="person.id"
-        class="relative flex flex-col gap-0.5"
+        class="relative flex scroll-mt-32 flex-col gap-0.5"
         :class="index > 0 ? 'mt-11' : ''"
         data-testid="visitor-person"
       >

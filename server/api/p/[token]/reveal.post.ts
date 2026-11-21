@@ -1,8 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { assignments, participations } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
-import { giverHints, receiverHintsOf } from '#server/database/hints';
-import { receiverList } from '#server/http/hints';
+import { resultHelp } from '#server/http/hints';
 import { recordEvent } from '#server/database/audit';
 import { requirePersonalLink } from '#server/http/personal';
 import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
@@ -47,23 +46,15 @@ export default defineEventHandler(async (event) => {
   if (!receiver) {
     throw createError({ statusCode: 500, statusMessage: 'result_unreadable' });
   }
-  const hints =
-    rules.giftHints === 'none'
-      ? null
-      : await giverHints(db, receiver.participationId, rules.giftHints);
-  // New since the last opening? Read before this opening counts, which
-  // makes them old (lot 16 bis): the badge shows once.
-  const news = hints
-    ? await receiverHintsOf(
-        db,
-        {
-          editionId: edition.id,
-          personId: person.id,
-          lastViewedAt: participation.lastViewedAt,
-        },
-        await dataKeyOf(event),
-      )
-    : null;
+  // « Pour t'aider à choisir » (ticket 107): their list, their tastes.
+  const help = await resultHelp(event, db, {
+    receiver: {
+      participationId: receiver.participationId,
+      email: receiver.person.email,
+    },
+    partyId: edition.partyId,
+    giverParticipationId: participation.id,
+  });
 
   const now = nowIso();
   const [updated] = await db
@@ -117,22 +108,10 @@ export default defineEventHandler(async (event) => {
     budget: rules.budget,
     eventDate: rules.eventDate,
     guardianMessage: rules.guardianMessage,
-    // « Sa liste de cadeaux » (lot 27 ter): a link, nothing of the list.
-    list: hints
-      ? await receiverList(
-          event,
-          db,
-          hints.mode,
-          receiver.participationId,
-          participation.id,
-        )
-      : null,
-    hints: hints && {
-      ...hints,
-      isNew: news?.state === 'new',
-      updatedAt: news?.hintsUpdatedAt ?? null,
-    },
-    // For the words under « Lui demander des pistes ».
+    // « La liste de cadeaux d'Inès »: a line, nothing of the list.
+    list: help.list,
+    hints: help.hints,
+    // For the words under « Lui demander des idées ».
     receiverHasEmail: Boolean(receiver.person.email),
     requesterHasEmail: Boolean(person.email),
     viewCount,

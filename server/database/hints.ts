@@ -11,6 +11,8 @@ import {
 import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
 import type { Db } from './client';
 import {
+  accounts,
+  familyMembers,
   secretSantas,
   giftPortraits,
   hintRequests,
@@ -26,6 +28,7 @@ import {
   EMPTY_PORTRAIT,
   HINT_ANSWERS,
   hasHints,
+  portraitOfCard,
   type HintAnswer,
   type Portrait,
 } from '#shared/utils/hints';
@@ -328,5 +331,70 @@ export const receiverHintsOf = async (
     }),
     receiverParticipationId,
     hintsUpdatedAt,
+  };
+};
+
+/**
+ * What the one who drew someone reads under their result (ticket 107,
+ * docs/spec/v3/secret-santa.md, « Le résultat »): with an account, the
+ * tastes of their « Moi » card; without one, the portrait and ideas they
+ * left before the V3, read only. And whether the giver already asked for
+ * ideas. Who they are stays on the server: only the account and their
+ * card, for finding their list.
+ * @param db - The database.
+ * @param receiver - Who receives.
+ * @param receiver.participationId - Their participation.
+ * @param receiver.email - Their address, if any.
+ * @returns The portrait, the ideas, the request, and their account.
+ */
+export const giverHelp = async (
+  db: Db,
+  receiver: { participationId: string; email: string | null },
+) => {
+  const [account] = receiver.email
+    ? await db
+        .select({ id: accounts.id })
+        .from(accounts)
+        .where(eq(accounts.email, receiver.email.toLowerCase()))
+        .limit(1)
+    : [];
+  const requested = Boolean(
+    await findHintRequest(db, receiver.participationId),
+  );
+  if (account) {
+    const [card] = await db
+      .select({
+        id: familyMembers.id,
+        answers: familyMembers.answers,
+        texts: familyMembers.texts,
+      })
+      .from(familyMembers)
+      .where(
+        and(
+          eq(familyMembers.accountId, account.id),
+          eq(familyMembers.isSelf, true),
+        ),
+      )
+      .limit(1);
+    return {
+      mode: 'full' as const,
+      portrait: portraitOfCard(card ?? { answers: null, texts: null }),
+      ideas: [],
+      requested,
+      accountId: account.id,
+      selfMemberId: card?.id ?? null,
+    };
+  }
+  const [portrait, ideas] = await Promise.all([
+    findPortrait(db, receiver.participationId),
+    listWishes(db, receiver.participationId),
+  ]);
+  return {
+    mode: 'full' as const,
+    portrait,
+    ideas,
+    requested,
+    accountId: null,
+    selfMemberId: null,
   };
 };

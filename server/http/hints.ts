@@ -1,8 +1,17 @@
 import type { H3Event } from 'h3';
-import { eq } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, or } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
-import { participations, persons } from '#server/database/schema';
 import {
+  giftListHolders,
+  giftListIdeas,
+  giftListParties,
+  giftListVisits,
+  giftLists,
+  participations,
+  persons,
+} from '#server/database/schema';
+import {
+  giverHelp,
   findHintRequest,
   findPortrait,
   findPreviousHints,
@@ -21,6 +30,7 @@ import { listWishes } from '#server/database/wishes';
 import { personalLink } from '#server/database/participations';
 import { findGiverParticipationId } from '#server/database/draw';
 import { listPathFromDraw } from './anonymous';
+import { optionalAccount } from './auth';
 import { dataKeyOf } from './context';
 import { emailConfigured, sendEmails } from './email';
 import type { PersonalContext } from './personal';
@@ -268,4 +278,144 @@ export const announceHints = async (
       locale,
     ),
   );
+};
+
+/**
+ * « La liste de cadeaux d'Inès » under a result (ticket 107, V3TirageVersListe,
+ * V3TirageNouvelles): a list the receiver holds that the giver may open,
+ * public or shared in the event of the draw (with all its members or with
+ * the one who drew), the most recently changed; where it opens, anonymous
+ * and on the receiver's part; and how many ideas came since the giver
+ * last opened it. Nothing of what is on it.
+ * @param event - The request.
+ * @param db - The database.
+ * @param input - Who receives, where, and who reads.
+ * @param input.accountId - The receiver's account.
+ * @param input.selfMemberId - Their « Moi » card, their part on the list.
+ * @param input.partyId - The event of the draw.
+ * @param input.giverParticipationId - Who gives, and reads this.
+ * @param input.giverAccountId - Their account, if they are logged in.
+ * @returns The list's line, or null.
+ */
+export const receiverListOf = async (
+  event: H3Event,
+  db: Db,
+  input: {
+    accountId: string;
+    selfMemberId: string | null;
+    partyId: string;
+    giverParticipationId: string;
+    giverAccountId: string | null;
+  },
+) => {
+  const [list] = await db
+    .select({
+      id: giftLists.id,
+      title: giftLists.title,
+      iconEmoji: giftLists.iconEmoji,
+      iconColor: giftLists.iconColor,
+      shareToken: giftLists.shareToken,
+    })
+    .from(giftListHolders)
+    .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+    .leftJoin(
+      giftListParties,
+      and(
+        eq(giftListParties.listId, giftLists.id),
+        eq(giftListParties.partyId, input.partyId),
+      ),
+    )
+    .where(
+      and(
+        eq(giftListHolders.accountId, input.accountId),
+        or(
+          inArray(giftListParties.visibility, ['party', 'giver']),
+          gt(giftLists.sharedAt, ''),
+        ),
+      ),
+    )
+    .orderBy(desc(giftLists.updatedAt))
+    .limit(1);
+  if (!list?.shareToken) return null;
+  const [visit] = input.giverAccountId
+    ? await db
+        .select({ at: giftListVisits.lastSeenAt })
+        .from(giftListVisits)
+        .where(
+          and(
+            eq(giftListVisits.listId, list.id),
+            eq(giftListVisits.accountId, input.giverAccountId),
+          ),
+        )
+        .limit(1)
+    : [];
+  const [fresh] = visit
+    ? await db
+        .select({ n: count() })
+        .from(giftListIdeas)
+        .where(
+          and(
+            eq(giftListIdeas.listId, list.id),
+            gt(giftListIdeas.createdAt, visit.at),
+          ),
+        )
+    : [];
+  const path = await listPathFromDraw(
+    event,
+    list.shareToken,
+    input.giverParticipationId,
+  );
+  return {
+    title: list.title,
+    icon: { emoji: list.iconEmoji, color: list.iconColor },
+    path: input.selfMemberId ? `${path}&personne=${input.selfMemberId}` : path,
+    newIdeas: fresh?.n ?? 0,
+  };
+};
+
+/**
+ * « Pour t'aider à choisir » under a result (ticket 107): the receiver's
+ * list as a line, their tastes, the ideas they left before the V3 when
+ * they have no account, and whether the giver already asked for ideas.
+ * @param event - The request.
+ * @param db - The database.
+ * @param input - Who receives, where, and who gives.
+ * @param input.receiver - Their participation and address.
+ * @param input.receiver.participationId - Their participation.
+ * @param input.receiver.email - Their address, if any.
+ * @param input.partyId - The event of the draw.
+ * @param input.giverParticipationId - Who gives, and reads this.
+ * @returns The list's line, and the hints as the card shows them.
+ */
+export const resultHelp = async (
+  event: H3Event,
+  db: Db,
+  input: {
+    receiver: { participationId: string; email: string | null };
+    partyId: string;
+    giverParticipationId: string;
+  },
+) => {
+  const help = await giverHelp(db, input.receiver);
+  const giver = await optionalAccount(event);
+  const list = help.accountId
+    ? await receiverListOf(event, db, {
+        accountId: help.accountId,
+        selfMemberId: help.selfMemberId,
+        partyId: input.partyId,
+        giverParticipationId: input.giverParticipationId,
+        giverAccountId: giver?.accountId ?? null,
+      })
+    : null;
+  return {
+    list,
+    hints: {
+      mode: help.mode,
+      portrait: help.portrait,
+      ideas: help.ideas,
+      requested: help.requested,
+      isNew: false,
+      updatedAt: null,
+    },
+  };
 };

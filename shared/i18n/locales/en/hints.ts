@@ -214,6 +214,12 @@ export default {
     removed: 'No list linked to your ideas any more',
   },
   result: {
+    listOf: '{name}’s gift list',
+    newIdeas: {
+      one: '{count} new idea since your last visit',
+      other: '{count} new ideas since your last visit',
+    },
+    nothing: '{name} hasn’t written anything yet.',
     list: 'Their gift list: {title}',
     listHelp: 'Anonymous mode will be on for you there.',
     title: 'To help you choose',

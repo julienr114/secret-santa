@@ -63,6 +63,8 @@ export type PersonalState = {
   /** « Lui demander des pistes » is still possible. */
   canAskHints: boolean;
   /** Alerts of the journal since it was last opened from this page. */
+  /** The stage of my list for the event (ticket 107), or null. */
+  myList: 'draft' | 'giver' | 'parties' | 'public' | null;
   journalAlerts: number;
   /** Drawn by the app, or already elsewhere (README 22.12). */
   drawMode: 'app' | 'elsewhere';
@@ -150,11 +152,16 @@ export type Reveal = {
   guardianMessage: string;
   /** What the receiver left; null when the group has no hints. */
   hints: GiverHints | null;
-  /** « Sa liste de cadeaux »: a link, in anonymous mode (lot 27 ter). */
+  /**
+   * « La liste de cadeaux d'Inès » (ticket 107): where it opens, in
+   * anonymous mode on her part, and how many ideas came since my last
+   * visit.
+   */
   list?: {
     title: string;
     icon: { emoji: string; color: string };
     path: string;
+    newIdeas: number;
   } | null;
   receiverHasEmail: boolean;
   requesterHasEmail: boolean;

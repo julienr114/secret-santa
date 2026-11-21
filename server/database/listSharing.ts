@@ -27,7 +27,11 @@ import {
   secretSantas,
 } from './schema';
 import { newId } from '#server/http/context';
-import type { Audience } from '#server/utils/listSharing';
+import {
+  listStage,
+  type Audience,
+  type ListStage,
+} from '#server/utils/listSharing';
 import { partyEmoji, type PartyCategory } from '#shared/utils/categories';
 
 // The sharing of a list by stages (docs/spec/v3/listes.md, ticket 106):
@@ -516,3 +520,97 @@ export const membersOf = async (db: Db, partyIds: readonly string[]) =>
             eq(persons.active, true),
           ),
         );
+
+/**
+ * The list I hold for an event: made for it, or shared in it; the most
+ * recently changed.
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param partyId - The event.
+ * @returns The list, with since when it is public, or null.
+ */
+export const findMyListFor = async (
+  db: Db,
+  accountId: string,
+  partyId: string,
+) => {
+  const [held] = await db
+    .select({ id: giftLists.id, sharedAt: giftLists.sharedAt })
+    .from(giftListHolders)
+    .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+    .leftJoin(
+      giftListParties,
+      and(
+        eq(giftListParties.listId, giftLists.id),
+        eq(giftListParties.partyId, partyId),
+      ),
+    )
+    .where(
+      and(
+        eq(giftListHolders.accountId, accountId),
+        or(
+          eq(giftLists.partyId, partyId),
+          eq(giftListParties.partyId, partyId),
+        ),
+      ),
+    )
+    .orderBy(desc(giftLists.updatedAt))
+    .limit(1);
+  return held ?? null;
+};
+
+/**
+ * What the line « Ma liste de cadeaux » says, from my Secret Santa: the
+ * stage of my list for the event, or null without one.
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param partyId - The event.
+ * @returns The stage, or null.
+ */
+export const myListStage = async (
+  db: Db,
+  accountId: string,
+  partyId: string,
+): Promise<ListStage | null> => {
+  const list = await findMyListFor(db, accountId, partyId);
+  if (!list) return null;
+  const events = await sharedEventsOf(db, list.id);
+  return listStage({
+    isPublic: list.sharedAt !== null,
+    parties: events.filter((row) => row.visibility === 'party').length,
+    givers: events.filter((row) => row.visibility === 'giver').length,
+  });
+};
+
+/**
+ * My list for an event, from my Secret Santa (ticket 107): one I hold
+ * that is made for it or shared in it, else a new one, made for it and
+ * kept for the one who drew me, with no draft in between
+ * (docs/spec/v3/listes.md, « Une nouvelle liste »).
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param party - The event of the draw.
+ * @param party.id - Its id.
+ * @param party.name - Its name, which the list takes.
+ * @param make - Makes the list when there is none: its id.
+ * @param now - ISO date.
+ * @returns The list's id.
+ */
+export const myListFor = async (
+  db: Db,
+  accountId: string,
+  party: { id: string; name: string },
+  make: () => Promise<string>,
+  now: string,
+): Promise<string> => {
+  const held = await findMyListFor(db, accountId, party.id);
+  if (held) return held.id;
+  const id = await make();
+  await saveSharing(
+    db,
+    { id, sharedAt: null },
+    { partyIds: [], giverIds: [party.id], isPublic: false },
+    now,
+  );
+  return id;
+};

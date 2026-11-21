@@ -7,6 +7,7 @@ import {
   hasHints,
   isPortraitEmpty,
   nextQuestion,
+  portraitOfCard,
   portraitTags,
   portraitTexts,
   questionAt,
@@ -134,5 +135,28 @@ describe('hints', () => {
     expect(nextQuestion('secondHand', 'portrait')).toBeNull();
     expect(nextQuestion('secondHand', 'full')).toBe('surprise');
     expect(questionAt('6', 'portrait')).toBe('usefulOrSurprising');
+  });
+});
+
+describe('portraitOfCard', () => {
+  it('reads the known answers and texts of a « Moi » card, nothing else', () => {
+    const portrait = portraitOfCard({
+      answers: { usefulOrSurprising: 'first', unknown: 'first', surprise: 'x' },
+      texts: { lately: '  La course à pied ', avoid: '   ', other: 'non' },
+    });
+    expect(portrait.answers.usefulOrSurprising).toBe('first');
+    expect(portrait.answers.surprise).toBeNull();
+    expect(Object.keys(portrait.answers)).not.toContain('unknown');
+    expect(portrait.texts).toEqual({
+      lately: 'La course à pied',
+      wouldHelp: null,
+      avoid: null,
+    });
+  });
+
+  it('is empty for a card never written', () => {
+    expect(hasHints(portraitOfCard({ answers: null, texts: null }), 0)).toBe(
+      false,
+    );
   });
 });

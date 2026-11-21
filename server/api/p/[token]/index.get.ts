@@ -1,3 +1,6 @@
+import type { H3Event } from 'h3';
+import type { Db } from '#server/database/client';
+import { myListStage } from '#server/database/listSharing';
 import { and, eq, gt, inArray } from 'drizzle-orm';
 import { auditLog } from '#server/database/schema';
 import {
@@ -22,6 +25,29 @@ import { editionPersons, findAnswers } from '#server/database/answers';
 import { answersState } from '#server/utils/answers';
 import { gamePayload } from '#server/http/guesses';
 import { organizerCount } from '#server/database/groups';
+
+/**
+ * The stage of my list for the event, for an account logged in with the
+ * person's address; null otherwise, or without a list.
+ * @param event - The request.
+ * @param db - The database.
+ * @param person - The person of the link.
+ * @param person.email - Their address, if any.
+ * @param partyId - The event.
+ * @returns The stage, or null.
+ */
+const myListLine = async (
+  event: H3Event,
+  db: Db,
+  person: { email: string | null },
+  partyId: string,
+) => {
+  const viewer = await optionalAccount(event);
+  const account = viewer ? await findAccountById(db, viewer.accountId) : null;
+  return account && person.email === account.email
+    ? myListStage(db, account.id, partyId)
+    : null;
+};
 
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
@@ -139,6 +165,9 @@ export default defineEventHandler(async (event) => {
       alreadyRequested: Boolean(request),
     }).ok,
     journalAlerts: unseenAlerts(alertRows, person.id, since),
+    // « Ma liste de cadeaux » (ticket 107): the stage of my list for the
+    // event, known to my account when it is the person's.
+    myList: await myListLine(event, db, person, group.id),
     guess: game
       ? {
           mode: game.mode,

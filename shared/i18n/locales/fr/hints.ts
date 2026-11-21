@@ -217,6 +217,12 @@ export default {
     removed: 'Plus de liste reliée à tes idées',
   },
   result: {
+    listOf: 'La liste de cadeaux de {name}',
+    newIdeas: {
+      one: '{count} nouvelle idée depuis ta dernière visite',
+      other: '{count} nouvelles idées depuis ta dernière visite',
+    },
+    nothing: '{name} n’a encore rien écrit.',
     list: 'Sa liste de cadeaux : {title}',
     listHelp: 'Le mode anonyme y sera activé pour toi.',
     title: 'Pour t’aider à choisir',

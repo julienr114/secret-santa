@@ -216,3 +216,29 @@ export const questionAt = (
   const index = Number(value) - 1;
   return asked[Number.isInteger(index) ? index : 0] ?? 'usefulOrSurprising';
 };
+
+/**
+ * The tastes written on a « Moi » card, as a portrait (ticket 107): what
+ * the one who drew me reads. Only the known questions, answers and texts.
+ * @param card - Its answers and texts, as kept.
+ * @param card.answers - The answers, by question.
+ * @param card.texts - The texts, by name.
+ * @returns The portrait.
+ */
+export const portraitOfCard = (card: {
+  answers: Record<string, string | null> | null;
+  texts: Record<string, string | null> | null;
+}): Portrait => ({
+  answers: Object.fromEntries(
+    HINT_QUESTIONS.map((question) => {
+      const answer = card.answers?.[question];
+      return [question, HINT_ANSWERS.find((known) => known === answer) ?? null];
+    }),
+  ) as HintAnswers,
+  texts: Object.fromEntries(
+    HINT_TEXTS.map((text) => {
+      const said = card.texts?.[text]?.trim();
+      return [text, said ? said : null];
+    }),
+  ) as HintTexts,
+});

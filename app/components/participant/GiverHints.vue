@@ -5,19 +5,23 @@ import {
 } from '~/composables/queries/usePersonal';
 import { giverPortrait, portraitTexts } from '#shared/utils/hints';
 
-// « Pour t'aider à choisir », under the result (README 22.11): the
-// receiver's answers in sentences (« Inès préfère : »…), their texts,
-// their precise ideas. With no
-// hint at all, « Lui demander des pistes », once per draw: a sheet says
-// what will happen, then the request leaves at once, anonymous; once the
-// draw is revealed (README 22.18), it says who asks.
+// « Pour t'aider à choisir », under the result (docs/spec/v3/
+// secret-santa.md, « Le résultat », V3TirageVersListe): first « La liste
+// de cadeaux d'Inès », which opens in anonymous mode, saying how many
+// ideas came since my last visit (V3TirageNouvelles); then her tastes, in
+// sentences (« Inès préfère : »…) and texts, from her « Moi » card; the
+// ideas she left before the V3 when she has no account. With nothing at
+// all, « Inès n'a encore rien écrit. » and « Lui demander des idées »,
+// once per draw: a sheet says what will happen, then the request leaves
+// at once, anonymous; once the draw is revealed (README 22.18), it says
+// who asks.
 const props = defineProps<{
   token: string;
   reveal: Reveal & { hints: NonNullable<Reveal['hints']> };
   /** The draw is revealed: the request is no longer anonymous. */
   named?: boolean;
 }>();
-const { t, tk, locale } = useT();
+const { t, tk } = useT();
 const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 const request = useRequestHintsMutation(() => props.token);
@@ -45,22 +49,9 @@ const answered = computed(
     Boolean(sentences.value) ||
     said.value.indifferent.length > 0,
 );
-/** « le 16 novembre », in the reader's language. */
-const updatedOn = computed(() =>
-  hints.value.updatedAt
-    ? new Intl.DateTimeFormat(locale.value, {
-        day: 'numeric',
-        month: 'long',
-      }).format(new Date(hints.value.updatedAt))
-    : '',
-);
 const texts = computed(() => portraitTexts(hints.value.portrait.texts));
-// « Sa liste de cadeaux » (lot 27 ter, maquette PistesResultatListe): a
-// link to the gift list the receiver linked to their hints, which opens
-// in anonymous mode. With it, « Si tu sèches » no longer shows: the list
-// says it better.
 const list = computed(() => props.reveal.list ?? null);
-const ideas = computed(() => (list.value ? [] : hints.value.ideas));
+const ideas = computed(() => hints.value.ideas);
 const empty = computed(
   () =>
     !list.value &&
@@ -92,17 +83,7 @@ const onSend = () =>
         <h2 class="font-display text-xl font-bold">
           {{ t('hints.result.title') }}
         </h2>
-        <span
-          v-if="hints.isNew"
-          class="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-inverted"
-          data-testid="hints-new"
-        >
-          {{ t('hints.result.isNew') }}
-        </span>
       </div>
-      <p v-if="hints.isNew && updatedOn" class="text-[13px] text-toned">
-        {{ t('hints.result.updatedOn', { date: updatedOn }) }}
-      </p>
     </div>
     <template v-if="!empty">
       <!-- Opened as a page of its own, not inside the app: the list is
@@ -116,11 +97,18 @@ const onSend = () =>
         <ListsTile :icon="list.icon" size="sm" />
         <span class="flex min-w-0 grow flex-col">
           <span class="text-[15px] font-bold break-words">{{
-            t('hints.result.list', { title: list.title })
+            t('hints.result.listOf', { name })
           }}</span>
-          <span class="text-[13px] leading-[1.35] text-toned">{{
-            t('hints.result.listHelp')
-          }}</span>
+          <span
+            class="text-[13px] leading-[1.35]"
+            :class="list.newIdeas > 0 ? 'font-bold text-primary' : 'text-toned'"
+            data-testid="giver-list-news"
+            >{{
+              list.newIdeas > 0
+                ? t('hints.result.newIdeas', { count: list.newIdeas })
+                : t('hints.result.listHelp')
+            }}</span
+          >
         </span>
         <UIcon
           name="i-lucide-chevron-right"
@@ -188,7 +176,7 @@ const onSend = () =>
     </UiNotice>
     <template v-else>
       <p class="text-[15px] leading-[1.45] text-toned">
-        {{ t('hints.result.none', { name }) }}
+        {{ t('hints.result.nothing', { name }) }}
       </p>
       <UButton
         block

@@ -216,6 +216,12 @@ export default {
     removed: 'Keine Liste mehr mit deinen Ideen verknüpft',
   },
   result: {
+    listOf: 'Die Wunschliste von {name}',
+    newIdeas: {
+      one: '{count} neue Idee seit deinem letzten Besuch',
+      other: '{count} neue Ideen seit deinem letzten Besuch',
+    },
+    nothing: '{name} hat noch nichts geschrieben.',
     list: 'Ihre Geschenkliste: {title}',
     listHelp: 'Der anonyme Modus ist dort für dich aktiviert.',
     title: 'Damit du besser wählst',

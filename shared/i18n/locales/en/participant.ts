@@ -2,6 +2,13 @@ import type fr from '../fr/participant';
 import type { Dict } from '../../types';
 
 export default {
+  myList: {
+    title: 'Your email address, to write your list',
+    label: 'Your email address',
+    submit: 'Confirm',
+    confirm: 'You get a link to confirm it.',
+    sent: 'Link sent to {email}: open it to write your list. Remember to check your spam.',
+  },
   revealed: {
     bannerTitle: 'The draw is no longer secret.',
     bannerBy:
@@ -103,6 +110,13 @@ export default {
         'That’s a wrap for this year. You can still find out who you were giving a gift to.',
     },
     tiles: {
+      list: {
+        none: 'Not written yet',
+        draft: 'Draft, only you see it',
+        giver: 'Seen only by the one who drew me',
+        parties: 'Seen by the members of the event',
+        public: 'Seen by anyone with the link',
+      },
       hintsTodo: 'To fill in',
       hintsEditable: 'Filled in, can be changed until the big day',
       hintsLocked: 'Filled in, can no longer be changed',

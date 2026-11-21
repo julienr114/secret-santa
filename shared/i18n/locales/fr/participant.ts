@@ -1,5 +1,12 @@
 // The participant's side: personal page, journal.
 export default {
+  myList: {
+    title: 'Ton adresse email, pour écrire ta liste',
+    label: 'Ton adresse email',
+    submit: 'Valider',
+    confirm: 'Tu reçois un lien pour la confirmer.',
+    sent: 'Lien envoyé à {email} : ouvre-le pour écrire ta liste. Pense à regarder dans les indésirables.',
+  },
   revealed: {
     bannerTitle: 'Le tirage n’est plus secret.',
     bannerBy:
@@ -105,6 +112,13 @@ export default {
         'C’est terminé pour cette année. Tu peux encore découvrir à qui tu offrais un cadeau.',
     },
     tiles: {
+      list: {
+        none: 'Pas encore écrite',
+        draft: 'Brouillon, toi seul la vois',
+        giver: 'Vue seulement par celui qui m’a tiré',
+        parties: 'Vue par les membres de l’événement',
+        public: 'Vue par toute personne qui a le lien',
+      },
       hintsTodo: 'À remplir',
       hintsEditable: 'Remplies, modifiables jusqu’au jour J',
       hintsLocked: 'Remplies, plus modifiables',

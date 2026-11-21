@@ -1,8 +1,7 @@
 import { and, desc, eq, inArray } from 'drizzle-orm';
 import { auditLog, persons } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
-import { giverHints, receiverHintsOf } from '#server/database/hints';
-import { receiverList } from '#server/http/hints';
+import { resultHelp } from '#server/http/hints';
 import { readPairs } from '#server/database/draw';
 import { requirePersonalLink } from '#server/http/personal';
 import { dataKeyOf } from '#server/http/context';
@@ -61,21 +60,15 @@ export default defineEventHandler(async (event) => {
   const receiverParticipationId = rows.find(
     (r) => r.person.id === view.receiverId,
   )!.participationId;
-  const hints =
-    rules.giftHints === 'none'
-      ? null
-      : await giverHints(db, receiverParticipationId, rules.giftHints);
-  const news = hints
-    ? await receiverHintsOf(
-        db,
-        {
-          editionId: edition.id,
-          personId: person.id,
-          lastViewedAt: participation.lastViewedAt,
-        },
-        dataKey,
-      )
-    : null;
+  const help = await resultHelp(event, db, {
+    receiver: {
+      participationId: receiverParticipationId,
+      email:
+        rows.find((r) => r.person.id === view.receiverId)?.person.email ?? null,
+    },
+    partyId: edition.partyId,
+    giverParticipationId: participation.id,
+  });
   // The organiser who revealed may not take part: then their first name
   // comes from the group.
   const meta = revealEvent?.meta as { by?: unknown } | null | undefined;
@@ -109,21 +102,9 @@ export default defineEventHandler(async (event) => {
     budget: rules.budget,
     eventDate: rules.eventDate,
     guardianMessage: rules.guardianMessage,
-    // « Sa liste de cadeaux » (lot 27 ter): a link, nothing of the list.
-    list: hints
-      ? await receiverList(
-          event,
-          db,
-          hints.mode,
-          receiverParticipationId,
-          participation.id,
-        )
-      : null,
-    hints: hints && {
-      ...hints,
-      isNew: false,
-      updatedAt: news?.hintsUpdatedAt ?? null,
-    },
+    // « La liste de cadeaux d'Inès »: a line, nothing of the list.
+    list: help.list,
+    hints: help.hints,
     receiverHasEmail: Boolean(
       people.find((p) => p.id === view.receiverId)?.email,
     ),

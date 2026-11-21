@@ -80,24 +80,14 @@ export type HomeDraw = {
 };
 export type HomePayload = {
   draws: HomeDraw[];
-  /** How many more groups the account may create; null without limit. */
-  groupsLeft: number | null;
 };
 
-/** The draws of the account, and how many more groups it may create. */
+/** The draws of the account, for « Tirages passés ». */
 export const useHomeQuery = (enabled: MaybeRefOrGetter<boolean> = true) =>
   useApiQuery<HomePayload>(
     () => keys.home(),
     () => '/api/auth/home',
     enabled,
-  );
-
-/** Asks the super-admins for the right to create a group. */
-export const useRequestGroupMutation = () =>
-  useApiMutation<{ ok: true }, string>(
-    (message) =>
-      api('/api/auth/group-requests', { method: 'POST', body: { message } }),
-    () => [keys.home()],
   );
 
 /** "My account": the address and the devices it is logged in on. */

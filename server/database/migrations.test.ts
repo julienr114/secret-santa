@@ -399,3 +399,32 @@ describe('the V3 migration', () => {
     ).toBe(0);
   });
 });
+
+describe('the end of the requests (ticket 105)', () => {
+  const LIMIT = '0034_v3_secret_santa_limit.sql';
+  const db = v2();
+  db.exec(`
+INSERT INTO group_requests (id, account_id, message, status, created_at) VALUES
+  ('r1', 'a3', 'Pour ma famille', 'pending', '${NOW}');
+UPDATE accounts SET group_quota = 5 WHERE id = 'a1';
+`);
+  files
+    .filter((file) => file >= V3 && file <= LIMIT)
+    .forEach((file) => apply(db, file));
+
+  it('drops the requests, a pending one with them', () => {
+    expect(
+      all(db, "SELECT name FROM sqlite_master WHERE name = 'group_requests'"),
+    ).toEqual([]);
+  });
+
+  it('gives every account the limit of 3 Secret Santa', () => {
+    expect(
+      all(db, 'SELECT DISTINCT secret_santa_limit AS n FROM accounts'),
+    ).toEqual([{ n: 3 }]);
+  });
+
+  it('leaves no foreign key broken', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+  });
+});

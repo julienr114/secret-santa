@@ -42,7 +42,6 @@ export default {
     'Exclusion introuvable. Recharge la page : la liste a peut-être changé.',
   edition_not_found:
     'Édition introuvable. Recharge la page : la liste a peut-être changé.',
-  edition_in_progress: "Clôture d'abord l'édition en cours.",
   edition_closed: 'Cette édition est clôturée.',
   invalid_rules: 'Ces règles ne tiennent pas ensemble. Vérifie-les.',
   results_already_revealed: 'Les résultats sont déjà dévoilés.',
@@ -93,17 +92,12 @@ export default {
   too_many_wishes: "Il y a trop d'idées dans ta liste.",
   invalid_wish:
     'Une idée est invalide : 200 caractères au plus, et un lien qui commence par http:// ou https://.',
-  group_quota_reached:
-    'Tu ne peux pas créer de groupe pour l’instant : fais-en la demande depuis l’accueil.',
-  group_request_pending:
-    'Tu as déjà une demande en attente. On te répond bientôt.',
-  group_request_useless: 'Tu peux déjà créer un groupe.',
+  secret_santa_limit_reached:
+    'Tu organises déjà 3 Secret Santa : c’est le maximum pour un compte.',
+  too_many_members: 'La fête est complète : 30 membres, c’est le maximum.',
   cannot_disable_self: 'Tu ne peux pas désactiver ton propre compte.',
   account_not_found:
     'Compte introuvable. Recharge la page : la liste a peut-être changé.',
-  request_not_found:
-    'Demande introuvable. Recharge la page : la liste a peut-être changé.',
-  request_decided: 'Cette demande a déjà reçu une réponse.',
   session_current:
     'C’est l’appareil que tu utilises : déconnecte-toi depuis le menu.',
   session_not_found:

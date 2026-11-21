@@ -11,10 +11,6 @@ export default {
     submit: 'Create group',
     created: 'Group created',
     note: 'You will be its organizer. You add the members right after, or you send them a link.',
-    groupsLeft: {
-      one: 'You can create {count} more group',
-      other: 'You can create {count} more groups',
-    },
     intro: 'A family, a group of friends, a team: one group per circle.',
     nameHelp: 'You and the members will see it at the top of each draw.',
     organizerHelp:

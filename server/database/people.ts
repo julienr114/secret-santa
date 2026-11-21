@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import { newId } from '#server/http/context';
 import { avatarOf, freshAvatar } from '#server/utils/avatars';
@@ -19,6 +19,23 @@ export const listPeople = (db: Db, groupId: string) =>
     .from(persons)
     .where(eq(persons.partyId, groupId))
     .orderBy(persons.firstName);
+
+/**
+ * How many active members a party has: what its 30 places count.
+ * @param db - The database.
+ * @param partyId - The party.
+ * @returns Its members still in it, those without an address included.
+ */
+export const countActiveMembers = async (
+  db: Db,
+  partyId: string,
+): Promise<number> => {
+  const [row] = await db
+    .select({ n: count() })
+    .from(persons)
+    .where(and(eq(persons.partyId, partyId), eq(persons.active, true)));
+  return row?.n ?? 0;
+};
 
 export const listExclusions = (db: Db, groupId: string) =>
   db

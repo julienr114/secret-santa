@@ -40,7 +40,6 @@ export default {
     'Exclusion not found. Reload the page: the list may have changed.',
   edition_not_found:
     'Edition not found. Reload the page: the list may have changed.',
-  edition_in_progress: 'Close the current edition first.',
   edition_closed: 'This edition is closed.',
   invalid_rules: 'These rules don’t fit together. Check them.',
   results_already_revealed: 'The results are already revealed.',
@@ -85,17 +84,12 @@ export default {
   too_many_wishes: 'There are too many ideas in your list.',
   invalid_wish:
     'An idea is invalid: 200 characters at most, and a link starting with http:// or https://.',
-  group_quota_reached:
-    'You cannot create a group for now: ask for one from the home page.',
-  group_request_pending:
-    'You already have a request pending. We’ll get back to you soon.',
-  group_request_useless: 'You can already create a group.',
+  secret_santa_limit_reached:
+    'You already organise 3 Secret Santas: that’s the most for one account.',
+  too_many_members: 'The party is full: 30 members is the most it can have.',
   cannot_disable_self: 'You cannot disable your own account.',
   account_not_found:
     'Account not found. Reload the page: the list may have changed.',
-  request_not_found:
-    'Request not found. Reload the page: the list may have changed.',
-  request_decided: 'This request has already been answered.',
   session_current: 'This is the device you are using: log out from the menu.',
   session_not_found:
     'Session not found. Reload the page: the list may have changed.',

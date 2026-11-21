@@ -46,7 +46,6 @@ export default {
     'Ausschluss nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
   edition_not_found:
     'Ausgabe nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
-  edition_in_progress: 'Schließe zuerst die laufende Ausgabe ab.',
   edition_closed: 'Diese Ausgabe ist abgeschlossen.',
   invalid_rules: 'Diese Regeln passen nicht zusammen. Prüfe sie.',
   results_already_revealed: 'Die Ergebnisse sind bereits aufgedeckt.',
@@ -97,17 +96,12 @@ export default {
   too_many_wishes: 'Deine Liste enthält zu viele Ideen.',
   invalid_wish:
     'Eine Idee ist ungültig: höchstens 200 Zeichen und ein Link, der mit http:// oder https:// beginnt.',
-  group_quota_reached:
-    'Du kannst im Moment keine Gruppe erstellen: Frag auf der Startseite danach.',
-  group_request_pending:
-    'Du hast bereits eine offene Anfrage. Wir melden uns bald.',
-  group_request_useless: 'Du kannst bereits eine Gruppe erstellen.',
+  secret_santa_limit_reached:
+    'Du organisierst schon 3 Wichteln: Mehr geht mit einem Konto nicht.',
+  too_many_members: 'Das Fest ist voll: 30 Mitglieder sind das Maximum.',
   cannot_disable_self: 'Du kannst dein eigenes Konto nicht deaktivieren.',
   account_not_found:
     'Konto nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
-  request_not_found:
-    'Anfrage nicht gefunden. Lade die Seite neu: die Liste hat sich vielleicht geändert.',
-  request_decided: 'Diese Anfrage wurde bereits beantwortet.',
   session_current:
     'Das ist das Gerät, das du gerade nutzt: Melde dich über das Menü ab.',
   session_not_found:

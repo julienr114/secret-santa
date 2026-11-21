@@ -45,16 +45,6 @@ export default {
       },
       partyToday: 'Fest heute',
     },
-    requestWhy:
-      'Under the Tree ist in der Beta: Gruppen werden auf Anfrage angelegt, solange wir prüfen, dass alles gut funktioniert.',
-    requestAction: 'Eine Auslosung organisieren',
-    requestDescription: 'Für wen möchtest du eine Auslosung organisieren?',
-    requestWhyTitle: 'Warum eine Anfrage?',
-    requestReply: 'Ein Administrator antwortet dir per E-Mail.',
-    requestLabel: 'Deine Anfrage',
-    requestPlaceholder: 'Das Weihnachten meiner Familie, etwa zwölf Personen.',
-    requestSend: 'Meine Anfrage senden',
-    requestSent: 'Anfrage gesendet',
     past: {
       title: 'Vergangene Auslosungen',
       empty: 'Noch keine vergangene Auslosung.',
@@ -73,31 +63,22 @@ export default {
   },
   admin: {
     accountsTitle: 'Konten',
-    approve: 'Annehmen',
-    refuse: 'Ablehnen',
-    approved: 'Anfrage angenommen',
-    refused: 'Anfrage abgelehnt',
     accounts: { one: '{count} Konto', other: '{count} Konten' },
     disabled: 'Deaktiviert',
     neverLoggedIn: 'Nie angemeldet',
-    quotaLabel: 'Gruppen, die es erstellen kann',
+    quotaLabel: 'Wichteln, die es organisieren darf',
     disabledHelp: 'Es kann sich nicht mehr anmelden',
     groupsEmpty: 'Noch keine Gruppe.',
     search: 'Name oder Adresse suchen',
     noMatch: 'Kein Konto.',
     groupsCount: { one: '{count} Gruppe', other: '{count} Gruppen' },
     seenOn: 'gesehen am {date}',
-    toHandle: 'Zu erledigen',
-    requests: {
-      one: '{count} offene Anfrage',
-      other: '{count} offene Anfragen',
-    },
     load: {
       near: 'Die App nähert sich ihrer kostenlosen Kapazität (etwa 50 Gruppen: 3.000 E-Mails im Monat bei Resend).',
       over: 'Eine weitere Gruppe überschreitet die kostenlose Kapazität (etwa 50 Gruppen: 3.000 E-Mails im Monat bei Resend). E-Mails könnten ausbleiben.',
     },
-    quotaLess: 'Eine Gruppe weniger',
-    quotaMore: 'Eine Gruppe mehr',
+    quotaLess: 'Ein Wichteln weniger',
+    quotaMore: 'Ein Wichteln mehr',
     disable: 'Konto deaktivieren',
     disableConfirm:
       'Es kann sich nicht mehr anmelden, seine Sitzungen werden geschlossen. Deaktivieren?',
@@ -105,19 +86,10 @@ export default {
     restoreHelp: 'Es kann sich wieder anmelden',
     disabledDone: 'Konto deaktiviert',
     restored: 'Konto reaktiviert',
-    requestSent: 'Gesendet am {date}',
     access: 'Zugang',
-    requestPending: 'Offene Anfrage',
-    requestFrom: 'Anfrage von {name}',
-    ifAccepted: 'Wenn du annimmst',
-    changeQuota: 'Gruppen, die es erstellen kann',
-    changeApp: 'Gruppen in der App',
     loadOk: '{count} von etwa {max} Gruppen, die die Gratisangebote abdecken.',
     title: 'Verwaltung',
     reserved: 'Nur für Super-Admins',
-    oneRequest: 'Zu bearbeiten · 1 Gruppenanfrage',
-    onDay: 'am {date}',
-    noRequest: 'Keine Anfrage zu bearbeiten',
     capacity: 'Kapazität',
     capacityCount: {
       one: '{count} Gruppe von etwa {max}',
@@ -125,10 +97,6 @@ export default {
     },
     capacityHint:
       'Darüber reichen die kostenlosen Angebote nicht mehr (3.000 E-Mails im Monat).',
-    ifAllAccepted: {
-      one: 'Mit dieser angenommenen Anfrage: {groups}.',
-      other: 'Mit diesen {count} angenommenen Anfragen: {groups}.',
-    },
     seeAll: 'Alles ansehen',
     groupsShort: 'Gruppen',
     disabledCount: { one: '{count} deaktiviert', other: '{count} deaktiviert' },
@@ -139,12 +107,13 @@ export default {
     styleGuide: 'Styleguide',
     styleGuideHint: 'Werkzeug für Entwickler',
     lastVisit: 'Letzter Besuch am {date}',
-    mayCreate: {
-      one: 'Darf {count} erstellen',
-      other: 'Darf {count} erstellen',
-    },
-    created: { one: '{count} schon erstellt', other: '{count} schon erstellt' },
     left: { one: 'noch {count} übrig', other: 'noch {count} übrig' },
+    mayOrganise: {
+      one: 'Darf {count} organisieren',
+      other: 'Darf {count} organisieren',
+    },
+    inProgress: { one: '{count} läuft', other: '{count} laufen' },
+    atLimit: 'am Limit für Wichteln',
     members: { one: '{count} Mitglied', other: '{count} Mitglieder' },
     draw: {
       preparing: 'in Vorbereitung',
@@ -156,43 +125,19 @@ export default {
       },
     },
     role: { organizer: 'Organisiert', participant: 'Nimmt teil' },
-    requestRefused: 'Anfrage abgelehnt',
     profileOwn:
       'Das Profil (Vorname, Symbol, Sprache) gehört der Person: Es wird hier nicht geändert.',
     activeAccounts: {
       one: '{count} aktives Konto',
       other: '{count} aktive Konten',
     },
-    canCreate: {
-      one: 'darf {count} Gruppe erstellen',
-      other: 'darf {count} Gruppen erstellen',
-    },
     noGroup: 'keine Gruppe',
-    requestsFirst: 'Offene Anfragen stehen oben, die älteste zuerst.',
     disabledRow: 'Deaktivierte Konten',
     searchGroups: 'Eine Gruppe oder einen Organisator suchen',
     noGroupMatch: 'Keine Gruppe.',
     noOrganizer: 'Noch kein Organisator',
     createFor: 'Eine Gruppe für jemanden erstellen',
     createForHint: 'Mit der Adresse des Organisators',
-    oneOf: 'Zu bearbeiten · 1 von {count}',
-    handle: 'Bearbeiten',
-    note: {
-      label: 'Ein Wort zur Antwort',
-      optional: '(freiwillig)',
-      presets: 'Fertige Nachrichten',
-      welcome: 'Willkommen',
-      welcomeText:
-        'Willkommen! Du kannst deine Gruppe jetzt erstellen. Sag mir, wenn du nicht weiterkommst.',
-      full: 'Ausgebucht',
-      fullText:
-        'Leider ist die App für dieses Jahr voll. Versuch es nächstes Jahr wieder!',
-      close: 'Nur Nahestehende',
-      closeText:
-        'Leider behalte ich die App vorerst meinen Nahestehenden vor. Trotzdem frohe Weihnachten!',
-      placeholder: 'Willkommen! Sag mir, wenn du nicht weiterkommst.',
-      hint: 'Wird der E-Mail mit deiner Antwort hinzugefügt.',
-    },
   },
   confirm: {
     title: 'Anmeldung',
@@ -237,20 +182,6 @@ export default {
     validity: 'Er ist 15 Minuten gültig und funktioniert nur einmal.',
     ignore:
       'Nichts angefordert? Ignoriere diese Nachricht: Ohne diesen Link kann sich niemand anmelden.',
-  },
-  requestEmail: {
-    subject: 'Neue Gruppenanfrage auf Under the Tree',
-    intro: '{email} möchte eine Gruppe erstellen:',
-    action: 'Um die Anfrage zu beantworten:',
-  },
-  decisionEmail: {
-    approvedSubject: 'Du kannst deine Gruppe auf Under the Tree erstellen',
-    approved:
-      'Deine Anfrage wurde angenommen: Melde dich an, um deine Gruppe zu erstellen.',
-    refusedSubject: 'Deine Gruppenanfrage auf Under the Tree',
-    refused:
-      'Deine Gruppenanfrage wurde abgelehnt. Du kannst in der App eine neue stellen.',
-    note: 'Ein Wort vom Administrator:',
   },
   invite: {
     intro: 'Du bist zur Feier eingeladen',

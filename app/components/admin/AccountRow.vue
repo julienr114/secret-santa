@@ -1,36 +1,26 @@
 <script setup lang="ts">
-import type {
-  AdminAccountRow,
-  PendingRequest,
-} from '~/composables/queries/useAdmin';
+import type { AdminAccountRow } from '~/composables/queries/useAdmin';
 import { fullName } from '#server/utils/people';
-import { remainingGroups } from '#server/utils/quota';
+import { remainingSecretSantas } from '#server/utils/quota';
 
 // One account on the admin's list: its icon, its name (or its address
 // without one), then its address (« Super-admin » for one), the groups it
-// organises (or a refused request, or how many it may create) and its
-// last visit; « À traiter » when a request waits. A tap opens the
-// account's page.
-const props = defineProps<{
-  account: AdminAccountRow;
-  request?: PendingRequest;
-}>();
+// organises (« à sa limite de Secret Santa » once it has reached it) and
+// its last visit. A tap opens the account's page.
+const props = defineProps<{ account: AdminAccountRow }>();
 const { t, locale } = useT();
 
 const name = computed(() => fullName(props.account));
-/**
- * « 2 groupes », « demande refusée », « peut créer 1 groupe » or « aucun
- * groupe ».
- */
+/** « à sa limite de Secret Santa », « 2 groupes » or « aucun groupe ». */
 const groupsPart = computed(() => {
+  if (remainingSecretSantas(props.account) === 0) {
+    return t('auth.admin.atLimit');
+  }
   const organized = props.account.groups.filter(
     (group) => group.role === 'organizer',
   ).length;
-  if (organized > 0) return t('auth.admin.groupsCount', { count: organized });
-  if (props.account.requestRefused) return t('auth.admin.requestRefused');
-  const left = remainingGroups(props.account);
-  return left > 0 && Number.isFinite(left)
-    ? t('auth.admin.canCreate', { count: left })
+  return organized > 0
+    ? t('auth.admin.groupsCount', { count: organized })
     : t('auth.admin.noGroup');
 });
 const line = computed(() =>
@@ -59,12 +49,5 @@ const line = computed(() =>
     :title="name || account.email"
     :subtitle="line"
     :class="{ 'opacity-60': account.disabled }"
-  >
-    <template v-if="request" #trailing>
-      <span
-        class="shrink-0 rounded-full bg-warning-soft px-2 py-0.5 text-[13px] font-bold text-warning-ink"
-        >{{ t('auth.admin.toHandle') }}</span
-      >
-    </template>
-  </UiListItem>
+  />
 </template>

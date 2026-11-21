@@ -6,7 +6,10 @@ import {
   joinDrawInPreparation,
 } from '#server/database/invite';
 import { personalPath } from '#server/database/participations';
-import { insertPersonFromAccount } from '#server/database/people';
+import {
+  countActiveMembers,
+  insertPersonFromAccount,
+} from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
 import { accounts, parties, persons } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
@@ -16,7 +19,7 @@ import { buildJoinedEmail } from '#server/utils/notifications';
 import { mergeRules } from '#server/utils/rules';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { canJoinGroup } from '#server/utils/invite';
+import { canJoinGroup, linkPlaces } from '#server/utils/invite';
 import { nameSchema } from '#server/utils/people';
 
 // Joins a group by its invitation link, as the logged-in account: it
@@ -25,7 +28,8 @@ import { nameSchema } from '#server/utils/people';
 // draw being prepared, if any (decided on 17 November 2026; a draw already
 // done is left alone). The first name given here names the person, and
 // completes the profile when it has none. Each newcomer takes one place
-// of the link; joining twice changes nothing. The organisers are told by
+// of the link, and the link never lets in more than the 30 members of a
+// party; joining twice changes nothing. The organisers are told by
 // email, unless the group turned it off. The answer gives the way to the
 // draw when the person is in it.
 const bodySchema = z.object({ firstName: nameSchema });
@@ -57,7 +61,13 @@ export default defineEventHandler(async (event) => {
   const now = nowIso();
   unwrap(
     canJoinGroup(
-      { until: group.inviteUntil, places: group.invitePlaces ?? 0 },
+      {
+        until: group.inviteUntil,
+        places: linkPlaces(
+          group.invitePlaces,
+          await countActiveMembers(db, group.id),
+        ),
+      },
       now.slice(0, 10),
     ),
   );

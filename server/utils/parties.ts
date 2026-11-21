@@ -84,6 +84,14 @@ export const checkPartySize = (count: number): Result<number> =>
     : ok(count);
 
 /**
+ * How many more members a party may take: what a link may still offer.
+ * @param members - Its active members.
+ * @returns The places left before 30, never below zero.
+ */
+export const membersLeft = (members: number): number =>
+  Math.max(0, MAX_PARTY_MEMBERS - members);
+
+/**
  * Whether one may leave a party: a member may, an organiser may not
  * (« Pour un membre : Quitter cette fête », fete.md).
  * @param role - My place in the party.

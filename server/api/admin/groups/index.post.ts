@@ -5,19 +5,16 @@ import { useDb } from '#server/database/client';
 import { parties } from '#server/database/schema';
 import { addOrganizer, publicGroup } from '#server/database/groups';
 import { findAccountById } from '#server/database/accounts';
-import { quotaAccountOf } from '#server/database/quota';
 import { requireAccount } from '#server/http/auth';
-import { unwrap } from '#server/http/errors';
-import { canCreateGroup } from '#server/utils/quota';
 import { newId, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import { accountEmailSchema } from '#server/utils/accounts';
 import { freeSlug, slugSchema, slugify } from '#server/utils/auth';
 
 // Creates a group, with the addresses of its organisers if any (others
-// can be added later from the group). Open to super-admins, and to any
-// account with room left in its quota, which becomes its first organiser
-// (README 22.2).
+// can be added later from the group). Open to any account, which becomes
+// its first organiser: a party is free to create (docs/spec/v3/modele.md),
+// only its Secret Santa count towards a limit.
 const bodySchema = z.object({
   // Left out by the app: the identifier is then made from the name.
   slug: slugSchema.optional(),
@@ -38,7 +35,6 @@ export default defineEventHandler(async (event) => {
   if (!account) {
     throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
-  unwrap(canCreateGroup(await quotaAccountOf(db, account)));
   const wanted = body.slug ?? slugify(body.name);
   const taken = (
     await db

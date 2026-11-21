@@ -1,13 +1,13 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import { apiLogin, heading, hydrated, loginAsSuper } from './helpers';
 
-// Open sign-up with a guard (README 22.2): anyone gets an account, nobody
-// may create a group before a super-admin answers their request.
+// Open sign-up (README 22.2): anyone gets an account and may organise,
+// with no request to anyone; the limit is 3 Secret Santa in progress per
+// account (ticket 105).
 test.describe.configure({ mode: 'serial' });
 
 const SUPER = 'super-signup@example.com';
 const NEWCOMER = 'nouvelle-venue@example.com';
-const LATER = 'plus-tard@example.com';
 const GROUP = { slug: 'famille-inscrite', name: 'Famille Inscrite' };
 const state: { admin?: APIRequestContext } = {};
 
@@ -20,7 +20,9 @@ test.afterAll(async () => {
   await state.admin?.dispose();
 });
 
-test('a new address signs up, and cannot create a group', async ({ page }) => {
+test('a new address signs up, and does not reach the administration', async ({
+  page,
+}) => {
   await page.goto('/');
   await hydrated(page);
   await page.getByLabel('Adresse email').fill(NEWCOMER);
@@ -33,8 +35,6 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
     page.getByTestId('tab-bar').getByRole('link', { name: 'Admin' }),
   ).toHaveCount(0);
 
-  const created = await page.request.post('/api/admin/groups', { data: GROUP });
-  expect(created.status()).toBe(403);
   expect((await page.request.get('/api/admin/accounts')).status()).toBe(403);
   await page.goto('/admin/comptes');
   await expect(heading(page)).toHaveText('Bonjour');
@@ -42,102 +42,7 @@ test('a new address signs up, and cannot create a group', async ({ page }) => {
   await expect(heading(page)).toHaveText('Bonjour');
 });
 
-test('they ask for a group, once at a time', async ({ page }) => {
-  await apiLogin(page.request, NEWCOMER);
-  // On its own page (README 23.3): the request, then why a request. The
-  // home of the V3 no longer leads to it (requests go with ticket 105).
-  await page.goto('/demande');
-  await hydrated(page);
-  await expect(page.getByTestId('request-why')).toContainText(
-    'Pourquoi une demande ?',
-  );
-  await page.getByLabel('Ta demande').fill('Le Noël de ma famille');
-  // A page where one writes (README 23.3): its action is in the page, at
-  // the end of the content, not in a band stuck to the bottom; the bar
-  // at the bottom stays, and touching outside the field leaves it.
-  await expect(page.getByTestId('inline-footer')).toBeVisible();
-  await expect(page.getByTestId('sticky-footer')).toHaveCount(0);
-  await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Accueil' }),
-  ).toHaveAttribute('aria-current', 'page');
-  await page.getByTestId('request-why').click();
-  await expect(page.getByLabel('Ta demande')).not.toBeFocused();
-  await page.getByRole('button', { name: 'Envoyer ma demande' }).click();
-  await expect(page.getByText('Demande envoyée')).toBeVisible();
-  await expect(heading(page)).toHaveText('Bonjour');
-
-  const again = await page.request.post('/api/auth/group-requests', {
-    data: { message: 'Encore' },
-  });
-  expect(again.status()).toBe(409);
-});
-
-test('the super-admin sees the request and accepts it', async ({
-  page,
-  playwright,
-  baseURL,
-}) => {
-  // A second account, without a name, asks too, after her.
-  const later = await playwright.request.newContext({ baseURL });
-  await apiLogin(later, LATER);
-  await later.post('/api/auth/group-requests', {
-    data: { message: 'Pour ma coloc' },
-  });
-  await later.dispose();
-
-  await loginAsSuper(page, SUPER);
-  await page
-    .getByTestId('tab-bar')
-    .getByRole('link', { name: 'Admin' })
-    .click();
-  await expect(heading(page)).toHaveText('Administration');
-  // The oldest request in its card, on a stack: « 1 sur 2 »; « Traiter »
-  // opens its page, which weighs it against the load of the app.
-  const card = page.getByTestId('admin-request');
-  await expect(card).toContainText('À traiter · 1 sur 2');
-  await expect(card).toContainText(NEWCOMER);
-  await expect(card).toContainText('Le Noël de ma famille');
-  await card.getByRole('link', { name: 'Traiter' }).click();
-  await expect(page).toHaveURL(/\/admin\/demandes\//);
-  await expect(page.getByTestId('group-request')).toContainText(
-    'Le Noël de ma famille',
-  );
-  await expect(page.getByTestId('app-load')).toContainText(
-    'couverts par les offres gratuites',
-  );
-  await page.getByRole('button', { name: 'Accepter' }).click();
-  await expect(page).toHaveURL(/\/admin$/);
-  // The next one takes its place; without a name, its address is the
-  // title and is not said again under it.
-  await expect(card).toContainText('À traiter · 1 demande de groupe');
-  await expect(card.getByRole('heading')).toHaveText(LATER);
-  await expect(card.getByText(LATER)).toHaveCount(1);
-  await card.getByRole('link', { name: 'Traiter' }).click();
-  // A ready-made word goes with the answer.
-  await page.getByRole('button', { name: 'C’est complet' }).click();
-  await expect(page.getByLabel(/Un mot en réponse/)).toHaveValue(
-    /application est complète/,
-  );
-  await page.getByRole('button', { name: 'Refuser' }).click();
-  await expect(card).toContainText('Aucune demande à traiter');
-
-  // The account may now create one group, and waits for nothing.
-  await page.getByRole('link', { name: /^Comptes/ }).click();
-  await expect(heading(page)).toHaveText('Comptes');
-  const row = page.getByTestId('accounts').getByRole('link', {
-    name: new RegExp(NEWCOMER),
-  });
-  await expect(row).not.toContainText('À traiter');
-  // The one refused says so on its line.
-  await expect(
-    page.getByTestId('accounts').getByRole('link', { name: new RegExp(LATER) }),
-  ).toContainText('demande refusée');
-  await row.click();
-  await expect(page.getByTestId('quota')).toHaveText('1');
-  await expect(page.getByTestId('request-row')).toHaveCount(0);
-});
-
-test('they create their group, organise it, and the quota is used up', async ({
+test('they create their group and organise up to 3 Secret Santa', async ({
   page,
 }) => {
   await apiLogin(page.request, NEWCOMER);
@@ -161,11 +66,8 @@ test('they create their group, organise it, and the quota is used up', async ({
   await expect(heading(page)).toHaveText('Bonjour Nina');
   await page.goto('/admin/groupes/nouveau');
   await hydrated(page);
-  // Only the name: they organise it, and see how many they may create.
+  // Only the name: they organise it.
   await expect(page.getByText('Tu en seras l’organisateur.')).toBeVisible();
-  await expect(page.getByTestId('groups-left')).toHaveText(
-    'Tu peux encore créer 1 groupe',
-  );
   await page.getByLabel('Nom du groupe').fill(GROUP.name);
   await expect(page.getByLabel('Adresse du premier organisateur')).toHaveCount(
     0,
@@ -189,16 +91,26 @@ test('they create their group, organise it, and the quota is used up', async ({
     ]),
   ).toEqual([['Nina', NEWCOMER]]);
 
-  const second = await page.request.post('/api/admin/groups', {
-    data: { slug: 'une-de-trop', name: 'Une de trop' },
-  });
-  expect(second.status()).toBe(403);
+  // Three Secret Santa, in the same party and the same year; the fourth
+  // is refused by the server.
+  const newSecretSanta = (label: string) =>
+    page.request.post(`/api/admin/${GROUP.slug}/editions`, {
+      data: { label, year: 2026, eventDate: '2026-12-25' },
+    });
+  for (const label of ['Les adultes', 'Les enfants', 'Les cousins']) {
+    expect((await newSecretSanta(label)).status()).toBe(201);
+  }
+  const fourth = await newSecretSanta('Un de trop');
+  expect(fourth.status()).toBe(403);
+  expect((await fourth.json()).statusMessage).toBe(
+    'secret_santa_limit_reached',
+  );
   await page.goto('/');
   await hydrated(page);
   await expect(page.getByTestId('home-party')).toContainText(GROUP.name);
 });
 
-test('the super-admin sees every group, sets a quota and disables an account', async ({
+test('the super-admin sees every group, sets a limit and disables an account', async ({
   page,
 }) => {
   await loginAsSuper(page, SUPER);
@@ -209,7 +121,7 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   // Each line: who organises it, its members, where its draw stands.
   await expect(
     page.getByTestId('groups').getByRole('link', { name: GROUP.name }),
-  ).toContainText('Nina · 1 membre · pas de tirage en cours');
+  ).toContainText('Nina · 1 membre · à préparer');
   // The search finds a group by its organiser too.
   await page.getByLabel('Chercher un groupe ou un organisateur').fill('Nina');
   await expect(page.getByTestId('groups')).toContainText(GROUP.name);
@@ -223,16 +135,16 @@ test('the super-admin sees every group, sets a quota and disables an account', a
   await page.goto('/admin/comptes');
   await hydrated(page);
   // A row opens the account's page: its groups with their link, its
-  // quota changed at once; its profile is read, not edited.
+  // limit changed at once; its profile is read, not edited.
   await page.getByTestId('accounts').getByText('Nina').click();
   await expect(page.getByRole('link', { name: GROUP.name })).toContainText(
-    'Organise · 1 membre · pas de tirage en cours',
+    'Organise · 1 membre · à préparer',
   );
-  await expect(page.getByTestId('quota')).toHaveText('1');
-  await page.getByRole('button', { name: 'Un groupe de plus' }).click();
-  await expect(page.getByTestId('quota')).toHaveText('2');
-  await page.getByRole('button', { name: 'Un groupe de plus' }).click();
   await expect(page.getByTestId('quota')).toHaveText('3');
+  await expect(page.getByText('3 en cours · il lui en reste 0')).toBeVisible();
+  await page.getByRole('button', { name: 'Un Secret Santa de plus' }).click();
+  await expect(page.getByTestId('quota')).toHaveText('4');
+  await expect(page.getByText('3 en cours · il lui en reste 1')).toBeVisible();
   await expect(page.getByRole('textbox')).toHaveCount(0);
   await expect(
     page.getByText('Son profil (prénom, icône, langue) lui appartient'),
@@ -249,7 +161,7 @@ test('the super-admin sees every group, sets a quota and disables an account', a
     name: GROUP.name,
     role: 'organizer',
     members: 1,
-    draw: null,
+    draw: { status: 'preparing' },
   });
   const self = await page.request.patch(`/api/admin/accounts/${idOf(SUPER)}`, {
     data: { disabled: true },

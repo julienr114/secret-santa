@@ -3,7 +3,7 @@ import { and, count, eq } from 'drizzle-orm';
 import { parties, persons } from '#server/database/schema';
 import { requireGroupAccess } from '#server/http/auth';
 import { validatedBody } from '#server/http/validate';
-import { MAX_PARTICIPANTS } from '#server/utils/editions';
+import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
 import {
   INVITE_MESSAGE_MAX,
   defaultInvitePlaces,
@@ -18,7 +18,7 @@ const bodySchema = z.object({
   open: z.boolean(),
   renew: z.boolean().default(false),
   until: z.iso.date().nullable().optional(),
-  places: z.number().int().min(1).max(MAX_PARTICIPANTS).optional(),
+  places: z.number().int().min(1).max(MAX_PARTY_MEMBERS).optional(),
   message: z.string().trim().max(INVITE_MESSAGE_MAX).nullable().optional(),
 });
 

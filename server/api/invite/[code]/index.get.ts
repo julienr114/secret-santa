@@ -7,7 +7,8 @@ import {
 import { personalPath } from '#server/database/participations';
 import { optionalAccount } from '#server/http/auth';
 import { dataKeyOf, nowIso } from '#server/http/context';
-import { canJoinGroup } from '#server/utils/invite';
+import { canJoinGroup, linkPlaces } from '#server/utils/invite';
+import { countActiveMembers } from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
 import { mergeRules } from '#server/utils/rules';
 import { organizerCount } from '#server/database/groups';
@@ -30,7 +31,7 @@ export default defineEventHandler(async (event) => {
     person && edition
       ? await findParticipationOf(db, edition.id, person.id)
       : null;
-  const [[year], [members]] = await Promise.all([
+  const [[year], [members], active] = await Promise.all([
     db
       .select({ date: partyYears.date })
       .from(partyYears)
@@ -41,6 +42,7 @@ export default defineEventHandler(async (event) => {
       .select({ n: count() })
       .from(persons)
       .where(eq(persons.partyId, group.id)),
+    countActiveMembers(db, group.id),
   ]);
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return {
@@ -73,7 +75,10 @@ export default defineEventHandler(async (event) => {
     // Why the link no longer lets anyone in, or null.
     closed: (() => {
       const open = canJoinGroup(
-        { until: group.inviteUntil, places: group.invitePlaces ?? 0 },
+        {
+          until: group.inviteUntil,
+          places: linkPlaces(group.invitePlaces, active),
+        },
         nowIso().slice(0, 10),
       );
       return open.ok ? null : open.reason;

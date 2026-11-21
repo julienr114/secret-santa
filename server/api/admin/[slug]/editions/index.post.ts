@@ -10,6 +10,8 @@ import {
   type Edition,
 } from '#server/database/editions';
 import { listPeople } from '#server/database/people';
+import { findAccountById } from '#server/database/accounts';
+import { quotaAccountOf } from '#server/database/quota';
 import { recordEvent } from '#server/database/audit';
 import { requireGroupAccess } from '#server/http/auth';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
@@ -21,21 +23,24 @@ import {
 } from '#server/utils/editions';
 import { unwrap } from '#server/http/errors';
 import { mergeRules } from '#server/utils/rules';
+import { canOrganiseSecretSanta } from '#server/utils/quota';
 
 // Creates an edition, ready to prepare: links work at once. Its participants start as those of the previous
 // edition who are still active (README 4.2), or every active person for a
-// first edition. Each gets a personal link right away.
+// first edition. Each gets a personal link right away. No request to
+// anyone: an account organises up to its limit of Secret Santa in progress
+// (3 by default, docs/spec/v3/secret-santa.md), and a party may have
+// several in the same year.
 export default defineEventHandler(async (event) => {
   const { user, group, db } = await requireGroupAccess(event);
   const body = await validatedBody(event, editionInputSchema);
   const dataKey = await dataKeyOf(event);
-  const existing = await listEditions(db, group.id);
-  if (existing.some((e) => e.status !== 'closed')) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'edition_in_progress',
-    });
+  const account = await findAccountById(db, user.accountId);
+  if (!account) {
+    throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
+  unwrap(canOrganiseSecretSanta(await quotaAccountOf(db, account)));
+  const existing = await listEditions(db, group.id);
   const previous = previousEdition(existing, body.year);
   const previousIds = previous
     ? (

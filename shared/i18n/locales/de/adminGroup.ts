@@ -11,10 +11,6 @@ export default {
     submit: 'Gruppe erstellen',
     created: 'Gruppe erstellt',
     note: 'Du wirst sie organisieren. Die Mitglieder fügst du gleich danach hinzu, oder du schickst ihnen einen Link.',
-    groupsLeft: {
-      one: 'Du kannst noch {count} Gruppe anlegen',
-      other: 'Du kannst noch {count} Gruppen anlegen',
-    },
     intro: 'Eine Familie, ein Freundeskreis, ein Team: eine Gruppe pro Kreis.',
     nameHelp: 'Du und die Mitglieder seht ihn oben in jeder Auslosung.',
     organizerHelp:

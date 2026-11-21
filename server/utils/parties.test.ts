@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   MAX_PARTY_MEMBERS,
+  membersLeft,
   canLeaveParty,
   checkPartySize,
   leavingLists,
@@ -79,6 +80,14 @@ describe('checkPartySize', () => {
       ok: false,
       reason: 'too_many_members',
     });
+  });
+});
+
+describe('membersLeft', () => {
+  it('leaves room up to thirty, never below zero', () => {
+    expect(membersLeft(0)).toBe(MAX_PARTY_MEMBERS);
+    expect(membersLeft(28)).toBe(2);
+    expect(membersLeft(31)).toBe(0);
   });
 });
 

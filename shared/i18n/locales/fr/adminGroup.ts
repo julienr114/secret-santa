@@ -8,10 +8,6 @@ export default {
     submit: 'Créer le groupe',
     created: 'Groupe créé',
     note: 'Tu en seras l’organisateur. Tu ajoutes les membres juste après, ou tu leur envoies un lien.',
-    groupsLeft: {
-      one: 'Tu peux encore créer {count} groupe',
-      other: 'Tu peux encore créer {count} groupes',
-    },
     intro: 'Une famille, une bande d’amis, une équipe : un groupe par cercle.',
     nameHelp:
       'Tu pourras le voir, toi et les membres, en haut de chaque tirage.',

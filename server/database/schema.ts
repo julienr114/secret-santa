@@ -390,8 +390,9 @@ export const accounts = sqliteTable('accounts', {
   isSuperAdmin: integer('is_super_admin', { mode: 'boolean' })
     .notNull()
     .default(false),
-  // How many groups the account may create; nobody may by default.
-  groupQuota: integer('group_quota').notNull().default(0),
+  // How many Secret Santa in progress the account may organise at once
+  // (docs/spec/v3/modele.md, « Les limites »); a super-admin may change it.
+  secretSantaLimit: integer('secret_santa_limit').notNull().default(3),
   language: text('language', { enum: ['fr', 'en', 'de'] })
     .notNull()
     .default('fr'),
@@ -460,39 +461,6 @@ export const partyOrganisers = sqliteTable(
   (t) => [
     uniqueIndex('party_organisers_pair_idx').on(t.partyId, t.accountId),
     index('party_organisers_account_idx').on(t.accountId),
-  ],
-);
-
-export const GROUP_REQUEST_STATUSES = [
-  'pending',
-  'approved',
-  'refused',
-] as const;
-
-// An account asks for the right to create a group (README 22.2): a
-// super-admin approves it by raising the account's quota, or refuses.
-export const groupRequests = sqliteTable(
-  'group_requests',
-  {
-    id: text('id').primaryKey(),
-    accountId: text('account_id')
-      .notNull()
-      .references(() => accounts.id),
-    // What the group is for, in the asker's words.
-    message: text('message').notNull(),
-    status: text('status', { enum: GROUP_REQUEST_STATUSES })
-      .notNull()
-      .default('pending'),
-    createdAt: text('created_at').notNull(),
-    decidedAt: text('decided_at'),
-    decidedBy: text('decided_by').references(() => accounts.id),
-    // The super-admin's words with the answer, in its email and on the
-    // asker's home (lot 12 of the redesign).
-    decisionNote: text('decision_note'),
-  },
-  (t) => [
-    index('group_requests_account_idx').on(t.accountId, t.createdAt),
-    index('group_requests_status_idx').on(t.status),
   ],
 );
 
@@ -782,7 +750,6 @@ export const giftListVisits = sqliteTable(
 export type FamilyMemberRow = typeof familyMembers.$inferSelect;
 export type GiftListRow = typeof giftLists.$inferSelect;
 export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;
-export type GroupRequestRow = typeof groupRequests.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;
 export type SessionRow = typeof sessions.$inferSelect;

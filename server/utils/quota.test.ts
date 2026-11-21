@@ -1,88 +1,58 @@
 import { describe, expect, it } from 'vitest';
 import {
   APP_GROUPS_COMFORT,
-  GROUP_QUOTA_MAX,
   appLoad,
-  canCreateGroup,
   canDisableAccount,
-  canRequestGroup,
-  quotaAfterApproval,
-  remainingGroups,
+  canOrganiseSecretSanta,
+  remainingSecretSantas,
 } from './quota';
 import { failureOf } from '~~/tests/helpers';
 
-const member = { isSuperAdmin: false, groupQuota: 0, createdCount: 0 };
+const member = { isSuperAdmin: false, secretSantaLimit: 3, organisedCount: 0 };
 
-describe('remainingGroups', () => {
-  it('is the quota minus the groups created, never negative', () => {
-    expect(remainingGroups(member)).toBe(0);
-    expect(remainingGroups({ ...member, groupQuota: 2, createdCount: 1 })).toBe(
-      1,
-    );
-    expect(remainingGroups({ ...member, groupQuota: 1, createdCount: 3 })).toBe(
-      0,
-    );
+describe('remainingSecretSantas', () => {
+  it('is the limit minus those in progress, never negative', () => {
+    expect(remainingSecretSantas(member)).toBe(3);
+    expect(remainingSecretSantas({ ...member, organisedCount: 2 })).toBe(1);
+    expect(
+      remainingSecretSantas({
+        ...member,
+        secretSantaLimit: 1,
+        organisedCount: 3,
+      }),
+    ).toBe(0);
   });
 
   it('has no limit for a super-admin', () => {
-    expect(remainingGroups({ ...member, isSuperAdmin: true })).toBe(Infinity);
-  });
-});
-
-describe('canCreateGroup', () => {
-  it('refuses by default and once the quota is used up', () => {
-    expect(failureOf(canCreateGroup(member)).reason).toBe(
-      'group_quota_reached',
-    );
     expect(
-      failureOf(canCreateGroup({ ...member, groupQuota: 1, createdCount: 1 }))
-        .reason,
-    ).toBe('group_quota_reached');
-  });
-
-  it('allows with room left, and always for a super-admin', () => {
-    expect(canCreateGroup({ ...member, groupQuota: 1 }).ok).toBe(true);
-    expect(canCreateGroup({ ...member, isSuperAdmin: true }).ok).toBe(true);
-  });
-});
-
-describe('canRequestGroup', () => {
-  it('allows an account with no room and no pending request', () => {
-    expect(canRequestGroup(member, false).ok).toBe(true);
-  });
-
-  it('refuses a second request while one is pending', () => {
-    expect(failureOf(canRequestGroup(member, true)).reason).toBe(
-      'group_request_pending',
-    );
-  });
-
-  it('refuses when the account can already create a group', () => {
-    expect(
-      failureOf(canRequestGroup({ ...member, groupQuota: 1 }, false)).reason,
-    ).toBe('group_request_useless');
-    expect(
-      failureOf(canRequestGroup({ ...member, isSuperAdmin: true }, false))
-        .reason,
-    ).toBe('group_request_useless');
-  });
-});
-
-describe('quotaAfterApproval', () => {
-  it('leaves room for exactly one more group', () => {
-    expect(quotaAfterApproval({ groupQuota: 0, createdCount: 0 })).toBe(1);
-    expect(quotaAfterApproval({ groupQuota: 1, createdCount: 1 })).toBe(2);
-    // A quota lowered below what exists is caught up first.
-    expect(quotaAfterApproval({ groupQuota: 0, createdCount: 2 })).toBe(3);
-  });
-
-  it('never goes over the maximum', () => {
-    expect(
-      quotaAfterApproval({
-        groupQuota: GROUP_QUOTA_MAX,
-        createdCount: GROUP_QUOTA_MAX,
+      remainingSecretSantas({
+        ...member,
+        isSuperAdmin: true,
+        organisedCount: 9,
       }),
-    ).toBe(GROUP_QUOTA_MAX);
+    ).toBe(Infinity);
+  });
+});
+
+describe('canOrganiseSecretSanta', () => {
+  it('allows up to the limit, then refuses the next one', () => {
+    expect(canOrganiseSecretSanta({ ...member, organisedCount: 2 }).ok).toBe(
+      true,
+    );
+    expect(
+      failureOf(canOrganiseSecretSanta({ ...member, organisedCount: 3 }))
+        .reason,
+    ).toBe('secret_santa_limit_reached');
+  });
+
+  it('always allows a super-admin', () => {
+    expect(
+      canOrganiseSecretSanta({
+        ...member,
+        isSuperAdmin: true,
+        organisedCount: 3,
+      }).ok,
+    ).toBe(true);
   });
 });
 

@@ -5,10 +5,11 @@ import {
   canClaim,
   canJoinGroup,
   defaultInvitePlaces,
+  linkPlaces,
   generateInviteCode,
   safeNext,
 } from './invite';
-import { MAX_PARTICIPANTS } from './editions';
+import { MAX_PARTY_MEMBERS } from './parties';
 import { failureOf } from '~~/tests/helpers';
 
 describe('generateInviteCode', () => {
@@ -44,9 +45,18 @@ describe('canJoinGroup', () => {
 });
 
 describe('defaultInvitePlaces', () => {
-  it('offers what a draw can still take', () => {
-    expect(defaultInvitePlaces(8)).toBe(MAX_PARTICIPANTS - 8);
-    expect(defaultInvitePlaces(MAX_PARTICIPANTS + 5)).toBe(0);
+  it('offers what the party can still take before 30 members', () => {
+    expect(defaultInvitePlaces(8)).toBe(MAX_PARTY_MEMBERS - 8);
+    expect(defaultInvitePlaces(MAX_PARTY_MEMBERS + 5)).toBe(0);
+  });
+});
+
+describe('linkPlaces', () => {
+  it('never offers more than what is left before 30 members', () => {
+    expect(linkPlaces(10, 5)).toBe(10);
+    expect(linkPlaces(10, 25)).toBe(5);
+    expect(linkPlaces(10, MAX_PARTY_MEMBERS)).toBe(0);
+    expect(linkPlaces(null, 5)).toBe(0);
   });
 });
 

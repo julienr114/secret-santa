@@ -1,5 +1,5 @@
 import { ok, fail, type Result } from './result';
-import { MAX_PARTICIPANTS } from './editions';
+import { membersLeft } from './parties';
 import { formatEventDate } from './rules';
 import { translate, type Locale } from '#shared/i18n';
 import { randomBytes, toBase64Url } from './crypto';
@@ -39,13 +39,26 @@ export const canJoinGroup = (
 };
 
 /**
- * How many places a new link offers by default: what a draw can still
- * take, given the active people of the group.
- * @param activePeople - Active people in the group.
+ * How many places a new link offers by default: what the party can still
+ * take before its 30 members.
+ * @param activePeople - Active people in the party.
  * @returns The places left, never below zero.
  */
 export const defaultInvitePlaces = (activePeople: number): number =>
-  Math.max(0, MAX_PARTICIPANTS - activePeople);
+  membersLeft(activePeople);
+
+/**
+ * The places a link really offers: never more than what is left before
+ * 30 members, so a full party pauses its link by itself, and a member who
+ * leaves opens it again (docs/spec/v3/fete.md, « 30 membres au plus »).
+ * @param places - The places the organiser gave the link.
+ * @param activePeople - Active people in the party.
+ * @returns The places one may still take by the link.
+ */
+export const linkPlaces = (
+  places: number | null,
+  activePeople: number,
+): number => Math.min(places ?? 0, membersLeft(activePeople));
 
 /**
  * Whether a draw opened by its personal link may be linked to an account:

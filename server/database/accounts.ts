@@ -48,7 +48,7 @@ export const createAccount = async (
     avatarEmoji: null,
     avatarColor: null,
     isSuperAdmin,
-    groupQuota: 0,
+    secretSantaLimit: 3,
     language,
     createdAt: now,
     lastLoginAt: null,

@@ -24,16 +24,23 @@ describe('backMove', () => {
 
 describe('partyPathOf', () => {
   it('sends the pages of a group to its party', () => {
-    expect(partyPathOf('/admin/famille')).toBe('/f/famille');
-    expect(partyPathOf('/admin/famille/')).toBe('/f/famille');
-    expect(partyPathOf('/admin/famille/personnes')).toBe('/f/famille/membres');
+    expect(partyPathOf('/admin/famille')).toBe('/e/famille');
+    expect(partyPathOf('/admin/famille/')).toBe('/e/famille');
+    expect(partyPathOf('/admin/famille/personnes')).toBe('/e/famille/membres');
     expect(partyPathOf('/admin/famille/personnes/p1')).toBe(
-      '/f/famille/membres/p1',
+      '/e/famille/membres/p1',
     );
     expect(partyPathOf('/admin/famille/invitation/mot')).toBe(
-      '/f/famille/invitation/mot',
+      '/e/famille/invitation/mot',
     );
-    expect(partyPathOf('/admin/famille/reglages')).toBe('/f/famille/reglages');
+    expect(partyPathOf('/admin/famille/reglages')).toBe('/e/famille/reglages');
+  });
+
+  it('sends the addresses of before ticket 102 from /f to /e', () => {
+    expect(partyPathOf('/f/famille')).toBe('/e/famille');
+    expect(partyPathOf('/f/famille/membres/p1')).toBe('/e/famille/membres/p1');
+    expect(partyPathOf('/f/nouvelle')).toBe('/e/nouvelle');
+    expect(partyPathOf('/f')).toBe('/e');
   });
 
   it('leaves the editions, the administration and the rest alone', () => {

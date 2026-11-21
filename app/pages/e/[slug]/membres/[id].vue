@@ -28,7 +28,7 @@ const toast = useMessages();
  * @returns Nothing.
  */
 const onError = (error: unknown) => toast.failed(errorMessage(error));
-const membersPath = computed(() => `/f/${slug.value}/membres`);
+const membersPath = computed(() => `/e/${slug.value}/membres`);
 
 const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);

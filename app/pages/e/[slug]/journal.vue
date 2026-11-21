@@ -10,7 +10,7 @@ const { t, locale } = useT();
 const journal = useGroupJournalQuery(slug, locale);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('participant.journal.title')) });
-const screen = computed(() => ({ back: `/f/${slug.value}` }));
+const screen = computed(() => ({ back: `/e/${slug.value}` }));
 </script>
 
 <template>

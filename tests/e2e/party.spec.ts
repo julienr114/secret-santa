@@ -23,7 +23,7 @@ test('a birthday party comes filled, and is created with its people', async ({
     data: { birthDate: '2022-12-14' },
   });
 
-  await page.goto(`/f/nouvelle?categorie=birthday&proche=${id}`);
+  await page.goto(`/e/nouvelle?categorie=birthday&proche=${id}`);
   await hydrated(page);
   await expect(heading(page)).toHaveText('Pour quelle occasion ?');
   await expect(page.getByTestId('category-birthday')).toHaveAttribute(
@@ -38,7 +38,7 @@ test('a birthday party comes filled, and is created with its people', async ({
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(heading(page)).toHaveText('Qui est de la fête ?');
   await page.getByTestId('party-create').click();
-  await expect(page).toHaveURL(/\/f\/l-anniversaire-de-zoe$/);
+  await expect(page).toHaveURL(/\/e\/l-anniversaire-de-zoe$/);
   state.slug = 'l-anniversaire-de-zoe';
 
   // The page: its category, every year, the date of its year, one member.
@@ -62,7 +62,7 @@ test('a birthday party comes filled, and is created with its people', async ({
 
 test('its settings are only its own', async ({ page }) => {
   await apiLogin(page.request, ORGANISER);
-  await page.goto(`/f/${state.slug}`);
+  await page.goto(`/e/${state.slug}`);
   await hydrated(page);
   await page.getByRole('link', { name: 'Réglages de la fête' }).click();
   await expect(heading(page)).toHaveText('Réglages de la fête');
@@ -97,7 +97,7 @@ test('a member sees the party, and leaves it', async ({
   });
 
   await apiLogin(page.request, MEMBER);
-  await page.goto(`/f/${state.slug}`);
+  await page.goto(`/e/${state.slug}`);
   await hydrated(page);
   await expect(heading(page)).toHaveText('L’anniversaire de Zoé');
   await expect(page.getByTestId('party-members')).toContainText('2 membres');
@@ -125,6 +125,6 @@ test('the old addresses of a group lead to its party', async ({ page }) => {
   await apiLogin(page.request, ORGANISER);
   await page.goto(`/admin/${state.slug}/personnes`);
   await hydrated(page);
-  await expect(page).toHaveURL(new RegExp(`/f/${state.slug}/membres$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${state.slug}/membres$`));
   await expect(heading(page)).toHaveText('Membres');
 });

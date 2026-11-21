@@ -34,7 +34,7 @@ flowchart LR
   accueil --> administration
 
   subgraph groupe ["Une fête (ses membres ; l'organisateur en plus)"]
-    leGroupe["La fête<br/><small>/f/[fête]</small>"]
+    leGroupe["La fête<br/><small>/e/[fête]</small>"]
     leGroupe --> membres["Membres<br/><small>organisateur</small>"]
     membres --> personne["Une personne"]
     membres --> nouvellePersonne["Nouvelle personne"]
@@ -46,7 +46,7 @@ flowchart LR
     leGroupe --> nouvelleEdition["Le Secret Santa 2027<br/><small>nouveau</small>"]
     nouvelleEdition --> ligneNouvelle["Une ligne<br/><small>nom, date, budget, Devine qui, petit mot, mot ajouté</small>"]
   end
-  accueil --> nouvelleFete["Pour quelle occasion ?<br/><small>/f/nouvelle</small>"]
+  accueil --> nouvelleFete["Pour quelle occasion ?<br/><small>/e/nouvelle</small>"]
   accueil --> leGroupe
 
   subgraph edition ["Une édition (organisateur)"]
@@ -111,11 +111,11 @@ Décidée par Julien le 18 novembre 2026.
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/f/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/f/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/f/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/e/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/e/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/e/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
-L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/f/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
+L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
@@ -138,21 +138,21 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; 
 
 ## Une fête (ses membres ; l'organisateur pour le reste)
 
-Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de la fête (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement, et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/f/nouvelle` | Accueil ; la seconde étape : la première | |
-| La fête | `/f/[fête]` | Accueil | Quitter cette fête |
-| Membres | `/f/[fête]/membres` | La fête | |
-| Une personne | `/f/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
-| Nouvelle personne | `/f/[fête]/membres/nouvelle` | Membres | |
-| Inviter par lien | `/f/[fête]/invitation` | Membres | Places, date limite |
-| Ton mot sur la page | `/f/[fête]/invitation/mot` | Inviter par lien | |
-| Exclusions | `/f/[fête]/exclusions` | Membres | Ajouter une exclusion |
-| Journal | `/f/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
-| Réglages de la fête | `/f/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
-| (ancienne adresse) | `/f/[fête]/organisateurs` | mène aux Réglages de la fête | |
+| Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/e/nouvelle` | Accueil ; la seconde étape : la première | |
+| La fête | `/e/[fête]` | Accueil | Quitter cette fête |
+| Membres | `/e/[fête]/membres` | La fête | |
+| Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
+| Nouvelle personne | `/e/[fête]/membres/nouvelle` | Membres | |
+| Inviter par lien | `/e/[fête]/invitation` | Membres | Places, date limite |
+| Ton mot sur la page | `/e/[fête]/invitation/mot` | Inviter par lien | |
+| Exclusions | `/e/[fête]/exclusions` | Membres | Ajouter une exclusion |
+| Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
+| Réglages de la fête | `/e/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
+| (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
 
 ## Une édition (organisateur)
 

@@ -181,7 +181,7 @@ test('a large group folds its lists, before and after the draw', async ({
   expect(
     (await (await page.request.get(`/api/invite/${inviteCode}`)).json()).closed,
   ).toBe('invite_full');
-  await page.goto('/f/cas-grand/membres');
+  await page.goto('/e/cas-grand/membres');
   await hydrated(page);
   await expect(page.getByTestId('members-count')).toHaveText('30 sur 30');
   await expect(page.getByTestId('party-full')).toContainText(
@@ -364,7 +364,7 @@ test('a screen reached by its address says where it belongs, and leads back', as
     .getByRole('navigation', { name: 'Tu es ici' })
     .getByRole('link', { name: 'cas-contexte' })
     .click();
-  await expect(page).toHaveURL(/\/f\/cas-contexte$/);
+  await expect(page).toHaveURL(/\/e\/cas-contexte$/);
 
   // « Retour » goes up the tree, not back in the history
   // (docs/ARBORESCENCE.md): the settings of the edition, opened from the
@@ -376,7 +376,7 @@ test('a screen reached by its address says where it belongs, and leads back', as
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(page).toHaveURL(new RegExp(`/editions/${id}$`));
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(/\/f\/cas-contexte$/);
+  await expect(page).toHaveURL(/\/e\/cas-contexte$/);
 });
 
 test.describe('on an iPhone', () => {

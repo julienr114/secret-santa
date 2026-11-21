@@ -5,7 +5,7 @@ definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 await navigateTo(
   {
-    path: `/f/${String(route.params.slug)}/reglages`,
+    path: `/e/${String(route.params.slug)}/reglages`,
     hash: '#organisateurs',
   },
   { replace: true },

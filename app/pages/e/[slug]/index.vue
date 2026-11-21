@@ -113,7 +113,7 @@ const onLeave = () =>
           </div>
           <NuxtLink
             v-if="organiser"
-            :to="`/f/${slug}/reglages`"
+            :to="`/e/${slug}/reglages`"
             :aria-label="t('party.settings')"
             class="flex size-11 shrink-0 items-center justify-center rounded-full bg-default ring-1 ring-default"
           >
@@ -123,7 +123,7 @@ const onLeave = () =>
 
         <component
           :is="organiser ? NuxtLink : 'div'"
-          :to="organiser ? `/f/${slug}/membres` : undefined"
+          :to="organiser ? `/e/${slug}/membres` : undefined"
           class="flex min-h-14 items-center gap-3 rounded-[28px] bg-default px-3.5 shadow-[0_3px_0_var(--color-peach-200),0_0_0_1.5px_var(--color-peach-200)]"
           data-testid="party-members"
         >

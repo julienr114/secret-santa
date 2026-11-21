@@ -38,7 +38,7 @@ const when = computed(() =>
       <span class="text-[13px] text-toned">{{ when }}</span>
     </span>
     <UButton
-      :to="`/f/nouvelle?categorie=birthday&proche=${birthday.memberId}`"
+      :to="`/e/nouvelle?categorie=birthday&proche=${birthday.memberId}`"
       color="neutral"
       variant="outline"
       class="min-h-10 shrink-0"

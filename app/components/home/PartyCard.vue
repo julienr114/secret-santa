@@ -29,7 +29,7 @@ const onSecretSanta = (to: string | null) => {
     data-testid="home-party"
   >
     <NuxtLink
-      :to="`/f/${party.slug}`"
+      :to="`/e/${party.slug}`"
       class="flex min-h-14 items-center gap-2.5 px-4 py-2.5 transition-colors active:bg-muted"
     >
       <span

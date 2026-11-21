@@ -19,7 +19,7 @@ const context = useScreenContext(slug);
 useHead({
   title: () => context.titleOf(t('adminEdition.invite.messageRow')),
 });
-const parent = computed(() => `/f/${slug.value}/invitation`);
+const parent = computed(() => `/e/${slug.value}/invitation`);
 const screen = computed(() => ({ back: parent.value }));
 
 const dashboard = useDashboardQuery(slug);

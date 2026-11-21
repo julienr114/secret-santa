@@ -24,7 +24,7 @@ const year = computed(() => edition.data.value?.edition.year ?? '');
 const parts = computed(() => [
   {
     label: party.data.value?.party.name ?? '',
-    to: `/f/${slug.value}`,
+    to: `/e/${slug.value}`,
   },
   {
     label: t('party.secretSanta.context', { year: year.value }),

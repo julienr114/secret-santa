@@ -219,13 +219,13 @@ const onSave = async () => {
 
       <UiList :title="t('adminEdition.addParticipants.someoneNew')">
         <UiListItem
-          :to="`/f/${slug}/membres/nouvelle?edition=${id}`"
+          :to="`/e/${slug}/membres/nouvelle?edition=${id}`"
           icon="i-lucide-user-plus"
           :title="t('adminEdition.addParticipants.create')"
           :subtitle="t('adminEdition.addParticipants.createHint')"
         />
         <UiListItem
-          :to="`/f/${slug}/invitation`"
+          :to="`/e/${slug}/invitation`"
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="t('adminEdition.addParticipants.inviteHint')"

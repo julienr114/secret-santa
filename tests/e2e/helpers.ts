@@ -47,7 +47,7 @@ export const loginAsOrganizer = async (
   email: string,
 ) => {
   await apiLogin(page.request, email);
-  await page.goto(`/f/${slug}`);
+  await page.goto(`/e/${slug}`);
   await hydrated(page);
-  await expect(page).toHaveURL(new RegExp(`/f/${slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${slug}$`));
 };

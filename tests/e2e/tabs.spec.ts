@@ -29,7 +29,7 @@ test('the bar, « Créer » and the menu of the account', async ({ page }) => {
     'Une liste',
   ]);
   await sheet.getByRole('button', { name: 'Un Secret Santa' }).click();
-  await expect(page).toHaveURL(/\/f\/nouvelle\?pour=secret-santa$/);
+  await expect(page).toHaveURL(/\/e\/nouvelle\?pour=secret-santa$/);
   await expect(heading(page)).toHaveText('Pour quelle occasion ?');
   await expect(sheet).toHaveCount(0);
 

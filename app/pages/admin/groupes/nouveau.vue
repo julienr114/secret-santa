@@ -49,7 +49,7 @@ const onSubmit = (event: FormSubmitEvent<Schema>) =>
     {
       onSuccess: ({ group }) => {
         toast.done(t('adminGroup.newGroup.created'));
-        navigateTo(`/f/${group.slug}`, { replace: true });
+        navigateTo(`/e/${group.slug}`, { replace: true });
       },
     },
   );

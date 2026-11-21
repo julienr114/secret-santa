@@ -200,7 +200,7 @@ test('a participant logs in with their address and finds their draw', async ({
   // The old address of the group leads to its party, which a member sees
   // without its settings (ticket 104).
   await page.goto(`/admin/${SLUG}`);
-  await expect(page).toHaveURL(new RegExp(`/f/${SLUG}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${SLUG}$`));
   await expect(heading(page)).toHaveText('Famille Courrier');
   await expect(
     page.getByRole('link', { name: 'Réglages de la fête' }),

@@ -154,11 +154,11 @@ const toast = useMessages();
 const errorMessage = useErrorMessage();
 /** Where to go once created: what the creation was for, else the party. */
 const after = (slug: string, invite: boolean) => {
-  if (invite) return `/f/${slug}/invitation`;
+  if (invite) return `/e/${slug}/invitation`;
   if (route.query.pour === 'secret-santa') {
     return `/admin/${slug}/editions/nouvelle`;
   }
-  return route.query.pour === 'liste' ? '/listes/nouvelle' : `/f/${slug}`;
+  return route.query.pour === 'liste' ? '/listes/nouvelle' : `/e/${slug}`;
 };
 const submit = (invite = false) => {
   if (!ready.value || !form.value.category || !date.value) return;
@@ -184,7 +184,7 @@ const emojiOf = (category: PartyCategory) =>
 </script>
 
 <template>
-  <AdminScreen :back="step === 'members' ? '/f/nouvelle' : '/'">
+  <AdminScreen :back="step === 'members' ? '/e/nouvelle' : '/'">
     <template v-if="step === 'occasion'">
       <UiPageTitle>{{ t('party.create.title') }}</UiPageTitle>
       <div

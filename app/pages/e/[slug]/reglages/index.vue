@@ -34,7 +34,7 @@ const errorMessage = useErrorMessage();
 const slug = computed(() => String(route.params.slug));
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('party.settings')) });
-const screen = computed(() => ({ back: `/f/${slug.value}` }));
+const screen = computed(() => ({ back: `/e/${slug.value}` }));
 const { user } = useUserSession();
 const isSuper = computed(() => user.value?.role === 'super_admin');
 

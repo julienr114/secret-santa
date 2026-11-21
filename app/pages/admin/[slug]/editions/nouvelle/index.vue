@@ -50,7 +50,7 @@ const title = computed(() => t('party.secretSanta.row', { year: year.value }));
 useHead({
   title: () => `${title.value} — ${partyName.value} — ${t('common.appName')}`,
 });
-const screen = computed(() => ({ back: `/f/${slug.value}` }));
+const screen = computed(() => ({ back: `/e/${slug.value}` }));
 
 // Paused, or at the limit, nothing to fill: its own screen says why.
 watch(
@@ -185,7 +185,7 @@ const onCreate = async () => {
     >
       <div class="flex flex-col gap-1">
         <UiPageContext
-          :parts="[{ label: partyName, to: `/f/${slug}` }]"
+          :parts="[{ label: partyName, to: `/e/${slug}` }]"
           :label="t('common.context')"
         />
         <UiPageTitle>{{ title }}</UiPageTitle>

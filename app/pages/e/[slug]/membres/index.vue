@@ -23,7 +23,7 @@ const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.people.title')) });
-const screen = computed(() => ({ back: `/f/${slug.value}` }));
+const screen = computed(() => ({ back: `/e/${slug.value}` }));
 
 const persons = computed(() => people.data.value?.persons ?? []);
 const activeCount = computed(
@@ -158,7 +158,7 @@ const view = computed(() =>
             <template #row="{ item: person }">
               <UiListItem
                 :avatar="person.avatar"
-                :to="`/f/${slug}/membres/${person.id}`"
+                :to="`/e/${slug}/membres/${person.id}`"
                 :title="fullName(person)"
                 :subtitle="subtitleOf(person)"
                 :class="{ 'opacity-50': !person.active }"
@@ -175,7 +175,7 @@ const view = computed(() =>
           />
           <UiListItem
             v-else
-            :to="`/f/${slug}/membres/nouvelle`"
+            :to="`/e/${slug}/membres/nouvelle`"
             icon="i-lucide-user-plus"
             :title="t('adminGroup.people.add')"
           />
@@ -183,7 +183,7 @@ const view = computed(() =>
       </section>
       <UiList :title="t('adminGroup.people.orInvite')">
         <UiListItem
-          :to="`/f/${slug}/invitation`"
+          :to="`/e/${slug}/invitation`"
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="inviteSummary"

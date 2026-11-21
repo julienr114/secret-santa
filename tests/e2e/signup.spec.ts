@@ -74,7 +74,7 @@ test('they create their group and organise up to 3 Secret Santa', async ({
   );
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
   // A member a moment ago, now the organiser of the group.
-  await expect(page).toHaveURL(new RegExp(`/f/${GROUP.slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${GROUP.slug}$`));
   await expect(heading(page)).toHaveText(GROUP.name);
   const { organizers } = await (
     await page.request.get(`/api/admin/${GROUP.slug}/organizers`)

@@ -14,7 +14,7 @@ import { useNewSecretSantaQuery } from '~/composables/queries/useHome';
 // none yet, the creation of a party straight away.
 const open = defineModel<boolean>('open', { required: true });
 const { t, tk } = useT();
-const NEW_PARTY = '/f/nouvelle?pour=secret-santa';
+const NEW_PARTY = '/e/nouvelle?pour=secret-santa';
 const OTHER = '';
 
 const step = ref<'what' | 'occasion'>('what');
@@ -98,7 +98,7 @@ const close = () => {
         :title="t('common.create.list')"
         icon="i-lucide-list-checks"
         icon-tone="lilac"
-        to="/f/nouvelle?pour=liste"
+        to="/e/nouvelle?pour=liste"
         :on-click="close"
       />
     </UiList>

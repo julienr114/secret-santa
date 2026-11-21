@@ -17,7 +17,7 @@ const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.exclusions.title')) });
-const screen = computed(() => ({ back: `/f/${slug.value}/membres` }));
+const screen = computed(() => ({ back: `/e/${slug.value}/membres` }));
 // The Secret Santa in progress holds « Éviter la même personne ».
 const currentId = computed(() => dashboard.data.value?.currentEditionId ?? '');
 const current = useEditionQuery(slug, currentId, () =>

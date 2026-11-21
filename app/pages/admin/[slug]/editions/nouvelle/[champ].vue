@@ -116,7 +116,7 @@ const onValidate = () => {
         :parts="[
           {
             label: party.data.value?.party.name ?? '',
-            to: `/f/${slug}`,
+            to: `/e/${slug}`,
           },
           { label: titleOf, to: parent },
         ]"

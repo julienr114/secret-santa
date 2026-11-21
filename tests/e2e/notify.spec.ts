@@ -56,7 +56,7 @@ test('the three emails are on by default and can be turned off', async ({
       .getByTestId('notifications')
       .getByRole('switch', { name: 'Rappel 3 jours avant la fête' }),
   ).toBeChecked();
-  await page.goto(`/f/${SLUG}/reglages`);
+  await page.goto(`/e/${SLUG}/reglages`);
   await hydrated(page);
   const section = page.getByTestId('notifications');
   const joined = section.getByRole('switch', {

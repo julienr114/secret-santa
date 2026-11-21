@@ -35,7 +35,7 @@ test('super-admin creates a group with its guardian', async ({ page }) => {
     .getByLabel('Adresse du premier organisateur')
     .fill(GROUP.organizer);
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
-  await expect(page).toHaveURL(new RegExp(`/f/${GROUP.slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${GROUP.slug}$`));
   await expect(heading(page)).toHaveText(GROUP.name);
 });
 
@@ -59,7 +59,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // Léa and Tom must not draw each other (both ways by default), each
   // picked in a sheet over « Nouvelle exclusion ». The exclusions stay
   // with the party (docs/spec/v3/modele.md).
-  await page.goto(`/f/${GROUP.slug}/exclusions`);
+  await page.goto(`/e/${GROUP.slug}/exclusions`);
   await hydrated(page);
   await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
   await page.getByRole('button', { name: /^Qui/ }).click();
@@ -73,7 +73,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByText('Léa et Tom')).toBeVisible();
 
   // Edition, from the party
-  await page.goto(`/f/${GROUP.slug}`);
+  await page.goto(`/e/${GROUP.slug}`);
   await hydrated(page);
   await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
   // Six rows, each opening its page (V3TirageNouveau); the day of the
@@ -300,7 +300,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 
   // The guardian reads the same journal as the participants, from the
   // admin: what was done, never who gives to whom.
-  await page.goto(`/f/${GROUP.slug}/journal`);
+  await page.goto(`/e/${GROUP.slug}/journal`);
   await hydrated(page);
   await expect(heading(page)).toHaveText('Journal du groupe');
   await expect(
@@ -415,7 +415,7 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
     .getByLabel('Adresse du premier organisateur')
     .fill('orga-autre@example.com');
   await page.getByRole('button', { name: 'Créer le groupe' }).click();
-  await expect(page).toHaveURL(/\/f\/autre-famille$/);
+  await expect(page).toHaveURL(/\/e\/autre-famille$/);
 
   await page.context().clearCookies();
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);

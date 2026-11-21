@@ -88,7 +88,7 @@ const greeting = computed(() =>
             {{ t(`home.empty.${card}.body`) }}
           </p>
           <UButton
-            :to="`/f/nouvelle?pour=${card === 'list' ? 'liste' : 'secret-santa'}`"
+            :to="`/e/nouvelle?pour=${card === 'list' ? 'liste' : 'secret-santa'}`"
             block
             :color="card === 'list' ? 'neutral' : 'primary'"
             :variant="card === 'list' ? 'outline' : 'solid'"

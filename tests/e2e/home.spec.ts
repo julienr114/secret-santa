@@ -136,6 +136,6 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
   await page.goto('/');
   await hydrated(page);
   await page.getByRole('link', { name: /^Famille Camille/ }).click();
-  await expect(page).toHaveURL(new RegExp(`/f/${famille}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${famille}$`));
   await camille.dispose();
 });

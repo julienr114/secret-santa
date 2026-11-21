@@ -163,13 +163,13 @@ export default {
     title: 'Damit du besser wählst',
     ask: 'Um Ideen bitten',
     sentEmailNamed: '{name} hat gerade eine E-Mail bekommen.',
-    sentPageNamed: '{name} sieht es auf der eigenen Ideen-Seite.',
+    sentPageNamed: '{name} sieht es beim Öffnen des eigenen Links.',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
     sent: 'Anfrage gesendet.',
     sentEmail:
       '{name} hat gerade eine E-Mail bekommen, ohne zu wissen, dass sie von dir kommt.',
     sentPage:
-      '{name} sieht es auf der eigenen Ideen-Seite, ohne zu wissen, dass es von dir kommt.',
+      '{name} sieht es beim Öffnen des eigenen Links, ohne zu wissen, dass es von dir kommt.',
     willEmail: 'Du bekommst eine E-Mail, sobald Ideen da sind.',
     willSee:
       'Schau wieder hier vorbei: Die Ideen erscheinen, sobald sie da sind.',

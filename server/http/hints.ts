@@ -2,6 +2,7 @@ import type { H3Event } from 'h3';
 import { and, count, desc, eq, gt, inArray, or } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import {
+  accounts,
   giftListHolders,
   giftListIdeas,
   giftListParties,
@@ -15,7 +16,7 @@ import { giverHelp } from '#server/database/hints';
 import { personalLink } from '#server/database/participations';
 
 import { listPathFromDraw } from './anonymous';
-import { optionalAccount } from './auth';
+
 import { dataKeyOf } from './context';
 import { emailConfigured, sendEmails } from './email';
 
@@ -169,6 +170,7 @@ export const receiverListOf = async (
  * @param input.receiver.email - Their address, if any.
  * @param input.partyId - The event of the draw.
  * @param input.giverParticipationId - Who gives, and reads this.
+ * @param input.giverEmail - Their address, for their visits of the list.
  * @returns The list's line, and the hints as the card shows them.
  */
 export const resultHelp = async (
@@ -178,10 +180,18 @@ export const resultHelp = async (
     receiver: { participationId: string; email: string | null };
     partyId: string;
     giverParticipationId: string;
+    giverEmail: string | null;
   },
 ) => {
   const help = await giverHelp(db, input.receiver);
-  const giver = await optionalAccount(event);
+  // Their visits are those of the giver's account, whoever opens the link.
+  const [giver] = input.giverEmail
+    ? await db
+        .select({ accountId: accounts.id })
+        .from(accounts)
+        .where(eq(accounts.email, input.giverEmail.toLowerCase()))
+        .limit(1)
+    : [];
   const list = help.accountId
     ? await receiverListOf(event, db, {
         accountId: help.accountId,

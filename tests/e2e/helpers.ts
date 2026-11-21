@@ -51,3 +51,28 @@ export const loginAsOrganizer = async (
   await hydrated(page);
   await expect(page).toHaveURL(new RegExp(`/e/${slug}$`));
 };
+
+/**
+ * Writes rows the screens can no longer make (the gift hints of before
+ * the V3, ticket 107) straight into the database of the test server.
+ * @param sql - The statements.
+ * @returns Once written.
+ */
+export const seedSql = async (sql: string) => {
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(
+    'pnpm',
+    [
+      'wrangler',
+      'd1',
+      'execute',
+      'secret-santa',
+      '--local',
+      '--persist-to',
+      '.wrangler/e2e',
+      '--command',
+      sql,
+    ],
+    { stdio: 'pipe' },
+  );
+};

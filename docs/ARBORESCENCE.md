@@ -70,10 +70,7 @@ flowchart LR
 
   subgraph tirage ["Un tirage (participant, lien personnel)"]
     page["La page du tirage<br/><small>/p/[jeton]</small>"]
-    page --> pistes["Mes pistes de cadeaux"]
-    pistes --> question["Une question"]
-    pistes --> texte["Un texte des pistes"]
-    pistes --> idee["Une idée précise"]
+    page --> maListe["Ma liste de cadeaux<br/><small>/p/[jeton]/liste</small>"]
     page --> devine["Devine qui"]
     devine --> palmares["Palmarès Devine qui<br/><small>images</small>"]
     page --> tout["Qui offre à qui<br/><small>une fois dévoilé</small>"]
@@ -165,7 +162,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
-| Réglages du Secret Santa (« Réglages de la fête » y mène aussi, pour le dernier de l'année) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, pistes de cadeaux |
+| Réglages du Secret Santa (« Réglages de la fête » y mène aussi, pour le dernier de l'année) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget |
 | Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
 | Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |
@@ -179,15 +176,12 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | La page du tirage | `/p/[jeton]` | Accueil, seulement si ouverte depuis l'accueil ; sinon pas de « Retour » | Mon icône, À qui offres-tu un cadeau ? |
-| Mes pistes de cadeaux | `/p/[jeton]/pistes` | La page du tirage | |
-| Un texte des pistes | `/p/[jeton]/pistes/texte?texte=` (`lately`, `wouldHelp`, `avoid`) | Mes pistes de cadeaux | |
-| Une idée précise (ajoutée, ou la `n`-ième) | `/p/[jeton]/pistes/idee` (`?n=`) | Mes pistes de cadeaux | |
-| Une question de « Moi et les cadeaux » | `/p/[jeton]/pistes/question?n=` | Mes pistes de cadeaux | |
+| Ma liste de cadeaux (connecté avec mon adresse : ouvre ma liste pour l'événement, `/listes/[id]` ; sinon « Ton adresse email, pour écrire ta liste ») | `/p/[jeton]/liste` | La page du tirage | |
 | Devine qui (pronostics, puis les réponses) | `/p/[jeton]/devine` | La page du tirage | Choisir un pronostic |
 | Le palmarès de Devine qui (images) | `/p/[jeton]/devine/palmares` | Devine qui (la croix et « Voir tous les résultats ») | |
 | Qui offre à qui (une fois le tirage dévoilé) | `/p/[jeton]/tirage` | La page du tirage | |
 | Journal du groupe | `/p/[jeton]/journal` | La page du tirage | À quoi sert-il ?, une alerte |
-| (ancienne adresse) | `/p/[jeton]/souhaits` | mène à Mes pistes de cadeaux | |
+| (anciennes adresses) | `/p/[jeton]/souhaits`, `/p/[jeton]/pistes` et ses pages | mènent à Ma liste de cadeaux (`hintsPathOf`) | |
 
 ## Listes de cadeaux (README 22.19)
 

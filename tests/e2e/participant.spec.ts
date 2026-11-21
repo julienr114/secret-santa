@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, heading, hydrated, seedSql } from './helpers';
 
 // The participant's journey through a personal link (README 4.3 and
 // section 18): waiting screen, gift hints, counted reveal, journal, and the
@@ -38,6 +38,10 @@ const admin = () => {
 const post = async (path: string, data?: unknown) => {
   const response = await admin().post(path, data ? { data } : {});
   expect(response.ok(), `${path}: ${response.status()}`).toBe(true);
+  return response.json();
+};
+const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
+  expect(response.ok(), `${response.url()}: ${response.status()}`).toBe(true);
   return response.json();
 };
 const edition = async () => {
@@ -109,7 +113,7 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   );
   await expect(steps).toContainText(/Jour J/);
   await expect(
-    page.getByRole('link', { name: 'Laisser mes idées de cadeaux' }),
+    page.getByRole('link', { name: 'Écrire ma liste de cadeaux' }),
   ).toBeVisible();
   // The budget and the day of the party under the title, in every state
   // but a closed edition (lot 16 bis).
@@ -159,118 +163,66 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   expect(invalid.status()).toBe(400);
   expect((await participantNamed('Bruno')).avatar).not.toEqual(fox);
 
-  // One tile per thing to do, alone on the whole width: waiting for an
-  // action, framed in brick (README 22.16).
+  // « Ma liste de cadeaux », a tile waiting for her (ticket 107).
   const tile = page.getByTestId('tile');
   await expect(tile).toHaveAttribute('data-state', 'todo');
-  await expect(tile).toContainText('À remplir');
-  await page.getByRole('link', { name: /Mes idées de cadeaux/ }).click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  // Six questions, one tap each, then back to the page; « Plus tard »
-  // leaves the rest unanswered.
-  await page.getByRole('link', { name: 'Commencer' }).click();
-  await expect(heading(page)).toHaveText('Utile, ou surprenant ?');
-  await page.getByTestId('hint-first').click();
-  await expect(heading(page)).toHaveText('Un objet, ou un moment ?');
-  await page.getByTestId('hint-both').click();
-  await expect(heading(page)).toHaveText('À garder, ou à consommer ?');
-  await page.getByRole('button', { name: 'Plus tard' }).click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  const tags = page.getByTestId('hints-tags');
-  // The block reads as a sentence.
-  await expect(page.getByText('Côté cadeaux, je préfère…')).toBeVisible();
-  await expect(tags).toContainText('un cadeau utile');
-  await expect(tags).toContainText('un objet ou un moment');
-  // A question without an answer is a dashed tag that opens it.
-  await tags.getByRole('link', { name: 'À garder, ou à consommer ?' }).click();
-  await expect(heading(page)).toHaveText('À garder, ou à consommer ?');
-  await page.getByTestId('hint-first').click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  await expect(tags).toContainText('quelque chose à garder');
-  // A tag opens its own question, its answer checked; one tap changes it
-  // and comes back, « Effacer ma réponse » takes it back.
-  await tags.getByRole('link', { name: 'un cadeau utile' }).click();
-  await expect(page.getByTestId('hint-first')).toHaveAttribute(
-    'aria-pressed',
-    'true',
+  await expect(tile).toContainText('Pas encore écrite');
+  // Without a session, her address first, confirmed by its link
+  // (V3ListeAdresse).
+  await page.getByRole('link', { name: /Ma liste de cadeaux/ }).click();
+  await expect(heading(page)).toHaveText(
+    'Ton adresse email, pour écrire ta liste',
   );
-  await page.getByTestId('hint-second').click();
-  await expect(tags).toContainText('un cadeau surprenant');
-  await tags.getByRole('link', { name: 'un cadeau surprenant' }).click();
-  await page.getByTestId('hint-clear').click();
-  await expect(
-    tags.getByRole('link', { name: 'Utile, ou surprenant ?' }),
-  ).toBeVisible();
-  // A text, on a page of its own (README 23.3), kept with « Valider ».
-  await page.getByText('Dire ce qui m’occupe').click();
-  await expect(heading(page)).toHaveText('En ce moment');
-  await page
-    .getByRole('textbox', { name: 'En ce moment' })
-    .fill('La course à pied');
+  await page.getByLabel('Ton adresse email').fill('alice-lutins@example.com');
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  await expect(page.getByText('La course à pied')).toBeVisible();
-  // An answer is a fixed value, never text.
-  const free = await page.request.patch(`/api/p/${tokenOf('Alice')}/hints`, {
-    data: { answers: { surprise: 'Surprends-moi' } },
-  });
-  expect(free.status()).toBe(400);
-
-  // Ideas are written on a page of their own (README 23.3), saved with
-  // « Valider »; « Retour » gives the idea up.
-  const idea = page.getByLabel('Idée', { exact: true });
-  const link = page.getByLabel(/^Lien/);
-  const validate = page.getByRole('button', { name: 'Valider' });
-  await page.getByText('Ajouter une idée').click();
-  await expect(heading(page)).toHaveText('Nouvelle idée');
-  await idea.fill('Abandonnée');
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  await expect(page.getByText('Abandonnée')).toHaveCount(0);
-  await page.getByText('Ajouter une idée').click();
-  await idea.fill('Un livre de cuisine');
-  await link.fill('https://example.com/livre');
-  await validate.click();
-  await expect(page.getByText('example.com', { exact: true })).toBeVisible();
-  await page.getByText('Ajouter une idée').click();
-  await idea.fill('Des chaussette');
-  await validate.click();
-  await expect(page.getByText('Encore 8 possibles')).toBeVisible();
-
-  // Tapping an idea opens it again, to change or delete it.
-  await page.getByText('Des chaussette').click();
-  await expect(heading(page)).toHaveText('Modifier l’idée');
-  await expect(idea).toHaveValue('Des chaussette');
-  await idea.fill('Des chaussettes');
-  await validate.click();
-  await expect(page.getByText('Des chaussettes')).toBeVisible();
-  await page.getByText('Ajouter une idée').click();
-  await idea.fill('À supprimer');
-  await validate.click();
-  await page.getByText('À supprimer').click();
-  await page.getByTestId('idea-remove').click();
-  await expect(heading(page)).toHaveText('Mes idées de cadeaux');
-  await expect(page.getByText('À supprimer')).toHaveCount(0);
-  await expect(page.getByText('Encore 8 possibles')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page.getByTestId('tile')).toHaveAttribute('data-state', 'done');
-  await expect(page.getByTestId('tile')).toContainText(
-    'Remplies, modifiables jusqu’au jour J',
+  await expect(page.getByTestId('list-address-sent')).toContainText(
+    'alice-lutins@example.com',
   );
-  await page.getByRole('link', { name: /Mes idées de cadeaux/ }).click();
-  await expect(page.getByText('Des chaussettes')).toBeVisible();
-
-  // The guardian sees that she left hints, never which ones.
+  // Logged in with it: her list for the event opens at once, kept for
+  // the one who drew her (V3ListeQuiSecret), with the event's name.
+  await apiLogin(page.request, 'alice-lutins@example.com');
+  await open(page, `/p/${tokenOf('Alice')}/liste`);
+  await expect(page).toHaveURL(/\/listes\/[^/]+$/);
+  await hydrated(page);
+  await expect(page.getByTestId('share-stage')).toContainText(
+    'Seul celui qui t’a tiré la voit',
+  );
+  await expect(page.getByTestId('list-title')).toHaveValue('Famille Lutins');
+  const listId = page.url().split('/listes/')[1] ?? '';
+  // Coming back gives the same list.
+  const again = await ok(
+    await page.request.post(`/api/p/${tokenOf('Alice')}/list`),
+  );
+  expect(again.id).toBe(listId);
+  expect((await participantNamed('Alice')).hasHints).toBe(false);
+  const doc = await ok(await page.request.get(`/api/lists/${listId}`));
+  const person =
+    doc.people[0]?.id ??
+    (
+      await ok(
+        await page.request.post(`/api/lists/${listId}/people`, {
+          data: {
+            newMember: {
+              firstName: 'Alice',
+              avatar: { emoji: '🦊', color: 'frost' },
+            },
+          },
+        }),
+      )
+    ).id;
+  await ok(
+    await page.request.post(`/api/lists/${listId}/ideas`, {
+      data: { listPersonId: person, text: 'Un livre de cuisine' },
+    }),
+  );
+  // The organiser learns that she wrote her list, never what.
   const response2 = await edition();
-  expect(await response2.text()).not.toMatch(/livre de cuisine|course à pied/);
+  expect(await response2.text()).not.toMatch(/livre de cuisine/);
   expect((await participantNamed('Alice')).hasHints).toBe(true);
-
-  // An invalid link in a wish is refused, and the list is left untouched.
-  const bad = await page.request.put(`/api/p/${tokenOf('Alice')}/wishes`, {
-    data: { wishes: [{ label: 'Piège', url: 'javascript:alert(1)' }] },
-  });
-  expect(bad.status()).toBe(400);
+  await open(page, `/p/${tokenOf('Alice')}`);
+  await expect(page.getByTestId('tile')).toContainText(
+    'Vue seulement par celui qui m’a tiré',
+  );
 
   // No result before the draw.
   const early = await page.request.post(`/api/p/${tokenOf('Alice')}/reveal`);
@@ -280,14 +232,13 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
 test('after the draw: the reveal is explicit, counted and journaled', async ({
   page,
 }) => {
+  // Ideas left before the V3 by people without an account (ticket 107):
+  // no screen writes them any more, the one who drew them reads them.
   for (const firstName of ['Bruno', 'Chloé']) {
-    const saved = await page.request.put(
-      `/api/p/${tokenOf(firstName)}/wishes`,
-      {
-        data: { wishes: [{ label: `Idée de ${firstName}`, url: '' }] },
-      },
+    const { participationId } = await participantNamed(firstName);
+    await seedSql(
+      `INSERT INTO wishes (id, participation_id, position, label, created_at) VALUES ('w-${participationId}', '${participationId}', 0, 'Idée de ${firstName}', '2026-11-21T00:00:00.000Z');`,
     );
-    expect(saved.ok()).toBe(true);
   }
   await post(`${ADMIN}/editions/${state.editionId}/draw`);
 
@@ -452,25 +403,17 @@ test('unknown and regenerated links are refused', async ({ page }) => {
 test('a closed edition is read only', async ({ page }) => {
   await post(`${ADMIN}/editions/${state.editionId}/close`);
   const token = tokenOf('Chloé');
-  const refused = await page.request.put(`/api/p/${token}/wishes`, {
-    data: { wishes: [{ label: 'Trop tard' }] },
-  });
-  expect(refused.status()).toBe(409);
   const avatar = await page.request.put(`/api/p/${token}/avatar`, {
     data: { emoji: '🎅', color: 'brick' },
   });
   expect(avatar.status()).toBe(409);
 
-  // The old address of the wish list leads to the gift hints.
+  // The old addresses of the wish list and of the gift hints lead to my
+  // list (ticket 107).
   await open(page, `/p/${token}/souhaits`);
-  await expect(page).toHaveURL(new RegExp(`/p/${token}/pistes$`));
-  await expect(
-    page.getByText(
-      'Tes idées ne bougent plus : c’est terminé pour cette année.',
-    ),
-  ).toBeVisible();
-  await expect(page.getByText('Idée de Chloé')).toBeVisible();
-  await expect(page.getByText('Ajouter une idée')).toHaveCount(0);
+  await expect(page).toHaveURL(new RegExp(`/p/${token}/liste$`));
+  await open(page, `/p/${token}/pistes/question`);
+  await expect(page).toHaveURL(new RegExp(`/p/${token}/liste$`));
 
   // The page of the draw: the party is over, and Chloé, who never looked,
   // can still find out. Her icon and her list no longer change.
@@ -481,9 +424,7 @@ test('a closed edition is read only', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: "Découvrir à qui j'offre un cadeau" }),
   ).toBeVisible();
-  await expect(page.getByTestId('tile')).toContainText(
-    'Remplies, plus modifiables',
-  );
+  await expect(page.getByTestId('tile')).toHaveCount(0);
   await expect(
     page.getByRole('button', { name: 'Changer mon icône' }),
   ).toHaveCount(0);

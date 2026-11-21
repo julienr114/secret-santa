@@ -68,6 +68,7 @@ export default defineEventHandler(async (event) => {
     },
     partyId: edition.partyId,
     giverParticipationId: participation.id,
+    giverEmail: person.email,
   });
   // The organiser who revealed may not take part: then their first name
   // comes from the group.

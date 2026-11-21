@@ -8,10 +8,10 @@ import {
 } from '@playwright/test';
 import { apiLogin, hydrated } from './helpers';
 
-// A gift list linked to the hints of a draw, and « Mode anonyme » on a
-// list opened by its link (lot 27 ter, README 22.20, maquettes
-// PistesListe, PistesListeChoisir, PistesResultatListe, ListeVisiteurMes,
-// ListeVisiteurAnonyme, ListeVisiteurTirage). The one who gives opens the
+// A gift list kept for the one who drew me (ticket 107), and « Mode
+// anonyme » on a list opened by its link (lot 27 ter, README 22.20,
+// maquettes V3TirageVersListe, ListeVisiteurMes, ListeVisiteurAnonyme,
+// ListeVisiteurTirage). The one who gives opens the
 // list of the one they give to in anonymous mode, with a note; nothing
 // those who hold the list read ever says who.
 test.describe.configure({ mode: 'serial' });
@@ -31,6 +31,7 @@ const state: {
   other: string;
   contexts: Record<string, BrowserContext>;
   listId: string;
+  partyId: string;
   token: string;
   second: string;
   ideas: string[];
@@ -42,6 +43,7 @@ const state: {
   other: '',
   contexts: {},
   listId: '',
+  partyId: '',
   token: '',
   second: '',
   ideas: [],
@@ -183,90 +185,52 @@ test.afterAll(async () => {
   await Promise.all(Object.values(state.contexts).map((c) => c.close()));
 });
 
-test('a gift list is linked to my hints, once it is shared', async ({
+test('a list kept for the one who drew me: they get in, nobody else', async ({
   playwright,
   baseURL,
 }) => {
-  const token = state.tokens[state.receiver];
   const api = as(state.receiver).request;
-  // Not without an account, not a draft, not the list of someone else.
-  const anonymous = await playwright.request.newContext({ baseURL });
-  expect(
-    (
-      await anonymous.put(`/api/p/${token}/hints/list`, {
-        data: { listId: state.listId },
-      })
-    ).status(),
-  ).toBe(401);
-  await anonymous.dispose();
-  const draft = await api.put(`/api/p/${token}/hints/list`, {
-    data: { listId: state.listId },
-  });
-  expect(draft.status()).toBe(409);
-  expect((await draft.json()).statusMessage).toBe('list_not_linkable');
-  expect(
-    (
-      await as(state.other).request.put(
-        `/api/p/${state.tokens[state.other]}/hints/list`,
-        { data: { listId: state.listId } },
-      )
-    ).status(),
-  ).toBe(409);
-
-  // In the page: the block, its sheet, the draft greyed.
-  const page = await open(state.receiver, `/p/${token}/pistes`);
-  const block = page.getByTestId('hints-list');
-  await expect(block).toContainText('Ma liste de cadeaux');
-  await block.getByTestId('hints-list-add').click();
-  const sheet = page.getByRole('dialog');
-  await expect(sheet).toContainText('Quelle liste ?');
-  const draftRow = sheet
-    .getByTestId('hints-list-choice')
-    .filter({ hasText: 'Noël chez nous' });
-  await expect(draftRow).toContainText('Brouillon : publie-la d’abord');
-  await expect(draftRow.getByRole('radio')).toBeDisabled();
-  await expect(sheet).toContainText('Aucune liste');
-  await page.keyboard.press('Escape');
-
-  // Shared, it can be chosen.
-  state.token = (
-    await ok(await api.post(`/api/lists/${state.listId}/share`, { data: {} }))
-  ).token;
-  await page.reload();
-  await hydrated(page);
-  await page.getByTestId('hints-list-add').click();
-  const row = page
-    .getByTestId('hints-list-choice')
-    .filter({ hasText: 'Noël chez nous' });
-  await expect(row).toContainText('Ta liste · publiée');
-  await row.getByRole('radio').check();
-  await page.getByTestId('hints-list-validate').click();
-  const linked = page.getByTestId('hints-list-linked');
-  await expect(linked).toContainText('Noël chez nous');
-  await expect(linked).toContainText('Ta liste, publiée');
-  await expect(block).toContainText(
-    'Ce qu’elle y coche est anonyme : personne ne saura que c’est elle, pas même toi.',
+  // « Celui qui m'a tiré », in the event of the draw (ticket 107).
+  const { options } = await ok(
+    await api.get(`/api/lists/${state.listId}/sharing`),
   );
-  await page.close();
-
-  // Without an account, the block says to log in.
+  const party = options.find((o: { slug: string }) => o.slug === SLUG);
+  expect(party.drawn).toBe(true);
+  state.partyId = party.id;
+  await ok(
+    await api.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], givers: [party.id], isPublic: false },
+    }),
+  );
+  state.token = (
+    await ok(await api.get(`/api/lists/${state.listId}`))
+  ).list.shareToken;
+  // The one who drew gets in by their account; the other does not, nor
+  // anyone without a session.
+  expect(
+    (await as(state.giver).request.get(`/api/l/${state.token}`)).status(),
+  ).toBe(200);
+  expect(
+    (await as(state.other).request.get(`/api/l/${state.token}`)).status(),
+  ).toBe(403);
   const guest = await playwright.request.newContext({ baseURL });
-  const hints = await ok(await guest.get(`/api/p/${token}/hints`));
-  expect(hints.list.loggedIn).toBe(false);
-  expect(hints.list.linked.title).toBe('Noël chez nous');
-  expect(hints.list.linked.holds).toBeNull();
+  expect((await guest.get(`/api/l/${state.token}`)).status()).toBe(401);
   await guest.dispose();
+  // The other members do not see it in the event.
+  const page = await ok(
+    await as(state.other).request.get(`/api/parties/${SLUG}`),
+  );
+  expect(JSON.stringify(page.lists)).not.toContain(state.listId);
+  // Public too, for what follows: whoever has the link gets in.
+  await ok(
+    await api.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], givers: [party.id], isPublic: true },
+    }),
+  );
 });
 
 test('the one who gives reads a link to it, and nobody else', async () => {
   if (!state.admin) throw new Error('admin context missing');
-  // The one who receives also left a precise idea: with a list linked,
-  // « Si tu sèches » no longer shows.
-  await ok(
-    await state.admin.put(`/api/p/${state.tokens[state.receiver]}/wishes`, {
-      data: { wishes: [{ label: 'Une lampe de lecture' }] },
-    }),
-  );
   const reveal = await ok(
     await state.admin.post(`/api/p/${state.tokens[state.giver]}/reveal`),
   );
@@ -289,7 +253,7 @@ test('the one who gives reads a link to it, and nobody else', async () => {
     .first()
     .click();
   const link = page.getByTestId('giver-list');
-  await expect(link).toContainText('Sa liste de cadeaux : Noël chez nous');
+  await expect(link).toContainText(/La liste de cadeaux d/);
   await expect(link).toContainText('Le mode anonyme y sera activé pour toi.');
   await expect(page.getByTestId('giver-hints')).not.toContainText(
     'Si tu sèches',
@@ -503,7 +467,7 @@ test('without a session no bar; without a first name, anonymous', async ({
   await holder.close();
 });
 
-test('unshared or unlinked, the link leaves the result', async () => {
+test('no longer shared with the one who drew, the line leads elsewhere', async () => {
   if (!state.admin) throw new Error('admin context missing');
   const api = as(state.receiver).request;
   const read = async () =>
@@ -512,14 +476,44 @@ test('unshared or unlinked, the link leaves the result', async () => {
         await state.admin!.post(`/api/p/${state.tokens[state.giver]}/reveal`),
       )
     ).list;
-  await api.post(`/api/lists/${state.listId}/share`, { data: { ask: 'off' } });
-  expect(await read()).toBeNull();
-  await api.post(`/api/lists/${state.listId}/share`, { data: { ask: 'on' } });
+  const share = (givers: string[]) =>
+    api.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], givers, isPublic: false },
+    });
+  // No longer kept for them: the line leads to another list they may
+  // open, the public one.
+  await ok(await share([]));
+  expect((await read()).title).toBe('Anniversaire de Léo');
+  await ok(await share([state.partyId]));
   expect((await read()).title).toBe('Noël chez nous');
+});
+
+test('the line says the ideas new since my last visit, and opens on their part', async () => {
+  if (!state.admin) throw new Error('admin context missing');
+  const reveal = async () =>
+    (
+      await ok(
+        await state.admin!.post(`/api/p/${state.tokens[state.giver]}/reveal`),
+      )
+    ).list;
+  // The giver opens the list: their visit is the mark.
+  await ok(await as(state.giver).request.get(`/api/l/${state.token}`));
+  expect((await reveal()).newIdeas).toBe(0);
+  const api = as(state.receiver).request;
+  const doc = await ok(await api.get(`/api/lists/${state.listId}`));
   await ok(
-    await api.put(`/api/p/${state.tokens[state.receiver]}/hints/list`, {
-      data: { listId: null },
+    await api.post(`/api/lists/${state.listId}/ideas`, {
+      data: { listPersonId: doc.people[0].id, text: 'Une lampe frontale' },
     }),
   );
-  expect(await read()).toBeNull();
+  expect((await reveal()).newIdeas).toBe(1);
+  const page = await open(state.giver, `/p/${state.tokens[state.giver]}`);
+  await page
+    .getByRole('button', { name: /Découvrir|Revoir/ })
+    .first()
+    .click();
+  await expect(page.getByTestId('giver-list-news')).toHaveText(
+    '1 nouvelle idée depuis ta dernière visite',
+  );
+  await page.close();
 });

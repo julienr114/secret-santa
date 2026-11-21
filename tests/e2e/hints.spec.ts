@@ -4,11 +4,11 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, hydrated } from './helpers';
 
-// « Lui demander des pistes » (README 22.11): once per draw, and
-// anonymous. No route, no journal line, no screen of the organiser says
-// who asked, nor that anyone did. Then the setting with three values.
+// « Lui demander des idées » (README 22.11, ticket 107): once per draw,
+// and anonymous. No route, no journal line, no screen of the organiser
+// says who asked, nor that anyone did. And no setting any more.
 test.describe.configure({ mode: 'serial' });
 
 const SLUG = 'famille-trefle';
@@ -139,7 +139,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   // is counted, as always), before the request.
   const before = await organiserView();
   await expect(
-    page.getByText(`${receiver} n’a pas encore laissé d’idées.`),
+    page.getByText(`${receiver} n’a encore rien écrit.`),
   ).toBeVisible();
   // The organiser's words are out of the result card, cut at three lines.
   const note = page.getByTestId('organizer-note');
@@ -155,7 +155,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page.getByRole('button', { name: 'Envoyer la demande' }).click();
   // The test server has no email key: no email leaves, the page says so.
   await expect(page.getByTestId('hints-request-sent')).toContainText(
-    `${receiver} le verra sur sa page d’idées`,
+    `${receiver} le verra en ouvrant son lien`,
   );
 
   // Nothing the organiser reads has changed: not a word, not a line.
@@ -166,12 +166,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
     ).text();
     expect(journal).not.toMatch(/pistes|hint|request|demande/i);
   }
-  // Nor what the receiver reads: that someone asks, never who.
-  const hints = await (
-    await page.request.get(`/api/p/${state.tokens[receiver]}/hints`)
-  ).text();
-  expect(JSON.parse(hints).requested).toBe(true);
-  expect(hints).not.toContain(giver);
+  // Nor what the receiver reads: never who asks.
   const receiverState = await (
     await page.request.get(`/api/p/${state.tokens[receiver]}`)
   ).text();
@@ -190,96 +185,24 @@ test('asking for hints is anonymous, and possible once per draw', async ({
     `/api/p/${state.tokens[giver]}/hints/request`,
   );
   expect(again.status()).toBe(409);
-
-  // The receiver sees the banner, answers one question, and the giver
-  // then reads it.
-  await open(page, `/p/${state.tokens[receiver]}/pistes`);
-  await expect(page.getByTestId('hints-requested')).toContainText(
-    'La personne qui t’offre un cadeau cherche l’inspiration.',
-  );
-  await page.getByRole('link', { name: 'Commencer' }).click();
-  await page.getByTestId('hint-second').click();
-  await expect(heading(page)).toHaveText('Un objet, ou un moment ?');
-  // New hints are put forward to the giver (lot 16 bis) on the page of
-  // the draw, until the result is opened again (on the home: ticket 110).
-  await open(page, `/p/${state.tokens[giver]}`);
-  await expect(page.getByText('De nouvelles idées t’attendent')).toBeVisible();
-  await page
-    .getByRole('button', { name: 'Revoir à qui j’offre, et ses idées' })
-    .click();
-  await expect(page.getByTestId('hints-new')).toHaveText('Nouveau');
-  // The giver reads it in sentences.
-  await expect(page.getByTestId('giver-portrait')).toContainText(
-    `${receiver} préfère :`,
-  );
-  await expect(page.getByTestId('giver-portrait')).toContainText(
-    'un cadeau surprenant plutôt qu’utile',
-  );
-  // Opened once, they are no longer new.
-  await open(page, `/p/${state.tokens[giver]}`);
-  await expect(page.getByText('Un trou de mémoire ?')).toBeVisible();
-  await expect(
-    page.getByText(
-      'Ton enveloppe est toujours là, avec ses idées de cadeaux.',
-      {
-        exact: false,
-      },
-    ),
-  ).toBeVisible();
-  await page
-    .getByRole('button', { name: 'Revoir à qui j’offre, et ses idées' })
-    .click();
-  await expect(page.getByTestId('hints-new')).toHaveCount(0);
-  // The request is answered: the banner is gone.
-  const answered = await ok(
-    await page.request.get(`/api/p/${state.tokens[receiver]}/hints`),
-  );
-  expect(answered.requested).toBe(false);
-  // The organiser only learns that hints were left.
-  const edition = await ok(
-    await admin().get(`${ADMIN}/editions/${state.editionId}`),
-  );
-  expect(
-    edition.participants.map((p: { firstName: string; hasHints: boolean }) => [
-      p.firstName,
-      p.hasHints,
-    ]),
-  ).toContainEqual([receiver, true]);
-  expect(JSON.stringify(edition)).not.toMatch(/surprenant|second/);
-  // On the follow-up, a count, never which ones are new nor for whom.
-  await page.context().addCookies((await admin().storageState()).cookies);
-  await open(page, `/admin/${SLUG}/editions/${state.editionId}`);
-  await expect(page.getByTestId('hints-count')).toHaveText(
-    '1 sur 3 a laissé des idées',
-  );
 });
 
 test('a cancelled draw takes its requests away', async ({ page }) => {
-  const hasHints = async (firstName: string) =>
-    (
-      await ok(await admin().get(`${ADMIN}/editions/${state.editionId}`))
-    ).participants.find((p: { firstName: string }) => p.firstName === firstName)
-      .hasHints;
-  // A giver whose receiver left nothing asks.
-  const candidates: string[] = [];
-  for (const name of NAMES) {
-    if (!(await hasHints(state.receiverOf[name] ?? ''))) candidates.push(name);
-  }
-  const asker = candidates[0] ?? '';
+  // A giver who has not asked yet (Agathe asked above).
+  const asker = NAMES.find((name) => name !== 'Agathe') ?? '';
   const receiver = state.receiverOf[asker] ?? '';
   await ok(
     await page.request.post(`/api/p/${state.tokens[asker]}/hints/request`),
   );
   const requested = async () =>
-    (await ok(await page.request.get(`/api/p/${state.tokens[receiver]}/hints`)))
-      .requested;
+    (await ok(await page.request.post(`/api/p/${state.tokens[asker]}/reveal`)))
+      .hints.requested;
   expect(await requested()).toBe(true);
   await ok(
     await admin().post(`${ADMIN}/editions/${state.editionId}/redraw`, {
       data: { reason: 'Test des pistes' },
     }),
   );
-  expect(await requested()).toBe(false);
   // Drawn again: the new giver may ask once more.
   await ok(await admin().post(`${ADMIN}/editions/${state.editionId}/draw`));
   for (const firstName of NAMES) {
@@ -296,48 +219,19 @@ test('a cancelled draw takes its requests away', async ({ page }) => {
   expect(again.status()).toBe(200);
 });
 
-test('the setting: portrait only, then no hint at all', async ({ page }) => {
+test('no setting any more: an old « no hints » hides nothing', async ({
+  page,
+}) => {
   const token = state.tokens.Basile ?? '';
-  await ok(
-    await admin().patch(`${ADMIN}/rules`, { data: { giftHints: 'portrait' } }),
-  );
-  const portrait = await ok(await page.request.get(`/api/p/${token}/hints`));
-  expect(portrait.mode).toBe('portrait');
-  const idea = await page.request.put(`/api/p/${token}/wishes`, {
-    data: { wishes: [{ label: 'Un livre' }] },
-  });
-  expect(idea.status()).toBe(403);
-  await open(page, `/p/${token}/pistes`);
-  await expect(page.getByText('Une idée précise, si tu sèches')).toHaveCount(0);
-  // Five questions without the precise ideas: « Neuf, ou d'occasion ? »
-  // is the last.
-  await open(page, `/p/${token}/pistes/question?n=5`);
-  await expect(heading(page)).toHaveText('Neuf, ou d’occasion ?');
-  await expect(page.getByText('question 5 sur 5')).toBeVisible();
-  await expect(page.getByTestId('hint-both')).toBeVisible();
-
+  // A Secret Santa that had « Aucune idée » before the V3 (ticket 107).
   await ok(
     await admin().patch(`${ADMIN}/rules`, { data: { giftHints: 'none' } }),
   );
-  expect((await page.request.get(`/api/p/${token}/hints`)).status()).toBe(403);
   await open(page, `/p/${token}`);
-  await expect(page.getByText('Mes idées de cadeaux')).toHaveCount(0);
-
-  // On the settings screen, the row says the value and opens three choices.
+  await expect(page.getByText('Ma liste de cadeaux')).toBeVisible();
+  // The settings screen has no row for it.
   await page.context().addCookies((await admin().storageState()).cookies);
   await open(page, `/admin/${SLUG}/editions/${state.editionId}/reglages`);
-  const row = page.getByTestId('gift-hints-setting');
-  await expect(row).toContainText('Aucune idée');
-  await row.click();
-  await page.getByText('Portrait et idées précises').click();
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(row).toContainText('Portrait et idées précises');
-  // The setting of this Secret Santa (ticket 105).
-  await expect
-    .poll(
-      async () =>
-        (await ok(await admin().get(`${ADMIN}/editions/${state.editionId}`)))
-          .rules?.giftHints,
-    )
-    .toBe('full');
+  await expect(page.getByTestId('setting-previous-years')).toBeVisible();
+  await expect(page.getByTestId('gift-hints-setting')).toHaveCount(0);
 });

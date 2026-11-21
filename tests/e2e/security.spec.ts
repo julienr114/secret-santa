@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin } from './helpers';
+import { apiLogin, seedSql } from './helpers';
 
 // The secret of the draw, checked from the outside (README 8.6 and 18):
 // once drawn, nothing the admin API answers may say who gives to whom, nor
@@ -105,15 +105,17 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       .split('/')
       .at(-1);
     state.tokens[person.id] = token ?? '';
-    const saved = await ctx('anonymous').put(`/api/p/${token}/wishes`, {
-      data: { wishes: [{ label: `${WISH} de ${person.firstName}` }] },
-    });
-    expect(saved.ok()).toBe(true);
-    const portrait = await ctx('anonymous').patch(`/api/p/${token}/hints`, {
-      data: { texts: { avoid: `${WISH} évité par ${person.firstName}` } },
-    });
-    expect(portrait.ok()).toBe(true);
   }
+  // The hints of before the V3 (ticket 107): no screen writes them any
+  // more; they stay, read only by the one who drew.
+  await seedSql(
+    state.people
+      .map(
+        (person) =>
+          `INSERT INTO wishes (id, participation_id, position, label, created_at) VALUES ('w-${person.participationId}', '${person.participationId}', 0, '${WISH} de ${person.firstName}', '2026-11-21T00:00:00.000Z'); INSERT INTO gift_portraits (participation_id, avoid, updated_at) VALUES ('${person.participationId}', '${WISH} évité par ${person.firstName}', '2026-11-21T00:00:00.000Z');`,
+      )
+      .join(' '),
+  );
 });
 
 test.afterAll(async () => {
@@ -191,7 +193,7 @@ test('a participant learns their own result only, and only by asking', async () 
   const { giver, receiver } = state.pairs[0] ?? {};
   if (!giver || !receiver) throw new Error('no pair');
   const token = state.tokens[giver.id];
-  for (const path of ['', '/wishes', '/hints', '/journal']) {
+  for (const path of ['', '/journal']) {
     const text = await (
       await ctx('anonymous').get(`/api/p/${token}${path}`)
     ).text();

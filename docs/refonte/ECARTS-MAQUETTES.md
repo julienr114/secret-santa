@@ -21,6 +21,18 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
+## Les pistes deviennent la liste (V3, ticket 107)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeCompteCree` | Pas de compte créé à la première idée : en attendant Q-018, aller à sa liste depuis son Secret Santa demande une session, ouverte par le lien reçu à son adresse. | Seul, en attendant Q-018 |
+| `V3ListeAdresse` | La phrase « Tes données, en clair » n'a pas de lien : la page n'existe pas encore (ticket 131). L'adresse donnée par l'organisateur est déjà remplie. | Seul |
+| `V3TirageVersListe` | « Ma liste de cadeaux » est la tuile de la page du tirage d'avant, avec le stade de ma liste (« Vue seulement par celui qui m'a tiré », « Pas encore écrite »…), et non une ligne sous la carte ; elle disparaît une fois le Secret Santa clôturé. | Seul |
+| `V3TirageVersListe` | La ligne de sa liste mène à une liste qu'elle tient et que je peux ouvrir : réservée à celui qui l'a tirée ou à tous les membres dans cet événement, ou publique ; la plus récemment modifiée. Sans compte, ses pistes d'avant la V3 restent, en lecture seule. | Seul |
+| `V3TirageNouvelles` | « 2 nouvelles idées » compte les idées ajoutées depuis ma dernière ouverture de sa liste, seulement si je l'ai déjà ouverte avec mon compte. | Seul |
+| `PistesResultatDemande` | Sans adresse, « Inès le verra en ouvrant son lien » : il n'y a plus de page de pistes. | Seul |
+| — | Le panneau « Qui verra ta liste ? » propose « Celui qui m'a tiré » sous un événement où je participe à un Secret Santa pas clôturé ; le choisir pour un événement où les membres voyaient la liste demande d'abord, comme décocher. | Seul |
+
 ## Le partage d'une liste (V3, ticket 106)
 
 | Maquette | Ce que fait le code | Décidé par |

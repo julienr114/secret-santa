@@ -165,13 +165,13 @@ export default {
     title: 'Pour t’aider à choisir',
     ask: 'Lui demander des idées',
     sentEmailNamed: '{name} vient de recevoir un email.',
-    sentPageNamed: '{name} le verra sur sa page d’idées.',
+    sentPageNamed: '{name} le verra en ouvrant son lien.',
     askHint: 'Sans dire que ça vient de toi.',
     sent: 'Demande envoyée.',
     sentEmail:
       '{name} vient de recevoir un email, sans savoir que ça vient de toi.',
     sentPage:
-      '{name} le verra sur sa page d’idées, sans savoir que ça vient de toi.',
+      '{name} le verra en ouvrant son lien, sans savoir que ça vient de toi.',
     willEmail: 'Tu recevras un email dès que des idées arrivent.',
     willSee: 'Reviens ici : les idées s’afficheront dès qu’elles arrivent.',
   },

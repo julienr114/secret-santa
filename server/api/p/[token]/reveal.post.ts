@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
     },
     partyId: edition.partyId,
     giverParticipationId: participation.id,
+    giverEmail: person.email,
   });
 
   const now = nowIso();

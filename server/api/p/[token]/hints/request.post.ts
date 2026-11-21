@@ -16,7 +16,7 @@ import { buildHintsRequestEmail, canRequestHints } from '#server/utils/hints';
 // arrive, the giver is found again from the draw. Once the draw is
 // revealed (README 22.18), nothing is secret: the email names who asks.
 export default defineEventHandler(async (event) => {
-  const { db, participation, edition, person, group, rules } =
+  const { db, participation, edition, person, group } =
     await requirePersonalLink(event);
   // One asks for the person one discovered, or that the reveal shows.
   if (participation.viewCount === 0 && !edition.revealedAt) {
@@ -33,7 +33,8 @@ export default defineEventHandler(async (event) => {
   unwrap(
     canRequestHints({
       status: edition.status,
-      mode: rules.giftHints,
+      // No setting any more (ticket 107): everything is available.
+      mode: 'full',
       receiverHasHints: await participationHasHints(
         db,
         receiverParticipationId,
@@ -57,12 +58,12 @@ export default defineEventHandler(async (event) => {
           ...data,
           editionLabel: edition.label,
           groupName: group.name,
-          mode: rules.giftHints,
+          mode: 'full',
           from: edition.revealedAt ? person.firstName : null,
         },
         locale,
       ),
-    '/pistes',
+    '/liste',
   );
   return { requested: true, emailed };
 });

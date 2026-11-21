@@ -102,10 +102,11 @@ describe('hint emails', () => {
     expect(email.text).toContain('Noël 2026 (Famille Camille)');
     expect(email.text).toContain(`\n${data.link}\n`);
     expect(email.text).toContain('On ne te dira pas qui demande');
-    expect(email.text).toContain('six questions');
-    expect(
-      buildHintsRequestEmail({ ...data, mode: 'portrait' }, 'fr').text,
-    ).toContain('cinq questions');
+    // It invites to write one's list (ticket 107, PistesEmail).
+    expect(email.text).toContain(
+      'Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
+    );
+    expect(email.text).toContain('Écrire ma liste :');
   });
 
   it('names who asks once the draw is revealed (README 22.18)', () => {

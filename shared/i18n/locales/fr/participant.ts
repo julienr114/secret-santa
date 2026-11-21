@@ -76,7 +76,7 @@ export default {
         other:
           'Le tirage n’est pas encore fait. Tes organisateurs te feront signe ; garde ce lien, c’est ici que tout se jouera.',
       },
-      action: 'Laisser mes idées de cadeaux',
+      action: 'Écrire ma liste de cadeaux',
       hint: 'En attendant, donne un coup de pouce à la personne qui te tirera au sort.',
     },
     ready: {
@@ -119,11 +119,6 @@ export default {
         parties: 'Vue par les membres de l’événement',
         public: 'Vue par toute personne qui a le lien',
       },
-      hintsTodo: 'À remplir',
-      hintsEditable: 'Remplies, modifiables jusqu’au jour J',
-      hintsLocked: 'Remplies, plus modifiables',
-      hintsShort: 'Remplies',
-      hintsShortLocked: 'Plus modifiables',
       game: {
         skipped: 'Tu passes ton tour',
         count: {
@@ -157,19 +152,6 @@ export default {
   },
   wishes: {
     openLink: 'Ouvrir le lien de « {label} »',
-    sheet: {
-      new: 'Nouvelle idée',
-      edit: 'Modifier l’idée',
-      description: 'Une idée courte, et un lien si tu en as un.',
-      idea: 'Idée',
-      ideaPlaceholder: 'Un livre, des chaussettes…',
-      link: 'Lien (facultatif)',
-      linkLabel: 'Lien',
-      optional: '(facultatif)',
-      linkHelp:
-        'Colle l’adresse d’une page : elle s’ouvrira dans un nouvel onglet.',
-      remove: 'Supprimer l’idée',
-    },
   },
   journal: {
     title: 'Journal de l’événement',

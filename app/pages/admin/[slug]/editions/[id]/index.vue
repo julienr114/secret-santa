@@ -344,7 +344,6 @@ const dateOpen = ref(false);
         :slug="slug"
         :edition-id="id"
         :participants="participants"
-        :hints-on="rules?.giftHints !== 'none'"
         :redrawn="redrawn"
         :party-reached="partyReached"
         :can-close="canClose"

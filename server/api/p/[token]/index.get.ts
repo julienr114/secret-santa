@@ -54,23 +54,21 @@ const myListLine = async (
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules, ...rest } =
     await requirePersonalLink(event);
-  const hintsOn = rules.giftHints !== 'none';
   // Once drawn, the page says whether the person they give to left hints,
   // and whether they are new since the result was last opened (lot 16
   // bis); never who it is.
   const revealed = participation.viewCount > 0 && canReveal(edition.status).ok;
-  const receiver =
-    hintsOn && canReveal(edition.status).ok
-      ? await receiverHintsOf(
-          db,
-          {
-            editionId: edition.id,
-            personId: person.id,
-            lastViewedAt: participation.lastViewedAt,
-          },
-          await dataKeyOf(event),
-        )
-      : null;
+  const receiver = canReveal(edition.status).ok
+    ? await receiverHintsOf(
+        db,
+        {
+          editionId: edition.id,
+          personId: person.id,
+          lastViewedAt: participation.lastViewedAt,
+        },
+        await dataKeyOf(event),
+      )
+    : null;
   const request = receiver?.receiverParticipationId
     ? await findHintRequest(db, receiver.receiverParticipationId)
     : null;
@@ -150,9 +148,9 @@ export default defineEventHandler(async (event) => {
     // page (lot 16 bis): no secret, the messages give them to all.
     budget: rules.budget,
     guardianMessage: rules.guardianMessage,
-    giftHints: rules.giftHints,
-    hintsEditable: canEditHints(edition.status, rules.giftHints).ok,
-    hasHints: hintsOn && (await participationHasHints(db, participation.id)),
+    // « Pistes de cadeaux » is no longer a setting (ticket 107).
+    hintsEditable: canEditHints(edition.status, 'full').ok,
+    hasHints: await participationHasHints(db, participation.id),
     revealed,
     // Revealed by the organiser: visible to the whole group (README 22.18).
     drawRevealed: Boolean(edition.revealedAt),
@@ -160,7 +158,7 @@ export default defineEventHandler(async (event) => {
     // « Tu pourras lui en demander », while a request is possible.
     canAskHints: canRequestHints({
       status: edition.status,
-      mode: rules.giftHints,
+      mode: 'full',
       receiverHasHints: receiver?.state !== 'none',
       alreadyRequested: Boolean(request),
     }).ok,

@@ -78,7 +78,7 @@ export default {
         other:
           'Die Auslosung steht noch aus. Deine Organisatoren melden sich; behalte diesen Link, hier spielt sich alles ab.',
       },
-      action: 'Meine Geschenkideen hinterlassen',
+      action: 'Meine Wunschliste schreiben',
       hint: 'Greif in der Zwischenzeit der Person unter die Arme, die dich ziehen wird.',
     },
     ready: {
@@ -121,11 +121,6 @@ export default {
         parties: 'Sichtbar für die Mitglieder des Events',
         public: 'Sichtbar für alle mit dem Link',
       },
-      hintsTodo: 'Auszufüllen',
-      hintsEditable: 'Ausgefüllt, änderbar bis zum großen Tag',
-      hintsLocked: 'Ausgefüllt, nicht mehr änderbar',
-      hintsShort: 'Ausgefüllt',
-      hintsShortLocked: 'Nicht mehr änderbar',
       game: {
         skipped: 'Du setzt aus',
         count: {
@@ -159,19 +154,6 @@ export default {
   },
   wishes: {
     openLink: 'Link von „{label}“ öffnen',
-    sheet: {
-      new: 'Neue Idee',
-      edit: 'Idee bearbeiten',
-      description: 'Eine kurze Idee und ein Link, falls du einen hast.',
-      idea: 'Idee',
-      ideaPlaceholder: 'Ein Buch, Socken…',
-      link: 'Link (optional)',
-      linkLabel: 'Link',
-      optional: '(optional)',
-      linkHelp:
-        'Füge die Adresse einer Seite ein: Sie öffnet sich in einem neuen Tab.',
-      remove: 'Idee löschen',
-    },
   },
   journal: {
     title: 'Protokoll des Events',

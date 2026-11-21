@@ -620,7 +620,7 @@ const card = computed(() => {
         />
         <UButton
           v-else-if="view === 'waiting' && me.hintsEditable"
-          :to="`/p/${token}/pistes`"
+          :to="`/p/${token}/liste`"
           block
           size="xl"
           icon="i-lucide-list-checks"

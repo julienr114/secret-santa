@@ -74,7 +74,7 @@ export default {
         other:
           'The draw hasn’t happened yet. Your organizers will give you a shout; keep this link, this is where it all happens.',
       },
-      action: 'Leave my gift ideas',
+      action: 'Write my gift list',
       hint: 'In the meantime, give a hand to whoever draws your name.',
     },
     ready: {
@@ -117,11 +117,6 @@ export default {
         parties: 'Seen by the members of the event',
         public: 'Seen by anyone with the link',
       },
-      hintsTodo: 'To fill in',
-      hintsEditable: 'Filled in, can be changed until the big day',
-      hintsLocked: 'Filled in, can no longer be changed',
-      hintsShort: 'Filled in',
-      hintsShortLocked: 'No longer editable',
       game: {
         skipped: 'Sitting this one out',
         count: {
@@ -155,18 +150,6 @@ export default {
   },
   wishes: {
     openLink: 'Open the link of "{label}"',
-    sheet: {
-      new: 'New idea',
-      edit: 'Edit the idea',
-      description: 'A short idea, and a link if you have one.',
-      idea: 'Idea',
-      ideaPlaceholder: 'A book, some socks…',
-      link: 'Link (optional)',
-      linkLabel: 'Link',
-      optional: '(optional)',
-      linkHelp: 'Paste the address of a page: it will open in a new tab.',
-      remove: 'Delete the idea',
-    },
   },
   journal: {
     title: 'Event journal',

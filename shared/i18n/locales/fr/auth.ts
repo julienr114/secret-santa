@@ -223,7 +223,7 @@ export default {
         'Tu fais partie de l’événement. Tes organisateurs te feront signe pour le prochain Secret Santa.',
     },
     meanwhile: 'En attendant',
-    hints: 'Laisser mes idées de cadeaux',
+    hints: 'Écrire ma liste de cadeaux',
     seeDraw: 'Voir mon tirage',
     goHome: 'Aller à mon accueil',
     findIt: 'Tu le retrouveras sur ton accueil en te connectant avec {email}.',

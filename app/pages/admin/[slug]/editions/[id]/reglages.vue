@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { formatEventDate } from '#server/utils/rules';
-import { GIFT_HINTS_MODES } from '#shared/utils/hints';
 import { usePartyQuery } from '~/composables/queries/useParty';
 
 // The settings of a Secret Santa (docs/spec/v3/secret-santa.md, « Ses
@@ -9,14 +8,14 @@ import { usePartyQuery } from '~/composables/queries/useParty';
 // the messages, the emails to me. Each saved at once, in its sheet, with
 // its switch or on its own page. Below what the mockup shows, until the
 // screens that will hold them are drawn: the day, the budget and the word
-// of the party, and « Pistes de cadeaux » until ticket 107. Once the
+// of the party. Once the
 // Secret Santa is closed, read only; the game no longer changes once the
 // draw is revealed.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
-const { t, tk, locale } = useT();
+const { t, locale } = useT();
 const party = usePartyQuery(slug);
 const { edition, shown, save, saving } = useEditionRuleSaver(slug, id);
 const closed = computed(() => edition.data.value?.edition.status === 'closed');
@@ -49,8 +48,8 @@ const gameFixed = computed(
 );
 const guessOpen = ref(false);
 
-const editing = ref<null | 'years' | 'hints'>(null);
-const sheet = (which: 'years' | 'hints') =>
+const editing = ref<null | 'years'>(null);
+const sheet = (which: 'years') =>
   computed({
     get: () => editing.value === which,
     set: (value) => {
@@ -58,7 +57,6 @@ const sheet = (which: 'years' | 'hints') =>
     },
   });
 const yearsOpen = sheet('years');
-const hintsOpen = sheet('hints');
 
 /** How far back nobody draws the same person again, as a row says it. */
 const yearsChoices = computed(() => [
@@ -80,14 +78,6 @@ const yearsValue = computed(() => {
     ? t('adminGroup.rules.previousYears.noneShort')
     : t('adminGroup.rules.previousYears.short', { count: years });
 });
-/** What participants may note for their giver, until ticket 107. */
-const hintsChoices = computed(() =>
-  GIFT_HINTS_MODES.map((mode) => ({
-    value: mode,
-    label: tk(`hints.setting.${mode}`),
-    hint: tk(`hints.setting.${mode}Help`),
-  })),
-);
 const noteValue = computed(() =>
   shown.value.messageNote
     ? `« ${shown.value.messageNote} »`
@@ -182,15 +172,6 @@ const noteValue = computed(() =>
           :readonly="closed"
           values
         />
-        <UiListItem
-          :title="t('hints.setting.title')"
-          :value="tk(`hints.setting.${shown.giftHints ?? 'full'}`)"
-          :chevron="!closed"
-          :busy="saving('giftHints')"
-          :busy-label="t('common.actions.saving')"
-          :on-click="closed ? undefined : () => (editing = 'hints')"
-          data-testid="gift-hints-setting"
-        />
       </UiList>
     </AdminQueryState>
 
@@ -206,21 +187,6 @@ const noteValue = computed(() =>
         (years) => {
           editing = null;
           save({ excludePreviousYears: years });
-        }
-      "
-    />
-    <UiChoiceSheet
-      v-model:open="hintsOpen"
-      :title="t('hints.setting.title')"
-      :description="t('hints.setting.help')"
-      :choices="hintsChoices"
-      :value="shown.giftHints ?? 'full'"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="
-        (mode) => {
-          editing = null;
-          save({ giftHints: mode });
         }
       "
     />

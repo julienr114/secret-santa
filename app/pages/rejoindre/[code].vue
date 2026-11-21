@@ -152,7 +152,7 @@ const closed = computed(() => {
         </h2>
         <UButton
           v-if="edition?.hintsOn && edition.status === 'preparing'"
-          :to="`${path}/pistes`"
+          :to="`${path}/liste`"
           block
           size="xl"
           class="h-12 justify-center font-bold"

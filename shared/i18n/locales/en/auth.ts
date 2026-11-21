@@ -225,7 +225,7 @@ export default {
         'You’re in the event. Your organizers will give you a shout for the next Secret Santa.',
     },
     meanwhile: 'Meanwhile',
-    hints: 'Leave my gift ideas',
+    hints: 'Write my gift list',
     seeDraw: 'See my draw',
     goHome: 'Go to my home',
     findIt: 'You will find it on your home by logging in with {email}.',

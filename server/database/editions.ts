@@ -1,3 +1,4 @@
+import { wroteListFor } from './listSharing';
 import { and, asc, count, eq, getTableColumns, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
@@ -198,7 +199,10 @@ export type Participant = PublicPerson & {
   linkCopiedAt: string | null;
   viewCount: number;
   lastViewedAt: string | null;
-  /** Left gift hints: a yes or no, never what (README 22.11). */
+  /**
+   * Wrote their list for the event (ticket 107), or left gift hints
+   * before the V3: a yes or no, never what.
+   */
   hasHints: boolean;
   badges: Badge[];
 };
@@ -216,6 +220,18 @@ export const listParticipants = async (
     .orderBy(asc(persons.firstName));
   const ids = rows.map((r) => r.participation.id);
   const withHints = await participationsWithHints(db, ids);
+  const [santa] = await db
+    .select({ partyId: secretSantas.partyId })
+    .from(secretSantas)
+    .where(eq(secretSantas.id, editionId))
+    .limit(1);
+  const wrote = santa
+    ? await wroteListFor(
+        db,
+        santa.partyId,
+        rows.flatMap((r) => (r.person.email ? [r.person.email] : [])),
+      )
+    : new Set<string>();
   return rows.map(({ participation, person }) => {
     const status = {
       participationId: participation.id,
@@ -223,7 +239,9 @@ export const listParticipants = async (
       linkCopiedAt: participation.linkCopiedAt,
       viewCount: participation.viewCount,
       lastViewedAt: participation.lastViewedAt,
-      hasHints: withHints.has(participation.id),
+      hasHints:
+        withHints.has(participation.id) ||
+        Boolean(person.email && wrote.has(person.email)),
     };
     return {
       ...publicPerson(person),

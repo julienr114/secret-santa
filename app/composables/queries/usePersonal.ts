@@ -9,7 +9,7 @@ import type { JournalEntry } from '#server/utils/audit';
 import type { EditionStatus } from '#server/utils/editions';
 import type { PersonalPhase } from '#server/utils/personal';
 import type { Locale } from '#shared/i18n';
-import type { GiftHintsMode, Portrait } from '#shared/utils/hints';
+import type { Portrait } from '#shared/utils/hints';
 import { keys } from './keys';
 import { api, useApiMutation } from './useApi';
 
@@ -41,7 +41,6 @@ export type PersonalState = {
   /** The organiser's words to the participants, or empty. */
   guardianMessage: string;
   /** What the group lets participants note (README 22.11). */
-  giftHints: GiftHintsMode;
   hintsEditable: boolean;
   /** They left hints of their own. */
   hasHints: boolean;

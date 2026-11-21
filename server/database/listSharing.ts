@@ -614,3 +614,48 @@ export const myListFor = async (
   );
   return id;
 };
+
+/**
+ * Who wrote their list for an event (ticket 107, « a écrit sa liste »):
+ * among these addresses, those whose account holds a list made for it or
+ * shared in it with at least one idea. A yes or no, never what.
+ * @param db - The database.
+ * @param partyId - The event.
+ * @param emails - The addresses of its participants.
+ * @returns The addresses of those who wrote one.
+ */
+export const wroteListFor = async (
+  db: Db,
+  partyId: string,
+  emails: readonly string[],
+): Promise<Set<string>> => {
+  if (emails.length === 0) return new Set();
+  const rows = await db
+    .selectDistinct({ email: accounts.email })
+    .from(accounts)
+    .innerJoin(giftListHolders, eq(giftListHolders.accountId, accounts.id))
+    .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
+    .leftJoin(
+      giftListParties,
+      and(
+        eq(giftListParties.listId, giftLists.id),
+        eq(giftListParties.partyId, partyId),
+      ),
+    )
+    .where(
+      and(
+        inArray(accounts.email, [...emails]),
+        or(
+          eq(giftLists.partyId, partyId),
+          eq(giftListParties.partyId, partyId),
+        ),
+        exists(
+          db
+            .select({ id: giftListIdeas.id })
+            .from(giftListIdeas)
+            .where(eq(giftListIdeas.listId, giftLists.id)),
+        ),
+      ),
+    );
+  return new Set(rows.map((row) => row.email));
+};

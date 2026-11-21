@@ -226,7 +226,7 @@ export default {
         'Du gehörst zum Event. Deine Organisatoren melden sich zum nächsten Wichteln.',
     },
     meanwhile: 'In der Zwischenzeit',
-    hints: 'Meine Geschenkideen hinterlassen',
+    hints: 'Meine Wunschliste schreiben',
     seeDraw: 'Meine Auslosung ansehen',
     goHome: 'Zu meiner Startseite',
     findIt:

@@ -13,7 +13,7 @@ Un ticket dessiné dit toujours deux choses : **ce qui a été décidé seul**, 
 
 ## Où en est-on
 
-Au 20 novembre 2026 au soir, `a-dessiner/` est vide.
+Au 21 novembre 2026, `a-dessiner/` est de nouveau vide.
 
 | Ticket | Quoi | Débloque |
 |---|---|---|
@@ -30,3 +30,5 @@ Au 20 novembre 2026 au soir, `a-dessiner/` est vide.
 | D11 | Les emails relus, la règle de leurs objets | 110 |
 | D12 | « Qui verra ta liste ? » rouvert par « Modifier », retirer sa liste d'une fête | 106 |
 | D13 | Le texte sous chaque ligne, le nom d'une fête dans une phrase, l'accueil dans l'ordre des dates | 112 |
+| D14 | Le partage d'une liste, par stades : brouillon, lien toujours là, accès à l'arrivée | 106, 107 |
+| D15 | « Événement » partout : maquettes, canevas, textes d'écran cités dans la spec | 102, 110 |

@@ -22,7 +22,7 @@ L'onglet ouvre un panneau du bas, « Créer », de deux lignes sans sous-titre :
 1. **Un Secret Santa**
 2. **Une liste**
 
-On ne propose pas « Une fête » : la fête est la première étape des deux.
+On ne propose pas « Un événement » : la fête est la première étape des deux.
 
 ### Première étape d'un Secret Santa : « Pour quelle occasion ? »
 
@@ -43,7 +43,7 @@ Maquettes : `V3FeteNouvelle` (titre : « Pour quelle occasion ? »), `V3FeteMemb
 
 1. La catégorie, en six tuiles : elle remplit le reste (`categories.md`).
 2. Le nom, la date (trois listes, `regles-d-ecran.md`), « Elle revient chaque année ».
-3. Les membres : « Reprendre les membres d'une autre fête » (on coche qui), pour ne pas réinviter les mêmes personnes à chaque occasion. « Inviter d'autres personnes » se fait par un lien, une fois la fête créée.
+3. Les membres : « Reprendre les membres de » (on coche qui), pour ne pas réinviter les mêmes personnes à chaque occasion. « Inviter d'autres personnes » se fait par un lien, une fois la fête créée.
 
 Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. Si on s'arrête après cette étape, la fête existe : on peut y inviter.
 
@@ -60,13 +60,13 @@ Maquette : `V3Accueil`.
 - **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes fêtes couvre déjà.
 - **« Plus tard »** : les fêtes qui viennent après la saison de Noël, par date.
 - **Le titre et le texte de chaque ligne** : `lignes.md`.
-- En bas, deux lignes : **« Les fêtes passées »** et **« Ce que j'offre ailleurs »** (`listes.md`).
+- En bas, deux lignes : **« Les événements passés »** et **« Ce que j'offre ailleurs »** (`listes.md`).
 
-L'accueil fait office de calendrier : pas d'écran à part. Pas de rubrique « Reçues par un lien ». Pas de bouton « Nouvelle liste » ni « Nouvelle fête » en bas de page.
+L'accueil fait office de calendrier : pas d'écran à part. Pas de rubrique « Reçues par un lien ». Pas de bouton « Nouvelle liste » ni « Nouvel événement » en bas de page.
 
 ## L'accueil d'un compte tout neuf
 
-Maquette : `V3AccueilVide`. Il ne parle pas de « fête ». Deux cartes :
+Maquette : `V3AccueilVide`. Il ne parle pas de « événement ». Deux cartes :
 
 - **Un Secret Santa** : « Chacun tire au sort la personne à qui il offre un cadeau. », bouton rouge « Organiser un Secret Santa ».
 - **Une liste de cadeaux** : « Tes idées, que tes proches cochent pour ne pas offrir deux fois la même chose. », bouton « Écrire ma liste ».
@@ -77,10 +77,10 @@ Les deux mènent à « Pour quelle occasion ? » (les catégories).
 
 Maquette : `V3AccueilAnnee`. Deux mois avant la date d'une fête qui revient :
 
-- l'organisateur voit « Préparer Noël 2027 » sur la carte de la fête ; les membres sont repris ;
+- l'organisateur voit « Préparer Noël 2027 » sur la carte de la fête. Un toucher recrée **autant de Secret Santa que l'an dernier**, chacun avec ses participants, ses réglages et la mémoire de ses tirages passés (Q-008). Rien n'est tiré ni envoyé : ils sont « à préparer ». L'organisateur **supprime** celui qui ne sert plus (« Supprimer ce Secret Santa », dans ses réglages, tant qu'il n'est pas tiré) ; un nouveau membre de la fête n'est ajouté d'office à aucun ;
 - chacun voit « Reprendre ma liste de l'an dernier ».
 
-Une fête qui ne revient pas passe dans « Les fêtes passées » après sa date.
+Une fête qui ne revient pas passe dans « Les événements passés » après sa date.
 
 La liste reprise : `listes.md`, « La liste reprise de l'an dernier ».
 
@@ -92,7 +92,7 @@ Maquette : `V3AccueilJeu`. Il n'y a pas de grande carte en haut de l'accueil pou
 - **Le Secret Santa dévoilé** : sa ligne dit « Dévoilé · qui a offert à qui », avec le point rouge tant que je ne l'ai pas ouvert.
 - **Le palmarès** : « Devine qui · Le palmarès est là », pareil.
 - **Jamais un résultat de tirage sur l'accueil** : la ligne d'un Secret Santa tiré dit « Tu sais à qui tu offres », sans prénom.
-- Une fête reste sur l'accueil quelque temps après sa date, pour le dévoilement et le palmarès. Combien de temps : `docs/travail/questions.md`, Q-009.
+- **Après la date** (Q-009) : une fête reste sur l'accueil tant que son Secret Santa n'est pas clôturé, **14 jours au plus** après sa date ; 3 jours si elle n'a pas de Secret Santa. Elle garde sa place dans l'ordre des dates, donc en haut. Ensuite elle part dans « Les événements passés », ou passe à sa date de l'année suivante si elle revient.
 
 ## « Quoi de neuf »
 

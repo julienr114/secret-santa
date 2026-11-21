@@ -28,6 +28,7 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 - [ ] Suppression de la page « Mes pistes », du réglage « Pistes de cadeaux » et de leurs textes.
 - [ ] « Lui demander des idées » : l'email invite à écrire sa liste ; la demande s'affiche toujours sans prénom (« Quelqu'un te demande des idées »).
 - [ ] La ligne de la liste dit quand elle a de nouvelles idées depuis ma dernière visite (`V3TirageNouvelles`).
+- [ ] « Celui qui m'a tiré » est un stade du partage (`docs/spec/v3/listes.md`, « Le partage d'une liste, par stades ») : choisi d'avance en arrivant de mon Secret Santa, sans brouillon entre les deux.
 
 ## Hors périmètre
 

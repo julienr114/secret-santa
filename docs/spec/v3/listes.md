@@ -1,57 +1,83 @@
 # Les listes
 
-Décisions : `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
-Maquettes : `V3ListeQui`, `V3ListeQuiSecret`, `V3Liste`, `V3ListeSecret`, `V3ListeNouvelle`, `V3ListePublique`, `V3ListeMembre`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeReprise`.
+Décisions : `2026-11-21-le-partage-d-une-liste-a-des-stades.md`, `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
+Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`, `V3ListeQui`, `V3ListeQuiSecret`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3Liste`, `V3ListeSecret`, `V3ListePublique`, `V3ListeFermee`, `V3ListeFermeeConnecte`, `V3ListeMembre`, `V3ListeReprise`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
 
 Le dessin d'une liste (les lignes, les coches, le mode anonyme, le fil, « ses goûts ») ne change pas : c'est celui de la Correction 30 de l'ancien plan et du README 22.19 à 22.21. Change où elle vit et qui la voit.
 
-## « Qui verra ta liste ? »
+## Le partage d'une liste, par stades
 
-Maquette : `V3ListeQui`. C'est la première étape d'une nouvelle liste, et l'écran que rouvre « Modifier » dans la barre du haut d'une liste.
+Décision : `2026-11-21-le-partage-d-une-liste-a-des-stades.md` (Julien, 21 novembre 2026). Ce qui suit remplace ce que ce fichier disait le 20 novembre : une liste n'est plus visible du seul fait d'être dans un événement.
 
-- **Mes fêtes, à cocher**, une ou plusieurs. Au moins une.
-- Sous une fête cochée **qui a un Secret Santa où je participe**, deux choix : **« Toute la fête »** ou **« Celui qui m'a tiré »**.
-  - En arrivant depuis mon Secret Santa (`V3ListeQuiSecret`), « Celui qui m'a tiré » est choisi d'avance.
-  - En arrivant de l'accueil ou de « Créer », « Toute la fête ».
-- **« Une autre occasion »** : crée une fête (`accueil-et-creation.md`).
-- **« Tout le monde, avec un lien »** : un interrupteur, en plus des fêtes. La liste devient publique.
+**Une liste a toujours son lien**, qu'on peut copier à tout moment. **C'est à l'arrivée sur l'adresse que l'accès se décide**, selon le stade du partage :
 
-### Rouvert par « Modifier »
-
-Maquettes : `V3ListeQuiModifier`, `V3ListeQuiRetirer`. Le même écran, avec « Enregistrer ». Décocher une fête en retire la liste (il doit en rester une, ou le lien public), après une confirmation qui dit ce que ça fait : « Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. Les 2 cadeaux qu'ils ont cochés restent prévus. » · « Annuler » · « Retirer ». Ceux qui avaient coché retrouvent ce qu'ils offrent dans « Ce que j'offre ailleurs ». C'est le choix A de Q-002 (`docs/travail/questions.md`), dessiné en attendant la réponse.
-
-## La barre du haut d'une liste
-
-Elle ne dit plus « Partage par lien ». Elle dit où est la liste, avec « Modifier » :
-
-| État | Texte |
+| Stade | Qui entre |
 |---|---|
-| Dans des fêtes (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » |
-| Réservée à celui qui m'a tiré (`V3ListeSecret`) | « Famille Camille » · « Seul celui qui m'a tiré la voit » |
-| Publique (`V3ListePublique`) | « Publique, avec un lien » · « Et dans la fête … » ; dessous, le lien et « Partager » |
-| Pour celui qui aide à la tenir (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille », **sans « Modifier »** : celui qui « aide à écrire » ne choisit pas qui la voit ; celui qui « gère la liste » le peut, comme celui qui l'a créée (`ListeTeneurs`) |
+| **Brouillon** | ceux qui tiennent la liste. C'est l'état de départ de toute liste |
+| **Celui qui m'a tiré** | lui en plus (dans un événement où je participe à un Secret Santa) |
+| **Un ou plusieurs événements** | leurs membres en plus |
+| **Publique** | quiconque a le lien, sans compte. C'est le dernier stade |
 
-Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre depuis le 20 novembre 2026.
-
-Une liste n'a pas de brouillon : elle est dans sa fête dès sa création, et ses membres la voient, même vide. À confirmer : `docs/travail/questions.md`, Q-006.
-
-### Le lien d'une liste publique
-
-Maquettes : `V3ListeQuiLien`, `V3ListeLienChanger`. La barre ne garde que le lien et « Partager ». Le reste est derrière « Modifier », dans « Qui verra ta liste ? », sous l'interrupteur « Tout le monde, avec un lien » :
-
-- le lien, et « Copier » ;
-- « Le message qui accompagne le lien » (la page `PersonnaliserMessage` d'aujourd'hui) ;
-- « Changer de lien », qui dit d'abord ce que ça fait : « L'ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste. » · « Annuler » · « Changer ».
-
-Éteindre l'interrupteur arrête le lien ; la liste reste dans ses fêtes.
+- Les stades se cumulent : une liste peut être réservée à celui qui m'a tiré dans un événement, ouverte à tous les membres d'un autre, et publique.
+- **Le partage se change dans les deux sens**, à tout moment.
+- Chaque événement où la liste est partagée la montre dans sa carte ; une liste réservée à celui qui m'a tiré n'apparaît pas pour les autres membres.
 
 ## Une nouvelle liste
 
-Maquette : `V3ListeNouvelle`. Son nom, sa date et son icône viennent de la fête (et de sa catégorie) : on ne les redemande pas.
+Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`.
+
+1. **« Pour quelle occasion ? »** : un de mes événements, ou « Une autre occasion » (qui en crée un, `accueil-et-creation.md`). La liste en prend le nom, la date et l'icône : on ne les redemande pas.
+2. La liste s'ouvre, **en brouillon** : moi seul la vois. J'écris.
+3. **« Partager »**, dans la barre du haut, ouvre « Qui verra ta liste ? ».
+
+En arrivant depuis mon Secret Santa pour écrire ma liste, l'occasion est connue et « Celui qui m'a tiré » est choisi d'avance (`V3ListeQuiSecret`) : ce que j'écris est lu dès que c'est écrit, comme les pistes d'avant.
+
+## La barre du haut d'une liste
+
+Elle dit le stade, et elle a toujours le lien. Deux lignes : l'état avec son bouton, puis l'adresse avec **« Copier le lien »**.
+
+| Stade | Texte | Bouton |
+|---|---|---|
+| Brouillon (`V3ListeNouvelle`, `V3ListeReprise`) | « Brouillon » · « Toi seul la vois » | « Partager » |
+| Celui qui m'a tiré (`V3ListeSecret`) | le nom de l'événement · « Seul celui qui t'a tiré la voit » | « Modifier » |
+| Des événements (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » | « Modifier » |
+| Publique (`V3ListePublique`) | « Publique » · « Toute personne qui a le lien la voit » | « Modifier » |
+| Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille » | aucun |
+
+Celui qui « gère la liste » a le bouton, comme celui qui l'a créée (`ListeTeneurs`). Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre.
+
+## « Qui verra ta liste ? »
+
+Maquettes : `V3ListeQui` (depuis un brouillon, bouton « Partager »), `V3ListeQuiModifier` (bouton « Enregistrer »), `V3ListeQuiSecret`, `V3ListeQuiLien`.
+
+- **Mes événements, à cocher**, aucun, un ou plusieurs. Tout décoché, la liste est un brouillon.
+- Sous un événement coché **où je participe à un Secret Santa**, deux choix : **« Tous les membres »** ou **« Celui qui m'a tiré »**.
+- **« Une autre occasion »** : crée un événement.
+- **« Tout le monde, avec le lien »** : un interrupteur. Allumé, la liste est publique.
+- Pour une liste publique, deux lignes de plus : « Le message qui accompagne le lien » (la page `PersonnaliserMessage`) et « Changer de lien » (`V3ListeLienChanger`), qui dit d'abord que l'ancien lien ne marchera plus.
+
+### Resserrer le partage
+
+Maquette : `V3ListeQuiRetirer`. Décocher un événement, éteindre « Tout le monde », revenir au brouillon : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, et **compte ceux qui ont coché un cadeau** :
+
+« Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. 2 d'entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » · « Annuler » · « Retirer ».
+
+Pour une liste publique : « 3 personnes ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » Si personne n'a coché, la confirmation ne dit que la première phrase.
+
+Pour ceux qui perdent l'accès, la liste disparaît, sans trace (Q-003). Leurs coches restent sur la liste : le cadeau est toujours prévu.
+
+## Arriver par le lien
+
+Maquettes : `V3ListeFermee`, `V3ListeFermeeConnecte`.
+
+- J'ai le droit d'entrer (je la tiens, je suis celui qui a tiré son auteur, je suis membre d'un événement où elle est partagée, ou elle est publique) : la liste s'ouvre.
+- Je ne suis pas connecté et elle n'est pas publique : « Cette liste n'est pas ouverte à tout le monde » · « Si elle a été partagée avec toi, connecte-toi pour l'ouvrir. » · « Se connecter ». Une fois connecté, on revient sur le lien.
+- Je suis connecté et je n'y ai pas droit : « Cette liste n'est pas partagée avec toi » · « Demande à la personne qui t'a envoyé le lien de te l'ouvrir. »
+- La page ne dit ni le nom de la liste, ni à qui elle est : le lien d'un brouillon ne doit rien apprendre.
 
 ## La liste reprise de l'an dernier
 
-Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans la même fête : le nom, la date et l'icône viennent de la fête. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
+Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans la même fête : le nom, la date et l'icône viennent de la fête. **Elle naît en brouillon**, le temps du tri. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
 
 ## La liste d'un autre membre
 
@@ -76,5 +102,6 @@ Un participant arrivé par son lien personnel n'a pas forcément de compte.
 Maquette : `V3OffreAilleurs`. Une ligne en bas de l'accueil.
 
 - Elle ne montre que les listes publiques **où j'ai coché quelque chose** sans être membre d'une de leurs fêtes : l'invité d'un mariage retrouve ce qu'il offre.
+- Une liste qui cesse d'être publique en disparaît (Q-003) : pas de liste fermée gardée pour mémoire.
 - Ouvrir un lien sans rien cocher ne laisse aucune trace.
 - Il n'y a pas de rubrique « Reçues par un lien ».

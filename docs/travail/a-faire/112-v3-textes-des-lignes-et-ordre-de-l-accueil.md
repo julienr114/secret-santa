@@ -22,8 +22,8 @@ Sur l'accueil et sur la page d'une fête, chaque ligne dit où en est la chose :
 - [ ] La ligne « Devine qui », quand le jeu est activé.
 - [ ] La ligne d'une liste : son titre (« Ma liste », « La liste de … »), son texte quand je la tiens, son texte quand elle est à quelqu'un d'autre.
 - [ ] Le point rouge sur les cas marqués ●, éteint quand j'ouvre la chose.
-- [ ] « aussi : Chez Mamie », « aussi dans 2 autres fêtes » : jamais de préposition devant le nom d'une fête, dans les trois langues.
-- [ ] Les textes de « Les fêtes passées » et de « Ce que j'offre ailleurs » ; les deux lignes ne se montrent que s'il y a quelque chose derrière.
+- [ ] « aussi : Chez Mamie », « aussi dans 2 autres événements » : jamais de préposition devant le nom d'une fête, dans les trois langues.
+- [ ] Les textes de « Les événements passés » et de « Ce que j'offre ailleurs » ; les deux lignes ne se montrent que s'il y a quelque chose derrière.
 - [ ] L'ordre de l'accueil : par date, la section de Noël à la place de sa première fête, ce qui vient avant au-dessus et sans titre, « Bientôt » après elle, « Plus tard » ensuite.
 - [ ] « Quitter » : les deux phrases sur ma liste, selon qu'elle est dans d'autres fêtes ou non.
 - [ ] Retirer de `docs/refonte/ECARTS-MAQUETTES.md` les lignes que ce ticket remet d'accord.

@@ -36,3 +36,9 @@ Ils continuent de marcher : les adresses des groupes (invitation, pages), des pa
 ## L'ordre
 
 Le modèle et la migration passent en premier, **sans changer aucun écran** : l'application d'aujourd'hui tourne sur le nouveau modèle avant qu'on touche à l'interface (ticket 101).
+
+## La bascule
+
+Décision : `2026-11-21-la-v3-se-publie-des-qu-elle-est-prete.md`. La V3 se publie dès qu'elle est prête, d'un coup, avec une sauvegarde juste avant, une répétition sur une copie du jour, un retour en arrière essayé, et un mot à ceux qui s'en servent. Le détail est le ticket 113.
+
+Deux règles de migration ajoutées le 21 novembre 2026 avec le partage par stades (`listes.md`) : une liste partagée par lien aujourd'hui devient **publique** ; une liste dont le partage est éteint devient un **brouillon**. Les pistes de cadeaux deviennent une liste au stade « celui qui m'a tiré ».

@@ -56,8 +56,8 @@ Elle n'existe que si le jeu est activé, que le tirage est fait et que je partic
 | Cas | Texte |
 |---|---|
 | Le jeu est ouvert, je n'ai pas joué | « À toi de jouer · jusqu'au 25 décembre à 18 h » ● (la fin du jeu) |
-| Le jeu est ouvert, j'ai joué | « Tu as joué · réponse à la fête » |
-| Le jeu est fermé, le palmarès n'est pas sorti | « Réponse à la fête » |
+| Le jeu est ouvert, j'ai joué | « Tu as joué · réponse le jour J » |
+| Le jeu est fermé, le palmarès n'est pas sorti | « Réponse le jour J » |
 | Le palmarès est sorti, je ne l'ai pas vu | « Le palmarès est là » ● |
 | Je l'ai vu | « Le palmarès » |
 
@@ -71,11 +71,12 @@ Elle n'existe que si le jeu est activé, que le tirage est fait et que je partic
 
 **Le texte, quand je la tiens**, en deux morceaux au plus :
 
+0. Si elle est en brouillon : **« Pas encore partagée »**, et rien d'autre.
 1. D'abord pour qui elle est : « Léo, Zoé et moi » (les mêmes règles que le titre, « moi » en dernier). Si elle n'est que pour moi : « 9 idées ». Si elle est vide : « Pas encore d'idées », et rien d'autre.
 2. Puis le premier de ces cas :
    - des cadeaux ont été cochés depuis ma dernière visite : « 2 cadeaux cochés » ● ;
    - elle est réservée à celui qui m'a tiré : « seul celui qui t'a tiré la voit » ;
-   - elle est aussi dans d'autres fêtes : « aussi : Chez Mamie », ou « aussi dans 2 autres fêtes » (voir plus bas).
+   - elle est aussi partagée dans d'autres événements : « aussi : Chez Mamie », ou « aussi dans 2 autres événements » (voir plus bas).
 
 **Le texte, quand elle est à quelqu'un d'autre** :
 
@@ -96,22 +97,22 @@ Une liste qui vient d'être créée n'a pas de texte à elle : ses idées sont n
 Le nom d'une fête est libre : « Chez Mamie », « Famille Camille », « Les 40 ans de Tonton ». On ne peut pas savoir s'il faut « chez », « dans » ou « à ». Donc :
 
 - **On ne colle jamais une préposition devant le nom d'une fête.**
-- Dans un texte sous une ligne : deux-points. « aussi : Chez Mamie » pour une autre fête ; **à partir de deux autres, on compte** : « aussi dans 2 autres fêtes ».
+- Dans un texte sous une ligne : deux-points. « aussi : Chez Mamie » pour une autre fête ; **à partir de deux autres, on compte** : « aussi dans 2 autres événements ».
 - Dans une phrase : le nom entre guillemets, derrière un mot qui ne change pas. « Quitter « Famille Camille » ? », « Retirer ta liste de « Chez Mamie » ? », « Et dans la fête « Notre mariage » ».
-- Quand la phrase n'a pas besoin du nom, on ne le met pas : « Elle reste dans tes autres fêtes. »
+- Quand la phrase n'a pas besoin du nom, on ne le met pas : « Elle reste dans tes autres événements. »
 
-Les trois langues suivent la même forme : « also: Chez Mamie », « also in 2 other parties » ; « auch: Chez Mamie », « auch in 2 weiteren Festen ». Le mot « fête » reste derrière une clé (Q-001).
+Les trois langues suivent la même forme : « also: Chez Mamie », « also in 2 other events » ; « auch: Chez Mamie », « auch in 2 weiteren Events ». Le nom commun est « événement » (`vocabulaire.md`).
 
 ## Les deux lignes du bas de l'accueil
 
-- **« Les fêtes passées »** : montrée dès qu'il y en a une. Texte : le nom de la plus récente, puis le compte des autres : « Les 6 ans de Léo », « Les 6 ans de Léo et 1 autre », « Les 6 ans de Léo et 4 autres ». Une fête qui revient compte une fois par année passée.
+- **« Les événements passés »** : montrée dès qu'il y en a une. Texte : le nom de la plus récente, puis le compte des autres : « Les 6 ans de Léo », « Les 6 ans de Léo et 1 autre », « Les 6 ans de Léo et 4 autres ». Une fête qui revient compte une fois par année passée.
 - **« Ce que j'offre ailleurs »** : montrée dès qu'il y a une liste publique où j'ai coché sans être membre de sa fête. Une liste : « Le mariage de Karim et Sofia · 1 cadeau ». Plusieurs : « 3 listes · 5 cadeaux ».
 
 ## Les lignes des fêtes passées
 
 Sur la page d'une fête, « Les années passées » : le titre est le nom de l'année (« Noël 2025 » ; pour une fête faite pour un proche dont on connaît la naissance, « Ses 3 ans »).
 
-Dans « Les fêtes passées » : le titre est le nom de la fête, sous l'année ; le texte commence par la date (« 25 décembre »).
+Dans « Les événements passés » : le titre est le nom de la fête, sous l'année ; le texte commence par la date (« 25 décembre »).
 
 Le texte, le premier qui s'applique :
 
@@ -125,4 +126,4 @@ Le texte, le premier qui s'applique :
 ## Les autres lignes de la page d'une fête
 
 - **Les membres** : « 12 membres », et « Inviter » pour un organisateur.
-- **« Quitter cette fête »** : pas de texte dessous. Ce que ça fait est dit dans le panneau, avant le geste.
+- **« Quitter cet événement »** : pas de texte dessous. Ce que ça fait est dit dans le panneau, avant le geste.

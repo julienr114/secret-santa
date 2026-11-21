@@ -6,22 +6,24 @@
 
 ## Objectif
 
-Deux mois avant une fête qui revient, l'accueil propose de la préparer et de reprendre sa liste. Les fêtes finies se retrouvent dans « Les fêtes passées », et chaque année passée d'une fête garde sa page, en lecture seule.
+Deux mois avant une fête qui revient, l'accueil propose de la préparer et de reprendre sa liste. Les fêtes finies se retrouvent dans « Les événements passés », et chaque année passée d'une fête garde sa page, en lecture seule.
 
 ## À lire d'abord
 
-- `docs/spec/v3/accueil-et-creation.md` (« L'année suivante », « Les fêtes passées »)
+- `docs/spec/v3/accueil-et-creation.md` (« L'année suivante », « Les événements passés »)
 - `docs/spec/v3/fete.md` (« Une année passée »)
 - `docs/spec/v3/listes.md` (« La liste reprise de l'an dernier »)
 - `docs/spec/v3/modele.md` (« L'année »)
 
 ## À faire
 
-- [ ] « Préparer Noël 2027 » pour l'organisateur, membres repris.
+- [ ] « Préparer Noël 2027 » pour l'organisateur : autant de Secret Santa que l'an dernier, chacun avec ses participants et ses réglages, « à préparer ».
+- [ ] « Supprimer ce Secret Santa », tant qu'il n'est pas tiré.
+- [ ] Après sa date, une fête reste sur l'accueil jusqu'à la clôture de son Secret Santa, 14 jours au plus (3 jours sans Secret Santa), puis passe dans « Les événements passés » ou à l'année suivante.
 - [ ] « Reprendre ma liste de l'an dernier » : la liste de l'année, dans la même fête, avec les idées pas offertes marquées pour moi seul (la reprise existe déjà pour une liste, lot 27 de l'ancien plan).
-- [ ] La page « Les fêtes passées » : par année, une ligne par fête et par année.
+- [ ] La page « Les événements passés » : par année, une ligne par fête et par année.
 - [ ] La page d'une année passée d'une fête : ses Secret Santa, « Devine qui », ses listes, en lecture seule.
-- [ ] Les lignes « Les fêtes passées » (accueil) et « Les années passées » (fête) y mènent.
+- [ ] Les lignes « Les événements passés » (accueil) et « Les années passées » (fête) y mènent.
 
 ## Hors périmètre
 
@@ -34,12 +36,6 @@ Deux mois avant une fête qui revient, l'accueil propose de la préparer et de r
 - [ ] Une année passée ne se modifie par aucune route (un test le vérifie).
 - [ ] Les quatre maquettes sont reproduites.
 - [ ] `/controle` passe.
-
-## Ce qui manque
-
-- **Q-008** : ce que « Préparer Noël 2027 » reprend quand la fête avait plusieurs Secret Santa l'an dernier.
-- **Q-009** : combien de temps une fête reste sur l'accueil après sa date, avant de passer dans « Les fêtes passées ».
-- Les maquettes sont là (tickets de conception D01 et D06). Dès que Q-008 et Q-009 ont leur réponse, ce ticket passe dans `a-faire/`.
 
 ## Compte rendu
 

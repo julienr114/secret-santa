@@ -30,7 +30,7 @@ Maquette : `V3TirageReglages`. Au-dessus du titre : « Famille Camille · Secret
 - **Le tirage au sort** : « Éviter la même personne ».
 - **Devine qui** : « Pronostics » (aucun pronostic, « Qui m'offre ? », toutes les paires).
 - **Les messages** : « Mot ajouté aux messages ».
-- **M'écrire par email** : « Tout le monde a découvert son tirage » ; « Rappel 3 jours avant la fête », avec la liste de ceux qui n'ont pas encore ouvert.
+- **M'écrire par email** : « Tout le monde a découvert son tirage » ; « Rappel 3 jours avant le jour J », avec la liste de ceux qui n'ont pas encore ouvert.
 
 Ces réglages sont recopiés du Secret Santa précédent quand on prépare celui de l'année suivante.
 

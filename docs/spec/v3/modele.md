@@ -11,7 +11,7 @@ Un événement, c'est **une occasion** : il n'y a pas de niveau « famille » au
 - une date habituelle (jour et mois) et « revient chaque année », ou non ;
 - des membres et des organisateurs.
 
-Tout ce que le groupe porte aujourd'hui reste à l'événement : l'invitation par lien, les organisateurs, les exclusions du tirage, les réglages.
+Tout ce que le groupe porte aujourd'hui reste à l'événement : les organisateurs, les exclusions du tirage, les réglages. **Sauf l'invitation par lien, qui passe au Secret Santa** : on s'inscrit à un Secret Santa, et du coup à son événement (`secret-santa.md`, « Inviter par lien »).
 
 ## L'année
 
@@ -43,11 +43,11 @@ Dans cet ordre, du plus étroit au plus large, événement par événement :
 2. **Tous les membres de l'événement.**
 3. En plus, si son propriétaire le choisit : **tout le monde avec un lien**. La liste est alors publique ; on y coche sans compte. C'est la réponse pour un mariage.
 
-**Pas de lien d'invité sur l'événement** : un événement ne s'ouvre qu'à ses membres. Le lien public est celui d'une liste.
+**Un événement n'a pas de lien à lui**, et on n'y ajoute personne : on y entre par un de ses Secret Santa ou par une de ses listes (plus bas). Le lien public est celui d'une liste.
 
 ## Deux sortes de personnes
 
-- **Les membres** d'un événement : ceux qui y ont accès (la table `persons` d'aujourd'hui). Un membre peut ne pas avoir de compte : il participe au Secret Santa par son lien personnel, il ne voit pas les listes.
+- **Les membres** d'un événement : ceux qui y sont entrés **par un de ses Secret Santa** (son organisateur les y a mis, ou ils se sont inscrits par son lien) **ou par une de ses listes** (ils la tiennent, on les y a invités, ou ils ont ouvert son lien). **On n'ajoute personne à l'événement lui-même** (`docs/decisions/2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`). C'est la table `persons` d'aujourd'hui, avec ce par quoi chacun est entré. Un membre peut ne pas avoir de compte : il participe au Secret Santa par son lien personnel, il ne voit pas les listes.
 - **« Mes proches »** : ceux pour qui j'écris des listes, attachés à mon compte (`family_members`), **transversaux aux événements**. Léo, 6 ans, n'apparaît dans un événement qu'à travers la liste de ses parents.
 
 Les deux tables ne fusionnent pas. La page « Mes proches » ne change pas.

@@ -60,7 +60,7 @@ On ne dit pas « créer un événement » : on demande « Pour quelle occasion ?
 | Les événements passés | Les fêtes passées |
 | Réglages de l'événement | Réglages de la fête |
 | L'événement est complet | La fête est complète |
-| Tu es invité à l'événement « Famille Camille » | Tu es invité à la fête « Famille Camille » |
+| Ceux qui s'inscrivent deviennent membres de l'événement | Ceux qui s'inscrivent rejoignent la fête |
 | Journal de l'événement | Journal de la fête |
 | Supprimer l'événement | Supprimer la fête |
 | aussi dans 2 autres événements | aussi dans 2 autres fêtes |

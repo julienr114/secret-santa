@@ -8,7 +8,7 @@ Ce sont les pages du groupe d'aujourd'hui, avec leurs règles (README, sections 
 ## La page d'un événement
 
 - En tête : la catégorie (« Noël · tous les ans »), le nom, la date de l'année et son décompte.
-- Les membres (une ligne, avec « Inviter » pour l'organisateur).
+- Les membres (une ligne, qui ouvre « Membres »).
 - Le ou les Secret Santa de l'année.
 - Les listes de ses membres ; « Nouvelle liste ».
 - Les années passées.
@@ -27,7 +27,6 @@ Maquette : `V3FeteReglages`. Seulement ce qui est à elle :
 
 - **L'événement** : catégorie ; date (« Le 25 décembre · proposée chaque année ») ; « Revient chaque année ».
 - **Secret Santa** : une ligne « Réglages du Secret Santa 2026 », qui mène aux réglages du Secret Santa (`secret-santa.md`).
-- **M'écrire par email** : « Quelqu'un rejoint l'événement par le lien ».
 - **Organisateurs** : la liste, « Ajouter un organisateur ».
 - « Supprimer l'événement », réservé au super-admin.
 
@@ -35,18 +34,26 @@ Ce qui ne concerne que le Secret Santa n'est pas ici.
 
 ## Les membres
 
-Maquette : `V3FeteMembres`. La page des membres du groupe d'aujourd'hui. Certains membres n'ont pas de compte : ils participent au Secret Santa, ils ne voient pas les listes.
+Maquette : `V3FeteMembres`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
+
+- **On n'ajoute personne à un événement.** On en devient membre en entrant dans un de ses Secret Santa ou dans une de ses listes (`modele.md`, « Deux sortes de personnes »).
+- La page montre qui est là et, sous chaque prénom, **par où il est entré** : « Secret Santa » (son nom s'il y en a plusieurs), « La liste de Camille », les deux séparés par une virgule. L'organisateur lit à la suite « ne tire pas Hugo » et « pas d'adresse email » ; l'adresse elle-même est sur la fiche de la personne.
+- Sous les membres, **« Ajouter quelqu'un »**, avec une ligne par endroit où je peux le faire :
+  - **« Au Secret Santa »**, pour son organisateur, une ligne par Secret Santa en préparation (son nom s'il y en a plusieurs) · « 5 participants · lien actif ». Elle ouvre « Choisir les participants » (`secret-santa.md`).
+  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`).
+  - Sans Secret Santa en préparation ni liste à moi, il n'y a pas de section.
+- L'organisateur retire quelqu'un depuis sa fiche : la personne sort des Secret Santa pas encore tirés, et ne voit plus les listes de l'événement.
+- Certains membres n'ont pas de compte : ils participent au Secret Santa, ils ne voient pas les listes.
 
 ### 30 membres au plus
 
-Maquette : `V3FeteMembresComplet`. À 30 membres, la page le dit (« 30 sur 30 »), « Ajouter une personne » laisse la place à un état (« L'événement est complet · 30 membres, c'est le maximum »), et le lien d'invitation se met en pause tout seul (« En pause · l'événement est complet »). Retirer un membre libère une place et le lien reprend. Les places restantes d'un lien ne dépassent jamais ce qui reste avant 30. Celui qui ouvre le lien d'un événement complet voit `RejoindreFerme`. Il n'y a rien à demander à personne.
+Maquette : `V3FeteMembresComplet`. À 30 membres, la page le dit (« 30 sur 30 »), un état le dit à la place de « Ajouter quelqu'un » (« L'événement est complet · 30 membres, c'est le maximum »), les liens d'invitation de ses Secret Santa se mettent en pause tout seuls (« En pause · l'événement est complet »), et le lien d'une liste ne fait plus entrer personne de nouveau. Retirer un membre libère une place et les liens reprennent. Les places restantes d'un lien ne dépassent jamais ce qui reste avant 30. Celui qui ouvre le lien d'un événement complet voit `RejoindreFerme`. Il n'y a rien à demander à personne.
 
 ## Inviter, rejoindre
 
-Maquettes : `V3FeteInviter`, `V3FeteRejoindre`.
+Décisions : `2026-11-21-le-lien-d-invitation-est-celui-d-un-secret-santa.md`, `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
 
-- Le lien d'invitation est celui de l'événement. Celui qui s'inscrit rejoint aussi le Secret Santa de l'année qui est encore en préparation, **s'il n'y en a qu'un**. S'il y en a plusieurs (les adultes, les enfants), il n'en rejoint aucun : l'organisateur le coche dans « Choisir les participants » de celui qu'il faut. La page d'arrivée dit alors « Ton organisateur te dira à quel Secret Santa tu participes. », sans la ligne « Voir mon tirage », et le message qui prévient l'organisateur finit par « À ajouter à un Secret Santa. » (`docs/decisions/2026-11-21-rejoindre-avec-plusieurs-secret-santa.md`)
-- La page du lien dit « Tu es invité à l'événement », le nom, puis la catégorie, la date et le nombre de membres. On s'y connecte avec son adresse email ; le compte se crée tout seul.
+On n'invite pas dans un événement. On invite **à un Secret Santa** (`secret-santa.md`, « Choisir les participants », « Inviter par lien ») ou **à une liste** (`listes.md`, « Inviter quelqu'un »), et celui qui entre devient membre de l'événement.
 
 ## Quitter
 

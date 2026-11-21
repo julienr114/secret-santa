@@ -39,13 +39,12 @@ Maquette : `V3ListeQui`. Voir `listes.md`. La ligne « Une autre occasion » cr�
 
 ### « Une autre occasion » : l'écran où un événement se crée
 
-Maquettes : `V3FeteNouvelle` (titre : « Pour quelle occasion ? »), `V3FeteMembresReprendre`.
+Maquette : `V3FeteNouvelle` (titre : « Pour quelle occasion ? »).
 
 1. La catégorie, en six tuiles : elle remplit le reste (`categories.md`).
 2. Le nom, la date (trois listes, `regles-d-ecran.md`), « Elle revient chaque année ».
-3. Les membres : « Reprendre les membres de » (on coche qui), pour ne pas réinviter les mêmes personnes à chaque occasion. « Inviter d'autres personnes » se fait par un lien, une fois l'événement créé.
 
-Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. Si on s'arrête après cette étape, l'événement existe : on peut y inviter.
+Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. **On ne demande pas qui en fait partie** : les gens entreront par le Secret Santa ou par la liste (`fete.md`, « Les membres »). Si on s'arrête là, l'événement existe, avec moi seul.
 
 ## L'accueil
 

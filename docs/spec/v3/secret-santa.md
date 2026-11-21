@@ -31,9 +31,31 @@ Maquette : `V3TirageReglages`. Au-dessus du titre : « Famille Camille · Secret
 - **Le tirage au sort** : « Éviter la même personne ».
 - **Devine qui** : « Pronostics » (aucun pronostic, « Qui m'offre ? », toutes les paires).
 - **Les messages** : « Mot ajouté aux messages ».
-- **M'écrire par email** : « Tout le monde a découvert son tirage » ; « Rappel 3 jours avant le jour J », avec la liste de ceux qui n'ont pas encore ouvert.
+- **M'écrire par email** : « Quelqu'un s'inscrit par le lien » ; « Tout le monde a découvert son tirage » ; « Rappel 3 jours avant le jour J », avec la liste de ceux qui n'ont pas encore ouvert.
 
 Ces réglages sont recopiés du Secret Santa précédent quand on prépare celui de l'année suivante.
+
+## Choisir les participants
+
+Maquettes : `AjouterParticipants`, `V3FeteMembresReprendre`. C'est par là, et par le lien, qu'on entre dans un événement du côté d'un Secret Santa (`fete.md`, « Les membres »).
+
+- Les membres de l'événement, à cocher. Dans un événement tout neuf, il n'y a que moi.
+- **« Créer une personne »** · « Elle rejoint l'événement et ce Secret Santa » : un prénom, une adresse facultative.
+- **« Inviter par lien »** · « Chacun s'inscrit lui-même » (plus bas).
+- **« Reprendre ceux d'un autre événement »** · « Tu coches qui » : la page « Qui reprendre ? », mes autres événements en pastilles, leurs membres à cocher, « Ajouter · 4 personnes ». Ceux que je coche deviennent participants, donc membres.
+
+## Inviter par lien
+
+Décision : `2026-11-21-le-lien-d-invitation-est-celui-d-un-secret-santa.md`. Maquettes : `V3FeteInviter`, `V3FeteRejoindre`, `RejoindreConnecte`, `RejoindreFait`, `RejoindreFerme` (les noms de fichiers sont restés).
+
+- **Le lien d'invitation est celui d'un Secret Santa.** S'y inscrire, c'est participer à ce Secret Santa, et devenir membre de son événement si on ne l'était pas. Un événement n'a pas de lien d'invitation.
+- Chaque Secret Santa a le sien, avec ses réglages : « Places restantes », « Date limite », « Ton mot sur la page », « Créer un nouveau lien », « Désactiver le lien ». Il se crée, se renouvelle et se désactive comme le lien d'un groupe aujourd'hui.
+- On l'ouvre depuis le Secret Santa en préparation (« Inviter par lien », `PreparerVide`) et depuis « Choisir les participants ».
+- Au-dessus du titre : « Famille Camille · Secret Santa 2026 ». Sous le titre, une phrase : « Ceux qui s'inscrivent participent au Secret Santa et deviennent membres de l'événement. »
+- Le message à partager : « Salut ! Tu es invité au Secret Santa « Famille Camille » 🎁 ». S'il y a plusieurs Secret Santa la même année, le sien suit entre parenthèses : « Famille Camille (Les adultes) ».
+- **La page du lien** dit « Tu es invité au Secret Santa », le nom de l'événement (et celui du Secret Santa, de la même façon), la catégorie, la date et le nombre d'inscrits. Le bouton d'un compte connecté : « Participer ».
+- **Il vit tant que le tirage n'a pas eu lieu.** Ensuite, celui qui l'ouvre lit, sur la page de `RejoindreFerme` : « Le tirage a déjà eu lieu » · « Préviens l'organisateur de Famille Camille. »
+- À 30 membres, les liens des Secret Santa de l'événement se mettent en pause (`fete.md`, « 30 membres au plus »). Quelqu'un qui est déjà membre peut toujours s'inscrire : il ne prend pas de place.
 
 ## La limite
 

@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-50 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+52 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -16,17 +16,17 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3QuoiDeNeuf` | « Quoi de neuf » · regroupé par fête, la plus récente en haut ; une liste publique où j’ai coché a sa section | 120 |
 | `V3TirageQuelleFete` | Secret Santa · première étape : « Pour quelle occasion ? », une fête que j’organise ou une autre occasion | 105 |
 | `V3Fete` | Événement · vue par un membre : ses membres, son Secret Santa, les listes, les années passées, « Quitter » | 104 |
-| `V3FeteOrganisateur` | Événement · vue par son organisateur : « Inviter », les réglages, « Un autre Secret Santa » | 104 |
+| `V3FeteOrganisateur` | Événement · vue par son organisateur : les réglages, « Un autre Secret Santa » ; la ligne des membres ouvre « Membres » | 104 |
 | `V3FeteAnniversaire` | Événement · « pour quelqu’un » (un anniversaire) : sa liste d’abord ; un Secret Santa reste possible | 104 |
-| `V3FeteNouvelle` | Première étape d’un Secret Santa ou d’une liste, quand l’occasion est nouvelle : « Pour quelle occasion ? », la catégorie d’abord, qui remplit le reste | 104 |
-| `V3FeteMembresReprendre` | Événement · nouvelle, suite : « Reprendre les membres de », on coche qui | 104 |
+| `V3FeteNouvelle` | Première étape d’un Secret Santa ou d’une liste, quand l’occasion est nouvelle : « Pour quelle occasion ? », la catégorie d’abord, qui remplit le reste ; pas d’étape « membres » | 117 |
+| `V3FeteMembresReprendre` | Secret Santa ou liste · « Reprendre ceux d’un autre événement » : on coche qui (le nom du fichier est resté) | 117 |
 | `V3FeteQuitter` | Événement · quitter : ce qui sort, ce qui reste | 104 |
 | `V3FeteAnneePassee` | Événement · une année passée (Noël 2025) : son Secret Santa et ses listes, en lecture seule ; rien à créer, rien à régler | 108 |
 | `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa | 104 |
-| `V3FeteMembres` | Événement · ses membres (certains sans compte : ils participent au Secret Santa, ils ne voient pas les listes) | 104 |
-| `V3FeteInviter` | Événement · inviter par lien | 104 |
-| `V3FeteRejoindre` | Événement · le lien d’invitation, sans compte : on rejoint une fête, et son Secret Santa s’il y en a un | 104 |
-| `V3FeteMembresComplet` | Événement · complète, vue par l’organisateur : 30 membres, plus d’« Ajouter une personne », le lien d’invitation en pause | 105 |
+| `V3FeteMembres` | Événement · ses membres, et par où chacun est entré (un Secret Santa, une liste) ; « Ajouter quelqu’un » mène au Secret Santa ou à ma liste, jamais à l’événement lui-même | 117 |
+| `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |
+| `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « Tu es invité au Secret Santa » (le nom du fichier est resté) | 116 |
+| `V3FeteMembresComplet` | Événement · complet, vu par l’organisateur : 30 membres, le lien du Secret Santa en pause | 117 |
 | `V3TirageNouveau` | Secret Santa · celui de l’année : la date de la fête est déjà là, et se change | 105 |
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
@@ -51,7 +51,9 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeQuiRetirer` | Liste · retirer sa liste d’une fête : la conséquence avant le geste ; les cadeaux cochés restent prévus | 106 |
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |
 | `V3ListeFermee` | Liste · arriver par le lien sans être connecté, quand elle n’est pas publique | 106 |
-| `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit | 106 |
+| `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit (un brouillon, une liste réservée à celui qui a tiré) | 106 |
+| `V3ListeInviter` | Liste · « Inviter quelqu’un » : par le lien de la liste, par une adresse email, ou en reprenant ceux d’un autre événement ; il devient membre de l’événement | 117 |
+| `V3ListePartageEmail` | Liste · l’email reçu par celui qu’on invite par son adresse | 117 |
 | `V3ListeReprise` | Liste · reprise de l’an dernier : dans sa fête, les idées pas offertes marquées pour moi seul | 108 |
 | `V3Admin` | Administration · le tableau de bord : des fêtes, plus de « Demandes » ; les limites atteintes se surveillent ; « Suspendre les nouveaux Secret Santa » | 109 |
 | `V3AdminComptes` | Administration · les comptes : plus de demande à traiter ; un compte à sa limite de Secret Santa se voit | 109 |
@@ -69,6 +71,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `PistesDemander`, `PistesResultatVide`, `PistesResultatDemande`, `PistesEmail` | « Lui demander des idées », anonyme : la question, le résultat sans rien d’écrit, la demande envoyée, l’email reçu (les noms de fichiers sont restés) | 107 |
 | `ListeTeneurs`, `ListeTeneursNiveau`, `ListeInvitation` | « Aider à écrire » ou « Gérer la liste » : seul celui qui gère choisit qui la voit | 106 |
 | `AdminSignalement`, `ListePartageSuspendu`, `ModerationEmail` | Un signalement arrête le lien public d’une liste, pas sa présence dans ses fêtes | 132 |
+| `ListeCocherPourMoi`, `ListeCocherPourDepart`, `ListeCocherPourChoix`, `ListeCocherPourLigne`, `ListeCocherPour`, `ListeCocherPourAutre` | Cocher pour quelqu’un, dans l’ordre du parcours : je coche (à mon nom), « Tu l’offres › » ouvre « Qui l’offre ? », je touche Mamie, enregistré, à plusieurs, quelqu’un d’autre ; fait sur `main`, sans ticket | — |
 | `PersonnaliserMessage` | « Le message qui accompagne le lien » d’une liste publique | 106 |
 
 ## Les maquettes d'avant, passées à la V3

@@ -33,6 +33,8 @@ Les demandes de groupe disparaissent (`groupRequests`). Celles qui attendent au 
 
 Ils continuent de marcher : les adresses des groupes (invitation, pages), des participants et des listes partagées sont redirigées vers leurs nouvelles adresses.
 
+Le lien d'invitation d'un groupe devient celui de son Secret Santa en préparation, avec ses réglages (places, date limite, mot). Un groupe qui n'en a pas voit son lien fermé (`secret-santa.md`, « Inviter par lien »).
+
 ## L'ordre
 
 Le modèle et la migration passent en premier, **sans changer aucun écran** : l'application d'aujourd'hui tourne sur le nouveau modèle avant qu'on touche à l'interface (ticket 101).

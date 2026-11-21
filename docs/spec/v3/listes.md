@@ -15,7 +15,7 @@ Décision : `2026-11-21-le-partage-d-une-liste-a-des-stades.md` (Julien, 21 nove
 |---|---|
 | **Brouillon** | ceux qui tiennent la liste. C'est l'état de départ de toute liste |
 | **Celui qui m'a tiré** | lui en plus (dans un événement où je participe à un Secret Santa) |
-| **Un ou plusieurs événements** | leurs membres en plus |
+| **Un ou plusieurs événements** | leurs membres en plus ; dans l'événement de la liste, ceux que j'invite et ceux qui ouvrent son lien en deviennent membres (« Inviter quelqu'un ») |
 | **Publique** | quiconque a le lien, sans compte. C'est le dernier stade |
 
 - Les stades se cumulent : une liste peut être réservée à celui qui m'a tiré dans un événement, ouverte à tous les membres d'un autre, et publique.
@@ -53,6 +53,7 @@ Maquettes : `V3ListeQui` (depuis un brouillon, bouton « Partager »), `V3ListeQ
 - **Mes événements, à cocher**, aucun, un ou plusieurs. Tout décoché, la liste est un brouillon.
 - Sous un événement coché **où je participe à un Secret Santa**, deux choix : **« Tous les membres »** ou **« Celui qui m'a tiré »**.
 - **« Une autre occasion »** : crée un événement.
+- **« Inviter quelqu'un »** : plus bas.
 - **« Tout le monde, avec le lien »** : un interrupteur. Allumé, la liste est publique.
 - Pour une liste publique, deux lignes de plus : « Le message qui accompagne le lien » (la page `PersonnaliserMessage`) et « Changer de lien » (`V3ListeLienChanger`), qui dit d'abord que l'ancien lien ne marchera plus.
 
@@ -66,13 +67,32 @@ Pour une liste publique : « 3 personnes ont coché un cadeau et ne pourront plu
 
 Pour ceux qui perdent l'accès, la liste disparaît, sans trace (Q-003). Leurs coches restent sur la liste : le cadeau est toujours prévu.
 
+## Inviter quelqu'un
+
+Maquettes : `V3ListeInviter`, `V3ListePartageEmail`, `V3FeteMembresReprendre`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
+
+On n'ajoute personne à un événement : du côté des listes, **c'est par une liste qu'on y entre**. Celui qui gère une liste partagée avec « Tous les membres » de **son événement** (l'occasion choisie à sa création) peut y faire entrer quelqu'un. La page dit : « Il verra ta liste et deviendra membre de l'événement. » Trois lignes :
+
+- **« Copier le lien »** : le lien de la liste. Celui qui l'ouvre et se connecte devient membre de l'événement, et la liste s'ouvre.
+- **« Par son adresse email »** : un prénom, une adresse. La personne est membre tout de suite et reçoit un email à mon nom (`V3ListePartageEmail`) : « Camille a partagé sa liste « Noël 2026 » avec toi » · « Coche ce que tu offres, et personne n'aura la même idée. » · « Voir la liste ».
+- **« Reprendre ceux d'un autre événement »** : la page « Qui reprendre ? », la même que pour un Secret Santa (`secret-santa.md`, « Choisir les participants »).
+
+Règles :
+
+- Le lien d'une liste ne fait entrer **que dans son événement**. Dans les autres événements où elle est partagée, seuls ceux qui en sont déjà membres la voient.
+- Tant que la liste est un brouillon, ou réservée à celui qui m'a tiré, « Inviter quelqu'un » n'est pas proposé et le lien ne fait entrer personne.
+- À 30 membres, on n'invite plus et le lien ne fait plus entrer personne de nouveau (`fete.md`).
+- « Changer de lien » vaut pour toute liste, pas seulement pour une liste publique : l'ancien lien ne fait plus entrer personne.
+- Sur « Membres », celui qui est entré ainsi porte « La liste de Camille ».
+
 ## Arriver par le lien
 
 Maquettes : `V3ListeFermee`, `V3ListeFermeeConnecte`.
 
 - J'ai le droit d'entrer (je la tiens, je suis celui qui a tiré son auteur, je suis membre d'un événement où elle est partagée, ou elle est publique) : la liste s'ouvre.
 - Je ne suis pas connecté et elle n'est pas publique : « Cette liste n'est pas ouverte à tout le monde » · « Si elle a été partagée avec toi, connecte-toi pour l'ouvrir. » · « Se connecter ». Une fois connecté, on revient sur le lien.
-- Je suis connecté et je n'y ai pas droit : « Cette liste n'est pas partagée avec toi » · « Demande à la personne qui t'a envoyé le lien de te l'ouvrir. »
+- Je suis connecté, je ne suis pas membre, et **elle est partagée avec tous les membres de son événement** : j'en deviens membre et la liste s'ouvre (« Inviter quelqu'un », plus haut). Sans compte, « Se connecter » en crée un, puis même chose.
+- Je suis connecté et je n'y ai pas droit (un brouillon, une liste réservée à celui qui a tiré, un événement complet) : « Cette liste n'est pas partagée avec toi » · « Demande à la personne qui t'a envoyé le lien de te l'ouvrir. »
 - La page ne dit ni le nom de la liste, ni à qui elle est : le lien d'un brouillon ne doit rien apprendre.
 
 ## La liste reprise de l'an dernier
@@ -96,6 +116,16 @@ Un participant arrivé par son lien personnel n'a pas forcément de compte.
 
 - **Le compte se crée tout seul à la première chose écrite** (un goût, une idée), pas à l'ouverture du lien : celui qui ne fait que regarder son résultat n'a pas de compte. On le dit sur le moment, par un message (`V3ListeCompteCree`) : « C'est enregistré » · « Un compte a été créé avec ton adresse, pour retrouver ta liste. » · « Compris ».
 - **Sans adresse email, pas de liste.** Celui dont on n'a pas l'adresse (un lien copié dans une messagerie) se la voit demander au moment où il veut écrire sa liste (`V3ListeAdresse`) : « Ton adresse email, pour écrire ta liste », un champ, « Valider », « Tu reçois un lien pour la confirmer. », « Tes données, en clair ». L'adresse se confirme par un lien, comme pour se connecter.
+
+## Cocher pour quelqu'un
+
+Décision : `2026-11-21-cocher-pour-quelqu-un.md`. Maquettes : `ListeCocherPourMoi`, `ListeCocherPourDepart`, `ListeCocherPourChoix`, `ListeCocherPourLigne`, `ListeCocherPour`, `ListeCocherPourAutre`. Fait sur `main` avant la V3, sans ticket (`docs/refonte/cocher-pour-quelqu-un/PROMPT.md`) ; la V3 le garde tel quel.
+
+Ceux qui tiennent une liste disent qui offre une idée : sous une idée cochée, les prénoms se touchent et ouvrent « Qui l'offre ? ». On y coche des prénoms connus, ou on en écrit un, avec son adresse email si on veut le relier à un compte. « Une personne » (des ronds, un seul à la fois) ou « Plusieurs » (des cases, autant qu'on veut) ; à plusieurs, « On est au complet » ferme le groupe. Ceux qui tiennent la liste ont les mêmes droits que celui qui a proposé. Personne n'est prévenu. Une coche anonyme ne se modifie pas.
+
+Dans la V3, « ceux que l'application connaît » comprend aussi les membres des événements où la liste est partagée.
+
+**Pour après, pas encore dans un ticket** : celui dont on donne l'adresse en cochant pour lui entre dans l'événement de la liste, comme par « Inviter quelqu'un ».
 
 ## « Ce que j'offre ailleurs »
 

@@ -45,4 +45,5 @@ Une ancienne adresse ne donne jamais une page d'erreur : elle mène à ce qui la
 | `/listes` | l'accueil |
 | `/tirages-passes` | « Les événements passés » (ticket 108) |
 | `/p/[jeton]/pistes` et ses pages, `/p/[jeton]/souhaits` | la liste réservée à celui qui m'a tiré (ticket 107) |
+| `/e/[événement]/invitation` (le lien d'invitation, quand il était à l'événement) et `/e/[événement]/membres/nouvelle` | « Membres » de l'événement |
 | `/f/[nom]`, `/admin/[groupe]` et ses pages | l'événement (déjà fait, tickets 102 et 104) |

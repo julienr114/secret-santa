@@ -125,5 +125,5 @@ Le texte, le premier qui s'applique :
 
 ## Les autres lignes de la page d'un événement
 
-- **Les membres** : « 12 membres », et « Inviter » pour un organisateur.
+- **Les membres** : « 12 membres », rien d'autre. La ligne ouvre « Membres ».
 - **« Quitter cet événement »** : pas de texte dessous. Ce que ça fait est dit dans le panneau, avant le geste.

@@ -1,6 +1,6 @@
 # 113 — V3 : la bascule (publier la V3)
 
-- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 120
+- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 116, 117, 120
 - **Migration** : oui, c'est elle qu'on publie
 - **Maquettes** : aucune (c'est une marche à suivre)
 

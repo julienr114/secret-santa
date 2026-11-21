@@ -3,8 +3,8 @@ import type { Dict } from '../../types';
 
 export default {
   general: {
-    journalPreview: 'What the group will read in the journal',
-    editionFallback: 'Edition',
+    journalPreview: 'What the members will read in the journal',
+    editionFallback: 'Secret Santa',
   },
   newEdition: {
     nameRow: 'Name',
@@ -14,10 +14,10 @@ export default {
       other: '{count} members taken from the Secret Santa {year}.',
     },
     partyMembers: {
-      one: '{count} member of the party.',
-      other: '{count} members of the party.',
+      one: '{count} member of the event.',
+      other: '{count} members of the event.',
     },
-    dateLabel: 'Day of the party',
+    dateLabel: 'Date',
     budgetLabel: 'Budget',
     optional: '(optional)',
     messageLabel: 'A word for the participants',
@@ -52,18 +52,19 @@ export default {
     exclusionsAppliedTitle: 'Exclusions applied at the draw',
     exclusionsTitle: 'Exclusions',
     pendingExclusions: {
-      one: '+ {count} exclusion from a draw that is not closed yet, kept secret.',
+      one: '+ {count} exclusion from a Secret Santa that is not closed yet, kept secret.',
       other:
-        '+ {count} exclusions from a draw that is not closed yet, kept secret.',
+        '+ {count} exclusions from a Secret Santa that is not closed yet, kept secret.',
     },
     previousDrawReason: 'Previous draw: {edition}',
     previousDrawsFooter:
-      'Nobody will get the same person again. The × lifts an exclusion for this edition only.',
+      'Nobody will get the same person again. The × lifts an exclusion for this Secret Santa only.',
     waive: 'Lift',
-    waiveLabel: 'Let {giver} draw {receiver} for this edition',
+    waiveLabel: 'Let {giver} draw {receiver} for this Secret Santa',
     waived: {
-      one: '{count} exclusion from previous years lifted for this edition.',
-      other: '{count} exclusions from previous years lifted for this edition.',
+      one: '{count} exclusion from previous years lifted for this Secret Santa.',
+      other:
+        '{count} exclusions from previous years lifted for this Secret Santa.',
     },
     restoreAll: 'Restore all',
   },
@@ -85,15 +86,15 @@ export default {
     title: 'Choose the participants',
     subtitle: 'Tick those taking part.',
     members: {
-      one: '{count} member of the group',
-      other: '{count} members of the group',
+      one: '{count} member of the event',
+      other: '{count} members of the event',
     },
     allChosen: 'Tick all',
     noneChosen: 'Untick all',
     choose: 'Include {name}',
     someoneNew: 'Someone new',
     create: 'Create a person',
-    createHint: 'They join the group and this edition',
+    createHint: 'They join the event and this Secret Santa',
     inviteHint: 'Everyone signs up on their own',
     save: {
       one: 'Save · {count} participant',
@@ -106,7 +107,7 @@ export default {
   },
   customize: {
     forReminder: 'The game reminder, for those who haven’t played yet',
-    forGroup: 'The message for the whole group',
+    forGroup: 'The message for everyone',
     title: 'Customise the message',
     forOne: 'For {name}',
     forMany: {
@@ -138,9 +139,9 @@ export default {
     redrawMessage:
       'After the new draw, you will have to let everyone know with the « {message} » message.',
     linksKept: 'Personal links stay valid.',
-    hintsKept: 'Gift hints are kept.',
+    hintsKept: 'Gift ideas are kept.',
     reasonLabel: 'Reason',
-    reasonHelp: 'Shown in the journal, for the whole group to see.',
+    reasonHelp: 'Shown in the journal, for all the members to see.',
     reasonPlaceholder: 'Tom dropped out',
     understood: 'I understand the current results will be lost',
     keep: 'Keep this draw',
@@ -155,7 +156,7 @@ export default {
     warningLastResort:
       'A disagreement, a doubt about a bug… You only see one result at a time.',
     warningJournal:
-      'The whole group will know: it is written in the journal, with the first name.',
+      'All the members will know: it is written in the journal, with the first name.',
     warningEphemeral:
       'The result only shows here and is gone when you leave the screen.',
     personLabel: 'Whose result?',
@@ -165,15 +166,15 @@ export default {
       other: '{count} names out of {total}',
     },
     sentenceLabel: 'Type: {sentence}',
-    understood: 'I understand the whole group will know I looked',
+    understood: 'I understand all the members will know I looked',
     submit: "See {name}'s result",
     submitAnyone: 'See the result',
     revealing: 'Opening the result…',
     notNow: 'Not after all',
     gives: '{name} gives a gift to',
     shownNotice:
-      'Your look is written in the group journal. The result is gone when you leave this screen.',
-    hide: 'Hide and go back to the edition',
+      'Your look is written in the event journal. The result is gone when you leave this screen.',
+    hide: 'Hide and go back to the Secret Santa',
     another: 'See another result',
   },
   drawPairs: {
@@ -182,7 +183,7 @@ export default {
   },
   results: {
     title: 'The draw',
-    footer: 'The edition is closed: its results are no longer secret.',
+    footer: 'The Secret Santa is closed: its results are no longer secret.',
   },
   share: {
     noteBefore: 'Above the message',
@@ -203,14 +204,14 @@ export default {
     copied: 'Message copied',
     settings: 'Link settings',
     places: 'Places left',
-    placesHelp: 'How many people can still join the party with this link.',
+    placesHelp: 'How many people can still join the event with this link.',
     placesLeft: {
       one: '{count} place left',
       other: '{count} places left',
     },
     capacity: {
-      one: 'The party can still take {count} person at most.',
-      other: 'The party can still take {count} people at most.',
+      one: 'The event can still take {count} person at most.',
+      other: 'The event can still take {count} people at most.',
     },
     fewer: 'One place less',
     more: 'One place more',
@@ -230,7 +231,7 @@ export default {
     closeHint: 'Nobody will be able to sign up',
     closeConfirm: 'Turn the link off? Nobody will be able to sign up.',
     message: {
-      intro: 'Hi! You are invited to the party “{group}” 🎁',
+      intro: 'Hi! You are invited to the event “{group}” 🎁',
       how: 'Sign up with your email address by opening this link:',
       until: 'You have until {date}.',
     },
@@ -250,7 +251,7 @@ export default {
     },
     empty: {
       title: 'Add the participants',
-      body: 'A draw needs at least three. Pick them among the members of the group, or send a link so they sign up.',
+      body: 'A Secret Santa needs at least three. Pick them among the members of the event, or send a link so they sign up.',
       invite: 'Invite by link',
       list: 'No participant',
       none: 'Nobody yet.',
@@ -278,24 +279,24 @@ export default {
     closed: {
       partyDone: 'Celebrated',
       partedOn: 'celebrated on {date}',
-      title: 'Edition closed',
+      title: 'Secret Santa closed',
       body: 'Read only. The draw is used to avoid the same pairs in the following years.',
       exclusions: 'Exclusions applied to the draw',
       exclusionsNone: 'None',
-      journal: 'Group journal',
+      journal: 'Event journal',
       journalHint: 'Everything that happened, for all to see',
-      next: 'Prepare the next edition',
+      next: 'Prepare the next Secret Santa',
     },
     steps: {
-      label: 'Steps of the edition',
+      label: 'Steps of the Secret Santa',
       prepare: 'Prepare',
       draw: 'Draw',
       answers: 'Answers',
       drawDone: 'Drawn',
       party: 'Celebrate',
     },
-    partyOn: 'Party on {date}',
-    changeDate: 'Party on {date}. Change the date',
+    partyOn: 'On {date}',
+    changeDate: 'On {date}. Change the date',
     budget: 'Budget {budget}',
     rules: {
       none: 'None yet',
@@ -316,7 +317,7 @@ export default {
       add: 'Add participants',
       optional: 'If you like',
       notifyBefore: 'Let people know before the draw',
-      notifyBeforeHint: 'Optional: everyone can already leave their hints',
+      notifyBeforeHint: 'Optional: everyone can already leave their ideas',
       exclusions: 'Exclusions',
       exclusionsCount: {
         one: '{count} exclusion',
@@ -345,8 +346,9 @@ export default {
       missingOne: '{name} does not take part yet',
       missingMany: '{count} people do not take part yet',
       missingOneDetail:
-        'This person is in the group but not in this edition. After the draw, it would have to be cancelled to add them.',
-      missingManyDetail: '{names} are in the group but not in this edition.',
+        'This person is in the event but not in this Secret Santa. After the draw, it would have to be cancelled to add them.',
+      missingManyDetail:
+        '{names} are in the event but not in this Secret Santa.',
       andOthers: {
         one: '{names} and {count} other',
         other: '{names} and {count} others',
@@ -371,12 +373,12 @@ export default {
         viewed: 'Envelope opened · {count}×',
       },
       later: 'Later, or if something goes wrong',
-      closeRow: 'Close the edition',
+      closeRow: 'Close the Secret Santa',
       closing: 'Closing…',
-      closeRowLater: 'Possible after the party, on {date}',
-      closeRowHint: 'The edition becomes read only',
+      closeRowLater: 'Possible after the big day, on {date}',
+      closeRowHint: 'The Secret Santa becomes read only',
       closeConfirm:
-        'Closing makes the edition read only; it will serve as history next year.',
+        'Closing makes the Secret Santa read only; it will serve as history next year.',
       revealOne: 'See a single result',
       revealOneHint: 'Last resort, written in the journal',
       cancel: 'Cancel and redo the draw',
@@ -386,12 +388,12 @@ export default {
     },
     reveal: {
       row: 'Reveal the results',
-      rowLater: 'Planned after the party, on {date}',
-      rowNoDate: 'Add the date of the party first',
-      cardTitle: 'The party is over: reveal the results',
-      cardTitleToday: 'It’s party day: reveal the results',
+      rowLater: 'Planned after the big day, on {date}',
+      rowNoDate: 'Add the date first',
+      cardTitle: 'The big day is over: reveal the results',
+      cardTitleToday: 'It’s the big day: reveal the results',
       cardHelp:
-        'It is optional, and final. Gift hints can still be changed until the edition is closed.',
+        'It is optional, and final. Gift ideas can still be changed until the Secret Santa is closed.',
       viewed: {
         one: '{count} of {total} has opened their envelope',
         other: '{count} of {total} have opened their envelope',
@@ -400,13 +402,13 @@ export default {
       action: 'Reveal the results',
       revealing: 'Revealing…',
       closeWithout: 'Close without revealing',
-      wholeGroup: 'The whole group will see who gave to whom.',
+      wholeGroup: 'All the members will see who gave to whom.',
       trouble: 'If something goes wrong',
       sheetTitle: 'Reveal the results?',
       sheetIntro: 'You are going to see who gave to whom.',
-      partyDone: 'The party took place',
+      partyDone: 'The big day is over',
       partyDoneOn: 'It was planned on {date}.',
-      partyToday: 'The party is today',
+      partyToday: 'It’s the big day',
       partyTodayOn: 'It is planned on {date}.',
       notViewedOne: '{name} hasn’t opened their envelope',
       notViewedMany: '{count} people haven’t opened their envelope',
@@ -417,46 +419,46 @@ export default {
       nobodyViewed: 'Nobody has opened it yet.',
       allViewed: 'Every envelope is open',
       allViewedHint: 'Nobody will find out theirs along with the list.',
-      wholeGroupTitle: 'The whole group will see the list',
+      wholeGroupTitle: 'All the members will see the list',
       wholeGroupHint: 'Each participant will see it on their page.',
       final:
-        'It is final, and the group’s journal says so. Gift hints can still be changed.',
+        'It is final, and the event journal says so. Gift ideas can still be changed.',
       notYet: 'Not yet',
-      earlyTitle: 'Reveal before the party?',
+      earlyTitle: 'Reveal before the big day?',
       earlyIntro: {
-        one: 'The party is planned on {date}, tomorrow.',
-        other: 'The party is planned on {date}, in {count} days.',
+        one: 'The big day is planned on {date}, tomorrow.',
+        other: 'The big day is planned on {date}, in {count} days.',
       },
       earlyWarning: 'The secret ends here, for good',
-      early1: 'You will know all the results before the party.',
-      early2: 'The journal will show it to the whole group.',
+      early1: 'You will know all the results before the big day.',
+      early2: 'The journal will show it to all the members.',
       early3: 'There is no going back.',
       copy: 'Type: {phrase}',
-      phrase: 'reveal before the party',
-      wait: 'Wait for the party',
+      phrase: 'reveal before the big day',
+      wait: 'Wait for the big day',
       anyway: 'Reveal anyway',
       done: 'Results revealed',
       revealedTitle: 'Results revealed',
       revealedHelp:
-        'Gift hints can still be changed until the edition is closed.',
+        'Gift ideas can still be changed until the Secret Santa is closed.',
       pairsTitle: {
         one: 'The draw · {count} participant',
         other: 'The draw · {count} participants',
       },
-      pairsFooter: 'The whole group sees this list, each on their page.',
-      closeHint: 'Freezes the edition and the gift hints',
+      pairsFooter: 'All the members see this list, each on their page.',
+      closeHint: 'Freezes the Secret Santa and the gift ideas',
     },
     missingDate: {
-      title: 'When is the party?',
+      title: 'When is the big day?',
       body: 'Without a date, participants have no countdown, and the results cannot be revealed.',
       validate: 'Confirm',
     },
     dateSheet: {
-      title: 'Date of the party',
-      description: 'The day of the party, when gifts are given.',
+      title: 'Date',
+      description: 'The day gifts are exchanged.',
       seen: 'Participants see it on their page, with the countdown.',
-      journal: 'The change is written in the group journal.',
-      saved: 'Party date saved',
+      journal: 'The change is written in the event journal.',
+      saved: 'Date saved',
     },
     emails: {
       title: 'Send by email',
@@ -492,7 +494,7 @@ export default {
       fixEmail: 'Fix their email address',
       emailLabel: "{name}'s email address",
       emailHelp:
-        'You can then email them their link. {name} will also use it to find their draws.',
+        'You can then email them their link. {name} will also use it to find their Secret Santas.',
       loadingMessage: 'Loading the message',
       sending: 'Sending…',
       sendTo: 'Send to {name}',
@@ -510,7 +512,7 @@ export default {
     },
   },
   game: {
-    eyebrow: 'The game of this edition',
+    eyebrow: 'The game of this Secret Santa',
     players: {
       one: '{players} of {total} made a guess.',
       other: '{players} of {total} made a guess.',
@@ -550,7 +552,7 @@ export default {
     },
     nudgeToday: 'Ends today.',
     nudgeButton: 'Remind them',
-    writeGroup: 'Write to the group',
+    writeGroup: 'Write to everyone',
     group: {
       subtitle: 'One message for everyone',
       days: {
@@ -565,11 +567,11 @@ export default {
       },
       nobody: 'Nobody has made a guess yet.',
       howSanta:
-        'How it works: everyone tries to guess who gives them their present, on their own page. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+        'How it works: everyone tries to guess who gives them their present, on their own page. Nobody sees the guesses before the big day: the answers come when the draw is revealed, with a surprise for all the members.',
       howAll:
-        'How it works: everyone tries to guess who gives to whom, on their own page, starting with their own Secret Santa. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+        'How it works: everyone tries to guess who gives to whom, on their own page, starting with their own Secret Santa. Nobody sees the guesses before the big day: the answers come when the draw is revealed, with a surprise for all the members.',
       howAllNeutral:
-        'How it works: everyone tries to guess who gives to whom, on their own page, starting with who gives to them. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+        'How it works: everyone tries to guess who gives to whom, on their own page, starting with who gives to them. Nobody sees the guesses before the big day: the answers come when the draw is revealed, with a surprise for all the members.',
       tail: 'The more of you play, the better it will be.',
       personal: 'Everyone finds the game with their personal link.',
       share: 'Share',
@@ -578,12 +580,12 @@ export default {
       help: 'For WhatsApp, SMS… The message names nobody and holds no personal link.',
     },
     toEach: 'To each, by email',
-    toGroup: 'To the group',
+    toGroup: 'To everyone',
     notPlayedCount: {
       one: 'Not played yet · {count} selected out of {total}',
       other: 'Not played yet · {count} selected out of {total}',
     },
-    noEmailGroup: 'No address? Use « To the group ».',
+    noEmailGroup: 'No address? Use « To everyone ».',
     reminderSent: {
       one: 'Reminder sent to {count} person',
       other: 'Reminder sent to {count} people',
@@ -592,7 +594,7 @@ export default {
   guess: {
     title: 'Devine qui',
     description:
-      'A guessing game: who gives to whom? The answers come at the party.',
+      'A guessing game: who gives to whom? The answers come on the big day.',
     mode: {
       none: 'No guesses',
       santa: 'Who gives to me?',
@@ -613,7 +615,7 @@ export default {
     },
     endLabel: 'End of the guesses, on {date} at',
     answersWhen:
-      'The answers come when you reveal the draw at the party, or by themselves the day after.',
+      'The answers come when you reveal the draw on the big day, or by themselves the day after.',
     lossSanta:
       "The guesses about the others will be deleted: only everyone's guess on their own Secret Santa stays.",
     lossSantaNeutral:
@@ -622,13 +624,13 @@ export default {
     confirmLoss: 'Delete and validate',
   },
   settings: {
-    title: 'Edition settings',
+    title: 'Secret Santa settings',
     dateTitle: 'Date',
     wordTitle: 'Short note',
     budgetIs: 'Budget {budget}',
     word: 'short note',
     what: 'Date, budget, short note',
-    party: 'The party',
+    party: 'The big day',
     game: 'The game',
     gameShort: 'game',
   },
@@ -636,10 +638,10 @@ export default {
     title: 'A problem?',
     row: 'Dropout, lost link, draw mistake',
     rowAnswers: 'Change the participants, give up',
-    description: "Each of these actions is written in the group's journal.",
+    description: 'Each of these actions is written in the event journal.',
     revealOne: 'See a single result',
     revealOneHint: 'Someone lost their link and has no other way',
-    revealEarly: 'Reveal before the party',
+    revealEarly: 'Reveal before the big day',
     revealEarlyHint: 'Everyone will know who gives to whom',
     cancel: 'Cancel and redo the draw',
     cancelHint: 'Dropout, mistake… everyone draws again',
@@ -651,21 +653,21 @@ export default {
     start: {
       title: 'Was the draw already made?',
       description:
-        'On paper or with another app: here, everyone says who they give to, and enjoys the gift hints.',
+        'On paper or with another app: here, everyone says who they give to, and enjoys the gift ideas.',
       eachTitle: 'Everyone answers on their page',
       eachDetail: 'Their answer stays secret, even from you.',
       closedTitle: 'Everything stays closed until the last answer',
       closedDetail:
         "If two answers don't fit together, you know whom to contact, not what they answered.",
       validateTitle: "You validate, and it's a draw like any other",
-      validateDetail: 'Gift hints, reminders, history for next year.',
-      exclusionOne: "The group's exclusion ({pair}) is not checked",
-      exclusionMany: "The group's {count} exclusions are not checked",
+      validateDetail: 'Gift ideas, reminders, history for next year.',
+      exclusionOne: 'The event’s exclusion ({pair}) is not checked',
+      exclusionMany: 'The event’s {count} exclusions are not checked',
       historyOnly: 'The rule of previous years is not checked',
       andHistory: ', nor the rule of previous years',
-      why: ': the draw took place elsewhere. It stays saved for the next editions.',
+      why: ': the draw took place elsewhere. It stays saved for the next Secret Santas.',
       whyMany:
-        ': the draw took place elsewhere. They stay saved for the next editions.',
+        ': the draw took place elsewhere. They stay saved for the next Secret Santas.',
       back: "You can go back to the app's draw as long as you haven't validated.",
       confirm: 'Ask for the answers',
     },
@@ -674,7 +676,7 @@ export default {
       ask: 'Ask by email',
       remindAll: 'Remind by email',
       askHelp:
-        "Nobody sees any gift hints until everyone has answered and you've validated.",
+        'Nobody sees any gift ideas until everyone has answered and you’ve validated.',
       toNotify: 'to notify',
       asked: 'not answered yet',
       answered: { one: 'answered', other: 'answered' },
@@ -697,7 +699,7 @@ export default {
       readyBody: '{count} answers, they all fit together.',
       validate: 'Validate the draw',
       readyHelp:
-        "Everyone will then see the gift hints of the person they're giving to.",
+        'Everyone will then see the gift ideas of the person they’re giving to.',
     },
     status: {
       toCheck: 'Answer to check',
@@ -739,7 +741,7 @@ export default {
         'To correct them later, the draw will have to be cancelled.',
       listTitle: 'The list of participants will be locked',
       listDetail: "As after the app's draw.",
-      hintsTitle: "Everyone will see their person's gift hints",
+      hintsTitle: 'Everyone will see their person’s gift ideas',
       hintsDetail: 'You notify them right after, by email.',
       secret: 'Nobody, you included, sees who gives to whom.',
       confirm: 'Validate the draw',

@@ -2,7 +2,7 @@ import type fr from '../fr/hints';
 import type { Dict } from '../../types';
 
 export default {
-  title: 'My gift hints',
+  title: 'My gift ideas',
   intro: 'Give a hand to the person giving you a gift. Everything is optional.',
   whoSees:
     'Only the person who gives you a present will see them, once the draw is done.',
@@ -11,8 +11,8 @@ export default {
     body: 'Six multiple-choice questions are enough: thirty seconds.',
     bodyPortrait: 'Five multiple-choice questions are enough: thirty seconds.',
   },
-  readOnly: 'Your hints are set: that’s a wrap for this year.',
-  until: 'You can change them until the party.',
+  readOnly: 'Your ideas are set: that’s a wrap for this year.',
+  until: 'You can change them until the big day.',
   start: {
     label: 'To begin',
     title: 'Six questions, thirty seconds',
@@ -22,9 +22,9 @@ export default {
     action: 'Start',
   },
   copy: {
-    action: 'Reuse my hints from {edition}',
+    action: 'Reuse my ideas from {edition}',
     hint: 'You can touch them up',
-    done: 'Hints from {edition} reused',
+    done: 'Ideas from {edition} reused',
   },
   me: {
     title: 'When it comes to presents, I prefer…',
@@ -77,7 +77,7 @@ export default {
     surprise: {
       title: 'Surprise me, or I’d rather know?',
       first: 'Surprise me',
-      firstHelp: 'I’ll find out on the day of the party.',
+      firstHelp: 'I’ll find out on the big day.',
       second: 'I’d rather know',
       secondHelp: 'I give a precise idea further down.',
     },
@@ -210,33 +210,33 @@ export default {
     none: 'No list',
     validate: 'Confirm',
     untitled: 'Untitled list',
-    done: 'List linked to your hints',
-    removed: 'No list linked to your hints any more',
+    done: 'List linked to your ideas',
+    removed: 'No list linked to your ideas any more',
   },
   result: {
     list: 'Their gift list: {title}',
     listHelp: 'Anonymous mode will be on for you there.',
     title: 'To help you choose',
     isNew: 'New',
-    updatedOn: 'Hints updated on {date}',
-    none: '{name} hasn’t left any hints yet.',
-    ask: 'Ask for hints',
+    updatedOn: 'Ideas updated on {date}',
+    none: '{name} hasn’t left any ideas yet.',
+    ask: 'Ask for ideas',
     sentEmailNamed: '{name} just got an email.',
-    sentPageNamed: '{name} will see it on their hints page.',
+    sentPageNamed: '{name} will see it on their ideas page.',
     askHint: 'Without saying it comes from you.',
     sent: 'Request sent.',
     sentEmail: '{name} just got an email, without knowing it comes from you.',
     sentPage:
-      '{name} will see it on their hints page, without knowing it comes from you.',
-    willEmail: 'You will get an email as soon as hints arrive.',
-    willSee: 'Come back here: the hints will show as soon as they arrive.',
+      '{name} will see it on their ideas page, without knowing it comes from you.',
+    willEmail: 'You will get an email as soon as ideas arrive.',
+    willSee: 'Come back here: the ideas will show as soon as they arrive.',
   },
   request: {
-    title: 'Ask {name} for hints?',
+    title: 'Ask {name} for ideas?',
     bodyEmail:
       '{name} gets an email inviting them to note their tastes and what is better avoided.',
     bodyPage:
-      '{name} will see it on their hints page, inviting them to note their tastes and what is better avoided.',
+      '{name} will see it on their ideas page, inviting them to note their tastes and what is better avoided.',
     named: 'Your name is given',
     namedHelp:
       'The draw is revealed: {name} will know the request comes from you.',
@@ -245,7 +245,7 @@ export default {
       one: 'Not in the email, not in the journal, not to the organizer.',
       other: 'Not in the email, not in the journal, not to the organizers.',
     },
-    once: 'One request per draw',
+    once: 'One request per Secret Santa',
     onceHelp: 'No reminders: we don’t pester anyone.',
     send: 'Send the request',
     sending: 'Sending the request…',
@@ -253,22 +253,22 @@ export default {
   },
   state: {
     hintsLeft: {
-      one: '{count} of {total} left hints',
-      other: '{count} of {total} left hints',
+      one: '{count} of {total} left ideas',
+      other: '{count} of {total} left ideas',
     },
     none: 'Nothing yet',
-    filledEditable: 'Filled in · can be changed until the party',
+    filledEditable: 'Filled in · can be changed until the big day',
     filledLocked: 'Filled in · can no longer be changed',
-    left: 'Left hints',
+    left: 'Left ideas',
   },
   setting: {
-    title: 'Gift hints',
+    title: 'Gift ideas',
     help: 'What everyone can note to help the person who gives them a present.',
     full: 'Portrait and precise ideas',
     fullHelp: 'The six questions, current interests, and item ideas',
     portrait: 'Portrait only',
     portraitHelp: 'No item idea: the surprise stays whole',
-    none: 'No hints',
+    none: 'No ideas',
     noneHelp: 'Everyone manages on their own',
   },
   email: {
@@ -285,14 +285,14 @@ export default {
         '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
       bodyPortraitFrom:
         '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: five multiple-choice questions, thirty seconds, and a few words if you like.',
-      cta: 'Leave a few hints:',
+      cta: 'Leave a few ideas:',
       anonymous: 'We won’t tell you who is asking: it’s a Secret Santa.',
       once: 'You will only get this message once.',
     },
     arrived: {
       subject: '{group} Secret Santa: gift hints are waiting for you',
       greeting: 'Hello {name},',
-      body: 'The person you give a present to for {edition} ({group}) left some hints. Open your link to read them:',
+      body: 'The person you give a present to for {edition} ({group}) left some ideas. Open your link to read them:',
     },
   },
 } satisfies Dict<typeof fr>;

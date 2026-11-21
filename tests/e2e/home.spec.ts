@@ -119,7 +119,7 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
     'Les 40 ans de Tonton',
   );
   await expect(
-    page.getByRole('link', { name: 'Les fêtes passées' }),
+    page.getByRole('link', { name: 'Les événements passés' }),
   ).toBeVisible();
   await expect(
     page.getByRole('link', { name: 'Ce que j’offre ailleurs' }),

@@ -9,7 +9,7 @@ export default {
   later: 'Später',
   age: { one: 'wird {count}', other: 'wird {count}' },
   prepare: 'Vorbereiten',
-  past: 'Vergangene Feiern',
+  past: 'Vergangene Events',
   elsewhere: 'Was ich anderswo schenke',
   empty: {
     secretSanta: {

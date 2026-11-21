@@ -329,7 +329,8 @@ export default {
     managing:
       'Tu peux partager la liste, inviter quelqu’un et la supprimer, comme {by}.',
     firstName: 'Ton prénom',
-    firstNameHelp: 'Vu par ceux avec qui tu tiens une liste ou fais un tirage.',
+    firstNameHelp:
+      'Vu par ceux avec qui tu tiens une liste ou fais un Secret Santa.',
     address:
       'Ton compte sera créé à l’adresse {email}, celle où tu as reçu l’invitation. Rien d’autre à remplir.',
     acceptCreate: 'Accepter, et créer mon compte',
@@ -532,7 +533,7 @@ export default {
     on: 'Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ».',
     noticeTitle: 'On a activé le mode anonyme pour toi',
     noticeBody:
-      'Tu offres un cadeau dans un tirage à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',
+      'Tu offres un cadeau dans un Secret Santa à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',
     understood: 'Compris',
   },
   login: {

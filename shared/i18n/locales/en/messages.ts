@@ -5,7 +5,7 @@ export default {
   invitation: {
     greeting: 'Hi {firstName}! 🎁',
     body: 'You’re in: the Secret Santa of {groupName} ({editionLabel}).',
-    cta: 'Open your link and leave a few gift hints:',
+    cta: 'Open your link and write your gift list:',
     subject: '{groupName} Secret Santa: your link, {firstName}',
   },
   drawn: {
@@ -34,15 +34,15 @@ export default {
     body: 'The draw of the {groupName} Secret Santa ({editionLabel}) is already done, outside the app. For what comes next, we meet in the app.',
     how: 'How it works: on your page, you say who you’re giving a gift to. Your answer stays secret, nobody else sees it.',
     hints:
-      'You can already leave your gift hints for the person giving to you. Once everyone has answered, each of us reads those of the person they give to: a single missing answer keeps them closed.',
-    game: '🔍 And for fun: Devine qui, a guessing game where everyone tries to guess who gives them their present. Answer at the party!',
+      'You can already write your gift list for the person giving to you. Once everyone has answered, each of us reads the list of the person they give to: a single missing answer keeps the lists closed.',
+    game: '🔍 And for fun: Devine qui, a guessing game where everyone tries to guess who gives them their present. Answer on the big day!',
     cta: 'Your personal link, to answer:',
     subject: '{groupName} Secret Santa: who are you giving to, {firstName}?',
   },
   answerReminder: {
     greeting:
       '{firstName}, the {groupName} Secret Santa is only waiting for you! 🎁',
-    cta: "Say who you're giving a gift to: once everyone has answered, each one sees their person's gift hints.",
+    cta: 'Say who you’re giving a gift to: once everyone has answered, each one sees their person’s gift list.',
     subject:
       '{groupName} Secret Santa: we’re waiting for your answer, {firstName}',
   },
@@ -65,7 +65,7 @@ export default {
     howAllNeutral:
       'How it works: you try to guess who gives to whom, starting with who gives to you. As many guesses as you like, until {guessEnd}.',
     secret:
-      'Nobody sees your guesses before the party. The answers come when the draw is revealed, with a surprise for the group: the more of you play, the better it will be.',
+      'Nobody sees your guesses before the big day. The answers come when the draw is revealed, with a surprise for all the members: the more of you play, the better it will be.',
     cta: 'Your link, to play:',
     subject:
       '{groupName} Secret Santa: guess who gives you your present, {firstName}',
@@ -81,7 +81,7 @@ export default {
     },
     nobody:
       'In the {groupName} Secret Santa ({editionLabel}), we’re playing Devine qui: guessing who gives to whom. Nobody has made a guess yet. What about you: who gives you your present?',
-    until: 'You have until {guessEnd}. Answer at the party, with a surprise.',
+    until: 'You have until {guessEnd}. Answer on the big day, with a surprise.',
     cta: 'Make my guess',
     skipBefore: 'Don’t feel like playing? ',
     skip: 'I’ll sit this one out',
@@ -95,7 +95,7 @@ export default {
     body: 'You made your guess about your Secret Santa in Devine qui, the game of the {groupName} Secret Santa ({editionLabel}). Well played.',
     bodyNeutral:
       'You made your guess about who gives to you in Devine qui, the game of the {groupName} Secret Santa ({editionLabel}). Well played.',
-    more: 'You have {days} days left to guess who gives to the others too. The more guesses, the better the surprise at the party.',
+    more: 'You have {days} days left to guess who gives to the others too. The more guesses, the better the surprise on the big day.',
     cta: 'Continue my guesses',
   },
   guessPoint: {

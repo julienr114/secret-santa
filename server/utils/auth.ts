@@ -71,7 +71,7 @@ export const slugSchema = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase letters, digits and dashes');
 
 const SLUG_MAX = 40;
-const SLUG_FALLBACK = 'groupe';
+const SLUG_FALLBACK = 'evenement';
 
 /**
  * The identifier of a group, from its name: lower case, no accents,

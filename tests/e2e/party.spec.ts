@@ -36,7 +36,7 @@ test('a birthday party comes filled, and is created with its people', async ({
   await expect(page.getByTestId('party-date-day')).toHaveValue('14');
   await expect(page.getByTestId('party-date-month')).toHaveValue('12');
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(heading(page)).toHaveText('Qui est de la fête ?');
+  await expect(heading(page)).toHaveText('Qui en fait partie ?');
   await page.getByTestId('party-create').click();
   await expect(page).toHaveURL(/\/e\/l-anniversaire-de-zoe$/);
   state.slug = 'l-anniversaire-de-zoe';
@@ -51,21 +51,21 @@ test('a birthday party comes filled, and is created with its people', async ({
   // A party « pour quelqu'un »: its list first, then a Secret Santa.
   await expect(page.getByTestId('party-lists')).toContainText('Sa liste');
   await expect(page.getByTestId('party-lists')).toContainText(
-    'Personne n’a encore mis de liste dans cette fête.',
+    'Personne n’a encore mis de liste dans cet événement.',
   );
   await expect(
     page.getByRole('link', { name: 'Organiser un Secret Santa' }),
   ).toBeVisible();
   // The organiser does not leave.
-  await expect(page.getByText('Quitter cette fête')).toHaveCount(0);
+  await expect(page.getByText('Quitter cet événement')).toHaveCount(0);
 });
 
 test('its settings are only its own', async ({ page }) => {
   await apiLogin(page.request, ORGANISER);
   await page.goto(`/e/${state.slug}`);
   await hydrated(page);
-  await page.getByRole('link', { name: 'Réglages de la fête' }).click();
-  await expect(heading(page)).toHaveText('Réglages de la fête');
+  await page.getByRole('link', { name: 'Réglages de l’événement' }).click();
+  await expect(heading(page)).toHaveText('Réglages de l’événement');
   const settings = page.getByTestId('party-settings');
   await expect(settings).toContainText('Anniversaire');
   await expect(settings).toContainText(
@@ -76,7 +76,7 @@ test('its settings are only its own', async ({ page }) => {
     page.getByRole('link', { name: /^Réglages du Secret Santa/ }),
   ).toHaveCount(0);
   await expect(page.getByTestId('notifications')).toContainText(
-    'Quelqu’un rejoint la fête par le lien',
+    'Quelqu’un rejoint l’événement par le lien',
   );
   // Once a year no more: the date says so.
   await settings.getByRole('switch').click();
@@ -103,17 +103,17 @@ test('a member sees the party, and leaves it', async ({
   await expect(page.getByTestId('party-members')).toContainText('2 membres');
   await expect(page.getByTestId('party-members')).not.toContainText('Inviter');
   await expect(
-    page.getByRole('link', { name: 'Réglages de la fête' }),
+    page.getByRole('link', { name: 'Réglages de l’événement' }),
   ).toHaveCount(0);
 
-  await page.getByRole('button', { name: /^Quitter cette fête/ }).click();
+  await page.getByRole('button', { name: /^Quitter cet événement/ }).click();
   const sheet = page.getByRole('dialog', {
     name: 'Quitter « L’anniversaire de Zoé » ?',
   });
   await expect(sheet).toContainText(
     'Les cadeaux que tu as cochés restent prévus.',
   );
-  await sheet.getByRole('button', { name: 'Quitter la fête' }).click();
+  await sheet.getByRole('button', { name: 'Quitter l’événement' }).click();
   await expect(page).toHaveURL(/\/$/);
 
   // Gone: the party no longer opens for them.

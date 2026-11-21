@@ -2,8 +2,8 @@
 // adding people, cancelling the draw and the last-resort reveal.
 export default {
   general: {
-    journalPreview: 'Ce que le groupe lira dans le journal',
-    editionFallback: 'Édition',
+    journalPreview: 'Ce que les membres liront dans le journal',
+    editionFallback: 'Secret Santa',
   },
   newEdition: {
     nameRow: 'Nom',
@@ -13,10 +13,10 @@ export default {
       other: '{count} membres repris du Secret Santa {year}.',
     },
     partyMembers: {
-      one: '{count} membre de la fête.',
-      other: '{count} membres de la fête.',
+      one: '{count} membre de l’événement.',
+      other: '{count} membres de l’événement.',
     },
-    dateLabel: 'Date de la fête',
+    dateLabel: 'Date',
     budgetLabel: 'Budget',
     optional: '(facultatif)',
     messageLabel: 'Petit mot pour les participants',
@@ -51,19 +51,19 @@ export default {
     exclusionsAppliedTitle: 'Exclusions appliquées au tirage',
     exclusionsTitle: 'Exclusions',
     pendingExclusions: {
-      one: "+ {count} exclusion d'un tirage pas encore clôturé, gardées secrètes.",
+      one: '+ {count} exclusion d’un Secret Santa pas encore clôturé, gardées secrètes.',
       other:
-        "+ {count} exclusions d'un tirage pas encore clôturé, gardées secrètes.",
+        '+ {count} exclusions d’un Secret Santa pas encore clôturé, gardées secrètes.',
     },
     previousDrawReason: 'Tirage précédent : {edition}',
     previousDrawsFooter:
-      'Personne ne retombera sur la même personne. Le × lève une exclusion pour cette édition seulement.',
+      'Personne ne retombera sur la même personne. Le × lève une exclusion pour ce Secret Santa seulement.',
     waive: 'Lever',
-    waiveLabel: 'Laisser {giver} tirer {receiver} pour cette édition',
+    waiveLabel: 'Laisser {giver} tirer {receiver} pour ce Secret Santa',
     waived: {
-      one: '{count} exclusion des années précédentes levée pour cette édition.',
+      one: '{count} exclusion des années précédentes levée pour ce Secret Santa.',
       other:
-        '{count} exclusions des années précédentes levées pour cette édition.',
+        '{count} exclusions des années précédentes levées pour ce Secret Santa.',
     },
     restoreAll: 'Tout rétablir',
   },
@@ -85,15 +85,15 @@ export default {
     title: 'Choisir les participants',
     subtitle: 'Coche ceux qui participent.',
     members: {
-      one: '{count} membre du groupe',
-      other: '{count} membres du groupe',
+      one: '{count} membre de l’événement',
+      other: '{count} membres de l’événement',
     },
     allChosen: 'Tout cocher',
     noneChosen: 'Tout décocher',
     choose: 'Faire participer {name}',
     someoneNew: 'Quelqu’un de nouveau',
     create: 'Créer une personne',
-    createHint: 'Elle rejoint le groupe et cette édition',
+    createHint: 'Elle rejoint l’événement et ce Secret Santa',
     inviteHint: 'Chacun s’inscrit lui-même',
     save: {
       one: 'Enregistrer · {count} participant',
@@ -106,7 +106,7 @@ export default {
   },
   customize: {
     forReminder: 'Le rappel du jeu, pour ceux qui n’ont pas encore joué',
-    forGroup: 'Le message pour tout le groupe',
+    forGroup: 'Le message pour tous',
     title: 'Personnaliser le message',
     forOne: 'Pour {name}',
     forMany: {
@@ -138,9 +138,9 @@ export default {
     redrawMessage:
       'Après le nouveau tirage, il faudra prévenir chacun avec le message « {message} ».',
     linksKept: 'Les liens personnels restent valables.',
-    hintsKept: 'Les pistes de cadeaux sont conservées.',
+    hintsKept: 'Les idées de cadeaux sont conservées.',
     reasonLabel: 'Motif',
-    reasonHelp: 'Affiché dans le journal, visible de tout le groupe.',
+    reasonHelp: 'Affiché dans le journal, visible de tous les membres.',
     reasonPlaceholder: 'Désistement de Tom',
     understood: 'Je comprends que les résultats actuels seront perdus',
     keep: 'Garder ce tirage',
@@ -155,7 +155,7 @@ export default {
     warningLastResort:
       "Un désaccord, un doute sur un bug… Tu ne vois qu'un résultat à la fois.",
     warningJournal:
-      "Tout le groupe le saura : c'est inscrit au journal, avec le prénom.",
+      'Tous les membres le sauront : c’est inscrit au journal, avec le prénom.',
     warningEphemeral:
       "Le résultat ne s'affiche qu'ici et disparaît quand tu quittes l'écran.",
     personLabel: 'Le résultat de qui ?',
@@ -165,15 +165,15 @@ export default {
       other: '{count} prénoms sur {total}',
     },
     sentenceLabel: 'Recopie : {sentence}',
-    understood: "Je comprends que tout le groupe saura que j'ai regardé",
+    understood: 'Je comprends que tous les membres sauront que j’ai regardé',
     submit: 'Voir le résultat de {name}',
     submitAnyone: 'Voir le résultat',
     revealing: 'Ouverture du résultat…',
     notNow: 'Finalement non',
     gives: '{name} offre un cadeau à',
     shownNotice:
-      'Ta consultation est inscrite au journal du groupe. Le résultat disparaît quand tu quittes cet écran.',
-    hide: "Cacher et revenir à l'édition",
+      'Ta consultation est inscrite au journal de l’événement. Le résultat disparaît quand tu quittes cet écran.',
+    hide: 'Cacher et revenir au Secret Santa',
     another: 'Voir un autre résultat',
   },
   drawPairs: {
@@ -182,7 +182,7 @@ export default {
   },
   results: {
     title: 'Le tirage',
-    footer: "L'édition est clôturée : ses résultats ne sont plus secrets.",
+    footer: 'Le Secret Santa est clôturé : ses résultats ne sont plus secrets.',
   },
   share: {
     noteBefore: 'Au-dessus du message',
@@ -204,14 +204,14 @@ export default {
     settings: 'Réglages du lien',
     places: 'Places restantes',
     placesHelp:
-      'Combien de personnes peuvent encore rejoindre la fête par ce lien.',
+      'Combien de personnes peuvent encore rejoindre l’événement par ce lien.',
     placesLeft: {
       one: '{count} place restante',
       other: '{count} places restantes',
     },
     capacity: {
-      one: 'La fête peut encore accueillir {count} personne au plus.',
-      other: 'La fête peut encore accueillir {count} personnes au plus.',
+      one: 'L’événement peut encore accueillir {count} personne au plus.',
+      other: 'L’événement peut encore accueillir {count} personnes au plus.',
     },
     fewer: 'Une place de moins',
     more: 'Une place de plus',
@@ -231,7 +231,7 @@ export default {
     closeHint: 'Plus personne ne pourra s’inscrire',
     closeConfirm: 'Désactiver le lien ? Plus personne ne pourra s’inscrire.',
     message: {
-      intro: 'Salut ! Tu es invité à la fête « {group} » 🎁',
+      intro: 'Salut ! Tu es invité à l’événement « {group} » 🎁',
       how: 'Inscris-toi avec ton adresse email en ouvrant ce lien :',
       until: 'Tu as jusqu’au {date}.',
     },
@@ -251,7 +251,7 @@ export default {
     },
     empty: {
       title: 'Ajoute les participants',
-      body: 'Il en faut au moins trois pour un tirage. Choisis-les parmi les membres du groupe, ou envoie un lien pour qu’ils s’inscrivent.',
+      body: 'Il en faut au moins trois pour un Secret Santa. Choisis-les parmi les membres de l’événement, ou envoie un lien pour qu’ils s’inscrivent.',
       invite: 'Inviter par lien',
       list: 'Aucun participant',
       none: 'Personne pour l’instant.',
@@ -279,24 +279,24 @@ export default {
     closed: {
       partyDone: 'Fêté',
       partedOn: 'fêté le {date}',
-      title: 'Édition clôturée',
+      title: 'Secret Santa clôturé',
       body: 'En lecture seule. Le tirage sert à éviter les mêmes paires les années suivantes.',
       exclusions: 'Exclusions appliquées au tirage',
       exclusionsNone: 'Aucune',
-      journal: 'Journal du groupe',
+      journal: 'Journal de l’événement',
       journalHint: 'Tout ce qui s’est passé, à la vue de tous',
-      next: 'Préparer l’édition suivante',
+      next: 'Préparer le Secret Santa suivant',
     },
     steps: {
-      label: "Étapes de l'édition",
+      label: 'Étapes du Secret Santa',
       prepare: 'Préparer',
       draw: 'Tirer',
       answers: 'Réponses',
       drawDone: 'Tirage fait',
       party: 'Fêter',
     },
-    partyOn: 'Fête le {date}',
-    changeDate: 'Fête le {date}. Modifier la date',
+    partyOn: 'Le {date}',
+    changeDate: 'Le {date}. Modifier la date',
     budget: 'Budget {budget}',
     rules: {
       none: 'Aucun pour l’instant',
@@ -317,7 +317,7 @@ export default {
       add: 'Ajouter des participants',
       optional: 'Si tu veux',
       notifyBefore: 'Prévenir avant le tirage',
-      notifyBeforeHint: 'Facultatif : chacun peut déjà laisser ses pistes',
+      notifyBeforeHint: 'Facultatif : chacun peut déjà laisser ses idées',
       exclusions: 'Exclusions',
       exclusionsCount: {
         one: '{count} exclusion',
@@ -346,9 +346,9 @@ export default {
       missingOne: '{name} ne participe pas encore',
       missingMany: '{count} personnes ne participent pas encore',
       missingOneDetail:
-        "Cette personne est dans le groupe mais pas dans cette édition. Après le tirage, il faudra l'annuler pour l'ajouter.",
+        'Cette personne est dans l’événement mais pas dans ce Secret Santa. Après le tirage, il faudra l’annuler pour l’ajouter.',
       missingManyDetail:
-        '{names} sont dans le groupe mais pas dans cette édition.',
+        '{names} sont dans l’événement mais pas dans ce Secret Santa.',
       andOthers: {
         one: '{names} et {count} autre',
         other: '{names} et {count} autres',
@@ -373,12 +373,12 @@ export default {
         viewed: 'Enveloppe ouverte · {count}×',
       },
       later: 'Plus tard, ou en cas de pépin',
-      closeRow: "Clôturer l'édition",
+      closeRow: 'Clôturer le Secret Santa',
       closing: 'Clôture en cours…',
-      closeRowLater: 'Possible après la fête, le {date}',
-      closeRowHint: "L'édition passe en lecture seule",
+      closeRowLater: 'Possible après le jour J, le {date}',
+      closeRowHint: 'Le Secret Santa passe en lecture seule',
       closeConfirm:
-        "Clôturer rend l'édition non modifiable ; elle servira d'historique l'an prochain.",
+        'Clôturer rend le Secret Santa non modifiable ; il servira d’historique l’an prochain.',
       revealOne: 'Voir un seul résultat',
       revealOneHint: 'Dernier recours, inscrit au journal',
       cancel: 'Annuler et relancer le tirage',
@@ -388,12 +388,12 @@ export default {
     },
     reveal: {
       row: 'Dévoiler les résultats',
-      rowLater: 'Prévu après la fête, le {date}',
-      rowNoDate: 'Ajoute d’abord la date de la fête',
-      cardTitle: 'La fête est passée : dévoile les résultats',
-      cardTitleToday: 'C’est le jour de la fête : dévoile les résultats',
+      rowLater: 'Prévu après le jour J, le {date}',
+      rowNoDate: 'Ajoute d’abord la date',
+      cardTitle: 'Le jour J est passé : dévoile les résultats',
+      cardTitleToday: 'C’est le jour J : dévoile les résultats',
       cardHelp:
-        'C’est facultatif, et définitif. Les pistes de cadeaux restent modifiables tant que l’édition n’est pas clôturée.',
+        'C’est facultatif, et définitif. Les idées de cadeaux restent modifiables tant que le Secret Santa n’est pas clôturé.',
       viewed: {
         one: '{count} sur {total} a ouvert son enveloppe',
         other: '{count} sur {total} ont ouvert leur enveloppe',
@@ -402,13 +402,13 @@ export default {
       action: 'Dévoiler les résultats',
       revealing: 'Dévoilement…',
       closeWithout: 'Clôturer sans dévoiler',
-      wholeGroup: 'Tout le groupe verra qui a offert à qui.',
+      wholeGroup: 'Tous les membres verront qui a offert à qui.',
       trouble: 'En cas de pépin',
       sheetTitle: 'Dévoiler les résultats ?',
       sheetIntro: 'Tu vas voir qui a offert à qui.',
-      partyDone: 'La fête a eu lieu',
+      partyDone: 'Le jour J est passé',
       partyDoneOn: 'Elle était prévue le {date}.',
-      partyToday: 'La fête, c’est aujourd’hui',
+      partyToday: 'C’est le jour J',
       partyTodayOn: 'Elle est prévue le {date}.',
       notViewedOne: '{name} n’a pas ouvert son enveloppe',
       notViewedMany: '{count} personnes n’ont pas ouvert leur enveloppe',
@@ -420,46 +420,46 @@ export default {
       allViewed: 'Toutes les enveloppes sont ouvertes',
       allViewedHint:
         'Personne ne découvrira le sien en même temps que la liste.',
-      wholeGroupTitle: 'Tout le groupe verra la liste',
+      wholeGroupTitle: 'Tous les membres verront la liste',
       wholeGroupHint: 'Chaque participant la verra sur sa page.',
       final:
-        'C’est définitif, et le journal du groupe l’indique. Les pistes de cadeaux restent modifiables.',
+        'C’est définitif, et le journal de l’événement l’indique. Les idées de cadeaux restent modifiables.',
       notYet: 'Pas encore',
-      earlyTitle: 'Dévoiler avant la fête ?',
+      earlyTitle: 'Dévoiler avant le jour J ?',
       earlyIntro: {
-        one: 'La fête est prévue le {date}, demain.',
-        other: 'La fête est prévue le {date}, dans {count} jours.',
+        one: 'Le jour J est prévu le {date}, demain.',
+        other: 'Le jour J est prévu le {date}, dans {count} jours.',
       },
       earlyWarning: 'Le secret s’arrête ici, pour de bon',
-      early1: 'Tu connaîtras tous les résultats avant la fête.',
-      early2: 'Le journal l’affichera à tout le groupe.',
+      early1: 'Tu connaîtras tous les résultats avant le jour J.',
+      early2: 'Le journal l’affichera à tous les membres.',
       early3: 'Impossible de revenir en arrière.',
       copy: 'Recopie : {phrase}',
-      phrase: 'dévoiler avant la fête',
-      wait: 'Attendre la fête',
+      phrase: 'dévoiler avant le jour J',
+      wait: 'Attendre le jour J',
       anyway: 'Dévoiler quand même',
       done: 'Résultats dévoilés',
       revealedTitle: 'Résultats dévoilés',
       revealedHelp:
-        'Les pistes de cadeaux restent modifiables jusqu’à la clôture de l’édition.',
+        'Les idées de cadeaux restent modifiables jusqu’à la clôture du Secret Santa.',
       pairsTitle: {
         one: 'Le tirage · {count} participant',
         other: 'Le tirage · {count} participants',
       },
-      pairsFooter: 'Tout le groupe voit cette liste, chacun sur sa page.',
-      closeHint: 'Fige l’édition et les pistes de cadeaux',
+      pairsFooter: 'Tous les membres voient cette liste, chacun sur sa page.',
+      closeHint: 'Fige le Secret Santa et les idées de cadeaux',
     },
     missingDate: {
-      title: 'Quand a lieu la fête ?',
+      title: 'Quand a lieu le jour J ?',
       body: 'Sans date, pas de compte à rebours pour les participants, et les résultats ne peuvent pas être dévoilés.',
       validate: 'Valider',
     },
     dateSheet: {
-      title: 'Date de la fête',
+      title: 'Date',
       description: 'Le jour où vous échangez les cadeaux.',
       seen: 'Les participants la voient sur leur page, avec le compte à rebours.',
-      journal: 'Le changement est inscrit au journal du groupe.',
-      saved: 'Date de la fête enregistrée',
+      journal: 'Le changement est inscrit au journal de l’événement.',
+      saved: 'Date enregistrée',
     },
     emails: {
       title: 'Envoyer par email',
@@ -495,7 +495,7 @@ export default {
       fixEmail: 'Corriger son adresse email',
       emailLabel: 'Adresse email de {name}',
       emailHelp:
-        'Tu pourras ensuite lui envoyer son lien par email. Elle servira aussi à {name} pour retrouver ses tirages.',
+        'Tu pourras ensuite lui envoyer son lien par email. Elle servira aussi à {name} pour retrouver ses Secret Santa.',
       loadingMessage: 'Chargement du message',
       sending: 'Envoi en cours…',
       sendTo: 'Envoyer à {name}',
@@ -515,7 +515,7 @@ export default {
   // Lot 18 (README 22.16): the edition's settings on a page of their own,
   // and « Un souci ? » in a sheet.
   game: {
-    eyebrow: 'Le jeu de cette édition',
+    eyebrow: 'Le jeu de ce Secret Santa',
     players: {
       one: '{players} sur {total} a fait un pronostic.',
       other: '{players} sur {total} ont fait un pronostic.',
@@ -555,7 +555,7 @@ export default {
     },
     nudgeToday: 'Fin aujourd’hui.',
     nudgeButton: 'Leur rappeler',
-    writeGroup: 'Écrire au groupe',
+    writeGroup: 'Écrire à tous',
     group: {
       subtitle: 'Un message pour tout le monde',
       days: {
@@ -570,11 +570,11 @@ export default {
       },
       nobody: 'Personne n’a encore fait de pronostic.',
       howSanta:
-        'Le principe : chacun essaie de deviner qui lui offre son cadeau, sur sa page. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+        'Le principe : chacun essaie de deviner qui lui offre son cadeau, sur sa page. Personne ne voit les pronostics avant le jour J : les réponses tombent quand le tirage est dévoilé, avec une surprise pour tous les membres.',
       howAll:
-        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par son propre Père Noël. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par son propre Père Noël. Personne ne voit les pronostics avant le jour J : les réponses tombent quand le tirage est dévoilé, avec une surprise pour tous les membres.',
       howAllNeutral:
-        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par qui lui offre. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par qui lui offre. Personne ne voit les pronostics avant le jour J : les réponses tombent quand le tirage est dévoilé, avec une surprise pour tous les membres.',
       tail: 'Plus vous êtes nombreux à jouer, plus elle sera belle.',
       personal: 'Chacun retrouve le jeu avec son lien personnel.',
       share: 'Partager',
@@ -583,12 +583,12 @@ export default {
       help: 'Pour WhatsApp, SMS… Le message ne nomme personne et ne contient aucun lien personnel.',
     },
     toEach: 'À chacun, par email',
-    toGroup: 'Au groupe',
+    toGroup: 'À tous',
     notPlayedCount: {
       one: 'Pas encore joué · {count} sélectionné sur {total}',
       other: 'Pas encore joué · {count} sélectionnés sur {total}',
     },
-    noEmailGroup: 'Sans adresse ? Passe par « Au groupe ».',
+    noEmailGroup: 'Sans adresse ? Passe par « À tous ».',
     reminderSent: {
       one: 'Rappel envoyé à {count} personne',
       other: 'Rappel envoyé à {count} personnes',
@@ -597,7 +597,7 @@ export default {
   guess: {
     title: 'Devine qui',
     description:
-      'Un jeu de pronostics : qui offre à qui ? Les réponses tombent à la fête.',
+      'Un jeu de pronostics : qui offre à qui ? Les réponses tombent le jour J.',
     mode: {
       none: 'Aucun pronostic',
       santa: 'Qui m’offre ?',
@@ -618,7 +618,7 @@ export default {
     },
     endLabel: 'Fin des pronostics, le {date} à',
     answersWhen:
-      'Les réponses tombent quand tu dévoiles le tirage à la fête, ou toutes seules le lendemain.',
+      'Les réponses tombent quand tu dévoiles le tirage le jour J, ou toutes seules le lendemain.',
     lossSanta:
       'Les pronostics sur les autres seront effacés : seuls restent ceux de chacun sur son propre Père Noël.',
     lossSantaNeutral:
@@ -627,13 +627,13 @@ export default {
     confirmLoss: 'Effacer et valider',
   },
   settings: {
-    title: 'Réglages de l’édition',
+    title: 'Réglages du Secret Santa',
     dateTitle: 'Date',
     wordTitle: 'Petit mot',
     budgetIs: 'Budget {budget}',
     word: 'petit mot',
     what: 'Date, budget, petit mot',
-    party: 'La fête',
+    party: 'Le jour J',
     game: 'Le jeu',
     gameShort: 'jeu',
   },
@@ -641,10 +641,11 @@ export default {
     title: 'Un souci ?',
     row: 'Désistement, lien perdu, erreur de tirage',
     rowAnswers: 'Changer les participants, abandonner',
-    description: 'Chacune de ces actions est inscrite au journal du groupe.',
+    description:
+      'Chacune de ces actions est inscrite au journal de l’événement.',
     revealOne: 'Voir un seul résultat',
     revealOneHint: 'Quelqu’un a perdu son lien et n’a pas d’autre moyen',
-    revealEarly: 'Dévoiler avant la fête',
+    revealEarly: 'Dévoiler avant le jour J',
     revealEarlyHint: 'Tout le monde saura qui offre à qui',
     cancel: 'Annuler et relancer le tirage',
     cancelHint: 'Désistement, erreur… tout le monde tire à nouveau',
@@ -657,7 +658,7 @@ export default {
     start: {
       title: 'Le tirage a déjà été fait ?',
       description:
-        'Sur papier ou avec une autre application : ici, chacun dit à qui il offre, et profite des pistes de cadeaux.',
+        'Sur papier ou avec une autre application : ici, chacun dit à qui il offre, et profite des idées de cadeaux.',
       eachTitle: 'Chacun répond sur sa page',
       eachDetail: 'Sa réponse reste secrète, même pour toi.',
       closedTitle: 'Tout reste fermé jusqu’à la dernière réponse',
@@ -665,14 +666,15 @@ export default {
         'Si deux réponses ne vont pas ensemble, tu sais qui contacter, pas ce qu’ils ont répondu.',
       validateTitle: 'Tu valides, et c’est un tirage comme les autres',
       validateDetail:
-        'Pistes de cadeaux, relances, historique pour l’an prochain.',
-      exclusionOne: 'L’exclusion du groupe ({pair}) n’est pas vérifiée',
-      exclusionMany: 'Les {count} exclusions du groupe ne sont pas vérifiées',
+        'Idées de cadeaux, relances, historique pour l’an prochain.',
+      exclusionOne: 'L’exclusion de l’événement ({pair}) n’est pas vérifiée',
+      exclusionMany:
+        'Les {count} exclusions de l’événement ne sont pas vérifiées',
       historyOnly: 'La règle des années précédentes n’est pas vérifiée',
       andHistory: ', ni la règle des années précédentes',
-      why: ' : le tirage a eu lieu ailleurs. Elle reste enregistrée pour les prochaines éditions.',
+      why: ' : le tirage a eu lieu ailleurs. Elle reste enregistrée pour les prochains Secret Santa.',
       whyMany:
-        ' : le tirage a eu lieu ailleurs. Elles restent enregistrées pour les prochaines éditions.',
+        ' : le tirage a eu lieu ailleurs. Elles restent enregistrées pour les prochains Secret Santa.',
       back: 'Tu peux revenir au tirage par l’application tant que tu n’as pas validé.',
       confirm: 'Demander les réponses',
     },
@@ -681,7 +683,7 @@ export default {
       ask: 'Demander par email',
       remindAll: 'Relancer par email',
       askHelp:
-        'Personne ne voit de pistes de cadeaux avant que tout le monde ait répondu et que tu aies validé.',
+        'Personne ne voit d’idées de cadeaux avant que tout le monde ait répondu et que tu aies validé.',
       toNotify: 'à prévenir',
       asked: 'pas encore répondu',
       answered: { one: 'a répondu', other: 'ont répondu' },
@@ -704,7 +706,7 @@ export default {
       readyBody: '{count} réponses, elles vont toutes ensemble.',
       validate: 'Valider le tirage',
       readyHelp:
-        'Chacun verra ensuite les pistes de cadeaux de la personne à qui il offre.',
+        'Chacun verra ensuite les idées de cadeaux de la personne à qui il offre.',
     },
     status: {
       toCheck: 'Réponse à vérifier',
@@ -746,7 +748,7 @@ export default {
       lockedDetail: 'Pour corriger ensuite, il faudra annuler le tirage.',
       listTitle: 'La liste des participants sera verrouillée',
       listDetail: 'Comme après un tirage par l’application.',
-      hintsTitle: 'Chacun verra les pistes de cadeaux de sa personne',
+      hintsTitle: 'Chacun verra les idées de cadeaux de sa personne',
       hintsDetail: 'Tu les préviens juste après, par email.',
       secret: 'Personne, toi compris, ne voit qui offre à qui.',
       confirm: 'Valider le tirage',

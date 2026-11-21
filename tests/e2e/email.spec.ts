@@ -84,7 +84,9 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(
     page
-      .getByText('Cette adresse est déjà celle d’une autre personne du groupe.')
+      .getByText(
+        'Cette adresse est déjà celle d’une autre personne de l’événement.',
+      )
       .first(),
   ).toBeVisible();
 
@@ -203,7 +205,7 @@ test('a participant logs in with their address and finds their draw', async ({
   await expect(page).toHaveURL(new RegExp(`/e/${SLUG}$`));
   await expect(heading(page)).toHaveText('Famille Courrier');
   await expect(
-    page.getByRole('link', { name: 'Réglages de la fête' }),
+    page.getByRole('link', { name: 'Réglages de l’événement' }),
   ).toHaveCount(0);
   await page.goto('/');
   await hydrated(page);
@@ -265,7 +267,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await expect(page.getByText('Supprimer la fête')).toHaveCount(0);
+  await expect(page.getByText('Supprimer l’événement')).toHaveCount(0);
   const refused = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
     { data: { confirm: SLUG } },
@@ -282,15 +284,15 @@ test('only the super-admin can delete a group, with everything in it', async ({
   expect(careless.status()).toBe(400);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await page.getByText('Supprimer la fête').click();
+  await page.getByText('Supprimer l’événement').click();
   await expect(
-    page.getByRole('button', { name: 'Garder le groupe' }),
+    page.getByRole('button', { name: 'Garder l’événement' }),
   ).toBeVisible();
   const confirm = page.getByRole('button', {
     name: 'Supprimer définitivement',
   });
   await expect(confirm).toBeDisabled();
-  await page.getByLabel(/Recopie l’identifiant du groupe/).fill(SLUG);
+  await page.getByLabel(/Recopie l’identifiant de l’événement/).fill(SLUG);
   await confirm.click();
   await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText('Famille Courrier')).toHaveCount(0);

@@ -4,8 +4,8 @@ import type { Dict } from '../../types';
 export default {
   joined: {
     subject: '{name} ist „{group}“ beigetreten',
-    body: '{name} ist gerade über den Einladungslink der Gruppe „{group}“ beigetreten.',
-    next: 'Denk daran, die Person der laufenden Auslosung und ihren Ausschlüssen (Partner, Geschwister) hinzuzufügen.',
+    body: '{name} ist gerade über den Einladungslink dem Event „{group}“ beigetreten.',
+    next: 'Denk daran, die Person dem laufenden Wichteln und ihren Ausschlüssen (Partner, Geschwister) hinzuzufügen.',
   },
   allViewed: {
     subject: 'Alle Umschläge in „{group}“ sind geöffnet',
@@ -13,12 +13,12 @@ export default {
   },
   reminder: {
     subject: 'Die Feier in „{group}“ naht',
-    body: 'Die Feier von {edition} ist am {date}.',
+    body: '{edition} ist am {date}.',
     missing: {
       one: '{count} Person hat ihren Umschlag noch nicht geöffnet: {names}.',
       other:
         '{count} Personen haben ihren Umschlag noch nicht geöffnet: {names}.',
     },
-    next: 'Du kannst ihnen ihren Link in der Ausgabe erneut senden.',
+    next: 'Du kannst ihnen ihren Link im Wichteln erneut senden.',
   },
 } satisfies Dict<typeof fr>;

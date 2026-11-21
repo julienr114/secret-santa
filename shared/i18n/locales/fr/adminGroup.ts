@@ -1,18 +1,19 @@
 export default {
   newGroup: {
     organizerLabel: 'Adresse du premier organisateur',
-    title: 'Nouveau groupe',
-    nameLabel: 'Nom du groupe',
+    title: 'Nouvel événement',
+    nameLabel: 'Nom de l’événement',
     namePlaceholder: 'Famille Martin',
     nameRequired: 'Nom requis',
-    submit: 'Créer le groupe',
-    created: 'Groupe créé',
+    submit: 'Créer l’événement',
+    created: 'Événement créé',
     note: 'Tu en seras l’organisateur. Tu ajoutes les membres juste après, ou tu leur envoies un lien.',
-    intro: 'Une famille, une bande d’amis, une équipe : un groupe par cercle.',
+    intro:
+      'Une famille, une bande d’amis, une équipe : un événement par cercle.',
     nameHelp:
-      'Tu pourras le voir, toi et les membres, en haut de chaque tirage.',
+      'Tu pourras le voir, toi et les membres, en haut de chaque Secret Santa.',
     organizerHelp:
-      'Pour créer le groupe de quelqu’un d’autre : il lui suffira de se connecter avec cette adresse. Vide, le groupe n’a pas encore d’organisateur.',
+      'Pour créer l’événement de quelqu’un d’autre : il lui suffira de se connecter avec cette adresse. Vide, l’événement n’a pas encore d’organisateur.',
     organizerPlaceholder: 'prenom@exemple.fr',
     creating: 'Création en cours…',
   },
@@ -23,7 +24,7 @@ export default {
     addHint: 'Il se connecte avec son adresse, sans mot de passe',
     addTitle: 'Nouvel organisateur',
     addDescription:
-      'Il pourra gérer {name} comme toi : membres, tirage, envois.',
+      'Il pourra gérer {name} comme toi : membres, Secret Santa, envois.',
     emailLabel: 'Son adresse email',
     emailHelp:
       'Il lui suffira de se connecter avec cette adresse : aucun mot de passe à transmettre.',
@@ -39,20 +40,20 @@ export default {
       other: 'Les {count} personnes et leurs exclusions.',
     },
     editions: {
-      one: 'L’édition, son tirage et les pistes de cadeaux.',
-      other: 'Les {count} éditions, leurs tirages et les pistes de cadeaux.',
+      one: 'Le Secret Santa, son tirage et les idées de cadeaux.',
+      other: 'Les {count} Secret Santa, leurs tirages et les idées de cadeaux.',
     },
-    journal: 'Le journal du groupe.',
+    journal: 'Le journal de l’événement.',
     links: 'Les liens personnels cessent de marcher.',
-    keep: 'Garder le groupe',
+    keep: 'Garder l’événement',
     deleting: 'Suppression en cours…',
   },
   dashboard: {
-    current: 'Édition en cours',
-    partyOn: 'Fête le {date}',
+    current: 'Secret Santa en cours',
+    partyOn: 'Le {date}',
     partyOnIn: {
-      one: 'Fête le {date} · demain',
-      other: 'Fête le {date} · dans {count} jours',
+      one: 'Le {date} · demain',
+      other: 'Le {date} · dans {count} jours',
     },
     viewedOf: {
       one: '{count} sur {total} a ouvert son enveloppe',
@@ -64,11 +65,11 @@ export default {
       one: '{count} participant · le tirage reste à lancer',
       other: '{count} participants · le tirage reste à lancer',
     },
-    open: "Ouvrir l'édition",
-    prepareTitle: 'Prépare le tirage de cette année',
+    open: 'Ouvrir le Secret Santa',
+    prepareTitle: 'Prépare le Secret Santa de cette année',
     takenAll: {
-      one: 'Le seul membre du groupe est repris.',
-      other: 'Les {count} membres du groupe sont repris.',
+      one: 'Le seul membre de l’événement est repris.',
+      other: 'Les {count} membres de l’événement sont repris.',
     },
     takenFrom: {
       one: '{count} participant de {label} est repris.',
@@ -84,11 +85,11 @@ export default {
       one: '{count} ne participe plus',
       other: '{count} ne participent plus',
     },
-    deleteGroup: 'Supprimer la fête',
+    deleteGroup: 'Supprimer l’événement',
     deleteTitle: 'Supprimer {name} ?',
-    deleteConfirmLabel: 'Recopie l’identifiant du groupe : {slug}',
+    deleteConfirmLabel: 'Recopie l’identifiant de l’événement : {slug}',
     deleteAction: 'Supprimer définitivement',
-    deleteDone: 'Groupe supprimé',
+    deleteDone: 'Événement supprimé',
   },
   people: {
     title: 'Membres',
@@ -110,11 +111,11 @@ export default {
     notTakingPart: 'ne participe pas à {label}',
     oneWay: 'Dans ce sens seulement',
     removeExclusion: "Retirer l'exclusion avec {name}",
-    leave: 'Retirer du groupe',
+    leave: 'Retirer de l’événement',
     leaveHint:
-      '{name} ne sera plus repris dans les prochaines éditions. Son historique est conservé.',
-    leaveConfirm: 'Retirer {name} du groupe ?',
-    comeBack: 'Remettre dans le groupe',
+      '{name} ne sera plus repris dans les prochains Secret Santa. Son historique est conservé.',
+    leaveConfirm: 'Retirer {name} de l’événement ?',
+    comeBack: 'Remettre dans l’événement',
     fallbackTitle: 'Personne',
     notFound: 'Personne introuvable.',
     saved: 'Enregistré',
@@ -126,7 +127,7 @@ export default {
   personForm: {
     languageRow: 'Langue de ses messages',
     emailHelpPerson:
-      "Pour lui envoyer son lien, et pour qu'il retrouve ses tirages en se connectant.",
+      'Pour lui envoyer son lien, et pour qu’il retrouve ses Secret Santa en se connectant.',
     emailHelpNew:
       'Pour lui envoyer son lien. Sans adresse, tu le partageras toi-même par WhatsApp ou SMS.',
     emailPlaceholder: 'prenom@exemple.fr',
@@ -137,7 +138,7 @@ export default {
     lastNameHelp: 'Utile seulement si deux personnes ont le même prénom',
     emailLabel: 'Adresse email',
     emailHelp:
-      'Facultatif. Sert à lui envoyer son lien par email, et lui permet de se connecter pour retrouver ses tirages. Sans adresse, tu partages son lien depuis ton téléphone.',
+      'Facultatif. Sert à lui envoyer son lien par email, et lui permet de se connecter pour retrouver ses Secret Santa. Sans adresse, tu partages son lien depuis ton téléphone.',
     emailInvalid: 'Adresse email invalide',
     languageHelp: 'Sa page, ses messages et ses emails sont dans cette langue.',
   },
@@ -176,9 +177,9 @@ export default {
       other: 'Pas la même personne que ces {count} dernières années',
     },
     previousOff: 'Les années précédentes ne comptent pas',
-    inSettings: 'Se règle dans les réglages du groupe',
+    inSettings: 'Se règle dans les réglages de l’événement',
     untilDraw:
-      'Les exclusions se modifient jusqu’au tirage. Ensuite, l’édition garde celles qui ont servi.',
+      'Les exclusions se modifient jusqu’au tirage. Ensuite, le Secret Santa garde celles qui ont servi.',
     title: 'Exclusions',
     intro:
       "Les personnes qui ne doivent pas se tirer l'une l'autre : un couple, des frères et sœurs, un parent et son enfant…",
@@ -211,17 +212,17 @@ export default {
     asTyped: 'Envoyé tel quel, quelle que soit la langue.',
     where: 'Où le placer',
     notifySection: 'M’écrire par email',
-    notifyReminder: 'Rappel 3 jours avant la fête',
+    notifyReminder: 'Rappel 3 jours avant le jour J',
     notifyReminderHelp: 'Avec la liste de ceux qui n’ont pas encore ouvert',
     previousYears: {
       none: 'Non, peu importe',
       lastYear: "Pas la même que l'an dernier",
       lastYears: 'Pas la même que les {count} dernières années',
-      tight: 'Le tirage devient très contraint dans un petit groupe',
+      tight: 'Le tirage devient très contraint dans un petit événement',
       noneShort: 'Non',
       short: { one: 'Que l’an dernier', other: '{count} dernières années' },
     },
-    eventDate: 'Date de la fête',
+    eventDate: 'Date',
     eventDatePick: 'Choisir une date',
     eventDatePlaceholder: 'jj/mm/aaaa',
     eventDateHelp: 'Clôturer n’est proposé qu’après cette date.',

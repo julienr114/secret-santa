@@ -1,7 +1,7 @@
 // Gift hints (README 22.11): the participant's page, the six questions,
 // what the giver reads, the request and its emails.
 export default {
-  title: 'Mes pistes de cadeaux',
+  title: 'Mes idées de cadeaux',
   intro:
     'Donne un coup de pouce à la personne qui t’offre un cadeau. Tout est facultatif.',
   whoSees:
@@ -11,8 +11,8 @@ export default {
     body: 'Six questions à choix suffisent, trente secondes.',
     bodyPortrait: 'Cinq questions à choix suffisent, trente secondes.',
   },
-  readOnly: 'Tes pistes ne bougent plus : c’est terminé pour cette année.',
-  until: 'Tu peux les modifier jusqu’à la fête.',
+  readOnly: 'Tes idées ne bougent plus : c’est terminé pour cette année.',
+  until: 'Tu peux les modifier jusqu’au jour J.',
   start: {
     label: 'Pour commencer',
     title: 'Six questions, trente secondes',
@@ -22,9 +22,9 @@ export default {
     action: 'Commencer',
   },
   copy: {
-    action: 'Reprendre mes pistes de {edition}',
+    action: 'Reprendre mes idées de {edition}',
     hint: 'Tu pourras les retoucher',
-    done: 'Pistes de {edition} reprises',
+    done: 'Idées de {edition} reprises',
   },
   me: {
     title: 'Côté cadeaux, je préfère…',
@@ -77,7 +77,7 @@ export default {
     surprise: {
       title: 'Surprends-moi, ou je préfère savoir ?',
       first: 'Surprends-moi',
-      firstHelp: 'Je découvrirai le jour de la fête.',
+      firstHelp: 'Je découvrirai le jour J.',
       second: 'Je préfère savoir',
       secondHelp: 'Je donne une idée précise plus bas.',
     },
@@ -213,34 +213,34 @@ export default {
     none: 'Aucune liste',
     validate: 'Valider',
     untitled: 'Liste sans nom',
-    done: 'Liste reliée à tes pistes',
-    removed: 'Plus de liste reliée à tes pistes',
+    done: 'Liste reliée à tes idées',
+    removed: 'Plus de liste reliée à tes idées',
   },
   result: {
     list: 'Sa liste de cadeaux : {title}',
     listHelp: 'Le mode anonyme y sera activé pour toi.',
     title: 'Pour t’aider à choisir',
     isNew: 'Nouveau',
-    updatedOn: 'Pistes mises à jour le {date}',
-    none: '{name} n’a pas encore laissé de pistes.',
-    ask: 'Lui demander des pistes',
+    updatedOn: 'Idées mises à jour le {date}',
+    none: '{name} n’a pas encore laissé d’idées.',
+    ask: 'Lui demander des idées',
     sentEmailNamed: '{name} vient de recevoir un email.',
-    sentPageNamed: '{name} le verra sur sa page de pistes.',
+    sentPageNamed: '{name} le verra sur sa page d’idées.',
     askHint: 'Sans dire que ça vient de toi.',
     sent: 'Demande envoyée.',
     sentEmail:
       '{name} vient de recevoir un email, sans savoir que ça vient de toi.',
     sentPage:
-      '{name} le verra sur sa page de pistes, sans savoir que ça vient de toi.',
-    willEmail: 'Tu recevras un email dès que des pistes arrivent.',
-    willSee: 'Reviens ici : les pistes s’afficheront dès qu’elles arrivent.',
+      '{name} le verra sur sa page d’idées, sans savoir que ça vient de toi.',
+    willEmail: 'Tu recevras un email dès que des idées arrivent.',
+    willSee: 'Reviens ici : les idées s’afficheront dès qu’elles arrivent.',
   },
   request: {
-    title: 'Demander des pistes à {name} ?',
+    title: 'Demander des idées à {name} ?',
     bodyEmail:
       '{name} reçoit un email qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     bodyPage:
-      '{name} le verra sur sa page de pistes, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
+      '{name} le verra sur sa page d’idées, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     named: 'Ton nom est donné',
     namedHelp:
       'Le tirage est dévoilé : {name} saura que la demande vient de toi.',
@@ -249,7 +249,7 @@ export default {
       one: 'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
       other: 'Ni dans l’email, ni dans le journal, ni pour les organisateurs.',
     },
-    once: 'Une seule demande par tirage',
+    once: 'Une seule demande par Secret Santa',
     onceHelp: 'Pas de relance possible : on ne harcèle personne.',
     send: 'Envoyer la demande',
     sending: 'Envoi de la demande…',
@@ -258,22 +258,22 @@ export default {
   // Lines that say where someone's hints stand.
   state: {
     hintsLeft: {
-      one: '{count} sur {total} a laissé des pistes',
-      other: '{count} sur {total} ont laissé des pistes',
+      one: '{count} sur {total} a laissé des idées',
+      other: '{count} sur {total} ont laissé des idées',
     },
     none: 'Rien pour l’instant',
-    filledEditable: 'Remplies · modifiables jusqu’à la fête',
+    filledEditable: 'Remplies · modifiables jusqu’au jour J',
     filledLocked: 'Remplies · plus modifiables',
-    left: 'A laissé des pistes',
+    left: 'A laissé des idées',
   },
   setting: {
-    title: 'Pistes de cadeaux',
+    title: 'Idées de cadeaux',
     help: 'Ce que chacun peut noter pour aider la personne qui lui offre un cadeau.',
     full: 'Portrait et idées précises',
     fullHelp: 'Les six questions, les envies du moment, et des idées d’objets',
     portrait: 'Portrait seulement',
     portraitHelp: 'Sans idée d’objet : la surprise reste entière',
-    none: 'Aucune piste',
+    none: 'Aucune idée',
     noneHelp: 'Chacun se débrouille',
   },
   email: {
@@ -290,14 +290,14 @@ export default {
         '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Six questions à choix, trente secondes, et quelques mots si tu veux.',
       bodyPortraitFrom:
         '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Cinq questions à choix, trente secondes, et quelques mots si tu veux.',
-      cta: 'Donner quelques pistes :',
+      cta: 'Donner quelques idées :',
       anonymous: 'On ne te dira pas qui demande : c’est un Secret Santa.',
       once: 'Tu ne recevras ce message qu’une fois.',
     },
     arrived: {
       subject: 'Secret Santa de {group} : des pistes de cadeaux t’attendent',
       greeting: 'Bonjour {name},',
-      body: 'La personne à qui tu offres un cadeau pour {edition} ({group}) a laissé des pistes. Ouvre ton lien pour les lire :',
+      body: 'La personne à qui tu offres un cadeau pour {edition} ({group}) a laissé des idées. Ouvre ton lien pour les lire :',
     },
   },
 };

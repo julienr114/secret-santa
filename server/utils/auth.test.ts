@@ -94,8 +94,8 @@ describe('slugify', () => {
   });
 
   it('falls back when nothing usable is left', () => {
-    expect(slugify('🎄🎁')).toBe('groupe');
-    expect(slugify('é')).toBe('groupe');
+    expect(slugify('🎄🎁')).toBe('evenement');
+    expect(slugify('é')).toBe('evenement');
   });
 });
 

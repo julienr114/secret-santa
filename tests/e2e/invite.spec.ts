@@ -105,7 +105,7 @@ test('someone with the link signs up and joins the group', async ({ page }) => {
     'Connecté avec zoe-invite@example.com',
   );
   await page.getByLabel('Prénom').fill('Zoé');
-  await page.getByRole('button', { name: 'Rejoindre la fête' }).click();
+  await page.getByRole('button', { name: 'Rejoindre l’événement' }).click();
   // In the group and in the draw being prepared: her draw is one tap away.
   const joined = page.getByTestId('invite-joined');
   await expect(joined).toContainText('Bienvenue dans Famille Invite');
@@ -158,7 +158,7 @@ test('a participant keeps a draw opened by its personal link in an account', asy
   await page.goto(personal);
   await hydrated(page);
   const card = page.getByTestId('account-invite');
-  await expect(card).toContainText('Garde tes tirages au même endroit');
+  await expect(card).toContainText('Garde tes Secret Santa au même endroit');
   await card.getByRole('link', { name: 'Créer mon compte' }).click();
   // The link opens on the creation of an account, the first name filled.
   await expect(page.getByLabel('Prénom')).toHaveValue('Ada');
@@ -170,7 +170,7 @@ test('a participant keeps a draw opened by its personal link in an account', asy
   await expect(page).toHaveURL(new RegExp(`${personal}$`));
   await card.getByRole('button', { name: 'Ajouter à mon compte' }).click();
   await expect(
-    page.getByText('Tirage ajouté à ton compte').first(),
+    page.getByText('Secret Santa ajouté à ton compte').first(),
   ).toBeVisible();
   await expect(card).toHaveCount(0);
   await page.goto('/');

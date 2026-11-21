@@ -149,7 +149,7 @@ const checklist = [
     key: 'missing',
     state: 'warning' as const,
     title: 'Léa ne participe pas encore',
-    detail: 'Elle est dans le groupe mais pas dans cette édition.',
+    detail: 'Elle est dans l’événement mais pas dans ce Secret Santa.',
   },
   {
     key: 'info',
@@ -217,7 +217,7 @@ const YEAR_CHOICES = [
   {
     value: 3,
     label: 'Pas la même que les 3 dernières années',
-    hint: 'Le tirage devient très contraint dans un petit groupe',
+    hint: 'Le tirage devient très contraint dans un petit événement',
   },
 ];
 const yearLabel = computed(
@@ -494,8 +494,8 @@ const undone = ref(0);
     </section>
 
     <section class="flex flex-col gap-3">
-      <UiSectionTitle>Pilotage d'une édition</UiSectionTitle>
-      <UiStepper :steps="steps" label="Étapes de l'édition" />
+      <UiSectionTitle>Pilotage d’un Secret Santa</UiSectionTitle>
+      <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
       <UiActionCard
         eyebrow="UiActionCard"
         title="Préviens chacun que le tirage est fait"
@@ -564,7 +564,7 @@ const undone = ref(0);
       <UiJournalPreview
         label="UiJournalPreview"
         icon="i-lucide-eye"
-        text="La ligne que tout le groupe lira dans le journal."
+        text="La ligne que tous les membres liront dans le journal."
       />
       <UiConfirmBox v-model="confirmed" label="UiConfirmBox : je comprends" />
       <UButton
@@ -781,14 +781,14 @@ const undone = ref(0);
       <UiTile
         to="#"
         icon="i-lucide-list-checks"
-        title="Mes pistes de cadeaux"
+        title="Mes idées de cadeaux"
         state="todo"
         text="À remplir"
       />
       <UiTile
         to="#"
         icon="i-lucide-list-checks"
-        title="Mes pistes de cadeaux"
+        title="Mes idées de cadeaux"
         state="done"
         text="Remplies, modifiables jusqu’à la fête"
       />
@@ -796,7 +796,7 @@ const undone = ref(0);
         <UiTile
           to="#"
           icon="i-lucide-list-checks"
-          title="Mes pistes de cadeaux"
+          title="Mes idées de cadeaux"
           state="done"
           text="Remplies"
           compact

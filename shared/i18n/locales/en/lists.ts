@@ -324,7 +324,7 @@ export default {
     managing:
       'You can share the list, invite someone and delete it, like {by}.',
     firstName: 'Your first name',
-    firstNameHelp: 'Seen by those you hold a list or do a draw with.',
+    firstNameHelp: 'Seen by those you hold a list or do a Secret Santa with.',
     address:
       'Your account will be created at {email}, where you received the invitation. Nothing else to fill in.',
     acceptCreate: 'Accept, and create my account',
@@ -522,7 +522,7 @@ export default {
     on: 'On: when you tick a gift, nobody sees your first name, not even those who hold the list. They see “Anonymous”.',
     noticeTitle: 'We turned anonymous mode on for you',
     noticeBody:
-      'You are giving a gift in a draw to someone on this list: your ticks will not say your first name. You can turn it off up there, for instance to also give a gift under your first name.',
+      'You are giving a gift in a Secret Santa to someone on this list: your ticks will not say your first name. You can turn it off up there, for instance to also give a gift under your first name.',
     understood: 'Got it',
   },
   login: {

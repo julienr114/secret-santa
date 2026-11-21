@@ -309,7 +309,7 @@ test('from the draw, the list opens in anonymous mode, with a note', async () =>
   const note = page.getByTestId('mode-notice');
   await expect(note).toContainText('On a activé le mode anonyme pour toi');
   await expect(note).toContainText(
-    'Tu offres un cadeau dans un tirage à quelqu’un de cette liste',
+    'Tu offres un cadeau dans un Secret Santa à quelqu’un de cette liste',
   );
   // It names nobody, and no text of a list says « Père Noël ».
   await expect(note).not.toContainText(state.receiver);

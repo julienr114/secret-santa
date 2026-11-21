@@ -95,7 +95,7 @@ test('the organiser says the draw was made elsewhere', async ({ page }) => {
   await expect(sheet).toContainText('Chacun répond sur sa page');
   // Said once: the exclusion is not checked.
   await expect(sheet).toContainText(
-    'L’exclusion du groupe (Agnès et Bruno) n’est pas vérifiée',
+    'L’exclusion de l’événement (Agnès et Bruno) n’est pas vérifiée',
   );
   await page.getByRole('button', { name: 'Demander les réponses' }).click();
   await expect(page.getByTestId('action-card')).toContainText(

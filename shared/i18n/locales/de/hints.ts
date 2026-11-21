@@ -2,7 +2,7 @@ import type fr from '../fr/hints';
 import type { Dict } from '../../types';
 
 export default {
-  title: 'Meine Geschenk-Hinweise',
+  title: 'Meine Geschenkideen',
   intro:
     'Greif der Person unter die Arme, die dich beschenkt. Alles ist freiwillig.',
   whoSees:
@@ -12,8 +12,8 @@ export default {
     body: 'Sechs Auswahlfragen reichen, dreißig Sekunden.',
     bodyPortrait: 'Fünf Auswahlfragen reichen, dreißig Sekunden.',
   },
-  readOnly: 'Deine Hinweise stehen fest: für dieses Jahr ist Schluss.',
-  until: 'Du kannst sie bis zur Feier ändern.',
+  readOnly: 'Deine Ideen stehen fest: für dieses Jahr ist Schluss.',
+  until: 'Du kannst sie bis zum großen Tag ändern.',
   start: {
     label: 'Zum Anfang',
     title: 'Sechs Fragen, dreißig Sekunden',
@@ -23,9 +23,9 @@ export default {
     action: 'Loslegen',
   },
   copy: {
-    action: 'Meine Hinweise von {edition} übernehmen',
+    action: 'Meine Ideen von {edition} übernehmen',
     hint: 'Du kannst sie danach anpassen',
-    done: 'Hinweise von {edition} übernommen',
+    done: 'Ideen von {edition} übernommen',
   },
   me: {
     title: 'Bei Geschenken mag ich lieber…',
@@ -78,7 +78,7 @@ export default {
     surprise: {
       title: 'Überrasch mich, oder lieber wissen?',
       first: 'Überrasch mich',
-      firstHelp: 'Ich lasse mich am Tag der Feier überraschen.',
+      firstHelp: 'Ich lasse mich am großen Tag überraschen.',
       second: 'Lieber wissen',
       secondHelp: 'Weiter unten gebe ich eine genaue Idee an.',
     },
@@ -212,35 +212,35 @@ export default {
     none: 'Keine Liste',
     validate: 'Bestätigen',
     untitled: 'Liste ohne Namen',
-    done: 'Liste mit deinen Hinweisen verknüpft',
-    removed: 'Keine Liste mehr mit deinen Hinweisen verknüpft',
+    done: 'Liste mit deinen Ideen verknüpft',
+    removed: 'Keine Liste mehr mit deinen Ideen verknüpft',
   },
   result: {
     list: 'Ihre Geschenkliste: {title}',
     listHelp: 'Der anonyme Modus ist dort für dich aktiviert.',
     title: 'Damit du besser wählst',
     isNew: 'Neu',
-    updatedOn: 'Hinweise aktualisiert am {date}',
-    none: '{name} hat noch keine Hinweise hinterlassen.',
-    ask: 'Um Hinweise bitten',
+    updatedOn: 'Ideen aktualisiert am {date}',
+    none: '{name} hat noch keine Ideen hinterlassen.',
+    ask: 'Um Ideen bitten',
     sentEmailNamed: '{name} hat gerade eine E-Mail bekommen.',
-    sentPageNamed: '{name} sieht es auf der eigenen Hinweis-Seite.',
+    sentPageNamed: '{name} sieht es auf der eigenen Ideen-Seite.',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
     sent: 'Anfrage gesendet.',
     sentEmail:
       '{name} hat gerade eine E-Mail bekommen, ohne zu wissen, dass sie von dir kommt.',
     sentPage:
-      '{name} sieht es auf der eigenen Hinweis-Seite, ohne zu wissen, dass es von dir kommt.',
-    willEmail: 'Du bekommst eine E-Mail, sobald Hinweise da sind.',
+      '{name} sieht es auf der eigenen Ideen-Seite, ohne zu wissen, dass es von dir kommt.',
+    willEmail: 'Du bekommst eine E-Mail, sobald Ideen da sind.',
     willSee:
-      'Schau wieder hier vorbei: Die Hinweise erscheinen, sobald sie da sind.',
+      'Schau wieder hier vorbei: Die Ideen erscheinen, sobald sie da sind.',
   },
   request: {
-    title: '{name} um Hinweise bitten?',
+    title: '{name} um Ideen bitten?',
     bodyEmail:
       '{name} bekommt eine E-Mail mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     bodyPage:
-      '{name} sieht es auf der eigenen Hinweis-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
+      '{name} sieht es auf der eigenen Ideen-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     named: 'Dein Name wird genannt',
     namedHelp:
       'Die Auslosung ist aufgedeckt: {name} weiß, dass die Anfrage von dir kommt.',
@@ -250,7 +250,7 @@ export default {
       other:
         'Weder in der E-Mail noch im Protokoll noch für die Organisatoren.',
     },
-    once: 'Eine einzige Anfrage pro Auslosung',
+    once: 'Eine einzige Anfrage pro Wichteln',
     onceHelp: 'Keine Erinnerung möglich: wir bedrängen niemanden.',
     send: 'Anfrage senden',
     sending: 'Anfrage wird gesendet…',
@@ -258,22 +258,22 @@ export default {
   },
   state: {
     hintsLeft: {
-      one: '{count} von {total} hat Hinweise hinterlassen',
-      other: '{count} von {total} haben Hinweise hinterlassen',
+      one: '{count} von {total} hat Ideen hinterlassen',
+      other: '{count} von {total} haben Ideen hinterlassen',
     },
     none: 'Noch nichts',
-    filledEditable: 'Ausgefüllt · änderbar bis zur Feier',
+    filledEditable: 'Ausgefüllt · änderbar bis zum großen Tag',
     filledLocked: 'Ausgefüllt · nicht mehr änderbar',
-    left: 'Hat Hinweise hinterlassen',
+    left: 'Hat Ideen hinterlassen',
   },
   setting: {
-    title: 'Geschenk-Hinweise',
+    title: 'Geschenkideen',
     help: 'Was jeder notieren kann, um der Person zu helfen, die ihn beschenkt.',
     full: 'Porträt und genaue Ideen',
     fullHelp: 'Die sechs Fragen, aktuelle Interessen und Geschenkideen',
     portrait: 'Nur Porträt',
     portraitHelp: 'Ohne Geschenkidee: Die Überraschung bleibt ganz',
-    none: 'Keine Hinweise',
+    none: 'Keine Ideen',
     noneHelp: 'Jeder kommt allein zurecht',
   },
   email: {
@@ -288,14 +288,14 @@ export default {
         '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
       bodyPortraitFrom:
         '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      cta: 'Ein paar Hinweise geben:',
+      cta: 'Ein paar Ideen geben:',
       anonymous: 'Wir verraten dir nicht, wer fragt: Es ist Wichteln.',
       once: 'Du bekommst diese Nachricht nur einmal.',
     },
     arrived: {
       subject: 'Wichteln {group}: Geschenkhinweise warten auf dich',
       greeting: 'Hallo {name},',
-      body: 'Die Person, die du zu {edition} ({group}) beschenkst, hat Hinweise hinterlassen. Öffne deinen Link, um sie zu lesen:',
+      body: 'Die Person, die du zu {edition} ({group}) beschenkst, hat Ideen hinterlassen. Öffne deinen Link, um sie zu lesen:',
     },
   },
 } satisfies Dict<typeof fr>;

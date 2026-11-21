@@ -68,11 +68,11 @@ test('they create their group and organise up to 3 Secret Santa', async ({
   await hydrated(page);
   // Only the name: they organise it.
   await expect(page.getByText('Tu en seras l’organisateur.')).toBeVisible();
-  await page.getByLabel('Nom du groupe').fill(GROUP.name);
+  await page.getByLabel('Nom de l’événement').fill(GROUP.name);
   await expect(page.getByLabel('Adresse du premier organisateur')).toHaveCount(
     0,
   );
-  await page.getByRole('button', { name: 'Créer le groupe' }).click();
+  await page.getByRole('button', { name: 'Créer l’événement' }).click();
   // A member a moment ago, now the organiser of the group.
   await expect(page).toHaveURL(new RegExp(`/e/${GROUP.slug}$`));
   await expect(heading(page)).toHaveText(GROUP.name);
@@ -164,14 +164,16 @@ test('the super-admin sees every party, sets a limit and disables an account', a
   await loginAsSuper(page, SUPER);
   await page.goto('/admin/groupes');
   await hydrated(page);
-  await expect(heading(page)).toHaveText('Fêtes');
+  await expect(heading(page)).toHaveText('Événements');
   await expect(page.getByText(GROUP.name)).toBeVisible();
   // Each line: who organises it, its members, where its draw stands.
   await expect(
     page.getByTestId('groups').getByRole('link', { name: GROUP.name }),
   ).toContainText('Nina · 1 membre · à préparer');
   // The search finds a group by its organiser too.
-  await page.getByLabel('Chercher une fête ou un organisateur').fill('Nina');
+  await page
+    .getByLabel('Chercher un événement ou un organisateur')
+    .fill('Nina');
   await expect(page.getByTestId('groups')).toContainText(GROUP.name);
 
   // The identifier comes from the name; a name used twice is numbered.
@@ -266,7 +268,7 @@ test('the super-admin pauses new Secret Santa; lists may still be created', asyn
     'Comptes à leur limite de Secret Santa',
   );
   await expect(page.getByTestId('watch-full-parties')).toContainText(
-    'Fêtes à 30 membres',
+    'Événements à 30 membres',
   );
   const pause = page
     .getByTestId('pause-secret-santas')

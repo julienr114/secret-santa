@@ -20,11 +20,11 @@ export default {
     santaIs: { before: 'C’est', after: 'qui t’offre ton cadeau.' },
     santaIsPast: { before: 'C’est', after: 'qui t’a offert ton cadeau.' },
     all: 'Voir tout le tirage',
-    allHint: 'Qui offre à qui, pour tout le groupe',
-    allHintPast: 'Qui a offert à qui, dans tout le groupe',
+    allHint: 'Qui offre à qui, pour tous les participants',
+    allHintPast: 'Qui a offert à qui, pour tous les participants',
     gaveTo: 'Tu as offert un cadeau à',
     afterBody:
-      'La fête est passée. Le tirage est dévoilé : tout le monde peut voir qui a offert à qui.',
+      'Le jour J est passé. Le tirage est dévoilé : tout le monde peut voir qui a offert à qui.',
     closedBody: 'C’est terminé pour cette année. À l’an prochain ?',
     pageTitle: 'Qui offre à qui',
     pageBody:
@@ -38,7 +38,7 @@ export default {
   },
   home: {
     greeting: 'Salut {firstName} !',
-    facts: { budget: 'Budget :', party: 'Fête le' },
+    facts: { budget: 'Budget :', party: 'Jour J' },
     note: {
       title: {
         one: "Le mot de l'organisateur",
@@ -48,19 +48,19 @@ export default {
     },
     changeAvatar: 'Changer mon icône',
     steps: {
-      label: 'Étapes du tirage',
+      label: 'Étapes du Secret Santa',
       invitation: 'Invitation',
       drawSoon: 'Tirage · bientôt',
       answer: 'Ta réponse',
       drawRevealed: 'Tirage dévoilé',
       drawDone: 'Tirage fait',
-      party: 'Fête',
+      party: 'Jour J',
       partyIn: {
-        one: 'Fête · dans {count} jour',
-        other: 'Fête · dans {count} jours',
+        one: 'Jour J · dans {count} jour',
+        other: 'Jour J · dans {count} jours',
       },
-      partyToday: "Fête · aujourd'hui",
-      partyOver: 'Fête passée',
+      partyToday: 'Jour J · aujourd’hui',
+      partyOver: 'Jour J passé',
     },
     waiting: {
       title: 'Encore un peu de patience',
@@ -69,14 +69,14 @@ export default {
         other:
           'Le tirage n’est pas encore fait. Tes organisateurs te feront signe ; garde ce lien, c’est ici que tout se jouera.',
       },
-      action: 'Laisser mes pistes de cadeaux',
+      action: 'Laisser mes idées de cadeaux',
       hint: 'En attendant, donne un coup de pouce à la personne qui te tirera au sort.',
     },
     ready: {
       title: "Ton enveloppe t'attend",
       body: 'Le tirage est fait. Vérifie que personne ne regarde par-dessus ton épaule, puis ouvre-la.',
       bodyHints:
-        'Le tirage est fait, et des pistes de cadeaux t’attendent à l’intérieur. Vérifie que personne ne regarde par-dessus ton épaule, puis ouvre-la.',
+        'Le tirage est fait, et des idées de cadeaux t’attendent à l’intérieur. Vérifie que personne ne regarde par-dessus ton épaule, puis ouvre-la.',
       reveal: "Découvrir à qui j'offre un cadeau",
       revealing: 'Ouverture de l’enveloppe…',
       hint: 'Ton enveloppe se referme toute seule dès que tu quittes la page.',
@@ -89,24 +89,24 @@ export default {
       title: 'Un trou de mémoire ?',
       body: 'Ton enveloppe est toujours là. Vérifie que personne ne regarde par-dessus ton épaule.',
       bodyHints:
-        'Ton enveloppe est toujours là, avec ses pistes de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
-      newTitle: 'De nouvelles pistes t’attendent',
+        'Ton enveloppe est toujours là, avec ses idées de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
+      newTitle: 'De nouvelles idées t’attendent',
       newBody:
         'La personne à qui tu offres en a laissé depuis ta dernière visite. Vérifie que personne ne regarde par-dessus ton épaule.',
-      revealWithHints: 'Revoir à qui j’offre, et ses pistes',
+      revealWithHints: 'Revoir à qui j’offre, et ses idées',
       noHintsYet:
-        'Aucune piste pour l’instant. Tu pourras lui en demander, sans te trahir.',
+        'Aucune idée pour l’instant. Tu pourras lui en demander, sans te trahir.',
       revealAgain: "Revoir à qui j'offre un cadeau",
     },
     closed: {
-      title: 'La fête est passée',
+      title: 'Le jour J est passé',
       body: 'C’est terminé pour cette année. Tu peux encore revoir à qui tu as offert un cadeau.',
       bodyNotSeen:
         'C’est terminé pour cette année. Tu peux encore découvrir à qui tu offrais un cadeau.',
     },
     tiles: {
       hintsTodo: 'À remplir',
-      hintsEditable: 'Remplies, modifiables jusqu’à la fête',
+      hintsEditable: 'Remplies, modifiables jusqu’au jour J',
       hintsLocked: 'Remplies, plus modifiables',
       hintsShort: 'Remplies',
       hintsShortLocked: 'Plus modifiables',
@@ -123,13 +123,13 @@ export default {
         lastDay: 'Dernier jour',
         play: 'Fais ton pronostic',
         played: 'Pronostic fait',
-        waiting: 'Réponse à la fête',
+        waiting: 'Réponse le jour J',
         palmares: 'Le palmarès t’attend',
         answers: 'Voir les réponses',
       },
     },
     journal: {
-      title: 'Journal du groupe',
+      title: 'Journal de l’événement',
       subtitle: "Tout ce qui s'est passé, à la vue de tous",
       alerts: {
         one: '{count} alerte depuis ta dernière visite',
@@ -158,21 +158,22 @@ export default {
     },
   },
   journal: {
-    title: 'Journal du groupe',
-    intro: 'Tout le groupe voit ce journal. Il ne dit jamais qui offre à qui.',
-    allEditions: 'Toutes les éditions',
-    edition: 'Édition',
+    title: 'Journal de l’événement',
+    intro:
+      'Tous les membres voient ce journal. Il ne dit jamais qui offre à qui.',
+    allEditions: 'Tous les Secret Santa',
+    edition: 'Secret Santa',
     empty: 'Calme plat. C’est bon signe.',
   },
   invalid: { title: 'Oups, ce lien ne marche plus' },
   account: {
-    title: 'Garde tes tirages au même endroit',
-    body: 'Crée un compte avec ton adresse email : tu retrouveras ce tirage, et les suivants, sans chercher le lien.',
+    title: 'Garde tes Secret Santa au même endroit',
+    body: 'Crée un compte avec ton adresse email : tu retrouveras ce Secret Santa, et les suivants, sans chercher le lien.',
     bodyClaim:
-      'Ajoute ce tirage à ton compte pour le retrouver depuis ton accueil.',
+      'Ajoute ce Secret Santa à ton compte pour le retrouver depuis ton accueil.',
     create: 'Créer mon compte',
     claim: 'Ajouter à mon compte',
-    added: 'Tirage ajouté à ton compte',
+    added: 'Secret Santa ajouté à ton compte',
     sendTo: 'Recevoir mon lien à {email}',
     sent: 'Lien envoyé à {email} : ouvre-le pour créer ton compte. Pense à regarder dans les indésirables.',
   },
@@ -180,7 +181,7 @@ export default {
   answer: {
     card: {
       title: 'À qui offres-tu un cadeau ?',
-      body: 'Le tirage a été fait hors de l’application. Dis ici à qui tu offres, pour voir ses pistes de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
+      body: 'Le tirage a été fait hors de l’application. Dis ici à qui tu offres, pour voir ses idées de cadeaux. Vérifie que personne ne regarde par-dessus ton épaule.',
       action: 'Dire à qui j’offre',
       hint: {
         one: 'Ta réponse reste secrète, même pour l’organisateur.',
@@ -188,9 +189,9 @@ export default {
       },
       savedTitle: 'C’est noté',
       savedBody: {
-        one: 'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponse sur {total} pour l’instant.',
+        one: 'Tu verras les idées de cadeaux de ta personne quand tout le monde aura répondu. {count} réponse sur {total} pour l’instant.',
         other:
-          'Tu verras les pistes de cadeaux de ta personne quand tout le monde aura répondu. {count} réponses sur {total} pour l’instant.',
+          'Tu verras les idées de cadeaux de ta personne quand tout le monde aura répondu. {count} réponses sur {total} pour l’instant.',
       },
       review: 'Revoir ou corriger ma réponse',
       savedHint:
@@ -232,7 +233,7 @@ export default {
     whoGivesMeShort: 'Qui t’offre ?',
     whoGivesTo: 'Qui offre à {name} ?',
     myGuess: 'Mon pronostic',
-    surprise: 'Une surprise attend le groupe à la fête.',
+    surprise: 'Une surprise attend tout le monde le jour J.',
     surpriseMore: 'Plus vous êtes nombreux à jouer, plus elle sera belle.',
     challenge: {
       one: 'L’an dernier, {count} personne sur {total} avait deviné son Père Noël. À battre.',
@@ -251,7 +252,7 @@ export default {
     skip: 'Je passe mon tour',
     skippedTitle: 'Tu passes ton tour',
     skippedBody:
-      'On ne te rappellera pas le jeu. Tu verras quand même la surprise à la fête.',
+      'On ne te rappellera pas le jeu. Tu verras quand même la surprise le jour J.',
     unskip: 'Finalement, je joue',
     unskipUntil: 'Possible jusqu’au {end}.',
     skipConfirm: 'Passer ton tour ?',
@@ -263,22 +264,22 @@ export default {
       other: '{count} pronostics sur {total}.',
     },
     progressLeft: {
-      one: 'Encore un et tu auras fait le tour : la surprise de la fête n’en sera que plus belle.',
+      one: 'Encore un et tu auras fait le tour : la surprise du jour J n’en sera que plus belle.',
       other:
-        'Encore {n} et tu auras fait le tour : la surprise de la fête n’en sera que plus belle.',
+        'Encore {n} et tu auras fait le tour : la surprise du jour J n’en sera que plus belle.',
     },
     progressDone:
-      'Tu as fait le tour : la surprise de la fête n’en sera que plus belle.',
+      'Tu as fait le tour : la surprise du jour J n’en sera que plus belle.',
     inviteTitle: 'Et toi, qui t’offre ton cadeau ?',
     inviteCount: {
-      one: '{count} sur {total} a déjà fait son pronostic. Réponse à la fête.',
+      one: '{count} sur {total} a déjà fait son pronostic. Réponse le jour J.',
       other:
-        '{count} sur {total} ont déjà fait leur pronostic. Réponse à la fête.',
+        '{count} sur {total} ont déjà fait leur pronostic. Réponse le jour J.',
     },
-    inviteNone: 'Réponse à la fête.',
+    inviteNone: 'Réponse le jour J.',
     makeGuess: 'Faire mon pronostic',
     changeMind: 'Changer d’avis',
-    secret: 'Personne ne voit ton pronostic avant la fête.',
+    secret: 'Personne ne voit ton pronostic avant le jour J.',
     mySanta: 'Mon Père Noël',
     mySantaNeutral: 'Celui qui m’offre',
     others: 'Les autres',
@@ -289,15 +290,15 @@ export default {
     you: 'toi',
     noGuess: 'Pas de pronostic',
     count: {
-      one: '{count} pronostic. Personne ne le voit avant la fête.',
-      other: '{count} pronostics. Personne ne les voit avant la fête.',
+      one: '{count} pronostic. Personne ne le voit avant le jour J.',
+      other: '{count} pronostics. Personne ne les voit avant le jour J.',
     },
     canChange: 'Tu pourras changer d’avis.',
     oneGift: 'Une personne n’offre qu’un cadeau.',
     movedFrom: 'Ton pronostic pour {name} : le choisir le déplace ici',
     movedFromMe: 'Ton pronostic pour toi : le choisir le déplace ici',
     clear: 'Effacer ce pronostic',
-    atParty: 'Réponse à la fête',
+    atParty: 'Réponse le jour J',
     atPartyBody: {
       one: 'Les réponses arrivent quand ton organisateur dévoile le tirage. Avec une surprise.',
       other:

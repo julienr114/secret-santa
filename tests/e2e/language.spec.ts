@@ -84,8 +84,8 @@ test('a personal page follows the preferred language, and can change it', async 
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByText('Noch ein wenig Geduld')).toBeVisible();
 
-  await page.getByRole('link', { name: /Protokoll der Gruppe/ }).click();
-  await expect(heading(page)).toHaveText('Protokoll der Gruppe');
+  await page.getByRole('link', { name: /Protokoll des Events/ }).click();
+  await expect(heading(page)).toHaveText('Protokoll des Events');
   await expect(page.getByText('Greta nimmt an der Ausgabe teil')).toHaveCount(
     0,
   );
@@ -99,7 +99,7 @@ test('a personal page follows the preferred language, and can change it', async 
   expect((await messageOf('Greta')).text).toMatch(/^Hi Greta! 🎁/);
 
   // Like every change made with a link, it is written to the journal.
-  await page.getByRole('link', { name: /Group journal/ }).click();
+  await page.getByRole('link', { name: /Event journal/ }).click();
   // A change of language is left out of the essentials: it is in
   // « Everything ».
   await expect(page.getByTestId('journal')).toBeVisible();

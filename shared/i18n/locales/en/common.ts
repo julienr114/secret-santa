@@ -15,7 +15,7 @@ export default {
     drawn: 'Draw done',
     closed: 'Closed',
   },
-  badge: { sent: 'sent', hints: 'hints', viewed: 'envelope opened' },
+  badge: { sent: 'sent', hints: 'ideas', viewed: 'envelope opened' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Draw done',

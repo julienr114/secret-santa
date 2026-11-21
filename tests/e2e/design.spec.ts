@@ -48,7 +48,7 @@ test('the style guide shows the edition components', async ({ page }) => {
   await expect(tile).not.toHaveCSS('transform', 'none');
 
   await expect(
-    page.getByRole('list', { name: "Étapes de l'édition" }),
+    page.getByRole('list', { name: 'Étapes du Secret Santa' }),
   ).toBeVisible();
   await expect(page.locator('[aria-current="step"]')).toHaveText(/Tirer/);
   await expect(page.getByText('pas encore ouvert').first()).toBeVisible();

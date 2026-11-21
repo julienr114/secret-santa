@@ -15,7 +15,7 @@ export default {
     drawn: 'Ausgelost',
     closed: 'Abgeschlossen',
   },
-  badge: { sent: 'gesendet', hints: 'Hinweise', viewed: 'Umschlag geöffnet' },
+  badge: { sent: 'gesendet', hints: 'Ideen', viewed: 'Umschlag geöffnet' },
   messageType: {
     invitation: 'Einladung',
     drawn: 'Auslosung erfolgt',

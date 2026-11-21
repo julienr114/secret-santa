@@ -107,7 +107,7 @@ test('choosing the participants adds and removes them at once', async ({
   await page.goto(`/admin/cas-choix/editions/${id}`);
   await hydrated(page);
   await page.getByRole('link', { name: 'Choisir les participants' }).click();
-  await expect(page.getByText('3 membres du groupe')).toBeVisible();
+  await expect(page.getByText('3 membres de l’événement')).toBeVisible();
   await page.getByRole('checkbox', { name: 'Faire participer Bob' }).uncheck();
   // Someone new joins the group and comes back ticked, Bob still unticked.
   await page.getByRole('link', { name: /^Créer une personne/ }).click();
@@ -185,13 +185,13 @@ test('a large group folds its lists, before and after the draw', async ({
   await hydrated(page);
   await expect(page.getByTestId('members-count')).toHaveText('30 sur 30');
   await expect(page.getByTestId('party-full')).toContainText(
-    'La fête est complète',
+    'L’événement est complet',
   );
   await expect(
     page.getByRole('link', { name: 'Ajouter une personne' }),
   ).toHaveCount(0);
   await expect(page.getByTestId('invite-row')).toContainText(
-    'En pause · la fête est complète',
+    'En pause · l’événement est complet',
   );
 
   await page.goto(`/admin/cas-grand/editions/${id}`);
@@ -298,7 +298,7 @@ test('the budget and the word change on the edition, until it is closed', async 
   );
   await page.getByTestId('settings-row').click();
   await expect(page.getByTestId('edition-settings')).toContainText(
-    'La fêteDate',
+    'Le jour JDate',
   );
   await budget.click();
   await page.getByRole('textbox').fill('30 €');
@@ -465,18 +465,18 @@ test('before the party, revealing asks for a phrase', async ({ page }) => {
   await hydrated(page);
   // Before the party, revealing is in « Un souci ? ».
   await page.getByTestId('trouble-row').click();
-  await page.getByText('Dévoiler avant la fête').click();
+  await page.getByText('Dévoiler avant le jour J').click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByTestId('reveal-early')).toContainText(
     'Le secret s’arrête ici, pour de bon',
   );
   const anyway = sheet.getByRole('button', { name: 'Dévoiler quand même' });
   await expect(anyway).toBeDisabled();
-  await sheet.getByRole('textbox').fill('Dévoiler avant la fête');
+  await sheet.getByRole('textbox').fill('Dévoiler avant le jour J');
   await anyway.click();
   await expect(page.getByTestId('revealed-notice')).toBeVisible();
   const { entries } = await (await api.get(`${at}/journal`)).json();
   expect(entries[0].text).toBe(
-    "L'organisateur a dévoilé les résultats avant la fête",
+    'L’organisateur a dévoilé les résultats avant le jour J',
   );
 });

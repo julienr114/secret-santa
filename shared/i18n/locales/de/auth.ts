@@ -33,21 +33,21 @@ export default {
   },
   home: {
     party: {
-      today: 'Fest heute',
-      in: { one: 'Fest morgen', other: 'Fest in {count} Tagen' },
-      on: 'Fest am {date}',
+      today: 'großer Tag heute',
+      in: { one: 'großer Tag morgen', other: 'großer Tag in {count} Tagen' },
+      on: 'am {date}',
     },
     drawCard: {
-      partyOn: 'Fest am {date}',
+      partyOn: 'Am {date}',
       partyOnIn: {
-        one: 'Fest am {date}, morgen',
-        other: 'Fest am {date}, in {count} Tagen',
+        one: 'Am {date}, morgen',
+        other: 'Am {date}, in {count} Tagen',
       },
-      partyToday: 'Fest heute',
+      partyToday: 'Heute ist der große Tag',
     },
     past: {
-      title: 'Vergangene Auslosungen',
-      empty: 'Noch keine vergangene Auslosung.',
+      title: 'Vergangene Wichteln',
+      empty: 'Noch kein vergangenes Wichteln.',
     },
     journalSignal: {
       lead: 'Neues im Protokoll.',
@@ -56,7 +56,7 @@ export default {
       result_revealed:
         'Der Organisator hat am {date} in einen Umschlag geschaut.',
       results_revealed:
-        'Die Ergebnisse wurden am {date} vor der Feier aufgedeckt.',
+        'Die Ergebnisse wurden am {date} vor dem großen Tag aufgedeckt.',
       draw_cancelled: 'Die Auslosung wurde am {date} aufgehoben.',
       several: '{count} Hinweise seit deinem letzten Besuch.',
     },
@@ -68,14 +68,14 @@ export default {
     neverLoggedIn: 'Nie angemeldet',
     quotaLabel: 'Wichteln, die es organisieren darf',
     disabledHelp: 'Es kann sich nicht mehr anmelden',
-    groupsEmpty: 'Noch keine Gruppe.',
+    groupsEmpty: 'Noch kein Event.',
     search: 'Name oder Adresse suchen',
     noMatch: 'Kein Konto.',
-    groupsCount: { one: '{count} Feier', other: '{count} Feiern' },
+    groupsCount: { one: '{count} Event', other: '{count} Events' },
     seenOn: 'gesehen am {date}',
     load: {
-      near: 'Die App nähert sich ihrer kostenlosen Kapazität (etwa 50 Gruppen: 3.000 E-Mails im Monat bei Resend).',
-      over: 'Eine weitere Gruppe überschreitet die kostenlose Kapazität (etwa 50 Gruppen: 3.000 E-Mails im Monat bei Resend). E-Mails könnten ausbleiben.',
+      near: 'Die App nähert sich ihrer kostenlosen Kapazität (etwa 50 Events: 3.000 E-Mails im Monat bei Resend).',
+      over: 'Ein weiteres Event überschreitet die kostenlose Kapazität (etwa 50 Events: 3.000 E-Mails im Monat bei Resend). E-Mails könnten ausbleiben.',
     },
     quotaLess: 'Ein Wichteln weniger',
     quotaMore: 'Ein Wichteln mehr',
@@ -87,18 +87,18 @@ export default {
     disabledDone: 'Konto deaktiviert',
     restored: 'Konto reaktiviert',
     access: 'Zugang',
-    loadOk: '{count} von etwa {max} Gruppen, die die Gratisangebote abdecken.',
+    loadOk: '{count} von etwa {max} Events, die die Gratisangebote abdecken.',
     title: 'Verwaltung',
     reserved: 'Nur für Super-Admins',
     capacity: 'Kapazität',
     capacityCount: {
-      one: '{count} Feier von etwa {max}',
-      other: '{count} Feiern von etwa {max}',
+      one: '{count} Event von etwa {max}',
+      other: '{count} Events von etwa {max}',
     },
     capacityHint:
       'Darüber reichen die kostenlosen Angebote nicht mehr (3.000 E-Mails im Monat).',
     seeAll: 'Alles ansehen',
-    groupsShort: 'Feiern',
+    groupsShort: 'Events',
     disabledCount: { one: '{count} deaktiviert', other: '{count} deaktiviert' },
     activeDraws: {
       one: '{count} laufendes Wichteln',
@@ -121,7 +121,7 @@ export default {
     },
     watch: 'Zu erledigen und im Blick',
     atLimitCount: 'Konten am Limit für Wichteln',
-    fullParties: 'Feiern mit 30 Mitgliedern',
+    fullParties: 'Events mit 30 Mitgliedern',
     emergency: 'Im Notfall',
     pauseSecretSantas: 'Neue Wichteln pausieren',
     pauseSecretSantasHelp: 'Die bestehenden laufen weiter',
@@ -142,12 +142,12 @@ export default {
       one: '{count} aktives Konto',
       other: '{count} aktive Konten',
     },
-    noGroup: 'keine Feier',
+    noGroup: 'kein Event',
     disabledRow: 'Deaktivierte Konten',
-    searchGroups: 'Eine Feier oder einen Organisator suchen',
-    noGroupMatch: 'Keine Feier.',
+    searchGroups: 'Ein Event oder einen Organisator suchen',
+    noGroupMatch: 'Kein Event.',
     noOrganizer: 'Noch kein Organisator',
-    createFor: 'Eine Feier für jemanden erstellen',
+    createFor: 'Ein Event für jemanden erstellen',
     createForHint: 'Mit der Adresse des Organisators',
   },
   confirm: {
@@ -177,11 +177,11 @@ export default {
     revoked: 'Gerät abgemeldet',
     revokeAllHint: 'Dieses Gerät eingeschlossen',
     revokeAllConfirm: 'Von allen Geräten abmelden?',
-    firstNameHelp: 'Wird übernommen, wenn du eine Gruppe erstellst.',
+    firstNameHelp: 'Wird übernommen, wenn du ein Event erstellst.',
     lastNameHelp:
       'Optional. Unterscheidet dich von einer Person gleichen Namens.',
     profileHint:
-      'Dein Vorname und dein Symbol werden übernommen, wenn du einer Gruppe beitrittst oder eine erstellst. Die Sprache ist die deiner E-Mails.',
+      'Dein Vorname und dein Symbol werden übernommen, wenn du einem Event beitrittst oder eines erstellst. Die Sprache ist die deiner E-Mails.',
     language: 'Sprache',
     connectedOn: 'Angemeldet am {date}',
     revokeShort: 'Abmelden',
@@ -195,12 +195,12 @@ export default {
       'Nichts angefordert? Ignoriere diese Nachricht: Ohne diesen Link kann sich niemand anmelden.',
   },
   invite: {
-    intro: 'Du bist zur Feier eingeladen',
+    intro: 'Du bist zum Event eingeladen',
     party: 'am {date}',
     nameHelp: 'Der Vorname, den die anderen sehen.',
     loginFirst:
       'Melde dich mit deiner E-Mail-Adresse an, um beizutreten. Noch kein Konto? Es wird dabei erstellt.',
-    joinGroup: 'Der Feier beitreten',
+    joinGroup: 'Dem Event beitreten',
     signedAs: 'Angemeldet als {email}',
     notMe: 'Das bin nicht ich',
     organiserWord: {
@@ -214,19 +214,19 @@ export default {
       other: 'Die Auslosung steht noch aus: Deine Organisatoren melden sich.',
     },
     addLater: {
-      one: 'Du gehörst zur Feier. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+      one: 'Du gehörst zum Event. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
       other:
-        'Du gehörst zur Feier. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
+        'Du gehörst zum Event. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
     },
     drawnAlready:
-      'Du gehörst zur Feier. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
+      'Du gehörst zum Event. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
     nextDraw: {
-      one: 'Du gehörst zur Feier. Dein Organisator meldet sich zur nächsten Auslosung.',
+      one: 'Du gehörst zum Event. Dein Organisator meldet sich zum nächsten Wichteln.',
       other:
-        'Du gehörst zur Feier. Deine Organisatoren melden sich zur nächsten Auslosung.',
+        'Du gehörst zum Event. Deine Organisatoren melden sich zum nächsten Wichteln.',
     },
     meanwhile: 'In der Zwischenzeit',
-    hints: 'Meine Geschenk-Hinweise hinterlassen',
+    hints: 'Meine Geschenkideen hinterlassen',
     seeDraw: 'Meine Auslosung ansehen',
     goHome: 'Zu meiner Startseite',
     findIt:

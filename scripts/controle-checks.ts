@@ -52,6 +52,9 @@ const wordPattern = (word: string) =>
     'iu',
   );
 
+/** A text without its placeholders (`{edition}`): they are never shown. */
+const shownPart = (text: string) => text.replace(/\{[^}]*\}/g, '');
+
 /** The texts of the dictionaries that still say a word the V3 removed. */
 export const forbiddenUses = (
   words: readonly string[],
@@ -61,7 +64,7 @@ export const forbiddenUses = (
     const pattern = wordPattern(word);
     return Object.entries(dictionaries).flatMap(([locale, texts]) =>
       Object.entries(texts)
-        .filter(([, text]) => pattern.test(text))
+        .filter(([, text]) => pattern.test(shownPart(text)))
         .map(([key, text]) => ({ locale, key, word, text })),
     );
   });

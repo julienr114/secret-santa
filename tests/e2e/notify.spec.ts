@@ -54,13 +54,13 @@ test('the three emails are on by default and can be turned off', async ({
   await expect(
     page
       .getByTestId('notifications')
-      .getByRole('switch', { name: 'Rappel 3 jours avant la fête' }),
+      .getByRole('switch', { name: 'Rappel 3 jours avant le jour J' }),
   ).toBeChecked();
   await page.goto(`/e/${SLUG}/reglages`);
   await hydrated(page);
   const section = page.getByTestId('notifications');
   const joined = section.getByRole('switch', {
-    name: 'Quelqu’un rejoint la fête par le lien',
+    name: 'Quelqu’un rejoint l’événement par le lien',
   });
   await expect(joined).toBeChecked();
   // A switch saves as soon as it is turned: no « Enregistrer ».

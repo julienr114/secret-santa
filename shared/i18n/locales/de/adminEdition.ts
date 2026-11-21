@@ -3,8 +3,8 @@ import type { Dict } from '../../types';
 
 export default {
   general: {
-    journalPreview: 'Was die Gruppe im Protokoll lesen wird',
-    editionFallback: 'Ausgabe',
+    journalPreview: 'Was die Mitglieder im Protokoll lesen werden',
+    editionFallback: 'Wichteln',
   },
   newEdition: {
     nameRow: 'Name',
@@ -14,10 +14,10 @@ export default {
       other: '{count} Mitglieder aus dem Wichteln {year} übernommen.',
     },
     partyMembers: {
-      one: '{count} Mitglied des Fests.',
-      other: '{count} Mitglieder des Fests.',
+      one: '{count} Mitglied des Events.',
+      other: '{count} Mitglieder des Events.',
     },
-    dateLabel: 'Tag der Feier',
+    dateLabel: 'Datum',
     budgetLabel: 'Budget',
     optional: '(optional)',
     messageLabel: 'Ein Wort an die Teilnehmer',
@@ -52,19 +52,19 @@ export default {
     exclusionsAppliedTitle: 'Bei der Auslosung angewandte Ausschlüsse',
     exclusionsTitle: 'Ausschlüsse',
     pendingExclusions: {
-      one: '+ {count} Ausschluss aus einer noch nicht abgeschlossenen Auslosung, bleibt geheim.',
+      one: '+ {count} Ausschluss aus einem noch nicht abgeschlossenen Wichteln, bleibt geheim.',
       other:
-        '+ {count} Ausschlüsse aus einer noch nicht abgeschlossenen Auslosung, bleiben geheim.',
+        '+ {count} Ausschlüsse aus einem noch nicht abgeschlossenen Wichteln, bleiben geheim.',
     },
     previousDrawReason: 'Frühere Auslosung: {edition}',
     previousDrawsFooter:
-      'Niemand bekommt wieder dieselbe Person. Das × hebt einen Ausschluss nur für diese Ausgabe auf.',
+      'Niemand bekommt wieder dieselbe Person. Das × hebt einen Ausschluss nur für dieses Wichteln auf.',
     waive: 'Aufheben',
-    waiveLabel: '{giver} darf {receiver} in dieser Ausgabe ziehen',
+    waiveLabel: '{giver} darf {receiver} in diesem Wichteln ziehen',
     waived: {
-      one: '{count} Ausschluss aus den Vorjahren für diese Ausgabe aufgehoben.',
+      one: '{count} Ausschluss aus den Vorjahren für dieses Wichteln aufgehoben.',
       other:
-        '{count} Ausschlüsse aus den Vorjahren für diese Ausgabe aufgehoben.',
+        '{count} Ausschlüsse aus den Vorjahren für dieses Wichteln aufgehoben.',
     },
     restoreAll: 'Alle wiederherstellen',
   },
@@ -87,15 +87,15 @@ export default {
     title: 'Teilnehmer auswählen',
     subtitle: 'Hake an, wer mitmacht.',
     members: {
-      one: '{count} Mitglied der Gruppe',
-      other: '{count} Mitglieder der Gruppe',
+      one: '{count} Mitglied des Events',
+      other: '{count} Mitglieder des Events',
     },
     allChosen: 'Alle anhaken',
     noneChosen: 'Alle abwählen',
     choose: '{name} teilnehmen lassen',
     someoneNew: 'Jemand Neues',
     create: 'Person anlegen',
-    createHint: 'Sie tritt der Gruppe und dieser Ausgabe bei',
+    createHint: 'Sie tritt dem Event und diesem Wichteln bei',
     inviteHint: 'Jeder meldet sich selbst an',
     save: {
       one: 'Speichern · {count} Teilnehmer',
@@ -109,7 +109,7 @@ export default {
   customize: {
     forReminder:
       'Die Erinnerung an das Spiel, für alle, die noch nicht gespielt haben',
-    forGroup: 'Die Nachricht für die ganze Gruppe',
+    forGroup: 'Die Nachricht für alle',
     title: 'Nachricht anpassen',
     forOne: 'Für {name}',
     forMany: {
@@ -141,9 +141,9 @@ export default {
     redrawMessage:
       'Nach der neuen Auslosung musst du allen die Nachricht „{message}“ senden.',
     linksKept: 'Die persönlichen Links bleiben gültig.',
-    hintsKept: 'Die Geschenk-Hinweise bleiben erhalten.',
+    hintsKept: 'Die Geschenkideen bleiben erhalten.',
     reasonLabel: 'Grund',
-    reasonHelp: 'Wird im Protokoll angezeigt, für die ganze Gruppe sichtbar.',
+    reasonHelp: 'Wird im Protokoll angezeigt, für alle Mitglieder sichtbar.',
     reasonPlaceholder: 'Tom hat abgesagt',
     understood: 'Ich verstehe, dass die aktuellen Ergebnisse verloren gehen',
     keep: 'Diese Auslosung behalten',
@@ -158,7 +158,7 @@ export default {
     warningLastResort:
       'Ein Streit, ein Verdacht auf einen Fehler… Du siehst nur ein Ergebnis auf einmal.',
     warningJournal:
-      'Die ganze Gruppe erfährt es: Es steht im Protokoll, mit dem Vornamen.',
+      'Alle Mitglieder erfahren es: Es steht im Protokoll, mit dem Vornamen.',
     warningEphemeral:
       'Das Ergebnis erscheint nur hier und verschwindet, wenn du die Seite verlässt.',
     personLabel: 'Wessen Ergebnis?',
@@ -169,15 +169,15 @@ export default {
     },
     sentenceLabel: 'Abschreiben: {sentence}',
     understood:
-      'Ich verstehe, dass die ganze Gruppe erfährt, dass ich nachgesehen habe',
+      'Ich verstehe, dass alle Mitglieder erfahren, dass ich nachgesehen habe',
     submit: 'Ergebnis von {name} ansehen',
     submitAnyone: 'Ergebnis ansehen',
     revealing: 'Ergebnis wird geöffnet…',
     notNow: 'Doch nicht',
     gives: '{name} beschenkt',
     shownNotice:
-      'Dein Nachsehen steht im Protokoll der Gruppe. Das Ergebnis verschwindet, wenn du diese Seite verlässt.',
-    hide: 'Verbergen und zurück zur Ausgabe',
+      'Dein Nachsehen steht im Protokoll des Events. Das Ergebnis verschwindet, wenn du diese Seite verlässt.',
+    hide: 'Verbergen und zurück zum Wichteln',
     another: 'Ein anderes Ergebnis ansehen',
   },
   drawPairs: {
@@ -187,7 +187,7 @@ export default {
   results: {
     title: 'Die Auslosung',
     footer:
-      'Die Ausgabe ist abgeschlossen: Ihre Ergebnisse sind nicht mehr geheim.',
+      'Das Wichteln ist abgeschlossen: Seine Ergebnisse sind nicht mehr geheim.',
   },
   share: {
     noteBefore: 'Über der Nachricht',
@@ -209,14 +209,14 @@ export default {
     settings: 'Einstellungen des Links',
     places: 'Freie Plätze',
     placesHelp:
-      'Wie viele Personen über diesen Link noch der Feier beitreten können.',
+      'Wie viele Personen über diesen Link noch dem Event beitreten können.',
     placesLeft: {
       one: '{count} freier Platz',
       other: '{count} freie Plätze',
     },
     capacity: {
-      one: 'Die Feier kann höchstens noch {count} Person aufnehmen.',
-      other: 'Die Feier kann höchstens noch {count} Personen aufnehmen.',
+      one: 'Das Event kann höchstens noch {count} Person aufnehmen.',
+      other: 'Das Event kann höchstens noch {count} Personen aufnehmen.',
     },
     fewer: 'Ein Platz weniger',
     more: 'Ein Platz mehr',
@@ -237,7 +237,7 @@ export default {
     closeHint: 'Niemand kann sich mehr anmelden',
     closeConfirm: 'Link deaktivieren? Niemand kann sich mehr anmelden.',
     message: {
-      intro: 'Hallo! Du bist zur Feier „{group}“ eingeladen 🎁',
+      intro: 'Hallo! Du bist zum Event „{group}“ eingeladen 🎁',
       how: 'Melde dich mit deiner E-Mail-Adresse über diesen Link an:',
       until: 'Du hast Zeit bis zum {date}.',
     },
@@ -260,7 +260,7 @@ export default {
     },
     empty: {
       title: 'Füge die Teilnehmer hinzu',
-      body: 'Für eine Auslosung braucht es mindestens drei. Wähle sie unter den Mitgliedern der Gruppe aus oder schicke einen Link, damit sie sich eintragen.',
+      body: 'Für ein Wichteln braucht es mindestens drei. Wähle sie unter den Mitgliedern des Events aus oder schicke einen Link, damit sie sich eintragen.',
       invite: 'Per Link einladen',
       list: 'Kein Teilnehmer',
       none: 'Noch niemand.',
@@ -288,24 +288,24 @@ export default {
     closed: {
       partyDone: 'Gefeiert',
       partedOn: 'gefeiert am {date}',
-      title: 'Ausgabe abgeschlossen',
+      title: 'Wichteln abgeschlossen',
       body: 'Schreibgeschützt. Die Auslosung dient dazu, dieselben Paare in den folgenden Jahren zu vermeiden.',
       exclusions: 'Bei der Auslosung angewandte Ausschlüsse',
       exclusionsNone: 'Keine',
-      journal: 'Protokoll der Gruppe',
+      journal: 'Protokoll des Events',
       journalHint: 'Alles, was passiert ist, für alle sichtbar',
-      next: 'Die nächste Ausgabe vorbereiten',
+      next: 'Das nächste Wichteln vorbereiten',
     },
     steps: {
-      label: 'Schritte der Ausgabe',
+      label: 'Schritte des Wichtelns',
       prepare: 'Vorbereiten',
       draw: 'Auslosen',
       answers: 'Antworten',
       drawDone: 'Ausgelost',
       party: 'Feiern',
     },
-    partyOn: 'Feier am {date}',
-    changeDate: 'Feier am {date}. Datum ändern',
+    partyOn: 'Am {date}',
+    changeDate: 'Am {date}. Datum ändern',
     budget: 'Budget {budget}',
     rules: {
       none: 'Noch keins',
@@ -326,8 +326,7 @@ export default {
       add: 'Teilnehmende hinzufügen',
       optional: 'Wenn du möchtest',
       notifyBefore: 'Vor der Auslosung benachrichtigen',
-      notifyBeforeHint:
-        'Optional: Alle können schon ihre Hinweise hinterlassen',
+      notifyBeforeHint: 'Optional: Alle können schon ihre Ideen hinterlassen',
       exclusions: 'Ausschlüsse',
       exclusionsCount: {
         one: '{count} Ausschluss',
@@ -356,9 +355,9 @@ export default {
       missingOne: '{name} macht noch nicht mit',
       missingMany: '{count} Personen machen noch nicht mit',
       missingOneDetail:
-        'Diese Person ist in der Gruppe, aber nicht in dieser Ausgabe. Nach der Auslosung müsste sie annulliert werden, um sie hinzuzufügen.',
+        'Diese Person ist im Event, aber nicht in diesem Wichteln. Nach der Auslosung müsste sie annulliert werden, um sie hinzuzufügen.',
       missingManyDetail:
-        '{names} sind in der Gruppe, aber nicht in dieser Ausgabe.',
+        '{names} sind im Event, aber nicht in diesem Wichteln.',
       andOthers: {
         one: '{names} und {count} weitere Person',
         other: '{names} und {count} weitere',
@@ -383,12 +382,12 @@ export default {
         viewed: 'Umschlag geöffnet · {count}×',
       },
       later: 'Später, oder wenn etwas schiefgeht',
-      closeRow: 'Ausgabe abschließen',
+      closeRow: 'Wichteln abschließen',
       closing: 'Wird abgeschlossen…',
-      closeRowLater: 'Möglich nach der Feier, am {date}',
-      closeRowHint: 'Die Ausgabe ist dann nur noch lesbar',
+      closeRowLater: 'Möglich nach dem großen Tag, am {date}',
+      closeRowHint: 'Das Wichteln ist dann nur noch lesbar',
       closeConfirm:
-        'Nach dem Abschluss ist die Ausgabe nicht mehr änderbar; sie dient nächstes Jahr als Verlauf.',
+        'Nach dem Abschluss ist das Wichteln nicht mehr änderbar; es dient nächstes Jahr als Verlauf.',
       revealOne: 'Ein einzelnes Ergebnis ansehen',
       revealOneHint: 'Letzter Ausweg, im Journal vermerkt',
       cancel: 'Auslosung annullieren und neu starten',
@@ -398,12 +397,12 @@ export default {
     },
     reveal: {
       row: 'Ergebnisse aufdecken',
-      rowLater: 'Vorgesehen nach der Feier, am {date}',
-      rowNoDate: 'Trag zuerst das Datum der Feier ein',
-      cardTitle: 'Die Feier ist vorbei: Deck die Ergebnisse auf',
-      cardTitleToday: 'Heute ist die Feier: Deck die Ergebnisse auf',
+      rowLater: 'Vorgesehen nach dem großen Tag, am {date}',
+      rowNoDate: 'Trag zuerst das Datum ein',
+      cardTitle: 'Der große Tag ist vorbei: Deck die Ergebnisse auf',
+      cardTitleToday: 'Heute ist der große Tag: Deck die Ergebnisse auf',
       cardHelp:
-        'Das ist freiwillig und endgültig. Die Geschenk-Hinweise bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
+        'Das ist freiwillig und endgültig. Die Geschenkideen bleiben änderbar, bis das Wichteln abgeschlossen ist.',
       viewed: {
         one: '{count} von {total} hat den Umschlag geöffnet',
         other: '{count} von {total} haben ihren Umschlag geöffnet',
@@ -412,13 +411,13 @@ export default {
       action: 'Ergebnisse aufdecken',
       revealing: 'Wird aufgedeckt…',
       closeWithout: 'Abschließen, ohne aufzudecken',
-      wholeGroup: 'Die ganze Gruppe sieht, wer wen beschenkt hat.',
+      wholeGroup: 'Alle Mitglieder sehen, wer wen beschenkt hat.',
       trouble: 'Wenn etwas schiefgeht',
       sheetTitle: 'Ergebnisse aufdecken?',
       sheetIntro: 'Du siehst gleich, wer wen beschenkt hat.',
-      partyDone: 'Die Feier hat stattgefunden',
+      partyDone: 'Der große Tag ist vorbei',
       partyDoneOn: 'Sie war für den {date} geplant.',
-      partyToday: 'Die Feier ist heute',
+      partyToday: 'Heute ist der große Tag',
       partyTodayOn: 'Sie ist für den {date} geplant.',
       notViewedOne: '{name} hat den eigenen Umschlag nicht geöffnet',
       notViewedMany: '{count} Personen haben ihren Umschlag nicht geöffnet',
@@ -429,47 +428,46 @@ export default {
       nobodyViewed: 'Noch niemand hat es geöffnet.',
       allViewed: 'Alle Umschläge sind geöffnet',
       allViewedHint: 'Niemand erfährt das eigene zusammen mit der Liste.',
-      wholeGroupTitle: 'Die ganze Gruppe sieht die Liste',
+      wholeGroupTitle: 'Alle Mitglieder sehen die Liste',
       wholeGroupHint: 'Alle Teilnehmenden sehen sie auf ihrer Seite.',
       final:
-        'Das ist endgültig, und das Protokoll der Gruppe zeigt es an. Die Geschenk-Hinweise bleiben änderbar.',
+        'Das ist endgültig, und das Protokoll des Events zeigt es an. Die Geschenkideen bleiben änderbar.',
       notYet: 'Noch nicht',
-      earlyTitle: 'Vor der Feier aufdecken?',
+      earlyTitle: 'Vor dem großen Tag aufdecken?',
       earlyIntro: {
-        one: 'Die Feier ist für den {date} geplant, also morgen.',
-        other: 'Die Feier ist für den {date} geplant, in {count} Tagen.',
+        one: 'Der große Tag ist für den {date} geplant, also morgen.',
+        other: 'Der große Tag ist für den {date} geplant, in {count} Tagen.',
       },
       earlyWarning: 'Das Geheimnis endet hier, endgültig',
-      early1: 'Du kennst alle Ergebnisse vor der Feier.',
-      early2: 'Das Protokoll zeigt es der ganzen Gruppe.',
+      early1: 'Du kennst alle Ergebnisse vor dem großen Tag.',
+      early2: 'Das Protokoll zeigt es allen Mitgliedern.',
       early3: 'Das lässt sich nicht rückgängig machen.',
       copy: 'Abschreiben: {phrase}',
-      phrase: 'vor der Feier aufdecken',
-      wait: 'Auf die Feier warten',
+      phrase: 'vor dem großen Tag aufdecken',
+      wait: 'Auf den großen Tag warten',
       anyway: 'Trotzdem aufdecken',
       done: 'Ergebnisse aufgedeckt',
       revealedTitle: 'Ergebnisse aufgedeckt',
       revealedHelp:
-        'Die Geschenk-Hinweise bleiben änderbar, bis die Ausgabe abgeschlossen ist.',
+        'Die Geschenkideen bleiben änderbar, bis das Wichteln abgeschlossen ist.',
       pairsTitle: {
         one: 'Die Auslosung · {count} Teilnehmer',
         other: 'Die Auslosung · {count} Teilnehmende',
       },
-      pairsFooter:
-        'Die ganze Gruppe sieht diese Liste, jeder auf seiner Seite.',
-      closeHint: 'Friert die Ausgabe und die Geschenk-Hinweise ein',
+      pairsFooter: 'Alle Mitglieder sehen diese Liste, jeder auf seiner Seite.',
+      closeHint: 'Friert das Wichteln und die Geschenkideen ein',
     },
     missingDate: {
-      title: 'Wann ist die Feier?',
+      title: 'Wann ist der große Tag?',
       body: 'Ohne Datum haben die Teilnehmenden keinen Countdown, und die Ergebnisse können nicht aufgedeckt werden.',
       validate: 'Bestätigen',
     },
     dateSheet: {
-      title: 'Datum der Feier',
+      title: 'Datum',
       description: 'Der Tag, an dem ihr die Geschenke austauscht.',
       seen: 'Die Teilnehmenden sehen es auf ihrer Seite, mit dem Countdown.',
-      journal: 'Die Änderung wird im Journal der Gruppe vermerkt.',
-      saved: 'Datum der Feier gespeichert',
+      journal: 'Die Änderung wird im Protokoll des Events vermerkt.',
+      saved: 'Datum gespeichert',
     },
     emails: {
       title: 'Per E-Mail senden',
@@ -505,7 +503,7 @@ export default {
       fixEmail: 'E-Mail-Adresse korrigieren',
       emailLabel: 'E-Mail-Adresse von {name}',
       emailHelp:
-        'Du kannst den Link dann per E-Mail senden. {name} findet damit auch die eigenen Auslosungen wieder.',
+        'Du kannst den Link dann per E-Mail senden. {name} findet damit auch die eigenen Wichteln wieder.',
       loadingMessage: 'Nachricht wird geladen',
       sending: 'Wird gesendet…',
       sendTo: 'An {name} senden',
@@ -523,7 +521,7 @@ export default {
     },
   },
   game: {
-    eyebrow: 'Das Spiel dieser Ausgabe',
+    eyebrow: 'Das Spiel dieses Wichtelns',
     players: {
       one: '{players} von {total} hat getippt.',
       other: '{players} von {total} haben getippt.',
@@ -563,7 +561,7 @@ export default {
     },
     nudgeToday: 'Ende heute.',
     nudgeButton: 'Sie erinnern',
-    writeGroup: 'Der Gruppe schreiben',
+    writeGroup: 'Allen schreiben',
     group: {
       subtitle: 'Eine Nachricht für alle',
       days: {
@@ -578,11 +576,11 @@ export default {
       },
       nobody: 'Noch niemand hat getippt.',
       howSanta:
-        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer ihn beschenkt. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer ihn beschenkt. Niemand sieht die Tipps vor dem großen Tag: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für alle Mitglieder.',
       howAll:
-        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen beim eigenen Wichtel. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen beim eigenen Wichtel. Niemand sieht die Tipps vor dem großen Tag: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für alle Mitglieder.',
       howAllNeutral:
-        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen damit, wer einen selbst beschenkt. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen damit, wer einen selbst beschenkt. Niemand sieht die Tipps vor dem großen Tag: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für alle Mitglieder.',
       tail: 'Je mehr von euch spielen, desto schöner wird sie.',
       personal: 'Alle finden das Spiel über ihren persönlichen Link.',
       share: 'Teilen',
@@ -591,12 +589,12 @@ export default {
       help: 'Für WhatsApp, SMS… Die Nachricht nennt niemanden und enthält keinen persönlichen Link.',
     },
     toEach: 'An alle einzeln, per E-Mail',
-    toGroup: 'An die Gruppe',
+    toGroup: 'An alle',
     notPlayedCount: {
       one: 'Noch nicht gespielt · {count} von {total} ausgewählt',
       other: 'Noch nicht gespielt · {count} von {total} ausgewählt',
     },
-    noEmailGroup: 'Keine Adresse? Nimm „An die Gruppe“.',
+    noEmailGroup: 'Keine Adresse? Nimm „An alle“.',
     reminderSent: {
       one: 'Erinnerung an {count} Person gesendet',
       other: 'Erinnerung an {count} Personen gesendet',
@@ -605,7 +603,7 @@ export default {
   guess: {
     title: 'Devine qui',
     description:
-      'Ein Tippspiel: Wer beschenkt wen? Die Antworten gibt es bei der Feier.',
+      'Ein Tippspiel: Wer beschenkt wen? Die Antworten gibt es am großen Tag.',
     mode: {
       none: 'Keine Tipps',
       santa: 'Wer beschenkt mich?',
@@ -626,7 +624,7 @@ export default {
     },
     endLabel: 'Ende der Tipps, am {date} um',
     answersWhen:
-      'Die Antworten kommen, wenn du die Auslosung bei der Feier aufdeckst, oder von selbst am Tag danach.',
+      'Die Antworten kommen, wenn du die Auslosung am großen Tag aufdeckst, oder von selbst am Tag danach.',
     lossSanta:
       'Die Tipps zu den anderen werden gelöscht: Nur die Tipps auf den eigenen Wichtel bleiben.',
     lossSantaNeutral:
@@ -635,13 +633,13 @@ export default {
     confirmLoss: 'Löschen und bestätigen',
   },
   settings: {
-    title: 'Einstellungen der Ausgabe',
+    title: 'Einstellungen des Wichtelns',
     dateTitle: 'Datum',
     wordTitle: 'Kurze Notiz',
     budgetIs: 'Budget {budget}',
     word: 'kurze Notiz',
     what: 'Datum, Budget, kurze Notiz',
-    party: 'Die Feier',
+    party: 'Der große Tag',
     game: 'Das Spiel',
     gameShort: 'Spiel',
   },
@@ -649,11 +647,11 @@ export default {
     title: 'Ein Problem?',
     row: 'Absage, verlorener Link, Fehler bei der Auslosung',
     rowAnswers: 'Teilnehmer ändern, aufgeben',
-    description: 'Jede dieser Aktionen wird im Protokoll der Gruppe vermerkt.',
+    description: 'Jede dieser Aktionen wird im Protokoll des Events vermerkt.',
     revealOne: 'Ein einzelnes Ergebnis ansehen',
     revealOneHint:
       'Jemand hat seinen Link verloren und keine andere Möglichkeit',
-    revealEarly: 'Vor der Feier aufdecken',
+    revealEarly: 'Vor dem großen Tag aufdecken',
     revealEarlyHint: 'Alle werden wissen, wer wen beschenkt',
     cancel: 'Auslosung absagen und neu starten',
     cancelHint: 'Absage, Fehler… alle losen neu',
@@ -665,22 +663,21 @@ export default {
     start: {
       title: 'Wurde schon ausgelost?',
       description:
-        'Auf Papier oder mit einer anderen App: Hier sagt jeder, wen er beschenkt, und nutzt die Geschenk-Hinweise.',
+        'Auf Papier oder mit einer anderen App: Hier sagt jeder, wen er beschenkt, und nutzt die Geschenkideen.',
       eachTitle: 'Jeder antwortet auf seiner Seite',
       eachDetail: 'Die Antwort bleibt geheim, selbst für dich.',
       closedTitle: 'Alles bleibt bis zur letzten Antwort geschlossen',
       closedDetail:
         'Wenn zwei Antworten nicht zusammenpassen, weißt du, wen du ansprechen musst, aber nicht, was geantwortet wurde.',
       validateTitle: 'Du bestätigst, und es ist eine Auslosung wie jede andere',
-      validateDetail:
-        'Geschenk-Hinweise, Erinnerungen, Verlauf fürs nächste Jahr.',
-      exclusionOne: 'Der Ausschluss der Gruppe ({pair}) wird nicht geprüft',
-      exclusionMany: 'Die {count} Ausschlüsse der Gruppe werden nicht geprüft',
+      validateDetail: 'Geschenkideen, Erinnerungen, Verlauf fürs nächste Jahr.',
+      exclusionOne: 'Der Ausschluss des Events ({pair}) wird nicht geprüft',
+      exclusionMany: 'Die {count} Ausschlüsse des Events werden nicht geprüft',
       historyOnly: 'Die Regel der Vorjahre wird nicht geprüft',
       andHistory: ', ebenso wenig die Regel der Vorjahre',
-      why: ': Die Auslosung fand woanders statt. Er bleibt für die nächsten Ausgaben gespeichert.',
+      why: ': Die Auslosung fand woanders statt. Er bleibt für die nächsten Wichteln gespeichert.',
       whyMany:
-        ': Die Auslosung fand woanders statt. Sie bleiben für die nächsten Ausgaben gespeichert.',
+        ': Die Auslosung fand woanders statt. Sie bleiben für die nächsten Wichteln gespeichert.',
       back: 'Du kannst zur Auslosung mit der App zurück, solange du nicht bestätigt hast.',
       confirm: 'Nach den Antworten fragen',
     },
@@ -689,7 +686,7 @@ export default {
       ask: 'Per E-Mail fragen',
       remindAll: 'Per E-Mail erinnern',
       askHelp:
-        'Niemand sieht Geschenk-Hinweise, bevor alle geantwortet haben und du bestätigt hast.',
+        'Niemand sieht Geschenkideen, bevor alle geantwortet haben und du bestätigt hast.',
       toNotify: 'zu benachrichtigen',
       asked: 'noch nicht geantwortet',
       answered: { one: 'hat geantwortet', other: 'haben geantwortet' },
@@ -712,7 +709,7 @@ export default {
       readyBody: '{count} Antworten, sie passen alle zusammen.',
       validate: 'Auslosung bestätigen',
       readyHelp:
-        'Jeder sieht danach die Geschenk-Hinweise der Person, die er beschenkt.',
+        'Jeder sieht danach die Geschenkideen der Person, die er beschenkt.',
     },
     status: {
       toCheck: 'Antwort zu prüfen',
@@ -755,7 +752,7 @@ export default {
         'Um sie danach zu korrigieren, muss die Auslosung abgesagt werden.',
       listTitle: 'Die Teilnehmerliste wird gesperrt',
       listDetail: 'Wie nach einer Auslosung mit der App.',
-      hintsTitle: 'Jeder sieht die Geschenk-Hinweise seiner Person',
+      hintsTitle: 'Jeder sieht die Geschenkideen seiner Person',
       hintsDetail: 'Du benachrichtigst sie gleich danach per E-Mail.',
       secret: 'Niemand, auch du nicht, sieht, wer wen beschenkt.',
       confirm: 'Auslosung bestätigen',

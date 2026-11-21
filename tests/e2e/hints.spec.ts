@@ -139,7 +139,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   // is counted, as always), before the request.
   const before = await organiserView();
   await expect(
-    page.getByText(`${receiver} n’a pas encore laissé de pistes.`),
+    page.getByText(`${receiver} n’a pas encore laissé d’idées.`),
   ).toBeVisible();
   // The organiser's words are out of the result card, cut at three lines.
   const note = page.getByTestId('organizer-note');
@@ -148,14 +148,14 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await expect(note.getByRole('button', { name: 'Lire la suite' })).toHaveCount(
     0,
   );
-  await page.getByRole('button', { name: 'Lui demander des pistes' }).click();
+  await page.getByRole('button', { name: 'Lui demander des idées' }).click();
   await expect(
-    page.getByRole('heading', { name: `Demander des pistes à ${receiver} ?` }),
+    page.getByRole('heading', { name: `Demander des idées à ${receiver} ?` }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Envoyer la demande' }).click();
   // The test server has no email key: no email leaves, the page says so.
   await expect(page.getByTestId('hints-request-sent')).toContainText(
-    `${receiver} le verra sur sa page de pistes`,
+    `${receiver} le verra sur sa page d’idées`,
   );
 
   // Nothing the organiser reads has changed: not a word, not a line.
@@ -184,7 +184,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
     .click();
   await expect(page.getByTestId('hints-request-sent')).toBeVisible();
   await expect(
-    page.getByRole('button', { name: 'Lui demander des pistes' }),
+    page.getByRole('button', { name: 'Lui demander des idées' }),
   ).toHaveCount(0);
   const again = await page.request.post(
     `/api/p/${state.tokens[giver]}/hints/request`,
@@ -203,9 +203,9 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   // New hints are put forward to the giver (lot 16 bis) on the page of
   // the draw, until the result is opened again (on the home: ticket 110).
   await open(page, `/p/${state.tokens[giver]}`);
-  await expect(page.getByText('De nouvelles pistes t’attendent')).toBeVisible();
+  await expect(page.getByText('De nouvelles idées t’attendent')).toBeVisible();
   await page
-    .getByRole('button', { name: 'Revoir à qui j’offre, et ses pistes' })
+    .getByRole('button', { name: 'Revoir à qui j’offre, et ses idées' })
     .click();
   await expect(page.getByTestId('hints-new')).toHaveText('Nouveau');
   // The giver reads it in sentences.
@@ -220,14 +220,14 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await expect(page.getByText('Un trou de mémoire ?')).toBeVisible();
   await expect(
     page.getByText(
-      'Ton enveloppe est toujours là, avec ses pistes de cadeaux.',
+      'Ton enveloppe est toujours là, avec ses idées de cadeaux.',
       {
         exact: false,
       },
     ),
   ).toBeVisible();
   await page
-    .getByRole('button', { name: 'Revoir à qui j’offre, et ses pistes' })
+    .getByRole('button', { name: 'Revoir à qui j’offre, et ses idées' })
     .click();
   await expect(page.getByTestId('hints-new')).toHaveCount(0);
   // The request is answered: the banner is gone.
@@ -250,7 +250,7 @@ test('asking for hints is anonymous, and possible once per draw', async ({
   await page.context().addCookies((await admin().storageState()).cookies);
   await open(page, `/admin/${SLUG}/editions/${state.editionId}`);
   await expect(page.getByTestId('hints-count')).toHaveText(
-    '1 sur 3 a laissé des pistes',
+    '1 sur 3 a laissé des idées',
   );
 });
 
@@ -321,13 +321,13 @@ test('the setting: portrait only, then no hint at all', async ({ page }) => {
   );
   expect((await page.request.get(`/api/p/${token}/hints`)).status()).toBe(403);
   await open(page, `/p/${token}`);
-  await expect(page.getByText('Mes pistes de cadeaux')).toHaveCount(0);
+  await expect(page.getByText('Mes idées de cadeaux')).toHaveCount(0);
 
   // On the settings screen, the row says the value and opens three choices.
   await page.context().addCookies((await admin().storageState()).cookies);
   await open(page, `/admin/${SLUG}/editions/${state.editionId}/reglages`);
   const row = page.getByTestId('gift-hints-setting');
-  await expect(row).toContainText('Aucune piste');
+  await expect(row).toContainText('Aucune idée');
   await row.click();
   await page.getByText('Portrait et idées précises').click();
   await page.getByRole('button', { name: 'Valider' }).click();

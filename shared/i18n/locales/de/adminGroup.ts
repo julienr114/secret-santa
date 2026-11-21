@@ -4,17 +4,17 @@ import type { Dict } from '../../types';
 export default {
   newGroup: {
     organizerLabel: 'Adresse des ersten Organisators',
-    title: 'Neue Gruppe',
-    nameLabel: 'Name der Gruppe',
+    title: 'Neues Event',
+    nameLabel: 'Name des Events',
     namePlaceholder: 'Familie Müller',
     nameRequired: 'Name erforderlich',
-    submit: 'Gruppe erstellen',
-    created: 'Gruppe erstellt',
+    submit: 'Event erstellen',
+    created: 'Event erstellt',
     note: 'Du wirst sie organisieren. Die Mitglieder fügst du gleich danach hinzu, oder du schickst ihnen einen Link.',
-    intro: 'Eine Familie, ein Freundeskreis, ein Team: eine Gruppe pro Kreis.',
-    nameHelp: 'Du und die Mitglieder seht ihn oben in jeder Auslosung.',
+    intro: 'Eine Familie, ein Freundeskreis, ein Team: ein Event pro Kreis.',
+    nameHelp: 'Du und die Mitglieder seht ihn oben in jedem Wichteln.',
     organizerHelp:
-      'Um die Gruppe von jemand anderem zu erstellen: Die Person meldet sich einfach mit dieser Adresse an. Leer hat die Gruppe noch keinen Organisator.',
+      'Um das Event von jemand anderem zu erstellen: Die Person meldet sich einfach mit dieser Adresse an. Leer hat das Event noch keinen Organisator.',
     organizerPlaceholder: 'name@beispiel.de',
     creating: 'Wird erstellt…',
   },
@@ -25,7 +25,7 @@ export default {
     addHint: 'Meldet sich mit seiner Adresse an, ohne Passwort',
     addTitle: 'Neuer Organisator',
     addDescription:
-      'Kann {name} wie du verwalten: Mitglieder, Auslosung, Versand.',
+      'Kann {name} wie du verwalten: Mitglieder, Wichteln, Versand.',
     emailLabel: 'Seine E-Mail-Adresse',
     emailHelp:
       'Es reicht, sich mit dieser Adresse anzumelden: kein Passwort weiterzugeben.',
@@ -41,21 +41,20 @@ export default {
       other: 'Die {count} Personen und ihre Ausschlüsse.',
     },
     editions: {
-      one: 'Die Ausgabe, ihre Auslosung und die Geschenk-Hinweise.',
-      other:
-        'Die {count} Ausgaben, ihre Auslosungen und die Geschenk-Hinweise.',
+      one: 'Das Wichteln, seine Auslosung und die Geschenkideen.',
+      other: 'Die {count} Wichteln, ihre Auslosungen und die Geschenkideen.',
     },
-    journal: 'Das Protokoll der Gruppe.',
+    journal: 'Das Protokoll des Events.',
     links: 'Die persönlichen Links funktionieren nicht mehr.',
-    keep: 'Gruppe behalten',
+    keep: 'Event behalten',
     deleting: 'Wird gelöscht…',
   },
   dashboard: {
-    current: 'Laufende Ausgabe',
-    partyOn: 'Feier am {date}',
+    current: 'Laufendes Wichteln',
+    partyOn: 'Am {date}',
     partyOnIn: {
-      one: 'Feier am {date} · morgen',
-      other: 'Feier am {date} · in {count} Tagen',
+      one: 'Am {date} · morgen',
+      other: 'Am {date} · in {count} Tagen',
     },
     viewedOf: {
       one: '{count} von {total} hat den Umschlag geöffnet',
@@ -70,11 +69,11 @@ export default {
       one: '{count} Teilnehmer · die Auslosung steht noch aus',
       other: '{count} Teilnehmer · die Auslosung steht noch aus',
     },
-    open: 'Ausgabe öffnen',
-    prepareTitle: 'Bereite die Auslosung dieses Jahres vor',
+    open: 'Wichteln öffnen',
+    prepareTitle: 'Bereite das Wichteln dieses Jahres vor',
     takenAll: {
-      one: 'Das einzige Mitglied der Gruppe wird übernommen.',
-      other: 'Die {count} Mitglieder der Gruppe werden übernommen.',
+      one: 'Das einzige Mitglied des Events wird übernommen.',
+      other: 'Die {count} Mitglieder des Events werden übernommen.',
     },
     takenFrom: {
       one: '{count} Teilnehmer von {label} wird übernommen.',
@@ -90,11 +89,11 @@ export default {
       one: '{count} macht nicht mehr mit',
       other: '{count} machen nicht mehr mit',
     },
-    deleteGroup: 'Feier löschen',
+    deleteGroup: 'Event löschen',
     deleteTitle: '{name} löschen?',
-    deleteConfirmLabel: 'Gib die Gruppenkennung ein: {slug}',
+    deleteConfirmLabel: 'Gib die Event-Kennung ein: {slug}',
     deleteAction: 'Endgültig löschen',
-    deleteDone: 'Gruppe gelöscht',
+    deleteDone: 'Event gelöscht',
   },
   people: {
     title: 'Mitglieder',
@@ -116,11 +115,11 @@ export default {
     notTakingPart: 'macht bei {label} nicht mit',
     oneWay: 'Nur in diese Richtung',
     removeExclusion: 'Ausschluss mit {name} entfernen',
-    leave: 'Aus der Gruppe entfernen',
+    leave: 'Aus dem Event entfernen',
     leaveHint:
-      '{name} wird in den nächsten Ausgaben nicht mehr übernommen. Der Verlauf bleibt erhalten.',
-    leaveConfirm: '{name} aus der Gruppe entfernen?',
-    comeBack: 'Wieder in die Gruppe aufnehmen',
+      '{name} wird in den nächsten Wichteln nicht mehr übernommen. Der Verlauf bleibt erhalten.',
+    leaveConfirm: '{name} aus dem Event entfernen?',
+    comeBack: 'Wieder in das Event aufnehmen',
     fallbackTitle: 'Person',
     notFound: 'Person nicht gefunden.',
     saved: 'Gespeichert',
@@ -132,7 +131,7 @@ export default {
   personForm: {
     languageRow: 'Sprache der Nachrichten',
     emailHelpPerson:
-      'Um den Link zu senden, und damit die Person ihre Auslosungen beim Anmelden findet.',
+      'Um den Link zu senden, und damit die Person ihre Wichteln beim Anmelden findet.',
     emailHelpNew:
       'Um den Link zu senden. Ohne Adresse teilst du ihn selbst per WhatsApp oder SMS.',
     emailPlaceholder: 'name@beispiel.de',
@@ -143,7 +142,7 @@ export default {
     lastNameHelp: 'Nur nützlich, wenn zwei Personen denselben Vornamen haben',
     emailLabel: 'E-Mail',
     emailHelp:
-      'Optional. Damit wird der Link per E-Mail verschickt, und die Person kann sich anmelden, um ihre Auslosungen zu finden. Ohne Adresse teilst du den Link vom Handy aus.',
+      'Optional. Damit wird der Link per E-Mail verschickt, und die Person kann sich anmelden, um ihre Wichteln zu finden. Ohne Adresse teilst du den Link vom Handy aus.',
     emailInvalid: 'Ungültige E-Mail-Adresse',
     languageHelp:
       'Die Seite, die Nachrichten und die E-Mails dieser Person sind in dieser Sprache.',
@@ -183,9 +182,9 @@ export default {
       other: 'Nicht dieselbe Person wie in den letzten {count} Jahren',
     },
     previousOff: 'Frühere Jahre zählen nicht',
-    inSettings: 'Wird in den Einstellungen der Gruppe festgelegt',
+    inSettings: 'Wird in den Einstellungen des Events festgelegt',
     untilDraw:
-      'Ausschlüsse lassen sich bis zur Auslosung ändern. Danach behält die Ausgabe die verwendeten.',
+      'Ausschlüsse lassen sich bis zur Auslosung ändern. Danach behält das Wichteln die verwendeten.',
     title: 'Ausschlüsse',
     intro:
       'Personen, die sich nicht gegenseitig ziehen sollen: ein Paar, Geschwister, ein Elternteil und sein Kind …',
@@ -218,17 +217,17 @@ export default {
     asTyped: 'Wird unverändert gesendet, egal in welcher Sprache.',
     where: 'Wo platzieren',
     notifySection: 'Mir per E-Mail schreiben',
-    notifyReminder: 'Erinnerung 3 Tage vor der Feier',
+    notifyReminder: 'Erinnerung 3 Tage vor dem großen Tag',
     notifyReminderHelp: 'Mit der Liste derer, die noch nicht geöffnet haben',
     previousYears: {
       none: 'Nein, egal',
       lastYear: 'Nicht dieselbe wie letztes Jahr',
       lastYears: 'Nicht dieselbe wie in den letzten {count} Jahren',
-      tight: 'Die Auslosung wird in einer kleinen Gruppe sehr eng',
+      tight: 'Die Auslosung wird in einem kleinen Event sehr eng',
       noneShort: 'Nein',
       short: { one: 'Nur letztes Jahr', other: 'Letzte {count} Jahre' },
     },
-    eventDate: 'Datum der Feier',
+    eventDate: 'Datum',
     eventDatePick: 'Datum wählen',
     eventDatePlaceholder: 'TT.MM.JJJJ',
     eventDateHelp: 'Das Abschließen wird erst nach diesem Datum angeboten.',

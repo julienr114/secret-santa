@@ -38,7 +38,7 @@ describe('buildMessage', () => {
 
   it('writes the invitation and the drawn message with budget and date', () => {
     expect(valueOf(buildMessage('invitation', data))).toBe(
-      'Salut Léa ! 🎁\nTu es de la partie : le Secret Santa de la famille Martin (Noël 2026).\nOuvre ton lien et laisse quelques pistes de cadeaux :\nhttps://secret-santa.example/p/abc123',
+      'Salut Léa ! 🎁\nTu es de la partie : le Secret Santa de la famille Martin (Noël 2026).\nOuvre ton lien et écris ta liste de cadeaux :\nhttps://secret-santa.example/p/abc123',
     );
     expect(
       valueOf(
@@ -110,7 +110,7 @@ describe('messageTypesFor', () => {
 
   it('writes the answer messages, the reminder as in its mockup', () => {
     expect(valueOf(buildMessage('answerReminder', data))).toBe(
-      'Léa, le Secret Santa de la famille Martin n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
+      'Léa, le Secret Santa de la famille Martin n’attend plus que toi ! 🎁\nDis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit la liste de cadeaux de sa personne.\nhttps://secret-santa.example/p/abc123',
     );
     // The request explains the principle: secret answers, hints once all
     // answered, and the game only when it is on.
@@ -445,7 +445,7 @@ describe('« Devine qui » in the messages', () => {
         'Salut Léa ! 🔍',
         'Au Secret Santa de la famille Martin (Noël 2026), on joue à Devine qui, un petit jeu de pronostics.',
         'Le principe : tu essaies de deviner qui t’offre ton cadeau. Un seul pronostic, que tu peux changer jusqu’au 25 décembre à 18 h.',
-        'Personne ne voit tes pronostics avant la fête. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe : plus vous êtes nombreux à jouer, plus elle sera belle.',
+        'Personne ne voit tes pronostics avant le jour J. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour tous les membres : plus vous êtes nombreux à jouer, plus elle sera belle.',
         'Ton lien, pour jouer :',
         'https://secret-santa.example/p/abc123',
       ].join('\n'),

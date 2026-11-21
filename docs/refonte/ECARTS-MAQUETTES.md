@@ -21,6 +21,16 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
+## Les mots (V3, ticket 102)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| Toutes | « Pistes » devient « idées » (« Mes idées de cadeaux », « Lui demander des idées », « Aucune idée ») et non « Ma liste de cadeaux » : tant que le ticket 107 n'a pas réuni pistes et listes, « liste » désignerait aussi les vraies listes. | Seul |
+| Toutes | En anglais « the big day », en allemand « der große Tag » pour « le jour J ». « Event » dans les deux langues, comme le dit la décision. | Seul |
+| Toutes | Les objets des emails gardent leurs mots (« La fête approche… », « des pistes de cadeaux t'attendent ») : ticket 110. | Julien (ticket) |
+| Toutes | Quelques adresses gardent l'ancien mot, qui ne se lit qu'en haut du navigateur : `/admin/groupes` (la liste des événements du super-admin), `?vers=groupe` (« À tous » dans le rappel du jeu), `/p/…/pistes`. | Seul |
+| `V3TirageReglages` | La section qui garde la date, le budget et le petit mot d'un Secret Santa (Q-015) s'appelle « Le jour J ». | Seul |
+
 ## L'administration (V3, ticket 109)
 
 | Maquette | Ce que fait le code | Décidé par |

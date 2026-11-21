@@ -330,8 +330,7 @@ export default {
     managing:
       'Du kannst die Liste teilen, jemanden einladen und sie löschen, wie {by}.',
     firstName: 'Dein Vorname',
-    firstNameHelp:
-      'Sehen die, mit denen du eine Liste führst oder eine Auslosung machst.',
+    firstNameHelp: 'Sehen die, mit denen du eine Liste führst oder wichtelst.',
     address:
       'Dein Konto wird mit der Adresse {email} angelegt, an die die Einladung ging. Sonst ist nichts auszufüllen.',
     acceptCreate: 'Annehmen und mein Konto anlegen',

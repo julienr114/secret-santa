@@ -128,7 +128,7 @@ test('the page of the draw, open at once', async ({ page }) => {
     await expect(page.getByText('Sans dire que ça vient de toi.')).toHaveCount(
       0,
     );
-    await page.getByRole('button', { name: 'Lui demander des pistes' }).click();
+    await page.getByRole('button', { name: 'Lui demander des idées' }).click();
     await expect(page.getByText('Ton nom est donné')).toBeVisible();
     await page.getByRole('button', { name: 'Pas maintenant' }).click();
   }

@@ -5,7 +5,7 @@ export default {
   invitation: {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Du bist dabei: das Wichteln von {groupName} ({editionLabel}).',
-    cta: 'Öffne deinen Link und hinterlass ein paar Geschenk-Hinweise:',
+    cta: 'Öffne deinen Link und schreib deine Wunschliste:',
     subject: 'Wichteln {groupName}: dein Link, {firstName}',
   },
   drawn: {
@@ -34,15 +34,15 @@ export default {
     body: 'Die Auslosung beim Wichteln von {groupName} ({editionLabel}) ist schon gemacht, außerhalb der App. Für alles Weitere treffen wir uns in der App.',
     how: 'So geht’s: Auf deiner Seite sagst du, wen du beschenkst. Deine Antwort bleibt geheim, niemand sonst sieht sie.',
     hints:
-      'Du kannst schon jetzt deine Geschenk-Hinweise für die Person hinterlassen, die dich beschenkt. Sobald alle geantwortet haben, liest jeder die Hinweise der Person, die er beschenkt: Fehlt eine einzige Antwort, bleiben sie zu.',
-    game: '🔍 Und zum Spaß: Devine qui, ein Tippspiel, bei dem jeder rät, wer ihn beschenkt. Antwort bei der Feier!',
+      'Du kannst schon jetzt deine Wunschliste für die Person schreiben, die dich beschenkt. Sobald alle geantwortet haben, liest jeder die Liste der Person, die er beschenkt: Fehlt eine einzige Antwort, bleiben die Listen zu.',
+    game: '🔍 Und zum Spaß: Devine qui, ein Tippspiel, bei dem jeder rät, wer ihn beschenkt. Antwort am großen Tag!',
     cta: 'Dein persönlicher Link, zum Antworten:',
     subject: 'Wichteln {groupName}: Wen beschenkst du, {firstName}?',
   },
   answerReminder: {
     greeting:
       '{firstName}, beim Wichteln von {groupName} fehlt nur noch deine Antwort! 🎁',
-    cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Geschenk-Hinweise seiner Person.',
+    cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Wunschliste seiner Person.',
     subject: 'Wichteln {groupName}: Wir warten auf deine Antwort, {firstName}',
   },
   answerCheck: {
@@ -64,7 +64,7 @@ export default {
     howAllNeutral:
       'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen damit, wer dich beschenkt. So viele Tipps, wie du willst, bis {guessEnd}.',
     secret:
-      'Niemand sieht deine Tipps vor der Feier. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe: Je mehr von euch spielen, desto schöner wird sie.',
+      'Niemand sieht deine Tipps vor dem großen Tag. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für alle Mitglieder: Je mehr von euch spielen, desto schöner wird sie.',
     cta: 'Dein Link, zum Spielen:',
     subject: 'Wichteln {groupName}: Rate, wer dich beschenkt, {firstName}',
   },
@@ -80,7 +80,7 @@ export default {
     nobody:
       'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. Noch niemand hat getippt. Und du: Wer beschenkt dich?',
     until:
-      'Du hast Zeit bis {guessEnd}. Antwort bei der Feier, mit einer Überraschung.',
+      'Du hast Zeit bis {guessEnd}. Antwort am großen Tag, mit einer Überraschung.',
     cta: 'Meinen Tipp abgeben',
     skipBefore: 'Keine Lust zu spielen? ',
     skip: 'Ich setze aus',
@@ -94,7 +94,7 @@ export default {
     body: 'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), deinen Tipp zu deinem Wichtel abgegeben. Gut gemacht.',
     bodyNeutral:
       'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), getippt, wer dich beschenkt. Gut gemacht.',
-    more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung bei der Feier.',
+    more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung am großen Tag.',
     cta: 'Weiter tippen',
   },
   guessPoint: {

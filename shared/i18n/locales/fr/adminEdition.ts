@@ -6,25 +6,27 @@ export default {
     editionFallback: 'Édition',
   },
   newEdition: {
-    title: 'Nouvelle édition',
-    nameLabel: "Nom de l'édition",
-    nameRequired: 'Nom requis',
+    nameRow: 'Nom',
+    dateToChoose: 'À choisir',
+    takenOverFrom: {
+      one: '{count} membre repris du Secret Santa {year}.',
+      other: '{count} membres repris du Secret Santa {year}.',
+    },
+    partyMembers: {
+      one: '{count} membre de la fête.',
+      other: '{count} membres de la fête.',
+    },
     dateLabel: 'Date de la fête',
-    dateRequired: 'Choisis la date de la fête',
     budgetLabel: 'Budget',
     optional: '(facultatif)',
-    budgetFrom: 'Repris de {label}. Affiché avec le résultat.',
-    shownWithResult: 'Affiché avec le résultat.',
     messageLabel: 'Petit mot pour les participants',
     messagePlaceholder: 'On ouvre les cadeaux après le dessert !',
-    messageRow: 'Facultatif. Affiché avec le résultat.',
     messageNone: 'Aucun',
     takenOver: {
       one: '{count} participant repris.',
       other: '{count} participants repris.',
     },
-    adjustLater: 'Tu ajusteras la liste sur l’écran suivant.',
-    submit: "Créer l'édition",
+    submit: 'Créer le Secret Santa',
     creating: 'Création en cours…',
   },
   cockpit: {
@@ -571,6 +573,8 @@ export default {
         'Le principe : chacun essaie de deviner qui lui offre son cadeau, sur sa page. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
       howAll:
         'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par son propre Père Noël. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
+      howAllNeutral:
+        'Le principe : chacun essaie de deviner qui offre à qui, sur sa page, à commencer par qui lui offre. Personne ne voit les pronostics avant la fête : les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe.',
       tail: 'Plus vous êtes nombreux à jouer, plus elle sera belle.',
       personal: 'Chacun retrouve le jeu avec son lien personnel.',
       share: 'Partager',
@@ -609,6 +613,7 @@ export default {
     modeHint: {
       none: 'Le jeu est éteint',
       santa: 'Chacun devine son propre Père Noël',
+      santaNeutral: 'Chacun devine qui lui offre',
       all: 'Chacun pronostique aussi pour les autres, autant qu’il veut',
     },
     endLabel: 'Fin des pronostics, le {date} à',
@@ -616,12 +621,13 @@ export default {
       'Les réponses tombent quand tu dévoiles le tirage à la fête, ou toutes seules le lendemain.',
     lossSanta:
       'Les pronostics sur les autres seront effacés : seuls restent ceux de chacun sur son propre Père Noël.',
+    lossSantaNeutral:
+      'Les pronostics sur les autres seront effacés : seuls restent ceux de chacun sur qui lui offre.',
     lossOff: 'Tous les pronostics seront effacés.',
     confirmLoss: 'Effacer et valider',
   },
   settings: {
     title: 'Réglages de l’édition',
-    intro: 'Ce que voient les participants de {label}.',
     dateTitle: 'Date',
     wordTitle: 'Petit mot',
     budgetIs: 'Budget {budget}',

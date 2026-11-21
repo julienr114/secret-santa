@@ -19,15 +19,15 @@ Organiser un Secret Santa ne demande plus rien à personne. On le crée depuis �
 
 ## À faire
 
-- [ ] « Pour quelle occasion ? » d'un Secret Santa : mes fêtes que j'organise, « Une autre occasion ».
-- [ ] Le formulaire de création en six lignes, chacune avec sa page ; les valeurs reprises du Secret Santa précédent.
-- [ ] Plusieurs Secret Santa la même année dans une fête : « Un autre Secret Santa ».
-- [ ] Les réglages du Secret Santa (le tirage au sort, Devine qui, les messages, les emails).
-- [ ] La limite : 3 Secret Santa par compte, 30 membres par fête, vérifiée côté serveur ; l'écran de la limite.
-- [ ] Une fête complète (`docs/spec/v3/fete.md`, « 30 membres au plus ») : l'état à la place d'« Ajouter une personne », le lien d'invitation en pause tout seul, `RejoindreFerme` pour celui qui l'ouvre.
+- [x] « Pour quelle occasion ? » d'un Secret Santa : mes fêtes que j'organise, « Une autre occasion ».
+- [x] Le formulaire de création en six lignes, chacune avec sa page ; les valeurs reprises du Secret Santa précédent.
+- [x] Plusieurs Secret Santa la même année dans une fête : « Un autre Secret Santa ».
+- [x] Les réglages du Secret Santa (le tirage au sort, Devine qui, les messages, les emails).
+- [x] La limite : 3 Secret Santa par compte, 30 membres par fête, vérifiée côté serveur ; l'écran de la limite.
+- [x] Une fête complète (`docs/spec/v3/fete.md`, « 30 membres au plus ») : l'état à la place d'« Ajouter une personne », le lien d'invitation en pause tout seul, `RejoindreFerme` pour celui qui l'ouvre.
 - [x] La fin des demandes : les écrans de demande et d'administration des demandes disparaissent ; les demandes en attente sont acceptées par la migration ; l'interrupteur d'urgence est au ticket 109 (pause ou demande : Q-007).
-- [ ] Le résultat hors d'une fête de catégorie Noël : sans « Père Noël ».
-- [ ] « Devine qui » hors d'une fête de catégorie Noël : les variantes sans « Père Noël » (`docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël »).
+- [x] Le résultat hors d'une fête de catégorie Noël : sans « Père Noël ».
+- [x] « Devine qui » hors d'une fête de catégorie Noël : les variantes sans « Père Noël » (`docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël »).
 
 ## Hors périmètre
 

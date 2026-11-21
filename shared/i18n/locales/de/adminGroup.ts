@@ -211,8 +211,6 @@ export default {
     excludePreviousYearsShort: 'Dieselbe Person vermeiden',
     excludePreviousYearsHelp:
       'Niemand beschenkt jemanden, den er in den letzten Jahren schon hatte.',
-    tighter: 'Je länger der Zeitraum, desto enger die Auslosung.',
-    participantsSection: 'Teilnehmer',
     messageNote: 'Wort in den Nachrichten',
     messageNoteHelp:
       'Wird jeder Nachricht und E-Mail an die Teilnehmer unverändert hinzugefügt. Du kannst es beim Senden noch ändern.',
@@ -220,12 +218,8 @@ export default {
     asTyped: 'Wird unverändert gesendet, egal in welcher Sprache.',
     where: 'Wo platzieren',
     notifySection: 'Mir per E-Mail schreiben',
-    notifyHelp: 'An jeden Organisator, in seiner Sprache.',
-    notifyJoined: 'Jemand tritt der Gruppe über den Link bei',
-    notifyAllViewed: 'Alle Umschläge sind geöffnet',
     notifyReminder: 'Erinnerung 3 Tage vor der Feier',
     notifyReminderHelp: 'Mit der Liste derer, die noch nicht geöffnet haben',
-    drawSection: 'Auslosung',
     previousYears: {
       none: 'Nein, egal',
       lastYear: 'Nicht dieselbe wie letztes Jahr',

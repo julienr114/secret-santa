@@ -55,6 +55,8 @@ export type GuessSummary = {
   nudge: boolean;
   /** The game can be turned on: before the draw, or four people drawn. */
   possible: boolean;
+  /** A Christmas party: elsewhere, never « Père Noël » (vocabulaire.md). */
+  christmas: boolean;
 };
 /** Where the answers of a draw made elsewhere stand (README 22.12). */
 export type AnswersSummary = {
@@ -216,6 +218,10 @@ export const useCreateEditionMutation = (slug: Slug) =>
       eventDate: string;
       budget?: string;
       guardianMessage?: string;
+      messageNote?: string;
+      guess?:
+        | { mode: 'none' }
+        | { mode: 'santa' | 'all'; endsAt: string; timeZone: string };
     }
   >(
     (body) => api(`${base(slug)}/editions`, { method: 'POST', body }),

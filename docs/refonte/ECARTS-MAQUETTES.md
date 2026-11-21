@@ -11,7 +11,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
 | `MenuAvatarOuvert` | Le menu n'a pas de ligne « Quoi de neuf » (c'est un onglet ; la spec ne la met pas dans le menu). « Langue » ouvre un panneau du bas avec les trois langues : un menu à côté du menu ne tient pas sur un téléphone. | Seul |
-| `V3AccueilPlusOuvert` | Jusqu'aux tickets 105 et 106, « Un Secret Santa » et « Une liste » ouvrent la création d'une fête, puis l'écran d'aujourd'hui (création d'une édition, nouvelle liste). | Julien, 20 novembre 2026 |
+| `V3AccueilPlusOuvert` | Jusqu'au ticket 106, « Une liste » ouvre la création d'une fête, puis la nouvelle liste d'aujourd'hui. | Julien, 20 novembre 2026 |
 | `V3Accueil` | « Quoi de neuf » ouvre une page vide jusqu'au ticket 120, sans pastille de nombre. | Julien, 20 novembre 2026 |
 | `V3Accueil` | Les lignes (Secret Santa, listes) et les deux lignes du bas n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (Q-010). Pas de point rouge avant le ticket 110. | Julien, 20 novembre 2026 |
 | `V3Accueil` | Les icônes des lignes sont les ronds de 40 px de `UiListItem`, pas les carrés de 36 px de la maquette. Un Secret Santa s'appelle « Le Secret Santa », ou par son nom quand la fête en a plusieurs. | Seul |
@@ -21,6 +21,16 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
+## Le Secret Santa (V3, ticket 105)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3TirageQuelleFete` | Sans aucune fête que j'organise, « Un Secret Santa » mène droit à « Pour quelle occasion ? » (les catégories) : il n'y a rien à choisir. La première fête est cochée d'avance. Le rond de choix est celui du téléphone. | Seul |
+| `V3TirageNouveau` | Au-dessus du titre, le nom de la fête seul. Pour un premier Secret Santa, la carte dit « 5 membres de la fête. » au lieu de « repris du Secret Santa 2026 ». Le nom proposé est la catégorie et l'année (« Noël 2027 », « Anniversaire 2027 »). Le budget vide dit « Aucun ». Un « Devine qui » choisi finit à 18 h le jour de la fête, comme le panneau des réglages. | Seul |
+| `V3TirageReglages` | Sous les quatre sections de la maquette, une section « La fête » garde la date, le budget et le petit mot d'un Secret Santa déjà créé (aucune maquette ne dit où ils se changent), et « Pistes de cadeaux » jusqu'au ticket 107. Les exclusions ne sont plus dans ces réglages : elles restent à la fête (Membres, et la page du Secret Santa). Les lignes n'ont pas d'icône. | Seul |
+| `V3TirageLimite` | Chaque ligne ouvre le Secret Santa. Un super-admin n'a pas de limite. | Seul |
+| `V3FeteMembresComplet` | « 30 sur 30 » ne s'écrit qu'une fois la fête complète. Les membres comptés sont ceux qui participent (« Ne participe plus » ne compte pas). | Seul |
+
 ## La fête (V3, ticket 104)
 
 | Maquette | Ce que fait le code | Décidé par |
@@ -29,13 +39,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Pas de section « Les années passées » avant le ticket 108. | Julien, 20 novembre 2026 |
 | `V3FeteAnniversaire` | Pas de « · ses 4 ans » après la date : la fête ne sait pas pour quel proche elle est. | Seul |
 | `V3Fete` | Pour un simple membre, la ligne des membres n'ouvre rien (la page des membres est à l'organisateur). | Seul |
-| `V3FeteOrganisateur` | « Un autre Secret Santa » (ou « Organiser un Secret Santa ») n'apparaît que si aucun Secret Santa de la fête n'est en cours, et mène à la création d'édition d'aujourd'hui : plusieurs à la fois viennent avec le ticket 105. Le titre de section est au pluriel pour l'organisateur ou dès deux Secret Santa. | Seul |
+| `V3FeteOrganisateur` | Le titre de section est au pluriel pour l'organisateur ou dès deux Secret Santa. | Seul |
 | `V3Fete` | Une ligne de liste s'ouvre sur la page d'aujourd'hui : la mienne dans son document, celle d'un autre par son lien public ; sans lien public, elle ne s'ouvre pas (règles du ticket 106). | Seul |
 | `V3FeteQuitter` | « Elle reste chez Mamie » n'est pas écrit (« chez » ou « dans » : question à la conception). « Tu ne participeras plus à son Secret Santa l'an prochain » ne s'écrit que si la fête a un Secret Santa. Un organisateur ne peut pas quitter la fête. | Seul |
 | `V3FeteNouvelle` | Le nom est proposé pour Noël (« Noël ») et pour un anniversaire (« L'anniversaire de Zoé », « Mon anniversaire » pour soi) ; vide pour les autres catégories. La date est remplie pour Noël et pour l'anniversaire d'un proche dont on connaît la date de naissance. | Seul |
 | `V3FeteMembresReprendre` | Les pastilles des fêtes se cochent : cocher une fête montre et coche ses membres. Le nombre du bouton me compte. « Inviter d'autres personnes » crée la fête et ouvre « Inviter par lien ». Seules les fêtes que j'organise sont proposées. | Seul |
 | `V3FeteNouvelle`, `V3FeteMembresReprendre` | Après « Créer la fête », on arrive sur l'écran d'aujourd'hui de ce qu'on venait créer (création d'une édition, nouvelle liste), sinon sur la fête. | Julien, 20 novembre 2026 |
-| `V3FeteReglages` | La catégorie et la date se changent dans un panneau du bas (comme les autres réglages), pas sur une page. « Réglages du Secret Santa » mène, jusqu'au ticket 105, aux réglages du tirage qui sont encore ceux du groupe (éviter la même personne, pistes, mot ajouté aux messages, emails du tirage). | Seul |
+| `V3FeteReglages` | La catégorie et la date se changent dans un panneau du bas (comme les autres réglages), pas sur une page. « Réglages du Secret Santa » mène aux réglages du dernier Secret Santa de l'année ; sans Secret Santa cette année, la section n'est pas là. | Seul |
 | `V3FeteInviter` | « Désactiver le lien » garde sa ligne d'aide (« Plus personne ne pourra s'inscrire »). | Seul |
 | `V3FeteRejoindre` | Les états qui suivent (inscrit, lien fermé) gardent leurs écrans d'aujourd'hui, avec « fête » au lieu de « groupe ». | Seul |
 

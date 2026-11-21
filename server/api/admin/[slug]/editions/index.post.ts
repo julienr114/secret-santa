@@ -54,7 +54,16 @@ export default defineEventHandler(async (event) => {
     (p) => p.active && (previousIds === null || previousIds.includes(p.id)),
   );
   unwrap(checkParticipantCount(people.length));
-  const game = carriedGame(previous, body.eventDate);
+  // « Devine qui » as chosen on the form, or the previous one's.
+  const game = body.guess
+    ? body.guess.mode === 'none'
+      ? { guessMode: 'none' as const, guessEndsAt: null, guessTimeZone: null }
+      : {
+          guessMode: body.guess.mode,
+          guessEndsAt: body.guess.endsAt,
+          guessTimeZone: body.guess.timeZone,
+        }
+    : carriedGame(previous, body.eventDate);
   const createdAt = nowIso();
   const edition: Edition = {
     id: newId(),
@@ -63,16 +72,20 @@ export default defineEventHandler(async (event) => {
     label: body.label,
     year: body.year,
     status: 'preparing',
-    // Its own rules, starting from the party's (ticket 101). The day of the
-    // party belongs to the edition (README 22.9), and so do a budget and a
-    // word given with it.
+    // Its own rules, copied from the previous Secret Santa of the party,
+    // or the party's for a first one (docs/spec/v3/secret-santa.md, « Ses
+    // réglages »). The day of the party belongs to it (README 22.9), and so
+    // do what the form gave.
     rules: unwrap(
-      mergeRules(group.rules, {
+      mergeRules(previous?.rules ?? group.rules, {
         eventDate: body.eventDate,
         ...(body.budget === undefined ? {} : { budget: body.budget }),
         ...(body.guardianMessage === undefined
           ? {}
           : { guardianMessage: body.guardianMessage }),
+        ...(body.messageNote === undefined
+          ? {}
+          : { messageNote: body.messageNote }),
       }),
     ),
     rulesSnapshot: null,

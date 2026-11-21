@@ -2,6 +2,7 @@
 import { byName, fullName, type PublicPerson } from '#server/utils/people';
 import { formatEventDate } from '#server/utils/rules';
 import { notDrawnBy } from '#shared/utils/exclusions';
+import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
 import { listView } from '#shared/utils/lists';
 import {
   useDashboardQuery,
@@ -10,7 +11,10 @@ import {
 
 // The members of a group: one list, those who take part first, each with
 // their address and who they never draw; then « Ajouter une personne »,
-// and the invitation link for those who sign up on their own.
+// and the invitation link for those who sign up on their own. At 30
+// members (docs/spec/v3/fete.md, V3FeteMembresComplet), the page says so,
+// a state takes the place of « Ajouter une personne », and the link is
+// paused by itself.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, locale } = useT();
 const route = useRoute();
@@ -21,10 +25,17 @@ const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.people.title')) });
 const screen = computed(() => ({ back: `/f/${slug.value}` }));
 
+const persons = computed(() => people.data.value?.persons ?? []);
+const activeCount = computed(
+  () => persons.value.filter((person) => person.active).length,
+);
+const full = computed(() => activeCount.value >= MAX_PARTY_MEMBERS);
+
 // The invitation link belongs to the group: its state on the row.
 const inviteSummary = computed(() => {
   const g = dashboard.data.value?.group;
   if (!g?.inviteCode) return t('adminEdition.invite.off');
+  if (full.value) return t('party.full.paused');
   return [
     t('adminEdition.invite.active'),
     t('adminEdition.invite.placesLeft', { count: g.invitePlaces ?? 0 }),
@@ -38,7 +49,6 @@ const inviteSummary = computed(() => {
   ].join(' · ');
 });
 
-const persons = computed(() => people.data.value?.persons ?? []);
 const { membersLine } = useMembersLine();
 const exclusions = computed(() => people.data.value?.exclusions ?? []);
 /** Those who take part first, then the others, by name in each. */
@@ -97,6 +107,18 @@ const view = computed(() =>
         :label="t('common.context')"
       />
       <UiPageTitle>{{ t('adminGroup.people.title') }}</UiPageTitle>
+      <p
+        v-if="full"
+        class="text-[15px] font-bold text-toned"
+        data-testid="members-count"
+      >
+        {{
+          t('party.full.count', {
+            count: activeCount,
+            max: MAX_PARTY_MEMBERS,
+          })
+        }}
+      </p>
     </div>
     <AdminQueryState
       :pending="people.isPending.value"
@@ -144,6 +166,15 @@ const view = computed(() =>
             </template>
           </UiFoldedRows>
           <UiListItem
+            v-if="full"
+            icon="i-lucide-users"
+            icon-tone="neutral"
+            :title="t('party.full.title')"
+            :subtitle="t('party.full.text', { max: MAX_PARTY_MEMBERS })"
+            data-testid="party-full"
+          />
+          <UiListItem
+            v-else
             :to="`/f/${slug}/membres/nouvelle`"
             icon="i-lucide-user-plus"
             :title="t('adminGroup.people.add')"

@@ -239,8 +239,15 @@ export default {
       other:
         'L’an dernier, {count} personnes sur {total} avaient deviné leur Père Noël. À battre.',
     },
+    challengeNeutral: {
+      one: 'L’an dernier, {count} personne sur {total} avait deviné qui lui offrait. À battre.',
+      other:
+        'L’an dernier, {count} personnes sur {total} avaient deviné qui leur offrait. À battre.',
+    },
     challengeNone:
       'L’an dernier, personne n’avait deviné son Père Noël. À battre.',
+    challengeNoneNeutral:
+      'L’an dernier, personne n’avait deviné qui lui offrait. À battre.',
     skip: 'Je passe mon tour',
     skippedTitle: 'Tu passes ton tour',
     skippedBody:
@@ -273,6 +280,7 @@ export default {
     changeMind: 'Changer d’avis',
     secret: 'Personne ne voit ton pronostic avant la fête.',
     mySanta: 'Mon Père Noël',
+    mySantaNeutral: 'Celui qui m’offre',
     others: 'Les autres',
     mine: 'Mes pronostics',
     choose: '+ Choisir',
@@ -301,12 +309,15 @@ export default {
     discover: 'Découvrir le palmarès',
     rewatch: 'Revoir le palmarès',
     palmaresHint: 'Ton Père Noël, le détective, les mieux cachés…',
+    palmaresHintNeutral: 'Celui qui t’offre, le détective, les mieux cachés…',
     palmaresHintSmall: 'Ton Père Noël, enfin démasqué',
+    palmaresHintSmallNeutral: 'Celui qui t’offre, enfin démasqué',
     mineScore: {
       one: 'Mes pronostics · {right} bon sur {count}',
       other: 'Mes pronostics · {right} bons sur {count}',
     },
     mySantaWas: 'Ton Père Noël : {name}',
+    mySantaWasNeutral: 'Celui qui t’offre : {name}',
     theirSantaWas: 'Celui de {name} : {giver}',
     right: 'Bien vu',
     youSaid: 'Tu disais {name}',
@@ -320,11 +331,15 @@ export default {
         title: 'Démasqué',
         titleMany: 'Démasqués',
         body: 'A deviné son Père Noël.',
+        bodyNeutral: 'A deviné qui lui offrait.',
         bodyMany: 'Ils avaient deviné leur Père Noël.',
+        bodyManyNeutral: 'Ils avaient deviné qui leur offrait.',
         share: '{n} sur {m}',
         crowdOf: 'personnes sur {total}',
         shareBody: 'avaient deviné leur Père Noël.',
+        shareBodyNeutral: 'avaient deviné qui leur offrait.',
         all: 'Les Pères Noël n’ont rien pu cacher.',
+        allNeutral: 'Personne n’a rien pu cacher.',
         most: 'Belle année pour les détectives.',
       },
       detective: {
@@ -372,8 +387,11 @@ export default {
         title: 'Le suspect idéal',
         titleMany: 'Les suspects idéaux',
         never: 'Cité {count} fois comme Père Noël. À tort, à chaque fois.',
+        neverNeutral: 'Cité {count} fois, à tort. À chaque fois.',
         body: 'Cité {count} fois à tort comme Père Noël.',
+        bodyNeutral: 'Cité {count} fois, à tort.',
         bodyMany: 'Cités {count} fois à tort chacun comme Père Noël.',
+        bodyManyNeutral: 'Cités {count} fois chacun, à tort.',
       },
       twins: {
         title: 'Les jumeaux',
@@ -414,13 +432,19 @@ export default {
         same: 'Au hasard, vous en auriez eu {chance}. Le hasard aurait fait aussi bien.',
         worse:
           'Au hasard, vous en auriez eu {chance}. Les Pères Noël étaient bien cachés.',
+        worseNeutral:
+          'Au hasard, vous en auriez eu {chance}. Tout le monde était bien caché.',
       },
       closeCall: {
         title: 'Si près du but',
         big: 'Presque !',
         body: 'Tu avais trouvé le Père Noël de {name}… puis tu as changé d’avis. L’instinct avait raison.',
+        bodyNeutral:
+          'Tu avais trouvé qui offrait à {name}… puis tu as changé d’avis. L’instinct avait raison.',
         bodyMe:
           'Tu avais trouvé ton Père Noël… puis tu as changé d’avis. L’instinct avait raison.',
+        bodyMeNeutral:
+          'Tu avais trouvé qui t’offrait… puis tu as changé d’avis. L’instinct avait raison.',
       },
     },
     story: {
@@ -432,8 +456,10 @@ export default {
       openingBody:
         '{players} joueurs, {guesses} pronostics. Voyons ce qu’ils valaient.',
       mySanta: 'Ton Père Noël',
+      mySantaNeutral: 'Celui qui t’offre',
       youSaid: 'Tu avais dit\n{name}…',
       noGuess: 'Et ton Père Noël était…',
+      noGuessNeutral: 'Et celui qui t’offre était…',
       soWell: 'Alors, bien vu ?',
       right: 'C’était\nbien {name} !',
       was: 'C’était {name}.',

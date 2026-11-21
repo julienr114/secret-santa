@@ -233,11 +233,13 @@ test('the word added to the messages is written on its own page', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.goto(`/f/${SLUG}/reglages/secret-santa`);
+  // A setting of the Secret Santa (ticket 105).
+  const settings = `/admin/${SLUG}/editions/${state.editionId}/reglages`;
+  await page.goto(settings);
   await hydrated(page);
   const row = page.getByTestId('group-note');
   await row.click();
-  await expect(page).toHaveURL(/\/reglages\/mot$/);
+  await expect(page).toHaveURL(/\/mot-messages$/);
   // « Retour » gives it up (README 23.3).
   await page.getByLabel(/^Ton mot/).fill('Oublié');
   await page.getByRole('button', { name: 'Retour' }).click();
@@ -246,9 +248,11 @@ test('the word added to the messages is written on its own page', async ({
   await page.getByLabel(/^Ton mot/).fill('Rendez-vous à 19 h !');
   await page.getByText('Au-dessus du message').click();
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page).toHaveURL(new RegExp(`/${SLUG}/reglages/secret-santa$`));
+  await expect(page).toHaveURL(new RegExp(`${settings}$`));
   await expect(row).toContainText('Rendez-vous à 19 h !');
-  const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
+  const { rules } = await (
+    await page.request.get(`${ADMIN}/editions/${state.editionId}`)
+  ).json();
   expect(rules).toMatchObject({
     messageNote: 'Rendez-vous à 19 h !',
     messageNotePosition: 'before',

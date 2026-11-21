@@ -34,7 +34,7 @@ import { localeOf } from '#shared/i18n';
 // two runs never send twice. Never who guessed what.
 
 type Context = { db: Db; dataKey: CryptoKey };
-type Group = { id: string; name: string; slug: string };
+type Group = { id: string; name: string; slug: string; category: string };
 
 /** Sets a column once; false when another run already did. */
 const claim = async (
@@ -118,6 +118,7 @@ export const autoRemind = async (
             editionLabel: edition.label,
             link: page,
             skipLink: `${page}?passer=1`,
+            christmas: group.category === 'christmas',
             guessEndsAt: edition.guessEndsAt!,
             guessTimeZone: edition.guessTimeZone,
             played: count.played,

@@ -1,4 +1,6 @@
 import type { HomeData } from '#server/database/homeParties';
+import type { OrganisedParty } from '#server/database/organising';
+import type { listOrganisedSecretSantas } from '#server/database/quota';
 import { keys } from './keys';
 import { useApiQuery } from './useApi';
 
@@ -11,4 +13,23 @@ export const useHomePartiesQuery = () =>
   useApiQuery<HomePartiesPayload>(
     () => keys.homeParties(),
     () => '/api/home',
+  );
+
+/** What « Créer › Un Secret Santa » shows: my parties, or my limit. */
+export type NewSecretSantaPayload = {
+  limitReached: boolean;
+  parties: OrganisedParty[];
+  secretSantas: Awaited<ReturnType<typeof listOrganisedSecretSantas>>;
+};
+
+/**
+ * The parties I organise, or the Secret Santa that keep me at my limit.
+ * @param enabled - Read only once the step is shown.
+ * @returns The query.
+ */
+export const useNewSecretSantaQuery = (enabled: MaybeRefOrGetter<boolean>) =>
+  useApiQuery<NewSecretSantaPayload>(
+    () => keys.newSecretSanta(),
+    () => '/api/secret-santas/new',
+    enabled,
   );

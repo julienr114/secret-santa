@@ -158,14 +158,42 @@ test('an impossible draw names who blocks it, and how to fix it', async ({
 test('a large group folds its lists, before and after the draw', async ({
   page,
 }) => {
+  // A party holds 30 members at most (ticket 105).
   const names = Array.from(
-    { length: 60 },
+    { length: 30 },
     (_, i) => `Grand${String(i).padStart(2, '0')}`,
   );
   const { at, id } = await setUp('cas-grand', names);
   const total = (await (await state.api!.get(`${at}/editions/${id}`)).json())
     .participants.length as number;
   await apiLogin(page.request, SUPER);
+
+  // Full at 30 (V3FeteMembresComplet): the server refuses the thirty-first,
+  // the page says so, and the link is paused by itself.
+  const more = await state.api!.post(`${at}/persons`, {
+    data: { firstName: 'Trente-et-un' },
+  });
+  expect(more.status()).toBe(409);
+  expect((await more.json()).statusMessage).toBe('too_many_members');
+  const { inviteCode } = await (
+    await state.api!.post(`${at}/invite`, { data: { open: true, places: 5 } })
+  ).json();
+  expect(
+    (await (await page.request.get(`/api/invite/${inviteCode}`)).json()).closed,
+  ).toBe('invite_full');
+  await page.goto('/f/cas-grand/membres');
+  await hydrated(page);
+  await expect(page.getByTestId('members-count')).toHaveText('30 sur 30');
+  await expect(page.getByTestId('party-full')).toContainText(
+    'La fête est complète',
+  );
+  await expect(
+    page.getByRole('link', { name: 'Ajouter une personne' }),
+  ).toHaveCount(0);
+  await expect(page.getByTestId('invite-row')).toContainText(
+    'En pause · la fête est complète',
+  );
+
   await page.goto(`/admin/cas-grand/editions/${id}`);
   await hydrated(page);
 
@@ -176,10 +204,10 @@ test('a large group folds its lists, before and after the draw', async ({
   await list
     .getByRole('button', { name: `Voir les ${total - 6} autres` })
     .click();
-  await expect(list.getByText('Grand59', { exact: true })).toBeVisible();
+  await expect(list.getByText('Grand29', { exact: true })).toBeVisible();
   await expect(list.getByRole('button', { name: /^Voir les/ })).toHaveCount(0);
   await list.getByRole('button', { name: 'Replier la liste' }).click();
-  await expect(list.getByText('Grand59', { exact: true })).toHaveCount(0);
+  await expect(list.getByText('Grand29', { exact: true })).toHaveCount(0);
   await expect(
     list.getByRole('button', { name: `Voir les ${total - 6} autres` }),
   ).toBeVisible();

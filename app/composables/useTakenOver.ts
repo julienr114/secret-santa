@@ -11,15 +11,22 @@ import {
  * them: those of the previous edition still active, or every active
  * member for a first one.
  * @param slug - The group.
- * @returns The previous edition (null for a first one) and its rules, the
- * members taken over, and whether it is still loading.
+ * @param year - The year of the new edition; the one the group expects
+ * by default.
+ * @returns The previous edition (null for a first one), its rules and its
+ * « Devine qui », the members taken over, and whether it is still loading.
  */
-export const useTakenOver = (slug: MaybeRefOrGetter<string>) => {
+export const useTakenOver = (
+  slug: MaybeRefOrGetter<string>,
+  year?: MaybeRefOrGetter<number | null>,
+) => {
   const dashboard = useDashboardQuery(slug);
   const people = usePeopleQuery(slug);
   const previous = computed(() => {
     const data = dashboard.data.value;
-    return data ? previousEdition(data.editions, data.nextEdition.year) : null;
+    return data
+      ? previousEdition(data.editions, toValue(year) ?? data.nextEdition.year)
+      : null;
   });
   const previousEditionQuery = useEditionQuery(
     slug,
@@ -43,5 +50,8 @@ export const useTakenOver = (slug: MaybeRefOrGetter<string>) => {
   const previousRules = computed(
     () => previousEditionQuery.data.value?.rules ?? null,
   );
-  return { previous, previousRules, members, pending };
+  const previousGuessMode = computed(
+    () => previousEditionQuery.data.value?.guess.mode ?? 'none',
+  );
+  return { previous, previousRules, previousGuessMode, members, pending };
 };

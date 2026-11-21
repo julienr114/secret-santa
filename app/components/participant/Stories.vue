@@ -20,6 +20,8 @@ import { numberWord } from '#shared/utils/words';
 type Person = { id: string; name: string; avatar: Avatar };
 const props = defineProps<{
   editionLabel: string;
+  /** A Christmas party: elsewhere, never « Père Noël » (vocabulaire.md). */
+  christmas: boolean;
   people: Person[];
   players: number;
   guesses: number;
@@ -40,7 +42,7 @@ const props = defineProps<{
   answersPath: string;
 }>();
 const emit = defineEmits<{ seen: [] }>();
-const { t, tk, locale } = useT();
+const { t, tk, locale } = useT({ christmas: () => props.christmas });
 
 const screens = computed<StoryScreen[]>(() =>
   storyScreens({

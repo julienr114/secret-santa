@@ -3,6 +3,7 @@ import { formatEventDate } from './rules';
 import { clockTime, guessEndText } from '#shared/utils/dates';
 import {
   DEFAULT_LOCALE,
+  santaKey,
   translate,
   translateKey,
   type Locale,
@@ -93,6 +94,11 @@ export type MessageData = {
   /** The game's mode, for how it is explained. */
   guessMode?: 'none' | 'santa' | 'all';
   /**
+   * A Christmas party; elsewhere, never « Père Noël »
+   * (docs/spec/v3/vocabulaire.md). Christmas when left out.
+   */
+  christmas?: boolean;
+  /**
    * The first name of the organiser who sends it, for the signature of an
    * email; none when unknown (it then signs with the Secret Santa).
    */
@@ -170,7 +176,11 @@ const linesOf = (
   locale: Locale,
 ): string[] =>
   TEMPLATES[type](data).map((key) =>
-    translate(locale, key, params(data, locale)),
+    translateKey(
+      locale,
+      santaKey(key, data.christmas ?? true),
+      params(data, locale),
+    ),
   );
 
 const isMessageType = (type: string): type is MessageType =>
@@ -468,6 +478,8 @@ type GameEmailData = {
   editionLabel: string;
   /** The page of the game, on the personal link. */
   link: string;
+  /** A Christmas party; elsewhere, never « Père Noël ». */
+  christmas?: boolean;
   guessEndsAt: string;
   guessTimeZone: string | null;
 };
@@ -505,7 +517,12 @@ export const buildGuessAutoReminderEmail = (
     total: data.total,
     days: data.days,
   };
-  const t = (key: string) => translateKey(locale, `messages.${key}`, params);
+  const t = (key: string) =>
+    translateKey(
+      locale,
+      santaKey(`messages.${key}`, data.christmas ?? true),
+      params,
+    );
   if (text === 'more') {
     return buttonEmail({
       subject: t('guessMore.subject'),

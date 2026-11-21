@@ -203,8 +203,6 @@ export default {
     excludePreviousYearsShort: 'Avoid the same person',
     excludePreviousYearsHelp:
       'Nobody gives to someone they already had in the last years.',
-    tighter: 'The longer the period, the tighter the draw.',
-    participantsSection: 'Participants',
     messageNote: 'Word added to messages',
     messageNoteHelp:
       'Added as is to every message and email sent to participants. You can still change it when sending.',
@@ -212,12 +210,8 @@ export default {
     asTyped: 'Sent as is, whatever the language.',
     where: 'Where to put it',
     notifySection: 'Email me',
-    notifyHelp: 'Sent to each organizer, in their language.',
-    notifyJoined: 'Someone joins the group with the link',
-    notifyAllViewed: 'Every envelope is open',
     notifyReminder: 'Reminder 3 days before the party',
     notifyReminderHelp: 'With the list of those who have not opened yet',
-    drawSection: 'Draw',
     previousYears: {
       none: 'No, never mind',
       lastYear: 'Not the same as last year',

@@ -1,35 +1,98 @@
 <script setup lang="ts">
 import { formatEventDate } from '#server/utils/rules';
-import { useEditionQuery } from '~/composables/queries/useGroup';
+import { GIFT_HINTS_MODES } from '#shared/utils/hints';
+import { usePartyQuery } from '~/composables/queries/useParty';
 
-// « Réglages de l'édition » (README 22.16, maquettes EditionReglages and
-// PropEditionReglages): what the participants of this edition see, the
-// party (date, budget, word) and the game « Devine qui » (22.17), each
-// changed in its sheet. Once the edition is closed, read only; the game
-// no longer changes once the draw is revealed.
+// The settings of a Secret Santa (docs/spec/v3/secret-santa.md, « Ses
+// réglages », V3TirageReglages), its own and no longer the party's: the
+// draw (« Éviter la même personne »), « Devine qui », the word added to
+// the messages, the emails to me. Each saved at once, in its sheet, with
+// its switch or on its own page. Below what the mockup shows, until the
+// screens that will hold them are drawn: the day, the budget and the word
+// of the party, and « Pistes de cadeaux » until ticket 107. Once the
+// Secret Santa is closed, read only; the game no longer changes once the
+// draw is revealed.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
-const { t, locale } = useT();
-const context = useScreenContext(slug, id);
+const { t, tk, locale } = useT();
+const party = usePartyQuery(slug);
+const { edition, shown, save, saving } = useEditionRuleSaver(slug, id);
+const closed = computed(() => edition.data.value?.edition.status === 'closed');
+const year = computed(() => edition.data.value?.edition.year ?? '');
+const parts = computed(() => [
+  {
+    label: party.data.value?.party.name ?? '',
+    to: `/f/${slug.value}`,
+  },
+  {
+    label: t('party.secretSanta.context', { year: year.value }),
+    to: `/admin/${slug.value}/editions/${id.value}`,
+  },
+]);
 useHead({
-  title: () => context.titleOf(t('adminEdition.settings.title')),
+  title: () =>
+    `${t('party.secretSanta.settings')} — ${parts.value
+      .map((part) => part.label)
+      .join(' · ')} — ${t('common.appName')}`,
 });
 const screen = computed(() => ({
   back: `/admin/${slug.value}/editions/${id.value}`,
 }));
 
-const edition = useEditionQuery(slug, id);
-const closed = computed(() => edition.data.value?.edition.status === 'closed');
 const eventDate = computed(() => edition.data.value?.rules.eventDate ?? '');
-const label = computed(() => edition.data.value?.edition.label ?? '');
 const dateOpen = ref(false);
 const guess = computed(() => edition.data.value?.guess);
 const gameFixed = computed(
   () => closed.value || Boolean(edition.data.value?.edition.revealedAt),
 );
 const guessOpen = ref(false);
+
+const editing = ref<null | 'years' | 'hints'>(null);
+const sheet = (which: 'years' | 'hints') =>
+  computed({
+    get: () => editing.value === which,
+    set: (value) => {
+      editing.value = value ? which : null;
+    },
+  });
+const yearsOpen = sheet('years');
+const hintsOpen = sheet('hints');
+
+/** How far back nobody draws the same person again, as a row says it. */
+const yearsChoices = computed(() => [
+  { value: 0, label: t('adminGroup.rules.previousYears.none') },
+  { value: 1, label: t('adminGroup.rules.previousYears.lastYear') },
+  {
+    value: 2,
+    label: t('adminGroup.rules.previousYears.lastYears', { count: 2 }),
+  },
+  {
+    value: 3,
+    label: t('adminGroup.rules.previousYears.lastYears', { count: 3 }),
+    hint: t('adminGroup.rules.previousYears.tight'),
+  },
+]);
+const yearsValue = computed(() => {
+  const years = shown.value.excludePreviousYears ?? 0;
+  return years === 0
+    ? t('adminGroup.rules.previousYears.noneShort')
+    : t('adminGroup.rules.previousYears.short', { count: years });
+});
+/** What participants may note for their giver, until ticket 107. */
+const hintsChoices = computed(() =>
+  GIFT_HINTS_MODES.map((mode) => ({
+    value: mode,
+    label: tk(`hints.setting.${mode}`),
+    hint: tk(`hints.setting.${mode}Help`),
+  })),
+);
+const noteValue = computed(() =>
+  shown.value.messageNote
+    ? `« ${shown.value.messageNote} »`
+    : t('adminEdition.invite.noWords'),
+);
 </script>
 
 <template>
@@ -40,15 +103,62 @@ const guessOpen = ref(false);
       :skeleton="['title', 'list']"
     >
       <div class="flex flex-col gap-1">
-        <UiPageContext
-          :parts="context.parts.value"
-          :label="t('common.context')"
-        />
-        <UiPageTitle>{{ t('adminEdition.settings.title') }}</UiPageTitle>
-        <p class="text-[15px] text-toned">
-          {{ t('adminEdition.settings.intro', { label }) }}
-        </p>
+        <UiPageContext :parts="parts" :label="t('common.context')" />
+        <UiPageTitle>{{ t('party.secretSanta.settings') }}</UiPageTitle>
       </div>
+
+      <UiList :title="t('party.secretSanta.drawSection')">
+        <UiListItem
+          :title="t('adminGroup.rules.excludePreviousYearsShort')"
+          :value="yearsValue"
+          :chevron="!closed"
+          :busy="saving('excludePreviousYears')"
+          :busy-label="t('common.actions.saving')"
+          :on-click="closed ? undefined : () => (editing = 'years')"
+          data-testid="setting-previous-years"
+        />
+      </UiList>
+
+      <UiList v-if="guess" :title="t('adminEdition.guess.title')">
+        <UiListItem
+          :title="t('party.secretSanta.guessRow')"
+          :value="t(`adminEdition.guess.mode.${guess.mode}`)"
+          :chevron="!gameFixed"
+          :on-click="gameFixed ? undefined : () => (guessOpen = true)"
+          data-testid="setting-guess"
+        />
+      </UiList>
+
+      <UiList :title="t('party.secretSanta.messagesSection')">
+        <UiListItem
+          :title="t('adminGroup.rules.messageNote')"
+          :value="noteValue"
+          :to="
+            closed ? undefined : `/admin/${slug}/editions/${id}/mot-messages`
+          "
+          data-testid="group-note"
+        />
+      </UiList>
+
+      <UiList
+        :title="t('adminGroup.rules.notifySection')"
+        data-testid="notifications"
+      >
+        <UiListItem
+          :checked="shown.notifyAllViewed ?? true"
+          :title="t('party.secretSanta.allViewed')"
+          :busy="saving('notifyAllViewed')"
+          @update:checked="(on) => save({ notifyAllViewed: on })"
+        />
+        <UiListItem
+          :checked="shown.notifyReminder ?? true"
+          :title="t('adminGroup.rules.notifyReminder')"
+          :subtitle="t('adminGroup.rules.notifyReminderHelp')"
+          :busy="saving('notifyReminder')"
+          @update:checked="(on) => save({ notifyReminder: on })"
+        />
+      </UiList>
+
       <UiList
         :title="t('adminEdition.settings.party')"
         data-testid="edition-settings"
@@ -72,19 +182,48 @@ const guessOpen = ref(false);
           :readonly="closed"
           values
         />
-      </UiList>
-      <UiList v-if="guess" :title="t('adminEdition.settings.game')">
         <UiListItem
-          icon="i-lucide-search"
-          icon-tone="neutral"
-          :title="t('adminEdition.guess.title')"
-          :value="t(`adminEdition.guess.mode.${guess.mode}`)"
-          :chevron="!gameFixed"
-          :on-click="gameFixed ? undefined : () => (guessOpen = true)"
-          data-testid="setting-guess"
+          :title="t('hints.setting.title')"
+          :value="tk(`hints.setting.${shown.giftHints ?? 'full'}`)"
+          :chevron="!closed"
+          :busy="saving('giftHints')"
+          :busy-label="t('common.actions.saving')"
+          :on-click="closed ? undefined : () => (editing = 'hints')"
+          data-testid="gift-hints-setting"
         />
       </UiList>
     </AdminQueryState>
+
+    <UiChoiceSheet
+      v-model:open="yearsOpen"
+      :title="t('adminGroup.rules.excludePreviousYearsShort')"
+      :description="t('adminGroup.rules.excludePreviousYearsHelp')"
+      :choices="yearsChoices"
+      :value="shown.excludePreviousYears ?? 0"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      @validate="
+        (years) => {
+          editing = null;
+          save({ excludePreviousYears: years });
+        }
+      "
+    />
+    <UiChoiceSheet
+      v-model:open="hintsOpen"
+      :title="t('hints.setting.title')"
+      :description="t('hints.setting.help')"
+      :choices="hintsChoices"
+      :value="shown.giftHints ?? 'full'"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      @validate="
+        (mode) => {
+          editing = null;
+          save({ giftHints: mode });
+        }
+      "
+    />
     <AdminPartyDateSheet
       v-if="!closed"
       v-model:open="dateOpen"

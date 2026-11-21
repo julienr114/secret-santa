@@ -15,7 +15,7 @@ import { byName, displayName } from '#server/utils/people';
 // one who does not take part: once the draw is revealed or the edition
 // closed only, without « mon Père Noël ».
 export default defineEventHandler(async (event) => {
-  const { db, edition } = await requireEdition(event);
+  const { db, edition, group } = await requireEdition(event);
   if (edition.guessMode === 'none') {
     throw createError({ statusCode: 409, statusMessage: 'guesses_off' });
   }
@@ -38,6 +38,8 @@ export default defineEventHandler(async (event) => {
   );
   return {
     editionLabel: edition.label,
+    // « Père Noël » is only said in a Christmas party (vocabulaire.md).
+    christmas: group.category === 'christmas',
     people: rows.toSorted(byName).map((p) => ({
       id: p.id,
       name: displayName(p, rows),

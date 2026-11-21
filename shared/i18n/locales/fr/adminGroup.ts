@@ -204,8 +204,6 @@ export default {
     excludePreviousYearsShort: 'Éviter la même personne',
     excludePreviousYearsHelp:
       "Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années.",
-    tighter: 'Plus la période est longue, plus le tirage est contraint.',
-    participantsSection: 'Participants',
     messageNote: 'Mot ajouté aux messages',
     messageNoteHelp:
       'Ajouté tel quel à chaque message et email envoyé aux participants. Tu peux encore le modifier au moment d’envoyer.',
@@ -213,12 +211,8 @@ export default {
     asTyped: 'Envoyé tel quel, quelle que soit la langue.',
     where: 'Où le placer',
     notifySection: 'M’écrire par email',
-    notifyHelp: 'Envoyé à chaque organisateur, dans sa langue.',
-    notifyJoined: 'Quelqu’un rejoint le groupe par le lien',
-    notifyAllViewed: 'Toutes les enveloppes sont ouvertes',
     notifyReminder: 'Rappel 3 jours avant la fête',
     notifyReminderHelp: 'Avec la liste de ceux qui n’ont pas encore ouvert',
-    drawSection: 'Tirage',
     previousYears: {
       none: 'Non, peu importe',
       lastYear: "Pas la même que l'an dernier",

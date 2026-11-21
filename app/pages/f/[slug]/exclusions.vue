@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {
   useDashboardQuery,
+  useEditionQuery,
   usePeopleQuery,
 } from '~/composables/queries/useGroup';
 
 // The group's exclusions: who must not draw whom, « Ajouter une
 // exclusion » first, then what the draw applies by itself (previous
-// years), which is set in the group's settings.
+// years), which is set in the settings of the Secret Santa in progress
+// (ticket 105).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const route = useRoute();
@@ -15,11 +17,17 @@ const people = usePeopleQuery(slug);
 const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.exclusions.title')) });
-const screen = computed(() => ({
-  back: `/f/${slug.value}/reglages/secret-santa`,
-}));
+const screen = computed(() => ({ back: `/f/${slug.value}/membres` }));
+// The Secret Santa in progress holds « Éviter la même personne ».
+const currentId = computed(() => dashboard.data.value?.currentEditionId ?? '');
+const current = useEditionQuery(slug, currentId, () =>
+  Boolean(currentId.value),
+);
 const years = computed(
-  () => dashboard.data.value?.rules.excludePreviousYears ?? 0,
+  () =>
+    current.data.value?.rules.excludePreviousYears ??
+    dashboard.data.value?.rules.excludePreviousYears ??
+    0,
 );
 </script>
 
@@ -47,7 +55,11 @@ const years = computed(
         :footer="t('adminGroup.exclusions.untilDraw')"
       >
         <UiListItem
-          :to="`/f/${slug}/reglages/secret-santa`"
+          :to="
+            currentId
+              ? `/admin/${slug}/editions/${currentId}/reglages`
+              : undefined
+          "
           icon="i-lucide-history"
           icon-tone="neutral"
           :title="

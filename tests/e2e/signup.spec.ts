@@ -97,14 +97,62 @@ test('they create their group and organise up to 3 Secret Santa', async ({
     page.request.post(`/api/admin/${GROUP.slug}/editions`, {
       data: { label, year: 2026, eventDate: '2026-12-25' },
     });
-  for (const label of ['Les adultes', 'Les enfants', 'Les cousins']) {
-    expect((await newSecretSanta(label)).status()).toBe(201);
-  }
+  expect((await newSecretSanta('Les adultes')).status()).toBe(201);
+  // From « Créer », by the screens, with no right of any kind: the party
+  // they organise is offered, already with a Secret Santa this year
+  // (V3TirageQuelleFete); « Continuer » opens the form.
+  await page.goto('/');
+  await hydrated(page);
+  const createTab = page
+    .getByTestId('tab-bar')
+    .getByRole('button', { name: 'Créer' });
+  await createTab.click();
+  await page.getByTestId('create-secret-santa').click();
+  const occasion = page.getByTestId('secret-santa-occasion');
+  await expect(occasion).toContainText(GROUP.name);
+  await expect(occasion).toContainText(
+    'Noël · 1 membre · déjà un Secret Santa cette année',
+  );
+  await expect(occasion).toContainText('Une autre occasion');
+  await expect(occasion.getByRole('radio', { name: /Famille/ })).toBeChecked();
+  await occasion.getByRole('button', { name: 'Continuer' }).click();
+  await expect(page).toHaveURL(
+    new RegExp(`/admin/${GROUP.slug}/editions/nouvelle$`),
+  );
+  await page.getByTestId('new-secret-santa-nom').click();
+  await page.getByLabel(/^Nom/).fill('Les enfants');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(page.getByTestId('new-secret-santa-nom')).toContainText(
+    'Les enfants',
+  );
+  await page.getByRole('button', { name: 'Créer le Secret Santa' }).click();
+  await expect(page).toHaveURL(
+    new RegExp(`/admin/${GROUP.slug}/editions/[^/]+$`),
+  );
+  expect((await newSecretSanta('Les cousins')).status()).toBe(201);
   const fourth = await newSecretSanta('Un de trop');
   expect(fourth.status()).toBe(403);
   expect((await fourth.json()).statusMessage).toBe(
     'secret_santa_limit_reached',
   );
+  // « Créer › Un Secret Santa » shows the limit and the three
+  // (V3TirageLimite); nothing to ask anyone.
+  await page.goto('/');
+  await hydrated(page);
+  await createTab.click();
+  await page.getByTestId('create-secret-santa').click();
+  await expect(page).toHaveURL(/\/secret-santa\/limite$/);
+  await expect(heading(page)).toHaveText('Tu organises déjà 3 Secret Santa');
+  await expect(
+    page.getByText('C’est le maximum pour un compte.'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('limit-secret-santas').getByRole('link'),
+  ).toHaveText([
+    /^Famille Inscrite\s*Les adultes · pas encore tiré/,
+    /^Famille Inscrite\s*Les enfants · pas encore tiré/,
+    /^Famille Inscrite\s*Les cousins · pas encore tiré/,
+  ]);
   await page.goto('/');
   await hydrated(page);
   await expect(page.getByTestId('home-party')).toContainText(GROUP.name);

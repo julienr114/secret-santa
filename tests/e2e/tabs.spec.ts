@@ -20,14 +20,15 @@ test('the bar, « Créer » and the menu of the account', async ({ page }) => {
   await expect(bar.getByRole('link', { name: 'Tirages' })).toHaveCount(0);
   await expect(bar.getByRole('link', { name: 'Listes' })).toHaveCount(0);
 
-  // « Créer »: two lines, nothing else, each to « Pour quelle occasion ? ».
+  // « Créer »: two lines, nothing else, each to « Pour quelle occasion ? »;
+  // organising no party yet, a Secret Santa starts with a new one.
   await bar.getByRole('button', { name: 'Créer' }).click();
   const sheet = page.getByRole('dialog', { name: 'Créer' });
-  await expect(sheet.getByRole('link')).toHaveText([
+  await expect(sheet.getByRole('listitem')).toHaveText([
     'Un Secret Santa',
     'Une liste',
   ]);
-  await sheet.getByRole('link', { name: 'Un Secret Santa' }).click();
+  await sheet.getByRole('button', { name: 'Un Secret Santa' }).click();
   await expect(page).toHaveURL(/\/f\/nouvelle\?pour=secret-santa$/);
   await expect(heading(page)).toHaveText('Pour quelle occasion ?');
   await expect(sheet).toHaveCount(0);

@@ -61,6 +61,8 @@ export default {
       'So geht’s: Du versuchst zu erraten, wer dich beschenkt. Ein einziger Tipp, den du bis {guessEnd} ändern kannst.',
     howAll:
       'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen bei deinem eigenen Wichtel. So viele Tipps, wie du willst, bis {guessEnd}.',
+    howAllNeutral:
+      'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen damit, wer dich beschenkt. So viele Tipps, wie du willst, bis {guessEnd}.',
     secret:
       'Niemand sieht deine Tipps vor der Feier. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe: Je mehr von euch spielen, desto schöner wird sie.',
     cta: 'Dein Link, zum Spielen:',
@@ -90,6 +92,8 @@ export default {
     subject: 'Wichteln {groupName}: Noch ein paar Tipps vor dem Ende?',
     greeting: 'Hallo {firstName},',
     body: 'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), deinen Tipp zu deinem Wichtel abgegeben. Gut gemacht.',
+    bodyNeutral:
+      'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), getippt, wer dich beschenkt. Gut gemacht.',
     more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung bei der Feier.',
     cta: 'Weiter tippen',
   },

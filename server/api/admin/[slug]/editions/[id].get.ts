@@ -114,6 +114,8 @@ export default defineEventHandler(async (event) => {
     // game cannot be turned on (Correction 12).
     possible:
       edition.status === 'preparing' || gamePossible(participants.length),
+    // « Père Noël » is only said in a Christmas party (vocabulaire.md).
+    christmas: group.category === 'christmas',
   };
   return {
     edition: publicEdition(edition, participants.length),

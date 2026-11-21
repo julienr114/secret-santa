@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
               edition.guessMode === 'none' ? null : edition.guessEndsAt,
             guessTimeZone: edition.guessTimeZone,
             guessMode: edition.guessMode as 'none' | 'santa' | 'all',
+            christmas: group.category === 'christmas',
           },
           // Written in the recipient's language, not the guardian's.
           person?.language,

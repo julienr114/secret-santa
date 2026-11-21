@@ -48,8 +48,8 @@ test('the three emails are on by default and can be turned off', async ({
 }) => {
   await loginAsSuper(page, SUPER);
   // The email of the party on its settings, those of the draw on the
-  // settings of its Secret Santa (ticket 104).
-  await page.goto(`/f/${SLUG}/reglages/secret-santa`);
+  // settings of its Secret Santa (ticket 105).
+  await page.goto(`/admin/${SLUG}/editions/${state.editionId}/reglages`);
   await hydrated(page);
   await expect(
     page

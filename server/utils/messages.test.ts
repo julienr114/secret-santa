@@ -455,6 +455,18 @@ describe('« Devine qui » in the messages', () => {
     ).toContain('tu essaies de deviner qui offre à qui');
   });
 
+  it('never says « Père Noël » outside a Christmas party', () => {
+    const all = { ...game, guessMode: 'all' as const };
+    expect(valueOf(buildMessage('guessReminder', all))).toContain(
+      'à commencer par ton propre Père Noël',
+    );
+    const elsewhere = valueOf(
+      buildMessage('guessReminder', { ...all, christmas: false }),
+    );
+    expect(elsewhere).toContain('à commencer par qui t’offre');
+    expect(elsewhere).not.toContain('Père Noël');
+  });
+
   it('announces the results without any name but the reader’s', () => {
     const email = buildGuessResultsEmail(
       { ...data, link: 'https://secret-santa.example/p/abc123/devine' },
@@ -513,6 +525,16 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'Secret Santa de Famille Camille : encore quelques pronostics avant la fin ?',
     );
     expect(email.text).not.toContain('Je passe mon tour');
+  });
+
+  it('asks for more without « Père Noël » outside Christmas', () => {
+    const email = buildGuessAutoReminderEmail(
+      { ...game, christmas: false, skipLink: '', played: 4, total: 6, days: 2 },
+      'more',
+      'fr',
+    );
+    expect(email.text).toContain('ton pronostic sur qui t’offre');
+    expect(email.text).not.toContain('Père Noël');
   });
 
   it('tells the organiser who has not played, five days before', () => {

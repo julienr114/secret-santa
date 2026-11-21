@@ -18,13 +18,12 @@ flowchart LR
 
   accueil --> compte["Mon compte"]
   accueil --> passes["Tirages passés"]
-  accueil --> demande["Demander à créer un groupe"]
+  accueil --> limite["La limite de Secret Santa<br/><small>/secret-santa/limite</small>"]
   accueil --> listes["Listes<br/><small>/listes</small>"]
   accueil --> nouveautes["Quoi de neuf<br/><small>/quoi-de-neuf</small>"]
 
   subgraph admin ["Administration (super-admin)"]
     administration["Administration<br/><small>/admin</small>"]
-    administration --> uneDemande["Une demande de groupe"]
     administration --> groupes["Tous les groupes"]
     groupes --> nouveauGroupe["Nouveau groupe"]
     administration --> comptes["Comptes"]
@@ -43,10 +42,8 @@ flowchart LR
     leGroupe --> exclusionsGroupe["Exclusions"]
     leGroupe --> journalGroupe["Journal"]
     leGroupe --> reglagesGroupe["Réglages de la fête"]
-    reglagesGroupe --> reglagesSanta["Réglages du Secret Santa"]
-    reglagesSanta --> motGroupe["Mot ajouté aux messages"]
-    leGroupe --> nouvelleEdition["Nouvelle édition"]
-    nouvelleEdition --> motNouvelle["Petit mot<br/><small>nouvelle édition</small>"]
+    leGroupe --> nouvelleEdition["Le Secret Santa 2027<br/><small>nouveau</small>"]
+    nouvelleEdition --> ligneNouvelle["Une ligne<br/><small>nom, date, budget, Devine qui, petit mot, mot ajouté</small>"]
   end
   accueil --> nouvelleFete["Pour quelle occasion ?<br/><small>/f/nouvelle</small>"]
   accueil --> leGroupe
@@ -59,8 +56,10 @@ flowchart LR
     lEdition --> messageUne["Personnaliser le message<br/><small>pour une personne</small>"]
     lEdition --> rappel["Rappeler le jeu"]
     rappel --> messageRappel["Personnaliser le message<br/><small>rappel, ou groupe</small>"]
-    lEdition --> reglagesEdition["Réglages de l'édition"]
+    lEdition --> reglagesEdition["Réglages du Secret Santa"]
     reglagesEdition --> motEdition["Petit mot"]
+    reglagesEdition --> motMessages["Mot ajouté aux messages"]
+    reglagesGroupe --> reglagesEdition
     lEdition --> exclusionsEdition["Exclusions de l'édition"]
     lEdition --> annuler["Annuler le tirage"]
     lEdition --> voir["Voir un seul résultat"]
@@ -111,13 +110,13 @@ Décidée par Julien le 18 novembre 2026.
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau : « Un Secret Santa » et « Une liste » mènent à « Pour quelle occasion ? » (`/f/nouvelle?pour=secret-santa`, `?pour=liste`). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » mène à « Pour quelle occasion ? » (`/f/nouvelle?pour=liste`). « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/f/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/f/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite`. Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
 L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle`. « Préparer », dans « Bientôt », ouvre `/f/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs » ouvre `/listes` jusqu'au ticket 106. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
-| Demander à créer un groupe | `/demande` | Accueil | |
+| La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Connexion | `/login` | — | |
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
@@ -129,16 +128,15 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/f/[fête]`) ; 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Administration | `/admin` | Accueil | |
-| Une demande de groupe (Refuser, Accepter) | `/admin/demandes/[id]` | Administration | |
 | Tous les groupes | `/admin/groupes` | Administration | |
 | Nouveau groupe | `/admin/groupes/nouveau` | Tous les groupes (super-admin), sinon Accueil | |
 | Comptes | `/admin/comptes` | Administration ; les comptes désactivés : Comptes | |
-| Un compte | `/admin/comptes/[id]` | Comptes | Quota, désactivation |
+| Un compte | `/admin/comptes/[id]` | Comptes | Limite de Secret Santa, désactivation |
 | Guide de style | `/admin/guide-de-style` | Administration | |
 
 ## Une fête (ses membres ; l'organisateur pour le reste)
 
-Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de la fête (`partyPathOf`, `app/middleware/redirects.global.ts`). Les éditions restent sous `/admin/[groupe]/editions` jusqu'au ticket 105.
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de la fête (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
@@ -149,26 +147,25 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Nouvelle personne | `/f/[fête]/membres/nouvelle` | Membres | |
 | Inviter par lien | `/f/[fête]/invitation` | Membres | Places, date limite |
 | Ton mot sur la page | `/f/[fête]/invitation/mot` | Inviter par lien | |
-| Exclusions | `/f/[fête]/exclusions` | La fête | Ajouter une exclusion |
+| Exclusions | `/f/[fête]/exclusions` | Membres | Ajouter une exclusion |
 | Journal | `/f/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête | `/f/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
-| Réglages du Secret Santa (jusqu'au ticket 105) | `/f/[fête]/reglages/secret-santa` | Réglages de la fête | Chaque réglage sauf le mot |
-| Mot ajouté aux messages | `/f/[fête]/reglages/mot` | Réglages du Secret Santa | |
 | (ancienne adresse) | `/f/[fête]/organisateurs` | mène aux Réglages de la fête | |
 
 ## Une édition (organisateur)
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Nouvelle édition | `/admin/[groupe]/editions/nouvelle` | La fête | |
-| Petit mot d'une nouvelle édition (gardé dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/mot` | Nouvelle édition | |
+| Un nouveau Secret Santa (« Le Secret Santa 2027 ») | `/admin/[fête]/editions/nouvelle` | La fête | |
+| Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, devine, mot, message]` | Le nouveau Secret Santa | |
 | L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
-| Réglages de l'édition | `…/editions/[id]/reglages` | L'édition | Date, budget, Devine qui |
-| Petit mot | `…/editions/[id]/mot` | Réglages de l'édition | |
+| Réglages du Secret Santa (« Réglages de la fête » y mène aussi, pour le dernier de l'année) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, pistes de cadeaux |
+| Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
+| Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |
 | Annuler le tirage | `…/editions/[id]/annuler` | L'édition | |
 | Voir un seul résultat | `…/editions/[id]/voir-le-tirage` | L'édition | Le résultat de qui ? |

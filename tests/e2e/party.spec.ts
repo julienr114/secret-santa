@@ -71,9 +71,10 @@ test('its settings are only its own', async ({ page }) => {
   await expect(settings).toContainText(
     'Le 14 décembre · proposée chaque année',
   );
+  // No Secret Santa yet: nothing of its own to set (ticket 105).
   await expect(
     page.getByRole('link', { name: /^Réglages du Secret Santa/ }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(page.getByTestId('notifications')).toContainText(
     'Quelqu’un rejoint la fête par le lien',
   );

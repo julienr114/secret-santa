@@ -57,12 +57,10 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.locator('main').getByRole('listitem')).toHaveCount(7);
 
   // Léa and Tom must not draw each other (both ways by default), each
-  // picked in a sheet over « Nouvelle exclusion ». The exclusions are a
-  // setting of the Secret Santa (ticket 104).
-  await page.goto(`/f/${GROUP.slug}/reglages`);
+  // picked in a sheet over « Nouvelle exclusion ». The exclusions stay
+  // with the party (docs/spec/v3/modele.md).
+  await page.goto(`/f/${GROUP.slug}/exclusions`);
   await hydrated(page);
-  await page.getByRole('link', { name: /^Réglages du Secret Santa/ }).click();
-  await page.getByTestId('exclusions-row').click();
   await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
   await page.getByRole('button', { name: /^Qui/ }).click();
   await page.getByRole('option', { name: 'Léa' }).click();
@@ -78,26 +76,37 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.goto(`/f/${GROUP.slug}`);
   await hydrated(page);
   await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
-  // The party date is required: Christmas Day is offered in one tap.
-  await page.getByRole('button', { name: "Créer l'édition" }).click();
-  await expect(page.getByText('Choisis la date de la fête')).toBeVisible();
-  // Five people taken over, as this is the group's first edition.
-  await expect(page.getByTestId('taken-over')).toContainText(
-    '5 participants repris.',
+  // Six rows, each opening its page (V3TirageNouveau); the day of the
+  // party is already there, and the five members of the party are taken,
+  // as this is its first Secret Santa.
+  await expect(heading(page)).toHaveText(/^Le Secret Santa \d{4}$/);
+  await expect(
+    page.getByTestId('new-secret-santa').getByRole('link'),
+  ).toHaveCount(6);
+  await expect(page.getByTestId('new-secret-santa-date')).toContainText(
+    '25 décembre',
   );
-  await page.getByRole('button', { name: /^Proposer le 25 décembre/ }).click();
+  await expect(page.getByTestId('taken-over')).toContainText(
+    '5 membres de la fête.',
+  );
   // A budget of its own, shown in the edition's header.
+  const budget = page.getByTestId('new-secret-santa-budget');
+  await expect(budget).toContainText('Aucun');
+  await budget.click();
+  await expect(page).toHaveURL(/\/editions\/nouvelle\/budget$/);
   await page.getByLabel(/^Budget/).fill('20 €');
-  // The word is written on its own page; the form is kept (README 23.3).
-  const word = page.getByTestId('new-edition-word');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('20 €');
+  // The word, on its own page too; the form is kept (README 23.3).
+  const word = page.getByTestId('new-secret-santa-mot');
   await expect(word).toContainText('Aucun');
   await word.click();
   await expect(page).toHaveURL(/\/editions\/nouvelle\/mot$/);
-  await page.getByLabel(/Ton mot/).fill('Après le dessert !');
+  await page.getByLabel(/^Petit mot/).fill('Après le dessert !');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(word).toContainText('Après le dessert !');
-  await expect(page.getByLabel(/^Budget/)).toHaveValue('20 €');
-  await page.getByRole('button', { name: "Créer l'édition" }).click();
+  await expect(budget).toContainText('20 €');
+  await page.getByRole('button', { name: 'Créer le Secret Santa' }).click();
   await expect(page.getByText('Famille E2E · Budget 20 €')).toBeVisible();
   await expect(page.getByTestId('settings-row')).toContainText('Budget 20 €');
   // Ready to prepare at once: links work, the draw can be checked.

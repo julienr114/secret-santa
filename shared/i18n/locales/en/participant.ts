@@ -230,7 +230,14 @@ export default {
       other:
         'Last year, {count} people out of {total} guessed their Secret Santa. Beat that.',
     },
+    challengeNeutral: {
+      one: 'Last year, {count} person out of {total} guessed who was giving to them. Beat that.',
+      other:
+        'Last year, {count} people out of {total} guessed who was giving to them. Beat that.',
+    },
     challengeNone: 'Last year, nobody guessed their Secret Santa. Beat that.',
+    challengeNoneNeutral:
+      'Last year, nobody guessed who was giving to them. Beat that.',
     skip: 'I’ll sit this one out',
     skippedTitle: 'You’re sitting this one out',
     skippedBody:
@@ -263,6 +270,7 @@ export default {
     changeMind: 'Change my mind',
     secret: 'Nobody sees your guess before the party.',
     mySanta: 'My Secret Santa',
+    mySantaNeutral: 'Who gives to me',
     others: 'The others',
     mine: 'My guesses',
     choose: '+ Choose',
@@ -291,12 +299,15 @@ export default {
     discover: 'Discover the palmarès',
     rewatch: 'Watch the palmarès again',
     palmaresHint: 'Your Secret Santa, the detective, the best hidden…',
+    palmaresHintNeutral: 'Who gives to you, the detective, the best hidden…',
     palmaresHintSmall: 'Your Secret Santa, unmasked at last',
+    palmaresHintSmallNeutral: 'Who gives to you, unmasked at last',
     mineScore: {
       one: 'My guesses · {right} right out of {count}',
       other: 'My guesses · {right} right out of {count}',
     },
     mySantaWas: 'Your Secret Santa: {name}',
+    mySantaWasNeutral: 'Who gives to you: {name}',
     theirSantaWas: "{name}'s: {giver}",
     right: 'Well spotted',
     youSaid: 'You said {name}',
@@ -310,11 +321,15 @@ export default {
         title: 'Unmasked',
         titleMany: 'Unmasked',
         body: 'Guessed their Secret Santa.',
+        bodyNeutral: 'Guessed who was giving to them.',
         bodyMany: 'They guessed their Secret Santa.',
+        bodyManyNeutral: 'They guessed who was giving to them.',
         share: '{n} out of {m}',
         crowdOf: 'people out of {total}',
         shareBody: 'guessed their Secret Santa.',
+        shareBodyNeutral: 'guessed who was giving to them.',
         all: 'The Santas couldn’t hide a thing.',
+        allNeutral: 'Nobody could hide a thing.',
         most: 'A great year for detectives.',
       },
       detective: {
@@ -361,8 +376,11 @@ export default {
         title: 'The ideal suspect',
         titleMany: 'The ideal suspects',
         never: 'Named {count} times as Secret Santa. Wrongly, every time.',
+        neverNeutral: 'Named {count} times, wrongly. Every time.',
         body: 'Named wrongly {count} times as Secret Santa.',
+        bodyNeutral: 'Named {count} times, wrongly.',
         bodyMany: 'Each named wrongly {count} times as Secret Santa.',
+        bodyManyNeutral: 'Each named {count} times, wrongly.',
       },
       twins: {
         title: 'The twins',
@@ -402,13 +420,19 @@ export default {
         same: 'By chance, you would have had {chance}. Chance would have done as well.',
         worse:
           'By chance, you would have had {chance}. The Santas were well hidden.',
+        worseNeutral:
+          'By chance, you would have had {chance}. Everyone was well hidden.',
       },
       closeCall: {
         title: 'So close',
         big: 'Almost!',
         body: 'You had found {name}’s Secret Santa… then you changed your mind. Your instinct was right.',
+        bodyNeutral:
+          'You had found who was giving to {name}… then you changed your mind. Your instinct was right.',
         bodyMe:
           'You had found your Secret Santa… then you changed your mind. Your instinct was right.',
+        bodyMeNeutral:
+          'You had found who was giving to you… then you changed your mind. Your instinct was right.',
       },
     },
     story: {
@@ -420,8 +444,10 @@ export default {
       openingBody:
         "{players} players, {guesses} guesses. Let's see what they were worth.",
       mySanta: 'Your Secret Santa',
+      mySantaNeutral: 'Who gives to you',
       youSaid: 'You said\n{name}…',
       noGuess: 'And your Secret Santa was…',
+      noGuessNeutral: 'And the one giving to you was…',
       soWell: 'So, well spotted?',
       right: 'It was\n{name} indeed!',
       was: 'It was {name}.',

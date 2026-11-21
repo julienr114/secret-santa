@@ -97,6 +97,7 @@ export default defineEventHandler(async (event) => {
               edition.guessMode === 'none' ? null : edition.guessEndsAt,
             guessTimeZone: edition.guessTimeZone,
             guessMode: edition.guessMode as 'none' | 'santa' | 'all',
+            christmas: group.category === 'christmas',
           },
           person.language,
           note,

@@ -89,7 +89,8 @@ const saveDate = () => {
   dateOpen.value = false;
   patch({ date });
 };
-const santaYear = computed(() => data.value?.secretSantas.at(-1)?.year);
+/** The latest Secret Santa of the year: its settings (ticket 105). */
+const latestSanta = computed(() => data.value?.secretSantas.at(-1));
 
 // Organisers: removing asks for a second tap.
 const adding = ref(false);
@@ -147,14 +148,12 @@ const deleting = ref(false);
         />
       </UiList>
 
-      <UiList :title="t('party.reglages.secretSanta')">
+      <UiList v-if="latestSanta" :title="t('party.reglages.secretSanta')">
         <UiListItem
           :title="
-            santaYear
-              ? t('party.reglages.secretSantaRow', { year: santaYear })
-              : t('party.reglages.secretSantaRowNone')
+            t('party.reglages.secretSantaRow', { year: latestSanta.year })
           "
-          :to="`/f/${slug}/reglages/secret-santa`"
+          :to="`/admin/${slug}/editions/${latestSanta.id}/reglages`"
         />
       </UiList>
 

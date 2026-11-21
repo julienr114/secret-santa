@@ -7,25 +7,27 @@ export default {
     editionFallback: 'Edition',
   },
   newEdition: {
-    title: 'New edition',
-    nameLabel: 'Name of the edition',
-    nameRequired: 'Name required',
+    nameRow: 'Name',
+    dateToChoose: 'To choose',
+    takenOverFrom: {
+      one: '{count} member taken from the Secret Santa {year}.',
+      other: '{count} members taken from the Secret Santa {year}.',
+    },
+    partyMembers: {
+      one: '{count} member of the party.',
+      other: '{count} members of the party.',
+    },
     dateLabel: 'Day of the party',
-    dateRequired: 'Choose the day of the party',
     budgetLabel: 'Budget',
     optional: '(optional)',
-    budgetFrom: 'Taken from {label}. Shown with the result.',
-    shownWithResult: 'Shown with the result.',
     messageLabel: 'A word for the participants',
     messagePlaceholder: 'We open the presents after dessert!',
-    messageRow: 'Optional. Shown with the result.',
     messageNone: 'None',
     takenOver: {
       one: '{count} participant taken over.',
       other: '{count} participants taken over.',
     },
-    adjustLater: 'You will adjust the list on the next screen.',
-    submit: 'Create the edition',
+    submit: 'Create the Secret Santa',
     creating: 'Creating…',
   },
   cockpit: {
@@ -566,6 +568,8 @@ export default {
         'How it works: everyone tries to guess who gives them their present, on their own page. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
       howAll:
         'How it works: everyone tries to guess who gives to whom, on their own page, starting with their own Secret Santa. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
+      howAllNeutral:
+        'How it works: everyone tries to guess who gives to whom, on their own page, starting with who gives to them. Nobody sees the guesses before the party: the answers come when the draw is revealed, with a surprise for the group.',
       tail: 'The more of you play, the better it will be.',
       personal: 'Everyone finds the game with their personal link.',
       share: 'Share',
@@ -604,6 +608,7 @@ export default {
     modeHint: {
       none: 'The game is off',
       santa: 'Everyone guesses their own Secret Santa',
+      santaNeutral: 'Everyone guesses who gives to them',
       all: 'Everyone also guesses for the others, as much as they like',
     },
     endLabel: 'End of the guesses, on {date} at',
@@ -611,12 +616,13 @@ export default {
       'The answers come when you reveal the draw at the party, or by themselves the day after.',
     lossSanta:
       "The guesses about the others will be deleted: only everyone's guess on their own Secret Santa stays.",
+    lossSantaNeutral:
+      'The guesses about the others will be deleted: only everyone’s guess on who gives to them stays.',
     lossOff: 'Every guess will be deleted.',
     confirmLoss: 'Delete and validate',
   },
   settings: {
     title: 'Edition settings',
-    intro: 'What the participants of {label} see.',
     dateTitle: 'Date',
     wordTitle: 'Short note',
     budgetIs: 'Budget {budget}',

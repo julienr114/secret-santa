@@ -10,6 +10,9 @@ export const keys = {
   // The page of a party (V3, ticket 104), under its group's key.
   party: (slug: string) => ['group', slug, 'party'] as const,
   partyCandidates: () => ['parties', 'candidates'] as const,
+  // « Créer › Un Secret Santa » (ticket 105), under the home's key: what
+  // changes the home changes it.
+  newSecretSanta: () => ['home', 'new-secret-santa'] as const,
   people: (slug: string) => ['group', slug, 'people'] as const,
   rules: (slug: string) => ['group', slug, 'rules'] as const,
   editions: (slug: string) => ['group', slug, 'editions'] as const,

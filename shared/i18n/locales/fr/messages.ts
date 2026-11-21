@@ -62,6 +62,8 @@ export default {
       'Le principe : tu essaies de deviner qui t’offre ton cadeau. Un seul pronostic, que tu peux changer jusqu’au {guessEnd}.',
     howAll:
       'Le principe : tu essaies de deviner qui offre à qui, à commencer par ton propre Père Noël. Autant de pronostics que tu veux, jusqu’au {guessEnd}.',
+    howAllNeutral:
+      'Le principe : tu essaies de deviner qui offre à qui, à commencer par qui t’offre. Autant de pronostics que tu veux, jusqu’au {guessEnd}.',
     secret:
       'Personne ne voit tes pronostics avant la fête. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe : plus vous êtes nombreux à jouer, plus elle sera belle.',
     cta: 'Ton lien, pour jouer :',
@@ -92,6 +94,8 @@ export default {
       'Secret Santa de {groupName} : encore quelques pronostics avant la fin ?',
     greeting: 'Bonjour {firstName},',
     body: 'Tu as fait ton pronostic sur ton Père Noël à Devine qui, le jeu du Secret Santa de {groupName} ({editionLabel}). Bien joué.',
+    bodyNeutral:
+      'Tu as fait ton pronostic sur qui t’offre à Devine qui, le jeu du Secret Santa de {groupName} ({editionLabel}). Bien joué.',
     more: 'Il te reste {days} jours pour deviner aussi qui offre aux autres. Plus il y a de pronostics, plus la surprise de la fête sera belle.',
     cta: 'Continuer mes pronostics',
   },

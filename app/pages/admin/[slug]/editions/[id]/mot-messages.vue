@@ -1,34 +1,38 @@
 <script setup lang="ts">
 import { NOTE_MAX, type NotePosition } from '#server/utils/messages';
 import {
-  useRulesQuery,
-  useUpdateRulesMutation,
+  useEditionQuery,
+  useUpdateEditionMutation,
 } from '~/composables/queries/useGroup';
 
-// The group's word, added to every message and email sent to the
-// participants, on a page of its own (README 23.3, Correction 18, maquette
-// GroupeMot): the word, then where it goes, « Valider » fixed at the
-// bottom, « Retour » gives the change up.
+// « Mot ajouté aux messages » of a Secret Santa (docs/spec/v3/
+// secret-santa.md, « Ses réglages », V3TirageReglages), added to every
+// message and email sent to its participants, on a page of its own (README
+// 23.3, Correction 18, maquette GroupeMot): the word, then where it goes,
+// « Valider » under it, « Retour » gives the change up.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
+const id = computed(() => String(route.params.id));
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
-const context = useScreenContext(slug);
+const context = useScreenContext(slug, id);
 useHead({
   title: () => context.titleOf(t('adminGroup.rules.messageNote')),
 });
-const parent = computed(() => `/f/${slug.value}/reglages/secret-santa`);
+const parent = computed(
+  () => `/admin/${slug.value}/editions/${id.value}/reglages`,
+);
 const screen = computed(() => ({ back: parent.value }));
 
-const rules = useRulesQuery(slug);
-const update = useUpdateRulesMutation(slug);
+const edition = useEditionQuery(slug, id);
+const update = useUpdateEditionMutation(slug);
 const positions = useNotePositionItems();
 const note = ref('');
 const position = ref<NotePosition>('after');
 watch(
-  () => rules.data.value?.rules,
+  () => edition.data.value?.rules,
   (current) => {
     note.value = current?.messageNote ?? '';
     position.value = current?.messageNotePosition ?? 'after';
@@ -40,12 +44,20 @@ const failure = computed(() =>
   update.isError.value ? errorMessage(update.error.value) : null,
 );
 /**
- * Saves the word and where it goes, then goes back.
+ * Saves the word and where it goes, with the other rules of the Secret
+ * Santa (the route replaces them all), then goes back.
  * @returns Nothing: the mutation reports by itself.
  */
 const onValidate = () =>
   update.mutate(
-    { messageNote: note.value.trim(), messageNotePosition: position.value },
+    {
+      id: id.value,
+      rulesOverride: {
+        ...(edition.data.value?.edition.rulesOverride ?? {}),
+        messageNote: note.value.trim(),
+        messageNotePosition: position.value,
+      },
+    },
     { onSuccess: () => goBack(parent.value) },
   );
 </script>
@@ -53,8 +65,8 @@ const onValidate = () =>
 <template>
   <AdminScreen v-bind="screen">
     <AdminQueryState
-      :pending="rules.isPending.value"
-      :error="rules.error.value"
+      :pending="edition.isPending.value"
+      :error="edition.error.value"
       :skeleton="['title', 'card']"
     >
       <div class="flex flex-col gap-1">
@@ -89,7 +101,7 @@ const onValidate = () =>
           size="xl"
           class="h-13 justify-center text-[17px] font-bold"
           :loading="saving"
-          :disabled="saving"
+          :disabled="saving || edition.data.value?.edition.status === 'closed'"
           :label="t('common.actions.validate')"
           data-testid="note-validate"
           @click="onValidate"

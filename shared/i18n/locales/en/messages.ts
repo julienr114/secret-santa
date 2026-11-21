@@ -62,6 +62,8 @@ export default {
       'How it works: you try to guess who gives you your present. One guess, which you can change until {guessEnd}.',
     howAll:
       'How it works: you try to guess who gives to whom, starting with your own Secret Santa. As many guesses as you like, until {guessEnd}.',
+    howAllNeutral:
+      'How it works: you try to guess who gives to whom, starting with who gives to you. As many guesses as you like, until {guessEnd}.',
     secret:
       'Nobody sees your guesses before the party. The answers come when the draw is revealed, with a surprise for the group: the more of you play, the better it will be.',
     cta: 'Your link, to play:',
@@ -91,6 +93,8 @@ export default {
     subject: '{groupName} Secret Santa: a few more guesses before the end?',
     greeting: 'Hello {firstName},',
     body: 'You made your guess about your Secret Santa in Devine qui, the game of the {groupName} Secret Santa ({editionLabel}). Well played.',
+    bodyNeutral:
+      'You made your guess about who gives to you in Devine qui, the game of the {groupName} Secret Santa ({editionLabel}). Well played.',
     more: 'You have {days} days left to guess who gives to the others too. The more guesses, the better the surprise at the party.',
     cta: 'Continue my guesses',
   },

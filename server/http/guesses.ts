@@ -34,7 +34,7 @@ import type { Actor } from '#server/utils/audit';
 // one email of the results). Used by the routes and by the scheduled task.
 
 type Context = { db: Db; event?: H3Event; dataKey: CryptoKey };
-type Group = { id: string; name: string };
+type Group = { id: string; name: string; category: string };
 
 /**
  * Writes « les pronostics sont fermés » in the journal, once.
@@ -191,7 +191,7 @@ export type GamePerson = { id: string; name: string; avatar: Avatar };
  */
 export const gamePayload = async (
   ctx: Pick<PersonalContext, 'db' | 'edition' | 'person' | 'participation'> & {
-    group: { name: string };
+    group: { name: string; category: string };
     rules: { eventDate: string };
   },
   dataKey: CryptoKey,
@@ -216,6 +216,8 @@ export const gamePayload = async (
     // The language of the page, like every read of a personal link.
     language: localeOf(person.language),
     groupName: ctx.group.name,
+    // « Père Noël » is only said in a Christmas party (vocabulaire.md).
+    christmas: ctx.group.category === 'christmas',
     // « ton organisateur » or « tes organisateurs ».
     organizers: await organizerCount(db, edition.partyId),
     firstName: person.firstName,

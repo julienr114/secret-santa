@@ -325,17 +325,19 @@ test('the setting: portrait only, then no hint at all', async ({ page }) => {
 
   // On the settings screen, the row says the value and opens three choices.
   await page.context().addCookies((await admin().storageState()).cookies);
-  await open(page, `/f/${SLUG}/reglages/secret-santa`);
+  await open(page, `/admin/${SLUG}/editions/${state.editionId}/reglages`);
   const row = page.getByTestId('gift-hints-setting');
   await expect(row).toContainText('Aucune piste');
   await row.click();
   await page.getByText('Portrait et idées précises').click();
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(row).toContainText('Portrait et idées précises');
+  // The setting of this Secret Santa (ticket 105).
   await expect
     .poll(
       async () =>
-        (await ok(await admin().get(`${ADMIN}/rules`))).rules?.giftHints,
+        (await ok(await admin().get(`${ADMIN}/editions/${state.editionId}`)))
+          .rules?.giftHints,
     )
     .toBe('full');
 });

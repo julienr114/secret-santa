@@ -23,7 +23,8 @@ const token = computed(() => String(route.params.token));
 const query = useGameQuery(token);
 useOrganizersOf(() => query.data.value?.organizers);
 const save = useGuessMutation(token);
-const { t } = useT();
+// « Père Noël » only in a Christmas party (docs/spec/v3/vocabulaire.md).
+const { t } = useT({ christmas: () => query.data.value?.christmas ?? true });
 const organizers = useOrganizers();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
@@ -433,6 +434,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
         <ParticipantGameSurprise
           v-if="!rows[0]?.guessed"
           :challenge="game.challenge"
+          :christmas="game.christmas"
         />
         <UiStickyFooter>
           <UButton
@@ -466,7 +468,10 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
       <!-- « Toutes les paires », open; or every mode once closed. -->
       <template v-else>
         <template v-if="game.open && made === 0">
-          <ParticipantGameSurprise :challenge="game.challenge" />
+          <ParticipantGameSurprise
+            :challenge="game.challenge"
+            :christmas="game.christmas"
+          />
         </template>
         <div
           v-else-if="progress"

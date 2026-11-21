@@ -238,8 +238,15 @@ export default {
       other:
         'Letztes Jahr haben {count} von {total} Personen ihren Wichtel erraten. Zu schlagen.',
     },
+    challengeNeutral: {
+      one: 'Letztes Jahr hat {count} von {total} Personen erraten, von wem das eigene Geschenk kam. Zu schlagen.',
+      other:
+        'Letztes Jahr haben {count} von {total} Personen erraten, von wem das eigene Geschenk kam. Zu schlagen.',
+    },
     challengeNone:
       'Letztes Jahr hat niemand den eigenen Wichtel erraten. Zu schlagen.',
+    challengeNoneNeutral:
+      'Letztes Jahr hat niemand erraten, von wem das eigene Geschenk kam. Zu schlagen.',
     skip: 'Ich setze aus',
     skippedTitle: 'Du setzt aus',
     skippedBody:
@@ -271,6 +278,7 @@ export default {
     changeMind: 'Meine Meinung ändern',
     secret: 'Niemand sieht deinen Tipp vor der Feier.',
     mySanta: 'Mein Wichtel',
+    mySantaNeutral: 'Wer mich beschenkt',
     others: 'Die anderen',
     mine: 'Meine Tipps',
     choose: '+ Wählen',
@@ -300,12 +308,16 @@ export default {
     discover: 'Die Rangliste entdecken',
     rewatch: 'Die Rangliste noch einmal ansehen',
     palmaresHint: 'Dein Wichtel, der Detektiv, die am besten Versteckten…',
+    palmaresHintNeutral:
+      'Wer dich beschenkt, der Detektiv, die am besten Versteckten…',
     palmaresHintSmall: 'Dein Wichtel, endlich enttarnt',
+    palmaresHintSmallNeutral: 'Wer dich beschenkt, endlich enttarnt',
     mineScore: {
       one: 'Meine Tipps · {right} richtig von {count}',
       other: 'Meine Tipps · {right} richtig von {count}',
     },
     mySantaWas: 'Dein Wichtel: {name}',
+    mySantaWasNeutral: 'Wer dich beschenkt: {name}',
     theirSantaWas: 'Der von {name}: {giver}',
     right: 'Gut erkannt',
     youSaid: 'Du sagtest {name}',
@@ -319,11 +331,15 @@ export default {
         title: 'Enttarnt',
         titleMany: 'Enttarnt',
         body: 'Hat den eigenen Wichtel erraten.',
+        bodyNeutral: 'Hat erraten, von wem das eigene Geschenk kam.',
         bodyMany: 'Sie haben ihren Wichtel erraten.',
+        bodyManyNeutral: 'Sie haben erraten, von wem ihr Geschenk kam.',
         share: '{n} von {m}',
         crowdOf: 'Personen von {total}',
         shareBody: 'haben ihren Wichtel erraten.',
+        shareBodyNeutral: 'haben erraten, von wem ihr Geschenk kam.',
         all: 'Die Wichtel konnten nichts verbergen.',
+        allNeutral: 'Niemand konnte etwas verbergen.',
         most: 'Ein gutes Jahr für Detektive.',
       },
       detective: {
@@ -371,8 +387,11 @@ export default {
         title: 'Der ideale Verdächtige',
         titleMany: 'Die idealen Verdächtigen',
         never: '{count}-mal als Wichtel genannt. Jedes Mal zu Unrecht.',
+        neverNeutral: '{count}-mal genannt. Jedes Mal zu Unrecht.',
         body: '{count}-mal zu Unrecht als Wichtel genannt.',
+        bodyNeutral: '{count}-mal zu Unrecht genannt.',
         bodyMany: 'Je {count}-mal zu Unrecht als Wichtel genannt.',
+        bodyManyNeutral: 'Je {count}-mal zu Unrecht genannt.',
       },
       twins: {
         title: 'Die Zwillinge',
@@ -412,13 +431,19 @@ export default {
         same: 'Per Zufall hättet ihr {chance} gehabt. Der Zufall hätte es genauso gut gemacht.',
         worse:
           'Per Zufall hättet ihr {chance} gehabt. Die Wichtel waren gut versteckt.',
+        worseNeutral:
+          'Per Zufall hättet ihr {chance} gehabt. Alle waren gut versteckt.',
       },
       closeCall: {
         title: 'So knapp',
         big: 'Fast!',
         body: 'Du hattest den Wichtel von {name} gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
+        bodyNeutral:
+          'Du hattest gefunden, wer {name} beschenkt… und dann umentschieden. Das Bauchgefühl hatte recht.',
         bodyMe:
           'Du hattest deinen Wichtel gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
+        bodyMeNeutral:
+          'Du hattest gefunden, wer dich beschenkt… und dann umentschieden. Das Bauchgefühl hatte recht.',
       },
     },
     story: {
@@ -430,8 +455,10 @@ export default {
       openingBody:
         '{players} Spieler, {guesses} Tipps. Mal sehen, was sie wert waren.',
       mySanta: 'Dein Wichtel',
+      mySantaNeutral: 'Wer dich beschenkt',
       youSaid: 'Du hattest\n{name} gesagt…',
       noGuess: 'Und dein Wichtel war…',
+      noGuessNeutral: 'Und dich beschenkt hat…',
       soWell: 'Und, gut erkannt?',
       right: 'Es war\ntatsächlich {name}!',
       was: 'Es war {name}.',

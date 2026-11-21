@@ -52,7 +52,10 @@ export type PartyPage = {
   members: { count: number; avatars: Avatar[] };
   /** The Secret Santas of the year I organise or take part in. */
   secretSantas: { id: string; year: number; to: string | null }[];
-  /** May organise one more: none of the party is going on (until 105). */
+  /**
+   * May organise one more: any organiser, the limit of the account being
+   * told on the form (ticket 105).
+   */
   canAddSecretSanta: boolean;
   /** The lists of the party I may see: public in it, or mine. */
   lists: {
@@ -215,9 +218,7 @@ export const loadPartyPage = async (
             ? `/admin/${party.slug}/editions/${santa.id}`
             : (paths.get(santa.id) ?? null),
       })),
-    canAddSecretSanta:
-      role === 'organiser' &&
-      santas.every((santa) => santa.status === 'closed'),
+    canAddSecretSanta: role === 'organiser',
     lists: links
       .filter((list) => list.visibility === 'party' || held.has(list.id))
       .map((list) => {

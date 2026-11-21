@@ -68,6 +68,19 @@ export const hasMessage = (key: string): boolean =>
   templateOf(DEFAULT_LOCALE, key, 0) !== null;
 
 /**
+ * The key of a text as a party of its category says it (docs/spec/v3/
+ * vocabulaire.md, « Père Noël seulement à Noël »): outside Christmas, a
+ * text that says « Père Noël » has a variant written for good, under the
+ * same key followed by `Neutral`.
+ * @param key - The key of the text at Christmas.
+ * @param christmas - Whether the party is of the Christmas category.
+ * @returns The key to read: its variant when there is one and it is not
+ * Christmas, otherwise the key itself.
+ */
+export const santaKey = (key: string, christmas: boolean): string =>
+  !christmas && hasMessage(`${key}Neutral`) ? `${key}Neutral` : key;
+
+/**
  * The text of `key` in `locale`, with `{name}` placeholders filled from
  * `params`. A plural text is chosen from `params.count`. A missing key
  * falls back to French, then to the key itself: never an exception.

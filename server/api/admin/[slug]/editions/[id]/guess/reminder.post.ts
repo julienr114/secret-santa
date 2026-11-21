@@ -74,6 +74,7 @@ export default defineEventHandler(async (event) => {
               guessEndsAt: edition.guessEndsAt,
               guessTimeZone: edition.guessTimeZone,
               guessMode: edition.guessMode as 'none' | 'santa' | 'all',
+              christmas: group.category === 'christmas',
             },
             person.language,
             note,

@@ -7,25 +7,27 @@ export default {
     editionFallback: 'Ausgabe',
   },
   newEdition: {
-    title: 'Neue Ausgabe',
-    nameLabel: 'Name der Ausgabe',
-    nameRequired: 'Name erforderlich',
+    nameRow: 'Name',
+    dateToChoose: 'Noch zu wählen',
+    takenOverFrom: {
+      one: '{count} Mitglied aus dem Wichteln {year} übernommen.',
+      other: '{count} Mitglieder aus dem Wichteln {year} übernommen.',
+    },
+    partyMembers: {
+      one: '{count} Mitglied des Fests.',
+      other: '{count} Mitglieder des Fests.',
+    },
     dateLabel: 'Tag der Feier',
-    dateRequired: 'Wähle den Tag der Feier',
     budgetLabel: 'Budget',
     optional: '(optional)',
-    budgetFrom: 'Übernommen von {label}. Wird mit dem Ergebnis angezeigt.',
-    shownWithResult: 'Wird mit dem Ergebnis angezeigt.',
     messageLabel: 'Ein Wort an die Teilnehmer',
     messagePlaceholder: 'Die Geschenke öffnen wir nach dem Dessert!',
-    messageRow: 'Optional. Wird mit dem Ergebnis angezeigt.',
     messageNone: 'Keins',
     takenOver: {
       one: '{count} Teilnehmer übernommen.',
       other: '{count} Teilnehmer übernommen.',
     },
-    adjustLater: 'Die Liste passt du auf dem nächsten Bildschirm an.',
-    submit: 'Ausgabe anlegen',
+    submit: 'Wichteln erstellen',
     creating: 'Wird angelegt…',
   },
   cockpit: {
@@ -579,6 +581,8 @@ export default {
         'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer ihn beschenkt. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
       howAll:
         'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen beim eigenen Wichtel. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
+      howAllNeutral:
+        'So geht’s: Jeder versucht auf seiner Seite zu erraten, wer wen beschenkt, angefangen damit, wer einen selbst beschenkt. Niemand sieht die Tipps vor der Feier: Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe.',
       tail: 'Je mehr von euch spielen, desto schöner wird sie.',
       personal: 'Alle finden das Spiel über ihren persönlichen Link.',
       share: 'Teilen',
@@ -617,6 +621,7 @@ export default {
     modeHint: {
       none: 'Das Spiel ist aus',
       santa: 'Jeder rät seinen eigenen Wichtel',
+      santaNeutral: 'Jeder rät, wer einen selbst beschenkt',
       all: 'Jeder tippt auch für die anderen, so viel er will',
     },
     endLabel: 'Ende der Tipps, am {date} um',
@@ -624,12 +629,13 @@ export default {
       'Die Antworten kommen, wenn du die Auslosung bei der Feier aufdeckst, oder von selbst am Tag danach.',
     lossSanta:
       'Die Tipps zu den anderen werden gelöscht: Nur die Tipps auf den eigenen Wichtel bleiben.',
+    lossSantaNeutral:
+      'Die Tipps zu den anderen werden gelöscht: Nur die Tipps darauf, wer einen selbst beschenkt, bleiben.',
     lossOff: 'Alle Tipps werden gelöscht.',
     confirmLoss: 'Löschen und bestätigen',
   },
   settings: {
     title: 'Einstellungen der Ausgabe',
-    intro: 'Was die Teilnehmer von {label} sehen.',
     dateTitle: 'Datum',
     wordTitle: 'Kurze Notiz',
     budgetIs: 'Budget {budget}',

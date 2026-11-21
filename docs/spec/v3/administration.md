@@ -17,7 +17,7 @@ Maquette : `V3Admin`.
 - « événements » à la place de « groupes », avec les Secret Santa en cours.
 - Deux chiffres à surveiller en plus : **« Comptes à leur limite de Secret Santa »** et **« Événements à 30 membres »**. Ce sont des chiffres, pas des pastilles : rien n'attend.
 - « Requêtes refusées pour débit » (et plus « Demandes ») : le mot « demande » ne sert plus.
-- **En cas d'urgence**, un troisième interrupteur à côté de « Suspendre les emails » et « Suspendre les inscriptions » : **« Suspendre les nouveaux Secret Santa »** · « Ceux qui existent continuent ». Allumé, quelqu'un qui veut en organiser un voit `V3TiragePause` : « Les nouveaux Secret Santa sont en pause » · « Ceux qui existent continuent. Reviens dans quelques jours. » Créer une liste reste possible.
+- **En cas d'urgence**, un troisième interrupteur à côté de « Suspendre les emails » et « Suspendre les inscriptions » (ces deux-là n'arrivent qu'au ticket 129 : d'ici là, il est seul) : **« Suspendre les nouveaux Secret Santa »** · « Ceux qui existent continuent ». Allumé, quelqu'un qui veut en organiser un voit `V3TiragePause` : « Les nouveaux Secret Santa sont en pause » · « Ceux qui existent continuent. Reviens dans quelques jours. » Créer une liste reste possible.
 
 ## Les comptes
 

@@ -13,7 +13,7 @@ C'est l'« édition » d'aujourd'hui : le tirage, ses règles, le suivi de l'org
 | Ligne | Valeur de départ |
 |---|---|
 | Nom | « Noël 2027 » (la catégorie et l'année) |
-| Date de l'événement | la date de l'événement cette année-là |
+| Date | la date de l'événement cette année-là |
 | Budget | celui du Secret Santa précédent |
 | Devine qui | celui du Secret Santa précédent, sinon « Aucun pronostic » |
 | Petit mot pour les participants | « Aucun » |
@@ -27,6 +27,7 @@ Il n'y a pas de réglage « Pistes de cadeaux » : voir plus bas.
 
 Maquette : `V3TirageReglages`. Au-dessus du titre : « Famille Camille · Secret Santa 2026 ».
 
+- **Le Secret Santa**, en premier : « Nom », « Date », « Budget », « Petit mot pour les participants ». Ce sont les lignes du formulaire de création, dans le même ordre : ce qui s'y règle se change ici, et nulle part ailleurs (Q-015).
 - **Le tirage au sort** : « Éviter la même personne ».
 - **Devine qui** : « Pronostics » (aucun pronostic, « Qui m'offre ? », toutes les paires).
 - **Les messages** : « Mot ajouté aux messages ».

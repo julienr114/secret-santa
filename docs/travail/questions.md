@@ -4,28 +4,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-### Q-015 — Où changer la date, le budget et le petit mot d'un Secret Santa déjà créé ? (ticket 105)
-
-- **Pour** : la conception
-- **Ce qui bloque** : `V3TirageReglages` montre quatre sections (le tirage au sort, Devine qui, les messages, les emails) et rien d'autre. Aucune maquette ne dit où se changent ensuite la date, le budget et le petit mot, que le formulaire de création règle.
-- **En attendant** : une cinquième section, « La fête », sous les quatre de la maquette, garde ces trois lignes (et « Pistes de cadeaux » jusqu'au ticket 107). C'est noté dans `ECARTS-MAQUETTES.md`.
-- **Les choix** : A, cette section en bas des réglages ; B, les trois lignes sur la page du Secret Santa elle-même ; C, une maquette à part.
-- **Ce que je ferais** : A, déjà en place : un seul endroit pour tout ce qui se règle.
-
-### Q-016 — « Joyeux Noël » à la fin du palmarès, hors de Noël (ticket 105)
-
-- **Pour** : la conception
-- **Ce qui bloque** : la dernière image du palmarès de Devine qui dit « Joyeux Noël, Inès » (« Joyeux Noël ! » pour un organisateur). `vocabulaire.md` ne donne de variante que pour « Père Noël » : ce texte reste tel quel dans un week-end d'été.
-- **Les choix** : A, « Bonne fête, Inès » ; B, le nom de la fête (« Les cousins, c'est fini ! ») ; C, rien qu'un prénom.
-- **Ce que je ferais** : A, avec « Joyeux Noël » gardé pour une fête de Noël.
-
-### Q-017 — Avec plusieurs Secret Santa en préparation la même année, lequel rejoint celui qui s'inscrit par le lien ? (ticket 105)
-
-- **Pour** : la conception
-- **Ce qui bloque** : `fete.md` dit « Ceux qui s'inscrivent rejoignent aussi le Secret Santa, tant que le tirage n'a pas eu lieu », au singulier. Une fête peut maintenant en avoir plusieurs la même année (« les adultes », « les enfants »).
-- **En attendant** : rien ne change dans le code : il rejoint le plus récent qui n'est pas clôturé, s'il est encore en préparation.
-- **Les choix** : A, aucun : l'organisateur l'ajoute lui-même là où il faut ; B, tous ceux en préparation ; C, le plus récent, comme aujourd'hui.
-- **Ce que je ferais** : A dès qu'il y en a deux, C quand il n'y en a qu'un : on ne met personne chez « les enfants » sans le savoir.
+Aucune.
 
 ## Réponses
 
@@ -120,3 +99,29 @@ Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN
 ### Q-014 — Une fête qui n'est pas Noël et qui vient avant Noël, sur l'accueil (ticket 103)
 
 - **Réponse de la conception (21 novembre 2026)** : au-dessus de la section de Noël, sans titre. L'accueil suit les dates : la section de Noël est posée à la place de sa première fête, ce qui vient avant est au-dessus, « Bientôt » puis « Plus tard » viennent après (`docs/decisions/2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`). Une saison de Noël d'une autre année garde sa propre section, à sa date : ton choix d'attente est le bon sur ce point. À coder : ticket 112.
+
+### Q-015 — Où changer la date, le budget et le petit mot d'un Secret Santa déjà créé ? (ticket 105)
+
+- **Pour** : la conception
+- **Ce qui bloque** : `V3TirageReglages` montre quatre sections (le tirage au sort, Devine qui, les messages, les emails) et rien d'autre. Aucune maquette ne dit où se changent ensuite la date, le budget et le petit mot, que le formulaire de création règle.
+- **En attendant** : une cinquième section, « La fête », sous les quatre de la maquette, garde ces trois lignes (et « Pistes de cadeaux » jusqu'au ticket 107). C'est noté dans `ECARTS-MAQUETTES.md`.
+- **Les choix** : A, cette section en bas des réglages ; B, les trois lignes sur la page du Secret Santa elle-même ; C, une maquette à part.
+- **Ce que je ferais** : A, déjà en place : un seul endroit pour tout ce qui se règle.
+- **Réponse de la conception (21 novembre 2026)** : A, à deux détails près. La section vient **en premier**, pas en bas, et elle s'appelle **« Le Secret Santa »**, pas « La fête » (le mot ne s'écrit plus). Elle a quatre lignes, celles du formulaire de création et dans son ordre : « Nom », « Date », « Budget », « Petit mot pour les participants ». « Pistes de cadeaux » y reste jusqu'au ticket 107, comme tu l'as fait. La maquette `V3TirageReglages` est à jour ; spec : `docs/spec/v3/secret-santa.md` (« Ses réglages »). Au passage, la ligne du formulaire de création s'appelle « Date », comme sur `V3TirageNouveau` (la spec disait « Date de l'événement »). À coder : ticket 115.
+
+### Q-016 — « Joyeux Noël » à la fin du palmarès, hors de Noël (ticket 105)
+
+- **Pour** : la conception
+- **Ce qui bloque** : la dernière image du palmarès de Devine qui dit « Joyeux Noël, Inès » (« Joyeux Noël ! » pour un organisateur). `vocabulaire.md` ne donne de variante que pour « Père Noël » : ce texte reste tel quel dans un week-end d'été.
+- **Les choix** : A, « Bonne fête, Inès » ; B, le nom de la fête (« Les cousins, c'est fini ! ») ; C, rien qu'un prénom.
+- **Ce que je ferais** : A, avec « Joyeux Noël » gardé pour une fête de Noël.
+- **Réponse de la conception (21 novembre 2026)** : ni A, ni B, ni C. Hors de Noël : **« Merci d'avoir joué, Inès »**, et **« Merci à tous ! »** pour un organisateur. « Bonne fête » se lit comme un souhait de fête du prénom, ou d'anniversaire, et ne se traduit pas bien ; « merci d'avoir joué » vaut pour toutes les catégories et les trois langues. « Joyeux Noël » reste dans un événement de catégorie Noël. Sur la même image, « C'est tout pour cette année » devient « C'est tout » dans un événement qui ne revient pas chaque année. Spec : `docs/spec/v3/vocabulaire.md` (« Devine qui hors de Noël »). Julien peut dire non. À coder : ticket 115.
+
+### Q-017 — Avec plusieurs Secret Santa en préparation la même année, lequel rejoint celui qui s'inscrit par le lien ? (ticket 105)
+
+- **Pour** : la conception
+- **Ce qui bloque** : `fete.md` dit « Ceux qui s'inscrivent rejoignent aussi le Secret Santa, tant que le tirage n'a pas eu lieu », au singulier. Une fête peut maintenant en avoir plusieurs la même année (« les adultes », « les enfants »).
+- **En attendant** : rien ne change dans le code : il rejoint le plus récent qui n'est pas clôturé, s'il est encore en préparation.
+- **Les choix** : A, aucun : l'organisateur l'ajoute lui-même là où il faut ; B, tous ceux en préparation ; C, le plus récent, comme aujourd'hui.
+- **Ce que je ferais** : A dès qu'il y en a deux, C quand il n'y en a qu'un : on ne met personne chez « les enfants » sans le savoir.
+- **Réponse de la conception (21 novembre 2026)** : ce que tu ferais. Un seul Secret Santa en préparation cette année : il le rejoint. Plusieurs : aucun, l'organisateur le coche dans « Choisir les participants ». Deux textes de plus : la page d'arrivée dit « Ton organisateur te dira à quel Secret Santa tu participes. », sans la ligne « Voir mon tirage » ; le message qui prévient l'organisateur finit par « À ajouter à un Secret Santa. » Décision : `docs/decisions/2026-11-21-rejoindre-avec-plusieurs-secret-santa.md`. Spec : `docs/spec/v3/fete.md` (« Inviter, rejoindre »). À coder : ticket 115.

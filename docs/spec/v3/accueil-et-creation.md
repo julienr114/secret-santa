@@ -9,7 +9,7 @@ Maquettes : `V3Accueil`, `V3AccueilAvantNoel`, `V3AccueilVide`, `V3AccueilAnnee`
 
 - La pastille des nouveautés est sur « Quoi de neuf ».
 - « Créer » est dessiné comme les deux autres onglets (une icône au trait, son nom dessous) : pas de rond rouge.
-- Elle est sur toutes les pages qui l'ont aujourd'hui. Les onglets « Tirages » et « Listes » disparaissent.
+- Elle est sur toutes les pages qui l'ont aujourd'hui. Les onglets « Tirages » et « Listes » disparaissent, et leurs pages avec eux (`navigation.md`).
 
 ## Le menu du compte
 
@@ -103,7 +103,8 @@ Maquette : `V3QuoiDeNeuf` (remplace `NotifCentre`).
 - Une ligne est en gras, avec un point rouge, tant que je n'ai pas ouvert ce qu'elle signale. C'est le même point que sur l'accueil : **il s'éteint quand j'ouvre la chose**, pas quand j'ouvre « Quoi de neuf ».
 - Les nouveautés d'une liste qui est dans deux événements n'apparaissent qu'une fois, sous celui dont la date est la plus proche.
 - Une demande d'idées est anonyme ici aussi : « Quelqu'un te demande des idées de cadeaux », jamais un prénom.
-- En bas, une ligne « Choisir ce qui me prévient » ; dessous, « Tout s'efface au bout de trente jours ». Pas de phrase d'introduction.
+- En bas, une ligne « Choisir ce qui me prévient » (elle n'apparaît qu'avec la page « Me prévenir », ticket 121) ; dessous, « Tout s'efface au bout de trente jours ». Pas de phrase d'introduction.
+- **Un mot de l'application** peut être posé en tête, au-dessus des sections : un texte court, dans la langue du compte, montré à ceux qu'il concerne, qui s'en va quand je l'ai fermé. Il sert le jour de la bascule (`migration.md`, « La bascule »).
 
 ### Hors de l'application
 

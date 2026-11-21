@@ -31,7 +31,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
 | `V3TirageNeutre` | Secret Santa · hors de Noël (catégorie « Autre ») : il garde son nom, « Secret Santa » ; aucun « Père Noël » | 105 |
-| `V3TirageReglages` | Secret Santa · ses réglages : éviter la même personne, les pistes de cadeaux, le mot des messages, les emails du tirage | 105 |
+| `V3TirageReglages` | Secret Santa · ses réglages : son nom, sa date, son budget et son petit mot d’abord ; puis éviter la même personne, Devine qui, le mot des messages, les emails du tirage | 105 |
 | `V3ListeSurligne` | Secret Santa · la liste de la personne tirée : la liste entière, la page s’ouvre calée sur sa partie (ici Inès, en bas), le mode anonyme déjà activé | 107 |
 | `V3TirageNouvelles` | Secret Santa · le résultat quand la liste de la personne tirée a de nouvelles idées : la ligne de sa liste le dit | 107 |
 | `V3TiragePause` | Secret Santa · en pause : ce que voit quelqu’un qui veut en créer un quand le super-admin a suspendu les nouveaux | 109 |

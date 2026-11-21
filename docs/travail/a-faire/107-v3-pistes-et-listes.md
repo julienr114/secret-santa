@@ -25,7 +25,7 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 - [ ] L'adresse demandée à celui qui n'en a pas, confirmée par un lien.
 - [ ] La migration : `giftPortraits` vers la fiche « Moi », `wishes` vers les idées d'une liste réservée à celui qui a tiré.
 - [ ] Le suivi de l'organisateur : « a écrit sa liste ».
-- [ ] Suppression de la page « Mes pistes », du réglage « Pistes de cadeaux » et de leurs textes.
+- [ ] Suppression de la page « Mes pistes », du réglage « Pistes de cadeaux » et de leurs textes. Leurs anciennes adresses mènent à la liste (`docs/spec/v3/navigation.md`, « Les anciennes adresses »).
 - [ ] « Lui demander des idées » : l'email invite à écrire sa liste ; la demande s'affiche toujours sans prénom (« Quelqu'un te demande des idées »).
 - [ ] La ligne de la liste dit quand elle a de nouvelles idées depuis ma dernière visite (`V3TirageNouvelles`).
 - [ ] « Celui qui m'a tiré » est un stade du partage (`docs/spec/v3/listes.md`, « Le partage d'une liste, par stades ») : choisi d'avance en arrivant de mon Secret Santa, sans brouillon entre les deux.
@@ -39,7 +39,7 @@ Il n'y a plus qu'un endroit où écrire ses goûts et ses idées. Celui qui m'a 
 
 - [ ] Après la migration, personne ne voit une idée qu'il ne voyait pas avant (un test le vérifie sur des données d'essai).
 - [ ] Un participant arrivé par son lien écrit une idée, voit le message du compte créé, et retrouve sa liste en se connectant.
-- [ ] Les six maquettes sont reproduites.
+- [ ] Les maquettes du ticket sont reproduites.
 - [ ] `/controle` passe.
 
 ## Compte rendu

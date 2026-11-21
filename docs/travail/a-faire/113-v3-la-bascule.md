@@ -1,8 +1,8 @@
 # 113 — V3 : la bascule (publier la V3)
 
-- **Dépend de** : 102, 106, 107, 108, 110, 111, 112
+- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 120
 - **Migration** : oui, c'est elle qu'on publie
-- **Maquettes** : aucune
+- **Maquettes** : aucune (c'est une marche à suivre)
 
 ## Objectif
 
@@ -26,14 +26,14 @@ Avant :
 
 Le jour même, par Julien (Claude Code ne publie pas et ne déploie pas) :
 
-- [ ] Choisir une heure creuse, et suspendre les emails le temps de la bascule (l'interrupteur de l'administration).
+- [ ] Choisir une heure creuse, en dehors de l'heure des tâches planifiées (`server/plugins/reminders.ts`) : aucun email automatique ne doit partir pendant la bascule. L'interrupteur « Suspendre les emails » n'arrive qu'au ticket 129 ; le pas-à-pas dit comment on s'en passe.
 - [ ] Sauvegarder la base de production.
 - [ ] Publier : la migration, puis le code.
-- [ ] Refaire les trois contrôles sur la production, puis rallumer les emails.
+- [ ] Refaire les trois contrôles sur la production.
 
 Après :
 
-- [ ] Le mot part par un email simple, le lendemain matin, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours. (Le résumé du matin et « Quoi de neuf » n'existent pas encore : tickets 120 et 121.)
+- [ ] Le mot s'affiche en tête de « Quoi de neuf » (ticket 120, fait avant la bascule) et part par un email simple, le lendemain matin, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours. (Le résumé du matin n'existe pas encore : ticket 121.)
 - [ ] Surveiller une journée le tableau de bord (erreurs du serveur, emails rejetés).
 
 ## Le mot aux utilisateurs
@@ -44,11 +44,12 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 
 ## Hors périmètre
 
-- Tout ce qui vient après la V3 (tickets 120 et suivants).
+- Tout ce qui vient après la V3 (tickets 121 et suivants).
 - Annoncer la V3 à d'autres que ceux qui s'en servent déjà.
 
 ## C'est fini quand
 
+- [ ] `/controle` passe sur la version publiée.
 - [ ] La comparaison sur la copie du jour ne montre aucun écart.
 - [ ] Le retour en arrière a été essayé une fois, et son pas-à-pas est dans le dépôt.
 - [ ] Les trois contrôles passent sur la production.

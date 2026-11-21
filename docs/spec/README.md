@@ -22,6 +22,7 @@ Ce que l'application doit être. Un fichier par domaine, pas d'historique ici : 
 | `v3/fete.md` | La page d'un événement, ses membres (30 au plus), ses réglages, inviter, rejoindre, quitter, une année passée |
 | `v3/secret-santa.md` | Créer un Secret Santa, ses réglages, la limite, le résultat |
 | `v3/listes.md` | Les listes dans les événements, qui les voit, la fin des « pistes de cadeaux » |
+| `v3/navigation.md` | « Retour » quand une page a plusieurs parents, ce qui remplace les pages des anciens onglets, les anciennes adresses |
 | `v3/regles-d-ecran.md` | Les règles communes à tous les écrans (dates, lignes, phrases) |
 | `v3/administration.md` | L'administration sans les demandes, les limites, « Suspendre les nouveaux Secret Santa » |
 | `v3/migration.md` | Ce que deviennent les données d'aujourd'hui |

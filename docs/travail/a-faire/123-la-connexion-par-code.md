@@ -28,6 +28,7 @@ Dans l'application installée sur le téléphone, un lien reçu par email s'ouvr
 - [ ] Le sixième essai d'un code est refusé, même avec le bon code.
 - [ ] Un code demandé sur un appareil ne connecte pas un autre appareil.
 - [ ] Dans un navigateur, la connexion par lien est exactement celle d'aujourd'hui.
+- [ ] Les deux maquettes sont reproduites.
 - [ ] `/controle` passe.
 
 ## Compte rendu

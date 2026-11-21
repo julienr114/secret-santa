@@ -17,6 +17,7 @@ Je ne reçois plus un email à chaque geste des autres : un résumé le matin, s
 ## À faire
 
 - [ ] **Le cœur, en fonctions pures** : pour une nouveauté et un compte, faut-il un email, lequel, quand (résumé, tout de suite, aucun ; ce qui presse ; déjà vue ; l'attente de dix minutes quand un téléphone est prévenu).
+- [ ] La ligne « Choisir ce qui me prévient », en bas de « Quoi de neuf », apparaît et ouvre ce réglage.
 - [ ] **Le réglage** « Par email » dans « Mon compte », trois choix, « Un résumé le matin » par défaut pour tous les comptes existants.
 - [ ] **Les emails automatiques des comptes passent par cette règle** : ils ne partent plus un par un. Les participants sans compte gardent les emails d'aujourd'hui. Aucun email pour de nouvelles idées sur une liste tant que le ticket 122 n'est pas fait.
 - [ ] **Le résumé** : la tâche planifiée du matin, un email par compte qui a du nouveau pas encore vu, **un bloc par événement** au nom de l'événement (et un bloc par liste publique où j'ai coché), en texte seul, dans la langue du compte, avec le lien pour changer le réglage.

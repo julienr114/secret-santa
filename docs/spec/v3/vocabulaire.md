@@ -43,6 +43,10 @@ Les écrans sont les mêmes ; chaque texte a sa variante sans « Père Noël » 
 | Ils avaient deviné leur Père Noël | Ils avaient deviné qui leur offrait |
 | Cité 6 fois comme Père Noël | Cité 6 fois, à tort |
 | Les Pères Noël étaient bien cachés | Tout le monde était bien caché |
+| Joyeux Noël, Inès (la dernière image du palmarès) | Merci d'avoir joué, Inès |
+| Joyeux Noël ! (la même image, pour un organisateur qui ne joue pas) | Merci à tous ! |
+
+Sur cette dernière image, « C'est tout pour cette année » devient « C'est tout » dans un événement qui ne revient pas chaque année, quelle que soit sa catégorie (Q-016).
 
 ## « Événement », le moins possible
 

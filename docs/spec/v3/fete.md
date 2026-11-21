@@ -45,7 +45,7 @@ Maquette : `V3FeteMembresComplet`. À 30 membres, la page le dit (« 30 sur 30 �
 
 Maquettes : `V3FeteInviter`, `V3FeteRejoindre`.
 
-- Le lien d'invitation est celui de l'événement. Ceux qui s'inscrivent rejoignent aussi le Secret Santa, tant que le tirage n'a pas eu lieu.
+- Le lien d'invitation est celui de l'événement. Celui qui s'inscrit rejoint aussi le Secret Santa de l'année qui est encore en préparation, **s'il n'y en a qu'un**. S'il y en a plusieurs (les adultes, les enfants), il n'en rejoint aucun : l'organisateur le coche dans « Choisir les participants » de celui qu'il faut. La page d'arrivée dit alors « Ton organisateur te dira à quel Secret Santa tu participes. », sans la ligne « Voir mon tirage », et le message qui prévient l'organisateur finit par « À ajouter à un Secret Santa. » (`docs/decisions/2026-11-21-rejoindre-avec-plusieurs-secret-santa.md`)
 - La page du lien dit « Tu es invité à l'événement », le nom, puis la catégorie, la date et le nombre de membres. On s'y connecte avec son adresse email ; le compte se crée tout seul.
 
 ## Quitter

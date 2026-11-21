@@ -30,6 +30,7 @@ Under the Tree s'installe sur l'écran d'accueil du téléphone, sur iPhone comm
 ## C'est fini quand
 
 - [ ] Vérifié à la main sur un iPhone et un Android : installer, s'abonner, recevoir, toucher, se désabonner.
+- [ ] Les trois maquettes sont reproduites.
 - [ ] Un test vérifie qu'aucun texte de notification ne contient un prénom tiré ni celui de qui demande des idées.
 - [ ] `/controle` passe.
 

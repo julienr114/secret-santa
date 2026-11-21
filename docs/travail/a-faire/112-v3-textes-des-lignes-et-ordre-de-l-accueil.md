@@ -1,8 +1,11 @@
 # 112 — V3 : le texte sous chaque ligne, et l'accueil dans l'ordre des dates
 
-- **Dépend de** : 105
+- **Dépend de** : 105, 106, 107
+- **Avec** : 120
 - **Migration** : non
 - **Maquettes** : `V3Accueil`, `V3AccueilAvantNoel`, `V3AccueilJeu`, `V3AccueilAnnee`, `V3Fete`, `V3FeteOrganisateur`, `V3FeteQuitter`
+
+> **À faire d'un seul tenant avec le ticket 120** (Julien, 21 novembre 2026) : les points rouges des lignes et la page « Quoi de neuf » comptent la même chose, ce qui est nouveau depuis ma dernière visite. Un seul calcul, une seule table, deux tickets déplacés ensemble.
 
 ## Objectif
 
@@ -31,8 +34,8 @@ Sur l'accueil et sur la page d'un événement, chaque ligne dit où en est la ch
 ## Hors périmètre
 
 - Les pages des événements passés (ticket 108) : `lignes.md` dit déjà leurs textes, ils se coderont là.
-- « Quoi de neuf » (tickets 110 et 120).
-- Combien de temps un événement reste sur l'accueil après sa date (Q-009).
+- La page « Quoi de neuf » : c'est le ticket 120, fait avec celui-ci.
+- Combien de temps un événement reste sur l'accueil après sa date : la règle est décidée (`accueil-et-creation.md`, « Après la date »), elle se code au ticket 108.
 
 ## C'est fini quand
 

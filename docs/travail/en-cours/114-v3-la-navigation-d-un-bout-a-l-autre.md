@@ -16,6 +16,8 @@ Depuis n'importe quelle page, « Retour » mène là où on l'attend. Aucun lien
 
 ## À faire
 
+- [ ] **Les squelettes** : chaque page de l'inventaire montre, pendant qu'elle charge, un squelette à sa forme (`docs/spec/v3/regles-d-ecran.md`, « Un écran qui arrive »). C'est la dernière vérification avant la bascule.
+- [ ] **Les treize maquettes orphelines** (Q-024, Julien a dit oui) : les supprimer de `docs/refonte/maquettes/` et de `docs/refonte/maquettes-sorbet/`, si ce n'est pas déjà fait. La liste est dans `docs/spec/v3/maquettes.md`.
 - [ ] **L'inventaire d'abord** : chaque fichier de `app/pages` a sa ligne dans `docs/ARBORESCENCE.md`, avec son parent. Une page sans ligne, ou dont le parent n'existe plus, est un défaut à corriger ici.
 - [ ] **Les pages des anciens onglets** : `/listes` et `/tirages-passes` n'existent plus, si les tickets 106 et 108 ne les ont pas déjà retirées ; leurs adresses, et celles des pistes, mènent où `navigation.md` le dit (`app/middleware/redirects.global.ts`).
 - [ ] **Plus rien ne vise `/listes`** : ni `back`, ni `navigateTo`, ni `to`, ni fil au-dessus d'un titre. Le 21 novembre : `listes/[id]/index.vue`, `listes/[id]/teneurs.vue`, `listes/[id]/supprimer.vue`, `famille/index.vue`, `l/[token]/index.vue`.

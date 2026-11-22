@@ -16,6 +16,8 @@ const props = withDefaults(
     error: unknown;
     rows?: number;
     skeleton?: SkeletonPart[];
+    /** Room between the skeleton's pieces. */
+    skeletonGap?: 'sm' | 'md' | 'lg';
     /** "On n'arrive pas à charger l'édition". */
     errorTitle?: string;
     /** Where "back" leads after a failure; home by default. */
@@ -25,6 +27,7 @@ const props = withDefaults(
   {
     rows: 4,
     skeleton: () => ['title', 'list'],
+    skeletonGap: 'lg',
     errorTitle: undefined,
     backTo: undefined,
     backLabel: undefined,
@@ -123,6 +126,7 @@ const onRetry = async () => {
     v-else-if="pending"
     :parts="skeleton"
     :rows="rows"
+    :gap="skeletonGap"
     :label="t('common.loading')"
   />
   <slot v-else />

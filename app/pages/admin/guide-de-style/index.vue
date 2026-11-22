@@ -970,6 +970,24 @@ const undone = ref(0);
         :parts="['header', 'steps', 'envelope', 'groups']"
         label="UiSkeleton"
       />
+      <UiSectionTitle>L’accueil arrive</UiSectionTitle>
+      <UiSkeleton
+        :parts="['greeting', 'parties']"
+        gap="sm"
+        label="UiSkeleton accueil"
+      />
+      <UiSectionTitle>Un événement arrive</UiSectionTitle>
+      <UiSkeleton
+        :parts="['head', 'members', 'sections']"
+        gap="md"
+        label="UiSkeleton événement"
+      />
+      <UiSectionTitle>Une liste, des réglages, des choix</UiSectionTitle>
+      <UiSkeleton
+        :parts="['bar', 'doc', 'icons', 'settings', 'chips']"
+        :rows="2"
+        label="UiSkeleton liste"
+      />
     </section>
 
     <section class="flex flex-col gap-3">

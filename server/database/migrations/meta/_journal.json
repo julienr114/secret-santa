@@ -281,6 +281,13 @@
       "when": 1795340526165,
       "tag": "0039_v3_news",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "6",
+      "when": 1795346103297,
+      "tag": "0040_v3_secret_santa_invite",
+      "breakpoints": true
     }
   ]
 }

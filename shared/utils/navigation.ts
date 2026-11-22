@@ -18,7 +18,6 @@ export const backMove = (
 /** The pages of a group, moved to its party (ticket 104). */
 const MOVED = {
   personnes: 'membres',
-  invitation: 'invitation',
   reglages: 'reglages',
   organisateurs: 'organisateurs',
   exclusions: 'exclusions',
@@ -41,6 +40,8 @@ export const partyPathOf = (path: string): string | null => {
   const [, first, slug, page, ...rest] = path.split('/');
   if (first !== 'admin' || !slug || NOT_A_GROUP.includes(slug)) return null;
   if (page === undefined || page === '') return `/e/${slug}`;
+  // An event has no invitation link any more (ticket 116).
+  if (page === 'invitation') return `/e/${slug}/membres`;
   const moved = MOVED[page as keyof typeof MOVED];
   return moved ? ['', 'e', slug, moved, ...rest].join('/') : null;
 };
@@ -98,6 +99,18 @@ export const pastPathOf = (path: string): string | null =>
  */
 export const listsPathOf = (path: string): string | null =>
   path === '/listes' || path === '/listes/' ? '/' : null;
+
+/**
+ * Where the invitation link of an event and its page lead now that an
+ * event has none (ticket 116, docs/spec/v3/navigation.md, « Les anciennes
+ * adresses »): to its « Membres ». The link of a Secret Santa is under it.
+ * @param path - The path asked for.
+ * @returns The new path, or null when it did not move.
+ */
+export const invitationPathOf = (path: string): string | null => {
+  const match = /^\/e\/([^/]+)\/invitation(\/.*)?$/.exec(path);
+  return match ? `/e/${match[1]}/membres` : null;
+};
 
 /** The pages « Retour » can lead back to, when a page has several parents. */
 export type Place =

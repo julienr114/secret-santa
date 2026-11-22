@@ -13,7 +13,7 @@ flowchart LR
   subgraph entrees ["Liens directs, sans « Retour »"]
     login["Connexion<br/><small>/login</small>"]:::sans
     lien["Lien de connexion<br/><small>/login/[jeton]</small>"]:::sans
-    rejoindre["Rejoindre un groupe<br/><small>/rejoindre/[code]</small>"]:::sans
+    rejoindre["S’inscrire à un Secret Santa<br/><small>/rejoindre/[code]</small>"]:::sans
   end
 
   accueil --> compte["Mon compte"]
@@ -38,8 +38,6 @@ flowchart LR
     leGroupe --> membres["Membres<br/><small>organisateur</small>"]
     membres --> personne["Une personne"]
     membres --> nouvellePersonne["Nouvelle personne"]
-    membres --> invitation["Inviter par lien"]
-    invitation --> motInvitation["Ton mot sur la page"]
     leGroupe --> exclusionsGroupe["Exclusions"]
     leGroupe --> journalGroupe["Journal"]
     leGroupe --> reglagesGroupe["Réglages de la fête"]
@@ -52,6 +50,9 @@ flowchart LR
   subgraph edition ["Une édition (organisateur)"]
     lEdition["L'édition<br/><small>…/editions/[id]</small>"]
     lEdition --> ajouter["Choisir les participants"]
+    lEdition --> invitation["Inviter par lien"]
+    ajouter --> invitation
+    invitation --> motInvitation["Ton mot sur la page"]
     lEdition --> emails["Envoyer par email"]
     emails --> messagePlusieurs["Personnaliser le message<br/><small>pour plusieurs</small>"]
     lEdition --> messageUne["Personnaliser le message<br/><small>pour une personne</small>"]
@@ -139,7 +140,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 | Les événements passés | `/evenements-passes` | Accueil | |
 | (ancienne adresse) | `/tirages-passes` | mène aux Événements passés (`pastPathOf`) | |
 | (ancienne adresse) | `/listes` | mène à l'accueil (`listsPathOf`, ticket 114) | |
-| Rejoindre une fête (lien d'invitation) | `/rejoindre/[code]` | — | |
+| S'inscrire à un Secret Santa (son lien d'invitation, ticket 116) | `/rejoindre/[code]` | — | |
 
 ## Administration (super-admin)
 
@@ -154,7 +155,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 
 ## Une fête (ses membres ; l'organisateur pour le reste)
 
-Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invitation`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement, et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement ; `…/invitation` mène à ses Membres, un événement n'ayant plus de lien d'invitation (ticket 116), et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
@@ -164,8 +165,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Membres | `/e/[fête]/membres` | La fête | |
 | Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
 | Nouvelle personne | `/e/[fête]/membres/nouvelle` | Membres | |
-| Inviter par lien | `/e/[fête]/invitation` | Membres | Places, date limite |
-| Ton mot sur la page | `/e/[fête]/invitation/mot` | Inviter par lien | |
+| (ancienne adresse) | `/e/[fête]/invitation` et `/e/[fête]/invitation/mot` (le lien était à l'événement) | mènent à Membres (`invitationPathOf`, ticket 116) | |
 | Exclusions | `/e/[fête]/exclusions` | Membres | Ajouter une exclusion |
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête | `/e/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
@@ -179,6 +179,8 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, devine, mot, message]` | Le nouveau Secret Santa | |
 | L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête ; l'accueil ou « Quoi de neuf » quand on en vient | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
+| Inviter par lien (le lien de ce Secret Santa, ticket 116 ; ouvert depuis « Préparer » sans participant et depuis « Choisir les participants ») | `…/editions/[id]/invitation` | L'édition | Places restantes, date limite |
+| Ton mot sur la page | `…/editions/[id]/invitation/mot` | Inviter par lien | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |

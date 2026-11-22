@@ -140,7 +140,22 @@ describe('the subjects of the organisers’ emails (ticket 110)', () => {
         { groupName: 'Famille Camille', firstName: 'Zoé', link: LINK },
         'fr',
       ).subject,
-    ).toBe('Famille Camille : Zoé a rejoint l’événement');
+    ).toBe('Famille Camille : Zoé s’inscrit par le lien');
+    const several = buildJoinedEmail(
+      {
+        groupName: 'Famille Camille',
+        santaName: 'Les adultes',
+        firstName: 'Zoé',
+        link: LINK,
+      },
+      'fr',
+    );
+    expect(several.subject).toBe(
+      'Famille Camille (Les adultes) : Zoé s’inscrit par le lien',
+    );
+    expect(several.text).toContain(
+      'au Secret Santa « Famille Camille (Les adultes) »',
+    );
     expect(buildAllViewedEmail(santa(null), 'fr').subject).toBe(
       'Famille Camille : toutes les enveloppes sont ouvertes',
     );

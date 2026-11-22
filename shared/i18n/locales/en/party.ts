@@ -14,7 +14,6 @@ export default {
   inDays: { one: 'in {count} day', other: 'in {count} days' },
   today: 'today',
   members: { one: '{count} member', other: '{count} members' },
-  invite: 'Invite',
   settings: 'Event settings',
   secretSantaTitle: { one: 'The Secret Santa', other: 'The Secret Santas' },
   full: {
@@ -32,6 +31,7 @@ export default {
     drawSection: 'The draw',
     guessRow: 'Guesses',
     messagesSection: 'The messages',
+    joined: 'Someone signs up with the link',
     allViewed: 'Everyone has found out who they drew',
     whichParty: 'The event of the Secret Santa',
     otherOccasion: 'Another occasion',
@@ -104,8 +104,6 @@ export default {
     who: 'Who is in it?',
     takeFrom: 'Take the members of',
     noEmail: 'No email address',
-    inviteOthers: 'Invite other people',
-    inviteOthersHint: 'With a link, once the event is created',
     submit: {
       one: 'Create the event · {count} member',
       other: 'Create the event · {count} members',
@@ -120,7 +118,5 @@ export default {
     recurring: 'Comes back every year',
     secretSanta: 'Secret Santa',
     secretSantaRow: 'Settings of the Secret Santa {year}',
-    email: 'Email me',
-    joined: 'Someone joins the event with the link',
   },
 } satisfies Dict<typeof fr>;

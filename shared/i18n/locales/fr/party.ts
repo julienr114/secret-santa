@@ -13,7 +13,6 @@ export default {
   inDays: { one: 'dans {count} jour', other: 'dans {count} jours' },
   today: 'aujourd’hui',
   members: { one: '{count} membre', other: '{count} membres' },
-  invite: 'Inviter',
   settings: 'Réglages de l’événement',
   secretSantaTitle: { one: 'Le Secret Santa', other: 'Les Secret Santa' },
   full: {
@@ -31,6 +30,7 @@ export default {
     drawSection: 'Le tirage au sort',
     guessRow: 'Pronostics',
     messagesSection: 'Les messages',
+    joined: 'Quelqu’un s’inscrit par le lien',
     allViewed: 'Tout le monde a découvert son tirage',
     whichParty: 'L’événement du Secret Santa',
     otherOccasion: 'Une autre occasion',
@@ -103,8 +103,6 @@ export default {
     who: 'Qui en fait partie ?',
     takeFrom: 'Reprendre les membres de',
     noEmail: 'Pas d’adresse email',
-    inviteOthers: 'Inviter d’autres personnes',
-    inviteOthersHint: 'Par un lien, après avoir créé l’événement',
     submit: {
       one: 'Créer l’événement · {count} membre',
       other: 'Créer l’événement · {count} membres',
@@ -119,7 +117,5 @@ export default {
     recurring: 'Revient chaque année',
     secretSanta: 'Secret Santa',
     secretSantaRow: 'Réglages du Secret Santa {year}',
-    email: 'M’écrire par email',
-    joined: 'Quelqu’un rejoint l’événement par le lien',
   },
 };

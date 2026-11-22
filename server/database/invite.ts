@@ -1,29 +1,38 @@
 import { and, count, eq } from 'drizzle-orm';
 import type { Db } from './client';
-import {
-  canEditParticipants,
-  checkParticipantCount,
-  currentEdition,
-} from '#server/utils/editions';
+import { checkParticipantCount } from '#server/utils/editions';
 import { recordEvent } from './audit';
-import { listEditions, newParticipation, type Edition } from './editions';
-import { parties, participations, persons } from './schema';
+import {
+  newParticipation,
+  santaNameForSubject,
+  selectEditions,
+  type Edition,
+} from './editions';
+import { parties, participations, persons, secretSantas } from './schema';
 
-// Invitation links of groups (README 22.2).
+// Invitation links of a Secret Santa (ticket 116; README 22.2). An event
+// has none: one signs up to a Secret Santa, and so becomes a member of its
+// event.
 
 /**
- * The group behind an invitation code, with its current edition (the
- * newest one not closed), or null.
+ * The Secret Santa behind an invitation code, with its event and its name
+ * when the event has several the same year, or null.
+ * @param db - Database.
+ * @param code - The code of the link.
+ * @returns The Secret Santa, its event, its name to say, or null.
  */
 export const findInvite = async (db: Db, code: string) => {
+  const [santa] = await selectEditions(db)
+    .where(eq(secretSantas.inviteCode, code))
+    .limit(1);
+  if (!santa) return null;
   const [group] = await db
     .select()
     .from(parties)
-    .where(eq(parties.inviteCode, code))
+    .where(eq(parties.id, santa.partyId))
     .limit(1);
   if (!group) return null;
-  const rows = await listEditions(db, group.id);
-  return { group, edition: currentEdition(rows) };
+  return { group, santa, santaName: await santaNameForSubject(db, santa) };
 };
 
 /** The person of a group with this address, or null. */
@@ -72,40 +81,38 @@ export const participantCount = async (
 };
 
 /**
- * Puts someone who just joined by the link in the draw being prepared
- * (decided on 17 November 2026), unless they are in it already, the draw
- * is done, or it is full. The group reads it in the journal.
+ * Puts someone who signed up by the link in its Secret Santa, unless they
+ * are in it already or it is full. The event reads it in the journal.
  * @param db - Database.
- * @param input - The current edition, the person, the key of the links.
- * @returns Their participation in the edition, or null when not in it.
+ * @param input - The Secret Santa (being prepared), the person, the key of
+ *   the links.
+ * @returns Their participation, or null when it is full.
  */
-export const joinDrawInPreparation = async (
+export const joinSecretSanta = async (
   db: Db,
   {
-    edition,
+    santa,
     personId,
     dataKey,
   }: {
-    edition: Edition | null;
+    santa: Edition;
     personId: string;
     dataKey: CryptoKey;
   },
 ) => {
-  if (!edition) return null;
-  const existing = await findParticipationOf(db, edition.id, personId);
+  const existing = await findParticipationOf(db, santa.id, personId);
   if (existing) return existing;
-  if (!canEditParticipants(edition.status)) return null;
-  const size = await participantCount(db, edition.id);
+  const size = await participantCount(db, santa.id);
   if (!checkParticipantCount(size + 1).ok) return null;
   const row = await newParticipation(
-    { secretSantaId: edition.id, personId },
+    { secretSantaId: santa.id, personId },
     dataKey,
   );
   await db.insert(participations).values(row);
   await recordEvent(db, {
     type: 'participant_added',
-    groupId: edition.partyId,
-    editionId: edition.id,
+    groupId: santa.partyId,
+    editionId: santa.id,
     personId,
     actor: 'participant',
   });

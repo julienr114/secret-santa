@@ -109,6 +109,8 @@ export default {
     'This Secret Santa is already linked to another address.',
   invite_expired:
     'This invitation link has expired: ask the organizer for a new one.',
+  invite_drawn:
+    'The draw has already taken place: nobody can sign up with this link any more.',
   invite_full:
     'There is no place left through this link: let the organizer know.',
   collecting_answers:

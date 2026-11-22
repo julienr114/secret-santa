@@ -3,9 +3,9 @@ import type { Dict } from '../../types';
 
 export default {
   joined: {
-    subject: '{name} joined the event',
-    body: '{name} just joined the event “{group}” with the invitation link.',
-    next: 'Remember to add them to the current Secret Santa and to their exclusions (partner, siblings).',
+    subject: '{name} signed up with the link',
+    body: '{name} just signed up to the Secret Santa “{group}” with the invitation link.',
+    next: 'Remember their exclusions (partner, siblings).',
   },
   allViewed: {
     subject: 'every envelope is open',

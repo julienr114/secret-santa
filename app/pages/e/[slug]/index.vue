@@ -151,15 +151,11 @@ const onLeave = () =>
           <span class="grow font-semibold">{{
             t('party.members', { count: data.members.count })
           }}</span>
-          <template v-if="organiser">
-            <span class="text-sm font-bold text-primary">{{
-              t('party.invite')
-            }}</span>
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-5 shrink-0 text-dimmed"
-            />
-          </template>
+          <UIcon
+            v-if="organiser"
+            name="i-lucide-chevron-right"
+            class="size-5 shrink-0 text-dimmed"
+          />
         </component>
 
         <div

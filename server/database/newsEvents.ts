@@ -81,7 +81,9 @@ export const tellParticipants = (
  * @param input.partyId - The event.
  * @param input.kind - What happened.
  * @param input.targetId - The Secret Santa, or the event itself.
- * @param input.name - The first name of who joined.
+ * @param input.name - The first name of who signed up by the link.
+ * @param input.detail - The Secret Santa they signed up to, when the
+ *   event has several the same year (ticket 116).
  * @param now - Now (ISO).
  * @returns Once written.
  */
@@ -92,6 +94,7 @@ export const tellOrganisers = (
     kind: 'reminder' | 'all_viewed' | 'joined';
     targetId: string;
     name?: string | null;
+    detail?: string | null;
   },
   now: string,
 ) =>
@@ -103,6 +106,7 @@ export const tellOrganisers = (
         targetId: input.targetId,
         partyId: input.partyId,
         name: input.name ?? null,
+        detail: input.detail ?? null,
       }),
       now,
     ),

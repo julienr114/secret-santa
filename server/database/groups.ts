@@ -16,14 +16,6 @@ export type PublicGroup = {
   slug: string;
   name: string;
   createdAt: string;
-  /** Code of the invitation link to the group, null when closed. */
-  inviteCode: string | null;
-  /** Last day the link works, if any. */
-  inviteUntil: string | null;
-  /** How many may still join by the link. */
-  invitePlaces: number | null;
-  /** The organiser's words on the invitation page. */
-  inviteMessage: string | null;
 };
 
 /** What the admin API exposes about a group. */
@@ -32,10 +24,6 @@ export const publicGroup = (group: PartyRow): PublicGroup => ({
   slug: group.slug,
   name: group.name,
   createdAt: group.createdAt,
-  inviteCode: group.inviteCode,
-  inviteUntil: group.inviteUntil,
-  invitePlaces: group.invitePlaces,
-  inviteMessage: group.inviteMessage,
 });
 
 // --- Organisers (README 22.5) ---------------------------------------------

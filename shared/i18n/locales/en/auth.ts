@@ -189,12 +189,13 @@ export default {
       'Did not ask for it? Ignore this message: without this link, nobody can log in.',
   },
   invite: {
-    intro: 'You are invited to the event',
+    intro: 'You are invited to the Secret Santa',
     party: 'on {date}',
+    signedUp: { one: '{count} signed up', other: '{count} signed up' },
     nameHelp: 'The first name the others will see.',
     loginFirst:
-      'Log in with your email address to join. No account yet? It is created on the way.',
-    joinGroup: 'Join the event',
+      'Log in with your email address to take part. No account yet? It is created on the way.',
+    joinGroup: 'Take part',
     signedAs: 'Logged in as {email}',
     notMe: 'Not me',
     organiserWord: {
@@ -204,28 +205,22 @@ export default {
     welcome: 'Welcome to {group}',
     inDraw: 'You take part in {label}.',
     notDrawnYet: {
-      one: 'The draw hasn’t happened yet: your organizer will give you a shout.',
-      other:
-        'The draw hasn’t happened yet: your organizers will give you a shout.',
-    },
-    addLater: {
-      one: 'You are in the event. Your organizer will add you to the draw of {label}.',
-      other:
-        'You are in the event. Your organizers will add you to the draw of {label}.',
-    },
-    drawnAlready:
-      'You are in the event. The draw of {label} is already done: you will be in the next one.',
-    nextDraw: {
-      one: 'You’re in the event. Your organizer will give you a shout for the next Secret Santa.',
-      other:
-        'You’re in the event. Your organizers will give you a shout for the next Secret Santa.',
+      one: 'The draw hasn’t happened yet: your organizer will let you know.',
+      other: 'The draw hasn’t happened yet: your organizers will let you know.',
     },
     meanwhile: 'Meanwhile',
     hints: 'Write my gift list',
     seeDraw: 'See my draw',
     goHome: 'Go to my home',
     findIt: 'You will find it on your home by logging in with {email}.',
-    joining: 'Joining…',
+    joining: 'Signing up…',
+    drawn: {
+      title: 'The draw has already taken place',
+      body: {
+        one: 'Tell the organizer of {group}.',
+        other: 'Tell the organizers of {group}.',
+      },
+    },
     full: {
       title: 'No place left with this link',
       body: {

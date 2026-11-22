@@ -23,9 +23,9 @@ import {
 
 // The settings of the party (docs/spec/v3/fete.md, maquette
 // V3FeteReglages): only what is its own. Its category, its date, whether
-// it comes back; a row to the settings of its Secret Santa; the email
-// « Quelqu'un rejoint la fête par le lien »; its organisers; deleting it,
-// for the super-admin. Each saved at once (README 23.3).
+// it comes back; a row to the settings of its Secret Santa; its
+// organisers; deleting it, for the super-admin. « Quelqu'un s'inscrit par
+// le lien » is a setting of each Secret Santa (ticket 116). Each saved at once (README 23.3).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
 const route = useRoute();
@@ -38,7 +38,6 @@ const screen = computed(() => ({ back: `/e/${slug.value}` }));
 const { user } = useUserSession();
 const isSuper = computed(() => user.value?.role === 'super_admin');
 
-const { shown, save, saving } = useRuleSaver(slug);
 const party = usePartyQuery(slug);
 const update = useUpdatePartyMutation(slug);
 const dashboard = useDashboardQuery(slug);
@@ -154,15 +153,6 @@ const deleting = ref(false);
             t('party.reglages.secretSantaRow', { year: latestSanta.year })
           "
           :to="`/admin/${slug}/editions/${latestSanta.id}/reglages`"
-        />
-      </UiList>
-
-      <UiList :title="t('party.reglages.email')" data-testid="notifications">
-        <UiListItem
-          :checked="shown.notifyJoined ?? true"
-          :title="t('party.reglages.joined')"
-          :busy="saving('notifyJoined')"
-          @update:checked="(on) => save({ notifyJoined: on })"
         />
       </UiList>
 

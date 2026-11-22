@@ -158,8 +158,7 @@ const { createFor, shareInto } = useListOccasion();
  * For a list: the new list, made for it; or, from « Qui verra ta liste ? »,
  * back to the list, now shared in it (ticket 106).
  */
-const after = async (slug: string, invite: boolean) => {
-  if (invite) return navigateTo(`/e/${slug}/invitation`);
+const after = async (slug: string) => {
   if (route.query.pour === 'secret-santa') {
     return navigateTo(`/admin/${slug}/editions/nouvelle`);
   }
@@ -167,7 +166,7 @@ const after = async (slug: string, invite: boolean) => {
   const list = typeof route.query.liste === 'string' ? route.query.liste : '';
   return list ? shareInto(list, slug) : createFor(slug);
 };
-const submit = (invite = false) => {
+const submit = () => {
   if (!ready.value || !form.value.category || !date.value) return;
   create.mutate(
     {
@@ -180,7 +179,7 @@ const submit = (invite = false) => {
     {
       onSuccess: async ({ slug }) => {
         form.value = blank();
-        await after(slug, invite);
+        await after(slug);
       },
       onError: (error) => toast.failed(errorMessage(error)),
     },
@@ -347,16 +346,6 @@ const emojiOf = (category: PartyCategory) =>
             </span>
           </template>
         </UiListItem>
-      </UiList>
-      <UiList>
-        <UiListItem
-          icon="i-lucide-link"
-          icon-tone="neutral"
-          :title="t('party.create.inviteOthers')"
-          :subtitle="t('party.create.inviteOthersHint')"
-          :chevron="true"
-          :on-click="() => submit(true)"
-        />
       </UiList>
       <UButton
         block

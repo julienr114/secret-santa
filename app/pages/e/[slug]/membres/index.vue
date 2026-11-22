@@ -1,26 +1,20 @@
 <script setup lang="ts">
 import { byName, fullName, type PublicPerson } from '#server/utils/people';
-import { formatEventDate } from '#server/utils/rules';
 import { notDrawnBy } from '#shared/utils/exclusions';
 import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
 import { listView } from '#shared/utils/lists';
-import {
-  useDashboardQuery,
-  usePeopleQuery,
-} from '~/composables/queries/useGroup';
+import { usePeopleQuery } from '~/composables/queries/useGroup';
 
 // The members of a group: one list, those who take part first, each with
-// their address and who they never draw; then « Ajouter une personne »,
-// and the invitation link for those who sign up on their own. At 30
-// members (docs/spec/v3/fete.md, V3FeteMembresComplet), the page says so,
-// a state takes the place of « Ajouter une personne », and the link is
-// paused by itself.
+// their address and who they never draw; then « Ajouter une personne ».
+// An event has no invitation link: each Secret Santa has its own (ticket
+// 116). At 30 members (docs/spec/v3/fete.md, V3FeteMembresComplet), the
+// page says so, and a state takes the place of « Ajouter une personne ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, locale } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const people = usePeopleQuery(slug);
-const dashboard = useDashboardQuery(slug);
 const context = useScreenContext(slug);
 useHead({ title: () => context.titleOf(t('adminGroup.people.title')) });
 const screen = computed(() => ({ back: `/e/${slug.value}` }));
@@ -30,24 +24,6 @@ const activeCount = computed(
   () => persons.value.filter((person) => person.active).length,
 );
 const full = computed(() => activeCount.value >= MAX_PARTY_MEMBERS);
-
-// The invitation link belongs to the group: its state on the row.
-const inviteSummary = computed(() => {
-  const g = dashboard.data.value?.group;
-  if (!g?.inviteCode) return t('adminEdition.invite.off');
-  if (full.value) return t('party.full.paused');
-  return [
-    t('adminEdition.invite.active'),
-    t('adminEdition.invite.placesLeft', { count: g.invitePlaces ?? 0 }),
-    ...(g.inviteUntil
-      ? [
-          t('adminEdition.invite.untilShort', {
-            date: formatEventDate(g.inviteUntil, locale.value),
-          }),
-        ]
-      : []),
-  ].join(' · ');
-});
 
 const { membersLine } = useMembersLine();
 const exclusions = computed(() => people.data.value?.exclusions ?? []);
@@ -181,15 +157,6 @@ const view = computed(() =>
           />
         </UiList>
       </section>
-      <UiList :title="t('adminGroup.people.orInvite')">
-        <UiListItem
-          :to="`/e/${slug}/invitation`"
-          icon="i-lucide-link"
-          :title="t('adminEdition.screen.empty.invite')"
-          :subtitle="inviteSummary"
-          data-testid="invite-row"
-        />
-      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

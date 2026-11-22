@@ -37,15 +37,36 @@ const KEPT = [
 const countOf = (query: Query, table: string) =>
   Number(query(`SELECT count(*) AS n FROM \`${table}\``)[0]?.n ?? 0);
 
+/**
+ * Where the invitation link of a group went: still on its party (up to
+ * 0039), else on one of its Secret Santa being prepared, or closed when it
+ * has none (ticket 116).
+ */
+const linkProblems = (group: Row, party: Row, after: Query): string[] => {
+  if ('invite_code' in party) {
+    return party.invite_code === group.invite_code
+      ? []
+      : [`fête ${group.id} : invite_code a changé`];
+  }
+  if (group.invite_code === null || group.invite_code === undefined) return [];
+  const santas = after(
+    `SELECT party_id, status, invite_code FROM secret_santas WHERE party_id = '${String(group.id).replaceAll("'", "''")}'`,
+  );
+  const kept = santas.some((santa) => santa.invite_code === group.invite_code);
+  const preparing = santas.some((santa) => santa.status === 'preparing');
+  return kept || !preparing ? [] : [`fête ${group.id} : lien perdu`];
+};
+
 const groupsProblems = (before: Query, after: Query): string[] => {
   const parties = byId(after('SELECT * FROM parties'));
   return before('SELECT * FROM groups').flatMap((group) => {
     const party = parties.get(String(group.id));
     if (!party) return [`groupe ${group.id} : aucune fête`];
     return [
-      ...(['name', 'slug', 'invite_code', 'created_by'] as const)
+      ...(['name', 'slug', 'created_by'] as const)
         .filter((key) => party[key] !== group[key])
         .map((key) => `fête ${group.id} : ${key} a changé`),
+      ...linkProblems(group, party, after),
       ...(party.category === 'christmas' && party.from_list === 0
         ? []
         : [`fête ${group.id} : pas une fête de Noël`]),

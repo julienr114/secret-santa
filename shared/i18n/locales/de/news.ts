@@ -25,7 +25,8 @@ export default {
       '{name} beteiligt sich an deinem Gemeinschaftsgeschenk: {detail}',
     revealed: 'Die Auslosung ist aufgedeckt: wer wen beschenkt hat',
     palmares: 'Die Rangliste von Devine qui ist da',
-    joined: '{name} ist dem Event beigetreten',
+    joined: '{name} hat sich über den Link angemeldet',
+    joinedIn: '{name} hat sich über den Link angemeldet ({detail})',
     all_viewed: 'Alle haben ihr Los entdeckt',
   },
 };

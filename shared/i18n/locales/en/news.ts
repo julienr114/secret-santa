@@ -25,7 +25,8 @@ export default {
     joined_gift: '{name} joins your shared gift: {detail}',
     revealed: 'The draw is revealed: who gave to whom',
     palmares: 'The palmarès of Devine qui is here',
-    joined: '{name} joined the event',
+    joined: '{name} signed up with the link',
+    joinedIn: '{name} signed up with the link ({detail})',
     all_viewed: 'Everyone has found out who they drew',
   },
 };

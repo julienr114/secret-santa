@@ -30,6 +30,7 @@ const STATUS_BY_REASON: Record<string, number> = {
   person_is_organizer: 409,
   invite_expired: 410,
   invite_full: 409,
+  invite_drawn: 409,
   person_has_other_email: 409,
   email_taken: 409,
   results_already_revealed: 409,

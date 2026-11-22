@@ -25,7 +25,8 @@ export default {
     joined_gift: '{name} se joint à ton cadeau à plusieurs : {detail}',
     revealed: 'Le tirage est dévoilé : qui a offert à qui',
     palmares: 'Le palmarès de Devine qui est là',
-    joined: '{name} a rejoint l’événement',
+    joined: '{name} s’inscrit par le lien',
+    joinedIn: '{name} s’inscrit par le lien ({detail})',
     all_viewed: 'Tout le monde a découvert son tirage',
   },
 };

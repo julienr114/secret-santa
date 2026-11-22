@@ -1,33 +1,49 @@
 <script setup lang="ts">
 import { INVITE_MESSAGE_MAX } from '#server/utils/invite';
+import { usePartyQuery } from '~/composables/queries/useParty';
 import {
-  useDashboardQuery,
+  useEditionQuery,
   useInviteLinkMutation,
 } from '~/composables/queries/useGroup';
 
-// The organiser's word on the invitation page, on a page of its own
-// (README 23.3, Correction 18, maquette GroupeInvitationMot): « Valider »
-// fixed at the bottom, « Retour » gives the change up. The link's other
-// settings are sent again unchanged.
+// The organiser's word on the page of a Secret Santa's link, on a page of
+// its own (README 23.3, Correction 18, maquette GroupeInvitationMot):
+// « Valider » fixed at the bottom, « Retour » gives the change up. The
+// link's other settings are sent again unchanged.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
+const id = computed(() => String(route.params.id));
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
-const context = useScreenContext(slug);
+const party = usePartyQuery(slug);
+const edition = useEditionQuery(slug, id);
+const invite = computed(() => edition.data.value?.invite);
+const parts = computed(() => [
+  { label: party.data.value?.party.name ?? '', to: `/e/${slug.value}` },
+  {
+    label: t('party.secretSanta.context', {
+      year: edition.data.value?.edition.year ?? '',
+    }),
+    to: `/admin/${slug.value}/editions/${id.value}`,
+  },
+]);
 useHead({
-  title: () => context.titleOf(t('adminEdition.invite.messageRow')),
+  title: () =>
+    `${t('adminEdition.invite.messageRow')} — ${parts.value
+      .map((part) => part.label)
+      .join(' · ')} — ${t('common.appName')}`,
 });
-const parent = computed(() => `/e/${slug.value}/invitation`);
+const parent = computed(
+  () => `/admin/${slug.value}/editions/${id.value}/invitation`,
+);
 const screen = computed(() => ({ back: parent.value }));
 
-const dashboard = useDashboardQuery(slug);
-const group = computed(() => dashboard.data.value?.group);
-const mutation = useInviteLinkMutation(slug);
+const mutation = useInviteLinkMutation(slug, id);
 const word = ref('');
 watch(
-  () => group.value?.inviteMessage,
+  () => invite.value?.message,
   (message) => {
     word.value = message ?? '';
   },
@@ -46,10 +62,8 @@ const onValidate = () =>
   mutation.mutate(
     {
       open: true,
-      until: group.value?.inviteUntil ?? null,
-      ...(group.value?.invitePlaces
-        ? { places: group.value.invitePlaces }
-        : {}),
+      until: invite.value?.until ?? null,
+      ...(invite.value?.places ? { places: invite.value.places } : {}),
       message: word.value.trim() || null,
     },
     { onSuccess: () => goBack(parent.value) },
@@ -59,15 +73,12 @@ const onValidate = () =>
 <template>
   <AdminScreen v-bind="screen">
     <AdminQueryState
-      :pending="dashboard.isPending.value"
-      :error="dashboard.error.value"
+      :pending="edition.isPending.value"
+      :error="edition.error.value"
       :skeleton="['title', 'card']"
     >
       <div class="flex flex-col gap-1">
-        <UiPageContext
-          :parts="context.parts.value"
-          :label="t('common.context')"
-        />
+        <UiPageContext :parts="parts" :label="t('common.context')" />
         <UiPageTitle>{{ t('adminEdition.invite.messageRow') }}</UiPageTitle>
         <p class="mt-1 text-[15px] leading-[1.45] text-toned">
           {{ t('adminEdition.invite.messageHelp') }}
@@ -88,7 +99,7 @@ const onValidate = () =>
           size="xl"
           class="h-13 justify-center text-[17px] font-bold"
           :loading="saving"
-          :disabled="saving || !group?.inviteCode"
+          :disabled="saving || !invite?.code"
           :label="t('common.actions.validate')"
           data-testid="invite-word-validate"
           @click="onValidate"

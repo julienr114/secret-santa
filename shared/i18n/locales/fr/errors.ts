@@ -118,6 +118,8 @@ export default {
     'Ce Secret Santa est déjà rattaché à une autre adresse.',
   invite_expired:
     'Ce lien d’invitation a expiré : demande-en un nouveau à l’organisateur.',
+  invite_drawn:
+    'Le tirage a déjà eu lieu : plus personne ne peut s’inscrire par ce lien.',
   invite_full: 'Il n’y a plus de place par ce lien : préviens l’organisateur.',
   collecting_answers:
     'Le tirage a été fait ailleurs : chacun donne sa réponse. Abandonne les réponses pour tirer avec l’application.',

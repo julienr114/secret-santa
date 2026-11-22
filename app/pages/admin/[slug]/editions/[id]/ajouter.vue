@@ -225,7 +225,7 @@ const onSave = async () => {
           :subtitle="t('adminEdition.addParticipants.createHint')"
         />
         <UiListItem
-          :to="`/e/${slug}/invitation`"
+          :to="`/admin/${slug}/editions/${id}/invitation`"
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="t('adminEdition.addParticipants.inviteHint')"

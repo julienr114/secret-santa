@@ -272,6 +272,11 @@ export const createSecretSanta = async (
     // A game carried over is on from the creation (« activé moins de
     // trois jours avant la fin », README 22.17).
     guessEnabledAt: game.guessMode === 'none' ? null : createdAt,
+    // A new Secret Santa has no invitation link yet (ticket 116).
+    inviteCode: null,
+    inviteUntil: null,
+    invitePlaces: null,
+    inviteMessage: null,
     createdAt,
   };
   const rows = await Promise.all(

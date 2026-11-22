@@ -197,11 +197,11 @@ export default {
     copiedDescription: 'Füge sie in die App deiner Wahl ein.',
   },
   invite: {
-    off: 'Deaktiviert',
-    active: 'Aktiv',
     description:
-      'Wer sich anmeldet, ist auch beim Wichteln dabei, solange die Auslosung nicht stattgefunden hat.',
+      'Wer sich anmeldet, macht beim Wichteln mit und wird Mitglied des Events.',
     closed: 'Der Link ist deaktiviert: Niemand kann sich anmelden.',
+    afterDraw:
+      'Die Auslosung hat schon stattgefunden: Niemand kann sich mehr anmelden.',
     create: 'Link erstellen',
     shareLink: 'Link teilen',
     copyMessage: 'Nachricht kopieren',
@@ -209,11 +209,7 @@ export default {
     settings: 'Einstellungen des Links',
     places: 'Freie Plätze',
     placesHelp:
-      'Wie viele Personen über diesen Link noch dem Event beitreten können.',
-    placesLeft: {
-      one: '{count} freier Platz',
-      other: '{count} freie Plätze',
-    },
+      'Wie viele Personen sich über diesen Link noch anmelden können.',
     capacity: {
       one: 'Das Event kann höchstens noch {count} Person aufnehmen.',
       other: 'Das Event kann höchstens noch {count} Personen aufnehmen.',
@@ -222,7 +218,6 @@ export default {
     more: 'Ein Platz mehr',
     until: 'Letzter Tag',
     untilHelp: 'Optional. Nach diesem Tag funktioniert der Link nicht mehr.',
-    untilShort: 'bis {date}',
     dateLabel: 'Datum',
     noUntil: 'Kein letzter Tag',
     none: 'Keiner',
@@ -237,7 +232,7 @@ export default {
     closeHint: 'Niemand kann sich mehr anmelden',
     closeConfirm: 'Link deaktivieren? Niemand kann sich mehr anmelden.',
     message: {
-      intro: 'Hallo! Du bist zum Event „{group}“ eingeladen 🎁',
+      intro: 'Hallo! Du bist zum Wichteln „{group}“ eingeladen 🎁',
       how: 'Melde dich mit deiner E-Mail-Adresse über diesen Link an:',
       until: 'Du hast Zeit bis zum {date}.',
     },

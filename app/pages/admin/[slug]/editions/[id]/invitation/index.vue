@@ -1,56 +1,72 @@
 <script setup lang="ts">
-import { buildInviteMessage } from '#server/utils/invite';
-import { MAX_PARTICIPANTS } from '#server/utils/editions';
+import { buildInviteMessage, invitePlace } from '#server/utils/invite';
 import { formatEventDate } from '#server/utils/rules';
+import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
+import { usePartyQuery } from '~/composables/queries/useParty';
 import {
-  useDashboardQuery,
+  useEditionQuery,
   useInviteLinkMutation,
-  usePeopleQuery,
 } from '~/composables/queries/useGroup';
 
-// The invitation link of a group, closed by default. Once open: the
-// message to share, as the guests will read it, then the link's settings,
-// each saved from its own sheet (places left, last day) or written on its
-// own page (the organiser's word, README 23.3), then a new link or none. Whoever opens the link
-// logs in and joins the group.
+// The invitation link of a Secret Santa (ticket 116, V3FeteInviter),
+// closed by default. Once open: the message to share, as the guests will
+// read it, then the link's settings, each saved from its own sheet (places
+// left, last day) or written on its own page (the organiser's word, README
+// 23.3), then a new link or none. Whoever opens the link logs in and signs
+// up to this Secret Santa, and so becomes a member of its event. Once the
+// draw is done, the link lets nobody in.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const dashboard = useDashboardQuery(slug);
-const group = computed(() => dashboard.data.value?.group);
-const people = usePeopleQuery(slug);
-/** What a draw can still take: by default, the link's places. */
-const room = computed(() =>
-  Math.max(
-    1,
-    MAX_PARTICIPANTS -
-      (people.data.value?.persons ?? []).filter((p) => p.active).length,
-  ),
+const id = computed(() => String(route.params.id));
+const party = usePartyQuery(slug);
+const edition = useEditionQuery(slug, id);
+const invite = computed(() => edition.data.value?.invite);
+/** What the event can still take: by default, the link's places. */
+const room = computed(() => Math.max(1, invite.value?.room ?? 1));
+const preparing = computed(
+  () => edition.data.value?.edition.status === 'preparing',
 );
 const { t, locale } = useT();
-const context = useScreenContext(slug);
+const parts = computed(() => [
+  { label: party.data.value?.party.name ?? '', to: `/e/${slug.value}` },
+  {
+    label: t('party.secretSanta.context', {
+      year: edition.data.value?.edition.year ?? '',
+    }),
+    to: `/admin/${slug.value}/editions/${id.value}`,
+  },
+]);
 useHead({
-  title: () => context.titleOf(t('adminEdition.screen.empty.invite')),
+  title: () =>
+    `${t('adminEdition.screen.empty.invite')} — ${parts.value
+      .map((part) => part.label)
+      .join(' · ')} — ${t('common.appName')}`,
 });
-const screen = computed(() => ({ back: `/e/${slug.value}/membres` }));
+const screen = computed(() => ({
+  back: `/admin/${slug.value}/editions/${id.value}`,
+}));
 const errorMessage = useErrorMessage();
 const toast = useMessages();
-const mutation = useInviteLinkMutation(slug);
+const mutation = useInviteLinkMutation(slug, id);
 const opening = useBusy(() => mutation.isPending.value);
 
-const code = computed(() => group.value?.inviteCode ?? null);
+const code = computed(() => (preparing.value ? invite.value?.code : null));
 const url = computed(() =>
   code.value && import.meta.client
     ? `${window.location.origin}/rejoindre/${code.value}`
     : '',
 );
 const message = computed(() =>
-  group.value && url.value
+  party.data.value && url.value
     ? buildInviteMessage(
         {
-          groupName: group.value.name,
+          place: invitePlace(
+            party.data.value.party.name,
+            edition.data.value?.santaName ?? null,
+          ),
           url: url.value,
-          until: group.value.inviteUntil,
+          until: invite.value?.until ?? null,
         },
         locale.value,
       )
@@ -67,9 +83,9 @@ const pending = ref<
 >({});
 /** The settings as shown, sent again with the one that changes. */
 const settings = computed(() => ({
-  until: group.value?.inviteUntil ?? null,
-  places: group.value?.invitePlaces ?? null,
-  message: group.value?.inviteMessage ?? null,
+  until: invite.value?.until ?? null,
+  places: invite.value?.places ?? null,
+  message: invite.value?.message ?? null,
   ...pending.value,
 }));
 const editing = ref<null | 'places' | 'until'>(null);
@@ -173,18 +189,15 @@ const messageValue = computed(() =>
 <template>
   <AdminScreen v-bind="screen">
     <div class="flex flex-col gap-1">
-      <UiPageContext
-        :parts="context.parts.value"
-        :label="t('common.context')"
-      />
+      <UiPageContext :parts="parts" :label="t('common.context')" />
       <UiPageTitle>{{ t('adminEdition.screen.empty.invite') }}</UiPageTitle>
       <p class="text-[15px] text-toned">
         {{ t('adminEdition.invite.description') }}
       </p>
     </div>
     <AdminQueryState
-      :pending="dashboard.isPending.value"
-      :error="dashboard.error.value"
+      :pending="edition.isPending.value"
+      :error="edition.error.value"
       :skeleton="['card', 'list']"
       :rows="3"
     >
@@ -218,6 +231,9 @@ const messageValue = computed(() =>
             @click="copy"
           />
         </template>
+        <p v-else-if="!preparing" class="text-sm text-toned">
+          {{ t('adminEdition.invite.afterDraw') }}
+        </p>
         <template v-else>
           <p class="text-sm text-toned">
             {{ t('adminEdition.invite.closed') }}
@@ -239,7 +255,11 @@ const messageValue = computed(() =>
         <UiList :title="t('adminEdition.invite.settings')">
           <UiListItem
             :title="t('adminEdition.invite.places')"
-            :value="String(settings.places ?? room)"
+            :value="
+              invite?.room === 0
+                ? t('party.full.paused')
+                : String(settings.places ?? room)
+            "
             :busy="savingKey('places')"
             :busy-label="t('common.actions.saving')"
             :on-click="() => (editing = 'places')"
@@ -254,7 +274,7 @@ const messageValue = computed(() =>
           <UiListItem
             :title="t('adminEdition.invite.messageRow')"
             :value="messageValue"
-            :to="`/e/${slug}/invitation/mot`"
+            :to="`/admin/${slug}/editions/${id}/invitation/mot`"
             data-testid="invite-word"
           />
         </UiList>
@@ -324,7 +344,7 @@ const messageValue = computed(() =>
       :value="settings.places ?? room"
       :hint="t('adminEdition.invite.capacity', { count: room })"
       :min="1"
-      :max="MAX_PARTICIPANTS"
+      :max="MAX_PARTY_MEMBERS"
       :decrease-label="t('adminEdition.invite.fewer')"
       :increase-label="t('adminEdition.invite.more')"
       :validate-label="t('common.actions.validate')"

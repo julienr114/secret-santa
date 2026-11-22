@@ -7,87 +7,86 @@ import {
 import { personalPath } from '#server/database/participations';
 import { optionalAccount } from '#server/http/auth';
 import { dataKeyOf, nowIso } from '#server/http/context';
-import { canJoinGroup, linkPlaces } from '#server/utils/invite';
+import { canSignUp, linkPlaces } from '#server/utils/invite';
 import { countActiveMembers } from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
-import { mergeRules } from '#server/utils/rules';
+import { isIsoDay, mergeRules } from '#server/utils/rules';
+import { eq } from 'drizzle-orm';
+import { partyYears } from '#server/database/schema';
 import { organizerCount } from '#server/database/groups';
-import { count, desc, eq } from 'drizzle-orm';
-import { partyYears, persons } from '#server/database/schema';
 
-// What an invitation link shows: the group, its draw in progress if any,
-// whether the link still lets people in (deadline, places), and, for a
-// logged-in account, whether it is already in (then the way to its draw,
-// if it takes part) and whether it has a first name.
+// What the link of a Secret Santa shows (ticket 116, V3FeteRejoindre): the
+// event and, when it has several Secret Santa the same year, this one's
+// name; its category, its date, how many signed up; whether the link still
+// lets this visitor in (the draw, the deadline, the places); and, for a
+// logged-in account, whether it already takes part (then the way to its
+// page) and whether it has a first name.
 export default defineEventHandler(async (event) => {
-  const { db, edition, group } = await requireInvite(event);
-  const rules = edition ? mergeRules(edition.rules) : null;
+  const { db, santa, santaName, group } = await requireInvite(event);
+  const rules = mergeRules(santa.rules);
   const user = await optionalAccount(event);
   const account = user ? await findAccountById(db, user.accountId) : null;
   const person = account
     ? await findPersonByGroupEmail(db, group.id, account.email)
     : null;
-  const participation =
-    person && edition
-      ? await findParticipationOf(db, edition.id, person.id)
-      : null;
-  const [[year], [members], active] = await Promise.all([
+  const participation = person
+    ? await findParticipationOf(db, santa.id, person.id)
+    : null;
+  const [active, participants, organizers, [year]] = await Promise.all([
+    countActiveMembers(db, group.id),
+    participantCount(db, santa.id),
+    organizerCount(db, group.id),
     db
       .select({ date: partyYears.date })
       .from(partyYears)
-      .where(eq(partyYears.partyId, group.id))
-      .orderBy(desc(partyYears.year))
+      .where(eq(partyYears.id, santa.yearId))
       .limit(1),
-    db
-      .select({ n: count() })
-      .from(persons)
-      .where(eq(persons.partyId, group.id)),
-    countActiveMembers(db, group.id),
   ]);
+  // Its day: the one the Secret Santa gives, else the one of its year.
+  const day =
+    rules.ok && isIsoDay(rules.value.eventDate)
+      ? rules.value.eventDate
+      : (year?.date ?? null);
+  const today = nowIso().slice(0, 10);
+  const open = canSignUp(
+    {
+      status: santa.status,
+      until: santa.inviteUntil,
+      places: linkPlaces(santa.invitePlaces, active),
+      member: Boolean(person?.active),
+    },
+    today,
+  );
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return {
     groupName: group.name,
-    // The party (V3FeteRejoindre): its category, its date, its members.
+    // The name of the Secret Santa, only when the event has several the
+    // same year: « Famille Camille (Les adultes) ».
+    santaName,
     party: {
       category: group.category,
       iconEmoji: group.iconEmoji,
-      date: year?.date ?? null,
-      members: members?.n ?? 0,
+      date: day,
     },
-    message: group.inviteMessage,
+    message: santa.inviteMessage,
     // « ton organisateur » or « tes organisateurs ».
-    organizers: await organizerCount(db, group.id),
-    edition: edition
-      ? {
-          label: edition.label,
-          // Drawn already: whoever joins now is in the group, not this draw.
-          status: edition.status,
-          hintsOn: true,
-          eventDate: rules?.ok ? rules.value.eventDate : '',
-          participants: await participantCount(db, edition.id),
-        }
-      : null,
+    organizers,
+    edition: {
+      label: santa.label,
+      status: santa.status,
+      participants,
+    },
     // The last day the link worked, once it has expired.
     expiredAfter:
-      group.inviteUntil && group.inviteUntil < nowIso().slice(0, 10)
-        ? group.inviteUntil
-        : null,
-    // Why the link no longer lets anyone in, or null.
-    closed: (() => {
-      const open = canJoinGroup(
-        {
-          until: group.inviteUntil,
-          places: linkPlaces(group.invitePlaces, active),
-        },
-        nowIso().slice(0, 10),
-      );
-      return open.ok ? null : open.reason;
-    })(),
+      santa.inviteUntil && santa.inviteUntil < today ? santa.inviteUntil : null,
+    // Why the link no longer lets this visitor in, or null.
+    closed: open.ok ? null : open.reason,
     account: account
       ? {
           email: account.email,
           firstName: account.firstName,
-          member: Boolean(person?.active),
+          // Takes part in this Secret Santa already.
+          joined: Boolean(participation && person?.active),
           path: participation
             ? await personalPath(participation, await dataKeyOf(event))
             : null,

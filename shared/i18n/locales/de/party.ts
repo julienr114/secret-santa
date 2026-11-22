@@ -14,7 +14,6 @@ export default {
   inDays: { one: 'in {count} Tag', other: 'in {count} Tagen' },
   today: 'heute',
   members: { one: '{count} Mitglied', other: '{count} Mitglieder' },
-  invite: 'Einladen',
   settings: 'Einstellungen des Events',
   secretSantaTitle: { one: 'Das Wichteln', other: 'Die Wichteln' },
   full: {
@@ -32,6 +31,7 @@ export default {
     drawSection: 'Die Auslosung',
     guessRow: 'Tipps',
     messagesSection: 'Die Nachrichten',
+    joined: 'Jemand meldet sich über den Link an',
     allViewed: 'Alle haben ihr Los entdeckt',
     whichParty: 'Das Event des Wichtelns',
     otherOccasion: 'Ein anderer Anlass',
@@ -104,8 +104,6 @@ export default {
     who: 'Wer ist dabei?',
     takeFrom: 'Die Mitglieder übernehmen von',
     noEmail: 'Keine E-Mail-Adresse',
-    inviteOthers: 'Weitere Personen einladen',
-    inviteOthersHint: 'Per Link, sobald das Event erstellt ist',
     submit: {
       one: 'Event erstellen · {count} Mitglied',
       other: 'Event erstellen · {count} Mitglieder',
@@ -120,7 +118,5 @@ export default {
     recurring: 'Jedes Jahr wieder',
     secretSanta: 'Wichteln',
     secretSantaRow: 'Einstellungen des Wichtelns {year}',
-    email: 'Per E-Mail benachrichtigen',
-    joined: 'Jemand tritt dem Event über den Link bei',
   },
 } satisfies Dict<typeof fr>;

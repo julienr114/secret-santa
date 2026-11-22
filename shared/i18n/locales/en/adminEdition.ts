@@ -193,22 +193,17 @@ export default {
     copiedDescription: 'Paste it into the app of your choice.',
   },
   invite: {
-    off: 'Off',
-    active: 'On',
     description:
-      'Those who sign up also join the Secret Santa, as long as the draw has not taken place.',
+      'Those who sign up take part in the Secret Santa and become members of the event.',
     closed: 'The link is off: nobody can sign up.',
+    afterDraw: 'The draw has already taken place: nobody can sign up any more.',
     create: 'Create the link',
     shareLink: 'Share the link',
     copyMessage: 'Copy the message',
     copied: 'Message copied',
     settings: 'Link settings',
     places: 'Places left',
-    placesHelp: 'How many people can still join the event with this link.',
-    placesLeft: {
-      one: '{count} place left',
-      other: '{count} places left',
-    },
+    placesHelp: 'How many people can still sign up with this link.',
     capacity: {
       one: 'The event can still take {count} person at most.',
       other: 'The event can still take {count} people at most.',
@@ -217,7 +212,6 @@ export default {
     more: 'One place more',
     until: 'Last day',
     untilHelp: 'Optional. The link stops working after this day.',
-    untilShort: 'until {date}',
     dateLabel: 'Date',
     noUntil: 'No last day',
     none: 'None',
@@ -231,7 +225,7 @@ export default {
     closeHint: 'Nobody will be able to sign up',
     closeConfirm: 'Turn the link off? Nobody will be able to sign up.',
     message: {
-      intro: 'Hi! You are invited to the event “{group}” 🎁',
+      intro: 'Hi! You are invited to the Secret Santa “{group}” 🎁',
       how: 'Sign up with your email address by opening this link:',
       until: 'You have until {date}.',
     },

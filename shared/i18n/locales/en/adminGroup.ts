@@ -96,7 +96,6 @@ export default {
     inactive: 'No longer takes part',
     notDrawing: 'does not draw {names}',
     add: 'Add a person',
-    orInvite: 'Or let them sign up',
   },
   newPerson: {
     takesPart: 'Takes part in {label}',

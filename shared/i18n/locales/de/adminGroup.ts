@@ -100,7 +100,6 @@ export default {
     inactive: 'Macht nicht mehr mit',
     notDrawing: 'zieht nicht {names}',
     add: 'Person hinzufügen',
-    orInvite: 'Oder lass sie sich selbst anmelden',
   },
   newPerson: {
     takesPart: 'Macht bei {label} mit',

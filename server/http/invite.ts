@@ -4,7 +4,7 @@ import { findInvite } from '#server/database/invite';
 import { notFound } from './errors';
 import { INVITE_CODE_SHAPE } from '#server/utils/invite';
 
-/** The group of an invitation link, with its current edition. */
+/** The Secret Santa of an invitation link, with its event. */
 export type InviteContext = NonNullable<
   Awaited<ReturnType<typeof findInvite>>
 > & {
@@ -12,10 +12,10 @@ export type InviteContext = NonNullable<
 };
 
 /**
- * Guard of /api/invite/[code]/*: the code of the route must open a group.
- * A malformed or unknown code gets the same 404.
+ * Guard of /api/invite/[code]/*: the code of the route must open a
+ * Secret Santa. A malformed, unknown or closed code gets the same 404.
  * @param event - The request.
- * @returns The group, its current edition and the database.
+ * @returns The Secret Santa, its event and the database.
  */
 export const requireInvite = async (event: H3Event): Promise<InviteContext> => {
   const code = getRouterParam(event, 'code') ?? '';

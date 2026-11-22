@@ -4,6 +4,7 @@ import {
   hintsPathOf,
   listsPathOf,
   parentOf,
+  invitationPathOf,
   partyPathOf,
   pastPathOf,
   placeOf,
@@ -31,6 +32,28 @@ describe('backMove', () => {
   });
 });
 
+describe('invitationPathOf', () => {
+  it('sends the old invitation link of an event and its word to its members', () => {
+    expect(invitationPathOf('/e/famille/invitation')).toBe(
+      '/e/famille/membres',
+    );
+    expect(invitationPathOf('/e/famille/invitation/')).toBe(
+      '/e/famille/membres',
+    );
+    expect(invitationPathOf('/e/famille/invitation/mot')).toBe(
+      '/e/famille/membres',
+    );
+  });
+
+  it('leaves the other pages, and the link of a Secret Santa, alone', () => {
+    expect(invitationPathOf('/e/famille/membres')).toBeNull();
+    expect(
+      invitationPathOf('/admin/famille/editions/e1/invitation'),
+    ).toBeNull();
+    expect(invitationPathOf('/invitation/abc')).toBeNull();
+  });
+});
+
 describe('partyPathOf', () => {
   it('sends the pages of a group to its party', () => {
     expect(partyPathOf('/admin/famille')).toBe('/e/famille');
@@ -40,7 +63,7 @@ describe('partyPathOf', () => {
       '/e/famille/membres/p1',
     );
     expect(partyPathOf('/admin/famille/invitation/mot')).toBe(
-      '/e/famille/invitation/mot',
+      '/e/famille/membres',
     );
     expect(partyPathOf('/admin/famille/reglages')).toBe('/e/famille/reglages');
   });

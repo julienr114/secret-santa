@@ -2,9 +2,10 @@ import { emailSubject, plainEmail, type Email } from './messages';
 import { daysUntil, formatEventDate } from './rules';
 import type { EditionStatus } from './editions';
 import { translate, type Locale } from '#shared/i18n';
+import { invitePlace } from './invite';
 
-// Emails to the organisers of an event (README 22.2): someone joined the
-// event, everyone discovered their result, the exchange is near and some
+// Emails to the organisers of an event (README 22.2): someone signed up to
+// a Secret Santa by its link, everyone discovered their result, the exchange is near and some
 // have not. Pure.
 
 /** How many days before the exchange the reminder goes. */
@@ -41,25 +42,31 @@ export const isReminderDue = (
 };
 
 /**
- * Someone joined the group by its invitation link.
- * @param data - Group, first name of the newcomer, link to the people.
+ * Someone signed up to a Secret Santa by its invitation link (ticket 116).
+ * @param data - Event, Secret Santa (its name when the event has several
+ *   that year), first name of the newcomer, link to the members.
  * @param locale - Language of the organiser.
  * @returns The email.
  */
 export const buildJoinedEmail = (
-  data: { groupName: string; firstName: string; link: string },
+  data: {
+    groupName: string;
+    santaName?: string | null;
+    firstName: string;
+    link: string;
+  },
   locale: Locale,
 ): Email =>
   plainEmail({
     subject: emailSubject(
       locale,
-      { event: data.groupName },
+      { event: data.groupName, santa: data.santaName },
       translate(locale, 'notify.joined.subject', { name: data.firstName }),
     ),
     before: [
       translate(locale, 'notify.joined.body', {
         name: data.firstName,
-        group: data.groupName,
+        group: invitePlace(data.groupName, data.santaName ?? null),
       }),
       translate(locale, 'notify.joined.next'),
     ],

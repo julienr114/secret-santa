@@ -3,9 +3,9 @@ import type { Dict } from '../../types';
 
 export default {
   joined: {
-    subject: '{name} ist dem Event beigetreten',
-    body: '{name} ist gerade über den Einladungslink dem Event „{group}“ beigetreten.',
-    next: 'Denk daran, die Person dem laufenden Wichteln und ihren Ausschlüssen (Partner, Geschwister) hinzuzufügen.',
+    subject: '{name} hat sich über den Link angemeldet',
+    body: '{name} hat sich gerade über den Einladungslink zum Wichteln „{group}“ angemeldet.',
+    next: 'Denk an die Ausschlüsse (Paar, Geschwister).',
   },
   allViewed: {
     subject: 'Alle Umschläge sind geöffnet',

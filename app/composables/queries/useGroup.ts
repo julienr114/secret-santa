@@ -75,6 +75,20 @@ export type EditionPayload = {
   guess: GuessSummary;
   /** Drawn again after a cancelled draw. */
   redrawn: boolean;
+  /** Its name, when the event has several the same year. */
+  santaName: string | null;
+  /** Its invitation link (ticket 116). */
+  invite: {
+    /** Null when closed. */
+    code: string | null;
+    until: string | null;
+    places: number | null;
+    message: string | null;
+    /** The places the link really offers: none at 30 members. */
+    placesLeft: number;
+    /** What the event can still take before 30 members. */
+    room: number;
+  };
 };
 
 type Slug = MaybeRefOrGetter<string>;
@@ -137,12 +151,6 @@ export const usePeopleQuery = (slug: Slug) =>
     () => `${base(slug)}/persons`,
   );
 
-export const useRulesQuery = (slug: Slug) =>
-  useApiQuery<{ rules: Rules }>(
-    () => keys.rules(toValue(slug)),
-    () => `${base(slug)}/rules`,
-  );
-
 export const useEditionQuery = (
   slug: Slug,
   id: Slug,
@@ -203,12 +211,6 @@ export const useDeleteExclusionMutation = (slug: Slug) =>
     () => groupKeys(slug),
   );
 
-export const useUpdateRulesMutation = (slug: Slug) =>
-  useApiMutation<{ rules: Rules }, RulesPatch>(
-    (body) => api(`${base(slug)}/rules`, { method: 'PATCH', body }),
-    () => groupKeys(slug),
-  );
-
 export const useCreateEditionMutation = (slug: Slug) =>
   useApiMutation<
     { edition: PublicEdition },
@@ -243,8 +245,8 @@ export const useUpdateEditionMutation = (slug: Slug) =>
     () => groupKeys(slug),
   );
 
-/** Opens, renews or closes the invitation link of a group. */
-export const useInviteLinkMutation = (slug: Slug) =>
+/** Opens, renews or closes the invitation link of a Secret Santa. */
+export const useInviteLinkMutation = (slug: Slug, id: Slug) =>
   useApiMutation<
     { inviteCode: string | null },
     {
@@ -255,6 +257,10 @@ export const useInviteLinkMutation = (slug: Slug) =>
       message?: string | null;
     }
   >(
-    (body) => api(`${base(slug)}/invite`, { method: 'POST', body }),
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/invite`, {
+        method: 'POST',
+        body,
+      }),
     () => groupKeys(slug),
   );

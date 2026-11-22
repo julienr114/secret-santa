@@ -615,3 +615,102 @@ INSERT INTO gift_giver_claims (id, list_id, idea_id, giver_id, mode, closed, not
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });
+
+describe('the invitation link goes to a Secret Santa (ticket 116)', () => {
+  const INVITE = '0040_v3_secret_santa_invite.sql';
+  const db = v2();
+  const untouched = v2();
+  // « Famille » has a link, « Noël 2026 » drawn and « Les enfants 2026 »
+  // being prepared, and its organiser turned off « Quelqu'un rejoint par le
+  // lien ». « Amis », whose only draw is closed, has a link too.
+  const links = `
+UPDATE groups SET invite_code = 'famille-code-001', invite_until = '2026-12-10', invite_places = 4, invite_message = 'Viens !' WHERE id = 'g1';
+UPDATE groups SET invite_code = 'amis-code-000002', invite_places = 2 WHERE id = 'g2';
+`;
+  db.exec(links);
+  untouched.exec(links);
+  files
+    .filter((file) => file <= INVITE)
+    .forEach((file) => {
+      if (file >= V3) apply(db, file);
+    });
+  const santa = (id: string) =>
+    one(
+      db,
+      'SELECT invite_code AS code, invite_until AS until, invite_places AS places, invite_message AS message, rules FROM secret_santas WHERE id = ?',
+      id,
+    );
+
+  it('gives the link of an event, with its settings, to its Secret Santa being prepared', () => {
+    expect(santa('e3')).toMatchObject({
+      code: 'famille-code-001',
+      until: '2026-12-10',
+      places: 4,
+      message: 'Viens !',
+    });
+    expect(santa('e2').code).toBeNull();
+  });
+
+  it('closes the link of an event without a Secret Santa being prepared', () => {
+    expect(
+      one(
+        db,
+        "SELECT count(*) AS n FROM secret_santas WHERE invite_code = 'amis-code-000002'",
+      ).n,
+    ).toBe(0);
+  });
+
+  it('keeps the choice of the email on the Secret Santa, not on the event', () => {
+    expect(JSON.parse(String(santa('e3').rules)).notifyJoined).toBe(false);
+    expect(
+      JSON.parse(
+        String(one(db, "SELECT rules FROM parties WHERE id = 'g1'").rules),
+      ).notifyJoined,
+    ).toBeUndefined();
+  });
+
+  it('passes the comparison of pnpm v3:compare, and sees a link lost', () => {
+    const compare = () =>
+      compareV3(
+        (sql) => all(untouched, sql),
+        (sql) => all(db, sql),
+      ).filter((problem) => problem.includes('lien'));
+    expect(compare()).toEqual([]);
+    db.exec("UPDATE secret_santas SET invite_code = NULL WHERE id = 'e3'");
+    expect(compare()).toEqual(['fête g1 : lien perdu']);
+    db.exec(
+      "UPDATE secret_santas SET invite_code = 'famille-code-001' WHERE id = 'e3'",
+    );
+  });
+
+  it('matches the Drizzle snapshot of the Secret Santa and the event', () => {
+    const snapshot = JSON.parse(
+      readFileSync(join(DIR, 'meta', '0040_snapshot.json'), 'utf8'),
+    ) as {
+      tables: Record<
+        string,
+        { columns: Record<string, unknown>; indexes: Record<string, unknown> }
+      >;
+    };
+    ['parties', 'secret_santas'].forEach((table) => {
+      const shape = snapshot.tables[table]!;
+      expect(
+        all(db, `PRAGMA table_info(\`${table}\`)`)
+          .map((row) => row.name)
+          .toSorted(),
+        table,
+      ).toEqual(Object.keys(shape.columns).toSorted());
+      expect(
+        all(db, `PRAGMA index_list(\`${table}\`)`)
+          .filter((row) => row.origin === 'c')
+          .map((row) => row.name)
+          .toSorted(),
+        table,
+      ).toEqual(Object.keys(shape.indexes).toSorted());
+    });
+  });
+
+  it('leaves no foreign key broken', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+  });
+});

@@ -111,50 +111,48 @@ export const useRevokeAllMutation = () => {
   });
 };
 
-/** What an invitation link shows. */
+/** What the invitation link of a Secret Santa shows (ticket 116). */
 export type InvitePayload = {
   groupName: string;
-  /** The party (V3): its category, the date of its year, its members. */
+  /** The Secret Santa's name, when its event has several that year. */
+  santaName: string | null;
+  /** The event: its category and the day. */
   party: {
     category: PartyCategory;
     iconEmoji: string | null;
     date: string | null;
-    members: number;
   };
-  /** How many organisers the group has (« tes organisateurs »). */
+  /** How many organisers the event has (« tes organisateurs »). */
   organizers: number;
   /** The organiser's words, if any. */
   message: string | null;
-  /** The draw in progress of the group, if any. */
+  /** The Secret Santa of the link. */
   edition: {
     label: string;
     status: 'preparing' | 'drawn' | 'closed';
-    /** Whether the participants may leave gift hints. */
-    hintsOn: boolean;
-    eventDate: string;
     participants: number;
-  } | null;
-  /** Why the link no longer lets anyone in, or null. */
+  };
   /** The last day an expired link worked. */
   expiredAfter: string | null;
-  closed: 'invite_expired' | 'invite_full' | null;
-  /** For a logged-in account: its first name, and whether it is in. */
+  /** Why the link no longer lets this visitor in, or null. */
+  closed: 'invite_drawn' | 'invite_expired' | 'invite_full' | null;
+  /** For a logged-in account: its first name, and whether it takes part. */
   account: {
     email: string;
     firstName: string | null;
-    member: boolean;
+    joined: boolean;
     path: string | null;
   } | null;
 };
 
-/** The group an invitation link leads to. */
+/** The Secret Santa an invitation link leads to. */
 export const useInviteQuery = (code: MaybeRefOrGetter<string>) =>
   useApiQuery<InvitePayload>(
     () => ['invite', toValue(code)],
     () => `/api/invite/${toValue(code)}`,
   );
 
-/** Joins the group of an invitation link. */
+/** Signs up to the Secret Santa of an invitation link. */
 export const useJoinMutation = (code: MaybeRefOrGetter<string>) =>
   useApiMutation<{ ok: true; path: string | null }, { firstName: string }>(
     (body) =>

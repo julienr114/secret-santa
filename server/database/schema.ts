@@ -37,14 +37,6 @@ export const parties = sqliteTable('parties', {
   // The party's own settings (notifyJoined), and the starting values of
   // its next Secret Santa.
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
-  // Invitation link to join the group: its code (null when closed), the
-  // last day it works (optional), how many may still join by it, and the
-  // organiser's words on its page.
-  inviteCode: text('invite_code').unique(),
-  inviteUntil: text('invite_until'),
-  invitePlaces: integer('invite_places'),
-  // Words of the organiser, shown on the invitation page.
-  inviteMessage: text('invite_message'),
   // The account that created the party: it counts against its quota.
   createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),
@@ -165,6 +157,13 @@ export const secretSantas = sqliteTable(
     guessEnabledAt: text('guess_enabled_at'),
     guessPointSentAt: text('guess_point_sent_at'),
     guessEndSentAt: text('guess_end_sent_at'),
+    // Its invitation link (ticket 116; an event has none): its code (null
+    // when closed), the last day it works (optional), how many may still
+    // sign up by it, and the organiser's words on its page.
+    inviteCode: text('invite_code').unique(),
+    inviteUntil: text('invite_until'),
+    invitePlaces: integer('invite_places'),
+    inviteMessage: text('invite_message'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('secret_santas_party_idx').on(t.partyId)],

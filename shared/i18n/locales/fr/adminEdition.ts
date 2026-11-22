@@ -192,23 +192,17 @@ export default {
     copiedDescription: "Colle-le dans l'application de ton choix.",
   },
   invite: {
-    off: 'Désactivé',
-    active: 'Actif',
     description:
-      'Ceux qui s’inscrivent rejoignent aussi le Secret Santa, tant que le tirage n’a pas eu lieu.',
+      'Ceux qui s’inscrivent participent au Secret Santa et deviennent membres de l’événement.',
     closed: 'Le lien est désactivé : personne ne peut s’inscrire.',
+    afterDraw: 'Le tirage a déjà eu lieu : plus personne ne peut s’inscrire.',
     create: 'Créer le lien',
     shareLink: 'Partager le lien',
     copyMessage: 'Copier le message',
     copied: 'Message copié',
     settings: 'Réglages du lien',
     places: 'Places restantes',
-    placesHelp:
-      'Combien de personnes peuvent encore rejoindre l’événement par ce lien.',
-    placesLeft: {
-      one: '{count} place restante',
-      other: '{count} places restantes',
-    },
+    placesHelp: 'Combien de personnes peuvent encore s’inscrire par ce lien.',
     capacity: {
       one: 'L’événement peut encore accueillir {count} personne au plus.',
       other: 'L’événement peut encore accueillir {count} personnes au plus.',
@@ -217,7 +211,6 @@ export default {
     more: 'Une place de plus',
     until: 'Date limite',
     untilHelp: 'Facultatif. Le lien ne marche plus après ce jour.',
-    untilShort: 'jusqu’au {date}',
     dateLabel: 'Date',
     noUntil: 'Pas de date limite',
     none: 'Aucune',
@@ -231,7 +224,7 @@ export default {
     closeHint: 'Plus personne ne pourra s’inscrire',
     closeConfirm: 'Désactiver le lien ? Plus personne ne pourra s’inscrire.',
     message: {
-      intro: 'Salut ! Tu es invité à l’événement « {group} » 🎁',
+      intro: 'Salut ! Tu es invité au Secret Santa « {group} » 🎁',
       how: 'Inscris-toi avec ton adresse email en ouvrant ce lien :',
       until: 'Tu as jusqu’au {date}.',
     },

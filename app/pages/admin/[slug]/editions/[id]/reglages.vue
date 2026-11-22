@@ -8,7 +8,8 @@ import { useUpdateEditionMutation } from '~/composables/queries/useGroup';
 // what the creation form chose, in its order (« Nom », « Date »,
 // « Budget », « Petit mot pour les participants », Q-015), then the draw
 // (« Éviter la même personne »), « Devine qui », the word added to the
-// messages, the emails to me. Each saved at once, in its sheet, with its
+// messages, the emails to me (« Quelqu'un s'inscrit par le lien », ticket
+// 116, then the others). Each saved at once, in its sheet, with its
 // switch or on its own page. Once the Secret Santa is closed, read only;
 // the game no longer changes once the draw is revealed. At the bottom,
 // while it is not drawn, « Supprimer ce Secret Santa » (ticket 108).
@@ -205,6 +206,12 @@ const noteValue = computed(() =>
         :title="t('adminGroup.rules.notifySection')"
         data-testid="notifications"
       >
+        <UiListItem
+          :checked="shown.notifyJoined ?? true"
+          :title="t('party.secretSanta.joined')"
+          :busy="saving('notifyJoined')"
+          @update:checked="(on) => save({ notifyJoined: on })"
+        />
         <UiListItem
           :checked="shown.notifyAllViewed ?? true"
           :title="t('party.secretSanta.allViewed')"

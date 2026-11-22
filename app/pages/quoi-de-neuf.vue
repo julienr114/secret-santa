@@ -61,9 +61,15 @@ const text = (line: NewsLine): string => {
     name: line.name ?? '',
     detail: line.detail ?? '',
   };
-  return line.kind === 'new_ideas' && !line.name
-    ? t('news.kind.new_ideasCount', params)
-    : tk(`news.kind.${line.kind}`, params);
+  if (line.kind === 'new_ideas' && !line.name) {
+    return t('news.kind.new_ideasCount', params);
+  }
+  // « Hugo s'inscrit par le lien (Les adultes) », when the event has
+  // several Secret Santa that year (ticket 116).
+  if (line.kind === 'joined' && line.detail) {
+    return t('news.kind.joinedIn', params);
+  }
+  return tk(`news.kind.${line.kind}`, params);
 };
 /** A list's news show a list; the others an envelope, or people. */
 const iconOf = (line: NewsLine) => {

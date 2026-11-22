@@ -4,6 +4,14 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-028 — « Hugo s'est inscrit par le lien » s'accorde au masculin (ticket 116)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. En attendant, la nouveauté des organisateurs dit « Hugo s'inscrit par le lien » (« Hugo s'inscrit par le lien (Les adultes) » quand l'événement a plusieurs Secret Santa cette année-là), et l'email « Hugo s'inscrit par le lien » en objet.
+- **Ce qu'on a trouvé** : le ticket 116 écrit « Hugo s'est inscrit par le lien » ; `CLAUDE.md` : « L'application ne connaît pas le genre d'une personne : tournures neutres ». « s'est inscrit » devient faux pour Inès. Le réglage, lui, dit « Quelqu'un s'inscrit par le lien » (`V3TirageReglages`).
+- **Les choix** : A, « Hugo s'inscrit par le lien » (le présent, comme le réglage) ; B, « Inscription de Hugo par le lien » ; C, « Hugo s'est inscrit » tel quel.
+- **Ce que je ferais** : A, déjà en place : neutre, court, et le même verbe que le réglage.
+
 ### Q-027 — « L'an prochain ? » dans le palmarès d'un événement qui ne revient pas (ticket 115)
 
 - **Pour** : la conception

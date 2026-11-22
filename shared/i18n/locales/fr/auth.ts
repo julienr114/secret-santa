@@ -187,12 +187,13 @@ export default {
       'Tu n’as rien demandé ? Ignore ce message : sans ce lien, personne ne peut se connecter.',
   },
   invite: {
-    intro: 'Tu es invité à l’événement',
+    intro: 'Tu es invité au Secret Santa',
     party: 'le {date}',
+    signedUp: { one: '{count} inscrit', other: '{count} inscrits' },
     nameHelp: 'Le prénom que verront les autres.',
     loginFirst:
-      'Connecte-toi avec ton adresse email pour la rejoindre. Pas encore de compte ? Il se crée tout seul.',
-    joinGroup: 'Rejoindre l’événement',
+      'Connecte-toi avec ton adresse email pour participer. Pas encore de compte ? Il se crée tout seul.',
+    joinGroup: 'Participer',
     signedAs: 'Connecté avec {email}',
     notMe: 'Ce n’est pas moi',
     organiserWord: {
@@ -202,21 +203,9 @@ export default {
     welcome: 'Bienvenue dans {group}',
     inDraw: 'Tu participes à {label}.',
     notDrawnYet: {
-      one: 'Le tirage n’est pas encore fait : ton organisateur te fera signe.',
+      one: 'Le tirage n’a pas encore eu lieu : ton organisateur te préviendra.',
       other:
-        'Le tirage n’est pas encore fait : tes organisateurs te feront signe.',
-    },
-    addLater: {
-      one: 'Tu fais partie de l’événement. Ton organisateur t’ajoutera au tirage de {label}.',
-      other:
-        'Tu fais partie de l’événement. Tes organisateurs t’ajouteront au tirage de {label}.',
-    },
-    drawnAlready:
-      'Tu fais partie de l’événement. Le tirage de {label} est déjà fait : tu seras du prochain.',
-    nextDraw: {
-      one: 'Tu fais partie de l’événement. Ton organisateur te fera signe pour le prochain Secret Santa.',
-      other:
-        'Tu fais partie de l’événement. Tes organisateurs te feront signe pour le prochain Secret Santa.',
+        'Le tirage n’a pas encore eu lieu : tes organisateurs te préviendront.',
     },
     meanwhile: 'En attendant',
     hints: 'Écrire ma liste de cadeaux',
@@ -224,6 +213,13 @@ export default {
     goHome: 'Aller à mon accueil',
     findIt: 'Tu le retrouveras sur ton accueil en te connectant avec {email}.',
     joining: 'Inscription en cours…',
+    drawn: {
+      title: 'Le tirage a déjà eu lieu',
+      body: {
+        one: 'Préviens l’organisateur de {group}.',
+        other: 'Préviens les organisateurs de {group}.',
+      },
+    },
     full: {
       title: 'Il n’y a plus de place par ce lien',
       body: {

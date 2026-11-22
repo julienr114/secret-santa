@@ -191,12 +191,13 @@ export default {
       'Nichts angefordert? Ignoriere diese Nachricht: Ohne diesen Link kann sich niemand anmelden.',
   },
   invite: {
-    intro: 'Du bist zum Event eingeladen',
+    intro: 'Du bist zum Wichteln eingeladen',
     party: 'am {date}',
+    signedUp: { one: '{count} angemeldet', other: '{count} angemeldet' },
     nameHelp: 'Der Vorname, den die anderen sehen.',
     loginFirst:
-      'Melde dich mit deiner E-Mail-Adresse an, um beizutreten. Noch kein Konto? Es wird dabei erstellt.',
-    joinGroup: 'Dem Event beitreten',
+      'Melde dich mit deiner E-Mail-Adresse an, um mitzumachen. Noch kein Konto? Es wird dabei erstellt.',
+    joinGroup: 'Mitmachen',
     signedAs: 'Angemeldet als {email}',
     notMe: 'Das bin nicht ich',
     organiserWord: {
@@ -206,20 +207,9 @@ export default {
     welcome: 'Willkommen in {group}',
     inDraw: 'Du machst bei {label} mit.',
     notDrawnYet: {
-      one: 'Die Auslosung steht noch aus: Dein Organisator meldet sich.',
-      other: 'Die Auslosung steht noch aus: Deine Organisatoren melden sich.',
-    },
-    addLater: {
-      one: 'Du gehörst zum Event. Dein Organisator nimmt dich in die Auslosung von {label} auf.',
+      one: 'Die Auslosung steht noch aus: Dein Organisator sagt dir Bescheid.',
       other:
-        'Du gehörst zum Event. Deine Organisatoren nehmen dich in die Auslosung von {label} auf.',
-    },
-    drawnAlready:
-      'Du gehörst zum Event. Die Auslosung von {label} ist schon gemacht: Du bist bei der nächsten dabei.',
-    nextDraw: {
-      one: 'Du gehörst zum Event. Dein Organisator meldet sich zum nächsten Wichteln.',
-      other:
-        'Du gehörst zum Event. Deine Organisatoren melden sich zum nächsten Wichteln.',
+        'Die Auslosung steht noch aus: Deine Organisatoren sagen dir Bescheid.',
     },
     meanwhile: 'In der Zwischenzeit',
     hints: 'Meine Wunschliste schreiben',
@@ -227,7 +217,14 @@ export default {
     goHome: 'Zu meiner Startseite',
     findIt:
       'Du findest sie auf deiner Startseite, wenn du dich mit {email} anmeldest.',
-    joining: 'Beitritt läuft…',
+    joining: 'Anmeldung läuft…',
+    drawn: {
+      title: 'Die Auslosung hat schon stattgefunden',
+      body: {
+        one: 'Sag dem Organisator von {group} Bescheid.',
+        other: 'Sag den Organisatoren von {group} Bescheid.',
+      },
+    },
     full: {
       title: 'Über diesen Link ist kein Platz mehr frei',
       body: {

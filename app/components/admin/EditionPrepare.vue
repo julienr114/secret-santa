@@ -119,7 +119,7 @@ const missingText = computed(() =>
         :label="t('adminEdition.screen.prepare.add')"
       />
       <UButton
-        :to="`/e/${slug}/invitation`"
+        :to="`${base}/invitation`"
         block
         variant="ghost"
         class="h-11 justify-center text-[15px] font-semibold text-primary-ink"

@@ -215,6 +215,32 @@ export const participations = sqliteTable(
   ],
 );
 
+// By where each member came into an event (ticket 117, docs/decisions/
+// 2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md): one of
+// its Secret Santa, or one of its lists. Nobody is added to an event
+// itself. One row per way in; a member may have both, or none (those of
+// before ticket 117 who never took part). No foreign key: a Secret Santa
+// or a list gone since simply says nothing.
+export const memberEntries = sqliteTable(
+  'member_entries',
+  {
+    id: text('id').primaryKey(),
+    partyId: text('party_id').notNull(),
+    personId: text('person_id').notNull(),
+    secretSantaId: text('secret_santa_id'),
+    listId: text('list_id'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    index('member_entries_party_idx').on(t.partyId),
+    uniqueIndex('member_entries_person_santa_idx').on(
+      t.personId,
+      t.secretSantaId,
+    ),
+    uniqueIndex('member_entries_person_list_idx').on(t.personId, t.listId),
+  ],
+);
+
 export const assignments = sqliteTable(
   'assignments',
   {

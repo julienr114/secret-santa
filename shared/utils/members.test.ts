@@ -3,6 +3,7 @@ import {
   canInviteToList,
   entersByListLink,
   entryParts,
+  placesTaken,
   takenOnce,
 } from './members';
 
@@ -132,5 +133,20 @@ describe('who « Qui reprendre ? » adds', () => {
     expect(
       takenOnce(ticked, ['hugo@example.com']).map((person) => person.id),
     ).toEqual(['a', 'd', 'e']);
+  });
+});
+
+describe('the places newcomers take', () => {
+  it('counts one each, none for a member already in by that address', () => {
+    expect(
+      placesTaken(
+        [
+          { email: 'ines@example.com' },
+          { email: null },
+          { email: 'hugo@example.com' },
+        ],
+        ['hugo@example.com'],
+      ),
+    ).toBe(2);
   });
 });

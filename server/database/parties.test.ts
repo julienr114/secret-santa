@@ -105,7 +105,7 @@ describe('leaveParty', () => {
 });
 
 describe('createParty', () => {
-  it('makes me its organiser and member, with the people I took, once each', async () => {
+  it('makes me its organiser and its only member', async () => {
     const { db, one, all, rows } = setup();
     const slug = await createParty(
       db,
@@ -115,8 +115,6 @@ describe('createParty', () => {
         name: 'L’anniversaire de Léo',
         date: '2026-12-14',
         recurring: true,
-        // Hugo and Tom from my party; Zoé is not in a party I organise.
-        memberIds: ['pm', 'pt', 'qx'],
       },
       NOW,
     );
@@ -129,11 +127,7 @@ describe('createParty', () => {
       all(
         `SELECT first_name, email FROM persons WHERE party_id = '${party.id}' ORDER BY first_name`,
       ),
-    ).toEqual([
-      { first_name: 'Camille', email: 'orga@x.fr' },
-      { first_name: 'Hugo', email: 'membre@x.fr' },
-      { first_name: 'Tom', email: null },
-    ]);
+    ).toEqual([{ first_name: 'Camille', email: 'orga@x.fr' }]);
     expect(
       all(
         `SELECT account_id FROM party_organisers WHERE party_id = '${party.id}'`,

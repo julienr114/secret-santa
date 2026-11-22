@@ -101,13 +101,25 @@ export default {
     continue: 'Weiter',
     birthdayOf: 'Der Geburtstag von {name}',
     myBirthday: 'Mein Geburtstag',
-    who: 'Wer ist dabei?',
-    takeFrom: 'Die Mitglieder übernehmen von',
+  },
+  // « Qui reprendre ? » (V3FeteMembresReprendre, ticket 117): for a Secret
+  // Santa or a list, never for the event alone.
+  take: {
+    row: 'Aus einem anderen Event übernehmen',
+    rowHint: 'Du hakst an, wen',
+    title: 'Wen übernehmen?',
+    from: 'Personen aus',
     noEmail: 'Keine E-Mail-Adresse',
+    choose: '{name} übernehmen',
     submit: {
-      one: 'Event erstellen · {count} Mitglied',
-      other: 'Event erstellen · {count} Mitglieder',
+      one: 'Hinzufügen · {count} Person',
+      other: 'Hinzufügen · {count} Personen',
     },
+    done: {
+      one: '{count} Person hinzugefügt',
+      other: '{count} Personen hinzugefügt',
+    },
+    none: 'Niemand Neues hinzuzufügen',
   },
   reglages: {
     party: 'Das Event',

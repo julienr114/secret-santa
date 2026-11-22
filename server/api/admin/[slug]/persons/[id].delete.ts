@@ -1,3 +1,4 @@
+import { forgetEntries } from '#server/database/members';
 import { eq, or } from 'drizzle-orm';
 import { auditLog, manualExclusions, persons } from '#server/database/schema';
 import { findPerson, hasParticipations } from '#server/database/people';
@@ -40,6 +41,7 @@ export default defineEventHandler(async (event) => {
           eq(manualExclusions.receiverId, person.id),
         ),
       ),
+    forgetEntries(db, { personIds: [person.id] }),
     db.delete(persons).where(eq(persons.id, person.id)),
   ]);
   return { ok: true };

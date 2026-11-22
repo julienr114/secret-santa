@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { randomAvatar } from '#server/utils/avatars';
 import { fullName } from '#server/utils/people';
-import {
-  useCreatePersonMutation,
-  useDashboardQuery,
-} from '~/composables/queries/useGroup';
-import { useAddParticipantMutation } from '~/composables/queries/useEdition';
+import { useCreateSantaPersonMutation } from '~/composables/queries/useGroup';
 
-// A new person: an icon given at random, first name, address, the
-// language of their messages, and whether they take part in the edition
-// being prepared; then « Ajouter », or « Ajouter, puis en créer une
-// autre » to stay here. Opened from « Choisir les participants », the
-// person joins that edition and comes back ticked.
+// « Créer une personne », from « Choisir les participants »
+// (AjouterParticipants): an icon given at random, first name, address, the
+// language of their messages; then « Ajouter », or « Ajouter, puis en
+// créer une autre » to stay here. The person joins the event and this
+// Secret Santa together, never the event alone (ticket 117), and comes
+// back ticked.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const goBack = useGoBack();
@@ -19,11 +16,14 @@ const errorMessage = useErrorMessage();
 const route = useRoute();
 const toast = useMessages();
 const slug = computed(() => String(route.params.slug));
-const create = useCreatePersonMutation(slug);
-const dashboard = useDashboardQuery(slug);
-const context = useScreenContext(slug);
+const id = computed(() => String(route.params.id));
+const choosing = computed(
+  () => `/admin/${slug.value}/editions/${id.value}/ajouter`,
+);
+const create = useCreateSantaPersonMutation(slug, id);
+const context = useScreenContext(slug, id);
 useHead({ title: () => context.titleOf(t('adminGroup.newPerson.title')) });
-const screen = computed(() => ({ back: `/e/${slug.value}/membres` }));
+const screen = computed(() => ({ back: choosing.value }));
 
 /**
  * A Christmas icon at random; Math.random is fine for a cosmetic default
@@ -34,29 +34,14 @@ const anyAvatar = () => randomAvatar((n) => Math.floor(Math.random() * n));
 const { draft, errors, check, value, reset } = usePersonDraft({
   avatar: anyAvatar(),
 });
-
-// The edition the person may join: the one being prepared, or the one
-// « Choisir les participants » was opened from.
-const asked = computed(() => String(route.query.edition ?? ''));
-const preparing = computed(() => {
-  const data = dashboard.data.value;
-  const edition = data?.editions.find(
-    (e) =>
-      e.id === (asked.value || data.currentEditionId) &&
-      e.status === 'preparing',
-  );
-  return edition ?? null;
-});
-const takesPart = ref(true);
-const join = useAddParticipantMutation(slug, () => preparing.value?.id ?? '');
-const ticked = useChosenParticipants(asked);
+const ticked = useChosenParticipants(id);
 
 const saving = ref(false);
 const busy = useBusy(() => saving.value);
 const failure = ref<unknown>(null);
 /**
- * Creates the person, adds them to the edition being prepared when they
- * take part, then goes back or starts a new one.
+ * Creates the person in this Secret Santa, ticks them on « Choisir les
+ * participants », then goes back or starts a new one.
  * @param again - True to stay and create another person.
  * @returns Once done.
  */
@@ -66,20 +51,10 @@ const onAdd = async (again: boolean) => {
   failure.value = null;
   try {
     const { person } = await create.mutateAsync(value.value);
-    if (preparing.value && takesPart.value) {
-      await join.mutateAsync(person.id);
-      if (asked.value && ticked.value) {
-        ticked.value = [...ticked.value, person.id];
-      }
-    }
+    if (ticked.value) ticked.value = [...ticked.value, person.id];
     toast.done(t('adminGroup.newPerson.added', { name: fullName(person) }));
     if (again) reset(anyAvatar());
-    else
-      goBack(
-        asked.value
-          ? `/admin/${slug.value}/editions/${asked.value}/ajouter`
-          : `/e/${slug.value}/membres`,
-      );
+    else goBack(choosing.value);
   } catch (error) {
     failure.value = error;
   } finally {
@@ -101,17 +76,7 @@ const onAdd = async (again: boolean) => {
       :errors="errors"
       :email-help="t('adminGroup.personForm.emailHelpNew')"
       :email-placeholder="t('adminGroup.personForm.emailPlaceholder')"
-    >
-      <template v-if="preparing" #rows>
-        <UiListItem
-          v-model:checked="takesPart"
-          :title="
-            t('adminGroup.newPerson.takesPart', { label: preparing.label })
-          "
-          :subtitle="t('adminGroup.newPerson.notDrawnYet')"
-        />
-      </template>
-    </AdminPersonFields>
+    />
     <UAlert
       v-if="failure"
       color="error"

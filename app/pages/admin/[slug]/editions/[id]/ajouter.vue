@@ -14,7 +14,8 @@ import {
 // Choosing who takes part, before the draw: every active member of the
 // group with a box, ticked when they take part. Saving adds the newly
 // ticked and removes the unticked, one call each, then goes back to the
-// edition. Someone new is created, or invited by link, below.
+// edition. Someone new is created, invited by link, or taken from another
+// event, below: they join the event by this Secret Santa (ticket 117).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -55,7 +56,7 @@ const current = computed(() => participants.value.map((p) => p.id));
 const ticked = useChosenParticipants(id);
 const chosen = computed(() => ticked.value ?? current.value);
 onBeforeRouteLeave((to) => {
-  if (!to.path.endsWith('/membres/nouvelle')) ticked.value = null;
+  if (!to.path.endsWith('/nouvelle-personne')) ticked.value = null;
 });
 /**
  * Whether a member is ticked.
@@ -219,7 +220,7 @@ const onSave = async () => {
 
       <UiList :title="t('adminEdition.addParticipants.someoneNew')">
         <UiListItem
-          :to="`/e/${slug}/membres/nouvelle?edition=${id}`"
+          :to="`/admin/${slug}/editions/${id}/nouvelle-personne`"
           icon="i-lucide-user-plus"
           :title="t('adminEdition.addParticipants.create')"
           :subtitle="t('adminEdition.addParticipants.createHint')"
@@ -229,6 +230,13 @@ const onSave = async () => {
           icon="i-lucide-link"
           :title="t('adminEdition.screen.empty.invite')"
           :subtitle="t('adminEdition.addParticipants.inviteHint')"
+        />
+        <UiListItem
+          :to="`/admin/${slug}/editions/${id}/reprendre`"
+          icon="i-lucide-users"
+          :title="t('party.take.row')"
+          :subtitle="t('party.take.rowHint')"
+          data-testid="take-row"
         />
       </UiList>
 

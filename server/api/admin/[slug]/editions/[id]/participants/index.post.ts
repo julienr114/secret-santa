@@ -5,7 +5,8 @@ import { newParticipation } from '#server/database/editions';
 import { findPerson } from '#server/database/people';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
-import { dataKeyOf } from '#server/http/context';
+import { recordEntry } from '#server/database/members';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { notFound, unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import {
@@ -50,7 +51,16 @@ export default defineEventHandler(async (event) => {
     { secretSantaId: edition.id, personId: person.id },
     await dataKeyOf(event),
   );
-  await db.insert(participations).values(row);
+  await db.batch([
+    db.insert(participations).values(row),
+    // One more way in: by this Secret Santa (ticket 117).
+    recordEntry(db, {
+      partyId: group.id,
+      personId: person.id,
+      via: { secretSantaId: edition.id },
+      now: nowIso(),
+    }),
+  ]);
   await recordEvent(db, {
     type: 'participant_added',
     groupId: group.id,

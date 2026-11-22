@@ -91,7 +91,7 @@ export const entersByListLink = (arrival: {
   arrival.placesLeft > 0;
 
 /** Someone a holder or an organiser takes from another event. */
-export type Candidate = { id: string; email: string | null };
+export type Takeable = { id: string; email: string | null };
 
 /**
  * Who « Qui reprendre ? » adds (docs/spec/v3/secret-santa.md, « Choisir
@@ -101,7 +101,7 @@ export type Candidate = { id: string; email: string | null };
  * @param inAlready - The addresses of those already there.
  * @returns Those to add.
  */
-export const takenOnce = <C extends Candidate>(
+export const takenOnce = <C extends Takeable>(
   ticked: readonly C[],
   inAlready: readonly string[],
 ): C[] =>
@@ -111,3 +111,18 @@ export const takenOnce = <C extends Candidate>(
       (!inAlready.includes(person.email) &&
         ticked.findIndex((other) => other.email === person.email) === index),
   );
+
+/**
+ * How many of the 30 places newcomers take: one each, but for someone
+ * already a member by that address.
+ * @param newcomers - Who comes in.
+ * @param memberEmails - The addresses of the members still in.
+ * @returns The places they take.
+ */
+export const placesTaken = (
+  newcomers: readonly { email: string | null }[],
+  memberEmails: readonly string[],
+): number =>
+  newcomers.filter(
+    (person) => person.email === null || !memberEmails.includes(person.email),
+  ).length;

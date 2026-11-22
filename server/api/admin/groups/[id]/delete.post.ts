@@ -1,3 +1,4 @@
+import { forgetEntries } from '#server/database/members';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
@@ -64,6 +65,7 @@ export default defineEventHandler(async (event) => {
     db.delete(secretSantas).where(eq(secretSantas.partyId, id)),
     db.delete(partyYears).where(eq(partyYears.partyId, id)),
     db.delete(giftListParties).where(eq(giftListParties.partyId, id)),
+    forgetEntries(db, { partyId: id }),
     db.delete(persons).where(eq(persons.partyId, id)),
     db.delete(partyOrganisers).where(eq(partyOrganisers.partyId, id)),
     db.delete(parties).where(eq(parties.id, id)),

@@ -6,7 +6,6 @@ import {
   checkPartySize,
   leavingLists,
   partyInputSchema,
-  takenPeople,
   usualDateOf,
 } from './parties';
 
@@ -24,7 +23,6 @@ describe('partyInputSchema', () => {
       name: 'L’anniversaire de Zoé',
       date: '2026-12-14',
       recurring: true,
-      memberIds: [],
     });
   });
 
@@ -53,23 +51,6 @@ describe('partyInputSchema', () => {
 describe('usualDateOf', () => {
   it('keeps the month and the day', () => {
     expect(usualDateOf('2026-12-25')).toBe('12-25');
-  });
-});
-
-describe('takenPeople', () => {
-  it('keeps one person per address, all those without one, never me', () => {
-    const people = [
-      { id: 'a', firstName: 'Camille', email: 'camille@x.fr' },
-      { id: 'b', firstName: 'Moi', email: 'moi@x.fr' },
-      { id: 'c', firstName: 'Tom', email: null },
-      { id: 'd', firstName: 'Camille', email: 'camille@x.fr' },
-      { id: 'e', firstName: 'Tom', email: null },
-    ];
-    expect(takenPeople(people, 'moi@x.fr').map((p) => p.id)).toEqual([
-      'a',
-      'c',
-      'e',
-    ]);
   });
 });
 

@@ -10,6 +10,7 @@ import {
   type SecretSantaRow,
 } from './schema';
 import { participationsWithHints } from './hints';
+import { recordEntry } from './members';
 import { encrypt, generateToken, hashToken } from '#server/utils/crypto';
 import { participantBadges, type Badge } from '#server/utils/editions';
 import { subjectSantaName } from '#server/utils/messages';
@@ -289,6 +290,15 @@ export const createSecretSanta = async (
   await db.batch([
     db.insert(secretSantas).values(secretSantaRow(edition)),
     ...rows.map((row) => db.insert(participations).values(row)),
+    // Each participant came into the event by it (ticket 117).
+    ...rows.map((row) =>
+      recordEntry(db, {
+        partyId: input.partyId,
+        personId: row.personId,
+        via: { secretSantaId: edition.id },
+        now: createdAt,
+      }),
+    ),
   ]);
   return { edition, count: rows.length };
 };

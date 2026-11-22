@@ -8,6 +8,7 @@ import {
   selectEditions,
   type Edition,
 } from './editions';
+import { recordEntry } from './members';
 import { parties, participations, persons, secretSantas } from './schema';
 
 // Invitation links of a Secret Santa (ticket 116; README 22.2). An event
@@ -108,7 +109,15 @@ export const joinSecretSanta = async (
     { secretSantaId: santa.id, personId },
     dataKey,
   );
-  await db.insert(participations).values(row);
+  await db.batch([
+    db.insert(participations).values(row),
+    recordEntry(db, {
+      partyId: santa.partyId,
+      personId,
+      via: { secretSantaId: santa.id },
+      now: new Date().toISOString(),
+    }),
+  ]);
   await recordEvent(db, {
     type: 'participant_added',
     groupId: santa.partyId,

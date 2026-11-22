@@ -37,7 +37,6 @@ flowchart LR
     leGroupe["La fête<br/><small>/e/[fête]</small>"]
     leGroupe --> membres["Membres<br/><small>organisateur</small>"]
     membres --> personne["Une personne"]
-    membres --> nouvellePersonne["Nouvelle personne"]
     leGroupe --> exclusionsGroupe["Exclusions"]
     leGroupe --> journalGroupe["Journal"]
     leGroupe --> reglagesGroupe["Réglages de la fête"]
@@ -52,6 +51,10 @@ flowchart LR
     lEdition --> ajouter["Choisir les participants"]
     lEdition --> invitation["Inviter par lien"]
     ajouter --> invitation
+    ajouter --> nouvellePersonne["Nouvelle personne"]
+    ajouter --> reprendre["Qui reprendre ?"]
+    reprendre --> invitation
+    membres --> ajouter
     invitation --> motInvitation["Ton mot sur la page"]
     lEdition --> emails["Envoyer par email"]
     emails --> messagePlusieurs["Personnaliser le message<br/><small>pour plusieurs</small>"]
@@ -155,16 +158,16 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 
 ## Une fête (ses membres ; l'organisateur pour le reste)
 
-Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement ; `…/invitation` mène à ses Membres, un événement n'ayant plus de lien d'invitation (ticket 116), et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement ; `…/invitation` mène à ses Membres, un événement n'ayant plus de lien d'invitation (ticket 116), comme `/e/[fête]/membres/nouvelle`, personne ne s'ajoutant plus à un événement lui-même (ticket 117), et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/e/nouvelle` | Accueil ; la seconde étape : la première | |
+| Pour quelle occasion ? (« Continuer » crée l'événement, puis mène au Secret Santa ou à la liste ; plus d'étape « membres », ticket 117) | `/e/nouvelle` | Accueil | |
 | La fête | `/e/[fête]` | Accueil ; « Quoi de neuf » quand on en vient | Quitter cette fête (puis l'accueil) |
 | Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes) | `/e/[fête]/annees/[année]` | D'où l'on vient : Les événements passés ou la fête ; sinon la fête si l'adresse le dit (`?depuis=evenement`, ses « Années passées »), sinon Les événements passés | |
-| Membres | `/e/[fête]/membres` | La fête | |
+| Membres (« Ajouter quelqu'un » : « Au Secret Santa » ouvre Choisir les participants, ou Inviter par lien quand l'événement est complet ; « À ma liste » ouvre Inviter quelqu'un de la liste ; ticket 117) | `/e/[fête]/membres` | La fête | |
 | Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
-| Nouvelle personne | `/e/[fête]/membres/nouvelle` | Membres | |
+| (ancienne adresse) | `/e/[fête]/membres/nouvelle` | mène à Membres (`invitationPathOf`, ticket 117) | |
 | (ancienne adresse) | `/e/[fête]/invitation` et `/e/[fête]/invitation/mot` (le lien était à l'événement) | mènent à Membres (`invitationPathOf`, ticket 116) | |
 | Exclusions | `/e/[fête]/exclusions` | Membres | Ajouter une exclusion |
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
@@ -179,6 +182,8 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, devine, mot, message]` | Le nouveau Secret Santa | |
 | L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête ; l'accueil ou « Quoi de neuf » quand on en vient | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
+| Nouvelle personne (elle rejoint l'événement et ce Secret Santa, ticket 117) | `…/editions/[id]/nouvelle-personne` | Choisir les participants | |
+| Qui reprendre ? (ceux d'un autre événement que j'organise, ticket 117) | `…/editions/[id]/reprendre` | Choisir les participants | |
 | Inviter par lien (le lien de ce Secret Santa, ticket 116 ; ouvert depuis « Préparer » sans participant et depuis « Choisir les participants ») | `…/editions/[id]/invitation` | L'édition | Places restantes, date limite |
 | Ton mot sur la page | `…/editions/[id]/invitation/mot` | Inviter par lien | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |

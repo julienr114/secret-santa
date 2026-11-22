@@ -101,13 +101,25 @@ export default {
     continue: 'Continue',
     birthdayOf: '{name}’s birthday',
     myBirthday: 'My birthday',
-    who: 'Who is in it?',
-    takeFrom: 'Take the members of',
+  },
+  // « Qui reprendre ? » (V3FeteMembresReprendre, ticket 117): for a Secret
+  // Santa or a list, never for the event alone.
+  take: {
+    row: 'Bring in people from another event',
+    rowHint: 'You tick who',
+    title: 'Who to bring in?',
+    from: 'People from',
     noEmail: 'No email address',
+    choose: 'Bring in {name}',
     submit: {
-      one: 'Create the event · {count} member',
-      other: 'Create the event · {count} members',
+      one: 'Add · {count} person',
+      other: 'Add · {count} people',
     },
+    done: {
+      one: '{count} person added',
+      other: '{count} people added',
+    },
+    none: 'Nobody new to add',
   },
   reglages: {
     party: 'The event',

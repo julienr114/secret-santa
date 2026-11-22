@@ -3,13 +3,20 @@ import { byName, fullName, type PublicPerson } from '#server/utils/people';
 import { notDrawnBy } from '#shared/utils/exclusions';
 import { MAX_PARTY_MEMBERS } from '#server/utils/parties';
 import { listView } from '#shared/utils/lists';
+import { namesPart, type LinePart } from '#shared/utils/lines';
+import type { EntryPart } from '#shared/utils/members';
+import type { AddPlace } from '#server/database/membersPage';
 import { usePeopleQuery } from '~/composables/queries/useGroup';
 
-// The members of a group: one list, those who take part first, each with
-// their address and who they never draw; then « Ajouter une personne ».
-// An event has no invitation link: each Secret Santa has its own (ticket
-// 116). At 30 members (docs/spec/v3/fete.md, V3FeteMembresComplet), the
-// page says so, and a state takes the place of « Ajouter une personne ».
+// The members of an event (docs/spec/v3/fete.md, « Les membres »,
+// V3FeteMembres): one list, those still in first, each with by where they
+// came in (« Secret Santa », « La liste de Camille »), who they never draw
+// and whether they have no address. Nobody is added to the event itself
+// (ticket 117): « Ajouter quelqu'un » has a line « Au Secret Santa » for
+// each being prepared and « À ma liste » for each list of mine shared with
+// its members. At 30 members (V3FeteMembresComplet), the page says so, a
+// state takes the place of the section, and the Secret Santa says its link
+// is paused.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, locale } = useT();
 const route = useRoute();
@@ -26,6 +33,7 @@ const activeCount = computed(
 const full = computed(() => activeCount.value >= MAX_PARTY_MEMBERS);
 
 const { membersLine } = useMembersLine();
+const { part } = useLineText();
 const exclusions = computed(() => people.data.value?.exclusions ?? []);
 /** Those who take part first, then the others, by name in each. */
 const sorted = computed(() =>
@@ -34,8 +42,20 @@ const sorted = computed(() =>
   ),
 );
 /**
- * The line under a member: their address, and who they never draw; or
- * that they no longer take part.
+ * The words of a way in: « Secret Santa », its name, « La liste de
+ * Camille ».
+ * @param entry - The way in.
+ * @returns Its words.
+ */
+const entryText = (entry: EntryPart) => {
+  if (entry.kind === 'list') {
+    return part(namesPart('lines.list.of', [entry.holder]));
+  }
+  return entry.name ?? t('adminGroup.people.bySanta');
+};
+/**
+ * The line under a member: by where they came in, who they never draw,
+ * and that they have no address; or that they are no longer in.
  * @param person - The member.
  * @returns The line.
  */
@@ -46,7 +66,7 @@ const subtitleOf = (person: PublicPerson) => {
     .filter((p): p is PublicPerson => Boolean(p))
     .map(fullName);
   return [
-    person.email ?? t('adminEdition.screen.emails.noEmail'),
+    (people.data.value?.entries[person.id] ?? []).map(entryText).join(', '),
     names.length
       ? t('adminGroup.people.notDrawing', {
           names: new Intl.ListFormat(locale.value, {
@@ -54,6 +74,57 @@ const subtitleOf = (person: PublicPerson) => {
           }).format(names),
         })
       : '',
+    person.email ? '' : t('adminGroup.people.noEmail'),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+};
+
+// « Ajouter quelqu'un »: always to something (ticket 117).
+const places = computed(() =>
+  (people.data.value?.places ?? []).filter(
+    (place) => !full.value || place.kind === 'santa',
+  ),
+);
+/**
+ * Where a line of « Ajouter quelqu'un » leads.
+ * @param place - The Secret Santa or the list.
+ * @returns The path.
+ */
+const placeTo = (place: AddPlace) => {
+  if (place.kind === 'list') return `/listes/${place.id}/inviter`;
+  const at = `/admin/${slug.value}/editions/${place.id}`;
+  return full.value ? `${at}/invitation` : `${at}/ajouter`;
+};
+/**
+ * Its title: « Au Secret Santa » (with its name when several are being
+ * prepared), « À ma liste ».
+ * @param place - The Secret Santa or the list.
+ * @returns The title.
+ */
+const placeTitle = (place: AddPlace) => {
+  if (place.kind === 'list') return t('adminGroup.people.toList');
+  return place.name
+    ? t('adminGroup.people.toSantaNamed', { name: place.name })
+    : t('adminGroup.people.toSanta');
+};
+/**
+ * Its line: « 5 participants · lien actif », « En pause · l'événement est
+ * complet », « Pour Léo, Zoé et moi ».
+ * @param place - The Secret Santa or the list.
+ * @returns The line.
+ */
+const placeSubtitle = (place: AddPlace) => {
+  if (place.kind === 'list') {
+    return place.forWhom ? part(place.forWhom as LinePart) : undefined;
+  }
+  if (full.value) return t('party.full.paused');
+  return [
+    part({
+      key: 'lines.organiser.participants',
+      params: { count: place.participants },
+    }),
+    place.linkActive ? t('adminGroup.people.linkActive') : '',
   ]
     .filter(Boolean)
     .join(' · ');
@@ -149,11 +220,25 @@ const view = computed(() =>
             :subtitle="t('party.full.text', { max: MAX_PARTY_MEMBERS })"
             data-testid="party-full"
           />
+        </UiList>
+      </section>
+      <section
+        v-if="places.length > 0"
+        class="flex flex-col gap-1.5"
+        data-testid="members-add"
+      >
+        <UiSectionTitle v-if="!full">{{
+          t('adminGroup.people.add')
+        }}</UiSectionTitle>
+        <UiList>
           <UiListItem
-            v-else
-            :to="`/e/${slug}/membres/nouvelle`"
-            icon="i-lucide-user-plus"
-            :title="t('adminGroup.people.add')"
+            v-for="place in places"
+            :key="place.id"
+            :to="placeTo(place)"
+            :icon="place.kind === 'santa' ? 'i-lucide-link' : 'i-lucide-list'"
+            :title="placeTitle(place)"
+            :subtitle="placeSubtitle(place)"
+            :data-testid="`members-add-${place.kind}`"
           />
         </UiList>
       </section>

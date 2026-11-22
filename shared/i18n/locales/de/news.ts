@@ -28,5 +28,7 @@ export default {
     joined: '{name} hat sich über den Link angemeldet',
     joinedIn: '{name} hat sich über den Link angemeldet ({detail})',
     all_viewed: 'Alle haben ihr Los entdeckt',
+    santa_added: '{name} hat dich zum Wichteln hinzugefügt',
+    list_shared: '{name} hat die eigene Liste mit dir geteilt',
   },
 };

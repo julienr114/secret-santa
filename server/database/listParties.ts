@@ -9,6 +9,7 @@ import {
 } from './schema';
 import { findAccountById } from './accounts';
 import { insertPersonFromAccount } from './people';
+import { forgetEntries, recordEntry } from './members';
 import { newId } from '#server/http/context';
 import {
   listPartySlug,
@@ -85,9 +86,17 @@ export const joinOwnParty = async (
     .from(persons)
     .where(and(eq(persons.partyId, listId), eq(persons.email, account.email)))
     .limit(1);
+  const personId = member?.id ?? newId();
   if (!member) {
-    await insertPersonFromAccount(db, { groupId: listId, account, now });
+    await insertPersonFromAccount(db, {
+      groupId: listId,
+      account,
+      now,
+      id: personId,
+    });
   }
+  // They hold the list: they came in by it (ticket 117).
+  await recordEntry(db, { partyId: listId, personId, via: { listId }, now });
 };
 
 /** What a list says of itself, carried to its own party. */
@@ -121,6 +130,7 @@ export const deleteListPartyStatements = (db: Db, listId: string) => {
   const ownId = db.select({ id: parties.id }).from(parties).where(own);
   return [
     db.delete(giftListParties).where(eq(giftListParties.listId, listId)),
+    forgetEntries(db, { partyId: listId }),
     db.delete(persons).where(eq(persons.partyId, ownId)),
     db.delete(partyOrganisers).where(eq(partyOrganisers.partyId, ownId)),
     db.delete(partyYears).where(eq(partyYears.partyId, ownId)),

@@ -18,17 +18,15 @@ export const partyNameSchema = z
 
 const isoDaySchema = z.string().refine(isIsoDay, 'iso_day');
 
-/** « Pour quelle occasion ? », then « Qui est de la fête ? ». */
+/**
+ * « Pour quelle occasion ? »: nothing on who is in it, since one comes in
+ * by a Secret Santa or a list (ticket 117).
+ */
 export const partyInputSchema = z.object({
   category: z.enum(PARTY_CATEGORIES),
   name: partyNameSchema,
   date: isoDaySchema,
   recurring: z.boolean(),
-  /** People taken from parties I organise. */
-  memberIds: z
-    .array(z.string().min(1).max(40))
-    .max(MAX_PARTY_MEMBERS - 1)
-    .default([]),
 });
 export type PartyInput = z.infer<typeof partyInputSchema>;
 
@@ -47,31 +45,6 @@ export const partyPatchSchema = z
  * @returns « 12-25 ».
  */
 export const usualDateOf = (iso: string): string => iso.slice(5, 10);
-
-type Candidate = {
-  id: string;
-  firstName: string;
-  email: string | null;
-};
-
-/**
- * The people one may take into a new party, once each: the same address
- * in two parties is one person; without an address, each stays.
- * Myself excepted, since I am in it anyway.
- * @param people - The people of the parties I organise, in their order.
- * @param myEmail - My address.
- * @returns The people, the first of each address kept.
- */
-export const takenPeople = <P extends Candidate>(
-  people: readonly P[],
-  myEmail: string,
-): P[] =>
-  people.filter(
-    (person, index) =>
-      person.email !== myEmail &&
-      (person.email === null ||
-        people.findIndex((other) => other.email === person.email) === index),
-  );
 
 /**
  * Whether a party may have that many members.

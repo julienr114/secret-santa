@@ -28,5 +28,7 @@ export default {
     joined: '{name} signed up with the link',
     joinedIn: '{name} signed up with the link ({detail})',
     all_viewed: 'Everyone has found out who they drew',
+    santa_added: '{name} added you to the Secret Santa',
+    list_shared: '{name} shared their list with you',
   },
 };

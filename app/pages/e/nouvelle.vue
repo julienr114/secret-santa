@@ -12,19 +12,17 @@ import {
   type BirthParts,
 } from '#shared/utils/memberFields';
 import { useFamilyQuery } from '~/composables/queries/useLists';
-import {
-  useCreatePartyMutation,
-  usePartyCandidatesQuery,
-} from '~/composables/queries/useParty';
+import { useCreatePartyMutation } from '~/composables/queries/useParty';
 
 // « Pour quelle occasion ? » (docs/spec/v3/accueil-et-creation.md,
-// maquettes V3FeteNouvelle and V3FeteMembresReprendre): the category in
-// six tiles fills the rest; « Pour qui ? » for a birthday; the name, the
-// date in three lists, « Elle revient chaque année »; then « Qui est de
-// la fête ? », the people taken from parties I organise. Opened with
-// ?categorie=birthday&proche=<id>, it comes filled (« Bientôt »). Then
-// the screen of today the creation was for (?pour=secret-santa or
-// liste, decided by Julien on 20 November 2026), else the party.
+// maquette V3FeteNouvelle): the category in six tiles fills the rest;
+// « Pour qui ? » for a birthday; the name, the date in three lists, « Elle
+// revient chaque année »; then « Continuer » creates it. Nobody else is
+// asked for: people come in by its Secret Santa or its list (ticket 117).
+// Opened with ?categorie=birthday&proche=<id>, it comes filled
+// (« Bientôt »). Then the screen of today the creation was for
+// (?pour=secret-santa or liste, decided by Julien on 20 November 2026),
+// else the party.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk } = useT();
 const route = useRoute();
@@ -41,8 +39,6 @@ type Form = {
   name: string;
   date: BirthParts;
   recurring: boolean;
-  memberIds: string[];
-  from: string[];
 };
 const blank = (): Form => ({
   category: null,
@@ -50,13 +46,8 @@ const blank = (): Form => ({
   name: '',
   date: { day: null, month: null, year: null },
   recurring: false,
-  memberIds: [],
-  from: [],
 });
 const form = useState<Form>('new-party', blank);
-const step = computed(() =>
-  route.query.etape === 'membres' ? 'members' : 'occasion',
-);
 
 /** The name a category, or the one a birthday is for, proposes. */
 const proposedName = (category: PartyCategory, forWhom: string | null) => {
@@ -104,51 +95,6 @@ const ready = computed(
     form.value.name.trim() !== '' &&
     date.value !== null,
 );
-const toMembers = () =>
-  navigateTo({ query: { ...route.query, etape: 'membres' } });
-
-// « Qui est de la fête ? »
-const candidates = usePartyCandidatesQuery();
-const shownPeople = computed(() => {
-  const all = (candidates.data.value?.people ?? []).filter((person) =>
-    form.value.from.includes(person.partyId),
-  );
-  return all.filter(
-    (person, index) =>
-      person.email === null ||
-      all.findIndex((other) => other.email === person.email) === index,
-  );
-});
-/** Takes a party's people in, or out. */
-const toggleFrom = (partyId: string) => {
-  const on = !form.value.from.includes(partyId);
-  const ofParty = (candidates.data.value?.people ?? [])
-    .filter((person) => person.partyId === partyId)
-    .map((person) => person.id);
-  form.value = {
-    ...form.value,
-    from: on
-      ? [...form.value.from, partyId]
-      : form.value.from.filter((id) => id !== partyId),
-    memberIds: on
-      ? [...new Set([...form.value.memberIds, ...ofParty])]
-      : form.value.memberIds.filter((id) => !ofParty.includes(id)),
-  };
-};
-const toggleMember = (id: string) => {
-  form.value = {
-    ...form.value,
-    memberIds: form.value.memberIds.includes(id)
-      ? form.value.memberIds.filter((one) => one !== id)
-      : [...form.value.memberIds, id],
-  };
-};
-const chosen = computed(() =>
-  shownPeople.value.filter((person) =>
-    form.value.memberIds.includes(person.id),
-  ),
-);
-
 const create = useCreatePartyMutation();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
@@ -174,7 +120,6 @@ const submit = () => {
       name: form.value.name.trim(),
       date: date.value,
       recurring: form.value.recurring,
-      memberIds: chosen.value.map((person) => person.id),
     },
     {
       onSuccess: async ({ slug }) => {
@@ -190,169 +135,94 @@ const emojiOf = (category: PartyCategory) =>
 </script>
 
 <template>
-  <AdminScreen :back="step === 'members' ? '/e/nouvelle' : '/'">
-    <template v-if="step === 'occasion'">
-      <UiPageTitle>{{ t('party.create.title') }}</UiPageTitle>
-      <div
-        role="radiogroup"
-        :aria-label="t('party.create.title')"
-        class="grid grid-cols-3 gap-2"
+  <AdminScreen back="/">
+    <UiPageTitle>{{ t('party.create.title') }}</UiPageTitle>
+    <div
+      role="radiogroup"
+      :aria-label="t('party.create.title')"
+      class="grid grid-cols-3 gap-2"
+    >
+      <button
+        v-for="category in PARTY_CATEGORIES"
+        :key="category"
+        type="button"
+        role="radio"
+        :aria-checked="form.category === category"
+        class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl bg-default text-sm font-semibold ring-1 ring-default"
+        :class="form.category === category ? 'ring-2 ring-primary' : ''"
+        :data-testid="`category-${category}`"
+        @click="fill(category, null)"
       >
-        <button
-          v-for="category in PARTY_CATEGORIES"
-          :key="category"
-          type="button"
-          role="radio"
-          :aria-checked="form.category === category"
-          class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl bg-default text-sm font-semibold ring-1 ring-default"
-          :class="form.category === category ? 'ring-2 ring-primary' : ''"
-          :data-testid="`category-${category}`"
-          @click="fill(category, null)"
-        >
-          <UiEmoji :emoji="emojiOf(category)" class="text-2xl" />
-          {{ tk(`party.category.${category}`) }}
-        </button>
-      </div>
+        <UiEmoji :emoji="emojiOf(category)" class="text-2xl" />
+        {{ tk(`party.category.${category}`) }}
+      </button>
+    </div>
 
-      <template v-if="form.category">
-        <div v-if="form.category === 'birthday'" class="flex flex-col gap-2">
-          <span class="text-[13px] font-semibold text-toned">{{
-            t('party.create.forWhom')
-          }}</span>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="person in people"
-              :key="person.id"
-              type="button"
-              class="flex h-10 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-semibold ring-1 ring-default"
-              :class="form.forWhom === person.id ? 'ring-2 ring-primary' : ''"
-              :aria-pressed="form.forWhom === person.id"
-              @click="fill('birthday', person.id)"
-            >
-              <UiEmoji :emoji="person.avatar.emoji" />
-              {{ person.isSelf ? t('party.create.me') : person.firstName }}
-            </button>
-            <button
-              type="button"
-              class="flex h-10 items-center rounded-full bg-default px-3 text-sm font-semibold ring-1 ring-default"
-              :class="form.forWhom === 'other' ? 'ring-2 ring-primary' : ''"
-              :aria-pressed="form.forWhom === 'other'"
-              @click="fill('birthday', 'other')"
-            >
-              {{ t('party.create.someoneElse') }}
-            </button>
-          </div>
-        </div>
-
-        <UFormField :label="t('party.create.name')">
-          <UInput
-            v-model="form.name"
-            size="xl"
-            class="w-full"
-            :maxlength="100"
-            data-testid="party-name"
-          />
-        </UFormField>
-
-        <div class="flex flex-col gap-2">
-          <span class="text-[13px] font-semibold text-toned">{{
-            t('party.create.date')
-          }}</span>
-          <UiDateSelects
-            v-model="form.date"
-            :years="years"
-            :label="t('party.create.date')"
-            testid="party-date"
-          />
-        </div>
-
-        <UiList>
-          <UiListItem
-            v-model:checked="form.recurring"
-            :title="t('party.create.recurring')"
-          />
-        </UiList>
-
-        <UButton
-          block
-          size="xl"
-          :disabled="!ready"
-          :label="t('party.create.continue')"
-          @click="toMembers"
-        />
-      </template>
-    </template>
-
-    <template v-else>
-      <div class="flex flex-col gap-1">
-        <p v-if="form.category" class="text-sm font-semibold text-toned">
-          <UiEmoji :emoji="emojiOf(form.category)" /> {{ form.name }}
-        </p>
-        <UiPageTitle>{{ t('party.create.who') }}</UiPageTitle>
-      </div>
-      <UiSkeleton
-        v-if="candidates.isPending.value"
-        :parts="['chips', 'list']"
-        :rows="3"
-        :label="t('common.loading')"
-      />
-      <section
-        v-if="(candidates.data.value?.parties.length ?? 0) > 0"
-        class="flex flex-col gap-2"
-      >
-        <UiSectionTitle>{{ t('party.create.takeFrom') }}</UiSectionTitle>
+    <template v-if="form.category">
+      <div v-if="form.category === 'birthday'" class="flex flex-col gap-2">
+        <span class="text-[13px] font-semibold text-toned">{{
+          t('party.create.forWhom')
+        }}</span>
         <div class="flex flex-wrap gap-2">
           <button
-            v-for="party in candidates.data.value?.parties ?? []"
-            :key="party.id"
+            v-for="person in people"
+            :key="person.id"
             type="button"
             class="flex h-10 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-semibold ring-1 ring-default"
-            :class="form.from.includes(party.id) ? 'ring-2 ring-primary' : ''"
-            :aria-pressed="form.from.includes(party.id)"
-            @click="toggleFrom(party.id)"
+            :class="form.forWhom === person.id ? 'ring-2 ring-primary' : ''"
+            :aria-pressed="form.forWhom === person.id"
+            @click="fill('birthday', person.id)"
           >
-            <UiEmoji :emoji="party.iconEmoji ?? emojiOf(party.category)" />
-            {{ party.name }}
+            <UiEmoji :emoji="person.avatar.emoji" />
+            {{ person.isSelf ? t('party.create.me') : person.firstName }}
+          </button>
+          <button
+            type="button"
+            class="flex h-10 items-center rounded-full bg-default px-3 text-sm font-semibold ring-1 ring-default"
+            :class="form.forWhom === 'other' ? 'ring-2 ring-primary' : ''"
+            :aria-pressed="form.forWhom === 'other'"
+            @click="fill('birthday', 'other')"
+          >
+            {{ t('party.create.someoneElse') }}
           </button>
         </div>
-      </section>
-      <UiList v-if="shownPeople.length > 0">
+      </div>
+
+      <UFormField :label="t('party.create.name')">
+        <UInput
+          v-model="form.name"
+          size="xl"
+          class="w-full"
+          :maxlength="100"
+          data-testid="party-name"
+        />
+      </UFormField>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-[13px] font-semibold text-toned">{{
+          t('party.create.date')
+        }}</span>
+        <UiDateSelects
+          v-model="form.date"
+          :years="years"
+          :label="t('party.create.date')"
+          testid="party-date"
+        />
+      </div>
+
+      <UiList>
         <UiListItem
-          v-for="person in shownPeople"
-          :key="person.id"
-          :avatar="person.avatar"
-          :title="person.firstName"
-          :subtitle="person.email ?? t('party.create.noEmail')"
-          :chevron="false"
-          :on-click="() => toggleMember(person.id)"
-        >
-          <template #trailing>
-            <span
-              role="checkbox"
-              :aria-checked="form.memberIds.includes(person.id)"
-              :aria-label="person.firstName"
-              class="flex size-6 shrink-0 items-center justify-center rounded-full"
-              :class="
-                form.memberIds.includes(person.id)
-                  ? 'bg-primary text-inverted'
-                  : 'ring-2 ring-accented'
-              "
-            >
-              <UIcon
-                v-if="form.memberIds.includes(person.id)"
-                name="i-lucide-check"
-                class="size-4"
-              />
-            </span>
-          </template>
-        </UiListItem>
+          v-model:checked="form.recurring"
+          :title="t('party.create.recurring')"
+        />
       </UiList>
+
       <UButton
         block
         size="xl"
         :loading="create.isPending.value"
         :disabled="!ready"
-        :label="t('party.create.submit', { count: chosen.length + 1 })"
+        :label="t('party.create.continue')"
         data-testid="party-create"
         @click="submit()"
       />

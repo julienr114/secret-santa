@@ -714,3 +714,83 @@ UPDATE groups SET invite_code = 'amis-code-000002', invite_places = 2 WHERE id =
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });
+
+describe('by where each member came in (ticket 117)', () => {
+  const ENTRIES = '0041_v3_member_entries.sql';
+  const before = v2();
+  files
+    .filter((file) => file < ENTRIES)
+    .forEach((file) => {
+      if (file >= V3) apply(before, file);
+    });
+  const db = v2();
+  files
+    .filter((file) => file <= ENTRIES)
+    .forEach((file) => {
+      if (file >= V3) apply(db, file);
+    });
+  const members = (base: DatabaseSync) =>
+    all(
+      base,
+      'SELECT party_id, first_name, email, active FROM persons ORDER BY party_id, first_name',
+    );
+
+  it('keeps every member of every event, nobody losing access', () => {
+    expect(members(db)).toEqual(members(before));
+    expect(members(db).length).toBeGreaterThan(0);
+  });
+
+  it('says those who took part came in by their Secret Santa', () => {
+    const rows = all(
+      db,
+      'SELECT person_id AS person, secret_santa_id AS santa, list_id AS list, party_id AS party FROM member_entries ORDER BY person_id, secret_santa_id',
+    );
+    const participations = all(
+      db,
+      'SELECT p.person_id AS person, p.secret_santa_id AS santa, NULL AS list, s.party_id AS party FROM participations p JOIN secret_santas s ON s.id = p.secret_santa_id ORDER BY p.person_id, p.secret_santa_id',
+    );
+    expect(rows).toEqual(participations);
+    expect(rows.length).toBeGreaterThan(0);
+  });
+
+  it('leaves the others without a way in', () => {
+    expect(
+      one(
+        db,
+        'SELECT count(*) AS n FROM persons WHERE id NOT IN (SELECT person_id FROM member_entries)',
+      ).n,
+    ).toBe(
+      one(
+        before,
+        'SELECT count(*) AS n FROM persons WHERE id NOT IN (SELECT person_id FROM participations)',
+      ).n,
+    );
+  });
+
+  it('matches the Drizzle snapshot of the table', () => {
+    const snapshot = JSON.parse(
+      readFileSync(join(DIR, 'meta', '0041_snapshot.json'), 'utf8'),
+    ) as {
+      tables: Record<
+        string,
+        { columns: Record<string, unknown>; indexes: Record<string, unknown> }
+      >;
+    };
+    const shape = snapshot.tables.member_entries!;
+    expect(
+      all(db, 'PRAGMA table_info(`member_entries`)')
+        .map((row) => row.name)
+        .toSorted(),
+    ).toEqual(Object.keys(shape.columns).toSorted());
+    expect(
+      all(db, 'PRAGMA index_list(`member_entries`)')
+        .filter((row) => row.origin === 'c')
+        .map((row) => row.name)
+        .toSorted(),
+    ).toEqual(Object.keys(shape.indexes).toSorted());
+  });
+
+  it('leaves no foreign key broken', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+  });
+});

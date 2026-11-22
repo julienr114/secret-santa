@@ -40,7 +40,6 @@ export type PartyBody = {
   name: string;
   date: string;
   recurring: boolean;
-  memberIds: string[];
 };
 
 /**

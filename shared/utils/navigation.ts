@@ -104,11 +104,14 @@ export const listsPathOf = (path: string): string | null =>
  * Where the invitation link of an event and its page lead now that an
  * event has none (ticket 116, docs/spec/v3/navigation.md, « Les anciennes
  * adresses »): to its « Membres ». The link of a Secret Santa is under it.
+ * « Nouvelle personne » goes there too: nobody is added to an event
+ * itself (ticket 117).
  * @param path - The path asked for.
  * @returns The new path, or null when it did not move.
  */
 export const invitationPathOf = (path: string): string | null => {
-  const match = /^\/e\/([^/]+)\/invitation(\/.*)?$/.exec(path);
+  const match =
+    /^\/e\/([^/]+)\/(?:invitation(?:\/.*)?|membres\/nouvelle\/?)$/.exec(path);
   return match ? `/e/${match[1]}/membres` : null;
 };
 

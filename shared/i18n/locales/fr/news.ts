@@ -28,5 +28,7 @@ export default {
     joined: '{name} s’inscrit par le lien',
     joinedIn: '{name} s’inscrit par le lien ({detail})',
     all_viewed: 'Tout le monde a découvert son tirage',
+    santa_added: '{name} t’ajoute au Secret Santa',
+    list_shared: '{name} a partagé sa liste avec toi',
   },
 };

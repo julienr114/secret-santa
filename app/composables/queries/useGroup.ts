@@ -1,3 +1,4 @@
+import type { MembersExtras } from '#server/database/membersPage';
 import type { JournalPersonCard } from '#server/database/journal';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
@@ -24,7 +25,7 @@ export type Dashboard = {
 export type PeoplePayload = {
   persons: PublicPerson[];
   exclusions: ExclusionRow[];
-};
+} & MembersExtras;
 /** A participant, with their answer status while answers are collected. */
 export type EditionParticipant = Participant & {
   answerStatus?: AnswerStatus;
@@ -174,9 +175,17 @@ export type PersonPatch = Partial<PersonBody & { active: boolean }> & {
   id: string;
 };
 
-export const useCreatePersonMutation = (slug: Slug) =>
+/**
+ * « Créer une personne »: someone new, in the event and this Secret Santa
+ * together (ticket 117).
+ */
+export const useCreateSantaPersonMutation = (slug: Slug, id: Slug) =>
   useApiMutation<{ person: PublicPerson }, PersonBody>(
-    (body) => api(`${base(slug)}/persons`, { method: 'POST', body }),
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/persons`, {
+        method: 'POST',
+        body,
+      }),
     () => groupKeys(slug),
   );
 

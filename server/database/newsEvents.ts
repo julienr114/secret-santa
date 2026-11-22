@@ -177,6 +177,49 @@ export const tellInvited = (
     );
   });
 
+/**
+ * Someone came into an event by a Secret Santa or a list because another
+ * put them there (ticket 117): « Camille t'ajoute au Secret Santa »,
+ * « Camille a partagé sa liste avec toi ». Only for the addresses that
+ * have an account, never for the one who did it.
+ * @param db - The database.
+ * @param input - What happened, where, to whom, and by whom.
+ * @param input.kind - Added to a Secret Santa, or a list shared.
+ * @param input.targetId - The Secret Santa, or the list.
+ * @param input.partyId - The event.
+ * @param input.emails - The addresses of those put there.
+ * @param input.by - Who put them there: their account and first name.
+ * @param now - Now (ISO).
+ * @returns Once written.
+ */
+export const tellEntered = (
+  db: Db,
+  input: {
+    kind: 'santa_added' | 'list_shared';
+    targetId: string;
+    partyId: string;
+    emails: readonly (string | null)[];
+    by: { accountId: string; name: string | null };
+  },
+  now: string,
+) =>
+  quietly(async () => {
+    const ids = await accountsOfEmails(db, input.emails);
+    await addNews(
+      db,
+      newsFor(
+        [...ids.values()].filter((id) => id !== input.by.accountId),
+        {
+          kind: input.kind,
+          targetId: input.targetId,
+          partyId: input.partyId,
+          name: input.by.name,
+        },
+      ),
+      now,
+    );
+  });
+
 /** The accounts that hold a list. */
 const holdersOf = async (db: Db, listId: string) =>
   (

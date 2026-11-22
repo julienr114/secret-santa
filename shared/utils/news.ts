@@ -17,6 +17,8 @@ export const NEWS_KINDS = [
   'palmares',
   'joined',
   'all_viewed',
+  'santa_added',
+  'list_shared',
 ] as const;
 export type NewsKind = (typeof NEWS_KINDS)[number];
 
@@ -54,6 +56,10 @@ export const NEWS_SHAPE: Record<
   palmares: { level: 'other', target: 'game' },
   joined: { level: 'other', target: 'party' },
   all_viewed: { level: 'other', target: 'follow' },
+  // Ticket 117: an organiser put me in their Secret Santa; someone who
+  // manages a list made me a member of its event to see it.
+  santa_added: { level: 'other', target: 'santa' },
+  list_shared: { level: 'other', target: 'list' },
 };
 
 /** After thirty days a news is gone (README 22.22). */

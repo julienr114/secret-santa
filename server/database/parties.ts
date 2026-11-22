@@ -25,16 +25,13 @@ import { decrypt } from '#server/utils/crypto';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { freeSlug, slugify } from '#server/utils/auth';
 import {
-  checkPartySize,
   leavingLists,
-  takenPeople,
   usualDateOf,
   type PartyInput,
 } from '#server/utils/parties';
 import type { PartyCategory } from '#shared/utils/categories';
 import type { LinePart, LineText } from '#shared/utils/lines';
 import { listYear } from '#shared/utils/years';
-import { unwrap } from '#server/http/errors';
 
 // The party (docs/spec/v3/fete.md, ticket 104): its page, its creation
 // with people taken from other parties, leaving it.
@@ -399,8 +396,8 @@ export const partiesToTakeFrom = async (db: Db, account: AccountRow) => {
 };
 
 /**
- * Creates a party: me as its organiser and first member, the people taken
- * from parties I organise (once each), and its year.
+ * Creates a party: me as its organiser and first member, and its year.
+ * Nobody else: one comes in by its Secret Santa or its lists (ticket 117).
  * @param db - The database.
  * @param account - Me.
  * @param input - What « Pour quelle occasion ? » gave.
@@ -413,18 +410,6 @@ export const createParty = async (
   input: PartyInput,
   now: string,
 ): Promise<string> => {
-  const offered = await partiesToTakeFrom(db, account);
-  const chosen = takenPeople(
-    offered.people.filter((person) => input.memberIds.includes(person.id)),
-    account.email,
-  );
-  unwrap(checkPartySize(chosen.length + 1));
-  const rows = await db
-    .select()
-    .from(persons)
-    .where(
-      inArray(persons.id, chosen.length === 0 ? [''] : chosen.map((p) => p.id)),
-    );
   const wanted = slugify(input.name) || 'fete';
   const taken = (await db.select({ slug: parties.slug }).from(parties)).map(
     (row) => row.slug,
@@ -456,22 +441,9 @@ export const createParty = async (
     db
       .insert(partyOrganisers)
       .values({ partyId: id, accountId: account.id, createdAt: now }),
-    // One statement per person: D1 caps the parameters of a statement.
-    ...rows.map((person) =>
-      db.insert(persons).values({
-        id: newId(),
-        partyId: id,
-        firstName: person.firstName,
-        lastName: person.lastName,
-        email: person.email,
-        language: person.language,
-        avatarEmoji: person.avatarEmoji,
-        avatarColor: person.avatarColor,
-        active: true,
-        createdAt: now,
-      }),
-    ),
   ]);
+  // Its creator: the event exists with them alone (docs/spec/v3/
+  // accueil-et-creation.md, « Une autre occasion »).
   await insertPersonFromAccount(db, { groupId: id, account, now });
   return slug;
 };

@@ -45,6 +45,13 @@ describe('invitationPathOf', () => {
     );
   });
 
+  it('sends « Nouvelle personne » to its members, nobody being added to an event', () => {
+    expect(invitationPathOf('/e/famille/membres/nouvelle')).toBe(
+      '/e/famille/membres',
+    );
+    expect(invitationPathOf('/e/famille/membres/p1')).toBeNull();
+  });
+
   it('leaves the other pages, and the link of a Secret Santa, alone', () => {
     expect(invitationPathOf('/e/famille/membres')).toBeNull();
     expect(

@@ -197,7 +197,7 @@ export const listTitle = (facts: ListFacts): LinePart => {
  * @param people - Those it is made for.
  * @returns The piece, or null.
  */
-const forWhom = (people: readonly ListPerson[]): LinePart | null => {
+export const forWhom = (people: readonly ListPerson[]): LinePart | null => {
   const others = people.filter((person) => !person.me).map((p) => p.name);
   if (others.length === 0) return null;
   if (!people.some((person) => person.me)) {

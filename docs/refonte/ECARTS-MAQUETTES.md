@@ -6,6 +6,15 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## On entre par un Secret Santa ou par une liste (V3, ticket 117)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3FeteMembres` | La page reste celle des organisateurs, comme avant (Q-029 pose la question des autres membres). « Au Secret Santa » porte le nom du Secret Santa entre parenthèses quand plusieurs sont en préparation (« Au Secret Santa (Les enfants) ») ; son texte dit le nombre de participants, et « lien actif » seulement quand son lien existe. Un membre entré avant le ticket sans avoir participé n'a rien sous son prénom (sinon « pas d'adresse email »). | Seul |
+| `V3FeteMembresComplet` | À 30 membres, « À ma liste » n'est pas montré (on n'invite plus) ; « Au Secret Santa » mène à son lien, comme dans la maquette. | Seul |
+| `V3FeteMembresReprendre` | Le contexte au-dessus du titre est le fil de l'écran (le nom de l'événement, sans emoji). Une pastille choisie a l'anneau rouge des pastilles de l'application, pas le fond vert. Ne sont proposés que les événements que j'organise (leurs adresses ne sont lues que par leurs organisateurs), jamais celui où l'on ajoute, ni quelqu'un qui y est déjà par son adresse ; sans personne de nouveau, « Personne de nouveau à ajouter ». | Seul |
+| `V3FeteNouvelle` | « Continuer » crée l'événement et mène droit au Secret Santa ou à la liste : plus d'étape « Qui en fait partie ? ». | Julien (décision du 21 novembre 2026) |
+
 ## Le lien d'invitation d'un Secret Santa (V3, ticket 116)
 
 | Maquette | Ce que fait le code | Décidé par |
@@ -14,7 +23,6 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FeteRejoindre`, `RejoindreConnecte` | Connecté, la page garde la ligne de `V3FeteRejoindre` (« 🎄 Noël · le 25 décembre 2026 · 5 inscrits ») plutôt que celle de `RejoindreConnecte` (« Noël 2026 · échange le 25 décembre · 5 personnes inscrites ») : une seule ligne pour les deux états. « 5 inscrits » compte les participants du Secret Santa. Le nom du Secret Santa suit celui de l'événement, entre parenthèses, quand il y en a plusieurs la même année. | Seul |
 | `RejoindreFerme` | Après le tirage, la même page dit « Le tirage a déjà eu lieu » · « Préviens l'organisateur de Famille Camille. » (« les organisateurs » quand ils sont plusieurs). Quelqu'un qui participe déjà voit `RejoindreFait`, avec « Voir mon tirage ». | Julien (ticket) |
 | `V3QuoiDeNeuf` | La nouveauté des organisateurs dit « Hugo s'inscrit par le lien » (au présent, sans accord : l'application ne connaît pas le genre) et non « Hugo s'est inscrit », suivi du nom du Secret Santa entre parenthèses quand l'événement en a plusieurs cette année-là (Q-028). | Seul |
-| `V3FeteMembres` (avant le ticket 117) | « Membres » n'a plus de section « Ou laisse-les s'inscrire » : l'événement n'a plus de lien. Le lien d'un Secret Santa s'ouvre depuis lui (« Préparer », « Choisir les participants ») ; « Au Secret Santa » arrive avec le ticket 117. | Seul |
 
 ## La navigation (V3, ticket 114)
 

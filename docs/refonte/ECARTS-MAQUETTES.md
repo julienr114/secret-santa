@@ -12,6 +12,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `ListeTeneurs` | Le fil au-dessus du titre ne dit plus « Listes · » : seulement le nom de la liste, qui y ramène. La page « Listes » n'existe plus (`navigation.md`). | Seul (`navigation.md`) |
 | `Famille` | « Mes proches » n'a plus de fil « Listes » au-dessus de son titre : elle s'ouvre depuis une liste, et « Retour » y ramène. | Seul (`navigation.md`) |
+| `ListeInvitation` | Pendant qu'elle charge, l'invitation à tenir une liste montre un squelette à sa forme (la tuile, la pastille, le nom, trois lignes, les deux boutons) au lieu d'une roue seule. | Seul (`regles-d-ecran.md`) |
 
 ## Les lignes, les points rouges et « Quoi de neuf » (V3, tickets 112 et 120)
 

@@ -207,7 +207,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | La page du tirage | `/p/[jeton]` | Connecté : d'où l'on vient (l'accueil, la fête, « Quoi de neuf », une année passée), sinon l'accueil ; sans session, pas de « Retour » | Mon icône, À qui offres-tu un cadeau ? |
-| Ma liste de cadeaux (connecté avec mon adresse : ouvre ma liste pour l'événement, `/listes/[id]` ; sinon « Ton adresse email, pour écrire ta liste ») | `/p/[jeton]/liste` | La page du tirage | |
+| Ma liste de cadeaux (connecté avec mon adresse : ouvre ma liste pour l'événement, `/listes/[id]`, ou une nouvelle où je suis déjà ; quand je tiens des listes de l'année où je figure, « Quelle liste pour ton Secret Santa ? » d'abord, ticket 136 ; sinon « Ton adresse email, pour écrire ta liste ») | `/p/[jeton]/liste` | La page du tirage | Quelle liste pour ton Secret Santa ? (« Annuler » ramène à la page du tirage) |
 | Devine qui (pronostics, puis les réponses) | `/p/[jeton]/devine` | La page du tirage | Choisir un pronostic |
 | Le palmarès de Devine qui (images) | `/p/[jeton]/devine/palmares` | Devine qui (la croix et « Voir tous les résultats ») | |
 | Qui offre à qui (une fois le tirage dévoilé) | `/p/[jeton]/tirage` | La page du tirage | |
@@ -221,7 +221,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
-| La liste (le document ; sa barre du haut se déroule sur place, sans panneau : l'adresse, « Qui verra ta liste ? » et ses confirmations, ticket 135) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
+| La liste (le document ; sa barre du haut se déroule sur place, sans panneau : l'adresse, « Qui verra ta liste ? » et ses confirmations, ticket 135 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
@@ -241,7 +241,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
+| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène ; depuis la carte du résultat, `?anonyme=1&p=…&personne=[proche]`, la liste filtrée sur la personne tirée, et `&tout=1` pour « Toute la liste », ticket 136) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
 
 Une liste d'une année passée (ticket 119), par son document comme par son lien, a un bandeau en haut : « Liste de Noël 2025 » · « Une année passée ». Son bouton « Noël 2026 », quand une liste de cette année en a été reprise et que j'ai le droit de l'ouvrir, mène à celle-ci : son document (`/listes/[id]`) si je la tiens, sinon son lien (`/l/[jeton]`).

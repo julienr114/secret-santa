@@ -1,61 +1,45 @@
-import { adoptPersonAvatar, findAccountById } from '#server/database/accounts';
-import { findPersonByGroupEmail } from '#server/database/invite';
-import { createList } from '#server/database/lists';
-import { myListFor, occasionDate } from '#server/database/listSharing';
-import { persons } from '#server/database/schema';
-import { requireAccount } from '#server/http/auth';
+import { z } from 'zod';
+import {
+  giveListToDraw,
+  listsIFigureOn,
+  newListForDraw,
+} from '#server/database/drawLists';
+import { findMyListFor, myListFor } from '#server/database/listSharing';
 import { nowIso } from '#server/http/context';
-import { unwrap } from '#server/http/errors';
-import { requirePersonalLink } from '#server/http/personal';
-import { canClaim } from '#server/utils/invite';
-import { listIconOfParty } from '#server/utils/lists';
-import { canUseEmail } from '#server/utils/people';
-import { partyEmoji } from '#shared/utils/categories';
-import { eq } from 'drizzle-orm';
+import { requireMyDraw, takeMyDraw } from '#server/http/drawList';
+import { notFound } from '#server/http/errors';
+import { validatedBody } from '#server/http/validate';
 
-// « Ma liste de cadeaux », from my Secret Santa (ticket 107, V3ListeQuiSecret):
-// my list for the event, made at once and kept for the one who drew me,
-// with no draft in between; or the one I already have there. Logged in
-// with the person's address, or taking it when the person has none, as
-// « Ajouter à mon compte » does.
+// « Ma liste de cadeaux », from my Secret Santa (tickets 107, 136): my
+// list for the event if I have one; else the list I chose among those
+// where I figure (« Quelle liste pour ton Secret Santa ? »), given to the
+// one who draws me on top of its sharing; else a new one, made for the
+// event and kept for the one who drew me, with no draft in between, and
+// me on it already, first (V3ListeSecretNouvelle).
+const bodySchema = z
+  .object({ list: z.string().min(1).max(40).optional() })
+  .default({});
+
 export default defineEventHandler(async (event) => {
-  const user = await requireAccount(event);
-  const { db, person, group } = await requirePersonalLink(event);
-  const account = await findAccountById(db, user.accountId);
-  if (!account) {
-    throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
+  const context = await requireMyDraw(event);
+  const { db, group, account } = context;
+  const { list: chosen } = await validatedBody(event, bodySchema);
+  await takeMyDraw(context);
+  const held = await findMyListFor(db, account.id, group.id);
+  if (held) return { id: held.id };
+  const now = nowIso();
+  if (chosen) {
+    const mine = await listsIFigureOn(db, account.id, group.id);
+    if (!mine.some((list) => list.id === chosen)) throw notFound();
+    await giveListToDraw(db, chosen, group.id, now);
+    return { id: chosen };
   }
-  unwrap(canClaim(person.email, account.email));
-  unwrap(
-    canUseEmail(
-      account.email,
-      await findPersonByGroupEmail(db, person.partyId, account.email),
-      person.id,
-    ),
-  );
-  if (person.email !== account.email) {
-    await db
-      .update(persons)
-      .set({ email: account.email })
-      .where(eq(persons.id, person.id));
-  }
-  // An account with no face of its own takes the one of the Secret Santa.
-  await adoptPersonAvatar(db, account, person);
   const id = await myListFor(
     db,
     account.id,
     group,
-    async () =>
-      createList(db, account.id, {
-        icon: listIconOfParty(
-          { emoji: partyEmoji(group), color: group.iconColor },
-          (n) => crypto.getRandomValues(new Uint32Array(1))[0]! % n,
-        ),
-        title: group.name,
-        eventDate: await occasionDate(db, group),
-        partyId: group.id,
-      }),
-    nowIso(),
+    async () => (await newListForDraw(db, account.id, group)).id,
+    now,
   );
   return { id };
 });

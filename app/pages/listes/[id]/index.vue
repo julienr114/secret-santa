@@ -8,6 +8,7 @@ import {
   LIST_ICON_GROUP_KEYS,
   LIST_ICON_GROUPS,
   LIST_TITLE_MAX,
+  canResumeInto,
   isWorthKeeping,
 } from '#server/utils/lists';
 import {
@@ -414,6 +415,13 @@ const sections = computed(() => {
   );
   return at === laid.others ? [...laid.rows, null] : laid.rows;
 });
+/** « Repartir d'une liste », while nothing is written (Q-032). */
+const resumable = computed(() =>
+  canResumeInto({
+    ideas: people.value.reduce((sum, person) => sum + person.ideas.length, 0),
+    single: doc.value?.single ?? false,
+  }),
+);
 const onRemovePerson = (person: PersonLine) =>
   removal.start(
     person.id,
@@ -669,14 +677,16 @@ onBeforeRouteLeave((to) => {
               :first="row.index === 0"
               :last="row.index === people.length - 1"
               :single="doc.single"
+              :santas="row.person.member.isSelf ? doc.santas : []"
             />
           </template>
         </div>
         <p class="sr-only" aria-live="polite">{{ announced }}</p>
 
-        <!-- An empty draft may start from another list. -->
+        <!-- A list with no idea yet may start from another, people or
+             not (Q-032): under the people, before « Ajouter quelqu'un ». -->
         <ListsResumeFrom
-          v-if="people.length === 0 && list.status === 'draft'"
+          v-if="resumable && list.status !== 'past'"
           :list-id="list.id"
         />
         <!-- A list without people keeps the block until it is shared:

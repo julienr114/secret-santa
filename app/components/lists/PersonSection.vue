@@ -35,6 +35,11 @@ const props = defineProps<{
    * at the edge.
    */
   single?: boolean;
+  /**
+   * « Secret Santa · Famille Camille » under my own name (ticket 136,
+   * V3ListeSecret), each leading to my page there.
+   */
+  santas?: ListDocument['santas'];
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -317,6 +322,21 @@ const explained = ref<string | null>(null);
         <p v-if="details" class="text-sm leading-[1.4] text-toned">
           {{ details }}
         </p>
+        <NuxtLink
+          v-for="santa in santas"
+          :key="santa.path"
+          :to="santa.path"
+          class="relative inline-flex min-h-6 items-center gap-1.5 self-start text-[13px] font-bold text-incognito before:absolute before:-inset-y-2.5 before:inset-x-0"
+          data-testid="person-santa"
+          data-no-drag
+        >
+          <UIcon
+            name="i-lucide-mail"
+            class="size-3.5 shrink-0"
+            aria-hidden="true"
+          />
+          {{ t('lists.doc.santa', { name: santa.name }) }}
+        </NuxtLink>
       </div>
       <UDropdownMenu
         v-model:open="menuOpen"

@@ -3,9 +3,11 @@ import { and, count, desc, eq, gt, inArray, or } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import {
   accounts,
+  familyMembers,
   giftListHolders,
   giftListIdeas,
   giftListParties,
+  giftListPeople,
   giftListVisits,
   giftLists,
   participations,
@@ -69,8 +71,9 @@ export const emailParticipant = async (
  * « La liste de cadeaux d'Inès » under a result (ticket 107, V3TirageVersListe,
  * V3TirageNouvelles): a list the receiver holds that the giver may open,
  * public or shared in the event of the draw (with all its members or with
- * the one who drew), the most recently changed; where it opens, anonymous
- * and on the receiver's part; and how many ideas came since the giver
+ * the one who drew), one where they figure first, then the most recently
+ * changed; where it opens, anonymous and filtered on the receiver's part
+ * when they figure on it (ticket 136); and how many ideas came since the giver
  * last opened it. Nothing of what is on it.
  * @param event - The request.
  * @param db - The database.
@@ -93,7 +96,7 @@ export const receiverListOf = async (
     giverAccountId: string | null;
   },
 ) => {
-  const [list] = await db
+  const lists = await db
     .select({
       id: giftLists.id,
       title: giftLists.title,
@@ -119,8 +122,41 @@ export const receiverListOf = async (
         ),
       ),
     )
-    .orderBy(desc(giftLists.updatedAt))
-    .limit(1);
+    .orderBy(desc(giftLists.updatedAt));
+  // Where the receiver figures (ticket 136): their « Moi », or a person
+  // of another family linked to their account. Such a list comes first,
+  // and opens filtered on them.
+  const figures =
+    lists.length === 0
+      ? []
+      : await db
+          .select({
+            listId: giftListPeople.listId,
+            memberId: giftListPeople.memberId,
+          })
+          .from(giftListPeople)
+          .innerJoin(
+            familyMembers,
+            eq(familyMembers.id, giftListPeople.memberId),
+          )
+          .where(
+            and(
+              inArray(
+                giftListPeople.listId,
+                lists.map((one) => one.id),
+              ),
+              or(
+                input.selfMemberId
+                  ? eq(familyMembers.id, input.selfMemberId)
+                  : undefined,
+                eq(familyMembers.linkedAccountId, input.accountId),
+              ),
+            ),
+          );
+  const list =
+    lists.find((one) => figures.some((row) => row.listId === one.id)) ??
+    lists[0];
+  const part = figures.find((row) => row.listId === list?.id)?.memberId;
   if (!list?.shareToken) return null;
   const [visit] = input.giverAccountId
     ? await db
@@ -153,7 +189,7 @@ export const receiverListOf = async (
   return {
     title: list.title,
     icon: { emoji: list.iconEmoji, color: list.iconColor },
-    path: input.selfMemberId ? `${path}&personne=${input.selfMemberId}` : path,
+    path: part ? `${path}&personne=${part}` : path,
     newIdeas: fresh?.n ?? 0,
   };
 };

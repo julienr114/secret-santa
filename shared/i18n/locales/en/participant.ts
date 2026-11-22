@@ -3,6 +3,11 @@ import type { Dict } from '../../types';
 
 export default {
   myList: {
+    which: {
+      title: 'Which list for your Secret Santa?',
+      new: 'A new list',
+      continue: 'Continue',
+    },
     ideaLabel: 'A gift idea',
     add: 'Add',
     accountNote:

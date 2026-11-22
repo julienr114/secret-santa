@@ -6,6 +6,7 @@ export default {
     untitled: 'Untitled',
   },
   doc: {
+    santa: 'Secret Santa · {name}',
     drag: {
       handle: 'Move: {name}',
       placed: '{name}, position {position} of {count}',
@@ -494,6 +495,8 @@ export default {
     none: 'Nothing',
   },
   visitor: {
+    wholeList: 'The whole list',
+    filterLabel: 'What you see of the list',
     figures: '{name}’s list. You are on it: you can write your own ideas.',
     itsYou: 'That’s you',
     ideaForMe: 'An idea for me…',

@@ -16,16 +16,16 @@ Retour de Julien, 22 novembre 2026, après avoir essayé : depuis un Secret Sant
 
 ## À faire
 
-- [ ] **Une liste créée depuis mon Secret Santa m'a déjà dedans, en premier** (`V3ListeSecretNouvelle`) : la personne « Moi », avec sa ligne « Une idée pour … ». Pareil depuis « Écrire ma liste » de l'email d'une demande d'idées.
-- [ ] **« Repartir d'une liste » tant que la liste n'a aucune idée**, même avec des personnes (Q-032, `docs/spec/v3/listes.md`, « Repartir d'une liste ») : `canResumeInto` ne demande plus une liste sans personne. La reprise garde à leur place les personnes déjà là, ajoute les autres après, ne met personne deux fois ; les idées pas offertes d'une personne déjà là arrivent sous son prénom. Le troisième critère du tri (une personne en commun) sert enfin. Le bloc est sous les personnes, avant « Ajouter quelqu'un ».
-- [ ] **« Quelle liste pour ton Secret Santa ? »** (`V3TirageQuelleListe`), quand je tiens déjà une ou plusieurs listes de cette année où je figure : mes listes (le nom, « Pour Léo, Zoé et moi », ses événements), puis « Une nouvelle liste » ; la première choisie d'avance (le même événement, sinon la même catégorie, sinon la plus récente), en fonction pure testée ; « Continuer ». Le composant `UiChoiceSheet`, les radios natifs.
-- [ ] **Choisir une liste qui existe** lui ajoute le stade « Celui qui m'a tiré » pour cet événement, sans rien retirer de son partage.
-- [ ] **Sous mon prénom, dans la liste** : « Secret Santa · Famille Camille », avec l'icône du Secret Santa, une ligne par Secret Santa, qui mène à mon Secret Santa. Seuls ceux qui tiennent la liste la voient.
-- [ ] **Le gros plan** (`V3ListeSurligne`) : arrivé depuis sa carte de résultat, celui qui m'a tiré voit la liste avec son titre et son mot d'accueil, mais une seule personne, moi ; en haut, `UiSegmented` avec mon prénom (choisi) et « Toute la liste ». Le mode anonyme reste activé d'office.
-- [ ] **« Toute la liste »** (`V3ListeSurligneTout`) : tout le monde, moi en premier.
-- [ ] Le gros plan se demande par l'adresse (un paramètre), pour que « Retour » puis « Suivant » le retrouvent ; il ne change aucun droit d'accès.
-- [ ] La page ne dit jamais « tu as tiré … ».
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Une liste créée depuis mon Secret Santa m'a déjà dedans, en premier** (`V3ListeSecretNouvelle`) : la personne « Moi », avec sa ligne « Une idée pour … ». Pareil depuis « Écrire ma liste » de l'email d'une demande d'idées.
+- [x] **« Repartir d'une liste » tant que la liste n'a aucune idée**, même avec des personnes (Q-032, `docs/spec/v3/listes.md`, « Repartir d'une liste ») : `canResumeInto` ne demande plus une liste sans personne. La reprise garde à leur place les personnes déjà là, ajoute les autres après, ne met personne deux fois ; les idées pas offertes d'une personne déjà là arrivent sous son prénom. Le troisième critère du tri (une personne en commun) sert enfin. Le bloc est sous les personnes, avant « Ajouter quelqu'un ».
+- [x] **« Quelle liste pour ton Secret Santa ? »** (`V3TirageQuelleListe`), quand je tiens déjà une ou plusieurs listes de cette année où je figure : mes listes (le nom, « Pour Léo, Zoé et moi », ses événements), puis « Une nouvelle liste » ; la première choisie d'avance (le même événement, sinon la même catégorie, sinon la plus récente), en fonction pure testée ; « Continuer ». Le composant `UiChoiceSheet`, les radios natifs.
+- [x] **Choisir une liste qui existe** lui ajoute le stade « Celui qui m'a tiré » pour cet événement, sans rien retirer de son partage.
+- [x] **Sous mon prénom, dans la liste** : « Secret Santa · Famille Camille », avec l'icône du Secret Santa, une ligne par Secret Santa, qui mène à mon Secret Santa. Seuls ceux qui tiennent la liste la voient.
+- [x] **La liste filtrée** (`V3ListeSurligne`) : arrivé depuis sa carte de résultat, celui qui m'a tiré voit la liste avec son titre et son mot d'accueil, mais une seule personne, moi ; en haut, `UiSegmented` avec mon prénom (choisi) et « Toute la liste ». Le mode anonyme reste activé d'office.
+- [x] **« Toute la liste »** (`V3ListeSurligneTout`) : tout le monde, moi en premier.
+- [x] Le filtre se demande par l'adresse (un paramètre), pour que « Retour » puis « Suivant » le retrouvent ; il ne change aucun droit d'accès.
+- [x] La page ne dit jamais « tu as tiré … ».
+- [x] Trois langues, `tests/e2e`.
 
 ## Hors périmètre
 

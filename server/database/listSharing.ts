@@ -95,7 +95,7 @@ export const memberWhereShared = async (
  * @param partyId - The event.
  * @returns Its year and date, or null when it has none.
  */
-const currentYearOf = async (db: Db, partyId: string) => {
+export const currentYearOf = async (db: Db, partyId: string) => {
   const [party] = await db
     .select({
       id: parties.id,

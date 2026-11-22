@@ -8,6 +8,7 @@ export default {
     untitled: 'Sans nom',
   },
   doc: {
+    santa: 'Secret Santa · {name}',
     drag: {
       handle: 'Déplacer : {name}',
       placed: '{name}, position {position} sur {count}',
@@ -498,6 +499,8 @@ export default {
     none: 'Rien',
   },
   visitor: {
+    wholeList: 'Toute la liste',
+    filterLabel: 'Ce que tu vois de la liste',
     figures:
       'La liste de {name}. Tu y figures : tu peux écrire tes propres idées.',
     itsYou: 'C’est toi',

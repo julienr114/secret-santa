@@ -30,6 +30,7 @@ import { listYear, pastBand, type PastBand } from '#shared/utils/years';
 import { loadYears, timelineOf } from '#server/database/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
+import { santaLinesOf, type SantaLine } from '#server/database/drawLists';
 import {
   accountsWhereShared,
   membersSeeing,
@@ -418,6 +419,12 @@ export type ListDocument = {
   /** The band of a list of a year over (ticket 119), or null. */
   past: PastListBand | null;
   /**
+   * « Secret Santa · Famille Camille » under my own name (ticket 136,
+   * V3ListeSecret): one per Secret Santa where I take part, in an event
+   * the list is shared in, each leading to my page there.
+   */
+  santas: SantaLine[];
+  /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
    * being anonymous, the first names written on it.
@@ -570,6 +577,7 @@ export const listDocument = async (
   db: Db,
   list: GiftListRow,
   accountId: string,
+  dataKey: CryptoKey,
 ): Promise<ListDocument> => {
   const viewer: Viewer = { accountId, role: 'holder' };
   const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
@@ -615,8 +623,33 @@ export const listDocument = async (
         ? await resumedFromOf(db, list, list.carriedFrom)
         : null,
     past: await pastBandOf(db, list, accountId),
+    santas: await mySantaLines(db, list.id, people, accountId, dataKey),
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
   };
+};
+
+/**
+ * The Secret Santa under my name on a list, when I figure on it (ticket
+ * 136): none otherwise.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param people - Its people.
+ * @param accountId - The holder looking.
+ * @param dataKey - The key of the personal links.
+ * @returns The lines.
+ */
+const mySantaLines = async (
+  db: Db,
+  listId: string,
+  people: readonly ListPerson[],
+  accountId: string,
+  dataKey: CryptoKey,
+): Promise<SantaLine[]> => {
+  if (!people.some((person) => person.member.accountId === accountId)) {
+    return [];
+  }
+  const account = await findAccountById(db, accountId);
+  return account ? santaLinesOf(db, listId, account, dataKey) : [];
 };
 
 /**

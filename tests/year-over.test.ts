@@ -30,6 +30,9 @@ const GUARDS = [
   'requirePersonalLink(event',
   'requireParticipation(event',
   'requireOpenYear(',
+  // « Ma liste de cadeaux » (ticket 136): requirePersonalLink, with the
+  // account checked to be the person's.
+  'requireMyDraw(event',
 ];
 
 /** What stays open once the year is over: out of the ticket. */

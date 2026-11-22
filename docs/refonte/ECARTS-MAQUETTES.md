@@ -260,3 +260,15 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeAnneePassee` | Le fond du bandeau est `warning-tint` (lilas 100, `#f1e8fc`) au lieu de `#efe7fb`. | Seul (le jeton le plus proche) |
 | `ListeNouvelleReprendre` | Sous une liste sans personne : « Sans personne », comme avant ; sous une liste faite pour moi seul : « Moi ». | Seul |
 
+## Le Secret Santa et ma partie d'une liste (ticket 136)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3TirageQuelleListe` | Le panneau s'ouvre sur la page « Ma liste de cadeaux » (`/p/[jeton]/liste`), pas par-dessus le résultat : c'est là que mènent la ligne du tirage, « Écrire ma liste » de l'email et le retour de la connexion. Derrière lui, « Famille Camille · Noël 2026 » et « Ma liste de cadeaux ». | Seul |
+| `V3TirageQuelleListe` | C'est `UiChoiceSheet` tel qu'il est (le ticket le demande) : le rond à gauche, la ligne choisie teintée, pas d'icône de liste à gauche, et « Annuler » sous « Continuer » (qui ramène à la page du tirage). | Seul (le composant du design system) |
+| `V3TirageQuelleListe` | Les événements d'une liste sont son occasion et ceux où elle est partagée ; une liste faite sans événement (son événement à elle) n'en dit aucun : « Pour Zoé et moi » seul. Une liste faite pour moi seul ne dit que ses événements. | Seul |
+| `V3TirageQuelleListe` | Ne sont proposées que les listes que je gère (pas celles où j'« aide à écrire » : leur partage n'est pas à moi), de l'année de l'événement, où je figure (mon « Moi », ou un proche d'un autre relié à mon compte). Le tri : même événement, même catégorie, puis la plus récemment modifiée. | Seul |
+| `V3ListeSecretNouvelle` | Je suis mis sur la liste sans les idées pas offertes de ma dernière liste (que « Ajouter quelqu'un » reprendrait) : c'est « Repartir d'une liste » qui les propose. | Seul (le ticket : « propose de repartir de Noël 2025 ») |
+| `V3ListeSecretNouvelle`, `V3ListeSecret` | « Secret Santa · Famille Camille » n'est que sous mon prénom, pour moi : un autre qui tient la liste ne le voit pas sous le sien ni sous le mien. Il y a une ligne par Secret Santa pas clôturé où je participe, dans un événement où la liste est partagée (tous les membres ou celui qui m'a tiré). Le nom du Secret Santa suit entre parenthèses quand l'événement en a plusieurs la même année. La zone qu'on touche fait 44 px, le texte garde sa hauteur. | Seul |
+| `V3ListeSecretNouvelle` | « Repartir d'une liste » dans une liste déjà partagée (celui qui m'a tiré la lit) : les idées reprises n'ont pas de marque, et la phrase « Reprise de … » ne se lit pas ; elles ne servent que le temps d'un brouillon. Le mot d'accueil que j'ai déjà écrit n'est pas remplacé par celui de l'ancienne liste. | Seul |
+| `V3ListeSurligne`, `V3ListeSurligneTout` | Le filtre ne se montre que si la personne de l'adresse est sur la liste ; sinon, la liste entière, sans les deux choix. La carte du résultat préfère, parmi les listes de la personne tirée, une où elle figure. | Seul |

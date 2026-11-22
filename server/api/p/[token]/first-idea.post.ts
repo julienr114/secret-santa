@@ -8,11 +8,11 @@ import {
 import {
   addPersonToList,
   createIdea,
-  createList,
   ensureSelf,
   findList,
 } from '#server/database/lists';
-import { myListFor, occasionDate } from '#server/database/listSharing';
+import { newListForDraw } from '#server/database/drawLists';
+import { myListFor } from '#server/database/listSharing';
 import { familyMembers } from '#server/database/schema';
 import { optionalAccount } from '#server/http/auth';
 import { dataKeyOf, nowIso } from '#server/http/context';
@@ -20,8 +20,7 @@ import { tellNewIdeas } from '#server/database/newsEvents';
 import { requirePersonalLink } from '#server/http/personal';
 import { validatedBody } from '#server/http/validate';
 import { avatarOf } from '#server/utils/avatars';
-import { IDEA_TEXT_MAX, listIconOfParty } from '#server/utils/lists';
-import { partyEmoji } from '#shared/utils/categories';
+import { IDEA_TEXT_MAX } from '#server/utils/lists';
 import { localeOf } from '#shared/i18n';
 import { HINT_TEXT_MAX } from '#shared/utils/hints';
 
@@ -75,33 +74,30 @@ export default defineEventHandler(async (event) => {
       ),
     )
     .limit(1);
+  // A new list, with me on it already, first (ticket 136).
+  const made = { selfPersonId: null as string | null };
   const listId = await myListFor(
     db,
     account.id,
     group,
-    async () =>
-      createList(db, account.id, {
-        icon: listIconOfParty(
-          { emoji: partyEmoji(group), color: group.iconColor },
-          (n) => crypto.getRandomValues(new Uint32Array(1))[0]! % n,
-        ),
-        title: group.name,
-        eventDate: await occasionDate(db, group),
-        partyId: group.id,
-      }),
+    async () => {
+      const list = await newListForDraw(db, account.id, group);
+      made.selfPersonId = list.selfPersonId;
+      return list.id;
+    },
     now,
   );
   const list = await findList(db, listId);
-  if (list && self) {
-    const listPersonId = await addPersonToList(db, list, self.id);
-    if (text) {
-      await createIdea(db, listId, listPersonId, { text, url: null }, null);
-      await tellNewIdeas(
-        db,
-        { listId, by: account.id, dataKey: await dataKeyOf(event) },
-        now,
-      );
-    }
+  const listPersonId =
+    made.selfPersonId ??
+    (list && self ? await addPersonToList(db, list, self.id) : null);
+  if (listPersonId && text) {
+    await createIdea(db, listId, listPersonId, { text, url: null }, null);
+    await tellNewIdeas(
+      db,
+      { listId, by: account.id, dataKey: await dataKeyOf(event) },
+      now,
+    );
   }
   // Their tastes are theirs, the same on every list: on the « Moi » card.
   if (self && lately) {

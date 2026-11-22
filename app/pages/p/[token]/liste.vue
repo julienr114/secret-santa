@@ -2,10 +2,14 @@
 import { useRequestLinkMutation } from '~/composables/queries/useAuth';
 import { api } from '~/composables/queries/useApi';
 import { usePersonalQuery } from '~/composables/queries/usePersonal';
+import type { LinePart } from '#shared/utils/lines';
 
 // « Ma liste de cadeaux », from my Secret Santa (ticket 107): logged in
 // with my address, my list for the event opens at once, kept for the one
-// who drew me (V3ListeQuiSecret). With the address the organiser gave and
+// who drew me (V3ListeQuiSecret), with me on it already, first
+// (V3ListeSecretNouvelle, ticket 136); when I hold lists of this year where
+// I figure, « Quelle liste pour ton Secret Santa ? » asks which first
+// (V3TirageQuelleListe). With the address the organiser gave and
 // no account yet, the first thing written, an idea or a taste (« En ce
 // moment »), makes the account, opens its session and the list (Q-018,
 // V3ListeCompteCree). Otherwise the address first
@@ -25,25 +29,89 @@ const opening = ref(false);
 const writing = ref(false);
 const back = computed(() => `/p/${token.value}`);
 
+/** A list « Quelle liste pour ton Secret Santa ? » offers (ticket 136). */
+type DrawListChoice = {
+  id: string;
+  title: string;
+  forWhom: LinePart | null;
+  events: string[];
+};
+const NEW_LIST = 'new';
+const choices = ref<DrawListChoice[]>([]);
+const choosing = ref(false);
+const chosen = ref<string>(NEW_LIST);
+const saving = ref(false);
+const { part } = useLineText();
+const choiceRows = computed(() => [
+  ...choices.value.map((list) => ({
+    value: list.id,
+    label: list.title || t('lists.resume.untitled'),
+    hint:
+      [list.forWhom ? part(list.forWhom) : '', list.events.join(', ')]
+        .filter(Boolean)
+        .join(' · ') || undefined,
+  })),
+  { value: NEW_LIST, label: t('participant.myList.which.new') },
+]);
+
 /**
- * Opens my list for the event, made if needed.
+ * Opens my list for the event: the one I have, the one I choose, or a
+ * new one with me on it.
+ * @param list - The list chosen, if any.
  * @returns Once on it.
  */
-const openMine = async () => {
-  opening.value = true;
+const openMine = async (list?: string) => {
   try {
     const { id } = await api<{ id: string }>(`/api/p/${token.value}/list`, {
       method: 'POST',
+      body: list ? { list } : {},
     });
     await navigateTo(`/listes/${id}`, { replace: true });
+  } catch (error) {
+    failure.value = error;
+    opening.value = false;
+    saving.value = false;
+    choosing.value = false;
+  }
+};
+/**
+ * My list for the event, or the lists I could give to the one who draws
+ * me: then the sheet asks which (V3TirageQuelleListe).
+ * @returns Once on a list, or once the sheet is open.
+ */
+const findMine = async () => {
+  opening.value = true;
+  try {
+    const found = await api<{
+      list: string | null;
+      choices: DrawListChoice[];
+    }>(`/api/p/${token.value}/list`);
+    if (found.list) {
+      await navigateTo(`/listes/${found.list}`, { replace: true });
+      return;
+    }
+    if (found.choices.length === 0) return openMine();
+    choices.value = found.choices;
+    chosen.value = found.choices[0]?.id ?? NEW_LIST;
+    opening.value = false;
+    choosing.value = true;
   } catch (error) {
     failure.value = error;
     opening.value = false;
   }
 };
 onMounted(() => {
-  if (loggedIn.value) void openMine();
+  if (loggedIn.value) void findMine();
 });
+const onChoose = (value: string) => {
+  saving.value = true;
+  void openMine(value === NEW_LIST ? undefined : value);
+};
+/** The sheet closed without a choice: back to my Secret Santa. */
+const onChoosing = (open: boolean) => {
+  choosing.value = open;
+  if (!open && !saving.value) void navigateTo(back.value, { replace: true });
+};
 
 const email = ref('');
 watch(
@@ -109,6 +177,12 @@ const onSend = () =>
       variant="subtle"
       :description="errorMessage(failure)"
     />
+    <div v-else-if="me && loggedIn" class="flex flex-col gap-4">
+      <p class="text-sm font-semibold text-toned">
+        {{ me.groupName }} · {{ me.editionLabel }}
+      </p>
+      <UiPageTitle>{{ t('hints.list.title') }}</UiPageTitle>
+    </div>
     <div
       v-else-if="me && firstIdea"
       class="flex flex-col gap-4"
@@ -177,5 +251,17 @@ const onSend = () =>
         <p class="text-sm text-toned">{{ t('participant.myList.confirm') }}</p>
       </template>
     </div>
+    <UiChoiceSheet
+      :open="choosing"
+      :title="t('participant.myList.which.title')"
+      :choices="choiceRows"
+      :value="chosen"
+      :validate-label="t('participant.myList.which.continue')"
+      :cancel-label="t('common.actions.cancel')"
+      :loading="saving"
+      data-testid="which-list"
+      @update:open="onChoosing"
+      @validate="onChoose"
+    />
   </ParticipantScreen>
 </template>

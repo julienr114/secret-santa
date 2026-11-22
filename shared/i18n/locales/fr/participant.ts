@@ -1,6 +1,12 @@
 // The participant's side: personal page, journal.
 export default {
   myList: {
+    // « Quelle liste pour ton Secret Santa ? » (ticket 136).
+    which: {
+      title: 'Quelle liste pour ton Secret Santa ?',
+      new: 'Une nouvelle liste',
+      continue: 'Continuer',
+    },
     ideaLabel: 'Une idée de cadeau',
     add: 'Ajouter',
     accountNote:

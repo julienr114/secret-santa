@@ -118,22 +118,39 @@ watch(
  */
 const isFresh = (idea: IdeaLine) =>
   Boolean(since.value) && idea.createdAt > (since.value ?? '');
-// From a result (ticket 107, V3ListeSurligne): the page opens on the part
-// of the person drawn, just under the bar of the anonymous mode, once.
-const scrolledTo = ref(false);
-watch(
-  () => Boolean(doc.value),
-  async (ready) => {
-    const who = route.query.personne;
-    if (!ready || scrolledTo.value || typeof who !== 'string') return;
-    scrolledTo.value = true;
-    await nextTick();
-    document
-      .getElementById(`personne-${who}`)
-      ?.scrollIntoView({ block: 'start' });
+// From a result (tickets 107, 136, V3ListeSurligne, V3ListeSurligneTout):
+// the list filtered on the person drawn, `personne` in the address, their
+// part alone; « Toute la liste » (`tout`) shows everyone, them first. The
+// address keeps the choice, for « Retour » then « Suivant ». A filter
+// only: it changes nothing of who may read what. Arrived another way, the
+// whole list, without the two choices.
+const filterOn = computed(() => {
+  const who = route.query.personne;
+  if (typeof who !== 'string' || !doc.value || doc.value.single) return null;
+  return doc.value.people.find((person) => person.member.id === who) ?? null;
+});
+const filter = computed<'one' | 'all'>({
+  get: () => (route.query.tout === '1' ? 'all' : 'one'),
+  set: (value) => {
+    const { tout: _all, ...rest } = route.query;
+    void router.replace({
+      query: value === 'all' ? { ...rest, tout: '1' } : rest,
+    });
   },
-  { immediate: true },
-);
+});
+const filterItems = computed(() => [
+  { value: 'one' as const, label: filterOn.value?.member.firstName ?? '' },
+  { value: 'all' as const, label: t('lists.visitor.wholeList') },
+]);
+/** The people shown: all of them, or the one filtered on, first. */
+const shownPeople = computed(() => {
+  const people = doc.value?.people ?? [];
+  const focus = filterOn.value;
+  if (!focus) return people;
+  return filter.value === 'one'
+    ? [focus]
+    : [focus, ...people.filter((person) => person.id !== focus.id)];
+});
 const holder = computed(() => doc.value?.holder.name ?? '');
 
 const noteText = computed(() => {
@@ -350,8 +367,15 @@ const writes = (person: PersonLine) =>
         />
       </div>
 
+      <UiSegmented
+        v-if="filterOn"
+        v-model="filter"
+        :items="filterItems"
+        :label="t('lists.visitor.filterLabel')"
+        data-testid="list-filter"
+      />
       <section
-        v-for="(person, index) in doc.people"
+        v-for="(person, index) in shownPeople"
         :id="`personne-${person.member.id}`"
         :key="person.id"
         class="relative flex scroll-mt-32 flex-col gap-0.5"

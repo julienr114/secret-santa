@@ -27,6 +27,7 @@ On n'invite plus dans un événement : on invite à un Secret Santa. Celui qui o
 - [ ] **La page d'un événement** (`V3FeteOrganisateur`, `V3FeteAnniversaire`) : la ligne des membres ne dit plus « Inviter ».
 - [ ] **Les réglages** : « Quelqu'un s'inscrit par le lien » quitte ceux de l'événement (`V3FeteReglages`, qui perd sa section « M'écrire par email ») pour ceux du Secret Santa (`V3TirageReglages`). Le choix déjà fait par l'organisateur est gardé.
 - [ ] L'ancienne adresse `/e/[événement]/invitation` mène à « Membres » (`docs/spec/v3/navigation.md`). Les liens `/rejoindre/[code]` déjà envoyés marchent toujours.
+- [ ] **La nouveauté des organisateurs** (nature `joined`, ticket 120) suit : « Hugo s'est inscrit par le lien », rangée sous l'événement, avec le nom du Secret Santa s'il y en a plusieurs. Elle ne dit plus « a rejoint l'événement ».
 - [ ] Trois langues. `docs/refonte/ECARTS-MAQUETTES.md` et `docs/ARBORESCENCE.md` à jour.
 
 ## Hors périmètre

@@ -285,5 +285,14 @@ test('opening the list clears its news and its dot, and marks its new idea in th
   await hydrated(page);
   await expect(line).toContainText('2 idées');
   await expect(line.getByTestId('new-dot')).toHaveCount(0);
+  // Had Hugo drawn Camille, her new idea is told on his own Secret Santa
+  // (« De nouvelles idées t'attendent »), seen by opening his page.
+  await ok(
+    await page.request.post(`/api/p/${state.token}/seen`, {
+      data: { target: 'santa' },
+    }),
+  );
+  await page.reload();
+  await hydrated(page);
   await expect(page.getByTestId('news-count')).toHaveCount(0);
 });

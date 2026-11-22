@@ -8,6 +8,7 @@ import {
 import { DRAW_MODES } from '../utils/answers';
 import { GUESS_MODES } from '../utils/guesses';
 import { PARTY_CATEGORIES } from '../../shared/utils/categories';
+import { NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
 
 // Data model from README section 10, in the shape of the V3
 // (docs/spec/v3/modele.md): a party (the group of before), its years, the
@@ -819,6 +820,54 @@ export const giftListVisits = sqliteTable(
     uniqueIndex('gift_list_visits_list_account_idx').on(t.listId, t.accountId),
     index('gift_list_visits_account_idx').on(t.accountId),
   ],
+);
+
+// The news of an account (« Quoi de neuf » and the red dots, ticket 120;
+// README 22.22): what happened, where (the place it points at, and the
+// event), when, how many times that day, and whether it was seen, by
+// opening that place. Accounts only. Never a result of a draw, never the
+// name of whoever asks for ideas: `name` is a first name the text says
+// (who invites, who joins a gift, whose list). Gone after thirty days.
+export const news = sqliteTable(
+  'news',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    kind: text('kind', { enum: NEWS_KINDS }).notNull(),
+    level: text('level', { enum: ['urgent', 'other'] }).notNull(),
+    targetType: text('target_type', { enum: NEWS_TARGETS }).notNull(),
+    // No foreign key: the thing may go first, and its news with it.
+    targetId: text('target_id').notNull(),
+    // The event; null for a list, which finds its own when read.
+    partyId: text('party_id'),
+    name: text('name'),
+    // The gift, for « se joint à ».
+    detail: text('detail'),
+    count: integer('count').notNull().default(1),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    seenAt: text('seen_at'),
+  },
+  (t) => [
+    index('news_account_idx').on(t.accountId, t.seenAt),
+    index('news_target_idx').on(t.targetType, t.targetId),
+  ],
+);
+
+// « Le mot de l'application » (ticket 120), closed by an account: it is
+// not shown to it again.
+export const noteDismissals = sqliteTable(
+  'note_dismissals',
+  {
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    noteId: text('note_id').notNull(),
+    dismissedAt: text('dismissed_at').notNull(),
+  },
+  (t) => [uniqueIndex('note_dismissals_pair_idx').on(t.accountId, t.noteId)],
 );
 
 export type FamilyMemberRow = typeof familyMembers.$inferSelect;

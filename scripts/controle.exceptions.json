@@ -1,4 +1,5 @@
 {
   "files": ["app/pages/admin/guide-de-style/index.vue"],
-  "texts": ["https://…"]
+  "texts": ["https://…"],
+  "keys": ["news.note.v3"]
 }

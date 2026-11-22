@@ -19,7 +19,7 @@ const LOCALES_DIR = join('shared', 'i18n', 'locales');
 const WORDS_FILE = join('scripts', 'controle.mots.json');
 const EXCEPTIONS_FILE = join('scripts', 'controle.exceptions.json');
 
-type Exceptions = { files: string[]; texts: string[] };
+type Exceptions = { files: string[]; texts: string[]; keys: string[] };
 
 const readJson = <T>(path: string): T =>
   JSON.parse(readFileSync(path, 'utf8')) as T;
@@ -77,7 +77,8 @@ const checkLanguages = (dictionaries: Record<string, Texts>) => {
 
 const checkWords = (dictionaries: Record<string, Texts>) => {
   const words = readJson<string[]>(WORDS_FILE);
-  const uses = forbiddenUses(words, dictionaries);
+  const { keys } = readJson<Exceptions>(EXCEPTIONS_FILE);
+  const uses = forbiddenUses(words, dictionaries, keys);
   if (uses.length > 0) {
     fail(
       `Mots interdits (${WORDS_FILE}) : ${uses.length} texte(s)`,

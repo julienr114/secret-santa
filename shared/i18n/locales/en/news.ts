@@ -6,6 +6,11 @@ export default {
   today: 'Today, {time}',
   yesterday: 'Yesterday, {time}',
   close: 'Close',
+  note: {
+    v3: 'Under the Tree has changed. Your groups are now called events, and each one brings together the Secret Santa and the gift lists. Your gift hints have become your list: only the one who drew you sees it, as before. Nothing is lost, and your draw hasn’t changed.',
+    v3Link: 'Your list is still open to anyone who has its link.',
+    subject: 'Under the Tree has changed',
+  },
   kind: {
     envelope: 'The draw is done: your envelope is waiting',
     hint_request: 'Someone is asking you for gift ideas',

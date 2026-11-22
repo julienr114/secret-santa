@@ -6,6 +6,11 @@ export default {
   today: 'Heute, {time}',
   yesterday: 'Gestern, {time}',
   close: 'Schließen',
+  note: {
+    v3: 'Under the Tree hat sich verändert. Deine Gruppen heißen jetzt Events, und dort findest du an einem Ort das Wichteln und die Geschenklisten. Deine Geschenk-Hinweise sind jetzt deine Liste: Nur wer dich gezogen hat, sieht sie, wie bisher. Nichts geht verloren, und dein Los hat sich nicht geändert.',
+    v3Link: 'Deine Liste bleibt für alle offen, die ihren Link haben.',
+    subject: 'Under the Tree hat sich verändert',
+  },
   kind: {
     envelope: 'Die Auslosung ist erfolgt: Dein Umschlag wartet',
     hint_request: 'Jemand bittet dich um Geschenkideen',

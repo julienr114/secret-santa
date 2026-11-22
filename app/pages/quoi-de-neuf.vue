@@ -125,7 +125,10 @@ const closeNote = async () => {
         class="flex items-start gap-3 rounded-2xl bg-lilac-100 py-3 pr-1.5 pl-4 text-[15px] text-lilac-800"
         data-testid="news-note"
       >
-        <p class="grow pt-1.5">{{ tk(note.key) }}</p>
+        <p class="grow pt-1.5">
+          {{ tk(note.key)
+          }}<template v-if="note.extraKey"> {{ tk(note.extraKey) }}</template>
+        </p>
         <UButton
           icon="i-lucide-x"
           color="neutral"

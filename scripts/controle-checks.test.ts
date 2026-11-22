@@ -70,6 +70,12 @@ describe('forbiddenUses', () => {
   it('finds nothing with an empty list', () => {
     expect(forbiddenUses([], dictionaries)).toEqual([]);
   });
+
+  it('lets the keys that name an old word on purpose say it', () => {
+    expect(
+      forbiddenUses(['groupe'], dictionaries, ['a']).map(({ key }) => key),
+    ).toEqual(['c']);
+  });
 });
 
 describe('hardCodedTexts', () => {

@@ -34,19 +34,19 @@ export default {
     palmaresNew: 'Le palmarès est là',
     palmares: 'Le palmarès',
   },
-  names: {
-    one: '{a}',
-    two: '{a} et {b}',
-    three: '{a}, {b} et {c}',
-    more: {
-      one: '{a}, {b} et {count} autre',
-      other: '{a}, {b} et {count} autres',
-    },
-    twoMe: '{a} et moi',
-    threeMe: '{a}, {b} et moi',
-  },
   list: {
-    mine: 'Ma liste',
+    mine: 'Ma liste de cadeaux',
+    for: {
+      one: 'Pour {a}',
+      two: 'Pour {a} et {b}',
+      three: 'Pour {a}, {b} et {c}',
+      more: {
+        one: 'Pour {a}, {b} et {count} autre',
+        other: 'Pour {a}, {b} et {count} autres',
+      },
+      twoMe: 'Pour {a} et moi',
+      threeMe: 'Pour {a}, {b} et moi',
+    },
     of: {
       one: 'La liste de {a}',
       two: 'La liste de {a} et {b}',

@@ -39,7 +39,7 @@ export default {
   create: {
     title: 'Erstellen',
     secretSanta: 'Ein Wichteln',
-    list: 'Eine Liste',
+    list: 'Eine Geschenkliste',
   },
   context: 'Du bist hier',
   actions: {

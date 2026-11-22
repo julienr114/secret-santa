@@ -33,7 +33,11 @@ export default {
     admin: 'Admin',
     label: 'Sections',
   },
-  create: { title: 'Créer', secretSanta: 'Un Secret Santa', list: 'Une liste' },
+  create: {
+    title: 'Créer',
+    secretSanta: 'Un Secret Santa',
+    list: 'Une liste de cadeaux',
+  },
   context: 'Tu es ici',
   actions: {
     back: 'Retour',

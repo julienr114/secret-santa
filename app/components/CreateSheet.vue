@@ -7,8 +7,8 @@ import {
 } from '~/composables/queries/useHome';
 
 // « Créer », the sheet of the tab (docs/spec/v3/accueil-et-creation.md):
-// two lines without a subtitle. « Une liste » turns the sheet into its
-// « Pour quelle occasion ? » (V3ListeOccasion, ticket 106): one of my
+// two lines without a subtitle. « Une liste de cadeaux » turns the sheet
+// into its « Pour quelle occasion ? » (V3ListeOccasion, ticket 106): one of my
 // events, whose name, date and icon the new list takes, or « Une autre
 // occasion », which creates one first; with no event of mine, that
 // straight away.

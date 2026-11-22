@@ -26,7 +26,7 @@ test('the bar, « Créer » and the menu of the account', async ({ page }) => {
   const sheet = page.getByRole('dialog', { name: 'Créer' });
   await expect(sheet.getByRole('listitem')).toHaveText([
     'Un Secret Santa',
-    'Une liste',
+    'Une liste de cadeaux',
   ]);
   await sheet.getByRole('button', { name: 'Un Secret Santa' }).click();
   await expect(page).toHaveURL(/\/e\/nouvelle\?pour=secret-santa$/);

@@ -34,19 +34,19 @@ export default {
     palmaresNew: 'Die Rangliste ist da',
     palmares: 'Die Rangliste',
   },
-  names: {
-    one: '{a}',
-    two: '{a} und {b}',
-    three: '{a}, {b} und {c}',
-    more: {
-      one: '{a}, {b} und {count} weitere Person',
-      other: '{a}, {b} und {count} weitere',
-    },
-    twoMe: '{a} und ich',
-    threeMe: '{a}, {b} und ich',
-  },
   list: {
-    mine: 'Meine Liste',
+    mine: 'Meine Geschenkliste',
+    for: {
+      one: 'Für {a}',
+      two: 'Für {a} und {b}',
+      three: 'Für {a}, {b} und {c}',
+      more: {
+        one: 'Für {a}, {b} und {count} weitere Person',
+        other: 'Für {a}, {b} und {count} weitere',
+      },
+      twoMe: 'Für {a} und mich',
+      threeMe: 'Für {a}, {b} und mich',
+    },
     of: {
       one: 'Die Liste von {a}',
       two: 'Die Liste von {a} und {b}',

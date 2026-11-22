@@ -205,7 +205,7 @@ const list: ListFacts = {
 };
 
 describe('listTitle', () => {
-  it('is « Ma liste » when I hold it', () => {
+  it('is « Ma liste de cadeaux » when I hold it', () => {
     expect(listTitle(list)).toEqual({ key: 'lines.list.mine' });
   });
 
@@ -254,7 +254,7 @@ describe('listLine, a list I hold', () => {
 
   it('says whom it is for, me last', () => {
     expect(listLine(list).parts).toEqual([
-      { key: 'lines.names.threeMe', params: { a: 'Léo', b: 'Zoé' } },
+      { key: 'lines.list.for.threeMe', params: { a: 'Léo', b: 'Zoé' } },
     ]);
     expect(
       listLine({
@@ -264,7 +264,7 @@ describe('listLine, a list I hold', () => {
           { name: 'Hugo', me: true },
         ],
       }).parts[0],
-    ).toEqual({ key: 'lines.names.twoMe', params: { a: 'Léo' } });
+    ).toEqual({ key: 'lines.list.for.twoMe', params: { a: 'Léo' } });
     expect(
       listLine({
         ...list,
@@ -276,7 +276,7 @@ describe('listLine, a list I hold', () => {
         ],
       }).parts[0],
     ).toEqual({
-      key: 'lines.names.more',
+      key: 'lines.list.for.more',
       params: { a: 'Léo', b: 'Zoé', count: 2 },
     });
     expect(
@@ -287,7 +287,7 @@ describe('listLine, a list I hold', () => {
           { name: 'Zoé', me: false },
         ],
       }).parts[0],
-    ).toEqual({ key: 'lines.names.two', params: { a: 'Léo', b: 'Zoé' } });
+    ).toEqual({ key: 'lines.list.for.two', params: { a: 'Léo', b: 'Zoé' } });
   });
 
   it('counts the ideas of a list for me alone, or for nobody', () => {
@@ -304,7 +304,7 @@ describe('listLine, a list I hold', () => {
     expect(
       keys(listLine({ ...list, ticked: 2, giverOnly: true, elsewhere: ['A'] })),
     ).toEqual({
-      keys: ['lines.names.threeMe', 'lines.list.ticked'],
+      keys: ['lines.list.for.threeMe', 'lines.list.ticked'],
       dot: true,
     });
   });
@@ -313,7 +313,7 @@ describe('listLine, a list I hold', () => {
     expect(
       keys(listLine({ ...list, giverOnly: true, elsewhere: ['A'] })),
     ).toEqual({
-      keys: ['lines.names.threeMe', 'lines.list.giverOnly'],
+      keys: ['lines.list.for.threeMe', 'lines.list.giverOnly'],
       dot: false,
     });
   });

@@ -118,7 +118,9 @@ test('a list made for an event opens as a draft, with the event’s name', async
   // In the card of its event, for its holder alone.
   await page.goto(`/e/${state.family}`);
   await hydrated(page);
-  await expect(page.getByTestId('party-lists')).toContainText('Ma liste');
+  await expect(page.getByTestId('party-lists')).toContainText(
+    'Ma liste de cadeaux',
+  );
 });
 
 test('a draft is read by nobody but its holder, by any route', async ({
@@ -169,6 +171,13 @@ test('shared in two events: their members get in, nobody else, the same ticks', 
   await expect(page.getByTestId('share-stage')).toContainText(
     '3 membres la voient',
   );
+  // On the home, the line of a list I hold for Léo (lignes.md): « Ma
+  // liste de cadeaux », then whom it is for.
+  await page.goto('/');
+  await hydrated(page);
+  const line = page.getByTestId('home-list').first();
+  await expect(line).toContainText('Ma liste de cadeaux');
+  await expect(line).toContainText('Pour Léo');
 
   const hugo = await as(playwright, baseURL, HUGO);
   const lea = await as(playwright, baseURL, LEA);

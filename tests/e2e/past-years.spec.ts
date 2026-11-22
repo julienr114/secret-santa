@@ -137,7 +137,9 @@ test('the year over is in « Les événements passés », read only', async ({
   await expect(page.getByTestId('past-year-secret-santas')).toContainText(
     /Tu offrais à (Zoé|Léo|Inès)/,
   );
-  await expect(page.getByTestId('past-year-lists')).toContainText('Ma liste');
+  await expect(page.getByTestId('past-year-lists')).toContainText(
+    'Ma liste de cadeaux',
+  );
 
   // Nothing changes in it, by any route.
   const at = `/api/admin/${state.slug}/editions/${state.oldId}`;

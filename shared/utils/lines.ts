@@ -192,8 +192,8 @@ export const listTitle = (facts: ListFacts): LinePart => {
 };
 
 /**
- * Whom my list is for, « moi » last: « Léo, Zoé et moi », or null when it
- * is for me alone (or for nobody).
+ * Whom my list is for, « moi » last, « Pour » first: « Pour Léo, Zoé et
+ * moi », « Pour Léo »; or null when it is for me alone (or for nobody).
  * @param people - Those it is made for.
  * @returns The piece, or null.
  */
@@ -201,12 +201,12 @@ const forWhom = (people: readonly ListPerson[]): LinePart | null => {
   const others = people.filter((person) => !person.me).map((p) => p.name);
   if (others.length === 0) return null;
   if (!people.some((person) => person.me)) {
-    return namesPart('lines.names', others);
+    return namesPart('lines.list.for', others);
   }
   const [a = '', b = ''] = others;
-  if (others.length === 1) return part('lines.names.twoMe', { a });
-  if (others.length === 2) return part('lines.names.threeMe', { a, b });
-  return part('lines.names.more', { a, b, count: others.length - 1 });
+  if (others.length === 1) return part('lines.list.for.twoMe', { a });
+  if (others.length === 2) return part('lines.list.for.threeMe', { a, b });
+  return part('lines.list.for.more', { a, b, count: others.length - 1 });
 };
 
 /**

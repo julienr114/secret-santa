@@ -36,7 +36,11 @@ export default {
     admin: 'Admin',
     label: 'Sections',
   },
-  create: { title: 'Create', secretSanta: 'A Secret Santa', list: 'A list' },
+  create: {
+    title: 'Create',
+    secretSanta: 'A Secret Santa',
+    list: 'A gift list',
+  },
   context: 'You are here',
   actions: {
     back: 'Back',

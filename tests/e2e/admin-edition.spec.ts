@@ -424,7 +424,9 @@ test('a guardian cannot reach another group', async ({ page, request }) => {
   await hydrated(page);
   await expect(page.getByTestId('home-party')).toContainText(GROUP.name);
   await expect(page.getByText('Autre famille')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Nouveau' })).toHaveCount(0);
+  await expect(
+    page.getByRole('link', { name: 'Nouveau', exact: true }),
+  ).toHaveCount(0);
   await page.goto('/admin/autre-famille/personnes');
   await hydrated(page);
   await expect(

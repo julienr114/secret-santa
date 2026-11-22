@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
     'hint_request',
     'receiver_ideas',
     'revealed',
+    'santa_added',
   ]);
   return { ok: true };
 });

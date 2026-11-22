@@ -36,5 +36,11 @@ export const ownEventOf = async (
     .where(eq(parties.id, list.partyId))
     .limit(1);
   if (!row) return null;
-  return { party: row.party, stage: row.visibility ?? null };
+  // The event made for a list alone (ticket 101) keeps its row whatever
+  // the sharing: it never counts as a sharing, like everywhere else
+  // (`sharedEventsOf`), so a draft lets nobody in.
+  return {
+    party: row.party,
+    stage: row.party.fromList ? null : (row.visibility ?? null),
+  };
 };

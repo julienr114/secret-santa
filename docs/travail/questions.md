@@ -61,6 +61,32 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. Que la conception nettoie `habiller.py` et `generateurs/README.md`, et que le README renvoie à `maquettes.md` pour ce qui remplace chaque nom.
 - **Ce que je ferais** : A pour le README ; B pour `habiller.py`, s'il doit encore servir.
 
+### Q-026 — L'inventaire des nouveautés, pour relecture (ticket 120)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. Le ticket demande de poser l'inventaire ici avant de coder ; en attendant la relecture, il est codé tel quel (une ligne de « Quoi de neuf » et, quand la spec le marque ●, un point sur la ligne). Changer le niveau ou retirer une nature est un petit changement.
+- **Ce qu'on a trouvé** : ce que l'application envoie ou signale aujourd'hui (`server/utils/notifications.ts`, `server/plugins/reminders.ts`, `server/plugins/guesses.ts`, `server/http/hints.ts`, `server/http/guesses.ts`, `server/http/nudges.ts`, `server/http/listInvite.ts`, `server/api/invite/[code]/join.post.ts`, le journal), classé d'après le README 22.22 :
+  - **Ce qui presse** :
+    - le tirage est fait, « ton enveloppe t'attend » (aujourd'hui : l'email que l'organisateur envoie) → nouveauté `envelope`, pour chaque participant qui a un compte ;
+    - quelqu'un te demande des idées (email `PistesEmail`) → `hint_request`, pour celui à qui on demande, sans dire qui ;
+    - une invitation à tenir une liste (email `ListeInvitationEmail`) → `list_invite`, si l'adresse a un compte ;
+    - pour l'organisateur, le jour J approche et certains n'ont pas découvert (email du matin) → `reminder` ;
+    - « une invitation à rejoindre un groupe », « la réponse à une demande de groupe » : n'existent plus en V3 (on entre par un Secret Santa ou une liste), rien.
+  - **Le reste** :
+    - de nouvelles idées sur une liste que je peux ouvrir sans la tenir (aujourd'hui : rien, ou l'email « des pistes sont arrivées » à celui qui avait demandé) → `new_ideas` pour les membres des événements où elle est partagée avec tous et ceux qui y ont coché ; et `receiver_ideas` (« De nouvelles idées t'attendent ») pour celui qui a tiré quelqu'un qui la tient, sur son propre Secret Santa, à la place de `new_ideas` ;
+    - quelqu'un a coché sur une liste que je tiens → `ticked`, regroupé dans la journée (« 2 cadeaux ont été cochés sur ta liste ») ;
+    - quelqu'un se joint à mon cadeau à plusieurs → `joined_gift`, pour celui qui le mène ;
+    - le tirage est dévoilé → `revealed` ; le palmarès est arrivé (email) → `palmares` ;
+    - quelqu'un a rejoint l'événement par le lien (email) → `joined`, pour les organisateurs ;
+    - toutes les enveloppes sont ouvertes (email) → `all_viewed`, pour les organisateurs ;
+    - **pas de nouveauté pour l'instant** : les alertes du journal (elles ont déjà leur signal sur l'accueil et la page du participant), le point de « Devine qui » et le rappel du jeu (emails aux organisateurs et aux joueurs ; la ligne « Devine qui » dit déjà « À toi de jouer » avec son point), les messages de l'organisateur (emails qu'il écrit lui-même).
+  - Pour les organisateurs, les nouveautés `reminder`, `all_viewed` et `joined` s'écrivent même quand leur email est coupé dans les réglages : le réglage reste celui de l'email.
+  - Aucun email ne change (ticket 121).
+- **Les choix** :
+  - A. Garder cet inventaire.
+  - B. Changer un niveau, ajouter les alertes du journal ou « Devine qui », ou retirer une nature.
+- **Ce que je ferais** : A.
+
 ## Réponses
 
 ### Q-018 — Le compte créé « à la première chose écrite » depuis un lien personnel : peut-on ouvrir une session sur la foi du lien, et si un compte existe déjà ? (ticket 107)

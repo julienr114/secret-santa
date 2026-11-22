@@ -107,7 +107,6 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | Toutes | En anglais « the big day », en allemand « der große Tag » pour « le jour J ». « Event » dans les deux langues, comme le dit la décision. | Seul |
 | Toutes | Les objets des emails gardent leurs mots (« La fête approche… », « des pistes de cadeaux t'attendent ») : ticket 110. | Julien (ticket) |
 | Toutes | Quelques adresses gardent l'ancien mot, qui ne se lit qu'en haut du navigateur : `/admin/groupes` (la liste des événements du super-admin), `?vers=groupe` (« À tous » dans le rappel du jeu), `/p/…/pistes`. | Seul |
-| `V3TirageReglages` | La section qui garde la date, le budget et le petit mot d'un Secret Santa (Q-015) s'appelle « Le jour J ». | Seul |
 
 ## L'administration (V3, ticket 109)
 
@@ -124,7 +123,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3TirageQuelleFete` | Sans aucune fête que j'organise, « Un Secret Santa » mène droit à « Pour quelle occasion ? » (les catégories) : il n'y a rien à choisir. La première fête est cochée d'avance. Le rond de choix est celui du téléphone. | Seul |
 | `V3TirageNouveau` | Au-dessus du titre, le nom de la fête seul. Pour un premier Secret Santa, la carte dit « 5 membres de la fête. » au lieu de « repris du Secret Santa 2026 ». Le nom proposé est la catégorie et l'année (« Noël 2027 », « Anniversaire 2027 »). Le budget vide dit « Aucun ». Un « Devine qui » choisi finit à 18 h le jour de la fête, comme le panneau des réglages. | Seul |
-| `V3TirageReglages` | Sous les quatre sections de la maquette, une section « La fête » garde la date, le budget et le petit mot d'un Secret Santa déjà créé (aucune maquette ne dit où ils se changent), et « Pistes de cadeaux » jusqu'au ticket 107. Les exclusions ne sont plus dans ces réglages : elles restent à la fête (Membres, et la page du Secret Santa). Les lignes n'ont pas d'icône. | Seul |
+| `V3TirageReglages` | Pas encore de ligne « Quelqu'un s'inscrit par le lien » sous « M'écrire par email » : elle vient avec le lien d'invitation d'un Secret Santa (ticket 116). | Julien (ticket) |
 | `V3TirageLimite` | Chaque ligne ouvre le Secret Santa. Un super-admin n'a pas de limite. | Seul |
 | `V3FeteMembresComplet` | « 30 sur 30 » ne s'écrit qu'une fois la fête complète. Les membres comptés sont ceux qui participent (« Ne participe plus » ne compte pas). | Seul |
 

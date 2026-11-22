@@ -649,12 +649,10 @@ export default {
   },
   settings: {
     title: 'Einstellungen des Wichtelns',
-    dateTitle: 'Datum',
     wordTitle: 'Kurze Notiz',
     budgetIs: 'Budget {budget}',
     word: 'kurze Notiz',
     what: 'Datum, Budget, kurze Notiz',
-    party: 'Der große Tag',
     game: 'Das Spiel',
     gameShort: 'Spiel',
   },

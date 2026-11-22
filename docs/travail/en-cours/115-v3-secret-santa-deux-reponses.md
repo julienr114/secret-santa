@@ -16,9 +16,10 @@ Le nom, la date, le budget et le petit mot d'un Secret Santa se changent en têt
 
 ## À faire
 
-- [ ] **Les réglages** (`V3TirageReglages`) : la section « Le Secret Santa » en premier, avec « Nom », « Date », « Budget », « Petit mot pour les participants » ; plus de section « La fête » en bas. La ligne du formulaire de création s'appelle « Date ».
+- [x] **Les réglages** (`V3TirageReglages`) : la section « Le Secret Santa » en premier, avec « Nom », « Date », « Budget », « Petit mot pour les participants » ; plus de section « La fête » en bas. La ligne du formulaire de création s'appelle « Date ».
 - [ ] **Le palmarès** (`DevineStory7`) : hors d'un événement de catégorie Noël, « Merci d'avoir joué, Inès » et « Merci à tous ! » ; « C'est tout » au lieu de « C'est tout pour cette année » dans un événement qui ne revient pas. Dans les trois langues, écrit pour de bon.
-- [ ] Retirer de `docs/refonte/ECARTS-MAQUETTES.md` la ligne de `V3TirageReglages` que ce ticket remet d'accord.
+- [ ] **« Liste de cadeaux », en toutes lettres** (Julien, 22 novembre 2026 ; `docs/spec/v3/vocabulaire.md`) : « Une liste de cadeaux » dans « Créer » ; « Ma liste de cadeaux » pour le titre de la ligne d'une liste que je tiens, et son texte commence par « Pour » (« Pour Léo, Zoé et moi », « Pour Léo »). Maquettes : `V3AccueilPlusOuvert`, `V3Accueil`, `V3Fete`. Dans les trois langues ; les tests de `lignes.md` suivent.
+- [x] Retirer de `docs/refonte/ECARTS-MAQUETTES.md` la ligne de `V3TirageReglages` que ce ticket remet d'accord.
 
 ## Hors périmètre
 
@@ -27,6 +28,7 @@ Le nom, la date, le budget et le petit mot d'un Secret Santa se changent en têt
 
 ## C'est fini quand
 
+- [ ] Sur l'accueil, la ligne d'une liste que je tiens pour Léo dit « Ma liste de cadeaux » et « Pour Léo ».
 - [ ] Aucun texte du palmarès ne dit « Noël » dans un événement d'une autre catégorie (un test le vérifie).
 - [ ] La maquette `V3TirageReglages` est reproduite.
 - [ ] `/controle` passe.

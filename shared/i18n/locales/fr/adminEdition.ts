@@ -643,12 +643,10 @@ export default {
   },
   settings: {
     title: 'Réglages du Secret Santa',
-    dateTitle: 'Date',
     wordTitle: 'Petit mot',
     budgetIs: 'Budget {budget}',
     word: 'petit mot',
     what: 'Date, budget, petit mot',
-    party: 'Le jour J',
     game: 'Le jeu',
     gameShort: 'jeu',
   },

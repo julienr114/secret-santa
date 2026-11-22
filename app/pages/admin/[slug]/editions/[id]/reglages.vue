@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { formatEventDate } from '#server/utils/rules';
 import { usePartyQuery } from '~/composables/queries/useParty';
+import { useUpdateEditionMutation } from '~/composables/queries/useGroup';
 
 // The settings of a Secret Santa (docs/spec/v3/secret-santa.md, « Ses
-// réglages », V3TirageReglages), its own and no longer the party's: the
-// draw (« Éviter la même personne »), « Devine qui », the word added to
-// the messages, the emails to me. Each saved at once, in its sheet, with
-// its switch or on its own page. Below what the mockup shows, until the
-// screens that will hold them are drawn: the day, the budget and the word
-// of the party. Once the
-// Secret Santa is closed, read only; the game no longer changes once the
-// draw is revealed. At the bottom, while it is not drawn, « Supprimer ce
-// Secret Santa » (ticket 108).
+// réglages », V3TirageReglages), its own and no longer the party's: first
+// what the creation form chose, in its order (« Nom », « Date »,
+// « Budget », « Petit mot pour les participants », Q-015), then the draw
+// (« Éviter la même personne »), « Devine qui », the word added to the
+// messages, the emails to me. Each saved at once, in its sheet, with its
+// switch or on its own page. Once the Secret Santa is closed, read only;
+// the game no longer changes once the draw is revealed. At the bottom,
+// while it is not drawn, « Supprimer ce Secret Santa » (ticket 108).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -43,6 +43,36 @@ const screen = computed(() => ({
 
 const eventDate = computed(() => edition.data.value?.rules.eventDate ?? '');
 const dateOpen = ref(false);
+
+const errorMessage = useErrorMessage();
+const toast = useMessages();
+const rename = useUpdateEditionMutation(slug);
+const nameOpen = ref(false);
+/** The name being saved, shown at once; null once the server answered. */
+const pendingName = ref<string | null>(null);
+const name = computed(
+  () => pendingName.value ?? edition.data.value?.edition.label ?? '',
+);
+/**
+ * Saves the new name, shown at once (README 23.3); an empty one changes
+ * nothing, a failure puts the old one back with a toast.
+ * @param label - The name typed.
+ * @returns Nothing.
+ */
+const onRename = (label: string) => {
+  nameOpen.value = false;
+  if (!label || label === name.value) return;
+  pendingName.value = label;
+  rename.mutate(
+    { id: id.value, label },
+    {
+      onError: (error) => toast.failed(errorMessage(error)),
+      onSettled: () => {
+        pendingName.value = null;
+      },
+    },
+  );
+};
 const guess = computed(() => edition.data.value?.guess);
 const gameFixed = computed(
   () => closed.value || Boolean(edition.data.value?.edition.revealedAt),
@@ -106,6 +136,38 @@ const noteValue = computed(() =>
         <UiPageTitle>{{ t('party.secretSanta.settings') }}</UiPageTitle>
       </div>
 
+      <UiList
+        :title="t('party.secretSantaTitle', { count: 1 })"
+        data-testid="edition-settings"
+      >
+        <UiListItem
+          :title="t('adminEdition.newEdition.nameRow')"
+          :value="name"
+          :chevron="!closed"
+          :busy="pendingName !== null"
+          :busy-label="t('common.actions.saving')"
+          :on-click="closed ? undefined : () => (nameOpen = true)"
+          data-testid="setting-name"
+        />
+        <UiListItem
+          :title="t('adminEdition.newEdition.dateLabel')"
+          :value="
+            eventDate
+              ? formatEventDate(eventDate, locale)
+              : t('adminEdition.newEdition.dateToChoose')
+          "
+          :chevron="!closed"
+          :on-click="closed ? undefined : () => (dateOpen = true)"
+          data-testid="setting-date"
+        />
+        <AdminEditionRuleRows
+          :slug="slug"
+          :edition-id="id"
+          :readonly="closed"
+          values
+        />
+      </UiList>
+
       <UiList :title="t('party.secretSanta.drawSection')">
         <UiListItem
           :title="t('adminGroup.rules.excludePreviousYearsShort')"
@@ -158,31 +220,6 @@ const noteValue = computed(() =>
         />
       </UiList>
 
-      <UiList
-        :title="t('adminEdition.settings.party')"
-        data-testid="edition-settings"
-      >
-        <UiListItem
-          icon="i-lucide-calendar"
-          icon-tone="neutral"
-          :title="t('adminEdition.settings.dateTitle')"
-          :value="
-            eventDate
-              ? formatEventDate(eventDate, locale)
-              : t('adminEdition.screen.rules.none')
-          "
-          :chevron="!closed"
-          :on-click="closed ? undefined : () => (dateOpen = true)"
-          data-testid="setting-date"
-        />
-        <AdminEditionRuleRows
-          :slug="slug"
-          :edition-id="id"
-          :readonly="closed"
-          values
-        />
-      </UiList>
-
       <UiList v-if="deletable">
         <UiListItem
           icon="i-lucide-trash-2"
@@ -208,6 +245,18 @@ const noteValue = computed(() =>
           save({ excludePreviousYears: years });
         }
       "
+    />
+    <UiTextSheet
+      v-if="!closed"
+      v-model:open="nameOpen"
+      :title="t('adminEdition.newEdition.nameRow')"
+      :label="t('adminEdition.newEdition.nameRow')"
+      hide-label
+      :value="name"
+      :maxlength="60"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      @validate="onRename"
     />
     <AdminPartyDateSheet
       v-if="!closed"

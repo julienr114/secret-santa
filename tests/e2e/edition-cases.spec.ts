@@ -266,8 +266,18 @@ test('the budget and the word change on the edition, until it is closed', async 
   );
   await expect(page.getByTestId('rule-budget')).toHaveCount(0);
   await page.getByTestId('settings-row').click();
+  // First the rows of the creation form, in its order (V3TirageReglages,
+  // Q-015).
+  await expect(page.getByTestId('edition-settings')).toContainText(
+    /Le Secret SantaNom.+Date.+BudgetAucunPetit mot pour les participantsAucun/,
+  );
+  const name = page.getByTestId('setting-name');
+  await name.click();
+  await page.getByRole('textbox').fill('Les adultes');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(name).toContainText('Les adultes');
   const budget = page.getByTestId('rule-budget');
-  await expect(budget).toContainText('Aucun pour l’instant');
+  await expect(budget).toContainText('Aucun');
   await budget.click();
   await page.getByRole('textbox').fill('25 €');
   await page.getByRole('button', { name: 'Valider' }).click();
@@ -298,7 +308,7 @@ test('the budget and the word change on the edition, until it is closed', async 
   );
   await page.getByTestId('settings-row').click();
   await expect(page.getByTestId('edition-settings')).toContainText(
-    'Le jour JDate',
+    'Le Secret SantaNomLes adultesDate',
   );
   await budget.click();
   await page.getByRole('textbox').fill('30 €');

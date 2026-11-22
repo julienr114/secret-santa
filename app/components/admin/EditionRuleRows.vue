@@ -14,8 +14,9 @@ const props = defineProps<{
   editionId: string;
   readonly?: boolean;
   /**
-   * The value on the right and short titles, as on « Réglages de
-   * l'édition » (README 22.16), instead of the value under the title.
+   * As on the settings of a Secret Santa (V3TirageReglages): the value on
+   * the right, no icon, the titles and « Aucun » of the creation form,
+   * instead of the value under the title.
    */
   values?: boolean;
 }>();
@@ -60,7 +61,10 @@ const shownOf = (rule: Rule) =>
  * @returns The line.
  */
 const valueOf = (rule: Rule) =>
-  shownOf(rule) || t('adminEdition.screen.rules.none');
+  shownOf(rule) ||
+  (props.values
+    ? t('adminEdition.newEdition.messageNone')
+    : t('adminEdition.screen.rules.none'));
 /**
  * Whether a rule is being saved.
  * @param rule - The rule.
@@ -102,7 +106,7 @@ const onValidate = (rule: Rule, value: string) => {
 
 <template>
   <UiListItem
-    :icon="RULES.budget.icon"
+    :icon="values ? undefined : RULES.budget.icon"
     icon-tone="neutral"
     :title="t('adminEdition.newEdition.budgetLabel')"
     :subtitle="values ? undefined : valueOf('budget')"
@@ -114,13 +118,9 @@ const onValidate = (rule: Rule, value: string) => {
     data-testid="rule-budget"
   />
   <UiListItem
-    :icon="RULES.guardianMessage.icon"
+    :icon="values ? undefined : RULES.guardianMessage.icon"
     icon-tone="neutral"
-    :title="
-      values
-        ? t('adminEdition.settings.wordTitle')
-        : t('adminEdition.newEdition.messageLabel')
-    "
+    :title="t('adminEdition.newEdition.messageLabel')"
     :subtitle="values ? undefined : valueOf('guardianMessage')"
     :value="values ? valueOf('guardianMessage') : undefined"
     :chevron="!readonly"

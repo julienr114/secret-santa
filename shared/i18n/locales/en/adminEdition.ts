@@ -640,12 +640,10 @@ export default {
   },
   settings: {
     title: 'Secret Santa settings',
-    dateTitle: 'Date',
     wordTitle: 'Short note',
     budgetIs: 'Budget {budget}',
     word: 'short note',
     what: 'Date, budget, short note',
-    party: 'The big day',
     game: 'The game',
     gameShort: 'game',
   },

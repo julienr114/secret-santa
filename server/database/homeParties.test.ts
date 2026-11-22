@@ -95,10 +95,29 @@ describe('loadHome', () => {
     const bySlug = (slug: string) =>
       home.parties.find((party) => party.slug === slug)!;
     expect(bySlug('famille').secretSantas).toEqual([
-      { id: 's1', label: 'Noël 2026', to: '/p/jeton-hugo' },
+      {
+        id: 's1',
+        label: 'Noël 2026',
+        to: '/p/jeton-hugo',
+        line: { parts: [{ key: 'lines.santa.notDrawn' }], dot: false },
+        game: null,
+      },
     ]);
+    // Organised without taking part: it speaks to the organiser.
     expect(bySlug('bureau').secretSantas).toEqual([
-      { id: 's2', label: 'Noël 2026', to: '/admin/bureau/editions/s2' },
+      {
+        id: 's2',
+        label: 'Noël 2026',
+        to: '/admin/bureau/editions/s2',
+        line: {
+          parts: [
+            { key: 'lines.organiser.prepare' },
+            { key: 'lines.organiser.participants', params: { count: 0 } },
+          ],
+          dot: false,
+        },
+        game: null,
+      },
     ]);
   });
 
@@ -107,11 +126,19 @@ describe('loadHome', () => {
     const home = await loadHome(db, hugo, key, TODAY);
     const famille = home.parties.find((party) => party.slug === 'famille')!;
     expect(famille.lists).toEqual([
-      { id: 'lh', mine: true, ownerName: 'Hugo', to: '/listes/lh' },
+      {
+        id: 'lh',
+        mine: true,
+        title: { key: 'lines.list.mine' },
+        line: { parts: [{ key: 'lines.list.empty' }], dot: false },
+        to: '/listes/lh',
+      },
       {
         id: 'lc',
         mine: false,
-        ownerName: 'Mamie Camille',
+        // Made for nobody: named after those who hold it.
+        title: { key: 'lines.list.of.one', params: { a: 'Camille' } },
+        line: { parts: [{ key: 'lines.list.empty' }], dot: false },
         to: '/l/tokc?depuis=famille',
       },
     ]);

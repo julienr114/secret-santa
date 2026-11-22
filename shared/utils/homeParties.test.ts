@@ -3,7 +3,7 @@ import {
   comingBirthdays,
   daysBetween,
   daysUntilChristmas,
-  homeSections,
+  homeBlocks,
 } from './homeParties';
 
 const TODAY = '2026-11-20';
@@ -27,7 +27,7 @@ describe('daysBetween', () => {
   });
 });
 
-describe('homeSections', () => {
+describe('homeBlocks', () => {
   const party = (
     name: string,
     category: 'christmas' | 'birthday',
@@ -37,47 +37,79 @@ describe('homeSections', () => {
     category,
     date,
   });
+  /** The blocks in short: their kind, title and names. */
+  const shape = (parties: ReturnType<typeof party>[]) =>
+    homeBlocks(parties).map((block) =>
+      block.kind === 'soon'
+        ? 'soon'
+        : block.kind === 'season'
+          ? `season ${block.year}: ${block.parties.map((p) => p.name).join(', ')}`
+          : `${block.later ? 'later' : 'cards'}: ${block.parties.map((p) => p.name).join(', ')}`,
+    );
 
-  it('groups the Christmas parties of a year by date, the others after', () => {
-    const { seasons, later } = homeSections([
-      party('Famille Camille', 'christmas', '2026-12-25'),
-      party('Les 40 ans de Tonton', 'birthday', '2027-02-08'),
-      party('Bureau', 'christmas', '2026-12-19'),
-      party('Chez Mamie', 'christmas', '2026-12-24'),
-    ]);
-    expect(seasons).toEqual([
-      {
-        year: 2026,
-        parties: [
-          party('Bureau', 'christmas', '2026-12-19'),
-          party('Chez Mamie', 'christmas', '2026-12-24'),
-          party('Famille Camille', 'christmas', '2026-12-25'),
-        ],
-      },
-    ]);
-    expect(later.map((p) => p.name)).toEqual(['Les 40 ans de Tonton']);
-  });
-
-  it('keeps a party a few days past at the top, and puts those without a date last', () => {
-    const { seasons, later } = homeSections([
-      party('Sans date', 'birthday', null),
-      party('Il y a deux jours', 'birthday', '2026-11-18'),
-      party('Léo', 'birthday', '2026-12-01'),
-    ]);
-    expect(seasons).toEqual([]);
-    expect(later.map((p) => p.name)).toEqual([
-      'Il y a deux jours',
-      'Léo',
-      'Sans date',
+  it('groups the Christmas parties of a year by date, then « Bientôt », then the others later', () => {
+    expect(
+      shape([
+        party('Famille Camille', 'christmas', '2026-12-25'),
+        party('Les 40 ans de Tonton', 'birthday', '2027-02-08'),
+        party('Bureau', 'christmas', '2026-12-19'),
+        party('Chez Mamie', 'christmas', '2026-12-24'),
+      ]),
+    ).toEqual([
+      'season 2026: Bureau, Chez Mamie, Famille Camille',
+      'soon',
+      'later: Les 40 ans de Tonton',
     ]);
   });
 
-  it('gives each year of Christmas its section', () => {
-    const { seasons } = homeSections([
-      party('Plus tard', 'christmas', '2027-12-25'),
-      party('Cette année', 'christmas', '2026-12-25'),
+  it('puts a party of 28 November above « Noël 2026 », without a title', () => {
+    expect(
+      shape([
+        party('Famille Camille', 'christmas', '2026-12-25'),
+        party('La crémaillère d’Inès', 'birthday', '2026-11-28'),
+        party('Les 40 ans de Tonton', 'birthday', '2027-02-08'),
+      ]),
+    ).toEqual([
+      'cards: La crémaillère d’Inès',
+      'season 2026: Famille Camille',
+      'soon',
+      'later: Les 40 ans de Tonton',
     ]);
-    expect(seasons.map((season) => season.year)).toEqual([2026, 2027]);
+  });
+
+  it('puts a party between two of Christmas after the section', () => {
+    expect(
+      shape([
+        party('Bureau', 'christmas', '2026-12-19'),
+        party('Léo', 'birthday', '2026-12-20'),
+        party('Famille Camille', 'christmas', '2026-12-25'),
+      ]),
+    ).toEqual(['season 2026: Bureau, Famille Camille', 'soon', 'later: Léo']);
+  });
+
+  it('without Christmas: cards without a title, a party a few days past at the top, one without a date last, then « Bientôt »', () => {
+    expect(
+      shape([
+        party('Sans date', 'birthday', null),
+        party('Il y a deux jours', 'birthday', '2026-11-18'),
+        party('Léo', 'birthday', '2026-12-01'),
+      ]),
+    ).toEqual(['cards: Il y a deux jours, Léo, Sans date', 'soon']);
+  });
+
+  it('gives each year of Christmas its section, at its date', () => {
+    expect(
+      shape([
+        party('Plus tard', 'christmas', '2027-12-25'),
+        party('Tonton', 'birthday', '2027-02-08'),
+        party('Cette année', 'christmas', '2026-12-25'),
+      ]),
+    ).toEqual([
+      'season 2026: Cette année',
+      'soon',
+      'later: Tonton',
+      'season 2027: Plus tard',
+    ]);
   });
 });
 

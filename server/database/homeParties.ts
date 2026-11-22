@@ -1,7 +1,6 @@
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
-  accounts,
   familyMembers,
   giftListHolders,
   giftListParties,
@@ -13,8 +12,10 @@ import {
   type AccountRow,
 } from './schema';
 import { loadYears, timelineOf, todayOnServer } from './years';
+import { gamePath, listKey, loadLines } from './lines';
 import { decrypt } from '#server/utils/crypto';
 import type { PartyCategory } from '#shared/utils/categories';
+import type { LinePart, LineText } from '#shared/utils/lines';
 import {
   listToResume,
   listYear,
@@ -43,13 +44,23 @@ export type HomeParty = {
   prepare: number | null;
   /** « Reprendre ma liste de l'an dernier »: the list to take again. */
   resume: string | null;
-  /** The Secret Santas of its current year I take part in or organise. */
-  secretSantas: { id: string; label: string; to: string | null }[];
+  /**
+   * The Secret Santas of its current year I take part in or organise,
+   * with their text (lignes.md) and their « Devine qui ».
+   */
+  secretSantas: {
+    id: string;
+    label: string;
+    to: string | null;
+    line: LineText | null;
+    game: { line: LineText; to: string } | null;
+  }[];
   /** Its lists I may see: in the party for all its members, or mine. */
   lists: {
     id: string;
     mine: boolean;
-    ownerName: string | null;
+    title: LinePart;
+    line: LineText | null;
     to: string | null;
   }[];
 };
@@ -75,6 +86,7 @@ const anyOf = (ids: string[]) => (ids.length === 0 ? [''] : ids);
  * @param account - Me.
  * @param dataKey - The key of the personal links.
  * @param today - The day, « 2026-11-20 » (UTC on the server).
+ * @param now - Now (ISO), for the news not seen yet.
  * @returns My parties and my people.
  */
 export const loadHome = async (
@@ -82,6 +94,7 @@ export const loadHome = async (
   account: AccountRow,
   dataKey: CryptoKey,
   today = todayOnServer(),
+  now = new Date().toISOString(),
 ): Promise<HomeData> => {
   const [mine, organised, people] = await Promise.all([
     db
@@ -154,8 +167,7 @@ export const loadHome = async (
     ),
   ];
   const listIds = [...new Set(links.map((list) => list.id))];
-  const ownerIds = [...new Set(links.map((list) => list.accountId))];
-  const [held, owners, taking] = await Promise.all([
+  const [held, taking] = await Promise.all([
     db
       .select({ listId: giftListHolders.listId })
       .from(giftListHolders)
@@ -167,14 +179,6 @@ export const loadHome = async (
       ),
     db
       .select({
-        id: accounts.id,
-        email: accounts.email,
-        firstName: accounts.firstName,
-      })
-      .from(accounts)
-      .where(inArray(accounts.id, anyOf(ownerIds))),
-    db
-      .select({
         secretSantaId: participations.secretSantaId,
         tokenEnc: participations.tokenEnc,
         tokenIv: participations.tokenIv,
@@ -184,20 +188,6 @@ export const loadHome = async (
         inArray(participations.personId, anyOf(mine.map((row) => row.id))),
       ),
   ]);
-  const ownerEmails = owners.map((owner) => owner.email);
-  const ownerPeople = await db
-    .select({
-      partyId: persons.partyId,
-      email: persons.email,
-      firstName: persons.firstName,
-    })
-    .from(persons)
-    .where(
-      and(
-        inArray(persons.partyId, ids),
-        inArray(persons.email, anyOf(ownerEmails)),
-      ),
-    );
   const myLists = new Set(held.map((row) => row.listId));
   const paths = new Map(
     await Promise.all(
@@ -216,6 +206,43 @@ export const loadHome = async (
 
   const timelines = new Map(
     rows.map((party) => [party.id, timelineOf(party, years, today)]),
+  );
+  // What each card shows, before its words are read.
+  const shown = rows.flatMap((party) => {
+    const current = timelines.get(party.id)?.current;
+    if (!current) return [];
+    const organiser = organises.has(party.id);
+    const santas = (
+      years.find((row) => row.partyId === party.id && row.year === current.year)
+        ?.santas ?? []
+    ).filter((santa) => organiser || paths.has(santa.id));
+    const lists = links.filter(
+      (list) =>
+        list.partyId === party.id &&
+        listYear(list) >= current.year &&
+        (list.visibility === 'party' || myLists.has(list.id)),
+    );
+    return [{ party, santas, lists }];
+  });
+  const lines = await loadLines(
+    db,
+    {
+      accountId: account.id,
+      persons: mine.map((row) => row.id),
+      santas: shown.flatMap(({ santas }) =>
+        santas.map((santa) => ({
+          id: santa.id,
+          // On the home, it speaks to me as one who takes part if I do.
+          as: paths.has(santa.id)
+            ? ('participant' as const)
+            : ('organiser' as const),
+        })),
+      ),
+      lists: shown.flatMap(({ party, lists }) =>
+        lists.map((list) => ({ id: list.id, partyId: party.id })),
+      ),
+    },
+    now,
   );
   return {
     people,
@@ -265,16 +292,25 @@ export const loadHome = async (
           ),
           secretSantas: santas
             .filter((santa) => organiser || paths.has(santa.id))
-            .map((santa) => ({
-              id: santa.id,
-              label: santa.label,
-              // My own page first; the organiser's otherwise.
-              to:
-                paths.get(santa.id) ??
-                (organiser
-                  ? `/admin/${party.slug}/editions/${santa.id}`
-                  : null),
-            })),
+            .map((santa) => {
+              const path = paths.get(santa.id) ?? null;
+              const line = lines.santas.get(santa.id);
+              return {
+                id: santa.id,
+                label: santa.label,
+                // My own page first; the organiser's otherwise.
+                to:
+                  path ??
+                  (organiser
+                    ? `/admin/${party.slug}/editions/${santa.id}`
+                    : null),
+                line: line?.line ?? null,
+                game:
+                  line?.game && path
+                    ? { line: line.game, to: gamePath(path, line.game) }
+                    : null,
+              };
+            }),
           // The lists of its current year; those of before are in its
           // years over (ticket 108).
           lists: inParty
@@ -284,14 +320,12 @@ export const loadHome = async (
                 (list.visibility === 'party' || myLists.has(list.id)),
             )
             .map((list) => {
-              const owner = owners.find((row) => row.id === list.accountId);
-              const person = ownerPeople.find(
-                (row) => row.partyId === party.id && row.email === owner?.email,
-              );
+              const line = lines.lists.get(listKey(list.id, party.id));
               return {
                 id: list.id,
                 mine: myLists.has(list.id),
-                ownerName: person?.firstName ?? owner?.firstName ?? null,
+                title: line?.title ?? { key: 'lines.list.mine' },
+                line: line?.line ?? null,
                 to: myLists.has(list.id)
                   ? `/listes/${list.id}`
                   : `/l/${list.shareToken}?depuis=${party.slug}`,

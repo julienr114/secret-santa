@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { daysUntil } from '#server/utils/rules';
 import { CATEGORY_DEFAULTS, partyEmoji } from '#shared/utils/categories';
 import {
@@ -11,16 +12,19 @@ import { categoryTint } from '~/utils/categories';
 // V3FeteOrganisateur, V3FeteAnniversaire, V3FeteQuitter): its category,
 // its name, the date of its year and how far it is; its members; its
 // Secret Santas; the lists of its members; for a member, « Quitter cette
-// fête ». A party « pour quelqu'un » shows its list first. Rows carry
-// their title only until their texts are written (decided by Julien on
-// 20 November 2026); « Les années passées », each opening that year
-// (ticket 108).
+// fête ». A party « pour quelqu'un » shows its list first. Each row has
+// its title, its text and maybe a red dot (lignes.md, tickets 112 and
+// 120); « Les années passées », each opening that year (ticket 108).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const page = usePartyQuery(slug);
 const data = computed(() => page.data.value);
+// The event opened: its news are seen (ticket 120).
+useSeen(() =>
+  data.value ? { target: 'party', targetId: data.value.party.id } : null,
+);
 useHead({
   title: () => `${data.value?.party.name ?? ''} — ${t('common.appName')}`,
 });
@@ -45,10 +49,7 @@ const when = computed(() => {
   return `${full} · ${days === 0 ? t('party.today') : t('party.inDays', { count: days })}`;
 });
 const { deedText, yearName } = usePastText();
-const listTitle = (list: NonNullable<typeof data.value>['lists'][number]) =>
-  list.mine
-    ? t('party.lists.mine')
-    : t('party.lists.of', { name: list.owner?.firstName ?? '' });
+const words = useLineText();
 
 // A string in <component :is> does not resolve global components.
 const NuxtLink = resolveComponent('NuxtLink');
@@ -60,11 +61,21 @@ const errorMessage = useErrorMessage();
 const myLists = computed(
   () => data.value?.lists.filter((list) => list.mine).length ?? 0,
 );
-/** What leaves with me and what stays (V3FeteQuitter). */
+/**
+ * What leaves with me and what stays (V3FeteQuitter, fete.md « Quitter »):
+ * my list stays in my other events, or I alone will see it.
+ */
 const leavePoints = computed(() =>
   [
     ...(myLists.value > 0
-      ? [t('party.leave.lists', { count: myLists.value })]
+      ? [
+          t(
+            data.value?.myListsAlone
+              ? 'party.leave.listsAlone'
+              : 'party.leave.listsElsewhere',
+            { count: myLists.value },
+          ),
+        ]
       : []),
     t('party.leave.ticks'),
     ...((data.value?.secretSantas.length ?? 0) > 0
@@ -164,14 +175,31 @@ const onLeave = () =>
             "
             data-testid="party-secret-santas"
           >
-            <UiListItem
-              v-for="santa in data.secretSantas"
-              :key="santa.id"
-              icon="i-lucide-mail"
-              icon-tone="neutral"
-              :title="t('party.secretSanta.row', { year: santa.year })"
-              :to="santa.to ?? undefined"
-            />
+            <template v-for="santa in data.secretSantas" :key="santa.id">
+              <UiListItem
+                icon="i-lucide-mail"
+                icon-tone="neutral"
+                :title="
+                  data.secretSantas.length > 1
+                    ? santa.label
+                    : t('party.secretSantaTitle', { count: 1 })
+                "
+                :subtitle="words.line(santa.line)"
+                :dot="santa.line?.dot ? t('lines.dot') : undefined"
+                :to="santa.to ?? undefined"
+                data-testid="party-santa"
+              />
+              <UiListItem
+                v-if="santa.game"
+                icon="i-lucide-circle-help"
+                icon-tone="neutral"
+                :title="t('lines.game.title')"
+                :subtitle="words.line(santa.game.line)"
+                :dot="santa.game.line.dot ? t('lines.dot') : undefined"
+                :to="santa.game.to"
+                data-testid="party-game"
+              />
+            </template>
             <UiAddRow
               v-if="data.canAddSecretSanta"
               :to="`/admin/${slug}/editions/nouvelle`"
@@ -212,8 +240,11 @@ const onLeave = () =>
                 :avatar="list.owner?.avatar"
                 :icon="list.owner ? undefined : 'i-lucide-list-checks'"
                 icon-tone="lilac"
-                :title="listTitle(list)"
+                :title="words.part(list.title)"
+                :subtitle="words.line(list.line)"
+                :dot="list.line?.dot ? t('lines.dot') : undefined"
                 :to="list.to ?? undefined"
+                data-testid="party-list"
               />
               <UiAddRow
                 :to="`/listes/nouvelle?pour=${slug}`"
@@ -250,7 +281,6 @@ const onLeave = () =>
             icon="i-lucide-log-out"
             icon-tone="neutral"
             :title="t('party.leave.row')"
-            :subtitle="t('party.leave.rowHint')"
             :chevron="true"
             :on-click="() => (leaving = true)"
           />

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { recordVisit } from '#server/database/claims';
+import { tellJoinedGift, tellTicked } from '#server/database/newsEvents';
+import { nowIso } from '#server/http/context';
 import { requireAccount } from '#server/http/auth';
 import { ticksAnonymous } from '#server/http/anonymous';
 import { anonymousRefusal } from '#server/utils/anonymous';
@@ -36,6 +38,17 @@ export default defineEventHandler(async (event) => {
   });
   const { role } = await roleOnList(db, list, user.accountId);
   if (role !== 'holder') await recordVisit(db, list.id, user.accountId);
+  // The news (ticket 120): those who hold it are told of a tick, the one
+  // who leads a gift given by several of who joins it.
+  if (joined) {
+    await tellJoinedGift(
+      db,
+      { listId: list.id, ideaId: body.ideaId, by: user.accountId },
+      nowIso(),
+    );
+  } else if (role !== 'holder') {
+    await tellTicked(db, { listId: list.id, by: user.accountId }, nowIso());
+  }
   setResponseStatus(event, 201);
   return { ok: true, joined };
 });

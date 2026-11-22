@@ -41,6 +41,7 @@ const AFTER_THE_YEAR = [
   'server/api/p/[token]/guess/seen.post.ts',
   'server/api/p/[token]/journal-seen.post.ts',
   'server/api/p/[token]/language.put.ts',
+  'server/api/p/[token]/seen.post.ts',
 ].toSorted();
 
 describe('a year over, by every route', () => {

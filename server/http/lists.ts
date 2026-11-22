@@ -245,6 +245,8 @@ export type MyClaim = {
 export type IdeaLine = {
   id: string;
   text: string;
+  /** When it was written: new since my last visit or not (ticket 120). */
+  createdAt: string;
   url: string | null;
   view: IdeaView;
   /** Mine, when I give it. */
@@ -318,6 +320,7 @@ const linesOf = (
       return {
         id: idea.id,
         text: idea.text,
+        createdAt: idea.createdAt,
         url: idea.url,
         view: ideaView(on, sees),
         who: ideaWho(on, sees),

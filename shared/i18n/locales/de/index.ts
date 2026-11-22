@@ -12,6 +12,8 @@ import hints from './hints';
 import lists from './lists';
 import party from './party';
 import home from './home';
+import lines from './lines';
+import news from './news';
 
 export default {
   common,
@@ -28,4 +30,6 @@ export default {
   lists,
   party,
   home,
+  lines,
+  news,
 };

@@ -3,6 +3,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { secretSantas, persons } from '#server/database/schema';
 import { findAccountById } from '#server/database/accounts';
 import { recordEvent } from '#server/database/audit';
+import { tellParticipants } from '#server/database/newsEvents';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, nowIso } from '#server/http/context';
 import { afterReveal } from '#server/http/guesses';
@@ -62,6 +63,11 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     ...(by ? { meta: { by: by.id } } : {}),
   });
+  await tellParticipants(
+    db,
+    { secretSantaId: edition.id, partyId: group.id, kind: 'revealed' },
+    nowIso(),
+  );
   // « Devine qui » (README 22.17): the guesses close, the results come.
   await afterReveal(
     { db, event, dataKey: await dataKeyOf(event) },

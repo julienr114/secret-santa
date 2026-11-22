@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { tabOf, type Tab } from '#shared/utils/navigation';
+import { useNewsCountQuery } from '~/composables/queries/useNews';
 
 // The bar at the bottom of every screen of someone logged in
 // (docs/spec/v3/accueil-et-creation.md): « Accueil », « Créer », « Quoi de
 // neuf », and « Admin » for the super-admin, the current one in colour.
 // « Créer » is drawn like the others and opens its sheet. Its ground
 // reaches the edge, its content stops above the home bar. A bottom sheet
-// covers it, and so do the images of the palmarès.
+// covers it, and so do the images of the palmarès. « Quoi de neuf »
+// carries the count of the news not seen (ticket 120), read again on each
+// page and on coming back to the app.
 const { t } = useT();
 const route = useRoute();
-const { user } = useUserSession();
+const { user, loggedIn } = useUserSession();
+const newsCount = useNewsCountQuery(loggedIn);
+const unseen = computed(() => newsCount.data.value?.count ?? 0);
+watch(
+  () => route.path,
+  () => {
+    if (loggedIn.value) void newsCount.refetch();
+  },
+);
 const creating = ref(false);
 const current = computed(() => tabOf(route.path));
 const links = computed(() => ({
@@ -81,8 +92,20 @@ const TAB =
           ]"
           :aria-current="current === tab ? 'page' : undefined"
         >
-          <UIcon :name="links[tab].icon" class="size-5" />
-          {{ links[tab].label }}
+          <span class="relative flex">
+            <UIcon :name="links[tab].icon" class="size-5" />
+            <span
+              v-if="tab === 'news' && unseen > 0"
+              class="absolute -top-1.25 left-3.25 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-coral-500 px-1.25 text-[11px] font-bold text-white tabular-nums ring-2 ring-default"
+              aria-hidden="true"
+              data-testid="news-count"
+              >{{ unseen }}</span
+            >
+          </span>
+          {{ links[tab].label
+          }}<span v-if="tab === 'news' && unseen > 0" class="sr-only"
+            >, {{ t('news.count', { count: unseen }) }}</span
+          >
         </NuxtLink>
       </li>
     </ul>

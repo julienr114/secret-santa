@@ -6,14 +6,16 @@ import { formatShortDay } from '~/utils/labels';
 import { usePrepareYearMutation } from '~/composables/queries/useParty';
 
 // A party on the home (docs/spec/v3/accueil-et-creation.md, V3Accueil):
-// its header opens it; below, its Secret Santas and the lists of its
-// members, at the same level, each with its title only (Q-006).
+// its header opens it; below, its Secret Santas (and their « Devine
+// qui ») and the lists of its members, at the same level, each with its
+// title, its text and maybe a red dot (lignes.md, tickets 112 and 120).
 // « Nouvelle liste » while I have none in it. Two months before an event
 // that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 » for
 // its organiser, « Reprendre ma liste de l'an dernier » for whoever held
 // one, instead of « Nouvelle liste ».
 const props = defineProps<{ party: HomeParty }>();
 const { t, tk, locale } = useT();
+const words = useLineText();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const prepare = usePrepareYearMutation(() => props.party.slug);
@@ -72,30 +74,42 @@ const onSecretSanta = (to: string | null) => {
       />
     </NuxtLink>
     <ul class="divide-y divide-default border-t border-default">
-      <UiListItem
-        v-for="santa in party.secretSantas"
-        :key="santa.id"
-        icon="i-lucide-mail"
-        icon-tone="neutral"
-        :title="
-          party.secretSantas.length > 1
-            ? santa.label
-            : t('party.secretSantaTitle', { count: 1 })
-        "
-        :to="santa.to ?? undefined"
-        @click="onSecretSanta(santa.to)"
-      />
+      <template v-for="santa in party.secretSantas" :key="santa.id">
+        <UiListItem
+          icon="i-lucide-mail"
+          icon-tone="neutral"
+          :title="
+            party.secretSantas.length > 1
+              ? santa.label
+              : t('party.secretSantaTitle', { count: 1 })
+          "
+          :subtitle="words.line(santa.line)"
+          :dot="santa.line?.dot ? t('lines.dot') : undefined"
+          :to="santa.to ?? undefined"
+          data-testid="home-santa"
+          @click="onSecretSanta(santa.to)"
+        />
+        <UiListItem
+          v-if="santa.game"
+          icon="i-lucide-circle-help"
+          icon-tone="neutral"
+          :title="t('lines.game.title')"
+          :subtitle="words.line(santa.game.line)"
+          :dot="santa.game.line.dot ? t('lines.dot') : undefined"
+          :to="santa.game.to"
+          data-testid="home-game"
+        />
+      </template>
       <UiListItem
         v-for="list in party.lists"
         :key="list.id"
         icon="i-lucide-list-checks"
         icon-tone="lilac"
-        :title="
-          list.mine
-            ? t('party.lists.mine')
-            : t('party.lists.of', { name: list.ownerName ?? '' })
-        "
+        :title="words.part(list.title)"
+        :subtitle="words.line(list.line)"
+        :dot="list.line?.dot ? t('lines.dot') : undefined"
         :to="list.to ?? undefined"
+        data-testid="home-list"
       />
       <UiAddRow
         v-if="party.prepare !== null"

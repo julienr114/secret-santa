@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { shoeSizesShown } from '#shared/utils/memberFields';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
@@ -77,6 +78,27 @@ const tick = useTickMutation(via);
 const untick = useUntickMutation(via);
 const removeOffList = useRemoveOffListMutation(token);
 const doc = computed(() => query.data.value);
+// The list opened: its news are seen (ticket 120). What was written
+// since my visit before this one has a dot (NotifListe), kept from the
+// first reading: the page reads the list again while open.
+useSeen(() =>
+  doc.value ? { target: 'list', targetId: doc.value.list.id } : null,
+);
+const since = ref<string | null | undefined>(undefined);
+watch(
+  () => doc.value?.since,
+  (value) => {
+    if (since.value === undefined && doc.value) since.value = value ?? null;
+  },
+  { immediate: true },
+);
+/**
+ * Whether an idea came since my last visit.
+ * @param idea - The idea.
+ * @returns True for a dot.
+ */
+const isFresh = (idea: IdeaLine) =>
+  Boolean(since.value) && idea.createdAt > (since.value ?? '');
 // From a result (ticket 107, V3ListeSurligne): the page opens on the part
 // of the person drawn, just under the bar of the anonymous mode, once.
 const scrolledTo = ref(false);
@@ -383,6 +405,7 @@ const writes = (person: PersonLine) =>
             v-for="idea in person.ideas"
             :key="idea.id"
             :idea="idea"
+            :fresh="isFresh(idea)"
             @tick="onTick(idea)"
             @untick="onUntick(idea)"
             @change="changing = { idea, forName: nameOf(person) }"

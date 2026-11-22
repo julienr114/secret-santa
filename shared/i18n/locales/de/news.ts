@@ -1,0 +1,31 @@
+// „Was ist neu“ (ticket 120, V3QuoiDeNeuf). Never who asks for ideas.
+export default {
+  count: { one: '{count} Neuigkeit', other: '{count} Neuigkeiten' },
+  forget: 'Nach dreißig Tagen wird alles gelöscht',
+  empty: 'Gerade nichts Neues.',
+  today: 'Heute, {time}',
+  yesterday: 'Gestern, {time}',
+  close: 'Schließen',
+  kind: {
+    envelope: 'Die Auslosung ist erfolgt: Dein Umschlag wartet',
+    hint_request: 'Jemand bittet dich um Geschenkideen',
+    list_invite: '{name} lädt dich ein, die Liste mitzuführen',
+    reminder: 'Der große Tag naht, und noch nicht alle haben ihr Los entdeckt',
+    new_ideas: '{name} hat neue Ideen auf die Liste gesetzt',
+    new_ideasCount: {
+      one: '{count} Idee mehr auf der Liste',
+      other: '{count} Ideen mehr auf der Liste',
+    },
+    receiver_ideas: 'Neue Ideen warten auf dich',
+    ticked: {
+      one: '{count} Geschenk wurde auf deiner Liste abgehakt',
+      other: '{count} Geschenke wurden auf deiner Liste abgehakt',
+    },
+    joined_gift:
+      '{name} beteiligt sich an deinem Gemeinschaftsgeschenk: {detail}',
+    revealed: 'Die Auslosung ist aufgedeckt: wer wen beschenkt hat',
+    palmares: 'Die Rangliste von Devine qui ist da',
+    joined: '{name} ist dem Event beigetreten',
+    all_viewed: 'Alle haben ihr Los entdeckt',
+  },
+};

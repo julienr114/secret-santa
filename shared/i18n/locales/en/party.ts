@@ -50,8 +50,6 @@ export default {
   lists: {
     title: 'The lists',
     titleSomeone: 'Their list',
-    mine: 'My list',
-    of: '{name}’s list',
     none: 'Nobody has put a list in this event yet.',
     new: 'New list',
     resume: 'Take up my list from last year',
@@ -75,11 +73,16 @@ export default {
   },
   leave: {
     row: 'Leave this event',
-    rowHint: 'You will no longer see its lists',
     title: 'Leave “{name}”?',
-    lists: {
-      one: 'Your list will leave this event.',
-      other: 'Your lists will leave this event.',
+    listsElsewhere: {
+      one: 'Your list will leave this event. It stays in your other events.',
+      other:
+        'Your lists will leave this event. They stay in your other events.',
+    },
+    listsAlone: {
+      one: 'Your list will leave this event. Only you will see it, until you put it somewhere else.',
+      other:
+        'Your lists will leave this event. Only you will see them, until you put them somewhere else.',
     },
     ticks: 'The gifts you ticked stay planned.',
     secretSanta: 'You will not take part in its Secret Santa next year.',

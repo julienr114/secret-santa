@@ -34,12 +34,9 @@ const santaTitle = (label: string) =>
   (data.value?.secretSantas.length ?? 0) > 1
     ? label
     : t('party.secretSantaTitle', { count: 1 });
-const listTitle = (list: NonNullable<typeof data.value>['lists'][number]) =>
-  list.mine
-    ? t('party.lists.mine')
-    : t('party.lists.of', { name: list.owner?.firstName ?? '' });
+const words = useLineText();
 const listText = (list: NonNullable<typeof data.value>['lists'][number]) => {
-  if (list.mine) return t('lists.doc.drag.ideas', { count: list.ideas });
+  if (list.held) return words.part(list.held);
   return list.offered > 0
     ? t('party.past.offered', { count: list.offered })
     : undefined;
@@ -117,7 +114,7 @@ const games = computed(
             :avatar="list.owner?.avatar"
             :icon="list.owner ? undefined : 'i-lucide-list-checks'"
             icon-tone="lilac"
-            :title="listTitle(list)"
+            :title="words.part(list.title)"
             :subtitle="listText(list)"
             :to="list.to"
           />

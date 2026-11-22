@@ -14,7 +14,14 @@ import { ideaChips, namesInOne } from '~/utils/givers';
 // say it is me, « Finalement, je ne l'offre plus »); its green box, above
 // that button, unticks at once, without the sheet (asked by Julien on 20
 // November 2026). Taken by someone else: crossed out, nothing more.
-const props = defineProps<{ idea: IdeaLine }>();
+const props = defineProps<{
+  idea: IdeaLine;
+  /**
+   * Written since my last visit (ticket 120, NotifListe): a dot in the
+   * margin, and « nouveau » for screen readers.
+   */
+  fresh?: boolean;
+}>();
 const emit = defineEmits<{
   tick: [];
   untick: [];
@@ -80,6 +87,12 @@ onBeforeUnmount(() => {
     ]"
     data-testid="visitor-idea"
   >
+    <span
+      v-if="fresh"
+      class="absolute top-4.5 -left-3 size-1.75 rounded-full bg-coral-500"
+      aria-hidden="true"
+      data-testid="idea-new"
+    />
     <!-- An idea I give: the whole line is the button of its sheet. Its
          link, above it, stays a link. -->
     <button
@@ -144,7 +157,8 @@ onBeforeUnmount(() => {
           chips.mine ? 'font-semibold' : '',
         ]"
       >
-        {{ idea.text }}
+        {{ idea.text
+        }}<span v-if="fresh" class="sr-only"> ({{ t('lines.dot') }})</span>
       </p>
       <ListsIdeaLink
         v-if="idea.url && host"

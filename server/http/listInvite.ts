@@ -7,6 +7,7 @@ import { INVITE_TTL_MS, type HolderLevel } from '#server/utils/listAccess';
 import { buildHolderInviteEmail } from '#server/utils/listEmail';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
+import { tellInvited } from '#server/database/newsEvents';
 
 // Sending an invitation to hold a list (lot 25 bis, README 22.20): a
 // fresh link of 256 bits, of which only the hash is kept, good for 7
@@ -40,6 +41,7 @@ export const sendHolderInvite = async (
   event: H3Event,
   db: Db,
   invite: {
+    listId: string;
     title: string;
     email: string;
     level: HolderLevel;
@@ -51,6 +53,12 @@ export const sendHolderInvite = async (
   const me = await findAccountById(db, invite.byAccountId);
   const invited = await findAccountByEmail(db, invite.email);
   const link = appUrl(event, `/invitation/${invite.token}`);
+  // In the app too, if the address has an account (ticket 120).
+  await tellInvited(
+    db,
+    { listId: invite.listId, email: invite.email, by: me?.firstName ?? null },
+    nowIso(),
+  );
   await sendEmails(event, [
     {
       ...buildHolderInviteEmail(

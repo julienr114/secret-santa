@@ -168,6 +168,7 @@ export const markKindSeen = async (
  * @param target - The place.
  * @param targetId - Which one.
  * @param now - Now (ISO).
+ * @param kinds - Only these kinds, when given.
  * @returns Once marked.
  */
 export const markSeenByEmail = async (
@@ -176,6 +177,7 @@ export const markSeenByEmail = async (
   target: NewsTarget,
   targetId: string,
   now: string,
+  kinds?: readonly NewsKind[],
 ): Promise<void> => {
   if (!email) return;
   const [account] = await db
@@ -184,7 +186,7 @@ export const markSeenByEmail = async (
     .where(eq(accounts.email, email.toLowerCase()))
     .limit(1);
   if (account) {
-    await markSeen(db, { accountId: account.id, target, targetId }, now);
+    await markSeen(db, { accountId: account.id, target, targetId, kinds }, now);
   }
 };
 

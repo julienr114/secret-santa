@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { namesInOne } from '~/utils/givers';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
@@ -50,6 +51,8 @@ const query = useListQuery(id);
 const update = useUpdateListMutation(id);
 const remove = useDeleteListMutation();
 const doc = computed(() => query.data.value);
+// The list opened: its news are seen (ticket 120).
+useSeen(() => (doc.value ? { target: 'list', targetId: id.value } : null));
 const list = computed(() => doc.value?.list);
 useHead({
   title: () =>

@@ -5,9 +5,10 @@ import {
 } from '#server/database/hints';
 import { findReceiverParticipationId } from '#server/database/draw';
 import { santaNameForSubject } from '#server/database/editions';
+import { tellAsked } from '#server/database/newsEvents';
 import { requirePersonalLink } from '#server/http/personal';
 import { emailParticipant } from '#server/http/hints';
-import { dataKeyOf } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { notFound, unwrap } from '#server/http/errors';
 import { buildHintsRequestEmail, canRequestHints } from '#server/utils/hints';
 
@@ -49,6 +50,16 @@ export default defineEventHandler(async (event) => {
     receiverParticipationId,
     editionId: edition.id,
   });
+  // « Quelqu'un te demande des idées », in the app too (ticket 120).
+  await tellAsked(
+    db,
+    {
+      participationId: receiverParticipationId,
+      secretSantaId: edition.id,
+      partyId: group.id,
+    },
+    nowIso(),
+  );
   const santaName = await santaNameForSubject(db, edition);
   const emailed = await emailParticipant(
     event,

@@ -2,17 +2,19 @@
 import {
   comingBirthdays,
   daysUntilChristmas,
-  homeSections,
+  homeBlocks,
 } from '#shared/utils/homeParties';
 import { nextOccurrence } from '#shared/utils/categories';
 import { useHomePartiesQuery } from '~/composables/queries/useHome';
 import { useElsewhereQuery } from '~/composables/queries/useLists';
 
 // The home of a logged-in account (docs/spec/v3/accueil-et-creation.md,
-// V3Accueil and V3AccueilVide): a section per season of Christmas, with
-// its countdown to 25 December; « Bientôt », the birthdays of my people;
-// « Plus tard », my other parties; then « Les événements passés » and « Ce
-// que j'offre ailleurs ». A new account sees two cards instead. Which
+// V3Accueil, V3AccueilAvantNoel and V3AccueilVide): my parties by date; a
+// section per season of Christmas, with its countdown to 25 December, at
+// the place of its first party, what comes before above it without a
+// title; « Bientôt », the birthdays of my people, after it; « Plus tard »,
+// the parties after; then « Les événements passés » and « Ce que j'offre
+// ailleurs ». A new account sees two cards instead. Which
 // parties are still on the home after their date, and at which date, the
 // server decides (ticket 108).
 const { t } = useT();
@@ -43,7 +45,18 @@ const pastLine = computed(() => {
     ? past.latest
     : t('home.pastMore', { name: past.latest, count: past.others });
 });
-const sections = computed(() => homeSections(parties.value));
+const blocks = computed(() => homeBlocks(parties.value));
+/**
+ * A key for a block of the home.
+ * @param block - The block.
+ * @returns What tells it from the others.
+ */
+const blockKey = (block: (typeof blocks.value)[number]) =>
+  block.kind === 'soon'
+    ? 'soon'
+    : block.kind === 'season'
+      ? `season-${block.year}`
+      : `cards-${block.parties[0]?.slug ?? ''}`;
 const birthdays = computed(() =>
   comingBirthdays(data.value?.people ?? [], parties.value, today),
 );
@@ -132,55 +145,56 @@ const greeting = computed(() =>
       </template>
 
       <template v-else>
-        <section
-          v-for="season in sections.seasons"
-          :key="season.year"
-          class="flex flex-col gap-3.5"
-          data-testid="home-season"
-        >
-          <div class="flex items-baseline justify-between gap-3 px-1 pt-1.5">
-            <h2 class="font-display text-[26px] leading-tight font-bold">
-              {{ t('home.christmas', { year: season.year }) }}
-            </h2>
-            <span
-              v-if="season.year === christmasYear && countdown > 0"
-              class="text-sm font-bold whitespace-nowrap text-primary"
-              data-testid="home-countdown"
-              >{{ t('party.inDays', { count: countdown }) }}</span
-            >
-          </div>
-          <HomePartyCard
-            v-for="party in season.parties"
-            :key="party.slug"
-            :party="party"
-          />
-        </section>
-
-        <section
-          v-if="birthdays.length > 0"
-          class="flex flex-col gap-3.5"
-          data-testid="home-soon"
-        >
-          <UiSectionTitle class="pt-2.5">{{ t('home.soon') }}</UiSectionTitle>
-          <HomeBirthday
-            v-for="birthday in birthdays"
-            :key="birthday.memberId"
-            :birthday="birthday"
-          />
-        </section>
-
-        <section
-          v-if="sections.later.length > 0"
-          class="flex flex-col gap-3.5"
-          data-testid="home-later"
-        >
-          <UiSectionTitle class="pt-2.5">{{ t('home.later') }}</UiSectionTitle>
-          <HomePartyCard
-            v-for="party in sections.later"
-            :key="party.slug"
-            :party="party"
-          />
-        </section>
+        <template v-for="block in blocks" :key="blockKey(block)">
+          <section
+            v-if="block.kind === 'season'"
+            class="flex flex-col gap-3.5"
+            data-testid="home-season"
+          >
+            <div class="flex items-baseline justify-between gap-3 px-1 pt-1.5">
+              <h2 class="font-display text-[26px] leading-tight font-bold">
+                {{ t('home.christmas', { year: block.year }) }}
+              </h2>
+              <span
+                v-if="block.year === christmasYear && countdown > 0"
+                class="text-sm font-bold whitespace-nowrap text-primary"
+                data-testid="home-countdown"
+                >{{ t('party.inDays', { count: countdown }) }}</span
+              >
+            </div>
+            <HomePartyCard
+              v-for="party in block.parties"
+              :key="party.slug"
+              :party="party"
+            />
+          </section>
+          <section
+            v-else-if="block.kind === 'soon' && birthdays.length > 0"
+            class="flex flex-col gap-3.5"
+            data-testid="home-soon"
+          >
+            <UiSectionTitle class="pt-2.5">{{ t('home.soon') }}</UiSectionTitle>
+            <HomeBirthday
+              v-for="birthday in birthdays"
+              :key="birthday.memberId"
+              :birthday="birthday"
+            />
+          </section>
+          <section
+            v-else-if="block.kind === 'cards'"
+            class="flex flex-col gap-3.5"
+            :data-testid="block.later ? 'home-later' : 'home-before'"
+          >
+            <UiSectionTitle v-if="block.later" class="pt-2.5">{{
+              t('home.later')
+            }}</UiSectionTitle>
+            <HomePartyCard
+              v-for="party in block.parties"
+              :key="party.slug"
+              :party="party"
+            />
+          </section>
+        </template>
 
         <UiList v-if="pastLine || elsewhereLine" class="mt-2.5">
           <UiListItem

@@ -6,6 +6,7 @@ import {
   joinDrawInPreparation,
 } from '#server/database/invite';
 import { personalPath } from '#server/database/participations';
+import { tellOrganisers } from '#server/database/newsEvents';
 import {
   countActiveMembers,
   insertPersonFromAccount,
@@ -96,6 +97,11 @@ export default defineEventHandler(async (event) => {
     .update(parties)
     .set({ invitePlaces: (group.invitePlaces ?? 1) - 1 })
     .where(eq(parties.id, group.id));
+  await tellOrganisers(
+    db,
+    { partyId: group.id, kind: 'joined', targetId: group.id, name: firstName },
+    now,
+  );
   const rules = mergeRules(group.rules);
   if (rules.ok && rules.value.notifyJoined) {
     await notifyOrganizers({ db, event }, group.id, (locale) =>

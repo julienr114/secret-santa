@@ -3,6 +3,7 @@ import { dbOf, type D1Binding } from '#server/database/client';
 import { gamesToWatch } from '#server/database/guesses';
 import { secretSantas, parties } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
+import { tellParticipants } from '#server/database/newsEvents';
 import { nowIso, secretsOf } from '#server/http/context';
 import { afterReveal, closeGuesses } from '#server/http/guesses';
 import { autoRemind, organizerEnd, organizerPoint } from '#server/http/nudges';
@@ -61,6 +62,11 @@ export default defineNitroPlugin((nitroApp) => {
             editionId: edition.id,
             actor: 'system',
           });
+          await tellParticipants(
+            db,
+            { secretSantaId: edition.id, partyId: group.id, kind: 'revealed' },
+            now,
+          );
           await afterReveal(
             { db, dataKey: key.value },
             { ...edition, revealedAt: now },

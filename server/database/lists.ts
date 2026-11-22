@@ -16,6 +16,7 @@ import {
   type FamilyMemberRow,
   type GiftListRow,
 } from './schema';
+import { deleteNewsOf } from './news';
 import { newId, nowIso } from '#server/http/context';
 import {
   createOwnParty,
@@ -629,6 +630,7 @@ export const deleteList = (db: Db, id: string) =>
     db.delete(giftListGivers).where(eq(giftListGivers.listId, id)),
     db.delete(giftOffList).where(eq(giftOffList.listId, id)),
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
+    deleteNewsOf(db, [id]),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
     db.delete(giftListPeople).where(eq(giftListPeople.listId, id)),
     db.delete(giftListInvites).where(eq(giftListInvites.listId, id)),

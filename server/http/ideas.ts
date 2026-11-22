@@ -7,6 +7,9 @@ import { deleteClaimsOfIdeas } from '#server/database/claims';
 import { createIdea, findIdea, findListPerson } from '#server/database/lists';
 import { giftListIdeas, type GiftListRow } from '#server/database/schema';
 import { notFound } from '#server/http/errors';
+import { markKindSeen } from '#server/database/news';
+import { tellNewIdeas } from '#server/database/newsEvents';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import { splitIdea } from '#server/utils/lists';
 import { ideaPatchSchema, newIdeaSchema } from '#server/utils/listSchemas';
@@ -26,6 +29,7 @@ type May = (listPersonId: string) => boolean | Promise<boolean>;
  * @param db - The database.
  * @param list - The list.
  * @param may - Who may write for whom.
+ * @param by - The account that writes.
  * @returns The id of the idea.
  */
 export const addIdea = async (
@@ -33,6 +37,7 @@ export const addIdea = async (
   db: Db,
   list: GiftListRow,
   may: May,
+  by: string,
 ) => {
   const body = await validatedBody(event, newIdeaSchema);
   if (
@@ -54,6 +59,15 @@ export const addIdea = async (
     { text: split?.text ?? '', url },
     body.after,
   );
+  // The news (ticket 120): those who may open the list are told; and
+  // whoever asked me for ideas has had some.
+  const now = nowIso();
+  await tellNewIdeas(
+    db,
+    { listId: list.id, by, dataKey: await dataKeyOf(event) },
+    now,
+  );
+  await markKindSeen(db, by, 'hint_request', now);
   setResponseStatus(event, 201);
   return { id };
 };

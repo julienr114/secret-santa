@@ -42,4 +42,7 @@ export const keys = {
   family: () => ['family'] as const,
   member: (id: string) => ['family', id] as const,
   link: (token: string) => ['l', token] as const,
+  // « Quoi de neuf » and its count (ticket 120).
+  news: () => ['news'] as const,
+  newsCount: () => ['news', 'count'] as const,
 };

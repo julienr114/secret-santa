@@ -21,15 +21,15 @@ Sur l'accueil et sur la page d'un événement, chaque ligne dit où en est la ch
 
 ## À faire
 
-- [ ] La ligne d'un Secret Santa : son titre (« Le Secret Santa », ou son nom s'il y en a plusieurs), le texte du participant, le texte de l'organisateur, ce que la ligne ouvre selon l'endroit.
-- [ ] La ligne « Devine qui », quand le jeu est activé.
-- [ ] La ligne d'une liste : son titre (« Ma liste », « La liste de … »), son texte quand je la tiens, son texte quand elle est à quelqu'un d'autre.
-- [ ] Le point rouge sur les cas marqués ●, éteint quand j'ouvre la chose.
-- [ ] « aussi : Chez Mamie », « aussi dans 2 autres événements » : jamais de préposition devant le nom d'un événement, dans les trois langues.
-- [ ] Les textes de « Les événements passés » et de « Ce que j'offre ailleurs » ; les deux lignes ne se montrent que s'il y a quelque chose derrière.
-- [ ] L'ordre de l'accueil : par date, la section de Noël à la place de son premier événement, ce qui vient avant au-dessus et sans titre, « Bientôt » après elle, « Plus tard » ensuite.
-- [ ] « Quitter » : les deux phrases sur ma liste, selon qu'elle est dans d'autres événements ou non.
-- [ ] Retirer de `docs/refonte/ECARTS-MAQUETTES.md` les lignes que ce ticket remet d'accord.
+- [x] La ligne d'un Secret Santa : son titre (« Le Secret Santa », ou son nom s'il y en a plusieurs), le texte du participant, le texte de l'organisateur, ce que la ligne ouvre selon l'endroit.
+- [x] La ligne « Devine qui », quand le jeu est activé.
+- [x] La ligne d'une liste : son titre (« Ma liste », « La liste de … »), son texte quand je la tiens, son texte quand elle est à quelqu'un d'autre.
+- [x] Le point rouge sur les cas marqués ●, éteint quand j'ouvre la chose.
+- [x] « aussi : Chez Mamie », « aussi dans 2 autres événements » : jamais de préposition devant le nom d'un événement, dans les trois langues.
+- [x] Les textes de « Les événements passés » et de « Ce que j'offre ailleurs » ; les deux lignes ne se montrent que s'il y a quelque chose derrière.
+- [x] L'ordre de l'accueil : par date, la section de Noël à la place de son premier événement, ce qui vient avant au-dessus et sans titre, « Bientôt » après elle, « Plus tard » ensuite.
+- [x] « Quitter » : les deux phrases sur ma liste, selon qu'elle est dans d'autres événements ou non.
+- [x] Retirer de `docs/refonte/ECARTS-MAQUETTES.md` les lignes que ce ticket remet d'accord.
 
 ## Hors périmètre
 

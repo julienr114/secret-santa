@@ -419,7 +419,11 @@ type Token = MaybeRefOrGetter<string>;
 /** What the bar « Mode anonyme » shows; null without one. */
 export type ListMode = { anonymous: boolean; notice: boolean } | null;
 /** A list by its link, with my « mode anonyme » on it (lot 27 ter). */
-export type LinkDocument = VisitorDocument & { mode: ListMode };
+export type LinkDocument = VisitorDocument & {
+  mode: ListMode;
+  /** My visit before this one, or null (ticket 120). */
+  since: string | null;
+};
 
 /**
  * A list by its link.

@@ -15,7 +15,8 @@ import {
 import { myListFor, occasionDate } from '#server/database/listSharing';
 import { familyMembers } from '#server/database/schema';
 import { optionalAccount } from '#server/http/auth';
-import { nowIso } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
+import { tellNewIdeas } from '#server/database/newsEvents';
 import { requirePersonalLink } from '#server/http/personal';
 import { validatedBody } from '#server/http/validate';
 import { avatarOf } from '#server/utils/avatars';
@@ -95,6 +96,11 @@ export default defineEventHandler(async (event) => {
     const listPersonId = await addPersonToList(db, list, self.id);
     if (text) {
       await createIdea(db, listId, listPersonId, { text, url: null }, null);
+      await tellNewIdeas(
+        db,
+        { listId, by: account.id, dataKey: await dataKeyOf(event) },
+        now,
+      );
     }
   }
   // Their tastes are theirs, the same on every list: on the « Moi » card.

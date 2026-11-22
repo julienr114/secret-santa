@@ -10,6 +10,7 @@ import { editionPersons } from '#server/database/answers';
 import { readPairs } from '#server/database/draw';
 import { personalPath } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
+import { tellParticipants } from '#server/database/newsEvents';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
 import {
@@ -115,6 +116,11 @@ export const afterReveal = async (
     editionId: edition.id,
     actor: 'system',
   });
+  await tellParticipants(
+    ctx.db,
+    { secretSantaId: edition.id, partyId: group.id, kind: 'palmares' },
+    nowIso(),
+  );
   const rows = await ctx.db
     .select({ participation: participations, person: persons })
     .from(participations)

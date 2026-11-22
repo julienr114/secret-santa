@@ -4,6 +4,8 @@ import { listEditionPeople } from '#server/database/participations';
 import { santaNameForSubject } from '#server/database/editions';
 import { resultHelp } from '#server/http/hints';
 import { recordEvent } from '#server/database/audit';
+import { tellOrganisers } from '#server/database/newsEvents';
+import { markSeenByEmail } from '#server/database/news';
 import { requirePersonalLink } from '#server/http/personal';
 import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
@@ -69,16 +71,26 @@ export default defineEventHandler(async (event) => {
     .where(eq(participations.id, participation.id))
     .returning({ viewCount: participations.viewCount });
   const viewCount = updated?.viewCount ?? participation.viewCount + 1;
+  // « Ton enveloppe t'attend » is seen, here and on the home (ticket 120).
+  await markSeenByEmail(db, person.email, 'santa', edition.id, now, [
+    'envelope',
+  ]);
   // Only the first consultation goes to the public journal. Later ones are
   // still counted for the organiser, but journaling them would let the
   // group match "Léa updated her list" with "Tom viewed his result" and
   // guess who gives to whom.
   if (viewCount === 1) {
-    // The last one to look completes the edition: the organisers are told.
-    if (
-      rules.notifyAllViewed &&
-      isEveryoneViewed(await viewCounts(db, edition.id))
-    ) {
+    // The last one to look completes the edition: the organisers are told,
+    // in the app always (ticket 120), by email if they want it.
+    const everyone = isEveryoneViewed(await viewCounts(db, edition.id));
+    if (everyone) {
+      await tellOrganisers(
+        db,
+        { partyId: group.id, kind: 'all_viewed', targetId: edition.id },
+        now,
+      );
+    }
+    if (rules.notifyAllViewed && everyone) {
       const santaName = await santaNameForSubject(db, edition);
       await notifyOrganizers({ db, event }, group.id, (locale) =>
         buildAllViewedEmail(

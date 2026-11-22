@@ -49,8 +49,6 @@ export default {
   lists: {
     title: 'Les listes',
     titleSomeone: 'Sa liste',
-    mine: 'Ma liste',
-    of: 'La liste de {name}',
     none: 'Personne n’a encore mis de liste dans cet événement.',
     new: 'Nouvelle liste',
     resume: 'Reprendre ma liste de l’an dernier',
@@ -74,11 +72,16 @@ export default {
   },
   leave: {
     row: 'Quitter cet événement',
-    rowHint: 'Tu n’y verras plus les listes',
     title: 'Quitter « {name} » ?',
-    lists: {
-      one: 'Ta liste sortira de cet événement.',
-      other: 'Tes listes sortiront de cet événement.',
+    listsElsewhere: {
+      one: 'Ta liste sortira de cet événement. Elle reste dans tes autres événements.',
+      other:
+        'Tes listes sortiront de cet événement. Elles restent dans tes autres événements.',
+    },
+    listsAlone: {
+      one: 'Ta liste sortira de cet événement. Toi seul la verras, tant que tu ne l’as pas mise ailleurs.',
+      other:
+        'Tes listes sortiront de cet événement. Toi seul les verras, tant que tu ne les as pas mises ailleurs.',
     },
     ticks: 'Les cadeaux que tu as cochés restent prévus.',
     secretSanta: 'Tu ne participeras plus à son Secret Santa l’an prochain.',

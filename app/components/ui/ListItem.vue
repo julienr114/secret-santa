@@ -36,6 +36,13 @@ const props = withDefaults(
     busyLabel?: string;
     /** Makes the row a button (otherwise a link with `to`, or plain). */
     onClick?: () => void;
+    /**
+     * Something new since my last visit (lignes.md): a red dot before the
+     * chevron, and these words for screen readers.
+     */
+    dot?: string;
+    /** The title in bold, as a news not seen yet (V3QuoiDeNeuf). */
+    strong?: boolean;
   }>(),
   {
     to: undefined,
@@ -53,6 +60,8 @@ const props = withDefaults(
     busy: false,
     busyLabel: undefined,
     onClick: undefined,
+    dot: undefined,
+    strong: false,
   },
 );
 /** A setting turned on or off; no switch when left unbound. */
@@ -96,8 +105,8 @@ const NuxtLink = resolveComponent('NuxtLink');
       </span>
       <span class="min-w-0 grow">
         <span
-          class="font-semibold"
           :class="[
+            strong ? 'font-bold' : 'font-semibold',
             oneLine ? 'block truncate' : 'line-clamp-2',
             tone === 'danger' ? 'text-error-ink' : muted ? 'text-muted' : '',
           ]"
@@ -131,6 +140,14 @@ const NuxtLink = resolveComponent('NuxtLink');
         class="flex min-h-11 shrink-0 items-center"
       />
       <slot name="trailing" />
+      <template v-if="dot">
+        <span
+          class="size-2.25 shrink-0 rounded-full bg-coral-500"
+          aria-hidden="true"
+          data-testid="new-dot"
+        />
+        <span class="sr-only">{{ dot }}</span>
+      </template>
       <UiSpinner
         v-if="busy && checked === undefined"
         :label="busyLabel ?? title"

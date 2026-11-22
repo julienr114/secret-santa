@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { isIsoDay } from '#server/utils/rules';
 import type { Avatar } from '#server/utils/avatars';
 import {
@@ -32,6 +33,8 @@ import {
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
+// My page opened: its news are seen (ticket 120).
+useSeen(() => ({ token: token.value, target: 'santa' }));
 useOrganizersOf(() => personal.data.value?.organizers);
 const revealMutation = useRevealMutation(token);
 const revealing = useBusy(() => revealMutation.isPending.value);

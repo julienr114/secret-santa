@@ -18,8 +18,9 @@ import {
 import { insertPersonFromAccount } from './people';
 import { loadYears, timelineOf } from './years';
 import { loadPastLines, type PastYearLine } from './pastYears';
+import { gamePath, listKey, loadLines } from './lines';
 import { createOwnParty } from './listParties';
-import { newId } from '#server/http/context';
+import { newId, nowIso } from '#server/http/context';
 import { decrypt } from '#server/utils/crypto';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { freeSlug, slugify } from '#server/utils/auth';
@@ -31,6 +32,7 @@ import {
   type PartyInput,
 } from '#server/utils/parties';
 import type { PartyCategory } from '#shared/utils/categories';
+import type { LinePart, LineText } from '#shared/utils/lines';
 import { listYear } from '#shared/utils/years';
 import { unwrap } from '#server/http/errors';
 
@@ -42,6 +44,7 @@ const MEMBER_ICONS = 5;
 
 export type PartyPage = {
   party: {
+    id: string;
     slug: string;
     name: string;
     category: PartyCategory;
@@ -58,8 +61,18 @@ export type PartyPage = {
   pastYears: PastYearLine[];
   role: 'organiser' | 'member';
   members: { count: number; avatars: Avatar[] };
-  /** The Secret Santas of the year I organise or take part in. */
-  secretSantas: { id: string; year: number; to: string | null }[];
+  /**
+   * The Secret Santas of the year I organise or take part in, with their
+   * text: the organiser's for an organiser, mine otherwise (lignes.md).
+   */
+  secretSantas: {
+    id: string;
+    year: number;
+    label: string;
+    to: string | null;
+    line: LineText | null;
+    game: { line: LineText; to: string } | null;
+  }[];
   /**
    * May organise one more: any organiser, the limit of the account being
    * told on the form (ticket 105).
@@ -70,8 +83,15 @@ export type PartyPage = {
     id: string;
     mine: boolean;
     owner: { firstName: string; avatar: Avatar } | null;
+    title: LinePart;
+    line: LineText | null;
     to: string | null;
   }[];
+  /**
+   * « Quitter » (fete.md): whether one of my lists here is in no other
+   * event; null without a list of mine here.
+   */
+  myListsAlone: boolean | null;
 };
 
 /**
@@ -102,6 +122,7 @@ export const loadPartyPage = async (
       .select({
         id: secretSantas.id,
         status: secretSantas.status,
+        label: secretSantas.label,
         yearId: secretSantas.yearId,
         year: partyYears.year,
       })
@@ -218,8 +239,38 @@ export const loadPartyPage = async (
       }),
     ),
   );
+  const santasShown = ofYear.filter(
+    (santa) => role === 'organiser' || paths.has(santa.id),
+  );
+  const listsShown = links.filter(
+    (list) => list.visibility === 'party' || held.has(list.id),
+  );
+  const [lines, elsewhere] = await Promise.all([
+    loadLines(
+      db,
+      {
+        accountId: account.id,
+        persons: me ? [me.id] : [],
+        santas: santasShown.map((santa) => ({
+          id: santa.id,
+          as: role === 'organiser' ? 'organiser' : 'participant',
+        })),
+        lists: listsShown.map((list) => ({ id: list.id, partyId: party.id })),
+      },
+      nowIso(),
+    ),
+    held.size === 0
+      ? []
+      : db
+          .select({ listId: giftListParties.listId, n: count() })
+          .from(giftListParties)
+          .where(inArray(giftListParties.listId, [...held]))
+          .groupBy(giftListParties.listId),
+  ]);
+  const mineHere = listsShown.filter((list) => held.has(list.id));
   return {
     party: {
+      id: party.id,
       slug: party.slug,
       name: party.name,
       category: party.category,
@@ -241,33 +292,49 @@ export const loadPartyPage = async (
       count: people.length,
       avatars: people.slice(0, MEMBER_ICONS).map(avatarOf),
     },
-    secretSantas: ofYear
-      .filter((santa) => role === 'organiser' || paths.has(santa.id))
-      .map((santa) => ({
+    secretSantas: santasShown.map((santa) => {
+      const path = paths.get(santa.id) ?? null;
+      const line = lines.santas.get(santa.id);
+      return {
         id: santa.id,
         year: santa.year,
+        label: santa.label,
         to:
           role === 'organiser'
             ? `/admin/${party.slug}/editions/${santa.id}`
-            : (paths.get(santa.id) ?? null),
-      })),
-    canAddSecretSanta: role === 'organiser',
-    lists: links
-      .filter((list) => list.visibility === 'party' || held.has(list.id))
-      .map((list) => {
-        const owner = owners.get(list.accountId);
-        const person = people.find((p) => p.email === owner?.email);
-        return {
-          id: list.id,
-          mine: held.has(list.id),
-          owner: person
-            ? { firstName: person.firstName, avatar: avatarOf(person) }
+            : path,
+        line: line?.line ?? null,
+        game:
+          line?.game && path
+            ? { line: line.game, to: gamePath(path, line.game) }
             : null,
-          to: held.has(list.id)
-            ? `/listes/${list.id}`
-            : `/l/${list.shareToken}?depuis=${party.slug}`,
-        };
-      }),
+      };
+    }),
+    canAddSecretSanta: role === 'organiser',
+    lists: listsShown.map((list) => {
+      const owner = owners.get(list.accountId);
+      const person = people.find((p) => p.email === owner?.email);
+      const line = lines.lists.get(listKey(list.id, party.id));
+      return {
+        id: list.id,
+        mine: held.has(list.id),
+        owner: person
+          ? { firstName: person.firstName, avatar: avatarOf(person) }
+          : null,
+        title: line?.title ?? { key: 'lines.list.mine' },
+        line: line?.line ?? null,
+        to: held.has(list.id)
+          ? `/listes/${list.id}`
+          : `/l/${list.shareToken}?depuis=${party.slug}`,
+      };
+    }),
+    myListsAlone:
+      mineHere.length === 0
+        ? null
+        : mineHere.some(
+            (list) =>
+              (elsewhere.find((row) => row.listId === list.id)?.n ?? 0) <= 1,
+          ),
   };
 };
 

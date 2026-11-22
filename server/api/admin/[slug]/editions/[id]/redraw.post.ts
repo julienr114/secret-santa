@@ -5,6 +5,7 @@ import { deleteAssignments } from '#server/database/draw';
 import { recordEvent } from '#server/database/audit';
 import { deleteHintRequestsOf } from '#server/database/hints';
 import { deleteGuessesOf } from '#server/database/guesses';
+import { deleteNewsOf } from '#server/database/news';
 import { requireEdition } from '#server/http/edition';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -29,6 +30,8 @@ export default defineEventHandler(async (event) => {
     deleteHintRequestsOf(db, edition.id),
     // The guesses of « Devine qui » were about this draw (README 22.17).
     deleteGuessesOf(db, [edition.id]),
+    // Its news were about this draw (ticket 120).
+    deleteNewsOf(db, [edition.id]),
     db
       .update(secretSantas)
       .set({

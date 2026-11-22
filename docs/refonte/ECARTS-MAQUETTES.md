@@ -6,6 +6,22 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## Les lignes, les points rouges et « Quoi de neuf » (V3, tickets 112 et 120)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3Accueil`, `V3AccueilJeu`, `V3Fete` | Le point rouge est un rond de 9 px en `coral-500`, avant la flèche ; un lecteur d'écran lit « nouveau ». « Devine qui » a l'icône `circle-help` dans un rond de 40 px, comme les autres lignes. | Seul (le composant du design system) |
+| `V3Accueil`, `V3Fete` | Le titre d'une liste d'un autre nomme ceux pour qui elle est faite (les prénoms de la liste), sans personne ceux qui la tiennent (le prénom de leur compte), et non le prénom donné dans l'événement (« Mamie Camille »). | Seul (`lignes.md`) |
+| `V3FeteOrganisateur` | Un Secret Santa dévoilé dit « Dévoilé », puis « Terminé » une fois clôturé, avant les cas « Fait · … » : « Tiré » s'entend d'un tirage pas encore dévoilé. | Seul |
+| `V3Accueil` | « Quelqu'un te demande des idées » et son point s'en vont quand j'ouvre ma page du Secret Santa, ou dès que j'écris une idée, même si je n'ai rien écrit pour celui qui demande (on ne sait pas qui c'est). | Seul (`lignes.md`, « Il s'éteint quand j'ouvre la chose ») |
+| `V3Accueil` | « Ma liste » d'une liste pour plus de trois personnes, moi compris : « Léo, Zoé et 2 autres », où je compte parmi les autres. | Seul |
+| `V3QuoiDeNeuf` | Pas de ligne « Choisir ce qui me prévient » avant le ticket 121 ; « Tout s'efface au bout de trente jours » est une phrase seule sous les sections. Sans aucune nouveauté, la page dit « Rien de neuf pour l'instant. » (la maquette ne montre pas cet état). | Seul (le ticket) |
+| `V3QuoiDeNeuf` | Les textes ne connaissent pas le genre : « Camille t'invite à tenir sa liste » (sans « avec elle ») ; « Mamie se joint à ton cadeau à plusieurs : Vélo » (et non « au vélo ») ; « Camille a ajouté des idées à sa liste » nomme qui a écrit, et « 3 idées de plus sur la liste » quand on ne le sait pas (au lieu de « sur leur liste »). | Seul |
+| `V3QuoiDeNeuf` | Les icônes sont les ronds de 40 px de `UiListItem` : une enveloppe pour un Secret Santa, une liste pour une liste, des personnes pour un événement. L'heure (« Aujourd'hui, 9 h 12 ») est lue dans le fuseau du téléphone, une fois la page affichée. | Seul |
+| `V3QuoiDeNeuf` | « Le mot de l'application » (pas de maquette) : un bandeau lilas en tête, son texte, et une croix « Fermer » de 44 px. Aucun mot n'est posé avant la bascule (ticket 113). | Seul |
+| `V3Accueil` | La pastille de « Quoi de neuf » (18 px, `coral-500`, cerclée de blanc) compte les lignes pas encore vues ; un lecteur d'écran lit « Quoi de neuf, 3 nouveautés ». | Seul |
+| `NotifListe` | Le point dans la marge (7 px) marque, sur la liste d'un autre ouverte par son lien, les idées écrites depuis ma visite d'avant ; à la première visite, aucun point. La phrase « Un point marque ce qui a changé depuis ta dernière visite » n'est pas écrite (pas de note sur le fonctionnement de l'interface). Les autres pastilles de cette maquette (onglets « Tirages » et « Listes ») n'existent plus. | Seul (`CLAUDE.md`) |
+
 ## Un écran qui arrive (V3, ticket 099)
 
 | Maquette | Ce que fait le code | Décidé par |
@@ -31,11 +47,9 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `MenuAvatarOuvert` | Le menu n'a pas de ligne « Quoi de neuf » (c'est un onglet ; la spec ne la met pas dans le menu). « Langue » ouvre un panneau du bas avec les trois langues : un menu à côté du menu ne tient pas sur un téléphone. | Seul |
 | `V3AccueilPlusOuvert` | Jusqu'au ticket 106, « Une liste » ouvre la création d'une fête, puis la nouvelle liste d'aujourd'hui. | Julien, 20 novembre 2026 |
-| `V3Accueil` | « Quoi de neuf » ouvre une page vide jusqu'au ticket 120, sans pastille de nombre. | Julien, 20 novembre 2026 |
-| `V3Accueil` | Les lignes (Secret Santa, listes) et les deux lignes du bas n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (Q-010). Pas de point rouge avant le ticket 110. | Julien, 20 novembre 2026 |
 | `V3Accueil` | Les icônes des lignes sont les ronds de 40 px de `UiListItem`, pas les carrés de 36 px de la maquette. Un Secret Santa s'appelle « Le Secret Santa », ou par son nom quand la fête en a plusieurs. | Seul |
 | `V3Accueil` | « Nouvelle liste » apparaît dans la carte d'une fête où je n'ai pas de liste. Une ligne de liste sans lien public (celle d'un autre) ne s'ouvre pas, comme sur la page de la fête. | Seul |
-| `V3Accueil` | Toutes les fêtes qui ne sont pas Noël vont sous « Plus tard », même avant Noël (Q-014). Le décompte de Noël disparaît le 25 décembre. | Seul |
+| `V3Accueil` | Le décompte de Noël disparaît le 25 décembre. | Seul |
 | `V3Accueil` | « Bientôt » ne propose pas mon propre anniversaire, ni celui pour lequel une de mes fêtes « Anniversaire » tombe le même jour. | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
 
@@ -48,7 +62,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3AccueilAnnee` | Après sa date, un événement reste sur l'accueil jusqu'à la clôture de son Secret Santa, 14 jours au plus, 3 jours sans Secret Santa (un Secret Santa clôturé le fait partir le lendemain) ; puis il passe à sa date de l'année suivante s'il revient, sinon il ne reste que dans « Les événements passés ». Les jours se comptent en UTC sur le serveur. | Seul (la règle : Julien, Q-009) |
 | `V3FetesPassees` | Une ligne sans rien à dire n'a que sa date. Sans aucun événement passé, la page dit « Aucun événement passé pour l'instant. » (la maquette ne montre pas cet état). | Seul |
 | `V3FeteAnneePassee` | Les icônes des Secret Santa et de « Devine qui » (une coupe) sont les ronds de 40 px de `UiListItem`. Avec plusieurs Secret Santa, la section s'appelle « Les Secret Santa » et chaque ligne porte son nom ; l'organisateur qui n'y participait pas n'a pas de texte sous la ligne. | Seul |
-| `V3FeteAnneePassee` | Sous « Ma liste » : le nombre d'idées seulement (« 9 idées ») ; « Léo, Zoé et moi » vient avec les textes des lignes (ticket 112). Sous la liste d'un autre : « Tu as offert 2 cadeaux », sinon rien. Les lignes ouvrent les listes comme aujourd'hui, où l'on peut encore écrire et cocher (Q-021). | Seul |
+| `V3FeteAnneePassee` | Sous « Ma liste » : pour qui elle était (« Léo, Zoé et moi »), ou le nombre d'idées si elle n'était que pour moi ; rien d'autre. Sous la liste d'un autre : « Tu as offert 2 cadeaux », sinon rien. Les lignes ouvrent les listes comme aujourd'hui, où l'on peut encore écrire et cocher (Q-021). | Seul |
 | `V3Fete`, `V3FeteAnniversaire` | « Les années passées » : le titre est le nom de l'année (« Noël 2025 », « Anniversaire 2025 ») ; « Ses 3 ans » attend de savoir pour qui un événement est fait (Q-022). | Seul |
 | `V3ListeReprise` | Le nom de la liste reprise est celui de l'événement (« Famille Camille »), comme toute liste faite pour un événement (`listes.md`), et non « Noël 2027 ». « Reprise de Noël 2026 » nomme l'année de l'ancienne liste quand elle était dans le même événement, sinon son nom, comme avant. | Seul |
 | — | « Supprimer ce Secret Santa » (pas de maquette) : une ligne rouge en bas des réglages du Secret Santa tant qu'il n'est pas tiré ; le panneau dit « C'est définitif », que les liens personnels de ses participants ne marcheront plus et qu'ils restent membres de l'événement, puis « Garder le Secret Santa » et « Supprimer le Secret Santa ». Pas d'identifiant à recopier : c'est la suppression d'un événement, réservée au super-admin, qui le demande. Ensuite, la page de l'événement. | Seul |
@@ -110,13 +124,12 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Les lignes (Secret Santa, listes) n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (question à la conception). | Julien, 20 novembre 2026 |
 | `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Pas de section « Les années passées » avant le ticket 108. | Julien, 20 novembre 2026 |
 | `V3FeteAnniversaire` | Pas de « · ses 4 ans » après la date : la fête ne sait pas pour quel proche elle est. | Seul |
 | `V3Fete` | Pour un simple membre, la ligne des membres n'ouvre rien (la page des membres est à l'organisateur). | Seul |
 | `V3FeteOrganisateur` | Le titre de section est au pluriel pour l'organisateur ou dès deux Secret Santa. | Seul |
 | `V3Fete` | Une ligne de liste s'ouvre sur la page d'aujourd'hui : la mienne dans son document, celle d'un autre par son lien public ; sans lien public, elle ne s'ouvre pas (règles du ticket 106). | Seul |
-| `V3FeteQuitter` | « Elle reste chez Mamie » n'est pas écrit (« chez » ou « dans » : question à la conception). « Tu ne participeras plus à son Secret Santa l'an prochain » ne s'écrit que si la fête a un Secret Santa. Un organisateur ne peut pas quitter la fête. | Seul |
+| `V3FeteQuitter` | Avec deux listes à moi dans l'événement, la phrase est au pluriel ; si l'une d'elles n'est dans aucun autre événement, c'est « Toi seul les verras… ». « Tu ne participeras plus à son Secret Santa l'an prochain » ne s'écrit que si la fête a un Secret Santa. Un organisateur ne peut pas quitter la fête. | Seul |
 | `V3FeteNouvelle` | Le nom est proposé pour Noël (« Noël ») et pour un anniversaire (« L'anniversaire de Zoé », « Mon anniversaire » pour soi) ; vide pour les autres catégories. La date est remplie pour Noël et pour l'anniversaire d'un proche dont on connaît la date de naissance. | Seul |
 | `V3FeteMembresReprendre` | Les pastilles des fêtes se cochent : cocher une fête montre et coche ses membres. Le nombre du bouton me compte. « Inviter d'autres personnes » crée la fête et ouvre « Inviter par lien ». Seules les fêtes que j'organise sont proposées. | Seul |
 | `V3FeteNouvelle`, `V3FeteMembresReprendre` | Après « Créer la fête », on arrive sur l'écran d'aujourd'hui de ce qu'on venait créer (création d'une édition, nouvelle liste), sinon sur la fête. | Julien, 20 novembre 2026 |

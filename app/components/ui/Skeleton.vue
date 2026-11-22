@@ -21,6 +21,7 @@ export type SkeletonPart =
   | 'envelope'
   | 'groups'
   | 'journal'
+  | 'news'
   | 'list';
 
 // A screen on its way, composed by the screen from pieces: a title, a
@@ -30,7 +31,8 @@ export type SkeletonPart =
 // The V3 adds the home's greeting and its event cards, the head of an
 // event or of a list (a pill or a tile, the name, the date), the share
 // bar of a list, the line of an event's members, sections of lines with
-// an icon, settings, and chips to choose from.
+// an icon, settings, and chips to choose from; and the sections of
+// « Quoi de neuf », each under an event (V3ChargementQuoiDeNeuf).
 // The busy state and its words go on the whole, for screen readers. It
 // keeps its room but shows only after 200 ms, so a quick load does not
 // flicker.
@@ -54,6 +56,11 @@ const PARTIES = [1, 2, 3].map((count) => skeletonLines(count));
 const SECTIONS = [
   { title: '34%', lines: skeletonLines(1) },
   { title: '26%', lines: skeletonLines(2, 1) },
+];
+/** The sections of « Quoi de neuf »: the width of their title, their lines. */
+const NEWS = [
+  { title: '46%', lines: skeletonLines(3) },
+  { title: '38%', lines: skeletonLines(1, 3) },
 ];
 /** Chips to choose from, by width. */
 const CHIPS = ['28%', '36%', '24%'];
@@ -158,6 +165,26 @@ const shown = useBusy(() => true);
           <div class="px-1">
             <USkeleton
               class="h-3 rounded-full bg-skeleton"
+              :style="{ width: section.title }"
+            />
+          </div>
+          <ul
+            class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
+          >
+            <UiSkeletonLines :lines="section.lines" />
+          </ul>
+        </section>
+      </div>
+      <div v-else-if="part === 'news'" class="contents">
+        <section
+          v-for="section in NEWS"
+          :key="section.title"
+          class="flex flex-col gap-2"
+        >
+          <div class="flex items-center gap-2 px-1">
+            <USkeleton class="size-6.5 shrink-0 rounded-[9px] bg-skeleton" />
+            <USkeleton
+              class="h-4.5 rounded-full bg-skeleton"
               :style="{ width: section.title }"
             />
           </div>

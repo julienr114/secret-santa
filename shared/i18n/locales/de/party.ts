@@ -50,8 +50,6 @@ export default {
   lists: {
     title: 'Die Listen',
     titleSomeone: 'Die Liste',
-    mine: 'Meine Liste',
-    of: 'Die Liste von {name}',
     none: 'Noch niemand hat eine Liste in dieses Event gestellt.',
     new: 'Neue Liste',
     resume: 'Meine Liste vom letzten Jahr übernehmen',
@@ -75,11 +73,16 @@ export default {
   },
   leave: {
     row: 'Dieses Event verlassen',
-    rowHint: 'Du siehst ihre Listen dann nicht mehr',
     title: '„{name}“ verlassen?',
-    lists: {
-      one: 'Deine Liste verlässt dieses Event.',
-      other: 'Deine Listen verlassen dieses Event.',
+    listsElsewhere: {
+      one: 'Deine Liste verlässt dieses Event. Sie bleibt in deinen anderen Events.',
+      other:
+        'Deine Listen verlassen dieses Event. Sie bleiben in deinen anderen Events.',
+    },
+    listsAlone: {
+      one: 'Deine Liste verlässt dieses Event. Nur du siehst sie, bis du sie woanders teilst.',
+      other:
+        'Deine Listen verlassen dieses Event. Nur du siehst sie, bis du sie woanders teilst.',
     },
     ticks: 'Die Geschenke, die du abgehakt hast, bleiben geplant.',
     secretSanta: 'Beim nächsten Wichteln bist du nicht mehr dabei.',

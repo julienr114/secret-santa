@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { fullName } from '#server/utils/people';
 import { gamePossible } from '#server/utils/guesses';
 import { formatEventDate, isIsoDay, partyIsOver } from '#server/utils/rules';
@@ -26,6 +27,8 @@ const route = useRoute();
 const router = useRouter();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
+// The follow-up opened: its news are seen (ticket 120).
+useSeen(() => ({ target: 'follow', targetId: id.value }));
 const toast = useMessages();
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();

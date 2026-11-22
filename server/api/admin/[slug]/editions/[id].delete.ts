@@ -8,6 +8,7 @@ import {
 import { deleteHintsOf } from '#server/database/hints';
 import { deleteAnswersOfParticipations } from '#server/database/answers';
 import { deleteGuessesOf } from '#server/database/guesses';
+import { deleteNewsOf } from '#server/database/news';
 import { requireEdition } from '#server/http/edition';
 
 // « Supprimer ce Secret Santa » (ticket 108, Q-008): one that is not drawn
@@ -30,6 +31,7 @@ export default defineEventHandler(async (event) => {
     deleteGuessesOf(db, [edition.id]),
     db.delete(hintRequests).where(eq(hintRequests.secretSantaId, edition.id)),
     db.delete(auditLog).where(eq(auditLog.secretSantaId, edition.id)),
+    deleteNewsOf(db, [edition.id]),
     db
       .delete(participations)
       .where(

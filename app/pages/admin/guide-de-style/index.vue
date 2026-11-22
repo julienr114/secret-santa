@@ -652,6 +652,23 @@ const undone = ref(0);
       </UiListItem>
       <UiListItem emoji="🎄" title="Ligne avec un emoji" :chevron="false" />
       <UiListItem
+        to="/admin/guide-de-style"
+        icon="i-lucide-mail"
+        icon-tone="neutral"
+        title="Ligne avec du nouveau"
+        subtitle="Un point rouge avant la flèche, « nouveau » pour un lecteur d'écran"
+        :dot="t('lines.dot')"
+      />
+      <UiListItem
+        to="/admin/guide-de-style"
+        icon="i-lucide-list-checks"
+        icon-tone="lilac"
+        title="Nouveauté pas encore vue, en gras"
+        subtitle="Quoi de neuf"
+        strong
+        :dot="t('lines.dot')"
+      />
+      <UiListItem
         icon="i-lucide-plus"
         :title="t('adminGroup.exclusions.add')"
         :on-click="() => (sheet = true)"

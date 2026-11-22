@@ -19,6 +19,8 @@ import {
   type PartyRow,
 } from './schema';
 import { loadYears, timelineOf, type LoadedYear } from './years';
+import { listKey, loadLines } from './lines';
+import { nowIso } from '#server/http/context';
 import { decrypt } from '#server/utils/crypto';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import {
@@ -28,6 +30,7 @@ import {
   type PartyList,
 } from '#server/utils/pastYears';
 import type { PartyCategory } from '#shared/utils/categories';
+import type { LinePart } from '#shared/utils/lines';
 import { listYear, type PastDeed } from '#shared/utils/years';
 
 // What the pages of the years over need (ticket 108): the lists of the
@@ -399,8 +402,14 @@ export type PastYearPage = {
     mine: boolean;
     owner: { firstName: string; avatar: Avatar } | null;
     to: string;
-    /** The ideas of a list I held; the gifts I ticked on another. */
-    ideas: number;
+    /** Its title, as on the page of the event (lignes.md). */
+    title: LinePart;
+    /**
+     * For a list I held, whom it was for (« Léo, Zoé et moi »), or its
+     * ideas (ticket 112).
+     */
+    held: LinePart | null;
+    /** The gifts I ticked on another. */
     offered: number;
   }[];
 };
@@ -500,6 +509,17 @@ export const loadPastYear = async (
               shown.map((list) => list.accountId),
             ),
           );
+  const distinct = [...new Map(shown.map((list) => [list.id, list])).values()];
+  const lines = await loadLines(
+    db,
+    {
+      accountId: account.id,
+      persons: [],
+      santas: [],
+      lists: distinct.map((list) => ({ id: list.id, partyId: party.id })),
+    },
+    nowIso(),
+  );
   return {
     party: {
       slug: party.slug,
@@ -528,23 +548,23 @@ export const loadPastYear = async (
             : null,
         };
       }),
-    lists: [...new Map(shown.map((list) => [list.id, list])).values()].map(
-      (list) => {
-        const email = owners.find((row) => row.id === list.accountId)?.email;
-        const person = people.find((row) => row.email === email);
-        return {
-          id: list.id,
-          mine: held.has(list.id),
-          owner: person
-            ? { firstName: person.firstName, avatar: avatarOf(person) }
-            : null,
-          to: held.has(list.id)
-            ? `/listes/${list.id}`
-            : `/l/${list.shareToken}?depuis=${party.slug}`,
-          ideas: counts.ideas.get(list.id) ?? 0,
-          offered: counts.offered.get(list.id) ?? 0,
-        };
-      },
-    ),
+    lists: distinct.map((list) => {
+      const line = lines.lists.get(listKey(list.id, party.id));
+      const email = owners.find((row) => row.id === list.accountId)?.email;
+      const person = people.find((row) => row.email === email);
+      return {
+        id: list.id,
+        mine: held.has(list.id),
+        owner: person
+          ? { firstName: person.firstName, avatar: avatarOf(person) }
+          : null,
+        to: held.has(list.id)
+          ? `/listes/${list.id}`
+          : `/l/${list.shareToken}?depuis=${party.slug}`,
+        title: line?.title ?? { key: 'lines.list.mine' },
+        held: held.has(list.id) ? (line?.line.parts[0] ?? null) : null,
+        offered: counts.offered.get(list.id) ?? 0,
+      };
+    }),
   };
 };

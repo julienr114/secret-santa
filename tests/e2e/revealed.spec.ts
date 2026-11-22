@@ -123,13 +123,13 @@ test('the page of the draw, open at once', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: /Découvrir|Cacher/ }),
   ).toHaveCount(0);
-  // The request for hints is no longer anonymous.
+  // The request for ideas stays anonymous, even revealed (ticket 110).
   if (draw.hints && !draw.hints.requested) {
-    await expect(page.getByText('Sans dire que ça vient de toi.')).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByText('Sans dire que ça vient de toi.'),
+    ).toBeVisible();
     await page.getByRole('button', { name: 'Lui demander des idées' }).click();
-    await expect(page.getByText('Ton nom est donné')).toBeVisible();
+    await expect(page.getByText('Ton nom n’apparaît nulle part')).toBeVisible();
     await page.getByRole('button', { name: 'Pas maintenant' }).click();
   }
   // « Qui m'offre mon cadeau ? », folded, then shown.

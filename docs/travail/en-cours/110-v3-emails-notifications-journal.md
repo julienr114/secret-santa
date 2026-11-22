@@ -18,13 +18,13 @@ Tout ce qui s'écrit hors des écrans principaux suit la V3 : l'objet d'un email
 
 ## À faire
 
-- [ ] Les objets : le nom de l'événement d'abord (« Famille Camille : ton enveloppe t'attend ») ; le nom du Secret Santa entre parenthèses seulement s'il y en a plusieurs la même année.
-- [ ] L'email de demande d'idées (`PistesEmail`) : « Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes. » · « Écrire ma liste ». Le lien ouvre la liste réservée à celui qui a tiré (ticket 107).
-- [ ] La demande d'idées ne nomme personne, nulle part : notifications, journal (le résumé du matin suivra la même règle, ticket 121). « Quelqu'un te demande des idées de cadeaux ».
-- [ ] L'email de modération (`ModerationEmail`) : c'est le lien public qui est arrêté ; la liste reste partagée dans ses événements.
-- [ ] L'invitation à tenir une liste (`ListeInvitationEmail`) : les mots de la V3, l'objet au nom de l'occasion.
-- [ ] Le journal : « Journal de l'événement », et ses lignes sans « groupe », « édition » ni « pistes ».
-- [ ] Les emails de « Devine qui » hors d'un événement de catégorie Noël : les variantes sans « Père Noël ».
+- [x] Les objets : le nom de l'événement d'abord (« Famille Camille : ton enveloppe t'attend ») ; le nom du Secret Santa entre parenthèses seulement s'il y en a plusieurs la même année.
+- [x] L'email de demande d'idées (`PistesEmail`) : « Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes. » · « Écrire ma liste ». Le lien ouvre la liste réservée à celui qui a tiré (ticket 107).
+- [x] La demande d'idées ne nomme personne, nulle part : notifications, journal (le résumé du matin suivra la même règle, ticket 121). « Quelqu'un te demande des idées de cadeaux ».
+- [ ] L'email de modération (`ModerationEmail`) : c'est le lien public qui est arrêté ; la liste reste partagée dans ses événements. *Sans objet ici : l'arrêt du lien public n'existe pas encore, il vient avec le ticket 132, qui cite cette maquette.*
+- [x] L'invitation à tenir une liste (`ListeInvitationEmail`) : les mots de la V3, l'objet au nom de l'occasion.
+- [x] Le journal : « Journal de l'événement », et ses lignes sans « groupe », « édition » ni « pistes ».
+- [x] Les emails de « Devine qui » hors d'un événement de catégorie Noël : les variantes sans « Père Noël ».
 
 ## Hors périmètre
 

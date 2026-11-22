@@ -31,6 +31,15 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 - **Les choix** : A, garder le nom de l'année ; B, retenir sur l'événement le proche pour qui il est fait (une colonne, une migration, et le choix du proche à la création).
 - **Ce que je ferais** : A pour la V3 ; B se décide avec « Bientôt », qui crée déjà l'anniversaire d'un proche.
 
+### Q-023 — L'objet de l'invitation à tenir une liste, « au nom de l'occasion » : le nom de l'événement devant, ou le titre de la liste ? (ticket 110)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. En attendant, l'objet reste celui de la maquette `ListeInvitationEmail` : « Camille t'invite à tenir la liste « Noël 2026 » ». Dans la V3, une liste faite pour un événement porte son nom, donc l'objet nomme déjà l'occasion.
+- **Ce qu'on a trouvé** : le ticket 110 : « L'invitation à tenir une liste (`ListeInvitationEmail`) : les mots de la V3, l'objet au nom de l'occasion. » `secret-santa.md` (« Les objets des emails ») ne parle que des emails d'un Secret Santa. Une liste n'a pas toujours d'événement (`gift_lists.party_id` peut être vide), et son titre peut avoir été changé.
+- **Les choix** :
+  - A. Garder l'objet de la maquette : le titre de la liste, qui est le nom de l'occasion tant qu'on ne l'a pas changé.
+  - B. Mettre le nom de l'événement devant, comme les emails d'un Secret Santa : « Famille Camille : Camille t'invite à tenir la liste « Famille Camille » », quitte à le dire deux fois ; sans événement, l'objet d'aujourd'hui.
+- **Ce que je ferais** : A, qui ne répète rien.
 
 ## Réponses
 

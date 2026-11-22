@@ -162,8 +162,6 @@ export default {
     listHelp: 'Anonymous mode will be on for you there.',
     title: 'To help you choose',
     ask: 'Ask for ideas',
-    sentEmailNamed: '{name} just got an email.',
-    sentPageNamed: '{name} will see it when opening their link.',
     askHint: 'Without saying it comes from you.',
     sent: 'Request sent.',
     sentEmail: '{name} just got an email, without knowing it comes from you.',
@@ -178,9 +176,6 @@ export default {
       '{name} gets an email inviting them to note their tastes and what is better avoided.',
     bodyPage:
       '{name} will see it on their ideas page, inviting them to note their tastes and what is better avoided.',
-    named: 'Your name is given',
-    namedHelp:
-      'The draw is revealed: {name} will know the request comes from you.',
     anonymous: 'Your name appears nowhere',
     anonymousHelp: {
       one: 'Not in the email, not in the journal, not to the organizer.',
@@ -201,21 +196,13 @@ export default {
   },
   email: {
     request: {
-      subject:
-        '{group} Secret Santa: someone is looking for a gift idea for you',
+      subject: 'someone is looking for a gift idea for you',
       greeting: 'Hello {name},',
-      body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: write your gift list, or a few words about what you like.',
-      bodyPortrait:
-        'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: write your gift list, or a few words about what you like.',
-      subjectFrom:
-        '{group} Secret Santa: {from} is looking for a gift idea for you',
-      bodyFrom:
-        '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: write your gift list, or a few words about what you like.',
-      bodyPortraitFrom:
-        '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: write your gift list, or a few words about what you like.',
-      cta: 'Write my list:',
-      anonymous: 'We won’t tell you who is asking: it’s a Secret Santa.',
-      once: 'You will only get this message once.',
+      body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose.',
+      help: 'Help them: write your gift list, or a few words about what you like.',
+      cta: 'Write my list',
+      anonymous:
+        'We won’t tell you who is asking: it’s a Secret Santa. You will only get this message once.',
     },
   },
 } satisfies Dict<typeof fr>;

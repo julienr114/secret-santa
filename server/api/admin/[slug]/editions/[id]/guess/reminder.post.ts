@@ -2,7 +2,10 @@ import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { secretSantas, participations } from '#server/database/schema';
-import { listParticipants } from '#server/database/editions';
+import {
+  listParticipants,
+  santaNameForSubject,
+} from '#server/database/editions';
 import { gameMembers } from '#server/database/guesses';
 import { toRemind } from '#server/utils/nudges';
 import { personalLink } from '#server/database/participations';
@@ -57,6 +60,7 @@ export default defineEventHandler(async (event) => {
   }
   // The email is signed by the organiser who sends it (their first name).
   const sender = (await findAccountById(db, user.accountId))?.firstName ?? null;
+  const santaName = await santaNameForSubject(db, edition);
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
     targets.map(async (person) => {
@@ -69,6 +73,7 @@ export default defineEventHandler(async (event) => {
               firstName: person.firstName,
               groupName: group.name,
               sender,
+              santaName,
               editionLabel: edition.label,
               link: await personalLink(event, row, dataKey),
               guessEndsAt: edition.guessEndsAt,

@@ -3,16 +3,16 @@ import type { Dict } from '../../types';
 
 export default {
   joined: {
-    subject: '{name} joined “{group}”',
+    subject: '{name} joined the event',
     body: '{name} just joined the event “{group}” with the invitation link.',
     next: 'Remember to add them to the current Secret Santa and to their exclusions (partner, siblings).',
   },
   allViewed: {
-    subject: 'Every envelope is open in “{group}”',
+    subject: 'every envelope is open',
     body: 'For {edition} in “{group}”, everyone now knows who they’re giving to. All that’s left is finding the gifts.',
   },
   reminder: {
-    subject: 'The party is near in “{group}”',
+    subject: 'the big day is near',
     body: '{edition} is on {date}.',
     missing: {
       one: '{count} person hasn’t opened their envelope yet: {names}.',

@@ -1,7 +1,7 @@
 import { ok, fail, type Result } from './result';
 import type { EditionStatus } from './editions';
-import { plainEmail, type Email } from './messages';
-import { translate, type Locale } from '#shared/i18n';
+import { buttonEmail, emailSubject, type Email } from './messages';
+import { translate, translateKey, type Locale } from '#shared/i18n';
 import type { GiftHintsMode } from '#shared/utils/hints';
 
 // Gift hints (README 22.11): who may write them, who may ask for them, and
@@ -69,9 +69,12 @@ export const giverHintsState = (state: {
 };
 
 /**
- * The email to the one who receives: the person who gives them a present
- * looks for ideas. It never says who asks (README 22.11).
- * @param data - First name, edition, group, link to their hints page.
+ * The email to the one who receives (PistesEmail, ticket 110): the person
+ * who gives them a present looks for ideas, and they are asked to write
+ * their list. It never says who asks, even once the draw is revealed
+ * (docs/spec/v3/vocabulaire.md: « toujours anonyme »).
+ * @param data - First name, edition, event, the Secret Santa's name when
+ *   the event has several that year, link to their list.
  * @param locale - Language of the receiver.
  * @returns The email.
  */
@@ -80,43 +83,32 @@ export const buildHintsRequestEmail = (
     firstName: string;
     editionLabel: string;
     groupName: string;
+    santaName?: string | null;
     link: string;
-    /** Five questions without the precise ideas, six with them. */
-    mode: GiftHintsMode;
-    /** Who asks, once the draw is revealed (README 22.18); else nobody. */
-    from?: string | null;
   },
   locale: Locale,
-): Email =>
-  plainEmail({
-    subject: data.from
-      ? translate(locale, 'hints.email.request.subjectFrom', {
-          from: data.from,
-          group: data.groupName,
-        })
-      : translate(locale, 'hints.email.request.subject', {
-          group: data.groupName,
-        }),
-    before: [
-      translate(locale, 'hints.email.request.greeting', {
-        name: data.firstName,
-      }),
-      translate(
-        locale,
-        `hints.email.request.${data.mode === 'portrait' ? 'bodyPortrait' : 'body'}${data.from ? 'From' : ''}`,
-        {
-          edition: data.editionLabel,
-          group: data.groupName,
-          from: data.from ?? '',
-        },
-      ),
-      translate(locale, 'hints.email.request.cta'),
-    ],
+): Email => {
+  const params = {
+    name: data.firstName,
+    edition: data.editionLabel,
+    group: data.groupName,
+  };
+  const t = (key: string) =>
+    translateKey(locale, `hints.email.request.${key}`, params);
+  return buttonEmail({
+    subject: emailSubject(
+      locale,
+      { event: data.groupName, santa: data.santaName },
+      t('subject'),
+    ),
+    before: [t('greeting'), t('body'), t('help')],
+    cta: t('cta'),
     link: data.link,
     after: [
-      ...(data.from
-        ? []
-        : [translate(locale, 'hints.email.request.anonymous')]),
-      translate(locale, 'hints.email.request.once'),
+      t('anonymous'),
+      translate(locale, 'messages.email.signature', {
+        groupName: data.groupName,
+      }),
     ],
   });
+};

@@ -8,7 +8,7 @@ import type { Reveal } from '~/composables/queries/usePersonal';
 defineProps<{
   token: string;
   reveal: Reveal;
-  /** The draw is revealed (README 22.18): no turning over, named requests. */
+  /** The draw is revealed (README 22.18): no turning over. */
   open?: boolean;
 }>();
 const { t } = useT();
@@ -31,7 +31,6 @@ const { t } = useT();
       <ParticipantGiverHints
         :token="token"
         :reveal="{ ...reveal, hints: reveal.hints }"
-        :named="open"
       />
     </template>
   </UiGiftTag>

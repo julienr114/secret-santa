@@ -12,6 +12,7 @@ import {
 import { participationsWithHints } from './hints';
 import { encrypt, generateToken, hashToken } from '#server/utils/crypto';
 import { participantBadges, type Badge } from '#server/utils/editions';
+import { subjectSantaName } from '#server/utils/messages';
 import { publicPerson, type PublicPerson } from '#server/utils/people';
 import { newId } from '#server/http/context';
 
@@ -156,6 +157,26 @@ const exclusionsOf = (snapshot: unknown) => {
           : [],
       )
     : [];
+};
+
+/**
+ * The name of a Secret Santa for the subject of its emails: only when its
+ * event has several the same year (ticket 110).
+ * @param db - The database.
+ * @param santa - Its name and its year.
+ * @param santa.label - Its name.
+ * @param santa.yearId - Its year.
+ * @returns The name, or null.
+ */
+export const santaNameForSubject = async (
+  db: Db,
+  santa: { label: string; yearId: string },
+): Promise<string | null> => {
+  const [row] = await db
+    .select({ n: count() })
+    .from(secretSantas)
+    .where(eq(secretSantas.yearId, santa.yearId));
+  return subjectSantaName(santa.label, row?.n ?? 0);
 };
 
 export const participantCounts = async (

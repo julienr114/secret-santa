@@ -13,13 +13,10 @@ import { giverPortrait, portraitTexts } from '#shared/utils/hints';
 // ideas she left before the V3 when she has no account. With nothing at
 // all, « Inès n'a encore rien écrit. » and « Lui demander des idées »,
 // once per draw: a sheet says what will happen, then the request leaves
-// at once, anonymous; once the draw is revealed (README 22.18), it says
-// who asks.
+// at once, anonymous, even once the draw is revealed (ticket 110).
 const props = defineProps<{
   token: string;
   reveal: Reveal & { hints: NonNullable<Reveal['hints']> };
-  /** The draw is revealed: the request is no longer anonymous. */
-  named?: boolean;
 }>();
 const { t, tk } = useT();
 const organizers = useOrganizers();
@@ -164,8 +161,8 @@ const onSend = () =>
         <strong>{{ t('hints.result.sent') }}</strong>
         {{
           emailed
-            ? t(`hints.result.sentEmail${named ? 'Named' : ''}`, { name })
-            : t(`hints.result.sentPage${named ? 'Named' : ''}`, { name })
+            ? t('hints.result.sentEmail', { name })
+            : t('hints.result.sentPage', { name })
         }}
         {{
           reveal.requesterHasEmail
@@ -187,10 +184,7 @@ const onSend = () =>
         :label="t('hints.result.ask')"
         @click="sheetOpen = true"
       />
-      <p
-        v-if="!named"
-        class="-mt-1.5 text-center text-[13px] leading-[1.4] text-toned"
-      >
+      <p class="-mt-1.5 text-center text-[13px] leading-[1.4] text-toned">
         {{ t('hints.result.askHint') }}
       </p>
     </template>
@@ -208,20 +202,12 @@ const onSend = () =>
       <UiNotice
         variant="checklist"
         :items="[
-          named
-            ? {
-                key: 'named',
-                state: 'ok',
-                icon: 'i-lucide-eye',
-                title: t('hints.request.named'),
-                detail: t('hints.request.namedHelp', { name }),
-              }
-            : {
-                key: 'anonymous',
-                state: 'ok',
-                title: t('hints.request.anonymous'),
-                detail: t('hints.request.anonymousHelp', { count: organizers }),
-              },
+          {
+            key: 'anonymous',
+            state: 'ok',
+            title: t('hints.request.anonymous'),
+            detail: t('hints.request.anonymousHelp', { count: organizers }),
+          },
           {
             key: 'once',
             state: 'ok',

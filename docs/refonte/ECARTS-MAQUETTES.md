@@ -6,6 +6,17 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## Les emails et le journal (V3, ticket 110)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| Tous les emails | L'objet commence par le nom de l'événement, puis le nom du Secret Santa entre parenthèses tel qu'il est écrit (« Famille Camille (Les enfants) : … »), quand l'événement en a plusieurs la même année. « ton enveloppe t'attend » n'a pas de prénom, comme l'exemple de `secret-santa.md` ; les autres objets gardent le leur. Les maquettes montrent l'objet sans l'événement. | Seul (la règle : `secret-santa.md`) |
+| `PistesEmail` | La signature est « Le Secret Santa de Famille Camille », pas « Under the Tree » : un email que personne n'envoie signe du Secret Santa de l'événement (Correction 17), comme celui du palmarès. Le pied (« Ne plus recevoir d'emails », « Ce que l'application fait de tes données ») attend les tickets 130 et 131. | Seul (la règle : Julien, Correction 17) |
+| `DevineEmailRappelAuto`, `DevineEmailRappelEncore`, `DevineEmailPalmares`, `DevineEmailOrgaPoint`, `DevineEmailOrgaFin` | Le corps garde les textes de la Correction 17, plus récente que ces maquettes : « Devine qui » y est présenté (« Au Secret Santa de Famille Camille (Noël 2026), on joue à Devine qui : deviner qui offre à qui. »), les emails aux participants signent « Le Secret Santa de Famille Camille », ceux à l'organisateur « Under the Tree, l'application de votre Secret Santa ». Objets : « 2 personnes n'ont pas encore joué à Devine qui », « les pronostics de Devine qui sont fermés », après le nom de l'événement. Pas de pied avant les tickets 130 et 131. | Julien (Correction 17) |
+| `ListeInvitationEmail` | « tenir à ses côtés » et non « tenir avec elle » : l'application ne connaît pas le genre. L'objet garde le titre de la liste (Q-023). Pas de pied (« Signaler cet envoi » : ticket 132 ; « Ne plus recevoir d'emails » : ticket 130). | Seul |
+| `ModerationEmail` | Pas codé : l'arrêt du lien public d'une liste par l'administrateur n'existe pas encore. Le ticket 132 le fera, avec cette maquette. | Seul |
+| `Journal` | Les lignes gardent le ton de la Correction 16 (« 5 personnes ont ouvert leur enveloppe », « Le tirage est fait, pour 5 participants ») ; le titre, la phrase du haut et « Le Secret Santa Noël 2026 a été créé » sont ceux de la maquette. | Julien (Correction 16) |
+
 ## L'accueil, la barre du bas et « Créer » (V3, ticket 103)
 
 | Maquette | Ce que fait le code | Décidé par |

@@ -103,7 +103,48 @@ export type MessageData = {
    * email; none when unknown (it then signs with the Secret Santa).
    */
   sender?: string | null;
+  /**
+   * The Secret Santa's name, for the subject of an email: only when its
+   * event has several the same year (`subjectSantaName`).
+   */
+  santaName?: string | null;
 };
+
+/**
+ * The name of a Secret Santa as the subject of an email gives it: only
+ * when its event has several the same year (docs/spec/v3/secret-santa.md,
+ * « Les objets des emails »).
+ * @param label - The Secret Santa's name.
+ * @param santasThisYear - How many Secret Santa its event has that year.
+ * @returns The name, or null when there is only one.
+ */
+export const subjectSantaName = (
+  label: string,
+  santasThisYear: number,
+): string | null => (santasThisYear > 1 ? label : null);
+
+/**
+ * The subject of an email: the event first, the Secret Santa between
+ * brackets when there are several the same year, then what it says
+ * (« Famille Camille (Les enfants) : ton enveloppe t'attend »). The word
+ * « Secret Santa » is not needed.
+ * @param locale - The recipient's language.
+ * @param place - The event, and the Secret Santa's name or null.
+ * @param place.event - The event's name.
+ * @param place.santa - The Secret Santa's name, when it must be said.
+ * @param text - What the email says.
+ * @returns The subject.
+ */
+export const emailSubject = (
+  locale: Locale,
+  place: { event: string; santa?: string | null },
+  text: string,
+): string =>
+  translate(
+    locale,
+    place.santa ? 'messages.subject.santa' : 'messages.subject.event',
+    { event: place.event, santa: place.santa ?? '', text },
+  );
 
 const params = (d: MessageData, locale: Locale): Params => ({
   firstName: d.firstName,
@@ -285,10 +326,10 @@ export const buildEmail = (
   ];
   const link = escapeHtml(data.link);
   return ok({
-    subject: translate(
+    subject: emailSubject(
       locale,
-      `messages.${type}.subject`,
-      params(data, locale),
+      { event: data.groupName, santa: data.santaName },
+      translate(locale, `messages.${type}.subject`, params(data, locale)),
     ),
     text: [
       ...(above.length > 0 ? [...above, ''] : []),
@@ -398,6 +439,7 @@ export const buildGuessResultsEmail = (
     groupName: string;
     editionLabel: string;
     link: string;
+    santaName?: string | null;
   },
   locale: Locale = DEFAULT_LOCALE,
 ): Email => {
@@ -419,7 +461,11 @@ export const buildGuessResultsEmail = (
   const cta = t('messages.guessResults.cta');
   const href = escapeHtml(data.link);
   return {
-    subject: t('messages.guessResults.subject'),
+    subject: emailSubject(
+      locale,
+      { event: data.groupName, santa: data.santaName },
+      t('messages.guessResults.subject'),
+    ),
     text: [...before, '', `${cta} : ${data.link}`, '', ...after].join('\n'),
     html: [
       '<div style="font-family:sans-serif;font-size:16px;line-height:1.5">',
@@ -439,7 +485,7 @@ type LinkLine = { before: string; label: string; link: string; after: string };
  * @param p - Subject, lines before, the button, lines after.
  * @returns The email, in text and in HTML.
  */
-const buttonEmail = (p: {
+export const buttonEmail = (p: {
   subject: string;
   before: string[];
   cta: string;
@@ -482,6 +528,8 @@ type GameEmailData = {
   christmas?: boolean;
   guessEndsAt: string;
   guessTimeZone: string | null;
+  /** The Secret Santa's name, when its event has several that year. */
+  santaName?: string | null;
 };
 
 /**
@@ -523,9 +571,15 @@ export const buildGuessAutoReminderEmail = (
       santaKey(`messages.${key}`, data.christmas ?? true),
       params,
     );
+  const subject = (key: string) =>
+    emailSubject(
+      locale,
+      { event: data.groupName, santa: data.santaName },
+      t(key),
+    );
   if (text === 'more') {
     return buttonEmail({
-      subject: t('guessMore.subject'),
+      subject: subject('guessMore.subject'),
       before: [
         t('guessMore.greeting'),
         t('guessMore.body'),
@@ -537,7 +591,7 @@ export const buildGuessAutoReminderEmail = (
     });
   }
   return buttonEmail({
-    subject: t('guessAuto.subject'),
+    subject: subject('guessAuto.subject'),
     before: [
       t('guessAuto.greeting'),
       data.played === 0 ? t('guessAuto.nobody') : t('guessAuto.body'),
@@ -569,6 +623,8 @@ type OrganizerGameData = {
   guessTimeZone: string | null;
   played: number;
   total: number;
+  /** The Secret Santa's name, when its event has several that year. */
+  santaName?: string | null;
 };
 
 /**
@@ -613,7 +669,11 @@ export const buildGuessPointEmail = (
   const t = (key: string, more: Record<string, string | number> = {}) =>
     translateKey(locale, `messages.guessPoint.${key}`, { ...params, ...more });
   return buttonEmail({
-    subject: t('subject'),
+    subject: emailSubject(
+      locale,
+      { event: data.groupName, santa: data.santaName },
+      t('subject'),
+    ),
     before: [
       t('greeting'),
       [
@@ -664,7 +724,11 @@ export const buildGuessEndEmail = (
       ),
     });
   return buttonEmail({
-    subject: t('subject'),
+    subject: emailSubject(
+      locale,
+      { event: data.groupName, santa: data.santaName },
+      t('subject'),
+    ),
     before: [t('greeting'), t('body')],
     cta: t('cta'),
     link: data.link,

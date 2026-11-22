@@ -11,8 +11,10 @@ import {
   buildEmail,
   buildGuessResultsEmail,
   buildMessage,
+  emailSubject,
   emailTargets,
   escapeHtml,
+  subjectSantaName,
   messageTypesFor,
   type MessageData,
 } from './messages';
@@ -128,16 +130,16 @@ describe('messageTypesFor', () => {
       ),
     ).toContain('Devine qui, un jeu de pronostics');
     expect(valueOf(buildEmail('answerCheck', data, 'de')).subject).toBe(
-      'Wichteln la famille Martin: Kannst du deine Antwort prüfen, Léa?',
+      'la famille Martin: Kannst du deine Antwort prüfen, Léa?',
     );
   });
 });
 
 describe('buildEmail', () => {
-  it('gives every type a subject with the first name, a text and an HTML twin', () => {
+  it('gives every type a subject naming the event, a text and an HTML twin', () => {
     MESSAGE_TYPES.forEach((type) => {
       const email = valueOf(buildEmail(type, data));
-      expect(email.subject, type).toContain('Léa');
+      expect(email.subject, type).toMatch(/^la famille Martin : \S/);
       expect(email.subject, type).not.toContain('\n');
       expect(email.text, type).toContain(data.link);
       expect(email.html, type).toContain(`href="${data.link}"`);
@@ -247,9 +249,7 @@ describe('languages', () => {
         'de',
       ),
     );
-    expect(email.subject).toBe(
-      'Wichteln la famille Martin: Léa, die Lose sind gezogen, dein Umschlag wartet',
-    );
+    expect(email.subject).toBe('la famille Martin: Dein Umschlag wartet');
     expect(email.text).toContain('Budget: 20 €.');
     expect(email.text).toContain('Wir sehen uns am 24.12..');
     expect(email.text).toContain('Dieser Link gehört nur dir');
@@ -473,7 +473,7 @@ describe('« Devine qui » in the messages', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Secret Santa de la famille Martin : le palmarès de Devine qui est arrivé',
+      'la famille Martin : le palmarès de Devine qui est arrivé',
     );
     expect(email.text).toContain('Bonjour Léa,');
     expect(email.text).toContain('fais-le d’abord');
@@ -503,7 +503,7 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Secret Santa de Famille Camille : plus que 2 jours pour deviner qui t’offre ton cadeau',
+      'Famille Camille : plus que 2 jours pour deviner qui t’offre ton cadeau',
     );
     expect(email.text).toContain(
       '4 personnes sur 6 ont déjà fait leur pronostic',
@@ -522,7 +522,7 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Secret Santa de Famille Camille : encore quelques pronostics avant la fin ?',
+      'Famille Camille : encore quelques pronostics avant la fin ?',
     );
     expect(email.text).not.toContain('Je passe mon tour');
   });
@@ -553,7 +553,7 @@ describe('the emails of « Devine qui » (Correction 15)', () => {
       'fr',
     );
     expect(email.subject).toBe(
-      'Devine qui, Famille Camille : 2 personnes n’ont pas encore joué',
+      'Famille Camille : 2 personnes n’ont pas encore joué à Devine qui',
     );
     expect(email.text).toContain(
       'Rose et Louis n’ont pas encore joué ; Louis n’a pas d’adresse email.',
@@ -599,5 +599,137 @@ describe('the signature of an email (who sends it)', () => {
     const email = valueOf(buildEmail('drawn', data, 'fr'));
     expect(email.text).toContain('Le Secret Santa de Famille Martin');
     expect(email.subject).toContain('Famille Martin');
+  });
+});
+
+describe('the subject of every email (ticket 110)', () => {
+  const game = {
+    firstName: 'Rose',
+    groupName: 'Famille Camille',
+    editionLabel: 'Noël 2026',
+    link: 'https://example.com/p/abc/devine',
+    guessEndsAt: '2026-12-25T17:00:00.000Z',
+    guessTimeZone: 'Europe/Paris',
+    played: 4,
+    total: 6,
+  };
+  const orga = { ...game, firstName: 'Camille' };
+  /** Every email of a Secret Santa, with or without its name. */
+  const subjects = (santaName: string | null): Record<string, string> => ({
+    ...Object.fromEntries(
+      MESSAGE_TYPES.map((type) => [
+        type,
+        valueOf(
+          buildEmail(type, { ...game, firstName: 'Léa', santaName }, 'fr'),
+        ).subject,
+      ]),
+    ),
+    guessResults: buildGuessResultsEmail({ ...game, santaName }, 'fr').subject,
+    guessAuto: buildGuessAutoReminderEmail(
+      { ...game, santaName, skipLink: '', days: 2 },
+      'play',
+      'fr',
+    ).subject,
+    guessMore: buildGuessAutoReminderEmail(
+      { ...game, santaName, skipLink: '', days: 2 },
+      'more',
+      'fr',
+    ).subject,
+    guessPoint: buildGuessPointEmail(
+      {
+        ...orga,
+        santaName,
+        missing: ['Rose', 'Louis'],
+        noEmail: [],
+        days: 5,
+        autoIn: null,
+      },
+      'fr',
+    ).subject,
+    guessEnd: buildGuessEndEmail({ ...orga, santaName }, 'fr').subject,
+  });
+
+  it('names the event first, when it has one Secret Santa', () => {
+    expect(subjects(null)).toEqual({
+      invitation: 'Famille Camille : ton lien, Léa',
+      drawn: 'Famille Camille : ton enveloppe t’attend',
+      reminder: 'Famille Camille : Léa, ton enveloppe t’attend toujours',
+      redraw: 'Famille Camille : Léa, on rebat les cartes, nouveau tirage',
+      answerRequest: 'Famille Camille : à qui offres-tu un cadeau, Léa ?',
+      answerReminder: 'Famille Camille : on attend ta réponse, Léa',
+      answerCheck: 'Famille Camille : peux-tu vérifier ta réponse, Léa ?',
+      guessReminder: 'Famille Camille : devine qui t’offre ton cadeau, Léa',
+      guessResults: 'Famille Camille : le palmarès de Devine qui est arrivé',
+      guessAuto:
+        'Famille Camille : plus que 2 jours pour deviner qui t’offre ton cadeau',
+      guessMore: 'Famille Camille : encore quelques pronostics avant la fin ?',
+      guessPoint:
+        'Famille Camille : 2 personnes n’ont pas encore joué à Devine qui',
+      guessEnd: 'Famille Camille : les pronostics de Devine qui sont fermés',
+    });
+  });
+
+  it('adds the Secret Santa between brackets when there are two', () => {
+    const one = subjects(null);
+    Object.entries(subjects('Les enfants')).forEach(([type, subject]) => {
+      expect(subject, type).toBe(
+        one[type]!.replace(
+          'Famille Camille : ',
+          'Famille Camille (Les enfants) : ',
+        ),
+      );
+    });
+  });
+
+  it('gives the name only when the event has several that year', () => {
+    expect(subjectSantaName('Les enfants', 1)).toBeNull();
+    expect(subjectSantaName('Les enfants', 2)).toBe('Les enfants');
+  });
+
+  it('puts the event first in every language, without « Secret Santa »', () => {
+    expect(emailSubject('en', { event: 'Smiths' }, 'your link')).toBe(
+      'Smiths: your link',
+    );
+    expect(
+      emailSubject('de', { event: 'Familie', santa: 'Kinder' }, 'Dein Link'),
+    ).toBe('Familie (Kinder): Dein Link');
+    (['fr', 'en', 'de'] as const).forEach((locale) => {
+      MESSAGE_TYPES.forEach((type) => {
+        const { subject } = valueOf(buildEmail(type, game, locale));
+        expect(subject, `${locale} ${type}`).toMatch(/^Famille Camille ?:/);
+        expect(subject, `${locale} ${type}`).not.toMatch(
+          /Secret Santa|Wichteln/,
+        );
+      });
+    });
+  });
+
+  it('never says « Père Noël » in an email of « Devine qui » outside Christmas', () => {
+    const elsewhere = { ...game, christmas: false };
+    const texts = [
+      valueOf(
+        buildEmail('guessReminder', { ...elsewhere, guessMode: 'all' }, 'fr'),
+      ),
+      valueOf(buildEmail('drawn', elsewhere, 'fr')),
+      buildGuessAutoReminderEmail(
+        { ...elsewhere, skipLink: '', days: 2 },
+        'play',
+        'fr',
+      ),
+      buildGuessAutoReminderEmail(
+        { ...elsewhere, skipLink: '', days: 2 },
+        'more',
+        'fr',
+      ),
+      buildGuessResultsEmail(elsewhere, 'fr'),
+      buildGuessPointEmail(
+        { ...orga, missing: ['Rose'], noEmail: [], days: 5, autoIn: 3 },
+        'fr',
+      ),
+      buildGuessEndEmail(orga, 'fr'),
+    ];
+    texts.forEach((email) =>
+      expect(`${email.subject}${email.text}`).not.toContain('Père Noël'),
+    );
   });
 });

@@ -89,32 +89,44 @@ describe('hint emails', () => {
     firstName: 'Inès',
     editionLabel: 'Noël 2026',
     groupName: 'Famille Camille',
-    link: 'https://example.com/p/abc/pistes',
-    mode: 'full' as const,
+    link: 'https://example.com/p/abc/liste',
   };
 
-  it('asks without saying who asks', () => {
+  it('asks without saying who asks, and invites to write one’s list', () => {
     const email = buildHintsRequestEmail(data, 'fr');
     expect(email.subject).toBe(
-      'Secret Santa de Famille Camille : quelqu’un cherche une idée de cadeau pour toi',
+      'Famille Camille : quelqu’un cherche une idée de cadeau pour toi',
     );
-    expect(email.text).toContain('Bonjour Inès,');
-    expect(email.text).toContain('Noël 2026 (Famille Camille)');
-    expect(email.text).toContain(`\n${data.link}\n`);
-    expect(email.text).toContain('On ne te dira pas qui demande');
-    // It invites to write one's list (ticket 107, PistesEmail).
-    expect(email.text).toContain(
-      'Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
+    // PistesEmail, ticket 110: the lines, the button, the end.
+    expect(email.text).toBe(
+      [
+        'Bonjour Inès,',
+        'La personne qui t’offre un cadeau pour Noël 2026 (Famille Camille) ne sait pas quoi choisir.',
+        'Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
+        '',
+        `Écrire ma liste : ${data.link}`,
+        '',
+        'On ne te dira pas qui demande : c’est un Secret Santa. Tu ne recevras ce message qu’une fois.',
+        'Le Secret Santa de Famille Camille',
+      ].join('\n'),
     );
-    expect(email.text).toContain('Écrire ma liste :');
+    expect(email.html).toContain(`<a href="${data.link}">Écrire ma liste</a>`);
   });
 
-  it('names who asks once the draw is revealed (README 22.18)', () => {
-    const email = buildHintsRequestEmail({ ...data, from: 'Hugo' }, 'fr');
-    expect(email.subject).toBe(
-      'Secret Santa de Famille Camille : Hugo cherche une idée de cadeau pour toi',
+  it('names the Secret Santa in the subject when the event has two', () => {
+    expect(
+      buildHintsRequestEmail({ ...data, santaName: 'Les enfants' }, 'fr')
+        .subject,
+    ).toBe(
+      'Famille Camille (Les enfants) : quelqu’un cherche une idée de cadeau pour toi',
     );
-    expect(email.text).toContain('Hugo t’offre un cadeau pour Noël 2026');
-    expect(email.text).not.toContain('On ne te dira pas qui demande');
+  });
+
+  it('is written in the three languages, every word filled', () => {
+    for (const locale of ['fr', 'en', 'de'] as const) {
+      const email = buildHintsRequestEmail(data, locale);
+      expect(`${email.subject}${email.text}`, locale).not.toMatch(/\{\w+\}/);
+      expect(email.subject, locale).toMatch(/^Famille Camille ?:/);
+    }
   });
 });

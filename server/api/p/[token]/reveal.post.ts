@@ -1,6 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { assignments, participations } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
+import { santaNameForSubject } from '#server/database/editions';
 import { resultHelp } from '#server/http/hints';
 import { recordEvent } from '#server/database/audit';
 import { requirePersonalLink } from '#server/http/personal';
@@ -78,11 +79,13 @@ export default defineEventHandler(async (event) => {
       rules.notifyAllViewed &&
       isEveryoneViewed(await viewCounts(db, edition.id))
     ) {
+      const santaName = await santaNameForSubject(db, edition);
       await notifyOrganizers({ db, event }, group.id, (locale) =>
         buildAllViewedEmail(
           {
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: appUrl(event, `/admin/${group.slug}/editions/${edition.id}`),
           },
           locale,

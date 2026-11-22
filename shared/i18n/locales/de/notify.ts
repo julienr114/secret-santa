@@ -3,16 +3,16 @@ import type { Dict } from '../../types';
 
 export default {
   joined: {
-    subject: '{name} ist „{group}“ beigetreten',
+    subject: '{name} ist dem Event beigetreten',
     body: '{name} ist gerade über den Einladungslink dem Event „{group}“ beigetreten.',
     next: 'Denk daran, die Person dem laufenden Wichteln und ihren Ausschlüssen (Partner, Geschwister) hinzuzufügen.',
   },
   allViewed: {
-    subject: 'Alle Umschläge in „{group}“ sind geöffnet',
+    subject: 'Alle Umschläge sind geöffnet',
     body: 'Für {edition} in „{group}“ weiß jetzt jeder, wen er beschenkt. Jetzt fehlen nur noch die Geschenke.',
   },
   reminder: {
-    subject: 'Die Feier in „{group}“ naht',
+    subject: 'Der große Tag naht',
     body: '{edition} ist am {date}.',
     missing: {
       one: '{count} Person hat ihren Umschlag noch nicht geöffnet: {names}.',

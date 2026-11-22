@@ -164,8 +164,6 @@ export default {
     listHelp: 'Le mode anonyme y sera activé pour toi.',
     title: 'Pour t’aider à choisir',
     ask: 'Lui demander des idées',
-    sentEmailNamed: '{name} vient de recevoir un email.',
-    sentPageNamed: '{name} le verra en ouvrant son lien.',
     askHint: 'Sans dire que ça vient de toi.',
     sent: 'Demande envoyée.',
     sentEmail:
@@ -181,9 +179,6 @@ export default {
       '{name} reçoit un email qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     bodyPage:
       '{name} le verra sur sa page d’idées, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
-    named: 'Ton nom est donné',
-    namedHelp:
-      'Le tirage est dévoilé : {name} saura que la demande vient de toi.',
     anonymous: 'Ton nom n’apparaît nulle part',
     anonymousHelp: {
       one: 'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
@@ -205,21 +200,13 @@ export default {
   },
   email: {
     request: {
-      subject:
-        'Secret Santa de {group} : quelqu’un cherche une idée de cadeau pour toi',
+      subject: 'quelqu’un cherche une idée de cadeau pour toi',
       greeting: 'Bonjour {name},',
-      body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
-      bodyPortrait:
-        'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
-      subjectFrom:
-        'Secret Santa de {group} : {from} cherche une idée de cadeau pour toi',
-      bodyFrom:
-        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
-      bodyPortraitFrom:
-        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
-      cta: 'Écrire ma liste :',
-      anonymous: 'On ne te dira pas qui demande : c’est un Secret Santa.',
-      once: 'Tu ne recevras ce message qu’une fois.',
+      body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir.',
+      help: 'Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
+      cta: 'Écrire ma liste',
+      anonymous:
+        'On ne te dira pas qui demande : c’est un Secret Santa. Tu ne recevras ce message qu’une fois.',
     },
   },
 };

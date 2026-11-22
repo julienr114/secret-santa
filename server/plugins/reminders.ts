@@ -2,6 +2,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { dbOf, type D1Binding } from '#server/database/client';
 import { editionsToRemind, missingViewers } from '#server/database/notify';
 import { secretSantas } from '#server/database/schema';
+import { santaNameForSubject } from '#server/database/editions';
 import { appUrl, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
 import { buildReminderEmail, isReminderDue } from '#server/utils/notifications';
@@ -61,6 +62,7 @@ export default defineNitroPlugin((nitroApp) => {
           if (claimed.length === 0) return;
           const missing = await missingViewers(db, edition.id);
           if (!rules.notifyReminder || missing.length === 0) return;
+          const santaName = await santaNameForSubject(db, edition);
           await notifyOrganizers({ db }, group.id, (locale) =>
             buildReminderEmail(
               {
@@ -68,6 +70,7 @@ export default defineNitroPlugin((nitroApp) => {
                 editionLabel: edition.label,
                 eventDate: rules.eventDate,
                 missing,
+                santaName,
                 link: appUrl(
                   undefined,
                   `/admin/${group.slug}/editions/${edition.id}`,

@@ -1,16 +1,16 @@
 // Emails to the organisers (README 22.2).
 export default {
   joined: {
-    subject: '{name} a rejoint « {group} »',
+    subject: '{name} a rejoint l’événement',
     body: '{name} vient de rejoindre l’événement « {group} » avec le lien d’invitation.',
     next: 'Pense à l’ajouter au Secret Santa en cours et à ses exclusions (couple, fratrie).',
   },
   allViewed: {
-    subject: 'Toutes les enveloppes sont ouvertes dans « {group} »',
+    subject: 'toutes les enveloppes sont ouvertes',
     body: 'Pour {edition} dans « {group} », chacun sait maintenant à qui il offre. Il ne reste plus qu’à trouver les cadeaux.',
   },
   reminder: {
-    subject: 'La fête approche dans « {group} »',
+    subject: 'le jour J approche',
     body: '{edition}, c’est le {date}.',
     missing: {
       one: '{count} personne n’a pas encore ouvert son enveloppe : {names}.',

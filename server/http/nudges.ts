@@ -7,6 +7,7 @@ import {
   type SecretSantaRow,
 } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
+import { santaNameForSubject } from '#server/database/editions';
 import { personalPath } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
 import { appUrl, nowIso } from './context';
@@ -103,6 +104,7 @@ export const autoRemind = async (
     1,
     daysLeft(edition.guessEndsAt, now, edition.guessTimeZone),
   );
+  const santaName = await santaNameForSubject(ctx.db, edition);
   const emails = await Promise.all(
     targets.map(async ({ id, text }) => {
       const member = members.find((m) => m.id === id)!;
@@ -116,6 +118,7 @@ export const autoRemind = async (
             firstName: member.person.firstName,
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: page,
             skipLink: `${page}?passer=1`,
             christmas: group.category === 'christmas',
@@ -179,6 +182,7 @@ export const organizerPoint = async (
     edition.guessAutoReminder && !edition.guessAutoReminderSentAt
       ? Math.max(1, daysLeft(autoAt, now, edition.guessTimeZone))
       : null;
+  const santaName = await santaNameForSubject(ctx.db, edition);
   await sendEmails(
     undefined,
     recipients.map((r) => ({
@@ -187,6 +191,7 @@ export const organizerPoint = async (
           firstName: r.firstName ?? '',
           groupName: group.name,
           editionLabel: edition.label,
+          santaName,
           link: appUrl(
             undefined,
             `/admin/${group.slug}/editions/${edition.id}`,
@@ -228,6 +233,7 @@ export const organizerEnd = async (
   const recipients = await newsRecipients(ctx.db, group.id);
   if (recipients.length === 0) return;
   const count = playedCount(await gameMembers(ctx.db, edition.id));
+  const santaName = await santaNameForSubject(ctx.db, edition);
   await sendEmails(
     undefined,
     recipients.map((r) => ({
@@ -244,6 +250,7 @@ export const organizerEnd = async (
           guessTimeZone: edition.guessTimeZone,
           played: count.played,
           total: count.total,
+          santaName,
         },
         localeOf(r.language),
       ),

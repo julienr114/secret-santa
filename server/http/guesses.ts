@@ -4,7 +4,7 @@ import type { Db } from '#server/database/client';
 import { secretSantas, participations, persons } from '#server/database/schema';
 import type { SecretSantaRow } from '#server/database/schema';
 import { gameMembers, guessesOf, listGuesses } from '#server/database/guesses';
-import { listEditions } from '#server/database/editions';
+import { listEditions, santaNameForSubject } from '#server/database/editions';
 import { organizerCount } from '#server/database/groups';
 import { editionPersons } from '#server/database/answers';
 import { readPairs } from '#server/database/draw';
@@ -120,6 +120,7 @@ export const afterReveal = async (
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
     .where(eq(participations.secretSantaId, edition.id));
+  const santaName = await santaNameForSubject(ctx.db, edition);
   const emails = await Promise.all(
     rows
       .filter(({ person }) => person.email)
@@ -129,6 +130,7 @@ export const afterReveal = async (
             firstName: person.firstName,
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: appUrl(
               ctx.event,
               `${await personalPath(participation, ctx.dataKey)}/devine`,

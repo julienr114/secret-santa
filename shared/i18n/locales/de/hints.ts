@@ -162,8 +162,6 @@ export default {
     listHelp: 'Der anonyme Modus ist dort für dich aktiviert.',
     title: 'Damit du besser wählst',
     ask: 'Um Ideen bitten',
-    sentEmailNamed: '{name} hat gerade eine E-Mail bekommen.',
-    sentPageNamed: '{name} sieht es beim Öffnen des eigenen Links.',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
     sent: 'Anfrage gesendet.',
     sentEmail:
@@ -180,9 +178,6 @@ export default {
       '{name} bekommt eine E-Mail mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     bodyPage:
       '{name} sieht es auf der eigenen Ideen-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
-    named: 'Dein Name wird genannt',
-    namedHelp:
-      'Die Auslosung ist aufgedeckt: {name} weiß, dass die Anfrage von dir kommt.',
     anonymous: 'Dein Name erscheint nirgends',
     anonymousHelp: {
       one: 'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
@@ -204,19 +199,13 @@ export default {
   },
   email: {
     request: {
-      subject: 'Wichteln {group}: Jemand sucht eine Geschenkidee für dich',
+      subject: 'Jemand sucht eine Geschenkidee für dich',
       greeting: 'Hallo {name},',
-      body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
-      bodyPortrait:
-        'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
-      subjectFrom: 'Wichteln {group}: {from} sucht eine Geschenkidee für dich',
-      bodyFrom:
-        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
-      bodyPortraitFrom:
-        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
-      cta: 'Meine Liste schreiben:',
-      anonymous: 'Wir verraten dir nicht, wer fragt: Es ist Wichteln.',
-      once: 'Du bekommst diese Nachricht nur einmal.',
+      body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll.',
+      help: 'Hilf ihr: Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
+      cta: 'Meine Liste schreiben',
+      anonymous:
+        'Wir verraten dir nicht, wer fragt: Es ist Wichteln. Du bekommst diese Nachricht nur einmal.',
     },
   },
 } satisfies Dict<typeof fr>;

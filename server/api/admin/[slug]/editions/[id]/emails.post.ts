@@ -1,7 +1,10 @@
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
-import { listParticipants } from '#server/database/editions';
+import {
+  listParticipants,
+  santaNameForSubject,
+} from '#server/database/editions';
 import { personalLink } from '#server/database/participations';
 import { auditLog, participations } from '#server/database/schema';
 import { auditInsert } from '#server/database/audit';
@@ -76,6 +79,7 @@ export default defineEventHandler(async (event) => {
 
   // The email is signed by the organiser who sends it (their first name).
   const sender = (await findAccountById(db, user.accountId))?.firstName ?? null;
+  const santaName = await santaNameForSubject(db, edition);
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
     targets.map(async (person) => {
@@ -88,6 +92,7 @@ export default defineEventHandler(async (event) => {
             firstName: person.firstName,
             groupName: group.name,
             sender,
+            santaName,
             editionLabel: edition.label,
             link: await personalLink(event, row, dataKey),
             budget: rules.budget,

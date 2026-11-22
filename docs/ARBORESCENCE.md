@@ -22,6 +22,7 @@ flowchart LR
   accueil --> limite["La limite de Secret Santa<br/><small>/secret-santa/limite</small>"]
   accueil --> pause["Les nouveaux Secret Santa en pause<br/><small>/secret-santa/pause</small>"]
   accueil --> nouveautes["Quoi de neuf<br/><small>/quoi-de-neuf</small>"]
+  accueil --> ailleurs["Ce que j'offre ailleurs<br/><small>/offert-ailleurs</small>"]
 
   subgraph admin ["Administration (super-admin)"]
     administration["Administration<br/><small>/admin</small>"]
@@ -147,6 +148,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 | Les événements passés | `/evenements-passes` | Accueil | |
 | (ancienne adresse) | `/tirages-passes` | mène aux Événements passés (`pastPathOf`) | |
 | (ancienne adresse) | `/listes` | mène à l'accueil (`listsPathOf`, ticket 114) | |
+| (ancienne adresse) | `/demande` (demander à organiser, V2) | mène à l'accueil (`gonePathOf`, ticket 113) | |
 | S'inscrire à un Secret Santa (son lien d'invitation, ticket 116) | `/rejoindre/[code]` | — | |
 
 ## Administration (super-admin)
@@ -159,10 +161,11 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 | Comptes | `/admin/comptes` | Administration ; les comptes désactivés : Comptes | |
 | Un compte | `/admin/comptes/[id]` | Comptes | Limite de Secret Santa, désactivation |
 | Guide de style | `/admin/guide-de-style` | Administration | |
+| (ancienne adresse) | `/admin/demandes` et `/admin/demandes/[id]` (les demandes, retirées au ticket 105) | mènent à l'Administration (`gonePathOf`, ticket 113) | |
 
 ## Une fête (ses membres ; l'organisateur pour le reste)
 
-Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement ; `…/invitation` mène à ses Membres, un événement n'ayant plus de lien d'invitation (ticket 116), comme `/e/[fête]/membres/nouvelle`, personne ne s'ajoutant plus à un événement lui-même (ticket 117), et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Les Secret Santa restent sous `/admin/[fête]/editions`.
+Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/reglages`, `…/organisateurs`, `…/exclusions`, `…/journal`) mènent à celles de l’événement ; `…/invitation` mène à ses Membres, un événement n'ayant plus de lien d'invitation (ticket 116), comme `/e/[fête]/membres/nouvelle`, personne ne s'ajoutant plus à un événement lui-même (ticket 117), et `/f/…` (l’adresse d’avant le ticket 102) à `/e/…` (`partyPathOf`, `app/middleware/redirects.global.ts`). Chaque adresse de la V2 mène à une page, redirections enchaînées (`tests/routes.test.ts`, ticket 113). Les Secret Santa restent sous `/admin/[fête]/editions`.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
@@ -177,6 +180,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête | `/e/[fête]/reglages` | La fête | Catégorie, « Pour » (un anniversaire, ticket 118), date, organisateur, suppression de la fête |
 | (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
+| (ancienne adresse) | `/admin/[groupe]/reglages/mot`, puis `/e/[fête]/reglages/mot` (le mot ajouté aux messages, passé au Secret Santa) | mène aux Réglages de la fête (`gonePathOf`, ticket 113) | |
 
 ## Une édition (organisateur)
 

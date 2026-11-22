@@ -1,7 +1,15 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { tabOf } from '#shared/utils/navigation';
+import {
+  gonePathOf,
+  hintsPathOf,
+  invitationPathOf,
+  listsPathOf,
+  partyPathOf,
+  pastPathOf,
+  tabOf,
+} from '#shared/utils/navigation';
 
 // Every path written in `app/` (a `to`, a `back`, a `navigateTo`) is a
 // page that exists (ticket 114): not an old address, which only the
@@ -120,5 +128,88 @@ describe('the tab lit on each page', () => {
       '/admin/guide-de-style',
     ]);
     expect(tabs['/admin/[slug]/editions/[id]']).toBe('home');
+  });
+});
+
+// Every page of the V2 (main, before the V3 goes out, ticket 113) still
+// leads to a page, through the redirects of
+// `app/middleware/redirects.global.ts`, played until nothing moves: links
+// already sent by email or kept by people never give an error page.
+const V2_PAGES = [
+  '/',
+  '/admin',
+  '/admin/comptes',
+  '/admin/comptes/x',
+  '/admin/demandes/x',
+  '/admin/groupes',
+  '/admin/groupes/nouveau',
+  '/admin/guide-de-style',
+  '/admin/x',
+  '/admin/x/editions/nouvelle',
+  '/admin/x/editions/x',
+  '/admin/x/editions/x/ajouter',
+  '/admin/x/editions/x/annuler',
+  '/admin/x/editions/x/emails',
+  '/admin/x/editions/x/exclusions',
+  '/admin/x/editions/x/message',
+  '/admin/x/editions/x/mot',
+  '/admin/x/editions/x/palmares',
+  '/admin/x/editions/x/participants/x',
+  '/admin/x/editions/x/rappel',
+  '/admin/x/editions/x/reglages',
+  '/admin/x/editions/x/voir-le-tirage',
+  '/admin/x/exclusions',
+  '/admin/x/invitation',
+  '/admin/x/invitation/mot',
+  '/admin/x/journal',
+  '/admin/x/organisateurs',
+  '/admin/x/personnes',
+  '/admin/x/personnes/x',
+  '/admin/x/personnes/nouvelle',
+  '/admin/x/reglages',
+  '/admin/x/reglages/mot',
+  '/compte',
+  '/demande',
+  '/famille',
+  '/famille/x',
+  '/invitation/x',
+  '/l/x',
+  '/l/x/connexion',
+  '/listes',
+  '/listes/x',
+  '/listes/nouvelle',
+  '/login',
+  '/login/x',
+  '/offert-ailleurs',
+  '/p/x',
+  '/p/x/devine',
+  '/p/x/devine/palmares',
+  '/p/x/journal',
+  '/p/x/liste',
+  '/p/x/pistes',
+  '/p/x/pistes/idee',
+  '/p/x/pistes/question',
+  '/p/x/pistes/texte',
+  '/p/x/souhaits',
+  '/p/x/tirage',
+  '/rejoindre/x',
+  '/tirages-passes',
+];
+
+/** Where the redirects lead a path, played until it no longer moves. */
+const landing = (path: string, hops = 0): string => {
+  const moved =
+    partyPathOf(path) ??
+    invitationPathOf(path) ??
+    hintsPathOf(path) ??
+    pastPathOf(path) ??
+    listsPathOf(path) ??
+    gonePathOf(path);
+  return moved === null || hops > 5 ? path : landing(moved, hops + 1);
+};
+
+describe('the addresses of the V2', () => {
+  it('each leads to a page', () => {
+    expect(V2_PAGES.filter((path) => !isPage(landing(path)))).toEqual([]);
   });
 });

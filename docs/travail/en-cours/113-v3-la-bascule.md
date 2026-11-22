@@ -18,8 +18,8 @@ La V3 remplace l'application en ligne, d'un coup, pendant que des gens s'en serv
 
 Avant :
 
-- [ ] Vérifier que tous les tickets dont celui-ci dépend sont dans `fait/`. Pas de publication à moitié.
-- [ ] **Refaire l'inventaire du ticket 114** (chaque page, son parent, son squelette, aucune adresse morte) : les tickets 115 à 119 sont passés après lui et ont ajouté ou retiré des pages.
+- [x] Vérifier que tous les tickets dont celui-ci dépend sont dans `fait/`. Pas de publication à moitié.
+- [x] **Refaire l'inventaire du ticket 114** (chaque page, son parent, son squelette, aucune adresse morte) : les tickets 115 à 119 sont passés après lui et ont ajouté ou retiré des pages.
 - [ ] Rejouer la migration sur une copie de la base du jour (`pnpm v3:essai`), et comparer (`pnpm v3:compare`) : autant d'événements que de groupes, chaque Secret Santa en cours avec ses participants et ses enveloppes, chaque liste avec ses idées et ses coches.
 - [ ] Sur cette copie, contrôler à la main trois comptes : quelqu'un qui a tiré et pas encore ouvert son enveloppe ; quelqu'un qui avait écrit des pistes (elles sont devenues sa liste, vue seulement par celui qui l'a tiré) ; quelqu'un dont la liste était partagée par lien (elle est publique, son lien marche encore, sans compte).
 - [ ] Écrire le pas-à-pas du retour en arrière, et l'essayer une fois sur la copie : restaurer la sauvegarde, remettre la version d'avant.

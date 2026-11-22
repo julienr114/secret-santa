@@ -101,6 +101,23 @@ export const listsPathOf = (path: string): string | null =>
   path === '/listes' || path === '/listes/' ? '/' : null;
 
 /**
+ * Where the pages of the V2 that nothing replaces lead (ticket 113, « une
+ * ancienne adresse ne donne jamais une page d'erreur »): asking to organise
+ * (`/demande`) to the home, the requests of the super-admin
+ * (`/admin/demandes`, ticket 105) to the administration, and the word of
+ * a group's settings (`/admin/[groupe]/reglages/mot`, moved by
+ * `partyPathOf`) to the settings of its event.
+ * @param path - The path asked for.
+ * @returns The new path, or null when it did not move.
+ */
+export const gonePathOf = (path: string): string | null => {
+  if (/^\/demande\/?$/.test(path)) return '/';
+  if (/^\/admin\/demandes(\/.*)?$/.test(path)) return '/admin';
+  const word = /^\/e\/([^/]+)\/reglages\/mot\/?$/.exec(path);
+  return word ? `/e/${word[1]}/reglages` : null;
+};
+
+/**
  * Where the invitation link of an event and its page lead now that an
  * event has none (ticket 116, docs/spec/v3/navigation.md, « Les anciennes
  * adresses »): to its « Membres ». The link of a Secret Santa is under it.

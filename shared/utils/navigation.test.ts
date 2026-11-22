@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  gonePathOf,
   backMove,
   hintsPathOf,
   listsPathOf,
@@ -254,5 +255,26 @@ describe('parentOf', () => {
   it('forgets the parent remembered when coming from another place', () => {
     expect(parentOf('list', '/p/tok', '/e/noel', '/')).toBe('/');
     expect(parentOf('list', null, '/e/noel', '/')).toBe('/');
+  });
+});
+
+describe('gonePathOf', () => {
+  it('leads the pages nothing replaces to the nearest', () => {
+    expect(gonePathOf('/demande')).toBe('/');
+    expect(gonePathOf('/admin/demandes')).toBe('/admin');
+    expect(gonePathOf('/admin/demandes/r1')).toBe('/admin');
+    expect(gonePathOf('/e/famille/reglages/mot')).toBe('/e/famille/reglages');
+  });
+
+  it('leaves the other pages', () => {
+    expect(gonePathOf('/e/famille/reglages')).toBeNull();
+    expect(gonePathOf('/demandes')).toBeNull();
+    expect(gonePathOf('/admin/comptes')).toBeNull();
+  });
+
+  it('takes the word of a group to its event in two steps', () => {
+    const moved = partyPathOf('/admin/famille/reglages/mot');
+    expect(moved).toBe('/e/famille/reglages/mot');
+    expect(gonePathOf(moved ?? '')).toBe('/e/famille/reglages');
   });
 });

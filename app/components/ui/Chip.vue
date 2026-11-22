@@ -12,6 +12,9 @@
 // My own state, which opens the sheet of what I give, says it is touched
 // (Correction 30, maquette ListeJOffreAgir): a line around it, mint or
 // lighter on the aubergine, and a small arrow at its end (`opens`).
+// Several pills touched together (the first names under an idea, for
+// those who hold the list: « Qui l'offre ? ») each have the line, and only
+// the last the arrow: `ringed` gives the line alone.
 // `selected` is an `info` pill touched, turned dark, while what it
 // unfolds shows. As a button it keeps a target of 44 px in height, by an
 // invisible padding. Its icon is decorative.
@@ -24,8 +27,16 @@ withDefaults(
     button?: boolean;
     /** Opens something: a line around it and « › » at its end. */
     opens?: boolean;
+    /** The line of `opens`, without the arrow. */
+    ringed?: boolean;
   }>(),
-  { kind: 'info', icon: undefined, button: false, opens: false },
+  {
+    kind: 'info',
+    icon: undefined,
+    button: false,
+    opens: false,
+    ringed: false,
+  },
 );
 const KINDS = {
   info: 'bg-muted text-toned',
@@ -50,6 +61,7 @@ const OPENS_RING: Partial<Record<keyof typeof KINDS, string>> = {
     :class="[
       KINDS[kind],
       opens ? `pr-1.5 ${OPENS_RING[kind] ?? ''}` : 'pr-[9px]',
+      ringed && !opens ? (OPENS_RING[kind] ?? '') : '',
       icon ? 'pl-[7px]' : 'pl-[9px]',
       button
         ? 'relative after:absolute after:inset-x-0 after:-inset-y-[11px]'

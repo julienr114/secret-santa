@@ -119,7 +119,7 @@ export const dropIdea = async (
 ) => {
   const idea = await ideaOf(event, db, list, may);
   await db.batch([
-    deleteClaimsOfIdeas(db, [idea.id]),
+    ...deleteClaimsOfIdeas(db, [idea.id]),
     db.delete(giftListIdeas).where(eq(giftListIdeas.id, idea.id)),
   ]);
   return { ok: true };

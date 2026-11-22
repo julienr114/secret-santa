@@ -6,14 +6,16 @@ import { mergeRules } from '../utils/rules';
 import { compareV3 } from './v3Compare';
 
 // The V3 migration (ticket 101) on data of the V2: every migration up to
-// 0032, then rows covering the cases of docs/spec/v3/migration.md, then
-// 0033, in one transaction as D1 applies it, foreign keys on.
+// 0033 (« Cocher pour quelqu'un », from main), then rows covering the
+// cases of docs/spec/v3/migration.md, then 0034, in one transaction as D1
+// applies it, foreign keys on. The migrations of the V3 come after the
+// one of main since ticket 098: 0034 to 0038.
 
 const DIR = join(__dirname, 'migrations');
 const files = readdirSync(DIR)
   .filter((file) => file.endsWith('.sql'))
   .toSorted();
-const V3 = '0033_v3_parties.sql';
+const V3 = '0034_v3_parties.sql';
 
 type Row = Record<string, unknown>;
 
@@ -112,7 +114,7 @@ describe('the V3 migration', () => {
 
   it('matches the Drizzle snapshot, table by table', () => {
     const snapshot = JSON.parse(
-      readFileSync(join(DIR, 'meta', '0033_snapshot.json'), 'utf8'),
+      readFileSync(join(DIR, 'meta', '0034_snapshot.json'), 'utf8'),
     ) as {
       tables: Record<
         string,
@@ -401,7 +403,7 @@ describe('the V3 migration', () => {
 });
 
 describe('the end of the requests (ticket 105)', () => {
-  const LIMIT = '0034_v3_secret_santa_limit.sql';
+  const LIMIT = '0035_v3_secret_santa_limit.sql';
   const db = v2();
   db.exec(`
 INSERT INTO group_requests (id, account_id, message, status, created_at) VALUES
@@ -430,7 +432,7 @@ UPDATE accounts SET group_quota = 5 WHERE id = 'a1';
 });
 
 describe('the sharing of a list by stages (ticket 106)', () => {
-  const SHARING = '0036_v3_list_sharing.sql';
+  const SHARING = '0037_v3_list_sharing.sql';
   const db = v2();
   // l2 is shared by link; l3, whose sharing was stopped, is linked to the
   // draw of « Famille » for Inès.
@@ -489,7 +491,7 @@ UPDATE participations SET gift_list_id = 'l3' WHERE id = 'pa2';
 });
 
 describe('the gift hints become the list (ticket 107)', () => {
-  const HINTS = '0037_v3_hints_to_lists.sql';
+  const HINTS = '0038_v3_hints_to_lists.sql';
   const db = v2();
   // Camille, with an account, left a portrait and two ideas in « Les
   // enfants 2026 », still being prepared; Inès, without one, an idea in
@@ -566,5 +568,50 @@ INSERT INTO wishes (id, participation_id, position, label, url, created_at) VALU
     expect(
       all(db, "SELECT name FROM sqlite_master WHERE name LIKE '_v3_hint%'"),
     ).toEqual([]);
+  });
+});
+
+describe('the ticks noted for someone go through the V3 (ticket 098)', () => {
+  const db = v2();
+  // On « Les 7 ans de Léo », Camille noted the puzzle for Tata (a first
+  // name), the bike for Parrain (with his address), and the train for
+  // Hugo and Tata together, closed.
+  db.exec(`
+INSERT INTO family_members (id, account_id, first_name, avatar_emoji, avatar_color, is_self, created_at) VALUES
+  ('f1', 'a1', 'Léo', '🚀', 'pine', 0, '${NOW}');
+INSERT INTO gift_list_people (id, list_id, member_id, position) VALUES
+  ('lp1', 'l3', 'f1', 0);
+INSERT INTO gift_list_ideas (id, list_id, list_person_id, text, url, position, created_at) VALUES
+  ('i1', 'l3', 'lp1', 'Puzzle', NULL, 0, '${NOW}'),
+  ('i2', 'l3', 'lp1', 'Vélo', NULL, 1, '${NOW}'),
+  ('i3', 'l3', 'lp1', 'Train', NULL, 2, '${NOW}');
+INSERT INTO gift_list_givers (id, list_id, name, email, added_by, created_at) VALUES
+  ('gv1', 'l3', 'Tata', NULL, 'a1', '${NOW}'),
+  ('gv2', 'l3', 'Parrain', 'parrain@example.com', 'a1', '${NOW}');
+INSERT INTO gift_claims (id, list_id, idea_id, account_id, mode, anonymous, closed, created_at, noted_by, giver_name) VALUES
+  ('c1', 'l3', 'i3', 'a2', 'group', 0, 1, '2026-11-20T10:00:00.000Z', 'a1', NULL);
+INSERT INTO gift_giver_claims (id, list_id, idea_id, giver_id, mode, closed, noted_by, created_at) VALUES
+  ('gc1', 'l3', 'i1', 'gv1', 'alone', 0, 'a1', '${NOW}'),
+  ('gc2', 'l3', 'i2', 'gv2', 'alone', 0, 'a1', '${NOW}'),
+  ('gc3', 'l3', 'i3', 'gv1', 'group', 0, 'a1', '2026-11-20T10:00:01.000Z');
+`);
+  const noted = () => ({
+    givers: all(db, 'SELECT * FROM gift_list_givers ORDER BY id'),
+    named: all(db, 'SELECT * FROM gift_giver_claims ORDER BY id'),
+    claims: all(
+      db,
+      'SELECT id, idea_id, account_id, mode, closed, noted_by, giver_name, created_at FROM gift_claims ORDER BY id',
+    ),
+  });
+  const before = noted();
+  files.filter((file) => file >= V3).forEach((file) => apply(db, file));
+
+  it('keeps every tick on the same idea, under the same name', () => {
+    expect(before.named).toHaveLength(3);
+    expect(noted()).toEqual(before);
+  });
+
+  it('leaves no foreign key broken', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });

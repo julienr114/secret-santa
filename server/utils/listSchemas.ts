@@ -95,3 +95,33 @@ export const addPersonSchema = z.union([
   z.object({ memberId: z.string().min(1) }),
   z.object({ newMember: newMemberSchema }),
 ]);
+
+/**
+ * « Qui l'offre ? » (21 November 2026): who gives an idea, from who the
+ * sheet showed as giving it. Each giver is someone it offered, by its
+ * key, or a first name written now, with its address or without. One
+ * person alone; several for a gift given by several, which « On est au
+ * complet » closes.
+ */
+export const giversSchema = z
+  .object({
+    from: z.array(z.string().max(64)).max(200),
+    givers: z
+      .array(
+        z.union([
+          z.object({ key: z.string().regex(/^[ag]:[A-Za-z0-9_-]{1,40}$/) }),
+          z.object({
+            name: plainName(MEMBER_NAME_MAX).min(1),
+            email: emailSchema.nullable(),
+          }),
+        ]),
+      )
+      .min(1)
+      .max(50),
+    mode: z.enum(['alone', 'group']),
+    closed: z.boolean().default(false),
+  })
+  .refine(
+    (body) => body.mode === 'group' || body.givers.length === 1,
+    'one person gives it alone',
+  );

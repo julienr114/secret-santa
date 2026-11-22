@@ -495,6 +495,27 @@ export const useUntickForMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
+/** Who gives an idea, as the sheet « Qui l'offre ? » saves it. */
+export type GiversBody = {
+  ideaId: string;
+  /** Who the sheet showed as giving it. */
+  from: string[];
+  givers: ({ key: string } | { name: string; email: string | null })[];
+  mode: 'alone' | 'group';
+  closed: boolean;
+};
+
+/** « Qui l'offre ? » (21 November 2026), for those who hold the list. */
+export const useSetGiversMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, GiversBody>(
+    ({ ideaId, ...body }) =>
+      api(`/api/lists/${toValue(id)}/claims/${ideaId}/givers`, {
+        method: 'PUT',
+        body,
+      }),
+    () => listKeys(toValue(id)),
+  );
+
 export const useAddOffListMutation = (token: Token) =>
   useApiMutation<
     { ok: true },

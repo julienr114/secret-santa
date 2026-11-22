@@ -245,20 +245,22 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(leo.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await expect(leo.getByTestId('idea-who')).toHaveCount(0);
   await expect(leo.getByText('Changer', { exact: true })).toHaveCount(0);
-  // No « Changer »: the pill of my state opens the sheet. With others,
-  // without the choice of staying anonymous.
+  // No « Changer »: the pill of my state opens « Qui l'offre ? », in
+  // place of the sheet of what I give (21 November 2026): « Plusieurs »,
+  // me alone, proposes a gift given by several.
   await leo.getByTestId('idea-mine').click();
-  const sheet = page.getByTestId('claim-sheet');
+  const sheet = page.getByTestId('who-sheet');
   await expect(sheet).toBeVisible();
-  await expect(sheet.getByRole('switch')).toHaveCount(0);
-  await sheet.getByText('On l’offre à plusieurs').click();
-  await page.getByTestId('claim-done').click();
+  await expect(page.getByTestId('claim-sheet')).toHaveCount(0);
+  await page.getByTestId('who-mode').getByText('Plusieurs').click();
+  await expect(sheet.getByRole('checkbox', { name: 'Moi' })).toBeChecked();
+  await page.getByTestId('who-save').click();
   await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
   await expect(leo.getByTestId('idea-joined')).toHaveText('Tu participes');
   // The green box unticks at once, without the sheet, even in a gift
   // given by several (Julien, 20 November 2026).
   await box.click();
-  await expect(page.getByTestId('claim-sheet')).toHaveCount(0);
+  await expect(page.getByTestId('who-sheet')).toHaveCount(0);
   await expect(box).toHaveAttribute('aria-checked', 'false');
   await expect(leo.getByTestId('idea-mine')).toHaveCount(0);
 

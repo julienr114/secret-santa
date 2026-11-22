@@ -236,36 +236,43 @@
     {
       "idx": 33,
       "version": "6",
-      "when": 1795189199390,
-      "tag": "0033_v3_parties",
+      "when": 1795300832206,
+      "tag": "0033_claims_for_someone",
       "breakpoints": true
     },
     {
       "idx": 34,
       "version": "6",
-      "when": 1795275421675,
-      "tag": "0034_v3_secret_santa_limit",
+      "when": 1795300833206,
+      "tag": "0034_v3_parties",
       "breakpoints": true
     },
     {
       "idx": 35,
       "version": "6",
-      "when": 1795281988242,
-      "tag": "0035_v3_switches",
+      "when": 1795300834206,
+      "tag": "0035_v3_secret_santa_limit",
       "breakpoints": true
     },
     {
       "idx": 36,
       "version": "6",
-      "when": 1795288730588,
-      "tag": "0036_v3_list_sharing",
+      "when": 1795300835206,
+      "tag": "0036_v3_switches",
       "breakpoints": true
     },
     {
       "idx": 37,
       "version": "6",
-      "when": 1795294041051,
-      "tag": "0037_v3_hints_to_lists",
+      "when": 1795300836206,
+      "tag": "0037_v3_list_sharing",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1795300837206,
+      "tag": "0038_v3_hints_to_lists",
       "breakpoints": true
     }
   ]

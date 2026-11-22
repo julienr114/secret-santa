@@ -51,6 +51,9 @@ const STATUS_BY_REASON: Record<string, number> = {
   list_shared: 409,
   anonymous_mode: 409,
   taken: 409,
+  anonymous: 409,
+  several: 400,
+  empty: 400,
 };
 
 /** Returns the value of an Ok result or throws the matching HTTP error. */

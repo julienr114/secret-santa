@@ -1,8 +1,8 @@
-// `pnpm v3:essai <export.sql>`: tries migration 0033 (ticket 101) on an
+// `pnpm v3:essai <export.sql>`: tries migration 0034 (ticket 101) on an
 // export of the database (`wrangler d1 export … --remote`), all locally.
 // The export is loaded with the foreign keys off (D1 writes the tables in
 // an order that breaks them otherwise, which is why `wrangler d1 execute
-// --local` refuses it), then 0033 runs in one transaction with the keys on,
+// --local` refuses it), then 0034 runs in one transaction with the keys on,
 // as D1 applies it, and the two databases are compared. The databases are
 // written next to the export, then deleted: they hold people's data.
 import { copyFileSync, readFileSync, rmSync } from 'node:fs';
@@ -17,7 +17,7 @@ if (!dump) {
 }
 const before = join(dirname(dump), 'v3-essai-avant.sqlite');
 const after = join(dirname(dump), 'v3-essai-apres.sqlite');
-const MIGRATION = 'server/database/migrations/0033_v3_parties.sql';
+const MIGRATION = 'server/database/migrations/0034_v3_parties.sql';
 
 const reader =
   (db: DatabaseSync): Query =>

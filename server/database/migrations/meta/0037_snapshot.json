@@ -1,8 +1,8 @@
 {
-  "id": "fe8fd3c2-9af1-4e2e-8a7d-fd621c5e3121",
-  "prevId": "2ddd4c12-6553-4c00-9e11-df491fcca338",
   "version": "6",
   "dialect": "sqlite",
+  "id": "2ddd4c12-6553-4c00-9e11-df491fcca338",
+  "prevId": "301e750e-f49c-4a42-943b-3f56422a5ab0",
   "tables": {
     "accounts": {
       "name": "accounts",
@@ -201,28 +201,28 @@
         "assignments_secret_santa_id_secret_santas_id_fk": {
           "name": "assignments_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "assignments",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "assignments_giver_person_id_persons_id_fk": {
           "name": "assignments_giver_person_id_persons_id_fk",
           "tableFrom": "assignments",
+          "tableTo": "persons",
           "columnsFrom": [
             "giver_person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -303,41 +303,41 @@
         "audit_log_party_id_parties_id_fk": {
           "name": "audit_log_party_id_parties_id_fk",
           "tableFrom": "audit_log",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "audit_log_secret_santa_id_secret_santas_id_fk": {
           "name": "audit_log_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "audit_log",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "audit_log_person_id_persons_id_fk": {
           "name": "audit_log_person_id_persons_id_fk",
           "tableFrom": "audit_log",
+          "tableTo": "persons",
           "columnsFrom": [
             "person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -396,28 +396,28 @@
         "draw_answers_participation_id_participations_id_fk": {
           "name": "draw_answers_participation_id_participations_id_fk",
           "tableFrom": "draw_answers",
+          "tableTo": "participations",
           "columnsFrom": [
             "participation_id"
           ],
-          "tableTo": "participations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "draw_answers_secret_santa_id_secret_santas_id_fk": {
           "name": "draw_answers_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "draw_answers",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -562,28 +562,28 @@
         "family_members_account_id_accounts_id_fk": {
           "name": "family_members_account_id_accounts_id_fk",
           "tableFrom": "family_members",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "family_members_linked_account_id_accounts_id_fk": {
           "name": "family_members_linked_account_id_accounts_id_fk",
           "tableFrom": "family_members",
+          "tableTo": "accounts",
           "columnsFrom": [
             "linked_account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -657,6 +657,20 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "noted_by": {
+          "name": "noted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "giver_name": {
+          "name": "giver_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -680,41 +694,291 @@
         "gift_claims_list_id_gift_lists_id_fk": {
           "name": "gift_claims_list_id_gift_lists_id_fk",
           "tableFrom": "gift_claims",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_claims_idea_id_gift_list_ideas_id_fk": {
           "name": "gift_claims_idea_id_gift_list_ideas_id_fk",
           "tableFrom": "gift_claims",
+          "tableTo": "gift_list_ideas",
           "columnsFrom": [
             "idea_id"
           ],
-          "tableTo": "gift_list_ideas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_claims_account_id_accounts_id_fk": {
           "name": "gift_claims_account_id_accounts_id_fk",
           "tableFrom": "gift_claims",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "gift_claims_noted_by_accounts_id_fk": {
+          "name": "gift_claims_noted_by_accounts_id_fk",
+          "tableFrom": "gift_claims",
+          "tableTo": "accounts",
+          "columnsFrom": [
+            "noted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "gift_giver_claims": {
+      "name": "gift_giver_claims",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "list_id": {
+          "name": "list_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "idea_id": {
+          "name": "idea_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "giver_id": {
+          "name": "giver_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "mode": {
+          "name": "mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "closed": {
+          "name": "closed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "noted_by": {
+          "name": "noted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "gift_giver_claims_idea_giver_idx": {
+          "name": "gift_giver_claims_idea_giver_idx",
+          "columns": [
+            "idea_id",
+            "giver_id"
+          ],
+          "isUnique": true
+        },
+        "gift_giver_claims_list_idx": {
+          "name": "gift_giver_claims_list_idx",
+          "columns": [
+            "list_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gift_giver_claims_list_id_gift_lists_id_fk": {
+          "name": "gift_giver_claims_list_id_gift_lists_id_fk",
+          "tableFrom": "gift_giver_claims",
+          "tableTo": "gift_lists",
+          "columnsFrom": [
+            "list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "gift_giver_claims_idea_id_gift_list_ideas_id_fk": {
+          "name": "gift_giver_claims_idea_id_gift_list_ideas_id_fk",
+          "tableFrom": "gift_giver_claims",
+          "tableTo": "gift_list_ideas",
+          "columnsFrom": [
+            "idea_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "gift_giver_claims_giver_id_gift_list_givers_id_fk": {
+          "name": "gift_giver_claims_giver_id_gift_list_givers_id_fk",
+          "tableFrom": "gift_giver_claims",
+          "tableTo": "gift_list_givers",
+          "columnsFrom": [
+            "giver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "gift_giver_claims_noted_by_accounts_id_fk": {
+          "name": "gift_giver_claims_noted_by_accounts_id_fk",
+          "tableFrom": "gift_giver_claims",
+          "tableTo": "accounts",
+          "columnsFrom": [
+            "noted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "gift_list_givers": {
+      "name": "gift_list_givers",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "list_id": {
+          "name": "list_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "added_by": {
+          "name": "added_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "gift_list_givers_list_idx": {
+          "name": "gift_list_givers_list_idx",
+          "columns": [
+            "list_id"
+          ],
+          "isUnique": false
+        },
+        "gift_list_givers_email_idx": {
+          "name": "gift_list_givers_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gift_list_givers_list_id_gift_lists_id_fk": {
+          "name": "gift_list_givers_list_id_gift_lists_id_fk",
+          "tableFrom": "gift_list_givers",
+          "tableTo": "gift_lists",
+          "columnsFrom": [
+            "list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "gift_list_givers_added_by_accounts_id_fk": {
+          "name": "gift_list_givers_added_by_accounts_id_fk",
+          "tableFrom": "gift_list_givers",
+          "tableTo": "accounts",
+          "columnsFrom": [
+            "added_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -782,28 +1046,28 @@
         "gift_list_holders_list_id_gift_lists_id_fk": {
           "name": "gift_list_holders_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_holders",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_holders_account_id_accounts_id_fk": {
           "name": "gift_list_holders_account_id_accounts_id_fk",
           "tableFrom": "gift_list_holders",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -883,28 +1147,28 @@
         "gift_list_ideas_list_id_gift_lists_id_fk": {
           "name": "gift_list_ideas_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_ideas",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_ideas_list_person_id_gift_list_people_id_fk": {
           "name": "gift_list_ideas_list_person_id_gift_list_people_id_fk",
           "tableFrom": "gift_list_ideas",
+          "tableTo": "gift_list_people",
           "columnsFrom": [
             "list_person_id"
           ],
-          "tableTo": "gift_list_people",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1015,28 +1279,28 @@
         "gift_list_invites_list_id_gift_lists_id_fk": {
           "name": "gift_list_invites_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_invites",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_invites_invited_by_accounts_id_fk": {
           "name": "gift_list_invites_invited_by_accounts_id_fk",
           "tableFrom": "gift_list_invites",
+          "tableTo": "accounts",
           "columnsFrom": [
             "invited_by"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1104,28 +1368,28 @@
         "gift_list_parties_list_id_gift_lists_id_fk": {
           "name": "gift_list_parties_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_parties",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_parties_party_id_parties_id_fk": {
           "name": "gift_list_parties_party_id_parties_id_fk",
           "tableFrom": "gift_list_parties",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1178,28 +1442,28 @@
         "gift_list_people_list_id_gift_lists_id_fk": {
           "name": "gift_list_people_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_people",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_people_member_id_family_members_id_fk": {
           "name": "gift_list_people_member_id_family_members_id_fk",
           "tableFrom": "gift_list_people",
+          "tableTo": "family_members",
           "columnsFrom": [
             "member_id"
           ],
-          "tableTo": "family_members",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1266,28 +1530,28 @@
         "gift_list_visits_list_id_gift_lists_id_fk": {
           "name": "gift_list_visits_list_id_gift_lists_id_fk",
           "tableFrom": "gift_list_visits",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_list_visits_account_id_accounts_id_fk": {
           "name": "gift_list_visits_account_id_accounts_id_fk",
           "tableFrom": "gift_list_visits",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1418,15 +1682,15 @@
         "gift_lists_account_id_accounts_id_fk": {
           "name": "gift_lists_account_id_accounts_id_fk",
           "tableFrom": "gift_lists",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1500,41 +1764,41 @@
         "gift_off_list_list_id_gift_lists_id_fk": {
           "name": "gift_off_list_list_id_gift_lists_id_fk",
           "tableFrom": "gift_off_list",
+          "tableTo": "gift_lists",
           "columnsFrom": [
             "list_id"
           ],
-          "tableTo": "gift_lists",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_off_list_list_person_id_gift_list_people_id_fk": {
           "name": "gift_off_list_list_person_id_gift_list_people_id_fk",
           "tableFrom": "gift_off_list",
+          "tableTo": "gift_list_people",
           "columnsFrom": [
             "list_person_id"
           ],
-          "tableTo": "gift_list_people",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "gift_off_list_account_id_accounts_id_fk": {
           "name": "gift_off_list_account_id_accounts_id_fk",
           "tableFrom": "gift_off_list",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1627,15 +1891,15 @@
         "gift_portraits_participation_id_participations_id_fk": {
           "name": "gift_portraits_participation_id_participations_id_fk",
           "tableFrom": "gift_portraits",
+          "tableTo": "participations",
           "columnsFrom": [
             "participation_id"
           ],
-          "tableTo": "participations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1711,54 +1975,54 @@
         "guesses_secret_santa_id_secret_santas_id_fk": {
           "name": "guesses_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "guesses",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "guesses_guesser_person_id_persons_id_fk": {
           "name": "guesses_guesser_person_id_persons_id_fk",
           "tableFrom": "guesses",
+          "tableTo": "persons",
           "columnsFrom": [
             "guesser_person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "guesses_recipient_person_id_persons_id_fk": {
           "name": "guesses_recipient_person_id_persons_id_fk",
           "tableFrom": "guesses",
+          "tableTo": "persons",
           "columnsFrom": [
             "recipient_person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "guesses_giver_person_id_persons_id_fk": {
           "name": "guesses_giver_person_id_persons_id_fk",
           "tableFrom": "guesses",
+          "tableTo": "persons",
           "columnsFrom": [
             "giver_person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1810,28 +2074,28 @@
         "hint_requests_receiver_participation_id_participations_id_fk": {
           "name": "hint_requests_receiver_participation_id_participations_id_fk",
           "tableFrom": "hint_requests",
+          "tableTo": "participations",
           "columnsFrom": [
             "receiver_participation_id"
           ],
-          "tableTo": "participations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "hint_requests_secret_santa_id_secret_santas_id_fk": {
           "name": "hint_requests_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "hint_requests",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1920,15 +2184,15 @@
         "login_links_account_id_accounts_id_fk": {
           "name": "login_links_account_id_accounts_id_fk",
           "tableFrom": "login_links",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1988,41 +2252,41 @@
         "manual_exclusions_party_id_parties_id_fk": {
           "name": "manual_exclusions_party_id_parties_id_fk",
           "tableFrom": "manual_exclusions",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "manual_exclusions_giver_id_persons_id_fk": {
           "name": "manual_exclusions_giver_id_persons_id_fk",
           "tableFrom": "manual_exclusions",
+          "tableTo": "persons",
           "columnsFrom": [
             "giver_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "manual_exclusions_receiver_id_persons_id_fk": {
           "name": "manual_exclusions_receiver_id_persons_id_fk",
           "tableFrom": "manual_exclusions",
+          "tableTo": "persons",
           "columnsFrom": [
             "receiver_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2174,28 +2438,28 @@
         "participations_secret_santa_id_secret_santas_id_fk": {
           "name": "participations_secret_santa_id_secret_santas_id_fk",
           "tableFrom": "participations",
+          "tableTo": "secret_santas",
           "columnsFrom": [
             "secret_santa_id"
           ],
-          "tableTo": "secret_santas",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "participations_person_id_persons_id_fk": {
           "name": "participations_person_id_persons_id_fk",
           "tableFrom": "participations",
+          "tableTo": "persons",
           "columnsFrom": [
             "person_id"
           ],
-          "tableTo": "persons",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2397,28 +2661,28 @@
         "party_organisers_party_id_parties_id_fk": {
           "name": "party_organisers_party_id_parties_id_fk",
           "tableFrom": "party_organisers",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "party_organisers_account_id_accounts_id_fk": {
           "name": "party_organisers_account_id_accounts_id_fk",
           "tableFrom": "party_organisers",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2478,15 +2742,15 @@
         "party_years_party_id_parties_id_fk": {
           "name": "party_years_party_id_parties_id_fk",
           "tableFrom": "party_years",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2582,15 +2846,15 @@
         "persons_party_id_parties_id_fk": {
           "name": "persons_party_id_parties_id_fk",
           "tableFrom": "persons",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2794,28 +3058,28 @@
         "secret_santas_party_id_parties_id_fk": {
           "name": "secret_santas_party_id_parties_id_fk",
           "tableFrom": "secret_santas",
+          "tableTo": "parties",
           "columnsFrom": [
             "party_id"
           ],
-          "tableTo": "parties",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "secret_santas_year_id_party_years_id_fk": {
           "name": "secret_santas_year_id_party_years_id_fk",
           "tableFrom": "secret_santas",
+          "tableTo": "party_years",
           "columnsFrom": [
             "year_id"
           ],
-          "tableTo": "party_years",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2888,15 +3152,15 @@
         "sessions_account_id_accounts_id_fk": {
           "name": "sessions_account_id_accounts_id_fk",
           "tableFrom": "sessions",
+          "tableTo": "accounts",
           "columnsFrom": [
             "account_id"
           ],
-          "tableTo": "accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2962,15 +3226,15 @@
         "wishes_participation_id_participations_id_fk": {
           "name": "wishes_participation_id_participations_id_fk",
           "tableFrom": "wishes",
+          "tableTo": "participations",
           "columnsFrom": [
             "participation_id"
           ],
-          "tableTo": "participations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2981,9 +3245,9 @@
   "views": {},
   "enums": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
   },
   "internal": {
     "indexes": {}

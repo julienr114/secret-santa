@@ -8,9 +8,11 @@ import { personSticker } from '~/utils/stickers';
 // image on every device (`UiEmoji`). `px` gives a size of its own, in
 // place of the four named ones. `flat` keeps the gradient alone: icons
 // that overlap, the images of the palmarès, which bring their own ring.
+// Without an avatar (a first name written for someone, « Cocher pour
+// quelqu'un »), a peach disc with the icon of a person.
 const props = withDefaults(
   defineProps<{
-    avatar: Avatar;
+    avatar: Avatar | null;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     /** A diameter of its own, in pixels. */
     px?: number;
@@ -26,11 +28,13 @@ const SIZES = {
 };
 const diameter = computed(() => props.px ?? SIZES[props.size].px);
 const style = computed(() => ({
-  ...personSticker(
-    AVATAR_SHADES[props.avatar.color],
-    diameter.value,
-    props.flat,
-  ),
+  ...(props.avatar
+    ? personSticker(
+        AVATAR_SHADES[props.avatar.color],
+        diameter.value,
+        props.flat,
+      )
+    : {}),
   ...(props.px
     ? {
         width: `${props.px}px`,
@@ -44,10 +48,11 @@ const style = computed(() => ({
 <template>
   <span
     class="inline-flex shrink-0 items-center justify-center rounded-full"
-    :class="px ? '' : SIZES[size].class"
+    :class="[px ? '' : SIZES[size].class, avatar ? '' : 'bg-muted text-toned']"
     :style="style"
     aria-hidden="true"
   >
-    <UiEmoji :emoji="avatar.emoji" />
+    <UiEmoji v-if="avatar" :emoji="avatar.emoji" />
+    <UIcon v-else name="i-lucide-user" class="size-1/2" />
   </span>
 </template>

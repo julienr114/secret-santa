@@ -16,6 +16,7 @@ import {
   useReorderMutation,
   useCreateListMutation,
   useUntickForMutation,
+  useUntickMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
 import { keys } from '~/composables/queries/keys';
@@ -136,6 +137,9 @@ provide(LIST_EDITING, {
   },
   removePerson: (person) => onRemovePerson(person),
   untickFor: (idea) => onUntickFor(idea),
+  who: (idea, forName) => {
+    naming.value = { idea, forName };
+  },
 });
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
@@ -206,22 +210,38 @@ const onAgain = () => {
 // up puts it back exactly as it was (same person, same way, same date),
 // an anonymous one included.
 const untickFor = useUntickForMutation(id);
-/** The ticks of an idea that may be taken off, as the list has them now. */
-const claimsOf = (ideaId: string) =>
-  doc.value?.people.flatMap((p) => p.ideas).find((i) => i.id === ideaId)
-    ?.claims ?? [];
+const untickMine = useUntickMutation(() => ({ listId: id.value }));
+/** An idea as the list has it now. */
+const ideaNow = (ideaId: string) =>
+  doc.value?.people.flatMap((p) => p.ideas).find((i) => i.id === ideaId);
 // The whole tick goes (Correction 30): each of a group in turn, once
-// « Annuler » is gone.
+// « Annuler » is gone; mine too, when « Qui l'offre ? » was saved with
+// nobody chosen.
 const unticking = useDelayedRemoval((ideaId, done) => {
-  claimsOf(ideaId)
+  const idea = ideaNow(ideaId);
+  (idea?.claims ?? [])
     .reduce<Promise<unknown>>(
       (before, claim) =>
         before.then(() => untickFor.mutateAsync({ ideaId, claimId: claim.id })),
       Promise.resolve(),
     )
+    .then(() => (idea?.mine ? untickMine.mutateAsync(ideaId) : undefined))
     .catch((error: unknown) => toast.failed(errorMessage(error)))
     .finally(done);
 });
+/**
+ * « Qui l'offre ? » saved with nobody chosen (21 November 2026): the idea
+ * is unticked, as for someone else, with « Annuler ». Only mine: at once,
+ * as the green box does.
+ */
+const onNobody = (idea: IdeaLine) => {
+  if (idea.claims.length > 0) onUntickFor(idea);
+  else if (idea.mine) {
+    untickMine.mutate(idea.id, {
+      onError: (error) => toast.failed(errorMessage(error)),
+    });
+  }
+};
 const onUntickFor = (idea: IdeaLine) => {
   const names = idea.claims.flatMap((claim) => (claim.by ? [claim.by] : []));
   unticking.start(
@@ -399,6 +419,15 @@ const onRemovePerson = (person: PersonLine) =>
 const via = computed(() => ({ listId: id.value }));
 const changing = ref<{ idea: IdeaLine; forName: string } | null>(null);
 const joining = ref<{ idea: IdeaLine; forName: string } | null>(null);
+// « Qui l'offre ? » (21 November 2026): in place of the sheet of what I
+// give, for those who hold the list.
+const naming = ref<{ idea: IdeaLine; forName: string } | null>(null);
+const namingOpen = computed({
+  get: () => naming.value !== null,
+  set: (open) => {
+    if (!open) naming.value = null;
+  },
+});
 const changeOpen = computed({
   get: () => changing.value !== null,
   set: (open) => {
@@ -423,6 +452,11 @@ watch(
     if (joining.value) {
       const idea = fresh(joining.value.idea.id);
       if (idea) joining.value = { ...joining.value, idea };
+    }
+    // Someone else ticked or unticked while it was open: it follows.
+    if (naming.value) {
+      const idea = fresh(naming.value.idea.id);
+      naming.value = idea?.who ? { ...naming.value, idea } : null;
     }
   },
 );
@@ -707,6 +741,15 @@ onBeforeRouteLeave((to) => {
       :via="via"
       :idea="changing.idea"
       :for-name="changing.forName"
+    />
+    <ListsWhoSheet
+      v-if="naming && doc"
+      v-model:open="namingOpen"
+      :list-id="id"
+      :idea="naming.idea"
+      :for-name="naming.forName"
+      :candidates="doc.candidates"
+      @nobody="onNobody"
     />
     <ListsJoinSheet
       v-if="joining"

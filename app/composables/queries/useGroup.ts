@@ -25,6 +25,8 @@ export type Dashboard = {
 export type PeoplePayload = {
   persons: PublicPerson[];
   exclusions: ExclusionRow[];
+  /** The members who organise: their line begins with « Organise ». */
+  organising: string[];
 } & MembersExtras;
 /** A participant, with their answer status while answers are collected. */
 export type EditionParticipant = Participant & {

@@ -15,9 +15,9 @@ Deux réponses arrivées après le ticket 117 (Q-029 et Q-031).
 
 ## À faire
 
-- [ ] **« Organise »** : dans « Membres », la ligne d'un organisateur commence par « Organise » (« Organise · Secret Santa · ne tire pas Hugo », ou « Organise » seul pour celui qui n'est entré ni par un Secret Santa ni par une liste). Trois langues, sans accord de genre.
-- [ ] **Pour un membre qui n'organise pas**, la ligne des membres de la page de l'événement dit combien ils sont et n'est pas un lien : pas de chevron, rien de touchable.
-- [ ] `tests/e2e`.
+- [x] **« Organise »** : dans « Membres », la ligne d'un organisateur commence par « Organise » (« Organise · Secret Santa · ne tire pas Hugo », ou « Organise » seul pour celui qui n'est entré ni par un Secret Santa ni par une liste). Trois langues, sans accord de genre.
+- [x] **Pour un membre qui n’organise pas**, la ligne des membres de la page de l'événement dit combien ils sont et n'est pas un lien : pas de chevron, rien de touchable.
+- [x] `tests/e2e`.
 
 ## Hors périmètre
 

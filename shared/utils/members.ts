@@ -126,3 +126,24 @@ export const placesTaken = (
   newcomers.filter(
     (person) => person.email === null || !memberEmails.includes(person.email),
   ).length;
+
+/**
+ * Those of the members who organise the event (docs/spec/v3/fete.md,
+ * « Les membres », Q-031): an organiser is a member by their address,
+ * and their line in « Membres » begins with « Organise ».
+ * @param members - The members, with their address.
+ * @param organiserEmails - The addresses of the organisers.
+ * @returns The ids of the members who organise.
+ */
+export const organisingIds = (
+  members: readonly { id: string; email: string | null }[],
+  organiserEmails: readonly string[],
+): string[] => {
+  const emails = organiserEmails.map((email) => email.toLowerCase());
+  return members
+    .filter(
+      (member) =>
+        member.email !== null && emails.includes(member.email.toLowerCase()),
+    )
+    .map((member) => member.id);
+};

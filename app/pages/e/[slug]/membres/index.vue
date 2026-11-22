@@ -54,7 +54,8 @@ const entryText = (entry: EntryPart) => {
   return entry.name ?? t('adminGroup.people.bySanta');
 };
 /**
- * The line under a member: by where they came in, who they never draw,
+ * The line under a member: « Organise » when they organise (Q-031), by
+ * where they came in, who they never draw,
  * and that they have no address; or that they are no longer in.
  * @param person - The member.
  * @returns The line.
@@ -66,6 +67,9 @@ const subtitleOf = (person: PublicPerson) => {
     .filter((p): p is PublicPerson => Boolean(p))
     .map(fullName);
   return [
+    people.data.value?.organising.includes(person.id)
+      ? t('adminGroup.people.organises')
+      : '',
     (people.data.value?.entries[person.id] ?? []).map(entryText).join(', '),
     names.length
       ? t('adminGroup.people.notDrawing', {

@@ -100,6 +100,7 @@ export default {
     inactive: 'Macht nicht mehr mit',
     notDrawing: 'zieht nicht {names}',
     add: 'Jemanden hinzufügen',
+    organises: 'Organisiert',
     bySanta: 'Wichteln',
     noEmail: 'keine E-Mail-Adresse',
     toSanta: 'Zum Wichteln',

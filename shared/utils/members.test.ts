@@ -3,6 +3,7 @@ import {
   canInviteToList,
   entersByListLink,
   entryParts,
+  organisingIds,
   placesTaken,
   takenOnce,
 } from './members';
@@ -148,5 +149,26 @@ describe('the places newcomers take', () => {
         ['hugo@example.com'],
       ),
     ).toBe(2);
+  });
+});
+
+describe('the members who organise', () => {
+  it('finds them by their address, whatever its case', () => {
+    expect(
+      organisingIds(
+        [
+          { id: 'a', email: 'Camille@example.com' },
+          { id: 'b', email: null },
+          { id: 'c', email: 'hugo@example.com' },
+        ],
+        ['camille@example.com', 'paul@example.com'],
+      ),
+    ).toEqual(['a']);
+  });
+
+  it('finds nobody without organisers', () => {
+    expect(organisingIds([{ id: 'a', email: 'a@example.com' }], [])).toEqual(
+      [],
+    );
   });
 });

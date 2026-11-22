@@ -96,6 +96,7 @@ export default {
     inactive: 'No longer takes part',
     notDrawing: 'does not draw {names}',
     add: 'Add someone',
+    organises: 'Organises',
     bySanta: 'Secret Santa',
     noEmail: 'no email address',
     toSanta: 'To the Secret Santa',

@@ -9,7 +9,8 @@ import { compareV3 } from './v3Compare';
 // 0033 (« Cocher pour quelqu'un », from main), then rows covering the
 // cases of docs/spec/v3/migration.md, then 0034, in one transaction as D1
 // applies it, foreign keys on. The migrations of the V3 come after the
-// one of main since ticket 098: 0034 to 0038.
+// one of main since ticket 098: 0034 to 0042, compared all together at the
+// end (ticket 113).
 
 const DIR = join(__dirname, 'migrations');
 const files = readdirSync(DIR)
@@ -823,5 +824,74 @@ describe('a birthday knows whom it is for (ticket 118)', () => {
         .map((row) => row.name)
         .toSorted(),
     ).toEqual(Object.keys(snapshot.tables.parties!.columns).toSorted());
+  });
+});
+
+describe('the comparison after every migration of the V3 (ticket 113)', () => {
+  // What production holds the day of the switch: hints of Camille (an
+  // account) and of Inès (none) in « Noël 2026 », drawn, Inès not having
+  // opened her envelope; ideas and ticks on « Les 7 ans de Léo », shared
+  // by link; the list of Hugo, linked to a draw, its sharing stopped.
+  const cases = `
+UPDATE participations SET first_viewed_at = '${NOW}' WHERE id = 'pa1';
+UPDATE gift_lists SET shared_at = '${NOW}' WHERE id = 'l3';
+INSERT INTO gift_portraits (participation_id, useful_or_surprising, updated_at) VALUES ('pa1', 'first', '${NOW}');
+UPDATE participations SET gift_list_id = NULL WHERE id = 'pa1';
+INSERT INTO wishes (id, participation_id, position, label, url, created_at) VALUES
+  ('w1', 'pa1', 0, 'Une lampe de lecture', NULL, '${NOW}'),
+  ('w2', 'pa1', 1, 'Des épices', 'https://epices.example', '${NOW}'),
+  ('w3', 'pa2', 0, 'Un livre', NULL, '${NOW}');
+INSERT INTO family_members (id, account_id, first_name, avatar_emoji, avatar_color, is_self, created_at) VALUES
+  ('f1', 'a1', 'Léo', '🚀', 'pine', 0, '${NOW}');
+INSERT INTO gift_list_people (id, list_id, member_id, position) VALUES
+  ('lp1', 'l3', 'f1', 0);
+INSERT INTO gift_list_ideas (id, list_id, list_person_id, text, url, position, created_at) VALUES
+  ('i1', 'l3', 'lp1', 'Puzzle', NULL, 0, '${NOW}');
+INSERT INTO gift_claims (id, list_id, idea_id, account_id, mode, created_at) VALUES
+  ('c1', 'l3', 'i1', 'a2', 'alone', '${NOW}');
+`;
+  const migrated = () => {
+    const db = v2();
+    db.exec(cases);
+    files.filter((file) => file >= V3).forEach((file) => apply(db, file));
+    return db;
+  };
+  const untouched = v2();
+  untouched.exec(cases);
+  const db = migrated();
+  const compare = (after: DatabaseSync) =>
+    compareV3(
+      (sql) => all(untouched, sql),
+      (sql) => all(after, sql),
+    );
+
+  it('finds everything, in its new shape', () => {
+    expect(compare(db)).toEqual([]);
+  });
+
+  it('sees an envelope opened, a hint lost, a link changed', () => {
+    const broken = migrated();
+    broken.exec(`
+PRAGMA foreign_keys = OFF;
+UPDATE participations SET first_viewed_at = NULL WHERE id = 'pa1';
+DELETE FROM gift_list_ideas WHERE text = 'Des épices';
+UPDATE gift_lists SET share_token = 'autre' WHERE id = 'l3';
+DELETE FROM gift_claims WHERE id = 'c1';
+`);
+    expect(compare(broken)).toEqual([
+      'participant pa1 : a changé',
+      'gift_claims : 1 lignes avant, 0 après',
+      'liste l3 : son lien a changé',
+      'liste l3 : gift_claims a changé',
+      'pistes pa1 : les idées ont changé',
+    ]);
+  });
+
+  it('sees a list left shared with an event after its sharing stopped', () => {
+    const broken = migrated();
+    broken.exec(
+      "INSERT INTO gift_list_parties (id, list_id, party_id, visibility, created_at) VALUES ('x', 'l2', 'g2', 'party', '2026-11-20')",
+    );
+    expect(compare(broken)).toEqual(['listes : 5 rattachements, 4 attendus']);
   });
 });

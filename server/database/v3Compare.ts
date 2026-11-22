@@ -1,9 +1,13 @@
 import { mergeRules } from '../utils/rules';
 
 // Compares a database of the V2 with the same one migrated to the V3
-// (ticket 101): the same groups, draws and lists, in their new shape.
-// Used by migrations.test.ts and by `pnpm v3:compare` on a copy of the
-// production database. Returns what differs, nothing when all is there.
+// (tickets 101 and 113): as many events as groups, each Secret Santa with
+// its participants and their envelopes, each list with its ideas and its
+// ticks, the gift hints become a list kept for the one who drew them, a
+// list shared by link still public. Used by migrations.test.ts, `pnpm
+// v3:essai` and `pnpm v3:compare` on a copy of the production database.
+// Returns what differs, nothing when all is there. It never reads who drew
+// whom: an envelope is compared as it is stored, sealed.
 
 type Row = Record<string, unknown>;
 /** Runs a read on one database and returns its rows. */
@@ -29,13 +33,25 @@ const KEPT = [
   'draw_answers',
   'audit_log',
   'accounts',
-  'gift_lists',
-  'gift_list_ideas',
   'gift_claims',
+  'gift_list_givers',
+  'gift_giver_claims',
 ];
 
 const countOf = (query: Query, table: string) =>
   Number(query(`SELECT count(*) AS n FROM \`${table}\``)[0]?.n ?? 0);
+
+const quoted = (value: unknown) => `'${String(value).replaceAll("'", "''")}'`;
+
+/** Whether a table has a column (a migration applied or not yet). */
+const hasColumn = (query: Query, table: string, column: string) =>
+  query(`SELECT name FROM pragma_table_info('${table}')`).some(
+    (row) => row.name === column,
+  );
+
+/** The rows of a query, each as one line of its columns, sorted. */
+const lines = (rows: Row[]) =>
+  rows.map((row) => JSON.stringify(Object.values(row))).toSorted();
 
 /**
  * Where the invitation link of a group went: still on its party (up to
@@ -59,7 +75,24 @@ const linkProblems = (group: Row, party: Row, after: Query): string[] => {
 
 const groupsProblems = (before: Query, after: Query): string[] => {
   const parties = byId(after('SELECT * FROM parties'));
-  return before('SELECT * FROM groups').flatMap((group) => {
+  const groups = countOf(before, 'groups');
+  const events = Number(
+    after('SELECT count(*) AS n FROM parties WHERE from_list = 0')[0]?.n ?? 0,
+  );
+  return [
+    ...(events === groups
+      ? []
+      : [`${groups} groupes avant, ${events} événements de groupe après`]),
+    ...groupsKept(before, parties, after),
+  ];
+};
+
+const groupsKept = (
+  before: Query,
+  parties: Map<string, Row>,
+  after: Query,
+): string[] =>
+  before('SELECT * FROM groups').flatMap((group) => {
     const party = parties.get(String(group.id));
     if (!party) return [`groupe ${group.id} : aucune fête`];
     return [
@@ -72,7 +105,6 @@ const groupsProblems = (before: Query, after: Query): string[] => {
         : [`fête ${group.id} : pas une fête de Noël`]),
     ];
   });
-};
 
 const organisersProblems = (before: Query, after: Query): string[] => {
   const pairs = (rows: Row[], key: string) =>
@@ -120,6 +152,59 @@ const editionsProblems = (before: Query, after: Query): string[] => {
   });
 };
 
+/**
+ * Each Secret Santa keeps its participants, their links and whether they
+ * opened their envelope, and its envelopes, sealed as they were.
+ */
+const envelopesProblems = (before: Query, after: Query): string[] => {
+  const participants = (query: Query, column: string) =>
+    lines(
+      query(
+        `SELECT ${column} AS santa, id, person_id, token_hash, first_viewed_at FROM participations`,
+      ),
+    );
+  const envelopes = (query: Query, column: string) =>
+    lines(
+      query(
+        `SELECT ${column} AS santa, id, giver_person_id, receiver_enc, receiver_iv FROM assignments`,
+      ),
+    );
+  const missing = (old: string[], now: string[], what: string) => {
+    const kept = new Set(now);
+    return old
+      .filter((line) => !kept.has(line))
+      .map((line) => `${what} ${String(JSON.parse(line)[1])} : a changé`);
+  };
+  return [
+    ...missing(
+      participants(before, 'edition_id'),
+      participants(after, 'secret_santa_id'),
+      'participant',
+    ),
+    ...missing(
+      envelopes(before, 'edition_id'),
+      envelopes(after, 'secret_santa_id'),
+      'enveloppe',
+    ),
+  ];
+};
+
+/** Everyone who took part in a Secret Santa came in by it (ticket 117). */
+const entriesProblems = (before: Query, after: Query): string[] => {
+  const tables = after(
+    "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'member_entries'",
+  );
+  if (tables.length === 0) return [];
+  const entered = new Set(
+    after(
+      'SELECT person_id, secret_santa_id FROM member_entries WHERE secret_santa_id IS NOT NULL',
+    ).map((row) => `${row.person_id}:${row.secret_santa_id}`),
+  );
+  return before('SELECT id, person_id, edition_id FROM participations')
+    .filter((row) => !entered.has(`${row.person_id}:${row.edition_id}`))
+    .map((row) => `participant ${row.id} : pas membre par son Secret Santa`);
+};
+
 const keptProblems = (before: Query, after: Query): string[] => {
   const members = Number(
     after(
@@ -141,18 +226,137 @@ const keptProblems = (before: Query, after: Query): string[] => {
   ];
 };
 
+/**
+ * The participations whose gift hints become a list (0038): a person with
+ * an account, ideas left, a Secret Santa not closed, no list linked.
+ */
+const hintsOf = (before: Query) =>
+  before(
+    `SELECT p.id, e.group_id, a.id AS account_id FROM participations p
+     JOIN persons ps ON ps.id = p.person_id
+     JOIN accounts a ON a.email = lower(ps.email)
+     JOIN editions e ON e.id = p.edition_id
+     WHERE e.status != 'closed' AND p.gift_list_id IS NULL
+       AND p.id IN (SELECT participation_id FROM wishes)`,
+  );
+
+/**
+ * Each list keeps its holders, its title, its ideas and its ticks; one
+ * shared by its link keeps its link, still public.
+ */
+const listsKept = (before: Query, after: Query): string[] => {
+  const now = byId(after('SELECT * FROM gift_lists'));
+  const children = (query: Query, table: string, list: unknown) =>
+    query(
+      `SELECT id FROM ${table} WHERE list_id = ${quoted(list)} ORDER BY id`,
+    ).map((row) => String(row.id));
+  return before('SELECT * FROM gift_lists').flatMap((list) => {
+    const kept = now.get(String(list.id));
+    if (!kept) return [`liste ${list.id} : perdue`];
+    return [
+      ...(['account_id', 'title', 'shared_at'] as const)
+        .filter((key) => kept[key] !== list[key])
+        .map((key) => `liste ${list.id} : ${key} a changé`),
+      ...(list.share_token === null || kept.share_token === list.share_token
+        ? []
+        : [`liste ${list.id} : son lien a changé`]),
+      ...(
+        [
+          'gift_list_holders',
+          'gift_list_ideas',
+          'gift_claims',
+          'gift_giver_claims',
+        ] as const
+      )
+        .filter(
+          (table) =>
+            !same(
+              children(before, table, list.id),
+              children(after, table, list.id),
+            ),
+        )
+        .map((table) => `liste ${list.id} : ${table} a changé`),
+    ];
+  });
+};
+
+/**
+ * The gift hints of each participation became a list of its own, in the
+ * draw's event, kept for the one who drew them, with the same ideas; the
+ * lists the migration made are those and no other.
+ */
+const hintsProblems = (before: Query, after: Query): string[] => {
+  const old = new Set(before('SELECT id FROM gift_lists').map((r) => r.id));
+  const made = after('SELECT id FROM gift_lists')
+    .map((row) => String(row.id))
+    .filter((id) => !old.has(id));
+  const hints = hintsOf(before);
+  const moved = hints.flatMap((hint) => {
+    const list = after(
+      `SELECT gift_list_id AS id FROM participations WHERE id = ${quoted(hint.id)}`,
+    )[0]?.id;
+    if (!list) return [`pistes ${hint.id} : aucune liste`];
+    const owner = after(
+      `SELECT account_id FROM gift_lists WHERE id = ${quoted(list)}`,
+    )[0]?.account_id;
+    const shared = after(
+      `SELECT visibility FROM gift_list_parties WHERE list_id = ${quoted(list)} AND party_id = ${quoted(hint.group_id)}`,
+    );
+    const texts = (query: Query, sql: string) =>
+      query(sql).map((row) => [row.text, row.url ?? null]);
+    return [
+      ...(owner === hint.account_id
+        ? []
+        : [`pistes ${hint.id} : pas sa liste`]),
+      ...(shared.length === 1 && shared[0]?.visibility === 'giver'
+        ? []
+        : [`pistes ${hint.id} : pas réservées à celui qui l'a tiré`]),
+      ...(same(
+        texts(
+          before,
+          `SELECT label AS text, url FROM wishes WHERE participation_id = ${quoted(hint.id)} ORDER BY position`,
+        ),
+        texts(
+          after,
+          `SELECT text, url FROM gift_list_ideas WHERE list_id = ${quoted(list)} ORDER BY position`,
+        ),
+      )
+        ? []
+        : [`pistes ${hint.id} : les idées ont changé`]),
+    ];
+  });
+  return [
+    ...moved,
+    ...(made.length === hints.length
+      ? []
+      : [`listes : ${made.length} créées, ${hints.length} attendues (pistes)`]),
+  ];
+};
+
+/**
+ * Where each list is shared: a list linked to a draw in its event (to all
+ * its members when shared by link, else to the one who drew its holder;
+ * a list whose sharing was stopped becomes a draft once 0037 ran), any
+ * other one in an event of its own; the hint lists come on top.
+ */
 const listsProblems = (before: Query, after: Query): string[] => {
+  const drafts = hasColumn(after, 'gift_lists', 'party_id');
   const links = after('SELECT * FROM gift_list_parties');
   const linked = before(
-    'SELECT DISTINCT p.gift_list_id AS list_id, e.group_id, l.share_token FROM participations p JOIN editions e ON e.id = p.edition_id JOIN gift_lists l ON l.id = p.gift_list_id',
+    'SELECT DISTINCT p.gift_list_id AS list_id, e.group_id, l.share_token, l.shared_at FROM participations p JOIN editions e ON e.id = p.edition_id JOIN gift_lists l ON l.id = p.gift_list_id',
   );
   const linkedIds = new Set(linked.map((row) => String(row.list_id)));
   const expected = [
-    ...linked.map((row) => ({
-      list: String(row.list_id),
-      party: String(row.group_id),
-      visibility: row.share_token === null ? 'giver' : 'party',
-    })),
+    ...linked
+      .filter(
+        (row) =>
+          !(drafts && row.share_token !== null && row.shared_at === null),
+      )
+      .map((row) => ({
+        list: String(row.list_id),
+        party: String(row.group_id),
+        visibility: row.share_token === null ? 'giver' : 'party',
+      })),
     ...before('SELECT id FROM gift_lists')
       .filter((row) => !linkedIds.has(String(row.id)))
       .map((row) => ({
@@ -164,6 +368,13 @@ const listsProblems = (before: Query, after: Query): string[] => {
   const found = new Set(
     links.map((row) => `${row.list_id}:${row.party_id}:${row.visibility}`),
   );
+  const total = expected.length + hintsOf(before).length;
+  const homeless = drafts
+    ? Number(
+        after('SELECT count(*) AS n FROM gift_lists WHERE party_id IS NULL')[0]
+          ?.n ?? 0,
+      )
+    : 0;
   return [
     ...expected
       .filter((e) => !found.has(`${e.list}:${e.party}:${e.visibility}`))
@@ -171,11 +382,10 @@ const listsProblems = (before: Query, after: Query): string[] => {
         (e) =>
           `liste ${e.list} : absente de la fête ${e.party} (${e.visibility})`,
       ),
-    ...(links.length === expected.length
+    ...(links.length === total
       ? []
-      : [
-          `listes : ${links.length} rattachements, ${expected.length} attendus`,
-        ]),
+      : [`listes : ${links.length} rattachements, ${total} attendus`]),
+    ...(homeless === 0 ? [] : [`listes : ${homeless} sans événement`]),
   ];
 };
 
@@ -189,6 +399,10 @@ export const compareV3 = (before: Query, after: Query): string[] => [
   ...groupsProblems(before, after),
   ...organisersProblems(before, after),
   ...editionsProblems(before, after),
+  ...envelopesProblems(before, after),
+  ...entriesProblems(before, after),
   ...keptProblems(before, after),
+  ...listsKept(before, after),
+  ...hintsProblems(before, after),
   ...listsProblems(before, after),
 ];

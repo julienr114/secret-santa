@@ -1,7 +1,8 @@
 // `pnpm v3:compare <before.sqlite> <after.sqlite>`: says whether a copy of
-// the database migrated to the V3 still has every group, draw and list of
-// the copy before (ticket 101). Read only on both files. The steps for a
-// copy of the production database are in the report of ticket 101.
+// the database migrated to the V3 still has every group, draw, envelope,
+// list, idea and tick of the copy before (tickets 101 and 113). Read only
+// on both files. The steps for a copy of the production database are in
+// docs/travail/bascule-v3.md.
 import { DatabaseSync } from 'node:sqlite';
 import { compareV3, type Query } from '../server/database/v3Compare.ts';
 
@@ -26,7 +27,7 @@ console.log(
   `Avant : ${count(before, 'groups')} groupes, ${count(before, 'editions')} éditions, ${count(before, 'gift_lists')} listes.`,
 );
 console.log(
-  `Après : ${count(after, 'parties')} fêtes (dont ${count(after, 'parties WHERE from_list = 1')} nées d'une liste), ${count(after, 'party_years')} années, ${count(after, 'secret_santas')} Secret Santa, ${count(after, 'gift_list_parties')} listes rangées.`,
+  `Après : ${count(after, 'parties')} événements (dont ${count(after, 'parties WHERE from_list = 1')} nés d'une liste), ${count(after, 'party_years')} années, ${count(after, 'secret_santas')} Secret Santa, ${count(after, 'gift_lists')} listes, ${count(after, 'gift_list_parties')} rattachements.`,
 );
 if (problems.length > 0) {
   console.error(`\n✗ ${problems.length} différence(s) :`);

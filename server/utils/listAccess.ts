@@ -266,8 +266,9 @@ export const invitesAccepted = <
  * listes.md, « Arriver par le lien »): in, when they hold it, when it is
  * public, when they are a member of an event it is shared in, or when
  * they drew one of its holders where it is kept for that one (ticket
- * 107); else a page that says nothing of the list, asking to log in first
- * when they are not.
+ * 107); logged in, they come into its event when its link lets them in
+ * (ticket 117, `entersByListLink`); else a page that says nothing of the
+ * list, asking to log in first when they are not.
  * @param arrival - Who arrives, and the stage of the list's sharing.
  * @param arrival.loggedIn - Whether they have a session.
  * @param arrival.holder - Whether they hold the list.
@@ -276,7 +277,10 @@ export const invitesAccepted = <
  * shared in.
  * @param arrival.giver - Whether they drew one of its holders, in an
  * event where it is kept for the one who drew.
- * @returns `open`, `login` (log in to try) or `closed`.
+ * @param arrival.enters - Whether its link makes them a member of its
+ * event.
+ * @returns `open`, `join` (come into its event, then open), `login` (log
+ * in to try) or `closed`.
  */
 export const listArrival = (arrival: {
   loggedIn: boolean;
@@ -284,9 +288,11 @@ export const listArrival = (arrival: {
   isPublic: boolean;
   member: boolean;
   giver: boolean;
-}): 'open' | 'login' | 'closed' => {
+  enters?: boolean;
+}): 'open' | 'join' | 'login' | 'closed' => {
   if (arrival.isPublic || arrival.holder || arrival.member || arrival.giver) {
     return 'open';
   }
-  return arrival.loggedIn ? 'closed' : 'login';
+  if (!arrival.loggedIn) return 'login';
+  return arrival.enters ? 'join' : 'closed';
 };

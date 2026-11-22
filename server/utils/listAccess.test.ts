@@ -218,4 +218,12 @@ describe('listArrival', () => {
     expect(listArrival({ ...nobody, loggedIn: false })).toBe('login');
     expect(listArrival(nobody)).toBe('closed');
   });
+
+  it('lets in its event an account its link makes a member, logged in only', () => {
+    expect(listArrival({ ...nobody, enters: true })).toBe('join');
+    expect(listArrival({ ...nobody, loggedIn: false, enters: true })).toBe(
+      'login',
+    );
+    expect(listArrival({ ...nobody, member: true, enters: true })).toBe('open');
+  });
 });

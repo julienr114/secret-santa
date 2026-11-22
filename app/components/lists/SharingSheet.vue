@@ -16,6 +16,8 @@ import { categoryTint } from '~/utils/categories';
 // or « Tout le monde » once someone ticked a gift, asks first, with how
 // many will lose the list (V3ListeQuiRetirer). « Partager » from a draft,
 // « Enregistrer » after. « Celui qui m'a tiré » comes with ticket 107.
+// « Inviter quelqu'un » (ticket 117) once the list is shared with all the
+// members of its own event; « Changer de lien » for any list.
 const props = defineProps<{
   listId: string;
   /** The list is a draft: the button says « Partager ». */
@@ -364,6 +366,21 @@ const onRenew = () =>
             {{ t('lists.sharing.otherOccasion') }}
           </NuxtLink>
         </li>
+        <li v-if="query.data.value?.invite" class="border-t border-default">
+          <NuxtLink
+            :to="`/listes/${listId}/inviter`"
+            class="flex min-h-15 items-center gap-3 px-4 py-2 font-semibold"
+            data-testid="sharing-invite"
+          >
+            <span
+              aria-hidden="true"
+              class="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-muted"
+            >
+              <UIcon name="i-lucide-user-plus" class="size-5" />
+            </span>
+            {{ t('lists.sharing.invite') }}
+          </NuxtLink>
+        </li>
       </ul>
       <ul class="border-y border-default">
         <UiListItem
@@ -397,12 +414,12 @@ const onRenew = () =>
             :to="`/listes/${listId}/message`"
             :title="t('lists.sharing.message')"
           />
-          <UiListItem
-            :title="t('lists.sharing.changeLink')"
-            :on-click="() => (renewing = true)"
-            data-testid="sharing-renew"
-          />
         </template>
+        <UiListItem
+          :title="t('lists.sharing.changeLink')"
+          :on-click="() => (renewing = true)"
+          data-testid="sharing-renew"
+        />
       </ul>
     </div>
     <UiSheet

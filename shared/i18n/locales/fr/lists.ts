@@ -162,6 +162,7 @@ export default {
     giverOnly: 'Celui qui m’a tiré',
     audienceLabel: 'Dans {name}, qui la verra',
     otherOccasion: 'Une autre occasion',
+    invite: 'Inviter quelqu’un',
     everyone: 'Tout le monde, avec le lien',
     copy: 'Copier',
     message: 'Le message qui accompagne le lien',
@@ -317,6 +318,29 @@ export default {
     left: 'Tu ne tiens plus cette liste',
     lastManager: 'Il faut que quelqu’un gère la liste.',
     notManager: 'Seuls ceux qui gèrent la liste peuvent faire ça.',
+  },
+  // The email to someone a list is shared with by their address (ticket
+  // 117, V3ListePartageEmail).
+  // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
+  // into its event, by it.
+  inviteMembers: {
+    title: 'Inviter quelqu’un',
+    subtitle: 'Il verra ta liste et deviendra membre de l’événement.',
+    copy: 'Copier le lien',
+    byEmail: 'Par son adresse email',
+    byEmailHint: 'Il reçoit un email à ton nom',
+    firstName: 'Son prénom',
+    email: 'Son adresse email',
+    submit: 'Inviter',
+    sent: 'Invitation envoyée à {name}',
+    closed: 'Partage d’abord ta liste avec tous les membres de son événement.',
+  },
+  sharedEmail: {
+    subject: '{by} a partagé sa liste « {title} » avec toi',
+    hello: 'Bonjour,',
+    intro:
+      '{by} a partagé avec toi sa liste de cadeaux « {title} ». Coche ce que tu offres, et personne n’aura la même idée.',
+    action: 'Voir la liste :',
   },
   inviteEmail: {
     subject: '{by} t’invite à tenir la liste « {title} »',

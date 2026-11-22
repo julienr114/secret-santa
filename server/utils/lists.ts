@@ -142,10 +142,10 @@ export const shareChange = (
   fresh: { token: string; now: string },
 ): { shareToken: string | null; sharedAt: string | null } => {
   if (ask === 'off') return { shareToken: list.shareToken, sharedAt: null };
+  // « Changer de lien » works for any list (ticket 117): the old link
+  // lets nobody in any more, and the sharing stays as it was.
   if (ask === 'renew') {
-    return list.sharedAt
-      ? { shareToken: fresh.token, sharedAt: list.sharedAt }
-      : { shareToken: list.shareToken, sharedAt: null };
+    return { shareToken: fresh.token, sharedAt: list.sharedAt };
   }
   return {
     shareToken: list.shareToken ?? fresh.token,

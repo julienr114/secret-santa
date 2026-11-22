@@ -311,8 +311,15 @@ export const useShareListMutation = (id: Id) =>
     () => listKeys(toValue(id)),
   );
 
-/** « Qui verra ta liste ? » (ticket 106): the events offered, and the link. */
-export type ListSharing = { options: SharingOption[]; isPublic: boolean };
+/**
+ * « Qui verra ta liste ? » (ticket 106): the events offered, the link,
+ * and whether « Inviter quelqu'un » is offered (ticket 117).
+ */
+export type ListSharing = {
+  options: SharingOption[];
+  isPublic: boolean;
+  invite: boolean;
+};
 /** A sharing asked for: the events ticked, and « Tout le monde ». */
 export type SharingAsk = {
   parties: string[];
@@ -356,6 +363,46 @@ export const sharingImpact = (
   );
 
 /** « Ce que j'offre ailleurs » (ticket 106). */
+/** « Inviter quelqu'un » (ticket 117): whether its link lets in, and the
+ * places left in its event. */
+export type ListMembers = {
+  partyId: string | null;
+  open: boolean;
+  placesLeft: number;
+};
+
+export const useListMembersQuery = (id: Id) =>
+  useApiQuery<ListMembers>(
+    () => keys.listMembers(toValue(id)),
+    () => `/api/lists/${toValue(id)}/members`,
+  );
+
+/** « Par son adresse email »: a member of its event at once, by the list. */
+export const useInviteToListMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, { firstName: string; email: string }>(
+    (body) =>
+      api(`/api/lists/${toValue(id)}/members`, { method: 'POST', body }),
+    () => [keys.listMembers(toValue(id)), keys.sharing(toValue(id))],
+  );
+
+/** « Reprendre ceux d'un autre événement », into the list's event. */
+export const useTakeToListMutation = (id: Id) =>
+  useApiMutation<{ count: number }, string[]>(
+    (personIds) =>
+      api(`/api/lists/${toValue(id)}/members/taken`, {
+        method: 'POST',
+        body: { personIds },
+      }),
+    () => [keys.listMembers(toValue(id)), keys.sharing(toValue(id))],
+  );
+
+/** Coming into the event of a list by its link (ticket 117). */
+export const useJoinByLinkMutation = (token: Token) =>
+  useApiMutation<{ ok: true }>(
+    () => api(`/api/l/${toValue(token)}/join`, { method: 'POST' }),
+    () => [...linkKeys(toValue(token)), keys.home()],
+  );
+
 export const useElsewhereQuery = () =>
   useApiQuery<{ lists: ElsewhereList[] }>(
     () => keys.elsewhere(),

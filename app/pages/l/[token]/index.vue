@@ -4,6 +4,7 @@ import { shoeSizesShown } from '#shared/utils/memberFields';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
+  useJoinByLinkMutation,
   useLinkQuery,
   useRemoveOffListMutation,
   useTickMutation,
@@ -76,6 +77,21 @@ onMounted(() => {
     // No storage (a private window): the address alone counts.
   }
 });
+// Its link lets me into its event (ticket 117, « Arriver par le lien »):
+// I become a member, by a POST, and the list opens. Once per visit.
+const join = useJoinByLinkMutation(token);
+const joinTried = ref(false);
+watch(
+  () => (query.error.value as { statusMessage?: string } | null)?.statusMessage,
+  (reason) => {
+    if (import.meta.server || reason !== 'list_join' || joinTried.value) {
+      return;
+    }
+    joinTried.value = true;
+    join.mutate(undefined, { onError: () => void query.refetch() });
+  },
+  { immediate: true },
+);
 const via = computed(() => ({ token: token.value }));
 const tick = useTickMutation(via);
 const untick = useUntickMutation(via);

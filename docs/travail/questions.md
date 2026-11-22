@@ -4,6 +4,10 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
 ### Q-028 — « Hugo s'est inscrit par le lien » s'accorde au masculin (ticket 116)
 
 - **Pour** : la conception
@@ -11,6 +15,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 - **Ce qu'on a trouvé** : le ticket 116 écrit « Hugo s'est inscrit par le lien » ; `CLAUDE.md` : « L'application ne connaît pas le genre d'une personne : tournures neutres ». « s'est inscrit » devient faux pour Inès. Le réglage, lui, dit « Quelqu'un s'inscrit par le lien » (`V3TirageReglages`).
 - **Les choix** : A, « Hugo s'inscrit par le lien » (le présent, comme le réglage) ; B, « Inscription de Hugo par le lien » ; C, « Hugo s'est inscrit » tel quel.
 - **Ce que je ferais** : A, déjà en place : neutre, court, et le même verbe que le réglage.
+- **Réponse de la conception (22 novembre 2026)** : A. « Hugo s'inscrit par le lien », au présent, en nouveauté comme en objet d'email, avec le nom du Secret Santa entre parenthèses quand l'événement en a plusieurs cette année-là. Le ticket 116 avait tort d'écrire « s'est inscrit » : l'application ne connaît pas le genre. La spec le dit maintenant : `docs/spec/v3/secret-santa.md`, « Ses réglages ». Rien à changer dans le code.
 
 ### Q-027 — « L'an prochain ? » dans le palmarès d'un événement qui ne revient pas (ticket 115)
 
@@ -19,91 +24,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 - **Ce qu'on a trouvé** : `participant.game.story.noGuessBody` (`shared/i18n/locales/*/participant.ts`) ; `docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël », ne parle que de la dernière image.
 - **Les choix** : A, « Tu n'avais pas fait de pronostic. » seul, dans un événement qui ne revient pas ; B, « La prochaine fois ? » partout ; C, laisser tel quel.
 - **Ce que je ferais** : A, comme « C'est tout » : on ne promet pas une année suivante qui ne viendra pas.
-
-### Q-020 — Une liste n'a pas d'année en base : je la range dans l'année de sa date. Faut-il une colonne ? (ticket 108)
-
-- **Pour** : Julien
-- **Ce qui bloque** : rien. L'année d'un événement a bien sa ligne en base depuis le ticket 101 (`party_years`), et ses Secret Santa y sont rattachés (`secret_santas.year_id`). Une liste, elle, n'est rattachée qu'à ses événements (`gift_lists.party_id`, `gift_list_parties`), pas à une année. En attendant, **pas de migration** : une liste appartient à l'année de sa date (`gift_lists.event_date`, sinon sa date de création). Toute liste faite pour un événement prend la date de son année ; je l'ai corrigé pour qu'une liste faite en janvier pour un événement qui revient prenne la date de l'année qui vient, et non celle de l'année finie.
-- **Ce qu'on a trouvé** : `docs/spec/v3/modele.md`, « L'année » : « Événement (permanent) → l'année de l'événement → ses Secret Santa et ses listes ». Le compte rendu du ticket 101 : « L'archivage des années passées attend le ticket 108 […] Je n'ajoute pas de colonne pour lui maintenant. » En local, toutes les listes ont une date.
-- **Les choix** :
-  - A. Garder la date de la liste (rien à migrer). Une liste dont on change la date à la main change d'année.
-  - B. Une colonne `gift_lists.year_id` (migration 0039), remplie depuis la date. Plus juste pour une liste partagée dans deux événements aux dates différentes, mais une table de plus à tenir à chaque création et à chaque partage.
-- **Ce que je ferais** : A tant qu'aucun cas réel ne la contredit.
-
-### Q-021 — Une liste d'une année passée devient-elle en lecture seule partout ? (ticket 108)
-
-- **Pour** : Julien, puis la conception s'il faut une maquette
-- **Ce qui bloque** : rien. « Une année passée ne se modifie par aucune route » est fait pour l'année et ses Secret Santa : tout ce qui écrit (côté organisateur et côté participant) répond « Cette année est finie », sauf clôturer et dévoiler, que le ticket laisse inchangés. Les listes de l'année, elles, gardent leurs règles d'aujourd'hui : la page de l'année passée ne montre aucun geste, mais la ligne d'une liste ouvre la liste comme avant, où l'on peut encore écrire et cocher.
-- **Ce qu'on a trouvé** : `docs/spec/v3/fete.md`, « Une année passée » : « Les listes de l'année, en lecture seule. » Aucune maquette ne montre une liste en lecture seule pour celui qui la tient, et une liste peut être dans plusieurs événements. Cocher après coup ce qu'on a offert compte dans « Tu as offert 3 cadeaux ».
-- **Les choix** :
-  - A. La liste d'une année passée ne se modifie plus nulle part : ni idée, ni coche, ni partage (une maquette du document en lecture seule, pour celui qui la tient et pour les autres).
-  - B. Comme aujourd'hui : seule la page de l'année passée est en lecture seule.
-- **Ce que je ferais** : A, avec sa maquette ; B en attendant, déjà en place.
-
-### Q-022 — « Ses 3 ans » : rien ne dit pour qui un événement est fait (ticket 108)
-
-- **Pour** : la conception
-- **Ce qui bloque** : le titre d'une année passée d'un anniversaire. `docs/spec/v3/lignes.md` : « pour un événement fait pour un proche dont on connaît la naissance, « Ses 3 ans » » ; `V3FeteAnniversaire` montre « Ses 3 ans » et « 7 cadeaux offerts à Zoé ». Or un événement ne garde pas pour qui il est fait (la catégorie remplit la date depuis la naissance, puis le lien se perd). En attendant, le titre est le nom de l'année, comme pour Noël : « Anniversaire 2025 ».
-- **Les choix** : A, garder le nom de l'année ; B, retenir sur l'événement le proche pour qui il est fait (une colonne, une migration, et le choix du proche à la création).
-- **Ce que je ferais** : A pour la V3 ; B se décide avec « Bientôt », qui crée déjà l'anniversaire d'un proche.
-
-### Q-023 — L'objet de l'invitation à tenir une liste, « au nom de l'occasion » : le nom de l'événement devant, ou le titre de la liste ? (ticket 110)
-
-- **Pour** : la conception
-- **Ce qui bloque** : rien. En attendant, l'objet reste celui de la maquette `ListeInvitationEmail` : « Camille t'invite à tenir la liste « Noël 2026 » ». Dans la V3, une liste faite pour un événement porte son nom, donc l'objet nomme déjà l'occasion.
-- **Ce qu'on a trouvé** : le ticket 110 : « L'invitation à tenir une liste (`ListeInvitationEmail`) : les mots de la V3, l'objet au nom de l'occasion. » `secret-santa.md` (« Les objets des emails ») ne parle que des emails d'un Secret Santa. Une liste n'a pas toujours d'événement (`gift_lists.party_id` peut être vide), et son titre peut avoir été changé.
-- **Les choix** :
-  - A. Garder l'objet de la maquette : le titre de la liste, qui est le nom de l'occasion tant qu'on ne l'a pas changé.
-  - B. Mettre le nom de l'événement devant, comme les emails d'un Secret Santa : « Famille Camille : Camille t'invite à tenir la liste « Famille Camille » », quitte à le dire deux fois ; sans événement, l'objet d'aujourd'hui.
-- **Ce que je ferais** : A, qui ne répète rien.
-
-### Q-024 — Supprimer les treize maquettes orphelines ? (ticket 111)
-
-- **Pour** : Julien
-- **Ce qui bloque** : rien. Le ticket dit « si Julien est d'accord » et ce n'est pas écrit : les fichiers restent en attendant (`maquettes/` et `maquettes-sorbet/` ont toujours le même nombre de fichiers, 349).
-- **Ce qu'on a trouvé** : `docs/spec/v3/maquettes.md` (« Neuf fichiers orphelins ») : `AdminAcces`, `AdminAccesMenu`, `AdminPlusieursDemandes`, `AdminSansDemande`, `FeteAjouterListe`, `FetePartagee`, `FetePartageeAjoutee`, `Souhaits`, `SouhaitsVide` ; et les quatre du ticket, hors du canevas et de l'index : `ListeIdeeBulle`, `ListeIdeeBulleGras`, `ListeSansPersonneA`, `ListeSansPersonneB`. Aucun code, aucun test, ni `ARBORESCENCE.md` ni `ECARTS-MAQUETTES.md` ne les cite ; seuls `PLAN.md` (archive) et `maquettes.md` le font.
-- **Les choix** :
-  - A. Les supprimer des deux dossiers (26 fichiers) ; l'historique Git les garde.
-  - B. Les garder.
-- **Ce que je ferais** : A. Un mot suffit, et Claude Code le fait dans un petit commit (les maquettes sont à la conception, d'où l'attente).
-
-### Q-025 — Le README, `habiller.py` et `generateurs/README.md` citent encore des maquettes périmées : les laisser ? (ticket 111)
-
-- **Pour** : la conception
-- **Ce qui bloque** : la case « Aucun fichier hors de `docs/spec/v3/maquettes.md` ne cite une maquette périmée », prise au pied de la lettre. En attendant, le code, les tests, `ARBORESCENCE.md` et `ECARTS-MAQUETTES.md` n'en citent plus aucune ; le reste n'a pas été touché.
-- **Ce qu'on a trouvé** : `README.md` en cite une trentaine (`AccueilDevoileAvant`, `PistesListe`, `NotifCentre`, `ListeNouvelle`…), dans des paragraphes datés qui racontent ce qui a été décidé et codé en V2. `docs/refonte/sorbet/habiller.py` a des retouches pour `AccueilVide`, `AccueilDemandeAcceptee`, `ListesVide`, `PistesVide`, `Rejoindre` (sans effet : les fichiers n'existent plus). `docs/refonte/generateurs/README.md` cite `GroupeMembres` et `Rejoindre`. Les citations de `PLAN.md`, `docs/decisions/`, `docs/spec/` et des tickets faits ne se touchent pas.
-- **Les choix** :
-  - A. Les laisser : ce sont des récits datés (le README décrit la V2 jusqu'à la bascule) ou des outils de la conception ; la case vaut pour ce que Claude Code tient.
-  - B. Que la conception nettoie `habiller.py` et `generateurs/README.md`, et que le README renvoie à `maquettes.md` pour ce qui remplace chaque nom.
-- **Ce que je ferais** : A pour le README ; B pour `habiller.py`, s'il doit encore servir.
-
-### Q-026 — L'inventaire des nouveautés, pour relecture (ticket 120)
-
-- **Pour** : Julien
-- **Ce qui bloque** : rien. Le ticket demande de poser l'inventaire ici avant de coder ; en attendant la relecture, il est codé tel quel (une ligne de « Quoi de neuf » et, quand la spec le marque ●, un point sur la ligne). Changer le niveau ou retirer une nature est un petit changement.
-- **Ce qu'on a trouvé** : ce que l'application envoie ou signale aujourd'hui (`server/utils/notifications.ts`, `server/plugins/reminders.ts`, `server/plugins/guesses.ts`, `server/http/hints.ts`, `server/http/guesses.ts`, `server/http/nudges.ts`, `server/http/listInvite.ts`, `server/api/invite/[code]/join.post.ts`, le journal), classé d'après le README 22.22 :
-  - **Ce qui presse** :
-    - le tirage est fait, « ton enveloppe t'attend » (aujourd'hui : l'email que l'organisateur envoie) → nouveauté `envelope`, pour chaque participant qui a un compte ;
-    - quelqu'un te demande des idées (email `PistesEmail`) → `hint_request`, pour celui à qui on demande, sans dire qui ;
-    - une invitation à tenir une liste (email `ListeInvitationEmail`) → `list_invite`, si l'adresse a un compte ;
-    - pour l'organisateur, le jour J approche et certains n'ont pas découvert (email du matin) → `reminder` ;
-    - « une invitation à rejoindre un groupe », « la réponse à une demande de groupe » : n'existent plus en V3 (on entre par un Secret Santa ou une liste), rien.
-  - **Le reste** :
-    - de nouvelles idées sur une liste que je peux ouvrir sans la tenir (aujourd'hui : rien, ou l'email « des pistes sont arrivées » à celui qui avait demandé) → `new_ideas` pour les membres des événements où elle est partagée avec tous et ceux qui y ont coché ; et `receiver_ideas` (« De nouvelles idées t'attendent ») pour celui qui a tiré quelqu'un qui la tient, sur son propre Secret Santa, à la place de `new_ideas` ;
-    - quelqu'un a coché sur une liste que je tiens → `ticked`, regroupé dans la journée (« 2 cadeaux ont été cochés sur ta liste ») ;
-    - quelqu'un se joint à mon cadeau à plusieurs → `joined_gift`, pour celui qui le mène ;
-    - le tirage est dévoilé → `revealed` ; le palmarès est arrivé (email) → `palmares` ;
-    - quelqu'un a rejoint l'événement par le lien (email) → `joined`, pour les organisateurs ;
-    - toutes les enveloppes sont ouvertes (email) → `all_viewed`, pour les organisateurs ;
-    - **pas de nouveauté pour l'instant** : les alertes du journal (elles ont déjà leur signal sur l'accueil et la page du participant), le point de « Devine qui » et le rappel du jeu (emails aux organisateurs et aux joueurs ; la ligne « Devine qui » dit déjà « À toi de jouer » avec son point), les messages de l'organisateur (emails qu'il écrit lui-même).
-  - Pour les organisateurs, les nouveautés `reminder`, `all_viewed` et `joined` s'écrivent même quand leur email est coupé dans les réglages : le réglage reste celui de l'email.
-  - Aucun email ne change (ticket 121).
-- **Les choix** :
-  - A. Garder cet inventaire.
-  - B. Changer un niveau, ajouter les alertes du journal ou « Devine qui », ou retirer une nature.
-- **Ce que je ferais** : A.
-
-## Réponses
+- **Réponse de la conception (22 novembre 2026)** : A. Dans un événement qui ne revient pas chaque année, la phrase est « Tu n'avais pas fait de pronostic. », sans « L'an prochain ? ». Dans un événement qui revient, elle ne change pas. C'est la règle de « C'est tout » (Q-016), étendue à toute phrase du palmarès qui promet une année suivante : `docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël ». À faire dans le ticket 115, trois langues.
 
 ### Q-018 — Le compte créé « à la première chose écrite » depuis un lien personnel : peut-on ouvrir une session sur la foi du lien, et si un compte existe déjà ? (ticket 107)
 
@@ -245,3 +166,93 @@ Les réponses d'avant le 20 novembre 2026 sont dans l'archive `docs/refonte/PLAN
 - **Les choix** : A, aucun : l'organisateur l'ajoute lui-même là où il faut ; B, tous ceux en préparation ; C, le plus récent, comme aujourd'hui.
 - **Ce que je ferais** : A dès qu'il y en a deux, C quand il n'y en a qu'un : on ne met personne chez « les enfants » sans le savoir.
 - **Réponse de Julien (21 novembre 2026)**, contre celle de la conception : la question ne se pose plus, parce que **le lien d'invitation est celui d'un Secret Santa, pas celui d'un événement**. On s'inscrit à un Secret Santa, et du coup à son événement ; chaque Secret Santa a son lien. Décision : `docs/decisions/2026-11-21-le-lien-d-invitation-est-celui-d-un-secret-santa.md`. Spec : `docs/spec/v3/secret-santa.md` (« Inviter par lien »), `docs/spec/v3/fete.md` (« Inviter, rejoindre »). Maquettes à jour : `V3FeteInviter`, `V3FeteRejoindre`, `RejoindreConnecte`, `V3FeteMembres`, `V3FeteReglages`, `V3TirageReglages`. À coder : ticket 116. D'ici là, ton choix d'attente tient.
+
+### Q-020 — Une liste n'a pas d'année en base : je la range dans l'année de sa date. Faut-il une colonne ? (ticket 108)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. L'année d'un événement a bien sa ligne en base depuis le ticket 101 (`party_years`), et ses Secret Santa y sont rattachés (`secret_santas.year_id`). Une liste, elle, n'est rattachée qu'à ses événements (`gift_lists.party_id`, `gift_list_parties`), pas à une année. En attendant, **pas de migration** : une liste appartient à l'année de sa date (`gift_lists.event_date`, sinon sa date de création). Toute liste faite pour un événement prend la date de son année ; je l'ai corrigé pour qu'une liste faite en janvier pour un événement qui revient prenne la date de l'année qui vient, et non celle de l'année finie.
+- **Ce qu'on a trouvé** : `docs/spec/v3/modele.md`, « L'année » : « Événement (permanent) → l'année de l'événement → ses Secret Santa et ses listes ». Le compte rendu du ticket 101 : « L'archivage des années passées attend le ticket 108 […] Je n'ajoute pas de colonne pour lui maintenant. » En local, toutes les listes ont une date.
+- **Les choix** :
+  - A. Garder la date de la liste (rien à migrer). Une liste dont on change la date à la main change d'année.
+  - B. Une colonne `gift_lists.year_id` (migration 0039), remplie depuis la date. Plus juste pour une liste partagée dans deux événements aux dates différentes, mais une table de plus à tenir à chaque création et à chaque partage.
+- **Ce que je ferais** : A tant qu'aucun cas réel ne la contredit.
+- **Réponse de Julien (22 novembre 2026)** : A, la date suffit. Pas de colonne, pas de migration : une liste appartient à l'année de sa date. Spec : `docs/spec/v3/modele.md` (« L'année »). Ton choix d'attente devient la règle.
+
+### Q-021 — Une liste d'une année passée devient-elle en lecture seule partout ? (ticket 108)
+
+- **Pour** : Julien, puis la conception s'il faut une maquette
+- **Ce qui bloque** : rien. « Une année passée ne se modifie par aucune route » est fait pour l'année et ses Secret Santa : tout ce qui écrit (côté organisateur et côté participant) répond « Cette année est finie », sauf clôturer et dévoiler, que le ticket laisse inchangés. Les listes de l'année, elles, gardent leurs règles d'aujourd'hui : la page de l'année passée ne montre aucun geste, mais la ligne d'une liste ouvre la liste comme avant, où l'on peut encore écrire et cocher.
+- **Ce qu'on a trouvé** : `docs/spec/v3/fete.md`, « Une année passée » : « Les listes de l'année, en lecture seule. » Aucune maquette ne montre une liste en lecture seule pour celui qui la tient, et une liste peut être dans plusieurs événements. Cocher après coup ce qu'on a offert compte dans « Tu as offert 3 cadeaux ».
+- **Les choix** :
+  - A. La liste d'une année passée ne se modifie plus nulle part : ni idée, ni coche, ni partage (une maquette du document en lecture seule, pour celui qui la tient et pour les autres).
+  - B. Comme aujourd'hui : seule la page de l'année passée est en lecture seule.
+- **Ce que je ferais** : A, avec sa maquette ; B en attendant, déjà en place.
+- **Réponse de Julien (22 novembre 2026)** : ni tout à fait A, ni tout à fait B. La liste d'une année passée **reste ouverte** (on y écrit, on y coche : c'est ce qu'il faut pour un mariage, où l'on offre après la date), mais **un bandeau en haut dit de quelle année elle est** et mène à celle de cette année. La page de l'année passée, elle, reste sans aucun geste, comme tu l'as faite. Décision : `docs/decisions/2026-11-22-une-liste-d-une-annee-passee-reste-ouverte.md`. Spec : `docs/spec/v3/listes.md` (« Une liste d'une année passée »). Maquette : `V3ListeAnneePassee`. À coder : ticket 119.
+
+### Q-022 — « Ses 3 ans » : rien ne dit pour qui un événement est fait (ticket 108)
+
+- **Pour** : la conception
+- **Ce qui bloque** : le titre d'une année passée d'un anniversaire. `docs/spec/v3/lignes.md` : « pour un événement fait pour un proche dont on connaît la naissance, « Ses 3 ans » » ; `V3FeteAnniversaire` montre « Ses 3 ans » et « 7 cadeaux offerts à Zoé ». Or un événement ne garde pas pour qui il est fait (la catégorie remplit la date depuis la naissance, puis le lien se perd). En attendant, le titre est le nom de l'année, comme pour Noël : « Anniversaire 2025 ».
+- **Les choix** : A, garder le nom de l'année ; B, retenir sur l'événement le proche pour qui il est fait (une colonne, une migration, et le choix du proche à la création).
+- **Ce que je ferais** : A pour la V3 ; B se décide avec « Bientôt », qui crée déjà l'anniversaire d'un proche.
+- **Réponse de la conception (22 novembre 2026)** : B, et pas plus tard. Trois maquettes en dépendent (« ses 4 ans », « Ses 3 ans », « 7 cadeaux offerts à Zoé »), et « Pour qui ? » existe déjà à la création : il suffit de ne plus jeter la réponse. Un anniversaire retient le proche pour qui il est fait ; les réglages ont une ligne « Pour » qui sert aussi aux anniversaires déjà créés. Décision : `docs/decisions/2026-11-22-un-anniversaire-sait-pour-qui-il-est-fait.md`. Spec : `docs/spec/v3/categories.md` (« Pour un anniversaire »). À coder : ticket 118. D'ici là, « Anniversaire 2025 » reste. Julien peut dire non.
+
+### Q-023 — L'objet de l'invitation à tenir une liste, « au nom de l'occasion » : le nom de l'événement devant, ou le titre de la liste ? (ticket 110)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. En attendant, l'objet reste celui de la maquette `ListeInvitationEmail` : « Camille t'invite à tenir la liste « Noël 2026 » ». Dans la V3, une liste faite pour un événement porte son nom, donc l'objet nomme déjà l'occasion.
+- **Ce qu'on a trouvé** : le ticket 110 : « L'invitation à tenir une liste (`ListeInvitationEmail`) : les mots de la V3, l'objet au nom de l'occasion. » `secret-santa.md` (« Les objets des emails ») ne parle que des emails d'un Secret Santa. Une liste n'a pas toujours d'événement (`gift_lists.party_id` peut être vide), et son titre peut avoir été changé.
+- **Les choix** :
+  - A. Garder l'objet de la maquette : le titre de la liste, qui est le nom de l'occasion tant qu'on ne l'a pas changé.
+  - B. Mettre le nom de l'événement devant, comme les emails d'un Secret Santa : « Famille Camille : Camille t'invite à tenir la liste « Famille Camille » », quitte à le dire deux fois ; sans événement, l'objet d'aujourd'hui.
+- **Ce que je ferais** : A, qui ne répète rien.
+- **Réponse de la conception (22 novembre 2026)** : A. L'objet reste celui de la maquette, avec le titre de la liste : il nomme déjà l'occasion, et mettre le nom de l'événement devant le dirait deux fois. « L'objet au nom de l'occasion », dans le ticket 110, ne voulait rien dire de plus : c'était mal écrit. Spec : `docs/spec/v3/secret-santa.md` (« Les objets des emails », dernier paragraphe).
+
+### Q-025 — Le README, `habiller.py` et `generateurs/README.md` citent encore des maquettes périmées : les laisser ? (ticket 111)
+
+- **Pour** : la conception
+- **Ce qui bloque** : la case « Aucun fichier hors de `docs/spec/v3/maquettes.md` ne cite une maquette périmée », prise au pied de la lettre. En attendant, le code, les tests, `ARBORESCENCE.md` et `ECARTS-MAQUETTES.md` n'en citent plus aucune ; le reste n'a pas été touché.
+- **Ce qu'on a trouvé** : `README.md` en cite une trentaine (`AccueilDevoileAvant`, `PistesListe`, `NotifCentre`, `ListeNouvelle`…), dans des paragraphes datés qui racontent ce qui a été décidé et codé en V2. `docs/refonte/sorbet/habiller.py` a des retouches pour `AccueilVide`, `AccueilDemandeAcceptee`, `ListesVide`, `PistesVide`, `Rejoindre` (sans effet : les fichiers n'existent plus). `docs/refonte/generateurs/README.md` cite `GroupeMembres` et `Rejoindre`. Les citations de `PLAN.md`, `docs/decisions/`, `docs/spec/` et des tickets faits ne se touchent pas.
+- **Les choix** :
+  - A. Les laisser : ce sont des récits datés (le README décrit la V2 jusqu'à la bascule) ou des outils de la conception ; la case vaut pour ce que Claude Code tient.
+  - B. Que la conception nettoie `habiller.py` et `generateurs/README.md`, et que le README renvoie à `maquettes.md` pour ce qui remplace chaque nom.
+- **Ce que je ferais** : A pour le README ; B pour `habiller.py`, s'il doit encore servir.
+- **Réponse de la conception (22 novembre 2026)** : A, partout. Le `README.md` raconte la V2 dans des paragraphes datés, et il perd ces parties à mesure que la V3 les remplace : on ne le réécrit pas pour des noms de maquettes. `habiller.py` et `generateurs/README.md` sont des outils de la conception : leurs quatre retouches pour des fichiers qui n'existent plus ne font rien, je les retirerai quand je retoucherai l'outil. La case « Aucun fichier hors de `maquettes.md` ne cite une maquette périmée » vaut pour ce que tu tiens (le code, les tests, `ARBORESCENCE.md`, `ECARTS-MAQUETTES.md`) : elle est remplie.
+
+### Q-024 — Supprimer les treize maquettes orphelines ? (ticket 111)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. Le ticket dit « si Julien est d'accord » et ce n'est pas écrit : les fichiers restent en attendant (`maquettes/` et `maquettes-sorbet/` ont toujours le même nombre de fichiers, 349).
+- **Ce qu'on a trouvé** : `docs/spec/v3/maquettes.md` (« Neuf fichiers orphelins ») : `AdminAcces`, `AdminAccesMenu`, `AdminPlusieursDemandes`, `AdminSansDemande`, `FeteAjouterListe`, `FetePartagee`, `FetePartageeAjoutee`, `Souhaits`, `SouhaitsVide` ; et les quatre du ticket, hors du canevas et de l'index : `ListeIdeeBulle`, `ListeIdeeBulleGras`, `ListeSansPersonneA`, `ListeSansPersonneB`. Aucun code, aucun test, ni `ARBORESCENCE.md` ni `ECARTS-MAQUETTES.md` ne les cite ; seuls `PLAN.md` (archive) et `maquettes.md` le font.
+- **Les choix** :
+  - A. Les supprimer des deux dossiers (26 fichiers) ; l'historique Git les garde.
+  - B. Les garder.
+- **Ce que je ferais** : A. Un mot suffit, et Claude Code le fait dans un petit commit (les maquettes sont à la conception, d'où l'attente).
+- **Réponse de Julien (22 novembre 2026)** : A, oui. Supprime les treize maquettes des deux dossiers (26 fichiers), dans un petit commit ; l'historique Git les garde. La conception a retiré leur paragraphe de `docs/spec/v3/maquettes.md`. C'est aussi une ligne du ticket 114, au cas où.
+
+### Q-026 — L'inventaire des nouveautés, pour relecture (ticket 120)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. Le ticket demande de poser l'inventaire ici avant de coder ; en attendant la relecture, il est codé tel quel (une ligne de « Quoi de neuf » et, quand la spec le marque ●, un point sur la ligne). Changer le niveau ou retirer une nature est un petit changement.
+- **Ce qu'on a trouvé** : ce que l'application envoie ou signale aujourd'hui (`server/utils/notifications.ts`, `server/plugins/reminders.ts`, `server/plugins/guesses.ts`, `server/http/hints.ts`, `server/http/guesses.ts`, `server/http/nudges.ts`, `server/http/listInvite.ts`, `server/api/invite/[code]/join.post.ts`, le journal), classé d'après le README 22.22 :
+  - **Ce qui presse** :
+    - le tirage est fait, « ton enveloppe t'attend » (aujourd'hui : l'email que l'organisateur envoie) → nouveauté `envelope`, pour chaque participant qui a un compte ;
+    - quelqu'un te demande des idées (email `PistesEmail`) → `hint_request`, pour celui à qui on demande, sans dire qui ;
+    - une invitation à tenir une liste (email `ListeInvitationEmail`) → `list_invite`, si l'adresse a un compte ;
+    - pour l'organisateur, le jour J approche et certains n'ont pas découvert (email du matin) → `reminder` ;
+    - « une invitation à rejoindre un groupe », « la réponse à une demande de groupe » : n'existent plus en V3 (on entre par un Secret Santa ou une liste), rien.
+  - **Le reste** :
+    - de nouvelles idées sur une liste que je peux ouvrir sans la tenir (aujourd'hui : rien, ou l'email « des pistes sont arrivées » à celui qui avait demandé) → `new_ideas` pour les membres des événements où elle est partagée avec tous et ceux qui y ont coché ; et `receiver_ideas` (« De nouvelles idées t'attendent ») pour celui qui a tiré quelqu'un qui la tient, sur son propre Secret Santa, à la place de `new_ideas` ;
+    - quelqu'un a coché sur une liste que je tiens → `ticked`, regroupé dans la journée (« 2 cadeaux ont été cochés sur ta liste ») ;
+    - quelqu'un se joint à mon cadeau à plusieurs → `joined_gift`, pour celui qui le mène ;
+    - le tirage est dévoilé → `revealed` ; le palmarès est arrivé (email) → `palmares` ;
+    - quelqu'un a rejoint l'événement par le lien (email) → `joined`, pour les organisateurs ;
+    - toutes les enveloppes sont ouvertes (email) → `all_viewed`, pour les organisateurs ;
+    - **pas de nouveauté pour l'instant** : les alertes du journal (elles ont déjà leur signal sur l'accueil et la page du participant), le point de « Devine qui » et le rappel du jeu (emails aux organisateurs et aux joueurs ; la ligne « Devine qui » dit déjà « À toi de jouer » avec son point), les messages de l'organisateur (emails qu'il écrit lui-même).
+  - Pour les organisateurs, les nouveautés `reminder`, `all_viewed` et `joined` s'écrivent même quand leur email est coupé dans les réglages : le réglage reste celui de l'email.
+  - Aucun email ne change (ticket 121).
+- **Les choix** :
+  - A. Garder cet inventaire.
+  - B. Changer un niveau, ajouter les alertes du journal ou « Devine qui », ou retirer une nature.
+- **Ce que je ferais** : A.
+- **Réponse de Julien (22 novembre 2026)** : A, « c'est très bien » : l'inventaire reste tel quel. Deux natures de plus arriveront avec les tickets 116 et 117, où la conception les a écrites : « Camille a partagé sa liste avec toi » et « Camille t'a ajouté au Secret Santa » ; et la nouveauté `joined` dira « s'est inscrit par le lien », puisque le lien est celui d'un Secret Santa.

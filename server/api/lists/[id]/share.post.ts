@@ -12,13 +12,14 @@ import { SHARE_ASKS, shareChange, shareMissing } from '#server/utils/lists';
 // The switch « Partage par lien » (README 22.19): on, the list has its
 // public link, once it has a name and someone on it; off, the link stops
 // working at once, the ticks stay, and sharing again gives the same link;
-// « Changer de lien » replaces it, the old one stops working.
+// « Changer de lien » replaces it, the old one stops working, for any
+// list, shared or not (ticket 117).
 const bodySchema = z.object({ ask: z.enum(SHARE_ASKS).default('on') });
 
 export default defineEventHandler(async (event) => {
   const { db, list } = await requireManagedList(event, 'share');
   const { ask } = await validatedBody(event, bodySchema);
-  if (ask !== 'off') {
+  if (ask === 'on') {
     const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
     const missing = shareMissing({
       title: list.title,

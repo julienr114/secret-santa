@@ -12,13 +12,40 @@ import { verifyParticipation } from '#server/utils/anonymous';
 import { optionalAccount, requireAccount } from '#server/http/auth';
 import { roleOnList, settleArrivals } from '#server/http/lists';
 import { canWriteIdeas, listArrival } from '#server/utils/listAccess';
+import { ownEventOf } from '#server/database/listMembers';
+import { countActiveMembers } from '#server/database/people';
+import { membersLeft } from '#server/utils/parties';
+import { entersByListLink } from '#shared/utils/members';
+import type { Db } from '#server/database/client';
+import type { GiftListRow } from '#server/database/schema';
+
+/**
+ * Whether the link of a list makes a logged-in account, not let in
+ * otherwise, a member of its event (ticket 117): shared with all the
+ * members of its own event, with a place left there.
+ * @param db - The database.
+ * @param list - The list.
+ * @returns Its event when its link lets in, else null.
+ */
+export const eventItLetsIn = async (db: Db, list: GiftListRow) => {
+  const own = await ownEventOf(db, list);
+  if (!own) return null;
+  const enters = entersByListLink({
+    loggedIn: true,
+    ownStage: own.stage,
+    member: false,
+    placesLeft: membersLeft(await countActiveMembers(db, own.party.id)),
+  });
+  return enters ? own.party : null;
+};
 
 /**
  * A list by the token of its link, for whoever may get in (docs/spec/v3/
  * listes.md, « Arriver par le lien »): those who hold it, the members of
  * an event it is shared in, the one who drew a holder where it is kept
  * for that one (by their account, or the participation their link
- * vouched for), everyone once it is public. Anyone else gets
+ * vouched for), everyone once it is public. An account its link makes a
+ * member of its event gets 403 `list_join` (ticket 117). Anyone else gets
  * the same refusal whether the list exists or not, so that a link says
  * nothing: 401 `list_login` without a session, 403 `list_not_shared`
  * with one.
@@ -60,14 +87,29 @@ export const listOfLink = async (event: H3Event) => {
           await dataKeyOf(event),
         )
       : false;
+  const enters = Boolean(
+    list &&
+    account &&
+    !holder &&
+    !member &&
+    !giver &&
+    !list.sharedAt &&
+    (await eventItLetsIn(db, list)),
+  );
   const arrival = listArrival({
     loggedIn: Boolean(account),
     holder,
     isPublic: Boolean(list?.sharedAt),
     member,
     giver,
+    enters,
   });
   if (list && arrival === 'open') return { db, list };
+  // Its link lets them into its event: the page asks for it by a POST
+  // (`/join`), reading never writes (README 8.3).
+  if (arrival === 'join') {
+    throw createError({ statusCode: 403, statusMessage: 'list_join' });
+  }
   throw account
     ? createError({ statusCode: 403, statusMessage: 'list_not_shared' })
     : createError({ statusCode: 401, statusMessage: 'list_login' });

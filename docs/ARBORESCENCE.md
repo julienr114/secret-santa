@@ -87,6 +87,9 @@ flowchart LR
     nouvelleListe["Nouvelle liste"]
     uneListe --> messageListe["Personnaliser le message"]
     uneListe --> teneurs["Ceux qui tiennent la liste"]
+    uneListe --> inviterListe["Inviter quelqu'un<br/><small>/listes/[id]/inviter</small>"]
+    inviterListe --> inviterEmail["Par son adresse email"]
+    inviterListe --> inviterReprendre["Qui reprendre ?"]
     uneListe --> proches["Mes proches<br/><small>/famille</small>"]
     proches --> membre
     uneListe --> membre["Un de mes proches<br/><small>/famille/[id]</small>"]
@@ -98,6 +101,7 @@ flowchart LR
   accueil --> uneListe
   accueil --> nouvelleListe
   leGroupe --> uneListe
+  membres --> inviterListe
   nouveautes --> uneListe
   nouveautes --> leGroupe
 
@@ -221,6 +225,9 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
+| Inviter quelqu'un à voir la liste, et donc dans son événement (ouvert par « Qui verra ta liste ? » et par « À ma liste » des Membres ; ticket 117) | `/listes/[id]/inviter` | La liste | |
+| Par son adresse email | `/listes/[id]/inviter/email` | Inviter quelqu'un | |
+| Qui reprendre ? (ceux d'un autre événement que j'organise) | `/listes/[id]/inviter/reprendre` | Inviter quelqu'un | |
 | Supprimer la liste (supprimée : là où « Retour » menait depuis la liste) | `/listes/[id]/supprimer` | La liste | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
 | Mes proches | `/famille` | La liste d'où l'on vient, sinon l'accueil | |
@@ -234,5 +241,5 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi » |
+| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |

@@ -74,12 +74,15 @@ describe('lists', () => {
       shareToken: 'old',
       sharedAt: 'now',
     });
-    // Another link, only while the list is shared.
+    // Another link, for any list (ticket 117), its sharing unchanged.
     expect(shareChange(shared, 'renew', fresh)).toEqual({
       shareToken: 'new',
       sharedAt: 'then',
     });
-    expect(shareChange(stopped, 'renew', fresh)).toEqual(stopped);
+    expect(shareChange(stopped, 'renew', fresh)).toEqual({
+      shareToken: 'new',
+      sharedAt: null,
+    });
     expect(shareChange(never, 'off', fresh)).toEqual(never);
   });
 

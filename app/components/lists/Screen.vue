@@ -9,8 +9,9 @@ import type { SkeletonPart } from '~/components/ui/Skeleton.vue';
 // arrives says so without a word of the list (docs/spec/v3/listes.md,
 // « Arriver par le lien »): logged out, « Se connecter », which comes back
 // here (V3ListeFermee); logged in, ask whoever sent the link
-// (V3ListeFermeeConnecte). The title stays neutral: messaging apps preview
-// these links.
+// (V3ListeFermeeConnecte). One its link lets into its event (ticket 117)
+// sees the list load while the page lets them in. The title stays neutral:
+// messaging apps preview these links.
 defineProps<{
   back?: string;
   pending: boolean;
@@ -27,6 +28,13 @@ const refusal = (error: unknown) => {
   const code = (error as { statusCode?: number }).statusCode;
   return code === 401 ? 'login' : code === 403 ? 'closed' : 'gone';
 };
+/**
+ * Whether the page is letting them into the list's event.
+ * @param error - The refusal.
+ * @returns True while coming in.
+ */
+const entering = (error: unknown) =>
+  (error as { statusMessage?: string } | null)?.statusMessage === 'list_join';
 useHead({ title: () => t('common.appName') });
 </script>
 
@@ -65,8 +73,14 @@ useHead({ title: () => t('common.appName') });
       as="main"
       class="flex w-full max-w-md grow flex-col gap-6 pt-4 pb-5"
     >
+      <UiSkeleton
+        v-if="error && entering(error)"
+        :parts="skeleton ?? ['title', 'card']"
+        :rows="2"
+        :label="t('common.loading')"
+      />
       <div
-        v-if="error && refusal(error) !== 'gone'"
+        v-else-if="error && refusal(error) !== 'gone'"
         class="flex flex-col gap-4 pt-2"
         :data-testid="`list-${refusal(error)}`"
       >

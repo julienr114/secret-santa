@@ -94,6 +94,9 @@ export default {
     'You already organise 3 Secret Santas: that’s the most for one account.',
   secret_santa_paused:
     'New Secret Santas are paused. Those that exist carry on.',
+  already_member:
+    'This address is already that of a member of the event: the list is open to them.',
+  list_not_open: 'Your list is not shared with all the members of its event.',
   too_many_members: 'The event is full: 30 members is the most it can have.',
   cannot_disable_self: 'You cannot disable your own account.',
   account_not_found:

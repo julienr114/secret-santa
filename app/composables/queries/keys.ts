@@ -37,6 +37,8 @@ export const keys = {
   list: (id: string) => ['lists', id] as const,
   holders: (id: string) => ['lists', id, 'holders'] as const,
   sharing: (id: string) => ['lists', id, 'sharing'] as const,
+  // « Inviter quelqu'un » (ticket 117).
+  listMembers: (id: string) => ['lists', id, 'members'] as const,
   elsewhere: () => ['lists', 'elsewhere'] as const,
   family: () => ['family'] as const,
   member: (id: string) => ['family', id] as const,

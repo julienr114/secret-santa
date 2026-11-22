@@ -160,6 +160,7 @@ export default {
     giverOnly: 'The one who drew me',
     audienceLabel: 'In {name}, who will see it',
     otherOccasion: 'Another occasion',
+    invite: 'Invite someone',
     everyone: 'Everyone, with the link',
     copy: 'Copy',
     message: 'The message that goes with the link',
@@ -315,6 +316,29 @@ export default {
     left: 'You no longer hold this list',
     lastManager: 'Someone has to manage the list.',
     notManager: 'Only those who manage the list can do that.',
+  },
+  // The email to someone a list is shared with by their address (ticket
+  // 117, V3ListePartageEmail).
+  // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
+  // into its event, by it.
+  inviteMembers: {
+    title: 'Invite someone',
+    subtitle: 'They will see your list and become a member of the event.',
+    copy: 'Copy the link',
+    byEmail: 'By their email address',
+    byEmailHint: 'They get an email in your name',
+    firstName: 'Their first name',
+    email: 'Their email address',
+    submit: 'Invite',
+    sent: 'Invitation sent to {name}',
+    closed: 'First share your list with all the members of its event.',
+  },
+  sharedEmail: {
+    subject: '{by} shared their list “{title}” with you',
+    hello: 'Hello,',
+    intro:
+      '{by} shared their gift list “{title}” with you. Tick what you give, and nobody will have the same idea.',
+    action: 'See the list:',
   },
   inviteEmail: {
     subject: '{by} invites you to hold the list “{title}”',

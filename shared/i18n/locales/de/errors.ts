@@ -103,6 +103,10 @@ export default {
     'Du organisierst schon 3 Wichteln: Mehr geht mit einem Konto nicht.',
   secret_santa_paused:
     'Neue Wichteln sind pausiert. Die bestehenden laufen weiter.',
+  already_member:
+    'Diese Adresse gehört schon einem Mitglied des Events: Die Liste ist für sie offen.',
+  list_not_open:
+    'Deine Liste ist nicht mit allen Mitgliedern ihres Events geteilt.',
   too_many_members: 'Das Event ist voll: 30 Mitglieder sind das Maximum.',
   cannot_disable_self: 'Du kannst dein eigenes Konto nicht deaktivieren.',
   account_not_found:

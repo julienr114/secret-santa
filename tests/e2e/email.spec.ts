@@ -220,12 +220,12 @@ test('a participant logs in with their address and finds their draw', async ({
   await expect(
     page.getByText(/Tes organisateurs te feront signe/),
   ).toBeVisible();
-  // Opened from home, the draw shows the way back; opened from its link
-  // (here a reload), it does not.
+  // Logged in, the draw shows the way back, opened from home or from its
+  // link (here a reload): to the home (ticket 114).
   await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();
   await page.reload();
   await hydrated(page);
-  await expect(page.getByRole('button', { name: 'Retour' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();
   // The name of the app still leads home.
   await page.getByRole('link', { name: /Under the Tree/ }).click();
   await expect(heading(page)).toHaveText('Bonjour');

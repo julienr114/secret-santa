@@ -33,6 +33,12 @@ import {
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
+// « Retour », for someone logged in: where the page was opened from, or the
+// home (docs/spec/v3/navigation.md). Opened by its link without a
+// session, none.
+const { loggedIn } = useUserSession();
+const parent = useParent('draw', '/');
+const back = computed(() => (loggedIn.value ? parent.value : undefined));
 // My page opened: its news are seen (ticket 120).
 useSeen(() => ({ token: token.value, target: 'santa' }));
 useOrganizersOf(() => personal.data.value?.organizers);
@@ -439,6 +445,7 @@ const card = computed(() => {
 <template>
   <ParticipantScreen
     :token="token"
+    :back="back"
     :pending="personal.isPending.value"
     :error="personal.error.value"
     :skeleton="['header', 'steps', 'envelope', 'list']"

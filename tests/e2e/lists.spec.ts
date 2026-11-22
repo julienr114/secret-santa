@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, heading, hydrated, openList } from './helpers';
 
-// Gift lists, for the one who holds them (README 22.19, lot 21): the tab,
-// a document written in place, the people of my family, sharing. Any
+// Gift lists, for the one who holds them (README 22.19, lot 21): a
+// document written in place, the people of my family, sharing. Any
 // account may hold lists.
 test.describe.configure({ mode: 'serial' });
 
@@ -16,15 +16,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('a list is written in its document, and shared', async ({ page }) => {
-  await page.goto('/listes');
-  await hydrated(page);
-  // The bar at the bottom; no list yet.
-  await expect(page.getByTestId('tab-bar')).toContainText('Accueil');
-  await expect(page.getByTestId('lists-empty')).toContainText(
-    'Fini, les cadeaux en double',
-  );
-  await page.getByRole('link', { name: 'Créer ma première liste' }).click();
+  await page.goto('/listes/nouvelle');
   await expect(page).toHaveURL(/\/listes\/[^/]+\?nouvelle=1$/);
+  await hydrated(page);
+  // The bar at the bottom.
+  await expect(page.getByTestId('tab-bar')).toContainText('Accueil');
   // A new list is a draft: the bar says so, and has its link already
   // (docs/spec/v3/listes.md, ticket 106).
   const bar = page.getByTestId('share-bar');
@@ -356,21 +352,12 @@ test('a list is written in its document, and shared', async ({ page }) => {
   expect((await page.request.get(`/api/l/${tokenOf(second)}`)).status()).toBe(
     200,
   );
-
-  // In the tab.
-  await page.goto('/listes');
-  await hydrated(page);
-  const card = page.getByTestId('list-card').filter({ hasText: 'Noël 2026' });
-  await expect(card).toContainText('Tu tiens cette liste');
-  await expect(card).toContainText('Camille n’a pas encore d’idées.');
 });
 
 test('a person of my family keeps their details from list to list', async ({
   page,
 }) => {
-  await page.goto('/listes');
-  await hydrated(page);
-  await page.getByTestId('list-card').first().click();
+  await openList(page, 'Noël 2026');
   const leo = page.getByTestId('list-person').filter({ hasText: 'Léo' });
   await leo.getByTestId('person-menu').click();
   await page.getByRole('menuitem', { name: 'Sa fiche et ses goûts' }).click();
@@ -489,14 +476,15 @@ test('a person of my family keeps their details from list to list', async ({
 });
 
 test('a document left empty is not kept', async ({ page }) => {
-  await page.goto('/listes');
-  await hydrated(page);
-  const before = await page.getByTestId('list-card').count();
-  await page.getByRole('link', { name: 'Nouvelle liste' }).click();
+  await page.goto('/listes/nouvelle');
   await expect(page).toHaveURL(/nouvelle=1/);
+  await hydrated(page);
+  const draft = new URL(page.url()).pathname.split('/').at(-1);
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(/\/listes$/);
-  await expect(page.getByTestId('list-card')).toHaveCount(before);
+  await expect(page).toHaveURL(/\/$/);
+  await expect
+    .poll(async () => (await page.request.get(`/api/lists/${draft}`)).status())
+    .toBe(404);
   // Another account sees nothing of my lists.
   const { coming } = await (await page.request.get('/api/lists')).json();
   await apiLogin(page.request, 'list-other@example.com');
@@ -505,9 +493,8 @@ test('a document left empty is not kept', async ({ page }) => {
 });
 
 test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
-  await page.goto('/listes');
+  await page.goto('/famille');
   await hydrated(page);
-  await page.getByTestId('family-link').click();
   await expect(heading(page)).toHaveText('Mes proches');
   // Someone added here is on no list yet.
   await page.getByRole('button', { name: 'Ajouter quelqu’un' }).click();
@@ -524,9 +511,7 @@ test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
 
   // In a list, the pill of someone on no list has its cross: deleted at
   // once, with « Annuler ».
-  await page.goto('/listes');
-  await hydrated(page);
-  await page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }).click();
+  await openList(page, 'Noël 2026');
   const add = page.getByTestId('add-someone');
   const mamie = add.getByTestId('family-pill').filter({ hasText: 'Mamie' });
   await mamie.getByTestId('family-cross').click();
@@ -569,9 +554,7 @@ test('« Mes proches »: everyone, and someone deleted', async ({ page }) => {
   await expect(page.getByTestId('member-remove')).toHaveCount(0);
 
   // Someone on lists, from « ⋯ »: a page says what goes with them.
-  await page.goto('/listes');
-  await hydrated(page);
-  await page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }).click();
+  await openList(page, 'Noël 2026');
   const leo = page.getByTestId('list-person').filter({ hasText: 'Léo' });
   await leo.getByTestId('person-menu').click();
   await page

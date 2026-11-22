@@ -76,3 +76,26 @@ export const seedSql = async (sql: string) => {
     { stdio: 'pipe' },
   );
 };
+
+/**
+ * Opens one of my lists by its name, as the page « Listes » did: it is
+ * gone (ticket 114), its answer (`/api/lists`) still says which lists
+ * are mine.
+ * @param page - The page, logged in.
+ * @param title - The name of the list.
+ * @returns The id of the list.
+ */
+export const openList = async (page: Page, title: string) => {
+  type Card = { id: string; title: string; holder: { token: string } | null };
+  const { coming, past } = (await (
+    await page.request.get('/api/lists')
+  ).json()) as Record<'coming' | 'past', Card[]>;
+  const list = [...coming, ...past].find((card) => card.title === title);
+  expect(list, `no list « ${title} »`).toBeTruthy();
+  // Held, its document; else, by its link.
+  await page.goto(
+    list!.holder ? `/l/${list!.holder.token}` : `/listes/${list!.id}`,
+  );
+  await hydrated(page);
+  return list!.id;
+};

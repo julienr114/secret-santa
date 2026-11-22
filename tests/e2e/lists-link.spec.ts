@@ -16,6 +16,15 @@ const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
   return response.json();
 };
 
+/** The names of the lists of the account logged in. */
+const titlesOf = async (api: APIRequestContext) => {
+  const { coming, past } = (await ok(await api.get('/api/lists'))) as Record<
+    'coming' | 'past',
+    { title: string }[]
+  >;
+  return [...coming, ...past].map((card) => card.title);
+};
+
 test.beforeAll(async ({ playwright, baseURL }) => {
   const api = await playwright.request.newContext({ baseURL });
   await apiLogin(api, HOLDER);
@@ -212,12 +221,8 @@ test('something else, and what the holder sees', async ({ page }) => {
   await expect(page.getByTestId('off-list')).toContainText(
     'Tu offres hors liste : un jeu de société',
   );
-  // The list is in Tonton's tab.
-  await page.goto('/listes');
-  await hydrated(page);
-  const card = page.getByTestId('list-card').filter({ hasText: 'Noël 2026' });
-  await expect(card).toContainText('Liste de Camille');
-  await expect(card).toContainText('Tu offres 2 cadeaux.');
+  // The list is among Tonton's.
+  expect(await titlesOf(page.request)).toContain('Noël 2026');
 
   // The holder sees who gives what.
   await apiLogin(page.request, HOLDER);
@@ -272,11 +277,7 @@ test('no longer public: the link says nothing of the list, the ticks stay', asyn
   await expect(page.getByTestId('list-closed')).toContainText(
     'Cette liste n’est pas partagée avec toi',
   );
-  await page.goto('/listes');
-  await hydrated(page);
-  await expect(
-    page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }),
-  ).toHaveCount(0);
+  expect(await titlesOf(page.request)).not.toContain('Noël 2026');
 
   // Public again: the same link, and what was ticked is still there.
   await ok(

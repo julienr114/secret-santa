@@ -2,55 +2,8 @@
 export default {
   home: {
     title: 'Listen',
-    intro: 'Jeder hakt ab, was er schenkt.',
-    family: 'Meine Leute',
-    new: 'Neue Liste',
-    coming: 'Demnächst',
-    past: 'Vorbei',
-    youHold: 'Du führst diese Liste',
-    notShared: 'Nicht geteilt',
-    listOf: 'Liste von {name}',
-    for: 'Für',
     on: 'Am {date}',
-    inDays: { one: 'in {count} Tag', other: 'in {count} Tagen' },
-    today: 'heute',
-    planned: {
-      one: '{count} Geschenk schon geplant',
-      other: '{count} Geschenke schon geplant',
-    },
-    plannedMine: ', davon {mine} von dir.',
-    plannedEnd: '.',
-    giving: {
-      one: 'Du schenkst {count} Geschenk.',
-      other: 'Du schenkst {count} Geschenke.',
-    },
-    nothingYet: 'Du hast noch nichts abgehakt.',
-    noneYet: 'Noch kein Geschenk geplant.',
-    noIdeas: {
-      one: '{names} hat noch keine Ideen.',
-      other: '{names} haben noch keine Ideen.',
-    },
-    newIdeas: { one: '{count} neue Idee', other: '{count} neue Ideen' },
-    offered: {
-      one: '{count} Geschenk geschenkt',
-      other: '{count} Geschenke geschenkt',
-    },
-    offeredTo: {
-      one: '{count} Geschenk für {name}',
-      other: '{count} Geschenke für {name}',
-    },
-    youGave: {
-      one: 'du hast {count} Geschenk geschenkt',
-      other: 'du hast {count} Geschenke geschenkt',
-    },
     untitled: 'Ohne Namen',
-    sent: 'Eine Liste, die man dir geschickt hat, erscheint hier, sobald du ihren Link angemeldet öffnest.',
-    empty: {
-      title: 'Schluss mit doppelten Geschenken',
-      body: 'Schreib die Geschenkideen deiner Leute für Weihnachten oder einen Geburtstag auf, teile den Link, und jeder hakt ab, was er schenkt.',
-      create: 'Meine erste Liste anlegen',
-      sent: 'Man hat dir eine Liste geschickt? Öffne ihren Link: Sie erscheint dann hier.',
-    },
   },
   doc: {
     drag: {

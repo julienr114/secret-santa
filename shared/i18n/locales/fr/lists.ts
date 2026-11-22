@@ -4,55 +4,8 @@
 export default {
   home: {
     title: 'Listes',
-    intro: 'Chacun coche ce qu’il offre.',
-    family: 'Mes proches',
-    new: 'Nouvelle liste',
-    coming: 'À venir',
-    past: 'Passées',
-    youHold: 'Tu tiens cette liste',
-    notShared: 'Pas partagée',
-    listOf: 'Liste de {name}',
-    for: 'Pour',
     on: 'Le {date}',
-    inDays: { one: 'dans {count} jour', other: 'dans {count} jours' },
-    today: 'aujourd’hui',
-    planned: {
-      one: '{count} cadeau déjà prévu',
-      other: '{count} cadeaux déjà prévus',
-    },
-    plannedMine: ', dont {mine} par toi.',
-    plannedEnd: '.',
-    giving: {
-      one: 'Tu offres {count} cadeau.',
-      other: 'Tu offres {count} cadeaux.',
-    },
-    nothingYet: 'Tu n’as encore rien coché.',
-    noneYet: 'Aucun cadeau prévu pour l’instant.',
-    noIdeas: {
-      one: '{names} n’a pas encore d’idées.',
-      other: '{names} n’ont pas encore d’idées.',
-    },
-    newIdeas: {
-      one: '{count} nouvelle idée',
-      other: '{count} nouvelles idées',
-    },
-    offered: { one: '{count} cadeau offert', other: '{count} cadeaux offerts' },
-    offeredTo: {
-      one: '{count} cadeau offert à {name}',
-      other: '{count} cadeaux offerts à {name}',
-    },
-    youGave: {
-      one: 'tu as offert {count} cadeau',
-      other: 'tu as offert {count} cadeaux',
-    },
     untitled: 'Sans nom',
-    sent: 'Une liste qu’on t’a envoyée apparaît ici dès que tu ouvres son lien en étant connecté.',
-    empty: {
-      title: 'Fini, les cadeaux en double',
-      body: 'Écris les idées de cadeaux de tes proches pour Noël ou un anniversaire, partage le lien, et chacun coche ce qu’il offre.',
-      create: 'Créer ma première liste',
-      sent: 'On t’a envoyé une liste ? Ouvre son lien : elle apparaîtra ici.',
-    },
   },
   doc: {
     drag: {

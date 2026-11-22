@@ -20,6 +20,8 @@ const { t, tk, locale } = useT();
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const page = usePartyQuery(slug);
+// « Retour »: the home, or « Quoi de neuf » when opened from there.
+const back = useParent('event', '/');
 const data = computed(() => page.data.value);
 // The event opened: its news are seen (ticket 120).
 useSeen(() =>
@@ -96,7 +98,7 @@ const onLeave = () =>
 </script>
 
 <template>
-  <AdminScreen back="/">
+  <AdminScreen :back="back">
     <AdminQueryState
       :pending="page.isPending.value"
       :error="page.error.value"

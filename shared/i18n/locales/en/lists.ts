@@ -2,52 +2,8 @@
 export default {
   home: {
     title: 'Lists',
-    intro: 'Everyone ticks what they give.',
-    family: 'My people',
-    new: 'New list',
-    coming: 'Coming up',
-    past: 'Past',
-    youHold: 'You hold this list',
-    notShared: 'Not shared',
-    listOf: '{name}’s list',
-    for: 'For',
     on: '{date}',
-    inDays: { one: 'in {count} day', other: 'in {count} days' },
-    today: 'today',
-    planned: {
-      one: '{count} gift already planned',
-      other: '{count} gifts already planned',
-    },
-    plannedMine: ', {mine} of them by you.',
-    plannedEnd: '.',
-    giving: {
-      one: 'You give {count} gift.',
-      other: 'You give {count} gifts.',
-    },
-    nothingYet: 'You haven’t ticked anything yet.',
-    noneYet: 'No gift planned yet.',
-    noIdeas: {
-      one: '{names} has no ideas yet.',
-      other: '{names} have no ideas yet.',
-    },
-    newIdeas: { one: '{count} new idea', other: '{count} new ideas' },
-    offered: { one: '{count} gift given', other: '{count} gifts given' },
-    offeredTo: {
-      one: '{count} gift given to {name}',
-      other: '{count} gifts given to {name}',
-    },
-    youGave: {
-      one: 'you gave {count} gift',
-      other: 'you gave {count} gifts',
-    },
     untitled: 'Untitled',
-    sent: 'A list someone sent you shows up here as soon as you open its link while logged in.',
-    empty: {
-      title: 'No more double gifts',
-      body: 'Write down your people’s gift ideas for Christmas or a birthday, share the link, and everyone ticks what they give.',
-      create: 'Create my first list',
-      sent: 'Someone sent you a list? Open its link: it will show up here.',
-    },
   },
   doc: {
     drag: {

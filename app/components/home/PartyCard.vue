@@ -33,15 +33,6 @@ const onPrepare = () =>
   });
 const emoji = computed(() => partyEmoji(props.party));
 const hasMine = computed(() => props.party.lists.some((list) => list.mine));
-const fromHome = useDrawFromHome();
-/**
- * Remembers that a Secret Santa was opened from the home, for its back
- * button.
- * @param to - The page opened.
- */
-const onSecretSanta = (to: string | null) => {
-  if (to?.startsWith('/p/')) fromHome.value = { path: to };
-};
 </script>
 
 <template>
@@ -87,7 +78,6 @@ const onSecretSanta = (to: string | null) => {
           :dot="santa.line?.dot ? t('lines.dot') : undefined"
           :to="santa.to ?? undefined"
           data-testid="home-santa"
-          @click="onSecretSanta(santa.to)"
         />
         <UiListItem
           v-if="santa.game"

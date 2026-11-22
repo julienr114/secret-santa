@@ -21,7 +21,6 @@ flowchart LR
   passes --> anneePassee["Une année passée<br/><small>/e/[fête]/annees/[année]</small>"]
   accueil --> limite["La limite de Secret Santa<br/><small>/secret-santa/limite</small>"]
   accueil --> pause["Les nouveaux Secret Santa en pause<br/><small>/secret-santa/pause</small>"]
-  accueil --> listes["Listes<br/><small>/listes</small>"]
   accueil --> nouveautes["Quoi de neuf<br/><small>/quoi-de-neuf</small>"]
 
   subgraph admin ["Administration (super-admin)"]
@@ -77,20 +76,26 @@ flowchart LR
     page --> tout["Qui offre à qui<br/><small>une fois dévoilé</small>"]
     page --> journal["Journal du groupe"]
   end
-  accueil -. "seulement si ouverte depuis l'accueil" .-> page
+  accueil --> page
 
   subgraph listesCadeaux ["Listes de cadeaux (celui qui tient la liste)"]
-    listes --> uneListe["La liste<br/><small>/listes/[id]</small>"]
-    listes --> nouvelleListe["Nouvelle liste"]
+    uneListe["La liste<br/><small>/listes/[id]</small>"]
+    nouvelleListe["Nouvelle liste"]
     uneListe --> messageListe["Personnaliser le message"]
     uneListe --> teneurs["Ceux qui tiennent la liste"]
-    listes --> proches["Mes proches<br/><small>/famille</small>"]
+    uneListe --> proches["Mes proches<br/><small>/famille</small>"]
     proches --> membre
     uneListe --> membre["Un de mes proches<br/><small>/famille/[id]</small>"]
     membre --> membreSupprimer["Supprimer de mes proches"]
     membre --> membreTexte["Un texte de ses goûts"]
     membre --> membreQuestion["Les questions, pour elle"]
   end
+
+  accueil --> uneListe
+  accueil --> nouvelleListe
+  leGroupe --> uneListe
+  nouveautes --> uneListe
+  nouveautes --> leGroupe
 
   classDef sans stroke-dasharray: 5 5
 ```
@@ -105,11 +110,20 @@ Décidée par Julien le 18 novembre 2026.
 - Les panneaux du bas (`UiSheet`) ne sont pas des écrans : ils se ferment, ils ne remontent pas. Ils sont indiqués sous l'écran qui les ouvre.
 - Le retour du navigateur, lui, garde son comportement habituel.
 
+### Quand une page a plusieurs parents
+
+Ajouté le 21 novembre 2026 (`docs/spec/v3/navigation.md`, ticket 114). Une liste, un événement, ma page d'un Secret Santa, celle de l'organisateur, « Mes proches », la fiche d'un proche et une année passée se montrent à plusieurs endroits : « Retour » mène à **celui d'où je viens**, si c'est l'un de leurs parents (le tableau de `navigation.md`), sinon au parent par défaut (un email, un lien, une adresse tapée, la page rechargée).
+
+- `parentOf` et `PARENTS` (`shared/utils/navigation.ts`, testés ligne par ligne) disent, pour la page d'avant dans l'historique, si elle est un parent ; `useParent` (`app/composables/useParent.ts`) la lit une fois la page montrée.
+- Le parent d'où je viens est retenu pour la visite : revenu d'une page fille (ses teneurs, la fiche d'un proche, un réglage), « Retour » y mène encore. Un rechargement l'oublie. Rien ne vient de l'adresse : « Retour » n'ouvre qu'une page que je viens de voir.
+- Un geste qui ferme la page (supprimer une liste, cesser de la tenir) mène là où « Retour » aurait mené depuis elle (`useParentOfPage`).
+- Sans session, ma page d'un Secret Santa et une liste par son lien n'ont pas de « Retour ».
+
 ## Accueil et compte
 
 | Écran | Adresse | Parent (« Retour ») | Panneaux |
 |---|---|---|---|
-La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur l'accueil, « Quoi de neuf » et les pages des listes. « Créer » ouvre son panneau. « Une liste » change le panneau en son « Pour quelle occasion ? » (ticket 106) : un de mes événements crée la liste pour lui et l'ouvre (`/listes/[id]`) ; « Une autre occasion », ou aucun événement à moi, mène à `/e/nouvelle?pour=liste`, qui crée l'événement puis la liste. « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/e/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/e/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
+La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin » pour le super-admin) est sur chaque écran de qui est connecté : « Quoi de neuf » et « Admin » s'allument sur leurs pages, toute autre page est sous « Accueil » (`tabOf`). « Créer » ouvre son panneau. « Une liste » change le panneau en son « Pour quelle occasion ? » (ticket 106) : un de mes événements crée la liste pour lui et l'ouvre (`/listes/[id]`) ; « Une autre occasion », ou aucun événement à moi, mène à `/e/nouvelle?pour=liste`, qui crée l'événement puis la liste. « Un Secret Santa » change le panneau en son « Pour quelle occasion ? » (ticket 105) : une fête que j'organise mène au formulaire (`/admin/[fête]/editions/nouvelle`), « Une autre occasion » à `/e/nouvelle?pour=secret-santa`. Sans fête à moi, il mène droit à `/e/nouvelle?pour=secret-santa` ; à ma limite, à `/secret-santa/limite` ; quand le super-admin a suspendu les nouveaux Secret Santa, à `/secret-santa/pause` (ticket 109). Le menu du compte s'ouvre sur mon icône, en haut à droite de chaque écran : « Mon compte », « Langue » (panneau du bas), « Se déconnecter ».
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
@@ -124,6 +138,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; 
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
 | Les événements passés | `/evenements-passes` | Accueil | |
 | (ancienne adresse) | `/tirages-passes` | mène aux Événements passés (`pastPathOf`) | |
+| (ancienne adresse) | `/listes` | mène à l'accueil (`listsPathOf`, ticket 114) | |
 | Rejoindre une fête (lien d'invitation) | `/rejoindre/[code]` | — | |
 
 ## Administration (super-admin)
@@ -144,8 +159,8 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/e/nouvelle` | Accueil ; la seconde étape : la première | |
-| La fête | `/e/[fête]` | Accueil | Quitter cette fête |
-| Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes) | `/e/[fête]/annees/[année]` | Les événements passés ; la fête quand on vient de ses « Années passées » (`?depuis=evenement`) | |
+| La fête | `/e/[fête]` | Accueil ; « Quoi de neuf » quand on en vient | Quitter cette fête (puis l'accueil) |
+| Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes) | `/e/[fête]/annees/[année]` | D'où l'on vient : Les événements passés ou la fête ; sinon la fête si l'adresse le dit (`?depuis=evenement`, ses « Années passées »), sinon Les événements passés | |
 | Membres | `/e/[fête]/membres` | La fête | |
 | Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
 | Nouvelle personne | `/e/[fête]/membres/nouvelle` | Membres | |
@@ -162,7 +177,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 |---|---|---|---|
 | Un nouveau Secret Santa (« Le Secret Santa 2027 ») | `/admin/[fête]/editions/nouvelle` | La fête | |
 | Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, devine, mot, message]` | Le nouveau Secret Santa | |
-| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
+| L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête ; l'accueil ou « Quoi de neuf » quand on en vient | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
@@ -180,7 +195,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| La page du tirage | `/p/[jeton]` | Accueil, seulement si ouverte depuis l'accueil ; sinon pas de « Retour » | Mon icône, À qui offres-tu un cadeau ? |
+| La page du tirage | `/p/[jeton]` | Connecté : d'où l'on vient (l'accueil, la fête, « Quoi de neuf », une année passée), sinon l'accueil ; sans session, pas de « Retour » | Mon icône, À qui offres-tu un cadeau ? |
 | Ma liste de cadeaux (connecté avec mon adresse : ouvre ma liste pour l'événement, `/listes/[id]` ; sinon « Ton adresse email, pour écrire ta liste ») | `/p/[jeton]/liste` | La page du tirage | |
 | Devine qui (pronostics, puis les réponses) | `/p/[jeton]/devine` | La page du tirage | Choisir un pronostic |
 | Le palmarès de Devine qui (images) | `/p/[jeton]/devine/palmares` | Devine qui (la croix et « Voir tous les résultats ») | |
@@ -190,20 +205,19 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 
 ## Listes de cadeaux (README 22.19)
 
-L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages restent jusqu'au ticket 106.
+L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (ticket 114) : `/listes` mène à l'accueil. Une liste s'ouvre depuis l'accueil, la page d'un événement, « Quoi de neuf », « Ce que j'offre ailleurs » ou une année passée.
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Listes (l'onglet) | `/listes` | — (barre du bas) | |
-| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Listes | |
-| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
+| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
+| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
-| Ceux qui tiennent la liste | `/listes/[id]/teneurs` | La liste | |
-| Supprimer la liste | `/listes/[id]/supprimer` | La liste | |
+| Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
+| Supprimer la liste (supprimée : là où « Retour » menait depuis la liste) | `/listes/[id]/supprimer` | La liste | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
-| Mes proches | `/famille` | Listes | |
-| Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | La liste, sinon Mes proches | Son icône |
+| Mes proches | `/famille` | La liste d'où l'on vient, sinon l'accueil | |
+| Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | D'où l'on vient (la liste, ma page d'un Secret Santa, Mes proches) ; sinon la liste de l'adresse, sinon Mes proches | Son icône |
 | Sa date de naissance, sa taille, sa ou ses pointures, son adresse email | `/famille/[id]/naissance`, `/taille`, `/pointure`, `/adresse` | Un de mes proches | |
 | Supprimer de mes proches | `/famille/[id]/supprimer` (`?liste=` depuis une liste) | La liste, sinon sa fiche | |
 | Un texte de ses goûts | `/famille/[id]/texte?texte=` | Une personne de ma famille | |
@@ -213,6 +227,5 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages rest
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Listes si connecté ; sinon pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi » |
+| La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi » |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
-| Les goûts d'une personne | `/l/[jeton]/gouts/[place]` | La liste, par son lien | |

@@ -46,6 +46,9 @@ import type { DropPlace, Lifted } from '~/composables/useListDrag';
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
+// « Retour »: where the list was opened from, or the home
+// (docs/spec/v3/navigation.md).
+const back = useParent('list', '/');
 const { t, tk, locale } = useT();
 const query = useListQuery(id);
 const update = useUpdateListMutation(id);
@@ -498,7 +501,7 @@ onBeforeRouteLeave((to) => {
 </script>
 
 <template>
-  <AdminScreen back="/listes">
+  <AdminScreen :back="back">
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"

@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, heading, hydrated, openList } from './helpers';
 
 // Gift lists held by several, and a person linked to their own account
 // (README 22.20, lot 25): invited by address, an invitation still
@@ -97,13 +97,11 @@ test('invited by address, Hugo holds the list by coming, and manages it', async 
   );
   expect(again.status()).toBe(409);
 
-  // The list is among Hugo's as soon as he opens his lists.
+  // The list is among Hugo's as soon as he opens his home.
   const hugo = await as('hugo');
-  await hugo.goto('/listes');
+  await hugo.goto('/');
   await hydrated(hugo);
-  const card = hugo.getByTestId('list-card').filter({ hasText: 'Noël à deux' });
-  await expect(card).toContainText('Tu tiens cette liste');
-  await card.click();
+  await openList(hugo, 'Noël à deux');
   await expect(hugo.getByTestId('holders-line')).toContainText(
     'Tu tiens cette liste avec Camille.',
   );
@@ -184,11 +182,9 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
 
   // The list is among his, before he ever opened it.
   const hugo = await as('hugo');
-  await hugo.goto('/listes');
+  await hugo.goto('/');
   await hydrated(hugo);
-  const card = hugo.getByTestId('list-card').filter({ hasText: 'Noël à deux' });
-  await expect(card).toContainText('Liste de Camille');
-  await card.click();
+  await openList(hugo, 'Noël à deux');
   await expect(hugo.getByTestId('visitor-sentence')).toContainText(
     'Tu y figures : tu peux écrire tes propres idées.',
   );

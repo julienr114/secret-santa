@@ -92,13 +92,11 @@ test('a list is deleted on purpose, after reading what is lost', async ({
 
   await page.getByTestId('list-remove').click();
   await page.getByTestId('list-delete').click();
-  await expect(page).toHaveURL(/\/listes$/);
+  // Opened by its address, where « Retour » would have led: the home.
+  await expect(page).toHaveURL(/\/$/);
   await expect(
     page.getByText('Liste supprimée', { exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByTestId('list-card').filter({ hasText: 'Noël à effacer' }),
-  ).toHaveCount(0);
   // Gone for everyone, its link with it: the link answers as for a list
   // not shared with you, saying nothing (ticket 106).
   expect((await api.get(`/api/lists/${id}`)).status()).toBe(404);

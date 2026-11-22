@@ -37,7 +37,9 @@ const goBack = useGoBack();
 const query = useMemberQuery(id);
 const update = useUpdateMemberMutation(id);
 const member = computed(() => query.data.value?.member);
-const back = computed(() =>
+// « Retour »: the list, my page of a Secret Santa or « Mes proches » it
+// was opened from; else the list named in the address, else « Mes proches ».
+const back = useParent('person', () =>
   listId.value ? `/listes/${listId.value}` : '/famille',
 );
 useHead({

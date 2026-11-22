@@ -4,7 +4,6 @@ import type {
 } from '#server/database/listSharing';
 import type {
   HolderView,
-  ListCard,
   ListDocument,
   MemberView,
   VisitorDocument,
@@ -17,16 +16,10 @@ import type { ListOrder } from '#shared/utils/reorder';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
-// Gift lists (README 22.19, lot 21): the « Listes » tab, the document of a
+// Gift lists (README 22.19, lot 21): the document of a
 // list for its holder, sharing it, the people of my family.
 
 type Id = MaybeRefOrGetter<string>;
-
-export const useListsQuery = () =>
-  useApiQuery<{ coming: ListCard[]; past: ListCard[] }>(
-    () => keys.lists(),
-    '/api/lists',
-  );
 
 export const useListQuery = (
   id: Id,

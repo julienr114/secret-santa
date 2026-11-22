@@ -42,8 +42,8 @@ test('the home and an event show their skeleton, then their content in its place
   expect(created.ok()).toBe(true);
   const { slug } = (await created.json()) as { slug: string };
 
-  // From the page of my lists, the home: its answer held back.
-  await page.goto('/listes');
+  // From « Quoi de neuf », the home: its answer held back.
+  await page.goto('/quoi-de-neuf');
   await hydrated(page);
   const home = await holdBack(page, '**/api/home');
   await page.getByRole('link', { name: 'Accueil' }).click();

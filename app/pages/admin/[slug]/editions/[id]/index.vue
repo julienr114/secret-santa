@@ -72,7 +72,10 @@ const label = computed(
     t('adminEdition.general.editionFallback'),
 );
 useHead({ title: () => `${label.value} — ${t('common.appName')}` });
-const screen = computed(() => ({ back: `/e/${slug.value}` }));
+// « Retour »: its event, or the home or « Quoi de neuf » when opened from
+// there.
+const back = useParent('edition', () => `/e/${slug.value}`);
+const screen = computed(() => ({ back: back.value }));
 const subtitle = computed(() =>
   [
     dashboard.data.value?.group.name,

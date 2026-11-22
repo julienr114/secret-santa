@@ -6,6 +6,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## La navigation (V3, ticket 114)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ListeTeneurs` | Le fil au-dessus du titre ne dit plus « Listes · » : seulement le nom de la liste, qui y ramène. La page « Listes » n'existe plus (`navigation.md`). | Seul (`navigation.md`) |
+| `Famille` | « Mes proches » n'a plus de fil « Listes » au-dessus de son titre : elle s'ouvre depuis une liste, et « Retour » y ramène. | Seul (`navigation.md`) |
+
 ## Les lignes, les points rouges et « Quoi de neuf » (V3, tickets 112 et 120)
 
 | Maquette | Ce que fait le code | Décidé par |

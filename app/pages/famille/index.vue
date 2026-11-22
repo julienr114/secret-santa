@@ -10,13 +10,15 @@ import {
 // people I hold gift lists for, family, friends or colleagues, those on
 // no list included, each with on how many of my lists they are. Touching
 // one opens their page, which has « Supprimer de mes proches » at the
-// bottom. In « Listes », not in « Mon compte »: it only serves the lists.
+// bottom. It has no way in of its own (decision of 21 November 2026): it opens
+// from a list, and « Retour » goes back to it, else to the home.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const query = useFamilyQuery();
 const create = useCreateMemberMutation();
+const back = useParent('people', '/');
 const members = computed(() => query.data.value?.members ?? []);
 useHead({ title: () => `${t('lists.family.title')} — ${t('common.appName')}` });
 
@@ -52,17 +54,13 @@ const onNew = (firstName: string) =>
 </script>
 
 <template>
-  <AdminScreen back="/listes">
+  <AdminScreen :back="back">
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
       :skeleton="['title', 'list']"
     >
       <div class="flex flex-col gap-1">
-        <UiPageContext
-          :parts="[{ label: t('lists.home.title'), to: '/listes' }]"
-          :label="t('common.context')"
-        />
         <UiPageTitle>{{ t('lists.family.title') }}</UiPageTitle>
         <p class="text-[15px] text-toned">{{ t('lists.family.intro') }}</p>
       </div>

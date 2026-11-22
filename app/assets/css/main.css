@@ -199,7 +199,7 @@
   --shadow-award: 0 3px 0 var(--color-mint-700);
 }
 
-/* The room the bar « Tirages / Listes » takes at the bottom of a screen:
+/* The room the bottom bar takes at the bottom of a screen:
    none without a session (README 22.21). */
 :root {
   --tab-bar: 0px;

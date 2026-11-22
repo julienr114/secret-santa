@@ -88,3 +88,93 @@ export const pastPathOf = (path: string): string | null =>
   path === '/tirages-passes' || path === '/tirages-passes/'
     ? '/evenements-passes'
     : null;
+
+/**
+ * Where `/listes`, the page of the old tab « Listes », leads now
+ * (docs/spec/v3/navigation.md, « Les anciennes adresses »): the home.
+ * Its lists (`/listes/[id]`, `/listes/nouvelle`) stay.
+ * @param path - The path asked for.
+ * @returns The new path, or null when it did not move.
+ */
+export const listsPathOf = (path: string): string | null =>
+  path === '/listes' || path === '/listes/' ? '/' : null;
+
+/** The pages « Retour » can lead back to, when a page has several parents. */
+export type Place =
+  | 'home'
+  | 'news'
+  | 'elsewhere'
+  | 'past'
+  | 'event'
+  | 'year'
+  | 'list'
+  | 'draw'
+  | 'people';
+
+/** Each place, by the shape of its path (without its query). */
+const PLACES: readonly (readonly [Place, RegExp])[] = [
+  ['home', /^\/$/],
+  ['news', /^\/quoi-de-neuf$/],
+  ['elsewhere', /^\/offert-ailleurs$/],
+  ['past', /^\/evenements-passes$/],
+  ['event', /^\/e\/(?!nouvelle$)[^/]+$/],
+  ['year', /^\/e\/[^/]+\/annees\/[^/]+$/],
+  ['list', /^\/(listes\/(?!nouvelle$)|l\/)[^/]+$/],
+  ['draw', /^\/p\/[^/]+$/],
+  ['people', /^\/famille$/],
+];
+
+/**
+ * Which of the places a page is, read from its address.
+ * @param fullPath - The path, with its query.
+ * @returns The place, or null for any other page.
+ */
+export const placeOf = (fullPath: string): Place | null => {
+  const path = fullPath.split(/[?#]/)[0] ?? '';
+  return PLACES.find(([, shape]) => shape.test(path))?.[0] ?? null;
+};
+
+/** The pages with several parents (docs/spec/v3/navigation.md). */
+export type Page =
+  'event' | 'list' | 'draw' | 'edition' | 'people' | 'person' | 'year';
+
+/**
+ * The parents of each page with several, line by line as the table of
+ * docs/spec/v3/navigation.md (« Retour », quand une page a plusieurs
+ * parents). Its default parent depends on the page: the caller gives it.
+ */
+export const PARENTS: Record<Page, readonly Place[]> = {
+  event: ['home', 'news'],
+  list: ['home', 'event', 'news', 'elsewhere', 'year'],
+  draw: ['home', 'event', 'news', 'year'],
+  edition: ['home', 'event', 'news'],
+  people: ['list'],
+  person: ['list', 'draw', 'people'],
+  year: ['past', 'event'],
+};
+
+/**
+ * Where « Retour » leads from a page with several parents: the one I come
+ * from, when it is one of them; back from one of its own pages (a list's
+ * holders, a person's tastes), the parent I came from first, remembered
+ * for the visit; otherwise (an email, a link, an address typed, the page
+ * reloaded, a page that is not its parent) the default one. Only a page
+ * I have just seen can be remembered: « Retour » never opens one I may
+ * not see.
+ * @param page - The page.
+ * @param previous - The page before in the history, if any.
+ * @param remembered - The parent remembered for this page, if any.
+ * @param fallback - Its default parent.
+ * @returns The path of the parent, with its query.
+ */
+export const parentOf = (
+  page: Page,
+  previous: string | null | undefined,
+  remembered: string | null | undefined,
+  fallback: string,
+): string => {
+  if (!previous) return fallback;
+  const place = placeOf(previous);
+  if (place === null) return remembered ?? fallback;
+  return PARENTS[page].includes(place) ? previous : fallback;
+};

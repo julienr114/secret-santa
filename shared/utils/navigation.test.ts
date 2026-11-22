@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   backMove,
   hintsPathOf,
+  listsPathOf,
+  parentOf,
   partyPathOf,
   pastPathOf,
+  placeOf,
   tabOf,
 } from './navigation';
 
@@ -94,5 +97,132 @@ describe('pastPathOf', () => {
   it('sends « Tirages passés » to « Les événements passés »', () => {
     expect(pastPathOf('/tirages-passes')).toBe('/evenements-passes');
     expect(pastPathOf('/evenements-passes')).toBeNull();
+  });
+});
+
+describe('listsPathOf', () => {
+  it('sends the page of the old tab « Listes » home', () => {
+    expect(listsPathOf('/listes')).toBe('/');
+    expect(listsPathOf('/listes/')).toBe('/');
+  });
+
+  it('leaves the lists themselves where they are', () => {
+    expect(listsPathOf('/listes/l1')).toBeNull();
+    expect(listsPathOf('/listes/nouvelle')).toBeNull();
+    expect(listsPathOf('/l/abc')).toBeNull();
+  });
+});
+
+describe('placeOf', () => {
+  it('reads the place of a page from its address, query or not', () => {
+    expect(placeOf('/')).toBe('home');
+    expect(placeOf('/quoi-de-neuf')).toBe('news');
+    expect(placeOf('/offert-ailleurs')).toBe('elsewhere');
+    expect(placeOf('/evenements-passes')).toBe('past');
+    expect(placeOf('/e/noel')).toBe('event');
+    expect(placeOf('/e/noel/annees/2025?depuis=evenement')).toBe('year');
+    expect(placeOf('/listes/l1?nouvelle=1')).toBe('list');
+    expect(placeOf('/l/abc?depuis=noel')).toBe('list');
+    expect(placeOf('/p/tok')).toBe('draw');
+    expect(placeOf('/famille')).toBe('people');
+  });
+
+  it('knows no other page, a child of a place included', () => {
+    expect(placeOf('/e/nouvelle')).toBeNull();
+    expect(placeOf('/e/noel/membres')).toBeNull();
+    expect(placeOf('/listes/nouvelle?pour=noel')).toBeNull();
+    expect(placeOf('/listes/l1/teneurs')).toBeNull();
+    expect(placeOf('/famille/m1?liste=l1')).toBeNull();
+    expect(placeOf('/p/tok/journal')).toBeNull();
+    expect(placeOf('/compte')).toBeNull();
+  });
+});
+
+// docs/spec/v3/navigation.md, « Retour », quand une page a plusieurs
+// parents: one test a line.
+describe('parentOf', () => {
+  it('an event: the home or « Quoi de neuf », by default the home', () => {
+    expect(parentOf('event', '/quoi-de-neuf', null, '/')).toBe('/quoi-de-neuf');
+    expect(parentOf('event', '/', null, '/')).toBe('/');
+    expect(parentOf('event', '/offert-ailleurs', null, '/')).toBe('/');
+    expect(parentOf('event', null, null, '/')).toBe('/');
+  });
+
+  it('a list: the home, an event, « Quoi de neuf », « Ce que j’offre ailleurs », a past year, by default the home', () => {
+    for (const from of [
+      '/',
+      '/e/noel',
+      '/quoi-de-neuf',
+      '/offert-ailleurs',
+      '/e/noel/annees/2025?depuis=evenement',
+    ]) {
+      expect(parentOf('list', from, null, '/')).toBe(from);
+    }
+    expect(parentOf('list', '/p/tok', null, '/')).toBe('/');
+    expect(parentOf('list', '/listes/l2', null, '/')).toBe('/');
+    expect(parentOf('list', null, null, '/')).toBe('/');
+  });
+
+  it('my page of a Secret Santa: the home, its event, « Quoi de neuf », a past year, by default the home', () => {
+    for (const from of [
+      '/',
+      '/e/noel',
+      '/quoi-de-neuf',
+      '/e/noel/annees/2025',
+    ]) {
+      expect(parentOf('draw', from, null, '/')).toBe(from);
+    }
+    expect(parentOf('draw', '/offert-ailleurs', null, '/')).toBe('/');
+    expect(parentOf('draw', undefined, null, '/')).toBe('/');
+  });
+
+  it('the Secret Santa for its organiser: the home, its event, « Quoi de neuf », by default its event', () => {
+    for (const from of ['/', '/e/noel', '/quoi-de-neuf']) {
+      expect(parentOf('edition', from, null, '/e/noel')).toBe(from);
+    }
+    expect(parentOf('edition', '/e/noel/annees/2025', null, '/e/noel')).toBe(
+      '/e/noel',
+    );
+    expect(parentOf('edition', null, null, '/e/noel')).toBe('/e/noel');
+  });
+
+  it('« Mes proches »: the list I come from, by default the home', () => {
+    expect(parentOf('people', '/listes/l1', null, '/')).toBe('/listes/l1');
+    expect(parentOf('people', '/', null, '/')).toBe('/');
+    expect(parentOf('people', null, null, '/')).toBe('/');
+  });
+
+  it('one of my people: the list, my page of a Secret Santa or « Mes proches », by default « Mes proches »', () => {
+    for (const from of ['/listes/l1', '/p/tok', '/famille']) {
+      expect(parentOf('person', from, null, '/famille')).toBe(from);
+    }
+    expect(parentOf('person', '/', null, '/famille')).toBe('/famille');
+    expect(parentOf('person', null, null, '/famille')).toBe('/famille');
+  });
+
+  it('a past year: « Les événements passés » or its event, by default « Les événements passés »', () => {
+    for (const from of ['/evenements-passes', '/e/noel']) {
+      expect(parentOf('year', from, null, '/evenements-passes')).toBe(from);
+    }
+    expect(parentOf('year', '/', null, '/evenements-passes')).toBe(
+      '/evenements-passes',
+    );
+  });
+
+  it('holds after a detour through one of its own pages', () => {
+    // Event → list → its holders → list: « Retour », the event.
+    expect(parentOf('list', '/listes/l1/teneurs', '/e/noel', '/')).toBe(
+      '/e/noel',
+    );
+    expect(
+      parentOf('list', '/famille/m1?liste=l1&place=p1', '/e/noel', '/'),
+    ).toBe('/e/noel');
+    // Nothing remembered: the default.
+    expect(parentOf('list', '/listes/l1/teneurs', null, '/')).toBe('/');
+  });
+
+  it('forgets the parent remembered when coming from another place', () => {
+    expect(parentOf('list', '/p/tok', '/e/noel', '/')).toBe('/');
+    expect(parentOf('list', null, '/e/noel', '/')).toBe('/');
   });
 });

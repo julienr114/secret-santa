@@ -42,6 +42,9 @@ const { t, locale } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const { loggedIn } = useUserSession();
+// « Retour », for someone logged in: where the list was opened from, or the
+// home (docs/spec/v3/navigation.md). Without a session, none.
+const back = useParent('list', '/');
 // What the address carries from a draw (lot 27 ter): `anonyme` asks for
 // the anonymous mode, `p` is the participation of the one who gives,
 // signed. Sent along as they are: the server alone decides. Kept on
@@ -287,7 +290,7 @@ const writes = (person: PersonLine) =>
 
 <template>
   <ListsScreen
-    :back="loggedIn ? '/listes' : undefined"
+    :back="loggedIn ? back : undefined"
     :pending="query.isPending.value"
     :error="query.error.value"
     :skeleton="['doc', 'list']"

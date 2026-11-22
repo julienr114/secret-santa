@@ -25,7 +25,7 @@ useHead({
   title: () =>
     `${title.value} — ${data.value?.party.name ?? ''} — ${t('common.appName')}`,
 });
-const back = computed(() =>
+const back = useParent('year', () =>
   route.query.depuis === 'evenement'
     ? `/e/${slug.value}`
     : '/evenements-passes',

@@ -40,7 +40,7 @@ onMounted(() =>
 </script>
 
 <template>
-  <AdminScreen back="/listes">
+  <AdminScreen back="/">
     <p v-if="failure" class="text-sm font-medium text-error" role="alert">
       {{ errorMessage(failure) }}
     </p>

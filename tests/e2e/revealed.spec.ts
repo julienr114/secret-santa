@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // A revealed draw (README 22.18): visible to the whole group. Before the
 // reveal, no participant route gives anyone else's result; after it, each
@@ -41,18 +41,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     }),
   );
   // The organiser is Camille, a person of the group: she reveals.
-  for (const [firstName, email] of [
-    ['Camille', SUPER],
-    ['Hugo', HUGO],
-    ['Inès', null],
-    ['Louis', null],
-  ]) {
-    await ok(
-      await admin().post(`${ADMIN}/persons`, {
-        data: { firstName, ...(email ? { email } : {}) },
-      }),
-    );
-  }
   const created = await ok(
     await admin().post(`${ADMIN}/editions`, {
       data: { label: 'Noël dévoilé', year: 2026, eventDate: '2099-12-24' },
@@ -60,6 +48,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   );
   state.editionId = created.edition.id;
   state.base = `${ADMIN}/editions/${created.edition.id}`;
+  await addPeople(admin(), ADMIN, state.editionId, [
+    { firstName: 'Camille', email: SUPER },
+    { firstName: 'Hugo', email: HUGO },
+    'Inès',
+    'Louis',
+  ]);
   const { participants } = await ok(await admin().get(state.base));
   const { messages } = await ok(
     await admin().get(`${state.base}/messages?type=invitation`),

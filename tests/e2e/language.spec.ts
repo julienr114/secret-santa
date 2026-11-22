@@ -46,18 +46,20 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       organizers: [ORGANIZER],
     },
   });
-  await api().post(`${ADMIN}/persons`, {
-    data: { firstName: 'Greta', language: 'de' },
-  });
-  await api().post(`${ADMIN}/persons`, { data: { firstName: 'Paul' } });
-  const refused = await api().post(`${ADMIN}/persons`, {
-    data: { firstName: 'Zed', language: 'es' },
-  });
-  expect(refused.status()).toBe(400);
   const edition = await api().post(`${ADMIN}/editions`, {
     data: { label: 'Noël 2026', year: 2026, eventDate: '2026-12-24' },
   });
   state.editionId = (await edition.json()).edition.id;
+  // Each comes into the event by its Secret Santa (ticket 117).
+  const persons = `${ADMIN}/editions/${state.editionId}/persons`;
+  await api().post(persons, {
+    data: { firstName: 'Greta', language: 'de' },
+  });
+  await api().post(persons, { data: { firstName: 'Paul' } });
+  const refused = await api().post(persons, {
+    data: { firstName: 'Zed', language: 'es' },
+  });
+  expect(refused.status()).toBe(400);
   state.link = new URL((await messageOf('Greta')).link).pathname;
 });
 

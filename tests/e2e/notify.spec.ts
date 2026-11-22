@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, hydrated, loginAsSuper } from './helpers';
+import { addPeople, apiLogin, hydrated, loginAsSuper } from './helpers';
 
 // Emails to the organisers (README 22.2). The test server has no email
 // key: sending fails quietly, so what is checked is the settings, that
@@ -28,14 +28,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       organizers: ['orga-notif@example.com'],
     },
   });
-  for (const firstName of ['Ada', 'Bob', 'Cléo']) {
-    await api.post(`${ADMIN}/persons`, { data: { firstName } });
-  }
   await api.patch(`${ADMIN}/rules`, { data: { eventDate: inDays(2) } });
   const edition = await api.post(`${ADMIN}/editions`, {
     data: { label: 'Noël notif', year: 2026, eventDate: inDays(2) },
   });
   state.editionId = (await edition.json()).edition.id;
+  await addPeople(api, ADMIN, state.editionId, ['Ada', 'Bob', 'Cléo']);
   await api.post(`${ADMIN}/editions/${state.editionId}/draw`);
 });
 

@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // « Lui demander des idées » (README 22.11, ticket 107): once per draw,
 // and anonymous. No route, no journal line, no screen of the organiser
@@ -65,16 +65,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { name: 'Famille Trèfle' },
     }),
   );
-  for (const firstName of NAMES) {
-    await ok(
-      await admin().post(`${ADMIN}/persons`, {
-        data: {
-          firstName,
-          email: `${firstName.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()}-trefle@example.com`,
-        },
-      }),
-    );
-  }
   const created = await ok(
     await admin().post(`${ADMIN}/editions`, {
       data: {
@@ -86,6 +76,15 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     }),
   );
   state.editionId = created.edition.id;
+  await addPeople(
+    admin(),
+    ADMIN,
+    state.editionId,
+    NAMES.map((firstName) => ({
+      firstName,
+      email: `${firstName.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()}-trefle@example.com`,
+    })),
+  );
   const { participants } = await ok(
     await admin().get(`${ADMIN}/editions/${state.editionId}`),
   );

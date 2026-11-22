@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, heading, hydrated, seedSql } from './helpers';
+import { apiLogin, heading, hydrated, seedMembers, seedSql } from './helpers';
 
 // The year after and the years over (ticket 108, V3AccueilAnnee,
 // V3FetesPassees, V3FeteAnneePassee, V3ListeReprise): an event that comes
@@ -51,9 +51,8 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   );
   state.slug = slug;
   const at = `/api/admin/${slug}`;
-  for (const firstName of NAMES) {
-    await ok(await api().post(`${at}/persons`, { data: { firstName } }));
-  }
+  // Members of before ticket 117: they are in both Secret Santa below.
+  await seedMembers(slug, NAMES);
   // Last year: two Secret Santa drawn and closed, and Hugo's list.
   const ids: string[] = [];
   for (const label of [`Noël ${year}`, 'Les enfants']) {

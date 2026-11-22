@@ -31,8 +31,8 @@ const ALLOWED: Record<string, string> = {
   'database/listParties.ts': 'by the list (kept in member_entries)',
   // Signing up by the link of a Secret Santa (ticket 116).
   'api/invite/[code]/join.post.ts': 'by the Secret Santa (joinSecretSanta)',
-  // An organiser is a member of the event they organise: Q-029.
-  'database/groups.ts': 'an organiser (Q-029)',
+  // An organiser is a member of the event they organise: Q-031.
+  'database/groups.ts': 'an organiser (Q-031)',
 };
 
 describe('nobody comes into an event but by a Secret Santa or a list', () => {

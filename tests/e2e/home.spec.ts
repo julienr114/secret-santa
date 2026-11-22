@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // The home of the V3 (ticket 103, V3Accueil and V3AccueilVide): a new
 // account sees two cards; an account with three Christmas parties and a
@@ -60,9 +60,21 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
     name: 'Famille Camille',
     date: `${christmas}-12-25`,
   });
-  await camille.post(`/api/admin/${famille}/persons`, {
-    data: { firstName: 'Hugo', email: HUGO },
+  // Hugo comes in by its Secret Santa (ticket 117).
+  const santa = await camille.post(`/api/admin/${famille}/editions`, {
+    data: {
+      label: `Noël ${christmas}`,
+      year: christmas,
+      eventDate: `${christmas}-12-25`,
+    },
   });
+  expect(santa.status()).toBe(201);
+  await addPeople(
+    camille,
+    `/api/admin/${famille}`,
+    (await santa.json()).edition.id,
+    [{ firstName: 'Hugo', email: HUGO }],
+  );
 
   // Hugo's own parties, and Zoé, one of his people, soon a year older.
   await apiLogin(page.request, HUGO);

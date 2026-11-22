@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // A draw already made elsewhere (README 22.12): each participant says on
 // their page who they give to; the organiser sees who answered and who
@@ -50,11 +50,19 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { name: 'Famille Papier' },
     }),
   );
-  for (const firstName of NAMES) {
-    const { person } = await ok(
-      await admin().post(`${ADMIN}/persons`, { data: { firstName } }),
-    );
-    state.ids[firstName] = person.id;
+  const created = await ok(
+    await admin().post(`${ADMIN}/editions`, {
+      data: { label: 'Noël sur papier', year: 2026, eventDate: '2026-12-24' },
+    }),
+  );
+  state.editionId = created.edition.id;
+  for (const person of await addPeople(
+    admin(),
+    ADMIN,
+    state.editionId,
+    NAMES,
+  )) {
+    state.ids[person.firstName] = person.id;
   }
   // Agnès never gives to Bruno: the draw elsewhere does not care.
   await ok(
@@ -66,12 +74,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       },
     }),
   );
-  const created = await ok(
-    await admin().post(`${ADMIN}/editions`, {
-      data: { label: 'Noël sur papier', year: 2026, eventDate: '2026-12-24' },
-    }),
-  );
-  state.editionId = created.edition.id;
   const { participants } = await ok(await admin().get(edition()));
   const { messages } = await ok(
     await admin().get(`${edition()}/messages?type=invitation`),
@@ -225,17 +227,19 @@ test('giving up the answers deletes them', async ({ page, request }) => {
       data: { name: 'Famille Brouillon' },
     }),
   );
-  const ids: Record<string, string> = {};
-  for (const firstName of ['Elsa', 'Fanny', 'Gaston']) {
-    const { person } = await ok(
-      await admin().post(`${GROUP}/persons`, { data: { firstName } }),
-    );
-    ids[firstName] = person.id;
-  }
   const created = await ok(
     await admin().post(`${GROUP}/editions`, {
       data: { label: 'Noël abandonné', year: 2026, eventDate: '2026-12-24' },
     }),
+  );
+  const ids: Record<string, string> = Object.fromEntries(
+    (
+      await addPeople(admin(), GROUP, created.edition.id, [
+        'Elsa',
+        'Fanny',
+        'Gaston',
+      ])
+    ).map((person) => [person.firstName, person.id]),
   );
   const base = `${GROUP}/editions/${created.edition.id}`;
   await ok(await admin().post(`${base}/answers/start`));

@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // The first idea written from a personal link (ticket 107, Q-018,
 // V3ListeCompteCree): it makes the account with the address the organiser
@@ -32,23 +32,17 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { slug: SLUG, name: 'Famille Première Idée' },
     }),
   );
-  for (const [firstName, email] of [
-    ['Romane', NEW],
-    ['Olga', KNOWN],
-    ['Paul', null],
-    ['Sacha', TASTE],
-  ] as const) {
-    await ok(
-      await admin().post(`${ADMIN}/persons`, {
-        data: email ? { firstName, email } : { firstName },
-      }),
-    );
-  }
   const { edition } = await ok(
     await admin().post(`${ADMIN}/editions`, {
       data: { label: 'Noël 2026', year: 2026, eventDate: '2099-12-24' },
     }),
   );
+  await addPeople(admin(), ADMIN, edition.id, [
+    { firstName: 'Romane', email: NEW },
+    { firstName: 'Olga', email: KNOWN },
+    'Paul',
+    { firstName: 'Sacha', email: TASTE },
+  ]);
   const { participants } = await ok(
     await admin().get(`${ADMIN}/editions/${edition.id}`),
   );

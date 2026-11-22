@@ -44,50 +44,18 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
 }) => {
   await loginAsOrganizer(page, GROUP.slug, GROUP.organizer);
 
-  // People
-  await page.getByTestId('party-members').click();
-  for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
-    await page.getByRole('link', { name: /^Ajouter une personne/ }).click();
-    await page.getByLabel('Prénom').fill(firstName);
-    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
-    await expect(heading(page)).toHaveText('Membres');
-  }
-  // 4 people, the organiser (a person of the group by default) and
-  // « Ajouter une personne »: an event has no invitation link (ticket 116)
-  await expect(page.locator('main').getByRole('listitem')).toHaveCount(6);
-
-  // Léa and Tom must not draw each other (both ways by default), each
-  // picked in a sheet over « Nouvelle exclusion ». The exclusions stay
-  // with the party (docs/spec/v3/modele.md).
-  await page.goto(`/e/${GROUP.slug}/exclusions`);
-  await hydrated(page);
-  await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
-  await page.getByRole('button', { name: /^Qui/ }).click();
-  await page.getByRole('option', { name: 'Léa' }).click();
-  await page.getByRole('button', { name: /^Ne tire pas/ }).click();
-  await page.getByRole('option', { name: 'Tom' }).click();
-  await expect(page.getByTestId('exclusion-sheet')).toContainText(
-    'Léa et Tom ne se tireront jamais l’un l’autre.',
-  );
-  await page.getByRole('button', { name: "Ajouter l'exclusion" }).click();
-  await expect(page.getByText('Léa et Tom')).toBeVisible();
-
-  // Edition, from the party
-  await page.goto(`/e/${GROUP.slug}`);
-  await hydrated(page);
+  // Edition, from the party. Nobody is added to an event itself (ticket
+  // 117): its organiser alone is taken, people come in by the Secret
+  // Santa.
   await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
   // Six rows, each opening its page (V3TirageNouveau); the day of the
-  // party is already there, and the five members of the party are taken,
-  // as this is its first Secret Santa.
+  // party is already there.
   await expect(heading(page)).toHaveText(/^Le Secret Santa \d{4}$/);
   await expect(
     page.getByTestId('new-secret-santa').getByRole('link'),
   ).toHaveCount(6);
   await expect(page.getByTestId('new-secret-santa-date')).toContainText(
     '25 décembre',
-  );
-  await expect(page.getByTestId('taken-over')).toContainText(
-    '5 membres de l’événement.',
   );
   // A budget of its own, shown in the edition's header.
   const budget = page.getByTestId('new-secret-santa-budget');
@@ -109,11 +77,57 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await page.getByRole('button', { name: 'Créer le Secret Santa' }).click();
   await expect(page.getByText('Famille E2E · Budget 20 €')).toBeVisible();
   await expect(page.getByTestId('settings-row')).toContainText('Budget 20 €');
-  // Ready to prepare at once: links work, the draw can be checked.
+  const editionUrl = new URL(page.url()).pathname;
+
+  // People: « Choisir les participants › Créer une personne », each one in
+  // the event and in this Secret Santa together.
+  await page.goto(`${editionUrl}/ajouter`);
+  await hydrated(page);
+  for (const firstName of ['Léa', 'Tom', 'Zoé', 'Hugo']) {
+    await page.getByRole('link', { name: /^Créer une personne/ }).click();
+    await page.getByLabel('Prénom').fill(firstName);
+    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+    await expect(heading(page)).toHaveText('Choisir les participants');
+  }
+  await page
+    .getByRole('button', { name: 'Enregistrer · 5 participants' })
+    .click();
+  await expect(page).toHaveURL(new RegExp(`${editionUrl}$`));
+  // « Membres » says by where each came in, and adds to the Secret Santa.
+  await page.goto(`/e/${GROUP.slug}/membres`);
+  await hydrated(page);
+  await expect(page.getByTestId('members')).toContainText(
+    'Secret Santa · pas d’adresse email',
+  );
+  await expect(page.getByTestId('members-add-santa')).toContainText(
+    '5 participants',
+  );
+  await expect(
+    page.getByRole('link', { name: /^Ajouter une personne/ }),
+  ).toHaveCount(0);
+
+  // Léa and Tom must not draw each other (both ways by default), each
+  // picked in a sheet over « Nouvelle exclusion ». The exclusions stay
+  // with the party (docs/spec/v3/modele.md).
+  await page.goto(`/e/${GROUP.slug}/exclusions`);
+  await hydrated(page);
+  await page.getByRole('button', { name: 'Ajouter une exclusion' }).click();
+  await page.getByRole('button', { name: /^Qui/ }).click();
+  await page.getByRole('option', { name: 'Léa' }).click();
+  await page.getByRole('button', { name: /^Ne tire pas/ }).click();
+  await page.getByRole('option', { name: 'Tom' }).click();
+  await expect(page.getByTestId('exclusion-sheet')).toContainText(
+    'Léa et Tom ne se tireront jamais l’un l’autre.',
+  );
+  await page.getByRole('button', { name: "Ajouter l'exclusion" }).click();
+  await expect(page.getByText('Léa et Tom')).toBeVisible();
+
+  // Ready to prepare: links work, the draw can be checked.
+  await page.goto(editionUrl);
+  await hydrated(page);
   await expect(
     page.getByText('5 participants, toutes les règles sont respectées.'),
   ).toBeVisible();
-  const editionUrl = new URL(page.url()).pathname;
   // The party date stays in the header, and changes in a sheet.
   await expect(page.getByTestId('party-date')).toContainText('25 décembre');
   await page.getByTestId('party-date').click();

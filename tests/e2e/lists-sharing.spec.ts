@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, heading, hydrated, seedMembers } from './helpers';
 
 // The sharing of a list by stages (ticket 106, docs/spec/v3/listes.md):
 // a list made for an event opens as a draft, read by nobody but its
@@ -60,12 +60,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     });
     expect(created.ok(), name).toBe(true);
     const { slug } = (await created.json()) as { slug: string };
-    for (const [firstName, email] of members) {
-      const added = await camille().post(`/api/admin/${slug}/persons`, {
-        data: { firstName, email },
-      });
-      expect(added.ok(), firstName).toBe(true);
-    }
+    // Members of before ticket 117, without a Secret Santa that would
+    // change what « Qui verra ta liste ? » offers.
+    await seedMembers(slug, members);
     return slug;
   };
   state.family = await party(FAMILY, [['Hugo', HUGO]]);

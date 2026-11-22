@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // The party (V3, ticket 104): « Pour quelle occasion ? » filled from a
 // birthday, the page of the party for its organiser and for a member, its
@@ -10,7 +10,7 @@ const ORGANISER = 'orga-fete@example.com';
 const MEMBER = 'membre-fete@example.com';
 const state = { slug: '' };
 
-test('a birthday party comes filled, and is created with its people', async ({
+test('a birthday party comes filled, and is created with me alone', async ({
   page,
 }) => {
   await apiLogin(page.request, ORGANISER);
@@ -35,9 +35,8 @@ test('a birthday party comes filled, and is created with its people', async ({
   );
   await expect(page.getByTestId('party-date-day')).toHaveValue('14');
   await expect(page.getByTestId('party-date-month')).toHaveValue('12');
+  // Nobody else is asked for (ticket 117): « Continuer » creates it.
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(heading(page)).toHaveText('Qui en fait partie ?');
-  await page.getByTestId('party-create').click();
   await expect(page).toHaveURL(/\/e\/l-anniversaire-de-zoe$/);
   state.slug = 'l-anniversaire-de-zoe';
 
@@ -89,12 +88,18 @@ test('a member sees the party, and leaves it', async ({
   playwright,
   baseURL,
 }) => {
-  // The organiser adds a member by their address.
+  // The organiser adds a member by their address, to a Secret Santa:
+  // nobody comes into an event by itself (ticket 117).
   const organiser = await playwright.request.newContext({ baseURL });
   await apiLogin(organiser, ORGANISER);
-  await organiser.post(`/api/admin/${state.slug}/persons`, {
-    data: { firstName: 'Hugo', email: MEMBER },
+  const at = `/api/admin/${state.slug}`;
+  const created = await organiser.post(`${at}/editions`, {
+    data: { label: 'Les 4 ans', year: 2026, eventDate: '2026-12-14' },
   });
+  expect(created.status()).toBe(201);
+  await addPeople(organiser, at, (await created.json()).edition.id, [
+    { firstName: 'Hugo', email: MEMBER },
+  ]);
 
   await apiLogin(page.request, MEMBER);
   await page.goto(`/e/${state.slug}`);

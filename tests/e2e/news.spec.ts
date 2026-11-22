@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // The lines and « Quoi de neuf » (tickets 112 and 120, V3Accueil,
 // V3AccueilAvantNoel, V3QuoiDeNeuf, NotifListe): each line says where the
@@ -74,17 +74,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   );
   state.slug = slug;
   const at = `/api/admin/${slug}`;
-  for (const [firstName, email] of [
-    ['Hugo', HUGO],
-    ['Inès', null],
-    ['Louis', null],
-  ] as const) {
-    await ok(
-      await camille().post(`${at}/persons`, {
-        data: { firstName, ...(email ? { email } : {}) },
-      }),
-    );
-  }
   const { edition } = await ok(
     await camille().post(`${at}/editions`, {
       data: {
@@ -95,6 +84,13 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     }),
   );
   state.base = `${at}/editions/${edition.id}`;
+  // Hugo comes in by the Secret Santa: « Camille t'ajoute au Secret
+  // Santa » (ticket 117).
+  await addPeople(camille(), at, edition.id, [
+    { firstName: 'Hugo', email: HUGO },
+    'Inès',
+    'Louis',
+  ]);
   const { participants } = await ok(await camille().get(state.base));
   const { messages } = await ok(
     await camille().get(`${state.base}/messages?type=invitation`),
@@ -203,8 +199,8 @@ test('the draw: a news, a count, a dot; « Quoi de neuf » clears nothing, the e
     .getByTestId('home-santa');
   await expect(santa).toContainText('Ton enveloppe t’attend');
   await expect(santa.getByTestId('new-dot')).toHaveCount(1);
-  // The draw and Camille's idea.
-  await expect(page.getByTestId('news-count')).toHaveText('2');
+  // Being added to the Secret Santa, the draw and Camille's idea.
+  await expect(page.getByTestId('news-count')).toHaveText('3');
 
   await page.getByRole('link', { name: /Quoi de neuf/ }).click();
   await expect(heading(page)).toHaveText('Quoi de neuf');
@@ -222,12 +218,17 @@ test('the draw: a news, a count, a dot; « Quoi de neuf » clears nothing, the e
       .filter({ hasText: 'Camille a ajouté des idées à sa liste' }),
   ).toHaveCount(1);
   await expect(
+    section
+      .getByTestId('news-line')
+      .filter({ hasText: 'Camille t’ajoute au Secret Santa' }),
+  ).toHaveCount(1);
+  await expect(
     page.getByText('Tout s’efface au bout de trente jours'),
   ).toBeVisible();
   // Reading the page marks nothing.
   await page.reload();
   await hydrated(page);
-  await expect(page.getByTestId('news-count')).toHaveText('2');
+  await expect(page.getByTestId('news-count')).toHaveText('3');
 
   // Hugo opens his envelope: its news goes, here and on the home.
   await ok(await page.request.post(`/api/p/${state.token}/reveal`));
@@ -239,7 +240,7 @@ test('the draw: a news, a count, a dot; « Quoi de neuf » clears nothing, the e
       .filter({ hasText: 'ton enveloppe t’attend' })
       .getByTestId('new-dot'),
   ).toHaveCount(0);
-  await expect(page.getByTestId('news-count')).toHaveText('1');
+  await expect(page.getByTestId('news-count')).toHaveText('2');
   await page.goto('/');
   await hydrated(page);
   await expect(santa).toContainText('Tu sais à qui tu offres');

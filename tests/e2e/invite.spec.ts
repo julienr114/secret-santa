@@ -4,7 +4,13 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated, loginAsOrganizer } from './helpers';
+import {
+  addPeople,
+  apiLogin,
+  heading,
+  hydrated,
+  loginAsOrganizer,
+} from './helpers';
 
 // Signing up to a Secret Santa by its invitation link (ticket 116): the
 // link is that of a Secret Santa, not of its event; and keeping a draw
@@ -53,14 +59,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   await api.post('/api/admin/groups', {
     data: { slug: SLUG, name: 'Famille Invite', organizers: [ORGANIZER] },
   });
-  for (const firstName of ['Ada', 'Bob']) {
-    await api.post(`${ADMIN}/persons`, { data: { firstName } });
-  }
   // Two Secret Santa the same year: each has its own link.
   const adults = await api.post(`${ADMIN}/editions`, {
     data: { label: 'Les adultes', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await adults.json()).edition.id;
+  await addPeople(api, ADMIN, state.editionId, ['Ada', 'Bob']);
   const children = await api.post(`${ADMIN}/editions`, {
     data: { label: 'Les enfants', year: 2026, eventDate: '2026-12-25' },
   });

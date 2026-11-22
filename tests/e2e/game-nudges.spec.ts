@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated, seedSql } from './helpers';
+import { apiLogin, hydrated, seedMembers, seedSql } from './helpers';
 
 // « Devine qui » : donner envie de jouer, et rappeler (README 22.17,
 // Correction 15). Last year's figure to beat, the surprise, « Je passe mon
@@ -67,12 +67,8 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { name: 'Famille Relance' },
     }),
   );
-  for (const firstName of NAMES) {
-    const { person } = await ok(
-      await admin().post(`${ADMIN}/persons`, { data: { firstName } }),
-    );
-    state.ids[firstName] = person.id;
-  }
+  // Members of before ticket 117: they are in every Secret Santa below.
+  Object.assign(state.ids, await seedMembers(SLUG, NAMES));
   // Last year: the game, two players, Ada found her Santa.
   // Made this year, then moved to last year: nothing is made in a year
   // over (ticket 108).

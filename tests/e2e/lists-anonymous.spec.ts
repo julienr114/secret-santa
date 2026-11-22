@@ -6,7 +6,7 @@ import {
   type BrowserContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // A gift list kept for the one who drew me (ticket 107), and « Mode
 // anonyme » on a list opened by its link (lot 27 ter, README 22.20,
@@ -99,19 +99,18 @@ test.beforeAll(async ({ playwright, baseURL, browser }) => {
   await ok(
     await admin.post('/api/admin/groups', { data: { name: 'Famille Masque' } }),
   );
-  for (const firstName of NAMES) {
-    await ok(
-      await admin.post(`${ADMIN}/persons`, {
-        data: { firstName, email: emailOf(firstName) },
-      }),
-    );
-  }
   const created = await ok(
     await admin.post(`${ADMIN}/editions`, {
       data: { label: 'Noël masqué', year: 2026, eventDate: '2026-12-24' },
     }),
   );
   const editionId = created.edition.id;
+  await addPeople(
+    admin,
+    ADMIN,
+    editionId,
+    NAMES.map((firstName) => ({ firstName, email: emailOf(firstName) })),
+  );
   const { participants } = await ok(
     await admin.get(`${ADMIN}/editions/${editionId}`),
   );

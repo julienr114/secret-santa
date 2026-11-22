@@ -1,8 +1,9 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import {
+  addPeople,
+  apiLogin,
   heading,
   hydrated,
-  apiLogin,
   loginAsOrganizer,
   loginAsSuper,
 } from './helpers';
@@ -29,13 +30,11 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     data: { slug: SLUG, name: 'Famille Courrier', organizers: [ORGANIZER] },
   });
   state.groupId = (await created.json()).group.id;
-  for (const firstName of ['Ada', 'Bob', 'Cléo']) {
-    await api.post(`${ADMIN}/persons`, { data: { firstName } });
-  }
   const edition = await api.post(`${ADMIN}/editions`, {
     data: { label: 'Noël courrier', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await edition.json()).edition.id;
+  await addPeople(api, ADMIN, state.editionId, ['Ada', 'Bob', 'Cléo']);
   // The organiser is a person of the group, with an address: this
   // edition goes without them, so that only Ada can be emailed.
   const { participants } = await (
@@ -68,9 +67,12 @@ test('the guardian adds addresses and sends to those who have one', async ({
   ).toBe('ada@example.com');
   // One address, one person of the group: neither a new person nor Bob
   // can take Ada's.
-  const twin = await page.request.post(`${ADMIN}/persons`, {
-    data: { firstName: 'Ada bis', email: 'ada@example.com' },
-  });
+  const twin = await page.request.post(
+    `${ADMIN}/editions/${state.editionId}/persons`,
+    {
+      data: { firstName: 'Ada bis', email: 'ada@example.com' },
+    },
+  );
   expect(twin.status()).toBe(409);
   const bob = persons.find((p: { firstName: string }) => p.firstName === 'Bob');
   const taken = await page.request.patch(`${ADMIN}/persons/${bob.id}`, {
@@ -167,31 +169,17 @@ test('a participant logs in with their address and finds their draw', async ({
 }) => {
   const api = state.api!;
   const email = 'dana-accueil@example.com';
-  const person = await api.post(`${ADMIN}/persons`, {
-    data: { firstName: 'Dana', email },
-  });
-  const personId = (await person.json()).person.id;
+  // She comes into the event by its Secret Santa (ticket 117).
+  await addPeople(api, ADMIN, state.editionId, [{ firstName: 'Dana', email }]);
 
   // The address is known through the person: it gets a link and a home,
-  // where the party is, without a Secret Santa as long as she takes part
-  // in no edition.
+  // where the party is.
   await apiLogin(page.request, email);
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour');
   const card = page.getByTestId('home-party');
   await expect(card).toContainText('Famille Courrier');
-  await expect(card.getByRole('link', { name: 'Le Secret Santa' })).toHaveCount(
-    0,
-  );
-
-  const added = await api.post(
-    `${ADMIN}/editions/${state.editionId}/participants`,
-    { data: { personId } },
-  );
-  expect(added.ok()).toBe(true);
-  await page.reload();
-  await hydrated(page);
   // Her Secret Santa is a line of the party's card.
   const santa = card.getByRole('link', { name: 'Le Secret Santa' });
   await expect(santa).toBeVisible();

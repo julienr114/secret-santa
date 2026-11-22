@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated, seedSql } from './helpers';
+import { addPeople, apiLogin, heading, hydrated, seedSql } from './helpers';
 
 // The participant's journey through a personal link (README 4.3 and
 // section 18): waiting screen, gift hints, counted reveal, journal, and the
@@ -67,7 +67,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     slug: SLUG,
     name: 'Famille Lutins',
   });
-  for (const firstName of NAMES) await post(`${ADMIN}/persons`, { firstName });
   const rules = await admin().patch(`${ADMIN}/rules`, {
     data: { budget: '20 € max', eventDate: '24 décembre' },
   });
@@ -78,6 +77,7 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     eventDate: '2026-12-24',
   });
   state.editionId = created.edition.id;
+  await addPeople(admin(), ADMIN, state.editionId, NAMES);
   const { participants } = await (await edition()).json();
   const { messages } = await (
     await admin().get(

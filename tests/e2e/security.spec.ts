@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin, seedSql } from './helpers';
+import { addPeople, apiLogin, seedSql } from './helpers';
 
 // The secret of the draw, checked from the outside (README 8.6 and 18):
 // once drawn, nothing the admin API answers may say who gives to whom, nor
@@ -75,22 +75,26 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   });
   await apiLogin(ctx('guardian'), ORGANIZER);
   const guardian = ctx('guardian');
-  const ids: string[] = [];
-  for (const firstName of NAMES) {
-    const created = await guardian.post(`${ADMIN}/persons`, {
-      data: { firstName, email: `${firstName.toLowerCase()}@example.com` },
-    });
-    ids.push((await created.json()).person.id);
-  }
+  const edition = await guardian.post(`${ADMIN}/editions`, {
+    data: { label: 'Noël du coffre', year: 2026, eventDate: '2026-12-25' },
+  });
+  state.editionId = (await edition.json()).edition.id;
+  const ids = (
+    await addPeople(
+      guardian,
+      ADMIN,
+      state.editionId,
+      NAMES.map((firstName) => ({
+        firstName,
+        email: `${firstName.toLowerCase()}@example.com`,
+      })),
+    )
+  ).map((person) => person.id);
   // An exclusion pairs two ids on purpose: the check below must tell such
   // a rule from a result.
   await guardian.post(`${ADMIN}/exclusions`, {
     data: { giverId: ids[0], receiverId: ids[1], reciprocal: true },
   });
-  const edition = await guardian.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël du coffre', year: 2026, eventDate: '2026-12-25' },
-  });
-  state.editionId = (await edition.json()).edition.id;
   const { participants } = await (
     await guardian.get(`${ADMIN}/editions/${state.editionId}`)
   ).json();
@@ -226,7 +230,7 @@ test('without a session every admin route is closed', async () => {
     `${ADMIN}/editions/${state.editionId}/close`,
     `${ADMIN}/editions/${state.editionId}/emails`,
     `${ADMIN}/editions/${state.editionId}/reveal-one`,
-    `${ADMIN}/persons`,
+    `${ADMIN}/editions/${state.editionId}/persons`,
     `${ADMIN}/exclusions`,
   ];
   for (const url of writes) {
@@ -291,12 +295,12 @@ test('the link of a list leaks nowhere, and another site cannot write', async ()
   }
   // A write sent from another site is refused before anything else; the
   // same from the application itself goes on to its usual answer.
-  const foreign = await ctx('guardian').post(`${ADMIN}/persons`, {
+  const foreign = await ctx('guardian').post(`${ADMIN}/exclusions`, {
     data: {},
     headers: { origin: 'https://evil.example' },
   });
   expect(foreign.status()).toBe(403);
-  const own = await ctx('guardian').post(`${ADMIN}/persons`, {
+  const own = await ctx('guardian').post(`${ADMIN}/exclusions`, {
     data: {},
     headers: { origin: new URL(foreign.url()).origin },
   });

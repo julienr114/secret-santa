@@ -4,7 +4,7 @@ import {
   test,
   type APIRequestContext,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // The edition screen in its edge cases (docs/refonte, lot 1): no
 // participant yet, a draw that cannot be made, and a large group whose
@@ -24,13 +24,13 @@ const setUp = async (slug: string, names: string[]) => {
   const api = state.api!;
   await api.post('/api/admin/groups', { data: { slug, name: slug } });
   const at = `/api/admin/${slug}`;
-  for (const firstName of names) {
-    await api.post(`${at}/persons`, { data: { firstName } });
-  }
   const created = await api.post(`${at}/editions`, {
     data: { label: 'Noël cas', year: 2026, eventDate: '2026-12-24' },
   });
-  return { at, id: (await created.json()).edition.id as string };
+  const id = (await created.json()).edition.id as string;
+  // Nobody comes into an event but by a Secret Santa (ticket 117).
+  await addPeople(api, at, id, names);
+  return { at, id };
 };
 
 test.beforeAll(async ({ playwright, baseURL }) => {
@@ -172,7 +172,7 @@ test('a large group folds its lists, before and after the draw', async ({
   // Full at 30 (V3FeteMembresComplet): the server refuses the thirty-first,
   // the page says so, and the link of its Secret Santa is paused by itself
   // (ticket 116).
-  const more = await state.api!.post(`${at}/persons`, {
+  const more = await state.api!.post(`${at}/editions/${id}/persons`, {
     data: { firstName: 'Trente-et-un' },
   });
   expect(more.status()).toBe(409);
@@ -191,9 +191,13 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(page.getByTestId('party-full')).toContainText(
     'L’événement est complet',
   );
+  // « Au Secret Santa » says its link is paused, and leads to it.
+  await expect(page.getByTestId('members-add-santa')).toContainText(
+    'En pause · l’événement est complet',
+  );
   await expect(
-    page.getByRole('link', { name: 'Ajouter une personne' }),
-  ).toHaveCount(0);
+    page.getByTestId('members-add-santa').getByRole('link'),
+  ).toHaveAttribute('href', new RegExp(`/editions/${id}/invitation$`));
 
   await page.goto(`/admin/cas-grand/editions/${id}`);
   await hydrated(page);

@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // « Retour » leads back where one comes from (ticket 114,
 // docs/spec/v3/navigation.md): a list opened from the home, an event or
@@ -54,23 +54,17 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   );
   state.slug = slug;
   const at = `/api/admin/${slug}`;
-  for (const [firstName, email] of [
-    ['Hugo', HUGO],
-    ['Inès', null],
-    ['Louis', null],
-  ] as const) {
-    await ok(
-      await camille.post(`${at}/persons`, {
-        data: { firstName, ...(email ? { email } : {}) },
-      }),
-    );
-  }
   const { edition } = await ok(
     await camille.post(`${at}/editions`, {
       data: { label: `Noël ${year}`, year, eventDate: `${year}-12-25` },
     }),
   );
   const base = `${at}/editions/${edition.id}`;
+  await addPeople(camille, at, edition.id, [
+    { firstName: 'Hugo', email: HUGO },
+    'Inès',
+    'Louis',
+  ]);
   const { participants } = await ok(await camille.get(base));
   const { messages } = await ok(
     await camille.get(`${base}/messages?type=invitation`),

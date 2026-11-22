@@ -61,7 +61,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3ChargementAccueil`, `V3ChargementFete` | Le squelette commence sous la barre du haut à la marge de toutes les pages (20 px), pas à 8 px : le contenu arrive ainsi à la place exacte du squelette. Les pièces battent doucement (`USkeleton`) et n'apparaissent qu'après 200 ms, comme les squelettes d'avant. | Seul (le cadre des écrans) |
 | `V3ChargementAccueil`, `V3ChargementFete` | Les lignes du squelette prennent tour à tour quatre largeurs (55/38, 62/30, 45/44, 48/40 %) : la deuxième section d'un événement a 62/30 puis 45/44 au lieu de 62/30 puis 48/40. | Seul |
-| Les écrans sans maquette de chargement | « Membres », la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Qui est de la fête ? », une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui verra ta liste ? », « Ce que j'offre ailleurs », les événements passés et une année passée ont un squelette composé des pièces de `UiSkeleton` à leur forme (lignes à icône, réglages, pastilles, barre de partage, en-tête d'une liste). | Seul (la règle : `regles-d-ecran.md`) |
+| Les écrans sans maquette de chargement | « Membres », la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Qui reprendre ? », une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui verra ta liste ? », « Ce que j'offre ailleurs », les événements passés et une année passée ont un squelette composé des pièces de `UiSkeleton` à leur forme (lignes à icône, réglages, pastilles, barre de partage, en-tête d'une liste). | Seul (la règle : `regles-d-ecran.md`) |
 
 ## Les emails et le journal (V3, ticket 110)
 

@@ -238,7 +238,9 @@ describe('never a result of a draw, never who asks for ideas', () => {
       'receiver_ideas',
     ]);
     for (const row of hugo) {
-      const text = JSON.stringify(row);
+      // Every column but the row's own random id, which may hold « z1 » by chance.
+      const { id: _id, ...columns } = row as Record<string, unknown>;
+      const text = JSON.stringify(columns);
       expect(text).not.toContain('Camille');
       expect(text).not.toContain('Zoé');
       expect(text).not.toContain('c1');

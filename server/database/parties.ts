@@ -18,6 +18,7 @@ import {
 import { insertPersonFromAccount } from './people';
 import { loadYears, timelineOf } from './years';
 import { loadPastLines, type PastYearLine } from './pastYears';
+import { loadForWhom } from './forWhom';
 import { gamePath, listKey, loadLines } from './lines';
 import { createOwnParty } from './listParties';
 import { newId, nowIso } from '#server/http/context';
@@ -25,11 +26,13 @@ import { decrypt } from '#server/utils/crypto';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { freeSlug, slugify } from '#server/utils/auth';
 import {
+  forMemberOf,
   leavingLists,
   usualDateOf,
   type PartyInput,
 } from '#server/utils/parties';
 import type { PartyCategory } from '#shared/utils/categories';
+import type { ForWhom } from '#shared/utils/forWhom';
 import type { LinePart, LineText } from '#shared/utils/lines';
 import { listYear } from '#shared/utils/years';
 
@@ -48,6 +51,8 @@ export type PartyPage = {
     iconEmoji: string | null;
     recurring: boolean;
     usualDate: string | null;
+    /** A birthday: whom it is for, their age the year shown (ticket 118). */
+    forWhom: ForWhom | null;
   };
   /**
    * The year of the party now (ticket 108): the one the home shows, else,
@@ -265,6 +270,7 @@ export const loadPartyPage = async (
           .groupBy(giftListParties.listId),
   ]);
   const mineHere = listsShown.filter((list) => held.has(list.id));
+  const forWhom = await loadForWhom(db, [party]);
   return {
     party: {
       id: party.id,
@@ -274,6 +280,7 @@ export const loadPartyPage = async (
       iconEmoji: party.iconEmoji,
       recurring: party.recurring,
       usualDate: party.usualDate,
+      forWhom: forWhom(party, shownYear?.year ?? null, account.id),
     },
     year: shownYear,
     pastYears: await loadPastLines(db, {
@@ -426,6 +433,7 @@ export const createParty = async (
       iconColor: null,
       usualDate: usualDateOf(input.date),
       recurring: input.recurring,
+      forMemberId: forMemberOf(input.category, input.forMemberId),
       fromList: false,
       rules: {},
       createdBy: account.id,

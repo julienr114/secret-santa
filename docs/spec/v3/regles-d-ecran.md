@@ -38,6 +38,18 @@ Pas de calendrier dessiné : `AdminDateField` et son `UCalendar` en panneau du b
 
 Sur l'accueil, l'en-tête d'une carte d'événement ouvre l'événement : il porte la même flèche que les lignes du dessous, après la date.
 
+## Un écran qui arrive
+
+Maquettes : `V3ChargementAccueil`, `V3ChargementFete`, `V3ChargementQuoiDeNeuf` ; celles d'avant restent valables pour ce qui n'a pas changé (`ChargementListe`, `ChargementTirage`, `ChargementJournal`, `ChargementPanneau`, `ChargementBouton`, `ChargementReglage`).
+
+- **Tout écran qui attend ses données montre un squelette** : des pièces grises à la place et à la taille de ce qui arrive, avec le composant qui existe (`UiSkeleton`). Jamais une page vide, jamais une roue seule au milieu.
+- **Le squelette a la forme de l'écran d'aujourd'hui.** Un nouvel écran a le sien ; un écran redessiné change le sien. Trois blocs gris qui ne ressemblent à rien ne sont pas un squelette.
+- La barre du haut et la barre du bas sont déjà là : seul le contenu est en squelette. Le titre de la page, quand on le connaît sans attendre (« Membres », « Réglages »), est écrit pour de bon.
+- L'accueil : le bonjour, le titre de la saison, puis des cartes d'événement, chacune avec son en-tête et ses lignes. La page d'un événement : la catégorie, le nom, la date, la ligne des membres, puis les sections et leurs lignes. « Quoi de neuf » : le titre, puis une section par événement.
+- Un panneau qui attend son contenu, un bouton qui travaille, un réglage qui s'enregistre : comme aujourd'hui.
+- Pour un lecteur d'écran, la zone est occupée et dit « Chargement », comme `UiSkeleton` le fait déjà.
+- Un écran déjà affiché qui se met à jour ne repasse pas par son squelette.
+
 ## Ce qui reste vrai
 
 Mobile seulement, cibles de 44 px, pas de mode sombre, pas de lien rouge souligné pour une action (une action est une ligne ou un bouton), pas de texte « volant » hors d'une ligne ou d'une pastille, le moins de pastilles et de cadres possible.

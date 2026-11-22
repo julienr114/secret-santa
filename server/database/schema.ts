@@ -31,6 +31,10 @@ export const parties = sqliteTable('parties', {
   // The usual day, `MM-DD`, and whether it comes back each year.
   usualDate: text('usual_date'),
   recurring: integer('recurring', { mode: 'boolean' }).notNull().default(false),
+  // A birthday: the one of my people it is for (ticket 118), or null
+  // (« Quelqu'un d'autre », « Personne »). No foreign key: the person may
+  // be deleted, the event keeps its name.
+  forMemberId: text('for_member_id'),
   // Made for a list kept apart before the V3 (ticket 101): hidden from
   // the screens of a group until the pages of a party come (ticket 104).
   fromList: integer('from_list', { mode: 'boolean' }).notNull().default(false),

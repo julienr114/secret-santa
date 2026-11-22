@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
     iconColor: null,
     usualDate: '12-25',
     recurring: true,
+    forMemberId: null,
     fromList: false,
     rules: {},
     createdBy: account.id,

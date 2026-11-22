@@ -4,12 +4,40 @@ import {
   membersLeft,
   canLeaveParty,
   checkPartySize,
+  forMemberOf,
   leavingLists,
   partyInputSchema,
   usualDateOf,
 } from './parties';
 
+describe('forMemberOf', () => {
+  it('keeps the person of a birthday, nobody for another category', () => {
+    expect(forMemberOf('birthday', 'z')).toBe('z');
+    expect(forMemberOf('birthday', null)).toBeNull();
+    expect(forMemberOf('birthday', undefined)).toBeNull();
+    expect(forMemberOf('wedding', 'z')).toBeNull();
+  });
+});
+
 describe('partyInputSchema', () => {
+  it('takes whom a birthday is for, or nobody', () => {
+    const base = {
+      category: 'birthday',
+      name: 'L’anniversaire de Zoé',
+      date: '2026-12-14',
+      recurring: true,
+    };
+    expect(
+      partyInputSchema.parse({ ...base, forMemberId: 'z' }).forMemberId,
+    ).toBe('z');
+    expect(
+      partyInputSchema.parse({ ...base, forMemberId: null }).forMemberId,
+    ).toBeNull();
+    expect(
+      partyInputSchema.safeParse({ ...base, forMemberId: '' }).success,
+    ).toBe(false);
+  });
+
   it('takes a category, a name, an ISO day and the people taken', () => {
     expect(
       partyInputSchema.parse({

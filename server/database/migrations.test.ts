@@ -794,3 +794,34 @@ describe('by where each member came in (ticket 117)', () => {
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
   });
 });
+
+describe('a birthday knows whom it is for (ticket 118)', () => {
+  const FOR = '0042_v3_birthday_for.sql';
+  const db = v2();
+  files
+    .filter((file) => file <= FOR)
+    .forEach((file) => {
+      if (file >= V3) apply(db, file);
+    });
+
+  it('leaves every event that exists for nobody', () => {
+    expect(
+      one(
+        db,
+        'SELECT count(*) AS n FROM parties WHERE for_member_id IS NOT NULL',
+      ).n,
+    ).toBe(0);
+    expect(one(db, 'SELECT count(*) AS n FROM parties').n).toBeGreaterThan(0);
+  });
+
+  it('matches the Drizzle snapshot of the table', () => {
+    const snapshot = JSON.parse(
+      readFileSync(join(DIR, 'meta', '0042_snapshot.json'), 'utf8'),
+    ) as { tables: Record<string, { columns: Record<string, unknown> }> };
+    expect(
+      all(db, 'PRAGMA table_info(`parties`)')
+        .map((row) => row.name)
+        .toSorted(),
+    ).toEqual(Object.keys(snapshot.tables.parties!.columns).toSorted());
+  });
+});

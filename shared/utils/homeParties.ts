@@ -110,10 +110,12 @@ export type ComingBirthday = {
 
 /**
  * The birthdays of my people coming within 60 days, for which none of my
- * parties is a birthday that day: « L'anniversaire de Zoé · dans 24
- * jours · ses 4 ans ». My own is not proposed.
+ * parties is a birthday that day, nor one made for them whatever its date
+ * (ticket 118): « L'anniversaire de Zoé · dans 24 jours · ses 4 ans ». My
+ * own is not proposed.
  * @param people - My people, with their birth dates.
- * @param parties - My parties, each with the date it is shown at.
+ * @param parties - My parties, each with the date it is shown at and whom
+ *   it is for.
  * @param today - « 2026-11-20 ».
  * @returns The birthdays, the nearest first.
  */
@@ -124,17 +126,19 @@ export const comingBirthdays = (
     birthDate: string | null;
     isSelf: boolean;
   }[],
-  parties: readonly Dated[],
+  parties: readonly (Dated & { forMemberId?: string | null })[],
   today: string,
 ): ComingBirthday[] => {
+  const birthdays = parties.filter((party) => party.category === 'birthday');
   const prepared = new Set(
-    parties.flatMap((party) =>
-      party.category === 'birthday' && party.date ? [party.date] : [],
-    ),
+    birthdays.flatMap((party) => (party.date ? [party.date] : [])),
   );
+  const theirs = new Set(birthdays.map((party) => party.forMemberId));
   return people
     .flatMap((person) => {
-      if (person.isSelf || !person.birthDate) return [];
+      if (person.isSelf || !person.birthDate || theirs.has(person.id)) {
+        return [];
+      }
       const date = nextOccurrence(person.birthDate.slice(5, 10), today);
       const days = daysBetween(today, date);
       if (days > BIRTHDAY_NOTICE_DAYS || prepared.has(date)) return [];

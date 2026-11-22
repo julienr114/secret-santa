@@ -36,6 +36,11 @@ export type HomeParty = {
   category: PartyCategory;
   iconEmoji: string | null;
   /**
+   * A birthday made for one of my people (ticket 118): « Bientôt » no
+   * longer proposes theirs. Null otherwise, and for someone else's.
+   */
+  forMemberId: string | null;
+  /**
    * The day it is shown at: its current year's (ticket 108), past for a
    * few days after it, then the next time it comes back.
    */
@@ -275,6 +280,9 @@ export const loadHome = async (
           name: party.name,
           category: party.category,
           iconEmoji: party.iconEmoji,
+          forMemberId: people.some((person) => person.id === party.forMemberId)
+            ? party.forMemberId
+            : null,
           date: current.date,
           prepare: yearToPrepare(
             {

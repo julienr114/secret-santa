@@ -1,7 +1,7 @@
 // The party (docs/spec/v3/fete.md, ticket 104): what may be created, who
 // may be taken from another party, who may leave. Pure.
 import { z } from 'zod';
-import { PARTY_CATEGORIES } from '#shared/utils/categories';
+import { PARTY_CATEGORIES, type PartyCategory } from '#shared/utils/categories';
 import { isPlainName, WEB_ADDRESS_REFUSED } from './limits';
 import { isIsoDay } from './rules';
 import { fail, ok, type Result } from './result';
@@ -18,26 +18,44 @@ export const partyNameSchema = z
 
 const isoDaySchema = z.string().refine(isIsoDay, 'iso_day');
 
+/** One of my people, whom a birthday is for (ticket 118). */
+const forMemberSchema = z.string().min(1).max(64).nullable();
+
 /**
  * « Pour quelle occasion ? »: nothing on who is in it, since one comes in
- * by a Secret Santa or a list (ticket 117).
+ * by a Secret Santa or a list (ticket 117); for a birthday, whom it is for
+ * (« Pour qui ? », ticket 118), none for « Quelqu'un d'autre ».
  */
 export const partyInputSchema = z.object({
   category: z.enum(PARTY_CATEGORIES),
   name: partyNameSchema,
   date: isoDaySchema,
   recurring: z.boolean(),
+  forMemberId: forMemberSchema.optional(),
 });
 export type PartyInput = z.infer<typeof partyInputSchema>;
 
-/** The settings of the party itself (V3FeteReglages). */
+/** The settings of the party itself (V3FeteReglages); « Pour », ticket 118. */
 export const partyPatchSchema = z
   .object({
     category: z.enum(PARTY_CATEGORIES),
     date: isoDaySchema,
     recurring: z.boolean(),
+    forMemberId: forMemberSchema,
   })
   .partial();
+
+/**
+ * Whom an event is for once saved: only a birthday is for someone; its
+ * category changed to another, it is for nobody any more.
+ * @param category - Its category once saved.
+ * @param forMemberId - The person asked for, or the one it had.
+ * @returns The person, or null.
+ */
+export const forMemberOf = (
+  category: PartyCategory,
+  forMemberId: string | null | undefined,
+): string | null => (category === 'birthday' ? (forMemberId ?? null) : null);
 
 /**
  * The usual day of a party from one of its dates.

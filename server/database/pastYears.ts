@@ -20,6 +20,7 @@ import {
 } from './schema';
 import { loadYears, timelineOf, type LoadedYear } from './years';
 import { listKey, loadLines } from './lines';
+import { loadForWhom } from './forWhom';
 import { nowIso } from '#server/http/context';
 import { decrypt } from '#server/utils/crypto';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
@@ -30,6 +31,7 @@ import {
   type PartyList,
 } from '#server/utils/pastYears';
 import type { PartyCategory } from '#shared/utils/categories';
+import type { ForWhom } from '#shared/utils/forWhom';
 import type { LinePart } from '#shared/utils/lines';
 import { listYear, type PastDeed } from '#shared/utils/years';
 
@@ -287,6 +289,8 @@ export type PastYearLine = {
   year: number;
   date: string | null;
   deed: PastDeed;
+  /** A birthday: whom it is for, their age that year (ticket 118). */
+  forWhom: ForWhom | null;
 };
 
 /**
@@ -338,6 +342,7 @@ export const loadPastLines = async (
       held,
     ),
   ]);
+  const forWhom = await loadForWhom(db, input.parties);
   const deeds = deedsOf({
     years: over.map(({ party, year }) => ({ partyId: party.id, year })),
     loaded,
@@ -354,6 +359,7 @@ export const loadPastLines = async (
     year,
     date,
     deed: deeds.get(yearKey(party.id, year)) ?? null,
+    forWhom: forWhom(party, year, account.id),
   }));
 };
 
@@ -383,6 +389,8 @@ export type PastYearPage = {
     name: string;
     category: PartyCategory;
     iconEmoji: string | null;
+    /** A birthday: whom it is for, their age that year (ticket 118). */
+    forWhom: ForWhom | null;
   };
   year: number;
   date: string | null;
@@ -510,6 +518,7 @@ export const loadPastYear = async (
             ),
           );
   const distinct = [...new Map(shown.map((list) => [list.id, list])).values()];
+  const forWhom = await loadForWhom(db, [party]);
   const lines = await loadLines(
     db,
     {
@@ -526,6 +535,7 @@ export const loadPastYear = async (
       name: party.name,
       category: party.category,
       iconEmoji: party.iconEmoji,
+      forWhom: forWhom(party, year, account.id),
     },
     year,
     date: over.date,

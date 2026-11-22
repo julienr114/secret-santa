@@ -13,6 +13,7 @@ import {
   giftOffList,
   giftListPeople,
   giftLists,
+  parties,
   type FamilyMemberRow,
   type GiftListRow,
 } from './schema';
@@ -383,7 +384,8 @@ export const claimedIdeas = async (
 
 /**
  * Deletes a person of my family for good: their page and tastes, their
- * places on my lists, their ideas there and what was ticked.
+ * places on my lists, their ideas there and what was ticked; a birthday
+ * made for them is for nobody any more.
  * @param db - The database.
  * @param memberId - The person.
  * @param places - Where they are, from `placesOfMember`.
@@ -397,8 +399,15 @@ export const deleteMember = (
   const personIds = places.map((place) => place.personId);
   const ideaIds = places.flatMap((place) => place.ideaIds);
   const gone = db.delete(familyMembers).where(eq(familyMembers.id, memberId));
-  if (personIds.length === 0) return db.batch([gone]);
+  // A birthday made for them keeps its name, and loses whom it is for
+  // (ticket 118).
+  const forNobody = db
+    .update(parties)
+    .set({ forMemberId: null })
+    .where(eq(parties.forMemberId, memberId));
+  if (personIds.length === 0) return db.batch([forNobody, gone]);
   return db.batch([
+    forNobody,
     db.delete(giftClaims).where(inArray(giftClaims.ideaId, ideaIds)),
     db.delete(giftGiverClaims).where(inArray(giftGiverClaims.ideaId, ideaIds)),
     db.delete(giftOffList).where(inArray(giftOffList.listPersonId, personIds)),

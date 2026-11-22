@@ -158,6 +158,23 @@ describe('comingBirthdays', () => {
     ).toHaveLength(1);
   });
 
+  it('leaves out one whose party is made for them, whatever its date', () => {
+    expect(
+      comingBirthdays(
+        [zoe],
+        [{ category: 'birthday', date: '2026-12-20', forMemberId: 'z' }],
+        TODAY,
+      ),
+    ).toEqual([]);
+    expect(
+      comingBirthdays(
+        [zoe],
+        [{ category: 'birthday', date: '2026-12-20', forMemberId: 'other' }],
+        TODAY,
+      ),
+    ).toHaveLength(1);
+  });
+
   it('counts across the new year, the nearest first', () => {
     expect(
       comingBirthdays(

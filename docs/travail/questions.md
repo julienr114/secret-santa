@@ -32,6 +32,26 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. Un organisateur ajouté n'est pas membre : il voit et règle l'événement, et n'en devient membre qu'en entrant dans un Secret Santa ou une liste, comme les autres. Il n'est plus proposé d'office parmi les participants.
 - **Ce que je ferais** : B, qui suit la décision sans exception ; mais c'est un changement pour les organisateurs d'aujourd'hui, d'où la question.
 
+### Q-032 — « Repartir d'une liste » : « une personne en commun » ne joue jamais, le bloc n'étant que dans une liste vide (ticket 119)
+
+- **Pour** : Julien, puis la conception
+- **Ce qui bloque** : rien. Le tri est codé en entier (`shared/utils/resumeChoices.ts`, testé), le troisième critère compris. Mais le bloc n'apparaît, et la reprise ne se fait, que dans un brouillon où personne n'est encore (`canResumeInto`, lot 27 : « pour que rien d'écrit ne se mélange à ce qui vient »). Une liste qui a déjà des personnes n'a donc jamais le bloc, et le critère 3 ne sert à rien. Je n'ai rien changé à la reprise.
+- **Ce qu'on a trouvé** : `docs/spec/v3/listes.md`, « Repartir d'une liste » : « 3. si la liste a déjà des personnes, celles où figure au moins une de ces personnes » ; la maquette `ListeNouvelleReprendre` montre une liste vide. Le ticket 136 (« j'y suis déjà, en premier ») fera naître des listes avec une personne.
+- **Les choix** :
+  - A. Garder le bloc aux listes vides : le critère 3 attend.
+  - B. Montrer le bloc tant que la liste n'a aucune idée, même avec des personnes, et dire comment la reprise se mêle à elles (les personnes déjà là gardent leur place, celles de l'ancienne liste s'ajoutent après, sans doublon).
+- **Ce que je ferais** : A pour la bascule ; B avec le ticket 136, qui en aura besoin.
+
+### Q-033 — Une liste reprise garde, après son premier partage, la liste dont elle vient (ticket 119)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien, c'est fait ainsi en attendant. Pour que le bandeau d'une liste de l'an dernier mène à celle de cette année, il faut savoir, une fois celle-ci partagée, de quelle liste elle a été reprise. Jusqu'ici, `gift_lists.carried_from` s'effaçait au premier partage (lot 27). Il reste maintenant sur la liste ; seules les marques des idées s'effacent au premier partage, et la phrase « Reprise de Noël 2025 » ne se lit que tant que la liste est un brouillon. Pas de migration. La liste qui a servi ne sait rien de plus, et rien n'est montré à personne d'autre que le bouton du bandeau.
+- **Ce qu'on a trouvé** : `docs/spec/v3/listes.md`, « Une liste d'une année passée » : « Si une liste de cette année a été reprise de celle-ci […] le bandeau y mène » ; README 22.20 : `carried_from` « effacés à la modification d'une idée et au premier partage ».
+- **Les choix** :
+  - A. Garder le lien après le partage (ce qui est fait).
+  - B. Ne plus chercher la liste reprise : le bandeau mène à la liste de cette année du même événement tenue par la même personne, reprise ou non.
+- **Ce que je ferais** : A : il suit la spec à la lettre, et ne montre rien de plus.
+
 ## Réponses
 
 ### Q-028 — « Hugo s'est inscrit par le lien » s'accorde au masculin (ticket 116)

@@ -138,14 +138,6 @@ Time Travel ne s'essaie pas en local : sa commande est celle de la documentation
 
 ## 4. Après
 
-- **Le mot** s'affiche seul en tête de « Quoi de neuf » pour les comptes créés avant la bascule (l'heure de la migration `0034`, lue dans `d1_migrations`), avec la phrase sur le lien pour ceux qui tenaient une liste partagée par lien. Fermé, il ne revient pas.
-- **L'email du lendemain matin**, une seule fois (qui le reçoit : Q-034) :
+La bascule se fait sans mot aux utilisateurs : ni ligne en tête de « Quoi de neuf », ni email (Q-034).
 
-  ```sh
-  pnpm -s wrangler d1 execute secret-santa --remote --json --command "$(pnpm -s v3:mot --requete)" > sauvegardes/v3-mot.json
-  pnpm v3:mot sauvegardes/v3-mot.json
-  NUXT_RESEND_API_KEY=<la clé de production> pnpm v3:mot sauvegardes/v3-mot.json --envoyer
-  ```
-
-  La deuxième commande dit combien de personnes, dans quelle langue, et montre chaque texte, sans rien envoyer. La troisième envoie, par lots, et note chaque adresse dans `sauvegardes/v3-mot.json.envoyes` : relancée, elle n'envoie jamais deux fois. Ensuite, supprimer les deux fichiers.
 - **Surveiller une journée** le tableau de bord (erreurs du serveur, emails rejetés).

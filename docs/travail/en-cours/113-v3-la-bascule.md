@@ -23,7 +23,7 @@ Avant :
 - [ ] Rejouer la migration sur une copie de la base du jour (`pnpm v3:essai`), et comparer (`pnpm v3:compare`) : autant d'événements que de groupes, chaque Secret Santa en cours avec ses participants et ses enveloppes, chaque liste avec ses idées et ses coches. **Ouverte : la copie du jour attend l'export de Julien** (`docs/travail/bascule-v3.md`, partie 1). Les deux commandes sont prêtes pour `0034` à `0042` et passent sur une copie de forme V2 fabriquée (compte rendu).
 - [x] Sur cette copie, contrôler à la main trois comptes : quelqu'un qui a tiré et pas encore ouvert son enveloppe ; quelqu'un qui avait écrit des pistes (elles sont devenues sa liste, vue seulement par celui qui l'a tiré) ; quelqu'un dont la liste était partagée par lien (elle est publique, son lien marche encore, sans compte). Fait sur la copie fabriquée ; à refaire par Julien sur la copie du jour (requêtes : `docs/travail/bascule-v3.md`, partie 1).
 - [x] Écrire le pas-à-pas du retour en arrière, et l'essayer une fois sur la copie : restaurer la sauvegarde, remettre la version d'avant. (`docs/travail/bascule-v3.md`, partie 3)
-- [x] Préparer le mot aux utilisateurs, dans les trois langues (plus bas).
+- [x] ~~Préparer le mot aux utilisateurs, dans les trois langues (plus bas).~~ Retiré, Q-034 : pas de mot.
 
 Le jour même, par Julien (Claude Code ne publie pas et ne déploie pas) :
 
@@ -34,10 +34,12 @@ Le jour même, par Julien (Claude Code ne publie pas et ne déploie pas) :
 
 Après :
 
-- [ ] Le mot s'affiche en tête de « Quoi de neuf » (ticket 120, fait avant la bascule) et part par un email simple, le lendemain matin, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours. (Le résumé du matin n'existe pas encore : ticket 121.)
+- ~~Le mot s'affiche en tête de « Quoi de neuf » (ticket 120, fait avant la bascule) et part par un email simple, le lendemain matin, une seule fois, à ceux qui ont un Secret Santa ou une liste en cours. (Le résumé du matin n'existe pas encore : ticket 121.)~~ Retiré, Q-034 : pas de mot.
 - [ ] Surveiller une journée le tableau de bord (erreurs du serveur, emails rejetés).
 
 ## Le mot aux utilisateurs
+
+**Retiré, Q-034 : pas de mot.** « Personne n'utilise pour le moment, pas besoin de mot. » Le texte ci-dessous n'est plus dans l'application.
 
 « Under the Tree a changé. Tes groupes s'appellent maintenant des événements, et on y trouve au même endroit le Secret Santa et les listes de cadeaux. Tes pistes de cadeaux sont devenues ta liste : seul celui qui t'a tiré la voit, comme avant. Rien n'est perdu, et ton tirage n'a pas bougé. »
 
@@ -54,11 +56,11 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 - [ ] La comparaison sur la copie du jour ne montre aucun écart.
 - [x] Le retour en arrière a été essayé une fois, et son pas-à-pas est dans le dépôt.
 - [ ] Les trois contrôles passent sur la production.
-- [ ] Le mot est parti, une fois.
+- ~~Le mot est parti, une fois.~~ Retiré, Q-034 : pas de mot.
 
 ## Compte rendu
 
-**Partiel, 22 novembre 2026 : la partie « Avant » est faite par Claude Code, sauf la copie du jour. Le ticket reste dans `en-cours/` : « Le jour même » et « Après » sont à Julien.** Le pas-à-pas complet : `docs/travail/bascule-v3.md`.
+**Partiel, 22 novembre 2026 : la partie « Avant » est faite par Claude Code, sauf la copie du jour. Le ticket reste dans `en-cours/` : « Le jour même » et « Après » sont à Julien.** Q-034 répondue le même jour : la bascule se fait sans mot ; le mot de « Quoi de neuf » et l'email du lendemain, faits puis retirés (plus bas). Le pas-à-pas complet : `docs/travail/bascule-v3.md`.
 
 ### Fait
 
@@ -73,27 +75,23 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
   Julien les refait sur la copie du jour puis en production : `bascule-v3.md`, parties 1 et 2.
 - **Le retour en arrière**, écrit (`bascule-v3.md`, partie 3) et essayé une fois sur la copie : sauvegarde (export complet, schéma, données), migration, restauration dans une base vide (le schéma, puis les données), comparaison table par table : **identique** ; puis le code de `main` (un `git worktree` du dossier de travail, retiré ensuite) démarre sur la base restaurée : la page d'un Secret Santa, une liste par son lien sans compte, l'ancienne adresse des pistes. Trouvé en chemin : **un export complet ne se recharge pas** (« no such table: main.persons ») ; le schéma puis les données, si. D'où les deux exports du pas-à-pas. Le retour principal est Time Travel (une commande), qui ne s'essaie pas en local.
 - **L'heure creuse sans « Suspendre les emails »** : retirer les deux Cron Triggers dans le tableau de bord le temps de la bascule ; le déploiement de la V3 les remet depuis `wrangler.toml`.
-- **Le mot**, dans les trois langues (`news.note.v3`, `news.note.v3Link`) : en tête de « Quoi de neuf » pour les comptes créés avant la bascule, l'heure de la migration `0034` lue dans `d1_migrations` (rien à régler le jour même ; aucun compte ne le voit avant la bascule, ni dans les tests e2e) ; la phrase sur le lien pour ceux qui tenaient une liste partagée par lien avant. Le mot dit « groupes » exprès : sa clé est permise par le contrôle des mots (`scripts/controle.exceptions.json`, `keys`).
-- **L'email du lendemain** : `buildSwitchEmail` (le mot, sa phrase sur le lien, l'adresse de l'application, sans image) et **`pnpm v3:mot`, un script que Julien lance** : il donne la requête des destinataires, montre ce qui partirait sans rien envoyer, et n'envoie qu'avec `--envoyer` et la clé de Resend, chaque adresse une seule fois (un journal à côté). Rien ne l'envoie tout seul.
+- ~~**Le mot**, dans les trois langues, en tête de « Quoi de neuf »~~ et ~~**l'email du lendemain** (`buildSwitchEmail`, `pnpm v3:mot`)~~ : faits (`c505206`, `f0b0a7a`), puis **retirés, Q-034 : pas de mot**. Partis avec eux : leurs textes dans les trois langues (`news.note.*`), leurs tests, l'exception `keys` du contrôle des mots (`scripts/controle.exceptions.json`) et son mécanisme, la recherche d'un `index.ts` de dossier dans `scripts/ts-resolve-hooks.mjs` (plus aucun script n'en a besoin). Le mécanisme du mot de l'application (ticket 120) reste, sans mot.
 
 ### Ce qui reste à Julien, dans l'ordre
 
-1. Lire Q-034 (à qui le mot et l'email).
-2. La copie du jour : les deux exports, `pnpm v3:essai sauvegardes/prod.sql --garder`, les trois requêtes (`bascule-v3.md`, partie 1). Puis cocher la case restée ouverte.
-3. Le jour même : `bascule-v3.md`, partie 2 (heure, build, version notée, tâches retirées, signet Time Travel, `pnpm db:migrate`, `pnpm -s wrangler deploy`, trois contrôles).
-4. Le lendemain : `pnpm v3:mot` (partie 4), puis surveiller.
+1. La copie du jour : les deux exports, `pnpm v3:essai sauvegardes/prod.sql --garder`, les trois requêtes (`bascule-v3.md`, partie 1). Puis cocher la case restée ouverte.
+2. Le jour même : `bascule-v3.md`, partie 2 (heure, build, version notée, tâches retirées, signet Time Travel, `pnpm db:migrate`, `pnpm -s wrangler deploy`, trois contrôles).
+3. Après : surveiller une journée (`bascule-v3.md`, partie 4). Pas de mot (Q-034).
 
 ### Décidé seul
 
-- **Le moment de la bascule** se lit dans `d1_migrations` (la ligne de `0034`) plutôt que dans une date écrite dans le code : rien à changer le jour même, et une installation neuve ne voit jamais le mot.
-- **« Tenait une liste partagée par lien »** : une liste que je tiens (la mienne ou à plusieurs), partagée par lien avant la bascule et encore publique.
-- **Les destinataires de l'email** : les comptes seulement (Q-034, réponse A en attendant).
 - **Les anciennes adresses sans remplaçant** mènent au plus proche (`/demande` à l'accueil, etc.) : `navigation.md` dit qu'une ancienne adresse ne donne jamais une page d'erreur, sans les nommer.
-- **Les traductions** du mot : « events » et « Events », comme le reste de l'application ; en allemand, « Geschenk-Hinweise » (le mot de la V2) et « Wichteln ».
 
 ### Contrôle
 
 `pnpm controle --e2e` passé : trois langues, mots interdits, textes en dur, lint, typecheck, 983 tests Vitest, 200 tests Playwright (dont `security.spec.ts`, sans échec). La case « `/controle` passe sur la version publiée » attend la publication.
+
+Après le retrait du mot (Q-034), `pnpm controle --e2e` repassé : 970 tests Vitest, 200 tests Playwright (dont `security.spec.ts`). Un premier passage avait échoué sur `tests/news.test.ts:245` : l'identifiant aléatoire d'une nouvelle contenait « z1 », que le test cherche comme texte interdit ; étranger au retrait, il passe au second passage. Ce test est fragile (une chance sur quelques milliers).
 
 ### Écarts avec les maquettes
 
@@ -101,7 +99,7 @@ Aucune maquette.
 
 ### Questions
 
-- Q-034 : à qui le mot et l'email de la bascule, et que dire à ceux qui n'ont pas de compte.
+- Q-034 : à qui le mot et l'email de la bascule, et que dire à ceux qui n'ont pas de compte. Réponse de Julien : pas de mot ; le mot et l'email sont retirés.
 
 ### Migrations
 
@@ -114,4 +112,7 @@ Aucune nouvelle. La bascule publie `0034` à `0042`.
 - `b1e2da6` chore(db): pnpm v3:essai plays every migration of the V3, compared whole
 - `c505206` feat(news): the word of the switch to the V3, at the top of « Quoi de neuf »
 - `f0b0a7a` chore(email): pnpm v3:mot, the email of the day after the switch
-- puis docs: the step-by-step of the switch, avec ce compte rendu.
+- `2760195` docs: the step-by-step of the switch to the V3, ticket 113 before
+- `d582583` chore(email): no email the day after the switch, pnpm v3:mot removed
+- `cfa2358` revert(news): no word of the switch at the top of « Quoi de neuf »
+- puis docs: no word at the switch (Q-034), avec ce compte rendu.

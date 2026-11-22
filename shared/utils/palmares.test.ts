@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { storyLooks, storyScreens, storyStep } from './palmares';
+import { LOCALES, santaKey, translateKey } from '#shared/i18n';
+import fr from '#shared/i18n/locales/fr';
+import { storyEnd, storyLooks, storyScreens, storyStep } from './palmares';
 
 describe('storyScreens', () => {
   it('opens, shows one’s own Santa, each award won, then ends', () => {
@@ -90,5 +92,65 @@ describe('storyStep', () => {
     expect(storyStep(4, 5, 'right')).toBe(4);
     expect(storyStep(2, 5, 'left')).toBe(1);
     expect(storyStep(0, 5, 'left')).toBe(0);
+  });
+});
+
+describe('storyEnd', () => {
+  it('says « pour cette année » only in a party that comes back', () => {
+    expect(storyEnd({ recurring: true, firstName: 'Inès' })).toEqual({
+      eyebrow: 'participant.game.story.endEyebrow',
+      title: 'participant.game.story.endTitle',
+      params: { name: 'Inès' },
+    });
+    expect(storyEnd({ recurring: false, firstName: null })).toEqual({
+      eyebrow: 'participant.game.story.endEyebrowOnce',
+      title: 'participant.game.story.endTitleAlone',
+    });
+  });
+
+  it('thanks the reader outside Christmas, everyone for an organiser', () => {
+    const say = (christmas: boolean, firstName: string | null) => {
+      const end = storyEnd({ recurring: false, firstName });
+      return translateKey('fr', santaKey(end.title, christmas), end.params);
+    };
+    expect(say(true, 'Inès')).toBe('Joyeux Noël,\nInès');
+    expect(say(false, 'Inès')).toBe('Merci d’avoir joué,\nInès');
+    expect(say(false, null)).toBe('Merci à tous !');
+  });
+});
+
+describe('the palmarès outside Christmas', () => {
+  /**
+   * Every text under a key, its plural forms as one.
+   * @param node - A branch of the French dictionary.
+   * @param path - Its key.
+   * @returns The keys of its texts.
+   */
+  const leaves = (node: unknown, path: string): string[] =>
+    typeof node === 'object' && node !== null && !('other' in node)
+      ? Object.entries(node).flatMap(([key, child]) =>
+          leaves(child, `${path}.${key}`),
+        )
+      : [path];
+  const keys = [
+    ...leaves(fr.participant.game.story, 'participant.game.story'),
+    ...leaves(fr.participant.game.awards, 'participant.game.awards'),
+  ].filter((key) => !/Neutral(\.|$)/.test(key));
+
+  it('never says « Noël », in any language', () => {
+    const christmas = /No[eë]l|Christmas|Weihnacht/i;
+    const said = LOCALES.flatMap((locale) =>
+      keys
+        .map((key) =>
+          translateKey(locale, santaKey(key, false), {
+            name: 'Inès',
+            a: 'Inès',
+            count: 2,
+          }),
+        )
+        .filter((text) => christmas.test(text)),
+    );
+    expect(keys.length).toBeGreaterThan(40);
+    expect(said).toEqual([]);
   });
 });

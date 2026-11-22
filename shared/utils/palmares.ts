@@ -79,3 +79,36 @@ export const storyStep = (
   side: 'left' | 'right',
 ): number =>
   side === 'right' ? Math.min(at + 1, count - 1) : Math.max(at - 1, 0);
+
+/** The texts of the last screen: their keys, before « Père Noël » is chosen. */
+export type StoryEnd = {
+  eyebrow: string;
+  title: string;
+  params?: { name: string };
+};
+
+/**
+ * The last screen (DevineStory7, docs/spec/v3/vocabulaire.md, « Devine
+ * qui hors de Noël »): « C'est tout pour cette année » in a party that
+ * comes back each year, « C'est tout » otherwise; then the reader's first
+ * name, or none for an organiser who does not play. Outside Christmas,
+ * the title reads its variant (« Merci d'avoir joué »), as every text with
+ * « Noël » does.
+ * @param p - Whether the party comes back each year; the reader's first
+ *   name, or null.
+ * @returns The keys and the name.
+ */
+export const storyEnd = (p: {
+  recurring: boolean;
+  firstName: string | null;
+}): StoryEnd => ({
+  eyebrow: p.recurring
+    ? 'participant.game.story.endEyebrow'
+    : 'participant.game.story.endEyebrowOnce',
+  ...(p.firstName
+    ? {
+        title: 'participant.game.story.endTitle',
+        params: { name: p.firstName },
+      }
+    : { title: 'participant.game.story.endTitleAlone' }),
+});

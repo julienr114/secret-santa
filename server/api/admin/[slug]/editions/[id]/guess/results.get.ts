@@ -40,6 +40,8 @@ export default defineEventHandler(async (event) => {
     editionLabel: edition.label,
     // « Père Noël » is only said in a Christmas party (vocabulaire.md).
     christmas: group.category === 'christmas',
+    // « C'est tout pour cette année » only in a party that comes back.
+    recurring: group.recurring,
     people: rows.toSorted(byName).map((p) => ({
       id: p.id,
       name: displayName(p, rows),

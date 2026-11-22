@@ -447,4 +447,22 @@ test('one player: the small palmarès, four screens', async ({ page }) => {
   );
   await stories.click({ position: { x: 350, y: 400 } });
   await expect(stories).toHaveAttribute('data-screen', 'end');
+  await expect(stories).toContainText('C’est tout pour cette année');
+  await expect(stories).toContainText('Joyeux Noël,');
+
+  // A birthday that does not come back: no « Noël », no « cette année »
+  // (docs/spec/v3/vocabulaire.md, « Devine qui hors de Noël »).
+  await ok(
+    await admin().patch(`/api/parties/famille-petit`, {
+      data: { category: 'birthday', recurring: false },
+    }),
+  );
+  await open(page, `/p/${tokens.Noé}/devine/palmares`);
+  for (const _ of Array.from({ length: 3 })) {
+    await stories.click({ position: { x: 350, y: 400 } });
+  }
+  await expect(stories).toHaveAttribute('data-screen', 'end');
+  await expect(stories).toContainText('Merci d’avoir joué,');
+  await expect(stories).not.toContainText('Joyeux');
+  await expect(stories).not.toContainText('cette année');
 });

@@ -199,7 +199,7 @@ export type GamePerson = { id: string; name: string; avatar: Avatar };
  */
 export const gamePayload = async (
   ctx: Pick<PersonalContext, 'db' | 'edition' | 'person' | 'participation'> & {
-    group: { name: string; category: string };
+    group: { name: string; category: string; recurring: boolean };
     rules: { eventDate: string };
   },
   dataKey: CryptoKey,
@@ -226,6 +226,8 @@ export const gamePayload = async (
     groupName: ctx.group.name,
     // « Père Noël » is only said in a Christmas party (vocabulaire.md).
     christmas: ctx.group.category === 'christmas',
+    // « C'est tout pour cette année » only in a party that comes back.
+    recurring: ctx.group.recurring,
     // « ton organisateur » or « tes organisateurs ».
     organizers: await organizerCount(db, edition.partyId),
     firstName: person.firstName,

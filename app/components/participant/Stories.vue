@@ -3,6 +3,7 @@ import type { Avatar } from '#server/utils/avatars';
 import type { Award } from '#server/utils/awards';
 import {
   STORY_SECONDS,
+  storyEnd,
   storyLooks,
   storyScreens,
   storyStep,
@@ -22,6 +23,8 @@ const props = defineProps<{
   editionLabel: string;
   /** A Christmas party: elsewhere, never « Père Noël » (vocabulaire.md). */
   christmas: boolean;
+  /** It comes back each year: « C'est tout pour cette année ». */
+  recurring: boolean;
   people: Person[];
   players: number;
   guesses: number;
@@ -36,7 +39,10 @@ const props = defineProps<{
   closeCall?: string | null;
   /** The reader, when they take part. */
   me?: string | null;
-  /** The reader's first name, for « Joyeux Noël » ; none for an organiser. */
+  /**
+   * The reader's first name, for « Joyeux Noël » (« Merci d'avoir joué »
+   * elsewhere); none for an organiser.
+   */
   firstName: string | null;
   /** Where « Voir tous les résultats » and the cross lead. */
   answersPath: string;
@@ -52,6 +58,9 @@ const screens = computed<StoryScreen[]>(() =>
   }),
 );
 const looks = computed(() => storyLooks(screens.value));
+const end = computed(() =>
+  storyEnd({ recurring: props.recurring, firstName: props.firstName }),
+);
 const at = ref(0);
 const started = ref(false);
 const paused = ref(false);
@@ -571,16 +580,12 @@ const santaWords = computed(() => {
 
       <template v-else-if="screen.kind === 'end'">
         <p class="text-sm font-bold tracking-[0.08em] uppercase opacity-80">
-          {{ t('participant.game.story.endEyebrow') }}
+          {{ tk(end.eyebrow) }}
         </p>
         <p
           class="font-display text-[48px] leading-[1.08] font-bold whitespace-pre-line"
         >
-          {{
-            firstName
-              ? t('participant.game.story.endTitle', { name: firstName })
-              : t('participant.game.story.endTitleAlone')
-          }}
+          {{ tk(end.title, end.params) }}
         </p>
         <UButton
           :to="answersPath"

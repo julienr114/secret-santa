@@ -194,30 +194,42 @@ test('no admin answer tells who gives to whom, nor any wish', async () => {
 });
 
 test('a participant learns their own result only, and only by asking', async () => {
-  const { giver, receiver } = state.pairs[0] ?? {};
-  if (!giver || !receiver) throw new Error('no pair');
-  const token = state.tokens[giver.id];
-  for (const path of ['', '/journal']) {
-    const text = await (
-      await ctx('anonymous').get(`/api/p/${token}${path}`)
-    ).text();
-    expect(text, path).not.toContain(receiver.id);
-    expect(text, path).not.toContain(`${WISH} de ${receiver.firstName}`);
-    expect(text, path).not.toContain(`par ${receiver.firstName}`);
-    expect(text, path).not.toMatch(FORBIDDEN);
+  // Every pair, not only the first: the draw is random, and the organiser
+  // (the only one with an account) must be checked as a receiver too.
+  expect(state.pairs).toHaveLength(NAMES.length + 1);
+  for (const { giver, receiver } of state.pairs) {
+    const token = state.tokens[giver.id];
+    for (const path of ['', '/journal']) {
+      const text = await (
+        await ctx('anonymous').get(`/api/p/${token}${path}`)
+      ).text();
+      expect(text, path).not.toContain(receiver.id);
+      expect(text, path).not.toContain(`${WISH} de ${receiver.firstName}`);
+      expect(text, path).not.toContain(`par ${receiver.firstName}`);
+      expect(text, path).not.toMatch(FORBIDDEN);
+    }
+    const reveal = await (
+      await ctx('anonymous').post(`/api/p/${token}/reveal`)
+    ).json();
+    const body = JSON.stringify(reveal);
+    expect(body).not.toMatch(FORBIDDEN);
+    if (NAMES.includes(receiver.firstName)) {
+      // No account: the reveal gives the hints they left before the V3,
+      // theirs and nobody else's.
+      expect(reveal.hints.ideas).toEqual([
+        { label: `${WISH} de ${receiver.firstName}`, url: null },
+      ]);
+      expect(reveal.hints.portrait.texts.avoid).toBe(
+        `${WISH} évité par ${receiver.firstName}`,
+      );
+      expect(body.match(new RegExp(WISH, 'g'))).toHaveLength(2);
+    } else {
+      // An account (ticket 107): their help comes from their list and
+      // their card, never from the hints of before, theirs or anyone's.
+      expect(reveal.hints.ideas).toEqual([]);
+      expect(body).not.toContain(WISH);
+    }
   }
-  // The reveal gives the receiver's hints and nobody else's.
-  const reveal = await (
-    await ctx('anonymous').post(`/api/p/${token}/reveal`)
-  ).json();
-  expect(reveal.hints.ideas).toEqual([
-    { label: `${WISH} de ${receiver.firstName}`, url: null },
-  ]);
-  expect(reveal.hints.portrait.texts.avoid).toBe(
-    `${WISH} évité par ${receiver.firstName}`,
-  );
-  expect(JSON.stringify(reveal).match(new RegExp(WISH, 'g'))).toHaveLength(2);
-  expect(JSON.stringify(reveal)).not.toMatch(FORBIDDEN);
 });
 
 test('without a session every admin route is closed', async () => {

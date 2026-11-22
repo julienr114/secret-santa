@@ -40,6 +40,8 @@ export type PartyBody = {
   name: string;
   date: string;
   recurring: boolean;
+  /** A birthday: the one of my people it is for (ticket 118). */
+  forMemberId?: string | null;
 };
 
 /**
@@ -65,6 +67,8 @@ export type PartyPatch = Partial<{
   category: PartyCategory;
   date: string;
   recurring: boolean;
+  /** « Pour » (ticket 118): one of my people, or null for « Personne ». */
+  forMemberId: string | null;
 }>;
 
 /** The settings of the party itself. */

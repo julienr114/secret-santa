@@ -13,6 +13,13 @@ export default {
   everyYear: 'every year',
   inDays: { one: 'in {count} day', other: 'in {count} days' },
   today: 'today',
+  // A birthday made for one of my people (ticket 118): their age.
+  age: {
+    theirs: { one: 'turning {count}', other: 'turning {count}' },
+    mine: { one: 'you turn {count}', other: 'you turn {count}' },
+    pastTheirs: { one: 'Turned {count}', other: 'Turned {count}' },
+    pastMine: { one: 'You turned {count}', other: 'You turned {count}' },
+  },
   members: { one: '{count} member', other: '{count} members' },
   settings: 'Event settings',
   secretSantaTitle: { one: 'The Secret Santa', other: 'The Secret Santas' },
@@ -67,6 +74,10 @@ export default {
     received: {
       one: '{count} gift given',
       other: '{count} gifts given',
+    },
+    receivedFor: {
+      one: '{count} gift given to {name}',
+      other: '{count} gifts given to {name}',
     },
     game: 'Devine qui',
     palmares: 'The palmarès',
@@ -124,6 +135,8 @@ export default {
   reglages: {
     party: 'The event',
     category: 'Category',
+    forWhom: 'For',
+    nobody: 'Nobody',
     date: 'Date',
     dateValue: '{date} · offered every year',
     dateValueOnce: '{date}',

@@ -13,6 +13,13 @@ export default {
   everyYear: 'jedes Jahr',
   inDays: { one: 'in {count} Tag', other: 'in {count} Tagen' },
   today: 'heute',
+  // A birthday made for one of my people (ticket 118): their age.
+  age: {
+    theirs: { one: 'wird {count}', other: 'wird {count}' },
+    mine: { one: 'du wirst {count}', other: 'du wirst {count}' },
+    pastTheirs: { one: 'Wurde {count}', other: 'Wurde {count}' },
+    pastMine: { one: 'Du wurdest {count}', other: 'Du wurdest {count}' },
+  },
   members: { one: '{count} Mitglied', other: '{count} Mitglieder' },
   settings: 'Einstellungen des Events',
   secretSantaTitle: { one: 'Das Wichteln', other: 'Die Wichteln' },
@@ -67,6 +74,10 @@ export default {
     received: {
       one: '{count} Geschenk verschenkt',
       other: '{count} Geschenke verschenkt',
+    },
+    receivedFor: {
+      one: '{count} Geschenk an {name} verschenkt',
+      other: '{count} Geschenke an {name} verschenkt',
     },
     game: 'Devine qui',
     palmares: 'Die Rangliste',
@@ -124,6 +135,8 @@ export default {
   reglages: {
     party: 'Das Event',
     category: 'Kategorie',
+    forWhom: 'Für',
+    nobody: 'Niemand',
     date: 'Datum',
     dateValue: 'Am {date} · jedes Jahr vorgeschlagen',
     dateValueOnce: 'Am {date}',

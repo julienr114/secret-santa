@@ -39,7 +39,7 @@ const { lineText } = usePastText();
           :key="`${line.slug}-${line.year}`"
           :to="`/e/${line.slug}/annees/${line.year}`"
           :title="line.name"
-          :subtitle="lineText(line.date, line.deed) || undefined"
+          :subtitle="lineText(line.date, line.deed, line.forWhom) || undefined"
         >
           <template #leading>
             <span

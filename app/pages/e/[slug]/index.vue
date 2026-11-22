@@ -47,8 +47,21 @@ const when = computed(() => {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(`${date}T12:00:00Z`));
-  if (days === null) return full;
-  return `${full} · ${days === 0 ? t('party.today') : t('party.inDays', { count: days })}`;
+  const forWhom = data.value?.party.forWhom;
+  // A birthday made for someone whose birth date is known: « ses 4 ans »
+  // (ticket 118).
+  const age = forWhom?.age
+    ? t(forWhom.me ? 'party.age.mine' : 'party.age.theirs', {
+        count: forWhom.age,
+      })
+    : null;
+  const countdown =
+    days === null
+      ? null
+      : days === 0
+        ? t('party.today')
+        : t('party.inDays', { count: days });
+  return [full, countdown, age].filter(Boolean).join(' · ');
 });
 const { deedText, yearName } = usePastText();
 const words = useLineText();
@@ -123,7 +136,11 @@ const onLeave = () =>
               >
             </span>
             <UiPageTitle>{{ data.party.name }}</UiPageTitle>
-            <p v-if="when" class="text-[15px] font-bold text-primary">
+            <p
+              v-if="when"
+              class="text-[15px] font-bold text-primary"
+              data-testid="party-when"
+            >
               {{ when }}
             </p>
           </div>
@@ -260,8 +277,8 @@ const onLeave = () =>
           <UiListItem
             v-for="past in data.pastYears"
             :key="past.year"
-            :title="yearName(past.category, past.year)"
-            :subtitle="deedText(past.deed) || undefined"
+            :title="yearName(past.category, past.year, past.forWhom)"
+            :subtitle="deedText(past.deed, past.forWhom) || undefined"
             :to="`/e/${slug}/annees/${past.year}?depuis=evenement`"
           >
             <template #leading>

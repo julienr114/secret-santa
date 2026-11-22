@@ -16,7 +16,7 @@ import { useCreatePartyMutation } from '~/composables/queries/useParty';
 
 // « Pour quelle occasion ? » (docs/spec/v3/accueil-et-creation.md,
 // maquette V3FeteNouvelle): the category in six tiles fills the rest;
-// « Pour qui ? » for a birthday; the name, the date in three lists, « Elle
+// « Pour qui ? » for a birthday, which the event keeps (ticket 118); the name, the date in three lists, « Elle
 // revient chaque année »; then « Continuer » creates it. Nobody else is
 // asked for: people come in by its Secret Santa or its list (ticket 117).
 // Opened with ?categorie=birthday&proche=<id>, it comes filled
@@ -120,6 +120,14 @@ const submit = () => {
       name: form.value.name.trim(),
       date: date.value,
       recurring: form.value.recurring,
+      // The one of my people a birthday is for (ticket 118); none for
+      // « Quelqu'un d'autre ».
+      forMemberId:
+        form.value.category === 'birthday' &&
+        form.value.forWhom &&
+        form.value.forWhom !== 'other'
+          ? form.value.forWhom
+          : null,
     },
     {
       onSuccess: async ({ slug }) => {

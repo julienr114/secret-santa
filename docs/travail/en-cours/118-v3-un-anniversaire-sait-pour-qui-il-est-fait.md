@@ -18,14 +18,14 @@ L'anniversaire de Zoé sait que c'est celui de Zoé. Il peut donc dire « ses 4 
 
 ## À faire
 
-- [ ] **Base** : un événement peut retenir un proche (`family_members`). Vide pour tous ceux qui existent.
-- [ ] **À la création** : « Pour qui ? » le remplit ; « Quelqu'un d'autre » le laisse vide. « Préparer », dans « Bientôt », le remplit aussi.
-- [ ] **Les réglages de l'événement** : pour la catégorie Anniversaire, une ligne « Pour », sous « Catégorie », de la même forme que les autres ; sa page propose mes proches et « Personne ».
-- [ ] **L'âge**, en fonction pure testée : avec une date de naissance, « ses 4 ans » à côté de la date de l'événement, « Ses 3 ans » en titre d'une année passée ; « tes 40 ans » quand c'est moi. Sans date de naissance, ou sans proche, rien.
-- [ ] **« 7 cadeaux offerts à Zoé »** : le prénom du proche, sur la ligne d'une année passée.
-- [ ] Un proche supprimé : l'événement garde son nom, perd l'âge et le prénom.
-- [ ] « Bientôt » ne propose pas l'anniversaire d'un proche qui a déjà le sien, même si on en a changé la date.
-- [ ] Trois langues. `docs/refonte/ECARTS-MAQUETTES.md` à jour.
+- [x] **Base** : un événement peut retenir un proche (`family_members`). Vide pour tous ceux qui existent.
+- [x] **À la création** : « Pour qui ? » le remplit ; « Quelqu'un d'autre » le laisse vide. « Préparer », dans « Bientôt », le remplit aussi.
+- [x] **Les réglages de l'événement** : pour la catégorie Anniversaire, une ligne « Pour », sous « Catégorie », de la même forme que les autres ; sa page propose mes proches et « Personne ».
+- [x] **L'âge**, en fonction pure testée : avec une date de naissance, « ses 4 ans » à côté de la date de l'événement, « Ses 3 ans » en titre d'une année passée ; « tes 40 ans » quand c'est moi. Sans date de naissance, ou sans proche, rien.
+- [x] **« 7 cadeaux offerts à Zoé »** : le prénom du proche, sur la ligne d'une année passée.
+- [x] Un proche supprimé : l'événement garde son nom, perd l'âge et le prénom.
+- [x] « Bientôt » ne propose pas l'anniversaire d'un proche qui a déjà le sien, même si on en a changé la date.
+- [x] Trois langues. `docs/refonte/ECARTS-MAQUETTES.md` à jour.
 
 ## Hors périmètre
 

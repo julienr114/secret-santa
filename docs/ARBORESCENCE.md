@@ -175,7 +175,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | (ancienne adresse) | `/e/[fête]/invitation` et `/e/[fête]/invitation/mot` (le lien était à l'événement) | mènent à Membres (`invitationPathOf`, ticket 116) | |
 | Exclusions | `/e/[fête]/exclusions` | Membres | Ajouter une exclusion |
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
-| Réglages de la fête | `/e/[fête]/reglages` | La fête | Catégorie, date, organisateur, suppression de la fête |
+| Réglages de la fête | `/e/[fête]/reglages` | La fête | Catégorie, « Pour » (un anniversaire, ticket 118), date, organisateur, suppression de la fête |
 | (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
 
 ## Une édition (organisateur)

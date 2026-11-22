@@ -96,7 +96,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FetesPassees` | Une ligne sans rien à dire n'a que sa date. Sans aucun événement passé, la page dit « Aucun événement passé pour l'instant. » (la maquette ne montre pas cet état). | Seul |
 | `V3FeteAnneePassee` | Les icônes des Secret Santa et de « Devine qui » (une coupe) sont les ronds de 40 px de `UiListItem`. Avec plusieurs Secret Santa, la section s'appelle « Les Secret Santa » et chaque ligne porte son nom ; l'organisateur qui n'y participait pas n'a pas de texte sous la ligne. | Seul |
 | `V3FeteAnneePassee` | Sous « Ma liste de cadeaux » : pour qui elle était (« Pour Léo, Zoé et moi »), ou le nombre d'idées si elle n'était que pour moi ; rien d'autre. Sous la liste d'un autre : « Tu as offert 2 cadeaux », sinon rien. Les lignes ouvrent les listes comme aujourd'hui, où l'on peut encore écrire et cocher (Q-021). | Seul |
-| `V3Fete`, `V3FeteAnniversaire` | « Les années passées » : le titre est le nom de l'année (« Noël 2025 », « Anniversaire 2025 ») ; « Ses 3 ans » attend de savoir pour qui un événement est fait (Q-022). | Seul |
+| `V3Fete`, `V3FeteAnniversaire` | « Les années passées » : le titre est le nom de l'année (« Noël 2025 ») ; pour un anniversaire fait pour un proche dont on connaît la naissance, son âge (« Ses 3 ans », ticket 118). Sans proche ou sans naissance : « Anniversaire 2025 ». | Seul, puis la conception (Q-022) |
 | `V3ListeReprise` | Le nom de la liste reprise est celui de l'événement (« Famille Camille »), comme toute liste faite pour un événement (`listes.md`), et non « Noël 2027 ». « Reprise de Noël 2026 » nomme l'année de l'ancienne liste quand elle était dans le même événement, sinon son nom, comme avant. | Seul |
 | — | « Supprimer ce Secret Santa » (pas de maquette) : une ligne rouge en bas des réglages du Secret Santa tant qu'il n'est pas tiré ; le panneau dit « C'est définitif », que les liens personnels de ses participants ne marcheront plus et qu'ils restent membres de l'événement, puis « Garder le Secret Santa » et « Supprimer le Secret Santa ». Pas d'identifiant à recopier : c'est la suppression d'un événement, réservée au super-admin, qui le demande. Ensuite, la page de l'événement. | Seul |
 
@@ -156,7 +156,6 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
 | `V3Fete`, `V3FeteOrganisateur`, `V3FeteAnniversaire` | Pas de section « Les années passées » avant le ticket 108. | Julien, 20 novembre 2026 |
-| `V3FeteAnniversaire` | Pas de « · ses 4 ans » après la date : la fête ne sait pas pour quel proche elle est. | Seul |
 | `V3Fete` | Pour un simple membre, la ligne des membres n'ouvre rien (la page des membres est à l'organisateur). | Seul |
 | `V3FeteOrganisateur` | Le titre de section est au pluriel pour l'organisateur ou dès deux Secret Santa. | Seul |
 | `V3Fete` | Une ligne de liste s'ouvre sur la page d'aujourd'hui : la mienne dans son document, celle d'un autre par son lien public ; sans lien public, elle ne s'ouvre pas (règles du ticket 106). | Seul |
@@ -234,3 +233,11 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `ListeCocherPour` | Un cadeau à plusieurs noté par celui qui tient la liste dit « Noté par toi » plutôt que « Proposé par » : la trace dit qui l'a écrit. | Seul |
 | `ListeCocherPourAutre` | Une adresse qui n'en est pas une marque le champ en rouge, sans phrase ; « Ajouter » reste grisé tant que le prénom est vide. Un prénom écrit à nouveau, avec la même adresse ou sans, est celui déjà écrit. | Seul |
 | `ListeCocherPourAutre` | « Avec son adresse, cette personne retrouvera ce cadeau en se connectant. » au lieu de « il retrouvera » : l'application ne connaît pas le genre. | Julien, 22 novembre 2026 |
+
+## Un anniversaire sait pour qui il est fait (ticket 118)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3FeteAnneePassee` | Pour un anniversaire dont on connaît l'âge, la pastille dit « 🎂 Ses 3 ans » au lieu de « Anniversaire 2025 » ; l'année reste dans la date dessous (« 14 décembre 2025 »). Pour moi : « Tes 40 ans ». | Seul (le ticket : « sa page de 2025 s'appelle Ses 3 ans ») |
+| `V3FeteReglages` | Pour un anniversaire, une ligne « Pour » sous « Catégorie », de la même forme : l'icône du proche, son prénom (« Moi » pour moi), ou « Personne ». Elle ouvre un panneau de choix comme la catégorie : mes proches, puis « Personne ». Aucune maquette ne montre ces deux écrans. Le proche choisi par un autre organisateur se lit, sans icône ; « Valider » sans rien changer le garde. | Seul |
+| `V3FeteAnniversaire` | « 7 cadeaux offerts à Zoé » ne nomme pas le proche quand c'est moi (« 7 cadeaux offerts ») ; il se lit aussi dans « Les événements passés ». Passer l'événement à une autre catégorie lui fait oublier pour qui il était fait. | Seul |

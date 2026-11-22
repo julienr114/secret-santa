@@ -12,6 +12,13 @@ export default {
   everyYear: 'tous les ans',
   inDays: { one: 'dans {count} jour', other: 'dans {count} jours' },
   today: 'aujourd’hui',
+  // A birthday made for one of my people (ticket 118): their age.
+  age: {
+    theirs: { one: 'ses {count} an', other: 'ses {count} ans' },
+    mine: { one: 'tes {count} an', other: 'tes {count} ans' },
+    pastTheirs: { one: 'Ses {count} an', other: 'Ses {count} ans' },
+    pastMine: { one: 'Tes {count} an', other: 'Tes {count} ans' },
+  },
   members: { one: '{count} membre', other: '{count} membres' },
   settings: 'Réglages de l’événement',
   secretSantaTitle: { one: 'Le Secret Santa', other: 'Les Secret Santa' },
@@ -66,6 +73,10 @@ export default {
     received: {
       one: '{count} cadeau offert',
       other: '{count} cadeaux offerts',
+    },
+    receivedFor: {
+      one: '{count} cadeau offert à {name}',
+      other: '{count} cadeaux offerts à {name}',
     },
     game: 'Devine qui',
     palmares: 'Le palmarès',
@@ -123,6 +134,8 @@ export default {
   reglages: {
     party: 'L’événement',
     category: 'Catégorie',
+    forWhom: 'Pour',
+    nobody: 'Personne',
     date: 'Date',
     dateValue: 'Le {date} · proposée chaque année',
     dateValueOnce: 'Le {date}',

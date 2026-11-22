@@ -19,7 +19,13 @@ const page = usePastYearQuery(slug, year);
 const data = computed(() => page.data.value);
 const { deedText, yearName, dayOf } = usePastText();
 const title = computed(() =>
-  data.value ? yearName(data.value.party.category, data.value.year) : '',
+  data.value
+    ? yearName(
+        data.value.party.category,
+        data.value.year,
+        data.value.party.forWhom,
+      )
+    : '',
 );
 useHead({
   title: () =>

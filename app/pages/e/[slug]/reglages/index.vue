@@ -16,6 +16,7 @@ import {
   usePeopleQuery,
   useRemoveOrganizerMutation,
 } from '~/composables/queries/useGroup';
+import { useFamilyQuery } from '~/composables/queries/useLists';
 import {
   usePartyQuery,
   useUpdatePartyMutation,
@@ -23,7 +24,8 @@ import {
 
 // The settings of the party (docs/spec/v3/fete.md, maquette
 // V3FeteReglages): only what is its own. Its category, its date, whether
-// it comes back; a row to the settings of its Secret Santa; its
+// it comes back; for a birthday, « Pour » (ticket 118), one of my people
+// or « Personne »; a row to the settings of its Secret Santa; its
 // organisers; deleting it, for the super-admin. « Quelqu'un s'inscrit par
 // le lien » is a setting of each Secret Santa (ticket 116). Each saved at once (README 23.3).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -61,6 +63,28 @@ const categoryChoices = computed(() =>
     label: `${CATEGORY_DEFAULTS[category].emoji ?? '✨'} ${tk(`party.category.${category}`)}`,
   })),
 );
+
+// « Pour », for a birthday (ticket 118): my people, or « Personne ».
+const NOBODY = '';
+const forOpen = ref(false);
+const family = useFamilyQuery();
+const forWhom = computed(() => data.value?.party.forWhom ?? null);
+const forPerson = computed(() =>
+  family.data.value?.members.find(
+    (person) => person.id === forWhom.value?.memberId,
+  ),
+);
+const forValue = computed(() => {
+  if (!forWhom.value) return t('party.reglages.nobody');
+  return forWhom.value.me ? t('party.create.me') : forWhom.value.firstName;
+});
+const forChoices = computed(() => [
+  ...(family.data.value?.members ?? []).map((person) => ({
+    value: person.id,
+    label: `${person.avatar.emoji} ${person.isSelf ? t('party.create.me') : person.firstName}`,
+  })),
+  { value: NOBODY, label: t('party.reglages.nobody') },
+]);
 
 // The date, in three lists in its sheet.
 const dateOpen = ref(false);
@@ -132,6 +156,15 @@ const deleting = ref(false);
           :emoji="CATEGORY_DEFAULTS[data.party.category].emoji ?? '✨'"
           :busy="update.isPending.value"
           :on-click="() => (categoryOpen = true)"
+        />
+        <UiListItem
+          v-if="data && data.party.category === 'birthday'"
+          :title="t('party.reglages.forWhom')"
+          :value="forValue"
+          :emoji="forPerson?.avatar.emoji"
+          :busy="update.isPending.value"
+          :on-click="() => (forOpen = true)"
+          data-testid="party-for-whom"
         />
         <UiListItem
           :title="t('party.reglages.date')"
@@ -236,6 +269,24 @@ const deleting = ref(false);
         (category: PartyCategory) => {
           categoryOpen = false;
           patch({ category });
+        }
+      "
+    />
+    <UiChoiceSheet
+      v-if="data"
+      v-model:open="forOpen"
+      :title="t('party.reglages.forWhom')"
+      :choices="forChoices"
+      :value="forWhom?.memberId ?? NOBODY"
+      :validate-label="t('common.actions.validate')"
+      :cancel-label="t('common.actions.cancel')"
+      @validate="
+        (memberId: string) => {
+          forOpen = false;
+          // Unchanged: another organiser's choice stays.
+          if (memberId !== (forWhom?.memberId ?? NOBODY)) {
+            patch({ forMemberId: memberId || null });
+          }
         }
       "
     />

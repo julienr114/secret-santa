@@ -52,9 +52,9 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
     await expect(heading(page)).toHaveText('Membres');
   }
-  // 4 people, the organiser (a person of the group by default), « Ajouter
-  // une personne » and the invitation link
-  await expect(page.locator('main').getByRole('listitem')).toHaveCount(7);
+  // 4 people, the organiser (a person of the group by default) and
+  // « Ajouter une personne »: an event has no invitation link (ticket 116)
+  await expect(page.locator('main').getByRole('listitem')).toHaveCount(6);
 
   // Léa and Tom must not draw each other (both ways by default), each
   // picked in a sheet over « Nouvelle exclusion ». The exclusions stay

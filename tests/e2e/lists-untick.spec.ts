@@ -103,9 +103,15 @@ test.afterAll(async () => {
 test('the grey box unticks at once, with « Annuler »', async () => {
   const page = await document();
   const billes = line(page, 'Circuit de billes');
-  // The first name is a pill to read, not a button.
+  // The first name is no longer a pill to read only: since « Cocher pour
+  // quelqu'un » (21 November 2026), it opens « Qui l'offre ? » for those
+  // who hold the list. The grey box still unticks.
   await expect(billes.getByTestId('idea-who')).toHaveText('Mamie');
-  await expect(billes.getByRole('button', { name: 'Mamie' })).toHaveCount(0);
+  await expect(
+    billes.getByRole('button', {
+      name: 'Offert par Mamie Circuit de billes : changer qui l’offre',
+    }),
+  ).toHaveCount(1);
   const box = billes.getByRole('checkbox', {
     name: 'Décocher : coché par Mamie',
   });

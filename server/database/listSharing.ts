@@ -659,3 +659,42 @@ export const wroteListFor = async (
     );
   return new Set(rows.map((row) => row.email));
 };
+
+/**
+ * The accounts of the events a list is shared in with all their members
+ * (« Cocher pour quelqu'un », ticket 098): its active members who have an
+ * account, by their address, and its organisers. Those without an account
+ * are not known to the app: nobody may give for them under their name.
+ * @param db - The database.
+ * @param listId - The list.
+ * @returns Their accounts, once each.
+ */
+export const accountsWhereShared = async (db: Db, listId: string) => {
+  const shared = db
+    .select({ partyId: giftListParties.partyId })
+    .from(giftListParties)
+    .where(
+      and(
+        eq(giftListParties.listId, listId),
+        eq(giftListParties.visibility, 'party'),
+      ),
+    );
+  const [members, organisers] = await Promise.all([
+    db
+      .select({ account: accounts })
+      .from(persons)
+      .innerJoin(accounts, eq(accounts.email, persons.email))
+      .where(and(inArray(persons.partyId, shared), eq(persons.active, true))),
+    db
+      .select({ account: accounts })
+      .from(partyOrganisers)
+      .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
+      .where(inArray(partyOrganisers.partyId, shared)),
+  ]);
+  return [...members, ...organisers]
+    .map((row) => row.account)
+    .filter(
+      (account, index, all) =>
+        all.findIndex((other) => other.id === account.id) === index,
+    );
+};

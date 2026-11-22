@@ -2,6 +2,7 @@ import type { H3Event } from 'h3';
 import { useDb, type Db } from '#server/database/client';
 import {
   claimsOfLists,
+  giverOf,
   linkWrittenGiversOf,
   offListOfLists,
   writtenGiversOf,
@@ -25,7 +26,11 @@ import {
 import type { GiftListRow } from '#server/database/schema';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
-import { membersSeeing, sharedEventsOf } from '#server/database/listSharing';
+import {
+  accountsWhereShared,
+  membersSeeing,
+  sharedEventsOf,
+} from '#server/database/listSharing';
 import { listStage, type ListStage } from '#server/utils/listSharing';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
@@ -527,6 +532,12 @@ export const candidatesOf = async (
     },
     holders: views,
     claims,
+    // In the V3, the app knows the members of the events the list is
+    // shared in too (ticket 098).
+    members: (await accountsWhereShared(db, listId)).map((account) => ({
+      accountId: account.id,
+      ...giverOf(account),
+    })),
     written: await writtenGiversOf(db, listId),
   });
 };

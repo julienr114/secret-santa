@@ -159,7 +159,8 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| Toutes les six | La barre du haut est celle de `main`, pas celle de la V3 que montrent les maquettes. | Julien (`PROMPT.md`) |
+| Toutes les six | Sur `main`, la barre du haut est restée celle de `main`. Sur `v3` (ticket 098), c'est celle de la V3, comme les maquettes. | Julien (`PROMPT.md`), puis le ticket 098 |
+| `ListeCocherPour` | En V3, les membres des événements où la liste est partagée avec tous les membres (et qui ont un compte) sont proposés après ceux qui ont coché, sans ligne dessous. Ceux d'un événement où la liste est réservée à celui qui m'a tiré ne le sont pas. | Spec (`listes.md`), seul pour la place et le partage réservé |
 | `ListeCocherPourDepart`, `ListeCocherPourChoix`, `ListeCocherPour` | Les lignes des prénoms sont celles de `UiCheckRow` : icône de 40 px et ligne de 60 px, au lieu de 36 px et 56 px. Le rond et la case sont ceux de l'application, à la couleur du thème. | Seul (le composant du design system) |
 | `ListeCocherPourLigne` | Au-delà de trois prénoms, c'est la pastille « 7 personnes » qui porte le filet et la flèche. | Seul |
 | `ListeCocherPourMoi` | « Tu participes › » ouvre aussi « Qui l'offre ? » pour ceux qui tiennent la liste ; « Se joindre » garde son panneau. Par le lien, celui qui tient la liste garde le panneau d'aujourd'hui : seul le document a « Qui l'offre ? ». | Seul |

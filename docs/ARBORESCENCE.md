@@ -191,7 +191,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103) ; ses pages rest
 |---|---|---|---|
 | Listes (l'onglet) | `/listes` | — (barre du bas) | |
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Listes | |
-| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée |
+| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | Listes | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste | `/listes/[id]/teneurs` | La liste | |

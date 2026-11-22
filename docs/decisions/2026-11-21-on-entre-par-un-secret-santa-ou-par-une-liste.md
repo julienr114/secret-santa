@@ -9,6 +9,7 @@ Le groupe d'avant avait ses membres, et on choisissait parmi eux les participant
 ## Décision
 
 - **On devient membre d'un événement en entrant dans un de ses Secret Santa ou dans une de ses listes.** Rien d'autre n'y fait entrer.
+- **Sauf un organisateur** (Julien, 22 novembre 2026, Q-031) : celui qu'on ajoute comme organisateur, dans les réglages de l'événement, en est membre tout de suite, comme avant. Il participe presque toujours, et il ne faut pas avoir à l'ajouter deux fois.
 - **Par un Secret Santa** : son organisateur m'y ajoute, ou je m'inscris par son lien.
 - **Par une liste** (réponse de Julien, « les deux ») : celui qui la gère m'invite, ou j'ouvre son lien et je me connecte. J'entre dans l'événement de la liste.
 - **La page « Membres » reste** (réponse de Julien) : on y voit qui est là et par où chacun est entré. **On peut y ajouter quelqu'un**, mais toujours à quelque chose : à un Secret Santa, ou à ma liste.

@@ -4,33 +4,9 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-### Q-029 — « Membres » est-elle ouverte aux membres, ou reste-t-elle aux organisateurs ? (ticket 117)
+Aucune.
 
-- **Pour** : la conception
-- **Ce qui bloque** : rien. En attendant, « Membres » reste la page des organisateurs, comme avant : un membre ne l'ouvre pas, et la ligne des membres de la page de l'événement ne mène nulle part pour lui. « À ma liste » n'apparaît donc que pour un organisateur qui gère aussi une liste ; un membre qui gère une liste invite depuis la liste elle-même (« Qui verra ta liste ? › Inviter quelqu'un »).
-- **Ce qu'on a trouvé** : `docs/spec/v3/fete.md`, « Les membres » : « L'organisateur lit à la suite « ne tire pas Hugo » et « pas d'adresse email » » (ce qui suppose que d'autres lisent la page) et « « À ma liste », une ligne par liste que je gère » ; le ticket : « selon ce que je peux faire ». Mais `docs/ARBORESCENCE.md` et le code (`requireGroupAccess`) la réservent aux organisateurs, et la page montre les exclusions du tirage et l'absence d'adresse, que les membres ne voient nulle part ailleurs.
-- **Les choix** :
-  - A. La garder aux organisateurs (comme aujourd'hui).
-  - B. L'ouvrir aux membres : les prénoms et par où chacun est entré, « À ma liste » ; sans « ne tire pas », sans « pas d'adresse email », sans fiche de personne. Une route de lecture de plus pour les membres.
-- **Ce que je ferais** : A tant que personne ne le demande : moins de données montrées, et inviter reste possible depuis la liste.
-
-### Q-030 — « Camille t'a ajouté au Secret Santa » s'accorde au masculin (ticket 117)
-
-- **Pour** : la conception
-- **Ce qui bloque** : rien. En attendant, la nouveauté dit « Camille t'ajoute au Secret Santa », au présent, comme Q-028 l'a décidé pour « Hugo s'inscrit par le lien ». En anglais « Camille added you to the Secret Santa », en allemand « Camille hat dich zum Wichteln hinzugefügt » (sans accord).
-- **Ce qu'on a trouvé** : le ticket 117 (« Les nouveautés ») et Q-026 écrivent « Camille t'a ajouté au Secret Santa » ; `CLAUDE.md` : « L'application ne connaît pas le genre d'une personne : tournures neutres ». « t'a ajouté » devient faux pour Inès (« t'a ajoutée »).
-- **Les choix** : A, « Camille t'ajoute au Secret Santa » ; B, « Camille t'a mis dans le Secret Santa » (même problème) ; C, « Tu participes au Secret Santa de Camille ».
-- **Ce que je ferais** : A, déjà en place : la règle de Q-028.
-
-### Q-031 — « Ajouter un organisateur » fait entrer quelqu'un dans l'événement sans Secret Santa ni liste (ticket 117)
-
-- **Pour** : Julien
-- **Ce qui bloque** : la case « Aucune route n'ajoute un membre à un événement sans passer par un Secret Santa ou une liste », prise au pied de la lettre. En attendant, rien ne change : un organisateur ajouté depuis les réglages devient aussi membre de l'événement (« un organisateur participe par défaut », depuis la V2), sans rien sous son prénom dans « Membres ». C'est la seule exception, écrite dans le test qui vérifie la règle (`server/database/members.test.ts`).
-- **Ce qu'on a trouvé** : `docs/decisions/2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md` : « Rien d'autre n'y fait entrer » ; `docs/spec/v3/fete.md`, « Les réglages de l'événement » : « Organisateurs : la liste, « Ajouter un organisateur » » ; `server/database/groups.ts`, `addOrganizer`. Un organisateur voit déjà l'événement et ses listes sans être membre (`memberWhereShared`, l'accueil).
-- **Les choix** :
-  - A. Garder l'exception : l'organisateur est membre, sans « par où ».
-  - B. Un organisateur ajouté n'est pas membre : il voit et règle l'événement, et n'en devient membre qu'en entrant dans un Secret Santa ou une liste, comme les autres. Il n'est plus proposé d'office parmi les participants.
-- **Ce que je ferais** : B, qui suit la décision sans exception ; mais c'est un changement pour les organisateurs d'aujourd'hui, d'où la question.
+## Réponses
 
 ### Q-032 — « Repartir d'une liste » : « une personne en commun » ne joue jamais, le bloc n'étant que dans une liste vide (ticket 119)
 
@@ -41,6 +17,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Garder le bloc aux listes vides : le critère 3 attend.
   - B. Montrer le bloc tant que la liste n'a aucune idée, même avec des personnes, et dire comment la reprise se mêle à elles (les personnes déjà là gardent leur place, celles de l'ancienne liste s'ajoutent après, sans doublon).
 - **Ce que je ferais** : A pour la bascule ; B avec le ticket 136, qui en aura besoin.
+- **Réponse de Julien (22 novembre 2026)** : B. « Repartir d'une liste » est proposé tant que la liste n'a aucune idée, même avec des personnes. Les personnes déjà là gardent leur place, celles de l'ancienne liste s'ajoutent après, personne n'est mis deux fois ; les idées pas offertes d'une personne déjà là arrivent sous son prénom. La spec le dit : `docs/spec/v3/listes.md`, « Repartir d'une liste ». Maquette : `V3ListeSecretNouvelle`. À coder dans le ticket 136, pas avant.
 
 ### Q-033 — Une liste reprise garde, après son premier partage, la liste dont elle vient (ticket 119)
 
@@ -51,8 +28,38 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Garder le lien après le partage (ce qui est fait).
   - B. Ne plus chercher la liste reprise : le bandeau mène à la liste de cette année du même événement tenue par la même personne, reprise ou non.
 - **Ce que je ferais** : A : il suit la spec à la lettre, et ne montre rien de plus.
+- **Réponse de Julien (22 novembre 2026)** : A. La liste reprise garde, après son premier partage, la liste dont elle vient ; seules les marques des idées s'effacent. Rien de plus n'est montré à personne. Rien à changer dans le code.
 
-## Réponses
+### Q-031 — « Ajouter un organisateur » fait entrer quelqu'un dans l'événement sans Secret Santa ni liste (ticket 117)
+
+- **Pour** : Julien
+- **Ce qui bloque** : la case « Aucune route n'ajoute un membre à un événement sans passer par un Secret Santa ou une liste », prise au pied de la lettre. En attendant, rien ne change : un organisateur ajouté depuis les réglages devient aussi membre de l'événement (« un organisateur participe par défaut », depuis la V2), sans rien sous son prénom dans « Membres ». C'est la seule exception, écrite dans le test qui vérifie la règle (`server/database/members.test.ts`).
+- **Ce qu'on a trouvé** : `docs/decisions/2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md` : « Rien d'autre n'y fait entrer » ; `docs/spec/v3/fete.md`, « Les réglages de l'événement » : « Organisateurs : la liste, « Ajouter un organisateur » » ; `server/database/groups.ts`, `addOrganizer`. Un organisateur voit déjà l'événement et ses listes sans être membre (`memberWhereShared`, l'accueil).
+- **Les choix** :
+  - A. Garder l'exception : l'organisateur est membre, sans « par où ».
+  - B. Un organisateur ajouté n'est pas membre : il voit et règle l'événement, et n'en devient membre qu'en entrant dans un Secret Santa ou une liste, comme les autres. Il n'est plus proposé d'office parmi les participants.
+- **Ce que je ferais** : B, qui suit la décision sans exception ; mais c'est un changement pour les organisateurs d'aujourd'hui, d'où la question.
+- **Réponse de Julien (22 novembre 2026)** : A. Un organisateur ajouté est membre de l'événement, comme aujourd'hui : c'est la seule exception à « on entre par un Secret Santa ou par une liste », et elle est écrite dans la décision. Dans « Membres », sa ligne commence par « Organise » (pas « Organisateur » : pas de genre) : `docs/spec/v3/fete.md`, « Les membres ». À coder : ticket 137.
+
+### Q-029 — « Membres » est-elle ouverte aux membres, ou reste-t-elle aux organisateurs ? (ticket 117)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. En attendant, « Membres » reste la page des organisateurs, comme avant : un membre ne l'ouvre pas, et la ligne des membres de la page de l'événement ne mène nulle part pour lui. « À ma liste » n'apparaît donc que pour un organisateur qui gère aussi une liste ; un membre qui gère une liste invite depuis la liste elle-même (« Qui verra ta liste ? › Inviter quelqu'un »).
+- **Ce qu'on a trouvé** : `docs/spec/v3/fete.md`, « Les membres » : « L'organisateur lit à la suite « ne tire pas Hugo » et « pas d'adresse email » » (ce qui suppose que d'autres lisent la page) et « « À ma liste », une ligne par liste que je gère » ; le ticket : « selon ce que je peux faire ». Mais `docs/ARBORESCENCE.md` et le code (`requireGroupAccess`) la réservent aux organisateurs, et la page montre les exclusions du tirage et l'absence d'adresse, que les membres ne voient nulle part ailleurs.
+- **Les choix** :
+  - A. La garder aux organisateurs (comme aujourd'hui).
+  - B. L'ouvrir aux membres : les prénoms et par où chacun est entré, « À ma liste » ; sans « ne tire pas », sans « pas d'adresse email », sans fiche de personne. Une route de lecture de plus pour les membres.
+- **Ce que je ferais** : A tant que personne ne le demande : moins de données montrées, et inviter reste possible depuis la liste.
+- **Réponse de la conception (22 novembre 2026)** : A, pour la bascule. « Membres » reste la page des organisateurs : elle montre les exclusions du tirage et l'absence d'adresse, que les membres ne lisent nulle part ailleurs. Pour un membre, la ligne des membres de la page de l'événement dit combien ils sont et ne mène nulle part : pas de chevron, pas un lien mort. « À ma liste » n'y apparaît que pour un organisateur qui gère aussi une liste ; un membre invite depuis sa liste. La spec le dit maintenant : `docs/spec/v3/fete.md`, « Les membres ». À vérifier dans le code : que la ligne ne soit pas un lien pour un membre. Ouvrir la page aux membres (les prénoms seuls) est signalé à Julien comme une idée pour plus tard.
+
+### Q-030 — « Camille t'a ajouté au Secret Santa » s'accorde au masculin (ticket 117)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. En attendant, la nouveauté dit « Camille t'ajoute au Secret Santa », au présent, comme Q-028 l'a décidé pour « Hugo s'inscrit par le lien ». En anglais « Camille added you to the Secret Santa », en allemand « Camille hat dich zum Wichteln hinzugefügt » (sans accord).
+- **Ce qu'on a trouvé** : le ticket 117 (« Les nouveautés ») et Q-026 écrivent « Camille t'a ajouté au Secret Santa » ; `CLAUDE.md` : « L'application ne connaît pas le genre d'une personne : tournures neutres ». « t'a ajouté » devient faux pour Inès (« t'a ajoutée »).
+- **Les choix** : A, « Camille t'ajoute au Secret Santa » ; B, « Camille t'a mis dans le Secret Santa » (même problème) ; C, « Tu participes au Secret Santa de Camille ».
+- **Ce que je ferais** : A, déjà en place : la règle de Q-028.
+- **Réponse de la conception (22 novembre 2026)** : A. « Camille t'ajoute au Secret Santa », au présent : la règle de Q-028, étendue à toute nouveauté (le présent, quand le passé demanderait un accord). Le ticket 117 et la réponse à Q-026 avaient tort d'écrire « t'a ajouté ». La spec le dit : `docs/spec/v3/secret-santa.md`, « Ses réglages ». Rien à changer dans le code.
 
 ### Q-028 — « Hugo s'est inscrit par le lien » s'accorde au masculin (ticket 116)
 

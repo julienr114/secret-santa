@@ -1,7 +1,7 @@
 # Les listes
 
-Décisions : `2026-11-21-le-partage-d-une-liste-a-des-stades.md`, `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
-Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`, `V3ListeQui`, `V3ListeQuiSecret`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3Liste`, `V3ListeSecret`, `V3ListePublique`, `V3ListeFermee`, `V3ListeFermeeConnecte`, `V3ListeMembre`, `V3ListeReprise`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
+Décisions : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md`, `2026-11-21-le-partage-d-une-liste-a-des-stades.md`, `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
+Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`, `V3ListeQui`, `V3ListeQuiSecret`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeAideLien`, `V3ListeSecretNouvelle`, `V3Liste`, `V3ListeSecret`, `V3ListePublique`, `V3ListeFermee`, `V3ListeFermeeConnecte`, `V3ListeMembre`, `V3ListeReprise`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
 
 Le dessin d'une liste (les lignes, les coches, le mode anonyme, le fil, « ses goûts ») ne change pas : c'est celui de la Correction 30 de l'ancien plan et du README 22.19 à 22.21. Change où elle vit et qui la voit.
 
@@ -28,13 +28,25 @@ Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`.
 
 1. **« Pour quelle occasion ? »** : un de mes événements, ou « Une autre occasion » (qui en crée un, `accueil-et-creation.md`). La liste en prend le nom, la date et l'icône : on ne les redemande pas.
 2. La liste s'ouvre, **en brouillon** : moi seul la vois. J'écris.
-3. **« Partager »**, dans la barre du haut, ouvre « Qui verra ta liste ? ».
+3. **« Partager »**, dans la barre du haut, la déroule : « Qui verra ta liste ? » est dedans.
 
-En arrivant depuis mon Secret Santa pour écrire ma liste, l'occasion est connue et « Celui qui m'a tiré » est choisi d'avance (`V3ListeQuiSecret`) : ce que j'écris est lu dès que c'est écrit, comme les pistes d'avant.
+### Depuis mon Secret Santa
+
+Décision : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md` (Julien, 22 novembre 2026). Ce qui est lié à un Secret Santa, ce n'est pas une liste : **c'est moi, dans une liste**. Celui qui m'a tiré a le droit d'ouvrir la liste entière ; ce qu'on lui montre d'abord, c'est ma partie (`secret-santa.md`, « Du résultat à la liste »).
+
+En touchant « Ma liste de cadeaux » sur la page de mon Secret Santa, ou « Écrire ma liste » dans l'email d'une demande d'idées :
+
+- **Je ne tiens aucune liste de cette année où je figure** : la liste se crée sans rien demander. L'occasion est connue, « Celui qui m'a tiré » est choisi d'avance, **et j'y suis déjà, en premier** (`V3ListeSecretNouvelle`). Ce que j'écris est lu dès que c'est écrit, comme les pistes d'avant.
+- **J'en tiens une ou plusieurs** : « Quelle liste pour ton Secret Santa ? » (`V3TirageQuelleListe`) les propose, une par ligne, avec « Pour Léo, Zoé et moi » et ses événements dessous ; puis « Une nouvelle liste ». La première est choisie d'avance : celle du même événement, sinon de la même catégorie, sinon la plus récente. « Continuer ». La liste choisie garde son partage : celui qui m'a tiré la voit en plus (les stades se cumulent). Une liste que je tiens mais où je ne figure pas n'est pas proposée.
+- **Sous mon prénom**, dans la liste, une ligne par Secret Santa : l'icône du Secret Santa, « Secret Santa · Famille Camille » (`V3ListeSecret`). Elle mène à mon Secret Santa. Seuls ceux qui tiennent la liste la voient.
+
+« Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`). Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
 
 ## La barre du haut d'une liste
 
-Elle dit le stade, et elle a toujours le lien. Deux lignes : l'état avec son bouton, puis l'adresse avec **« Copier le lien »**.
+Décision de Julien, 22 novembre 2026 : la barre est **repliée**, et **elle se déroule sur place**. Ce qui suit remplace les deux lignes d'avant (l'adresse toujours visible) et le panneau du bas « Qui verra ta liste ? ».
+
+**Repliée**, c'est une ligne : le stade, et un bouton. Elle reste collée sous la barre du haut pendant que la liste défile.
 
 | Stade | Texte | Bouton |
 |---|---|---|
@@ -42,24 +54,35 @@ Elle dit le stade, et elle a toujours le lien. Deux lignes : l'état avec son bo
 | Celui qui m'a tiré (`V3ListeSecret`) | le nom de l'événement · « Seul celui qui t'a tiré la voit » | « Modifier » |
 | Des événements (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » | « Modifier » |
 | Publique (`V3ListePublique`) | « Publique » · « Toute personne qui a le lien la voit » | « Modifier » |
-| Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille » | aucun |
+| Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille » | « Le lien » |
 
-Celui qui « gère la liste » a le bouton, comme celui qui l'a créée (`ListeTeneurs`). Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre.
+**Le bouton la déroule là où elle est** : pas de panneau du bas, pas de voile, pas d'autre page. La liste est poussée vers le bas. Déroulée, **elle reste collée en haut** ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Son bouton devient **« Fermer »**, qui la replie sans rien changer.
+
+Dedans, dans cet ordre :
+
+1. **L'adresse de la liste et « Copier le lien »** (« Copié », un instant). C'est le seul endroit où l'adresse est écrite : repliée, la barre ne la montre pas.
+2. Pour ceux qui gèrent la liste : **« Qui verra ta liste ? »** (plus bas), puis le bouton, « Partager » pour un brouillon, « Enregistrer » ensuite. Il enregistre et replie la barre.
+
+Celui qui « aide à écrire » n'a que l'adresse et « Copier le lien » (`V3ListeAideLien`).
+
+Celui qui « gère la liste » a les mêmes boutons que celui qui l'a créée (`ListeTeneurs`). Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre, repliée.
 
 ## « Qui verra ta liste ? »
 
 Maquettes : `V3ListeQui` (depuis un brouillon, bouton « Partager »), `V3ListeQuiModifier` (bouton « Enregistrer »), `V3ListeQuiSecret`, `V3ListeQuiLien`.
 
+Ce n'est plus un panneau : c'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse.
+
 - **Mes événements, à cocher**, aucun, un ou plusieurs. Tout décoché, la liste est un brouillon.
-- Sous un événement coché **où je participe à un Secret Santa**, deux choix : **« Tous les membres »** ou **« Celui qui m'a tiré »**.
+- Sous un événement coché **où je participe à un Secret Santa**, deux choix : **« Tous les membres »** ou **« Celui qui m'a tiré »**, dans le composant à deux choix de l'application (`UiSegmented`).
 - **« Une autre occasion »** : crée un événement.
 - **« Inviter quelqu'un »** : plus bas.
 - **« Tout le monde, avec le lien »** : un interrupteur. Allumé, la liste est publique.
-- Pour une liste publique, deux lignes de plus : « Le message qui accompagne le lien » (la page `PersonnaliserMessage`) et « Changer de lien » (`V3ListeLienChanger`), qui dit d'abord que l'ancien lien ne marchera plus.
+- Pour une liste publique, deux lignes de plus : « Le message qui accompagne le lien » (la page `PersonnaliserMessage`) et « Changer de lien » (`V3ListeLienChanger`), qui dit d'abord que l'ancien lien ne marchera plus. L'adresse n'est pas répétée sous l'interrupteur : elle est en haut de la barre déroulée.
 
 ### Resserrer le partage
 
-Maquette : `V3ListeQuiRetirer`. Décocher un événement, éteindre « Tout le monde », revenir au brouillon : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, et **compte ceux qui ont coché un cadeau** :
+Maquette : `V3ListeQuiRetirer`. Décocher un événement, éteindre « Tout le monde », revenir au brouillon : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, dans la barre déroulée, à la place du bouton, et **compte ceux qui ont coché un cadeau** :
 
 « Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. 2 d'entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » · « Annuler » · « Retirer ».
 
@@ -99,6 +122,24 @@ Maquettes : `V3ListeFermee`, `V3ListeFermeeConnecte`.
 
 Maquette : `V3ListeReprise`. « Reprendre ma liste de l'an dernier » (accueil, `V3AccueilAnnee`) crée la liste de l'année dans le même événement : le nom, la date et l'icône viennent de l'événement. **Elle naît en brouillon**, le temps du tri. Les idées qui n'avaient pas été offertes sont reprises et marquées, pour moi seul : « Reprise de Noël 2026. Les idées marquées n'avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque. » Les idées offertes ne sont pas reprises.
 
+La liste reprise **garde le souvenir de celle dont elle vient**, même après son premier partage (Q-033) : c'est ce qui permet au bandeau d'une liste de l'an dernier de mener à celle de cette année. Seules les marques des idées s'effacent au partage, et rien de plus n'est montré à personne.
+
+### « Repartir d'une liste »
+
+Maquette : `ListeNouvelleReprendre`. Demandé par Julien le 22 novembre 2026 : une liste pour Camille proposait de repartir de « Les 7 ans de Léo », où Camille n'est pas.
+
+« Repartir d'une liste » est proposé **tant que la liste n'a aucune idée**, même si elle a déjà des personnes (Julien, Q-032) : une liste créée depuis mon Secret Santa m'a déjà dedans (`V3ListeSecretNouvelle`), et c'est là qu'on veut repartir de celle de l'an dernier. Le bloc est sous les personnes déjà là, avant « Ajouter quelqu'un ». Dès qu'une idée est écrite, il disparaît.
+
+Il ne propose que des listes que je tiens et **qui lui ressemblent**. Dans cet ordre, trois au plus :
+
+1. celles du **même événement**, une autre année, la plus récente d'abord ;
+2. celles d'un événement de la **même catégorie** (un Noël pour un Noël ; pour un anniversaire, celui du même proche) ;
+3. si la liste a déjà des personnes, celles où figure **au moins une de ces personnes**.
+
+- Une liste qui n'a rien de commun n'est jamais proposée. S'il n'y en a aucune, la section n'apparaît pas.
+- **Quand la liste a déjà des personnes**, la reprise ne les déplace pas : elles gardent leur place, celles de l'ancienne liste s'ajoutent après, et **personne n'est mis deux fois**. Les idées pas offertes d'une personne déjà là arrivent sous son prénom.
+- Sous le nom de chaque liste, **les prénoms** de ceux pour qui elle est faite (les règles du titre d'une ligne, `lignes.md`), pas « 4 personnes » : « Léo, Zoé et moi · 6 idées pas encore offertes ».
+
 ## La liste d'un autre membre
 
 Maquette : `V3ListeMembre`. Elle s'ouvre depuis l'événement, sans lien. Une pastille en haut porte l'emoji et le nom de l'événement, et y ramène.
@@ -116,6 +157,16 @@ Un participant arrivé par son lien personnel n'a pas forcément de compte.
 
 - **Le compte se crée tout seul à la première chose écrite** (un goût, une idée), pas à l'ouverture du lien : celui qui ne fait que regarder son résultat n'a pas de compte. On le dit sur le moment, par un message (`V3ListeCompteCree`) : « C'est enregistré » · « Un compte a été créé avec ton adresse, pour retrouver ta liste. » · « Compris ».
 - **Sans adresse email, pas de liste.** Celui dont on n'a pas l'adresse (un lien copié dans une messagerie) se la voit demander au moment où il veut écrire sa liste (`V3ListeAdresse`) : « Ton adresse email, pour écrire ta liste », un champ, « Valider », « Tu reçois un lien pour la confirmer. », « Tes données, en clair ». L'adresse se confirme par un lien, comme pour se connecter.
+
+## Une liste d'une année passée
+
+Maquette : `V3ListeAnneePassee`. Décision : `2026-11-22-une-liste-d-une-annee-passee-reste-ouverte.md` (Julien, Q-021).
+
+- Une liste est d'une année passée quand son événement a quitté l'accueil pour l'année de sa date (`accueil-et-creation.md`, « Après la date »). Une liste appartient à l'année de sa date.
+- **Elle reste ouverte** : on y écrit, on y coche, on en change le partage, comme avant.
+- **Un bandeau en haut le dit**, à tout le monde, celui qui la tient compris : « Liste de Noël 2025 » · « Une année passée ».
+- Si une liste de cette année a été reprise de celle-ci (« Reprendre ma liste de l'an dernier »), et que j'ai le droit de l'ouvrir, le bandeau y mène : un bouton au nom de l'année, « Noël 2026 ».
+- Sur la page de l'année passée de l'événement, les listes n'ont aucun geste : on les ouvre, c'est tout.
 
 ## Cocher pour quelqu'un
 

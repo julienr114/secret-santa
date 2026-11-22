@@ -25,7 +25,7 @@ Le titre et le texte de chaque ligne : `lignes.md`.
 
 Maquette : `V3FeteReglages`. Seulement ce qui est à elle :
 
-- **L'événement** : catégorie ; date (« Le 25 décembre · proposée chaque année ») ; « Revient chaque année ».
+- **L'événement** : catégorie ; pour un anniversaire, « Pour » (le proche pour qui il est fait, ou « Personne ») ; date (« Le 25 décembre · proposée chaque année ») ; « Revient chaque année ».
 - **Secret Santa** : une ligne « Réglages du Secret Santa 2026 », qui mène aux réglages du Secret Santa (`secret-santa.md`).
 - **Organisateurs** : la liste, « Ajouter un organisateur ».
 - « Supprimer l'événement », réservé au super-admin.
@@ -36,11 +36,13 @@ Ce qui ne concerne que le Secret Santa n'est pas ici.
 
 Maquette : `V3FeteMembres`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
 
+- **C'est la page des organisateurs** (Q-029) : un membre ne l'ouvre pas. Pour lui, la ligne des membres de la page de l'événement dit combien ils sont, sans mener nulle part (pas de chevron). Elle montre les exclusions du tirage et l'absence d'adresse, que les membres ne lisent nulle part ailleurs.
 - **On n'ajoute personne à un événement.** On en devient membre en entrant dans un de ses Secret Santa ou dans une de ses listes (`modele.md`, « Deux sortes de personnes »).
 - La page montre qui est là et, sous chaque prénom, **par où il est entré** : « Secret Santa » (son nom s'il y en a plusieurs), « La liste de Camille », les deux séparés par une virgule. L'organisateur lit à la suite « ne tire pas Hugo » et « pas d'adresse email » ; l'adresse elle-même est sur la fiche de la personne.
+- **Un organisateur est membre** dès qu'on l'ajoute dans les réglages de l'événement, sans passer par un Secret Santa ni par une liste (Q-031) : c'est la seule exception. Sa ligne commence par **« Organise »** : « Organise · Secret Santa · ne tire pas Hugo », ou « Organise » seul. Pas « Organisateur » : l'application ne connaît pas le genre.
 - Sous les membres, **« Ajouter quelqu'un »**, avec une ligne par endroit où je peux le faire :
   - **« Au Secret Santa »**, pour son organisateur, une ligne par Secret Santa en préparation (son nom s'il y en a plusieurs) · « 5 participants · lien actif ». Elle ouvre « Choisir les participants » (`secret-santa.md`).
-  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`).
+  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`). Seul un organisateur qui gère aussi une liste la voit ici ; un membre invite depuis sa liste (« Qui verra ta liste ? », « Inviter quelqu'un »).
   - Sans Secret Santa en préparation ni liste à moi, il n'y a pas de section.
 - L'organisateur retire quelqu'un depuis sa fiche : la personne sort des Secret Santa pas encore tirés, et ne voit plus les listes de l'événement.
 - Certains membres n'ont pas de compte : ils participent au Secret Santa, ils ne voient pas les listes.
@@ -69,5 +71,5 @@ Maquette : `V3FeteAnneePassee`. On y arrive par « Les années passées » de l'
 
 - En tête : une pastille avec l'année (« Noël 2025 »), le nom de l'événement, la date de cette année-là, sans décompte.
 - Le ou les Secret Santa de l'année, avec ce que j'y ai fait (« Tu offrais à Zoé »), et « Devine qui » s'il y en avait un.
-- Les listes de l'année, en lecture seule.
+- Les listes de l'année, sans aucun geste sur cette page. Chacune s'ouvre, et reste modifiable (`listes.md`, « Une liste d'une année passée »).
 - Rien à créer, rien à régler, pas de « Quitter » : on ne change pas une année finie.

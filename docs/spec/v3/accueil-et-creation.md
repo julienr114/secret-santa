@@ -20,7 +20,7 @@ L'icône de la personne connectée remplace le burger, en haut à droite. Le men
 L'onglet ouvre un panneau du bas, « Créer », de deux lignes sans sous-titre :
 
 1. **Un Secret Santa**
-2. **Une liste**
+2. **Une liste de cadeaux**
 
 On ne propose pas « Un événement » : l'événement est la première étape des deux.
 

@@ -9,7 +9,8 @@ Un événement, c'est **une occasion** : il n'y a pas de niveau « famille » au
 - un nom libre ;
 - une catégorie (`categories.md`) ;
 - une date habituelle (jour et mois) et « revient chaque année », ou non ;
-- des membres et des organisateurs.
+- des membres et des organisateurs ;
+- pour un anniversaire, **le proche pour qui il est fait**, si on l'a choisi (`categories.md`, « Pour un anniversaire »).
 
 Tout ce que le groupe porte aujourd'hui reste à l'événement : les organisateurs, les exclusions du tirage, les réglages. **Sauf l'invitation par lien, qui passe au Secret Santa** : on s'inscrit à un Secret Santa, et du coup à son événement (`secret-santa.md`, « Inviter par lien »).
 
@@ -18,6 +19,7 @@ Tout ce que le groupe porte aujourd'hui reste à l'événement : les organisateu
 Événement (permanent) → **l'année de l'événement** (« Noël 2026 », avec sa vraie date, qui peut varier d'une année à l'autre) → ses Secret Santa et ses listes.
 
 - Une seule date à changer par année.
+- **Une liste appartient à l'année de sa date** : elle n'a pas d'année à elle en base (Q-020).
 - Les années passées s'archivent ensemble.
 - À l'écran, on ne dit pas « édition » : on dit « Noël 2026 » et « le Secret Santa ».
 

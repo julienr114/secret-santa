@@ -2,12 +2,15 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-52 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+60 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
 | `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas | 103 |
 | `V3AccueilAvantNoel` | Accueil · une fête qui n’est pas Noël et qui vient avant : elle est au-dessus de la saison de Noël, sans titre ; l’accueil suit les dates | 112 |
+| `V3ChargementAccueil` | Chargement · le nouvel accueil : le bonjour, le titre de la saison, des cartes d’événement avec leurs lignes | 099 |
+| `V3ChargementFete` | Chargement · la page d’un événement : la catégorie, le nom, la date, les membres, puis les Secret Santa et les listes | 099 |
+| `V3ChargementQuoiDeNeuf` | Chargement · « Quoi de neuf » : le titre, puis une section par événement avec ses lignes | 120 |
 | `V3AccueilVide` | Accueil · un compte tout neuf : un Secret Santa ou une liste ; on ne parle pas de « événement », c’est leur première étape | 103 |
 | `V3AccueilAnnee` | Accueil · l’année suivante (fin octobre 2027) : « Préparer Noël 2027 », « Reprendre ma liste de l’an dernier » | 108 |
 | `V3AccueilPlusOuvert` | Accueil · l’onglet « Créer » touché : un Secret Santa ou une liste ; la fête est la première étape des deux | 103 |
@@ -32,28 +35,33 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
 | `V3TirageNeutre` | Secret Santa · hors de Noël (catégorie « Autre ») : il garde son nom, « Secret Santa » ; aucun « Père Noël » | 105 |
 | `V3TirageReglages` | Secret Santa · ses réglages : son nom, sa date, son budget et son petit mot d’abord ; puis éviter la même personne, Devine qui, le mot des messages, les emails du tirage | 105 |
-| `V3ListeSurligne` | Secret Santa · la liste de la personne tirée : la liste entière, la page s’ouvre calée sur sa partie (ici Inès, en bas), le mode anonyme déjà activé | 107 |
+| `V3ListeSurligne` | Secret Santa · la liste de la personne tirée, en gros plan : sa partie seule, deux choix en haut (« Inès », « Toute la liste »), le mode anonyme déjà activé | 107, 136 |
+| `V3ListeSurligneTout` | Secret Santa · la liste de la personne tirée, « Toute la liste » choisi : tout le monde, elle en premier | 136 |
+| `V3TirageQuelleListe` | Secret Santa · « Ma liste de cadeaux » touché quand je tiens déjà une liste où je figure : celle-là, ou une nouvelle | 136 |
 | `V3TirageNouvelles` | Secret Santa · le résultat quand la liste de la personne tirée a de nouvelles idées : la ligne de sa liste le dit | 107 |
 | `V3TiragePause` | Secret Santa · en pause : ce que voit quelqu’un qui veut en créer un quand le super-admin a suspendu les nouveaux | 109 |
-| `V3ListeQui` | Liste · « Partager » touché sur un brouillon : « Qui verra ta liste ? », un ou plusieurs de mes événements, celui qui m’a tiré, ou tout le monde | 106 |
+| `V3ListeQui` | Liste · « Partager » touché sur un brouillon : la barre se déroule sur place, le lien et « Qui verra ta liste ? » sont dedans | 106, 135 |
 | `V3Liste` | Liste · la mienne, partagée dans deux événements : la barre dit qui la voit, « Modifier », et « Copier le lien » | 106 |
 | `V3ListeNouvelle` | Liste · nouvelle : elle naît en brouillon, moi seul la vois ; le lien est déjà là | 106 |
 | `V3ListePublique` | Liste · publique, le dernier stade : quiconque a le lien la voit et coche, sans compte | 106 |
 | `V3ListeMembre` | Liste · celle d’un autre membre : on y arrive par la fête, sans lien ; la fête est rappelée en haut | 106 |
 | `V3OffreAilleurs` | Liste · « Ce que j’offre ailleurs » : les listes publiques où j’ai coché, pas celles que j’ai seulement ouvertes | 106 |
-| `V3ListeQuiSecret` | Liste · depuis mon Secret Santa : « Celui qui m’a tiré » est choisi d’avance ; « Tous les membres » reste possible | 107 |
-| `V3ListeSecret` | Liste · la mienne, montrée seulement à celui qui m’a tiré : les anciennes « pistes de cadeaux » | 107 |
+| `V3ListeQuiSecret` | Liste · « Modifier » touché sur une liste montrée à celui qui m’a tiré : la barre déroulée | 107, 135 |
+| `V3ListeSecret` | Liste · la mienne, montrée seulement à celui qui m’a tiré ; sous mon prénom, le Secret Santa auquel ma partie est liée | 107, 135, 136 |
 | `V3ListeCompteCree` | Liste · sans compte, par son lien : le compte se crée tout seul à la première chose écrite, et on le dit | 107 |
 | `V3ListeAdresse` | Liste · arrivé par un lien copié, sans adresse email : on la demande au moment d’écrire sa liste ; pas de liste sans adresse | 107 |
-| `V3ListeQuiLien` | Liste · publique, « Modifier » touché : le lien, « Copier », le message qui l’accompagne, « Changer de lien » | 106 |
-| `V3ListeLienChanger` | Liste · publique, changer de lien : la conséquence avant le geste | 106 |
-| `V3ListeQuiModifier` | Liste · « Modifier » touché sur une liste dans deux fêtes : les mêmes cases, « Enregistrer » | 106 |
-| `V3ListeQuiRetirer` | Liste · retirer sa liste d’une fête : la conséquence avant le geste ; les cadeaux cochés restent prévus | 106 |
+| `V3ListeQuiLien` | Liste · publique, « Modifier » touché : la barre déroulée, le lien, son message, « Changer de lien » | 106, 135 |
+| `V3ListeLienChanger` | Liste · publique, changer de lien : la conséquence avant le geste, dans la barre déroulée | 106, 135 |
+| `V3ListeQuiModifier` | Liste · « Modifier » touché : la barre se déroule sur place, plus de panneau du bas ; le lien, les événements cochés, « Enregistrer » | 106, 135 |
+| `V3ListeQuiRetirer` | Liste · retirer sa liste d’un événement : la conséquence avant le geste, dans la barre déroulée | 106, 135 |
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |
 | `V3ListeFermee` | Liste · arriver par le lien sans être connecté, quand elle n’est pas publique | 106 |
 | `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit (un brouillon, une liste réservée à celui qui a tiré) | 106 |
 | `V3ListeInviter` | Liste · « Inviter quelqu’un » : par le lien de la liste, par une adresse email, ou en reprenant ceux d’un autre événement ; il devient membre de l’événement | 117 |
 | `V3ListePartageEmail` | Liste · l’email reçu par celui qu’on invite par son adresse | 117 |
+| `V3ListeAnneePassee` | Liste · celle d’une année passée : elle reste ouverte ; un bandeau dit de quelle année elle est, et mène à celle de cette année | 119 |
+| `V3ListeAideLien` | Liste · pour celui qui « aide à écrire » : « Le lien » déroule la barre, qui ne contient que le lien à copier | 135 |
+| `V3ListeSecretNouvelle` | Liste · créée depuis mon Secret Santa : j’y suis déjà, en premier ; sous mon prénom, le Secret Santa | 136 |
 | `V3ListeReprise` | Liste · reprise de l’an dernier : dans sa fête, les idées pas offertes marquées pour moi seul | 108 |
 | `V3Admin` | Administration · le tableau de bord : des fêtes, plus de « Demandes » ; les limites atteintes se surveillent ; « Suspendre les nouveaux Secret Santa » | 109 |
 | `V3AdminComptes` | Administration · les comptes : plus de demande à traiter ; un compte à sa limite de Secret Santa se voit | 109 |
@@ -66,7 +74,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `MenuAvatar`, `MenuAvatarOuvert` | L’icône du compte à la place du burger, et son menu | 103 |
 | `ProcheNaissance` | Les trois listes d’une date | 105 |
 | `ListeGroupeFil`, `ListeGroupeFilDeplie` | Le dessin d’une liste (Correction 30) | 106 |
-| `ListeAidePartage` | La barre du haut pour celui qui aide à tenir la liste : sans « Modifier » | 106 |
+| `ListeAidePartage` | La barre du haut pour celui qui aide à tenir la liste : repliée, avec « Le lien » à la place de « Modifier » | 106, 135 |
 | `RejoindreFerme` | Ce que voit celui qui ouvre le lien d’une fête complète | 105 |
 | `PistesDemander`, `PistesResultatVide`, `PistesResultatDemande`, `PistesEmail` | « Lui demander des idées », anonyme : la question, le résultat sans rien d’écrit, la demande envoyée, l’email reçu (les noms de fichiers sont restés) | 107 |
 | `ListeTeneurs`, `ListeTeneursNiveau`, `ListeInvitation` | « Aider à écrire » ou « Gérer la liste » : seul celui qui gère choisit qui la voit | 106 |
@@ -107,7 +115,7 @@ Elles ne décrivent plus rien de la V3. **Elles ne sont plus sur le canevas** de
 
 Les maquettes `Futur*` (des idées jamais planifiées) n'ont pas été touchées.
 
-**Neuf fichiers orphelins** sont encore dans le dépôt sans être sur le canevas, depuis avant la V3 : `AdminAcces`, `AdminAccesMenu`, `AdminPlusieursDemandes`, `AdminSansDemande`, `FeteAjouterListe`, `FetePartagee`, `FetePartageeAjoutee`, `Souhaits`, `SouhaitsVide`. Ils ne décrivent plus rien (des demandes, une exploration abandonnée, l'ancien écran des souhaits) et mènent à des maquettes supprimées. La conception ne les a pas supprimés parce qu'ils n'étaient pas dans la liste montrée à Julien : ticket 111.
+**Treize fichiers orphelins** (ni sur le canevas, ni cités par le code) sont à supprimer des deux dossiers, à la demande de Julien (Q-024, 22 novembre 2026) : `AdminAcces`, `AdminAccesMenu`, `AdminPlusieursDemandes`, `AdminSansDemande`, `FeteAjouterListe`, `FetePartagee`, `FetePartageeAjoutee`, `Souhaits`, `SouhaitsVide`, `ListeIdeeBulle`, `ListeIdeeBulleGras`, `ListeSansPersonneA`, `ListeSansPersonneB`. C'est Claude Code qui le fait, dans un commit ; l'historique Git les garde.
 
 ## Pas encore dessinées
 

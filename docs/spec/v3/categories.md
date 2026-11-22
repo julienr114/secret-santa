@@ -36,6 +36,8 @@ Trois formes derrière les catégories : « on s'offre tous » (un Secret Santa,
 
 L'écran « Pour quelle occasion ? » propose « Pour qui ? » parmi mes proches. Le nom devient « L'anniversaire de Zoé », la date sa date de naissance cette année.
 
+**L'événement retient ce proche** (`docs/decisions/2026-11-22-un-anniversaire-sait-pour-qui-il-est-fait.md`). Avec sa date de naissance, il dit son âge : « ses 4 ans » à côté de la date, « Ses 3 ans » pour une année passée, et « 7 cadeaux offerts à Zoé ». Pour moi-même, je lis « tes 40 ans » ; les autres lisent « ses 40 ans ». « Quelqu'un d'autre » ne retient personne, et l'événement ne dit pas d'âge. Si le proche est supprimé, l'événement garde son nom et perd l'âge.
+
 ## L'emoji et l'icône au trait
 
 L'emoji d'une catégorie est réservé à **un événement précise**. Quand on parle d'un Secret Santa ou d'une liste en général (le panneau « Créer », l'accueil d'un compte tout neuf), on montre une icône au trait dans un carré teinté.

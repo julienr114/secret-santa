@@ -65,14 +65,14 @@ Elle n'existe que si le jeu est activé, que le tirage est fait et que je partic
 
 **Titre** :
 
-- je tiens la liste (je l'ai créée, ou on m'a invité à la tenir) : **« Ma liste »** ;
+- je tiens la liste (je l'ai créée, ou on m'a invité à la tenir) : **« Ma liste de cadeaux »** (pas « Ma liste » tout court : Julien, 22 novembre 2026) ;
 - sinon **« La liste de »** suivi des prénoms de ceux pour qui elle est faite : un (« La liste de Mamie »), deux (« La liste de Léo et Zoé »), trois (« La liste de Léo, Zoé et Hugo »), au-delà « La liste de Léo, Zoé et 2 autres » ;
 - une liste sans personne (un mariage) : les prénoms de ceux qui la tiennent (« La liste de Karim et Sofia »).
 
 **Le texte, quand je la tiens**, en deux morceaux au plus :
 
 0. Si elle est en brouillon : **« Pas encore partagée »**, et rien d'autre.
-1. D'abord pour qui elle est : « Léo, Zoé et moi » (les mêmes règles que le titre, « moi » en dernier). Si elle n'est que pour moi : « 9 idées ». Si elle est vide : « Pas encore d'idées », et rien d'autre.
+1. D'abord pour qui elle est, avec « Pour » devant : « Pour Léo, Zoé et moi », « Pour Léo » (les mêmes règles que le titre, « moi » en dernier). C'est ce qui dit que je la tiens pour eux. Si elle n'est que pour moi : « 9 idées ». Si elle est vide : « Pas encore d'idées », et rien d'autre.
 2. Puis le premier de ces cas :
    - des cadeaux ont été cochés depuis ma dernière visite : « 2 cadeaux cochés » ● ;
    - elle est réservée à celui qui m'a tiré : « seul celui qui t'a tiré la voit » ;

@@ -32,6 +32,8 @@ Maquette : `V3TirageReglages`. Au-dessus du titre : « Famille Camille · Secret
 - **Devine qui** : « Pronostics » (aucun pronostic, « Qui m'offre ? », toutes les paires).
 - **Les messages** : « Mot ajouté aux messages ».
 - **M'écrire par email** : « Quelqu'un s'inscrit par le lien » ; « Tout le monde a découvert son tirage » ; « Rappel 3 jours avant le jour J », avec la liste de ceux qui n'ont pas encore ouvert.
+  - Ce que l'organisateur reçoit quand quelqu'un s'inscrit, en nouveauté comme en objet d'email : **« Hugo s'inscrit par le lien »**, au présent, avec le nom du Secret Santa entre parenthèses quand l'événement en a plusieurs cette année-là (« Hugo s'inscrit par le lien (Les adultes) »). Jamais « s'est inscrit » : l'application ne connaît pas le genre (Q-028).
+  - De même, la nouveauté de celui qu'on ajoute dit **« Camille t'ajoute au Secret Santa »**, au présent, jamais « t'a ajouté » (Q-030). La règle vaut pour toute nouveauté : le présent, quand le passé demanderait un accord.
 
 Ces réglages sont recopiés du Secret Santa précédent quand on prépare celui de l'année suivante.
 
@@ -76,19 +78,29 @@ Si la personne n'a rien écrit : « Lui demander des idées », anonyme, comme a
 
 Quand sa liste a bougé depuis ma dernière visite, la ligne de sa liste le dit : « 2 nouvelles idées depuis ta dernière visite » (`V3TirageNouvelles`).
 
-Plus bas, pour moi : une ligne **« Ma liste de cadeaux »**, avec son état (« Vue seulement par celui qui m'a tiré »).
+Plus bas, pour moi : une ligne **« Ma liste de cadeaux »**, avec son état (« Pas encore écrite », « Vue seulement par celui qui m'a tiré »…). Sans liste encore, la toucher la crée avec moi dedans, ou propose celles que je tiens déjà : « Quelle liste pour ton Secret Santa ? » (`V3TirageQuelleListe` ; `listes.md`, « Depuis mon Secret Santa »).
 
 Hors d'un événement de catégorie Noël, la page ne dit jamais « Père Noël » (`vocabulaire.md`).
 
 ## Du résultat à la liste
 
-Maquette : `V3ListeSurligne` (le nom du fichier est resté ; il n'y a pas de surlignage).
+Maquettes : `V3ListeSurligne` (le nom du fichier est resté ; il n'y a pas de surlignage), `V3ListeSurligneTout`.
 
-Celui qui m'a tiré arrive sur **la liste entière**, et **la page s'ouvre calée sur ma partie** : mon prénom en haut de l'écran, juste sous la barre du mode anonyme, déjà activé. Rien d'autre : ni fond, ni phrase.
+Décision : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md`. Ce qui suit remplace « la page s'ouvre calée sur ma partie ».
+
+Celui qui m'a tiré ouvre la liste **en gros plan sur ma partie** : la liste avec son titre et son mot d'accueil, mais **une seule personne, moi**. Le mode anonyme est déjà activé.
+
+- **En haut, deux choix**, dans le composant à deux choix de l'application (`UiSegmented`) : **mon prénom** (« Inès »), choisi d'avance, et **« Toute la liste »**. C'est ce qui dit qu'on ne regarde qu'une partie, et ce qui montre le reste.
+- **« Toute la liste »** montre tout le monde, **moi en premier**, puis les autres dans leur ordre.
+- « Gros plan » est le nom de cette vue dans la spec et dans le code ; l'écran ne l'écrit pas.
+- Celui qui a le droit d'ouvrir la liste autrement (un membre de l'événement, par exemple) et qui y arrive depuis sa carte de résultat a le même gros plan. Arrivé par un autre chemin, il voit la liste entière, sans les deux choix.
+- La page ne dit jamais « tu as tiré Inès » : le résultat reste sur la page du Secret Santa.
 
 ## Les objets des emails
 
 L'objet d'un email nomme l'événement : « Famille Camille : ton enveloppe t'attend ». Quand l'événement a plusieurs Secret Santa la même année, il ajoute le nom du Secret Santa entre parenthèses : « Famille Camille (les enfants) : ton enveloppe t'attend ». Le mot « Secret Santa » n'a pas besoin d'être dans l'objet.
+
+L'invitation à tenir une liste n'est pas un email de Secret Santa : son objet reste « Camille t'invite à tenir la liste « Noël 2026 » », avec le titre de la liste. Ce titre est le nom de l'occasion tant qu'on ne l'a pas changé ; on ne met pas le nom de l'événement devant (Q-023).
 
 ## Ce qui disparaît
 

@@ -26,6 +26,15 @@ Vaut pour les écrans, les emails, les notifications, le journal et l'administra
 
 « Tirage fait », « On fait le tirage dimanche », « tant que le tirage n'a pas eu lieu », « Tout le monde a découvert son tirage », « tirer au sort ».
 
+## « Liste de cadeaux », en toutes lettres
+
+Décidé par Julien le 22 novembre 2026 : « Une liste » et « Ma liste » ne disaient ni une liste de quoi, ni pour qui.
+
+- Dans « Créer » : **« Une liste de cadeaux »**.
+- Le titre de la ligne d'une liste que je tiens, sur l'accueil et sur la page d'un événement : **« Ma liste de cadeaux »**, et dessous **« Pour Léo, Zoé et moi »** (`lignes.md`).
+- La liste de quelqu'un d'autre reste « La liste de Camille » : le prénom dit déjà de quoi on parle.
+- Les boutons gardent leur forme courte là où le contexte le dit (« Nouvelle liste » sous « Les listes », « Écrire ma liste »).
+
 ## « Secret Santa » partout, « Père Noël » seulement à Noël
 
 - « Secret Santa » est le nom de la chose, même pour un week-end d'été.
@@ -47,6 +56,8 @@ Les écrans sont les mêmes ; chaque texte a sa variante sans « Père Noël » 
 | Joyeux Noël ! (la même image, pour un organisateur qui ne joue pas) | Merci à tous ! |
 
 Sur cette dernière image, « C'est tout pour cette année » devient « C'est tout » dans un événement qui ne revient pas chaque année, quelle que soit sa catégorie (Q-016).
+
+La même règle vaut pour toute phrase du palmarès qui promet une année suivante. Dans un événement qui ne revient pas, « Tu n'avais pas fait de pronostic. L'an prochain ? » devient « Tu n'avais pas fait de pronostic. » (Q-027).
 
 ## « Événement », le moins possible
 

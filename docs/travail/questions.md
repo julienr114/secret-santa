@@ -4,7 +4,32 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-020 — Une liste n'a pas d'année en base : je la range dans l'année de sa date. Faut-il une colonne ? (ticket 108)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. L'année d'un événement a bien sa ligne en base depuis le ticket 101 (`party_years`), et ses Secret Santa y sont rattachés (`secret_santas.year_id`). Une liste, elle, n'est rattachée qu'à ses événements (`gift_lists.party_id`, `gift_list_parties`), pas à une année. En attendant, **pas de migration** : une liste appartient à l'année de sa date (`gift_lists.event_date`, sinon sa date de création). Toute liste faite pour un événement prend la date de son année ; je l'ai corrigé pour qu'une liste faite en janvier pour un événement qui revient prenne la date de l'année qui vient, et non celle de l'année finie.
+- **Ce qu'on a trouvé** : `docs/spec/v3/modele.md`, « L'année » : « Événement (permanent) → l'année de l'événement → ses Secret Santa et ses listes ». Le compte rendu du ticket 101 : « L'archivage des années passées attend le ticket 108 […] Je n'ajoute pas de colonne pour lui maintenant. » En local, toutes les listes ont une date.
+- **Les choix** :
+  - A. Garder la date de la liste (rien à migrer). Une liste dont on change la date à la main change d'année.
+  - B. Une colonne `gift_lists.year_id` (migration 0039), remplie depuis la date. Plus juste pour une liste partagée dans deux événements aux dates différentes, mais une table de plus à tenir à chaque création et à chaque partage.
+- **Ce que je ferais** : A tant qu'aucun cas réel ne la contredit.
+
+### Q-021 — Une liste d'une année passée devient-elle en lecture seule partout ? (ticket 108)
+
+- **Pour** : Julien, puis la conception s'il faut une maquette
+- **Ce qui bloque** : rien. « Une année passée ne se modifie par aucune route » est fait pour l'année et ses Secret Santa : tout ce qui écrit (côté organisateur et côté participant) répond « Cette année est finie », sauf clôturer et dévoiler, que le ticket laisse inchangés. Les listes de l'année, elles, gardent leurs règles d'aujourd'hui : la page de l'année passée ne montre aucun geste, mais la ligne d'une liste ouvre la liste comme avant, où l'on peut encore écrire et cocher.
+- **Ce qu'on a trouvé** : `docs/spec/v3/fete.md`, « Une année passée » : « Les listes de l'année, en lecture seule. » Aucune maquette ne montre une liste en lecture seule pour celui qui la tient, et une liste peut être dans plusieurs événements. Cocher après coup ce qu'on a offert compte dans « Tu as offert 3 cadeaux ».
+- **Les choix** :
+  - A. La liste d'une année passée ne se modifie plus nulle part : ni idée, ni coche, ni partage (une maquette du document en lecture seule, pour celui qui la tient et pour les autres).
+  - B. Comme aujourd'hui : seule la page de l'année passée est en lecture seule.
+- **Ce que je ferais** : A, avec sa maquette ; B en attendant, déjà en place.
+
+### Q-022 — « Ses 3 ans » : rien ne dit pour qui un événement est fait (ticket 108)
+
+- **Pour** : la conception
+- **Ce qui bloque** : le titre d'une année passée d'un anniversaire. `docs/spec/v3/lignes.md` : « pour un événement fait pour un proche dont on connaît la naissance, « Ses 3 ans » » ; `V3FeteAnniversaire` montre « Ses 3 ans » et « 7 cadeaux offerts à Zoé ». Or un événement ne garde pas pour qui il est fait (la catégorie remplit la date depuis la naissance, puis le lien se perd). En attendant, le titre est le nom de l'année, comme pour Noël : « Anniversaire 2025 ».
+- **Les choix** : A, garder le nom de l'année ; B, retenir sur l'événement le proche pour qui il est fait (une colonne, une migration, et le choix du proche à la création).
+- **Ce que je ferais** : A pour la V3 ; B se décide avec « Bientôt », qui crée déjà l'anniversaire d'un proche.
 
 
 ## Réponses

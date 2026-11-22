@@ -48,12 +48,12 @@ const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
 
 test.beforeAll(async ({ playwright, baseURL }) => {
   // Hugo has an account before anything happens: news are for accounts.
-  const hugo = await playwright.request.newContext({ baseURL });
-  await apiLogin(hugo, HUGO);
+  const hugoApi = await playwright.request.newContext({ baseURL });
+  await apiLogin(hugoApi, HUGO);
   await ok(
-    await hugo.put('/api/auth/profile', { data: { firstName: 'Hugo' } }),
+    await hugoApi.put('/api/auth/profile', { data: { firstName: 'Hugo' } }),
   );
-  await hugo.dispose();
+  await hugoApi.dispose();
   state.camille = await playwright.request.newContext({ baseURL });
   await apiLogin(camille(), CAMILLE);
   await ok(

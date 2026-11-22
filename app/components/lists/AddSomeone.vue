@@ -13,7 +13,7 @@ import {
 // name touched joins the list with their ideas nobody gave last time
 // (nothing says so under the pills: Julien, 19 November 2026).
 // Someone added by mistake goes from here (Correction 24, maquettes
-// ListeNouvelle, ProcheSupprime): the pill of a person who is on none of
+// V3ListeNouvelle, ProcheSupprime): the pill of a person who is on none of
 // my lists is cut in two, the first name adds, the cross deletes them
 // from « Mes proches », at once and with « Annuler ». Under the pills,
 // the way to the page « Mes proches ».
@@ -22,7 +22,7 @@ const props = defineProps<{
   family: ListDocument['family'];
   onList: ListDocument['people'];
   /**
-   * « Une liste sans personne » (lot 27 bis, maquettes ListeNouvelle,
+   * « Une liste sans personne » (lot 27 bis, maquettes V3ListeNouvelle,
    * ListeSansPersonne). In an empty document, one more pill makes the
    * list one. Under such a list the block is a single pill, « Une
    * personne », which opens the usual choice: the first person added

@@ -2,7 +2,7 @@
 import { randomListIcon } from '#server/utils/lists';
 import { useCreateListMutation } from '~/composables/queries/useLists';
 
-// « Nouvelle liste » (README 22.19, maquette ListeNouvelle): no form, no
+// « Nouvelle liste » (README 22.19, maquette V3ListeNouvelle): no form, no
 // « Créer » button. A draft is made at once and its document opens. From
 // an event (`?pour=`, ticket 106), it takes the event's name, date and
 // icon; otherwise an icon drawn at random, the cursor in its name, and

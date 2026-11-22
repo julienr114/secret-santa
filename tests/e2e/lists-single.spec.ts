@@ -2,7 +2,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { apiLogin, hydrated } from './helpers';
 
 // « Une liste sans personne » (lot 27 bis, README 22.20, maquettes
-// ListeNouvelle, ListeSansPersonne, ListeSansPersonneVisiteur): for a
+// V3ListeNouvelle, ListeSansPersonne, ListeSansPersonneVisiteur): for a
 // wedding, a housewarming, the ideas one under the other, without a part
 // by person. A pill in the empty document makes the list one; the first
 // person added later takes the ideas already written; once shared its

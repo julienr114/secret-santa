@@ -14,9 +14,9 @@ Les maquettes périmées ont été supprimées par la conception le 20 novembre 
 
 ## À faire
 
-- [ ] `docs/refonte/ECARTS-MAQUETTES.md` cite encore `PistesListe`, `PistesListeChoisir` et `ListeNouvelle` : dire ce qui les remplace, ou retirer la ligne.
+- [x] `docs/refonte/ECARTS-MAQUETTES.md` cite encore `PistesListe`, `PistesListeChoisir` et `ListeNouvelle` : dire ce qui les remplace, ou retirer la ligne.
 - [ ] Supprimer, si Julien est d'accord, les neuf fichiers orphelins listés dans `docs/spec/v3/maquettes.md` (dans `maquettes/` et `maquettes-sorbet/`).
-- [ ] Chercher dans `docs/ARBORESCENCE.md`, les commentaires du code et les tests un nom de la liste des périmées.
+- [x] Chercher dans `docs/ARBORESCENCE.md`, les commentaires du code et les tests un nom de la liste des périmées.
 - [ ] Quatre fichiers ne sont que dans le dépôt, sans être sur le canevas ni dans l'index : `ListeIdeeBulle`, `ListeIdeeBulleGras`, `ListeSansPersonneA`, `ListeSansPersonneB`. Les supprimer avec les neuf, si Julien est d'accord.
 
 ## Hors périmètre

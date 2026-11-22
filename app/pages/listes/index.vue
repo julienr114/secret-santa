@@ -4,8 +4,8 @@ import { formatEventDate } from '#server/utils/rules';
 import type { ListCard } from '#server/http/lists';
 import { useListsQuery } from '~/composables/queries/useLists';
 
-// The « Listes » tab (README 22.19, maquettes ListesAccueil and
-// ListesVide): one run of cards by date, mine and those sent to me mixed;
+// The « Listes » tab (README 22.19; its maquettes are gone, V3Accueil
+// takes its place, docs/spec/v3/navigation.md): one run of cards by date, mine and those sent to me mixed;
 // on each, who holds it, the tile, the name, the day, « Pour » and the
 // icons of those who receive, then what I give there. Then « Passées ».
 // Without a list, a card that says what lists are for.

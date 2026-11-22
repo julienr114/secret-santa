@@ -35,7 +35,7 @@ import {
 import type { DropPlace, Lifted } from '~/composables/useListDrag';
 
 // The document of a list, for the one who holds it (README 22.19,
-// maquettes ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
+// maquettes V3ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
 // document, not a form: the bar of its sharing on top, its stage and its
 // link (ListsShareBar, ticket 106); then its square tile, its name, its
 // day, the word for the family, the people and their ideas, « Ajouter

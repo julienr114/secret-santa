@@ -3,7 +3,7 @@ import type { ListDocument } from '#server/http/lists';
 import { LIST_NOTE_MAX } from '#server/utils/lists';
 import { useUpdateListMutation } from '~/composables/queries/useLists';
 
-// The word for the family (README 22.19, maquettes ListeNouvelle and
+// The word for the family (README 22.19, maquettes V3ListeNouvelle and
 // ListeTeneur): the starting text in a dashed frame while untouched,
 // the holder's own text once changed, nothing once erased. Touched, it
 // is written in place; it is saved when the field is left.

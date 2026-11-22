@@ -167,7 +167,6 @@ export default {
     message: 'The message that goes with the link',
     changeLink: 'Change the link',
     save: 'Save',
-    saved: 'Sharing saved',
     renew: {
       title: 'Change the link?',
       body: 'The old link will stop working: you will have to send the new one. Those who already ticked a gift keep the list.',

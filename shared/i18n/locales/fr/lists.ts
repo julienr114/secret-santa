@@ -169,7 +169,6 @@ export default {
     message: 'Le message qui accompagne le lien',
     changeLink: 'Changer de lien',
     save: 'Enregistrer',
-    saved: 'Partage enregistré',
     renew: {
       title: 'Changer de lien ?',
       body: 'L’ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste.',

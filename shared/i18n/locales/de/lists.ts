@@ -170,7 +170,6 @@ export default {
     message: 'Die Nachricht zum Link',
     changeLink: 'Link ändern',
     save: 'Speichern',
-    saved: 'Freigabe gespeichert',
     renew: {
       title: 'Link ändern?',
       body: 'Der alte Link funktioniert nicht mehr: Du musst den neuen schicken. Wer schon ein Geschenk abgehakt hat, behält die Liste.',

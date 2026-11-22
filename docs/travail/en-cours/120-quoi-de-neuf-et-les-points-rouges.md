@@ -3,7 +3,7 @@
 - **Dépend de** : 105, 106, 107
 - **Avec** : 112
 - **Migration** : oui (les nouveautés)
-- **Maquettes** : `V3QuoiDeNeuf`, `V3Accueil`, `V3AccueilJeu`, `NotifListe`
+- **Maquettes** : `V3QuoiDeNeuf`, `V3ChargementQuoiDeNeuf`, `V3Accueil`, `V3AccueilJeu`, `NotifListe`
 
 > **À faire d'un seul tenant avec le ticket 112** (Julien, 21 novembre 2026) : les points rouges des lignes et la page « Quoi de neuf » comptent la même chose, ce qui est nouveau depuis ma dernière visite. Un seul calcul, une seule table, deux tickets déplacés ensemble.
 

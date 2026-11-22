@@ -47,7 +47,8 @@ test('a birthday party comes filled, and is created with its people', async ({
     /Anniversaire · tous les ans/,
   );
   await expect(page.getByTestId('party-members')).toContainText('1 membre');
-  await expect(page.getByTestId('party-members')).toContainText('Inviter');
+  // The event has no link: the line opens « Membres » (ticket 116).
+  await expect(page.getByTestId('party-members')).not.toContainText('Inviter');
   // A party « pour quelqu'un »: its list first, then a Secret Santa.
   await expect(page.getByTestId('party-lists')).toContainText('Sa liste');
   await expect(page.getByTestId('party-lists')).toContainText(
@@ -75,9 +76,8 @@ test('its settings are only its own', async ({ page }) => {
   await expect(
     page.getByRole('link', { name: /^Réglages du Secret Santa/ }),
   ).toHaveCount(0);
-  await expect(page.getByTestId('notifications')).toContainText(
-    'Quelqu’un rejoint l’événement par le lien',
-  );
+  // « Quelqu'un s'inscrit par le lien » is a setting of a Secret Santa.
+  await expect(page.getByTestId('notifications')).toHaveCount(0);
   // Once a year no more: the date says so.
   await settings.getByRole('switch').click();
   await expect(settings).toContainText('Le 14 décembre');

@@ -93,9 +93,10 @@ test('an edition without participants says to add them', async ({ page }) => {
   await expect(
     card.getByRole('link', { name: 'Ajouter des participants' }),
   ).toBeVisible();
+  // The link of this Secret Santa (ticket 116).
   await expect(
     card.getByRole('link', { name: 'Inviter par lien' }),
-  ).toBeVisible();
+  ).toHaveAttribute('href', /\/editions\/[^/]+\/invitation$/);
   await expect(page.getByText('Personne pour l’instant.')).toBeVisible();
 });
 
@@ -169,14 +170,17 @@ test('a large group folds its lists, before and after the draw', async ({
   await apiLogin(page.request, SUPER);
 
   // Full at 30 (V3FeteMembresComplet): the server refuses the thirty-first,
-  // the page says so, and the link is paused by itself.
+  // the page says so, and the link of its Secret Santa is paused by itself
+  // (ticket 116).
   const more = await state.api!.post(`${at}/persons`, {
     data: { firstName: 'Trente-et-un' },
   });
   expect(more.status()).toBe(409);
   expect((await more.json()).statusMessage).toBe('too_many_members');
   const { inviteCode } = await (
-    await state.api!.post(`${at}/invite`, { data: { open: true, places: 5 } })
+    await state.api!.post(`${at}/editions/${id}/invite`, {
+      data: { open: true, places: 5 },
+    })
   ).json();
   expect(
     (await (await page.request.get(`/api/invite/${inviteCode}`)).json()).closed,
@@ -190,9 +194,6 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(
     page.getByRole('link', { name: 'Ajouter une personne' }),
   ).toHaveCount(0);
-  await expect(page.getByTestId('invite-row')).toContainText(
-    'En pause · l’événement est complet',
-  );
 
   await page.goto(`/admin/cas-grand/editions/${id}`);
   await hydrated(page);

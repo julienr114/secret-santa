@@ -47,32 +47,37 @@ test('the three emails are on by default and can be turned off', async ({
   page,
 }) => {
   await loginAsSuper(page, SUPER);
-  // The email of the party on its settings, those of the draw on the
-  // settings of its Secret Santa (ticket 105).
+  // All three are settings of the Secret Santa (ticket 116): « Quelqu'un
+  // s'inscrit par le lien » first, the event keeps none.
   await page.goto(`/admin/${SLUG}/editions/${state.editionId}/reglages`);
   await hydrated(page);
-  await expect(
-    page
-      .getByTestId('notifications')
-      .getByRole('switch', { name: 'Rappel 3 jours avant le jour J' }),
-  ).toBeChecked();
-  await page.goto(`/e/${SLUG}/reglages`);
-  await hydrated(page);
   const section = page.getByTestId('notifications');
+  await expect(
+    section.getByRole('switch', { name: 'Rappel 3 jours avant le jour J' }),
+  ).toBeChecked();
   const joined = section.getByRole('switch', {
-    name: 'Quelqu’un rejoint l’événement par le lien',
+    name: 'Quelqu’un s’inscrit par le lien',
   });
   await expect(joined).toBeChecked();
   // A switch saves as soon as it is turned: no « Enregistrer ».
   const saved = page.waitForResponse(
-    (r) => r.url().endsWith('/rules') && r.request().method() === 'PATCH',
+    (r) =>
+      r.url().endsWith(`/editions/${state.editionId}`) &&
+      r.request().method() === 'PATCH',
   );
   await joined.click();
   await saved;
   await expect(joined).not.toBeChecked();
-  const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
+  const { rules } = await (
+    await page.request.get(`${ADMIN}/editions/${state.editionId}`)
+  ).json();
   expect(rules.notifyJoined).toBe(false);
   expect(rules.notifyReminder).toBe(true);
+  await page.goto(`/e/${SLUG}/reglages`);
+  await hydrated(page);
+  await expect(page.getByText('Quelqu’un s’inscrit par le lien')).toHaveCount(
+    0,
+  );
 });
 
 test('the morning task reminds once, a few days before the exchange', async ({

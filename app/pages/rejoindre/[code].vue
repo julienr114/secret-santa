@@ -128,11 +128,13 @@ const closed = computed(() => {
 
 <template>
   <AuthScreen>
-    <USkeleton
+    <!-- Its shape while it loads (regles-d-ecran.md), not a grey block. -->
+    <UiSkeleton
       v-if="invite.isPending.value"
-      class="h-48 rounded-2xl bg-skeleton"
-      aria-busy="true"
-      :aria-label="t('common.loading')"
+      :parts="['title', 'card']"
+      :rows="2"
+      :label="t('common.loading')"
+      class="pt-6"
     />
 
     <div

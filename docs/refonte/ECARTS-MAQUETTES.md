@@ -19,6 +19,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | (pas de maquette) | « Par son adresse email » est une page : « Son prénom », « Son adresse email », « Inviter ». Une adresse déjà membre de l'événement est refusée : « la liste lui est ouverte ». | Seul |
 | `V3ListePartageEmail` | Comme les autres emails : le lien est écrit en entier sous « Voir la liste : » (pas de bouton), et le pied n'a pas encore « Ne plus recevoir d'emails », « Signaler » ni « Ce que l'application fait de tes données » (tickets 130 et 132). | Seul (les autres emails) |
 | `V3ListeFermee`, `V3ListeFermeeConnecte` | Connecté, quand le lien fait entrer dans l'événement de la liste, la page montre le squelette de la liste le temps d'y entrer, puis la liste. | Seul |
+| `V3FeteRejoindre` | Pendant qu'elle charge, la page du lien d'un Secret Santa montre un squelette à sa forme (le titre, une carte) au lieu d'un bloc gris (noté par le ticket 114). | Seul (`regles-d-ecran.md`) |
 | `V3QuoiDeNeuf` | « Camille t'ajoute au Secret Santa », au présent, et non « Camille t'a ajouté » : l'application ne connaît pas le genre (Q-030). « Camille a partagé sa liste avec toi » tel quel. | Seul (Q-028) |
 
 ## Le lien d'invitation d'un Secret Santa (V3, ticket 116)

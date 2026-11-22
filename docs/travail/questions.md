@@ -4,7 +4,21 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-034 — Le mot de la bascule : à qui, et que dire à ceux qui n'ont pas de compte ? (ticket 113)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien avant la bascule ; le choix de qui reçoit l'email du lendemain, le jour où Julien le lance. En attendant :
+  - **le mot en tête de « Quoi de neuf »** va à tous les comptes créés avant la bascule (la règle du ticket 120, « les comptes créés avant une date »), qu'ils aient ou non un Secret Santa en cours ; la phrase sur le lien, à ceux qui tenaient une liste partagée par lien avant la bascule ;
+  - **l'email** (`pnpm v3:mot`) part seulement aux **comptes** créés avant la bascule, non désactivés, qui ont un Secret Santa pas clôturé (y participent par leur adresse ou l'organisent) ou une liste dont le jour n'est pas passé.
+- **Ce qu'on a trouvé** :
+  - Le ticket 113 : « à ceux qui ont un Secret Santa ou une liste en cours » ; la décision du 21 novembre : « Un mot à ceux qui sont au milieu d'un Secret Santa ».
+  - Le mot dit « Tes pistes de cadeaux sont devenues ta liste ». C'est vrai pour un participant **avec un compte** (0038). Pour un participant **sans compte**, `migration.md` dit que rien n'est créé à sa place : ses pistes restent en lecture seule, et il devra donner son adresse pour écrire une liste (`V3ListeAdresse`). La phrase serait fausse pour lui.
+  - Un participant sans compte n'a pas de langue enregistrée, et l'email ne pourrait que pointer l'accueil (son lien personnel est chiffré).
+- **Les choix** :
+  - A. Comme en attendant : le mot à tous les comptes d'avant, l'email aux seuls comptes avec un Secret Santa ou une liste en cours ; les participants sans compte ne reçoivent rien (ils retrouvent leur page par leur lien, inchangé).
+  - B. L'email aussi aux participants sans compte d'un Secret Santa en cours, avec un autre texte (sans « Tes pistes sont devenues ta liste »), qu'il faudrait écrire, et leur lien personnel, que seul le serveur peut déchiffrer (un envoi depuis l'application, pas un script).
+  - C. Le mot de « Quoi de neuf » seulement aux comptes qui ont un Secret Santa ou une liste en cours, comme l'email.
+- **Ce que je ferais** : A. Ceux qui n'ont pas de compte n'ont rien perdu, et leur lien marche encore ; leur écrire demanderait un texte et un envoi qui n'existent pas.
 
 ## Réponses
 

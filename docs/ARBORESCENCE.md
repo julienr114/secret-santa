@@ -221,7 +221,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
-| La liste (le document) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | « Qui verra ta liste ? » (« Partager », « Modifier ») et ses confirmations (retirer, changer de lien), l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
+| La liste (le document ; sa barre du haut se déroule sur place, sans panneau : l'adresse, « Qui verra ta liste ? » et ses confirmations, ticket 135) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |

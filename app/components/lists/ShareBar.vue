@@ -2,12 +2,14 @@
 import type { ListDocument } from '#server/http/lists';
 
 // The bar on top of a list (docs/spec/v3/listes.md, « La barre du haut
-// d'une liste », V3ListeNouvelle, V3Liste, V3ListePublique): it says the
-// stage of the sharing, and it always has the link. Two rows: the stage
-// with its button (« Partager » on a draft, « Modifier » after), then the
-// address with « Copier le lien ». Who « aide à écrire » has no button,
-// and reads who chose (ListeAidePartage). The bar stays stuck under the
-// top bar while the list scrolls.
+// d'une liste »): folded, one row, the stage of the sharing and a button
+// (« Partager » on a draft, « Modifier » after, « Le lien » for who « aide
+// à écrire », who reads who chose: ListeAidePartage). The button unrolls
+// it where it is, pushing the list down: the address with « Copier le
+// lien », then « Qui verra ta liste ? » for who manages the list
+// (V3ListeQui…, V3ListeAideLien). It stays stuck under the top bar, its
+// content scrolls when taller than the screen; « Fermer » or Échap folds
+// it without changing anything.
 const props = defineProps<{
   doc: ListDocument;
   readonly?: boolean;
@@ -55,7 +57,32 @@ const url = computed(() =>
     ? `${window.location.origin}/l/${props.doc.list.shareToken}`
     : '',
 );
-const editing = ref(false);
+const open = ref(false);
+const contentId = useId();
+const toggle = useTemplateRef<HTMLButtonElement>('toggle');
+const content = useTemplateRef<HTMLElement>('content');
+const label = computed(() => {
+  if (open.value) return t('lists.sharing.close');
+  if (props.readonly) return t('lists.sharing.theLink');
+  return sharing.value.stage === 'draft'
+    ? t('lists.sharing.share')
+    : t('lists.sharing.edit');
+});
+
+/**
+ * Unrolls or folds the bar: the focus goes into it, then back to its
+ * button.
+ * @param on - Unrolled.
+ * @returns Once the focus has moved.
+ */
+const setOpen = async (on: boolean) => {
+  open.value = on;
+  await nextTick();
+  (on
+    ? content.value?.querySelector<HTMLElement>('button, a')
+    : toggle.value
+  )?.focus();
+};
 
 // « Copier le lien » answers where it was touched: « Copié », for a moment.
 const copied = ref(false);
@@ -73,58 +100,63 @@ const onCopy = async () => {
 
 <template>
   <div
-    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 flex flex-col gap-1.5 rounded-[24px] bg-default pt-1.5 pr-2 pb-2 pl-3.5 shadow-card ring-1 ring-default"
+    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 flex max-h-[calc(100dvh-3.5rem-env(safe-area-inset-top)-1rem-var(--tab-bar)-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-[24px] bg-default shadow-card ring-1 ring-default"
     data-testid="share-bar"
+    @keydown.esc="open && setOpen(false)"
   >
-    <div class="flex min-h-11 items-center gap-2.5">
-      <UIcon
-        :name="icon"
-        class="size-5 shrink-0"
-        :class="sharing.stage === 'draft' ? 'text-toned' : 'text-success'"
-      />
+    <div
+      class="flex min-h-13 shrink-0 items-center gap-2.5 pr-2 pl-3.5"
+      :class="{ '-mb-1.5': open }"
+    >
+      <UIcon :name="icon" class="size-5 shrink-0 text-success" />
       <span class="flex min-w-0 grow flex-col" data-testid="share-stage">
         <span class="truncate text-sm font-bold">{{ title }}</span>
         <span class="text-[13px] leading-[1.3] text-toned">{{ subtitle }}</span>
       </span>
       <button
-        v-if="!readonly"
+        ref="toggle"
         type="button"
         class="flex h-9 shrink-0 items-center rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
+        :aria-expanded="open"
+        :aria-controls="contentId"
         data-testid="share-open"
-        @click="editing = true"
+        @click="setOpen(!open)"
       >
-        {{
-          sharing.stage === 'draft'
-            ? t('lists.sharing.share')
-            : t('lists.sharing.edit')
-        }}
+        {{ label }}
       </button>
     </div>
     <div
-      class="flex items-center gap-2.5 rounded-[18px] bg-muted py-1.5 pr-1.5 pl-3"
+      v-if="open"
+      :id="contentId"
+      ref="content"
+      class="flex min-h-0 flex-col gap-2.5 overflow-y-auto overscroll-contain pt-2.5 pb-2"
+      data-testid="share-content"
     >
-      <span
-        class="min-w-0 grow truncate text-sm font-semibold"
-        data-testid="share-link"
-        >{{ url.replace(/^https?:\/\//, '') }}</span
+      <div
+        class="mx-2 flex shrink-0 items-center gap-2.5 rounded-[18px] bg-muted py-1.5 pr-1.5 pl-3"
       >
-      <button
-        type="button"
-        class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
-        data-testid="copy-link"
-        @click="onCopy"
-      >
-        <span aria-live="polite">{{
-          copied ? t('lists.share.copied') : t('lists.sharing.copyLink')
-        }}</span>
-      </button>
+        <span
+          class="min-w-0 grow truncate text-sm font-semibold"
+          data-testid="share-link"
+          >{{ url.replace(/^https?:\/\//, '') }}</span
+        >
+        <button
+          type="button"
+          class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
+          data-testid="copy-link"
+          @click="onCopy"
+        >
+          <span aria-live="polite">{{
+            copied ? t('lists.share.copied') : t('lists.sharing.copyLink')
+          }}</span>
+        </button>
+      </div>
+      <ListsSharingPanel
+        v-if="!readonly"
+        :list-id="doc.list.id"
+        :draft="sharing.stage === 'draft'"
+        @done="setOpen(false)"
+      />
     </div>
-    <ListsSharingSheet
-      v-if="!readonly"
-      v-model:open="editing"
-      :list-id="doc.list.id"
-      :draft="sharing.stage === 'draft'"
-      :url="url"
-    />
   </div>
 </template>

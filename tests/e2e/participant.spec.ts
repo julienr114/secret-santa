@@ -188,6 +188,22 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
     'Seul celui qui t’a tiré la voit',
   );
   await expect(page.getByTestId('list-title')).toHaveValue('Famille Lutins');
+  // « Modifier » unrolls the bar: « Celui qui m’a tiré » is chosen, in the
+  // two-choice control; « Fermer » folds it without changing anything.
+  await page.getByTestId('share-open').click();
+  const sharing = page.getByTestId('sharing-panel');
+  await expect(
+    sharing.getByRole('radio', { name: 'Celui qui m’a tiré' }),
+  ).toBeChecked();
+  await sharing.getByText('Tous les membres').click();
+  await expect(
+    sharing.getByRole('radio', { name: 'Tous les membres' }),
+  ).toBeChecked();
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await expect(sharing).toHaveCount(0);
+  await expect(page.getByTestId('share-stage')).toContainText(
+    'Seul celui qui t’a tiré la voit',
+  );
   const listId = page.url().split('/listes/')[1] ?? '';
   // Her account keeps the face she had in the Secret Santa: 🦊 on frost.
   const family = await ok(await page.request.get('/api/family'));

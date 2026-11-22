@@ -156,7 +156,7 @@ test('shared in two events: their members get in, nobody else, the same ticks', 
   await page.goto(`/listes/${state.listId}`);
   await hydrated(page);
   await page.getByTestId('share-open').click();
-  const sharing = page.getByRole('dialog', { name: 'Qui verra ta liste ?' });
+  const sharing = page.getByTestId('sharing-panel');
   await expect(sharing).toContainText('Noël · 2 membres');
   await sharing.getByTestId(`sharing-event-${state.family}`).check();
   await sharing.getByTestId(`sharing-event-${state.granny}`).check();
@@ -220,21 +220,24 @@ test('narrowing says first how many who ticked lose it; their ticks stay', async
   await page.goto(`/listes/${state.listId}`);
   await hydrated(page);
   await page.getByTestId('share-open').click();
-  const sharing = page.getByRole('dialog', { name: 'Qui verra ta liste ?' });
+  const sharing = page.getByTestId('sharing-panel');
   await sharing.getByTestId(`sharing-event-${state.family}`).click();
   // Hugo ticked in « Famille Partage »… and so did Tom, who stays in
   // through « Chez Mamie »: only Hugo would lose it. Taking « Chez Mamie »
   // too, both would.
-  const narrow = page.getByRole('dialog', {
+  const narrow = page.getByRole('alertdialog', {
     name: `Retirer ta liste de « ${FAMILY} » ?`,
   });
   await expect(narrow).toContainText('Son membre ne la verra plus.');
+  // In the unrolled bar, in the place of what follows: no button meanwhile.
+  await expect(sharing.getByTestId('sharing-save')).toHaveCount(0);
+  await expect(sharing.getByTestId('sharing-everyone')).toHaveCount(0);
   await expect(narrow).toContainText(
     '1 d’entre eux a coché un cadeau et ne pourra plus ouvrir la liste.',
   );
   await narrow.getByRole('button', { name: 'Retirer' }).click();
   await sharing.getByTestId(`sharing-event-${state.granny}`).click();
-  const narrowGranny = page.getByRole('dialog', {
+  const narrowGranny = page.getByRole('alertdialog', {
     name: `Retirer ta liste de « ${GRANNY} » ?`,
   });
   await expect(narrowGranny).toContainText('Ses 2 membres ne la verront plus.');

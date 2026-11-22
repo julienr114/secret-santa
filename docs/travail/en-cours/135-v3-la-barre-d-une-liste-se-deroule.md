@@ -15,17 +15,17 @@ Retour de Julien, 22 novembre 2026, après avoir essayé : la barre prend trop d
 
 ## À faire
 
-- [ ] **Repliée** : une ligne (l'icône, le stade, sa phrase, le bouton). Plus de ligne d'adresse. Elle reste collée sous la barre du haut, comme aujourd'hui.
-- [ ] **Le bouton la déroule sur place** : « Partager » (brouillon), « Modifier » (ensuite), « Le lien » (celui qui « aide à écrire »). Pas de panneau du bas, pas de voile : la liste est poussée vers le bas. **Déroulée, la barre reste collée en haut** (Julien, 22 novembre) ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Le bouton devient « Fermer », qui replie sans rien changer.
-- [ ] **Dedans, d'abord l'adresse et « Copier le lien »** (« Copié », un instant, comme aujourd'hui).
-- [ ] **Puis « Qui verra ta liste ? »**, pour ceux qui gèrent la liste : le contenu de `SharingSheet` passe dans la barre, sans changer ses règles (les événements à cocher, « Une autre occasion », « Inviter quelqu'un », « Tout le monde, avec le lien », le bouton). Le bouton enregistre et replie la barre.
-- [ ] **« Tous les membres » / « Celui qui m'a tiré »** : le composant `UiSegmented`, pas des pastilles maison.
-- [ ] **Liste publique** : l'adresse n'est plus répétée sous l'interrupteur (elle est en haut de la barre déroulée). « Le message qui accompagne le lien » et « Changer de lien » restent.
-- [ ] **Les confirmations** (« Retirer ta liste de … ? », « Changer de lien ? ») s'affichent dans la barre déroulée, à la place du bouton.
-- [ ] **Celui qui « aide à écrire »** : « Le lien » déroule la barre, qui ne contient que l'adresse et « Copier le lien ».
-- [ ] Le clavier et les lecteurs d'écran : le bouton dit s'il est déroulé (`aria-expanded`), le focus entre dans la barre à l'ouverture et revient au bouton à la fermeture, Échap replie.
-- [ ] `SharingSheet` ne sert plus : le supprimer, et ses textes qui ne servent plus (« Copier », `lists.sharing.copy`).
-- [ ] Trois langues (« Fermer », « Le lien »), `tests/e2e` mis à jour.
+- [x] **Repliée** : une ligne (l'icône, le stade, sa phrase, le bouton). Plus de ligne d'adresse. Elle reste collée sous la barre du haut, comme aujourd'hui.
+- [x] **Le bouton la déroule sur place** : « Partager » (brouillon), « Modifier » (ensuite), « Le lien » (celui qui « aide à écrire »). Pas de panneau du bas, pas de voile : la liste est poussée vers le bas. **Déroulée, la barre reste collée en haut** (Julien, 22 novembre) ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Le bouton devient « Fermer », qui replie sans rien changer.
+- [x] **Dedans, d'abord l'adresse et « Copier le lien »** (« Copié », un instant, comme aujourd'hui).
+- [x] **Puis « Qui verra ta liste ? »**, pour ceux qui gèrent la liste : le contenu de `SharingSheet` passe dans la barre, sans changer ses règles (les événements à cocher, « Une autre occasion », « Inviter quelqu'un », « Tout le monde, avec le lien », le bouton). Le bouton enregistre et replie la barre.
+- [x] **« Tous les membres » / « Celui qui m'a tiré »** : le composant `UiSegmented`, pas des pastilles maison.
+- [x] **Liste publique** : l'adresse n'est plus répétée sous l'interrupteur (elle est en haut de la barre déroulée). « Le message qui accompagne le lien » et « Changer de lien » restent.
+- [x] **Les confirmations** (« Retirer ta liste de … ? », « Changer de lien ? ») s'affichent dans la barre déroulée, à la place du bouton.
+- [x] **Celui qui « aide à écrire »** : « Le lien » déroule la barre, qui ne contient que l'adresse et « Copier le lien ».
+- [x] Le clavier et les lecteurs d'écran : le bouton dit s'il est déroulé (`aria-expanded`), le focus entre dans la barre à l'ouverture et revient au bouton à la fermeture, Échap replie.
+- [x] `SharingSheet` ne sert plus : le supprimer, et ses textes qui ne servent plus (« Copier », `lists.sharing.copy`).
+- [x] Trois langues (« Fermer », « Le lien »), `tests/e2e` mis à jour.
 
 ## Hors périmètre
 

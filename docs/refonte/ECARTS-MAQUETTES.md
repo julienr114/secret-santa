@@ -6,6 +6,14 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## La barre d'une liste se déroule (V3, ticket 135)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeQuiRetirer`, `V3ListeLienChanger` | La question prend la place de ce qui suit ce qu'on a touché : sous les événements pour un événement retiré (comme `V3ListeQuiRetirer`), sous « Tout le monde, avec le lien » pour l'interrupteur et pour « Changer de lien » (comme `V3ListeLienChanger`). Le focus va sur « Annuler ». | Seul |
+| `V3ListeQuiLien` | « Une autre occasion » reste sous les événements d'une liste publique (la maquette ne l'a pas), et « Inviter quelqu'un » quand ses règles le proposent : les règles du partage ne changent pas. | Seul |
+| Toutes les déroulées | Échap replie la barre sans rien changer, comme « Fermer » ; ce qui était coché sans être enregistré est oublié. Pendant le chargement de « Qui verra ta liste ? », un squelette sous son titre. | Seul |
+
 ## On entre par un Secret Santa ou par une liste (V3, ticket 117)
 
 | Maquette | Ce que fait le code | Décidé par |
@@ -14,7 +22,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FeteMembresComplet` | À 30 membres, « À ma liste » n'est pas montré (on n'invite plus) ; « Au Secret Santa » mène à son lien, comme dans la maquette. | Seul |
 | `V3FeteMembresReprendre` | Le contexte au-dessus du titre est le fil de l'écran (le nom de l'événement, sans emoji). Une pastille choisie a l'anneau rouge des pastilles de l'application, pas le fond vert. Ne sont proposés que les événements que j'organise (leurs adresses ne sont lues que par leurs organisateurs), jamais celui où l'on ajoute, ni quelqu'un qui y est déjà par son adresse ; sans personne de nouveau, « Personne de nouveau à ajouter ». | Seul |
 | `V3FeteNouvelle` | « Continuer » crée l'événement et mène droit au Secret Santa ou à la liste : plus d'étape « Qui en fait partie ? ». | Julien (décision du 21 novembre 2026) |
-| `V3ListeQui`, `V3ListeQuiModifier` | « Inviter quelqu'un » n'est proposé qu'une fois la liste enregistrée comme partagée avec « Tous les membres » de son événement : ni sur un brouillon (la maquette `V3ListeQui` le montre), ni sur une liste réservée à celui qui a tiré (`listes.md`). Il est dans le panneau « Qui verra ta liste ? » jusqu'au ticket 135, qui déroule la barre. « Changer de lien » est proposé pour toute liste, sous « Tout le monde, avec le lien », et plus seulement pour une liste publique. | Seul (`listes.md`) |
+| `V3ListeQui`, `V3ListeQuiModifier` | « Inviter quelqu'un » n'est proposé qu'une fois la liste enregistrée comme partagée avec « Tous les membres » de son événement : ni sur un brouillon (la maquette `V3ListeQui` le montre), ni sur une liste réservée à celui qui a tiré (`listes.md`). Il est dans la barre déroulée (ticket 135). « Changer de lien » est proposé pour toute liste, sous « Tout le monde, avec le lien », et plus seulement pour une liste publique. | Seul (`listes.md`) |
 | `V3ListeInviter` | Le contexte au-dessus du titre est le nom de la liste (sans emoji), qui y ramène. « Copier le lien » dit « Copié » à sa place, un instant. Deux états que la maquette ne montre pas : une liste qui n'est pas partagée avec tous les membres de son événement (« Partage d'abord ta liste avec tous les membres de son événement. ») et un événement complet (« L'événement est complet · 30 membres, c'est le maximum »), à la place des trois lignes. | Seul |
 | (pas de maquette) | « Par son adresse email » est une page : « Son prénom », « Son adresse email », « Inviter ». Une adresse déjà membre de l'événement est refusée : « la liste lui est ouverte ». | Seul |
 | `V3ListePartageEmail` | Comme les autres emails : le lien est écrit en entier sous « Voir la liste : » (pas de bouton), et le pied n'a pas encore « Ne plus recevoir d'emails », « Signaler » ni « Ce que l'application fait de tes données » (tickets 130 et 132). | Seul (les autres emails) |
@@ -110,15 +118,15 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3TirageVersListe` | La ligne de sa liste mène à une liste qu'elle tient et que je peux ouvrir : réservée à celui qui l'a tirée ou à tous les membres dans cet événement, ou publique ; la plus récemment modifiée. Sans compte, ses pistes d'avant la V3 restent, en lecture seule. | Seul |
 | `V3TirageNouvelles` | « 2 nouvelles idées » compte les idées ajoutées depuis ma dernière ouverture de sa liste, seulement si je l'ai déjà ouverte avec mon compte. | Seul |
 | `PistesResultatDemande` | Sans adresse, « Inès le verra en ouvrant son lien » : il n'y a plus de page de pistes. | Seul |
-| — | Le panneau « Qui verra ta liste ? » propose « Celui qui m'a tiré » sous un événement où je participe à un Secret Santa pas clôturé ; le choisir pour un événement où les membres voyaient la liste demande d'abord, comme décocher. | Seul |
+| — | « Qui verra ta liste ? » propose « Celui qui m'a tiré » sous un événement où je participe à un Secret Santa pas clôturé ; le choisir pour un événement où les membres voyaient la liste demande d'abord, comme décocher. | Seul |
 
 ## Le partage d'une liste (V3, ticket 106)
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `V3ListeQui`, `V3ListeQuiModifier` | Pas de choix « Tous les membres » / « Celui qui m'a tiré » sous un événement coché : il vient avec le ticket 107 ; un événement coché l'est pour tous ses membres. Les événements sont rangés par nom. | Seul |
+| `V3ListeQui`, `V3ListeQuiModifier` | Les événements sont rangés par nom. | Seul |
 | `V3ListeQuiRetirer` | La confirmation compte les membres de l'événement retiré qui perdent vraiment la liste (ni ceux qui la tiennent, ni ceux qui la gardent par un autre événement), et ceux qui ont coché parmi tous ceux qui la perdent. Si personne ne la perd, pas de confirmation. Pour « Tout le monde », un titre (« Retirer « Tout le monde, avec le lien » ? ») que la spec ne donne pas, et pas de confirmation si personne n'a coché. | Seul |
-| `V3ListeLienChanger` | « Changer de lien » se confirme dans un panneau par-dessus « Qui verra ta liste ? » ; le nouveau lien vaut tout de suite, sans « Enregistrer ». | Seul |
+| `V3ListeLienChanger` | Le nouveau lien vaut tout de suite, sans « Enregistrer ». | Seul |
 | `V3Liste` | Une liste partagée dans des événements où personne d'autre n'est membre dit « Personne d'autre ne la voit ». « Celui qui m'a tiré » (liste liée aux pistes avant la V3) dit le nom de l'événement et « Seul celui qui t'a tiré la voit ». | Seul |
 | `V3ListeFermee`, `V3ListeFermeeConnecte` | Un lien inconnu ou remplacé reçoit la même page qu'une liste fermée : la page ne dit pas si la liste existe. | Seul |
 | `V3OffreAilleurs` | La ligne « Ce que j'offre ailleurs » apparaît aussi sur l'accueil sans aucun événement (`V3AccueilVide`), dès qu'il y a une liste : l'invité d'un mariage n'est membre d'aucun événement. | Seul |

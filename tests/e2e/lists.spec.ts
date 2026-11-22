@@ -21,15 +21,27 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await hydrated(page);
   // The bar at the bottom.
   await expect(page.getByTestId('tab-bar')).toContainText('Accueil');
-  // A new list is a draft: the bar says so, and has its link already
-  // (docs/spec/v3/listes.md, ticket 106).
+  // A new list is a draft: the bar says so in one row, and has its link
+  // already, written only once unrolled (docs/spec/v3/listes.md, tickets
+  // 106 and 135).
   const bar = page.getByTestId('share-bar');
   await expect(page.getByTestId('share-stage')).toContainText('Brouillon');
   await expect(page.getByTestId('share-stage')).toContainText(
     'Toi seul la vois',
   );
-  await expect(page.getByTestId('share-open')).toHaveText('Partager');
+  const toggle = page.getByTestId('share-open');
+  await expect(toggle).toHaveText('Partager');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await toggle.click();
+  await expect(toggle).toHaveText('Fermer');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByTestId('share-link')).toContainText('/l/');
+  // The focus went in; Échap folds it, and gives the focus back.
+  await expect(page.getByTestId('copy-link')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await expect(toggle).toBeFocused();
   await expect(page.getByTestId('note-default')).toContainText(
     'Quelques idées pour t’éviter de chercher.',
   );
@@ -321,12 +333,16 @@ test('a list is written in its document, and shared', async ({ page }) => {
   // « Partager »: « Qui verra ta liste ? », and « Tout le monde, avec le
   // lien » makes it public.
   await page.getByTestId('share-open').click();
-  const sharing = page.getByRole('dialog', { name: 'Qui verra ta liste ?' });
+  const sharing = page.getByTestId('sharing-panel');
   await sharing.getByTestId('sharing-everyone').getByRole('switch').click();
   await sharing.getByTestId('sharing-save').click();
   await expect(sharing).toBeHidden();
   await expect(page.getByTestId('share-stage')).toContainText('Publique');
   await expect(page.getByTestId('share-open')).toHaveText('Modifier');
+  // Unrolled, the address first, then « Qui verra ta liste ? », in one
+  // place: no sheet.
+  await page.getByTestId('share-open').click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   const link = page.getByTestId('share-link');
   await expect(link).toContainText('/l/');
   // « Copier le lien » answers in place.
@@ -335,14 +351,18 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(page.getByTestId('copy-link')).toHaveText('Copié');
   await expect(bar.getByRole('link', { name: 'Par email' })).toHaveCount(0);
   const first = (await link.textContent()) ?? '';
-  // « Changer de lien », confirmed first: the old one stops working.
-  await page.getByTestId('share-open').click();
+  // « Changer de lien », confirmed first, in the place of the button: the
+  // old one stops working.
   await sharing.getByTestId('sharing-renew').click();
-  const renew = page.getByRole('dialog', { name: 'Changer de lien ?' });
+  const renew = page.getByRole('alertdialog', { name: 'Changer de lien ?' });
   await expect(renew).toContainText('L’ancien lien ne marchera plus');
+  await expect(sharing.getByTestId('sharing-save')).toHaveCount(0);
   await renew.getByRole('button', { name: 'Changer', exact: true }).click();
   await expect(renew).toBeHidden();
+  await expect(link).not.toHaveText(first);
   await sharing.getByTestId('sharing-save').click();
+  await expect(sharing).toBeHidden();
+  await page.getByTestId('share-open').click();
   await expect(link).not.toHaveText(first);
   const second = (await link.textContent()) ?? '';
   const tokenOf = (shown: string) => shown.split('/l/')[1];

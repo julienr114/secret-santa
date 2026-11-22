@@ -153,6 +153,8 @@ export default {
     chosenBy: 'gewählt von {name}',
     share: 'Teilen',
     edit: 'Ändern',
+    close: 'Schließen',
+    theLink: 'Der Link',
     copyLink: 'Link kopieren',
     title: 'Wer sieht deine Liste?',
     eventLine: {
@@ -165,7 +167,6 @@ export default {
     otherOccasion: 'Ein anderer Anlass',
     invite: 'Jemanden einladen',
     everyone: 'Alle, mit dem Link',
-    copy: 'Kopieren',
     message: 'Die Nachricht zum Link',
     changeLink: 'Link ändern',
     save: 'Speichern',

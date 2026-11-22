@@ -130,13 +130,19 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
     'Tu tiens cette liste avec Camille.',
   );
   // He reads the sharing, and does not touch it (ListeAidePartage): the
-  // stage, who chose it, the link to copy; no button.
+  // stage, who chose it; « Le lien » unrolls the link to copy, and
+  // nothing else (V3ListeAideLien).
   await expect(hugo.getByTestId('share-stage')).toContainText('Brouillon');
   await expect(hugo.getByTestId('share-stage')).toContainText(
     'choisi par Camille',
   );
-  await expect(hugo.getByTestId('share-open')).toHaveCount(0);
+  await expect(hugo.getByTestId('share-open')).toHaveText('Le lien');
+  await hugo.getByTestId('share-open').click();
   await expect(hugo.getByTestId('share-link')).toContainText('/l/');
+  await expect(hugo.getByTestId('copy-link')).toBeVisible();
+  await expect(hugo.getByTestId('sharing-panel')).toHaveCount(0);
+  await hugo.getByTestId('share-open').click();
+  await expect(hugo.getByTestId('share-link')).toHaveCount(0);
   expect(
     (
       await context.request.post(`/api/lists/${state.listId}/share`, {
@@ -151,14 +157,14 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
       })
     ).status(),
   ).toBe(403);
-  // Camille makes it public: he reads it, still without a button.
+  // Camille makes it public: he reads it, still with « Le lien » only.
   await camille.request.put(`/api/lists/${state.listId}/sharing`, {
     data: { parties: [], isPublic: true },
   });
   await hugo.reload();
   await hydrated(hugo);
   await expect(hugo.getByTestId('share-stage')).toContainText('Publique');
-  await expect(hugo.getByTestId('share-open')).toHaveCount(0);
+  await expect(hugo.getByTestId('share-open')).toHaveText('Le lien');
   await camille.request.put(`/api/lists/${state.listId}/sharing`, {
     data: { parties: [], isPublic: false },
   });
@@ -284,7 +290,7 @@ test('an address without an account creates it by the link, once', async ({
   // Logged in without a second email, on the list, which he manages.
   await tonton.waitForURL(`**/listes/${state.listId}`);
   await hydrated(tonton);
-  await expect(tonton.getByTestId('share-open')).toBeEnabled();
+  await expect(tonton.getByTestId('share-open')).not.toHaveText('Le lien');
   const mine = await (
     await context.request.get(`/api/lists/${state.listId}/holders`)
   ).json();

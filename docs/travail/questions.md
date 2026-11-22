@@ -41,6 +41,26 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. Mettre le nom de l'événement devant, comme les emails d'un Secret Santa : « Famille Camille : Camille t'invite à tenir la liste « Famille Camille » », quitte à le dire deux fois ; sans événement, l'objet d'aujourd'hui.
 - **Ce que je ferais** : A, qui ne répète rien.
 
+### Q-024 — Supprimer les treize maquettes orphelines ? (ticket 111)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. Le ticket dit « si Julien est d'accord » et ce n'est pas écrit : les fichiers restent en attendant (`maquettes/` et `maquettes-sorbet/` ont toujours le même nombre de fichiers, 349).
+- **Ce qu'on a trouvé** : `docs/spec/v3/maquettes.md` (« Neuf fichiers orphelins ») : `AdminAcces`, `AdminAccesMenu`, `AdminPlusieursDemandes`, `AdminSansDemande`, `FeteAjouterListe`, `FetePartagee`, `FetePartageeAjoutee`, `Souhaits`, `SouhaitsVide` ; et les quatre du ticket, hors du canevas et de l'index : `ListeIdeeBulle`, `ListeIdeeBulleGras`, `ListeSansPersonneA`, `ListeSansPersonneB`. Aucun code, aucun test, ni `ARBORESCENCE.md` ni `ECARTS-MAQUETTES.md` ne les cite ; seuls `PLAN.md` (archive) et `maquettes.md` le font.
+- **Les choix** :
+  - A. Les supprimer des deux dossiers (26 fichiers) ; l'historique Git les garde.
+  - B. Les garder.
+- **Ce que je ferais** : A. Un mot suffit, et Claude Code le fait dans un petit commit (les maquettes sont à la conception, d'où l'attente).
+
+### Q-025 — Le README, `habiller.py` et `generateurs/README.md` citent encore des maquettes périmées : les laisser ? (ticket 111)
+
+- **Pour** : la conception
+- **Ce qui bloque** : la case « Aucun fichier hors de `docs/spec/v3/maquettes.md` ne cite une maquette périmée », prise au pied de la lettre. En attendant, le code, les tests, `ARBORESCENCE.md` et `ECARTS-MAQUETTES.md` n'en citent plus aucune ; le reste n'a pas été touché.
+- **Ce qu'on a trouvé** : `README.md` en cite une trentaine (`AccueilDevoileAvant`, `PistesListe`, `NotifCentre`, `ListeNouvelle`…), dans des paragraphes datés qui racontent ce qui a été décidé et codé en V2. `docs/refonte/sorbet/habiller.py` a des retouches pour `AccueilVide`, `AccueilDemandeAcceptee`, `ListesVide`, `PistesVide`, `Rejoindre` (sans effet : les fichiers n'existent plus). `docs/refonte/generateurs/README.md` cite `GroupeMembres` et `Rejoindre`. Les citations de `PLAN.md`, `docs/decisions/`, `docs/spec/` et des tickets faits ne se touchent pas.
+- **Les choix** :
+  - A. Les laisser : ce sont des récits datés (le README décrit la V2 jusqu'à la bascule) ou des outils de la conception ; la case vaut pour ce que Claude Code tient.
+  - B. Que la conception nettoie `habiller.py` et `generateurs/README.md`, et que le README renvoie à `maquettes.md` pour ce qui remplace chaque nom.
+- **Ce que je ferais** : A pour le README ; B pour `habiller.py`, s'il doit encore servir.
+
 ## Réponses
 
 ### Q-018 — Le compte créé « à la première chose écrite » depuis un lien personnel : peut-on ouvrir une session sur la foi du lien, et si un compte existe déjà ? (ticket 107)

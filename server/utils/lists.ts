@@ -425,6 +425,11 @@ export const addPersonRefusal = (list: {
 /** A person of a list, with their ideas, as taking it up again reads it. */
 export type ResumablePerson = {
   memberId: string;
+  /**
+   * The account this person is (« Moi » of its owner, or linked), or
+   * null: the same person may be two rows of two families.
+   */
+  accountId?: string | null;
   position: number;
   /** The hidden part of a list without people. */
   placeholder?: boolean;
@@ -462,6 +467,7 @@ export const resumedList = (source: {
     .toSorted((a, b) => a.position - b.position)
     .map((person) => ({
       memberId: person.memberId,
+      accountId: person.accountId ?? null,
       ideas: carriedIdeas(person.ideas),
     })),
 });
@@ -490,17 +496,67 @@ export const resumeSummary = (
 });
 
 /**
- * Whether a list can be started from another: only while it is still an
- * empty draft, so that nothing written is ever mixed with what comes.
+ * Whether a list can be started from another: while it has no idea, even
+ * with people on it (Q-032, ticket 136), so that nothing written is ever
+ * mixed with what comes. A list without people keeps its shape.
  * @param list - The new list.
- * @param list.sharedAt - When it was shared, or null.
- * @param list.peopleCount - How many people are on it.
- * @returns True for a draft nobody is on.
+ * @param list.ideas - How many ideas are on it.
+ * @param list.single - Whether it is a list without people.
+ * @returns True while nothing is written on it.
  */
 export const canResumeInto = (list: {
-  sharedAt: string | null;
-  peopleCount: number;
-}): boolean => !list.sharedAt && list.peopleCount === 0;
+  ideas: number;
+  single: boolean;
+}): boolean => list.ideas === 0 && !list.single;
+
+/** A person already on the list taken up into, as the merge reads them. */
+export type PersonThere = {
+  /** Their place on the list. */
+  id: string;
+  memberId: string;
+  accountId: string | null;
+};
+
+/**
+ * How the people of an old list join those already on the new one (Q-032,
+ * ticket 136): those already there keep their place, the others come
+ * after in their order, nobody twice; the ideas of someone already there
+ * go under their name. The same person is the same row of a family, or
+ * the same account (« Moi » here, linked there).
+ * @param there - The people already on the new list, in their order.
+ * @param taken - The people of the old list, as `resumedList` gives them.
+ * @returns The ideas for those there, by their place, and the people to
+ *   add after them.
+ */
+export const mergeResumed = <
+  T extends { memberId: string; accountId?: string | null },
+>(
+  there: readonly PersonThere[],
+  taken: readonly T[],
+): { into: { listPersonId: string; person: T }[]; added: T[] } => {
+  const placeOf = (person: T) =>
+    there.find(
+      (one) =>
+        one.memberId === person.memberId ||
+        (one.accountId !== null &&
+          one.accountId === (person.accountId ?? null)),
+    );
+  const into = taken.flatMap((person) => {
+    const place = placeOf(person);
+    return place ? [{ listPersonId: place.id, person }] : [];
+  });
+  const added = taken.filter(
+    (person, index) =>
+      !placeOf(person) &&
+      // Twice on the old list under two rows: once here.
+      taken.findIndex(
+        (other) =>
+          other.memberId === person.memberId ||
+          (Boolean(person.accountId) && other.accountId === person.accountId),
+      ) === index,
+  );
+  return { into, added };
+};
 
 /**
  * How many days until a list's day.

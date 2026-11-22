@@ -3,6 +3,7 @@ import {
   canDeleteList,
   addPersonRefusal,
   canResumeInto,
+  mergeResumed,
   isSingleList,
   singleRefusal,
   resumeSummary,
@@ -352,12 +353,54 @@ describe('taking a list up again (lot 27)', () => {
     ).toEqual({ people: 1, ideas: 1, single: true });
   });
 
-  it('only starts an empty draft from another list', () => {
-    expect(canResumeInto({ sharedAt: null, peopleCount: 0 })).toBe(true);
-    expect(canResumeInto({ sharedAt: null, peopleCount: 1 })).toBe(false);
+  it('starts a list from another while it has no idea (Q-032)', () => {
+    expect(canResumeInto({ ideas: 0, single: false })).toBe(true);
+    expect(canResumeInto({ ideas: 1, single: false })).toBe(false);
+    // A list without people keeps its shape.
+    expect(canResumeInto({ ideas: 0, single: true })).toBe(false);
+  });
+
+  it('keeps those already there in place, and adds the others after', () => {
+    const merged = mergeResumed(
+      [{ id: 'p-camille', memberId: 'camille', accountId: 'acc-camille' }],
+      [
+        { memberId: 'leo', accountId: null, ideas: ['Billes'] },
+        { memberId: 'camille', accountId: 'acc-camille', ideas: ['Couteau'] },
+        { memberId: 'zoe', accountId: null, ideas: [] },
+      ],
+    );
+    expect(merged.into).toEqual([
+      {
+        listPersonId: 'p-camille',
+        person: {
+          memberId: 'camille',
+          accountId: 'acc-camille',
+          ideas: ['Couteau'],
+        },
+      },
+    ]);
+    expect(merged.added.map((person) => person.memberId)).toEqual([
+      'leo',
+      'zoe',
+    ]);
+  });
+
+  it('knows the same person by their account, under two families', () => {
+    const merged = mergeResumed(
+      [{ id: 'p-me', memberId: 'my-self', accountId: 'acc-me' }],
+      [
+        { memberId: 'julien-linked', accountId: 'acc-me' },
+        { memberId: 'hugo', accountId: null },
+        { memberId: 'hugo', accountId: null },
+      ],
+    );
+    expect(merged.into.map((one) => one.listPersonId)).toEqual(['p-me']);
+    // Nobody twice.
+    expect(merged.added.map((person) => person.memberId)).toEqual(['hugo']);
+    // Nobody there: all come, in their order.
     expect(
-      canResumeInto({ sharedAt: '2026-11-19T10:00:00.000Z', peopleCount: 0 }),
-    ).toBe(false);
+      mergeResumed([], [{ memberId: 'a' }, { memberId: 'b' }]).added,
+    ).toEqual([{ memberId: 'a' }, { memberId: 'b' }]);
   });
 });
 

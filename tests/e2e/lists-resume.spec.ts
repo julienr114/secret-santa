@@ -206,8 +206,8 @@ test('a past list is taken up again from its document', async () => {
   await page.close();
 });
 
-test('only an empty draft starts from a list, and only from one I hold', async () => {
-  // The new list has people now: nothing is mixed into it.
+test('only a list with no idea starts from a list, and only from one I hold', async () => {
+  // The new list has ideas now: nothing is mixed into it (Q-032).
   const full = await api().post(`/api/lists/${state.newId}/resume`, {
     data: { from: state.oldId },
   });

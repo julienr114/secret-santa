@@ -29,6 +29,7 @@ import { avatarOf, type Avatar } from '#server/utils/avatars';
 import type { HolderLevel } from '#server/utils/listAccess';
 import {
   carriedIdeas,
+  mergeResumed,
   resumedList,
   type ResumablePerson,
 } from '#server/utils/lists';
@@ -737,6 +738,9 @@ export const resumableOfLists = async (
       memberId: giftListPeople.memberId,
       position: giftListPeople.position,
       placeholder: familyMembers.placeholder,
+      ownerId: familyMembers.accountId,
+      isSelf: familyMembers.isSelf,
+      linkedAccountId: familyMembers.linkedAccountId,
     })
     .from(giftListPeople)
     .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
@@ -752,6 +756,7 @@ export const resumableOfLists = async (
   for (const person of people) {
     byList.get(person.listId)?.push({
       memberId: person.memberId,
+      accountId: person.isSelf ? person.ownerId : person.linkedAccountId,
       position: person.position,
       placeholder: person.placeholder,
       ideas: ideas
@@ -768,18 +773,25 @@ export const resumableOfLists = async (
 };
 
 /**
- * Starts an empty draft from an old list (lot 27, README 22.20): its
- * icon, its word, its people and the ideas nobody ticked, each marked
- * as taken from that list. The old list does not change.
+ * Starts a list from an old one (lot 27, README 22.20): its icon, its
+ * word (unless the holder already wrote theirs), its people and the ideas
+ * nobody ticked. While the new list has no idea, it may already have
+ * people (Q-032, ticket 136): they keep their place, the others come
+ * after, nobody twice, and the ideas of someone already there go under
+ * their name. The ideas are marked as taken from that list while it is
+ * a draft: the mark is for the time of sorting, before it is shared. The
+ * old list does not change.
  * @param db - The database.
- * @param list - The new list, an empty draft.
+ * @param list - The new list, with no idea yet.
  * @param source - The old list.
+ * @param marked - Whether the ideas carry the mark (a draft).
  * @returns Once written.
  */
 export const resumeList = async (
   db: Db,
   list: GiftListRow,
   source: GiftListRow,
+  marked = true,
 ) => {
   const taken = resumedList({
     icon: { emoji: source.iconEmoji, color: source.iconColor },
@@ -787,20 +799,53 @@ export const resumeList = async (
     noteEdited: source.noteEdited,
     people: (await resumableOfLists(db, [source.id])).get(source.id) ?? [],
   });
+  const there = (await resumableOfLists(db, [list.id])).get(list.id) ?? [];
+  const places = await db
+    .select({ id: giftListPeople.id, memberId: giftListPeople.memberId })
+    .from(giftListPeople)
+    .where(eq(giftListPeople.listId, list.id));
+  const { into, added } = mergeResumed(
+    places.map((place) => ({
+      id: place.id,
+      memberId: place.memberId,
+      accountId:
+        there.find((one) => one.memberId === place.memberId)?.accountId ?? null,
+    })),
+    taken.people,
+  );
   const now = nowIso();
-  const rows = taken.people.map((person, position) => ({
+  const after = Math.max(-1, ...there.map((person) => person.position)) + 1;
+  const rows = added.map((person, index) => ({
     id: newId(),
-    position,
+    position: after + index,
     ...person,
   }));
+  const ideasOf = (
+    listPersonId: string,
+    ideas: (typeof rows)[number]['ideas'],
+  ) =>
+    ideas.map((idea, index) =>
+      db.insert(giftListIdeas).values({
+        id: newId(),
+        listId: list.id,
+        listPersonId,
+        text: idea.text,
+        url: idea.url,
+        position: index,
+        carriedFrom: marked ? source.id : null,
+        createdAt: now,
+      }),
+    );
   await db.batch([
     db
       .update(giftLists)
       .set({
         iconEmoji: taken.icon.emoji,
         iconColor: taken.icon.color,
-        note: taken.note,
-        noteEdited: taken.noteEdited,
+        // A word the holder already wrote stays theirs.
+        ...(list.noteEdited
+          ? {}
+          : { note: taken.note, noteEdited: taken.noteEdited }),
         carriedFrom: source.id,
         updatedAt: now,
       })
@@ -813,20 +858,10 @@ export const resumeList = async (
         position: person.position,
       }),
     ),
-    ...rows.flatMap((person) =>
-      person.ideas.map((idea, index) =>
-        db.insert(giftListIdeas).values({
-          id: newId(),
-          listId: list.id,
-          listPersonId: person.id,
-          text: idea.text,
-          url: idea.url,
-          position: index,
-          carriedFrom: source.id,
-          createdAt: now,
-        }),
-      ),
+    ...into.flatMap(({ listPersonId, person }) =>
+      ideasOf(listPersonId, person.ideas),
     ),
+    ...rows.flatMap((person) => ideasOf(person.id, person.ideas)),
   ]);
 };
 

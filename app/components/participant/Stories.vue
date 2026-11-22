@@ -3,6 +3,7 @@ import type { Avatar } from '#server/utils/avatars';
 import type { Award } from '#server/utils/awards';
 import {
   STORY_SECONDS,
+  noGuessKey,
   storyEnd,
   storyLooks,
   storyScreens,
@@ -375,7 +376,7 @@ const santaWords = computed(() => {
           })
       : guessed
         ? t('participant.game.story.wrongBody', { name: guessed.name })
-        : t('participant.game.story.noGuessBody'),
+        : tk(noGuessKey(props.recurring)),
   };
 });
 </script>

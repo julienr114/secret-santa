@@ -462,6 +462,7 @@ export default {
       },
       wrongBody: 'Missed: you said {name}.',
       noGuessBody: 'You hadn’t made a guess. Next year?',
+      noGuessBodyOnce: 'You hadn’t made a guess.',
       endEyebrow: "That's all for this year",
       endEyebrowOnce: "That's all",
       endTitle: 'Merry Christmas,\n{name}',

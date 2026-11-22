@@ -473,6 +473,7 @@ export default {
       },
       wrongBody: 'Raté : tu avais dit {name}.',
       noGuessBody: 'Tu n’avais pas fait de pronostic. L’an prochain ?',
+      noGuessBodyOnce: 'Tu n’avais pas fait de pronostic.',
       endEyebrow: 'C’est tout pour cette année',
       endEyebrowOnce: 'C’est tout',
       endTitle: 'Joyeux Noël,\n{name}',

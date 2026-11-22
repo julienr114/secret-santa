@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { LOCALES, santaKey, translateKey } from '#shared/i18n';
 import fr from '#shared/i18n/locales/fr';
-import { storyEnd, storyLooks, storyScreens, storyStep } from './palmares';
+import {
+  noGuessKey,
+  storyEnd,
+  storyLooks,
+  storyScreens,
+  storyStep,
+} from './palmares';
 
 describe('storyScreens', () => {
   it('opens, shows one’s own Santa, each award won, then ends', () => {
@@ -116,6 +122,17 @@ describe('storyEnd', () => {
     expect(say(true, 'Inès')).toBe('Joyeux Noël,\nInès');
     expect(say(false, 'Inès')).toBe('Merci d’avoir joué,\nInès');
     expect(say(false, null)).toBe('Merci à tous !');
+  });
+});
+
+describe('noGuessKey', () => {
+  it('promises a next year only in a party that comes back', () => {
+    expect(translateKey('fr', noGuessKey(true))).toBe(
+      'Tu n’avais pas fait de pronostic. L’an prochain ?',
+    );
+    expect(translateKey('fr', noGuessKey(false))).toBe(
+      'Tu n’avais pas fait de pronostic.',
+    );
   });
 });
 

@@ -51,8 +51,8 @@ Le nom, la date, le budget et le petit mot d'un Secret Santa se changent en têt
 
 **Écarts avec les maquettes** : les deux lignes de `V3TirageReglages` sur la section du bas sont retirées de `ECARTS-MAQUETTES.md` ; il reste « Quelqu'un s'inscrit par le lien », absent jusqu'au ticket 116. Les lignes `V3Accueil` et `V3FeteAnneePassee` disent maintenant « Ma liste de cadeaux » et « Pour… ».
 
-**Questions posées** : Q-027, « L'an prochain ? » sur l'image de mon Père Noël sans pronostic, dans un événement qui ne revient pas (laissé tel quel en attendant).
+**Questions posées** : Q-027, « L'an prochain ? » sur l'image de mon Père Noël sans pronostic, dans un événement qui ne revient pas. La conception a répondu A pendant le ticket : c'est fait (`noGuessKey`, `noGuessBodyOnce` dans les trois langues, « Tu n'avais pas fait de pronostic. » seul). « Belle année pour les détectives » reste : elle ne promet pas d'année suivante. Après ce dernier commit, `pnpm lint`, `pnpm typecheck`, `pnpm test` et `guess.spec.ts` repassent.
 
 **Migrations** : aucune.
 
-**Commits** : `328f235` docs: ticket 115 started ; `f95e52f` feat(secret-santa): its name, date, budget and word come first in its settings ; `4b71749` feat(guess): the palmarès thanks the players outside Christmas ; `7db90cb` feat(lines): « Ma liste de cadeaux », for whom it is ; puis le rangement du ticket.
+**Commits** : `328f235` docs: ticket 115 started ; `f95e52f` feat(secret-santa): its name, date, budget and word come first in its settings ; `4b71749` feat(guess): the palmarès thanks the players outside Christmas ; `7db90cb` feat(lines): « Ma liste de cadeaux », for whom it is ; `0203706` docs: ticket 115 done ; puis « L'an prochain ? » seulement dans un événement qui revient (Q-027).

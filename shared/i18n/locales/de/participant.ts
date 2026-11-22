@@ -473,6 +473,7 @@ export default {
       },
       wrongBody: 'Daneben: Du hattest {name} gesagt.',
       noGuessBody: 'Du hattest keinen Tipp abgegeben. Nächstes Jahr?',
+      noGuessBodyOnce: 'Du hattest keinen Tipp abgegeben.',
       endEyebrow: 'Das war es für dieses Jahr',
       endEyebrowOnce: 'Das war es',
       endTitle: 'Frohe Weihnachten,\n{name}',

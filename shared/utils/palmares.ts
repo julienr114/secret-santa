@@ -80,6 +80,18 @@ export const storyStep = (
 ): number =>
   side === 'right' ? Math.min(at + 1, count - 1) : Math.max(at - 1, 0);
 
+/**
+ * What one's own Santa screen says to a reader who made no guess: « L'an
+ * prochain ? » only in a party that comes back each year (docs/spec/v3/
+ * vocabulaire.md, Q-027).
+ * @param recurring - Whether the party comes back each year.
+ * @returns The key of the text.
+ */
+export const noGuessKey = (recurring: boolean): string =>
+  recurring
+    ? 'participant.game.story.noGuessBody'
+    : 'participant.game.story.noGuessBodyOnce';
+
 /** The texts of the last screen: their keys, before « Père Noël » is chosen. */
 export type StoryEnd = {
   eyebrow: string;

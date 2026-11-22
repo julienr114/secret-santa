@@ -875,7 +875,7 @@ secret-santa/
 │                                  draw, rules, crypto, audit, messages, wishes,
 │                                  editions, people, personal, avatars, auth, result
 ├── shared/i18n/                 ← dictionnaires fr/en/de typés, translate()
-├── scripts/                     ← seed-demo.ts, e2e-server.sh
+├── scripts/                     ← seed-v3.ts (les données locales, pnpm seed:v3), e2e-server.sh
 └── tests/e2e/                   ← admin-edition, email, language, participant, security
 ```
 

@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { apiLogin, hydrated, seedSql } from './helpers';
 
 // « Devine qui » : donner envie de jouer, et rappeler (README 22.17,
 // Correction 15). Last year's figure to beat, the surprise, « Je passe mon
@@ -74,7 +74,9 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     state.ids[firstName] = person.id;
   }
   // Last year: the game, two players, Ada found her Santa.
-  const last = await newEdition('Noël 2025', 2025);
+  // Made this year, then moved to last year: nothing is made in a year
+  // over (ticket 108).
+  const last = await newEdition('Noël 2025', 2026);
   await ok(await admin().post(`${last.base}/draw`));
   await ok(await admin().put(`${last.base}/guess`, { data: game('santa') }));
   // Everyone finds out whom they give to; then each names a Santa.
@@ -102,6 +104,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     await admin().post(`${last.base}/reveal`, { data: { early: true } }),
   );
   await ok(await admin().post(`${last.base}/close`));
+  await seedSql(`
+INSERT INTO party_years (id, party_id, year, date, created_at)
+  SELECT 'y-relance-2025', party_id, 2025, '2025-12-25', created_at
+  FROM secret_santas WHERE id = '${last.id}';
+UPDATE secret_santas SET year_id = 'y-relance-2025' WHERE id = '${last.id}';
+`);
 
   // This year: the game is carried over.
   const now = await newEdition('Noël 2026', 2026);

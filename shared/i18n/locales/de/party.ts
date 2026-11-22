@@ -54,6 +54,24 @@ export default {
     of: 'Die Liste von {name}',
     none: 'Noch niemand hat eine Liste in dieses Event gestellt.',
     new: 'Neue Liste',
+    resume: 'Meine Liste vom letzten Jahr übernehmen',
+  },
+  // The years over (ticket 108, V3FetesPassees, V3FeteAnneePassee).
+  past: {
+    years: 'Vergangene Jahre',
+    empty: 'Noch kein vergangenes Event.',
+    gaveTo: 'Du hast {name} beschenkt',
+    gaveToTwo: 'Du hast {name} und {other} beschenkt',
+    offered: {
+      one: 'Du hast {count} Geschenk verschenkt',
+      other: 'Du hast {count} Geschenke verschenkt',
+    },
+    received: {
+      one: '{count} Geschenk verschenkt',
+      other: '{count} Geschenke verschenkt',
+    },
+    game: 'Devine qui',
+    palmares: 'Die Rangliste',
   },
   leave: {
     row: 'Dieses Event verlassen',

@@ -632,6 +632,21 @@ export default {
     lossOff: 'Alle Tipps werden gelöscht.',
     confirmLoss: 'Löschen und bestätigen',
   },
+  // « Supprimer ce Secret Santa » (ticket 108), while it is not drawn.
+  delete: {
+    row: 'Dieses Secret Santa löschen',
+    title: '„{label}“ löschen?',
+    forGood: 'Das ist endgültig',
+    links: {
+      one: 'Der persönliche Link der teilnehmenden Person funktioniert nicht mehr.',
+      other:
+        'Die persönlichen Links der {count} Teilnehmenden funktionieren nicht mehr.',
+    },
+    members: 'Die Teilnehmenden bleiben Mitglieder des Events.',
+    keep: 'Secret Santa behalten',
+    confirm: 'Secret Santa löschen',
+    done: 'Secret Santa gelöscht',
+  },
   settings: {
     title: 'Einstellungen des Wichtelns',
     dateTitle: 'Datum',

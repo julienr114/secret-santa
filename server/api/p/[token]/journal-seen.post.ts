@@ -7,7 +7,9 @@ import { requirePersonalLink } from '#server/http/personal';
 // there start again from now (lot 12 of the redesign). A POST, since
 // reading never writes (README 8.3).
 export default defineEventHandler(async (event) => {
-  const { db, participation } = await requirePersonalLink(event);
+  const { db, participation } = await requirePersonalLink(event, {
+    afterTheYear: true,
+  });
   await db
     .update(participations)
     .set({ journalSeenAt: nowIso() })

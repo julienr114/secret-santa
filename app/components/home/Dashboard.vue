@@ -2,7 +2,6 @@
 import {
   comingBirthdays,
   daysUntilChristmas,
-  homeDateOf,
   homeSections,
 } from '#shared/utils/homeParties';
 import { nextOccurrence } from '#shared/utils/categories';
@@ -12,8 +11,10 @@ import { useElsewhereQuery } from '~/composables/queries/useLists';
 // The home of a logged-in account (docs/spec/v3/accueil-et-creation.md,
 // V3Accueil and V3AccueilVide): a section per season of Christmas, with
 // its countdown to 25 December; « Bientôt », the birthdays of my people;
-// « Plus tard », my other parties; then « Les fêtes passées » and « Ce que
-// j'offre ailleurs ». A new account sees two cards instead.
+// « Plus tard », my other parties; then « Les événements passés » and « Ce
+// que j'offre ailleurs ». A new account sees two cards instead. Which
+// parties are still on the home after their date, and at which date, the
+// server decides (ticket 108).
 const { t } = useT();
 // « Ce que j'offre ailleurs » (ticket 106), shown once I offer something
 // on a public list of an event I am not in: « Le mariage de Karim et
@@ -33,13 +34,16 @@ const home = useHomePartiesQuery();
 useHead({ title: () => `${t('home.title')} — ${t('common.appName')}` });
 const today = new Date().toLocaleDateString('sv-SE');
 const data = computed(() => home.data.value);
-const parties = computed(() =>
-  (data.value?.parties ?? []).map((party) => ({
-    ...party,
-    date: homeDateOf(party, today),
-  })),
-);
-const sections = computed(() => homeSections(parties.value, today));
+const parties = computed(() => data.value?.parties ?? []);
+// « Les événements passés » (lignes.md): the latest, and how many others.
+const pastLine = computed(() => {
+  const past = data.value?.past;
+  if (!past) return '';
+  return past.others === 0
+    ? past.latest
+    : t('home.pastMore', { name: past.latest, count: past.others });
+});
+const sections = computed(() => homeSections(parties.value));
 const birthdays = computed(() =>
   comingBirthdays(data.value?.people ?? [], parties.value, today),
 );
@@ -177,12 +181,15 @@ const greeting = computed(() =>
           />
         </section>
 
-        <UiList class="mt-2.5">
+        <UiList v-if="pastLine || elsewhereLine" class="mt-2.5">
           <UiListItem
-            to="/tirages-passes"
+            v-if="pastLine"
+            to="/evenements-passes"
             icon="i-lucide-clock"
             icon-tone="neutral"
             :title="t('home.past')"
+            :subtitle="pastLine"
+            data-testid="home-past"
           />
           <UiListItem
             v-if="elsewhereLine"

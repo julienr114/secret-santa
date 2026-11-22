@@ -38,7 +38,7 @@ const { createFor, creating } = useListOccasion();
  * @returns « Noël · 25 décembre ».
  */
 const dayLineOf = (event: (typeof events.value)[number]) => {
-  const day = event.yearDate ?? null;
+  const day = event.date;
   return [
     tk(`party.category.${event.category}`),
     day &&

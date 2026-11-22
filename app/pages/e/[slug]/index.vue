@@ -13,7 +13,8 @@ import { categoryTint } from '~/utils/categories';
 // Secret Santas; the lists of its members; for a member, « Quitter cette
 // fête ». A party « pour quelqu'un » shows its list first. Rows carry
 // their title only until their texts are written (decided by Julien on
-// 20 November 2026); the past years come with ticket 108.
+// 20 November 2026); « Les années passées », each opening that year
+// (ticket 108).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
 const route = useRoute();
@@ -43,6 +44,7 @@ const when = computed(() => {
   if (days === null) return full;
   return `${full} · ${days === 0 ? t('party.today') : t('party.inDays', { count: days })}`;
 });
+const { deedText, yearName } = usePastText();
 const listTitle = (list: NonNullable<typeof data.value>['lists'][number]) =>
   list.mine
     ? t('party.lists.mine')
@@ -219,6 +221,28 @@ const onLeave = () =>
             </ul>
           </section>
         </div>
+
+        <UiList
+          v-if="data.pastYears.length > 0"
+          :title="t('party.past.years')"
+          data-testid="party-past-years"
+        >
+          <UiListItem
+            v-for="past in data.pastYears"
+            :key="past.year"
+            :title="yearName(past.category, past.year)"
+            :subtitle="deedText(past.deed) || undefined"
+            :to="`/e/${slug}/annees/${past.year}?depuis=evenement`"
+          >
+            <template #leading>
+              <span
+                class="w-9 shrink-0 text-center font-display text-[15px] font-bold text-toned"
+                aria-hidden="true"
+                >{{ past.year }}</span
+              >
+            </template>
+          </UiListItem>
+        </UiList>
 
         <UiList v-if="data.role === 'member'">
           <UiListItem

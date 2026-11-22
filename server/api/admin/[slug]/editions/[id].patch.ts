@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { secretSantas } from '#server/database/schema';
 import { findEdition, publicEdition } from '#server/database/editions';
 import { recordEvent } from '#server/database/audit';
+import { requireOpenYear } from '#server/database/years';
 import { requireGroupAccess } from '#server/http/auth';
 import { notFound, unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -15,6 +16,7 @@ export default defineEventHandler(async (event) => {
   const { user, group, db } = await requireGroupAccess(event);
   const edition = await findEdition(db, group.id, getRouterParam(event, 'id'));
   if (!edition) throw notFound('edition_not_found');
+  await requireOpenYear(db, group.id, edition.yearId);
   if (edition.status === 'closed') {
     throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
   }

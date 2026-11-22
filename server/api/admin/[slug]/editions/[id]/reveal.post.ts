@@ -24,7 +24,9 @@ import { mergeRules } from '#server/utils/rules';
 const bodySchema = z.object({ early: z.boolean().default(false) });
 
 export default defineEventHandler(async (event) => {
-  const { user, group, db, edition } = await requireEdition(event);
+  const { user, group, db, edition } = await requireEdition(event, {
+    afterTheYear: true,
+  });
   const { early } = await validatedBody(event, bodySchema);
   const rules = unwrap(mergeRules(edition.rules));
   const today = nowIso().slice(0, 10);

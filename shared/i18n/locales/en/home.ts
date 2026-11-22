@@ -9,6 +9,11 @@ export default {
   later: 'Later',
   age: { one: 'turning {count}', other: 'turning {count}' },
   prepare: 'Prepare',
+  prepareYear: 'Prepare {name}',
+  pastMore: {
+    one: '{name} and {count} other',
+    other: '{name} and {count} others',
+  },
   past: 'Past events',
   elsewhere: 'What I’m giving elsewhere',
   empty: {

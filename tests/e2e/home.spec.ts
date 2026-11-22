@@ -118,9 +118,8 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
   await expect(page.getByTestId('home-later')).toContainText(
     'Les 40 ans de Tonton',
   );
-  await expect(
-    page.getByRole('link', { name: 'Les événements passés' }),
-  ).toBeVisible();
+  // « Les événements passés » waits for an event over (ticket 108).
+  await expect(page.getByTestId('home-past')).toHaveCount(0);
   // « Ce que j'offre ailleurs » waits for a public list where I offer
   // something (ticket 106).
   await expect(page.getByTestId('home-elsewhere')).toHaveCount(0);

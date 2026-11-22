@@ -602,9 +602,13 @@ onBeforeRouteLeave((to) => {
           data-testid="resumed-from"
         >
           {{
-            doc.resumedFrom.title
-              ? t('lists.resume.from', { title: doc.resumedFrom.title })
-              : t('lists.resume.fromUntitled')
+            doc.resumedFrom.year
+              ? t('lists.resume.from', {
+                  title: `${tk(`party.category.${doc.resumedFrom.year.category}`)} ${doc.resumedFrom.year.year}`,
+                })
+              : doc.resumedFrom.title
+                ? t('lists.resume.from', { title: doc.resumedFrom.title })
+                : t('lists.resume.fromUntitled')
           }}
           {{ t('lists.resume.marksBefore') }}
           <UIcon

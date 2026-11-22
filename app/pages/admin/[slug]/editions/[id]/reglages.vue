@@ -10,7 +10,8 @@ import { usePartyQuery } from '~/composables/queries/useParty';
 // screens that will hold them are drawn: the day, the budget and the word
 // of the party. Once the
 // Secret Santa is closed, read only; the game no longer changes once the
-// draw is revealed.
+// draw is revealed. At the bottom, while it is not drawn, « Supprimer ce
+// Secret Santa » (ticket 108).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -47,6 +48,13 @@ const gameFixed = computed(
   () => closed.value || Boolean(edition.data.value?.edition.revealedAt),
 );
 const guessOpen = ref(false);
+/** Not drawn yet: it may still be deleted (Q-008). */
+const deletable = computed(
+  () =>
+    edition.data.value?.edition.status === 'preparing' &&
+    !edition.data.value.edition.drawnAt,
+);
+const deleting = ref(false);
 
 const editing = ref<null | 'years'>(null);
 const sheet = (which: 'years') =>
@@ -173,6 +181,16 @@ const noteValue = computed(() =>
           values
         />
       </UiList>
+
+      <UiList v-if="deletable">
+        <UiListItem
+          icon="i-lucide-trash-2"
+          tone="danger"
+          :title="t('adminEdition.delete.row')"
+          :on-click="() => (deleting = true)"
+          data-testid="delete-secret-santa"
+        />
+      </UiList>
     </AdminQueryState>
 
     <UiChoiceSheet
@@ -196,6 +214,14 @@ const noteValue = computed(() =>
       :slug="slug"
       :edition-id="id"
       :value="eventDate"
+    />
+    <AdminDeleteSecretSantaSheet
+      v-if="deletable && edition.data.value"
+      v-model:open="deleting"
+      :slug="slug"
+      :edition-id="id"
+      :label="edition.data.value.edition.label"
+      :participants="edition.data.value.participants.length"
     />
     <AdminGuessSheet
       v-if="guess && !gameFixed && eventDate"

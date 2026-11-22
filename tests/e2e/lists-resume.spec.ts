@@ -123,7 +123,7 @@ test('an empty new list starts from an old one', async () => {
     'Reprise de Noël 2025. Les idées marquées',
   );
   await expect(page.getByTestId('resumed-from')).toContainText(
-    'Toi seul vois cette marque, elle disparaît au partage.',
+    'Toi seul vois cette marque.',
   );
   await expect(page.getByTestId('idea-carried')).toHaveCount(3);
 

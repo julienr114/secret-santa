@@ -623,6 +623,21 @@ export default {
     lossOff: 'Every guess will be deleted.',
     confirmLoss: 'Delete and validate',
   },
+  // « Supprimer ce Secret Santa » (ticket 108), while it is not drawn.
+  delete: {
+    row: 'Delete this Secret Santa',
+    title: 'Delete “{label}”?',
+    forGood: 'This is for good',
+    links: {
+      one: 'The personal link of its participant will stop working.',
+      other:
+        'The personal links of its {count} participants will stop working.',
+    },
+    members: 'Its participants stay members of the event.',
+    keep: 'Keep the Secret Santa',
+    confirm: 'Delete the Secret Santa',
+    done: 'Secret Santa deleted',
+  },
   settings: {
     title: 'Secret Santa settings',
     dateTitle: 'Date',

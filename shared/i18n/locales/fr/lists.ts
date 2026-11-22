@@ -313,7 +313,7 @@ export default {
     fromUntitled: 'Reprise d’une autre liste.',
     marksBefore: 'Les idées marquées',
     marksAfter:
-      'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque, elle disparaît au partage.',
+      'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque.',
     mark: 'Reprise de l’ancienne liste',
   },
   holders: {

@@ -77,3 +77,14 @@ export const hintsPathOf = (path: string): string | null => {
   const match = /^\/p\/([^/]+)\/(pistes|souhaits)(\/.*)?$/.exec(path);
   return match ? `/p/${match[1]}/liste` : null;
 };
+
+/**
+ * Where « Tirages passés » leads now (ticket 108, docs/spec/v3/navigation.md,
+ * « Les anciennes adresses »): « Les événements passés ».
+ * @param path - The path asked for.
+ * @returns The new path, or null when it did not move.
+ */
+export const pastPathOf = (path: string): string | null =>
+  path === '/tirages-passes' || path === '/tirages-passes/'
+    ? '/evenements-passes'
+    : null;

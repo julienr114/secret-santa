@@ -315,7 +315,7 @@ export default {
     fromUntitled: 'Übernommen von einer anderen Liste.',
     marksBefore: 'Die Ideen mit',
     marksAfter:
-      'wurden nicht verschenkt: Behalte sie oder lösche sie. Nur du siehst diese Markierung, sie verschwindet beim Teilen.',
+      'wurden nicht verschenkt: Behalte sie oder lösche sie. Nur du siehst diese Markierung.',
     mark: 'Von der alten Liste übernommen',
   },
   holders: {

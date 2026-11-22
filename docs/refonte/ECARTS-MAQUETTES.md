@@ -16,10 +16,23 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3Accueil` | Les lignes (Secret Santa, listes) et les deux lignes du bas n'ont que leur titre : aucun sous-titre d'état tant que leurs textes ne sont pas écrits (Q-010). Pas de point rouge avant le ticket 110. | Julien, 20 novembre 2026 |
 | `V3Accueil` | Les icônes des lignes sont les ronds de 40 px de `UiListItem`, pas les carrés de 36 px de la maquette. Un Secret Santa s'appelle « Le Secret Santa », ou par son nom quand la fête en a plusieurs. | Seul |
 | `V3Accueil` | « Nouvelle liste » apparaît dans la carte d'une fête où je n'ai pas de liste. Une ligne de liste sans lien public (celle d'un autre) ne s'ouvre pas, comme sur la page de la fête. | Seul |
-| `V3Accueil` | Une fête qui revient est montrée à sa prochaine date quand son année est passée ; une fête qui ne revient pas quitte l'accueil le lendemain de sa date (Q-009). Toutes les fêtes qui ne sont pas Noël vont sous « Plus tard », même avant Noël (Q-014). Le décompte de Noël disparaît le 25 décembre. | Seul |
+| `V3Accueil` | Toutes les fêtes qui ne sont pas Noël vont sous « Plus tard », même avant Noël (Q-014). Le décompte de Noël disparaît le 25 décembre. | Seul |
 | `V3Accueil` | « Bientôt » ne propose pas mon propre anniversaire, ni celui pour lequel une de mes fêtes « Anniversaire » tombe le même jour. | Seul |
-| `V3Accueil` | « Les fêtes passées » ouvre « Tirages passés » (ticket 108) ; « Ce que j'offre ailleurs » ouvre la page des listes d'aujourd'hui (ticket 106). | Seul |
 | `V3Accueil` | La carte du haut d'avant (« À faire maintenant »), le changement d'icône sur l'accueil, l'état de la demande de groupe et la ligne « Administration » disparaissent : l'icône se change dans « Mon compte », l'administration est un onglet, les demandes partent avec le ticket 105. | Seul |
+
+## L'année suivante et les événements passés (V3, ticket 108)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3AccueilAnnee` | Le texte sous « Les événements passés » suit `lignes.md` : le nom du plus récent, puis le compte des autres (« Famille Camille et 2 autres »), et non « Noël 2026, les 40 ans de Tonton et 3 autres ». La ligne n'est montrée que s'il y a un événement passé. | Seul |
+| `V3AccueilAnnee` | « Préparer Noël 2027 » agit sur place : les Secret Santa apparaissent dans la carte, sans changer de page (la maquette ne dit pas où il mène). « Reprendre ma liste de l'an dernier » prend la place de « Nouvelle liste ». Les deux sont proposés 60 jours avant la date, comme « Bientôt ». | Seul |
+| `V3AccueilAnnee` | Après sa date, un événement reste sur l'accueil jusqu'à la clôture de son Secret Santa, 14 jours au plus, 3 jours sans Secret Santa (un Secret Santa clôturé le fait partir le lendemain) ; puis il passe à sa date de l'année suivante s'il revient, sinon il ne reste que dans « Les événements passés ». Les jours se comptent en UTC sur le serveur. | Seul (la règle : Julien, Q-009) |
+| `V3FetesPassees` | Une ligne sans rien à dire n'a que sa date. Sans aucun événement passé, la page dit « Aucun événement passé pour l'instant. » (la maquette ne montre pas cet état). | Seul |
+| `V3FeteAnneePassee` | Les icônes des Secret Santa et de « Devine qui » (une coupe) sont les ronds de 40 px de `UiListItem`. Avec plusieurs Secret Santa, la section s'appelle « Les Secret Santa » et chaque ligne porte son nom ; l'organisateur qui n'y participait pas n'a pas de texte sous la ligne. | Seul |
+| `V3FeteAnneePassee` | Sous « Ma liste » : le nombre d'idées seulement (« 9 idées ») ; « Léo, Zoé et moi » vient avec les textes des lignes (ticket 112). Sous la liste d'un autre : « Tu as offert 2 cadeaux », sinon rien. Les lignes ouvrent les listes comme aujourd'hui, où l'on peut encore écrire et cocher (Q-021). | Seul |
+| `V3Fete`, `V3FeteAnniversaire` | « Les années passées » : le titre est le nom de l'année (« Noël 2025 », « Anniversaire 2025 ») ; « Ses 3 ans » attend de savoir pour qui un événement est fait (Q-022). | Seul |
+| `V3ListeReprise` | Le nom de la liste reprise est celui de l'événement (« Famille Camille »), comme toute liste faite pour un événement (`listes.md`), et non « Noël 2027 ». « Reprise de Noël 2026 » nomme l'année de l'ancienne liste quand elle était dans le même événement, sinon son nom, comme avant. | Seul |
+| — | « Supprimer ce Secret Santa » (pas de maquette) : une ligne rouge en bas des réglages du Secret Santa tant qu'il n'est pas tiré ; le panneau dit « C'est définitif », que les liens personnels de ses participants ne marcheront plus et qu'ils restent membres de l'événement, puis « Garder le Secret Santa » et « Supprimer le Secret Santa ». Pas d'identifiant à recopier : c'est la suppression d'un événement, réservée au super-admin, qui le demande. Ensuite, la page de l'événement. | Seul |
 
 ## Les pistes deviennent la liste (V3, ticket 107)
 

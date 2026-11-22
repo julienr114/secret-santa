@@ -1,21 +1,20 @@
 import { carriedGame } from '#server/utils/guesses';
 import { eq } from 'drizzle-orm';
-import { secretSantas, participations } from '#server/database/schema';
+import { participations } from '#server/database/schema';
 import {
+  createSecretSanta,
   listEditions,
-  newParticipation,
   publicEdition,
-  secretSantaRow,
   yearIdFor,
-  type Edition,
 } from '#server/database/editions';
+import { requireOpenYearNumber } from '#server/database/years';
 import { listPeople } from '#server/database/people';
 import { findAccountById } from '#server/database/accounts';
 import { quotaAccountOf } from '#server/database/quota';
 import { recordEvent } from '#server/database/audit';
 import { isSwitchOn } from '#server/database/switches';
 import { requireGroupAccess } from '#server/http/auth';
-import { dataKeyOf, newId, nowIso } from '#server/http/context';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import {
   checkParticipantCount,
@@ -47,6 +46,8 @@ export default defineEventHandler(async (event) => {
       await isSwitchOn(db, 'new_secret_santas'),
     ),
   );
+  // Nothing is made in a year over (ticket 108).
+  await requireOpenYearNumber(db, group, body.year);
   const existing = await listEditions(db, group.id);
   const previous = previousEdition(existing, body.year);
   const previousIds = previous
@@ -72,13 +73,11 @@ export default defineEventHandler(async (event) => {
         }
     : carriedGame(previous, body.eventDate);
   const createdAt = nowIso();
-  const edition: Edition = {
-    id: newId(),
+  const { edition, count } = await createSecretSanta(db, {
     partyId: group.id,
     yearId: await yearIdFor(db, group.id, body.year, createdAt),
-    label: body.label,
     year: body.year,
-    status: 'preparing',
+    label: body.label,
     // Its own rules, copied from the previous Secret Santa of the party,
     // or the party's for a first one (docs/spec/v3/secret-santa.md, « Ses
     // réglages »). The day of the party belongs to it (README 22.9), and so
@@ -95,47 +94,19 @@ export default defineEventHandler(async (event) => {
           : { messageNote: body.messageNote }),
       }),
     ),
-    rulesSnapshot: null,
-    historyWaivers: null,
-    reminderSentAt: null,
-    drawnAt: null,
-    closedAt: null,
-    revealedAt: null,
-    drawMode: 'app',
-    // « Devine qui » is taken from the previous edition (README 22.17),
-    // its end moved to the new party at the same time of day.
-    ...game,
-    guessReminderSentAt: null,
-    guessesClosedAt: null,
-    guessResultsSentAt: null,
-    // The automatic reminder keeps the previous edition's setting.
+    game,
     guessAutoReminder: previous?.guessAutoReminder ?? true,
-    guessAutoReminderSentAt: null,
-    guessPointSentAt: null,
-    guessEndSentAt: null,
-    // A game carried over is on from the creation (« activé moins de
-    // trois jours avant la fin », README 22.17).
-    guessEnabledAt: game.guessMode === 'none' ? null : createdAt,
+    personIds: people.map((p) => p.id),
+    dataKey,
     createdAt,
-  };
-  const rows = await Promise.all(
-    people.map((p) =>
-      newParticipation({ secretSantaId: edition.id, personId: p.id }, dataKey),
-    ),
-  );
-  // One statement per participant: D1 caps a statement at 100 bound
-  // parameters, which a single multi-row insert passes at ten people.
-  await db.batch([
-    db.insert(secretSantas).values(secretSantaRow(edition)),
-    ...rows.map((row) => db.insert(participations).values(row)),
-  ]);
+  });
   await recordEvent(db, {
     type: 'edition_created',
     groupId: group.id,
     editionId: edition.id,
     actor: user.role,
-    meta: { label: edition.label, participants: rows.length },
+    meta: { label: edition.label, participants: count },
   });
   setResponseStatus(event, 201);
-  return { edition: publicEdition(edition, rows.length) };
+  return { edition: publicEdition(edition, count) };
 });

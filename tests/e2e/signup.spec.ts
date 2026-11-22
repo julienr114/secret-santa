@@ -233,13 +233,13 @@ test('the super-admin sees every party, sets a limit and disables an account', a
   expect((await another('Un de trop')).status()).toBe(403);
 
   // Disabling closes the sessions at once and stops the login links.
-  expect((await victim.request.get('/api/auth/home')).status()).toBe(200);
+  expect((await victim.request.get('/api/home')).status()).toBe(200);
   const disabled = await page.request.patch(
     `/api/admin/accounts/${idOf(NEWCOMER)}`,
     { data: { disabled: true } },
   );
   expect(disabled.ok()).toBe(true);
-  expect((await victim.request.get('/api/auth/home')).status()).toBe(401);
+  expect((await victim.request.get('/api/home')).status()).toBe(401);
   const link = await victim.request.post('/api/auth/link', {
     data: { email: NEWCOMER },
   });

@@ -9,13 +9,18 @@ import {
   participations,
   parties,
   partyOrganisers,
-  partyYears,
   persons,
-  secretSantas,
   type AccountRow,
 } from './schema';
+import { loadYears, timelineOf, todayOnServer } from './years';
 import { decrypt } from '#server/utils/crypto';
 import type { PartyCategory } from '#shared/utils/categories';
+import {
+  listToResume,
+  listYear,
+  pastSummary,
+  yearToPrepare,
+} from '#shared/utils/years';
 
 // The home of the V3 (docs/spec/v3/accueil-et-creation.md, ticket 103):
 // the parties I am a member or an organiser of, each with its Secret
@@ -29,11 +34,16 @@ export type HomeParty = {
   name: string;
   category: PartyCategory;
   iconEmoji: string | null;
-  /** The date of its latest year, its usual day, whether it comes back. */
-  yearDate: string | null;
-  usualDate: string | null;
-  recurring: boolean;
-  /** The Secret Santas of its latest year I take part in or organise. */
+  /**
+   * The day it is shown at: its current year's (ticket 108), past for a
+   * few days after it, then the next time it comes back.
+   */
+  date: string | null;
+  /** « Préparer Noël 2027 », for its organiser: the year to prepare. */
+  prepare: number | null;
+  /** « Reprendre ma liste de l'an dernier »: the list to take again. */
+  resume: string | null;
+  /** The Secret Santas of its current year I take part in or organise. */
   secretSantas: { id: string; label: string; to: string | null }[];
   /** Its lists I may see: in the party for all its members, or mine. */
   lists: {
@@ -46,6 +56,8 @@ export type HomeParty = {
 
 export type HomeData = {
   parties: HomeParty[];
+  /** « Les événements passés »: the latest, and how many others. */
+  past: { latest: string; others: number } | null;
   people: {
     id: string;
     firstName: string;
@@ -62,12 +74,14 @@ const anyOf = (ids: string[]) => (ids.length === 0 ? [''] : ids);
  * @param db - The database.
  * @param account - Me.
  * @param dataKey - The key of the personal links.
+ * @param today - The day, « 2026-11-20 » (UTC on the server).
  * @returns My parties and my people.
  */
 export const loadHome = async (
   db: Db,
   account: AccountRow,
   dataKey: CryptoKey,
+  today = todayOnServer(),
 ): Promise<HomeData> => {
   const [mine, organised, people] = await Promise.all([
     db
@@ -95,29 +109,11 @@ export const loadHome = async (
   ]);
   const organises = new Set(organised.map((row) => row.partyId));
   const ids = [...new Set([...mine.map((row) => row.partyId), ...organises])];
-  if (ids.length === 0) return { parties: [], people };
+  if (ids.length === 0) return { parties: [], people, past: null };
 
-  const [rows, years, santas, shares, made] = await Promise.all([
+  const [rows, years, shares, made] = await Promise.all([
     db.select().from(parties).where(inArray(parties.id, ids)),
-    db
-      .select({
-        id: partyYears.id,
-        partyId: partyYears.partyId,
-        year: partyYears.year,
-        date: partyYears.date,
-      })
-      .from(partyYears)
-      .where(inArray(partyYears.partyId, ids)),
-    db
-      .select({
-        id: secretSantas.id,
-        partyId: secretSantas.partyId,
-        yearId: secretSantas.yearId,
-        label: secretSantas.label,
-      })
-      .from(secretSantas)
-      .where(inArray(secretSantas.partyId, ids))
-      .orderBy(asc(secretSantas.createdAt)),
+    loadYears(db, ids),
     db
       .select({
         id: giftLists.id,
@@ -125,6 +121,8 @@ export const loadHome = async (
         accountId: giftLists.accountId,
         shareToken: giftLists.shareToken,
         visibility: giftListParties.visibility,
+        eventDate: giftLists.eventDate,
+        createdAt: giftLists.createdAt,
       })
       .from(giftListParties)
       .innerJoin(giftLists, eq(giftLists.id, giftListParties.listId))
@@ -138,6 +136,8 @@ export const loadHome = async (
         partyId: giftLists.partyId,
         accountId: giftLists.accountId,
         shareToken: giftLists.shareToken,
+        eventDate: giftLists.eventDate,
+        createdAt: giftLists.createdAt,
       })
       .from(giftLists)
       .where(inArray(giftLists.partyId, ids))
@@ -214,57 +214,91 @@ export const loadHome = async (
     ),
   );
 
+  const timelines = new Map(
+    rows.map((party) => [party.id, timelineOf(party, years, today)]),
+  );
   return {
     people,
-    parties: rows.map((party) => {
-      const latest = years
-        .filter((year) => year.partyId === party.id)
-        .toSorted((a, b) => b.year - a.year)[0];
+    past: pastSummary(
+      rows.flatMap((party) =>
+        (timelines.get(party.id)?.past ?? []).map((year) => ({
+          ...year,
+          name: party.name,
+        })),
+      ),
+    ),
+    parties: rows.flatMap((party) => {
+      const timeline = timelines.get(party.id);
+      const current = timeline?.current;
+      // Over for good: it is in « Les événements passés » only.
+      if (!current) return [];
+      const ofYear = (year: number | undefined) =>
+        years.find((row) => row.partyId === party.id && row.year === year)
+          ?.santas ?? [];
+      const santas = ofYear(current.year);
       const organiser = organises.has(party.id);
-      return {
-        slug: party.slug,
-        name: party.name,
-        category: party.category,
-        iconEmoji: party.iconEmoji,
-        yearDate: latest?.date ?? null,
-        usualDate: party.usualDate,
-        recurring: party.recurring,
-        secretSantas: santas
-          .filter(
-            (santa) =>
-              santa.partyId === party.id &&
-              santa.yearId === latest?.id &&
-              (organiser || paths.has(santa.id)),
-          )
-          .map((santa) => ({
-            id: santa.id,
-            label: santa.label,
-            // My own page first; the organiser's otherwise.
-            to:
-              paths.get(santa.id) ??
-              (organiser ? `/admin/${party.slug}/editions/${santa.id}` : null),
-          })),
-        lists: links
-          .filter(
-            (list) =>
-              list.partyId === party.id &&
-              (list.visibility === 'party' || myLists.has(list.id)),
-          )
-          .map((list) => {
-            const owner = owners.find((row) => row.id === list.accountId);
-            const person = ownerPeople.find(
-              (row) => row.partyId === party.id && row.email === owner?.email,
-            );
-            return {
-              id: list.id,
-              mine: myLists.has(list.id),
-              ownerName: person?.firstName ?? owner?.firstName ?? null,
-              to: myLists.has(list.id)
-                ? `/listes/${list.id}`
-                : `/l/${list.shareToken}?depuis=${party.slug}`,
-            };
-          }),
-      };
+      const inParty = links.filter((list) => list.partyId === party.id);
+      const mineByYear = inParty
+        .filter((list) => myLists.has(list.id))
+        .map((list) => ({ id: list.id, year: listYear(list) }))
+        .toSorted((a, b) => b.year - a.year);
+      return [
+        {
+          slug: party.slug,
+          name: party.name,
+          category: party.category,
+          iconEmoji: party.iconEmoji,
+          date: current.date,
+          prepare: yearToPrepare(
+            {
+              organiser,
+              recurring: party.recurring,
+              current,
+              santas: santas.length,
+              santasBefore: ofYear(timeline.past[0]?.year).length,
+            },
+            today,
+          ),
+          resume: listToResume(
+            { recurring: party.recurring, current, mine: mineByYear },
+            today,
+          ),
+          secretSantas: santas
+            .filter((santa) => organiser || paths.has(santa.id))
+            .map((santa) => ({
+              id: santa.id,
+              label: santa.label,
+              // My own page first; the organiser's otherwise.
+              to:
+                paths.get(santa.id) ??
+                (organiser
+                  ? `/admin/${party.slug}/editions/${santa.id}`
+                  : null),
+            })),
+          // The lists of its current year; those of before are in its
+          // years over (ticket 108).
+          lists: inParty
+            .filter(
+              (list) =>
+                listYear(list) >= current.year &&
+                (list.visibility === 'party' || myLists.has(list.id)),
+            )
+            .map((list) => {
+              const owner = owners.find((row) => row.id === list.accountId);
+              const person = ownerPeople.find(
+                (row) => row.partyId === party.id && row.email === owner?.email,
+              );
+              return {
+                id: list.id,
+                mine: myLists.has(list.id),
+                ownerName: person?.firstName ?? owner?.firstName ?? null,
+                to: myLists.has(list.id)
+                  ? `/listes/${list.id}`
+                  : `/l/${list.shareToken}?depuis=${party.slug}`,
+              };
+            }),
+        },
+      ];
     }),
   };
 };

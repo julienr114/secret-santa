@@ -5,7 +5,9 @@ import { requirePersonalLink } from '#server/http/personal';
 // The participant watched the palmarès (README 22.17): « Revoir le
 // palmarès », their guesses corrected, and no more card on the home.
 export default defineEventHandler(async (event) => {
-  const { db, edition, participation } = await requirePersonalLink(event);
+  const { db, edition, participation } = await requirePersonalLink(event, {
+    afterTheYear: true,
+  });
   if (!edition.revealedAt && edition.status !== 'closed') {
     throw createError({
       statusCode: 409,

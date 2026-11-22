@@ -193,6 +193,80 @@ export const newParticipation = async (
   };
 };
 
+/** What a new Secret Santa takes, its draw settings complete. */
+export type NewSecretSanta = {
+  partyId: string;
+  yearId: string;
+  year: number;
+  label: string;
+  rules: SecretSantaRow['rules'];
+  /** « Devine qui »: as chosen, or carried from the one before. */
+  game: Pick<SecretSantaRow, 'guessMode' | 'guessEndsAt' | 'guessTimeZone'>;
+  guessAutoReminder: boolean;
+  /** Its participants, each given a personal link at once. */
+  personIds: readonly string[];
+  dataKey: CryptoKey;
+  createdAt: string;
+};
+
+/**
+ * Creates a Secret Santa to prepare, with its participants: nothing is
+ * drawn nor sent. The creation of a Secret Santa (README 4.2) and
+ * « Préparer Noël 2027 » (ticket 108) both go through here.
+ * @param db - The database.
+ * @param input - What it takes.
+ * @returns The edition and how many take part.
+ */
+export const createSecretSanta = async (
+  db: Db,
+  input: NewSecretSanta,
+): Promise<{ edition: Edition; count: number }> => {
+  const { game, createdAt } = input;
+  const edition: Edition = {
+    id: newId(),
+    partyId: input.partyId,
+    yearId: input.yearId,
+    label: input.label,
+    year: input.year,
+    status: 'preparing',
+    rules: input.rules,
+    rulesSnapshot: null,
+    historyWaivers: null,
+    reminderSentAt: null,
+    drawnAt: null,
+    closedAt: null,
+    revealedAt: null,
+    drawMode: 'app',
+    // « Devine qui » is taken from the previous edition (README 22.17),
+    // its end moved to the new party at the same time of day.
+    ...game,
+    guessReminderSentAt: null,
+    guessesClosedAt: null,
+    guessResultsSentAt: null,
+    // The automatic reminder keeps the previous edition's setting.
+    guessAutoReminder: input.guessAutoReminder,
+    guessAutoReminderSentAt: null,
+    guessPointSentAt: null,
+    guessEndSentAt: null,
+    // A game carried over is on from the creation (« activé moins de
+    // trois jours avant la fin », README 22.17).
+    guessEnabledAt: game.guessMode === 'none' ? null : createdAt,
+    createdAt,
+  };
+  const rows = await Promise.all(
+    input.personIds.map((personId) =>
+      newParticipation({ secretSantaId: edition.id, personId }, input.dataKey),
+    ),
+  );
+  // One statement per participant: D1 caps a statement at 100 bound
+  // parameters, which a single multi-row insert passes at ten people.
+  await db.batch([
+    db.insert(secretSantas).values(secretSantaRow(edition)),
+    ...rows.map((row) => db.insert(participations).values(row)),
+  ]);
+  return { edition, count: rows.length };
+};
+
 export type Participant = PublicPerson & {
   participationId: string;
   messageSentAt: string | null;

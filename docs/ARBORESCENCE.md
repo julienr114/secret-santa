@@ -17,7 +17,8 @@ flowchart LR
   end
 
   accueil --> compte["Mon compte"]
-  accueil --> passes["Tirages passés"]
+  accueil --> passes["Les événements passés<br/><small>/evenements-passes</small>"]
+  passes --> anneePassee["Une année passée<br/><small>/e/[fête]/annees/[année]</small>"]
   accueil --> limite["La limite de Secret Santa<br/><small>/secret-santa/limite</small>"]
   accueil --> pause["Les nouveaux Secret Santa en pause<br/><small>/secret-santa/pause</small>"]
   accueil --> listes["Listes<br/><small>/listes</small>"]
@@ -112,14 +113,15 @@ La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin »
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
-L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. En bas, « Les fêtes passées » ouvre « Tirages passés » jusqu'au ticket 108, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
+L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; « Nouvelle liste » ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. Deux mois avant un événement qui revient (ticket 108) : « Préparer Noël 2027 », pour son organisateur, recrée sur place les Secret Santa de l'an dernier (la carte les montre aussitôt) ; « Reprendre ma liste de l'an dernier » ouvre `/listes/nouvelle?pour=[événement]&reprendre=[liste]`, qui crée la liste de l'année et l'ouvre. En bas, « Les événements passés », montrée dès qu'il y en a un, ouvre `/evenements-passes`, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf (vide jusqu'au ticket 120) | `/quoi-de-neuf` | — (barre du bas) | |
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
 | Connexion | `/login` | — | |
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
-| Tirages passés | `/tirages-passes` | Accueil | |
+| Les événements passés | `/evenements-passes` | Accueil | |
+| (ancienne adresse) | `/tirages-passes` | mène aux Événements passés (`pastPathOf`) | |
 | Rejoindre une fête (lien d'invitation) | `/rejoindre/[code]` | — | |
 
 ## Administration (super-admin)
@@ -141,6 +143,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 |---|---|---|---|
 | Pour quelle occasion ? (puis « Qui est de la fête ? », `?etape=membres`) | `/e/nouvelle` | Accueil ; la seconde étape : la première | |
 | La fête | `/e/[fête]` | Accueil | Quitter cette fête |
+| Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes) | `/e/[fête]/annees/[année]` | Les événements passés ; la fête quand on vient de ses « Années passées » (`?depuis=evenement`) | |
 | Membres | `/e/[fête]/membres` | La fête | |
 | Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
 | Nouvelle personne | `/e/[fête]/membres/nouvelle` | Membres | |
@@ -162,7 +165,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/invit
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
-| Réglages du Secret Santa (« Réglages de la fête » y mène aussi, pour le dernier de l'année) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget |
+| Réglages du Secret Santa (« Réglages de la fête » y mène aussi, pour le dernier de l'année) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, Supprimer ce Secret Santa (pas encore tiré ; ensuite : la fête) |
 | Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
 | Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |

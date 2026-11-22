@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
@@ -16,6 +16,8 @@ import {
   type PersonRow,
 } from './schema';
 import { insertPersonFromAccount } from './people';
+import { loadYears, timelineOf } from './years';
+import { loadPastLines, type PastYearLine } from './pastYears';
 import { createOwnParty } from './listParties';
 import { newId } from '#server/http/context';
 import { decrypt } from '#server/utils/crypto';
@@ -29,6 +31,7 @@ import {
   type PartyInput,
 } from '#server/utils/parties';
 import type { PartyCategory } from '#shared/utils/categories';
+import { listYear } from '#shared/utils/years';
 import { unwrap } from '#server/http/errors';
 
 // The party (docs/spec/v3/fete.md, ticket 104): its page, its creation
@@ -46,8 +49,13 @@ export type PartyPage = {
     recurring: boolean;
     usualDate: string | null;
   };
-  /** The year of the party now, the latest one. */
+  /**
+   * The year of the party now (ticket 108): the one the home shows, else,
+   * for an event over for good, its last one.
+   */
   year: { year: number; date: string | null } | null;
+  /** « Les années passées », the latest first, with what I did there. */
+  pastYears: PastYearLine[];
   role: 'organiser' | 'member';
   members: { count: number; avatars: Avatar[] };
   /** The Secret Santas of the year I organise or take part in. */
@@ -83,17 +91,8 @@ export const loadPartyPage = async (
   },
 ): Promise<PartyPage> => {
   const { party, account, role, me, dataKey } = input;
-  const [[year], people, santas, shares, made] = await Promise.all([
-    db
-      .select({
-        id: partyYears.id,
-        year: partyYears.year,
-        date: partyYears.date,
-      })
-      .from(partyYears)
-      .where(eq(partyYears.partyId, party.id))
-      .orderBy(desc(partyYears.year))
-      .limit(1),
+  const [years, people, santas, shares, made] = await Promise.all([
+    loadYears(db, [party.id]),
     db
       .select()
       .from(persons)
@@ -116,6 +115,8 @@ export const loadPartyPage = async (
         accountId: giftLists.accountId,
         shareToken: giftLists.shareToken,
         visibility: giftListParties.visibility,
+        eventDate: giftLists.eventDate,
+        createdAt: giftLists.createdAt,
       })
       .from(giftListParties)
       .innerJoin(giftLists, eq(giftLists.id, giftListParties.listId))
@@ -128,18 +129,24 @@ export const loadPartyPage = async (
         id: giftLists.id,
         accountId: giftLists.accountId,
         shareToken: giftLists.shareToken,
+        eventDate: giftLists.eventDate,
+        createdAt: giftLists.createdAt,
       })
       .from(giftLists)
       .where(eq(giftLists.partyId, party.id))
       .orderBy(asc(giftLists.createdAt)),
   ]);
-  // One row per list: shared here, else made for here.
+  // The year the page shows; the years before are « Les années passées ».
+  const timeline = timelineOf(party, years);
+  const shownYear = timeline.current ?? timeline.past[0] ?? null;
+  const year = years.find((row) => row.year === shownYear?.year);
+  // One row per list of that year: shared here, else made for here.
   const links = [
     ...shares,
     ...made
       .filter((list) => !shares.some((row) => row.id === list.id))
       .map((list) => ({ ...list, visibility: 'made' as const })),
-  ];
+  ].filter((list) => !shownYear || listYear(list) >= shownYear.year);
   const held = new Set(
     links.length === 0
       ? []
@@ -220,7 +227,15 @@ export const loadPartyPage = async (
       recurring: party.recurring,
       usualDate: party.usualDate,
     },
-    year: year ? { year: year.year, date: year.date } : null,
+    year: shownYear,
+    pastYears: await loadPastLines(db, {
+      account,
+      dataKey,
+      parties: [party],
+      except: shownYear
+        ? { partyId: party.id, year: shownYear.year }
+        : undefined,
+    }),
     role,
     members: {
       count: people.length,

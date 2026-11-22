@@ -8,7 +8,9 @@ import { nextStatus } from '#server/utils/editions';
 
 // After the party: read only, and history for next year's exclusions.
 export default defineEventHandler(async (event) => {
-  const { user, group, db, edition } = await requireEdition(event);
+  const { user, group, db, edition } = await requireEdition(event, {
+    afterTheYear: true,
+  });
   const status = unwrap(nextStatus(edition.status, 'close'));
   // « Devine qui » (README 22.17): its answers come with the reveal, so
   // closing without revealing waits until the game is turned off.

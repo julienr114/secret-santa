@@ -9,6 +9,11 @@ export default {
   later: 'Später',
   age: { one: 'wird {count}', other: 'wird {count}' },
   prepare: 'Vorbereiten',
+  prepareYear: '{name} vorbereiten',
+  pastMore: {
+    one: '{name} und {count} weiteres',
+    other: '{name} und {count} weitere',
+  },
   past: 'Vergangene Events',
   elsewhere: 'Was ich anderswo schenke',
   empty: {

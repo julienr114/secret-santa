@@ -47,7 +47,7 @@ const organiserView = async () => {
     `${ADMIN}/editions/${state.editionId}`,
     `${ADMIN}/journal`,
     `${ADMIN}/persons`,
-    '/api/auth/home',
+    '/api/past',
     '/api/home',
     '/api/admin/groups',
     '/api/admin/accounts',

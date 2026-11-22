@@ -2,8 +2,9 @@ import type { PartyCategory } from './categories';
 import { nextOccurrence } from './categories';
 
 // The home of the V3 (docs/spec/v3/accueil-et-creation.md, « L'accueil »):
-// the date each party is shown at, the sections of Christmas, « Plus
-// tard », the birthdays proposed in « Bientôt », the countdown.
+// the sections of Christmas, « Plus tard », the birthdays proposed in
+// « Bientôt », the countdown. The date each party is shown at is in
+// ./years.ts.
 
 /** How long before a birthday « Bientôt » proposes it (Julien, 20 November 2026). */
 export const BIRTHDAY_NOTICE_DAYS = 60;
@@ -29,28 +30,6 @@ export const daysBetween = (from: string, to: string): number =>
 export const daysUntilChristmas = (today: string): number =>
   daysBetween(today, nextOccurrence('12-25', today));
 
-/**
- * The day a party is shown at on the home: its latest year while it is
- * to come; once past, the next time it comes back, if it does.
- * @param party - The date of its latest year, its usual day, whether it comes back.
- * @param today - « 2026-11-20 ».
- * @returns « 2026-12-24 », a past day for a party that is over, or null.
- */
-export const homeDateOf = (
-  party: {
-    yearDate: string | null;
-    usualDate: string | null;
-    recurring: boolean;
-  },
-  today: string,
-): string | null => {
-  if (party.yearDate && party.yearDate >= today) return party.yearDate;
-  if (party.recurring && party.usualDate) {
-    return nextOccurrence(party.usualDate, today);
-  }
-  return party.yearDate;
-};
-
 /** What the sections need of a party. */
 type Dated = { category: PartyCategory; date: string | null };
 
@@ -61,19 +40,16 @@ const byDate = <T extends Dated>(a: T, b: T) =>
 /**
  * The parties of the home in their sections: one section per season of
  * Christmas, whatever their names (no other category is grouped), then
- * « Plus tard » for the others; each by date. A party whose day is past
- * is left out (« Les fêtes passées », ticket 108).
- * @param parties - My parties, each with the date it is shown at.
- * @param today - « 2026-11-20 ».
+ * « Plus tard » for the others; each by date. Which parties are still on
+ * the home after their day is decided before (shared/utils/years.ts,
+ * ticket 108): one a few days past keeps its place, at the top.
+ * @param parties - My parties on the home, each with the date it is shown at.
  * @returns The seasons, by year, and the parties after.
  */
 export const homeSections = <T extends Dated>(
   parties: readonly T[],
-  today: string,
 ): { seasons: { year: number; parties: T[] }[]; later: T[] } => {
-  const coming = parties
-    .filter((party) => party.date === null || party.date >= today)
-    .toSorted(byDate);
+  const coming = parties.toSorted(byDate);
   const inSeason = (party: T): party is T & { date: string } =>
     party.category === 'christmas' && party.date !== null;
   const christmas = coming.filter(inSeason);

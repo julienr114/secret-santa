@@ -3,7 +3,6 @@ import {
   comingBirthdays,
   daysBetween,
   daysUntilChristmas,
-  homeDateOf,
   homeSections,
 } from './homeParties';
 
@@ -28,44 +27,6 @@ describe('daysBetween', () => {
   });
 });
 
-describe('homeDateOf', () => {
-  it('shows the date of its year while it is to come', () => {
-    expect(
-      homeDateOf(
-        { yearDate: '2026-12-24', usualDate: '12-25', recurring: true },
-        TODAY,
-      ),
-    ).toBe('2026-12-24');
-  });
-
-  it('shows the next time a party comes back, once past', () => {
-    expect(
-      homeDateOf(
-        { yearDate: '2025-12-25', usualDate: '12-25', recurring: true },
-        TODAY,
-      ),
-    ).toBe('2026-12-25');
-    expect(
-      homeDateOf(
-        { yearDate: '2026-02-08', usualDate: '02-08', recurring: true },
-        TODAY,
-      ),
-    ).toBe('2027-02-08');
-  });
-
-  it('keeps the past day of a party that does not come back', () => {
-    expect(
-      homeDateOf(
-        { yearDate: '2026-06-13', usualDate: '06-13', recurring: false },
-        TODAY,
-      ),
-    ).toBe('2026-06-13');
-    expect(
-      homeDateOf({ yearDate: null, usualDate: null, recurring: false }, TODAY),
-    ).toBeNull();
-  });
-});
-
 describe('homeSections', () => {
   const party = (
     name: string,
@@ -78,15 +39,12 @@ describe('homeSections', () => {
   });
 
   it('groups the Christmas parties of a year by date, the others after', () => {
-    const { seasons, later } = homeSections(
-      [
-        party('Famille Camille', 'christmas', '2026-12-25'),
-        party('Les 40 ans de Tonton', 'birthday', '2027-02-08'),
-        party('Bureau', 'christmas', '2026-12-19'),
-        party('Chez Mamie', 'christmas', '2026-12-24'),
-      ],
-      TODAY,
-    );
+    const { seasons, later } = homeSections([
+      party('Famille Camille', 'christmas', '2026-12-25'),
+      party('Les 40 ans de Tonton', 'birthday', '2027-02-08'),
+      party('Bureau', 'christmas', '2026-12-19'),
+      party('Chez Mamie', 'christmas', '2026-12-24'),
+    ]);
     expect(seasons).toEqual([
       {
         year: 2026,
@@ -100,27 +58,25 @@ describe('homeSections', () => {
     expect(later.map((p) => p.name)).toEqual(['Les 40 ans de Tonton']);
   });
 
-  it('leaves out the parties that are past, and puts those without a date last', () => {
-    const { seasons, later } = homeSections(
-      [
-        party('Sans date', 'birthday', null),
-        party('Fini', 'birthday', '2026-06-13'),
-        party('Léo', 'birthday', '2026-12-01'),
-      ],
-      TODAY,
-    );
+  it('keeps a party a few days past at the top, and puts those without a date last', () => {
+    const { seasons, later } = homeSections([
+      party('Sans date', 'birthday', null),
+      party('Il y a deux jours', 'birthday', '2026-11-18'),
+      party('Léo', 'birthday', '2026-12-01'),
+    ]);
     expect(seasons).toEqual([]);
-    expect(later.map((p) => p.name)).toEqual(['Léo', 'Sans date']);
+    expect(later.map((p) => p.name)).toEqual([
+      'Il y a deux jours',
+      'Léo',
+      'Sans date',
+    ]);
   });
 
   it('gives each year of Christmas its section', () => {
-    const { seasons } = homeSections(
-      [
-        party('Plus tard', 'christmas', '2027-12-25'),
-        party('Cette année', 'christmas', '2026-12-25'),
-      ],
-      TODAY,
-    );
+    const { seasons } = homeSections([
+      party('Plus tard', 'christmas', '2027-12-25'),
+      party('Cette année', 'christmas', '2026-12-25'),
+    ]);
     expect(seasons.map((season) => season.year)).toEqual([2026, 2027]);
   });
 });

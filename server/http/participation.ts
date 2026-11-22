@@ -2,6 +2,8 @@ import type { H3Event } from 'h3';
 import { findParticipation } from '#server/database/participations';
 import { requireGroupAccess, type GroupContext } from './auth';
 import { notFound } from './errors';
+import { writes } from './edition';
+import { requireOpenYear } from '#server/database/years';
 
 export type ParticipationContext = GroupContext &
   NonNullable<Awaited<ReturnType<typeof findParticipation>>>;
@@ -17,5 +19,9 @@ export const requireParticipation = async (
     getRouterParam(event, 'participationId') ?? '',
   );
   if (!row) throw notFound('participation_not_found');
+  // Nothing changes in a year over (ticket 108).
+  if (writes(event)) {
+    await requireOpenYear(context.db, context.group.id, row.edition.yearId);
+  }
   return { ...context, ...row };
 };

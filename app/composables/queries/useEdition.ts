@@ -214,3 +214,10 @@ export const useRevealOneMutation = (slug: Ref, id: Ref) =>
         body,
       }),
   );
+
+/** « Supprimer ce Secret Santa », while it is not drawn (ticket 108). */
+export const useDeleteSecretSantaMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<{ ok: true }, undefined>(
+    () => api(`${base(slug)}/editions/${toValue(id)}`, { method: 'DELETE' }),
+    () => [...groupKeys(slug), keys.home()],
+  );

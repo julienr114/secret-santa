@@ -308,7 +308,7 @@ export default {
     fromUntitled: 'Taken up from another list.',
     marksBefore: 'The ideas marked',
     marksAfter:
-      'were not given: keep them or erase them. Only you see this mark, and it goes when the list is shared.',
+      'were not given: keep them or erase them. Only you see this mark.',
     mark: 'Taken up from the old list',
   },
   holders: {

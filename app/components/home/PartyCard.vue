@@ -3,13 +3,32 @@ import type { HomeParty } from '#server/database/homeParties';
 import { partyEmoji } from '#shared/utils/categories';
 import { categoryTint } from '~/utils/categories';
 import { formatShortDay } from '~/utils/labels';
+import { usePrepareYearMutation } from '~/composables/queries/useParty';
 
 // A party on the home (docs/spec/v3/accueil-et-creation.md, V3Accueil):
 // its header opens it; below, its Secret Santas and the lists of its
 // members, at the same level, each with its title only (Q-006).
-// « Nouvelle liste » while I have none in it.
-const props = defineProps<{ party: HomeParty & { date: string | null } }>();
-const { t, locale } = useT();
+// « Nouvelle liste » while I have none in it. Two months before an event
+// that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 » for
+// its organiser, « Reprendre ma liste de l'an dernier » for whoever held
+// one, instead of « Nouvelle liste ».
+const props = defineProps<{ party: HomeParty }>();
+const { t, tk, locale } = useT();
+const toast = useMessages();
+const errorMessage = useErrorMessage();
+const prepare = usePrepareYearMutation(() => props.party.slug);
+const prepareLabel = computed(() =>
+  props.party.prepare === null
+    ? ''
+    : t('home.prepareYear', {
+        name: `${tk(`party.category.${props.party.category}`)} ${props.party.prepare}`,
+      }),
+);
+/** Prepares the Secret Santa of the year to come, a failure told in a toast. */
+const onPrepare = () =>
+  prepare.mutate(undefined, {
+    onError: (error) => toast.failed(errorMessage(error)),
+  });
 const emoji = computed(() => partyEmoji(props.party));
 const hasMine = computed(() => props.party.lists.some((list) => list.mine));
 const fromHome = useDrawFromHome();
@@ -79,7 +98,20 @@ const onSecretSanta = (to: string | null) => {
         :to="list.to ?? undefined"
       />
       <UiAddRow
-        v-if="!hasMine"
+        v-if="party.prepare !== null"
+        :label="prepareLabel"
+        :busy="prepare.isPending.value"
+        :on-click="onPrepare"
+        data-testid="home-prepare"
+      />
+      <UiAddRow
+        v-if="party.resume"
+        :to="`/listes/nouvelle?pour=${party.slug}&reprendre=${party.resume}`"
+        :label="t('party.lists.resume')"
+        data-testid="home-resume"
+      />
+      <UiAddRow
+        v-else-if="!hasMine"
         :to="`/listes/nouvelle?pour=${party.slug}`"
         :label="t('party.lists.new')"
       />

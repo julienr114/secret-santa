@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { backMove, hintsPathOf, partyPathOf, tabOf } from './navigation';
+import {
+  backMove,
+  hintsPathOf,
+  partyPathOf,
+  pastPathOf,
+  tabOf,
+} from './navigation';
 
 describe('backMove', () => {
   it('goes back when the page before is the parent', () => {
@@ -81,5 +87,12 @@ describe('hintsPathOf', () => {
     expect(hintsPathOf('/p/abc')).toBeNull();
     expect(hintsPathOf('/p/abc/journal')).toBeNull();
     expect(hintsPathOf('/p/abc/pistesx')).toBeNull();
+  });
+});
+
+describe('pastPathOf', () => {
+  it('sends « Tirages passés » to « Les événements passés »', () => {
+    expect(pastPathOf('/tirages-passes')).toBe('/evenements-passes');
+    expect(pastPathOf('/evenements-passes')).toBeNull();
   });
 });

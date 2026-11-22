@@ -3,6 +3,10 @@ import type { Dict } from '../../types';
 
 export default {
   unknown: 'Autsch, da hat etwas gehakt. Versuch es gleich noch einmal.',
+  year_over: 'Dieses Jahr ist vorbei: Daran ändert sich nichts mehr.',
+  secret_santa_drawn:
+    'Dieses Secret Santa ist ausgelost: Es lässt sich nicht mehr löschen.',
+  nothing_to_prepare: 'Gerade gibt es nichts vorzubereiten.',
   other: 'Da hat etwas gehakt ({reason}).',
   validation: 'Da fehlt noch etwas: prüfe die Felder.',
   unauthorized: 'Melde dich an, um fortzufahren.',

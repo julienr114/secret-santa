@@ -1,4 +1,5 @@
 import type { PartyPage, TakenPerson } from '#server/database/parties';
+import type { PastYearLine, PastYearPage } from '#server/database/pastYears';
 import type { PartyCategory } from '#shared/utils/categories';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -79,4 +80,28 @@ export const useLeavePartyMutation = (slug: MaybeRefOrGetter<string>) =>
   useApiMutation<{ ok: true }, undefined>(
     () => api(`/api/parties/${toValue(slug)}/leave`, { method: 'POST' }),
     () => [keys.home(), keys.lists()],
+  );
+
+/** « Les événements passés » (ticket 108): by year, a line per event. */
+export const usePastEventsQuery = () =>
+  useApiQuery<{ years: { year: number; lines: PastYearLine[] }[] }>(
+    () => keys.pastEvents(),
+    () => '/api/past',
+  );
+
+/** A year over of a party, read only (ticket 108). */
+export const usePastYearQuery = (
+  slug: MaybeRefOrGetter<string>,
+  year: MaybeRefOrGetter<number>,
+) =>
+  useApiQuery<PastYearPage>(
+    () => keys.pastYear(toValue(slug), toValue(year)),
+    () => `/api/parties/${toValue(slug)}/years/${toValue(year)}`,
+  );
+
+/** « Préparer Noël 2027 » (ticket 108): the Secret Santa of last year again. */
+export const usePrepareYearMutation = (slug: MaybeRefOrGetter<string>) =>
+  useApiMutation<{ year: number; secretSantas: { id: string }[] }, undefined>(
+    () => api(`/api/admin/${toValue(slug)}/prepare`, { method: 'POST' }),
+    () => [keys.home(), keys.group(toValue(slug))],
   );

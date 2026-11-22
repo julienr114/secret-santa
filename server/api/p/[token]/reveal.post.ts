@@ -22,7 +22,7 @@ import { canReveal } from '#server/utils/personal';
 // journaled.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
-    await requirePersonalLink(event);
+    await requirePersonalLink(event, { afterTheYear: true });
   unwrap(canReveal(edition.status));
   const [assignment] = await db
     .select()

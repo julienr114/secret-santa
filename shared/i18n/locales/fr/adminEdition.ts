@@ -626,6 +626,21 @@ export default {
     lossOff: 'Tous les pronostics seront effacés.',
     confirmLoss: 'Effacer et valider',
   },
+  // « Supprimer ce Secret Santa » (ticket 108), while it is not drawn.
+  delete: {
+    row: 'Supprimer ce Secret Santa',
+    title: 'Supprimer « {label} » ?',
+    forGood: 'C’est définitif',
+    links: {
+      one: 'Le lien personnel de son participant ne marchera plus.',
+      other:
+        'Les liens personnels de ses {count} participants ne marcheront plus.',
+    },
+    members: 'Ses participants restent membres de l’événement.',
+    keep: 'Garder le Secret Santa',
+    confirm: 'Supprimer le Secret Santa',
+    done: 'Secret Santa supprimé',
+  },
   settings: {
     title: 'Réglages du Secret Santa',
     dateTitle: 'Date',

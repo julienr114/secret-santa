@@ -9,6 +9,11 @@ export default {
   later: 'Plus tard',
   age: { one: 'ses {count} an', other: 'ses {count} ans' },
   prepare: 'Préparer',
+  prepareYear: 'Préparer {name}',
+  pastMore: {
+    one: '{name} et {count} autre',
+    other: '{name} et {count} autres',
+  },
   past: 'Les événements passés',
   elsewhere: 'Ce que j’offre ailleurs',
   empty: {

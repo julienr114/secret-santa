@@ -13,6 +13,11 @@ export const keys = {
   // « Créer › Un Secret Santa » (ticket 105), under the home's key: what
   // changes the home changes it.
   newSecretSanta: () => ['home', 'new-secret-santa'] as const,
+  // « Les événements passés » (ticket 108), under the home's key.
+  pastEvents: () => ['home', 'past'] as const,
+  // A year over of a party (ticket 108), under its group's key.
+  pastYear: (slug: string, year: number) =>
+    ['group', slug, 'year', year] as const,
   people: (slug: string) => ['group', slug, 'people'] as const,
   rules: (slug: string) => ['group', slug, 'rules'] as const,
   editions: (slug: string) => ['group', slug, 'editions'] as const,

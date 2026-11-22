@@ -3,6 +3,10 @@ import type { Dict } from '../../types';
 
 export default {
   unknown: 'Ouch, something got stuck. Try again in a moment.',
+  year_over: 'This year is over: nothing changes in it any more.',
+  secret_santa_drawn:
+    'This Secret Santa is drawn: it can no longer be deleted.',
+  nothing_to_prepare: 'There is nothing to prepare yet.',
   other: 'Something got stuck ({reason}).',
   validation: 'Something’s missing: check the fields.',
   unauthorized: 'Log in to continue.',

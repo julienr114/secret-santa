@@ -45,10 +45,6 @@ export default {
       },
       partyToday: 'It’s the big day',
     },
-    past: {
-      title: 'Past Secret Santas',
-      empty: 'No past Secret Santa yet.',
-    },
     journalSignal: {
       lead: 'New in the journal.',
       row: 'New in the journal',

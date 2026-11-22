@@ -1,5 +1,4 @@
 import type { PartyCategory } from '#shared/utils/categories';
-import type { EditionStatus } from '#server/utils/editions';
 import type { SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
 import type { Locale } from '#shared/i18n';
@@ -67,28 +66,6 @@ export const useConfirmLinkMutation = () => {
     return result;
   });
 };
-
-/** A draw of the account, for « Tirages passés ». */
-export type HomeDraw = {
-  id: string;
-  /** The personal page of the draw. */
-  path: string;
-  groupName: string;
-  editionLabel: string;
-  year: number;
-  status: EditionStatus;
-};
-export type HomePayload = {
-  draws: HomeDraw[];
-};
-
-/** The draws of the account, for « Tirages passés ». */
-export const useHomeQuery = (enabled: MaybeRefOrGetter<boolean> = true) =>
-  useApiQuery<HomePayload>(
-    () => keys.home(),
-    () => '/api/auth/home',
-    enabled,
-  );
 
 /** "My account": the address and the devices it is logged in on. */
 export const useAccountQuery = () =>

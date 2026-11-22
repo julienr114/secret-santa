@@ -26,13 +26,15 @@ import {
   persons,
   secretSantas,
 } from './schema';
-import { newId } from '#server/http/context';
+import { newId, nowIso } from '#server/http/context';
 import {
   listStage,
   type Audience,
   type ListStage,
 } from '#server/utils/listSharing';
 import { partyEmoji, type PartyCategory } from '#shared/utils/categories';
+import { listYear } from '#shared/utils/years';
+import { loadYears, timelineOf } from './years';
 
 // The sharing of a list by stages (docs/spec/v3/listes.md, ticket 106):
 // draft, the members of one or several events, public. Who gets in is
@@ -87,7 +89,35 @@ export const memberWhereShared = async (
 };
 
 /**
- * The date of an event's latest year: what a list made for it takes.
+ * The event's current year (ticket 108): the one the home shows, else
+ * its last one; with its id once it exists.
+ * @param db - The database.
+ * @param partyId - The event.
+ * @returns Its year and date, or null when it has none.
+ */
+const currentYearOf = async (db: Db, partyId: string) => {
+  const [party] = await db
+    .select({
+      id: parties.id,
+      recurring: parties.recurring,
+      usualDate: parties.usualDate,
+    })
+    .from(parties)
+    .where(eq(parties.id, partyId))
+    .limit(1);
+  if (!party) return null;
+  const years = await loadYears(db, [partyId]);
+  const timeline = timelineOf(party, years);
+  const current = timeline.current ?? timeline.past[0] ?? null;
+  return current
+    ? { ...current, id: years.find((row) => row.year === current.year)?.id }
+    : null;
+};
+
+/**
+ * The date of an event's current year: what a list made for it takes, the
+ * year to come once the last one is over (ticket 108). That year gets its
+ * row if it has none yet: its lists belong to it.
  * @param db - The database.
  * @param party - The event.
  * @param party.id - Its id.
@@ -97,13 +127,21 @@ export const occasionDate = async (
   db: Db,
   party: { id: string },
 ): Promise<string | null> => {
-  const [year] = await db
-    .select({ date: partyYears.date })
-    .from(partyYears)
-    .where(eq(partyYears.partyId, party.id))
-    .orderBy(desc(partyYears.year))
-    .limit(1);
-  return year?.date ?? null;
+  const current = await currentYearOf(db, party.id);
+  if (!current) return null;
+  if (!current.id) {
+    await db
+      .insert(partyYears)
+      .values({
+        id: newId(),
+        partyId: party.id,
+        year: current.year,
+        date: current.date,
+        createdAt: nowIso(),
+      })
+      .onConflictDoNothing();
+  }
+  return current.date;
 };
 
 /** An event the list is shared in, or may be, as « Qui verra ta liste ? » shows it. */
@@ -534,8 +572,13 @@ export const findMyListFor = async (
   accountId: string,
   partyId: string,
 ) => {
-  const [held] = await db
-    .select({ id: giftLists.id, sharedAt: giftLists.sharedAt })
+  const held = await db
+    .select({
+      id: giftLists.id,
+      sharedAt: giftLists.sharedAt,
+      eventDate: giftLists.eventDate,
+      createdAt: giftLists.createdAt,
+    })
     .from(giftListHolders)
     .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
     .leftJoin(
@@ -554,9 +597,12 @@ export const findMyListFor = async (
         ),
       ),
     )
-    .orderBy(desc(giftLists.updatedAt))
-    .limit(1);
-  return held ?? null;
+    .orderBy(desc(giftLists.updatedAt));
+  if (held.length === 0) return null;
+  // A list of a year over stays there (ticket 108).
+  const current = await currentYearOf(db, partyId);
+  const list = held.find((row) => !current || listYear(row) >= current.year);
+  return list ? { id: list.id, sharedAt: list.sharedAt } : null;
 };
 
 /**

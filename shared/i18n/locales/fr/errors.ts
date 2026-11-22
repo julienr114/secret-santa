@@ -1,6 +1,9 @@
 // Messages for API failure reasons (statusMessage of createError).
 export default {
   unknown: 'Aïe, quelque chose a coincé. Réessaie dans un instant.',
+  year_over: 'Cette année est finie : on n’y change plus rien.',
+  secret_santa_drawn: 'Ce Secret Santa est tiré : il ne se supprime plus.',
+  nothing_to_prepare: 'Il n’y a rien à préparer pour l’instant.',
   other: 'Quelque chose a coincé ({reason}).',
   validation: 'Il manque quelque chose : vérifie les champs.',
   unauthorized: 'Connecte-toi pour continuer.',

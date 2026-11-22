@@ -42,10 +42,6 @@ export default {
       },
       partyToday: 'C’est le jour J',
     },
-    past: {
-      title: 'Secret Santa passés',
-      empty: 'Aucun Secret Santa passé pour l’instant.',
-    },
     journalSignal: {
       lead: 'Du nouveau au journal.',
       row: 'Du nouveau au journal',

@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3';
+import { eq } from 'drizzle-orm';
 import { useDb, type Db } from '#server/database/client';
 import {
   claimsOfLists,
@@ -23,7 +24,9 @@ import {
   type ListHolder,
   type ListPerson,
 } from '#server/database/lists';
-import type { GiftListRow } from '#server/database/schema';
+import { parties, type GiftListRow } from '#server/database/schema';
+import type { PartyCategory } from '#shared/utils/categories';
+import { listYear } from '#shared/utils/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
 import {
@@ -402,7 +405,14 @@ export type ListDocument = {
    * The list this one was started from (lot 27), until it is shared:
    * its name, empty when it has none or is gone.
    */
-  resumedFrom: { title: string } | null;
+  /**
+   * The list it was taken from: its title, or, taken from the year before
+   * of the same event (ticket 108), that year (« Reprise de Noël 2026 »).
+   */
+  resumedFrom: {
+    title: string;
+    year: { category: PartyCategory; year: number } | null;
+  } | null;
   /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
@@ -458,6 +468,35 @@ const sharingSummary = async (
   };
 };
 
+/**
+ * Where a list taken up again comes from: the old list's title, and its
+ * year when it was a year before of the same event (ticket 108).
+ * @param db - The database.
+ * @param list - The new list.
+ * @param sourceId - The old one.
+ * @returns What the note of the document says.
+ */
+const resumedFromOf = async (
+  db: Db,
+  list: GiftListRow,
+  sourceId: string,
+): Promise<ListDocument['resumedFrom']> => {
+  const source = await findList(db, sourceId);
+  if (!source) return { title: '', year: null };
+  const sameEvent = source.partyId !== null && source.partyId === list.partyId;
+  const [party] = sameEvent
+    ? await db
+        .select({ category: parties.category })
+        .from(parties)
+        .where(eq(parties.id, source.partyId ?? ''))
+        .limit(1)
+    : [];
+  return {
+    title: source.title,
+    year: party ? { category: party.category, year: listYear(source) } : null,
+  };
+};
+
 export const listDocument = async (
   db: Db,
   list: GiftListRow,
@@ -500,7 +539,7 @@ export const listDocument = async (
     holders: holders.map((holder) => holderView(holder, accountId)),
     manages,
     resumedFrom: list.carriedFrom
-      ? { title: (await findList(db, list.carriedFrom))?.title ?? '' }
+      ? await resumedFromOf(db, list, list.carriedFrom)
       : null,
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
   };

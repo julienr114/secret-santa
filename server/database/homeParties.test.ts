@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { testDb } from '../../tests/d1';
 import { encrypt } from '#server/utils/crypto';
 import { loadHome } from './homeParties';
@@ -9,6 +9,7 @@ import { accounts } from './schema';
 // their organiser, their Secret Santas of the year, the lists I may see.
 
 const NOW = '2026-11-20T10:00:00.000Z';
+const TODAY = '2026-11-20';
 
 const SETUP = `
 INSERT INTO accounts (id, email, first_name, created_at) VALUES
@@ -73,7 +74,7 @@ const setup = async () => {
 describe('loadHome', () => {
   it('gives my parties, as a member or as their organiser, and no other', async () => {
     const { db, key, hugo } = await setup();
-    const home = await loadHome(db, hugo, key);
+    const home = await loadHome(db, hugo, key, TODAY);
     expect(home.parties.map((party) => party.slug).toSorted()).toEqual([
       'bureau',
       'famille',
@@ -82,15 +83,15 @@ describe('loadHome', () => {
     expect(famille).toMatchObject({
       name: 'Famille Camille',
       category: 'christmas',
-      yearDate: '2026-12-25',
-      usualDate: '12-25',
-      recurring: true,
+      date: '2026-12-25',
+      prepare: null,
+      resume: null,
     });
   });
 
   it('gives the Secret Santas of the year: mine by my link, the organiser’s by its page', async () => {
     const { db, key, hugo } = await setup();
-    const home = await loadHome(db, hugo, key);
+    const home = await loadHome(db, hugo, key, TODAY);
     const bySlug = (slug: string) =>
       home.parties.find((party) => party.slug === slug)!;
     expect(bySlug('famille').secretSantas).toEqual([
@@ -103,7 +104,7 @@ describe('loadHome', () => {
 
   it('gives the lists in the party, mine, never one kept for a giver', async () => {
     const { db, key, hugo } = await setup();
-    const home = await loadHome(db, hugo, key);
+    const home = await loadHome(db, hugo, key, TODAY);
     const famille = home.parties.find((party) => party.slug === 'famille')!;
     expect(famille.lists).toEqual([
       { id: 'lh', mine: true, ownerName: 'Hugo', to: '/listes/lh' },
@@ -118,10 +119,51 @@ describe('loadHome', () => {
 
   it('gives my people with their birth dates, not the one that carries nobody', async () => {
     const { db, key, hugo } = await setup();
-    const home = await loadHome(db, hugo, key);
+    const home = await loadHome(db, hugo, key, TODAY);
     expect(home.people.map((person) => person.id).toSorted()).toEqual([
       'fh',
       'fz',
     ]);
+  });
+
+  it('names the latest year over, and counts the others', async () => {
+    const { db, key, hugo } = await setup();
+    const home = await loadHome(db, hugo, key, TODAY);
+    expect(home.past).toEqual({ latest: 'Famille Camille', others: 0 });
+  });
+
+  it('moves to the year after once the event is over, and offers to prepare it', async () => {
+    const { db, key, hugo } = await setup();
+    // Two weeks after Christmas, the Secret Santa of the office closed.
+    await db.run(sql`UPDATE secret_santas SET status = 'closed'`);
+    const home = await loadHome(db, hugo, key, '2027-10-30');
+    const bureau = home.parties.find((party) => party.slug === 'bureau')!;
+    expect(bureau).toMatchObject({
+      date: '2027-12-19',
+      prepare: 2027,
+      secretSantas: [],
+    });
+    // Hugo does not organise Camille's: nothing to prepare there, and his
+    // list of last year is offered again instead of being shown.
+    const famille = home.parties.find((party) => party.slug === 'famille')!;
+    expect(famille).toMatchObject({
+      date: '2027-12-25',
+      prepare: null,
+      resume: 'lh',
+      lists: [],
+    });
+    expect(home.past).toEqual({ latest: 'Famille Camille', others: 2 });
+  });
+
+  it('keeps an event whose Secret Santa is not closed, two weeks at most', async () => {
+    const { db, key, hugo } = await setup();
+    const kept = await loadHome(db, hugo, key, '2027-01-02');
+    expect(kept.parties.find((party) => party.slug === 'famille')?.date).toBe(
+      '2026-12-25',
+    );
+    const gone = await loadHome(db, hugo, key, '2027-01-09');
+    expect(gone.parties.find((party) => party.slug === 'famille')?.date).toBe(
+      '2027-12-25',
+    );
   });
 });

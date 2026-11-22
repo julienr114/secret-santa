@@ -45,10 +45,6 @@ export default {
       },
       partyToday: 'Heute ist der große Tag',
     },
-    past: {
-      title: 'Vergangene Wichteln',
-      empty: 'Noch kein vergangenes Wichteln.',
-    },
     journalSignal: {
       lead: 'Neues im Protokoll.',
       row: 'Neues im Protokoll',

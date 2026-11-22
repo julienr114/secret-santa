@@ -4,6 +4,14 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-027 — « L'an prochain ? » dans le palmarès d'un événement qui ne revient pas (ticket 115)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. Dans un événement qui ne revient pas chaque année, la dernière image dit maintenant « C'est tout » (Q-016) ; mais l'image de mon Père Noël dit encore, si je n'avais pas fait de pronostic, « Tu n'avais pas fait de pronostic. L'an prochain ? ». En attendant, je n'y ai pas touché.
+- **Ce qu'on a trouvé** : `participant.game.story.noGuessBody` (`shared/i18n/locales/*/participant.ts`) ; `docs/spec/v3/vocabulaire.md`, « Devine qui hors de Noël », ne parle que de la dernière image.
+- **Les choix** : A, « Tu n'avais pas fait de pronostic. » seul, dans un événement qui ne revient pas ; B, « La prochaine fois ? » partout ; C, laisser tel quel.
+- **Ce que je ferais** : A, comme « C'est tout » : on ne promet pas une année suivante qui ne viendra pas.
+
 ### Q-020 — Une liste n'a pas d'année en base : je la range dans l'année de sa date. Faut-il une colonne ? (ticket 108)
 
 - **Pour** : Julien

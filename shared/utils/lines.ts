@@ -192,22 +192,37 @@ export const listTitle = (facts: ListFacts): LinePart => {
 };
 
 /**
+ * The first names of those a list is made for, « moi » last: « Léo, Zoé
+ * et moi », « Léo », « Moi »; or null for nobody.
+ * @param prefix - The keys: `${prefix}.one`, `.two`, `.three`, `.more`,
+ *   `.twoMe`, `.threeMe`, `.me`.
+ * @param people - Those it is made for.
+ * @returns The piece, or null.
+ */
+export const peopleNames = (
+  prefix: string,
+  people: readonly ListPerson[],
+): LinePart | null => {
+  const others = people.filter((person) => !person.me).map((p) => p.name);
+  const me = people.some((person) => person.me);
+  if (others.length === 0) return me ? part(`${prefix}.me`) : null;
+  if (!me) return namesPart(prefix, others);
+  const [a = '', b = ''] = others;
+  if (others.length === 1) return part(`${prefix}.twoMe`, { a });
+  if (others.length === 2) return part(`${prefix}.threeMe`, { a, b });
+  return part(`${prefix}.more`, { a, b, count: others.length - 1 });
+};
+
+/**
  * Whom my list is for, « moi » last, « Pour » first: « Pour Léo, Zoé et
  * moi », « Pour Léo »; or null when it is for me alone (or for nobody).
  * @param people - Those it is made for.
  * @returns The piece, or null.
  */
-export const forWhom = (people: readonly ListPerson[]): LinePart | null => {
-  const others = people.filter((person) => !person.me).map((p) => p.name);
-  if (others.length === 0) return null;
-  if (!people.some((person) => person.me)) {
-    return namesPart('lines.list.for', others);
-  }
-  const [a = '', b = ''] = others;
-  if (others.length === 1) return part('lines.list.for.twoMe', { a });
-  if (others.length === 2) return part('lines.list.for.threeMe', { a, b });
-  return part('lines.list.for.more', { a, b, count: others.length - 1 });
-};
+export const forWhom = (people: readonly ListPerson[]): LinePart | null =>
+  people.some((person) => !person.me)
+    ? peopleNames('lines.list.for', people)
+    : null;
 
 /**
  * The text of a list I hold (lignes.md, « Le texte, quand je la tiens »).

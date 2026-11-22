@@ -24,14 +24,16 @@ import {
   type ListHolder,
   type ListPerson,
 } from '#server/database/lists';
-import { parties, type GiftListRow } from '#server/database/schema';
+import { giftLists, parties, type GiftListRow } from '#server/database/schema';
 import type { PartyCategory } from '#shared/utils/categories';
-import { listYear } from '#shared/utils/years';
+import { listYear, pastBand, type PastBand } from '#shared/utils/years';
+import { loadYears, timelineOf } from '#server/database/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
 import {
   accountsWhereShared,
   membersSeeing,
+  memberWhereShared,
   sharedEventsOf,
 } from '#server/database/listSharing';
 import { listStage, type ListStage } from '#server/utils/listSharing';
@@ -65,6 +67,7 @@ import {
   canWriteIdeas,
   holderMay,
   invitesAccepted,
+  listArrival,
   listRole,
   seesGivers,
   type HolderLevel,
@@ -405,17 +408,15 @@ export type ListDocument = {
   /** What its top bar says of its sharing (ticket 106). */
   sharing: SharingSummary;
   /**
-   * The list this one was started from (lot 27), until it is shared:
-   * its name, empty when it has none or is gone.
-   */
-  /**
-   * The list it was taken from: its title, or, taken from the year before
+   * The list it was taken from, while it is a draft: its title, or, taken from the year before
    * of the same event (ticket 108), that year (« Reprise de Noël 2026 »).
    */
   resumedFrom: {
     title: string;
     year: { category: PartyCategory; year: number } | null;
   } | null;
+  /** The band of a list of a year over (ticket 119), or null. */
+  past: PastListBand | null;
   /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
@@ -500,6 +501,71 @@ const resumedFromOf = async (
   };
 };
 
+/** The band of a list of a year over, with the category of its event. */
+export type PastListBand = PastBand & { category: PartyCategory };
+
+/**
+ * The band of a list of a year over (docs/spec/v3/listes.md, « Une liste
+ * d'une année passée », ticket 119), for whoever opens it: its year, and
+ * the list of this year taken from it when I may open it (I hold it: its
+ * document; it is public, or shared in an event I am a member of: its
+ * link).
+ * @param db - The database.
+ * @param list - The list.
+ * @param accountId - The one looking, or null without a session.
+ * @returns The band, or null for a list of this year.
+ */
+export const pastBandOf = async (
+  db: Db,
+  list: GiftListRow,
+  accountId: string | null,
+): Promise<PastListBand | null> => {
+  if (!list.partyId) return null;
+  const [party] = await db
+    .select({
+      id: parties.id,
+      category: parties.category,
+      recurring: parties.recurring,
+      usualDate: parties.usualDate,
+    })
+    .from(parties)
+    .where(eq(parties.id, list.partyId))
+    .limit(1);
+  if (!party) return null;
+  const timeline = timelineOf(party, await loadYears(db, [party.id]));
+  const current = timeline.current?.year;
+  const taken = (
+    await db.select().from(giftLists).where(eq(giftLists.carriedFrom, list.id))
+  ).filter((one) => listYear(one) === current);
+  const account =
+    accountId && taken.length > 0 ? await findAccountById(db, accountId) : null;
+  const where = async (one: GiftListRow): Promise<string | null> => {
+    if (account && (await findHolding(db, account.id, one.id))) {
+      return `/listes/${one.id}`;
+    }
+    const arrival = listArrival({
+      loggedIn: account !== null,
+      holder: false,
+      isPublic: one.sharedAt !== null,
+      member: account ? await memberWhereShared(db, one.id, account) : false,
+      giver: false,
+    });
+    return arrival === 'open' && one.shareToken ? `/l/${one.shareToken}` : null;
+  };
+  const band = pastBand(
+    timeline,
+    list,
+    await Promise.all(
+      taken.map(async (one) => ({
+        year: listYear(one),
+        createdAt: one.createdAt,
+        to: await where(one),
+      })),
+    ),
+  );
+  return band ? { ...band, category: party.category } : null;
+};
+
 export const listDocument = async (
   db: Db,
   list: GiftListRow,
@@ -521,6 +587,7 @@ export const listDocument = async (
   const manages = holders.some(
     (holder) => holder.accountId === accountId && holder.level === 'manage',
   );
+  const sharing = await sharingSummary(db, list, holders);
   return {
     list: {
       ...headOf(list),
@@ -528,7 +595,7 @@ export const listDocument = async (
       // who gets in is decided on arrival (ticket 106).
       shareToken: list.shareToken,
     },
-    sharing: await sharingSummary(db, list, holders),
+    sharing,
     people: lines,
     single: isSingleList(people),
     planned,
@@ -541,9 +608,13 @@ export const listDocument = async (
       })),
     holders: holders.map((holder) => holderView(holder, accountId)),
     manages,
-    resumedFrom: list.carriedFrom
-      ? await resumedFromOf(db, list, list.carriedFrom)
-      : null,
+    // Kept once shared, to lead from the old list to this one (ticket
+    // 119); the sentence of its marks goes at the first share.
+    resumedFrom:
+      list.carriedFrom && sharing.stage === 'draft'
+        ? await resumedFromOf(db, list, list.carriedFrom)
+        : null,
+    past: await pastBandOf(db, list, accountId),
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
   };
 };
@@ -598,6 +669,8 @@ export type VisitorDocument = {
   /** Whether I am logged in. */
   loggedIn: boolean;
   mine: number;
+  /** The band of a list of a year over (ticket 119), or null. */
+  past: PastListBand | null;
 };
 
 /**
@@ -667,6 +740,7 @@ export const visitorDocument = async (
     figures: role === 'linked',
     loggedIn: accountId !== null,
     mine,
+    past: await pastBandOf(db, list, accountId),
   };
 };
 

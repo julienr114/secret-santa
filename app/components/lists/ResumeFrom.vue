@@ -4,14 +4,16 @@ import {
   useResumeMutation,
 } from '~/composables/queries/useLists';
 
-// « Repartir d'une liste » (lot 27, README 22.20, maquette
+// « Repartir d'une liste » (lot 27, README 22.20, ticket 119, maquette
 // ListeNouvelleReprendre), in the empty document of a new list: the
-// other lists I hold, each with what it would bring, « 4 personnes · 6
-// idées pas encore offertes ». Touching one takes its icon, its word,
+// other lists I hold that look like it, three at most, each with the
+// first names of its people and what it would bring, « Léo, Zoé et moi ·
+// 6 idées pas encore offertes ». Touching one takes its icon, its word,
 // its people and the ideas nobody ticked; the old list does not change.
-// Nothing shows while I hold no other list with someone on it.
+// Nothing shows while none looks like it.
 const props = defineProps<{ listId: string }>();
 const { t } = useT();
+const { part } = useLineText();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const query = useResumableQuery(() => props.listId);
@@ -54,9 +56,9 @@ const onResume = (from: string) => {
         }}</span>
         <span class="text-[13px] text-toned"
           >{{
-            list.single
+            list.single || !list.names
               ? t('lists.single.resume')
-              : t('lists.resume.people', { count: list.people })
+              : part(list.names)
           }}
           ·
           {{

@@ -258,7 +258,18 @@ export default {
     noIdeas: 'keine Idee zu übernehmen',
     title: 'Von einer Liste ausgehen',
     untitled: 'Liste ohne Namen',
-    people: { one: '{count} Person', other: '{count} Personen' },
+    names: {
+      me: 'Ich',
+      one: '{a}',
+      two: '{a} und {b}',
+      three: '{a}, {b} und {c}',
+      more: {
+        one: '{a}, {b} und {count} weitere Person',
+        other: '{a}, {b} und {count} weitere',
+      },
+      twoMe: '{a} und ich',
+      threeMe: '{a}, {b} und ich',
+    },
     ideas: {
       one: '{count} noch nicht verschenkte Idee',
       other: '{count} noch nicht verschenkte Ideen',
@@ -271,6 +282,18 @@ export default {
     marksAfter:
       'wurden nicht verschenkt: Behalte sie oder lösche sie. Nur du siehst diese Markierung.',
     mark: 'Von der alten Liste übernommen',
+  },
+  // A list of a year over (ticket 119, V3ListeAnneePassee).
+  past: {
+    title: {
+      christmas: 'Weihnachtsliste {year}',
+      birthday: 'Geburtstagsliste {year}',
+      birth: 'Geburtsliste {year}',
+      wedding: 'Hochzeitsliste {year}',
+      housewarming: 'Einweihungsliste {year}',
+      other: 'Liste von {year}',
+    },
+    subtitle: 'Ein vergangenes Jahr',
   },
   holders: {
     here: 'Gerade da',

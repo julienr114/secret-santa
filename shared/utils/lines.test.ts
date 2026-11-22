@@ -6,6 +6,7 @@ import {
   namesPart,
   organiserLine,
   participantLine,
+  peopleNames,
   type GameFacts,
   type ListFacts,
   type LineText,
@@ -184,6 +185,38 @@ describe('namesPart', () => {
       key: 'p.more',
       params: { a: 'Léo', b: 'Zoé', count: 2 },
     });
+  });
+});
+
+describe('peopleNames', () => {
+  const leo = { name: 'Léo', me: false };
+  const zoe = { name: 'Zoé', me: false };
+  const me = { name: 'Hugo', me: true };
+
+  it('puts « moi » last', () => {
+    expect(peopleNames('p', [me, leo, zoe])).toEqual({
+      key: 'p.threeMe',
+      params: { a: 'Léo', b: 'Zoé' },
+    });
+    expect(peopleNames('p', [leo, me])).toEqual({
+      key: 'p.twoMe',
+      params: { a: 'Léo' },
+    });
+    expect(peopleNames('p', [me])).toEqual({ key: 'p.me' });
+  });
+
+  it('says the names alone without me, and nothing for nobody', () => {
+    expect(peopleNames('p', [leo, zoe])).toEqual({
+      key: 'p.two',
+      params: { a: 'Léo', b: 'Zoé' },
+    });
+    expect(peopleNames('p', [])).toBeNull();
+  });
+
+  it('counts me among the others past two names', () => {
+    expect(
+      peopleNames('p', [leo, zoe, { name: 'Inès', me: false }, me]),
+    ).toEqual({ key: 'p.more', params: { a: 'Léo', b: 'Zoé', count: 2 } });
   });
 });
 

@@ -321,6 +321,7 @@ const writes = (person: PersonLine) =>
           fromChip.name
         }}</NuxtLink
       >
+      <ListsPastBand v-if="doc.past" :band="doc.past" />
       <!-- Logged in, and not one of those who hold the list: the mode,
            said before ticking. -->
       <ListsAnonymousBar v-if="doc.mode" :token="token" :mode="doc.mode" />

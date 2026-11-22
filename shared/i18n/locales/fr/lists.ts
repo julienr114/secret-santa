@@ -256,7 +256,18 @@ export default {
     noIdeas: 'aucune idée à reprendre',
     title: 'Repartir d’une liste',
     untitled: 'Liste sans nom',
-    people: { one: '{count} personne', other: '{count} personnes' },
+    names: {
+      me: 'Moi',
+      one: '{a}',
+      two: '{a} et {b}',
+      three: '{a}, {b} et {c}',
+      more: {
+        one: '{a}, {b} et {count} autre',
+        other: '{a}, {b} et {count} autres',
+      },
+      twoMe: '{a} et moi',
+      threeMe: '{a}, {b} et moi',
+    },
     ideas: {
       one: '{count} idée pas encore offerte',
       other: '{count} idées pas encore offertes',
@@ -269,6 +280,18 @@ export default {
     marksAfter:
       'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque.',
     mark: 'Reprise de l’ancienne liste',
+  },
+  // A list of a year over (ticket 119, V3ListeAnneePassee).
+  past: {
+    title: {
+      christmas: 'Liste de Noël {year}',
+      birthday: 'Liste d’anniversaire {year}',
+      birth: 'Liste de naissance {year}',
+      wedding: 'Liste de mariage {year}',
+      housewarming: 'Liste de crémaillère {year}',
+      other: 'Liste de {year}',
+    },
+    subtitle: 'Une année passée',
   },
   holders: {
     here: 'Là en ce moment',

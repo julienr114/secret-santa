@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   giftListParties,
@@ -16,6 +16,7 @@ import {
   ownPartyOf,
   type ListForParty,
 } from '#server/utils/listParties';
+import type { ResumeEvent } from '#shared/utils/resumeChoices';
 
 // The parties of the lists made on the screens of before (ticket 101):
 // each gets its own, with the list's id, its holders as members and its
@@ -136,4 +137,57 @@ export const deleteListPartyStatements = (db: Db, listId: string) => {
     db.delete(partyYears).where(eq(partyYears.partyId, ownId)),
     db.delete(parties).where(own),
   ] as const;
+};
+
+/**
+ * The events of some lists, as « Repartir d'une liste » compares them
+ * (ticket 119): the occasion of each, and those it is shared in. Two
+ * queries whatever the number of lists.
+ * @param db - The database.
+ * @param lists - The lists, with their occasion.
+ * @returns The events of each list, by list.
+ */
+export const eventsOfLists = async (
+  db: Db,
+  lists: readonly { id: string; partyId: string | null }[],
+): Promise<Map<string, ResumeEvent[]>> => {
+  const ids = lists.map((list) => list.id);
+  const shared =
+    ids.length === 0
+      ? []
+      : await db
+          .select({
+            listId: giftListParties.listId,
+            partyId: giftListParties.partyId,
+          })
+          .from(giftListParties)
+          .where(inArray(giftListParties.listId, ids));
+  const partyIds = [
+    ...new Set([
+      ...lists.flatMap((list) => (list.partyId ? [list.partyId] : [])),
+      ...shared.map((row) => row.partyId),
+    ]),
+  ];
+  const events =
+    partyIds.length === 0
+      ? []
+      : await db
+          .select({
+            id: parties.id,
+            category: parties.category,
+            forMemberId: parties.forMemberId,
+          })
+          .from(parties)
+          .where(inArray(parties.id, partyIds));
+  return new Map(
+    lists.map((list) => {
+      const of = new Set([
+        ...(list.partyId ? [list.partyId] : []),
+        ...shared
+          .filter((row) => row.listId === list.id)
+          .map((row) => row.partyId),
+      ]);
+      return [list.id, events.filter((event) => of.has(event.id))];
+    }),
+  );
 };

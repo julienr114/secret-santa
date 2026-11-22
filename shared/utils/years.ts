@@ -119,6 +119,61 @@ export const listYear = (list: {
 }): number => Number((list.eventDate ?? list.createdAt).slice(0, 4));
 
 /**
+ * Whether a list is of a year over (docs/spec/v3/listes.md, « Une liste
+ * d'une année passée »): its event has left the home for the year of its
+ * date. The rule of the years of an event, not a second one.
+ * @param timeline - Where its event is.
+ * @param list - Its date and when it was made.
+ * @returns True once its year is over.
+ */
+export const listIsPast = (
+  timeline: Timeline,
+  list: { eventDate: string | null; createdAt: string },
+): boolean => yearIsOver(timeline, listYear(list));
+
+/** A list of this year that I may open, taken from a list of a year over. */
+export type TakenList = {
+  year: number;
+  createdAt: string;
+  /** Where I open it; null when I may not. */
+  to: string | null;
+};
+
+/** The band on top of a list of a year over (V3ListeAnneePassee). */
+export type PastBand = {
+  /** The year of the list: « Liste de Noël 2025 ». */
+  year: number;
+  /** The list of this year taken from it, that I may open: « Noël 2026 ». */
+  next: { year: number; to: string } | null;
+};
+
+/**
+ * The band of a list of a year over, for everyone, the one who holds it
+ * included; it leads to the list of this year taken from it (« Reprendre
+ * ma liste de l'an dernier ») when I may open it. Nothing for a list of
+ * this year.
+ * @param timeline - Where its event is.
+ * @param list - Its date and when it was made.
+ * @param taken - The lists taken from it, each with where I open it.
+ * @returns The band, or null.
+ */
+export const pastBand = (
+  timeline: Timeline,
+  list: { eventDate: string | null; createdAt: string },
+  taken: readonly TakenList[],
+): PastBand | null => {
+  if (!listIsPast(timeline, list)) return null;
+  const current = timeline.current?.year;
+  const [next] = taken
+    .filter((one) => one.year === current && one.to !== null)
+    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return {
+    year: listYear(list),
+    next: next?.to ? { year: next.year, to: next.to } : null,
+  };
+};
+
+/**
  * Whether the home offers to prepare the year to come (V3AccueilAnnee):
  * to an organiser, for an event that comes back, two months before its
  * date, when that year has no Secret Santa yet and the year before had.

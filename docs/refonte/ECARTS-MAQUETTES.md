@@ -241,3 +241,14 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FeteAnneePassee` | Pour un anniversaire dont on connaît l'âge, la pastille dit « 🎂 Ses 3 ans » au lieu de « Anniversaire 2025 » ; l'année reste dans la date dessous (« 14 décembre 2025 »). Pour moi : « Tes 40 ans ». | Seul (le ticket : « sa page de 2025 s'appelle Ses 3 ans ») |
 | `V3FeteReglages` | Pour un anniversaire, une ligne « Pour » sous « Catégorie », de la même forme : l'icône du proche, son prénom (« Moi » pour moi), ou « Personne ». Elle ouvre un panneau de choix comme la catégorie : mes proches, puis « Personne ». Aucune maquette ne montre ces deux écrans. Le proche choisi par un autre organisateur se lit, sans icône ; « Valider » sans rien changer le garde. | Seul |
 | `V3FeteAnniversaire` | « 7 cadeaux offerts à Zoé » ne nomme pas le proche quand c'est moi (« 7 cadeaux offerts ») ; il se lit aussi dans « Les événements passés ». Passer l'événement à une autre catégorie lui fait oublier pour qui il était fait. | Seul |
+
+## Une liste d'une année passée, et « Repartir d'une liste » (ticket 119)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeAnneePassee` | Le bandeau se lit aussi dans le document de celui qui tient la liste, sous la barre du partage et au-dessus de l'icône : aucune maquette ne le montre là. | Seul (la spec : « à tout le monde, celui qui la tient compris ») |
+| `V3ListeAnneePassee` | Le titre suit la catégorie de l'événement : « Liste de Noël 2025 », « Liste d'anniversaire 2025 », « Liste de mariage 2025 »… ; « Liste de 2025 » pour un événement « Autre ». Le bouton dit l'année comme ailleurs (« Noël 2026 », « Anniversaire 2026 »). | Seul |
+| `V3ListeAnneePassee` | Le bouton mène au document de la liste de cette année pour qui la tient, à son lien pour les autres. Celui qui a tiré son auteur, quand elle lui est réservée, n'a pas de bouton : son droit passe par le lien de sa page de Secret Santa. | Seul |
+| `V3ListeAnneePassee` | Le fond du bandeau est `warning-tint` (lilas 100, `#f1e8fc`) au lieu de `#efe7fb`. | Seul (le jeton le plus proche) |
+| `ListeNouvelleReprendre` | Sous une liste sans personne : « Sans personne », comme avant ; sous une liste faite pour moi seul : « Moi ». | Seul |
+

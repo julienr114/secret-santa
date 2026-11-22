@@ -243,3 +243,5 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 |---|---|---|---|
 | La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
+
+Une liste d'une année passée (ticket 119), par son document comme par son lien, a un bandeau en haut : « Liste de Noël 2025 » · « Une année passée ». Son bouton « Noël 2026 », quand une liste de cette année en a été reprise et que j'ai le droit de l'ouvrir, mène à celle-ci : son document (`/listes/[id]`) si je la tiens, sinon son lien (`/l/[jeton]`).

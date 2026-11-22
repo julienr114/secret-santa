@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   labelForYear,
   listToResume,
+  listIsPast,
   listYear,
   partyTimeline,
   pastByYear,
+  pastBand,
   pastDeed,
   pastSummary,
   stillOnHome,
@@ -234,5 +236,100 @@ describe('pastByYear and pastSummary', () => {
       others: 3,
     });
     expect(pastSummary([])).toBeNull();
+  });
+});
+
+describe('listIsPast', () => {
+  const years = [
+    { year: 2025, date: '2025-12-25', santas: [] },
+    { year: 2026, date: '2026-12-25', santas: [] },
+  ];
+  const at = (today: string) => partyTimeline(CHRISTMAS, years, today);
+  const of2025 = { eventDate: '2025-12-25', createdAt: '2025-11-01T10:00:00Z' };
+  const of2026 = { eventDate: '2026-12-25', createdAt: '2026-11-01T10:00:00Z' };
+
+  it('says a list of last year is over, not the one of this year', () => {
+    expect(listIsPast(at('2026-11-22'), of2025)).toBe(true);
+    expect(listIsPast(at('2026-11-22'), of2026)).toBe(false);
+  });
+
+  it('follows the event leaving the home, not the date alone', () => {
+    expect(listIsPast(at('2026-12-28'), of2026)).toBe(false);
+    expect(listIsPast(at('2026-12-29'), of2026)).toBe(true);
+  });
+
+  it('reads the day it was made without a date', () => {
+    expect(
+      listIsPast(at('2026-11-22'), {
+        eventDate: null,
+        createdAt: '2025-10-01T10:00:00Z',
+      }),
+    ).toBe(true);
+  });
+
+  it('says every list of an event over for good is over', () => {
+    const wedding = partyTimeline(
+      WEDDING,
+      [{ year: 2026, date: '2026-06-13', santas: [] }],
+      '2026-11-22',
+    );
+    expect(
+      listIsPast(wedding, {
+        eventDate: '2026-06-13',
+        createdAt: '2026-01-01T10:00:00Z',
+      }),
+    ).toBe(true);
+  });
+});
+
+describe('pastBand', () => {
+  const timeline = partyTimeline(
+    CHRISTMAS,
+    [
+      { year: 2025, date: '2025-12-25', santas: [] },
+      { year: 2026, date: '2026-12-25', santas: [] },
+    ],
+    '2026-11-22',
+  );
+  const of2025 = { eventDate: '2025-12-25', createdAt: '2025-11-01T10:00:00Z' };
+
+  it('says nothing on a list of this year', () => {
+    expect(
+      pastBand(
+        timeline,
+        { eventDate: '2026-12-25', createdAt: '2026-11-01T10:00:00Z' },
+        [],
+      ),
+    ).toBeNull();
+  });
+
+  it('says the year, without a way on when nothing was taken from it', () => {
+    expect(pastBand(timeline, of2025, [])).toEqual({ year: 2025, next: null });
+  });
+
+  it('leads to the list of this year taken from it, when I may open it', () => {
+    expect(
+      pastBand(timeline, of2025, [
+        { year: 2026, createdAt: '2026-11-02T10:00:00Z', to: '/l/abc' },
+      ]),
+    ).toEqual({ year: 2025, next: { year: 2026, to: '/l/abc' } });
+  });
+
+  it('leads nowhere to a list I may not open, or of another year', () => {
+    expect(
+      pastBand(timeline, of2025, [
+        { year: 2026, createdAt: '2026-11-02T10:00:00Z', to: null },
+        { year: 2024, createdAt: '2024-11-02T10:00:00Z', to: '/l/old' },
+      ]),
+    ).toEqual({ year: 2025, next: null });
+  });
+
+  it('takes the latest when several were taken', () => {
+    expect(
+      pastBand(timeline, of2025, [
+        { year: 2026, createdAt: '2026-11-02T10:00:00Z', to: '/l/a' },
+        { year: 2026, createdAt: '2026-11-05T10:00:00Z', to: '/listes/b' },
+      ])?.next,
+    ).toEqual({ year: 2026, to: '/listes/b' });
   });
 });

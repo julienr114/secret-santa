@@ -47,7 +47,7 @@ test.beforeAll(async ({ browser }) => {
   const mamie = await login(MAMIE, 'Mamie');
   const { id } = await (
     await api().post('/api/lists', {
-      data: { icon: { emoji: '❄️', color: 'night' }, title: 'Noël 2025' },
+      data: { icon: { emoji: '🎄', color: 'night' }, title: 'Noël 2025' },
     })
   ).json();
   await api().patch(`/api/lists/${id}`, {
@@ -93,14 +93,21 @@ test.afterAll(async () => {
 });
 
 test('an empty new list starts from an old one', async () => {
-  const page = await open('/listes/nouvelle');
-  await expect(page).toHaveURL(/nouvelle=1/);
-  state.newId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
-  // « Repartir d'une liste »: my lists, with what each would bring.
+  // A new Christmas list: the old one, a Christmas too, looks like it
+  // (ticket 119).
+  const { id } = await (
+    await api().post('/api/lists', {
+      data: { icon: { emoji: '🎄', color: 'pine' }, title: '' },
+    })
+  ).json();
+  state.newId = id;
+  const page = await open(`/listes/${id}?nouvelle=1`);
+  // « Repartir d'une liste »: my lists that look like it, with the first
+  // names of their people and what each would bring.
   const block = page.getByTestId('resume-from');
   await expect(block.getByRole('heading')).toHaveText('Repartir d’une liste');
   const old = block.getByTestId('resume-list').filter({ hasText: 'Noël 2025' });
-  await expect(old).toContainText('2 personnes · 3 idées pas encore offertes');
+  await expect(old).toContainText('Léo et Zoé · 3 idées pas encore offertes');
   await old.click();
 
   // The people, in their order, with the ideas nobody ticked.
@@ -129,7 +136,7 @@ test('an empty new list starts from an old one', async () => {
 
   // The icon and the word came; the name and the day are to be filled in.
   const doc = await (await api().get(`/api/lists/${state.newId}`)).json();
-  expect(doc.list.icon).toEqual({ emoji: '❄️', color: 'night' });
+  expect(doc.list.icon).toEqual({ emoji: '🎄', color: 'night' });
   expect(doc.list.note).toEqual({
     kind: 'text',
     text: 'Pas de peluches cette année.',

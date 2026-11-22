@@ -576,8 +576,9 @@ export const giftLists = sqliteTable(
     // to those who hold it, even as a draft. The events it is shared in
     // are in gift_list_parties. No foreign key: the event may go first.
     partyId: text('party_id'),
-    // The list this one was started from (lot 27), until it is first
-    // shared. No foreign key: the old list may be deleted meanwhile.
+    // The list this one was started from (lot 27): its document says it
+    // while a draft, the old list's band leads here (ticket 119). No
+    // foreign key: the old list may be deleted meanwhile.
     carriedFrom: text('carried_from'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),

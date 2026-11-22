@@ -540,6 +540,7 @@ onBeforeRouteLeave((to) => {
             t('lists.live.visitors', { count: visitors })
           }}</span>
         </p>
+        <ListsPastBand v-if="doc.past" :band="doc.past" />
 
         <div class="flex flex-col gap-2">
           <button

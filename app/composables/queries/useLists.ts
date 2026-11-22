@@ -9,6 +9,7 @@ import type {
   VisitorDocument,
 } from '#server/http/lists';
 import type { Avatar } from '#server/utils/avatars';
+import type { LinePart } from '#shared/utils/lines';
 import type { HolderLevel } from '#server/utils/listAccess';
 import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
@@ -74,6 +75,8 @@ export type ResumableList = {
   id: string;
   icon: { emoji: string; color: string };
   title: string;
+  /** The first names of its people, « moi » last (ticket 119). */
+  names: LinePart | null;
   people: number;
   ideas: number;
   /** A list without people (lot 27 bis). */

@@ -219,7 +219,9 @@ test('the first person added takes the ideas already written', async () => {
 test('taken up again, a list without people stays one', async () => {
   const fresh = await (
     await api().post('/api/lists', {
-      data: { icon: { emoji: '🎁', color: 'pine' }, title: '' },
+      // A wedding too: « Repartir d'une liste » offers only the lists
+      // that look like it (ticket 119).
+      data: { icon: { emoji: '💍', color: 'pine' }, title: '' },
     })
   ).json();
   const page = await open('camille', `/listes/${fresh.id}`);

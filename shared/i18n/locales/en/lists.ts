@@ -254,7 +254,18 @@ export default {
     noIdeas: 'no idea to take up',
     title: 'Start from a list',
     untitled: 'Unnamed list',
-    people: { one: '{count} person', other: '{count} people' },
+    names: {
+      me: 'Me',
+      one: '{a}',
+      two: '{a} and {b}',
+      three: '{a}, {b} and {c}',
+      more: {
+        one: '{a}, {b} and {count} other',
+        other: '{a}, {b} and {count} others',
+      },
+      twoMe: '{a} and me',
+      threeMe: '{a}, {b} and me',
+    },
     ideas: {
       one: '{count} idea not given yet',
       other: '{count} ideas not given yet',
@@ -267,6 +278,18 @@ export default {
     marksAfter:
       'were not given: keep them or erase them. Only you see this mark.',
     mark: 'Taken up from the old list',
+  },
+  // A list of a year over (ticket 119, V3ListeAnneePassee).
+  past: {
+    title: {
+      christmas: 'Christmas list {year}',
+      birthday: 'Birthday list {year}',
+      birth: 'Baby list {year}',
+      wedding: 'Wedding list {year}',
+      housewarming: 'Housewarming list {year}',
+      other: 'List of {year}',
+    },
+    subtitle: 'A past year',
   },
   holders: {
     here: 'Here right now',

@@ -831,23 +831,18 @@ export const resumeList = async (
 };
 
 /**
- * The marks of a list taken up again go: at its first share, nothing
- * says any more where the list or its ideas came from.
+ * The marks of a list taken up again go at its first share: no idea says
+ * any more where it came from. The list keeps where it was taken from,
+ * for the band of the old one to lead to it (ticket 119).
  * @param db - The database.
  * @param listId - The list.
  * @returns Once erased.
  */
 export const forgetCarried = (db: Db, listId: string) =>
-  db.batch([
-    db
-      .update(giftLists)
-      .set({ carriedFrom: null })
-      .where(eq(giftLists.id, listId)),
-    db
-      .update(giftListIdeas)
-      .set({ carriedFrom: null })
-      .where(eq(giftListIdeas.listId, listId)),
-  ]);
+  db
+    .update(giftListIdeas)
+    .set({ carriedFrom: null })
+    .where(eq(giftListIdeas.listId, listId));
 
 /** A person's place on a list, or null when not on it. */
 export const findListPerson = async (db: Db, listId: string, id: string) =>

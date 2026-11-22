@@ -16,12 +16,12 @@ Le lien d'une liste de l'an dernier marche toujours. Celui qui l'ouvre doit voir
 
 ## À faire
 
-- [ ] **Savoir qu'une liste est d'une année passée**, en fonction pure testée : son événement a quitté l'accueil pour l'année de sa date. La même règle que celle du ticket 108, pas une seconde.
-- [ ] **Le bandeau**, en haut de la liste, pour tout le monde (celui qui la tient, un membre, celui qui arrive par le lien) : « Liste de Noël 2025 » · « Une année passée ».
-- [ ] **Le bouton vers cette année** (« Noël 2026 ») quand une liste a été reprise de celle-ci et que j'ai le droit de l'ouvrir. Sinon, pas de bouton.
-- [ ] La liste reste modifiable : rien d'autre ne change.
-- [ ] **« Repartir d'une liste »** (`ListeNouvelleReprendre`), en fonction pure testée : seulement les listes que je tiens et qui ressemblent à la nouvelle (le même événement une autre année, puis la même catégorie, puis une personne en commun), trois au plus, jamais une liste sans rien de commun ; pas de section s'il n'y en a aucune. Sous chaque nom, les prénoms à la place de « 4 personnes ».
-- [ ] Trois langues, `tests/e2e`.
+- [x] **Savoir qu'une liste est d'une année passée**, en fonction pure testée : son événement a quitté l'accueil pour l'année de sa date. La même règle que celle du ticket 108, pas une seconde.
+- [x] **Le bandeau**, en haut de la liste, pour tout le monde (celui qui la tient, un membre, celui qui arrive par le lien) : « Liste de Noël 2025 » · « Une année passée ».
+- [x] **Le bouton vers cette année** (« Noël 2026 ») quand une liste a été reprise de celle-ci et que j'ai le droit de l'ouvrir. Sinon, pas de bouton.
+- [x] La liste reste modifiable : rien d'autre ne change.
+- [x] **« Repartir d'une liste »** (`ListeNouvelleReprendre`), en fonction pure testée : seulement les listes que je tiens et qui ressemblent à la nouvelle (le même événement une autre année, puis la même catégorie, puis une personne en commun), trois au plus, jamais une liste sans rien de commun ; pas de section s'il n'y en a aucune. Sous chaque nom, les prénoms à la place de « 4 personnes ».
+- [x] Trois langues, `tests/e2e`.
 
 ## Hors périmètre
 

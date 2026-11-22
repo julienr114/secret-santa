@@ -20,7 +20,7 @@ const { lineText } = usePastText();
     <AdminQueryState
       :pending="past.isPending.value"
       :error="past.error.value"
-      :skeleton="['title', 'list']"
+      :skeleton="['title', 'sections']"
     >
       <div class="px-1 pt-1">
         <UiPageTitle>{{ t('home.past') }}</UiPageTitle>

@@ -54,7 +54,7 @@ const games = computed(
     <AdminQueryState
       :pending="page.isPending.value"
       :error="page.error.value"
-      :skeleton="['title', 'list']"
+      :skeleton="['head', 'sections']"
     >
       <template v-if="data">
         <div class="flex flex-col gap-2 px-1 pt-1">

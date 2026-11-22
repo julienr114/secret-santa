@@ -153,7 +153,7 @@ const onDelete = () =>
     <AdminQueryState
       :pending="people.isPending.value"
       :error="people.error.value"
-      :skeleton="['header', 'list']"
+      :skeleton="['header', 'settings', 'list']"
       :rows="2"
     >
       <p v-if="!person" class="text-muted">

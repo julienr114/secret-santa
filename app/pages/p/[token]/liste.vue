@@ -19,7 +19,10 @@ const { loggedIn } = useUserSession();
 const query = usePersonalQuery(token);
 const me = computed(() => query.data.value);
 const failure = ref<unknown>(null);
+// Opening my list before anything shows, or writing the first idea from
+// the screen shown: only the first goes through the skeleton.
 const opening = ref(false);
+const writing = ref(false);
 const back = computed(() => `/p/${token.value}`);
 
 /**
@@ -68,7 +71,7 @@ const { fetch: refreshSession } = useUserSession();
  * @returns Once on the list.
  */
 const onFirstIdea = async () => {
-  opening.value = true;
+  writing.value = true;
   try {
     const { id } = await api<{ id: string }>(
       `/api/p/${token.value}/first-idea`,
@@ -81,7 +84,7 @@ const onFirstIdea = async () => {
     await navigateTo(`/listes/${id}?compte=1`, { replace: true });
   } catch (error) {
     failure.value = error;
-    opening.value = false;
+    writing.value = false;
   }
 };
 const onSend = () =>
@@ -134,6 +137,7 @@ const onSend = () =>
         size="xl"
         class="h-13 justify-center text-[17px] font-bold"
         :disabled="!written"
+        :loading="writing"
         :label="t('participant.myList.add')"
         @click="onFirstIdea"
       />

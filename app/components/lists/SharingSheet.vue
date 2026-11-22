@@ -266,7 +266,7 @@ const onRenew = () =>
   >
     <UiSkeleton
       v-if="query.isPending.value"
-      :parts="['list']"
+      :parts="['icons']"
       :rows="3"
       :label="t('common.loading')"
     />

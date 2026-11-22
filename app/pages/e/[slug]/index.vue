@@ -89,7 +89,8 @@ const onLeave = () =>
     <AdminQueryState
       :pending="page.isPending.value"
       :error="page.error.value"
-      :skeleton="['list']"
+      :skeleton="['head', 'members', 'sections']"
+      skeleton-gap="md"
     >
       <template v-if="data">
         <div class="flex items-start gap-2">

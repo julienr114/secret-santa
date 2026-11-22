@@ -15,14 +15,14 @@ Aucun écran de la V3 ne s'ouvre sur du vide. Pendant que ses données arrivent,
 
 ## À faire
 
-- [ ] **L'inventaire d'abord** : pour chaque page de `app/pages` déjà passée à la V3, ce qu'elle montre pendant le chargement, et si ça a sa forme. Le mettre dans le compte rendu.
-- [ ] **L'accueil** (`V3ChargementAccueil`) : aujourd'hui `['header', 'card', 'card']`, qui date de l'ancien accueil. Le bonjour, le titre de la saison, des cartes d'événement avec leur en-tête et leurs lignes.
-- [ ] **La page d'un événement** (`V3ChargementFete`) : la catégorie, le nom, la date, la ligne des membres, puis les sections et leurs lignes.
-- [ ] **Les autres pages déjà faites**, à la forme de chacune : « Membres » et la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Pour quelle occasion ? », la page d'un Secret Santa pour l'organisateur et pour le participant, une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui verra ta liste ? », « Ce que j'offre ailleurs », l'administration.
-- [ ] Ajouter à `UiSkeleton` les pièces qui manquent (une carte d'événement, une ligne à icône, une ligne de membres), plutôt que de dessiner un squelette à la main dans chaque page.
-- [ ] Un écran déjà affiché qui se met à jour ne repasse pas par son squelette.
-- [ ] Le guide de style montre les nouvelles pièces.
-- [ ] `tests/e2e` : avec une réponse retardée, l'accueil et la page d'un événement montrent leur squelette, puis leur contenu, sans saut de mise en page visible.
+- [x] **L'inventaire d'abord** : pour chaque page de `app/pages` déjà passée à la V3, ce qu'elle montre pendant le chargement, et si ça a sa forme. Le mettre dans le compte rendu.
+- [x] **L'accueil** (`V3ChargementAccueil`) : aujourd'hui `['header', 'card', 'card']`, qui date de l'ancien accueil. Le bonjour, le titre de la saison, des cartes d'événement avec leur en-tête et leurs lignes.
+- [x] **La page d'un événement** (`V3ChargementFete`) : la catégorie, le nom, la date, la ligne des membres, puis les sections et leurs lignes.
+- [x] **Les autres pages déjà faites**, à la forme de chacune : « Membres » et la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Pour quelle occasion ? », la page d'un Secret Santa pour l'organisateur et pour le participant, une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui verra ta liste ? », « Ce que j'offre ailleurs », l'administration.
+- [x] Ajouter à `UiSkeleton` les pièces qui manquent (une carte d'événement, une ligne à icône, une ligne de membres), plutôt que de dessiner un squelette à la main dans chaque page.
+- [x] Un écran déjà affiché qui se met à jour ne repasse pas par son squelette.
+- [x] Le guide de style montre les nouvelles pièces.
+- [x] `tests/e2e` : avec une réponse retardée, l'accueil et la page d'un événement montrent leur squelette, puis leur contenu, sans saut de mise en page visible.
 
 ## Hors périmètre
 

@@ -268,7 +268,7 @@ const writes = (person: PersonLine) =>
     :back="loggedIn ? '/listes' : undefined"
     :pending="query.isPending.value"
     :error="query.error.value"
-    :skeleton="['title', 'card', 'list']"
+    :skeleton="['doc', 'list']"
   >
     <template v-if="doc">
       <NuxtLink

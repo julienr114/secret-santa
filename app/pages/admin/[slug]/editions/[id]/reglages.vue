@@ -98,7 +98,8 @@ const noteValue = computed(() =>
     <AdminQueryState
       :pending="edition.isPending.value"
       :error="edition.error.value"
-      :skeleton="['title', 'list']"
+      :skeleton="['title', 'settings', 'settings', 'settings']"
+      :rows="2"
     >
       <div class="flex flex-col gap-1">
         <UiPageContext :parts="parts" :label="t('common.context')" />

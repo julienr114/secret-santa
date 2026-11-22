@@ -65,7 +65,8 @@ const greeting = computed(() =>
     <AdminQueryState
       :pending="home.isPending.value"
       :error="home.error.value"
-      :skeleton="['header', 'card', 'card']"
+      :skeleton="['greeting', 'parties']"
+      skeleton-gap="sm"
     >
       <div class="flex flex-col gap-0.5 px-1 pt-1">
         <UiPageTitle>{{ greeting }}</UiPageTitle>

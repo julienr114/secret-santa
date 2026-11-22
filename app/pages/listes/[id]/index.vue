@@ -499,7 +499,7 @@ onBeforeRouteLeave((to) => {
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
-      :skeleton="['card', 'title', 'card']"
+      :skeleton="['bar', 'doc', 'list']"
     >
       <template v-if="doc && list">
         <ListsShareBar

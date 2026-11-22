@@ -291,6 +291,12 @@ const emojiOf = (category: PartyCategory) =>
         </p>
         <UiPageTitle>{{ t('party.create.who') }}</UiPageTitle>
       </div>
+      <UiSkeleton
+        v-if="candidates.isPending.value"
+        :parts="['chips', 'list']"
+        :rows="3"
+        :label="t('common.loading')"
+      />
       <section
         v-if="(candidates.data.value?.parties.length ?? 0) > 0"
         class="flex flex-col gap-2"

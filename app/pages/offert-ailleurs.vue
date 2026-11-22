@@ -43,7 +43,7 @@ const iconOf = (list: ElsewhereList) =>
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
-      :skeleton="['list']"
+      :skeleton="['icons']"
       :rows="2"
     >
       <ul

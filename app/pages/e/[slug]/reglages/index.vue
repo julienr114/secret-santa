@@ -122,7 +122,7 @@ const deleting = ref(false);
     <AdminQueryState
       :pending="party.isPending.value"
       :error="party.error.value"
-      :skeleton="['list', 'list']"
+      :skeleton="['settings', 'settings', 'settings']"
       :rows="2"
     >
       <UiList :title="t('party.reglages.party')" data-testid="party-settings">

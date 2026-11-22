@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   giftListHolders,
@@ -15,12 +15,7 @@ import {
 import { loadYears, timelineOf } from './years';
 import { decrypt } from '#server/utils/crypto';
 import type { PartyCategory } from '#shared/utils/categories';
-import {
-  appNotes,
-  isoOfSqlite,
-  noteFor,
-  type AppNote,
-} from '#shared/utils/appNote';
+import { noteFor, type AppNote } from '#shared/utils/appNote';
 import {
   forgetBefore,
   listSection,
@@ -63,72 +58,6 @@ export type NewsSection = {
 export type NewsPage = { sections: NewsSection[]; note: AppNote | null };
 
 /**
- * When the V3 went out: the day its first migration was applied, as D1
- * keeps it (`d1_migrations`, written by `wrangler d1 migrations apply`).
- * Null where that table does not exist (the tests on node:sqlite).
- * @param db - The database.
- * @returns The instant (ISO), or null.
- */
-export const switchedAt = async (db: Db): Promise<string | null> => {
-  const rows = await db
-    .all<{ at: string }>(
-      sql`SELECT applied_at AS at FROM d1_migrations WHERE name = '0034_v3_parties.sql'`,
-    )
-    .catch(() => []);
-  return isoOfSqlite(rows[0]?.at);
-};
-
-/**
- * Whether an account held, before an instant, a list shared by its link
- * (its own, or one it holds with others) that still is.
- * @param db - The database.
- * @param accountId - The account.
- * @param before - The instant (ISO).
- * @returns True when it did.
- */
-const heldLinkListBefore = async (
-  db: Db,
-  accountId: string,
-  before: string,
-): Promise<boolean> => {
-  const rows = await db.all<{ id: string }>(sql`
-    SELECT l.id FROM gift_lists l
-    WHERE l.shared_at IS NOT NULL AND l.shared_at < ${before}
-      AND (l.account_id = ${accountId} OR l.id IN (
-        SELECT list_id FROM gift_list_holders WHERE account_id = ${accountId}
-      ))
-    LIMIT 1`);
-  return rows.length > 0;
-};
-
-/**
- * The word of the app for an account (ticket 113): the one of the switch
- * to the V3 for the accounts created before it, with its sentence on the
- * lists shared by link for those who held one.
- * @param db - The database.
- * @param account - The account.
- * @param dismissed - The ids of the words it closed.
- * @returns The word, or null.
- */
-const wordOf = async (
-  db: Db,
-  account: AccountRow,
-  dismissed: string[],
-): Promise<AppNote | null> => {
-  const notes = appNotes(await switchedAt(db));
-  const first = noteFor({ ...account, heldLinkList: false }, dismissed, notes);
-  if (!first) return null;
-  const rule = notes.find((note) => note.id === first.id);
-  if (!rule?.linkKey) return first;
-  const held = await heldLinkListBefore(
-    db,
-    account.id,
-    rule.createdBefore ?? '9999-12-31',
-  );
-  return noteFor({ ...account, heldLinkList: held }, dismissed, notes);
-};
-
-/**
  * « Quoi de neuf » for an account.
  * @param db - The database.
  * @param account - Me.
@@ -167,8 +96,7 @@ export const loadNewsPage = async (
       .from(noteDismissals)
       .where(eq(noteDismissals.accountId, account.id)),
   ]);
-  const note = await wordOf(
-    db,
+  const note = noteFor(
     account,
     dismissed.map((row) => row.noteId),
   );

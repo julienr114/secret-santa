@@ -55,24 +55,16 @@ const wordPattern = (word: string) =>
 /** A text without its placeholders (`{edition}`): they are never shown. */
 const shownPart = (text: string) => text.replace(/\{[^}]*\}/g, '');
 
-/**
- * The texts of the dictionaries that still say a word the V3 removed.
- * `allowed` lists the keys that name an old word on purpose (the word of
- * the switch says that groups became events), in every language.
- */
+/** The texts of the dictionaries that still say a word the V3 removed. */
 export const forbiddenUses = (
   words: readonly string[],
   dictionaries: Readonly<Record<string, Texts>>,
-  allowed: readonly string[] = [],
 ): readonly ForbiddenUse[] =>
   words.flatMap((word) => {
     const pattern = wordPattern(word);
     return Object.entries(dictionaries).flatMap(([locale, texts]) =>
       Object.entries(texts)
-        .filter(
-          ([key, text]) =>
-            !allowed.includes(key) && pattern.test(shownPart(text)),
-        )
+        .filter(([, text]) => pattern.test(shownPart(text)))
         .map(([key, text]) => ({ locale, key, word, text })),
     );
   });

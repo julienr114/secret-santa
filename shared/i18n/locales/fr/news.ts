@@ -6,14 +6,6 @@ export default {
   today: 'Aujourd’hui, {time}',
   yesterday: 'Hier, {time}',
   close: 'Fermer',
-  // The word of the switch to the V3 (ticket 113): at the top of « Quoi de
-  // neuf », and in the email of the day after. It names the old word on
-  // purpose (scripts/controle.exceptions.json).
-  note: {
-    v3: 'Under the Tree a changé. Tes groupes s’appellent maintenant des événements, et on y trouve au même endroit le Secret Santa et les listes de cadeaux. Tes pistes de cadeaux sont devenues ta liste : seul celui qui t’a tiré la voit, comme avant. Rien n’est perdu, et ton tirage n’a pas bougé.',
-    v3Link: 'Ta liste est toujours ouverte à ceux qui ont son lien.',
-    subject: 'Under the Tree a changé',
-  },
   kind: {
     envelope: 'Le tirage est fait : ton enveloppe t’attend',
     hint_request: 'Quelqu’un te demande des idées de cadeaux',

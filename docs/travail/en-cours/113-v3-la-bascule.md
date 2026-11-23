@@ -1,6 +1,6 @@
 # 113 — V3 : la bascule (publier la V3)
 
-- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 116, 117, 120, 118, 119, 135, 136, 137 ; et 138, 139, 140, 141, demandés avant la bascule le 23 novembre 2026
+- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 116, 117, 120, 118, 119, 135, 136, 137 ; et 138 à 145, demandés avant la bascule le 23 novembre 2026
 - **Migration** : oui, c'est elle qu'on publie
 - **Maquettes** : aucune (c'est une marche à suivre)
 
@@ -77,7 +77,7 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 - **L'heure creuse sans « Suspendre les emails »** : retirer les deux Cron Triggers dans le tableau de bord le temps de la bascule ; le déploiement de la V3 les remet depuis `wrangler.toml`.
 - ~~**Le mot**, dans les trois langues, en tête de « Quoi de neuf »~~ et ~~**l'email du lendemain** (`buildSwitchEmail`, `pnpm v3:mot`)~~ : faits (`c505206`, `f0b0a7a`), puis **retirés, Q-034 : pas de mot**. Partis avec eux : leurs textes dans les trois langues (`news.note.*`), leurs tests, l'exception `keys` du contrôle des mots (`scripts/controle.exceptions.json`) et son mécanisme, la recherche d'un `index.ts` de dossier dans `scripts/ts-resolve-hooks.mjs` (plus aucun script n'en a besoin). Le mécanisme du mot de l'application (ticket 120) reste, sans mot.
 
-### Repris le 23 novembre 2026, après les tickets 138 à 141
+### Repris le 23 novembre 2026, après les tickets 138 à 145
 
 - **Les dépendances** : 138, 139, 140 et 141 sont dans `fait/`, avec toutes les autres.
 - **Une migration de plus** : `0043_v3_giver_with_members` (ticket 139 : « Celui qui m'a tiré » et tous les membres d'un événement peuvent être là ensemble). `bascule-v3.md` dit maintenant dix migrations, `0034` à `0043`.
@@ -85,6 +85,7 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 - **L'inventaire du 114, refait** : chaque page de `app/pages` a sa ligne dans `ARBORESCENCE.md` ; les pages retirées par le 139 (`/listes/[id]/inviter` et ses deux pages, `/listes/[id]/message`) mènent à la liste (`gonePathOf`), et `tests/routes.test.ts` rejoue toujours chaque adresse de `main`.
 - **`pnpm controle --e2e`** : passé après chacun des tickets 139-141 et 140 (984 tests Vitest, 204 tests Playwright).
 - La case de la copie du jour reste ouverte : elle attend l'export de Julien.
+- **Puis 142 à 145** (le point rouge et sa ligne dans « Quoi de neuf », la tuile des événements, la carte de la ligne qu'on écrit, « cette personne ») : dans `fait/`. Aucune migration, aucune page ajoutée ni retirée : l'inventaire et `v3:essai` ne changent pas. À savoir pour la bascule : depuis le 142, une nouveauté pas vue ne s'efface plus ; la tâche du matin n'oublie que celles vues il y a plus de trente jours. `pnpm controle --e2e` passé après chacun (992 tests Vitest, 205 Playwright).
 
 ### Ce qui reste à Julien, dans l'ordre
 
@@ -125,4 +126,4 @@ Aucune par ce ticket. La bascule publie `0034` à `0043` (la `0043` vient du tic
 - `d582583` chore(email): no email the day after the switch, pnpm v3:mot removed
 - `cfa2358` revert(news): no word of the switch at the top of « Quoi de neuf »
 - puis docs: no word at the switch (Q-034), avec ce compte rendu.
-- le 23 novembre : docs: ticket 113, the switch after tickets 138 to 141 (ce paragraphe, `bascule-v3.md` venant du commit du ticket 139).
+- le 23 novembre : docs: ticket 113, the switch after tickets 138 to 141 ; puis docs: ticket 113, after tickets 142 to 145 (ce paragraphe, `bascule-v3.md` venant du commit du ticket 139).

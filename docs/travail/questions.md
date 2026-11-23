@@ -4,6 +4,10 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
 ### Q-035 — « Il reçoit un email à ton nom » : une tournure neutre ? (tickets 139, 141)
 
 - **Pour** : la conception
@@ -13,8 +17,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Garder « Il reçoit… » (le masculin d'usage, comme « Celui qui m'a tiré »).
   - B. Une tournure neutre, par exemple « Un email à ton nom lui est envoyé, et cette personne devient membre de « Famille Camille ». »
 - **Ce que je ferais** : B, si la conception trouve une phrase aussi courte.
-
-## Réponses
+- **Réponse de la conception (23 novembre 2026)** : B. « Cette personne reçoit un email à ton nom, et devient membre de « {name} ». » La règle est écrite dans `vocabulaire.md` (« Cette personne », pas « il ») : elle vaut pour toute personne précise qu'on invite ou qu'on ajoute, et quatre autres textes du français sont à tourner de même (l'invitation à tenir une liste, le nouvel organisateur). « il » reste quand il reprend un mot masculin (« l'organisateur : il peut… ») et dans « celui qui m'a tiré ». À coder : ticket 145. Spec (`listes.md`) et maquettes à jour.
 
 ### Q-034 — Le mot de la bascule : à qui, et que dire à ceux qui n'ont pas de compte ? (ticket 113)
 

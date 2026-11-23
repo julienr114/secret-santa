@@ -54,7 +54,7 @@ Maquette : `V3Accueil`.
 - **Une section par saison de Noël** : « Noël 2026 · dans 35 jours ». C'est la catégorie qui regroupe : tous mes événements de catégorie Noël de la même année vont sous ce titre, quel que soit leur nom. **Aucune autre catégorie n'est regroupée.**
   - Le décompte du titre ne dépend d'aucun événement : il compte jusqu'au **25 décembre à minuit**, toujours.
   - Dans la section, les événements sont dans l'ordre des dates, le plus proche en haut.
-- **Une carte par événement** : l'emoji de sa catégorie, son nom, sa date, une flèche (l'en-tête ouvre l'événement) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux événements apparaît dans les deux cartes (« aussi chez Mamie »).
+- **Une carte par événement** : l'emoji de sa catégorie dans une tuile en couleur (`categories.md`, « L'icône d'un événement est une tuile en couleur »), son nom, sa date, une flèche (l'en-tête ouvre l'événement) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux événements apparaît dans les deux cartes (« aussi chez Mamie »).
 - **L'ordre est celui des dates** (`2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`) : la section de Noël est posée à la place de son premier événement ; **un événement qui vient avant est au-dessus, sans titre** ; ce qui vient après est sous « Plus tard ». Sans section de Noël à venir : des cartes sans titre, puis « Bientôt ».
 - **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes événements couvre déjà.
 - **« Plus tard »** : les événements qui viennent après la saison de Noël, par date.
@@ -100,9 +100,11 @@ Maquette : `V3QuoiDeNeuf` (remplace `NotifCentre`).
 - **Une section par événement**, avec l'emoji de sa catégorie ; l'événement qui a la nouveauté la plus récente est en haut. Dans une section, du plus récent au plus ancien.
 - Une liste publique où j'ai coché, sans être membre de son événement, a sa section à elle, au nom de l'occasion.
 - Une ligne est en gras, avec un point rouge, tant que je n'ai pas ouvert ce qu'elle signale. C'est le même point que sur l'accueil : **il s'éteint quand j'ouvre la chose**, pas quand j'ouvre « Quoi de neuf ».
+- **Un point rouge a toujours sa ligne ici** (Julien, 23 novembre 2026). Le point d'une ligne de l'accueil ou d'un événement n'est pas calculé de son côté : il s'allume parce qu'une nouveauté pas encore vue vise cette chose. Pas de nouveauté, pas de point ; le texte de la ligne, lui, dit toujours l'état (« Ton enveloppe t'attend »).
+- **Une nouveauté pas encore vue ne s'efface pas.** Seules celles que j'ai vues partent au bout de trente jours.
 - Les nouveautés d'une liste qui est dans deux événements n'apparaissent qu'une fois, sous celui dont la date est la plus proche.
 - Une demande d'idées est anonyme ici aussi : « Quelqu'un te demande des idées de cadeaux », jamais un prénom.
-- En bas, une ligne « Choisir ce qui me prévient » (elle n'apparaît qu'avec la page « Me prévenir », ticket 121) ; dessous, « Tout s'efface au bout de trente jours ». Pas de phrase d'introduction.
+- En bas, une ligne « Choisir ce qui me prévient » (elle n'apparaît qu'avec la page « Me prévenir », ticket 121) ; dessous, « Ce que tu as vu s'efface au bout de trente jours ». Pas de phrase d'introduction.
 - **Un mot de l'application** peut être posé en tête, au-dessus des sections : un texte court, dans la langue du compte, montré à ceux qu'il concerne, qui s'en va quand je l'ai fermé. Il sert le jour de la bascule (`migration.md`, « La bascule »).
 
 ### Hors de l'application

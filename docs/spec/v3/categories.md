@@ -41,3 +41,22 @@ L'écran « Pour quelle occasion ? » propose « Pour qui ? » parmi mes proches
 ## L'emoji et l'icône au trait
 
 L'emoji d'une catégorie est réservé à **un événement précise**. Quand on parle d'un Secret Santa ou d'une liste en général (le panneau « Créer », l'accueil d'un compte tout neuf), on montre une icône au trait dans un carré teinté.
+
+## L'icône d'un événement est une tuile en couleur
+
+Julien, le 23 novembre 2026 : les icônes des événements étaient fades, au même niveau que celles des lignes dessous. Maquettes `V3Accueil`, `V3Fete`, `V3QuoiDeNeuf`, `V3FetesPassees`.
+
+- **L'événement** : son emoji dans une tuile carrée aux coins arrondis, en **dégradé de la couleur de sa catégorie**, avec un liseré blanc et une ombre légère. 44 px dans une carte de l'accueil, 30 px dans « Quoi de neuf » et « Les événements passés », 28 px dans la barre du partage.
+- **Les lignes dessous** (un Secret Santa, une liste, « Devine qui ») : l'icône au trait seule, **sans rond ni carré coloré**. C'est ce qui met l'événement en avant.
+- **« Créer »** et l'accueil d'un compte tout neuf gardent leurs deux icônes dans un carré teinté : là, il n'y a pas d'événement au-dessus.
+
+| Catégorie | Du clair | Au soutenu |
+|---|---|---|
+| Noël | `#d9f5df` | `#58c07a` |
+| Anniversaire | `#fff0b8` | `#f4b82e` |
+| Naissance | `#dcefff` | `#6eb0f2` |
+| Mariage | `#f7dcec` | `#d977ae` |
+| Crémaillère | `#ffe1d6` | `#f08a6c` |
+| Autre | `#efe6fb` | `#a98be0` |
+
+Le dégradé va du coin haut gauche au coin bas droit (150°), le soutenu juste après le bord. C'est la **catégorie** qui donne la couleur, même quand l'icône de l'événement a été choisie à la main.

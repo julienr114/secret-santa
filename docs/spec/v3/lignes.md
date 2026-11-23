@@ -9,7 +9,7 @@ Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque lis
 
 - **Le texte dit un état, jamais un mode d'emploi.** Un seul état, deux au plus, séparés par « · ».
 - **Pour chaque ligne, les cas sont dans l'ordre : le premier qui s'applique est écrit.**
-- **Le point rouge** accompagne les cas marqués ●. Il s'éteint quand j'ouvre la chose (`accueil-et-creation.md`, « Quoi de neuf »).
+- **Le point rouge** accompagne les cas marqués ●. Il s'éteint quand j'ouvre la chose (`accueil-et-creation.md`, « Quoi de neuf »). Il n'est allumé que si une nouveauté pas encore vue vise cette chose : un point rouge a toujours sa ligne dans « Quoi de neuf ». Un cas marqué ● sans nouveauté (une donnée d'avant les nouveautés) garde son texte, sans point.
 - **Aucun résultat de tirage**, ni sur l'accueil ni sur la page d'un événement. Seule exception : mon propre résultat, pour une année finie, dans les pages des événements passés.
 - **Aucun prénom dans une demande d'idées** : elle est anonyme.
 - Les nombres s'accordent (« 1 cadeau », « 2 cadeaux », « 1 nouvelle idée », « 3 nouvelles idées ») dans les trois langues.

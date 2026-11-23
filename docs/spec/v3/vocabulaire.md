@@ -85,6 +85,20 @@ En anglais « event », en allemand « Event ».
 
 Le reste de cette spec dit « événement » depuis le 21 novembre 2026. Seuls des noms n'ont pas bougé, parce qu'ils sont cités partout : le fichier `fete.md`, les maquettes `V3Fete…`, et dans le code `party`.
 
+## « Cette personne », pas « il »
+
+Q-035, le 23 novembre 2026. L'application ne connaît pas le genre : **quand un texte parle d'une personne précise qu'on invite ou qu'on ajoute, il dit « cette personne »**, ou tourne la phrase pour ne pas avoir de pronom.
+
+| On écrit | On n'écrit plus |
+|---|---|
+| Cette personne reçoit un email à ton nom, et devient membre de « Famille Camille ». | Il reçoit un email à ton nom… |
+| Cette personne reçoit un email, et peut refuser. L'invitation vaut 7 jours. | Il reçoit un email, et peut refuser… |
+| Elle sert à envoyer l'invitation, qui dit que c'est toi qui invites. | Elle sert à lui envoyer l'invitation. Il verra que c'est toi qui l'invites. |
+| Ce que cette personne pourra faire | Ce qu'il pourra faire |
+| Cette personne pourra gérer Famille Camille comme toi : membres, Secret Santa, envois. | Il pourra gérer… |
+
+Ce qui reste : « il » quand il reprend **un mot** masculin, pas une personne (« l'organisateur : il peut rouvrir des places », « chacun… autant qu'il veut »), et « celui qui m'a tiré ». L'anglais (« they ») et l'allemand (« die Person ») le font déjà.
+
 ## Ce qui ne change pas
 
 - Les textes d'une liste ne disent jamais « Père Noël » ni « famille ».

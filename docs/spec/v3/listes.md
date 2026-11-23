@@ -152,7 +152,7 @@ Demandé par Julien le 23 novembre 2026 : la barre est un espace restreint, tout
 
 `V3ListeInviter` (vide), `V3ListeInviterEmail` (rempli). Un seul niveau :
 
-- Deux lignes, **« Prénom »** et **« Adresse email »** (le libellé à gauche, ce qu'on écrit à droite ; « prenom@exemple.fr » en texte d'attente), et dessous : « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». »
+- Deux lignes, **« Prénom »** et **« Adresse email »** (le libellé à gauche, ce qu'on écrit à droite ; « prenom@exemple.fr » en texte d'attente), et dessous : « Cette personne reçoit un email à ton nom, et devient membre de « Famille Camille ». » (pas « Il reçoit » : `vocabulaire.md`)
 - **« Inviter »**, éteint tant que le prénom ou l'adresse manque.
 - Dessous, une ligne : **« Reprendre ceux d'un autre événement »**.
 
@@ -207,6 +207,16 @@ Il ne propose que des listes que je tiens et **qui lui ressemblent**. Dans cet o
 - Une liste qui n'a rien de commun n'est jamais proposée. S'il n'y en a aucune, la section n'apparaît pas.
 - **Quand la liste a déjà des personnes**, la reprise ne les déplace pas : elles gardent leur place, celles de l'ancienne liste s'ajoutent après, et **personne n'est mis deux fois**. Les idées pas offertes d'une personne déjà là arrivent sous son prénom.
 - Sous le nom de chaque liste, **les prénoms** de ceux pour qui elle est faite (les règles du titre d'une ligne, `lignes.md`), pas « 4 personnes » : « Léo, Zoé et moi · 6 idées pas encore offertes ».
+
+## La ligne qu'on écrit, la ligne qu'on déplace
+
+Julien, le 23 novembre 2026 : le bandeau blanc bord à bord, avec son trait rouge à gauche, était trop dur. Maquettes `ListeIdee`, `ListeIdeeLien`, `ListeIdeeLienFait`, `ListeHorsListe`, `ListeGlisser`.
+
+- **La ligne qu'on écrit est une carte blanche** : des coins arrondis de 16 px, un liseré très clair (la couleur des traits fins), une ombre légère teintée de rouge. **Plus de trait rouge**, plus de blanc jusqu'aux bords de l'écran.
+- La carte dépasse de 10 px à gauche et de 8 px à droite de la ligne, et de 4 px au-dessus et au-dessous : **la case et le texte ne bougent pas** quand on entre dans la ligne ou qu'on en sort.
+- C'est la même carte pour « J'offre autre chose », écrit sur place : pas de trait vert non plus.
+- **La ligne qu'on déplace est la même carte**, soulevée : l'ombre plus marquée, à peine penchée, la poignée à droite. **Plus de contour rouge.** La personne qu'on déplace, repliée sur une ligne, a la même carte.
+- **L'endroit où elle va tomber** : un trait arrondi de 4 px, de la couleur du bord des cases (pêche), plus un trait rouge.
 
 ## Une idée qui n'a qu'un lien
 

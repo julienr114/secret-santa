@@ -707,7 +707,7 @@ export default {
       remind: 'Relancer {name}',
       validateWithout: 'Valider sans attendre {name}',
       oneMissingHelp:
-        'Sa réponse est remplie pour lui, sans que tu la voies. Il la découvrira sur sa page.',
+        'Sa réponse est remplie sans que tu la voies, et apparaît sur sa page.',
       readyTitle: 'Tout le monde a répondu : valide le tirage',
       readyBody: '{count} réponses, elles vont toutes ensemble.',
       validate: 'Valider le tirage',

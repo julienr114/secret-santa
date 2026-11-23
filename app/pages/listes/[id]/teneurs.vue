@@ -66,7 +66,7 @@ const day = (iso: string, month = true) =>
     day: 'numeric',
     ...(month ? { month: 'long' as const } : {}),
   }).format(new Date(iso));
-/** « Invitée le 18 novembre · valable jusqu'au 25 », the month said once. */
+/** « Invitation du 18 novembre · valable jusqu'au 25 », the month said once. */
 const waitingLine = (waiting: Invite) => {
   const sameMonth =
     waiting.sentAt.slice(0, 7) === waiting.expiresAt.slice(0, 7);

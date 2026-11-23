@@ -154,7 +154,7 @@ test('shared with all its members, the list invites by an address', async ({
   const invite = page.getByTestId('share-invite');
   await expect(invite.getByRole('heading')).toHaveText('Quelqu’un d’autre');
   await expect(invite).toContainText(
-    'Il reçoit un email à ton nom, et devient membre de « Famille Entrée ».',
+    'Cette personne reçoit un email à ton nom, et devient membre de « Famille Entrée ».',
   );
   await expect(page.getByTestId('share-link')).toHaveCount(0);
   await expect(page).toHaveURL(new RegExp(`/listes/${state.listId}\\?`));

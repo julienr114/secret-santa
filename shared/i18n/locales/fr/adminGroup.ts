@@ -13,7 +13,7 @@ export default {
     nameHelp:
       'Tu pourras le voir, toi et les membres, en haut de chaque Secret Santa.',
     organizerHelp:
-      'Pour créer l’événement de quelqu’un d’autre : il lui suffira de se connecter avec cette adresse. Vide, l’événement n’a pas encore d’organisateur.',
+      'Pour créer l’événement de quelqu’un d’autre : cette personne n’aura qu’à se connecter avec cette adresse. Vide, l’événement n’a pas encore d’organisateur.',
     organizerPlaceholder: 'prenom@exemple.fr',
     creating: 'Création en cours…',
   },
@@ -21,14 +21,15 @@ export default {
     title: 'Organisateurs',
     you: 'C’est toi',
     add: 'Ajouter un organisateur',
-    addHint: 'Il se connecte avec son adresse, sans mot de passe',
+    addHint: 'Cette personne se connecte avec son adresse, sans mot de passe',
     addTitle: 'Nouvel organisateur',
     addDescription:
-      'Il pourra gérer {name} comme toi : membres, Secret Santa, envois.',
+      'Cette personne pourra gérer {name} comme toi : membres, Secret Santa, envois.',
     emailLabel: 'Son adresse email',
     emailHelp:
-      'Il lui suffira de se connecter avec cette adresse : aucun mot de passe à transmettre.',
-    noResults: 'Comme toi, il ne verra pas les résultats du tirage.',
+      'Cette personne n’aura qu’à se connecter avec cette adresse : aucun mot de passe à transmettre.',
+    noResults:
+      'Comme toi, cette personne ne verra pas les résultats du tirage.',
     remove: 'Retirer',
     removeLabel: 'Retirer {email} des organisateurs',
   },
@@ -106,7 +107,8 @@ export default {
   },
   newPerson: {
     addAnother: 'Ajouter, puis en créer une autre',
-    randomIcon: 'Une icône lui est donnée au hasard ; elle pourra la changer.',
+    randomIcon:
+      'Une icône lui est donnée au hasard ; cette personne pourra la changer.',
     title: 'Nouvelle personne',
     added: 'Bienvenue à {name}',
   },
@@ -131,7 +133,7 @@ export default {
   personForm: {
     languageRow: 'Langue de ses messages',
     emailHelpPerson:
-      'Pour lui envoyer son lien, et pour qu’il retrouve ses Secret Santa en se connectant.',
+      'Pour lui envoyer son lien, et pour que cette personne retrouve ses Secret Santa en se connectant.',
     emailHelpNew:
       'Pour lui envoyer son lien. Sans adresse, tu le partageras toi-même par WhatsApp ou SMS.',
     emailPlaceholder: 'prenom@exemple.fr',

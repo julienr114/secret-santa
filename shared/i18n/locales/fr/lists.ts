@@ -91,7 +91,8 @@ export default {
     },
     newPerson: {
       title: 'Quelqu’un d’autre',
-      description: 'Il rejoint tes proches, gardés d’une liste à l’autre.',
+      description:
+        'Cette personne rejoint tes proches, gardés d’une liste à l’autre.',
       label: 'Prénom',
       add: 'Ajouter',
     },
@@ -300,7 +301,7 @@ export default {
       manage: 'En plus : partager, inviter, supprimer la liste.',
     },
     levelOf: 'Le niveau de {name}',
-    invited: 'Invitée le {date} · valable jusqu’au {until}',
+    invited: 'Invitation du {date} · valable jusqu’au {until}',
     expired: 'Invitation expirée · le {date}',
     declined: 'A refusé · le {date}',
     resend: 'Renvoyer',
@@ -310,8 +311,8 @@ export default {
     someoneElse: 'Quelqu’un d’autre',
     emailLabel: 'Son adresse email',
     emailHelp:
-      'Elle sert à lui envoyer l’invitation. Il verra que c’est toi qui l’invites.',
-    can: 'Ce qu’il pourra faire',
+      'Elle sert à envoyer l’invitation, qui dit que c’est toi qui invites.',
+    can: 'Ce que cette personne pourra faire',
     choice: {
       write: {
         title: 'Aider à écrire',
@@ -325,7 +326,7 @@ export default {
     inviteName: 'Inviter {name}',
     send: 'Envoyer l’invitation',
     inviteHelp:
-      'Il reçoit un email, et peut refuser. L’invitation vaut 7 jours.',
+      'Cette personne reçoit un email, et peut refuser. L’invitation vaut 7 jours.',
     seesAll:
       'Ceux qui tiennent la liste voient tout, y compris ce qu’on leur offre s’ils y figurent.',
     alreadyHolder: 'Cette personne tient déjà la liste.',
@@ -344,7 +345,7 @@ export default {
   inviteMembers: {
     firstName: 'Prénom',
     email: 'Adresse email',
-    hint: 'Il reçoit un email à ton nom, et devient membre de « {name} ».',
+    hint: 'Cette personne reçoit un email à ton nom, et devient membre de « {name} ».',
     submit: 'Inviter',
     sent: 'Invitation envoyée',
     takeTitle: 'Reprendre ceux de',

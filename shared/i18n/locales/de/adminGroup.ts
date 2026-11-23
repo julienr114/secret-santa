@@ -22,14 +22,14 @@ export default {
     title: 'Organisatoren',
     you: 'Das bist du',
     add: 'Organisator hinzufügen',
-    addHint: 'Meldet sich mit seiner Adresse an, ohne Passwort',
+    addHint: 'Die Person meldet sich mit ihrer Adresse an, ohne Passwort',
     addTitle: 'Neuer Organisator',
     addDescription:
       'Kann {name} wie du verwalten: Mitglieder, Wichteln, Versand.',
-    emailLabel: 'Seine E-Mail-Adresse',
+    emailLabel: 'Die E-Mail-Adresse',
     emailHelp:
       'Es reicht, sich mit dieser Adresse anzumelden: kein Passwort weiterzugeben.',
-    noResults: 'Wie du sieht er die Ergebnisse der Auslosung nicht.',
+    noResults: 'Wie du sieht die Person die Ergebnisse der Auslosung nicht.',
     remove: 'Entfernen',
     removeLabel: '{email} aus den Organisatoren entfernen',
   },

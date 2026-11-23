@@ -4,7 +4,15 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-036 — « Tu es invité » : une tournure neutre ? (ticket 145)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. Les deux textes restent tels quels.
+- **Ce qu'on a trouvé** : en relisant le français pour le ticket 145, deux textes parlent au lecteur au masculin, ce que « cette personne » ne règle pas : `auth.ts`, `invite.intro`, « Tu es invité au Secret Santa » (la page du lien d'un Secret Santa, maquettes `V3FeteRejoindre`, `RejoindreConnecte`) ; `adminEdition.ts`, le message prêt à envoyer, « Salut ! Tu es invité au Secret Santa « {group} » 🎁 ». L'anglais dit « You are invited », l'allemand ne dit pas de genre.
+- **Les choix** :
+  - A. Les garder (le masculin d'usage, comme « Celui qui m'a tiré »).
+  - B. « On t'invite au Secret Santa » et « Salut ! On t'invite au Secret Santa « {group} » 🎁 ».
+- **Ce que je ferais** : B, aussi court.
 
 ## Réponses
 

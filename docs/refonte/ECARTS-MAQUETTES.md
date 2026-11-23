@@ -6,6 +6,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## « Cette personne », pas « il » (ticket 145)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ListeTeneurs` | Une invitation en attente dit « Invitation du 18 novembre · valable jusqu'au 25 » au lieu de « Invitée le 18 novembre… » (`vocabulaire.md`). | Ticket 145 |
+| `PanneauOrganisateur` et ses pages | En plus des textes du ticket : « Cette personne se connecte avec son adresse, sans mot de passe », « Cette personne n'aura qu'à se connecter avec cette adresse », « Comme toi, cette personne ne verra pas les résultats du tirage ». | Seul (la règle de `vocabulaire.md`) |
+
 ## L'icône d'un événement est une tuile en couleur (V3, ticket 143)
 
 | Maquette | Ce que fait le code | Décidé par |

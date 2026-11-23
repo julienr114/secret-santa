@@ -224,7 +224,7 @@ export default {
     closeHint: 'Plus personne ne pourra s’inscrire',
     closeConfirm: 'Désactiver le lien ? Plus personne ne pourra s’inscrire.',
     message: {
-      intro: 'Salut ! Tu es invité au Secret Santa « {group} » 🎁',
+      intro: 'Salut ! Je t’invite au Secret Santa « {group} » 🎁',
       how: 'Inscris-toi avec ton adresse email en ouvrant ce lien :',
       until: 'Tu as jusqu’au {date}.',
     },

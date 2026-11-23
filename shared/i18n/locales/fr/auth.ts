@@ -187,7 +187,7 @@ export default {
       'Tu n’as rien demandé ? Ignore ce message : sans ce lien, personne ne peut se connecter.',
   },
   invite: {
-    intro: 'Tu es invité au Secret Santa',
+    intro: 'On t’invite au Secret Santa',
     party: 'le {date}',
     signedUp: { one: '{count} inscrit', other: '{count} inscrits' },
     nameHelp: 'Le prénom que verront les autres.',

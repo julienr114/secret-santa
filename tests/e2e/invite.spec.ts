@@ -101,7 +101,7 @@ test('the organiser opens the link of a Secret Santa from its participants', asy
   // this year, so its name between brackets.
   const message = page.getByTestId('invite-message');
   await expect(message).toContainText(
-    'Tu es invité au Secret Santa « Famille Invite (Les adultes) »',
+    'Je t’invite au Secret Santa « Famille Invite (Les adultes) »',
   );
   const text = (await message.textContent()) ?? '';
   state.code = text.trim().split('/').at(-1)!;
@@ -143,7 +143,7 @@ test('someone with the link signs up to that Secret Santa, not to the other', as
 }) => {
   await page.goto(`/rejoindre/${state.code}`);
   await hydrated(page);
-  await expect(page.getByText('Tu es invité au Secret Santa')).toBeVisible();
+  await expect(page.getByText('On t’invite au Secret Santa')).toBeVisible();
   await expect(heading(page)).toHaveText('Famille Invite (Les adultes)');
   // Ada, Bob and the organiser take part already.
   await expect(

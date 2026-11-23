@@ -137,7 +137,7 @@ describe('buildInviteMessage', () => {
 
   it('invites to the Secret Santa, its name between brackets when needed', () => {
     expect(buildInviteMessage(invite, 'fr')).toContain(
-      'Tu es invité au Secret Santa « Famille Démo »',
+      'Je t’invite au Secret Santa « Famille Démo »',
     );
     expect(
       buildInviteMessage(

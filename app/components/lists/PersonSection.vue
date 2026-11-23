@@ -380,7 +380,7 @@ const explained = ref<string | null>(null);
       >
         <li
           v-if="row.kind === 'drop'"
-          class="my-0.5 h-1 rounded-full bg-primary"
+          class="my-0.5 h-1 rounded-full bg-peach-300"
           aria-hidden="true"
           data-testid="drop-line"
         />

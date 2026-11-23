@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Avatar } from '#server/utils/avatars';
 
-// What is lifted, under the finger (lot 24 ter, maquette ListeGlisser): a
-// white card with a red outline and a shadow, slightly tilted, a handle
-// on its right. An idea shows its text; a person folds into one line,
+// What is lifted, under the finger (lot 24 ter, maquette ListeGlisser): the
+// white card of the line being written (ticket 144), its shadow deeper,
+// slightly tilted, a handle on its right; no red outline. An idea shows its text; a person folds into one line,
 // their icon, their first name and how many ideas they have, so that a
 // long list can be crossed.
 defineProps<{
@@ -21,7 +21,7 @@ defineProps<{
 
 <template>
   <div
-    class="pointer-events-none fixed z-40 flex min-h-12 -rotate-1 items-center gap-3 rounded-2xl bg-default px-3 py-2 shadow-[0_10px_28px_rgba(90,40,60,0.28)] ring-2 ring-primary"
+    class="pointer-events-none fixed z-40 flex min-h-12 -rotate-[1.2deg] items-center gap-3 rounded-[16px] bg-default px-3 py-2 shadow-line-lifted"
     :style="{ top: `${y - 24}px`, left: `${left}px`, width: `${width}px` }"
     aria-hidden="true"
     data-testid="drag-ghost"

@@ -25,8 +25,9 @@ import { splitIdea } from '#server/utils/lists';
 // link: « Tu l'offres › », which opens its sheet; a gift given by several
 // is joined from here too. The grey box of someone else's tick unticks it
 // at once, for those who may (Correction 30).
-// Touched, the text turns into a field; the return key saves it and goes
-// to the next line, touching elsewhere saves it too; a line left empty
+// Touched, the text turns into a field, in a white card that moves
+// neither the box nor the text (ticket 144); the return key saves it and
+// goes to the next line, touching elsewhere saves it too; a line left empty
 // goes, and so does a line with nothing in it when the erase key is
 // pressed again, the caret going up to the line above. Nothing sits above
 // the keyboard: while one is in the line, its
@@ -523,7 +524,7 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="group relative flex scroll-mt-32 items-start gap-[var(--line-gap,12px)] py-[13px]"
+    class="group relative flex scroll-mt-32 items-start gap-[var(--line-gap,12px)]"
     :style="
       lockShade
         ? {
@@ -535,9 +536,11 @@ const onFocusOut = (event: FocusEvent) => {
     :data-locked="lockedBy ? '' : undefined"
     :class="[
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
+      // Being written: a white card over the line, which moves neither
+      // the box nor the text (ticket 144).
       writing
-        ? '-mr-4 -ml-[calc(16px_+_var(--line-in,0px))] border-l-[3px] border-primary bg-default pr-4 pb-2.5 pl-[calc(13px_+_var(--line-in,0px))]'
-        : '',
+        ? '-my-1 -mr-2 -ml-2.5 rounded-[16px] bg-default pt-[17px] pr-2 pb-3.5 pl-2.5 shadow-line-card'
+        : 'py-[13px]',
       liftedHere ? 'opacity-30' : '',
       guided ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5' : '',
     ]"

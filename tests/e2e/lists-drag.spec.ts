@@ -113,7 +113,7 @@ test('on a phone, a long press lifts a line and drops it elsewhere', async ({
     await page.evaluate(() => document.activeElement?.tagName ?? ''),
   ).not.toBe('TEXTAREA');
   // Said to screen readers, and « Annuler » puts it back.
-  await expect(page.locator('[aria-live="polite"]').last()).toContainText(
+  await expect(page.getByTestId('list-announce')).toContainText(
     'Circuit, position 3 sur 3',
   );
   await page.getByRole('button', { name: 'Annuler' }).click();

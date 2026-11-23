@@ -735,7 +735,9 @@ onBeforeRouteLeave((to) => {
             />
           </template>
         </div>
-        <p class="sr-only" aria-live="polite">{{ announced }}</p>
+        <p class="sr-only" aria-live="polite" data-testid="list-announce">
+          {{ announced }}
+        </p>
 
         <!-- A list with no idea yet may start from another, people or
              not (Q-032): under the people, before « Ajouter quelqu'un ». -->

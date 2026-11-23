@@ -85,7 +85,7 @@ flowchart LR
 
   subgraph listesCadeaux ["Listes de cadeaux (celui qui tient la liste)"]
     uneListe["La liste<br/><small>/listes/[id]</small>"]
-    nouvelleListe["Nouvelle liste"]
+    nouvelleListe["Créer une liste de cadeaux"]
     uneListe --> teneurs["Ceux qui tiennent la liste"]
     uneListe --> proches["Mes proches<br/><small>/famille</small>"]
     proches --> membre
@@ -132,7 +132,7 @@ La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin »
 
 | Accueil, ou connexion sans session | `/` | — (barre du bas) | |
 
-L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; la ligne « Devine qui » (ticket 112), sous un Secret Santa où le jeu est ouvert, ouvre `/p/[jeton]/devine`, ou `/p/[jeton]/devine/palmares` une fois le palmarès sorti ; « Nouvelle liste » ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. Deux mois avant un événement qui revient (ticket 108) : « Préparer Noël 2027 », pour son organisateur, recrée sur place les Secret Santa de l'an dernier (la carte les montre aussitôt) ; « Reprendre ma liste de l'an dernier » ouvre `/listes/nouvelle?pour=[événement]&reprendre=[liste]`, qui crée la liste de l'année et l'ouvre. En bas, « Les événements passés », montrée dès qu'il y en a un, ouvre `/evenements-passes`, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
+L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; la ligne « Devine qui » (ticket 112), sous un Secret Santa où le jeu est ouvert, ouvre `/p/[jeton]/devine`, ou `/p/[jeton]/devine/palmares` une fois le palmarès sorti ; En bas d'une carte, ce qu'on peut y créer (ticket 151) : « Créer un Secret Santa » (pour son organisateur, quand il n'en a pas cette année) ouvre `/admin/[fête]/editions/nouvelle` ; « Créer une liste de cadeaux » (quand je n'y tiens aucune liste) ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement et l'ouvre sur sa visite (`?visite=creer`, ticket 149) ; à Noël le Secret Santa d'abord, ailleurs la liste. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. Deux mois avant un événement qui revient (ticket 108) : « Préparer Noël 2027 », pour son organisateur, recrée sur place les Secret Santa de l'an dernier (la carte les montre aussitôt) ; « Reprendre ma liste de l'an dernier » ouvre `/listes/nouvelle?pour=[événement]&reprendre=[liste]`, qui crée la liste de l'année et l'ouvre. En bas, « Les événements passés », montrée dès qu'il y en a un, ouvre `/evenements-passes`, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf | `/quoi-de-neuf` | — (barre du bas) | |
 
 « Quoi de neuf » (ticket 120) : chaque ligne ouvre la chose qu'elle signale : ma page d'un Secret Santa (`/p/[jeton]`), le palmarès (`/p/[jeton]/devine/palmares`), le suivi de l'organisateur (`/admin/[fête]/editions/[id]`), les membres d'un événement (`/e/[fête]/membres`), une liste (`/listes/[id]` si je la tiens ou si l'on m'invite à la tenir, sinon `/l/[jeton]`).
@@ -183,7 +183,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Un nouveau Secret Santa (« Le Secret Santa 2027 ») | `/admin/[fête]/editions/nouvelle` | La fête | |
-| Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, devine, mot, message]` | Le nouveau Secret Santa | |
+| Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, mot, message]` (« Devine qui » se choisit sur la carte du formulaire, ticket 150) | Le nouveau Secret Santa | |
 | L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête ; l'accueil ou « Quoi de neuf » quand on en vient | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Nouvelle personne (elle rejoint l'événement et ce Secret Santa, ticket 117) | `…/editions/[id]/nouvelle-personne` | Choisir les participants | |
@@ -220,7 +220,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
-| Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
+| Créer une liste de cadeaux (crée le brouillon, puis ouvre la liste sur sa visite, `?visite=creer`) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
 | La liste (le document ; sa barre du haut se déroule sur place, sans panneau, ticket 135 : l'adresse et « Qui voit ta liste ? » ; plus loin dans la barre, sans quitter la liste, « Quelqu'un d'autre » (`?partage=inviter`, ouvert aussi par « À ma liste » des Membres), « Reprendre ceux de » (`?partage=reprendre`) et les confirmations (`?partage=confirmer`), où « ‹ » et le retour du téléphone reculent d'un niveau, tickets 139 et 141 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |

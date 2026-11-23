@@ -20,7 +20,7 @@ Avant :
 
 - [x] Vérifier que tous les tickets dont celui-ci dépend sont dans `fait/`. Pas de publication à moitié.
 - [x] **Refaire l'inventaire du ticket 114** (chaque page, son parent, son squelette, aucune adresse morte) : les tickets 115 à 119 sont passés après lui et ont ajouté ou retiré des pages.
-- [ ] Rejouer la migration sur une copie de la base du jour (`pnpm v3:essai`), et comparer (`pnpm v3:compare`) : autant d'événements que de groupes, chaque Secret Santa en cours avec ses participants et ses enveloppes, chaque liste avec ses idées et ses coches. **Ouverte : la copie du jour attend l'export de Julien** (`docs/travail/bascule-v3.md`, partie 1). Les deux commandes sont prêtes pour `0034` à `0043` (la `0043` vient du ticket 139) et passent sur une copie de forme V2 fabriquée (compte rendu).
+- [ ] Rejouer la migration sur une copie de la base du jour (`pnpm v3:essai`), et comparer (`pnpm v3:compare`) : autant d'événements que de groupes, chaque Secret Santa en cours avec ses participants et ses enveloppes, chaque liste avec ses idées et ses coches. **Ouverte : la copie du jour attend l'export de Julien** (`docs/travail/bascule-v3.md`, partie 1). Les deux commandes sont prêtes pour `0034` à `0045` (`0043` du ticket 139, `0044` du 149, `0045` du 152) et passent sur une copie de forme V2 fabriquée (compte rendu).
 - [x] Sur cette copie, contrôler à la main trois comptes : quelqu'un qui a tiré et pas encore ouvert son enveloppe ; quelqu'un qui avait écrit des pistes (elles sont devenues sa liste, vue seulement par celui qui l'a tiré) ; quelqu'un dont la liste était partagée par lien (elle est publique, son lien marche encore, sans compte). Fait sur la copie fabriquée ; à refaire par Julien sur la copie du jour (requêtes : `docs/travail/bascule-v3.md`, partie 1).
 - [x] Écrire le pas-à-pas du retour en arrière, et l'essayer une fois sur la copie : restaurer la sauvegarde, remettre la version d'avant. (`docs/travail/bascule-v3.md`, partie 3)
 - [x] ~~Préparer le mot aux utilisateurs, dans les trois langues (plus bas).~~ Retiré, Q-034 : pas de mot.
@@ -87,6 +87,12 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 - La case de la copie du jour reste ouverte : elle attend l'export de Julien.
 - **Puis 142 à 145** (le point rouge et sa ligne dans « Quoi de neuf », la tuile des événements, la carte de la ligne qu'on écrit, « cette personne ») : dans `fait/`. Aucune migration, aucune page ajoutée ni retirée : l'inventaire et `v3:essai` ne changent pas. À savoir pour la bascule : depuis le 142, une nouveauté pas vue ne s'efface plus ; la tâche du matin n'oublie que celles vues il y a plus de trente jours. `pnpm controle --e2e` passé après chacun (992 tests Vitest, 205 Playwright).
 
+- **Puis 146 à 152** (« On t'invite », la liste plus légère, lier et délier une liste d'un Secret Santa, la visite d'une liste neuve, « Devine qui » mis en avant, « Créer un Secret Santa » sur la carte, la poignée et son menu, les étoiles, les titres) : dans `fait/`. **Deux migrations de plus** : `0044_v3_list_tours` (ce que le compte a vu de la visite, ticket 149) et `0045_v3_idea_stars_titles` (les étoiles et les titres d'une idée, ticket 152). `bascule-v3.md` dit maintenant douze migrations, `0034` à `0045`, et la comparaison vérifie en plus qu'aucune idée n'a d'étoiles ni n'est un titre après la migration.
+- **`pnpm v3:essai` rejoué** sur la même copie de forme V2 : les douze migrations passent, mêmes nombres (24 groupes, 26 éditions, 9 listes avant ; 30 événements, 32 années, 26 Secret Santa, 10 listes, 10 rattachements après), **aucun écart, aucune clé étrangère cassée**.
+- **L'inventaire** : aucune page ajoutée ni retirée (66 pages) ; `ARBORESCENCE.md` suit les noms (« Créer une liste de cadeaux », « Créer un Secret Santa » sur la carte, la page « Devine qui » du formulaire de création n'existe plus) et les adresses `?visite=`.
+- À savoir pour la bascule : depuis le 148, « ma liste du Secret Santa » est la liste liée (`giver`), et seulement elle ; une liste faite pour l'événement ou partagée avec ses membres, sans lien, est proposée par « Quelle liste pour ton Secret Santa ? » au lieu de s'ouvrir directement. La migration `0043` lie déjà les listes gardées pour celui qui a tiré.
+- `pnpm controle --e2e` passé après chacun (1 001 tests Vitest et 215 Playwright au dernier).
+
 ### Ce qui reste à Julien, dans l'ordre
 
 1. La copie du jour : les deux exports, `pnpm v3:essai sauvegardes/prod.sql --garder`, les trois requêtes (`bascule-v3.md`, partie 1). Puis cocher la case restée ouverte.
@@ -113,7 +119,7 @@ Aucune maquette.
 
 ### Migrations
 
-Aucune par ce ticket. La bascule publie `0034` à `0043` (la `0043` vient du ticket 139).
+Aucune par ce ticket. La bascule publie `0034` à `0045` (`0043` du ticket 139, `0044` du 149, `0045` du 152).
 
 ### Commits
 
@@ -126,4 +132,4 @@ Aucune par ce ticket. La bascule publie `0034` à `0043` (la `0043` vient du tic
 - `d582583` chore(email): no email the day after the switch, pnpm v3:mot removed
 - `cfa2358` revert(news): no word of the switch at the top of « Quoi de neuf »
 - puis docs: no word at the switch (Q-034), avec ce compte rendu.
-- le 23 novembre : docs: ticket 113, the switch after tickets 138 to 141 ; puis docs: ticket 113, after tickets 142 to 145 (ce paragraphe, `bascule-v3.md` venant du commit du ticket 139).
+- le 23 novembre : docs: ticket 113, the switch after tickets 138 to 141 ; puis docs: ticket 113, after tickets 142 to 145 ; puis docs: ticket 113, after tickets 146 to 152 (`bascule-v3.md` venant des commits des tickets 139, 149 et 152).

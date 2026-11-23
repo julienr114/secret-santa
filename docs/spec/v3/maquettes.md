@@ -51,12 +51,12 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeCompteCree` | Liste · sans compte, par son lien : le compte se crée tout seul à la première chose écrite, et on le dit | 107 |
 | `V3ListeAdresse` | Liste · arrivé par un lien copié, sans adresse email : on la demande au moment d’écrire sa liste ; pas de liste sans adresse | 107 |
 | `V3ListeQuiLien` | Liste · « Tout le monde » choisi : plus personne à choisir, il reste « Changer de lien » | 106, 135, 139 |
-| `V3ListeLienChanger` | Liste · changer de lien : la conséquence avant le geste | 106, 135, 139 |
+| `V3ListeLienChanger` | Liste · « Changer de lien » touché : un niveau plus loin dans la barre, la conséquence, « Changer » ; le retour annule | 139, 141 |
 | `V3ListeLienNouveau` | Liste · le lien vient de changer : la nouvelle adresse est dans la barre, « Nouveau lien créé » | 139 |
 | `V3ListeQuiModifier` | Liste · « Modifier » touché : deux choix, « Qui je veux » ou « Tout le monde » ; dessous, seulement ceux qui la voient, chacun avec sa croix, « Ajouter », et « Changer de lien » | 106, 135, 138, 139 |
 | `V3ListeQuiAjouter` | Liste · « Ajouter » touché : mes autres événements, « Celui qui m’a tiré » et « Quelqu’un d’autre », en pastilles ; en toucher une l’ajoute | 139 |
-| `V3ListeQuiOuvrir` | Liste · « Tout le monde » touché : la conséquence avant d’ouvrir la liste à quiconque a le lien | 139 |
-| `V3ListeQuiRetirer` | Liste · la croix touchée : retirer sa liste d’un événement, la conséquence avant le geste | 106, 135, 139 |
+| `V3ListeQuiOuvrir` | Liste · « Tout le monde » touché : un niveau plus loin dans la barre, la conséquence, « Ouvrir » ; le retour annule | 139, 141 |
+| `V3ListeQuiRetirer` | Liste · la croix touchée : un niveau plus loin dans la barre, la conséquence, « Retirer » ; le retour annule | 139, 141 |
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |
 | `V3ListeFermee` | Liste · arriver par le lien sans être connecté, quand elle n’est pas publique | 106 |
 | `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit (un brouillon, une liste réservée à celui qui a tiré) | 106 |

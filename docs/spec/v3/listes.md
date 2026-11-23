@@ -54,7 +54,9 @@ Décision de Julien, 22 novembre 2026 : la barre est **repliée**, et **elle se 
 | Celui qui m'a tiré (`V3ListeSecret`) | le nom de l'événement · « Seul celui qui t'a tiré la voit » | « Modifier » |
 | Des événements (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » | « Modifier » |
 | Publique (`V3ListePublique`) | « Publique » · « Toute personne qui a le lien la voit » | « Modifier » |
-| Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille » | « Le lien » |
+| Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes | « Le lien » |
+
+Le nom et la phrase tiennent **chacun sur une ligne**, jamais plus : trop longs, ils sont coupés par « … » (Julien, 23 novembre 2026). La barre ne dit plus « choisi par Camille » à celui qui aide à écrire : ça ne lui sert à rien.
 
 **Le bouton la déroule là où elle est** : pas de panneau du bas, pas de voile, pas d'autre page. **Elle passe par-dessus la liste, elle ne la pousse pas** (Julien, 22 novembre, après l'avoir essayée) : la liste ne bouge pas, la barre déroulée flotte au-dessus, avec une ombre plus marquée. Toucher en dehors la replie, comme « Fermer ». Déroulée, **elle reste collée en haut** ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Son bouton devient **« Fermer »**, qui la replie sans rien changer.
 
@@ -87,22 +89,24 @@ C'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse
 
 ### « Tout le monde »
 
-- Le toucher demande d'abord : « Ouvrir ta liste à tout le monde ? » · « Toute personne qui a le lien pourra la voir et cocher un cadeau, sans compte. » · « Annuler » · « Ouvrir » (`V3ListeQuiOuvrir`).
+- Le toucher demande d'abord, un niveau plus loin dans la barre (`V3ListeQuiOuvrir`) : « ‹ Ouvrir à tout le monde ? » · « Toute personne qui a le lien pourra voir ta liste et cocher un cadeau, sans compte. » · « Ouvrir ». Le retour annule.
 - Une fois publique, il n'y a plus personne à choisir : il reste **« Changer de lien »** (`V3ListeQuiLien`).
 - Revenir à « Qui je veux » retrouve ceux qui y étaient ; c'est resserrer le partage, avec sa confirmation (plus bas).
 - **« Le message qui accompagne le lien » disparaît** : « Copier le lien » ne copie que l'adresse, ce message n'accompagnait plus rien.
 
 ### Changer de lien
 
-`V3ListeLienChanger`, puis `V3ListeLienNouveau`. « Changer de lien ? » · « L'ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste. » · « Annuler » · « Changer ». Ensuite la nouvelle adresse est dans la barre, et un message le dit : « Nouveau lien créé ».
+`V3ListeLienChanger`, puis `V3ListeLienNouveau`. Un niveau plus loin dans la barre : « ‹ Changer de lien ? » · « L'ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste. » · « Changer ». Le retour annule. Ensuite la barre revient au premier niveau, la nouvelle adresse y est, et un message le dit : « Nouveau lien créé ».
 
 ### Resserrer le partage
 
-Maquette : `V3ListeQuiRetirer`. Toucher la croix d'une ligne, revenir de « Tout le monde » à « Qui je veux » : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, dans la barre déroulée, et **compte ceux qui ont coché un cadeau**. Si personne ne perd rien (un événement sans autre membre que moi), la croix retire sans demander.
+Maquette : `V3ListeQuiRetirer`. Toucher la croix d'une ligne, revenir de « Tout le monde » à « Qui je veux » : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, et **compte ceux qui ont coché un cadeau**. Si personne ne perd rien (un événement sans autre membre que moi), la croix retire sans demander.
+
+**La confirmation est un niveau de la barre** (Julien, 23 novembre 2026), comme « Quelqu'un d'autre » : elle arrive par la droite, son titre est précédé du retour, et **le retour annule**. Il n'y a qu'un bouton, celui qui fait le geste. Pas de bouton « Annuler ».
 
 Pour un événement :
 
-« Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. 2 d'entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » · « Annuler » · « Retirer ».
+« ‹ Retirer « Chez Mamie » ? » · « Ses 9 membres ne verront plus ta liste. 2 d'entre eux ont coché un cadeau et ne pourront plus l'ouvrir. Leurs cadeaux restent prévus. » · « Retirer ».
 
 Pour une liste publique : « 3 personnes ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » Si personne n'a coché, la confirmation ne dit que la première phrase.
 
@@ -124,11 +128,31 @@ Demandé par Julien le 23 novembre 2026 : « Quelqu'un d'autre » n'ouvre pas un
 - « Fermer », toucher en dehors et Échap replient la barre d'où que l'on soit ; rouverte, elle est au premier niveau, et ce qu'on avait commencé à écrire est oublié.
 - Le retour du téléphone ou du navigateur recule d'un niveau avant de quitter la liste.
 
+### Tout y est un peu plus petit
+
+Demandé par Julien le 23 novembre 2026 : la barre est un espace restreint, tout ce qu'elle contient est d'une taille en dessous du reste de l'application, sans devenir difficile à toucher.
+
+| Dans la barre | Ailleurs |
+|---|---|
+| un champ est **une ligne** de 48 px : le libellé à gauche, ce qu'on écrit à droite | un champ de 52 px sous son libellé |
+| un bouton de 44 px | 48 px |
+| une ligne de 48 px, son texte en 15 px, son icône de 28 px | 52 à 56 px, 16 px, 32 px |
+| une pastille de 36 px, son texte en 14 px | 40 à 44 px, 15 px |
+| les deux choix « Qui je veux » / « Tout le monde » : 34 px de haut | 40 px |
+| un titre de niveau en 16 px | 18 px |
+
+- **Ce qu'on touche garde 44 px**, quelle que soit sa taille à l'œil : une pastille, un des deux choix, la croix d'une ligne ont une zone à toucher de 44 px de haut, par une marge invisible. Deux zones ne se recouvrent pas.
+- **Les champs sont des lignes**, comme le reste de la barre (un formulaire est tout en lignes ou tout en champs) : pas de cadre, le libellé à gauche en 15 px, ce qu'on écrit à droite. Toucher la ligne, n'importe où, met le curseur dans le champ.
+- **Le texte d'un champ reste en 16 px** : en dessous, un iPhone zoome sur le champ.
+- Ce sont des variantes des composants de l'application (`UiSegmented`, `UiTextField`, les lignes, les boutons), pas des composants à part.
+- **Les coins s'emboîtent** (Julien, 23 novembre 2026) : quand une forme arrondie est posée dans une autre (le choix sélectionné dans son fond, « Copier le lien » dans le champ de l'adresse), son rayon est celui du fond moins la marge qui les sépare. C'est vrai pour `UiSegmented` partout, pas seulement dans la barre.
+- **Un message de l'application reste en bas de l'écran** (« Invitation envoyée », « Nouveau lien créé »), comme partout ailleurs : jamais sous la barre.
+
 ### « Quelqu'un d'autre »
 
 `V3ListeInviter` (vide), `V3ListeInviterEmail` (rempli). Un seul niveau :
 
-- **« Son prénom »**, **« Son adresse email »**, et dessous : « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». »
+- Deux lignes, **« Prénom »** et **« Adresse email »** (le libellé à gauche, ce qu'on écrit à droite ; « prenom@exemple.fr » en texte d'attente), et dessous : « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». »
 - **« Inviter »**, éteint tant que le prénom ou l'adresse manque.
 - Dessous, une ligne : **« Reprendre ceux d'un autre événement »**.
 

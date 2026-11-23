@@ -18,6 +18,9 @@ La barre du haut d'une liste, déroulée, montrait tout à la fois : mes événe
 - **« Le message qui accompagne le lien » disparaît** : « Copier le lien » ne copie que l'adresse, ce message n'était plus relié à rien.
 - **« Changer de lien »** reste proposé dès que le lien fait entrer quelqu'un, publique ou non.
 
+- **Les confirmations sont des niveaux de la barre** (Julien, 23 novembre 2026) : retirer un événement, ouvrir à tout le monde, changer de lien. Le retour annule, un seul bouton fait le geste.
+- **Tout est un peu plus petit dans la barre** (Julien, 23 novembre 2026), parce que l'espace est restreint, mais ce qu'on touche garde 44 px.
+
 ## Écarté
 
 - Tout en cases à cocher, « Tout le monde » compris : une longue liste de tout ce qui est possible, alors qu'on veut d'abord voir ce qui est.

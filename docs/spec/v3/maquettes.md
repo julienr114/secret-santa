@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-65 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+66 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -60,9 +60,10 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |
 | `V3ListeFermee` | Liste · arriver par le lien sans être connecté, quand elle n’est pas publique | 106 |
 | `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit (un brouillon, une liste réservée à celui qui a tiré) | 106 |
-| `V3ListeInviter` | Liste · « Inviter quelqu’un », par la pastille « Quelqu’un d’autre » : le lien, une adresse email, ceux d’un autre événement, ou une autre occasion | 117, 139 |
-| `V3ListeInviterEmail` | Liste · « Par son adresse email » : un prénom, une adresse, « Inviter » | 117, 139 |
-| `V3ListeInviteEnvoyee` | Liste · de retour après « Inviter » : « Invitation envoyée » | 139 |
+| `V3ListeInviter` | Liste · « Quelqu’un d’autre » touché : on reste dans la barre, un niveau plus loin, avec un retour ; son prénom, son adresse, « Inviter », et « Reprendre ceux d’un autre événement » | 117, 139 |
+| `V3ListeInviterEmail` | Liste · « Quelqu’un d’autre », le prénom et l’adresse écrits : « Inviter » | 117, 139 |
+| `V3ListeInviteEnvoyee` | Liste · l’invitation est partie : la barre est revenue à « Qui voit ta liste ? », un membre de plus, « Invitation envoyée » | 139 |
+| `V3ListeInviterReprendre` | Liste · « Reprendre ceux d’un autre événement », toujours dans la barre : l’événement, ceux qu’on coche, « Inviter · 3 personnes » | 139 |
 | `V3ListePartageEmail` | Liste · l’email reçu par celui qu’on invite par son adresse | 117 |
 | `V3ListeAnneePassee` | Liste · celle d’une année passée : elle reste ouverte ; un bandeau dit de quelle année elle est, et mène à celle de cette année | 119 |
 | `V3ListeAideLien` | Liste · pour celui qui « aide à écrire » : « Le lien » déroule la barre, qui ne contient que le lien à copier | 135 |

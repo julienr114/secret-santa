@@ -82,7 +82,7 @@ C'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse
   - **« Celui qui m'a tiré »** · « Secret Santa · Famille Camille », une ligne par Secret Santa auquel ma partie de la liste est liée (« Depuis mon Secret Santa »). Elle peut être là en même temps que l'événement : l'une dit que ma partie sert à mon Secret Santa, l'autre que tous les membres voient la liste.
 - **« Ajouter »**, dessous, se déroule sur place en pastilles : mes autres événements, « Celui qui m'a tiré » (si je participe à un Secret Santa et que je figure dans la liste), et **« Quelqu'un d'autre »**. Toucher une pastille l'ajoute aux lignes du dessus, tout de suite. Toucher « Ajouter » une seconde fois le replie.
 - **Personne encore** (un brouillon) : aucune ligne, et « Ajouter » est déjà ouvert.
-- **« Quelqu'un d'autre »** ouvre la page « Inviter quelqu'un » (plus bas). La pastille n'est là que si la liste est déjà partagée avec les membres de son événement, puisque celui qu'on invite en devient membre.
+- **« Quelqu'un d'autre »** fait glisser la barre vers un niveau plus loin, sans quitter la liste (« Inviter quelqu'un », plus bas). La pastille n'est là que si la liste est déjà partagée avec les membres de son événement, puisque celui qu'on invite en devient membre.
 - **« Changer de lien »**, en dernière ligne, dès que le lien fait entrer quelqu'un (la liste est partagée avec son événement). Pas sur un brouillon, ni sur une liste que seul celui qui m'a tiré voit.
 
 ### « Tout le monde »
@@ -110,14 +110,39 @@ Pour ceux qui perdent l'accès, la liste disparaît, sans trace (Q-003). Leurs c
 
 ## Inviter quelqu'un
 
-Maquettes : `V3ListeInviter`, `V3ListeInviterEmail`, `V3ListeInviteEnvoyee`, `V3ListePartageEmail`, `V3FeteMembresReprendre`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
+Maquettes : `V3ListeInviter`, `V3ListeInviterEmail`, `V3ListeInviterReprendre`, `V3ListeInviteEnvoyee`, `V3ListePartageEmail`. Décisions : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`, `2026-11-22-qui-voit-ta-liste-deux-choix.md`.
 
-On n'ajoute personne à un événement : du côté des listes, **c'est par une liste qu'on y entre**. Celui qui gère une liste partagée avec « Tous les membres » de **son événement** (l'occasion choisie à sa création) peut y faire entrer quelqu'un. On y arrive par la pastille « Quelqu'un d'autre » de « Qui voit ta liste ? ». La page dit : « Il verra ta liste et deviendra membre de l'événement. » Quatre lignes :
+On n'ajoute personne à un événement : du côté des listes, **c'est par une liste qu'on y entre**. Celui qui gère une liste partagée avec les membres de **son événement** (l'occasion choisie à sa création) peut y faire entrer quelqu'un, par la pastille « Quelqu'un d'autre » de « Qui voit ta liste ? ».
 
-- **« Copier le lien »** : le lien de la liste. Celui qui l'ouvre et se connecte devient membre de l'événement, et la liste s'ouvre.
-- **« Par son adresse email »** (`V3ListeInviterEmail`) : un prénom, une adresse, « Inviter », et dessous « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». ». De retour sur la liste, un message : « Invitation envoyée » (`V3ListeInviteEnvoyee`). La personne est membre tout de suite et reçoit un email à mon nom (`V3ListePartageEmail`) : « Camille a partagé sa liste « Noël 2026 » avec toi » · « Coche ce que tu offres, et personne n'aura la même idée. » · « Voir la liste ».
-- **« Reprendre ceux d'un autre événement »** : la page « Qui reprendre ? », la même que pour un Secret Santa (`secret-santa.md`, « Choisir les participants »).
-- **« Dans une autre occasion »** · « Un nouvel événement, où partager ta liste » : crée un événement (`accueil-et-creation.md`). C'était la ligne « Une autre occasion » de « Qui verra ta liste ? ».
+### On reste dans la barre
+
+Demandé par Julien le 23 novembre 2026 : « Quelqu'un d'autre » n'ouvre pas une page. **La barre déroulée a une navigation à elle** : son contenu glisse vers un niveau plus loin, et un retour, en haut à gauche, ramène au précédent.
+
+- **L'en-tête de la barre ne bouge pas** : le stade, sa phrase, « Fermer ». Seul ce qui est dessous change.
+- **Un niveau plus loin a un titre précédé du retour** (« ‹ Quelqu'un d'autre »). L'adresse à copier n'est qu'au premier niveau.
+- **Le mouvement** : le niveau où l'on va arrive par la droite pendant que l'autre part par la gauche ; le retour fait l'inverse ; la hauteur de la barre suit, dans le même temps. Un quart de seconde, pas plus. Pour qui a demandé moins d'animations (`prefers-reduced-motion`), le contenu change sans glisser.
+- « Fermer », toucher en dehors et Échap replient la barre d'où que l'on soit ; rouverte, elle est au premier niveau, et ce qu'on avait commencé à écrire est oublié.
+- Le retour du téléphone ou du navigateur recule d'un niveau avant de quitter la liste.
+
+### « Quelqu'un d'autre »
+
+`V3ListeInviter` (vide), `V3ListeInviterEmail` (rempli). Un seul niveau :
+
+- **« Son prénom »**, **« Son adresse email »**, et dessous : « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». »
+- **« Inviter »**, éteint tant que le prénom ou l'adresse manque.
+- Dessous, une ligne : **« Reprendre ceux d'un autre événement »**.
+
+« Inviter » ramène au premier niveau : l'événement compte un membre de plus, et un message le dit, « Invitation envoyée » (`V3ListeInviteEnvoyee`). La personne est membre tout de suite et reçoit un email à mon nom (`V3ListePartageEmail`) : « Camille a partagé sa liste « Noël 2026 » avec toi » · « Coche ce que tu offres, et personne n'aura la même idée. » · « Voir la liste ».
+
+### « Reprendre ceux d'un autre événement »
+
+`V3ListeInviterReprendre`. Un niveau de plus, titre « ‹ Reprendre ceux de » : mes autres événements en pastilles (un seul choisi), ses membres à cocher (ceux qui ne sont pas déjà dans l'événement de la liste ; sans adresse email, la case reste vide et ne se coche pas), puis « Inviter · 3 personnes ». Même retour au premier niveau, « 3 invitations envoyées ».
+
+### Ce qui n'y est plus
+
+- **« Copier le lien »** n'est plus une ligne ici : l'adresse est au premier niveau de la barre.
+- **« Une autre occasion »** quitte le partage d'une liste : on crée un événement par « Créer », et il apparaît ensuite dans « Ajouter ». Un événement créé d'ici n'avait que moi dedans.
+- La page « Inviter quelqu'un » et ses sous-pages (`/listes/…/inviter`) disparaissent.
 
 Règles :
 

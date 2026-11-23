@@ -13,7 +13,8 @@ La barre du haut d'une liste, déroulée, montrait tout à la fois : mes événe
 - **« Celui qui m'a tiré » est une ligne comme les autres**, plus un choix à deux sous un événement.
 - **Sous « Tout le monde », plus personne à choisir.** Y passer demande confirmation. En revenir retrouve ceux qu'on avait choisis.
 - **Plus de bouton « Enregistrer »** : chaque geste s'applique tout de suite. Deux gestes demandent d'abord : retirer quelqu'un qui perd l'accès, et ouvrir à tout le monde.
-- **« Quelqu'un d'autre »** remplace « Une autre occasion » et « Inviter quelqu'un » : une seule entrée, vers la page « Inviter quelqu'un », qui gagne « Dans une autre occasion ».
+- **« Quelqu'un d'autre »** remplace « Une autre occasion » et « Inviter quelqu'un » : une seule entrée.
+- **On ne quitte pas la barre pour inviter** (Julien, 23 novembre 2026) : elle a une navigation à elle, avec un retour et un glissement d'un niveau à l'autre. « Quelqu'un d'autre » y est un niveau (un prénom, une adresse, « Inviter »), « Reprendre ceux d'un autre événement » un deuxième. La page « Inviter quelqu'un » disparaît, et « Une autre occasion » quitte le partage d'une liste : on crée un événement par « Créer ».
 - **« Le message qui accompagne le lien » disparaît** : « Copier le lien » ne copie que l'adresse, ce message n'était plus relié à rien.
 - **« Changer de lien »** reste proposé dès que le lien fait entrer quelqu'un, publique ou non.
 

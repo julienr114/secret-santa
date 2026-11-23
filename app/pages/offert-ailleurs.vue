@@ -46,27 +46,19 @@ const iconOf = (list: ElsewhereList) =>
       :skeleton="['icons']"
       :rows="2"
     >
-      <ul
-        class="-mx-4 divide-y divide-default border-y border-default bg-default"
-        data-testid="elsewhere"
-      >
-        <li v-for="list in lists" :key="list.token">
-          <NuxtLink
-            :to="`/l/${list.token}`"
-            class="flex min-h-16 items-center gap-3 px-4 py-2"
-          >
+      <UiList data-testid="elsewhere">
+        <UiListItem
+          v-for="list in lists"
+          :key="list.token"
+          :to="`/l/${list.token}`"
+          :title="list.title"
+          :subtitle="lineOf(list)"
+        >
+          <template #leading>
             <ListsTile :icon="iconOf(list)" />
-            <span class="flex min-w-0 grow flex-col">
-              <span class="truncate font-bold">{{ list.title }}</span>
-              <span class="text-sm text-toned">{{ lineOf(list) }}</span>
-            </span>
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-5 shrink-0 text-dimmed"
-            />
-          </NuxtLink>
-        </li>
-      </ul>
+          </template>
+        </UiListItem>
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

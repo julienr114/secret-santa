@@ -12,12 +12,14 @@ import {
 } from '~/composables/queries/useLists';
 import { AVATAR_SHADES } from '~/utils/avatars';
 import { ideaChips, namesInOne } from '~/utils/givers';
-import { asAddress, linkHost, shownAddress } from '~/utils/ideaLink';
+import { asAddress, ideaName, linkHost, shownAddress } from '~/utils/ideaLink';
 import { splitIdea } from '#server/utils/lists';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
 // 22.20, maquettes ListeIdee, ListeIdeeLien, ListeIdeeLienFait): its box,
-// its text and its link, and, for the holder, who gives it. The holder
+// its text and its link, and, for the holder, who gives it. Without a
+// text, the name of its site takes its place, and is touched to write it
+// (ticket 140). The holder
 // ticks too, their « Moi » included: the box gives the idea alone,
 // touched again it unticks. What they give says so under it, as by the
 // link: « Tu l'offres › », which opens its sheet; a gift given by several
@@ -158,6 +160,9 @@ const claims = computed(() =>
 // by first name, my own state in one pill, « Se joindre » last.
 const chips = computed(() => ideaChips(view.value, Boolean(editing.untickFor)));
 const host = computed(() => (props.idea?.url ? linkHost(props.idea.url) : ''));
+/** Its name: its text, or the name of its site when it has only a link
+ * (ticket 140). */
+const name = computed(() => (props.idea ? ideaName(props.idea) : ''));
 /** The first names of the others who give it, in one go. */
 const giverNames = computed(() =>
   namesInOne(
@@ -170,9 +175,9 @@ const joinLabel = computed(() =>
   giverNames.value
     ? t('lists.chips.joinWith', {
         names: giverNames.value,
-        idea: props.idea?.text ?? '',
+        idea: name.value,
       })
-    : t('lists.chips.joinIdea', { idea: props.idea?.text ?? '' }),
+    : t('lists.chips.joinIdea', { idea: name.value }),
 );
 /**
  * « Qui l'offre ? » (21 November 2026): for those who hold the list, the
@@ -548,7 +553,7 @@ const onFocusOut = (event: FocusEvent) => {
       type="button"
       tabindex="-1"
       class="absolute top-1.5 -left-6 hidden size-7 cursor-grab items-center justify-center rounded-md text-toned group-hover:flex"
-      :aria-label="t('lists.doc.drag.handle', { name: idea.text })"
+      :aria-label="t('lists.doc.drag.handle', { name })"
       data-testid="drag-handle"
       data-no-drag
       @mousedown="drag.grab($event, { kind: 'idea', id: idea.id })"
@@ -564,12 +569,12 @@ const onFocusOut = (event: FocusEvent) => {
               role: 'checkbox',
               'aria-checked': mine || taken,
               'aria-label': mine
-                ? t('lists.visitor.untick', { idea: idea.text })
+                ? t('lists.visitor.untick', { idea: name })
                 : openGroup
                   ? joinLabel
                   : taken && claims.length > 0
                     ? untickForLabel
-                    : t('lists.visitor.tick', { idea: idea.text }),
+                    : t('lists.visitor.tick', { idea: name }),
               disabled: !boxActive && claims.length === 0,
             }
           : { 'aria-hidden': 'true' }
@@ -719,7 +724,7 @@ const onFocusOut = (event: FocusEvent) => {
             @click="start"
           >
             <span
-              :key="lockedBy ? 'live' : idea.text"
+              :key="lockedBy ? 'live' : name"
               :class="settled && !lockedBy ? 'text-changed' : ''"
               ><template v-if="lockedBy"
                 >{{ lockedBy.text.slice(0, lockedBy.caret)
@@ -731,7 +736,7 @@ const onFocusOut = (event: FocusEvent) => {
                   aria-hidden="true"
                   data-testid="live-caret"
                 />{{ lockedBy.text.slice(lockedBy.caret) }}</template
-              ><template v-else>{{ idea.text }}</template></span
+              ><template v-else>{{ name }}</template></span
             >
           </button>
           <!-- Taken from an old list and not changed since (lot 27): a small
@@ -790,8 +795,7 @@ const onFocusOut = (event: FocusEvent) => {
               }}</UiChip
             >
             <span class="sr-only"
-              >{{ givenBy }}
-              {{ t('lists.who.change', { idea: idea.text }) }}</span
+              >{{ givenBy }} {{ t('lists.who.change', { idea: name }) }}</span
             >
           </button>
           <template v-else>
@@ -820,8 +824,8 @@ const onFocusOut = (event: FocusEvent) => {
             button
             :aria-label="
               chips.mine === 'group'
-                ? t('lists.chips.mineGroupLabel', { idea: idea.text })
-                : t('lists.chips.mineLabel', { idea: idea.text })
+                ? t('lists.chips.mineGroupLabel', { idea: name })
+                : t('lists.chips.mineLabel', { idea: name })
             "
             :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
             data-no-drag

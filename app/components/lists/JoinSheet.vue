@@ -40,7 +40,7 @@ const onJoin = () =>
 <template>
   <UiSheet
     v-model:open="open"
-    :title="t('lists.claim.together', { idea: ideaShort(idea.text) })"
+    :title="t('lists.claim.together', { idea: ideaShort(ideaName(idea)) })"
     :description="
       !forName
         ? count > 2

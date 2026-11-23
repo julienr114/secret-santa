@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { asAddress, linkHost, shownAddress } from './ideaLink';
+import { asAddress, ideaName, linkHost, shownAddress } from './ideaLink';
 
 describe('asAddress', () => {
   it('keeps an address as pasted', () => {
@@ -56,5 +56,17 @@ describe('an address as its field shows it', () => {
     ]) {
       expect(asAddress(shownAddress(url))).toBe(url);
     }
+  });
+});
+
+describe('ideaName', () => {
+  it('names an idea by its text, else by the site of its link', () => {
+    expect(ideaName({ text: 'Vélo', url: 'https://www.velo.fr/a' })).toBe(
+      'Vélo',
+    );
+    expect(ideaName({ text: '', url: 'https://www.lutin-jouets.fr/b' })).toBe(
+      'lutin-jouets.fr',
+    );
+    expect(ideaName({ text: '', url: null })).toBe('');
   });
 });

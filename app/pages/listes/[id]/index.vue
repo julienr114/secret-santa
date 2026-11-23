@@ -298,8 +298,11 @@ const announced = ref('');
 const nameOf = (what: Lifted) =>
   what.kind === 'person'
     ? (people.value.find((p) => p.id === what.id)?.member.firstName ?? '')
-    : (people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id)
-        ?.text ?? '');
+    : ideaName(
+        people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id) ?? {
+          text: '',
+        },
+      );
 /**
  * Shows an order and saves it; « Annuler » puts the one before back.
  * @param next - The order wanted.

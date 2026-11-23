@@ -38,6 +38,8 @@ const crossed = computed(
 );
 const openGroup = computed(() => chips.value.join);
 const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
+/** Its name: its text, or the name of its site (ticket 140). */
+const name = computed(() => ideaName(props.idea));
 const names = computed(() =>
   namesInOne(
     chips.value.givers.map((pill) => pill.name ?? ''),
@@ -47,12 +49,12 @@ const names = computed(() =>
 /** « Se joindre à Mamie et Tonton pour Vélo 16 pouces ». */
 const joinLabel = computed(() =>
   names.value
-    ? t('lists.chips.joinWith', { names: names.value, idea: props.idea.text })
-    : t('lists.chips.joinIdea', { idea: props.idea.text }),
+    ? t('lists.chips.joinWith', { names: names.value, idea: name.value })
+    : t('lists.chips.joinIdea', { idea: name.value }),
 );
 /** « Circuit de billes, tu l'offres en anonyme : modifier ou ne plus l'offrir ». */
 const mineLabel = computed(() => {
-  const idea = props.idea.text;
+  const idea = name.value;
   if (chips.value.mine === 'anonymous') {
     return t('lists.chips.mineAnonymousLabel', { idea });
   }
@@ -109,7 +111,7 @@ onBeforeUnmount(() => {
       type="button"
       role="checkbox"
       aria-checked="true"
-      :aria-label="t('lists.visitor.untick', { idea: idea.text })"
+      :aria-label="t('lists.visitor.untick', { idea: name })"
       class="relative z-10 -m-2.5 flex size-[42px] shrink-0 items-center justify-center"
       data-testid="idea-box"
       @click="emit('untick')"
@@ -127,7 +129,7 @@ onBeforeUnmount(() => {
       role="checkbox"
       :aria-checked="crossed"
       :aria-label="
-        openGroup ? joinLabel : t('lists.visitor.tick', { idea: idea.text })
+        openGroup ? joinLabel : t('lists.visitor.tick', { idea: name })
       "
       :disabled="crossed"
       class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
@@ -157,7 +159,7 @@ onBeforeUnmount(() => {
           chips.mine ? 'font-semibold' : '',
         ]"
       >
-        {{ idea.text
+        {{ name
         }}<span v-if="fresh" class="sr-only"> ({{ t('lines.dot') }})</span>
       </p>
       <ListsIdeaLink

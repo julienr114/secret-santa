@@ -33,9 +33,9 @@ Maquette : `V3TirageQuelleFete`. Un seul choix (un Secret Santa est dans un seul
 
 Les événements où je ne suis que membre ne sont pas proposées. Arrivé à la limite de 3 : `secret-santa.md`.
 
-### Première étape d'une liste : « Qui verra ta liste ? »
+### Partager une liste : « Qui voit ta liste ? »
 
-Maquette : `V3ListeQui`. Voir `listes.md`. La ligne « Une autre occasion » crée un événement.
+Maquette : `V3ListeQui`. Ce n'est plus la première étape d'une liste : elle naît en brouillon, et « Partager », dans sa barre du haut, ouvre « Qui voit ta liste ? » (`listes.md`). Un événement se crée depuis là par « Ajouter », « Quelqu'un d'autre », « Dans une autre occasion ».
 
 ### « Une autre occasion » : l'écran où un événement se crée
 

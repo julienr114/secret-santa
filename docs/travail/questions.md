@@ -4,6 +4,10 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
 ### Q-034 — Le mot de la bascule : à qui, et que dire à ceux qui n'ont pas de compte ? (ticket 113)
 
 - **Pour** : Julien
@@ -19,8 +23,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. L'email aussi aux participants sans compte d'un Secret Santa en cours, avec un autre texte (sans « Tes pistes sont devenues ta liste »), qu'il faudrait écrire, et leur lien personnel, que seul le serveur peut déchiffrer (un envoi depuis l'application, pas un script).
   - C. Le mot de « Quoi de neuf » seulement aux comptes qui ont un Secret Santa ou une liste en cours, comme l'email.
 - **Ce que je ferais** : A. Ceux qui n'ont pas de compte n'ont rien perdu, et leur lien marche encore ; leur écrire demanderait un texte et un envoi qui n'existent pas.
-
-## Réponses
+- **Réponse de Julien (22 novembre 2026)** : aucun des trois. « Personne n'utilise pour le moment, pas besoin de mot. » La bascule se fait sans mot : ni ligne en tête de « Quoi de neuf », ni email du lendemain. À retirer du ticket 113 et du code : le mot de « Quoi de neuf », `buildSwitchEmail`, `pnpm v3:mot`, leurs textes dans les trois langues et leurs tests ; l'étape « le lendemain » du pas-à-pas disparaît. La décision est notée dans `docs/decisions/2026-11-21-la-v3-se-publie-des-qu-elle-est-prete.md`.
 
 ### Q-032 — « Repartir d'une liste » : « une personne en commun » ne joue jamais, le bloc n'étant que dans une liste vide (ticket 119)
 

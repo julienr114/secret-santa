@@ -1,7 +1,7 @@
 # Les listes
 
-Décisions : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md`, `2026-11-21-le-partage-d-une-liste-a-des-stades.md`, `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
-Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`, `V3ListeQui`, `V3ListeQuiSecret`, `V3ListeQuiModifier`, `V3ListeQuiRetirer`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeAideLien`, `V3ListeSecretNouvelle`, `V3Liste`, `V3ListeSecret`, `V3ListePublique`, `V3ListeFermee`, `V3ListeFermeeConnecte`, `V3ListeMembre`, `V3ListeReprise`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
+Décisions : `2026-11-22-qui-voit-ta-liste-deux-choix.md`, `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md`, `2026-11-21-le-partage-d-une-liste-a-des-stades.md`, `2026-11-20-le-groupe-devient-la-fete.md`, `2026-11-20-pistes-et-listes-fusionnent.md`, `2026-11-20-on-cree-un-secret-santa-ou-une-liste.md`.
+Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`, `V3ListeQui`, `V3ListeQuiSecret`, `V3ListeQuiModifier`, `V3ListeQuiAjouter`, `V3ListeQuiRetirer`, `V3ListeQuiOuvrir`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeLienNouveau`, `V3ListeInviterEmail`, `V3ListeInviteEnvoyee`, `V3ListeAideLien`, `V3ListeSecretNouvelle`, `V3Liste`, `V3ListeSecret`, `V3ListePublique`, `V3ListeFermee`, `V3ListeFermeeConnecte`, `V3ListeMembre`, `V3ListeReprise`, `V3ListeCompteCree`, `V3ListeAdresse`, `V3OffreAilleurs`.
 
 Le dessin d'une liste (les lignes, les coches, le mode anonyme, le fil, « ses goûts ») ne change pas : c'est celui de la Correction 30 de l'ancien plan et du README 22.19 à 22.21. Change où elle vit et qui la voit.
 
@@ -18,7 +18,7 @@ Décision : `2026-11-21-le-partage-d-une-liste-a-des-stades.md` (Julien, 21 nove
 | **Un ou plusieurs événements** | leurs membres en plus ; dans l'événement de la liste, ceux que j'invite et ceux qui ouvrent son lien en deviennent membres (« Inviter quelqu'un ») |
 | **Publique** | quiconque a le lien, sans compte. C'est le dernier stade |
 
-- Les stades se cumulent : une liste peut être réservée à celui qui m'a tiré dans un événement, ouverte à tous les membres d'un autre, et publique.
+- Les stades se cumulent : une liste peut être réservée à celui qui m'a tiré dans un événement et ouverte à tous les membres d'un autre. **« Publique » s'écrit à part** : à l'écran, on choisit entre « Qui je veux » et « Tout le monde », pas les deux (« Qui voit ta liste ? », plus bas). Une liste publique garde en mémoire ceux qu'on avait choisis.
 - **Le partage se change dans les deux sens**, à tout moment.
 - Chaque événement où la liste est partagée la montre dans sa carte ; une liste réservée à celui qui m'a tiré n'apparaît pas pour les autres membres.
 
@@ -28,7 +28,7 @@ Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`.
 
 1. **« Pour quelle occasion ? »** : un de mes événements, ou « Une autre occasion » (qui en crée un, `accueil-et-creation.md`). La liste en prend le nom, la date et l'icône : on ne les redemande pas.
 2. La liste s'ouvre, **en brouillon** : moi seul la vois. J'écris.
-3. **« Partager »**, dans la barre du haut, la déroule : « Qui verra ta liste ? » est dedans.
+3. **« Partager »**, dans la barre du haut, la déroule : « Qui voit ta liste ? » est dedans.
 
 ### Depuis mon Secret Santa
 
@@ -40,7 +40,7 @@ En touchant « Ma liste de cadeaux » sur la page de mon Secret Santa, ou « Éc
 - **J'en tiens une ou plusieurs** : « Quelle liste pour ton Secret Santa ? » (`V3TirageQuelleListe`) les propose, une par ligne, avec « Pour Léo, Zoé et moi » et ses événements dessous ; puis « Une nouvelle liste ». La première est choisie d'avance : celle du même événement, sinon de la même catégorie, sinon la plus récente. « Continuer ». La liste choisie garde son partage : celui qui m'a tiré la voit en plus (les stades se cumulent). Une liste que je tiens mais où je ne figure pas n'est pas proposée.
 - **Sous mon prénom**, dans la liste, une ligne par Secret Santa : l'icône du Secret Santa, « Secret Santa · Famille Camille » (`V3ListeSecret`). Elle mène à mon Secret Santa. Seuls ceux qui tiennent la liste la voient.
 
-« Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`). Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
+« Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`) : « Celui qui m'a tiré » y est une ligne comme les autres. Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
 
 ## La barre du haut d'une liste
 
@@ -56,33 +56,51 @@ Décision de Julien, 22 novembre 2026 : la barre est **repliée**, et **elle se 
 | Publique (`V3ListePublique`) | « Publique » · « Toute personne qui a le lien la voit » | « Modifier » |
 | Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes, plus « choisi par Camille » | « Le lien » |
 
-**Le bouton la déroule là où elle est** : pas de panneau du bas, pas de voile, pas d'autre page. La liste est poussée vers le bas. Déroulée, **elle reste collée en haut** ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Son bouton devient **« Fermer »**, qui la replie sans rien changer.
+**Le bouton la déroule là où elle est** : pas de panneau du bas, pas de voile, pas d'autre page. **Elle passe par-dessus la liste, elle ne la pousse pas** (Julien, 22 novembre, après l'avoir essayée) : la liste ne bouge pas, la barre déroulée flotte au-dessus, avec une ombre plus marquée. Toucher en dehors la replie, comme « Fermer ». Déroulée, **elle reste collée en haut** ; si elle est plus haute que l'écran, c'est son contenu qui défile, pas la page. Son bouton devient **« Fermer »**, qui la replie sans rien changer.
 
 Dedans, dans cet ordre :
 
 1. **L'adresse de la liste et « Copier le lien »** (« Copié », un instant). C'est le seul endroit où l'adresse est écrite : repliée, la barre ne la montre pas.
-2. Pour ceux qui gèrent la liste : **« Qui verra ta liste ? »** (plus bas), puis le bouton, « Partager » pour un brouillon, « Enregistrer » ensuite. Il enregistre et replie la barre.
+2. Pour ceux qui gèrent la liste : **« Qui voit ta liste ? »** (plus bas). **Il n'y a pas de bouton pour enregistrer** : chaque geste s'applique tout de suite, et la phrase de la barre suit (« 21 membres la voient »).
 
 Celui qui « aide à écrire » n'a que l'adresse et « Copier le lien » (`V3ListeAideLien`).
 
 Celui qui « gère la liste » a les mêmes boutons que celui qui l'a créée (`ListeTeneurs`). Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre, repliée.
 
-## « Qui verra ta liste ? »
+## « Qui voit ta liste ? »
 
-Maquettes : `V3ListeQui` (depuis un brouillon, bouton « Partager »), `V3ListeQuiModifier` (bouton « Enregistrer »), `V3ListeQuiSecret`, `V3ListeQuiLien`.
+Décision : `2026-11-22-qui-voit-ta-liste-deux-choix.md` (Julien, 22 novembre 2026, après avoir essayé : « c'est incompréhensible »). Ce qui suit remplace la liste d'événements à cocher, le choix à deux sous un événement, l'interrupteur « Tout le monde, avec le lien » et le bouton « Enregistrer ».
 
-Ce n'est plus un panneau : c'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse.
+Maquettes : `V3ListeQui` (un brouillon), `V3ListeQuiModifier`, `V3ListeQuiAjouter`, `V3ListeQuiSecret`, `V3ListeQuiRetirer`, `V3ListeQuiOuvrir`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeLienNouveau`.
 
-- **Mes événements, à cocher**, aucun, un ou plusieurs. Tout décoché, la liste est un brouillon.
-- Sous un événement coché **où je participe à un Secret Santa**, deux choix : **« Tous les membres »** ou **« Celui qui m'a tiré »**, dans le composant à deux choix de l'application (`UiSegmented`).
-- **« Une autre occasion »** : crée un événement.
-- **« Inviter quelqu'un »** : plus bas.
-- **« Tout le monde, avec le lien »** : un interrupteur. Allumé, la liste est publique.
-- Pour une liste publique, deux lignes de plus : « Le message qui accompagne le lien » (la page `PersonnaliserMessage`) et « Changer de lien » (`V3ListeLienChanger`), qui dit d'abord que l'ancien lien ne marchera plus. L'adresse n'est pas répétée sous l'interrupteur : elle est en haut de la barre déroulée.
+C'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse. Le titre, « Qui voit ta liste ? », puis **deux choix qui s'excluent**, dans le composant à deux choix de l'application (`UiSegmented`) : **« Qui je veux »** et **« Tout le monde »**.
+
+### « Qui je veux »
+
+- **On ne voit que ceux qui voient la liste**, une ligne chacun, avec une croix pour le retirer :
+  - un événement : son icône, son nom, « 12 membres » ;
+  - **« Celui qui m'a tiré »** · « Secret Santa · Famille Camille », une ligne par Secret Santa auquel ma partie de la liste est liée (« Depuis mon Secret Santa »). Elle peut être là en même temps que l'événement : l'une dit que ma partie sert à mon Secret Santa, l'autre que tous les membres voient la liste.
+- **« Ajouter »**, dessous, se déroule sur place en pastilles : mes autres événements, « Celui qui m'a tiré » (si je participe à un Secret Santa et que je figure dans la liste), et **« Quelqu'un d'autre »**. Toucher une pastille l'ajoute aux lignes du dessus, tout de suite. Toucher « Ajouter » une seconde fois le replie.
+- **Personne encore** (un brouillon) : aucune ligne, et « Ajouter » est déjà ouvert.
+- **« Quelqu'un d'autre »** ouvre la page « Inviter quelqu'un » (plus bas). La pastille n'est là que si la liste est déjà partagée avec les membres de son événement, puisque celui qu'on invite en devient membre.
+- **« Changer de lien »**, en dernière ligne, dès que le lien fait entrer quelqu'un (la liste est partagée avec son événement). Pas sur un brouillon, ni sur une liste que seul celui qui m'a tiré voit.
+
+### « Tout le monde »
+
+- Le toucher demande d'abord : « Ouvrir ta liste à tout le monde ? » · « Toute personne qui a le lien pourra la voir et cocher un cadeau, sans compte. » · « Annuler » · « Ouvrir » (`V3ListeQuiOuvrir`).
+- Une fois publique, il n'y a plus personne à choisir : il reste **« Changer de lien »** (`V3ListeQuiLien`).
+- Revenir à « Qui je veux » retrouve ceux qui y étaient ; c'est resserrer le partage, avec sa confirmation (plus bas).
+- **« Le message qui accompagne le lien » disparaît** : « Copier le lien » ne copie que l'adresse, ce message n'accompagnait plus rien.
+
+### Changer de lien
+
+`V3ListeLienChanger`, puis `V3ListeLienNouveau`. « Changer de lien ? » · « L'ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste. » · « Annuler » · « Changer ». Ensuite la nouvelle adresse est dans la barre, et un message le dit : « Nouveau lien créé ».
 
 ### Resserrer le partage
 
-Maquette : `V3ListeQuiRetirer`. Décocher un événement, éteindre « Tout le monde », revenir au brouillon : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, dans la barre déroulée, à la place du bouton, et **compte ceux qui ont coché un cadeau** :
+Maquette : `V3ListeQuiRetirer`. Toucher la croix d'une ligne, revenir de « Tout le monde » à « Qui je veux » : chaque fois que des gens vont perdre l'accès, **une confirmation le dit avant**, dans la barre déroulée, et **compte ceux qui ont coché un cadeau**. Si personne ne perd rien (un événement sans autre membre que moi), la croix retire sans demander.
+
+Pour un événement :
 
 « Retirer ta liste de « Chez Mamie » ? » · « Ses 9 membres ne la verront plus. 2 d'entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus. » · « Annuler » · « Retirer ».
 
@@ -92,18 +110,19 @@ Pour ceux qui perdent l'accès, la liste disparaît, sans trace (Q-003). Leurs c
 
 ## Inviter quelqu'un
 
-Maquettes : `V3ListeInviter`, `V3ListePartageEmail`, `V3FeteMembresReprendre`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
+Maquettes : `V3ListeInviter`, `V3ListeInviterEmail`, `V3ListeInviteEnvoyee`, `V3ListePartageEmail`, `V3FeteMembresReprendre`. Décision : `2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md`.
 
-On n'ajoute personne à un événement : du côté des listes, **c'est par une liste qu'on y entre**. Celui qui gère une liste partagée avec « Tous les membres » de **son événement** (l'occasion choisie à sa création) peut y faire entrer quelqu'un. La page dit : « Il verra ta liste et deviendra membre de l'événement. » Trois lignes :
+On n'ajoute personne à un événement : du côté des listes, **c'est par une liste qu'on y entre**. Celui qui gère une liste partagée avec « Tous les membres » de **son événement** (l'occasion choisie à sa création) peut y faire entrer quelqu'un. On y arrive par la pastille « Quelqu'un d'autre » de « Qui voit ta liste ? ». La page dit : « Il verra ta liste et deviendra membre de l'événement. » Quatre lignes :
 
 - **« Copier le lien »** : le lien de la liste. Celui qui l'ouvre et se connecte devient membre de l'événement, et la liste s'ouvre.
-- **« Par son adresse email »** : un prénom, une adresse. La personne est membre tout de suite et reçoit un email à mon nom (`V3ListePartageEmail`) : « Camille a partagé sa liste « Noël 2026 » avec toi » · « Coche ce que tu offres, et personne n'aura la même idée. » · « Voir la liste ».
+- **« Par son adresse email »** (`V3ListeInviterEmail`) : un prénom, une adresse, « Inviter », et dessous « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». ». De retour sur la liste, un message : « Invitation envoyée » (`V3ListeInviteEnvoyee`). La personne est membre tout de suite et reçoit un email à mon nom (`V3ListePartageEmail`) : « Camille a partagé sa liste « Noël 2026 » avec toi » · « Coche ce que tu offres, et personne n'aura la même idée. » · « Voir la liste ».
 - **« Reprendre ceux d'un autre événement »** : la page « Qui reprendre ? », la même que pour un Secret Santa (`secret-santa.md`, « Choisir les participants »).
+- **« Dans une autre occasion »** · « Un nouvel événement, où partager ta liste » : crée un événement (`accueil-et-creation.md`). C'était la ligne « Une autre occasion » de « Qui verra ta liste ? ».
 
 Règles :
 
 - Le lien d'une liste ne fait entrer **que dans son événement**. Dans les autres événements où elle est partagée, seuls ceux qui en sont déjà membres la voient.
-- Tant que la liste est un brouillon, ou réservée à celui qui m'a tiré, « Inviter quelqu'un » n'est pas proposé et le lien ne fait entrer personne.
+- Tant que la liste est un brouillon, ou réservée à celui qui m'a tiré, « Quelqu'un d'autre » n'est pas proposé et le lien ne fait entrer personne.
 - À 30 membres, on n'invite plus et le lien ne fait plus entrer personne de nouveau (`fete.md`).
 - « Changer de lien » vaut pour toute liste, pas seulement pour une liste publique : l'ancien lien ne fait plus entrer personne.
 - Sur « Membres », celui qui est entré ainsi porte « La liste de Camille ».
@@ -139,6 +158,15 @@ Il ne propose que des listes que je tiens et **qui lui ressemblent**. Dans cet o
 - Une liste qui n'a rien de commun n'est jamais proposée. S'il n'y en a aucune, la section n'apparaît pas.
 - **Quand la liste a déjà des personnes**, la reprise ne les déplace pas : elles gardent leur place, celles de l'ancienne liste s'ajoutent après, et **personne n'est mis deux fois**. Les idées pas offertes d'une personne déjà là arrivent sous son prénom.
 - Sous le nom de chaque liste, **les prénoms** de ceux pour qui elle est faite (les règles du titre d'une ligne, `lignes.md`), pas « 4 personnes » : « Léo, Zoé et moi · 6 idées pas encore offertes ».
+
+## Une idée qui n'a qu'un lien
+
+Bogue trouvé par Julien le 22 novembre 2026 : une idée écrite sans texte, avec seulement un lien, ne pouvait plus être modifiée ni effacée. Toucher la ligne ouvrait le lien, et rien d'autre ne se touchait.
+
+- **Une ligne a toujours un texte à toucher.** Quand l'idée n'a pas de texte, la ligne affiche **le nom du site** à sa place (« lutin-jouets.fr »), dans le style d'un texte d'idée ; le toucher ouvre l'écriture, comme pour n'importe quelle idée. Le lien reste dessous, à sa place, et lui seul ouvre le site.
+- Rien n'est enregistré à la place de la personne : en écriture, le champ du texte est vide, avec son texte d'attente.
+- Partout où le texte d'une idée sert à la nommer (« Cocher … », « Qui l'offre ? », les lecteurs d'écran), une idée sans texte se nomme par le nom de son site.
+- Celui qui ne tient pas la liste voit la même ligne, sans pouvoir l'écrire.
 
 ## La liste d'un autre membre
 

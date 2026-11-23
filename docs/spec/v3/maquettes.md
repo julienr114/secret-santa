@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-60 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+65 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -35,29 +35,34 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
 | `V3TirageNeutre` | Secret Santa · hors de Noël (catégorie « Autre ») : il garde son nom, « Secret Santa » ; aucun « Père Noël » | 105 |
 | `V3TirageReglages` | Secret Santa · ses réglages : son nom, sa date, son budget et son petit mot d’abord ; puis éviter la même personne, Devine qui, le mot des messages, les emails du tirage | 105 |
-| `V3ListeSurligne` | Secret Santa · la liste de la personne tirée, en gros plan : sa partie seule, deux choix en haut (« Inès », « Toute la liste »), le mode anonyme déjà activé | 107, 136 |
+| `V3ListeSurligne` | Secret Santa · la liste de la personne tirée, filtrée sur elle : sa partie seule, deux choix en haut (« Inès », « Toute la liste »), le mode anonyme déjà activé | 107, 136 |
 | `V3ListeSurligneTout` | Secret Santa · la liste de la personne tirée, « Toute la liste » choisi : tout le monde, elle en premier | 136 |
 | `V3TirageQuelleListe` | Secret Santa · « Ma liste de cadeaux » touché quand je tiens déjà une liste où je figure : celle-là, ou une nouvelle | 136 |
 | `V3TirageNouvelles` | Secret Santa · le résultat quand la liste de la personne tirée a de nouvelles idées : la ligne de sa liste le dit | 107 |
 | `V3TiragePause` | Secret Santa · en pause : ce que voit quelqu’un qui veut en créer un quand le super-admin a suspendu les nouveaux | 109 |
-| `V3ListeQui` | Liste · « Partager » touché sur un brouillon : la barre se déroule sur place, le lien et « Qui verra ta liste ? » sont dedans | 106, 135 |
+| `V3ListeQui` | Liste · « Partager » touché sur un brouillon : la barre se déroule par-dessus la liste ; personne ne la voit encore, « Ajouter » est ouvert sur mes événements | 106, 135, 138, 139 |
 | `V3Liste` | Liste · la mienne, partagée dans deux événements : la barre dit qui la voit, « Modifier », et « Copier le lien » | 106 |
 | `V3ListeNouvelle` | Liste · nouvelle : elle naît en brouillon, moi seul la vois ; le lien est déjà là | 106 |
 | `V3ListePublique` | Liste · publique, le dernier stade : quiconque a le lien la voit et coche, sans compte | 106 |
 | `V3ListeMembre` | Liste · celle d’un autre membre : on y arrive par la fête, sans lien ; la fête est rappelée en haut | 106 |
 | `V3OffreAilleurs` | Liste · « Ce que j’offre ailleurs » : les listes publiques où j’ai coché, pas celles que j’ai seulement ouvertes | 106 |
-| `V3ListeQuiSecret` | Liste · « Modifier » touché sur une liste montrée à celui qui m’a tiré : la barre déroulée | 107, 135 |
+| `V3ListeQuiSecret` | Liste · « Modifier » touché sur une liste montrée à celui qui m’a tiré : lui seul est dans « Qui je veux » | 107, 135, 139 |
 | `V3ListeSecret` | Liste · la mienne, montrée seulement à celui qui m’a tiré ; sous mon prénom, le Secret Santa auquel ma partie est liée | 107, 135, 136 |
 | `V3ListeCompteCree` | Liste · sans compte, par son lien : le compte se crée tout seul à la première chose écrite, et on le dit | 107 |
 | `V3ListeAdresse` | Liste · arrivé par un lien copié, sans adresse email : on la demande au moment d’écrire sa liste ; pas de liste sans adresse | 107 |
-| `V3ListeQuiLien` | Liste · publique, « Modifier » touché : la barre déroulée, le lien, son message, « Changer de lien » | 106, 135 |
-| `V3ListeLienChanger` | Liste · publique, changer de lien : la conséquence avant le geste, dans la barre déroulée | 106, 135 |
-| `V3ListeQuiModifier` | Liste · « Modifier » touché : la barre se déroule sur place, plus de panneau du bas ; le lien, les événements cochés, « Enregistrer » | 106, 135 |
-| `V3ListeQuiRetirer` | Liste · retirer sa liste d’un événement : la conséquence avant le geste, dans la barre déroulée | 106, 135 |
+| `V3ListeQuiLien` | Liste · « Tout le monde » choisi : plus personne à choisir, il reste « Changer de lien » | 106, 135, 139 |
+| `V3ListeLienChanger` | Liste · changer de lien : la conséquence avant le geste | 106, 135, 139 |
+| `V3ListeLienNouveau` | Liste · le lien vient de changer : la nouvelle adresse est dans la barre, « Nouveau lien créé » | 139 |
+| `V3ListeQuiModifier` | Liste · « Modifier » touché : deux choix, « Qui je veux » ou « Tout le monde » ; dessous, seulement ceux qui la voient, chacun avec sa croix, « Ajouter », et « Changer de lien » | 106, 135, 138, 139 |
+| `V3ListeQuiAjouter` | Liste · « Ajouter » touché : mes autres événements, « Celui qui m’a tiré » et « Quelqu’un d’autre », en pastilles ; en toucher une l’ajoute | 139 |
+| `V3ListeQuiOuvrir` | Liste · « Tout le monde » touché : la conséquence avant d’ouvrir la liste à quiconque a le lien | 139 |
+| `V3ListeQuiRetirer` | Liste · la croix touchée : retirer sa liste d’un événement, la conséquence avant le geste | 106, 135, 139 |
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |
 | `V3ListeFermee` | Liste · arriver par le lien sans être connecté, quand elle n’est pas publique | 106 |
 | `V3ListeFermeeConnecte` | Liste · arriver par le lien, connecté, sans y avoir droit (un brouillon, une liste réservée à celui qui a tiré) | 106 |
-| `V3ListeInviter` | Liste · « Inviter quelqu’un » : par le lien de la liste, par une adresse email, ou en reprenant ceux d’un autre événement ; il devient membre de l’événement | 117 |
+| `V3ListeInviter` | Liste · « Inviter quelqu’un », par la pastille « Quelqu’un d’autre » : le lien, une adresse email, ceux d’un autre événement, ou une autre occasion | 117, 139 |
+| `V3ListeInviterEmail` | Liste · « Par son adresse email » : un prénom, une adresse, « Inviter » | 117, 139 |
+| `V3ListeInviteEnvoyee` | Liste · de retour après « Inviter » : « Invitation envoyée » | 139 |
 | `V3ListePartageEmail` | Liste · l’email reçu par celui qu’on invite par son adresse | 117 |
 | `V3ListeAnneePassee` | Liste · celle d’une année passée : elle reste ouverte ; un bandeau dit de quelle année elle est, et mène à celle de cette année | 119 |
 | `V3ListeAideLien` | Liste · pour celui qui « aide à écrire » : « Le lien » déroule la barre, qui ne contient que le lien à copier | 135 |
@@ -80,7 +85,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `ListeTeneurs`, `ListeTeneursNiveau`, `ListeInvitation` | « Aider à écrire » ou « Gérer la liste » : seul celui qui gère choisit qui la voit | 106 |
 | `AdminSignalement`, `ListePartageSuspendu`, `ModerationEmail` | Un signalement arrête le lien public d’une liste, pas sa présence dans ses fêtes | 132 |
 | `ListeCocherPourMoi`, `ListeCocherPourDepart`, `ListeCocherPourChoix`, `ListeCocherPourLigne`, `ListeCocherPour`, `ListeCocherPourAutre` | Cocher pour quelqu’un, dans l’ordre du parcours : je coche (à mon nom), « Tu l’offres › » ouvre « Qui l’offre ? », je touche Mamie, enregistré, à plusieurs, quelqu’un d’autre ; fait sur `main`, sans ticket | — |
-| `PersonnaliserMessage` | « Le message qui accompagne le lien » d’une liste publique | 106 |
+| `PersonnaliserMessage` | Personnaliser le message d’un envoi de Secret Santa. Ne sert plus aux listes : « Le message qui accompagne le lien » disparaît (ticket 139) | 106 |
 
 ## Les maquettes d'avant, passées à la V3
 

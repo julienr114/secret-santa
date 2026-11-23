@@ -88,12 +88,12 @@ Maquettes : `V3ListeSurligne` (le nom du fichier est resté ; il n'y a pas de su
 
 Décision : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md`. Ce qui suit remplace « la page s'ouvre calée sur ma partie ».
 
-Celui qui m'a tiré ouvre la liste **en gros plan sur ma partie** : la liste avec son titre et son mot d'accueil, mais **une seule personne, moi**. Le mode anonyme est déjà activé.
+Celui qui m'a tiré ouvre la liste **filtrée sur moi** : la liste avec son titre et son mot d'accueil, mais **une seule personne, moi**. Le mode anonyme est déjà activé.
 
 - **En haut, deux choix**, dans le composant à deux choix de l'application (`UiSegmented`) : **mon prénom** (« Inès »), choisi d'avance, et **« Toute la liste »**. C'est ce qui dit qu'on ne regarde qu'une partie, et ce qui montre le reste.
 - **« Toute la liste »** montre tout le monde, **moi en premier**, puis les autres dans leur ordre.
-- « Gros plan » est le nom de cette vue dans la spec et dans le code ; l'écran ne l'écrit pas.
-- Celui qui a le droit d'ouvrir la liste autrement (un membre de l'événement, par exemple) et qui y arrive depuis sa carte de résultat a le même gros plan. Arrivé par un autre chemin, il voit la liste entière, sans les deux choix.
+- C'est **un filtre** : « la liste filtrée » dans la spec, `filter` dans le code. L'écran n'écrit pas le mot ; les deux choix suffisent.
+- Celui qui a le droit d'ouvrir la liste autrement (un membre de l'événement, par exemple) et qui y arrive depuis sa carte de résultat a le même filtre. Arrivé par un autre chemin, il voit la liste entière, sans les deux choix.
 - La page ne dit jamais « tu as tiré Inès » : le résultat reste sur la page du Secret Santa.
 
 ## Les objets des emails

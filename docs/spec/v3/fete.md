@@ -42,7 +42,7 @@ Maquette : `V3FeteMembres`. Décision : `2026-11-21-on-entre-par-un-secret-santa
 - **Un organisateur est membre** dès qu'on l'ajoute dans les réglages de l'événement, sans passer par un Secret Santa ni par une liste (Q-031) : c'est la seule exception. Sa ligne commence par **« Organise »** : « Organise · Secret Santa · ne tire pas Hugo », ou « Organise » seul. Pas « Organisateur » : l'application ne connaît pas le genre.
 - Sous les membres, **« Ajouter quelqu'un »**, avec une ligne par endroit où je peux le faire :
   - **« Au Secret Santa »**, pour son organisateur, une ligne par Secret Santa en préparation (son nom s'il y en a plusieurs) · « 5 participants · lien actif ». Elle ouvre « Choisir les participants » (`secret-santa.md`).
-  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`). Seul un organisateur qui gère aussi une liste la voit ici ; un membre invite depuis sa liste (« Qui verra ta liste ? », « Inviter quelqu'un »).
+  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`). Seul un organisateur qui gère aussi une liste la voit ici ; un membre invite depuis sa liste (« Qui voit ta liste ? », « Ajouter », « Quelqu'un d'autre »).
   - Sans Secret Santa en préparation ni liste à moi, il n'y a pas de section.
 - L'organisateur retire quelqu'un depuis sa fiche : la personne sort des Secret Santa pas encore tirés, et ne voit plus les listes de l'événement.
 - Certains membres n'ont pas de compte : ils participent au Secret Santa, ils ne voient pas les listes.

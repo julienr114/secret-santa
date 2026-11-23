@@ -92,11 +92,11 @@ test('a list made for an event opens as a draft, with the event’s name', async
   await expect(occasion).toContainText('Noël · 25 décembre');
   await occasion.getByRole('radio', { name: new RegExp(FAMILY) }).check();
   await occasion.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page).toHaveURL(/\/listes\/[^/?]+$/);
+  await expect(page).toHaveURL(/\/listes\/[^/?]+(\?visite=\w+)?$/);
   await hydrated(page);
   await expect(page.getByTestId('list-title')).toHaveValue(FAMILY);
   await expect(page.getByTestId('share-stage')).toContainText('Brouillon');
-  state.listId = page.url().split('/listes/')[1]!;
+  state.listId = page.url().split('?')[0]!.split('/listes/')[1]!;
   const doc = await (await camille().get(`/api/lists/${state.listId}`)).json();
   state.token = doc.list.shareToken;
   const { id: person } = await (

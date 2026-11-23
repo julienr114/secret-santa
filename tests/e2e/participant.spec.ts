@@ -220,7 +220,7 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   );
   await page.getByRole('button', { name: 'Fermer' }).click();
   await expect(sharing).toHaveCount(0);
-  const listId = page.url().split('/listes/')[1] ?? '';
+  const listId = page.url().split('?')[0]!.split('/listes/')[1] ?? '';
   // Her account keeps the face she had in the Secret Santa: 🦊 on frost.
   const family = await ok(await page.request.get('/api/family'));
   expect(

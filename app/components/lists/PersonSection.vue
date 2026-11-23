@@ -44,6 +44,10 @@ const props = defineProps<{
   linkable?: ListDocument['linkable'];
   /** Whether I manage the list. */
   manages?: boolean;
+  /** My name and my pill, a step of the visit (ticket 149). */
+  tourMe?: boolean;
+  /** What the visit puts on my empty line (ticket 149). */
+  tourLine?: 'line' | 'firstLine' | null;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -263,103 +267,106 @@ const explained = ref<string | null>(null);
     :data-drag-id="person.id"
   >
     <ListsPersonThread v-if="!single && !liftedHere" />
-    <header
-      v-if="!single"
-      class="flex items-center gap-2.5"
-      :data-drag="drag ? 'person' : undefined"
-      :data-drag-id="drag ? person.id : undefined"
-    >
-      <!-- Someone with an account of their own chooses their icon; « Moi »
+    <ListsTourStop v-if="!single" :step="tourMe ? 'me' : null">
+      <header
+        class="flex items-center gap-2.5"
+        :data-drag="drag ? 'person' : undefined"
+        :data-drag-id="drag ? person.id : undefined"
+      >
+        <!-- Someone with an account of their own chooses their icon; « Moi »
            changes mine from here. -->
-      <UiAvatar
-        v-if="member.linked && !member.isSelf"
-        :avatar="member.avatar"
-        :px="40"
-        class="shrink-0"
-      />
-      <button
-        v-else
-        type="button"
-        class="relative shrink-0"
-        :aria-label="t('lists.person.icon', { name: member.firstName })"
-        data-testid="person-icon"
-        @click="iconOpen = true"
-      >
-        <UiAvatar :avatar="member.avatar" :px="40" />
-        <!-- The pencil of the list's tile: this icon changes by touching it. -->
-        <span
-          class="absolute -right-1.5 -bottom-1 flex size-5 items-center justify-center rounded-full bg-default ring-1 ring-default"
-          aria-hidden="true"
+        <UiAvatar
+          v-if="member.linked && !member.isSelf"
+          :avatar="member.avatar"
+          :px="40"
+          class="shrink-0"
+        />
+        <button
+          v-else
+          type="button"
+          class="relative shrink-0"
+          :aria-label="t('lists.person.icon', { name: member.firstName })"
+          data-testid="person-icon"
+          @click="iconOpen = true"
         >
-          <UIcon name="i-lucide-pencil" class="size-2.5" />
-        </span>
-      </button>
-      <div class="flex min-w-0 grow flex-col gap-0.5">
-        <h2 class="font-display text-2xl leading-[1.15] font-bold">
-          <ListsLiveLock v-if="nameLock" :by="nameLock" />
-          <input
-            v-else-if="naming"
-            ref="nameField"
-            v-model="nameDraft"
-            type="text"
-            enterkeyhint="done"
-            :maxlength="MEMBER_NAME_MAX"
-            class="w-full bg-transparent outline-none select-text"
-            :aria-label="t('lists.person.name')"
-            data-testid="person-name-field"
-            @keydown.enter.prevent="saveName"
-            @keydown.esc.prevent="cancelName"
-            @blur="saveName"
-          />
-          <template v-else-if="member.linked">{{ member.firstName }}</template>
-          <button
-            v-else
-            type="button"
-            class="text-left"
-            data-testid="person-name"
-            @click="startName"
+          <UiAvatar :avatar="member.avatar" :px="40" />
+          <!-- The pencil of the list's tile: this icon changes by touching it. -->
+          <span
+            class="absolute -right-1.5 -bottom-1 flex size-5 items-center justify-center rounded-full bg-default ring-1 ring-default"
+            aria-hidden="true"
           >
-            {{ member.firstName }}
-          </button>
-          <template v-if="member.isSelf && !naming && !nameLock">
-            {{ ' ' }}<ListsMeTag />
-          </template>
-        </h2>
-        <p v-if="details" class="text-sm leading-[1.4] text-toned">
-          {{ details }}
-        </p>
-        <ListsDrawLink
-          v-if="member.isSelf"
-          :list-id="listId"
-          :santas="santas ?? []"
-          :linkable="linkable ?? []"
-          :manages="manages"
-        />
-      </div>
-      <UDropdownMenu
-        v-model:open="menuOpen"
-        :items="menu"
-        :content="{ align: 'end' }"
-        :ui="{
-          content:
-            'max-w-[280px] min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
-          group: 'p-0',
-          label: 'px-3.5 pt-3 pb-1 text-sm font-normal text-default',
-          item: 'min-h-12 items-center px-3.5 text-base',
-          itemLeadingIcon: 'size-5',
-        }"
-      >
-        <UButton
-          variant="ghost"
-          color="neutral"
-          icon="i-lucide-ellipsis"
-          class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
-          :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
-          data-testid="person-menu"
-          data-no-drag
-        />
-      </UDropdownMenu>
-    </header>
+            <UIcon name="i-lucide-pencil" class="size-2.5" />
+          </span>
+        </button>
+        <div class="flex min-w-0 grow flex-col gap-0.5">
+          <h2 class="font-display text-2xl leading-[1.15] font-bold">
+            <ListsLiveLock v-if="nameLock" :by="nameLock" />
+            <input
+              v-else-if="naming"
+              ref="nameField"
+              v-model="nameDraft"
+              type="text"
+              enterkeyhint="done"
+              :maxlength="MEMBER_NAME_MAX"
+              class="w-full bg-transparent outline-none select-text"
+              :aria-label="t('lists.person.name')"
+              data-testid="person-name-field"
+              @keydown.enter.prevent="saveName"
+              @keydown.esc.prevent="cancelName"
+              @blur="saveName"
+            />
+            <template v-else-if="member.linked">{{
+              member.firstName
+            }}</template>
+            <button
+              v-else
+              type="button"
+              class="text-left"
+              data-testid="person-name"
+              @click="startName"
+            >
+              {{ member.firstName }}
+            </button>
+            <template v-if="member.isSelf && !naming && !nameLock">
+              {{ ' ' }}<ListsMeTag />
+            </template>
+          </h2>
+          <p v-if="details" class="text-sm leading-[1.4] text-toned">
+            {{ details }}
+          </p>
+          <ListsDrawLink
+            v-if="member.isSelf"
+            :list-id="listId"
+            :santas="santas ?? []"
+            :linkable="linkable ?? []"
+            :manages="manages"
+          />
+        </div>
+        <UDropdownMenu
+          v-model:open="menuOpen"
+          :items="menu"
+          :content="{ align: 'end' }"
+          :ui="{
+            content:
+              'max-w-[280px] min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
+            group: 'p-0',
+            label: 'px-3.5 pt-3 pb-1 text-sm font-normal text-default',
+            item: 'min-h-12 items-center px-3.5 text-base',
+            itemLeadingIcon: 'size-5',
+          }"
+        >
+          <UButton
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-ellipsis"
+            class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
+            :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
+            data-testid="person-menu"
+            data-no-drag
+          />
+        </UDropdownMenu>
+      </header>
+    </ListsTourStop>
     <!-- What the others read of their tastes, the same paragraph. -->
     <ListsPersonTastes v-if="!single && !liftedHere" :member="member" />
     <!-- A person lifted is folded: their ideas wait, out of the way. -->
@@ -473,6 +480,7 @@ const explained = ref<string | null>(null);
       </li>
       <ListsIdeaLine
         key="new"
+        :tour="tourLine ?? null"
         :via="via"
         :list-person-id="person.id"
         :for-name="single ? '' : member.firstName"

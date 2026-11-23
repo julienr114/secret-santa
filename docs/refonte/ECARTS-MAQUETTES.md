@@ -318,3 +318,12 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeSecretLie` | « Délier » n'est que pour ceux qui gèrent la liste (comme son partage) ; celui qui aide à l'écrire n'a que « Voir mon Secret Santa ». | Seul |
 | `V3ListeSecretLier` | L'icône de « Lier à mon Secret Santa » est le `link` de Lucide, 12 px. La ligne n'est là que si l'un de mes Secret Santa de l'année, tiré, n'a pas de liste. | Seul |
 | `V3ListeSecretLierConfirmer` | Avec plusieurs Secret Santa, le panneau les propose dans `UiChoiceList` (un rond chacun), au-dessus de « Lier » ; le premier sans liste est choisi d'avance, et la phrase suit celui qui est choisi. Un Secret Santa déjà lié à une autre liste y est aussi, avec « Il ne sera plus lié à « … ». ». | Seul |
+
+## La visite d'une liste neuve (ticket 149)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeVisiteSecret1` | Dans la lumière : tout l'en-tête de ma partie (l'icône, « Camille (moi) », la pastille et « ⋯ »). | Seul |
+| `V3ListeVisiteSecret4`, `V3ListeVisiteCreer1` | Dans la lumière : l'icône de la liste avec son nom et sa date (le bloc d'en-tête entier). | Seul |
+| `V3ListeVisite*` | La note va au-dessus quand l'élément, une fois amené à l'écran, finit sous les deux tiers de sa hauteur ; sinon dessous. Le voile et la note sont ceux de la première coche (`ListsVeilNote`), ici avec « n sur N », « Passer » et « Suivant ». | Seul |
+| `V3ListeVisiteIdee` | La note de la première ligne va sur la ligne vide de la première personne ajoutée, moi compris. | Seul |

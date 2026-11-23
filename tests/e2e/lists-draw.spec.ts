@@ -158,9 +158,9 @@ test('a list made from my Secret Santa has me on it, first, and starts from last
   );
   // No list of this year where she figures: no question, a new list.
   const page = await open('Inès', `/p/${state.tokens['Inès']}/liste`);
-  await expect(page).toHaveURL(/\/listes\/[^/?]+$/);
+  await expect(page).toHaveURL(/\/listes\/[^/?]+(\?visite=\w+)?$/);
   await hydrated(page);
-  state.inesList = page.url().split('/listes/')[1] ?? '';
+  state.inesList = page.url().split('?')[0]!.split('/listes/')[1] ?? '';
   await expect(page.getByTestId('share-stage')).toContainText(
     'Seul celui qui t’a tiré la voit',
   );

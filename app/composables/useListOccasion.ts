@@ -20,7 +20,8 @@ export const useListOccasion = () => {
       icon: randomListIcon((n) => Math.floor(Math.random() * n)),
       party: slug,
     });
-    await navigateTo(`/listes/${id}`);
+    // Its visit opens on it (ticket 149).
+    await navigateTo(`/listes/${id}?visite=creer`);
   };
   return { createFor, creating: create.isPending };
 };

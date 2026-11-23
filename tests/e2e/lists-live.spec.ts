@@ -257,7 +257,10 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await hugo.keyboard.type('Après le retour');
   await hugo.keyboard.press('Enter');
   await expect(leo(camille).getByTestId('idea-text')).toHaveCount(4);
-  await hugo.getByText('Touche un texte pour le modifier.').click();
+  // Out of the field: what is written is saved.
+  await hugo.evaluate(() =>
+    (document.activeElement as HTMLElement | null)?.blur(),
+  );
 
   // Hugo leaves: Camille is alone again; the visitor is still counted.
   await hugo.close();
@@ -331,7 +334,10 @@ test('who figures on the list and writes by its link is live too', async ({
   await expect(mine.getByTestId('idea-text')).toHaveText([
     'Des bottes de pêche',
   ]);
-  await camille.getByText('Touche un texte pour le modifier.').click();
+  // Out of the field: what is written is saved.
+  await camille.evaluate(() =>
+    (document.activeElement as HTMLElement | null)?.blur(),
+  );
   await leo(camille).getByTestId('idea-text').first().click();
   await camille.keyboard.type('!');
   await expect(camille.locator('textarea:focus')).toHaveCount(1);

@@ -51,6 +51,11 @@ const props = defineProps<{
   placeholder?: string;
   /** Where the line is, for « retour » to find the next one. */
   line: string;
+  /**
+   * The visit of a new list on this empty line (ticket 149): the step
+   * « Une idée par ligne », or the note of the first line.
+   */
+  tour?: 'line' | 'firstLine' | null;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -74,6 +79,13 @@ const queryClient = useQueryClient();
 const afterRelease = usePointerHeld();
 
 const row = ref<HTMLElement | null>(null);
+const listTour = useListTour();
+const tourStop = useTourStop(
+  () => (props.tour === 'line' ? 'line' : null),
+  row,
+);
+/** The note of the first line, while nothing is written on it. */
+const firstLineNote = computed(() => props.tour === 'firstLine');
 const field = ref<HTMLTextAreaElement | null>(null);
 /** The copy of the text under its field, which gives the field its height. */
 const mirror = ref<HTMLElement | null>(null);
@@ -542,7 +554,9 @@ const onFocusOut = (event: FocusEvent) => {
         ? '-my-1 -mr-2 -ml-2.5 rounded-[16px] bg-default pt-[17px] pr-2 pb-3.5 pl-2.5 shadow-line-card'
         : 'py-[13px]',
       liftedHere ? 'opacity-30' : '',
-      guided ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5' : '',
+      guided || tourStop.active.value || firstLineNote
+        ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5'
+        : '',
     ]"
     :data-line="line"
     :data-drag="idea && drag ? 'idea' : undefined"
@@ -861,6 +875,26 @@ const onFocusOut = (event: FocusEvent) => {
         />
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
+    </div>
+    <ListsTourNote
+      v-if="tourStop.active.value"
+      step="line"
+      :placement="tourStop.placement.value"
+    />
+    <div
+      v-else-if="firstLineNote"
+      class="absolute inset-x-2.5 top-[calc(100%+8px)] z-10"
+      data-testid="tour-first-line"
+    >
+      <ListsVeilNote
+        tone="plum"
+        tip="left"
+        name="tour"
+        tour
+        :title="t('lists.tour.firstLine.title')"
+        :body="t('lists.tour.firstLine.body')"
+        @understood="listTour.firstLineSeen()"
+      />
     </div>
     <div
       v-if="guided && idea"

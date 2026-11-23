@@ -3,6 +3,7 @@ import { useSeen } from '~/composables/queries/useNews';
 import { namesInOne } from '~/utils/givers';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
+import { tourKindOf } from '#shared/utils/listTour';
 import {
   LIST_COLORS,
   LIST_ICON_GROUP_KEYS,
@@ -21,7 +22,9 @@ import {
   useUntickMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
+import { useQueryClient } from '@tanstack/vue-query';
 import { keys } from '~/composables/queries/keys';
+import { api } from '~/composables/queries/useApi';
 import { LIST_EDITING } from '~/composables/useListEditing';
 import { LIST_SHADES } from '~/utils/listShades';
 import {
@@ -83,6 +86,55 @@ onMounted(async () => {
     titleField.value?.textareaRef?.focus();
   }
 });
+
+// The visit of a list just made (ticket 149): `?visite=secret|creer`,
+// once per account, for one who manages it. The address keeps it: once
+// seen, the account says so, and nothing opens again.
+// After the visit from « Créer », a note on the first line once the
+// first person is added (V3ListeVisiteIdee).
+const tour = useListTour();
+const queryClient = useQueryClient();
+onMounted(async () => {
+  await query.suspense();
+  const current = doc.value;
+  const asked = route.query.visite;
+  if (!asked || !current || !list.value) return;
+  const kind = tourKindOf(asked, current.tours.visit);
+  if (!kind || !current.manages) return;
+  // « Repartir d'une liste » is a step only when it shows a list.
+  const listId = list.value.id;
+  const resume =
+    resumable.value && list.value.status !== 'past'
+      ? (
+          await queryClient
+            .ensureQueryData({
+              queryKey: [...keys.list(listId), 'resumable'],
+              queryFn: () => api<unknown[]>(`/api/lists/${listId}/resumable`),
+            })
+            .catch(() => [])
+        ).length > 0
+      : false;
+  tour.start(kind, listId, resume);
+});
+onBeforeUnmount(() => tour.leave());
+/**
+ * What the visit puts on a person's empty line: the step « Une idée par
+ * ligne » on mine, the note of the first line on the first person.
+ * @param person - The person.
+ * @param index - Their place.
+ * @returns The step, the note, or null.
+ */
+const lineTour = (
+  person: PersonLine,
+  index: number,
+): 'line' | 'firstLine' | null => {
+  const first =
+    index === 0 &&
+    tour.firstLineOf.value === list.value?.id &&
+    !doc.value?.tours.firstLine;
+  if (first) return 'firstLine';
+  return person.member.isSelf ? 'line' : null;
+};
 
 // The account just made by the first idea (Q-018, V3ListeCompteCree):
 // said once, then gone from the address.
@@ -519,7 +571,9 @@ onBeforeRouteLeave((to) => {
       :skeleton="['bar', 'doc', 'list']"
     >
       <template v-if="doc && list">
-        <ListsShareBar :doc="doc" :readonly="!doc.manages" />
+        <ListsTourStop step="share">
+          <ListsShareBar :doc="doc" :readonly="!doc.manages" />
+        </ListsTourStop>
         <ListsHoldersLine
           v-if="doc.manages || doc.holders.length > 1"
           :list-id="list.id"
@@ -547,62 +601,64 @@ onBeforeRouteLeave((to) => {
         </p>
         <ListsPastBand v-if="doc.past" :band="doc.past" />
 
-        <div class="flex flex-col gap-2">
-          <button
-            type="button"
-            class="relative self-start"
-            :aria-label="t('lists.doc.changeIcon')"
-            data-testid="list-icon"
-            @click="iconOpen = true"
-          >
-            <ListsTile :icon="list.icon" size="lg" />
-            <span
-              class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
-              aria-hidden="true"
+        <ListsTourStop step="name">
+          <div class="flex flex-col gap-2">
+            <button
+              type="button"
+              class="relative self-start"
+              :aria-label="t('lists.doc.changeIcon')"
+              data-testid="list-icon"
+              @click="iconOpen = true"
             >
-              <UIcon name="i-lucide-pencil" class="size-3.5" />
-            </span>
-          </button>
-          <ListsLiveLock
-            v-if="titleLock"
-            :by="titleLock"
-            :fallback="t('lists.doc.titlePlaceholder')"
-            class="font-display text-[36px] leading-[1.1] font-bold"
-          />
-          <UTextarea
-            v-else
-            ref="titleField"
-            v-model="title"
-            autoresize
-            :rows="1"
-            :maxlength="LIST_TITLE_MAX"
-            variant="none"
-            :placeholder="t('lists.doc.titlePlaceholder')"
-            :aria-label="t('lists.doc.titleLabel')"
-            class="w-full"
-            :ui="{
-              base: 'overflow-hidden p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
-            }"
-            data-testid="list-title"
-            @keydown.enter.prevent="($event.target as HTMLElement).blur()"
-            @focus="titleActive = true"
-            @blur="
-              titleActive = false;
-              saveTitle();
-            "
-          />
-          <button
-            type="button"
-            class="self-start text-[15px]"
-            :class="
-              list.eventDate ? 'text-toned' : 'font-semibold text-primary-ink'
-            "
-            data-testid="list-date"
-            @click="dateOpen = true"
-          >
-            {{ dateLine || t('lists.doc.addDate') }}
-          </button>
-        </div>
+              <ListsTile :icon="list.icon" size="lg" />
+              <span
+                class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
+                aria-hidden="true"
+              >
+                <UIcon name="i-lucide-pencil" class="size-3.5" />
+              </span>
+            </button>
+            <ListsLiveLock
+              v-if="titleLock"
+              :by="titleLock"
+              :fallback="t('lists.doc.titlePlaceholder')"
+              class="font-display text-[36px] leading-[1.1] font-bold"
+            />
+            <UTextarea
+              v-else
+              ref="titleField"
+              v-model="title"
+              autoresize
+              :rows="1"
+              :maxlength="LIST_TITLE_MAX"
+              variant="none"
+              :placeholder="t('lists.doc.titlePlaceholder')"
+              :aria-label="t('lists.doc.titleLabel')"
+              class="w-full"
+              :ui="{
+                base: 'overflow-hidden p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
+              }"
+              data-testid="list-title"
+              @keydown.enter.prevent="($event.target as HTMLElement).blur()"
+              @focus="titleActive = true"
+              @blur="
+                titleActive = false;
+                saveTitle();
+              "
+            />
+            <button
+              type="button"
+              class="self-start text-[15px]"
+              :class="
+                list.eventDate ? 'text-toned' : 'font-semibold text-primary-ink'
+              "
+              data-testid="list-date"
+              @click="dateOpen = true"
+            >
+              {{ dateLine || t('lists.doc.addDate') }}
+            </button>
+          </div>
+        </ListsTourStop>
 
         <ListsNote :list-id="list.id" :note="list.note" />
 
@@ -643,15 +699,12 @@ onBeforeRouteLeave((to) => {
           @click="onAgain"
         />
 
-        <div
-          v-if="people.length > 0"
-          class="flex flex-col gap-0.5 text-sm text-toned"
+        <p
+          v-if="people.length > 0 && doc.planned > 0"
+          class="text-sm text-toned"
         >
-          <p v-if="doc.planned > 0">
-            {{ t('lists.doc.plannedHolder', { count: doc.planned }) }}
-          </p>
-          <p>{{ t('lists.doc.touchToEdit') }}</p>
-        </div>
+          {{ t('lists.doc.plannedHolder', { count: doc.planned }) }}
+        </p>
 
         <!-- The board: what moves by dragging. A long press must lift a
              line, not select its text nor open the browser's menu. -->
@@ -677,6 +730,8 @@ onBeforeRouteLeave((to) => {
               :santas="row.person.member.isSelf ? doc.santas : []"
               :linkable="row.person.member.isSelf ? doc.linkable : []"
               :manages="doc.manages"
+              :tour-me="row.person.member.isSelf"
+              :tour-line="lineTour(row.person, row.index)"
             />
           </template>
         </div>
@@ -684,19 +739,22 @@ onBeforeRouteLeave((to) => {
 
         <!-- A list with no idea yet may start from another, people or
              not (Q-032): under the people, before « Ajouter quelqu'un ». -->
-        <ListsResumeFrom
-          v-if="resumable && list.status !== 'past'"
-          :list-id="list.id"
-        />
+        <ListsTourStop v-if="resumable && list.status !== 'past'" step="resume">
+          <ListsResumeFrom :list-id="list.id" />
+        </ListsTourStop>
         <!-- A list without people keeps the block until it is shared:
              its shape no longer changes then (lot 27 bis). -->
-        <ListsAddSomeone
+        <ListsTourStop
           v-if="!(doc.single && list.status !== 'draft')"
-          :list-id="list.id"
-          :family="doc.family"
-          :on-list="people"
-          :single="doc.single"
-        />
+          step="add"
+        >
+          <ListsAddSomeone
+            :list-id="list.id"
+            :family="doc.family"
+            :on-list="people"
+            :single="doc.single"
+          />
+        </ListsTourStop>
         <!-- The red line of what cannot be taken back, for those who
              manage the list; it leads to the page that says what is lost. -->
         <UiList v-if="doc.manages">

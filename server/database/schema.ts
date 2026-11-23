@@ -430,6 +430,16 @@ export const accounts = sqliteTable('accounts', {
   lastLoginAt: text('last_login_at'),
   // A disabled account cannot log in and its sessions stop working.
   disabledAt: text('disabled_at'),
+  // The visit of a new list, seen or skipped, on any device (ticket 149):
+  // one visit per account, whichever.
+  listTourSeen: integer('list_tour_seen', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+  // The note on the first line, once the first person is added to a list
+  // made from « Créer » (ticket 149, V3ListeVisiteIdee).
+  firstLineNoteSeen: integer('first_line_note_seen', { mode: 'boolean' })
+    .notNull()
+    .default(false),
 });
 
 // The super-admin's emergency switches (docs/spec/v3/administration.md,

@@ -43,7 +43,6 @@ export default {
       one: '{count} gift already planned. Only you see the names.',
       other: '{count} gifts already planned. Only you see the names.',
     },
-    touchToEdit: 'Tap a text to change it.',
     me: 'Me',
     meTag: '(me)',
     drawTitle: 'Ideas for the Secret Santa',
@@ -503,6 +502,55 @@ export default {
     ask: 'The one who drew you in “{name}” will see this list, starting with your part.',
     moves: 'It will no longer be linked to “{title}”.',
     submit: 'Link',
+  },
+  tour: {
+    of: '{at} of {count}',
+    skip: 'Skip',
+    next: 'Next',
+    secret: {
+      me: {
+        title: 'Your part',
+        body: 'It is linked to your Secret Santa: the one who drew you reads it as soon as you write.',
+      },
+      line: {
+        title: 'One idea per line',
+        body: 'Add a link if you found the item.',
+      },
+      share: {
+        title: 'Who sees it',
+        body: 'For now, the one who drew you, and only them. “Edit” opens it to others.',
+      },
+      name: {
+        title: 'The name and the date',
+        body: 'Tap a text to change it.',
+      },
+      resume: {
+        title: 'Your ideas from before',
+        body: 'Take back those nobody gave.',
+      },
+      add: {
+        title: 'A list for several',
+        body: 'Add your children or someone close: each has their part.',
+      },
+    },
+    create: {
+      name: {
+        title: 'The name and the date',
+        body: 'They come from the occasion. Tap a text to change it.',
+      },
+      add: {
+        title: 'For whom?',
+        body: 'One part per person: you, your children, someone close.',
+      },
+      share: {
+        title: 'Nobody sees it yet',
+        body: '“Share” chooses who, whenever you want.',
+      },
+    },
+    firstLine: {
+      title: 'One idea per line',
+      body: 'Add a link if you found the item.',
+    },
   },
   visitor: {
     wholeList: 'The whole list',

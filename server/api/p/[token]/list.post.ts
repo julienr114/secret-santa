@@ -30,13 +30,13 @@ export default defineEventHandler(async (event) => {
   const { list: chosen } = await validatedBody(event, bodySchema);
   await takeMyDraw(context);
   const held = await findMyListFor(db, account.id, group.id);
-  if (held) return { id: held.id };
+  if (held) return { id: held.id, created: false };
   const now = nowIso();
   if (chosen) {
     const mine = await listsIFigureOn(db, account.id, group.id);
     if (!mine.some((list) => list.id === chosen)) throw notFound();
     await linkDraw(db, account.id, chosen, group.id, now);
-    return { id: chosen };
+    return { id: chosen, created: false };
   }
   const id = await myListFor(
     db,
@@ -56,5 +56,6 @@ export default defineEventHandler(async (event) => {
       ).id,
     now,
   );
-  return { id };
+  // Made here: its visit opens on it (ticket 149).
+  return { id, created: true };
 });

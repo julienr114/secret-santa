@@ -62,11 +62,14 @@ const choiceRows = computed(() => [
  */
 const openMine = async (list?: string) => {
   try {
-    const { id } = await api<{ id: string }>(`/api/p/${token.value}/list`, {
-      method: 'POST',
-      body: list ? { list } : {},
+    const { id, created } = await api<{ id: string; created: boolean }>(
+      `/api/p/${token.value}/list`,
+      { method: 'POST', body: list ? { list } : {} },
+    );
+    // Made here: its visit opens on it (ticket 149).
+    await navigateTo(`/listes/${id}${created ? '?visite=secret' : ''}`, {
+      replace: true,
     });
-    await navigateTo(`/listes/${id}`, { replace: true });
   } catch (error) {
     failure.value = error;
     opening.value = false;

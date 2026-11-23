@@ -45,7 +45,6 @@ export default {
       one: '{count} cadeau déjà prévu. Toi seul vois les prénoms.',
       other: '{count} cadeaux déjà prévus. Toi seul vois les prénoms.',
     },
-    touchToEdit: 'Touche un texte pour le modifier.',
     me: 'Moi',
     meTag: '(moi)',
     drawTitle: 'Idées pour le Secret Santa',
@@ -508,6 +507,55 @@ export default {
     ask: 'Celui qui t’a tiré dans « {name} » verra cette liste, en commençant par ta partie.',
     moves: 'Il ne sera plus lié à « {title} ».',
     submit: 'Lier',
+  },
+  tour: {
+    of: '{at} sur {count}',
+    skip: 'Passer',
+    next: 'Suivant',
+    secret: {
+      me: {
+        title: 'Ta partie',
+        body: 'Elle est liée à ton Secret Santa : celui qui t’a tiré la lit dès que tu écris.',
+      },
+      line: {
+        title: 'Une idée par ligne',
+        body: 'Ajoute un lien si tu as trouvé l’objet.',
+      },
+      share: {
+        title: 'Qui la voit',
+        body: 'Pour l’instant, celui qui t’a tiré, et lui seul. « Modifier » l’ouvre à d’autres.',
+      },
+      name: {
+        title: 'Le nom et la date',
+        body: 'Touche un texte pour le changer.',
+      },
+      resume: {
+        title: 'Tes idées d’avant',
+        body: 'Reprends celles qui n’ont pas été offertes.',
+      },
+      add: {
+        title: 'Une liste pour plusieurs',
+        body: 'Ajoute tes enfants ou un proche : chacun a sa partie.',
+      },
+    },
+    create: {
+      name: {
+        title: 'Le nom et la date',
+        body: 'Ils viennent de l’occasion. Touche un texte pour le changer.',
+      },
+      add: {
+        title: 'Pour qui ?',
+        body: 'Une partie par personne : toi, tes enfants, un proche.',
+      },
+      share: {
+        title: 'Personne ne la voit encore',
+        body: '« Partager » choisit qui, quand tu veux.',
+      },
+    },
+    firstLine: {
+      title: 'Une idée par ligne',
+      body: 'Ajoute un lien si tu as trouvé l’objet.',
+    },
   },
   visitor: {
     wholeList: 'Toute la liste',

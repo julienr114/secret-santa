@@ -204,7 +204,10 @@ test('with a mouse, a handle is pulled; the keyboard and the menu do the same', 
   await expect(
     section(page, 'Zoé').getByTestId('idea-field').first(),
   ).toHaveValue('Puzzle');
-  await page.getByText('Touche un texte pour le modifier.').click();
+  // Out of the field: what is written is saved.
+  await page.evaluate(() =>
+    (document.activeElement as HTMLElement | null)?.blur(),
+  );
   await expect(ideasOf(page, 'Zoé')).toHaveText(['Puzzle', 'Poupée']);
 
   // « Descendre », in the menu of a person; the first one has no « Monter ».

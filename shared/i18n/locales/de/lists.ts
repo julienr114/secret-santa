@@ -44,7 +44,6 @@ export default {
       one: '{count} Geschenk schon geplant. Nur du siehst die Namen.',
       other: '{count} Geschenke schon geplant. Nur du siehst die Namen.',
     },
-    touchToEdit: 'Tipp einen Text an, um ihn zu ändern.',
     me: 'Ich',
     meTag: '(ich)',
     drawTitle: 'Ideen fürs Secret Santa',
@@ -508,6 +507,55 @@ export default {
     ask: 'Wer dich in „{name}“ gezogen hat, wird diese Liste sehen, beginnend mit deinem Teil.',
     moves: 'Es ist dann nicht mehr mit „{title}“ verknüpft.',
     submit: 'Verknüpfen',
+  },
+  tour: {
+    of: '{at} von {count}',
+    skip: 'Überspringen',
+    next: 'Weiter',
+    secret: {
+      me: {
+        title: 'Dein Teil',
+        body: 'Er ist mit deinem Secret Santa verknüpft: Wer dich gezogen hat, liest ihn, sobald du schreibst.',
+      },
+      line: {
+        title: 'Eine Idee pro Zeile',
+        body: 'Füge einen Link hinzu, wenn du das Teil gefunden hast.',
+      },
+      share: {
+        title: 'Wer sie sieht',
+        body: 'Im Moment nur, wer dich gezogen hat. „Ändern“ öffnet sie für andere.',
+      },
+      name: {
+        title: 'Name und Datum',
+        body: 'Tipp einen Text an, um ihn zu ändern.',
+      },
+      resume: {
+        title: 'Deine Ideen von vorher',
+        body: 'Übernimm die, die niemand geschenkt hat.',
+      },
+      add: {
+        title: 'Eine Liste für mehrere',
+        body: 'Füge deine Kinder oder jemand Nahestehendes hinzu: Jede Person hat ihren Teil.',
+      },
+    },
+    create: {
+      name: {
+        title: 'Name und Datum',
+        body: 'Sie kommen vom Anlass. Tipp einen Text an, um ihn zu ändern.',
+      },
+      add: {
+        title: 'Für wen?',
+        body: 'Ein Teil pro Person: du, deine Kinder, jemand Nahestehendes.',
+      },
+      share: {
+        title: 'Noch sieht sie niemand',
+        body: '„Teilen“ wählt, wer sie sieht, wann du willst.',
+      },
+    },
+    firstLine: {
+      title: 'Eine Idee pro Zeile',
+      body: 'Füge einen Link hinzu, wenn du das Teil gefunden hast.',
+    },
   },
   visitor: {
     wholeList: 'Die ganze Liste',

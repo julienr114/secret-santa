@@ -440,6 +440,11 @@ export type ListDocument = {
    */
   linkable: LinkChoice[];
   /**
+   * What the one looking has seen of the visit of a new list (ticket
+   * 149), on any device: the visit, and the note on the first line.
+   */
+  tours: { visit: boolean; firstLine: boolean };
+  /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
    * being anonymous, the first names written on it.
@@ -646,6 +651,21 @@ export const listDocument = async (
       dataKey,
     )),
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
+    tours: await toursOf(db, accountId),
+  };
+};
+
+/**
+ * What an account has seen of the visit of a new list (ticket 149).
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns The visit, and the note on the first line.
+ */
+const toursOf = async (db: Db, accountId: string) => {
+  const account = await findAccountById(db, accountId);
+  return {
+    visit: account?.listTourSeen ?? true,
+    firstLine: account?.firstLineNoteSeen ?? true,
   };
 };
 

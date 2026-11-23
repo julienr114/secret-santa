@@ -27,10 +27,19 @@ onMounted(() =>
       from,
     },
     {
+      // Its visit opens on it (ticket 149), unless taken up from last
+      // year's list: it has its people already.
       onSuccess: ({ id }) =>
-        navigateTo(party ? `/listes/${id}` : `/listes/${id}?nouvelle=1`, {
-          replace: true,
-        }),
+        navigateTo(
+          {
+            path: `/listes/${id}`,
+            query: {
+              ...(party ? {} : { nouvelle: '1' }),
+              ...(from ? {} : { visite: 'creer' }),
+            },
+          },
+          { replace: true },
+        ),
       onError: (error) => {
         failure.value = error;
       },

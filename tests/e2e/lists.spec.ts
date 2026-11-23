@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 
 test('a list is written in its document, and shared', async ({ page }) => {
   await page.goto('/listes/nouvelle');
-  await expect(page).toHaveURL(/\/listes\/[^/]+\?nouvelle=1$/);
+  await expect(page).toHaveURL(/\/listes\/[^/]+\?nouvelle=1(&visite=creer)?$/);
   await hydrated(page);
   // The bar at the bottom.
   await expect(page.getByTestId('tab-bar')).toContainText('Accueil');
@@ -87,7 +87,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await expect(page.getByRole('dialog')).toContainText('L’icône de Léo');
   await page.keyboard.press('Escape');
   // Touching elsewhere leaves the line being written.
-  const elsewhere = page.getByText('Touche un texte pour le modifier.');
+  const elsewhere = page.getByRole('heading', { name: 'Ajouter quelqu’un' });
 
   // Ideas: the return key goes on to the next line; an address pasted
   // becomes « lien ».

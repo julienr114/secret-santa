@@ -57,6 +57,8 @@ export const createAccount = async (
     createdAt: now,
     lastLoginAt: null,
     disabledAt: null,
+    listTourSeen: false,
+    firstLineNoteSeen: false,
   };
   await db.insert(accounts).values(account);
   return account;

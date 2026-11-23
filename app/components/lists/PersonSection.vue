@@ -396,6 +396,8 @@ const explained = ref<string | null>(null);
           :for-name="single ? '' : member.firstName"
           :idea="row.idea"
           :line="`${person.id}:${row.index}`"
+          :first="row.index === 0"
+          :last="row.index === person.ideas.length - 1"
         />
       </template>
       <li

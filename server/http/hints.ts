@@ -177,6 +177,7 @@ export const receiverListOf = async (
         .where(
           and(
             eq(giftListIdeas.listId, list.id),
+            eq(giftListIdeas.isTitle, false),
             gt(giftListIdeas.createdAt, visit.at),
           ),
         )

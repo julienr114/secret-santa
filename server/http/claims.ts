@@ -56,7 +56,8 @@ export const tickIdea = async (
   },
 ): Promise<boolean> => {
   const idea = await findIdea(db, list.id, how.ideaId);
-  if (!idea) throw notFound();
+  // A title is never ticked (ticket 152).
+  if (!idea || idea.isTitle) throw notFound();
   const claims = (await claimsOfLists(db, [list.id])).filter(
     (c) => c.ideaId === idea.id,
   );
@@ -148,7 +149,7 @@ export const setIdeaGivers = async (
   },
 ) => {
   const idea = await findIdea(db, listId, ideaId);
-  if (!idea) throw notFound();
+  if (!idea || idea.isTitle) throw notFound();
   const all = await claimsOfLists(db, [listId]);
   const current = all.filter((claim) => claim.ideaId === idea.id);
   if (current.some((claim) => claim.anonymous)) {

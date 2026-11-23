@@ -722,6 +722,11 @@ export const giftListIdeas = sqliteTable(
     // The list this idea was taken from (lot 27): a mark for those who
     // hold the list, gone once the idea is changed or the list shared.
     carriedFrom: text('carried_from'),
+    // How much it is wanted, 0 to 3 stars (ticket 152); none on a title.
+    stars: integer('stars').notNull().default(0),
+    // A title over the ideas that follow it (ticket 152): no box, never
+    // ticked, not counted as an idea.
+    isTitle: integer('is_title', { mode: 'boolean' }).notNull().default(false),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('gift_list_ideas_list_idx').on(t.listId)],

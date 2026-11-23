@@ -138,4 +138,5 @@ export default {
   draw_not_revealed: 'Die Auslosung ist noch nicht aufgedeckt.',
   already_played: 'Du hast schon getippt: Nimm den Tipp erst zurück.',
   email_taken: 'Diese Adresse gehört schon einer anderen Person des Events.',
+  idea_claimed: 'Jemand schenkt es schon.',
 } satisfies Dict<typeof fr>;

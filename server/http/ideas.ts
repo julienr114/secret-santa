@@ -4,7 +4,12 @@ import type { H3Event } from 'h3';
 import { eq } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import { deleteClaimsOfIdeas } from '#server/database/claims';
-import { createIdea, findIdea, findListPerson } from '#server/database/lists';
+import {
+  claimedIdeas,
+  createIdea,
+  findIdea,
+  findListPerson,
+} from '#server/database/lists';
 import { giftListIdeas, type GiftListRow } from '#server/database/schema';
 import { notFound } from '#server/http/errors';
 import { markKindSeen } from '#server/database/news';
@@ -99,7 +104,12 @@ export const changeIdea = async (
 ) => {
   const idea = await ideaOf(event, db, list, may);
   const body = await validatedBody(event, ideaPatchSchema);
+  // Someone gives it: it stays an idea (ticket 152).
+  if (body.title && (await claimedIdeas(db, [idea.id])).size > 0) {
+    throw createError({ statusCode: 409, statusMessage: 'idea_claimed' });
+  }
   const split = body.text === undefined ? null : splitIdea(body.text);
+  const title = body.title ?? idea.isTitle;
   await db
     .update(giftListIdeas)
     .set({
@@ -111,6 +121,10 @@ export const changeIdea = async (
         : split?.url
           ? { url: split.url }
           : {}),
+      ...(body.stars === undefined ? {} : { stars: body.stars }),
+      ...(body.title === undefined ? {} : { isTitle: body.title }),
+      // A title has neither link nor stars.
+      ...(title ? { url: null, stars: 0 } : {}),
     })
     .where(eq(giftListIdeas.id, idea.id));
   return { ok: true };

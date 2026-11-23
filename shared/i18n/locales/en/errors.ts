@@ -126,4 +126,5 @@ export default {
   draw_not_revealed: 'The draw is not revealed yet.',
   already_played: 'You already made a guess: take it back first.',
   email_taken: 'This address already belongs to another person of the event.',
+  idea_claimed: 'Someone already gives it.',
 } satisfies Dict<typeof fr>;

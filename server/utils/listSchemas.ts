@@ -87,7 +87,14 @@ export const newIdeaSchema = z.object({
 });
 
 export const ideaPatchSchema = z
-  .object({ text: ideaTextSchema, url: urlSchema })
+  .object({
+    text: ideaTextSchema,
+    url: urlSchema,
+    /** How much it is wanted (ticket 152). */
+    stars: z.number().int().min(0).max(3),
+    /** « En faire un titre », « En refaire une idée » (ticket 152). */
+    title: z.boolean(),
+  })
   .partial()
   .refine((body) => Object.keys(body).length > 0, 'nothing to update');
 

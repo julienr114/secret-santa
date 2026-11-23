@@ -234,7 +234,13 @@ const listLines = async (
           createdAt: giftListIdeas.createdAt,
         })
         .from(giftListIdeas)
-        .where(inArray(giftListIdeas.listId, ids)),
+        // A title is not an idea (ticket 152).
+        .where(
+          and(
+            inArray(giftListIdeas.listId, ids),
+            eq(giftListIdeas.isTitle, false),
+          ),
+        ),
       db
         .select({
           listId: giftListVisits.listId,

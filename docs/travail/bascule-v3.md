@@ -6,7 +6,7 @@ Toutes ces commandes se lancent par Julien, depuis la racine du dépôt. Claude 
 
 ## Ce qu'il faut savoir
 
-- La production est à `0033_claims_for_someone`. La V3 publie **onze migrations d'un coup**, de `0034_v3_parties` à `0044_v3_list_tours`. Elles ne se défont pas : on ne revient en arrière qu'en restaurant la base.
+- La production est à `0033_claims_for_someone`. La V3 publie **douze migrations d'un coup**, de `0034_v3_parties` à `0045_v3_idea_stars_titles`. Elles ne se défont pas : on ne revient en arrière qu'en restaurant la base.
 - **L'ordre : la migration, puis le code.** Entre les deux, la V2 tourne sur la base de la V3 et peut afficher des erreurs : quelques dizaines de secondes, si le code est construit d'avance.
 - **Les tâches planifiées** (`wrangler.toml`, `[triggers]`) :
   - `0 8 * * *`, chaque matin à 8 h UTC (9 h à Paris en hiver) : les rappels aux organisateurs (`server/plugins/reminders.ts`) ;
@@ -27,8 +27,8 @@ cat sauvegardes/prod-schema.sql sauvegardes/prod-donnees.sql > sauvegardes/prod.
 pnpm v3:essai sauvegardes/prod.sql --garder
 ```
 
-- `v3:essai` charge l'export, applique chaque migration qu'il n'a pas encore (de `0034` à `0044`, une transaction chacune, clés étrangères actives, comme D1), puis compare les deux bases.
-- Il doit finir par « ✓ Tout est là, sous sa nouvelle forme, sans clé étrangère cassée. » La comparaison vérifie : autant d'événements que de groupes ; chaque Secret Santa avec ses participants, leur lien, s'ils ont ouvert leur enveloppe, et ses enveloppes (scellées, jamais lues) ; chaque liste avec ceux qui la tiennent, ses idées et ses coches ; une liste partagée par lien garde son lien ; les pistes devenues une liste réservée à celui qui a tiré ; une liste dont le partage était coupé devient un brouillon.
+- `v3:essai` charge l'export, applique chaque migration qu'il n'a pas encore (de `0034` à `0045`, une transaction chacune, clés étrangères actives, comme D1), puis compare les deux bases.
+- Il doit finir par « ✓ Tout est là, sous sa nouvelle forme, sans clé étrangère cassée. » La comparaison vérifie : autant d'événements que de groupes ; chaque Secret Santa avec ses participants, leur lien, s'ils ont ouvert leur enveloppe, et ses enveloppes (scellées, jamais lues) ; chaque liste avec ceux qui la tiennent, ses idées et ses coches ; une liste partagée par lien garde son lien ; les pistes devenues une liste réservée à celui qui a tiré ; une liste dont le partage était coupé devient un brouillon ; aucune idée n'a d'étoiles ni n'est un titre (ticket 152).
 - Un écart, ou une erreur : **on ne publie pas**. On garde les fichiers et on demande à Claude Code.
 - `--garder` laisse `sauvegardes/v3-essai-avant.sqlite` et `sauvegardes/v3-essai-apres.sqlite` pour les trois contrôles. On peut rejouer la comparaison seule : `pnpm v3:compare sauvegardes/v3-essai-avant.sqlite sauvegardes/v3-essai-apres.sqlite`.
 
@@ -77,7 +77,7 @@ Noter un cas de chaque (l'événement, le prénom, le lien) : on les revérifie 
 5. **Sauvegarder** :
    - le signet de Time Travel, à noter quelque part hors de la base : `pnpm -s wrangler d1 time-travel info secret-santa` ;
    - si la répétition date de plus de quelques heures, refaire les deux exports de la partie 1 sous d'autres noms (`sauvegardes/avant-v3-schema.sql`, `sauvegardes/avant-v3-donnees.sql`).
-6. **La migration** : `pnpm db:migrate` (c'est `wrangler d1 migrations apply secret-santa --remote`). Elle liste `0034` à `0044` et demande de confirmer. Si elle échoue en route : **ne pas déployer**, restaurer la base (partie 3, étape 2) et garder le message d'erreur.
+6. **La migration** : `pnpm db:migrate` (c'est `wrangler d1 migrations apply secret-santa --remote`). Elle liste `0034` à `0045` et demande de confirmer. Si elle échoue en route : **ne pas déployer**, restaurer la base (partie 3, étape 2) et garder le message d'erreur.
 7. **Le code, aussitôt** : `pnpm -s wrangler deploy` (le build de l'étape 2). Les deux tâches planifiées reviennent avec lui : le vérifier dans Trigger Events.
 8. **Les trois contrôles en production**, avec les cas notés à la répétition :
    1. Dans le suivi d'un Secret Santa tiré que j'organise (`/admin/[événement]/editions/[id]`), ceux qui n'avaient pas ouvert leur enveloppe ne l'ont toujours pas ouverte. Ne rien « Découvrir » à la place de quelqu'un.
@@ -129,7 +129,7 @@ Puis mettre le `database_id` de `secret-santa-retour` dans le `wrangler.toml` de
 Une base de forme V2 (la base locale de `sauvegardes/state-v2`, montée à `0033`, avec en plus des pistes et un portrait sur un Secret Santa tiré et une coche « pour quelqu'un »), dans un dossier `--persist-to` à part :
 
 1. sauvegarde : l'export complet, le schéma, les données (`wrangler d1 export --local`) ;
-2. migration : `wrangler d1 migrations apply --local`, `0034` à `0044` ;
+2. migration : `wrangler d1 migrations apply --local`, `0034` à `0045` ;
 3. restauration dans une base vide : le schéma, puis les données (`wrangler d1 execute --local --file`) ; l'export complet, lui, est refusé (« no such table: main.persons ») ;
 4. comparaison table par table avec la base d'avant : **identique** (72 tables et index), `d1_migrations` revenu à `0033` ;
 5. le code de `main` (construit dans un `git worktree`) démarre sur la base restaurée : la page d'un Secret Santa par son lien (enveloppe toujours fermée), une liste par son lien sans compte, l'ancienne adresse des pistes.

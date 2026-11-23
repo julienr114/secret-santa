@@ -171,7 +171,12 @@ export const listCounts = async (
       db
         .select({ listId: giftListIdeas.listId })
         .from(giftListIdeas)
-        .where(inArray(giftListIdeas.listId, anyOf(mine))),
+        .where(
+          and(
+            inArray(giftListIdeas.listId, anyOf(mine)),
+            eq(giftListIdeas.isTitle, false),
+          ),
+        ),
     ]);
   const tally = (rows: readonly { listId: string }[]) =>
     rows.reduce(

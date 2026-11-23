@@ -199,6 +199,10 @@ provide(LIST_EDITING, {
   who: (idea, forName) => {
     naming.value = { idea, forName };
   },
+  canMove: () => people.value.length > 1,
+  moveTo: (idea, from) => {
+    moving.value = { idea, from };
+  },
 });
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
@@ -360,7 +364,12 @@ const nameOf = (what: Lifted) =>
  * @param next - The order wanted.
  * @param what - What moved, to say so; nothing when undoing.
  */
-const saveOrder = (next: ListOrder, what: Lifted | null) => {
+const saveOrder = (
+  next: ListOrder,
+  what: Lifted | null,
+  /** The message, when not « {name} déplacé ». */
+  said?: string,
+) => {
   const before = orderNow();
   if (sameOrder(before, next)) return;
   const name = what ? nameOf(what) : '';
@@ -389,7 +398,7 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
     count: place?.count ?? 0,
   });
   toast.undo(
-    t('lists.doc.drag.moved', { name }),
+    said ?? t('lists.doc.drag.moved', { name }),
     () => {
       toast.remove('moved');
       saveOrder(before, null);
@@ -427,6 +436,33 @@ const onStep = async (what: Lifted, step: -1 | 1) => {
   }, 60);
 };
 const dragging = useListDrag(board, { drop: onDrop, step: onStep });
+
+// « Déplacer vers… » (ticket 152, V3ListeLigneDeplacer): a sheet with the
+// other people of the list; the line goes to the end of their part, with
+// its tick if it has one.
+const moving = ref<{ idea: IdeaLine; from: string } | null>(null);
+const movingOpen = computed({
+  get: () => moving.value !== null,
+  set: (open: boolean) => {
+    if (!open) moving.value = null;
+  },
+});
+const moveTargets = computed(() =>
+  people.value.filter((person) => person.id !== moving.value?.from),
+);
+const onSend = (target: PersonLine) => {
+  const line = moving.value;
+  moving.value = null;
+  if (!line) return;
+  saveOrder(
+    moveIdea(orderNow(), line.idea.id, {
+      personId: target.id,
+      index: target.ideas.filter((idea) => idea.id !== line.idea.id).length,
+    }),
+    { kind: 'idea', id: line.idea.id },
+    t('lists.line.moved', { name: target.member.firstName }),
+  );
+};
 /** The card under the finger: what it says, and where the list is. */
 const ghost = computed(() => {
   const what = dragging.lifted.value;
@@ -442,7 +478,9 @@ const ghost = computed(() => {
     label: nameOf(what),
     avatar: person?.member.avatar,
     detail: person
-      ? t('lists.doc.drag.ideas', { count: person.ideas.length })
+      ? t('lists.doc.drag.ideas', {
+          count: person.ideas.filter((idea) => !idea.title).length,
+        })
       : undefined,
   };
 });
@@ -854,6 +892,21 @@ onBeforeRouteLeave((to) => {
           @click="onAccountSeen"
         />
       </template>
+    </UiSheet>
+    <UiSheet v-model:open="movingOpen" :title="t('lists.line.moveTitle')">
+      <ul
+        class="-mx-4 divide-y divide-divider border-y border-divider"
+        data-testid="move-sheet"
+      >
+        <UiListItem
+          v-for="person in moveTargets"
+          :key="person.id"
+          :avatar="person.member.avatar"
+          :title="person.member.firstName"
+          :chevron="false"
+          :on-click="() => onSend(person)"
+        />
+      </ul>
     </UiSheet>
   </AdminScreen>
 </template>

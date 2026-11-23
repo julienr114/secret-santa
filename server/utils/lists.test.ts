@@ -192,16 +192,24 @@ describe('lists', () => {
     });
   });
 
-  it('carries over the ideas nobody gave, in their order', () => {
+  it('carries over the ideas nobody gave, in their order, with their stars and titles', () => {
     expect(
       carriedIdeas([
-        { text: 'B', url: null, position: 2, planned: false },
+        { text: 'B', url: null, position: 2, planned: false, stars: 2 },
         { text: 'A', url: 'https://a', position: 1, planned: false },
         { text: 'C', url: null, position: 0, planned: true },
+        {
+          text: 'Playmobil',
+          url: null,
+          position: 3,
+          planned: false,
+          title: true,
+        },
       ]),
     ).toEqual([
-      { text: 'A', url: 'https://a' },
-      { text: 'B', url: null },
+      { text: 'A', url: 'https://a', stars: 0, title: false },
+      { text: 'B', url: null, stars: 2, title: false },
+      { text: 'Playmobil', url: null, stars: 0, title: true },
     ]);
   });
 

@@ -216,6 +216,10 @@
   --color-tile-housewarming-to: #f08a6c;
   --color-tile-other-from: #efe6fb;
   --color-tile-other-to: #a98be0;
+  /* The stars of an idea (ticket 152): strong peach, full; off, a light
+     peach outline. */
+  --color-rating: #f08a6c;
+  --color-rating-off: var(--color-peach-300);
   /* « Devine qui » (ticket 150): the light green of the game, its edge,
      the track of its choices, its text; its round is mint 500. */
   --color-game-tint: #e9f7f1;

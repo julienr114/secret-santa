@@ -137,4 +137,5 @@ export default {
   already_played: 'Tu as déjà fait un pronostic : retire-le d’abord.',
   email_taken:
     'Cette adresse est déjà celle d’une autre personne de l’événement.',
+  idea_claimed: 'Quelqu’un l’offre déjà.',
 };

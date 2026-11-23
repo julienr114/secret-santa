@@ -123,6 +123,15 @@ onBeforeUnmount(() => {
         <UIcon name="i-lucide-check" class="size-3.5" />
       </span>
     </button>
+    <!-- A title: a dot on the thread, no box (ticket 152). -->
+    <span
+      v-else-if="idea.title"
+      class="flex w-[22px] shrink-0 justify-center self-center"
+      aria-hidden="true"
+      data-testid="title-dot"
+    >
+      <span class="size-2.5 rounded-full bg-line-strong ring-4 ring-page" />
+    </span>
     <button
       v-else
       type="button"
@@ -152,16 +161,20 @@ onBeforeUnmount(() => {
       </span>
     </button>
     <div class="pointer-events-none flex min-w-0 grow flex-col">
-      <p
-        class="text-base/[22px]"
+      <component
+        :is="idea.title ? 'h3' : 'p'"
         :class="[
+          idea.title
+            ? 'font-display text-[19px]/[25px] font-bold'
+            : 'text-base/[22px]',
           crossed ? 'text-toned line-through' : '',
           chips.mine ? 'font-semibold' : '',
         ]"
       >
         {{ name
-        }}<span v-if="fresh" class="sr-only"> ({{ t('lines.dot') }})</span>
-      </p>
+        }}<span v-if="fresh" class="sr-only"> ({{ t('lines.dot') }})</span
+        ><ListsStars :count="idea.stars" :class="crossed ? 'opacity-50' : ''" />
+      </component>
       <ListsIdeaLink
         v-if="idea.url && host"
         :url="idea.url"

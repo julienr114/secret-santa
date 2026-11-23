@@ -336,25 +336,37 @@ export const cardSentence = (
     : { key: 'nothingYet' };
 };
 
+/** An idea of an old list, as a new list reads it. */
+type OldIdea = {
+  text: string;
+  url: string | null;
+  position: number;
+  planned: boolean;
+  /** Its stars and whether it is a title follow it (ticket 152). */
+  stars?: number;
+  title?: boolean;
+};
+
 /**
  * The ideas a person brings to a new list: those of their last list that
- * nobody gave (README 22.19, « Ajouter quelqu'un »), in their order.
+ * nobody gave (README 22.19, « Ajouter quelqu'un »), in their order, with
+ * their stars, and the titles among them (ticket 152).
  * @param previous - Their ideas on their last list, each with whether it
  *   was planned.
- * @returns The text and link of each idea carried over.
+ * @returns The text, link, stars and kind of each line carried over.
  */
 export const carriedIdeas = (
-  previous: readonly {
-    text: string;
-    url: string | null;
-    position: number;
-    planned: boolean;
-  }[],
-): { text: string; url: string | null }[] =>
+  previous: readonly OldIdea[],
+): { text: string; url: string | null; stars: number; title: boolean }[] =>
   previous
     .filter((idea) => !idea.planned)
     .toSorted((a, b) => a.position - b.position)
-    .map(({ text, url }) => ({ text, url }));
+    .map(({ text, url, stars, title }) => ({
+      text,
+      url,
+      stars: stars ?? 0,
+      title: title ?? false,
+    }));
 
 /**
  * Whether a list may be deleted. An empty document goes by itself when
@@ -434,12 +446,7 @@ export type ResumablePerson = {
   position: number;
   /** The hidden part of a list without people. */
   placeholder?: boolean;
-  ideas: readonly {
-    text: string;
-    url: string | null;
-    position: number;
-    planned: boolean;
-  }[];
+  ideas: readonly OldIdea[];
 };
 
 /**
@@ -490,8 +497,10 @@ export const resumeSummary = (
       member: { placeholder: person.placeholder === true },
     })),
   ),
+  // A title is not an idea (ticket 152).
   ideas: people.reduce(
-    (sum, person) => sum + carriedIdeas(person.ideas).length,
+    (sum, person) =>
+      sum + carriedIdeas(person.ideas).filter((idea) => !idea.title).length,
     0,
   ),
 });

@@ -334,3 +334,12 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3TirageNouveau`, `V3TirageNouveauQui`, `V3TirageNouveauSans` | Les trois choix sont `UiSegmented` à sa taille habituelle (40 px de haut, texte de 14 px) au lieu de 36 px et 13,5 px ; les couleurs du jeu passent par une teinte `game` du composant. La loupe est l'icône Lucide `search`. | Seul (le composant du design system) |
 | `EditionMot`, `GroupeMot` | Les deux phrases se lisent aussi sous le titre des pages du formulaire de création (« Petit mot pour les participants », « Mot ajouté aux messages »), pas seulement dans les réglages d'un Secret Santa. | Seul |
+
+## Ranger une liste : la poignée, les étoiles, les titres (ticket 152)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeLigneMenu`, `V3ListeLigneEtoiles` | L'étoile est dessinée en SVG (le contour de l'étoile Lucide), pleine en `rating` (`#f08a6c`), en contour `rating-off` (pêche 300) ; 14 px au bout du texte, 22 px dans le menu. Les icônes du menu sont Lucide : `heading`, `arrow-up`, `arrow-down`, `corner-down-right`, `trash-2`. | Seul |
+| `V3ListeLigneMenu` | Sur ordinateur, la poignée qui apparaît au survol d'une ligne se pose à droite, sur la ligne, par-dessus la fin d'un texte long. | Seul |
+| `V3ListeLigneDeplacer` | « Déplacée vers Zoé » est le message des déplacements, avec « Annuler » comme après un glisser. Après « Monter » ou « Descendre », la ligne reste ouverte à l'écriture, comme avec `Alt` + une flèche. | Seul |
+| `V3ListeTitres` | Un titre garde la ligne ouverte à l'écriture après « En faire un titre » (le clavier revient), comme après les étoiles. | Seul (la spec : « revient après un choix qui laisse dans la ligne ») |

@@ -508,6 +508,10 @@ export type ListPerson = {
     createdAt: string;
     /** Taken from an old list (lot 27), and not changed since. */
     carried: boolean;
+    /** How much it is wanted, 0 to 3 (ticket 152). */
+    stars: number;
+    /** A title over the ideas that follow (ticket 152). */
+    title: boolean;
   }[];
 };
 
@@ -540,13 +544,15 @@ export const peopleOfLists = async (
       member: memberOf(member),
       ideas: ideas
         .filter((idea) => idea.listPersonId === person.id)
-        .map(({ id, text, url, position, createdAt, carriedFrom }) => ({
-          id,
-          text,
-          url,
-          position,
-          createdAt,
-          carried: carriedFrom !== null,
+        .map((idea) => ({
+          id: idea.id,
+          text: idea.text,
+          url: idea.url,
+          position: idea.position,
+          createdAt: idea.createdAt,
+          carried: idea.carriedFrom !== null,
+          stars: idea.stars,
+          title: idea.isTitle,
         })),
     });
   }
@@ -692,6 +698,8 @@ export const addPersonToList = async (
       url: idea.url,
       position: idea.position,
       planned: plannedIdeaIds.has(idea.id),
+      stars: idea.stars,
+      title: idea.isTitle,
     })),
   );
   const id = newId();
@@ -707,6 +715,8 @@ export const addPersonToList = async (
         listPersonId: id,
         text: idea.text,
         url: idea.url,
+        stars: idea.stars,
+        isTitle: idea.title,
         position: index,
         createdAt: now,
       }),
@@ -766,6 +776,8 @@ export const resumableOfLists = async (
           url: idea.url,
           position: idea.position,
           planned: planned.has(idea.id),
+          stars: idea.stars,
+          title: idea.isTitle,
         })),
     });
   }
@@ -831,6 +843,8 @@ export const resumeList = async (
         listPersonId,
         text: idea.text,
         url: idea.url,
+        stars: idea.stars,
+        isTitle: idea.title,
         position: index,
         carriedFrom: marked ? source.id : null,
         createdAt: now,

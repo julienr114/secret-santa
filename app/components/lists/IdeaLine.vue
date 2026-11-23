@@ -38,6 +38,12 @@ import { splitIdea } from '#server/utils/lists';
 // « Une autre idée… », where a new one is written. Where the list is
 // held, a line moves: lifted by a long press, pulled by its handle with a
 // mouse, or `Alt` + an arrow while it is written (lot 24 ter).
+// One handle, on the right (ticket 152): in the card of the line being
+// written, and on any line a mouse hovers. A touch or a click opens its
+// menu (the stars, « En faire un titre », « Monter », « Descendre »,
+// « Déplacer vers… », « Supprimer la ligne »); a long press, or the mouse
+// pulled, moves the line. A title has no box: a dot on the thread, its
+// text bold. The stars are read at the end of the text.
 const props = defineProps<{
   /** Where the list is written: its document, or its link. */
   via: ClaimRoute;
@@ -56,6 +62,9 @@ const props = defineProps<{
    * « Une idée par ligne », or the note of the first line.
    */
   tour?: 'line' | 'firstLine' | null;
+  /** First or last of the person's lines: no « Monter », no « Descendre ». */
+  first?: boolean;
+  last?: boolean;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -77,6 +86,67 @@ const toast = useMessages();
 const errorMessage = useErrorMessage();
 const queryClient = useQueryClient();
 const afterRelease = usePointerHeld();
+/** The handle of the line, and its menu (ticket 152). */
+const handle = ref<HTMLElement | null>(null);
+const menuOpen = ref(false);
+const menuAbove = ref(false);
+/** Opens the menu under the handle, above it when the screen ends. */
+const toggleMenu = () => {
+  if (menuOpen.value) {
+    menuOpen.value = false;
+    return;
+  }
+  const box = handle.value?.getBoundingClientRect();
+  menuAbove.value = Boolean(
+    box && box.bottom + 360 > window.innerHeight && box.top > 360,
+  );
+  menuOpen.value = true;
+};
+/**
+ * Closes the menu; after a choice that keeps one in the line, the
+ * keyboard comes back.
+ * @param back - Whether writing goes on in the line.
+ */
+const closeMenu = async (back = false) => {
+  menuOpen.value = false;
+  if (!back) return;
+  await nextTick();
+  if (writing.value) field.value?.focus();
+  else handle.value?.focus();
+};
+const onStars = (stars: number) => {
+  if (!props.idea) return;
+  update.mutate(
+    { ideaId: props.idea.id, stars },
+    { onError: (error) => toast.failed(errorMessage(error)) },
+  );
+  void closeMenu(true);
+};
+const onTitle = () => {
+  if (!props.idea) return;
+  update.mutate(
+    { ideaId: props.idea.id, title: !props.idea.title },
+    { onError: (error) => toast.failed(errorMessage(error)) },
+  );
+  void closeMenu(true);
+};
+const onStepLine = (step: -1 | 1) => {
+  void closeMenu();
+  if (props.idea && drag) drag.step({ kind: 'idea', id: props.idea.id }, step);
+};
+const canMove = computed(
+  () =>
+    Boolean(editing.moveTo) && (editing.canMove?.(props.listPersonId) ?? false),
+);
+const onMoveTo = () => {
+  void closeMenu();
+  if (props.idea) editing.moveTo?.(props.idea, props.listPersonId);
+};
+const onRemoveLine = async () => {
+  void closeMenu();
+  await removeIdea();
+  leave();
+};
 
 const row = ref<HTMLElement | null>(null);
 const listTour = useListTour();
@@ -563,22 +633,18 @@ const onFocusOut = (event: FocusEvent) => {
     :data-drag-id="idea && drag ? idea.id : undefined"
     @focusout="onFocusOut"
   >
-    <!-- With a mouse, a handle shows on the left as the line is hovered;
-         on a phone a long press lifts the line. -->
-    <button
-      v-if="idea && drag && !writing"
-      type="button"
-      tabindex="-1"
-      class="absolute top-1.5 -left-6 hidden size-7 cursor-grab items-center justify-center rounded-md text-toned group-hover:flex"
-      :aria-label="t('lists.doc.drag.handle', { name })"
-      data-testid="drag-handle"
-      data-no-drag
-      @mousedown="drag.grab($event, { kind: 'idea', id: idea.id })"
+    <!-- A title: a dot on the thread of the person, no box (ticket 152). -->
+    <span
+      v-if="idea?.title"
+      class="flex w-[22px] shrink-0 justify-center self-center"
+      aria-hidden="true"
+      data-testid="title-dot"
     >
-      <UIcon name="i-lucide-grip-vertical" class="size-4" />
-    </button>
+      <span class="size-2.5 rounded-full bg-line-strong ring-4 ring-page" />
+    </span>
     <component
       :is="idea ? 'button' : 'span'"
+      v-else
       v-bind="
         idea
           ? {
@@ -628,7 +694,14 @@ const onFocusOut = (event: FocusEvent) => {
       <template v-if="writing || !idea">
         <!-- A long text goes on to the next row: the field is as tall as
              its text, measured by a copy of it under the field. -->
-        <div class="grid min-w-0 text-base/[22px]">
+        <div
+          class="grid min-w-0"
+          :class="
+            idea?.title
+              ? 'font-display text-[19px]/[25px] font-bold'
+              : 'text-base/[22px]'
+          "
+        >
           <span
             ref="mirror"
             class="invisible col-start-1 row-start-1 break-words whitespace-pre-wrap"
@@ -668,7 +741,7 @@ const onFocusOut = (event: FocusEvent) => {
              address and a cross to take it off. Out of the way of the tab
              key, which goes from line to line. -->
         <div
-          v-if="writing"
+          v-if="writing && !idea?.title"
           class="mt-1.5 flex min-h-8 items-center gap-1.5 border-t pt-1.5 text-sm/[1.4]"
           :class="linkError ? 'border-error' : 'border-muted'"
           data-testid="idea-link-row"
@@ -728,7 +801,14 @@ const onFocusOut = (event: FocusEvent) => {
         </div>
       </template>
       <template v-else>
-        <p class="text-base/[22px]">
+        <component
+          :is="idea.title ? 'h3' : 'p'"
+          :class="
+            idea.title
+              ? 'font-display text-[19px]/[25px] font-bold'
+              : 'text-base/[22px]'
+          "
+        >
           <button
             type="button"
             class="text-left"
@@ -766,7 +846,11 @@ const onFocusOut = (event: FocusEvent) => {
             :aria-label="t('lists.resume.mark')"
             data-testid="idea-carried"
           />
-        </p>
+          <ListsStars
+            :count="idea.stars"
+            :class="taken && !mine ? 'opacity-50' : ''"
+          />
+        </component>
         <ListsIdeaLink v-if="idea.url && host" :url="idea.url" :host="host" />
         <!-- The row of pills: never struck through. -->
         <div
@@ -875,6 +959,52 @@ const onFocusOut = (event: FocusEvent) => {
         />
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
+    </div>
+    <!-- The handle (ticket 152): in the card of the line being written,
+         and on any line a mouse hovers; its stars just before it. -->
+    <div
+      v-if="idea"
+      class="shrink-0 items-start gap-1"
+      :class="
+        writing
+          ? 'relative -mt-[5px] -mr-1 flex'
+          : menuOpen
+            ? 'absolute top-2 right-0 flex'
+            : 'absolute top-2 right-0 hidden [@media(hover:hover)]:group-hover:flex'
+      "
+    >
+      <ListsStars v-if="writing" :count="idea.stars" class="mt-[9px] ml-0" />
+      <button
+        ref="handle"
+        type="button"
+        class="flex size-8 cursor-grab items-center justify-center rounded-[10px] text-dimmed"
+        :class="menuOpen ? 'bg-peach-100' : 'bg-default'"
+        :aria-label="t('lists.line.handle')"
+        aria-haspopup="menu"
+        :aria-expanded="menuOpen"
+        data-line-handle
+        data-testid="line-handle"
+        @mousedown="drag?.grab($event, { kind: 'idea', id: idea.id })"
+        @click="toggleMenu"
+      >
+        <UIcon name="i-lucide-grip-vertical" class="size-4" />
+      </button>
+      <ListsLineMenu
+        v-if="menuOpen"
+        :stars="idea.stars"
+        :title="idea.title"
+        :can-up="Boolean(drag) && !first"
+        :can-down="Boolean(drag) && !last"
+        :can-move="canMove"
+        :above="menuAbove"
+        @stars="onStars"
+        @title="onTitle"
+        @up="onStepLine(-1)"
+        @down="onStepLine(1)"
+        @move="onMoveTo"
+        @remove="onRemoveLine"
+        @close="closeMenu(true)"
+      />
     </div>
     <ListsTourNote
       v-if="tourStop.active.value"

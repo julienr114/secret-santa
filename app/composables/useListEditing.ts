@@ -27,6 +27,12 @@ export type ListEditing = {
    * Only in the document.
    */
   who?: (idea: IdeaLine, forName: string) => void;
+  /**
+   * « Déplacer vers… » (ticket 152): whether a line of this person may go
+   * to someone else, and the sheet that sends it.
+   */
+  canMove?: (listPersonId: string) => boolean;
+  moveTo?: (idea: IdeaLine, listPersonId: string) => void;
 };
 
 export const LIST_EDITING: InjectionKey<ListEditing> = Symbol('list-editing');

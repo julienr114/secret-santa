@@ -21,7 +21,11 @@ export type DropPlace =
 export type ListDrag = {
   lifted: Readonly<Ref<Lifted | null>>;
   drop: Readonly<Ref<DropPlace | null>>;
-  /** The handle of a line, pressed with the mouse. */
+  /**
+   * The handle of a line, pressed with the mouse (ticket 152): it lifts
+   * once the mouse moves with the button down; let go before, it was a
+   * click, which opens the menu.
+   */
   grab: (event: MouseEvent, what: Lifted) => void;
   /** `Alt` + an arrow in a line, « Monter » and « Descendre » in a menu. */
   step: (what: Lifted, step: -1 | 1) => void;
@@ -40,6 +44,8 @@ export const useListDragging = (): ListDrag | null => inject(LIST_DRAG, null);
 const LONG_PRESS_MS = 350;
 /** How far a finger may slip during that time and still lift. */
 const SLIP_PX = 10;
+/** How far the mouse moves, button down on a handle, before it lifts. */
+const PULL_PX = 4;
 /** How far past the list a line may go before it is given up. */
 const OUTSIDE_PX = 48;
 /** How close to an edge of the screen the page starts to scroll. */
@@ -249,12 +255,33 @@ export const useListDrag = (
     }
     end(true);
   };
-  const grab = (event: MouseEvent, what: Lifted) => {
-    if (event.button !== 0 || lifted.value) return;
-    event.preventDefault();
-    lift(what, { x: event.clientX, y: event.clientY });
+  /** The mouse is down on a handle, not moved yet. */
+  const held = ref<{ x: number; y: number; what: Lifted } | null>(null);
+  const onHeldMove = (event: MouseEvent) => {
+    const start = held.value;
+    if (!start) return;
+    if (
+      Math.hypot(event.clientX - start.x, event.clientY - start.y) < PULL_PX
+    ) {
+      return;
+    }
+    stopHeld();
+    lift(start.what, { x: event.clientX, y: event.clientY });
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+  };
+  const stopHeld = () => {
+    held.value = null;
+    window.removeEventListener('mousemove', onHeldMove);
+    window.removeEventListener('mouseup', stopHeld);
+  };
+  const grab = (event: MouseEvent, what: Lifted) => {
+    if (event.button !== 0 || lifted.value) return;
+    // Not the text selection a drag of the mouse would start.
+    event.preventDefault();
+    held.value = { x: event.clientX, y: event.clientY, what };
+    window.addEventListener('mousemove', onHeldMove);
+    window.addEventListener('mouseup', stopHeld);
   };
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape' || !lifted.value) return;
@@ -292,6 +319,7 @@ export const useListDrag = (
   onBeforeUnmount(() => {
     cancelPress();
     stopMouse();
+    stopHeld();
     window.cancelAnimationFrame(frame.value);
     window.removeEventListener('keydown', onKeyDown);
     if (board.value) unlisten(board.value);

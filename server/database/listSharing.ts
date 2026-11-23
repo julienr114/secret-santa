@@ -722,7 +722,12 @@ export const wroteListFor = async (
           db
             .select({ id: giftListIdeas.id })
             .from(giftListIdeas)
-            .where(eq(giftListIdeas.listId, giftLists.id)),
+            .where(
+              and(
+                eq(giftListIdeas.listId, giftLists.id),
+                eq(giftListIdeas.isTitle, false),
+              ),
+            ),
         ),
       ),
     );

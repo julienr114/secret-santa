@@ -395,6 +395,20 @@ const listsProblems = (before: Query, after: Query): string[] => {
  * @param after - Reads the same database after it.
  * @returns One line per difference; empty when everything is there.
  */
+/**
+ * The ideas keep their kind (ticket 152): after the migration, none has a
+ * star, none is a title.
+ */
+const ideasPlain = (_before: Query, after: Query): string[] =>
+  // Only once the migration of ticket 152 ran: the columns are there.
+  after(
+    "SELECT name FROM pragma_table_info('gift_list_ideas') WHERE name = 'stars'",
+  ).length === 0
+    ? []
+    : after(
+        'SELECT id FROM gift_list_ideas WHERE stars <> 0 OR is_title <> 0',
+      ).map((row) => `idée ${row.id} : des étoiles ou un titre`);
+
 export const compareV3 = (before: Query, after: Query): string[] => [
   ...groupsProblems(before, after),
   ...organisersProblems(before, after),
@@ -405,4 +419,5 @@ export const compareV3 = (before: Query, after: Query): string[] => [
   ...listsKept(before, after),
   ...hintsProblems(before, after),
   ...listsProblems(before, after),
+  ...ideasPlain(before, after),
 ];

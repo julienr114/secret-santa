@@ -257,6 +257,10 @@ export type IdeaLine = {
   /** When it was written: new since my last visit or not (ticket 120). */
   createdAt: string;
   url: string | null;
+  /** How much it is wanted, 0 to 3, read by everyone (ticket 152). */
+  stars: number;
+  /** A title over the ideas that follow: no box, never ticked. */
+  title: boolean;
   view: IdeaView;
   /** Mine, when I give it. */
   mine: MyClaim | null;
@@ -336,6 +340,8 @@ const linesOf = (
         text: idea.text,
         createdAt: idea.createdAt,
         url: idea.url,
+        stars: idea.stars,
+        title: idea.title,
         view: ideaView(on, sees),
         who: ideaWho(on, sees),
         carried: sees.holds && idea.carried,
@@ -921,7 +927,10 @@ export const listCards = async (
       sentence: cardSentence({ planned, mine }, holds),
       noIdeas: holds
         ? onList
-            .filter((p) => p.ideas.length === 0 && !p.member.placeholder)
+            .filter(
+              (p) =>
+                !p.ideas.some((idea) => !idea.title) && !p.member.placeholder,
+            )
             .map((p) => p.member.firstName)
         : [],
       planned,

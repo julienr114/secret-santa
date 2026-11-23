@@ -175,7 +175,7 @@ test('with a mouse, a handle is pulled; the keyboard and the menu do the same', 
     .locator('[data-drag="idea"]')
     .filter({ hasText: 'Puzzle' });
   await row.hover();
-  const handle = row.getByTestId('drag-handle');
+  const handle = row.getByTestId('line-handle');
   await expect(handle).toBeVisible();
   const from = await centre(handle);
   const under = await centre(ideasOf(page, 'Zoé').nth(1));
@@ -223,7 +223,7 @@ test('by the link, nothing moves', async ({ page }) => {
   await hydrated(page);
   await expect(page.getByTestId('visitor-person').first()).toBeVisible();
   await expect(page.locator('[data-drag]')).toHaveCount(0);
-  await expect(page.getByTestId('drag-handle')).toHaveCount(0);
+  await expect(page.getByTestId('line-handle')).toHaveCount(0);
   // Nor by its route, for someone who does not hold the list.
   await apiLogin(page.request, 'drag-other@example.com');
   const refused = await page.request.put(`/api/lists/${state.listId}/order`, {

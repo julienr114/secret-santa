@@ -291,7 +291,14 @@ export const useCreateIdeaMutation = (via: Via) =>
 export const useUpdateIdeaMutation = (via: Via) =>
   useApiMutation<
     { ok: true },
-    { ideaId: string; text?: string; url?: string | null }
+    {
+      ideaId: string;
+      text?: string;
+      url?: string | null;
+      /** Its stars, 0 to 3, and whether it is a title (ticket 152). */
+      stars?: number;
+      title?: boolean;
+    }
   >(
     ({ ideaId, ...body }) =>
       api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'PATCH', body }),

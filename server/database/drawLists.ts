@@ -283,6 +283,8 @@ export type SantaLine = {
   name: string;
   /** My page in it. */
   path: string;
+  /** The emoji of its event, at the head of the pill (ticket 147). */
+  emoji: string | null;
 };
 
 /**
@@ -307,6 +309,8 @@ export const santaLinesOf = async (
     .select({
       partyId: parties.id,
       partyName: parties.name,
+      category: parties.category,
+      iconEmoji: parties.iconEmoji,
       santaId: secretSantas.id,
       yearId: secretSantas.yearId,
       label: secretSantas.label,
@@ -345,6 +349,7 @@ export const santaLinesOf = async (
         ),
       ),
       path: await personalPath(row, dataKey),
+      emoji: partyEmoji(row),
     })),
   );
   return lines.toSorted((a, b) => a.name.localeCompare(b.name));

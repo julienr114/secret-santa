@@ -302,3 +302,11 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeSecretNouvelle`, `V3ListeSecret` | « Secret Santa · Famille Camille » n'est que sous mon prénom, pour moi : un autre qui tient la liste ne le voit pas sous le sien ni sous le mien. Il y a une ligne par Secret Santa pas clôturé où je participe, dans un événement où la liste est partagée (tous les membres ou celui qui m'a tiré). Le nom du Secret Santa suit entre parenthèses quand l'événement en a plusieurs la même année. La zone qu'on touche fait 44 px, le texte garde sa hauteur. | Seul |
 | `V3ListeSecretNouvelle` | « Repartir d'une liste » dans une liste déjà partagée (celui qui m'a tiré la lit) : les idées reprises n'ont pas de marque, et la phrase « Reprise de … » ne se lit pas ; elles ne servent que le temps d'un brouillon. Le mot d'accueil que j'ai déjà écrit n'est pas remplacé par celui de l'ancienne liste. | Seul |
 | `V3ListeSurligne`, `V3ListeSurligneTout` | Le filtre ne se montre que si la personne de l'adresse est sur la liste ; sinon, la liste entière, sans les deux choix. La carte du résultat préfère, parmi les listes de la personne tirée, une où elle figure. | Seul |
+
+## La liste, plus légère (ticket 147)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeSecret`, `V3ListeSecretNouvelle` | L'icône de la personne reste le rond de 40 px de la liste (prénom de 24 px), pas 52 px (prénom de 26 px) : le prénom et la pastille, centrés sur elle, la dépassent de quelques pixels. La pastille garde sa zone à toucher de 44 px, sans changer sa hauteur de 20 px. | Seul (la taille de toutes les personnes d'une liste) |
+| `V3ListeMotAccueil` | Le mot proposé est le même pour toutes les catégories (« Quelques idées pour t'éviter de chercher… ») : aucun texte par catégorie n'est écrit dans la spec. | Seul |
+| `V3ListeNouvelle` | Le crayon d'« Ajouter un mot d'accueil » est l'icône Lucide `pencil` de 12 px. | Seul |

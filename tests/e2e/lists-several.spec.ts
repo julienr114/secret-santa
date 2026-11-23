@@ -185,18 +185,16 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
   await hugo.goto('/');
   await hydrated(hugo);
   await openList(hugo, 'Noël à deux');
-  await expect(hugo.getByTestId('visitor-sentence')).toContainText(
-    'Tu y figures : tu peux écrire tes propres idées.',
-  );
-  // His section first, « C'est toi », where he writes in place.
+  await expect(hugo.getByTestId('visitor-sentence')).toHaveCount(0);
+  // His section first, « Hugo (moi) », where he writes in place.
   const first = hugo.getByTestId('visitor-person').first();
-  await expect(first.getByTestId('its-you')).toBeVisible();
-  await first.getByPlaceholder('Une idée pour moi…').click();
+  await expect(first.getByTestId('me-tag')).toHaveText('(moi)');
+  await first.getByPlaceholder('Une idée pour toi…').click();
   await hugo.keyboard.type('Un bon couteau');
   await hugo.keyboard.press('Enter');
   await expect(first.getByTestId('idea-text')).toHaveText('Un bon couteau');
   await expect(
-    first.getByPlaceholder('Une autre idée pour moi…'),
+    first.getByPlaceholder('Une autre idée pour toi…'),
   ).toBeVisible();
   // Not for anyone else, and he does not see who gives what.
   const forLeo = await hugo.request.post(`/api/l/${state.token}/ideas`, {

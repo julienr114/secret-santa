@@ -3,10 +3,12 @@ import type { ListDocument } from '#server/http/lists';
 import { LIST_NOTE_MAX } from '#server/utils/lists';
 import { useUpdateListMutation } from '~/composables/queries/useLists';
 
-// The word for the family (README 22.19, maquettes V3ListeNouvelle and
-// ListeTeneur): the starting text in a dashed frame while untouched,
-// the holder's own text once changed, nothing once erased. Touched, it
-// is written in place; it is saved when the field is left.
+// The word for the family, in option (docs/spec/v3/listes.md, « Une
+// nouvelle liste », ticket 147; V3ListeNouvelle, V3ListeMotAccueil): none
+// at first, « Ajouter un mot d'accueil » under the date. Touched, the
+// field opens in the white card of writing (ticket 144), filled with the
+// starting word, the cursor at its end; it is saved when left. Emptied,
+// the list has no word and the line comes back.
 const props = defineProps<{
   listId: string;
   note: ListDocument['list']['note'];
@@ -17,11 +19,7 @@ const writing = ref(false);
 const draft = ref('');
 const field = ref<{ textareaRef?: HTMLTextAreaElement } | null>(null);
 const shown = computed(() =>
-  props.note.kind === 'text'
-    ? props.note.text
-    : props.note.kind === 'default'
-      ? t('lists.doc.noteDefault')
-      : '',
+  props.note.kind === 'text' ? props.note.text : '',
 );
 // Live (lot 26): while someone else who holds the list writes the word,
 // it is theirs.
@@ -34,17 +32,18 @@ const { lockedBy } = useLiveWriting(
 );
 const start = async () => {
   if (lockedBy.value) return;
-  draft.value = shown.value;
+  draft.value = shown.value || t('lists.doc.noteDefault');
   writing.value = true;
   await nextTick();
-  field.value?.textareaRef?.focus();
+  const area = field.value?.textareaRef;
+  area?.focus();
+  area?.setSelectionRange(draft.value.length, draft.value.length);
 };
-/** Saves the word, unless the starting text was left as it was. */
+/** Saves the word when it changed; emptied, the list has none. */
 const onBlur = () => {
   writing.value = false;
   const text = draft.value.trim();
-  if (props.note.kind === 'default' && text === shown.value) return;
-  if (props.note.kind !== 'default' && text === shown.value) return;
+  if (text === shown.value) return;
   update.mutate({ note: text || null });
 };
 </script>
@@ -55,39 +54,25 @@ const onBlur = () => {
     :by="lockedBy"
     class="text-base leading-[1.5]"
   />
-  <div v-else-if="writing" class="flex flex-col gap-1">
+  <div
+    v-else-if="writing"
+    class="my-1 -mr-2 -ml-2.5 rounded-[16px] bg-default py-2.5 pr-2 pl-2.5 shadow-line-card"
+    data-testid="note-card"
+  >
     <UTextarea
       ref="field"
       v-model="draft"
       autoresize
-      :rows="3"
+      :rows="1"
       :maxlength="LIST_NOTE_MAX"
+      variant="none"
       :aria-label="t('lists.doc.noteLabel')"
       class="w-full"
-      :ui="{ base: 'text-base leading-[1.5]' }"
+      :ui="{ base: 'p-0 text-base md:text-base leading-[1.5]' }"
       data-testid="note-field"
       @blur="onBlur"
     />
-    <p class="px-1 text-[13px] text-toned">{{ t('lists.doc.noteHelp') }}</p>
   </div>
-  <button
-    v-else-if="note.kind === 'default'"
-    type="button"
-    class="flex flex-col gap-1.5 rounded-xl border border-dashed border-accented p-3.5 text-left"
-    data-testid="note-default"
-    @click="start"
-  >
-    <span
-      class="flex items-center gap-1.5 text-xs font-bold tracking-[0.04em] text-primary-ink uppercase"
-    >
-      <UIcon name="i-lucide-pencil-line" class="size-3.5" />
-      {{ t('lists.doc.noteLabel') }}
-    </span>
-    <span class="text-base leading-[1.5]">{{ shown }}</span>
-    <span class="text-[13px] text-toned">{{
-      t('lists.doc.noteDefaultHint')
-    }}</span>
-  </button>
   <button
     v-else-if="note.kind === 'text'"
     type="button"
@@ -100,10 +85,11 @@ const onBlur = () => {
   <button
     v-else
     type="button"
-    class="self-start text-[15px] font-semibold text-primary-ink"
+    class="flex min-h-8 items-center gap-1.25 self-start text-sm leading-[1.4] text-dimmed italic"
     data-testid="note-add"
     @click="start"
   >
+    <UIcon name="i-lucide-pencil" class="size-3 shrink-0" aria-hidden="true" />
     {{ t('lists.doc.noteAdd') }}
   </button>
 </template>

@@ -132,7 +132,7 @@ const cancelName = () => {
   naming.value = false;
 };
 const member = computed(() => props.person.member);
-/** « 6 ans · taille 6 ans, pointure 30 », or « Moi ». */
+/** « 6 ans · taille 6 ans, pointure 30 ». */
 const details = computed(() => {
   const m = member.value;
   const sizes = [
@@ -144,7 +144,6 @@ const details = computed(() => {
       : null,
   ].filter(Boolean);
   return [
-    m.isSelf ? t('lists.doc.me') : null,
     m.age === null ? null : t('lists.doc.age', { count: m.age }),
     sizes.length > 0 ? sizes.join(', ') : null,
   ]
@@ -318,6 +317,9 @@ const explained = ref<string | null>(null);
           >
             {{ member.firstName }}
           </button>
+          <template v-if="member.isSelf && !naming && !nameLock">
+            {{ ' ' }}<ListsMeTag />
+          </template>
         </h2>
         <p v-if="details" class="text-sm leading-[1.4] text-toned">
           {{ details }}
@@ -326,16 +328,19 @@ const explained = ref<string | null>(null);
           v-for="santa in santas"
           :key="santa.path"
           :to="santa.path"
-          class="relative inline-flex min-h-6 items-center gap-1.5 self-start text-[13px] font-bold text-incognito before:absolute before:-inset-y-2.5 before:inset-x-0"
+          class="relative inline-flex h-5 max-w-full items-center gap-1 self-start rounded-full bg-peach-100 pr-2 pl-1.5 text-[11.5px] font-bold text-toned before:absolute before:-inset-y-3 before:inset-x-0"
           data-testid="person-santa"
           data-no-drag
         >
-          <UIcon
-            name="i-lucide-mail"
-            class="size-3.5 shrink-0"
+          <span
+            v-if="santa.emoji"
+            class="shrink-0 text-[11px]"
             aria-hidden="true"
-          />
-          {{ t('lists.doc.santa', { name: santa.name }) }}
+            >{{ santa.emoji }}</span
+          >
+          <span class="min-w-0 truncate">{{
+            t('lists.doc.santa', { name: santa.name })
+          }}</span>
         </NuxtLink>
       </div>
       <UDropdownMenu
@@ -481,11 +486,15 @@ const explained = ref<string | null>(null);
         :idea="null"
         :after="null"
         :placeholder="
-          person.ideas.length > 0
-            ? t('lists.doc.anotherIdea')
-            : single
-              ? t('lists.single.firstIdea')
-              : t('lists.doc.ideaFor', { name: member.firstName })
+          member.isSelf && !single
+            ? person.ideas.length > 0
+              ? t('lists.visitor.anotherForMe')
+              : t('lists.visitor.ideaForMe')
+            : person.ideas.length > 0
+              ? t('lists.doc.anotherIdea')
+              : single
+                ? t('lists.single.firstIdea')
+                : t('lists.doc.ideaFor', { name: member.firstName })
         "
         :line="`${person.id}:new`"
       />

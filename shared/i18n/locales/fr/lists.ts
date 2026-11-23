@@ -40,15 +40,14 @@ export default {
     noteLabel: 'Ton mot d’accueil',
     noteDefault:
       'Quelques idées pour t’éviter de chercher. Coche ce que tu offres, et personne n’aura la même idée. Tu en as une autre ? Elle est la bienvenue.',
-    noteDefaultHint: 'Un texte de départ : touche-le pour écrire le tien.',
     noteAdd: 'Ajouter un mot d’accueil',
-    noteHelp: 'Effacé, la liste n’a pas de mot.',
     plannedHolder: {
       one: '{count} cadeau déjà prévu. Toi seul vois les prénoms.',
       other: '{count} cadeaux déjà prévus. Toi seul vois les prénoms.',
     },
     touchToEdit: 'Touche un texte pour le modifier.',
     me: 'Moi',
+    meTag: '(moi)',
     age: { one: '{count} an', other: '{count} ans' },
     size: 'taille {size}',
     shoe: 'pointure {size}',
@@ -500,18 +499,10 @@ export default {
   visitor: {
     wholeList: 'Toute la liste',
     filterLabel: 'Ce que tu vois de la liste',
-    figures:
-      'La liste de {name}. Tu y figures : tu peux écrire tes propres idées.',
-    itsYou: 'C’est toi',
-    ideaForMe: 'Une idée pour moi…',
-    anotherForMe: 'Une autre idée pour moi…',
-    holder: 'La liste de {name}.',
-    whoSees: 'Personne d’autre que {name} ne voit qui a coché quoi.',
-    mine: {
-      one: 'Tu offres {count} cadeau : personne d’autre que {name} ne sait que c’est toi.',
-      other:
-        'Tu offres {count} cadeaux : personne d’autre que {name} ne sait que c’est toi.',
-    },
+    ideaForMe: 'Une idée pour toi…',
+    anotherForMe: 'Une autre idée pour toi…',
+    holder: 'La liste de {name}',
+    holderOn: '{date} · la liste de {name}',
     youHold: 'Tu tiens cette liste : tu vois qui offre quoi.',
     openDoc: 'Modifier ma liste',
     giving: 'Tu l’offres',

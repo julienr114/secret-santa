@@ -186,18 +186,18 @@ export const isWorthKeeping = (list: {
 }): boolean => shareMissing(list).length < 2;
 
 /**
- * The word for the family: the starting text until it is changed, the
- * holder's own text after, nothing once erased.
+ * The word for the family, in option (V3ListeNouvelle, ticket 147): the
+ * holder's text once written, nothing otherwise. A list never touched has
+ * none: the starting text was never stored.
  * @param note - What is stored: null while untouched.
  * @param edited - Whether it was ever changed.
- * @returns `default` for the starting text, `none`, or the text.
+ * @returns `none`, or the text.
  */
 export const noteOf = (
   note: string | null,
   edited: boolean,
-): { kind: 'default' } | { kind: 'none' } | { kind: 'text'; text: string } => {
-  if (!edited) return { kind: 'default' };
-  const text = note?.trim() ?? '';
+): { kind: 'none' } | { kind: 'text'; text: string } => {
+  const text = edited ? (note?.trim() ?? '') : '';
   return text ? { kind: 'text', text } : { kind: 'none' };
 };
 

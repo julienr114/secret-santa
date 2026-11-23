@@ -42,8 +42,9 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('share-link')).toHaveCount(0);
   await expect(toggle).toBeFocused();
-  await expect(page.getByTestId('note-default')).toContainText(
-    'Quelques idées pour t’éviter de chercher.',
+  // No word at first: a discreet line offers one (ticket 147).
+  await expect(page.getByTestId('note-add')).toHaveText(
+    'Ajouter un mot d’accueil',
   );
 
   // The name, written in place; then someone new, and myself.
@@ -59,8 +60,11 @@ test('a list is written in its document, and shared', async ({ page }) => {
     .getByRole('button', { name: 'Camille' })
     .click();
   await expect(
-    page.getByTestId('list-person').filter({ hasText: 'Camille' }),
-  ).toContainText('Moi');
+    page
+      .getByTestId('list-person')
+      .filter({ hasText: 'Camille' })
+      .getByTestId('me-tag'),
+  ).toHaveText('(moi)');
 
   // A first name and an icon change here, by touching them; not the
   // name of « Moi ».
@@ -275,7 +279,7 @@ test('a list is written in its document, and shared', async ({ page }) => {
   // Nobody is kept from their own ideas: one of « Moi » ticks and unticks
   // like the others (then goes, for what follows).
   const me = page.getByTestId('list-person').filter({ hasText: 'Camille' });
-  await me.getByPlaceholder('Une idée pour Camille…').click();
+  await me.getByPlaceholder('Une idée pour toi…').click();
   await page.keyboard.type('Un bon couteau');
   await page.keyboard.press('Enter');
   await elsewhere.click();
@@ -301,8 +305,17 @@ test('a list is written in its document, and shared', async ({ page }) => {
     page.getByTestId('tab-bar').getByRole('link', { name: 'Quoi de neuf' }),
   ).not.toHaveAttribute('aria-current', 'page');
 
-  // The word: touched, it is mine; erased, there is none.
-  await page.getByTestId('note-default').click();
+  // The word: offered with the starting one, the cursor at its end;
+  // kept, it is the list's; erased, there is none.
+  await page.getByTestId('note-add').click();
+  await expect(page.getByTestId('note-field')).toHaveValue(
+    /^Quelques idées pour t’éviter de chercher\./,
+  );
+  await page.getByTestId('list-title').click();
+  await expect(page.getByTestId('note-text')).toContainText(
+    'Quelques idées pour t’éviter de chercher.',
+  );
+  await page.getByTestId('note-text').click();
   await page.getByTestId('note-field').fill('');
   await page.getByTestId('list-title').click();
   await expect(page.getByTestId('note-add')).toBeVisible();

@@ -94,7 +94,13 @@ test('on a phone, a long press lifts a line and drops it elsewhere', async ({
   await expect(ideasOf(page, 'Léo')).toHaveText(['Circuit', 'Vélo', 'Puzzle']);
   const touch = await finger(page);
 
-  // An idea, to the end of its person's.
+  // An idea, to the end of its person's, away from the edges of the
+  // screen (the head of the list is shorter without a word, ticket 147).
+  await ideasOf(page, 'Léo')
+    .nth(0)
+    .evaluate((el) =>
+      window.scrollTo(0, window.scrollY + el.getBoundingClientRect().top - 250),
+    );
   const from = await centre(ideasOf(page, 'Léo').nth(0));
   const below = await centre(ideasOf(page, 'Léo').nth(2));
   const scrolled = await page.evaluate(() => window.scrollY);

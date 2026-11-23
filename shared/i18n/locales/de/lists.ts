@@ -39,16 +39,14 @@ export default {
     noteLabel: 'Dein Willkommenswort',
     noteDefault:
       'Ein paar Ideen, damit du nicht suchen musst. Hak ab, was du schenkst, dann hat niemand dieselbe Idee. Du hast noch eine? Sie ist willkommen.',
-    noteDefaultHint:
-      'Ein Vorschlag: Tipp ihn an, um deinen eigenen zu schreiben.',
     noteAdd: 'Ein Willkommenswort hinzufügen',
-    noteHelp: 'Gelöscht, hat die Liste kein Wort.',
     plannedHolder: {
       one: '{count} Geschenk schon geplant. Nur du siehst die Namen.',
       other: '{count} Geschenke schon geplant. Nur du siehst die Namen.',
     },
     touchToEdit: 'Tipp einen Text an, um ihn zu ändern.',
     me: 'Ich',
+    meTag: '(ich)',
     age: { one: '{count} Jahr', other: '{count} Jahre' },
     size: 'Größe {size}',
     shoe: 'Schuhgröße {size}',
@@ -501,18 +499,10 @@ export default {
   visitor: {
     wholeList: 'Die ganze Liste',
     filterLabel: 'Was du von der Liste siehst',
-    figures:
-      'Die Liste von {name}. Du stehst darauf: Du kannst deine eigenen Ideen aufschreiben.',
-    itsYou: 'Das bist du',
-    ideaForMe: 'Eine Idee für mich…',
-    anotherForMe: 'Noch eine Idee für mich…',
-    holder: 'Die Liste von {name}.',
-    whoSees: 'Niemand außer {name} sieht, wer was abgehakt hat.',
-    mine: {
-      one: 'Du schenkst {count} Geschenk: Niemand außer {name} weiß, dass du es bist.',
-      other:
-        'Du schenkst {count} Geschenke: Niemand außer {name} weiß, dass du es bist.',
-    },
+    ideaForMe: 'Eine Idee für dich…',
+    anotherForMe: 'Noch eine Idee für dich…',
+    holder: 'Die Liste von {name}',
+    holderOn: '{date} · die Liste von {name}',
     youHold: 'Du führst diese Liste: Du siehst, wer was schenkt.',
     openDoc: 'Meine Liste bearbeiten',
     giving: 'Du schenkst es',

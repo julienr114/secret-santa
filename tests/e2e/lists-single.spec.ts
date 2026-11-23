@@ -131,6 +131,12 @@ test('shared, it shows no person by its link, and keeps its shape', async () => 
   // By the link: the ideas, without a header of person nor their tastes;
   // « J'offre autre chose » once, at the bottom, without a name.
   const page = await open('mamie', `/l/${state.token}`);
+  // Whose it is (beside its date, when it has one); no sentence under
+  // the word (ticket 147).
+  await expect(page.getByTestId('visitor-date')).toContainText(
+    'La liste de Camille',
+  );
+  await expect(page.getByTestId('visitor-sentence')).toHaveCount(0);
   const part = page.getByTestId('visitor-person');
   await expect(part).toHaveCount(1);
   await expect(part.getByRole('heading')).toHaveCount(0);

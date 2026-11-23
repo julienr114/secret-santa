@@ -99,8 +99,8 @@ describe('lists', () => {
     expect(isWorthKeeping({ title: 'Noël', peopleCount: 0 })).toBe(true);
   });
 
-  it('keeps the starting word until changed, and nothing once erased', () => {
-    expect(noteOf(null, false)).toEqual({ kind: 'default' });
+  it('has no word until one is written, and none once erased', () => {
+    expect(noteOf(null, false)).toEqual({ kind: 'none' });
     expect(noteOf('  ', true)).toEqual({ kind: 'none' });
     expect(noteOf(null, true)).toEqual({ kind: 'none' });
     expect(noteOf('À vous !', true)).toEqual({

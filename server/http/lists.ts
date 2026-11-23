@@ -701,7 +701,6 @@ export type VisitorDocument = {
   figures: boolean;
   /** Whether I am logged in. */
   loggedIn: boolean;
-  mine: number;
   /** The band of a list of a year over (ticket 119), or null. */
   past: PastListBand | null;
 };
@@ -745,7 +744,7 @@ export const visitorDocument = async (
   accountId: string | null,
 ): Promise<VisitorDocument> => {
   const { role, holders, people } = await roleOnList(db, list, accountId);
-  const { lines, mine } = linesOf(
+  const { lines } = linesOf(
     people,
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
@@ -772,7 +771,6 @@ export const visitorDocument = async (
     holds: role === 'holder',
     figures: role === 'linked',
     loggedIn: accountId !== null,
-    mine,
     past: await pastBandOf(db, list, accountId),
   };
 };

@@ -168,9 +168,9 @@ test('a list made from my Secret Santa has me on it, first, and starts from last
   const people = page.getByTestId('list-person');
   await expect(people).toHaveCount(1);
   await expect(people.first()).toContainText('Inès');
-  await expect(people.first()).toContainText('Moi');
+  await expect(people.first().getByTestId('me-tag')).toHaveText('(moi)');
   const santa = people.first().getByTestId('person-santa');
-  await expect(santa).toHaveText('Secret Santa · Famille Lilas');
+  await expect(santa).toContainText('Secret Santa · Famille Lilas');
   await expect(santa).toHaveAttribute('href', `/p/${state.tokens['Inès']}`);
   // « Repartir d'une liste », under her, before « Ajouter quelqu'un »:
   // last year's list, where she figures (Q-032).
@@ -242,7 +242,7 @@ test('a list of this year where I figure is offered, chosen beforehand', async (
   await expect(page.getByTestId('share-stage')).toContainText(
     'Seul celui qui t’a tiré la voit',
   );
-  await expect(page.getByTestId('person-santa')).toHaveText(
+  await expect(page.getByTestId('person-santa')).toContainText(
     'Secret Santa · Famille Lilas',
   );
   // From now on, his list for the event: no question.

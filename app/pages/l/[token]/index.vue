@@ -155,25 +155,25 @@ const holder = computed(() => doc.value?.holder.name ?? '');
 
 const noteText = computed(() => {
   const note = doc.value?.list.note;
-  if (!note || note.kind === 'none') return '';
-  return note.kind === 'text' ? note.text : t('lists.doc.noteDefault');
+  return note?.kind === 'text' ? note.text : '';
 });
-const dateLine = computed(() =>
-  doc.value?.list.eventDate
-    ? t('lists.home.on', {
-        date: formatEventDate(doc.value.list.eventDate, locale.value),
-      })
-    : '',
-);
-const sentence = computed(() => {
+/**
+ * Its day; a list without people also says whose it is (ticket 147).
+ * No sentence under the word otherwise: what I offer reads on the
+ * lines, my part by « (moi) ».
+ */
+const dateLine = computed(() => {
   const d = doc.value;
   if (!d) return '';
-  if (d.holds) return t('lists.visitor.youHold');
-  if (d.figures) return t('lists.visitor.figures', { name: holder.value });
-  const head = t('lists.visitor.holder', { name: holder.value });
-  return d.mine > 0
-    ? `${head} ${t('lists.visitor.mine', { count: d.mine, name: holder.value })}`
-    : `${head} ${t('lists.visitor.whoSees', { name: holder.value })}`;
+  const date = d.list.eventDate
+    ? t('lists.home.on', {
+        date: formatEventDate(d.list.eventDate, locale.value),
+      })
+    : '';
+  if (!d.single || d.holds || !holder.value) return date;
+  return date
+    ? t('lists.visitor.holderOn', { date, name: holder.value })
+    : t('lists.visitor.holder', { name: holder.value });
 });
 /** « 6 ans · taille 6 ans, pointure 30 ». */
 const details = (person: PersonLine) => {
@@ -347,7 +347,13 @@ const writes = (person: PersonLine) =>
         <h1 class="font-display text-[36px] leading-[1.1] font-bold">
           {{ doc.list.title }}
         </h1>
-        <p v-if="dateLine" class="text-[15px] text-toned">{{ dateLine }}</p>
+        <p
+          v-if="dateLine"
+          class="text-[15px] text-toned"
+          data-testid="visitor-date"
+        >
+          {{ dateLine }}
+        </p>
         <p
           v-if="noteText"
           class="text-base leading-[1.5] whitespace-pre-line"
@@ -355,8 +361,12 @@ const writes = (person: PersonLine) =>
         >
           {{ noteText }}
         </p>
-        <p class="text-sm text-toned" data-testid="visitor-sentence">
-          {{ sentence }}
+        <p
+          v-if="doc.holds"
+          class="text-sm text-toned"
+          data-testid="visitor-sentence"
+        >
+          {{ t('lists.visitor.youHold') }}
         </p>
         <UButton
           v-if="doc.holds"
@@ -391,16 +401,10 @@ const writes = (person: PersonLine) =>
           <div class="flex min-w-0 flex-col gap-0.5">
             <h2 class="font-display text-2xl leading-[1.15] font-bold">
               {{ person.member.firstName }}
+              <ListsMeTag v-if="writes(person)" />
             </h2>
             <p
-              v-if="writes(person)"
-              class="text-sm font-semibold text-primary-ink"
-              data-testid="its-you"
-            >
-              {{ t('lists.visitor.itsYou') }}
-            </p>
-            <p
-              v-else-if="details(person)"
+              v-if="!writes(person) && details(person)"
               class="text-sm leading-[1.4] text-toned"
             >
               {{ details(person) }}

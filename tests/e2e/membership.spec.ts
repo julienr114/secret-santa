@@ -196,7 +196,7 @@ test('shared with all its members, the list invites by an address', async ({
   ).toHaveCount(1);
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
-  await expect(page.getByTestId('visitor-sentence')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
 test('its link lets a logged-in account into its own event only', async ({
@@ -205,7 +205,7 @@ test('its link lets a logged-in account into its own event only', async ({
   await apiLogin(page.request, INES);
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
-  await expect(page.getByTestId('visitor-sentence')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   const { persons, entries } = await membersOf(state.slug);
   const ines = persons.find((person) => person.email === INES);
   expect(ines).toBeTruthy();

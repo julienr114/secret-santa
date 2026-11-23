@@ -81,9 +81,8 @@ test('without an account, the list reads, and a box asks for an address', async 
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Noël 2026');
-  await expect(page.getByTestId('visitor-sentence')).toContainText(
-    'La liste de Camille.',
-  );
+  // No sentence under the word (ticket 147).
+  await expect(page.getByTestId('visitor-sentence')).toHaveCount(0);
   // Without a session (README 22.21): the language button, no menu, no bar.
   await expect(
     page.getByRole('button', { name: 'Changer de langue' }),

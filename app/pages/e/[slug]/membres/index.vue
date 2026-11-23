@@ -96,7 +96,7 @@ const places = computed(() =>
  * @returns The path.
  */
 const placeTo = (place: AddPlace) => {
-  if (place.kind === 'list') return `/listes/${place.id}/inviter`;
+  if (place.kind === 'list') return `/listes/${place.id}?partage=inviter`;
   const at = `/admin/${slug.value}/editions/${place.id}`;
   return full.value ? `${at}/invitation` : `${at}/ajouter`;
 };

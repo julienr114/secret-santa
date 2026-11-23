@@ -157,13 +157,31 @@ test('shared in two events: their members get in, nobody else, the same ticks', 
   await hydrated(page);
   await page.getByTestId('share-open').click();
   const sharing = page.getByTestId('sharing-panel');
-  await expect(sharing).toContainText('Noël · 2 membres');
-  await sharing.getByTestId(`sharing-event-${state.family}`).check();
-  await sharing.getByTestId(`sharing-event-${state.granny}`).check();
-  await sharing.getByTestId('sharing-save').click();
-  await expect(sharing).toBeHidden();
+  // A draft: nobody, « Ajouter » already unrolled; each pill is saved at
+  // once and becomes a line, with its members.
+  await expect(sharing.getByTestId('sharing-add')).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
+  await expect(sharing.getByTestId('sharing-someone-else')).toHaveCount(0);
+  await sharing.getByTestId(`sharing-add-${state.family}`).click();
+  await expect(
+    sharing.getByTestId(`sharing-event-${state.family}`),
+  ).toContainText('2 membres');
+  await expect(page.getByTestId('share-stage')).toContainText(FAMILY);
+  await sharing.getByTestId(`sharing-add-${state.granny}`).click();
+  await expect(
+    sharing.getByTestId(`sharing-event-${state.granny}`),
+  ).toBeVisible();
+  await expect(sharing.getByTestId(`sharing-add-${state.granny}`)).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole('button', { name: 'Enregistrer' })).toHaveCount(
+    0,
+  );
+  // In the order they were added.
   await expect(page.getByTestId('share-stage')).toContainText(
-    `${GRANNY}, ${FAMILY}`,
+    `${FAMILY}, ${GRANNY}`,
   );
   await expect(page.getByTestId('share-stage')).toContainText(
     '3 membres la voient',
@@ -221,32 +239,64 @@ test('narrowing says first how many who ticked lose it; their ticks stay', async
   await hydrated(page);
   await page.getByTestId('share-open').click();
   const sharing = page.getByTestId('sharing-panel');
-  await sharing.getByTestId(`sharing-event-${state.family}`).click();
+  await sharing
+    .getByTestId(`sharing-event-${state.family}`)
+    .getByTestId('sharing-remove')
+    .click();
   // Hugo ticked in « Famille Partage »… and so did Tom, who stays in
-  // through « Chez Mamie »: only Hugo would lose it. Taking « Chez Mamie »
-  // too, both would.
-  const narrow = page.getByRole('alertdialog', {
-    name: `Retirer ta liste de « ${FAMILY} » ?`,
-  });
-  await expect(narrow).toContainText('Son membre ne la verra plus.');
-  // In the unrolled bar, in the place of what follows: no button meanwhile.
-  await expect(sharing.getByTestId('sharing-save')).toHaveCount(0);
-  await expect(sharing.getByTestId('sharing-everyone')).toHaveCount(0);
-  await expect(narrow).toContainText(
-    '1 d’entre eux a coché un cadeau et ne pourra plus ouvrir la liste.',
+  // through « Chez Mamie »: only Hugo would lose it. Then taking « Chez
+  // Mamie », Tom would.
+  // One level further in the bar; the back cancels.
+  const narrow = page.getByTestId('share-confirm');
+  await expect(narrow.getByRole('heading')).toHaveText(
+    `Retirer « ${FAMILY} » ?`,
   );
+  await expect(narrow).toContainText('Son membre ne verra plus ta liste.');
+  await expect(narrow).toContainText(
+    '1 d’entre eux a coché un cadeau et ne pourra plus l’ouvrir.',
+  );
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await page.getByTestId('share-back').click();
+  await expect(narrow).toHaveCount(0);
+  await expect(
+    sharing.getByTestId(`sharing-event-${state.family}`),
+  ).toBeVisible();
+  await expect(
+    sharing
+      .getByTestId(`sharing-event-${state.family}`)
+      .getByTestId('sharing-remove'),
+  ).toBeFocused();
+  await sharing
+    .getByTestId(`sharing-event-${state.family}`)
+    .getByTestId('sharing-remove')
+    .click();
   await narrow.getByRole('button', { name: 'Retirer' }).click();
-  await sharing.getByTestId(`sharing-event-${state.granny}`).click();
-  const narrowGranny = page.getByRole('alertdialog', {
-    name: `Retirer ta liste de « ${GRANNY} » ?`,
-  });
-  await expect(narrowGranny).toContainText('Ses 2 membres ne la verront plus.');
+  await expect(
+    sharing.getByTestId(`sharing-event-${state.family}`),
+  ).toHaveCount(0);
+  await expect(page.getByTestId('share-stage')).toContainText(GRANNY);
+  await sharing
+    .getByTestId(`sharing-event-${state.granny}`)
+    .getByTestId('sharing-remove')
+    .click();
+  const narrowGranny = page.getByTestId('share-confirm');
+  await expect(narrowGranny.getByRole('heading')).toHaveText(
+    `Retirer « ${GRANNY} » ?`,
+  );
   await expect(narrowGranny).toContainText(
-    '2 d’entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus.',
+    'Ses 2 membres ne verront plus ta liste.',
+  );
+  // Hugo lost it at the first cross, saved at once: only Tom is left.
+  await expect(narrowGranny).toContainText(
+    '1 d’entre eux a coché un cadeau et ne pourra plus l’ouvrir. Son cadeau reste prévu.',
   );
   await narrowGranny.getByRole('button', { name: 'Retirer' }).click();
-  await sharing.getByTestId('sharing-save').click();
   await expect(page.getByTestId('share-stage')).toContainText('Brouillon');
+  // Nobody again: « Ajouter » unrolled.
+  await expect(sharing.getByTestId('sharing-add')).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
   // Gone for them, without a trace; their ticks are still on the list.
   const hugo = await as(playwright, baseURL, HUGO);
   expect((await hugo.get(`/api/l/${state.token}`)).status()).toBe(403);

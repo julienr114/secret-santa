@@ -5,13 +5,14 @@ import { membersLeft } from '#server/utils/parties';
 import { canInviteToList } from '#shared/utils/members';
 
 // « Inviter quelqu'un » (V3ListeInviter, ticket 117): whether this list
-// makes people come into its event, which one, and how many places are
-// left there. For those who manage the list.
+// makes people come into its event, which one (its name for « Quelqu'un
+// d'autre », ticket 139), and how many places are left there. For those who manage the list.
 export default defineEventHandler(async (event) => {
   const { db, list } = await requireManagedList(event, 'invite');
   const own = await ownEventOf(db, list);
   return {
     partyId: own?.party.id ?? null,
+    partyName: own?.party.name ?? null,
     open: Boolean(
       own && canInviteToList({ manages: true, ownStage: own.stage }),
     ),

@@ -98,19 +98,18 @@ const ready = computed(
 const create = useCreatePartyMutation();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
-const { createFor, shareInto } = useListOccasion();
+const { createFor } = useListOccasion();
 /**
  * Where to go once created: what the creation was for, else the party.
- * For a list: the new list, made for it; or, from « Qui verra ta liste ? »,
- * back to the list, now shared in it (ticket 106).
+ * For a list: the new list, made for it.
  */
 const after = async (slug: string) => {
   if (route.query.pour === 'secret-santa') {
     return navigateTo(`/admin/${slug}/editions/nouvelle`);
   }
-  if (route.query.pour !== 'liste') return navigateTo(`/e/${slug}`);
-  const list = typeof route.query.liste === 'string' ? route.query.liste : '';
-  return list ? shareInto(list, slug) : createFor(slug);
+  return route.query.pour === 'liste'
+    ? createFor(slug)
+    : navigateTo(`/e/${slug}`);
 };
 const submit = () => {
   if (!ready.value || !form.value.category || !date.value) return;

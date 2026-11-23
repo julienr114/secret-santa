@@ -330,16 +330,35 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'false');
 
-  // « Partager »: « Qui verra ta liste ? », and « Tout le monde, avec le
-  // lien » makes it public.
+  // « Partager »: « Qui voit ta liste ? », and « Tout le monde » asks
+  // first, one level further in the bar, where the back cancels; then it
+  // is public at once, without « Enregistrer ».
   await page.getByTestId('share-open').click();
   const sharing = page.getByTestId('sharing-panel');
-  await sharing.getByTestId('sharing-everyone').getByRole('switch').click();
-  await sharing.getByTestId('sharing-save').click();
-  await expect(sharing).toBeHidden();
+  await sharing.getByText('Tout le monde', { exact: true }).click();
+  const opening = page.getByTestId('share-confirm');
+  await expect(opening.getByRole('heading')).toHaveText(
+    'Ouvrir à tout le monde ?',
+  );
+  await expect(opening).toContainText('sans compte');
+  await expect(opening.getByRole('button', { name: 'Annuler' })).toHaveCount(0);
+  await page.getByTestId('share-back').click();
+  await expect(page.getByTestId('share-stage')).toContainText('Brouillon');
+  await expect(
+    sharing.getByRole('radio', { name: 'Qui je veux' }),
+  ).toBeChecked();
+  await sharing.getByText('Tout le monde', { exact: true }).click();
+  await opening.getByRole('button', { name: 'Ouvrir', exact: true }).click();
   await expect(page.getByTestId('share-stage')).toContainText('Publique');
+  await expect(page.getByRole('button', { name: 'Enregistrer' })).toHaveCount(
+    0,
+  );
+  // Public, nobody left to choose: « Changer de lien » alone.
+  await expect(sharing.getByTestId('sharing-add')).toHaveCount(0);
+  await page.getByTestId('share-open').click();
+  await expect(sharing).toBeHidden();
   await expect(page.getByTestId('share-open')).toHaveText('Modifier');
-  // Unrolled, the address first, then « Qui verra ta liste ? », in one
+  // Unrolled, the address first, then « Qui voit ta liste ? », in one
   // place: no sheet.
   await page.getByTestId('share-open').click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -354,13 +373,16 @@ test('a list is written in its document, and shared', async ({ page }) => {
   // « Changer de lien », confirmed first, in the place of the button: the
   // old one stops working.
   await sharing.getByTestId('sharing-renew').click();
-  const renew = page.getByRole('alertdialog', { name: 'Changer de lien ?' });
+  const renew = page.getByTestId('share-confirm');
+  await expect(renew.getByRole('heading')).toHaveText('Changer de lien ?');
   await expect(renew).toContainText('L’ancien lien ne marchera plus');
-  await expect(sharing.getByTestId('sharing-save')).toHaveCount(0);
   await renew.getByRole('button', { name: 'Changer', exact: true }).click();
   await expect(renew).toBeHidden();
+  await expect(
+    page.getByText('Nouveau lien créé', { exact: true }),
+  ).toBeVisible();
   await expect(link).not.toHaveText(first);
-  await sharing.getByTestId('sharing-save').click();
+  await page.getByTestId('share-open').click();
   await expect(sharing).toBeHidden();
   await page.getByTestId('share-open').click();
   await expect(link).not.toHaveText(first);

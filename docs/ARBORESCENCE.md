@@ -86,11 +86,7 @@ flowchart LR
   subgraph listesCadeaux ["Listes de cadeaux (celui qui tient la liste)"]
     uneListe["La liste<br/><small>/listes/[id]</small>"]
     nouvelleListe["Nouvelle liste"]
-    uneListe --> messageListe["Personnaliser le message"]
     uneListe --> teneurs["Ceux qui tiennent la liste"]
-    uneListe --> inviterListe["Inviter quelqu'un<br/><small>/listes/[id]/inviter</small>"]
-    inviterListe --> inviterEmail["Par son adresse email"]
-    inviterListe --> inviterReprendre["Qui reprendre ?"]
     uneListe --> proches["Mes proches<br/><small>/famille</small>"]
     proches --> membre
     uneListe --> membre["Un de mes proches<br/><small>/famille/[id]</small>"]
@@ -102,7 +98,7 @@ flowchart LR
   accueil --> uneListe
   accueil --> nouvelleListe
   leGroupe --> uneListe
-  membres --> inviterListe
+  membres --> uneListe
   nouveautes --> uneListe
   nouveautes --> leGroupe
 
@@ -225,14 +221,11 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Nouvelle liste (crée le brouillon, puis ouvre la liste) | `/listes/nouvelle` (`?pour=[événement]` : pour cet événement) | Accueil | |
-| La liste (le document ; sa barre du haut se déroule sur place, sans panneau : l'adresse, « Qui verra ta liste ? » et ses confirmations, ticket 135 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
+| La liste (le document ; sa barre du haut se déroule sur place, sans panneau, ticket 135 : l'adresse et « Qui voit ta liste ? » ; plus loin dans la barre, sans quitter la liste, « Quelqu'un d'autre » (`?partage=inviter`, ouvert aussi par « À ma liste » des Membres), « Reprendre ceux de » (`?partage=reprendre`) et les confirmations (`?partage=confirmer`), où « ‹ » et le retour du téléphone reculent d'un niveau, tickets 139 et 141 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
-| Personnaliser le message | `/listes/[id]/message` | La liste | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
-| Inviter quelqu'un à voir la liste, et donc dans son événement (ouvert par « Qui verra ta liste ? » et par « À ma liste » des Membres ; ticket 117) | `/listes/[id]/inviter` | La liste | |
-| Par son adresse email | `/listes/[id]/inviter/email` | Inviter quelqu'un | |
-| Qui reprendre ? (ceux d'un autre événement que j'organise) | `/listes/[id]/inviter/reprendre` | Inviter quelqu'un | |
 | Supprimer la liste (supprimée : là où « Retour » menait depuis la liste) | `/listes/[id]/supprimer` | La liste | |
+| (anciennes adresses) | `/listes/[id]/inviter` et ses pages, `/listes/[id]/message` | mènent à la liste (`gonePathOf`, ticket 139) | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
 | Mes proches | `/famille` | La liste d'où l'on vient, sinon l'accueil | |
 | Un de mes proches | `/famille/[id]` (`?liste=&place=` depuis une liste) | D'où l'on vient (la liste, ma page d'un Secret Santa, Mes proches) ; sinon la liste de l'adresse, sinon Mes proches | Son icône |

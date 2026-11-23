@@ -148,19 +148,27 @@ test('shared with all its members, the list invites by an address', async ({
   await page.goto(`/listes/${state.listId}`);
   await hydrated(page);
   await page.getByTestId('share-open').click();
-  await page.getByTestId('sharing-invite').click();
-  await expect(heading(page)).toHaveText('Inviter quelqu’un');
-  await expect(
-    page.getByText('Il verra ta liste et deviendra membre de l’événement.'),
-  ).toBeVisible();
-  await expect(page.getByTestId('invite-copy')).toContainText(
-    `/l/${state.token}`,
+  await page.getByTestId('sharing-add').click();
+  await page.getByTestId('sharing-someone-else').click();
+  // One level further in the bar, without leaving the list.
+  const invite = page.getByTestId('share-invite');
+  await expect(invite.getByRole('heading')).toHaveText('Quelqu’un d’autre');
+  await expect(invite).toContainText(
+    'Il reçoit un email à ton nom, et devient membre de « Famille Entrée ».',
   );
-  await page.getByTestId('invite-email').click();
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await expect(page).toHaveURL(new RegExp(`/listes/${state.listId}\\?`));
   await page.getByTestId('invite-first-name').fill('Louis');
   await page.getByTestId('invite-address').fill(LOUIS);
   await page.getByTestId('invite-submit').click();
-  await expect(heading(page)).toHaveText('Inviter quelqu’un');
+  // Back to the first level, which says so.
+  await expect(
+    page.getByText('Invitation envoyée', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId('share-link')).toContainText(
+    `/l/${state.token}`,
+  );
+  await expect(page.getByTestId('share-invite')).toHaveCount(0);
 
   // Louis is a member of the list's event, by the list; not of the other.
   const { persons, entries } = await membersOf(state.slug);
@@ -266,7 +274,7 @@ test('at 30 members, its link lets nobody else in', async ({ page }) => {
   expect((await membersOf(state.slug)).persons).toHaveLength(30);
   // « Inviter quelqu'un » says the event is full.
   await apiLogin(page.request, CAMILLE);
-  await page.goto(`/listes/${state.listId}/inviter`);
+  await page.goto(`/listes/${state.listId}?partage=inviter`);
   await hydrated(page);
   await expect(page.getByTestId('invite-full')).toContainText(
     'L’événement est complet',
@@ -274,6 +282,77 @@ test('at 30 members, its link lets nobody else in', async ({ page }) => {
   await seedSql(
     `DELETE FROM persons WHERE id LIKE 'seed-${state.slug}-Plein%';`,
   );
+});
+
+test('in the bar, « Reprendre ceux de » is one level further; the back goes one level', async ({
+  page,
+}) => {
+  const from = await newEvent('Bureau Entrée');
+  await seedMembers(from, [
+    ['Nadia', 'nadia-entree@example.com'],
+    ['Karim', 'karim-entree@example.com'],
+    'Tom',
+  ]);
+  await share(state.listId, [state.slug]);
+  await apiLogin(page.request, CAMILLE);
+  await page.goto(`/listes/${state.listId}`);
+  await hydrated(page);
+  await page.getByTestId('share-open').click();
+  await page.getByTestId('sharing-add').click();
+  await page.getByTestId('sharing-someone-else').click();
+  await page.getByTestId('invite-first-name').fill('Inès');
+  await page.getByTestId('invite-take').click();
+  const take = page.getByTestId('share-take');
+  await expect(take.getByRole('heading')).toHaveText('Reprendre ceux de');
+  // The back of the phone goes back one level, what was written kept;
+  // the focus goes back to what was touched.
+  await page.goBack();
+  await expect(page.getByTestId('share-invite')).toBeVisible();
+  await expect(page.getByTestId('invite-first-name')).toHaveValue('Inès');
+  await expect(page.getByTestId('invite-take')).toBeFocused();
+  await page.goForward();
+  await expect(take).toBeVisible();
+  // One event among mine, its members ticked; without an address, the box
+  // stays empty.
+  await take.getByRole('button', { name: /Bureau Entrée/ }).click();
+  await expect(
+    take.getByRole('checkbox', { name: 'Reprendre Nadia' }),
+  ).toBeChecked();
+  await expect(
+    take.getByRole('checkbox', { name: 'Reprendre Tom' }),
+  ).toBeDisabled();
+  await expect(take.getByTestId('take-submit')).toHaveText(
+    'Inviter · 2 personnes',
+  );
+  await take.getByRole('checkbox', { name: 'Reprendre Karim' }).uncheck();
+  await take.getByTestId('take-submit').click();
+  // Back to the first level, on the same list.
+  await expect(
+    page.getByText('1 invitation envoyée', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId('share-link')).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/listes/${state.listId}$`));
+  const { persons } = await membersOf(state.slug);
+  const emails = persons.map((person) => person.email);
+  expect(emails).toContain('nadia-entree@example.com');
+  expect(emails).not.toContain('karim-entree@example.com');
+  // « Fermer » folds it from any level; unrolled again, the first level,
+  // what was written forgotten.
+  await page.getByTestId('sharing-add').click();
+  await page.getByTestId('sharing-someone-else').click();
+  await page.getByTestId('invite-first-name').fill('Léa');
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await expect(page.getByTestId('share-content')).toHaveCount(0);
+  await expect(page).toHaveURL(new RegExp(`/listes/${state.listId}$`));
+  await page.getByTestId('share-open').click();
+  await expect(page.getByTestId('share-link')).toBeVisible();
+  await page.getByTestId('sharing-add').click();
+  await page.getByTestId('sharing-someone-else').click();
+  await expect(page.getByTestId('invite-first-name')).toHaveValue('');
+  // « ‹ » goes back to the first level, on what was touched.
+  await page.getByTestId('share-back').click();
+  await expect(page.getByTestId('share-link')).toBeVisible();
+  await expect(page.getByTestId('sharing-someone-else')).toBeFocused();
 });
 
 test('« Qui reprendre ? » makes those of another event participants', async ({

@@ -516,13 +516,7 @@ onBeforeRouteLeave((to) => {
       :skeleton="['bar', 'doc', 'list']"
     >
       <template v-if="doc && list">
-        <ListsShareBar
-          :doc="doc"
-          :readonly="!doc.manages"
-          :manager-name="
-            doc.holders.find((holder) => holder.level === 'manage')?.name
-          "
-        />
+        <ListsShareBar :doc="doc" :readonly="!doc.manages" />
         <ListsHoldersLine
           v-if="doc.manages || doc.holders.length > 1"
           :list-id="list.id"

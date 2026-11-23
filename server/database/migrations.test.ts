@@ -9,7 +9,7 @@ import { compareV3 } from './v3Compare';
 // 0033 (« Cocher pour quelqu'un », from main), then rows covering the
 // cases of docs/spec/v3/migration.md, then 0034, in one transaction as D1
 // applies it, foreign keys on. The migrations of the V3 come after the
-// one of main since ticket 098: 0034 to 0042, compared all together at the
+// one of main since ticket 098: 0034 to 0043, compared all together at the
 // end (ticket 113).
 
 const DIR = join(__dirname, 'migrations');
@@ -824,6 +824,40 @@ describe('a birthday knows whom it is for (ticket 118)', () => {
         .map((row) => row.name)
         .toSorted(),
     ).toEqual(Object.keys(snapshot.tables.parties!.columns).toSorted());
+  });
+});
+
+describe('the one who drew me, with all the members (ticket 139)', () => {
+  const GIVER = '0043_v3_giver_with_members.sql';
+  const db = v2();
+  files
+    .filter((file) => file <= GIVER)
+    .forEach((file) => {
+      if (file >= V3) apply(db, file);
+    });
+
+  it('keeps for the one who drew me what was kept for them, and only that', () => {
+    const rows = all(db, 'SELECT visibility, giver FROM gift_list_parties') as {
+      visibility: string;
+      giver: number;
+    }[];
+    expect(rows.length).toBeGreaterThan(0);
+    expect(
+      rows.every((row) => row.giver === (row.visibility === 'giver' ? 1 : 0)),
+    ).toBe(true);
+  });
+
+  it('matches the Drizzle snapshot of the table', () => {
+    const snapshot = JSON.parse(
+      readFileSync(join(DIR, 'meta', '0043_snapshot.json'), 'utf8'),
+    ) as { tables: Record<string, { columns: Record<string, unknown> }> };
+    expect(
+      all(db, 'PRAGMA table_info(`gift_list_parties`)')
+        .map((row) => row.name)
+        .toSorted(),
+    ).toEqual(
+      Object.keys(snapshot.tables.gift_list_parties!.columns).toSorted(),
+    );
   });
 });
 

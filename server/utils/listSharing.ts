@@ -93,3 +93,69 @@ export const losingMembers = (
       )
       .map((member) => member.email ?? member.id),
   ).size;
+
+/** An event as « Qui voit ta liste ? » knows it (ticket 139). */
+export type SharingState = {
+  id: string;
+  /** All its members see the list. */
+  shared: boolean;
+  /** « Celui qui m'a tiré » is there. */
+  giver: boolean;
+  /** I take part there in a Secret Santa not closed. */
+  drawn: boolean;
+};
+
+/** What is saved at each gesture: the events, « Celui qui m'a tiré », public. */
+export type SharingAsk = {
+  parties: string[];
+  givers: string[];
+  isPublic: boolean;
+};
+
+/**
+ * The sharing as it stands, to save with one change.
+ * @param options - The events offered, with how the list is shared there.
+ * @param isPublic - « Tout le monde ».
+ * @returns What to save.
+ */
+export const sharingAsk = (
+  options: readonly SharingState[],
+  isPublic: boolean,
+): SharingAsk => ({
+  parties: options.filter((o) => o.shared).map((o) => o.id),
+  givers: options.filter((o) => o.giver).map((o) => o.id),
+  isPublic,
+});
+
+/**
+ * What « Qui je veux » shows (docs/spec/v3/listes.md, ticket 139): a
+ * line per event the list is shared in, a line « Celui qui m'a tiré » per
+ * event where it is there; behind « Ajouter », the other events, « Celui
+ * qui m'a tiré » (where I take part in a Secret Santa and it is not yet
+ * there, when I am on the list) and « Quelqu'un d'autre » (when it is
+ * shared with all the members of its own event). « Ajouter » is open
+ * while nobody sees it.
+ * @param options - The events offered.
+ * @param list - What the list says.
+ * @param list.onList - I am one of its people.
+ * @param list.invite - Shared with all the members of its own event.
+ * @returns The lines and the pills.
+ */
+export const sharingView = <T extends SharingState>(
+  options: readonly T[],
+  list: { onList: boolean; invite: boolean },
+) => {
+  const events = options.filter((o) => o.shared);
+  const givers = options.filter((o) => o.giver);
+  return {
+    events,
+    givers,
+    /** The events where « Celui qui m'a tiré » may be added. */
+    addGiver: list.onList
+      ? options.filter((o) => o.drawn && !o.giver).map((o) => o.id)
+      : [],
+    addEvents: options.filter((o) => !o.shared),
+    someoneElse: list.invite,
+    nobody: events.length === 0 && givers.length === 0,
+  };
+};

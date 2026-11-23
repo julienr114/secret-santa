@@ -6,20 +6,29 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## « Qui voit ta liste ? », deux choix, et la barre en plus petit (V3, tickets 139 et 141)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeQuiModifier`, `V3ListeQuiAjouter` | Les lignes des événements sont dans l'ordre de leurs noms ; la phrase de la barre repliée les nomme dans l'ordre où la liste y a été partagée. | Seul |
+| `V3ListeQuiAjouter` | La pastille « Celui qui m'a tiré » ajoute une ligne par Secret Santa où je participe et qu'elle n'a pas encore (le plus souvent un seul). Ajouter ou retirer « Celui qui m'a tiré » ne demande jamais : personne ne perd l'accès qu'il avait par l'événement. | Seul |
+| `V3ListeQuiRetirer`, `V3ListeQuiOuvrir`, `V3ListeLienChanger` | Revenir de « Tout le monde » à « Qui je veux » quand quelqu'un a coché pose la même question, un niveau plus loin, titrée « Retirer « Tout le monde » ? » (la spec ne donne que son texte). Une confirmation, comme « Quelqu'un d'autre », a son adresse (`?partage=confirmer`) ; ouverte directement, l'adresse mène au premier niveau. | Seul |
+| `V3ListeInviter`, `V3ListeInviterEmail` | À 30 membres, le niveau dit « L'événement est complet » à la place des champs. Une erreur de l'envoi s'affiche sous le texte, avant « Inviter ». | Seul |
+| `V3ListeInviterReprendre` | Ne sont proposés que les événements que j'organise, comme au ticket 117 ; une pastille choisie coche d'office ses membres qui ont une adresse. | Seul |
+| `V3ListeInviteEnvoyee` | Après « Inviter », « Ajouter » est replié et le clavier se ferme, pour que le message reste en bas de l'écran. | Seul |
+| `FeteMembres` (« À ma liste ») | Mène à la liste, la barre déroulée sur « Quelqu'un d'autre » (`?partage=inviter`). | Seul |
+
 ## La barre déroulée passe par-dessus la liste (V3, ticket 138)
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
 | Toutes les déroulées | Toucher en dehors de la barre la replie et ne fait que cela : ce qui était sous le doigt n'est ni pressé ni sélectionné (la barre du haut et celle du bas comprises). Le focus revient au bouton, comme avec « Fermer ». | Seul |
-| `V3ListeQui`, `V3ListeQuiModifier`, `V3ListeQuiSecret`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeQuiRetirer` | Le contenu de la barre reste celui du ticket 135 (les événements à cocher, l'interrupteur, « Enregistrer ») : les maquettes montrent déjà « Qui je veux » / « Tout le monde », qui est le ticket 139. | Ticket 138 (« Hors périmètre ») |
 
 ## La barre d'une liste se déroule (V3, ticket 135)
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `V3ListeQuiRetirer`, `V3ListeLienChanger` | La question prend la place de ce qui suit ce qu'on a touché : sous les événements pour un événement retiré (comme `V3ListeQuiRetirer`), sous « Tout le monde, avec le lien » pour l'interrupteur et pour « Changer de lien » (comme `V3ListeLienChanger`). Le focus va sur « Annuler ». | Seul |
-| `V3ListeQuiLien` | « Une autre occasion » reste sous les événements d'une liste publique (la maquette ne l'a pas), et « Inviter quelqu'un » quand ses règles le proposent : les règles du partage ne changent pas. | Seul |
-| Toutes les déroulées | Échap replie la barre sans rien changer, comme « Fermer » ; ce qui était coché sans être enregistré est oublié. Pendant le chargement de « Qui verra ta liste ? », un squelette sous son titre. | Seul |
+| Toutes les déroulées | Échap replie la barre sans rien changer, comme « Fermer », d'où que l'on soit. Pendant le chargement de « Qui voit ta liste ? », un squelette sous son titre. | Seul |
 
 ## On entre par un Secret Santa ou par une liste (V3, ticket 117)
 
@@ -29,9 +38,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FeteMembresComplet` | À 30 membres, « À ma liste » n'est pas montré (on n'invite plus) ; « Au Secret Santa » mène à son lien, comme dans la maquette. | Seul |
 | `V3FeteMembresReprendre` | Le contexte au-dessus du titre est le fil de l'écran (le nom de l'événement, sans emoji). Une pastille choisie a l'anneau rouge des pastilles de l'application, pas le fond vert. Ne sont proposés que les événements que j'organise (leurs adresses ne sont lues que par leurs organisateurs), jamais celui où l'on ajoute, ni quelqu'un qui y est déjà par son adresse ; sans personne de nouveau, « Personne de nouveau à ajouter ». | Seul |
 | `V3FeteNouvelle` | « Continuer » crée l'événement et mène droit au Secret Santa ou à la liste : plus d'étape « Qui en fait partie ? ». | Julien (décision du 21 novembre 2026) |
-| `V3ListeQui`, `V3ListeQuiModifier` | « Inviter quelqu'un » n'est proposé qu'une fois la liste enregistrée comme partagée avec « Tous les membres » de son événement : ni sur un brouillon (la maquette `V3ListeQui` le montre), ni sur une liste réservée à celui qui a tiré (`listes.md`). Il est dans la barre déroulée (ticket 135). « Changer de lien » est proposé pour toute liste, sous « Tout le monde, avec le lien », et plus seulement pour une liste publique. | Seul (`listes.md`) |
-| `V3ListeInviter` | Le contexte au-dessus du titre est le nom de la liste (sans emoji), qui y ramène. « Copier le lien » dit « Copié » à sa place, un instant. Deux états que la maquette ne montre pas : une liste qui n'est pas partagée avec tous les membres de son événement (« Partage d'abord ta liste avec tous les membres de son événement. ») et un événement complet (« L'événement est complet · 30 membres, c'est le maximum »), à la place des trois lignes. | Seul |
-| (pas de maquette) | « Par son adresse email » est une page : « Son prénom », « Son adresse email », « Inviter ». Une adresse déjà membre de l'événement est refusée : « la liste lui est ouverte ». | Seul |
+| `V3ListeQui`, `V3ListeQuiModifier` | « Quelqu'un d'autre » n'est proposé qu'une fois la liste partagée avec les membres de son événement : ni sur un brouillon, ni sur une liste réservée à celui qui a tiré (`listes.md`). Une adresse déjà membre de l'événement est refusée : « la liste lui est ouverte ». | Seul (`listes.md`) |
 | `V3ListePartageEmail` | Comme les autres emails : le lien est écrit en entier sous « Voir la liste : » (pas de bouton), et le pied n'a pas encore « Ne plus recevoir d'emails », « Signaler » ni « Ce que l'application fait de tes données » (tickets 130 et 132). | Seul (les autres emails) |
 | `V3ListeFermee`, `V3ListeFermeeConnecte` | Connecté, quand le lien fait entrer dans l'événement de la liste, la page montre le squelette de la liste le temps d'y entrer, puis la liste. | Seul |
 | `V3FeteRejoindre` | Pendant qu'elle charge, la page du lien d'un Secret Santa montre un squelette à sa forme (le titre, une carte) au lieu d'un bloc gris (noté par le ticket 114). | Seul (`regles-d-ecran.md`) |
@@ -76,7 +83,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3ChargementAccueil`, `V3ChargementFete` | Le squelette commence sous la barre du haut à la marge de toutes les pages (20 px), pas à 8 px : le contenu arrive ainsi à la place exacte du squelette. Les pièces battent doucement (`USkeleton`) et n'apparaissent qu'après 200 ms, comme les squelettes d'avant. | Seul (le cadre des écrans) |
 | `V3ChargementAccueil`, `V3ChargementFete` | Les lignes du squelette prennent tour à tour quatre largeurs (55/38, 62/30, 45/44, 48/40 %) : la deuxième section d'un événement a 62/30 puis 45/44 au lieu de 62/30 puis 48/40. | Seul |
-| Les écrans sans maquette de chargement | « Membres », la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Qui reprendre ? », une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui verra ta liste ? », « Ce que j'offre ailleurs », les événements passés et une année passée ont un squelette composé des pièces de `UiSkeleton` à leur forme (lignes à icône, réglages, pastilles, barre de partage, en-tête d'une liste). | Seul (la règle : `regles-d-ecran.md`) |
+| Les écrans sans maquette de chargement | « Membres », la fiche d'une personne, les réglages d'un événement et d'un Secret Santa, « Qui reprendre ? », une liste (celui qui la tient, celui qui l'ouvre par son lien), « Qui voit ta liste ? », « Ce que j'offre ailleurs », les événements passés et une année passée ont un squelette composé des pièces de `UiSkeleton` à leur forme (lignes à icône, réglages, pastilles, barre de partage, en-tête d'une liste). | Seul (la règle : `regles-d-ecran.md`) |
 
 ## Les emails et le journal (V3, ticket 110)
 
@@ -125,7 +132,6 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3TirageVersListe` | La ligne de sa liste mène à une liste qu'elle tient et que je peux ouvrir : réservée à celui qui l'a tirée ou à tous les membres dans cet événement, ou publique ; la plus récemment modifiée. Sans compte, ses pistes d'avant la V3 restent, en lecture seule. | Seul |
 | `V3TirageNouvelles` | « 2 nouvelles idées » compte les idées ajoutées depuis ma dernière ouverture de sa liste, seulement si je l'ai déjà ouverte avec mon compte. | Seul |
 | `PistesResultatDemande` | Sans adresse, « Inès le verra en ouvrant son lien » : il n'y a plus de page de pistes. | Seul |
-| — | « Qui verra ta liste ? » propose « Celui qui m'a tiré » sous un événement où je participe à un Secret Santa pas clôturé ; le choisir pour un événement où les membres voyaient la liste demande d'abord, comme décocher. | Seul |
 
 ## Le partage d'une liste (V3, ticket 106)
 

@@ -114,15 +114,7 @@ export default {
     },
   },
   share: {
-    message:
-      '🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n’ait la même idée :',
     and: 'et',
-    me: 'moi',
-    footer:
-      'Fait avec Under the Tree, pour les listes de cadeaux et les Secret Santa entre proches.',
-    personalize: 'Personnaliser le message',
-    personalizeHelp: 'Le lien et la dernière phrase restent à la fin.',
-    personalizeLabel: 'Le message',
     copyFailed: 'Copie impossible ici : sélectionne le lien pour le copier.',
     copied: 'Copié',
     changed: 'Nouveau lien créé',
@@ -150,42 +142,44 @@ export default {
       other: '{count} membres la voient',
     },
     nobody: 'Personne d’autre ne la voit',
-    chosenBy: 'choisi par {name}',
     share: 'Partager',
     edit: 'Modifier',
     close: 'Fermer',
     theLink: 'Le lien',
     copyLink: 'Copier le lien',
-    title: 'Qui verra ta liste ?',
-    eventLine: {
-      one: '{category} · {count} membre',
-      other: '{category} · {count} membres',
+    title: 'Qui voit ta liste ?',
+    membersOf: {
+      one: '{count} membre',
+      other: '{count} membres',
     },
-    allMembers: 'Tous les membres',
     giverOnly: 'Celui qui m’a tiré',
-    audienceLabel: 'Dans {name}, qui la verra',
-    otherOccasion: 'Une autre occasion',
-    invite: 'Inviter quelqu’un',
-    everyone: 'Tout le monde, avec le lien',
-    message: 'Le message qui accompagne le lien',
+    chosen: 'Qui je veux',
+    everyone: 'Tout le monde',
+    remove: 'Retirer {name}',
+    add: 'Ajouter',
+    someoneElse: 'Quelqu’un d’autre',
+    open: {
+      title: 'Ouvrir à tout le monde ?',
+      body: 'Toute personne qui a le lien pourra voir ta liste et cocher un cadeau, sans compte.',
+      submit: 'Ouvrir',
+    },
     changeLink: 'Changer de lien',
-    save: 'Enregistrer',
     renew: {
       title: 'Changer de lien ?',
       body: 'L’ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste.',
       submit: 'Changer',
     },
     narrow: {
-      title: 'Retirer ta liste de « {name} » ?',
-      everyoneTitle: 'Retirer « Tout le monde, avec le lien » ?',
+      title: 'Retirer « {name} » ?',
+      everyoneTitle: 'Retirer « Tout le monde » ?',
       members: {
-        one: 'Son membre ne la verra plus.',
-        other: 'Ses {count} membres ne la verront plus.',
+        one: 'Son membre ne verra plus ta liste.',
+        other: 'Ses {count} membres ne verront plus ta liste.',
       },
       claimersOf: {
-        one: '{count} d’entre eux a coché un cadeau et ne pourra plus ouvrir la liste. Son cadeau reste prévu.',
+        one: '{count} d’entre eux a coché un cadeau et ne pourra plus l’ouvrir. Son cadeau reste prévu.',
         other:
-          '{count} d’entre eux ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus.',
+          '{count} d’entre eux ont coché un cadeau et ne pourront plus l’ouvrir. Leurs cadeaux restent prévus.',
       },
       claimers: {
         one: '{count} personne a coché un cadeau et ne pourra plus ouvrir la liste. Son cadeau reste prévu.',
@@ -348,16 +342,20 @@ export default {
   // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
   // into its event, by it.
   inviteMembers: {
-    title: 'Inviter quelqu’un',
-    subtitle: 'Il verra ta liste et deviendra membre de l’événement.',
-    copy: 'Copier le lien',
-    byEmail: 'Par son adresse email',
-    byEmailHint: 'Il reçoit un email à ton nom',
-    firstName: 'Son prénom',
-    email: 'Son adresse email',
+    firstName: 'Prénom',
+    email: 'Adresse email',
+    hint: 'Il reçoit un email à ton nom, et devient membre de « {name} ».',
     submit: 'Inviter',
-    sent: 'Invitation envoyée à {name}',
-    closed: 'Partage d’abord ta liste avec tous les membres de son événement.',
+    sent: 'Invitation envoyée',
+    takeTitle: 'Reprendre ceux de',
+    takeSubmit: {
+      one: 'Inviter · {count} personne',
+      other: 'Inviter · {count} personnes',
+    },
+    taken: {
+      one: '{count} invitation envoyée',
+      other: '{count} invitations envoyées',
+    },
   },
   sharedEmail: {
     subject: '{by} a partagé sa liste « {title} » avec toi',

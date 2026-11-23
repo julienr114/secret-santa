@@ -188,22 +188,36 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
     'Seul celui qui t’a tiré la voit',
   );
   await expect(page.getByTestId('list-title')).toHaveValue('Famille Lutins');
-  // « Modifier » unrolls the bar: « Celui qui m’a tiré » is chosen, in the
-  // two-choice control; « Fermer » folds it without changing anything.
+  // « Modifier » unrolls the bar: « Celui qui m’a tiré » is a line of its
+  // own (V3ListeQuiSecret). The event's members may see it too: two lines
+  // together; taking the event away again leaves « Celui qui m’a tiré ».
   await page.getByTestId('share-open').click();
   const sharing = page.getByTestId('sharing-panel');
-  await expect(
-    sharing.getByRole('radio', { name: 'Celui qui m’a tiré' }),
-  ).toBeChecked();
-  await sharing.getByText('Tous les membres').click();
-  await expect(
-    sharing.getByRole('radio', { name: 'Tous les membres' }),
-  ).toBeChecked();
-  await page.getByRole('button', { name: 'Fermer' }).click();
-  await expect(sharing).toHaveCount(0);
+  const giver = sharing.locator('[data-testid^="sharing-giver-"]');
+  await expect(giver).toContainText('Celui qui m’a tiré');
+  await expect(giver).toContainText('Secret Santa · Famille Lutins');
+  await expect(sharing.getByTestId('sharing-add')).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  );
+  await sharing.getByTestId('sharing-add').click();
+  await sharing.getByRole('button', { name: /Famille Lutins/ }).click();
+  const event = sharing.locator('[data-testid^="sharing-event-"]');
+  await expect(event).toContainText('Famille Lutins');
+  await expect(giver).toBeVisible();
+  await expect(page.getByTestId('share-stage')).toContainText('la voi');
+  await event.getByTestId('sharing-remove').click();
+  await page
+    .getByTestId('share-confirm')
+    .getByRole('button', { name: 'Retirer' })
+    .click();
+  await expect(event).toHaveCount(0);
+  await expect(giver).toBeVisible();
   await expect(page.getByTestId('share-stage')).toContainText(
     'Seul celui qui t’a tiré la voit',
   );
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await expect(sharing).toHaveCount(0);
   const listId = page.url().split('/listes/')[1] ?? '';
   // Her account keeps the face she had in the Secret Santa: 🦊 on frost.
   const family = await ok(await page.request.get('/api/family'));

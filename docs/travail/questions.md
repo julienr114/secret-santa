@@ -4,7 +4,15 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-035 — « Il reçoit un email à ton nom » : une tournure neutre ? (tickets 139, 141)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. Le texte de la spec est codé tel quel, dans les trois langues (`lists.inviteMembers.hint`).
+- **Ce qu'on a trouvé** : `docs/spec/v3/listes.md`, « Quelqu'un d'autre », écrit « Il reçoit un email à ton nom, et devient membre de « Famille Camille ». » ; `CLAUDE.md` dit « L'application ne connaît pas le genre d'une personne : tournures neutres ». L'anglais dit « They get an email », l'allemand « Die Person bekommt ».
+- **Les choix** :
+  - A. Garder « Il reçoit… » (le masculin d'usage, comme « Celui qui m'a tiré »).
+  - B. Une tournure neutre, par exemple « Un email à ton nom lui est envoyé, et cette personne devient membre de « Famille Camille ». »
+- **Ce que je ferais** : B, si la conception trouve une phrase aussi courte.
 
 ## Réponses
 

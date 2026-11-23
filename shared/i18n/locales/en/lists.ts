@@ -112,15 +112,7 @@ export default {
     },
   },
   share: {
-    message:
-      '🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea:',
     and: 'and',
-    me: 'me',
-    footer:
-      'Made with Under the Tree, for gift lists and Secret Santas with those close to you.',
-    personalize: 'Personalise the message',
-    personalizeHelp: 'The link and the last sentence stay at the end.',
-    personalizeLabel: 'The message',
     copyFailed: 'Could not copy here: select the link to copy it.',
     copied: 'Copied',
     changed: 'New link created',
@@ -148,42 +140,44 @@ export default {
       other: '{count} members see it',
     },
     nobody: 'Nobody else sees it',
-    chosenBy: 'chosen by {name}',
     share: 'Share',
     edit: 'Edit',
     close: 'Close',
     theLink: 'The link',
     copyLink: 'Copy the link',
-    title: 'Who will see your list?',
-    eventLine: {
-      one: '{category} · {count} member',
-      other: '{category} · {count} members',
+    title: 'Who sees your list?',
+    membersOf: {
+      one: '{count} member',
+      other: '{count} members',
     },
-    allMembers: 'All the members',
     giverOnly: 'The one who drew me',
-    audienceLabel: 'In {name}, who will see it',
-    otherOccasion: 'Another occasion',
-    invite: 'Invite someone',
-    everyone: 'Everyone, with the link',
-    message: 'The message that goes with the link',
+    chosen: 'Who I want',
+    everyone: 'Everyone',
+    remove: 'Remove {name}',
+    add: 'Add',
+    someoneElse: 'Someone else',
+    open: {
+      title: 'Open to everyone?',
+      body: 'Anyone with the link will be able to see your list and tick a gift, without an account.',
+      submit: 'Open',
+    },
     changeLink: 'Change the link',
-    save: 'Save',
     renew: {
       title: 'Change the link?',
       body: 'The old link will stop working: you will have to send the new one. Those who already ticked a gift keep the list.',
       submit: 'Change',
     },
     narrow: {
-      title: 'Take your list out of “{name}”?',
-      everyoneTitle: 'Remove “Everyone, with the link”?',
+      title: 'Remove “{name}”?',
+      everyoneTitle: 'Remove “Everyone”?',
       members: {
-        one: 'Its member will no longer see it.',
-        other: 'Its {count} members will no longer see it.',
+        one: 'Its member will no longer see your list.',
+        other: 'Its {count} members will no longer see your list.',
       },
       claimersOf: {
-        one: '{count} of them ticked a gift and will no longer open the list. Their gift is still planned.',
+        one: '{count} of them ticked a gift and will no longer be able to open it. Their gift is still planned.',
         other:
-          '{count} of them ticked a gift and will no longer open the list. Their gifts are still planned.',
+          '{count} of them ticked a gift and will no longer be able to open it. Their gifts are still planned.',
       },
       claimers: {
         one: '{count} person ticked a gift and will no longer open the list. Their gift is still planned.',
@@ -346,16 +340,20 @@ export default {
   // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
   // into its event, by it.
   inviteMembers: {
-    title: 'Invite someone',
-    subtitle: 'They will see your list and become a member of the event.',
-    copy: 'Copy the link',
-    byEmail: 'By their email address',
-    byEmailHint: 'They get an email in your name',
-    firstName: 'Their first name',
-    email: 'Their email address',
+    firstName: 'First name',
+    email: 'Email address',
+    hint: 'They get an email in your name, and become a member of “{name}”.',
     submit: 'Invite',
-    sent: 'Invitation sent to {name}',
-    closed: 'First share your list with all the members of its event.',
+    sent: 'Invitation sent',
+    takeTitle: 'Take those of',
+    takeSubmit: {
+      one: 'Invite · {count} person',
+      other: 'Invite · {count} people',
+    },
+    taken: {
+      one: '{count} invitation sent',
+      other: '{count} invitations sent',
+    },
   },
   sharedEmail: {
     subject: '{by} shared their list “{title}” with you',

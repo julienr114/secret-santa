@@ -203,9 +203,44 @@ export const listsIFigureOn = async (
 };
 
 /**
+ * Whether I am on a list (ticket 139): my « Moi », or a person of someone
+ * else's family linked to my account. « Celui qui m'a tiré » is offered
+ * only then.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param accountId - My account.
+ * @returns True when I am one of its people.
+ */
+export const amOnList = async (
+  db: Db,
+  listId: string,
+  accountId: string,
+): Promise<boolean> => {
+  const [found] = await db
+    .select({ id: giftListPeople.id })
+    .from(giftListPeople)
+    .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
+    .where(
+      and(
+        eq(giftListPeople.listId, listId),
+        or(
+          and(
+            eq(familyMembers.accountId, accountId),
+            eq(familyMembers.isSelf, true),
+          ),
+          eq(familyMembers.linkedAccountId, accountId),
+        ),
+      ),
+    )
+    .limit(1);
+  return Boolean(found);
+};
+
+/**
  * Gives a list I hold to the one who draws me (« Celui qui m'a tiré »,
  * ticket 136): one more stage of its sharing for the event, nothing taken
- * from it. Shared with all the members already, it stays so. The marks
+ * from it. Shared with all the members already, it stays so, with the
+ * line « Celui qui m'a tiré » too (ticket 139). The marks
  * of a list taken up again go, as at any first share.
  * @param db - The database.
  * @param listId - The list.
@@ -227,9 +262,13 @@ export const giveListToDraw = async (
         listId,
         partyId,
         visibility: 'giver',
+        giver: true,
         createdAt: now,
       })
-      .onConflictDoNothing(),
+      .onConflictDoUpdate({
+        target: [giftListParties.listId, giftListParties.partyId],
+        set: { giver: true },
+      }),
     db
       .update(giftLists)
       .set({ updatedAt: now })

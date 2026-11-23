@@ -12,6 +12,7 @@ import type { Avatar } from '#server/utils/avatars';
 import type { LinePart } from '#shared/utils/lines';
 import type { HolderLevel } from '#server/utils/listAccess';
 import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
+import type { SharingAsk } from '#server/utils/listSharing';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import type { ListOrder } from '#shared/utils/reorder';
 import { keys } from './keys';
@@ -315,20 +316,15 @@ export const useShareListMutation = (id: Id) =>
   );
 
 /**
- * « Qui verra ta liste ? » (ticket 106): the events offered, the link,
- * and whether « Inviter quelqu'un » is offered (ticket 117).
+ * « Qui voit ta liste ? » (tickets 106, 139): the events offered, whether
+ * it is public, whether I am on it, and whether « Quelqu'un d'autre » is
+ * offered (ticket 117).
  */
 export type ListSharing = {
   options: SharingOption[];
   isPublic: boolean;
+  onList: boolean;
   invite: boolean;
-};
-/** A sharing asked for: the events ticked, and « Tout le monde ». */
-export type SharingAsk = {
-  parties: string[];
-  /** The events kept for « Celui qui m'a tiré » (ticket 107). */
-  givers?: string[];
-  isPublic: boolean;
 };
 
 export const useListSharingQuery = (
@@ -370,6 +366,7 @@ export const sharingImpact = (
  * places left in its event. */
 export type ListMembers = {
   partyId: string | null;
+  partyName: string | null;
   open: boolean;
   placesLeft: number;
 };

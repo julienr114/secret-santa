@@ -153,9 +153,10 @@ export type SharingOption = {
   emoji: string | null;
   /** Its active members. */
   members: number;
-  /** Shared there: with all its members, or the one who drew me. */
-  checked: boolean;
-  /** Only the one who drew me sees it there (ticket 107). */
+  /** All its members see it. */
+  shared: boolean;
+  /** « Celui qui m'a tiré » there (ticket 139): my part of the list
+   * serves my Secret Santa, with or without all the members. */
   giver: boolean;
   /** I take part there in a Secret Santa not closed: « Celui qui m'a
    * tiré » may be chosen. */
@@ -174,6 +175,7 @@ export const sharedEventsOf = (db: Db, listId: string) =>
       id: parties.id,
       name: parties.name,
       visibility: giftListParties.visibility,
+      giver: giftListParties.giver,
     })
     .from(giftListParties)
     .innerJoin(parties, eq(parties.id, giftListParties.partyId))
@@ -345,9 +347,11 @@ export const sharingOptions = async (
       .groupBy(persons.partyId),
   ]);
   const members = new Map(counts.map((row) => [row.partyId, row.n]));
-  const checked = new Set(shared.map((row) => row.id));
+  const checked = new Set(
+    shared.filter((row) => row.visibility === 'party').map((row) => row.id),
+  );
   const givers = new Set(
-    shared.filter((row) => row.visibility === 'giver').map((row) => row.id),
+    shared.filter((row) => row.giver).map((row) => row.id),
   );
   const drawn = new Set(
     (
@@ -376,7 +380,7 @@ export const sharingOptions = async (
       category: party.category,
       emoji: partyEmoji(party),
       members: members.get(party.id) ?? 0,
-      checked: checked.has(party.id),
+      shared: checked.has(party.id),
       giver: givers.has(party.id),
       drawn: drawn.has(party.id),
     }))
@@ -384,15 +388,16 @@ export const sharingOptions = async (
 };
 
 /**
- * Saves « Qui verra ta liste ? »: the events ticked, for all their
- * members or only for the one who drew me (ticket 107), and whether it is
- * public. Its own event, which holds only its holders, stays.
+ * Saves « Qui voit ta liste ? »: the events shared with all their
+ * members, those where the one who drew me sees it (ticket 139: both may
+ * be true of one event), and whether it is public. Its own event, which
+ * holds only its holders, stays.
  * @param db - The database.
  * @param list - The list, with since when it is public.
  * @param sharing - What is asked.
- * @param sharing.partyIds - The events ticked for all their members.
- * @param sharing.giverIds - The events ticked for the one who drew me.
- * @param sharing.isPublic - « Tout le monde, avec le lien ».
+ * @param sharing.partyIds - The events shared with all their members.
+ * @param sharing.giverIds - The events of « Celui qui m'a tiré ».
+ * @param sharing.isPublic - « Tout le monde ».
  * @param now - ISO date.
  * @returns Once saved.
  */
@@ -407,10 +412,18 @@ export const saveSharing = async (
   now: string,
 ) => {
   const shared = await sharedEventsOf(db, list.id);
-  const wanted = new Map<string, 'party' | 'giver'>([
-    ...(sharing.giverIds ?? []).map((id) => [id, 'giver'] as const),
-    ...sharing.partyIds.map((id) => [id, 'party'] as const),
-  ]);
+  const givers = new Set(sharing.giverIds ?? []);
+  const wanted = new Map(
+    [...new Set([...givers, ...sharing.partyIds])].map((id) => [
+      id,
+      {
+        visibility: sharing.partyIds.includes(id)
+          ? ('party' as const)
+          : ('giver' as const),
+        giver: givers.has(id),
+      },
+    ]),
+  );
   const dropped = shared
     .filter((row) => !wanted.has(row.id))
     .map((row) => row.id);
@@ -428,7 +441,7 @@ export const saveSharing = async (
           inArray(giftListParties.partyId, dropped.length ? dropped : ['']),
         ),
       ),
-    ...[...wanted].map(([partyId, visibility]) =>
+    ...[...wanted].map(([partyId, { visibility, giver }]) =>
       db
         .insert(giftListParties)
         .values({
@@ -436,11 +449,12 @@ export const saveSharing = async (
           listId: list.id,
           partyId,
           visibility,
+          giver,
           createdAt: now,
         })
         .onConflictDoUpdate({
           target: [giftListParties.listId, giftListParties.partyId],
-          set: { visibility },
+          set: { visibility, giver },
         }),
     ),
   ]);

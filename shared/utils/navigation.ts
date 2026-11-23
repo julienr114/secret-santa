@@ -106,12 +106,18 @@ export const listsPathOf = (path: string): string | null =>
  * (`/demande`) to the home, the requests of the super-admin
  * (`/admin/demandes`, ticket 105) to the administration, and the word of
  * a group's settings (`/admin/[groupe]/reglages/mot`, moved by
- * `partyPathOf`) to the settings of its event.
+ * `partyPathOf`) to the settings of its event; « Inviter quelqu'un » and
+ * the message of a list's link to the list (ticket 139: it is in the bar
+ * now, or gone).
  * @param path - The path asked for.
  * @returns The new path, or null when it did not move.
  */
 export const gonePathOf = (path: string): string | null => {
   if (/^\/demande\/?$/.test(path)) return '/';
+  const list = /^\/listes\/([^/]+)\/(?:inviter(?:\/.*)?|message\/?)$/.exec(
+    path,
+  );
+  if (list) return `/listes/${list[1]}`;
   if (/^\/admin\/demandes(\/.*)?$/.test(path)) return '/admin';
   const word = /^\/e\/([^/]+)\/reglages\/mot\/?$/.exec(path);
   return word ? `/e/${word[1]}/reglages` : null;
@@ -211,3 +217,30 @@ export const parentOf = (
   if (place === null) return remembered ?? fallback;
   return PARENTS[page].includes(place) ? previous : fallback;
 };
+
+/**
+ * The levels of the bar of a list (tickets 139, 141): « Quelqu'un
+ * d'autre », « Reprendre ceux de » past it, and a question before a step
+ * (« Retirer « Chez Mamie » ? », « Ouvrir à tout le monde ? », « Changer
+ * de lien ? »), each one further than the first.
+ */
+export const SHARE_LEVELS = ['', 'inviter', 'reprendre', 'confirmer'] as const;
+export type ShareLevel = (typeof SHARE_LEVELS)[number];
+
+/**
+ * The level of the bar of a list an address asks for (`?partage=`): the
+ * first one when it says none, or one that does not exist.
+ * @param value - The value of `partage`.
+ * @returns The level, '' for the first.
+ */
+export const shareLevelOf = (value: unknown): ShareLevel =>
+  SHARE_LEVELS.find((level) => level !== '' && level === value) ?? '';
+
+/**
+ * How far a level of the bar of a list is from the first: « Reprendre ceux
+ * de » is past « Quelqu'un d'autre ».
+ * @param level - The level.
+ * @returns 0 for the first.
+ */
+export const shareDepth = (level: ShareLevel): number =>
+  ({ '': 0, inviter: 1, confirmer: 1, reprendre: 2 })[level];

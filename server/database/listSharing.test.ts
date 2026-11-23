@@ -77,7 +77,7 @@ describe('who gets in by an event', () => {
   });
 });
 
-describe('« Qui verra ta liste ? »', () => {
+describe('« Qui voit ta liste ? »', () => {
   it('offers my events with their members, ticked where it is shared, never its own', async () => {
     const db = setup();
     expect(await sharingOptions(db, 'l1', camille)).toEqual([
@@ -88,7 +88,7 @@ describe('« Qui verra ta liste ? »', () => {
         category: 'christmas',
         emoji: '🎄',
         members: 2,
-        checked: false,
+        shared: false,
         giver: false,
         drawn: false,
       },
@@ -99,7 +99,7 @@ describe('« Qui verra ta liste ? »', () => {
         category: 'christmas',
         emoji: '🎄',
         members: 3,
-        checked: true,
+        shared: true,
         giver: false,
         drawn: false,
       },
@@ -121,6 +121,37 @@ describe('« Qui verra ta liste ? »', () => {
     expect(all.map((row) => row.partyId).toSorted()).toEqual(['l1', 'p2']);
     const [list] = await db.query.giftLists.findMany();
     expect(list?.sharedAt).toBe(NOW);
+  });
+
+  it('keeps the one who drew me and all the members of one event together', async () => {
+    const db = setup();
+    await saveSharing(
+      db,
+      { id: 'l1', sharedAt: null },
+      { partyIds: ['p1'], giverIds: ['p1', 'p2'], isPublic: false },
+      NOW,
+    );
+    expect(
+      (await sharedEventsOf(db, 'l1'))
+        .map((row) => [row.id, row.visibility, row.giver])
+        .toSorted(),
+    ).toEqual([
+      ['p1', 'party', true],
+      ['p2', 'giver', true],
+    ]);
+    await saveSharing(
+      db,
+      { id: 'l1', sharedAt: null },
+      { partyIds: [], giverIds: ['p1'], isPublic: false },
+      NOW,
+    );
+    expect(
+      (await sharedEventsOf(db, 'l1')).map((row) => [
+        row.id,
+        row.visibility,
+        row.giver,
+      ]),
+    ).toEqual([['p1', 'giver', true]]);
   });
 
   it('counts those who see it once each, its holders aside', async () => {

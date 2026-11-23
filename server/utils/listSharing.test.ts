@@ -3,6 +3,8 @@ import {
   listStage,
   losingClaimers,
   losingMembers,
+  sharingAsk,
+  sharingView,
   type Audience,
 } from './listSharing';
 
@@ -70,5 +72,46 @@ describe('losingMembers', () => {
     expect(
       losingMembers(members, ['me@x.fr'], audience({ isPublic: true })),
     ).toBe(0);
+  });
+});
+
+describe('« Qui je veux » (ticket 139)', () => {
+  const options = [
+    { id: 'p1', shared: true, giver: true, drawn: true },
+    { id: 'p2', shared: false, giver: false, drawn: true },
+    { id: 'p3', shared: false, giver: false, drawn: false },
+  ];
+
+  it('shows those who see it, and offers the rest', () => {
+    const view = sharingView(options, { onList: true, invite: true });
+    expect(view.events.map((o) => o.id)).toEqual(['p1']);
+    expect(view.givers.map((o) => o.id)).toEqual(['p1']);
+    expect(view.addEvents.map((o) => o.id)).toEqual(['p2', 'p3']);
+    expect(view.addGiver).toEqual(['p2']);
+    expect(view.someoneElse).toBe(true);
+    expect(view.nobody).toBe(false);
+  });
+
+  it('offers « Celui qui m’a tiré » only to who is on the list', () => {
+    expect(
+      sharingView(options, { onList: false, invite: false }).addGiver,
+    ).toEqual([]);
+  });
+
+  it('knows a list nobody sees', () => {
+    expect(
+      sharingView(
+        options.map((o) => ({ ...o, shared: false, giver: false })),
+        { onList: true, invite: false },
+      ).nobody,
+    ).toBe(true);
+  });
+
+  it('saves the events and « Celui qui m’a tiré » apart', () => {
+    expect(sharingAsk(options, false)).toEqual({
+      parties: ['p1'],
+      givers: ['p1'],
+      isPublic: false,
+    });
   });
 });

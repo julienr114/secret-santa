@@ -130,12 +130,10 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
     'Tu tiens cette liste avec Camille.',
   );
   // He reads the sharing, and does not touch it (ListeAidePartage): the
-  // stage, who chose it; « Le lien » unrolls the link to copy, and
-  // nothing else (V3ListeAideLien).
+  // stage, not who chose it (ticket 141); « Le lien » unrolls the link to
+  // copy, and nothing else (V3ListeAideLien).
   await expect(hugo.getByTestId('share-stage')).toContainText('Brouillon');
-  await expect(hugo.getByTestId('share-stage')).toContainText(
-    'choisi par Camille',
-  );
+  await expect(hugo.getByTestId('share-stage')).not.toContainText('choisi par');
   await expect(hugo.getByTestId('share-open')).toHaveText('Le lien');
   await hugo.getByTestId('share-open').click();
   await expect(hugo.getByTestId('share-link')).toContainText('/l/');

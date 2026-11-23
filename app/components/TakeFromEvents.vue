@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ContextPart } from '~/components/ui/PageContext.vue';
 import { CATEGORY_DEFAULTS } from '#shared/utils/categories';
+import { peopleToTake } from '#shared/utils/take';
 import { usePartyCandidatesQuery } from '~/composables/queries/useParty';
 
 // « Qui reprendre ? » (V3FeteMembresReprendre, ticket 117): my other
@@ -30,18 +31,13 @@ const events = computed(() =>
 const from = ref<string[]>([]);
 const chosen = ref<string[]>([]);
 /** Those of the events ticked, once each address, none already there. */
-const shown = computed(() => {
-  const all = (candidates.data.value?.people ?? []).filter(
-    (person) =>
-      from.value.includes(person.partyId) &&
-      (person.email === null || !props.inAlready.includes(person.email)),
-  );
-  return all.filter(
-    (person, index) =>
-      person.email === null ||
-      all.findIndex((other) => other.email === person.email) === index,
-  );
-});
+const shown = computed(() =>
+  peopleToTake(
+    candidates.data.value?.people ?? [],
+    from.value,
+    props.inAlready,
+  ),
+);
 const picked = computed(() =>
   shown.value.filter((person) => chosen.value.includes(person.id)),
 );

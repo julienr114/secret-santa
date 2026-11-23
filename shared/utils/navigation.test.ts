@@ -9,6 +9,9 @@ import {
   partyPathOf,
   pastPathOf,
   placeOf,
+  SHARE_LEVELS,
+  shareDepth,
+  shareLevelOf,
   tabOf,
 } from './navigation';
 
@@ -266,6 +269,15 @@ describe('gonePathOf', () => {
     expect(gonePathOf('/e/famille/reglages/mot')).toBe('/e/famille/reglages');
   });
 
+  it('leads « Inviter quelqu’un » and the message of a list to the list (ticket 139)', () => {
+    expect(gonePathOf('/listes/l1/inviter')).toBe('/listes/l1');
+    expect(gonePathOf('/listes/l1/inviter/email')).toBe('/listes/l1');
+    expect(gonePathOf('/listes/l1/inviter/reprendre')).toBe('/listes/l1');
+    expect(gonePathOf('/listes/l1/message')).toBe('/listes/l1');
+    expect(gonePathOf('/listes/l1')).toBeNull();
+    expect(gonePathOf('/listes/l1/titulaires')).toBeNull();
+  });
+
   it('leaves the other pages', () => {
     expect(gonePathOf('/e/famille/reglages')).toBeNull();
     expect(gonePathOf('/demandes')).toBeNull();
@@ -276,5 +288,20 @@ describe('gonePathOf', () => {
     const moved = partyPathOf('/admin/famille/reglages/mot');
     expect(moved).toBe('/e/famille/reglages/mot');
     expect(gonePathOf(moved ?? '')).toBe('/e/famille/reglages');
+  });
+});
+
+describe('the levels of the bar of a list (ticket 139)', () => {
+  it('reads the level an address asks for, the first one otherwise', () => {
+    expect(shareLevelOf('inviter')).toBe('inviter');
+    expect(shareLevelOf('reprendre')).toBe('reprendre');
+    expect(shareLevelOf(undefined)).toBe('');
+    expect(shareLevelOf('autre')).toBe('');
+    expect(shareLevelOf(['inviter'])).toBe('');
+  });
+
+  it('knows a question as one level further', () => {
+    expect(shareLevelOf('confirmer')).toBe('confirmer');
+    expect(SHARE_LEVELS.map(shareDepth)).toEqual([0, 1, 2, 1]);
   });
 });

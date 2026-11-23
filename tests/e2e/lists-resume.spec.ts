@@ -172,8 +172,8 @@ test('an empty new list starts from an old one', async () => {
     .toBe('Noël 2026');
   await page.getByTestId('share-open').click();
   const sheet = page.getByTestId('sharing-panel');
-  await sheet.getByTestId('sharing-everyone').getByRole('switch').click();
-  await sheet.getByTestId('sharing-save').click();
+  await sheet.getByText('Tout le monde', { exact: true }).click();
+  await page.getByTestId('share-confirm-submit').click();
   await expect(page.getByTestId('share-stage')).toContainText('Publique');
   await expect(page.getByTestId('idea-carried')).toHaveCount(0);
   await expect(page.getByTestId('resumed-from')).toHaveCount(0);

@@ -666,6 +666,9 @@ export const giftListParties = sqliteTable(
     visibility: text('visibility', { enum: LIST_VISIBILITIES })
       .notNull()
       .default('party'),
+    // « Celui qui m'a tiré » (ticket 139): my part of the list serves my
+    // Secret Santa there, with or without all the members.
+    giver: integer('giver', { mode: 'boolean' }).notNull().default(false),
     createdAt: text('created_at').notNull(),
   },
   (t) => [

@@ -4,6 +4,7 @@ import type {
 } from '#server/database/listSharing';
 import type {
   HolderView,
+  IdeaLine,
   ListDocument,
   MemberView,
   VisitorDocument,
@@ -16,6 +17,12 @@ import type { SharingAsk } from '#server/utils/listSharing';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import type { ListOrder } from '#shared/utils/reorder';
 import { keys } from './keys';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
+import {
+  tickedLine,
+  untickedLine,
+  withLine,
+} from '#shared/utils/optimisticTick';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
 // Gift lists (README 22.19, lot 21): the document of a
@@ -526,8 +533,93 @@ export const useListModeMutation = (token: Token) =>
     () => [keys.link(toValue(token))],
   );
 
+/** The page's own data of a list: what a line ticked changes at once. */
+const docKey = (via: ClaimRoute) =>
+  'token' in via ? keys.link(via.token) : keys.list(via.listId);
+
+/** The requests of each line, one after the other, in the order of the taps. */
+const claimQueues = new Map<string, Promise<unknown>>();
+/** The ticks and unticks not answered yet, all lines together. */
+const claimsPending = ref(0);
+
+/**
+ * Sends a request of a line after those of the same line still running:
+ * tapped quickly several times, the server gets them in order and ends
+ * on the last one.
+ * @param ideaId - The line.
+ * @param send - The request.
+ * @returns Its answer.
+ */
+const inTurn = <T>(ideaId: string, send: () => Promise<T>): Promise<T> => {
+  const next = (claimQueues.get(ideaId) ?? Promise.resolve())
+    .catch(() => undefined)
+    .then(send);
+  claimQueues.set(ideaId, next);
+  const clear = () => {
+    if (claimQueues.get(ideaId) === next) claimQueues.delete(ideaId);
+  };
+  next.then(clear, clear);
+  return next;
+};
+
+/**
+ * A tick or an untick that shows at once (Julien, 23 November 2026): the
+ * line changes in the page's data at the tap, before the server answers.
+ * The requests of a line leave one after the other, in the order of the
+ * taps; once the last one of the page is answered, the list is read
+ * again, and the server has the last word (a refusal included).
+ * @param via - The list, by its link or as one who holds it.
+ * @param request - The request.
+ * @param ideaOf - The line of the request.
+ * @param change - What becomes of the line, from the variables and
+ * whether the list is ticked anonymously here; null to wait.
+ * @returns The mutation.
+ */
+const useOptimisticClaim = <TData, TVariables>(
+  via: Via,
+  request: (variables: TVariables) => Promise<TData>,
+  ideaOf: (variables: TVariables) => string,
+  change: (
+    variables: TVariables,
+    anonymous: boolean,
+  ) => ((line: IdeaLine) => IdeaLine) | null,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<TData, Error, TVariables>({
+    mutationFn: (variables) =>
+      inTurn(ideaOf(variables), () => request(variables)),
+    onMutate: (variables) => {
+      claimsPending.value += 1;
+      const key = docKey(toValue(via));
+      const before = queryClient.getQueryData<{
+        mode?: { anonymous: boolean } | null;
+        people: { ideas: IdeaLine[] }[];
+      }>(key);
+      const line = before
+        ? change(variables, before.mode?.anonymous ?? false)
+        : null;
+      if (!before || !line) return;
+      // A reading under way would bring the line back as it was.
+      void queryClient.cancelQueries(
+        { queryKey: key, exact: true },
+        { revert: false, silent: true },
+      );
+      queryClient.setQueryData(key, withLine(before, ideaOf(variables), line));
+    },
+    onSettled: async () => {
+      claimsPending.value -= 1;
+      if (claimsPending.value > 0) return;
+      await Promise.all(
+        claimKeys(toValue(via)).map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      );
+    },
+  });
+};
+
 export const useTickMutation = (via: Via) =>
-  useApiMutation<
+  useOptimisticClaim<
     { ok: true; joined: boolean },
     {
       ideaId: string;
@@ -536,8 +628,14 @@ export const useTickMutation = (via: Via) =>
       note?: string | null;
     }
   >(
+    via,
     (body) => api(claimsUrl(toValue(via)), { method: 'POST', body }),
-    () => claimKeys(toValue(via)),
+    (body) => body.ideaId,
+    // Alone only: a group waits for the server.
+    (body, anonymous) =>
+      body.mode === 'group'
+        ? null
+        : (line) => tickedLine(line, body.anonymous ?? anonymous),
   );
 
 export const useChangeClaimMutation = (via: Via) =>
@@ -557,10 +655,12 @@ export const useChangeClaimMutation = (via: Via) =>
   );
 
 export const useUntickMutation = (via: Via) =>
-  useApiMutation<{ ok: true }, string>(
+  useOptimisticClaim<{ ok: true }, string>(
+    via,
     (ideaId) =>
       api(`${claimsUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
-    () => claimKeys(toValue(via)),
+    (ideaId) => ideaId,
+    () => untickedLine,
   );
 
 /** Those who hold a list take the tick of someone else off an idea. */

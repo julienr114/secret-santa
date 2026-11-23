@@ -282,6 +282,11 @@ export type IdeaLine = {
    * list; null when it does not open (free, or an anonymous tick).
    */
   who: IdeaWho | null;
+  /**
+   * Never sent: ticked or unticked on this screen, the server has not
+   * answered yet (shared/utils/optimisticTick.ts).
+   */
+  pending?: boolean;
 };
 
 /** A person on a list, with their ideas and the gifts not on the list. */

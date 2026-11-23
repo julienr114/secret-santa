@@ -831,6 +831,7 @@ const onFocusOut = (event: FocusEvent) => {
                 : t('lists.chips.mineLabel', { idea: name })
             "
             :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
+            :disabled="idea?.pending"
             data-no-drag
             @click="onMine"
           />

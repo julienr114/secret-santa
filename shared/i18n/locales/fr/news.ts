@@ -1,7 +1,7 @@
 // « Quoi de neuf » (ticket 120, V3QuoiDeNeuf). Never who asks for ideas.
 export default {
   count: { one: '{count} nouveauté', other: '{count} nouveautés' },
-  forget: 'Tout s’efface au bout de trente jours',
+  forget: 'Ce que tu as vu s’efface au bout de trente jours',
   empty: 'Rien de neuf pour l’instant.',
   today: 'Aujourd’hui, {time}',
   yesterday: 'Hier, {time}',
@@ -29,6 +29,7 @@ export default {
     joinedIn: '{name} s’inscrit par le lien ({detail})',
     all_viewed: 'Tout le monde a découvert son tirage',
     santa_added: '{name} t’ajoute au Secret Santa',
+    game_open: 'Devine qui : à toi de jouer',
     list_shared: '{name} a partagé sa liste avec toi',
   },
 };

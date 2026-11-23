@@ -223,7 +223,7 @@ test('the draw: a news, a count, a dot; « Quoi de neuf » clears nothing, the e
       .filter({ hasText: 'Camille t’ajoute au Secret Santa' }),
   ).toHaveCount(1);
   await expect(
-    page.getByText('Tout s’efface au bout de trente jours'),
+    page.getByText('Ce que tu as vu s’efface au bout de trente jours'),
   ).toBeVisible();
   // Reading the page marks nothing.
   await page.reload();

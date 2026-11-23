@@ -2,6 +2,7 @@ import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
+  news,
   giftClaims,
   giftListHolders,
   giftListIdeas,
@@ -12,6 +13,7 @@ import {
   secretSantas,
 } from './schema';
 import { findGiverParticipationId } from './draw';
+import { guessesOpen } from '#server/utils/guesses';
 import {
   accountsOfEmails,
   addNews,
@@ -34,7 +36,7 @@ const anyOf = (ids: readonly string[]) => (ids.length === 0 ? [''] : [...ids]);
 
 /**
  * Tells everyone who takes part in a Secret Santa: the draw is made, the
- * draw is revealed, the palmarès is out.
+ * draw is revealed, the palmarès is out, « Devine qui » opens.
  * @param db - The database.
  * @param input - The Secret Santa, its event and what happened.
  * @param input.secretSantaId - The Secret Santa.
@@ -48,7 +50,7 @@ export const tellParticipants = (
   input: {
     secretSantaId: string;
     partyId: string;
-    kind: 'envelope' | 'revealed' | 'palmares';
+    kind: 'envelope' | 'revealed' | 'palmares' | 'game_open';
   },
   now: string,
 ) =>
@@ -71,6 +73,44 @@ export const tellParticipants = (
       }),
       now,
     );
+  });
+
+/**
+ * « Devine qui » is open, the draw made (ticket 142): « À toi de jouer »
+ * gets its news, as its line gets its dot. Nothing when the game is not
+ * on.
+ * @param db - The database.
+ * @param input - The Secret Santa and its event.
+ * @param input.secretSantaId - The Secret Santa.
+ * @param input.partyId - Its event.
+ * @param now - Now (ISO).
+ * @returns Once written.
+ */
+export const tellGameOpen = async (
+  db: Db,
+  input: { secretSantaId: string; partyId: string },
+  now: string,
+) => {
+  const [edition] = await db
+    .select()
+    .from(secretSantas)
+    .where(eq(secretSantas.id, input.secretSantaId))
+    .limit(1);
+  if (!edition || !guessesOpen(edition, now)) return;
+  await tellParticipants(db, { ...input, kind: 'game_open' }, now);
+};
+
+/**
+ * The game turned off: its « À toi de jouer » goes.
+ * @param db - The database.
+ * @param secretSantaId - The Secret Santa.
+ * @returns Once deleted.
+ */
+export const forgetGameOpen = (db: Db, secretSantaId: string) =>
+  quietly(async () => {
+    await db
+      .delete(news)
+      .where(and(eq(news.kind, 'game_open'), eq(news.targetId, secretSantaId)));
   });
 
 /**
@@ -433,10 +473,10 @@ export const tellNewIdeas = (
           ]
         : [];
     });
+    const giverAccountIds = new Set(giverNews.map((one) => one.accountId));
     const told = new Set([
       input.by,
       ...holders.map((holder) => holder.accountId),
-      ...giverNews.map((one) => one.accountId),
     ]);
     const readers = [
       ...(await memberAccounts(
@@ -447,15 +487,25 @@ export const tellNewIdeas = (
       )),
       ...claimers.map((row) => row.accountId),
     ].filter((id) => !told.has(id));
+    // The one who drew a holder reads the list like any member too, so
+    // that its line has its dot as everyone's (ticket 142); their news of
+    // the list names nobody, beside « De nouvelles idées t'attendent ».
     await addNews(
       db,
       [
-        ...newsFor(readers, {
-          kind: 'new_ideas',
-          targetId: input.listId,
-          partyId: null,
-          name: author?.firstName ?? null,
-        }),
+        ...newsFor(
+          readers.filter((id) => !giverAccountIds.has(id)),
+          {
+            kind: 'new_ideas',
+            targetId: input.listId,
+            partyId: null,
+            name: author?.firstName ?? null,
+          },
+        ),
+        ...newsFor(
+          readers.filter((id) => giverAccountIds.has(id)),
+          { kind: 'new_ideas', targetId: input.listId, partyId: null },
+        ),
         ...giverNews,
       ],
       now,

@@ -7,6 +7,7 @@ import {
 } from '#server/database/schema';
 import { deleteGuessesOf, listGuesses } from '#server/database/guesses';
 import { recordEvent } from '#server/database/audit';
+import { forgetGameOpen, tellGameOpen } from '#server/database/newsEvents';
 import { requireEdition } from '#server/http/edition';
 import { newId, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
@@ -114,6 +115,13 @@ export default defineEventHandler(async (event) => {
       editionId: edition.id,
       actor: user.role,
     });
+    // Turned on after the draw: « À toi de jouer » (ticket 142).
+    await tellGameOpen(
+      db,
+      { secretSantaId: edition.id, partyId: group.id },
+      now,
+    );
   }
+  if (mode === 'none') await forgetGameOpen(db, edition.id);
   return { guessMode: mode, guessEndsAt: mode === 'none' ? null : endsAt };
 });

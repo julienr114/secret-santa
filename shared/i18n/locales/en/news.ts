@@ -1,7 +1,7 @@
 // “What’s new” (ticket 120, V3QuoiDeNeuf). Never who asks for ideas.
 export default {
   count: { one: '{count} new thing', other: '{count} new things' },
-  forget: 'Everything is cleared after thirty days',
+  forget: 'What you have seen is cleared after thirty days',
   empty: 'Nothing new for now.',
   today: 'Today, {time}',
   yesterday: 'Yesterday, {time}',
@@ -29,6 +29,7 @@ export default {
     joinedIn: '{name} signed up with the link ({detail})',
     all_viewed: 'Everyone has found out who they drew',
     santa_added: '{name} added you to the Secret Santa',
+    game_open: 'Devine qui: your turn',
     list_shared: '{name} shared their list with you',
   },
 };

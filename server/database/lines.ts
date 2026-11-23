@@ -160,6 +160,7 @@ const santaLines = async (
           : participantLine({
               drawn,
               opened: Boolean(me?.firstViewedAt),
+              envelopeNews: waits(unseen, 'envelope', santa.id),
               revealed: Boolean(row.revealedAt),
               revealSeen: !waits(unseen, 'revealed', santa.id),
               asked: waits(unseen, 'hint_request', santa.id),
@@ -173,6 +174,8 @@ const santaLines = async (
           Boolean(me?.guessSkippedAt),
         resultsOut: results.some((one) => one.secretSantaId === santa.id),
         resultsSeen: Boolean(me?.guessResultsSeenAt),
+        palmaresNews: waits(unseen, 'palmares', santa.id),
+        playNews: waits(unseen, 'game_open', santa.id),
         endsAt: row.guessEndsAt,
       });
       return [[santa.id, { line, game }]];
@@ -321,6 +324,7 @@ const listLines = async (
         newIdeas: listIdeas.filter(
           (one) => !lastSeenAt || one.createdAt > lastSeenAt,
         ).length,
+        ideasNews: waits(unseen, 'new_ideas', list.id),
       };
       return [
         listKey(list.id, list.partyId),
@@ -352,7 +356,7 @@ export const loadLines = async (
   },
   now: string,
 ): Promise<Lines> => {
-  const unseen = await unseenNews(db, input.accountId, now);
+  const unseen = await unseenNews(db, input.accountId);
   const [santas, lists] = await Promise.all([
     santaLines(db, input.santas, input.persons, unseen, now),
     listLines(db, input.accountId, input.lists, unseen),

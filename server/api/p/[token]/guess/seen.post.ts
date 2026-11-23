@@ -18,6 +18,8 @@ export default defineEventHandler(async (event) => {
     await markResultsSeen(db, participation.id, nowIso());
   }
   // The news of the palmarès are seen with it (ticket 120).
-  await markSeenByEmail(db, person.email, 'game', edition.id, nowIso());
+  await markSeenByEmail(db, person.email, 'game', edition.id, nowIso(), [
+    'palmares',
+  ]);
   return { ok: true };
 });

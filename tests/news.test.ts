@@ -13,6 +13,7 @@ import {
 } from '#server/database/news';
 import {
   tellAsked,
+  tellGameOpen,
   tellNewIdeas,
   tellParticipants,
   tellTicked,
@@ -127,7 +128,7 @@ describe('writing news', () => {
       level: 'other',
       targetType: 'list',
     });
-    expect(await countUnseen(db, 'az', LATER)).toBe(1);
+    expect(await countUnseen(db, 'az')).toBe(1);
   });
 
   it('is seen by opening the thing, and only that', async () => {
@@ -137,21 +138,21 @@ describe('writing news', () => {
       { secretSantaId: 's1', partyId: 'p1', kind: 'envelope' },
       NOW,
     );
-    expect(await countUnseen(db, 'ah', NOW)).toBe(1);
+    expect(await countUnseen(db, 'ah')).toBe(1);
     await markSeen(
       db,
       { accountId: 'ah', target: 'list', targetId: 's1' },
       NOW,
     );
-    expect(await countUnseen(db, 'ah', NOW)).toBe(1);
+    expect(await countUnseen(db, 'ah')).toBe(1);
     await markSeen(
       db,
       { accountId: 'ah', target: 'santa', targetId: 's1' },
       NOW,
     );
-    expect(await countUnseen(db, 'ah', NOW)).toBe(0);
+    expect(await countUnseen(db, 'ah')).toBe(0);
     // Everyone else still has theirs.
-    expect(await countUnseen(db, 'ac', NOW)).toBe(1);
+    expect(await countUnseen(db, 'ac')).toBe(1);
   });
 
   it('reading « Quoi de neuf » marks nothing', async () => {
@@ -173,17 +174,24 @@ describe('writing news', () => {
       seen: false,
       to: '/p/jeton-h1',
     });
-    expect(await countUnseen(db, 'ah', NOW)).toBe(1);
+    expect(await countUnseen(db, 'ah')).toBe(1);
   });
 
-  it('forgets after thirty days', async () => {
+  it('forgets thirty days after it was seen, never before (ticket 142)', async () => {
     const { db } = await setup();
-    await tellTicked(
+    const OLD = '2026-10-01T10:00:00.000Z';
+    await tellTicked(db, { listId: 'lz', by: 'ah' }, OLD);
+    // Not seen, fifty days later: still counted, still there.
+    expect(await countUnseen(db, 'az')).toBe(1);
+    await forgetNews(db, NOW);
+    expect(await db.select().from(news)).toHaveLength(1);
+    // Seen fifty days ago: forgotten.
+    await markSeen(
       db,
-      { listId: 'lz', by: 'ah' },
-      '2026-10-01T10:00:00.000Z',
+      { accountId: 'az', target: 'list', targetId: 'lz' },
+      OLD,
     );
-    expect(await countUnseen(db, 'az', NOW)).toBe(0);
+    expect(await countUnseen(db, 'az')).toBe(0);
     await forgetNews(db, NOW);
     expect(await db.select().from(news)).toHaveLength(0);
   });
@@ -209,7 +217,9 @@ describe('new ideas on a list', () => {
         .toSorted((a, b) => String(a[0]).localeCompare(String(b[0]))),
     ).toEqual([
       ['ac', 'new_ideas', 'lz'],
-      // Hugo drew Zoé: told about his Secret Santa, not about her list.
+      // Hugo drew Zoé: told about his Secret Santa, and about her list as
+      // any member, without her name (ticket 142).
+      ['ah', 'new_ideas', 'lz'],
       ['ah', 'receiver_ideas', 's1'],
       ['ai', 'new_ideas', 'lz'],
     ]);
@@ -235,6 +245,7 @@ describe('never a result of a draw, never who asks for ideas', () => {
     const hugo = allNews(sqlite).filter((row) => row.account_id === 'ah');
     expect(hugo.map((row) => row.kind).toSorted()).toEqual([
       'hint_request',
+      'new_ideas',
       'receiver_ideas',
     ]);
     for (const row of hugo) {
@@ -289,5 +300,86 @@ describe('never a result of a draw, never who asks for ideas', () => {
       home.parties.find((party) => party.slug === 'famille')!.secretSantas[0]
         ?.line,
     ).toEqual({ parts: [{ key: 'lines.santa.receiverNews' }], dot: true });
+  });
+});
+
+describe('a red dot always has its line in « Quoi de neuf » (ticket 142)', () => {
+  const OLD = '2026-10-13T10:00:00.000Z';
+  /** Hugo's dot on the Secret Santa or its game, his lines, his count. */
+  const look = async (
+    ctx: Awaited<ReturnType<typeof setup>>,
+    on: 'santa' | 'game',
+  ) => {
+    const hugo = await ctx.account('ah');
+    const home = await loadHome(ctx.db, hugo, ctx.key, TODAY, LATER);
+    const santa = home.parties.find((party) => party.slug === 'famille')!
+      .secretSantas[0]!;
+    const page = await loadNewsPage(ctx.db, hugo, ctx.key, LATER);
+    return {
+      dot: on === 'santa' ? santa.line.dot : Boolean(santa.game?.line.dot),
+      lines: page.sections
+        .flatMap((section) => section.news)
+        .filter((line) => !line.seen).length,
+      count: await countUnseen(ctx.db, 'ah'),
+    };
+  };
+
+  it('an envelope not opened for forty days keeps its dot, its line, its count', async () => {
+    const ctx = await setup();
+    ctx.sqlite.exec(
+      "UPDATE participations SET first_viewed_at = NULL WHERE id = 'p-h1'",
+    );
+    await tellParticipants(
+      ctx.db,
+      { secretSantaId: 's1', partyId: 'p1', kind: 'envelope' },
+      OLD,
+    );
+    await forgetNews(ctx.db, LATER);
+    expect(await look(ctx, 'santa')).toEqual({ dot: true, lines: 1, count: 1 });
+    await markSeen(
+      ctx.db,
+      { accountId: 'ah', target: 'santa', targetId: 's1' },
+      LATER,
+    );
+    expect(await look(ctx, 'santa')).toEqual({
+      dot: false,
+      lines: 0,
+      count: 0,
+    });
+  });
+
+  it('an envelope from before the news keeps its text, without a dot', async () => {
+    const ctx = await setup();
+    ctx.sqlite.exec(
+      "UPDATE participations SET first_viewed_at = NULL WHERE id = 'p-h1'",
+    );
+    const state = await look(ctx, 'santa');
+    expect(state).toEqual({ dot: false, lines: 0, count: 0 });
+  });
+
+  it('« À toi de jouer » has its news, seen by opening the game', async () => {
+    const ctx = await setup();
+    ctx.sqlite.exec(
+      "UPDATE secret_santas SET guess_mode = 'santa', guess_ends_at = '2099-12-25T17:00:00.000Z' WHERE id = 's1'",
+    );
+    await tellGameOpen(ctx.db, { secretSantaId: 's1', partyId: 'p1' }, NOW);
+    expect(await look(ctx, 'game')).toEqual({ dot: true, lines: 1, count: 1 });
+    await markSeen(
+      ctx.db,
+      {
+        accountId: 'ah',
+        target: 'game',
+        targetId: 's1',
+        kinds: ['game_open'],
+      },
+      LATER,
+    );
+    expect(await look(ctx, 'game')).toEqual({ dot: false, lines: 0, count: 0 });
+  });
+
+  it('a game not on writes no news', async () => {
+    const ctx = await setup();
+    await tellGameOpen(ctx.db, { secretSantaId: 's1', partyId: 'p1' }, NOW);
+    expect(await countUnseen(ctx.db, 'ah')).toBe(0);
   });
 });

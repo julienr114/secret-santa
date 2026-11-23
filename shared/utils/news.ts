@@ -19,6 +19,7 @@ export const NEWS_KINDS = [
   'all_viewed',
   'santa_added',
   'list_shared',
+  'game_open',
 ] as const;
 export type NewsKind = (typeof NEWS_KINDS)[number];
 
@@ -60,19 +61,24 @@ export const NEWS_SHAPE: Record<
   // manages a list made me a member of its event to see it.
   santa_added: { level: 'other', target: 'santa' },
   list_shared: { level: 'other', target: 'list' },
+  // Ticket 142: « Devine qui » opens, « À toi de jouer » has its line.
+  game_open: { level: 'other', target: 'game' },
 };
 
-/** After thirty days a news is gone (README 22.22). */
+/** Thirty days after it was seen, a news is gone (README 22.22). */
 export const FORGET_DAYS = 30;
 
 /**
- * Whether a news is forgotten: thirty days after it happened.
- * @param at - When it happened (ISO).
+ * Whether a news is forgotten: thirty days after it was seen. A news not
+ * seen yet stays, however old: a red dot always has its line in « Quoi
+ * de neuf » (ticket 142).
+ * @param seenAt - When it was seen (ISO), null when not yet.
  * @param now - Now (ISO).
  * @returns True once forgotten.
  */
-export const isForgotten = (at: string, now: string): boolean =>
-  Date.parse(now) - Date.parse(at) >= FORGET_DAYS * 86_400_000;
+export const isForgotten = (seenAt: string | null, now: string): boolean =>
+  seenAt !== null &&
+  Date.parse(now) - Date.parse(seenAt) >= FORGET_DAYS * 86_400_000;
 
 /**
  * The instant before which news are forgotten.

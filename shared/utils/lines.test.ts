@@ -18,9 +18,26 @@ const keys = (line: LineText | null) =>
   line ? { keys: line.parts.map((p) => p.key), dot: line.dot } : null;
 
 describe('participantLine', () => {
+  it('keeps the text of an envelope without its news, not its dot (ticket 142)', () => {
+    expect(
+      keys(
+        participantLine({
+          drawn: true,
+          opened: false,
+          envelopeNews: false,
+          revealed: false,
+          revealSeen: true,
+          asked: false,
+          receiverNews: false,
+        }),
+      ),
+    ).toEqual({ keys: ['lines.santa.envelope'], dot: false });
+  });
+
   const drawn: ParticipantFacts = {
     drawn: true,
     opened: true,
+    envelopeNews: true,
     revealed: false,
     revealSeen: false,
     asked: false,
@@ -128,6 +145,8 @@ describe('gameLine', () => {
     played: false,
     resultsOut: false,
     resultsSeen: false,
+    palmaresNews: true,
+    playNews: true,
     endsAt: '2026-12-25T17:00:00.000Z',
   };
   it('is not shown without the game, the draw, or me in it', () => {
@@ -160,6 +179,14 @@ describe('gameLine', () => {
       keys: expected,
       dot,
     });
+  });
+
+  it('lights the dot only by a news not seen yet (ticket 142)', () => {
+    expect(gameLine({ ...open, playNews: false })?.dot).toBe(false);
+    expect(
+      gameLine({ ...open, open: false, resultsOut: true, palmaresNews: false })
+        ?.dot,
+    ).toBe(false);
   });
 
   it('gives the end of the game to write', () => {
@@ -235,6 +262,7 @@ const list: ListFacts = {
   elsewhere: [],
   offered: 0,
   newIdeas: 0,
+  ideasNews: true,
 };
 
 describe('listTitle', () => {
@@ -374,6 +402,12 @@ describe('listLine, someone else’s list', () => {
       true,
     ],
     ['something new', { newIdeas: 3 }, ['lines.list.newIdeas'], true],
+    [
+      'something new, its news seen elsewhere',
+      { newIdeas: 3, ideasNews: false },
+      ['lines.list.newIdeas'],
+      false,
+    ],
     ['I offer', { offered: 2 }, ['lines.list.offer'], false],
     ['otherwise', {}, ['lines.list.ideas'], false],
   ])('%s', (_, facts, expected, dot) => {

@@ -1,7 +1,9 @@
 // The title and the text of each line of the home and of the page of an
 // event (docs/spec/v3/lignes.md, tickets 112 and 120): for each line, its
 // cases in order, the first that applies is written; the red dot goes
-// with the cases marked ● there. Pure: the server reads the facts, these
+// with the cases marked ● there, lit only by a news not seen yet (ticket
+// 142: a red dot always has its line in « Quoi de neuf »). The text
+// still says the state. Pure: the server reads the facts, these
 // choose the words, the screen translates them. Never a result of a draw,
 // never who asks for ideas: no fact here carries a name of that kind.
 
@@ -44,6 +46,8 @@ export type ParticipantFacts = {
   drawn: boolean;
   /** I opened my envelope. */
   opened: boolean;
+  /** A news « ton enveloppe t'attend » not seen yet (ticket 142). */
+  envelopeNews: boolean;
   revealed: boolean;
   /** I looked at my page since the reveal. */
   revealSeen: boolean;
@@ -61,7 +65,9 @@ export type ParticipantFacts = {
  */
 export const participantLine = (facts: ParticipantFacts): LineText => {
   if (!facts.drawn) return text([part('lines.santa.notDrawn')]);
-  if (!facts.opened) return text([part('lines.santa.envelope')], true);
+  if (!facts.opened) {
+    return text([part('lines.santa.envelope')], facts.envelopeNews);
+  }
   if (facts.revealed && !facts.revealSeen) {
     return text([part('lines.santa.revealedNew')], true);
   }
@@ -117,6 +123,10 @@ export type GameFacts = {
   /** The palmarès came out. */
   resultsOut: boolean;
   resultsSeen: boolean;
+  /** A news of the palmarès not seen yet (ticket 142). */
+  palmaresNews: boolean;
+  /** A news « à toi de jouer » not seen yet (ticket 142). */
+  playNews: boolean;
   /** The end of the guesses (an instant). */
   endsAt: string | null;
 };
@@ -132,7 +142,7 @@ export const gameLine = (facts: GameFacts): LineText | null => {
   if (facts.resultsOut) {
     return facts.resultsSeen
       ? text([part('lines.game.palmares')])
-      : text([part('lines.game.palmaresNew')], true);
+      : text([part('lines.game.palmaresNew')], facts.palmaresNews);
   }
   if (facts.open && !facts.played) {
     return text(
@@ -142,7 +152,7 @@ export const gameLine = (facts: GameFacts): LineText | null => {
             { key: 'lines.game.until', end: facts.endsAt },
           ]
         : [part('lines.game.play')],
-      true,
+      facts.playNews,
     );
   }
   if (facts.open) {
@@ -174,6 +184,8 @@ export type ListFacts = {
   offered: number;
   /** Ideas since my last visit, all of them before a first one. */
   newIdeas: number;
+  /** A news of new ideas on it not seen yet (someone else's; ticket 142). */
+  ideasNews: boolean;
 };
 
 /**
@@ -265,8 +277,8 @@ const othersLine = (facts: ListFacts): LineText => {
   const offer = part('lines.list.offer', { count: facts.offered });
   const fresh = part('lines.list.newIdeas', { count: facts.newIdeas });
   if (facts.offered > 0 && facts.newIdeas > 0)
-    return text([offer, fresh], true);
-  if (facts.newIdeas > 0) return text([fresh], true);
+    return text([offer, fresh], facts.ideasNews);
+  if (facts.newIdeas > 0) return text([fresh], facts.ideasNews);
   if (facts.offered > 0) return text([offer]);
   return text([part('lines.list.ideas', { count: facts.ideas })]);
 };

@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, isNull, or } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   giftListHolders,
@@ -78,7 +78,8 @@ export const loadNewsPage = async (
       .where(
         and(
           eq(news.accountId, account.id),
-          gte(news.createdAt, forgetBefore(now)),
+          // Not seen yet, or seen less than thirty days ago (ticket 142).
+          or(isNull(news.seenAt), gte(news.seenAt, forgetBefore(now))),
         ),
       )
       .orderBy(desc(news.updatedAt))
@@ -212,7 +213,10 @@ export const loadNewsPage = async (
         return paths.get(row.targetId) ?? null;
       case 'game': {
         const path = paths.get(row.targetId);
-        return path ? `${path}/devine/palmares` : null;
+        if (!path) return null;
+        return row.kind === 'game_open'
+          ? `${path}/devine`
+          : `${path}/devine/palmares`;
       }
       case 'follow':
         return party ? `/admin/${party.slug}/editions/${row.targetId}` : null;

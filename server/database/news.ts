@@ -1,4 +1,4 @@
-import { and, count, eq, gte, inArray, isNull, lt } from 'drizzle-orm';
+import { and, count, eq, inArray, isNull, lt } from 'drizzle-orm';
 import type { Db } from './client';
 import { accounts, news, partyOrganisers, persons } from './schema';
 import { newId } from '#server/http/context';
@@ -13,7 +13,9 @@ import {
 
 // The news of the accounts in the database (ticket 120): written where
 // something happens, grouped in the day, seen by opening the thing,
-// forgotten after thirty days. Best effort: a news that cannot be written
+// forgotten thirty days after they were seen, never before (ticket 142).
+// A red dot is lit only by a news not seen yet: it always has its line in
+// « Quoi de neuf ». Best effort: a news that cannot be written
 // never stops the gesture that made it.
 
 /** `inArray` with nothing in it still makes a valid query. */
@@ -199,17 +201,12 @@ export type UnseenNews = {
 };
 
 /**
- * The news of an account not seen yet, and not forgotten.
+ * The news of an account not seen yet: never forgotten (ticket 142).
  * @param db - The database.
  * @param accountId - Me.
- * @param now - Now (ISO).
  * @returns The news.
  */
-export const unseenNews = (
-  db: Db,
-  accountId: string,
-  now: string,
-): Promise<UnseenNews[]> =>
+export const unseenNews = (db: Db, accountId: string): Promise<UnseenNews[]> =>
   db
     .select({
       kind: news.kind,
@@ -218,47 +215,34 @@ export const unseenNews = (
       count: news.count,
     })
     .from(news)
-    .where(
-      and(
-        eq(news.accountId, accountId),
-        isNull(news.seenAt),
-        gte(news.createdAt, forgetBefore(now)),
-      ),
-    );
+    .where(and(eq(news.accountId, accountId), isNull(news.seenAt)));
 
 /**
  * How many news wait: the count on the tab « Quoi de neuf ».
  * @param db - The database.
  * @param accountId - Me.
- * @param now - Now (ISO).
  * @returns The number of lines not seen yet.
  */
 export const countUnseen = async (
   db: Db,
   accountId: string,
-  now: string,
 ): Promise<number> => {
   const [row] = await db
     .select({ n: count() })
     .from(news)
-    .where(
-      and(
-        eq(news.accountId, accountId),
-        isNull(news.seenAt),
-        gte(news.createdAt, forgetBefore(now)),
-      ),
-    );
+    .where(and(eq(news.accountId, accountId), isNull(news.seenAt)));
   return row?.n ?? 0;
 };
 
 /**
- * Forgets the news of more than thirty days (the morning task).
+ * Forgets the news seen more than thirty days ago (the morning task);
+ * those not seen yet stay (ticket 142).
  * @param db - The database.
  * @param now - Now (ISO).
  * @returns Once done.
  */
 export const forgetNews = async (db: Db, now: string): Promise<void> => {
-  await db.delete(news).where(lt(news.createdAt, forgetBefore(now)));
+  await db.delete(news).where(lt(news.seenAt, forgetBefore(now)));
 };
 
 /**

@@ -92,11 +92,15 @@ describe('the shape of a news', () => {
   });
 });
 
-describe('forgetting after thirty days', () => {
-  it('keeps a news 29 days, forgets it at 30', () => {
+describe('forgetting thirty days after it was seen', () => {
+  it('keeps a news seen 29 days ago, forgets it at 30', () => {
     expect(isForgotten('2026-10-24T10:00:00.000Z', NOW)).toBe(false);
     expect(isForgotten('2026-10-23T10:00:00.000Z', NOW)).toBe(true);
     expect(forgetBefore(NOW)).toBe('2026-10-23T10:00:00.000Z');
+  });
+
+  it('never forgets a news not seen yet (ticket 142)', () => {
+    expect(isForgotten(null, NOW)).toBe(false);
   });
 });
 

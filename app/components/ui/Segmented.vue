@@ -11,8 +11,10 @@ withDefaults(
     /** What is being chosen, for screen readers. */
     label: string;
     size?: 'md' | 'sm';
+    /** `game`: on the light green card of « Devine qui » (ticket 150). */
+    tone?: 'neutral' | 'game';
   }>(),
-  { size: 'md' },
+  { size: 'md', tone: 'neutral' },
 );
 const model = defineModel<T>({ required: true });
 const name = useId();
@@ -22,8 +24,11 @@ const name = useId();
   <div
     role="radiogroup"
     :aria-label="label"
-    class="grid auto-cols-fr grid-flow-col rounded-md bg-muted"
-    :class="size === 'sm' ? 'gap-[3px] p-[3px]' : 'gap-1 p-1'"
+    class="grid auto-cols-fr grid-flow-col rounded-md"
+    :class="[
+      size === 'sm' ? 'gap-[3px] p-[3px]' : 'gap-1 p-1',
+      tone === 'game' ? 'bg-game-track' : 'bg-muted',
+    ]"
   >
     <label
       v-for="item in items"
@@ -34,8 +39,11 @@ const name = useId();
           ? 'isolate h-7 rounded-[calc(var(--radius-md)-3px)] after:absolute after:inset-x-0 after:-inset-y-2 after:-z-10'
           : 'h-10 rounded-[calc(var(--radius-md)-0.25rem)]',
         model === item.value
-          ? 'bg-default font-bold text-highlighted shadow-[0_1px_2px_rgba(60,30,10,0.12)]'
-          : 'font-semibold text-toned',
+          ? [
+              'bg-default font-bold shadow-[0_1px_2px_rgba(60,30,10,0.12)]',
+              tone === 'game' ? 'text-game-strong' : 'text-highlighted',
+            ]
+          : ['font-semibold', tone === 'game' ? 'text-game-ink' : 'text-toned'],
       ]"
     >
       <input

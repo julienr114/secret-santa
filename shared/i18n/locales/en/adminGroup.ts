@@ -211,7 +211,7 @@ export default {
       'Nobody gives to someone they already had in the last years.',
     messageNote: 'Word added to messages',
     messageNoteHelp:
-      'Added as is to every message and email sent to participants. You can still change it when sending.',
+      'When you send someone their link, or a reminder, your word goes with it. You can still change it when sending.',
     yourWord: 'Your word',
     asTyped: 'Sent as is, whatever the language.',
     where: 'Where to put it',

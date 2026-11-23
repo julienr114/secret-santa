@@ -213,7 +213,7 @@ export default {
       "Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années.",
     messageNote: 'Mot ajouté aux messages',
     messageNoteHelp:
-      'Ajouté tel quel à chaque message et email envoyé aux participants. Tu peux encore le modifier au moment d’envoyer.',
+      'Quand tu envoies son lien à quelqu’un, ou un rappel, ton mot part avec. Tu peux encore le changer au moment d’envoyer.',
     yourWord: 'Ton mot',
     asTyped: 'Envoyé tel quel, quelle que soit la langue.',
     where: 'Où le placer',

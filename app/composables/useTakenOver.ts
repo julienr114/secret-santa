@@ -51,7 +51,8 @@ export const useTakenOver = (
     () => previousEditionQuery.data.value?.rules ?? null,
   );
   const previousGuessMode = computed(
-    () => previousEditionQuery.data.value?.guess.mode ?? 'none',
+    // A first Secret Santa plays every pair (ticket 150).
+    () => previousEditionQuery.data.value?.guess.mode ?? 'all',
   );
   return { previous, previousRules, previousGuessMode, members, pending };
 };

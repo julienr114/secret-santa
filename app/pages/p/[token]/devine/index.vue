@@ -256,22 +256,23 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
         <NuxtLink
           v-if="results.size !== 'none'"
           :to="`/p/${token}/devine/palmares`"
-          class="flex items-center gap-4 rounded-2xl bg-success px-5 py-4 text-white active:bg-success-deep"
+          class="flex items-center gap-3.5 rounded-[28px] bg-game-tint px-5 py-4 text-default shadow-[0_0_0_1.5px_var(--color-game-ring)]"
           data-testid="palmares-link"
         >
+          <!-- The loupe, icon of the game everywhere (ticket 150). -->
           <span
-            class="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/15"
+            class="flex size-12 shrink-0 items-center justify-center rounded-full bg-mint-500 text-white"
             aria-hidden="true"
           >
-            <UIcon name="i-lucide-sparkle" class="size-6" />
+            <UIcon name="i-lucide-search" class="size-6" />
           </span>
-          <span class="flex min-w-0 grow flex-col">
-            <span class="font-display text-[19px] leading-[1.2] font-bold">{{
+          <span class="flex min-w-0 grow flex-col gap-0.5">
+            <span class="font-display text-xl leading-[1.2] font-bold">{{
               results.seen
                 ? t('participant.game.rewatch')
                 : t('participant.game.discover')
             }}</span>
-            <span class="text-sm opacity-90">{{
+            <span class="text-sm leading-[1.4] text-game-ink">{{
               results.size === 'small'
                 ? t('participant.game.palmaresHintSmall')
                 : t('participant.game.palmaresHint')
@@ -279,7 +280,7 @@ const isMe = (row: Pick<Row, 'recipientId'>) =>
           </span>
           <UIcon
             name="i-lucide-chevron-right"
-            class="size-5 shrink-0"
+            class="size-5 shrink-0 text-dimmed"
             aria-hidden="true"
           />
         </NuxtLink>

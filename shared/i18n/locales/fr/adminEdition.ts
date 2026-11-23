@@ -295,7 +295,6 @@ export default {
       none: 'Aucun pour l’instant',
       budgetHelp: 'Affiché avec le résultat de chacun.',
       budgetPlaceholder: '20 €',
-      wordHelp: 'Affiché avec le résultat de chacun.',
       wordLabel: 'Ton mot',
     },
     now: 'À faire maintenant',
@@ -589,6 +588,17 @@ export default {
   },
   guess: {
     title: 'Devine qui',
+    tagline: 'Le jeu qui pimente le Secret Santa.',
+    choice: {
+      none: 'Sans',
+      santa: 'Qui m’offre ?',
+      all: 'Toutes les paires',
+    },
+    pitch: {
+      none: 'Pas de jeu : le mystère reste entier.',
+      santa: 'Chacun essaie de démasquer qui lui offre. Verdict le jour J.',
+      all: 'Tout le monde enquête : qui offre à qui ? Le jour J, les masques tombent et le palmarès sacre les meilleurs détectives.',
+    },
     description:
       'Un jeu de pronostics : qui offre à qui ? Les réponses tombent le jour J.',
     mode: {
@@ -637,6 +647,8 @@ export default {
   settings: {
     title: 'Réglages du Secret Santa',
     wordTitle: 'Petit mot',
+    wordWhere:
+      'Chaque participant le lit sous le résultat de son tirage, avec le titre « Le mot de l’organisateur ».',
     budgetIs: 'Budget {budget}',
     word: 'petit mot',
     what: 'Date, budget, petit mot',

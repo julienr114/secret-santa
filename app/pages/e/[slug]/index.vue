@@ -207,7 +207,7 @@ const onLeave = () =>
               />
               <UiListItem
                 v-if="santa.game"
-                icon="i-lucide-circle-help"
+                icon="i-lucide-search"
                 icon-tone="neutral"
                 bare-icon
                 :title="t('lines.game.title')"

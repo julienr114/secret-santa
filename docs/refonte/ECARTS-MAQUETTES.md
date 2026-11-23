@@ -327,3 +327,10 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeVisiteSecret4`, `V3ListeVisiteCreer1` | Dans la lumière : l'icône de la liste avec son nom et sa date (le bloc d'en-tête entier). | Seul |
 | `V3ListeVisite*` | La note va au-dessus quand l'élément, une fois amené à l'écran, finit sous les deux tiers de sa hauteur ; sinon dessous. Le voile et la note sont ceux de la première coche (`ListsVeilNote`), ici avec « n sur N », « Passer » et « Suivant ». | Seul |
 | `V3ListeVisiteIdee` | La note de la première ligne va sur la ligne vide de la première personne ajoutée, moi compris. | Seul |
+
+## « Devine qui » mis en avant (ticket 150)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3TirageNouveau`, `V3TirageNouveauQui`, `V3TirageNouveauSans` | Les trois choix sont `UiSegmented` à sa taille habituelle (40 px de haut, texte de 14 px) au lieu de 36 px et 13,5 px ; les couleurs du jeu passent par une teinte `game` du composant. La loupe est l'icône Lucide `search`. | Seul (le composant du design system) |
+| `EditionMot`, `GroupeMot` | Les deux phrases se lisent aussi sous le titre des pages du formulaire de création (« Petit mot pour les participants », « Mot ajouté aux messages »), pas seulement dans les réglages d'un Secret Santa. | Seul |

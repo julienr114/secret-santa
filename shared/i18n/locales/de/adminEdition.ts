@@ -306,7 +306,6 @@ export default {
       none: 'Noch keins',
       budgetHelp: 'Wird mit jedem Ergebnis angezeigt.',
       budgetPlaceholder: '20 €',
-      wordHelp: 'Wird mit jedem Ergebnis angezeigt.',
       wordLabel: 'Dein Wort',
     },
     now: 'Jetzt zu tun',
@@ -597,6 +596,18 @@ export default {
   },
   guess: {
     title: 'Devine qui',
+    tagline: 'Das Spiel, das dem Secret Santa Würze gibt.',
+    choice: {
+      none: 'Ohne',
+      santa: 'Wer beschenkt mich?',
+      all: 'Alle Paare',
+    },
+    pitch: {
+      none: 'Kein Spiel: Das Geheimnis bleibt ganz.',
+      santa:
+        'Alle versuchen zu entlarven, wer sie beschenkt. Das Urteil am großen Tag.',
+      all: 'Alle ermitteln: Wer beschenkt wen? Am großen Tag fallen die Masken, und die Rangliste kürt die besten Detektive.',
+    },
     description:
       'Ein Tippspiel: Wer beschenkt wen? Die Antworten gibt es am großen Tag.',
     mode: {
@@ -645,6 +656,8 @@ export default {
   settings: {
     title: 'Einstellungen des Wichtelns',
     wordTitle: 'Kurze Notiz',
+    wordWhere:
+      'Alle Teilnehmenden lesen sie unter dem Ergebnis ihrer Ziehung, mit dem Titel „Die Nachricht des Organisators“.',
     budgetIs: 'Budget {budget}',
     word: 'kurze Notiz',
     what: 'Datum, Budget, kurze Notiz',

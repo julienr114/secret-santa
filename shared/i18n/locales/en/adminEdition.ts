@@ -296,7 +296,6 @@ export default {
       none: 'None yet',
       budgetHelp: 'Shown with each result.',
       budgetPlaceholder: '€20',
-      wordHelp: 'Shown with each result.',
       wordLabel: 'Your word',
     },
     now: 'To do now',
@@ -587,6 +586,18 @@ export default {
   },
   guess: {
     title: 'Devine qui',
+    tagline: 'The game that spices up the Secret Santa.',
+    choice: {
+      none: 'None',
+      santa: 'Who gives to me?',
+      all: 'Every pair',
+    },
+    pitch: {
+      none: 'No game: the mystery stays whole.',
+      santa:
+        'Everyone tries to unmask who gives to them. The verdict on the day.',
+      all: 'Everyone investigates: who gives to whom? On the day, the masks come off and the awards crown the best detectives.',
+    },
     description:
       'A guessing game: who gives to whom? The answers come on the big day.',
     mode: {
@@ -635,6 +646,8 @@ export default {
   settings: {
     title: 'Secret Santa settings',
     wordTitle: 'Short note',
+    wordWhere:
+      'Each participant reads it under the result of their draw, with the title “The organizer’s note”.',
     budgetIs: 'Budget {budget}',
     word: 'short note',
     what: 'Date, budget, short note',

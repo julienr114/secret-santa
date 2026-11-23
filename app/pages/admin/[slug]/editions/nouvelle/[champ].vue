@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { GUESS_MODES, type GuessMode } from '#server/utils/guesses';
 import { birthParts, dateOf, partyYears } from '#shared/utils/memberFields';
 import type { NewEditionDraft } from '~/composables/useNewEditionDraft';
 import { usePartyQuery } from '~/composables/queries/useParty';
@@ -15,7 +14,7 @@ const slug = computed(() => String(route.params.slug));
 const field = computed(() => String(route.params.champ));
 const party = usePartyQuery(slug);
 // « Père Noël » only in a Christmas party (docs/spec/v3/vocabulaire.md).
-const { t, tk } = useT({
+const { t } = useT({
   christmas: () =>
     (party.data.value?.party.category ?? 'christmas') === 'christmas',
 });
@@ -41,7 +40,6 @@ const titles = computed<Record<string, string>>(() => ({
   nom: t('adminEdition.newEdition.nameRow'),
   date: t('adminEdition.newEdition.dateLabel'),
   budget: t('adminEdition.newEdition.budgetLabel'),
-  devine: t('adminEdition.guess.title'),
   mot: t('adminEdition.newEdition.messageLabel'),
   message: t('adminGroup.rules.messageNote'),
 }));
@@ -65,25 +63,16 @@ onMounted(() => {
 
 const text = ref('');
 const date = ref(birthParts(null));
-const guess = ref<GuessMode>('none');
 watch(
   draft,
   (d) => {
     if (!d) return;
     if (isText(field.value)) text.value = String(d[FIELDS[field.value].key]);
     date.value = birthParts(d.eventDate || null);
-    guess.value = d.guessMode;
   },
   { immediate: true },
 );
 const years = partyYears(new Date().getFullYear());
-const guessChoices = computed(() =>
-  GUESS_MODES.map((value) => ({
-    value,
-    label: t(`adminEdition.guess.mode.${value}`),
-    hint: tk(`adminEdition.guess.modeHint.${value}`),
-  })),
-);
 /** The name is required, and so is a full date. */
 const invalid = computed(
   () =>
@@ -102,8 +91,6 @@ const onValidate = () => {
     draft.value = { ...d, [FIELDS[field.value].key]: text.value.trim() };
   } else if (field.value === 'date') {
     draft.value = { ...d, eventDate: dateOf(date.value) ?? d.eventDate };
-  } else if (field.value === 'devine') {
-    draft.value = { ...d, guessMode: guess.value };
   }
   goBack(parent.value);
 };
@@ -123,6 +110,17 @@ const onValidate = () => {
         :label="t('common.context')"
       />
       <UiPageTitle>{{ title }}</UiPageTitle>
+      <!-- Where each word goes (ticket 150, EditionMot, GroupeMot). -->
+      <p
+        v-if="field === 'mot' || field === 'message'"
+        class="mt-1 text-[15px] leading-[1.45] text-toned"
+      >
+        {{
+          field === 'mot'
+            ? t('adminEdition.settings.wordWhere')
+            : t('adminGroup.rules.messageNoteHelp')
+        }}
+      </p>
     </div>
     <UiTextField
       v-if="isText(field)"
@@ -143,13 +141,6 @@ const onValidate = () => {
       :years="years"
       :label="title"
       testid="new-secret-santa-date"
-    />
-    <UiChoiceList
-      v-else-if="field === 'devine'"
-      v-model="guess"
-      :choices="guessChoices"
-      :label="title"
-      plain
     />
     <UiStickyFooter inline>
       <UButton

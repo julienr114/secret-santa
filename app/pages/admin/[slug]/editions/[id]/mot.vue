@@ -75,6 +75,10 @@ const onValidate = () => {
           :label="t('common.context')"
         />
         <UiPageTitle>{{ t('adminEdition.settings.wordTitle') }}</UiPageTitle>
+        <!-- Where it goes (ticket 150, EditionMot). -->
+        <p class="mt-1 text-[15px] leading-[1.45] text-toned">
+          {{ t('adminEdition.settings.wordWhere') }}
+        </p>
       </div>
       <UiTextField
         id="edition-word"
@@ -83,7 +87,6 @@ const onValidate = () => {
         :optional="t('adminEdition.newEdition.optional')"
         :maxlength="WORD_MAX"
         :placeholder="t('adminEdition.newEdition.messagePlaceholder')"
-        :hint="t('adminEdition.screen.rules.wordHelp')"
       />
       <p v-if="failure" class="text-sm font-medium text-error" role="alert">
         {{ failure }}

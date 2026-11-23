@@ -10,10 +10,11 @@ import { useNewSecretSantaQuery } from '~/composables/queries/useHome';
 import { usePartyQuery } from '~/composables/queries/useParty';
 
 // A new Secret Santa (docs/spec/v3/secret-santa.md, « Le créer »,
-// V3TirageNouveau): six rows of the same shape, the value on the right,
+// V3TirageNouveau): five rows of the same shape, the value on the right,
 // each opening its page (regles-d-ecran.md, « Des lignes, pas des
-// champs »). The values start from the party and from the previous
-// Secret Santa. Below, who is taken over, then « Créer le Secret Santa »;
+// champs »), then the card of « Devine qui », chosen in place (ticket
+// 150). The values start from the party and from the previous Secret
+// Santa; a first one plays every pair. Below, who is taken over, then « Créer le Secret Santa »;
 // the participants are adjusted on the next screen. An account at its
 // limit is sent to the screen of the limit, anyone to the screen of the
 // pause while new Secret Santa are paused.
@@ -87,7 +88,7 @@ onBeforeRouteLeave((to) => {
 });
 
 const none = computed(() => t('adminEdition.newEdition.messageNone'));
-/** The six rows, in the order of the mockup. */
+/** The five rows, in the order of the mockup. */
 const rows = computed(() => {
   const d = draft.value;
   if (!d) return [];
@@ -104,11 +105,6 @@ const rows = computed(() => {
       key: 'budget',
       title: t('adminEdition.newEdition.budgetLabel'),
       value: d.budget || none.value,
-    },
-    {
-      key: 'devine',
-      title: t('adminEdition.guess.title'),
-      value: t(`adminEdition.guess.mode.${d.guessMode}`),
     },
     {
       key: 'mot',
@@ -181,7 +177,7 @@ const onCreate = async () => {
       :pending="!draft"
       :error="party.error.value"
       :skeleton="['title', 'list']"
-      :rows="6"
+      :rows="5"
     >
       <div class="flex flex-col gap-1">
         <UiPageContext
@@ -200,6 +196,11 @@ const onCreate = async () => {
           :data-testid="`new-secret-santa-${row.key}`"
         />
       </UiList>
+      <AdminGuessChoice
+        v-if="draft"
+        v-model="draft.guessMode"
+        :possible="members.length >= 4"
+      />
       <UiCard
         padding="md"
         class="flex items-center gap-3"

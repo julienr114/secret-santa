@@ -216,6 +216,13 @@
   --color-tile-housewarming-to: #f08a6c;
   --color-tile-other-from: #efe6fb;
   --color-tile-other-to: #a98be0;
+  /* « Devine qui » (ticket 150): the light green of the game, its edge,
+     the track of its choices, its text; its round is mint 500. */
+  --color-game-tint: #e9f7f1;
+  --color-game-ring: #bfe6d6;
+  --color-game-track: #d2eee2;
+  --color-game-ink: #4d6b60;
+  --color-game-strong: #0b5c45;
   /* The line being written, and the line lifted (ticket 144): a white
      card, its thin peach edge and a light shadow tinted red, deeper once
      lifted. */

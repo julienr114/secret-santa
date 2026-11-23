@@ -155,9 +155,7 @@ const closeNote = async () => {
           />
           {{ section.title }}
         </h2>
-        <ul
-          class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:overflow-hidden sm:rounded-lg sm:border"
-        >
+        <UiList>
           <UiListItem
             v-for="line in section.news"
             :key="line.id"
@@ -170,7 +168,7 @@ const closeNote = async () => {
             :to="line.to ?? undefined"
             data-testid="news-line"
           />
-        </ul>
+        </UiList>
       </section>
 
       <p class="px-1 text-[13px] text-toned">{{ t('news.forget') }}</p>

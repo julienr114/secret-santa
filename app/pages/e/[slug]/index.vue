@@ -247,10 +247,7 @@ const onLeave = () =>
                 :label="t('party.lists.new')"
               />
             </template>
-            <ul
-              v-else
-              class="-mx-4 divide-y divide-default border-y border-default bg-default sm:mx-0 sm:rounded-lg sm:border"
-            >
+            <UiList v-else>
               <UiListItem
                 v-for="list in data.lists"
                 :key="list.id"
@@ -268,7 +265,7 @@ const onLeave = () =>
                 :to="`/listes/nouvelle?pour=${slug}`"
                 :label="t('party.lists.new')"
               />
-            </ul>
+            </UiList>
           </section>
         </div>
 

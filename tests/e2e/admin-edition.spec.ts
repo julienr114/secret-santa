@@ -47,7 +47,7 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // Edition, from the party. Nobody is added to an event itself (ticket
   // 117): its organiser alone is taken, people come in by the Secret
   // Santa.
-  await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
+  await page.getByRole('link', { name: 'Créer un Secret Santa' }).click();
   // Five rows, each opening its page (V3TirageNouveau); the day of the
   // party is already there.
   await expect(heading(page)).toHaveText(/^Le Secret Santa \d{4}$/);

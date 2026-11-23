@@ -10,10 +10,11 @@ import { usePrepareYearMutation } from '~/composables/queries/useParty';
 // title, its text and maybe a red dot (lignes.md, tickets 112 and 120).
 // The event in its tile in colour, the lines under it with their icon
 // alone (ticket 143).
-// « Nouvelle liste » while I have none in it. Two months before an event
-// that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 » for
-// its organiser, « Reprendre ma liste de l'an dernier » for whoever held
-// one, instead of « Nouvelle liste ».
+// At the bottom, what may be made in it (ticket 151): « Créer un Secret
+// Santa », « Créer une liste de cadeaux ». Two months before an event
+// that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 »
+// for its organiser, « Reprendre ma liste de l'an dernier » for whoever
+// held one, instead of the list.
 const props = defineProps<{ party: HomeParty }>();
 const { t, tk, locale } = useT();
 const words = useLineText();
@@ -34,6 +35,36 @@ const onPrepare = () =>
   });
 const emoji = computed(() => partyEmoji(props.party));
 const hasMine = computed(() => props.party.lists.some((list) => list.mine));
+/**
+ * What may be made in it (ticket 151, V3AccueilSansSecret): « Créer un
+ * Secret Santa » for its organiser while it has none this year, « Créer
+ * une liste de cadeaux » while I hold none; the Secret Santa first at
+ * Christmas, the list first elsewhere.
+ */
+const creates = computed(() => {
+  const santa = props.party.createSanta
+    ? [
+        {
+          key: 'santa',
+          to: `/admin/${props.party.slug}/editions/nouvelle`,
+          label: t('party.secretSanta.organise'),
+        },
+      ]
+    : [];
+  const list =
+    hasMine.value || props.party.resume
+      ? []
+      : [
+          {
+            key: 'list',
+            to: `/listes/nouvelle?pour=${props.party.slug}`,
+            label: t('party.lists.new'),
+          },
+        ];
+  return props.party.category === 'christmas'
+    ? [...santa, ...list]
+    : [...list, ...santa];
+});
 </script>
 
 <template>
@@ -113,9 +144,11 @@ const hasMine = computed(() => props.party.lists.some((list) => list.mine));
         data-testid="home-resume"
       />
       <UiAddRow
-        v-else-if="!hasMine"
-        :to="`/listes/nouvelle?pour=${party.slug}`"
-        :label="t('party.lists.new')"
+        v-for="row in creates"
+        :key="row.key"
+        :to="row.to"
+        :label="row.label"
+        :data-testid="`home-create-${row.key}`"
       />
     </ul>
   </section>

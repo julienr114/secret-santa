@@ -43,7 +43,7 @@ test('a new account is asked where to start', async ({ page }) => {
     'Écrire ma liste',
   );
   await expect(page.getByTestId('home-season')).toHaveCount(0);
-  await page.getByRole('link', { name: 'Organiser un Secret Santa' }).click();
+  await page.getByRole('link', { name: 'Créer un Secret Santa' }).click();
   await expect(heading(page)).toHaveText('Pour quelle occasion ?');
 });
 
@@ -120,9 +120,21 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
   // Hugo has no list in Camille's party yet.
   await expect(
     season.getByTestId('home-party').nth(2).getByRole('link', {
-      name: 'Nouvelle liste',
+      name: 'Créer une liste de cadeaux',
     }),
   ).toBeVisible();
+  // He does not organise it: no « Créer un Secret Santa » there (ticket
+  // 151). In Chez Mamie, his, without one: the Secret Santa first, it is
+  // Christmas, then the list.
+  await expect(
+    season.getByTestId('home-party').nth(2).getByTestId('home-create-santa'),
+  ).toHaveCount(0);
+  await expect(
+    season
+      .getByTestId('home-party')
+      .nth(1)
+      .locator('[data-testid^="home-create-"]'),
+  ).toHaveText(['Créer un Secret Santa', 'Créer une liste de cadeaux']);
 
   const soon = page.getByTestId('home-soon');
   await expect(soon).toContainText('L’anniversaire de Zoé');

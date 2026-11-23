@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // The last row of a list that adds to it (V3): a plus and its words, in
-// red, smaller than a row (« Un autre Secret Santa », « Nouvelle liste »,
+// red, smaller than a row (« Un autre Secret Santa », « Créer une liste de cadeaux »,
 // « Préparer Noël 2027 »). A link, or a button while `onClick` is given.
 const props = withDefaults(
   defineProps<{

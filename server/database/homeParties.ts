@@ -50,6 +50,11 @@ export type HomeParty = {
   /** « Reprendre ma liste de l'an dernier »: the list to take again. */
   resume: string | null;
   /**
+   * « Créer un Secret Santa » (ticket 151): I organise it, and it has none
+   * this year.
+   */
+  createSanta: boolean;
+  /**
    * The Secret Santas of its current year I take part in or organise,
    * with their text (lignes.md) and their « Devine qui ».
    */
@@ -298,6 +303,7 @@ export const loadHome = async (
             { recurring: party.recurring, current, mine: mineByYear },
             today,
           ),
+          createSanta: organiser && santas.length === 0,
           secretSantas: santas
             .filter((santa) => organiser || paths.has(santa.id))
             .map((santa) => {

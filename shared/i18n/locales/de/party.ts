@@ -32,7 +32,7 @@ export default {
   secretSanta: {
     row: 'Das Wichteln {year}',
     another: 'Noch ein Wichteln',
-    organise: 'Ein Wichteln organisieren',
+    organise: 'Ein Secret Santa erstellen',
     context: 'Wichteln {year}',
     settings: 'Einstellungen',
     drawSection: 'Die Auslosung',
@@ -58,7 +58,7 @@ export default {
     title: 'Die Listen',
     titleSomeone: 'Die Liste',
     none: 'Noch niemand hat eine Liste in dieses Event gestellt.',
-    new: 'Neue Liste',
+    new: 'Eine Geschenkliste erstellen',
     resume: 'Meine Liste vom letzten Jahr übernehmen',
   },
   // The years over (ticket 108, V3FetesPassees, V3FeteAnneePassee).

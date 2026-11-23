@@ -31,7 +31,7 @@ export default {
   secretSanta: {
     row: 'Le Secret Santa {year}',
     another: 'Un autre Secret Santa',
-    organise: 'Organiser un Secret Santa',
+    organise: 'Créer un Secret Santa',
     context: 'Secret Santa {year}',
     settings: 'Réglages',
     drawSection: 'Le tirage au sort',
@@ -57,7 +57,7 @@ export default {
     title: 'Les listes',
     titleSomeone: 'Sa liste',
     none: 'Personne n’a encore mis de liste dans cet événement.',
-    new: 'Nouvelle liste',
+    new: 'Créer une liste de cadeaux',
     resume: 'Reprendre ma liste de l’an dernier',
   },
   // The years over (ticket 108, V3FetesPassees, V3FeteAnneePassee).

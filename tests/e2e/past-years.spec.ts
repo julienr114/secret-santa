@@ -99,9 +99,9 @@ test('the home offers to prepare the year to come and to take my list again', as
   await expect(card.getByTestId('home-resume')).toHaveText(
     'Reprendre ma liste de l’an dernier',
   );
-  await expect(card.getByRole('link', { name: 'Nouvelle liste' })).toHaveCount(
-    0,
-  );
+  await expect(
+    card.getByRole('link', { name: 'Créer une liste de cadeaux' }),
+  ).toHaveCount(0);
   await expect(page.getByTestId('home-past')).toContainText('Famille Annees');
 
   // As many Secret Santa as last year, to prepare, their year moved on.

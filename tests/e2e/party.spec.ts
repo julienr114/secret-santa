@@ -54,7 +54,7 @@ test('a birthday party comes filled, and is created with me alone', async ({
     'Personne n’a encore mis de liste dans cet événement.',
   );
   await expect(
-    page.getByRole('link', { name: 'Organiser un Secret Santa' }),
+    page.getByRole('link', { name: 'Créer un Secret Santa' }),
   ).toBeVisible();
   // The organiser does not leave.
   await expect(page.getByText('Quitter cet événement')).toHaveCount(0);

@@ -20,7 +20,7 @@ export default {
     secretSanta: {
       title: 'Ein Wichteln',
       body: 'Alle ziehen die Person, der sie etwas schenken.',
-      button: 'Ein Wichteln organisieren',
+      button: 'Ein Secret Santa erstellen',
     },
     list: {
       title: 'Eine Wunschliste',

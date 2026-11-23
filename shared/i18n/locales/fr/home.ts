@@ -20,7 +20,7 @@ export default {
     secretSanta: {
       title: 'Un Secret Santa',
       body: 'Chacun tire au sort la personne à qui il offre un cadeau.',
-      button: 'Organiser un Secret Santa',
+      button: 'Créer un Secret Santa',
     },
     list: {
       title: 'Une liste de cadeaux',

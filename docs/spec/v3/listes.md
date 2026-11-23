@@ -262,6 +262,45 @@ La première fois que j'arrive sur une liste que je viens de créer, une visite 
 
 Puis, **quand la première personne est ajoutée**, une note seule sur sa première ligne, sans compte d'étapes : « Une idée par ligne », « Ajoute un lien si tu as trouvé l'objet. », « Compris » (`V3ListeVisiteIdee`). Une seule fois par compte elle aussi ; celui qui a vu la visite du Secret Santa ne la voit pas.
 
+## Ranger une liste : la poignée, les étoiles, les titres
+
+Décision : `2026-11-23-des-etoiles-et-des-titres-dans-une-liste.md`. Maquettes `V3ListeLigneMenu`, `V3ListeLigneEtoiles`, `V3ListeLigneTitre`, `V3ListeLigneDeplacer`, `V3ListeTitres`. **Avant la bascule** (ticket 152).
+
+Julien, en écrivant la liste de son enfant : plusieurs boîtes de Playmobil à ranger sous un même mot, et des étoiles tapées à la main pour dire lesquelles il préfère.
+
+### La poignée de la ligne qu'on écrit
+
+- La carte blanche de l'écriture a, au bout de la ligne, **la poignée à six points**. **Un toucher ouvre son menu ; rester appuyé dessus passe en déplacement** (comme dans Notion).
+- **Il n'y a plus qu'une poignée** (Julien, 23 novembre 2026). Sur ordinateur, celle qui apparaissait **à gauche** d'une ligne au survol, pour la déplacer, **n'existe plus** : c'est la même poignée, **à droite**, qui apparaît au survol de n'importe quelle ligne. Un clic ouvre le menu ; garder le bouton enfoncé et bouger déplace la ligne. Au clavier, la poignée prend le focus : Entrée ouvre le menu, et « Monter » / « Descendre » y remplacent le glisser.
+- Le menu s'ouvre sous la poignée (au-dessus quand la place manque en bas). **Le clavier se replie tant qu'il est ouvert**, et revient après un choix qui laisse dans la ligne (les étoiles, « En faire un titre »). Toucher dehors le referme. Pour une idée, de haut en bas :
+  1. **« Envie »**, un petit titre, et dessous **trois étoiles** ;
+  2. « En faire un titre » ;
+  3. **« Monter »** et **« Descendre »** : la même chose que glisser, sans glisser, d'un cran dans la partie de la personne. « Monter » n'est pas là pour la première ligne, « Descendre » pour la dernière ;
+  4. **« Déplacer vers… »** : un panneau du bas, « Déplacer vers », avec les autres personnes de la liste (`V3ListeLigneDeplacer`) ; en toucher une y envoie la ligne, à la fin de sa partie, avec un message en bas (« Déplacée vers Zoé »). Pas là quand la liste n'a qu'une personne ;
+  5. « Supprimer la ligne » (en rouge, après un filet).
+- Sur un téléphone, il n'y a que la ligne qu'on écrit qui montre la poignée : pas une poignée par ligne. L'appui long sur une ligne continue de la soulever, comme aujourd'hui.
+- Une idée **déjà cochée** par quelqu'un se déplace avec sa coche : rien ne change pour celui qui l'offre.
+
+### Les étoiles
+
+- **Une, deux ou trois étoiles par idée**, ou aucune : à quel point l'idée fait envie. Toucher la troisième en met trois ; toucher de nouveau la dernière allumée les retire toutes.
+- Elles sont **pêche soutenu** (`#f08a6c`), pleines ; éteintes dans le menu, un contour pêche clair. Pas l'emoji, pas de jaune.
+- **Tout le monde les lit**, au bout du texte de l'idée : « Le camion de pompiers ★★★ ». Pendant qu'on écrit, elles sont juste avant la poignée.
+- **Elles ne trient rien** : la liste reste dans l'ordre où on l'a rangée. Une idée offerte garde ses étoiles, en plus clair comme son texte.
+- Seuls ceux qui tiennent la liste (ou celui qui y écrit sa partie) les posent.
+
+### Les titres
+
+- « En faire un titre » change la ligne sur place : **plus de case, un point plein sur la ligne de la personne**, le texte en gras, dans l'écriture des prénoms, en 19 px (entre le prénom et les idées). Un titre n'a **ni lien, ni étoile**, et ne se coche pas : pas de « tout cocher ».
+- Son menu : « En refaire une idée », « Monter », « Descendre », « Déplacer vers… », « Supprimer la ligne ».
+- **La liste reste plate** : un titre couvre les idées qui le suivent, jusqu'au titre suivant ou à la fin de la partie de la personne. Ce qui ne va sous aucun titre se met au-dessus. Un titre se déplace comme une idée ; il ne déplace pas ses idées avec lui.
+- **La ligne qui part de l'icône de la personne ne s'interrompt pas** : elle traverse le point du titre comme elle traverse les cases.
+- Un titre ne compte pas comme une idée (« 5 idées »), et supprimer un titre ne supprime aucune idée.
+
+### Supprimer la ligne
+
+C'est ce que fait aujourd'hui une ligne vidée : l'idée s'en va, **après avoir demandé quand quelqu'un l'a déjà cochée**. Vider la ligne continue de marcher.
+
 ## Une idée qui n'a qu'un lien
 
 Bogue trouvé par Julien le 22 novembre 2026 : une idée écrite sans texte, avec seulement un lien, ne pouvait plus être modifiée ni effacée. Toucher la ligne ouvrait le lien, et rien d'autre ne se touchait.

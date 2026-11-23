@@ -2,11 +2,12 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-80 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+88 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
 | `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas | 103 |
+| `V3AccueilSansSecret` | Accueil · un événement que j’organise n’a pas de Secret Santa cette année : sa carte propose « Créer un Secret Santa », puis « Créer une liste de cadeaux » | 151 |
 | `V3AccueilAvantNoel` | Accueil · une fête qui n’est pas Noël et qui vient avant : elle est au-dessus de la saison de Noël, sans titre ; l’accueil suit les dates | 112 |
 | `V3ChargementAccueil` | Chargement · le nouvel accueil : le bonjour, le titre de la saison, des cartes d’événement avec leurs lignes | 099 |
 | `V3ChargementFete` | Chargement · la page d’un événement : la catégorie, le nom, la date, les membres, puis les Secret Santa et les listes | 099 |
@@ -30,7 +31,9 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |
 | `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « On t’invite au Secret Santa » (le nom du fichier est resté) | 116 |
 | `V3FeteMembresComplet` | Événement · complet, vu par l’organisateur : 30 membres, le lien du Secret Santa en pause | 117 |
-| `V3TirageNouveau` | Secret Santa · celui de l’année : la date de la fête est déjà là, et se change | 105 |
+| `V3TirageNouveau` | Secret Santa · celui de l’année : cinq lignes, puis la carte « Devine qui » sur « Toutes les paires » | 105, 150 |
+| `V3TirageNouveauQui` | Secret Santa · nouveau, « Devine qui » sur « Qui m’offre ? » : la phrase dit ce qui va se passer | 150 |
+| `V3TirageNouveauSans` | Secret Santa · nouveau, « Devine qui » sur « Sans » : le jeu est éteint | 150 |
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
 | `V3TirageNeutre` | Secret Santa · hors de Noël (catégorie « Autre ») : il garde son nom, « Secret Santa » ; aucun « Père Noël » | 105 |
@@ -75,6 +78,11 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeVisiteSecret1` à `V3ListeVisiteSecret6` | Visite · liste créée depuis un Secret Santa : ma partie, une idée par ligne, qui la voit, le nom et la date, repartir d’une liste, ajouter quelqu’un | 149 |
 | `V3ListeVisiteCreer1` à `V3ListeVisiteCreer3` | Visite · liste créée depuis « Créer » : le nom et la date, pour qui, personne ne la voit encore | 149 |
 | `V3ListeVisiteIdee` | Visite · depuis « Créer », la première personne ajoutée : une note sur sa première ligne | 149 |
+| `V3ListeLigneMenu` | Liste · la poignée de la ligne qu’on écrit, touchée : « Envie » et ses trois étoiles, « En faire un titre », « Monter », « Descendre », « Déplacer vers… », « Supprimer la ligne » | 152 |
+| `V3ListeLigneEtoiles` | Liste · trois étoiles choisies : elles se posent au bout de la ligne, on continue d’écrire | 152 |
+| `V3ListeLigneTitre` | Liste · « En faire un titre » touché : le point, le texte plus grand, plus de lien ; sa poignée propose « En refaire une idée » | 152 |
+| `V3ListeLigneDeplacer` | Liste · « Déplacer vers… » touché : les autres personnes de la liste ; en toucher une y envoie la ligne | 152 |
+| `V3ListeTitres` | Liste · ce que tout le monde lit : un titre sur la ligne de la personne, les étoiles au bout des idées | 152 |
 | `V3ListeReprise` | Liste · reprise de l’an dernier : dans sa fête, les idées pas offertes marquées pour moi seul | 108 |
 | `V3Admin` | Administration · le tableau de bord : des fêtes, plus de « Demandes » ; les limites atteintes se surveillent ; « Suspendre les nouveaux Secret Santa » | 109 |
 | `V3AdminComptes` | Administration · les comptes : plus de demande à traiter ; un compte à sa limite de Secret Santa se voit | 109 |

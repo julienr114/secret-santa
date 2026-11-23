@@ -8,18 +8,38 @@ C'est l'« édition » d'aujourd'hui : le tirage, ses règles, le suivi de l'org
 ## Le créer
 
 1. « Créer › Un Secret Santa », puis « Pour quelle occasion ? » (`accueil-et-creation.md`).
-2. Le formulaire (`V3TirageNouveau`), **sans aucun champ écrit sur place** : six lignes de la même forme, la valeur à droite, un chevron.
+2. Le formulaire (`V3TirageNouveau`), **sans aucun champ écrit sur place** : cinq lignes de la même forme, la valeur à droite, un chevron ; puis la carte « Devine qui ».
 
 | Ligne | Valeur de départ |
 |---|---|
 | Nom | « Noël 2027 » (la catégorie et l'année) |
 | Date | la date de l'événement cette année-là |
 | Budget | celui du Secret Santa précédent |
-| Devine qui | celui du Secret Santa précédent, sinon « Aucun pronostic » |
 | Petit mot pour les participants | « Aucun » |
 | Mot ajouté aux messages | celui du Secret Santa précédent, sinon « Aucun » |
 
-Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : « 5 membres repris du Secret Santa 2026. », puis « Créer le Secret Santa ». On ajuste les participants sur l'écran suivant, comme aujourd'hui.
+Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : la carte « Devine qui », « 5 membres repris du Secret Santa 2026. », puis « Créer le Secret Santa ».
+
+**« Devine qui » est mis en avant** (Julien, 23 novembre 2026 : « c'est le petit truc en plus de notre appli » ; maquettes `V3TirageNouveau`, `V3TirageNouveauQui`, `V3TirageNouveauSans`). Il sort des lignes :
+
+- **Une carte vert clair**, la couleur du jeu : **la loupe** blanche dans un rond vert, « Devine qui », et dessous « Le jeu qui pimente le Secret Santa. ».
+- **Le choix se fait dans la carte**, sans ouvrir de page : trois choix exclusifs (`UiSegmented`), **« Sans »**, **« Qui m'offre ? »**, **« Toutes les paires »**.
+- **Une phrase sous le choix dit ce qui va se passer**, et change avec lui. **Elle doit donner envie** (Julien : « qu'on voie que ça apporte du fun », surtout pour « Toutes les paires ») : le vocabulaire de l'enquête, celui de la loupe et du palmarès.
+
+| Choix | Phrase |
+|---|---|
+| Sans | Pas de jeu : le mystère reste entier. |
+| Qui m'offre ? | Chacun essaie de démasquer qui lui offre. Verdict le jour J. |
+| Toutes les paires | Tout le monde enquête : qui offre à qui ? Le jour J, les masques tombent et le palmarès sacre les meilleurs détectives. |
+
+- **Au départ : « Toutes les paires »** pour un premier Secret Santa ; ensuite, le choix du Secret Santa précédent. (Avant : « Aucun pronostic ».) La règle des quatre participants ne change pas : en dessous, le jeu ne s'ouvre pas, et la carte le dit à la place de la phrase (« À partir de quatre participants. »).
+- Les autres réglages du jeu (la fin des pronostics, le rappel, les emails) restent dans les réglages du Secret Santa.
+- **La loupe est l'icône du jeu partout** : la ligne « Devine qui » d'un événement, la carte de création, et **« Découvrir le palmarès »**, qui prend le même vert clair et la même loupe à la place du vert plein et de l'étoile (`DevinePalmares`).
+
+**Les deux mots disent où ils vont**, sur leur page (maquettes `EditionMot`, `GroupeMot`) :
+
+- « Petit mot pour les participants » : sous le titre, « Chaque participant le lit sous le résultat de son tirage, avec le titre « Le mot de l'organisateur ». » Pas d'aperçu : Julien l'a vu en maquette (une carte, puis un petit téléphone) et l'a écarté, la phrase suffit.
+- « Mot ajouté aux messages » : sous le titre, « Quand tu envoies son lien à quelqu'un, ou un rappel, ton mot part avec. Tu peux encore le changer au moment d'envoyer. » Pas d'aperçu ; « Où le placer » ne change pas. On ajuste les participants sur l'écran suivant, comme aujourd'hui.
 
 Il n'y a pas de réglage « Pistes de cadeaux » : voir plus bas.
 

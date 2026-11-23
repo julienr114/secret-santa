@@ -10,7 +10,7 @@ Vaut pour les écrans, les emails, les notifications, le journal et l'administra
 |---|---|
 | groupe | le nom de l'événement, ou « événement » quand il faut un nom commun |
 | édition | « Noël 2026 » (l'année de la fête), ou « le Secret Santa 2026 » |
-| tirage, pour désigner la chose | **Secret Santa** : « Le Secret Santa 2026 », « Un Secret Santa », « Organiser un Secret Santa », « Créer le Secret Santa », « Un autre Secret Santa » |
+| tirage, pour désigner la chose | **Secret Santa** : « Le Secret Santa 2026 », « Un Secret Santa », « Créer un Secret Santa », « Créer le Secret Santa », « Un autre Secret Santa » |
 | pistes de cadeaux, mes pistes | « Ma liste de cadeaux », « ses goûts », « ses idées » |
 | Lui demander des pistes | « Lui demander des idées » (toujours anonyme) |
 | a rempli ses pistes (suivi de l'organisateur) | « a écrit sa liste », sans jamais en montrer le contenu |
@@ -33,7 +33,7 @@ Décidé par Julien le 22 novembre 2026 : « Une liste » et « Ma liste » ne d
 - Dans « Créer » : **« Une liste de cadeaux »**.
 - Le titre de la ligne d'une liste que je tiens, sur l'accueil et sur la page d'un événement : **« Ma liste de cadeaux »**, et dessous **« Pour Léo, Zoé et moi »** (`lignes.md`).
 - La liste de quelqu'un d'autre reste « La liste de Camille » : le prénom dit déjà de quoi on parle.
-- Les boutons gardent leur forme courte là où le contexte le dit (« Nouvelle liste » sous « Les listes », « Écrire ma liste »).
+- Les boutons gardent leur forme courte là où le contexte le dit (« Écrire ma liste »). **Ce qui crée dit « Créer »** (Julien, 23 novembre 2026) : « Créer une liste de cadeaux », en toutes lettres, et « Créer un Secret Santa » ; plus de « Nouvelle liste » ni d'« Organiser un Secret Santa ».
 
 ## « Secret Santa » partout, « Père Noël » seulement à Noël
 

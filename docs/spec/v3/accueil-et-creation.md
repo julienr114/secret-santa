@@ -55,6 +55,7 @@ Maquette : `V3Accueil`.
   - Le décompte du titre ne dépend d'aucun événement : il compte jusqu'au **25 décembre à minuit**, toujours.
   - Dans la section, les événements sont dans l'ordre des dates, le plus proche en haut.
 - **Une carte par événement** : l'emoji de sa catégorie dans une tuile en couleur (`categories.md`, « L'icône d'un événement est une tuile en couleur »), son nom, sa date, une flèche (l'en-tête ouvre l'événement) ; dessous, ses Secret Santa et les listes de ses membres, au même niveau. Une liste dans deux événements apparaît dans les deux cartes (« aussi chez Mamie »).
+  - **En bas de la carte, ce qu'on peut y créer** (Julien, 23 novembre 2026 ; maquette `V3AccueilSansSecret`) : **« Créer un Secret Santa »** quand l'événement n'en a pas cette année et que je l'organise ; **« Créer une liste de cadeaux »** quand je n'y tiens aucune liste. Une ligne chacun, un « + » devant, la même écriture. Le Secret Santa est en premier dans un événement de catégorie Noël (c'est ce que la catégorie propose en premier, `categories.md`), la liste en premier ailleurs. « Créer un Secret Santa » ouvre le formulaire, l'occasion déjà choisie.
 - **L'ordre est celui des dates** (`2026-11-21-l-accueil-suit-les-dates.md`, maquette `V3AccueilAvantNoel`) : la section de Noël est posée à la place de son premier événement ; **un événement qui vient avant est au-dessus, sans titre** ; ce qui vient après est sous « Plus tard ». Sans section de Noël à venir : des cartes sans titre, puis « Bientôt ».
 - **« Bientôt »**, après la section de Noël : avec la date de naissance d'un proche, l'accueil propose **60 jours avant** « L'anniversaire de Zoé · dans 24 jours · ses 4 ans », avec « Préparer ». Un toucher ouvre « Pour quelle occasion ? » déjà rempli. Il ne propose ni mon propre anniversaire, ni celui qu'une de mes événements couvre déjà.
 - **« Plus tard »** : les événements qui viennent après la saison de Noël, par date.
@@ -67,7 +68,7 @@ L'accueil fait office de calendrier : pas d'écran à part. Pas de rubrique « R
 
 Maquette : `V3AccueilVide`. Il ne parle pas de « événement ». Deux cartes :
 
-- **Un Secret Santa** : « Chacun tire au sort la personne à qui il offre un cadeau. », bouton rouge « Organiser un Secret Santa ».
+- **Un Secret Santa** : « Chacun tire au sort la personne à qui il offre un cadeau. », bouton rouge « Créer un Secret Santa ».
 - **Une liste de cadeaux** : « Tes idées, que tes proches cochent pour ne pas offrir deux fois la même chose. », bouton « Écrire ma liste ».
 
 Les deux mènent à « Pour quelle occasion ? » (les catégories).

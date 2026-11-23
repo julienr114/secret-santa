@@ -10,7 +10,7 @@ Ce sont les pages du groupe d'aujourd'hui, avec leurs règles (README, sections 
 - En tête : la catégorie (« Noël · tous les ans »), le nom, la date de l'année et son décompte.
 - Les membres (une ligne, qui ouvre « Membres »).
 - Le ou les Secret Santa de l'année.
-- Les listes de ses membres ; « Nouvelle liste ».
+- Les listes de ses membres ; « Créer une liste de cadeaux », et « Créer un Secret Santa » quand l'événement n'en a pas cette année (pour ses organisateurs).
 - Les années passées.
 - Pour un membre : « Quitter cet événement ».
 - Pour l'organisateur : les réglages (une roue), « Un autre Secret Santa ».

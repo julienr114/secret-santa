@@ -1,6 +1,6 @@
 # 113 — V3 : la bascule (publier la V3)
 
-- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 116, 117, 120, 118, 119, 135, 136, 137
+- **Dépend de** : 102, 106, 107, 108, 110, 111, 112, 114, 115, 116, 117, 120, 118, 119, 135, 136, 137 ; et 138, 139, 140, 141, demandés avant la bascule le 23 novembre 2026
 - **Migration** : oui, c'est elle qu'on publie
 - **Maquettes** : aucune (c'est une marche à suivre)
 
@@ -77,6 +77,15 @@ Une phrase de plus pour ceux qui tenaient une liste partagée par lien : « Ta l
 - **L'heure creuse sans « Suspendre les emails »** : retirer les deux Cron Triggers dans le tableau de bord le temps de la bascule ; le déploiement de la V3 les remet depuis `wrangler.toml`.
 - ~~**Le mot**, dans les trois langues, en tête de « Quoi de neuf »~~ et ~~**l'email du lendemain** (`buildSwitchEmail`, `pnpm v3:mot`)~~ : faits (`c505206`, `f0b0a7a`), puis **retirés, Q-034 : pas de mot**. Partis avec eux : leurs textes dans les trois langues (`news.note.*`), leurs tests, l'exception `keys` du contrôle des mots (`scripts/controle.exceptions.json`) et son mécanisme, la recherche d'un `index.ts` de dossier dans `scripts/ts-resolve-hooks.mjs` (plus aucun script n'en a besoin). Le mécanisme du mot de l'application (ticket 120) reste, sans mot.
 
+### Repris le 23 novembre 2026, après les tickets 138 à 141
+
+- **Les dépendances** : 138, 139, 140 et 141 sont dans `fait/`, avec toutes les autres.
+- **Une migration de plus** : `0043_v3_giver_with_members` (ticket 139 : « Celui qui m'a tiré » et tous les membres d'un événement peuvent être là ensemble). `bascule-v3.md` dit maintenant dix migrations, `0034` à `0043`.
+- **`pnpm v3:essai` rejoué** sur une copie de forme V2 refabriquée (la base locale de `sauvegardes/state-v2`, copiée dans le dossier de travail de la session, montée à `0033` avec `sqlite3`, puis `.dump`) : les dix migrations passent, 24 groupes, 26 éditions, 9 listes avant ; 30 événements, 32 années, 26 Secret Santa, 10 listes, 10 rattachements après ; **aucun écart, aucune clé étrangère cassée**. La liste née de pistes est au stade `giver`, avec `giver` à vrai ; les autres rattachements à faux. Rien touché à `sauvegardes/state-v2`. (Cette copie n'a pas les pistes et le portrait ajoutés le 22 novembre pour Camille : d'où 10 listes au lieu de 11.)
+- **L'inventaire du 114, refait** : chaque page de `app/pages` a sa ligne dans `ARBORESCENCE.md` ; les pages retirées par le 139 (`/listes/[id]/inviter` et ses deux pages, `/listes/[id]/message`) mènent à la liste (`gonePathOf`), et `tests/routes.test.ts` rejoue toujours chaque adresse de `main`.
+- **`pnpm controle --e2e`** : passé après chacun des tickets 139-141 et 140 (984 tests Vitest, 204 tests Playwright).
+- La case de la copie du jour reste ouverte : elle attend l'export de Julien.
+
 ### Ce qui reste à Julien, dans l'ordre
 
 1. La copie du jour : les deux exports, `pnpm v3:essai sauvegardes/prod.sql --garder`, les trois requêtes (`bascule-v3.md`, partie 1). Puis cocher la case restée ouverte.
@@ -103,7 +112,7 @@ Aucune maquette.
 
 ### Migrations
 
-Aucune nouvelle. La bascule publie `0034` à `0042`.
+Aucune par ce ticket. La bascule publie `0034` à `0043` (la `0043` vient du ticket 139).
 
 ### Commits
 
@@ -116,3 +125,4 @@ Aucune nouvelle. La bascule publie `0034` à `0042`.
 - `d582583` chore(email): no email the day after the switch, pnpm v3:mot removed
 - `cfa2358` revert(news): no word of the switch at the top of « Quoi de neuf »
 - puis docs: no word at the switch (Q-034), avec ce compte rendu.
+- le 23 novembre : docs: ticket 113, the switch after tickets 138 to 141 (ce paragraphe, `bascule-v3.md` venant du commit du ticket 139).

@@ -344,6 +344,41 @@ export const useSaveSharingMutation = (id: Id) =>
   );
 
 /**
+ * « Lier à mon Secret Santa » (ticket 148): the list, to the Secret Santa
+ * of an event; linked elsewhere, it moves here.
+ * @param id - The list.
+ * @returns The mutation, with the event of the Secret Santa.
+ */
+export const useLinkDrawMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (partyId) =>
+      api(`/api/lists/${toValue(id)}/draw/${partyId}`, { method: 'PUT' }),
+    () => [
+      ...listKeys(toValue(id)),
+      keys.sharing(toValue(id)),
+      keys.home(),
+      ['p'],
+    ],
+  );
+
+/**
+ * « Délier », and the cross of « Celui qui m'a tiré » (ticket 148).
+ * @param id - The list.
+ * @returns The mutation, with the event of the Secret Santa.
+ */
+export const useUnlinkDrawMutation = (id: Id) =>
+  useApiMutation<{ ok: true }, string>(
+    (partyId) =>
+      api(`/api/lists/${toValue(id)}/draw/${partyId}`, { method: 'DELETE' }),
+    () => [
+      ...listKeys(toValue(id)),
+      keys.sharing(toValue(id)),
+      keys.home(),
+      ['p'],
+    ],
+  );
+
+/**
  * How many who ticked would lose the list with a narrower sharing.
  * @param id - The list.
  * @param ask - The sharing asked for.

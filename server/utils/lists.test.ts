@@ -18,6 +18,7 @@ import {
   listStatus,
   memberRemoval,
   noteOf,
+  drawListTitle,
   listIconOfParty,
   randomListIcon,
   shareChange,
@@ -463,5 +464,15 @@ describe('listIconOfParty', () => {
     });
     const drawn = listIconOfParty({ emoji: '🛸', color: null }, () => 0);
     expect(drawn).toEqual(randomListIcon(() => 0));
+  });
+});
+
+describe('drawListTitle', () => {
+  it('names the list for the Secret Santa, its name between brackets when needed', () => {
+    expect(drawListTitle('fr', null)).toBe('Idées pour le Secret Santa');
+    expect(drawListTitle('fr', 'Les adultes')).toBe(
+      'Idées pour le Secret Santa (Les adultes)',
+    );
+    expect(drawListTitle('en', null)).toBe('Ideas for the Secret Santa');
   });
 });

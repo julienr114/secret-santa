@@ -169,9 +169,24 @@ test('a list made from my Secret Santa has me on it, first, and starts from last
   await expect(people).toHaveCount(1);
   await expect(people.first()).toContainText('Inès');
   await expect(people.first().getByTestId('me-tag')).toHaveText('(moi)');
+  // Named for the Secret Santa, not the event (ticket 148).
+  await expect(page.getByTestId('list-title')).toHaveValue(
+    'Idées pour le Secret Santa',
+  );
+  // The pill opens what the link means, and leads to her page.
   const santa = people.first().getByTestId('person-santa');
   await expect(santa).toContainText('Secret Santa · Famille Lilas');
-  await expect(santa).toHaveAttribute('href', `/p/${state.tokens['Inès']}`);
+  await santa.click();
+  const sheet = page.getByTestId('link-sheet');
+  await expect(sheet).toContainText(
+    'Celui qui t’a tiré voit cette liste, en commençant par ta partie.',
+  );
+  await expect(sheet.getByTestId('link-see').getByRole('link')).toHaveAttribute(
+    'href',
+    `/p/${state.tokens['Inès']}`,
+  );
+  await page.keyboard.press('Escape');
+  await expect(sheet).toHaveCount(0);
   // « Repartir d'une liste », under her, before « Ajouter quelqu'un »:
   // last year's list, where she figures (Q-032).
   const block = page.getByTestId('resume-from');
@@ -285,6 +300,9 @@ test('the one who drew me reads my part first, and the rest by « Toute la liste
   await expect(people.first()).toContainText('Un bon couteau de cuisine');
   await expect(page.locator('body')).not.toContainText('Circuit de billes');
   await expect(page.locator('body')).not.toContainText(/tu as tiré/i);
+  // Neither the pill nor « Lier »: they are for those who hold the list.
+  await expect(page.getByTestId('person-santa')).toHaveCount(0);
+  await expect(page.getByTestId('person-link')).toHaveCount(0);
   // « Toute la liste »: everyone, her first, kept in the address.
   await filter.getByText('Toute la liste').click();
   await expect(page).toHaveURL(/[?&]tout=1/);
@@ -309,5 +327,67 @@ test('the one who drew me reads my part first, and the rest by « Toute la liste
   await hydrated(page);
   await expect(page.getByTestId('list-filter')).toHaveCount(0);
   await expect(people).toHaveCount(2);
+  await page.close();
+});
+
+test('from the list, the link is undone, made again, and moves', async () => {
+  const api = as('Inès').request;
+  const page = await open('Inès', `/listes/${state.inesList}`);
+  const me = page.getByTestId('list-person').first();
+  // « Délier »: the pill goes, « Lier à mon Secret Santa » comes; the list
+  // and its ideas stay; her Secret Santa asks again.
+  await me.getByTestId('person-santa').click();
+  await page.getByTestId('link-unlink').click();
+  await expect(page.getByText('Liste déliée', { exact: true })).toBeVisible();
+  await expect(me.getByTestId('person-santa')).toHaveCount(0);
+  await expect(me.getByTestId('idea-text')).toHaveText([
+    'Un bon couteau de cuisine',
+  ]);
+  const asked = await ok(await api.get(`/api/p/${state.tokens['Inès']}/list`));
+  expect(asked.list).toBeNull();
+  expect(asked.choices.map((one: { id: string }) => one.id)).toContain(
+    state.inesList,
+  );
+  // « Lier », after its question; closing it would have cancelled.
+  await me.getByTestId('person-link').click();
+  const ask = page.getByRole('dialog', { name: 'Lier à ton Secret Santa ?' });
+  await expect(ask).toContainText(
+    'Celui qui t’a tiré dans « Famille Lilas » verra cette liste, en commençant par ta partie.',
+  );
+  await ask.getByTestId('link-submit').click();
+  await expect(ask).toHaveCount(0);
+  await expect(me.getByTestId('person-santa')).toContainText(
+    'Secret Santa · Famille Lilas',
+  );
+  await expect(me.getByTestId('person-link')).toHaveCount(0);
+  expect(
+    (await ok(await api.get(`/api/p/${state.tokens['Inès']}/list`))).list,
+  ).toBe(state.inesList);
+
+  // A Secret Santa has only one list: linked to another, it moves there.
+  const other = await listWithMe(
+    api,
+    { title: 'Noël à part', eventDate: '2026-12-25' },
+    'Lou',
+    { mine: [], theirs: [] },
+  );
+  const doc = await ok(await api.get(`/api/lists/${state.inesList}`));
+  const { partyId } = doc.santas[0];
+  // Nobody else may link a list that is not theirs.
+  const refused = await as('Hugo').request.put(
+    `/api/lists/${other}/draw/${partyId}`,
+  );
+  expect(refused.ok()).toBe(false);
+  const moved = await ok(await api.get(`/api/lists/${other}`));
+  expect(moved.linkable).toEqual([
+    { partyId, name: 'Famille Lilas', linkedTo: 'Idées pour le Secret Santa' },
+  ]);
+  await ok(await api.put(`/api/lists/${other}/draw/${partyId}`));
+  expect(
+    (await ok(await api.get(`/api/p/${state.tokens['Inès']}/list`))).list,
+  ).toBe(other);
+  await page.reload();
+  await hydrated(page);
+  await expect(me.getByTestId('person-santa')).toHaveCount(0);
   await page.close();
 });

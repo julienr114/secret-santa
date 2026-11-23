@@ -30,7 +30,12 @@ import { listYear, pastBand, type PastBand } from '#shared/utils/years';
 import { loadYears, timelineOf } from '#server/database/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
-import { santaLinesOf, type SantaLine } from '#server/database/drawLists';
+import {
+  linkChoicesOf,
+  santaLinesOf,
+  type LinkChoice,
+  type SantaLine,
+} from '#server/database/drawLists';
 import {
   accountsWhereShared,
   membersSeeing,
@@ -419,11 +424,16 @@ export type ListDocument = {
   /** The band of a list of a year over (ticket 119), or null. */
   past: PastListBand | null;
   /**
-   * « Secret Santa · Famille Camille » under my own name (ticket 136,
-   * V3ListeSecret): one per Secret Santa where I take part, in an event
-   * the list is shared in, each leading to my page there.
+   * « Secret Santa · Famille Camille » under my own name (tickets 136,
+   * 148, V3ListeSecret): one per Secret Santa where I take part whose
+   * event the list is linked to, each leading to my page there.
    */
   santas: SantaLine[];
+  /**
+   * What « Lier à mon Secret Santa » offers under my name (ticket 148),
+   * for one who manages the list and figures on it: empty otherwise.
+   */
+  linkable: LinkChoice[];
   /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
@@ -623,33 +633,47 @@ export const listDocument = async (
         ? await resumedFromOf(db, list, list.carriedFrom)
         : null,
     past: await pastBandOf(db, list, accountId),
-    santas: await mySantaLines(db, list.id, people, accountId, dataKey),
+    ...(await mySantaLines(
+      db,
+      list.id,
+      people,
+      { id: accountId, manages },
+      dataKey,
+    )),
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
   };
 };
 
 /**
- * The Secret Santa under my name on a list, when I figure on it (ticket
- * 136): none otherwise.
+ * The Secret Santa under my name on a list, when I figure on it (tickets
+ * 136, 148): those it is linked to, and those it may be linked to when I
+ * manage it; none otherwise.
  * @param db - The database.
  * @param listId - The list.
  * @param people - Its people.
- * @param accountId - The holder looking.
+ * @param viewer - The holder looking.
+ * @param viewer.id - Their account.
+ * @param viewer.manages - Whether they manage the list.
  * @param dataKey - The key of the personal links.
- * @returns The lines.
+ * @returns The pills and the choices of « Lier ».
  */
 const mySantaLines = async (
   db: Db,
   listId: string,
   people: readonly ListPerson[],
-  accountId: string,
+  viewer: { id: string; manages: boolean },
   dataKey: CryptoKey,
-): Promise<SantaLine[]> => {
-  if (!people.some((person) => person.member.accountId === accountId)) {
-    return [];
+): Promise<{ santas: SantaLine[]; linkable: LinkChoice[] }> => {
+  const none = { santas: [], linkable: [] };
+  if (!people.some((person) => person.member.accountId === viewer.id)) {
+    return none;
   }
-  const account = await findAccountById(db, accountId);
-  return account ? santaLinesOf(db, listId, account, dataKey) : [];
+  const account = await findAccountById(db, viewer.id);
+  if (!account) return none;
+  return {
+    santas: await santaLinesOf(db, listId, account, dataKey),
+    linkable: viewer.manages ? await linkChoicesOf(db, listId, account) : [],
+  };
 };
 
 /**

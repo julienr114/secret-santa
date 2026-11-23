@@ -675,6 +675,8 @@ onBeforeRouteLeave((to) => {
               :last="row.index === people.length - 1"
               :single="doc.single"
               :santas="row.person.member.isSelf ? doc.santas : []"
+              :linkable="row.person.member.isSelf ? doc.linkable : []"
+              :manages="doc.manages"
             />
           </template>
         </div>

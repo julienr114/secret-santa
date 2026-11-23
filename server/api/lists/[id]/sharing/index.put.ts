@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { findAccountById } from '#server/database/accounts';
+import { unlinkElsewhere } from '#server/database/drawLists';
 import { forgetCarried } from '#server/database/lists';
 import { saveSharing, sharingOptions } from '#server/database/listSharing';
 import { nowIso } from '#server/http/context';
@@ -37,6 +38,12 @@ export default defineEventHandler(async (event) => {
     body.givers.some((id) => !drawn.has(id))
   ) {
     throw createError({ statusCode: 403, statusMessage: 'forbidden' });
+  }
+  // A Secret Santa has only one list (ticket 148): added here, it leaves
+  // the other.
+  for (const id of body.givers) {
+    const option = options.find((one) => one.id === id);
+    if (!option?.giver) await unlinkElsewhere(db, account.id, list.id, id);
   }
   await saveSharing(
     db,

@@ -36,10 +36,14 @@ const props = defineProps<{
    */
   single?: boolean;
   /**
-   * « Secret Santa · Famille Camille » under my own name (ticket 136,
-   * V3ListeSecret), each leading to my page there.
+   * « Secret Santa · Famille Camille » under my own name (tickets 136,
+   * 148, V3ListeSecret): a pill that opens the sheet of the link.
    */
   santas?: ListDocument['santas'];
+  /** What « Lier à mon Secret Santa » offers under my name (ticket 148). */
+  linkable?: ListDocument['linkable'];
+  /** Whether I manage the list. */
+  manages?: boolean;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -324,24 +328,13 @@ const explained = ref<string | null>(null);
         <p v-if="details" class="text-sm leading-[1.4] text-toned">
           {{ details }}
         </p>
-        <NuxtLink
-          v-for="santa in santas"
-          :key="santa.path"
-          :to="santa.path"
-          class="relative inline-flex h-5 max-w-full items-center gap-1 self-start rounded-full bg-peach-100 pr-2 pl-1.5 text-[11.5px] font-bold text-toned before:absolute before:-inset-y-3 before:inset-x-0"
-          data-testid="person-santa"
-          data-no-drag
-        >
-          <span
-            v-if="santa.emoji"
-            class="shrink-0 text-[11px]"
-            aria-hidden="true"
-            >{{ santa.emoji }}</span
-          >
-          <span class="min-w-0 truncate">{{
-            t('lists.doc.santa', { name: santa.name })
-          }}</span>
-        </NuxtLink>
+        <ListsDrawLink
+          v-if="member.isSelf"
+          :list-id="listId"
+          :santas="santas ?? []"
+          :linkable="linkable ?? []"
+          :manages="manages"
+        />
       </div>
       <UDropdownMenu
         v-model:open="menuOpen"

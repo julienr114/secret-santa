@@ -310,3 +310,11 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeSecret`, `V3ListeSecretNouvelle` | L'icône de la personne reste le rond de 40 px de la liste (prénom de 24 px), pas 52 px (prénom de 26 px) : le prénom et la pastille, centrés sur elle, la dépassent de quelques pixels. La pastille garde sa zone à toucher de 44 px, sans changer sa hauteur de 20 px. | Seul (la taille de toutes les personnes d'une liste) |
 | `V3ListeMotAccueil` | Le mot proposé est le même pour toutes les catégories (« Quelques idées pour t'éviter de chercher… ») : aucun texte par catégorie n'est écrit dans la spec. | Seul |
 | `V3ListeNouvelle` | Le crayon d'« Ajouter un mot d'accueil » est l'icône Lucide `pencil` de 12 px. | Seul |
+
+## Lier et délier une liste d'un Secret Santa (ticket 148)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3ListeSecretLie` | « Délier » n'est que pour ceux qui gèrent la liste (comme son partage) ; celui qui aide à l'écrire n'a que « Voir mon Secret Santa ». | Seul |
+| `V3ListeSecretLier` | L'icône de « Lier à mon Secret Santa » est le `link` de Lucide, 12 px. La ligne n'est là que si l'un de mes Secret Santa de l'année, tiré, n'a pas de liste. | Seul |
+| `V3ListeSecretLierConfirmer` | Avec plusieurs Secret Santa, le panneau les propose dans `UiChoiceList` (un rond chacun), au-dessus de « Lier » ; le premier sans liste est choisi d'avance, et la phrase suit celui qui est choisi. Un Secret Santa déjà lié à une autre liste y est aussi, avec « Il ne sera plus lié à « … ». ». | Seul |

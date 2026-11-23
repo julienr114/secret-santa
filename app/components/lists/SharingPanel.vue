@@ -10,6 +10,7 @@ import {
   sharingImpact,
   useListSharingQuery,
   useSaveSharingMutation,
+  useUnlinkDrawMutation,
 } from '~/composables/queries/useLists';
 
 // « Qui voit ta liste ? », the first level of the bar of a list once
@@ -39,6 +40,7 @@ const query = useListSharingQuery(
   () => true,
 );
 const save = useSaveSharingMutation(() => props.listId);
+const unlink = useUnlinkDrawMutation(() => props.listId);
 
 // The gesture being saved shows at once.
 const pending = ref<SharingAsk | null>(null);
@@ -68,7 +70,9 @@ const canRenew = computed(
   () => isPublic.value || (query.data.value?.invite ?? false),
 );
 const checking = ref(false);
-const busy = computed(() => save.isPending.value || checking.value);
+const busy = computed(
+  () => save.isPending.value || unlink.isPending.value || checking.value,
+);
 /** The sharing as it stands, with one change. */
 const changed = (change: Partial<SharingAsk>): SharingAsk => ({
   ...sharingAsk(options.value, isPublic.value),
@@ -137,16 +141,24 @@ const onRemoveEvent = async (option: SharingOption) => {
 };
 
 /**
- * The cross of « Celui qui m'a tiré »: it goes at once.
+ * The cross of « Celui qui m'a tiré »: it goes at once, as « Délier »
+ * under my name (ticket 148, one way in the code).
  * @param option - The event of the Secret Santa.
  * @returns Nothing.
  */
-const onRemoveGiver = (option: SharingOption) =>
-  apply({
+const onRemoveGiver = (option: SharingOption) => {
+  pending.value = changed({
     givers: sharingAsk(options.value, isPublic.value).givers.filter(
       (id) => id !== option.id,
     ),
   });
+  unlink.mutate(option.id, {
+    onError: (error) => toast.failed(errorMessage(error)),
+    onSettled: () => {
+      pending.value = null;
+    },
+  });
+};
 
 /**
  * A pill of « Ajouter »: an event, with all its members. « Ajouter »

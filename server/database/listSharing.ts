@@ -574,49 +574,58 @@ export const membersOf = async (db: Db, partyIds: readonly string[]) =>
         );
 
 /**
- * The list I hold for an event: made for it, or shared in it; the most
- * recently changed.
+ * The lists I hold linked to the Secret Santa of an event (« Celui qui m'a
+ * tiré », ticket 148), of any year, the most recently changed first.
+ * Made for the event or shared with all its members, a list is not linked.
  * @param db - The database.
  * @param accountId - My account.
  * @param partyId - The event.
- * @returns The list, with since when it is public, or null.
+ * @returns The lists.
  */
-export const findMyListFor = async (
-  db: Db,
-  accountId: string,
-  partyId: string,
-) => {
-  const held = await db
+export const linkedListsOf = (db: Db, accountId: string, partyId: string) =>
+  db
     .select({
       id: giftLists.id,
+      title: giftLists.title,
       sharedAt: giftLists.sharedAt,
       eventDate: giftLists.eventDate,
       createdAt: giftLists.createdAt,
     })
     .from(giftListHolders)
     .innerJoin(giftLists, eq(giftLists.id, giftListHolders.listId))
-    .leftJoin(
+    .innerJoin(
       giftListParties,
       and(
         eq(giftListParties.listId, giftLists.id),
         eq(giftListParties.partyId, partyId),
+        eq(giftListParties.giver, true),
       ),
     )
-    .where(
-      and(
-        eq(giftListHolders.accountId, accountId),
-        or(
-          eq(giftLists.partyId, partyId),
-          eq(giftListParties.partyId, partyId),
-        ),
-      ),
-    )
+    .where(eq(giftListHolders.accountId, accountId))
     .orderBy(desc(giftLists.updatedAt));
+
+/**
+ * The list of my Secret Santa for an event (tickets 107, 136, 148): the
+ * one I hold linked to it, of its current year. Unlinked, there is none:
+ * « Ma liste de cadeaux » asks again.
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param partyId - The event.
+ * @returns The list, with its name and since when it is public, or null.
+ */
+export const findMyListFor = async (
+  db: Db,
+  accountId: string,
+  partyId: string,
+) => {
+  const held = await linkedListsOf(db, accountId, partyId);
   if (held.length === 0) return null;
   // A list of a year over stays there (ticket 108).
   const current = await currentYearOf(db, partyId);
   const list = held.find((row) => !current || listYear(row) >= current.year);
-  return list ? { id: list.id, sharedAt: list.sharedAt } : null;
+  return list
+    ? { id: list.id, title: list.title, sharedAt: list.sharedAt }
+    : null;
 };
 
 /**

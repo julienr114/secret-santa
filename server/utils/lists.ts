@@ -6,6 +6,7 @@
 // from one list to the next.
 import { z } from 'zod';
 import type { Avatar } from './avatars';
+import { translate, type Locale } from '#shared/i18n';
 
 export const LIST_TITLE_MAX = 80;
 export const LIST_NOTE_MAX = 500;
@@ -661,3 +662,17 @@ export const memberRemoval = (
       places.reduce((sum, place) => sum + place.offList, 0),
   };
 };
+
+/**
+ * The name of a list made from my Secret Santa (docs/spec/v3/listes.md,
+ * « Depuis mon Secret Santa », ticket 148): not the event's, already in
+ * the bar and on the home; the Secret Santa between brackets when the
+ * event has several that year.
+ * @param locale - My language.
+ * @param santa - The Secret Santa's name when it must be said, or null.
+ * @returns « Idées pour le Secret Santa (Les adultes) ».
+ */
+export const drawListTitle = (locale: Locale, santa: string | null): string =>
+  santa
+    ? translate(locale, 'lists.doc.drawTitleOf', { name: santa })
+    : translate(locale, 'lists.doc.drawTitle');

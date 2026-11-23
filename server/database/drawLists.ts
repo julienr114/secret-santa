@@ -13,7 +13,7 @@ import {
   type PartyRow,
 } from './schema';
 import { createList, ensureSelf, forgetCarried } from './lists';
-import { currentYearOf, occasionDate } from './listSharing';
+import { currentYearOf, linkedListsOf, occasionDate } from './listSharing';
 import { personalPath } from './participations';
 import { newId } from '#server/http/context';
 import { invitePlace } from '#server/utils/invite';
@@ -50,25 +50,28 @@ const selfOf = async (db: Db, accountId: string): Promise<string | null> => {
 
 /**
  * A new list from my Secret Santa (V3ListeSecretNouvelle): made for its
- * event, with its name, date and icon, and me on it already, first.
+ * event, with its date and icon, and me on it already, first.
  * Without the ideas of my last list: « Repartir d'une liste » offers
  * them (Q-032).
  * @param db - The database.
  * @param accountId - My account.
  * @param party - The event of the draw.
+ * @param title - Its name, « Idées pour le Secret Santa » (ticket 148:
+ * `drawListTitle`).
  * @returns The list, and my place on it (null before I have a first name).
  */
 export const newListForDraw = async (
   db: Db,
   accountId: string,
   party: PartyRow,
+  title: string,
 ): Promise<{ id: string; selfPersonId: string | null }> => {
   const id = await createList(db, accountId, {
     icon: listIconOfParty(
       { emoji: partyEmoji(party), color: party.iconColor },
       (n) => crypto.getRandomValues(new Uint32Array(1))[0]! % n,
     ),
-    title: party.name,
+    title,
     eventDate: await occasionDate(db, party),
     partyId: party.id,
   });
@@ -277,8 +280,159 @@ export const giveListToDraw = async (
   await forgetCarried(db, listId);
 };
 
+/**
+ * Unlinks a list from the Secret Santa of an event (ticket 148): the one
+ * who drew me no longer sees it by this way. Shared with all the members
+ * of the event, it stays so; otherwise the event leaves its sharing.
+ * Nothing else changes: its ideas, its ticks. The cross of « Celui qui
+ * m'a tiré » in « Qui voit ta liste ? » does the same.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param partyId - The event of the Secret Santa.
+ * @returns Once saved.
+ */
+export const unlinkDraw = async (db: Db, listId: string, partyId: string) => {
+  const where = and(
+    eq(giftListParties.listId, listId),
+    eq(giftListParties.partyId, partyId),
+  );
+  await db.batch([
+    db
+      .delete(giftListParties)
+      .where(and(where, eq(giftListParties.visibility, 'giver'))),
+    db.update(giftListParties).set({ giver: false }).where(where),
+  ]);
+};
+
+/**
+ * Links a list I hold to the Secret Santa of an event (ticket 148). A
+ * Secret Santa has only one list: linked elsewhere, it moves here.
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param listId - The list.
+ * @param partyId - The event of the Secret Santa.
+ * @param now - ISO date.
+ * @returns Once saved.
+ */
+export const linkDraw = async (
+  db: Db,
+  accountId: string,
+  listId: string,
+  partyId: string,
+  now: string,
+) => {
+  await unlinkElsewhere(db, accountId, listId, partyId);
+  await giveListToDraw(db, listId, partyId, now);
+};
+
+/**
+ * Unlinks from the Secret Santa of an event the other lists I hold: a
+ * Secret Santa has only one list (ticket 148).
+ * @param db - The database.
+ * @param accountId - My account.
+ * @param listId - The list it is linked to now.
+ * @param partyId - The event of the Secret Santa.
+ * @returns Once saved.
+ */
+export const unlinkElsewhere = async (
+  db: Db,
+  accountId: string,
+  listId: string,
+  partyId: string,
+) => {
+  const others = (await linkedListsOf(db, accountId, partyId)).filter(
+    (list) => list.id !== listId,
+  );
+  for (const other of others) await unlinkDraw(db, other.id, partyId);
+};
+
+/** A Secret Santa « Lier à mon Secret Santa » offers (ticket 148). */
+export type LinkChoice = {
+  partyId: string;
+  /** The event, with the Secret Santa between brackets when it has several. */
+  name: string;
+  /** The list it is linked to now, by name, or null. */
+  linkedTo: string | null;
+};
+
+/**
+ * What « Lier à mon Secret Santa » offers on a list I hold and figure on
+ * (V3ListeSecretLier): my Secret Santa of their current year whose draw is
+ * done, not linked to this list, each with the list it is linked to.
+ * Never who drew me.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param account - Me.
+ * @param account.id - My account.
+ * @param account.email - My address, as the participants carry it.
+ * @returns The choices, by name.
+ */
+export const linkChoicesOf = async (
+  db: Db,
+  listId: string,
+  account: { id: string; email: string },
+): Promise<LinkChoice[]> => {
+  const rows = await db
+    .select({
+      partyId: parties.id,
+      partyName: parties.name,
+      yearId: secretSantas.yearId,
+      label: secretSantas.label,
+    })
+    .from(secretSantas)
+    .innerJoin(parties, eq(parties.id, secretSantas.partyId))
+    .innerJoin(
+      participations,
+      eq(participations.secretSantaId, secretSantas.id),
+    )
+    .innerJoin(persons, eq(persons.id, participations.personId))
+    .where(
+      and(eq(persons.email, account.email), eq(secretSantas.status, 'drawn')),
+    );
+  if (rows.length === 0) return [];
+  const siblings = await db
+    .select({ yearId: secretSantas.yearId })
+    .from(secretSantas)
+    .where(
+      inArray(secretSantas.yearId, [...new Set(rows.map((row) => row.yearId))]),
+    );
+  const choices = await Promise.all(
+    rows.map(async (row): Promise<LinkChoice | null> => {
+      const current = await currentYearOf(db, row.partyId);
+      if (current && current.id !== row.yearId) return null;
+      const linked = await linkedListsOf(db, account.id, row.partyId);
+      if (linked.some((list) => list.id === listId)) return null;
+      const other = linked.find(
+        (list) => !current || listYear(list) >= current.year,
+      );
+      return {
+        partyId: row.partyId,
+        name: invitePlace(
+          row.partyName,
+          subjectSantaName(
+            row.label,
+            siblings.filter((one) => one.yearId === row.yearId).length,
+          ),
+        ),
+        linkedTo: other ? other.title : null,
+      };
+    }),
+  );
+  return choices
+    .filter((choice): choice is LinkChoice => choice !== null)
+    .filter(
+      (choice, at, all) =>
+        all.findIndex((one) => one.partyId === choice.partyId) === at,
+    )
+    .toSorted((a, b) => a.name.localeCompare(b.name));
+};
+
 /** « Secret Santa · Famille Camille » under my name on a list. */
 export type SantaLine = {
+  /** The event of the Secret Santa: what the link is about. */
+  partyId: string;
+  /** Its category, for the tile of the sheet of the link. */
+  category: PartyCategory;
   /** The event, with the Secret Santa between brackets when it has several. */
   name: string;
   /** My page in it. */
@@ -288,10 +442,11 @@ export type SantaLine = {
 };
 
 /**
- * The Secret Santa under my name on a list (V3ListeSecret): one line per
- * Secret Santa not closed where I take part, in an event the list is
- * shared in (all its members, or the one who drew me). Each leads to my
- * page there. For those who hold the list, under their own name only.
+ * The Secret Santa under my name on a list (V3ListeSecret): one pill per
+ * Secret Santa not closed where I take part, whose event the list is
+ * linked to (« Celui qui m'a tiré », ticket 148: shared with all its
+ * members only, it is not). Each leads to my page there. For those who
+ * hold the list, under their own name only.
  * @param db - The database.
  * @param listId - The list.
  * @param account - Me.
@@ -328,6 +483,7 @@ export const santaLinesOf = async (
     .where(
       and(
         eq(giftListParties.listId, listId),
+        eq(giftListParties.giver, true),
         eq(persons.email, account.email),
         ne(secretSantas.status, 'closed'),
       ),
@@ -341,6 +497,8 @@ export const santaLinesOf = async (
     );
   const lines = await Promise.all(
     rows.map(async (row) => ({
+      partyId: row.partyId,
+      category: row.category,
       name: invitePlace(
         row.partyName,
         subjectSantaName(

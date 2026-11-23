@@ -187,7 +187,9 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(page.getByTestId('share-stage')).toContainText(
     'Seul celui qui t’a tiré la voit',
   );
-  await expect(page.getByTestId('list-title')).toHaveValue('Famille Lutins');
+  await expect(page.getByTestId('list-title')).toHaveValue(
+    'Idées pour le Secret Santa',
+  );
   // « Modifier » unrolls the bar: « Celui qui m’a tiré » is a line of its
   // own (V3ListeQuiSecret). The event's members may see it too: two lines
   // together; taking the event away again leaves « Celui qui m’a tiré ».

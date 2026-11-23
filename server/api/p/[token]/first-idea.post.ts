@@ -12,6 +12,7 @@ import {
   findList,
 } from '#server/database/lists';
 import { newListForDraw } from '#server/database/drawLists';
+import { santaNameForSubject } from '#server/database/editions';
 import { myListFor } from '#server/database/listSharing';
 import { familyMembers } from '#server/database/schema';
 import { optionalAccount } from '#server/http/auth';
@@ -20,7 +21,7 @@ import { tellNewIdeas } from '#server/database/newsEvents';
 import { requirePersonalLink } from '#server/http/personal';
 import { validatedBody } from '#server/http/validate';
 import { avatarOf } from '#server/utils/avatars';
-import { IDEA_TEXT_MAX } from '#server/utils/lists';
+import { drawListTitle, IDEA_TEXT_MAX } from '#server/utils/lists';
 import { localeOf } from '#shared/i18n';
 import { HINT_TEXT_MAX } from '#shared/utils/hints';
 
@@ -46,7 +47,7 @@ const refuse = (statusMessage: string) =>
   createError({ statusCode: 409, statusMessage });
 
 export default defineEventHandler(async (event) => {
-  const { db, person, group } = await requirePersonalLink(event);
+  const { db, person, group, edition } = await requirePersonalLink(event);
   const { text, lately } = await validatedBody(event, bodySchema);
   if (await optionalAccount(event)) throw refuse('already_logged_in');
   if (!person.email) throw refuse('email_needed');
@@ -81,7 +82,15 @@ export default defineEventHandler(async (event) => {
     account.id,
     group,
     async () => {
-      const list = await newListForDraw(db, account.id, group);
+      const list = await newListForDraw(
+        db,
+        account.id,
+        group,
+        drawListTitle(
+          localeOf(person.language),
+          await santaNameForSubject(db, edition),
+        ),
+      );
       made.selfPersonId = list.selfPersonId;
       return list.id;
     },

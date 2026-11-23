@@ -6,6 +6,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## La barre déroulée passe par-dessus la liste (V3, ticket 138)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| Toutes les déroulées | Toucher en dehors de la barre la replie et ne fait que cela : ce qui était sous le doigt n'est ni pressé ni sélectionné (la barre du haut et celle du bas comprises). Le focus revient au bouton, comme avec « Fermer ». | Seul |
+| `V3ListeQui`, `V3ListeQuiModifier`, `V3ListeQuiSecret`, `V3ListeQuiLien`, `V3ListeLienChanger`, `V3ListeQuiRetirer` | Le contenu de la barre reste celui du ticket 135 (les événements à cocher, l'interrupteur, « Enregistrer ») : les maquettes montrent déjà « Qui je veux » / « Tout le monde », qui est le ticket 139. | Ticket 138 (« Hors périmètre ») |
+
 ## La barre d'une liste se déroule (V3, ticket 135)
 
 | Maquette | Ce que fait le code | Décidé par |

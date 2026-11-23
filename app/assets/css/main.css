@@ -195,6 +195,9 @@
   /* A card: no blurred shadow, a peach edge and a plain band under it. */
   --shadow-card:
     0 3px 0 var(--color-peach-200), 0 0 0 1.5px var(--color-peach-200);
+  /* What floats over the page, unrolled (the bar of a list): a blurred
+     shadow, deeper than a card's. */
+  --shadow-raised: 0 18px 40px rgb(41 37 36 / 0.24);
   /* The palmarès in the journal: a plain green card on its darker band. */
   --shadow-award: 0 3px 0 var(--color-mint-700);
 }

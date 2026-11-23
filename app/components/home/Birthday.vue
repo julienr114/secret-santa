@@ -25,12 +25,7 @@ const when = computed(() =>
     class="flex items-center gap-2.5 rounded-[28px] border-[1.5px] border-dashed border-peach-300 py-3 pr-3 pl-4"
     data-testid="home-birthday"
   >
-    <span
-      class="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-lilac-100 text-base"
-      aria-hidden="true"
-    >
-      <UiEmoji :emoji="emoji" />
-    </span>
+    <UiEventTile :emoji="emoji" category="birthday" :size="32" />
     <span class="flex min-w-0 grow flex-col">
       <span class="font-display text-[17px] leading-tight font-bold">{{
         t('party.create.birthdayOf', { name: birthday.firstName })

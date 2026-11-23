@@ -11,7 +11,6 @@ import {
   useListSharingQuery,
   useSaveSharingMutation,
 } from '~/composables/queries/useLists';
-import { categoryTint } from '~/utils/categories';
 
 // « Qui voit ta liste ? », the first level of the bar of a list once
 // unrolled (docs/spec/v3/listes.md, tickets 139 and 141; V3ListeQui,
@@ -279,11 +278,11 @@ const PILL =
             class="border-b border-default"
             :data-testid="`sharing-event-${option.slug}`"
           >
-            <span
-              aria-hidden="true"
-              :class="[SQUARE, categoryTint(option.category)]"
-              >{{ option.emoji ?? '🎁' }}</span
-            >
+            <UiEventTile
+              :emoji="option.emoji ?? '🎁'"
+              :category="option.category"
+              :size="28"
+            />
             <span class="flex min-w-0 grow flex-col">
               <span class="truncate font-semibold">{{ option.name }}</span>
               <span class="truncate text-[13px] text-toned">{{

@@ -90,6 +90,7 @@ const games = computed(
             :key="santa.id"
             icon="i-lucide-mail"
             icon-tone="neutral"
+            bare-icon
             :title="santaTitle(santa.label)"
             :subtitle="
               santa.gaveTo
@@ -103,6 +104,7 @@ const games = computed(
             :key="`${santa.id}-game`"
             icon="i-lucide-trophy"
             icon-tone="neutral"
+            bare-icon
             :title="t('party.past.game')"
             :subtitle="t('party.past.palmares')"
             :to="santa.game ?? undefined"
@@ -120,6 +122,7 @@ const games = computed(
             :avatar="list.owner?.avatar"
             :icon="list.owner ? undefined : 'i-lucide-list-checks'"
             icon-tone="lilac"
+            bare-icon
             :title="words.part(list.title)"
             :subtitle="listText(list)"
             :to="list.to"

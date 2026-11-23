@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { HomeParty } from '#server/database/homeParties';
 import { partyEmoji } from '#shared/utils/categories';
-import { categoryTint } from '~/utils/categories';
 import { formatShortDay } from '~/utils/labels';
 import { usePrepareYearMutation } from '~/composables/queries/useParty';
 
@@ -9,6 +8,8 @@ import { usePrepareYearMutation } from '~/composables/queries/useParty';
 // its header opens it; below, its Secret Santas (and their « Devine
 // qui ») and the lists of its members, at the same level, each with its
 // title, its text and maybe a red dot (lignes.md, tickets 112 and 120).
+// The event in its tile in colour, the lines under it with their icon
+// alone (ticket 143).
 // « Nouvelle liste » while I have none in it. Two months before an event
 // that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 » for
 // its organiser, « Reprendre ma liste de l'an dernier » for whoever held
@@ -44,13 +45,7 @@ const hasMine = computed(() => props.party.lists.some((list) => list.mine));
       :to="`/e/${party.slug}`"
       class="flex min-h-14 items-center gap-2.5 px-4 py-2.5 transition-colors active:bg-muted"
     >
-      <span
-        class="flex size-8 shrink-0 items-center justify-center rounded-[9px] text-base"
-        :class="categoryTint(party.category)"
-        aria-hidden="true"
-      >
-        <UiEmoji v-if="emoji" :emoji="emoji" />
-      </span>
+      <UiEventTile :emoji="emoji" :category="party.category" :size="44" />
       <h3 class="min-w-0 grow font-display text-lg leading-tight font-bold">
         {{ party.name }}
       </h3>
@@ -69,6 +64,7 @@ const hasMine = computed(() => props.party.lists.some((list) => list.mine));
         <UiListItem
           icon="i-lucide-mail"
           icon-tone="neutral"
+          bare-icon
           :title="
             party.secretSantas.length > 1
               ? santa.label
@@ -83,6 +79,7 @@ const hasMine = computed(() => props.party.lists.some((list) => list.mine));
           v-if="santa.game"
           icon="i-lucide-circle-help"
           icon-tone="neutral"
+          bare-icon
           :title="t('lines.game.title')"
           :subtitle="words.line(santa.game.line)"
           :dot="santa.game.line.dot ? t('lines.dot') : undefined"
@@ -95,6 +92,7 @@ const hasMine = computed(() => props.party.lists.some((list) => list.mine));
         :key="list.id"
         icon="i-lucide-list-checks"
         icon-tone="lilac"
+        bare-icon
         :title="words.part(list.title)"
         :subtitle="words.line(list.line)"
         :dot="list.line?.dot ? t('lines.dot') : undefined"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { partyEmoji } from '#shared/utils/categories';
 import { usePastEventsQuery } from '~/composables/queries/useParty';
-import { categoryTint } from '~/utils/categories';
 
 // « Les événements passés » (ticket 108, docs/spec/v3/accueil-et-creation.md,
 // V3FetesPassees): by year, the latest first, a line per event and year
@@ -42,13 +41,11 @@ const { lineText } = usePastText();
           :subtitle="lineText(line.date, line.deed, line.forWhom) || undefined"
         >
           <template #leading>
-            <span
-              class="flex size-9 shrink-0 items-center justify-center rounded-[9px] text-lg"
-              :class="categoryTint(line.category)"
-              aria-hidden="true"
-            >
-              <UiEmoji v-if="partyEmoji(line)" :emoji="partyEmoji(line)!" />
-            </span>
+            <UiEventTile
+              :emoji="partyEmoji(line)"
+              :category="line.category"
+              :size="36"
+            />
           </template>
         </UiListItem>
       </UiList>

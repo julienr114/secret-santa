@@ -6,6 +6,16 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 « Julien » : décidé par Julien. « Seul » : tranché par Claude Code en codant, à valider ; le détail est en section 6 du `PLAN.md`, sous le nom du lot.
 
+## L'icône d'un événement est une tuile en couleur (V3, ticket 143)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3FetesPassees` | La tuile fait 36 px, comme la maquette ; `categories.md` dit 30 px. | Seul (la maquette) |
+| `V3Accueil` | « Bientôt » (l'anniversaire d'un de mes proches, pas encore un événement) a la tuile de 32 px de la maquette, en dégradé « Anniversaire ». | Seul (la maquette) |
+| `V3Fete` | L'en-tête de la page d'un événement garde sa pastille de catégorie : la maquette n'y a pas de tuile (le ticket en annonçait une de 44 px). | Seul (la maquette) |
+| `V3QuoiDeNeuf` | La section d'une liste hors de mes événements a la tuile de la catégorie « Autre ». | Seul |
+| `CreateSheet` | « Créer » ne change pas : ses événements gardent leur carré teinté (ticket 143). | Ticket 143 |
+
 ## « Qui voit ta liste ? », deux choix, et la barre en plus petit (V3, tickets 139 et 141)
 
 | Maquette | Ce que fait le code | Décidé par |

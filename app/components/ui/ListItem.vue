@@ -27,6 +27,11 @@ const props = withDefaults(
      * lilac for a list (V3).
      */
     iconTone?: 'primary' | 'neutral' | 'lilac';
+    /**
+     * The icon alone, in its colour, without its round (a line under an
+     * event, ticket 143): at the same place and width.
+     */
+    bareIcon?: boolean;
     /** The current value of a setting, shown on the right. */
     value?: string;
     /** The name of the row, when its texts do not say what a tap does. */
@@ -55,6 +60,7 @@ const props = withDefaults(
     muted: false,
     oneLine: false,
     iconTone: 'primary',
+    bareIcon: false,
     value: undefined,
     label: undefined,
     busy: false,
@@ -75,6 +81,13 @@ const ICON_TONES = {
   neutral: 'bg-muted text-toned',
   lilac: 'bg-lilac-100 text-lilac-800',
   danger: 'bg-error-soft text-error-ink',
+};
+/** The colour of the icon alone, by tone. */
+const BARE_TONES = {
+  primary: 'text-primary',
+  neutral: 'text-toned',
+  lilac: 'text-lilac-800',
+  danger: 'text-error-ink',
 };
 // A string in <component :is> does not resolve global components.
 const NuxtLink = resolveComponent('NuxtLink');
@@ -97,7 +110,11 @@ const NuxtLink = resolveComponent('NuxtLink');
       <span
         v-else-if="emoji || icon"
         class="flex size-10 shrink-0 items-center justify-center rounded-full"
-        :class="ICON_TONES[tone === 'danger' ? 'danger' : iconTone]"
+        :class="
+          bareIcon
+            ? BARE_TONES[tone === 'danger' ? 'danger' : iconTone]
+            : ICON_TONES[tone === 'danger' ? 'danger' : iconTone]
+        "
         aria-hidden="true"
       >
         <span v-if="emoji" class="text-lg">{{ emoji }}</span>

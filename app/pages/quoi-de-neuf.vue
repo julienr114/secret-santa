@@ -6,7 +6,6 @@ import type { NewsLine, NewsSection } from '#server/database/newsPage';
 import { api } from '~/composables/queries/useApi';
 import { keys } from '~/composables/queries/keys';
 import { useNewsQuery } from '~/composables/queries/useNews';
-import { categoryTint } from '~/utils/categories';
 import { useQueryClient } from '@tanstack/vue-query';
 
 // « Quoi de neuf », the tab of the bar at the bottom (ticket 120,
@@ -148,17 +147,12 @@ const closeNote = async () => {
         data-testid="news-section"
       >
         <h2 class="flex items-center gap-2 px-1 font-display text-lg font-bold">
-          <span
-            class="flex size-6.5 shrink-0 items-center justify-center rounded-[9px] text-[13px]"
-            :class="
-              section.category
-                ? categoryTint(section.category)
-                : 'bg-lilac-100 text-lilac-800'
-            "
-            aria-hidden="true"
-          >
-            <UiEmoji v-if="emojiOf(section)" :emoji="emojiOf(section)!" />
-          </span>
+          <!-- A list of its own, out of my events: the tile of « Autre ». -->
+          <UiEventTile
+            :emoji="emojiOf(section)"
+            :category="section.category ?? 'other'"
+            :size="30"
+          />
           {{ section.title }}
         </h2>
         <ul

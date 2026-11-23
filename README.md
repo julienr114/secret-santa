@@ -2168,6 +2168,7 @@ Définis dans `app/assets/css/main.css`, aux valeurs du style « Sorbet » (23.5
 | `envelope`, `envelope-fold`, `envelope-line`, `shade`, `star`, `star-soft`, `wood` | Les illustrations : le papier, du clair au soutenu, son filet, l'ombre sous les choses, l'étoile lilas (aussi devant une idée précise) et son ton clair, le tronc du sapin |
 | `thread`, `alert`, `alert-ink`, `alert-link` | Le fil du journal ; une alerte du journal (rond violet à l'icône blanche, texte et lien posés sur le fond lilas). L'utilitaire `knot` entoure un nœud du fil de la couleur de la page |
 | `restricted`, `restricted-ring` | Le cadre en pointillés de ce qui n'est qu'au super-admin |
+| `tile-*-from`, `tile-*-to`, `shadow-tile`, `shadow-tile-sm` | La tuile d'un événement (`UiEventTile`, ticket 143) : le dégradé de chaque catégorie (`christmas`, `birthday`, `birth`, `wedding`, `housewarming`, `other`), son liseré blanc et son ombre |
 | `stack`, `stack-back` | Les bords des cartes en attente sous la première d'une pile |
 | `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond d'un pavé ou d'un encadré, `soft` celui d'un halo, d'un bouton rond à presser, d'un rond d'état ou d'un surlignage (la même teinte que `tint` dans Sorbet), `ink` le texte et les icônes posés dessus |
 | `primary-deep`, `success-deep`, `error-deep` | Un cran plus foncé : un bouton plein pressé, le texte d'un encadré de danger |

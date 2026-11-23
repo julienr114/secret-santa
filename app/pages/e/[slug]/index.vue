@@ -194,6 +194,7 @@ const onLeave = () =>
               <UiListItem
                 icon="i-lucide-mail"
                 icon-tone="neutral"
+                bare-icon
                 :title="
                   data.secretSantas.length > 1
                     ? santa.label
@@ -208,6 +209,7 @@ const onLeave = () =>
                 v-if="santa.game"
                 icon="i-lucide-circle-help"
                 icon-tone="neutral"
+                bare-icon
                 :title="t('lines.game.title')"
                 :subtitle="words.line(santa.game.line)"
                 :dot="santa.game.line.dot ? t('lines.dot') : undefined"
@@ -255,6 +257,7 @@ const onLeave = () =>
                 :avatar="list.owner?.avatar"
                 :icon="list.owner ? undefined : 'i-lucide-list-checks'"
                 icon-tone="lilac"
+                bare-icon
                 :title="words.part(list.title)"
                 :subtitle="words.line(list.line)"
                 :dot="list.line?.dot ? t('lines.dot') : undefined"

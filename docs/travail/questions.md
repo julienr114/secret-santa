@@ -4,6 +4,10 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
 ### Q-036 — « Tu es invité » : une tournure neutre ? (ticket 145)
 
 - **Pour** : la conception
@@ -13,8 +17,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Les garder (le masculin d'usage, comme « Celui qui m'a tiré »).
   - B. « On t'invite au Secret Santa » et « Salut ! On t'invite au Secret Santa « {group} » 🎁 ».
 - **Ce que je ferais** : B, aussi court.
-
-## Réponses
+- **Réponse de la conception (23 novembre 2026)** : B, avec une nuance. La page du lien dit « On t'invite au Secret Santa ». Le message prêt à envoyer dit « Salut ! Je t'invite au Secret Santa « {group} » 🎁 » : c'est l'organisateur qui l'envoie lui-même, « je » est plus juste que « on ». La règle est dans `vocabulaire.md` (second tableau de « Cette personne », pas « il »), `secret-santa.md` et les maquettes sont à jour. À coder : ticket 146.
 
 ### Q-035 — « Il reçoit un email à ton nom » : une tournure neutre ? (tickets 139, 141)
 

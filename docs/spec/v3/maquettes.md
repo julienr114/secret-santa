@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-66 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+80 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -28,7 +28,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa | 104 |
 | `V3FeteMembres` | Événement · ses membres, et par où chacun est entré (un Secret Santa, une liste) ; « Ajouter quelqu’un » mène au Secret Santa ou à ma liste, jamais à l’événement lui-même | 117 |
 | `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |
-| `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « Tu es invité au Secret Santa » (le nom du fichier est resté) | 116 |
+| `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « On t’invite au Secret Santa » (le nom du fichier est resté) | 116 |
 | `V3FeteMembresComplet` | Événement · complet, vu par l’organisateur : 30 membres, le lien du Secret Santa en pause | 117 |
 | `V3TirageNouveau` | Secret Santa · celui de l’année : la date de la fête est déjà là, et se change | 105 |
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
@@ -68,6 +68,13 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeAnneePassee` | Liste · celle d’une année passée : elle reste ouverte ; un bandeau dit de quelle année elle est, et mène à celle de cette année | 119 |
 | `V3ListeAideLien` | Liste · pour celui qui « aide à écrire » : « Le lien » déroule la barre, qui ne contient que le lien à copier | 135 |
 | `V3ListeSecretNouvelle` | Liste · créée depuis mon Secret Santa : j’y suis déjà, en premier ; sous mon prénom, le Secret Santa | 136 |
+| `V3ListeMotAccueil` | Liste · « Ajouter un mot d’accueil » touché : le mot de départ de la catégorie est proposé, prêt à être changé ; vidé, la liste n’a pas de mot | 147 |
+| `V3ListeSecretLie` | Liste · la pastille « Secret Santa · Famille Camille » touchée : ce que le lien veut dire, « Voir mon Secret Santa », « Délier » | 148 |
+| `V3ListeSecretLier` | Liste · j’y figure, et mon Secret Santa de l’année n’a pas de liste : « Lier à mon Secret Santa », sous mon prénom | 148 |
+| `V3ListeSecretLierConfirmer` | Liste · « Lier à mon Secret Santa » touché : la conséquence, « Lier » | 148 |
+| `V3ListeVisiteSecret1` à `V3ListeVisiteSecret6` | Visite · liste créée depuis un Secret Santa : ma partie, une idée par ligne, qui la voit, le nom et la date, repartir d’une liste, ajouter quelqu’un | 149 |
+| `V3ListeVisiteCreer1` à `V3ListeVisiteCreer3` | Visite · liste créée depuis « Créer » : le nom et la date, pour qui, personne ne la voit encore | 149 |
+| `V3ListeVisiteIdee` | Visite · depuis « Créer », la première personne ajoutée : une note sur sa première ligne | 149 |
 | `V3ListeReprise` | Liste · reprise de l’an dernier : dans sa fête, les idées pas offertes marquées pour moi seul | 108 |
 | `V3Admin` | Administration · le tableau de bord : des fêtes, plus de « Demandes » ; les limites atteintes se surveillent ; « Suspendre les nouveaux Secret Santa » | 109 |
 | `V3AdminComptes` | Administration · les comptes : plus de demande à traiter ; un compte à sa limite de Secret Santa se voit | 109 |

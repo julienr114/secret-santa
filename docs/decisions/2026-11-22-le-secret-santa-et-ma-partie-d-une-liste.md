@@ -23,3 +23,10 @@ Depuis son Secret Santa, chacun écrit une liste pour celui qui l'a tiré. Chaqu
 ## Où ça s'applique
 
 `docs/spec/v3/listes.md` (« Depuis mon Secret Santa »), `docs/spec/v3/secret-santa.md` (« Le résultat », « Du résultat à la liste »). Maquettes : `V3TirageQuelleListe`, `V3ListeSecretNouvelle`, `V3ListeSecret`, `V3ListeSurligne`, `V3ListeSurligneTout`. Ticket 136.
+
+## Le 23 novembre 2026 : lier, délier, et le nom
+
+- Le lien se voit et se défait : la pastille sous mon prénom ouvre un panneau, avec « Délier » ; une liste où je figure propose « Lier à mon Secret Santa ». Un Secret Santa n'a qu'une liste.
+- La liste créée depuis un Secret Santa s'appelle « Idées pour le Secret Santa ».
+
+Le détail : `docs/spec/v3/listes.md`, « Depuis mon Secret Santa » et « Lier et délier ».

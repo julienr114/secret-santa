@@ -54,8 +54,8 @@ Décision : `2026-11-21-le-lien-d-invitation-est-celui-d-un-secret-santa.md`. Ma
 - Chaque Secret Santa a le sien, avec ses réglages : « Places restantes », « Date limite », « Ton mot sur la page », « Créer un nouveau lien », « Désactiver le lien ». Il se crée, se renouvelle et se désactive comme le lien d'un groupe aujourd'hui.
 - On l'ouvre depuis le Secret Santa en préparation (« Inviter par lien », `PreparerVide`) et depuis « Choisir les participants ».
 - Au-dessus du titre : « Famille Camille · Secret Santa 2026 ». Sous le titre, une phrase : « Ceux qui s'inscrivent participent au Secret Santa et deviennent membres de l'événement. »
-- Le message à partager : « Salut ! Tu es invité au Secret Santa « Famille Camille » 🎁 ». S'il y a plusieurs Secret Santa la même année, le sien suit entre parenthèses : « Famille Camille (Les adultes) ».
-- **La page du lien** dit « Tu es invité au Secret Santa », le nom de l'événement (et celui du Secret Santa, de la même façon), la catégorie, la date et le nombre d'inscrits. Le bouton d'un compte connecté : « Participer ».
+- Le message à partager : « Salut ! Je t'invite au Secret Santa « Famille Camille » 🎁 » (c'est l'organisateur qui l'envoie, en son nom ; pas « Tu es invité » : `vocabulaire.md`). S'il y a plusieurs Secret Santa la même année, le sien suit entre parenthèses : « Famille Camille (Les adultes) ».
+- **La page du lien** dit « On t'invite au Secret Santa », le nom de l'événement (et celui du Secret Santa, de la même façon), la catégorie, la date et le nombre d'inscrits. Le bouton d'un compte connecté : « Participer ».
 - **Il vit tant que le tirage n'a pas eu lieu.** Ensuite, celui qui l'ouvre lit, sur la page de `RejoindreFerme` : « Le tirage a déjà eu lieu » · « Préviens l'organisateur de Famille Camille. »
 - À 30 membres, les liens des Secret Santa de l'événement se mettent en pause (`fete.md`, « 30 membres au plus »). Quelqu'un qui est déjà membre peut toujours s'inscrire : il ne prend pas de place.
 

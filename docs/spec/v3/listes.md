@@ -30,15 +30,27 @@ Maquettes : `V3ListeOccasion`, `V3ListeNouvelle`.
 2. La liste s'ouvre, **en brouillon** : moi seul la vois. J'écris.
 3. **« Partager »**, dans la barre du haut, la déroule : « Qui voit ta liste ? » est dedans.
 
+**Le mot d'accueil est en option** (Julien, 23 novembre 2026 ; maquettes `V3ListeNouvelle`, `V3ListeMotAccueil`). Une liste neuve n'en a pas : plus de cadre en pointillés avec un texte de départ. Sous la date, une ligne discrète, **« Ajouter un mot d'accueil »** (un crayon, en italique, comme « Ajouter un lien »). La toucher ouvre le champ dans la carte blanche de l'écriture, **déjà rempli du mot de départ de la catégorie** (`categories.md`), le curseur au bout : on le garde, on le change ou on le vide. Vidé, la liste n'a pas de mot et la ligne « Ajouter un mot d'accueil » revient. Seuls ceux qui tiennent la liste voient cette ligne.
+
 ### Depuis mon Secret Santa
 
 Décision : `2026-11-22-le-secret-santa-et-ma-partie-d-une-liste.md` (Julien, 22 novembre 2026). Ce qui est lié à un Secret Santa, ce n'est pas une liste : **c'est moi, dans une liste**. Celui qui m'a tiré a le droit d'ouvrir la liste entière ; ce qu'on lui montre d'abord, c'est ma partie (`secret-santa.md`, « Du résultat à la liste »).
 
 En touchant « Ma liste de cadeaux » sur la page de mon Secret Santa, ou « Écrire ma liste » dans l'email d'une demande d'idées :
 
-- **Je ne tiens aucune liste de cette année où je figure** : la liste se crée sans rien demander. L'occasion est connue, « Celui qui m'a tiré » est choisi d'avance, **et j'y suis déjà, en premier** (`V3ListeSecretNouvelle`). Ce que j'écris est lu dès que c'est écrit, comme les pistes d'avant.
+- **Je ne tiens aucune liste de cette année où je figure** : la liste se crée sans rien demander. **Elle s'appelle « Idées pour le Secret Santa »** (et « Idées pour le Secret Santa (Les adultes) » quand l'événement en a plusieurs cette année-là) : elle ne prend pas le nom de l'occasion, déjà écrit dans la barre du haut et sur l'accueil. Le nom se change en le touchant. L'occasion est connue, « Celui qui m'a tiré » est choisi d'avance, **et j'y suis déjà, en premier** (`V3ListeSecretNouvelle`). Ce que j'écris est lu dès que c'est écrit, comme les pistes d'avant.
 - **J'en tiens une ou plusieurs** : « Quelle liste pour ton Secret Santa ? » (`V3TirageQuelleListe`) les propose, une par ligne, avec « Pour Léo, Zoé et moi » et ses événements dessous ; puis « Une nouvelle liste ». La première est choisie d'avance : celle du même événement, sinon de la même catégorie, sinon la plus récente. « Continuer ». La liste choisie garde son partage : celui qui m'a tiré la voit en plus (les stades se cumulent). Une liste que je tiens mais où je ne figure pas n'est pas proposée.
-- **Sous mon prénom**, dans la liste, une ligne par Secret Santa : l'icône du Secret Santa, « Secret Santa · Famille Camille » (`V3ListeSecret`). Elle mène à mon Secret Santa. Seuls ceux qui tiennent la liste la voient.
+- **Sous mon prénom**, dans la liste, une petite pastille par Secret Santa (`V3ListeSecret`, `V3ListeSecretNouvelle`) : l'emoji de l'événement et « Secret Santa · Famille Camille », sur une ligne, coupé par « … ». **Elle est discrète** : 20 px de haut, un fond clair, un texte gris de 11,5 px, de la famille des pastilles de prénoms sous les idées ; **le prénom et la pastille ne dépassent pas la hauteur de l'icône de la personne** (52 px). La toucher ouvre le panneau du lien (« Lier et délier », plus bas). Seuls ceux qui tiennent la liste la voient (Julien, 23 novembre 2026).
+
+### Lier et délier
+
+Julien, le 23 novembre 2026 : « il y a un concept de liaison ». Maquettes `V3ListeSecretLie`, `V3ListeSecretLier`, `V3ListeSecretLierConfirmer`.
+
+- **Voir le lien** : toucher la pastille ouvre un panneau, en bas : la tuile de l'événement, « Secret Santa · Famille Camille », « Celui qui t'a tiré voit cette liste, en commençant par ta partie. », puis deux lignes, **« Voir mon Secret Santa »** et **« Délier »**.
+- **Délier** ne supprime rien : la pastille s'en va, celui qui m'a tiré ne voit plus la liste par ce chemin (il la voit encore s'il est membre d'un événement avec qui elle est partagée), et ma page du Secret Santa propose de nouveau « Ma liste de cadeaux ». Un message en bas : « Liste déliée ». C'est le même geste que la croix de « Celui qui m'a tiré » dans « Qui voit ta liste ? ».
+- **Lier une liste qui existe** : dans une liste que je tiens et où je figure, quand j'ai cette année un Secret Santa dont le tirage est fait et qui n'a pas de liste, une ligne discrète sous mon prénom, **« Lier à mon Secret Santa »** (en italique, comme « Ajouter un lien »). La toucher demande : **« Lier à ton Secret Santa ? »**, « Celui qui t'a tiré dans « Famille Camille » verra cette liste, en commençant par ta partie. », un seul bouton, « Lier » ; fermer le panneau annule. Avec plusieurs Secret Santa sans liste, le panneau les propose, un rond chacun.
+- **Un Secret Santa n'a qu'une liste** : le lier ici quand il l'est déjà ailleurs le déplace, et le panneau le dit (« Il ne sera plus lié à « Noël 2026 ». »).
+- L'autre chemin ne change pas : « Ma liste de cadeaux », sur la page de mon Secret Santa, propose « Quelle liste pour ton Secret Santa ? » dès que je tiens une liste de l'année où je figure.
 
 « Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`) : « Celui qui m'a tiré » y est une ligne comme les autres. Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
 
@@ -218,6 +230,38 @@ Julien, le 23 novembre 2026 : le bandeau blanc bord à bord, avec son trait roug
 - **La ligne qu'on déplace est la même carte**, soulevée : l'ombre plus marquée, à peine penchée, la poignée à droite. **Plus de contour rouge.** La personne qu'on déplace, repliée sur une ligne, a la même carte.
 - **L'endroit où elle va tomber** : un trait arrondi de 4 px, de la couleur du bord des cases (pêche), plus un trait rouge.
 
+## La visite d'une liste neuve
+
+Décision : `2026-11-23-la-visite-d-une-liste-neuve.md`. Maquettes `V3ListeVisiteSecret1` à `6`, `V3ListeVisiteCreer1` à `3`, `V3ListeVisiteIdee`.
+
+La première fois que j'arrive sur une liste que je viens de créer, une visite montre ce qu'on peut y faire, **avec le voile et la note de la première coche** (`ListeCocheGuide`) : le voile violet sur toute l'application, un seul élément dans la lumière, une note accrochée à lui.
+
+- **La note** : un titre, une phrase, et en haut à droite « 2 sur 6 ». En bas, **« Passer »** à gauche (il arrête la visite) et **« Suivant »** à droite ; à la dernière étape, « Compris » seul. La note est sous l'élément, ou au-dessus quand il est en bas de l'écran ; la page défile pour le montrer.
+- **Une seule fois par compte**, vue ou passée : elle ne revient ni sur une autre liste, ni sur un autre appareil. Celui qui a vu l'une des deux visites ne voit pas l'autre.
+- Elle ne s'ouvre que sur une liste **que je viens de créer** : jamais sur la liste d'un autre, ni sur une liste que je rouvre.
+- **Elle remplace « Touche un texte pour le modifier. »**, qui disparaît de la phrase de celui qui tient la liste.
+
+**Depuis un Secret Santa** (six étapes ; cinq sans « Repartir d'une liste ») :
+
+| | Dans la lumière | Titre | Phrase |
+|---|---|---|---|
+| 1 | mon prénom et la pastille du Secret Santa | Ta partie | Elle est liée à ton Secret Santa : celui qui t'a tiré la lit dès que tu écris. |
+| 2 | ma première ligne, vide | Une idée par ligne | Ajoute un lien si tu as trouvé l'objet. |
+| 3 | la barre du haut | Qui la voit | Pour l'instant, celui qui t'a tiré, et lui seul. « Modifier » l'ouvre à d'autres. |
+| 4 | le nom et la date | Le nom et la date | Touche un texte pour le changer. |
+| 5 | « Repartir d'une liste », s'il est là | Tes idées d'avant | Reprends celles qui n'ont pas été offertes. |
+| 6 | « Ajouter quelqu'un » | Une liste pour plusieurs | Ajoute tes enfants ou un proche : chacun a sa partie. |
+
+**Depuis « Créer »** (trois étapes : la liste n'a encore personne) :
+
+| | Dans la lumière | Titre | Phrase |
+|---|---|---|---|
+| 1 | le nom et la date | Le nom et la date | Ils viennent de l'occasion. Touche un texte pour le changer. |
+| 2 | « Ajouter quelqu'un » | Pour qui ? | Une partie par personne : toi, tes enfants, un proche. |
+| 3 | la barre du haut | Personne ne la voit encore | « Partager » choisit qui, quand tu veux. |
+
+Puis, **quand la première personne est ajoutée**, une note seule sur sa première ligne, sans compte d'étapes : « Une idée par ligne », « Ajoute un lien si tu as trouvé l'objet. », « Compris » (`V3ListeVisiteIdee`). Une seule fois par compte elle aussi ; celui qui a vu la visite du Secret Santa ne la voit pas.
+
 ## Une idée qui n'a qu'un lien
 
 Bogue trouvé par Julien le 22 novembre 2026 : une idée écrite sans texte, avec seulement un lien, ne pouvait plus être modifiée ni effacée. Toucher la ligne ouvrait le lien, et rien d'autre ne se touchait.
@@ -227,9 +271,18 @@ Bogue trouvé par Julien le 22 novembre 2026 : une idée écrite sans texte, ave
 - Partout où le texte d'une idée sert à la nommer (« Cocher … », « Qui l'offre ? », les lecteurs d'écran), une idée sans texte se nomme par le nom de son site.
 - Celui qui ne tient pas la liste voit la même ligne, sans pouvoir l'écrire.
 
+## Ma partie d'une liste
+
+Julien, le 23 novembre 2026.
+
+- **« Camille (moi) »** : là où je figure, « (moi) » est écrit entre parenthèses à côté de mon prénom, plus petit et en gris. Il remplace la ligne « Moi » sous le prénom (dans une liste que je tiens) et « C'est toi » (dans la liste d'un autre où je figure). Je suis seul à le lire : les autres lisent « Camille ».
+- **« Une idée pour toi… »** : dans ma partie, la ligne vide ne dit pas mon prénom. « Une autre idée pour toi… » quand il y en a déjà. Pour les autres personnes, « Une idée pour Léo… » ne change pas.
+
 ## La liste d'un autre membre
 
 Maquette : `V3ListeMembre`. Elle s'ouvre depuis l'événement, sans lien. Une pastille en haut porte l'emoji et le nom de l'événement, et y ramène.
+
+**Plus de phrase sous le mot d'accueil** (Julien, 23 novembre 2026). « La liste de Lou. Tu offres 1 cadeau : personne d'autre que Lou ne sait que c'est toi. », « La liste de Camille et Hugo. Camille seule voit qui a coché quoi. », « Tu y figures : tu peux écrire tes propres idées. » et « Un point marque ce qui a changé depuis ta dernière visite. » disparaissent : ce que j'offre se lit sur les lignes (« Tu l'offres ›  ») et sur l'accueil, ma partie se reconnaît à « (moi) » et à « Une idée pour toi… ». Une liste sans personne garde « la liste de Camille et Hugo » à côté de sa date. La phrase de celui qui tient la liste (« 9 cadeaux déjà prévus… ») n'est pas touchée.
 
 ## La fin des « pistes de cadeaux »
 

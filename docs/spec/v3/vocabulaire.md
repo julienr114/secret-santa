@@ -97,6 +97,13 @@ Q-035, le 23 novembre 2026. L'application ne connaît pas le genre : **quand un 
 | Ce que cette personne pourra faire | Ce qu'il pourra faire |
 | Cette personne pourra gérer Famille Camille comme toi : membres, Secret Santa, envois. | Il pourra gérer… |
 
+**Pareil quand le texte parle au lecteur** (Q-036) : pas de participe qui s'accorde avec lui.
+
+| On écrit | On n'écrit plus |
+|---|---|
+| On t'invite au Secret Santa (la page du lien) | Tu es invité au Secret Santa |
+| Salut ! Je t'invite au Secret Santa « Famille Camille » 🎁 (le message que l'organisateur envoie lui-même) | Salut ! Tu es invité au Secret Santa… |
+
 Ce qui reste : « il » quand il reprend **un mot** masculin, pas une personne (« l'organisateur : il peut rouvrir des places », « chacun… autant qu'il veut »), et « celui qui m'a tiré ». L'anglais (« they ») et l'allemand (« die Person ») le font déjà.
 
 ## Ce qui ne change pas

@@ -40,7 +40,7 @@ const props = defineProps<{
    * 148, V3ListeSecret): a pill that opens the sheet of the link.
    */
   santas?: ListDocument['santas'];
-  /** What « Lier à mon Secret Santa » offers under my name (ticket 148). */
+  /** What « Lier à un Secret Santa » offers, in my menu (tickets 148, 153). */
   linkable?: ListDocument['linkable'];
   /** Whether I manage the list. */
   manages?: boolean;
@@ -124,6 +124,27 @@ const rows = computed<Row[]>(() => {
   );
   return at === laid.others ? [...laid.rows, { kind: 'drop' }] : laid.rows;
 });
+/**
+ * The menu of a gift not on the list (Julien, 24 November 2026): its
+ * handle, shown once the line is touched or under a mouse; « Monter »
+ * and « Descendre » in it.
+ */
+const giftMenu = ref<{ id: string; above: boolean } | null>(null);
+const onGiftHandle = (event: MouseEvent, id: string) => {
+  if (giftMenu.value?.id === id) {
+    giftMenu.value = null;
+    return;
+  }
+  const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  giftMenu.value = {
+    id,
+    above: box.bottom + 160 > window.innerHeight && box.top > 160,
+  };
+};
+const onGiftStep = (id: string, step: -1 | 1) => {
+  giftMenu.value = null;
+  drag?.step({ kind: 'idea', id }, step);
+};
 /** Moves a gift not on the list one step with `Alt` + an arrow. */
 const onGiftKey = (event: KeyboardEvent, id: string) => {
   if (!drag || !event.altKey) return;
@@ -200,6 +221,18 @@ const planned = computed(
     props.person.ideas.filter((idea) => idea.view.kind !== 'free').length +
     props.person.offList.length,
 );
+/**
+ * « Lier à un Secret Santa » (ticket 153): in my part, while one of my
+ * Secret Santa of the year has no list, even when mine is linked to
+ * another; it opens the sheet of ListsDrawLink.
+ */
+const drawLink = ref<{ ask: () => void } | null>(null);
+const canLink = computed(
+  () =>
+    member.value.isSelf &&
+    props.manages &&
+    (props.linkable ?? []).some((one) => one.linkedTo === null),
+);
 const menuOpen = ref(false);
 const confirming = ref(false);
 watch(menuOpen, (open) => {
@@ -229,6 +262,15 @@ const menu = computed(() =>
             icon: 'i-lucide-user',
             to: `/famille/${member.value.id}?liste=${props.listId}&place=${props.person.id}`,
           },
+          ...(canLink.value
+            ? [
+                {
+                  label: t('lists.link.action'),
+                  icon: 'i-lucide-mail',
+                  onSelect: () => drawLink.value?.ask(),
+                },
+              ]
+            : []),
           // The same as dragging, without dragging.
           ...(drag && !props.first
             ? [
@@ -372,6 +414,7 @@ const explained = ref<string | null>(null);
           </p>
           <ListsDrawLink
             v-if="member.isSelf"
+            ref="drawLink"
             :list-id="listId"
             :santas="santas ?? []"
             :linkable="linkable ?? []"
@@ -439,7 +482,7 @@ const explained = ref<string | null>(null);
              its person, never at another (Julien, 24 November 2026). -->
         <li
           v-else
-          class="relative flex flex-col py-[13px]"
+          class="group relative flex flex-col py-[13px]"
           :class="
             drag?.lifted.value?.kind === 'idea' &&
             drag.lifted.value.id === row.gift.id
@@ -456,6 +499,7 @@ const explained = ref<string | null>(null);
           <button
             type="button"
             class="flex items-start gap-[var(--line-gap,12px)] text-left"
+            :class="drag ? 'pr-9' : ''"
             :aria-expanded="explained === row.gift.id"
             @click="explained = explained === row.gift.id ? null : row.gift.id"
           >
@@ -476,6 +520,45 @@ const explained = ref<string | null>(null);
               }}</UiChip>
             </span>
           </button>
+          <div
+            v-if="drag && lines.length > 1"
+            class="absolute top-2 right-0"
+            :class="
+              explained === row.gift.id || giftMenu?.id === row.gift.id
+                ? 'flex'
+                : 'hidden [@media(hover:hover)]:group-hover:flex'
+            "
+          >
+            <button
+              type="button"
+              class="flex size-8 cursor-grab items-center justify-center rounded-[10px] text-dimmed"
+              :class="
+                giftMenu?.id === row.gift.id ? 'bg-peach-100' : 'bg-default'
+              "
+              :aria-label="t('lists.line.handle')"
+              aria-haspopup="menu"
+              :aria-expanded="giftMenu?.id === row.gift.id"
+              data-line-handle
+              data-testid="line-handle"
+              @click="onGiftHandle($event, row.gift.id)"
+            >
+              <UIcon name="i-lucide-grip-vertical" class="size-4" />
+            </button>
+            <ListsLineMenu
+              v-if="giftMenu?.id === row.gift.id"
+              gift
+              :stars="0"
+              :title="false"
+              :can-title="false"
+              :can-up="row.at > 0"
+              :can-down="row.at < lines.length - 1"
+              :can-move="false"
+              :above="giftMenu.above"
+              @up="onGiftStep(row.gift.id, -1)"
+              @down="onGiftStep(row.gift.id, 1)"
+              @close="giftMenu = null"
+            />
+          </div>
           <p
             v-if="explained === row.gift.id"
             class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"

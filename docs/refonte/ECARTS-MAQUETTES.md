@@ -316,7 +316,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
 | `V3ListeSecretLie` | « Délier » n'est que pour ceux qui gèrent la liste (comme son partage) ; celui qui aide à l'écrire n'a que « Voir mon Secret Santa ». | Seul |
-| `V3ListeSecretLier` | L'icône de « Lier à mon Secret Santa » est le `link` de Lucide, 12 px. La ligne n'est là que si l'un de mes Secret Santa de l'année, tiré, n'a pas de liste. | Seul |
+| `V3ListeSecretLier` | « Lier à un Secret Santa » est dans le menu « … » de ma partie (ticket 153), avec l'enveloppe du tirage (`mail` de Lucide) ; il suit la fiche, avant « Monter », « Descendre » et « Retirer de cette liste ». La fiche garde le libellé du code, pas « Ma fiche et mes goûts ». L'entrée n'est là que si l'un de mes Secret Santa de l'année, tiré, n'a pas de liste. | Seul |
 | `V3ListeSecretLierConfirmer` | Avec plusieurs Secret Santa, le panneau les propose dans `UiChoiceList` (un rond chacun), au-dessus de « Lier » ; le premier sans liste est choisi d'avance, et la phrase suit celui qui est choisi. Un Secret Santa déjà lié à une autre liste y est aussi, avec « Il ne sera plus lié à « … ». ». | Seul |
 
 ## La visite d'une liste neuve (ticket 149)

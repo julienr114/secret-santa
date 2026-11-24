@@ -10,8 +10,9 @@ import {
 // name, a discreet pill per Secret Santa the list is linked to; touched,
 // a sheet says what the link means, « Voir mon Secret Santa » and
 // « Délier » (V3ListeSecretLie). When one of my Secret Santa of the year
-// has no list, « Lier à mon Secret Santa » asks first
-// (V3ListeSecretLier, V3ListeSecretLierConfirmer). Never who drew me.
+// has no list, « Lier à un Secret Santa », in the menu « … » of my part
+// (ticket 153), opens the sheet that asks first (V3ListeSecretLier,
+// V3ListeSecretLierConfirmer). Never who drew me.
 const props = defineProps<{
   listId: string;
   santas: SantaLine[];
@@ -45,10 +46,6 @@ const onUnlink = () => {
   });
 };
 
-/** « Lier » shows while one of my Secret Santa has no list. */
-const canLink = computed(
-  () => props.manages && props.linkable.some((one) => one.linkedTo === null),
-);
 const asking = ref(false);
 const chosen = ref('');
 watch(asking, (open) => {
@@ -73,6 +70,11 @@ const moves = computed(() =>
         title: choice.value.linkedTo || t('lists.home.untitled'),
       }),
 );
+/** Opens the sheet « Lier à ton Secret Santa ? », from the menu. */
+const ask = () => {
+  asking.value = true;
+};
+defineExpose({ ask });
 const onLink = () => {
   if (!choice.value) return;
   link.mutate(choice.value.partyId, {
@@ -100,17 +102,6 @@ const onLink = () => {
     <span class="min-w-0 truncate">{{
       t('lists.doc.santa', { name: santa.name })
     }}</span>
-  </button>
-  <button
-    v-if="canLink"
-    type="button"
-    class="relative inline-flex min-h-5 items-center gap-1.25 self-start text-[13px] leading-[1.4] text-dimmed italic before:absolute before:-inset-y-3 before:inset-x-0"
-    data-testid="person-link"
-    data-no-drag
-    @click="asking = true"
-  >
-    <UIcon name="i-lucide-link" class="size-3 shrink-0" aria-hidden="true" />
-    {{ t('lists.link.action') }}
   </button>
 
   <UiSheet

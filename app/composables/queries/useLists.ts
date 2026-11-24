@@ -358,7 +358,7 @@ export const useSaveSharingMutation = (id: Id) =>
   );
 
 /**
- * « Lier à mon Secret Santa » (ticket 148): the list, to the Secret Santa
+ * « Lier à un Secret Santa » (tickets 148, 153): the list, to the Secret Santa
  * of an event; linked elsewhere, it moves here.
  * @param id - The list.
  * @returns The mutation, with the event of the Secret Santa.

@@ -497,7 +497,7 @@ export default {
     none: 'Nichts',
   },
   link: {
-    action: 'Mit meinem Secret Santa verknüpfen',
+    action: 'Mit einem Secret Santa verknüpfen',
     what: 'Wer dich gezogen hat, sieht diese Liste, beginnend mit deinem Teil.',
     see: 'Mein Secret Santa ansehen',
     unlink: 'Verknüpfung lösen',

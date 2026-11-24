@@ -31,7 +31,8 @@ const state: {
   tokens: Record<string, string>;
   contexts: Record<string, BrowserContext>;
   inesList: string;
-} = { tokens: {}, contexts: {}, inesList: '' };
+  otherList: string;
+} = { tokens: {}, contexts: {}, inesList: '', otherList: '' };
 
 const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
   expect(response.ok(), `${response.url()}: ${response.status()}`).toBe(true);
@@ -302,7 +303,7 @@ test('the one who drew me reads my part first, and the rest by « Toute la liste
   await expect(page.locator('body')).not.toContainText(/tu as tiré/i);
   // Neither the pill nor « Lier »: they are for those who hold the list.
   await expect(page.getByTestId('person-santa')).toHaveCount(0);
-  await expect(page.getByTestId('person-link')).toHaveCount(0);
+  await expect(page.getByText('Lier à un Secret Santa')).toHaveCount(0);
   // « Toute la liste »: everyone, her first, kept in the address.
   await filter.getByText('Toute la liste').click();
   await expect(page).toHaveURL(/[?&]tout=1/);
@@ -334,8 +335,9 @@ test('from the list, the link is undone, made again, and moves', async () => {
   const api = as('Inès').request;
   const page = await open('Inès', `/listes/${state.inesList}`);
   const me = page.getByTestId('list-person').first();
-  // « Délier »: the pill goes, « Lier à mon Secret Santa » comes; the list
-  // and its ideas stay; her Secret Santa asks again.
+  // « Délier »: the pill goes, « Lier à un Secret Santa » comes in the
+  // menu of her part; the list and its ideas stay; her Secret Santa asks
+  // again.
   await me.getByTestId('person-santa').click();
   await page.getByTestId('link-unlink').click();
   await expect(page.getByText('Liste déliée', { exact: true })).toBeVisible();
@@ -349,7 +351,8 @@ test('from the list, the link is undone, made again, and moves', async () => {
     state.inesList,
   );
   // « Lier », after its question; closing it would have cancelled.
-  await me.getByTestId('person-link').click();
+  await me.getByTestId('person-menu').click();
+  await page.getByRole('menuitem', { name: 'Lier à un Secret Santa' }).click();
   const ask = page.getByRole('dialog', { name: 'Lier à ton Secret Santa ?' });
   await expect(ask).toContainText(
     'Celui qui t’a tiré dans « Famille Lilas » verra cette liste, en commençant par ta partie.',
@@ -359,7 +362,11 @@ test('from the list, the link is undone, made again, and moves', async () => {
   await expect(me.getByTestId('person-santa')).toContainText(
     'Secret Santa · Famille Lilas',
   );
-  await expect(me.getByTestId('person-link')).toHaveCount(0);
+  await me.getByTestId('person-menu').click();
+  await expect(
+    page.getByRole('menuitem', { name: 'Lier à un Secret Santa' }),
+  ).toHaveCount(0);
+  await page.keyboard.press('Escape');
   expect(
     (await ok(await api.get(`/api/p/${state.tokens['Inès']}/list`))).list,
   ).toBe(state.inesList);
@@ -389,5 +396,60 @@ test('from the list, the link is undone, made again, and moves', async () => {
   await page.reload();
   await hydrated(page);
   await expect(me.getByTestId('person-santa')).toHaveCount(0);
+  state.otherList = other;
+  await page.close();
+});
+
+test('linked to one Secret Santa, my part offers « Lier à un Secret Santa » for another, in its menu', async () => {
+  // A second Secret Santa of the year for Inès, drawn, with no list.
+  const admin = state.admin!;
+  const slug = 'amis-lilas';
+  await ok(
+    await admin.post('/api/admin/groups', { data: { name: 'Amis Lilas' } }),
+  );
+  const created = await ok(
+    await admin.post(`/api/admin/${slug}/editions`, {
+      data: { label: 'Noël des amis', year: 2026, eventDate: '2026-12-20' },
+    }),
+  );
+  await addPeople(
+    admin,
+    `/api/admin/${slug}`,
+    created.edition.id,
+    NAMES.map((firstName) => ({ firstName, email: emailOf(firstName) })),
+  );
+  await ok(
+    await admin.post(`/api/admin/${slug}/editions/${created.edition.id}/draw`),
+  );
+
+  const page = await open('Inès', `/listes/${state.otherList}`);
+  const me = page
+    .getByTestId('list-person')
+    .filter({ has: page.getByTestId('me-tag') });
+  // Under her name, the pill of « Famille Lilas », nothing more.
+  await expect(me.getByTestId('person-santa')).toHaveText([
+    /Secret Santa · Famille Lilas/,
+  ]);
+  await expect(me.getByText('Lier à un Secret Santa')).toHaveCount(0);
+  // In the menu, after her card: « Lier à un Secret Santa ».
+  await me.getByTestId('person-menu').click();
+  const items = page.getByRole('menuitem');
+  await expect(items.nth(1)).toHaveText('Lier à un Secret Santa');
+  await items.nth(1).click();
+  const ask = page.getByRole('dialog', { name: 'Lier à ton Secret Santa ?' });
+  await expect(ask).toContainText('Amis Lilas');
+  await ask.getByText('Amis Lilas').click();
+  await ask.getByTestId('link-submit').click();
+  await expect(ask).toHaveCount(0);
+  // The sooner first.
+  await expect(me.getByTestId('person-santa')).toHaveText([
+    /Amis Lilas/,
+    /Famille Lilas/,
+  ]);
+  // Both linked: no more entry.
+  await me.getByTestId('person-menu').click();
+  await expect(
+    page.getByRole('menuitem', { name: 'Lier à un Secret Santa' }),
+  ).toHaveCount(0);
   await page.close();
 });

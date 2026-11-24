@@ -497,7 +497,7 @@ export default {
     none: 'Rien',
   },
   link: {
-    action: 'Lier à mon Secret Santa',
+    action: 'Lier à un Secret Santa',
     what: 'Celui qui t’a tiré voit cette liste, en commençant par ta partie.',
     see: 'Voir mon Secret Santa',
     unlink: 'Délier',

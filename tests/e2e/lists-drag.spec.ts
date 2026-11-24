@@ -346,6 +346,25 @@ test('a gift not on the list moves among the ideas of its person, never to anoth
     /Un pull tricoté/,
   ]);
 
+  // Its handle, once touched: « Monter » and « Descendre » only.
+  await pull.locator('button').first().click();
+  await pull.getByTestId('line-handle').click();
+  const menu = page.getByTestId('line-menu');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByTestId('line-up')).toBeVisible();
+  await expect(menu.getByTestId('line-down')).toHaveCount(0);
+  await expect(menu.getByTestId('line-star-1')).toHaveCount(0);
+  await expect(menu.getByTestId('line-title')).toHaveCount(0);
+  await expect(menu.getByTestId('line-move')).toHaveCount(0);
+  await expect(menu.getByTestId('line-remove')).toHaveCount(0);
+  await menu.getByTestId('line-up').click();
+  await expect(linesOf('Léo')).toHaveText([
+    'Circuit',
+    'Livre',
+    /Un pull tricoté/,
+    'Vélo',
+  ]);
+
   // Nor by the route.
   const fresh = await (await api.get(`/api/lists/${id}`)).json();
   const giftId = leo.offList[0].id;

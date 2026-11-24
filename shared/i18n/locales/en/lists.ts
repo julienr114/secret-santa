@@ -492,7 +492,7 @@ export default {
     none: 'Nothing',
   },
   link: {
-    action: 'Link to my Secret Santa',
+    action: 'Link to a Secret Santa',
     what: 'The one who drew you sees this list, starting with your part.',
     see: 'See my Secret Santa',
     unlink: 'Unlink',

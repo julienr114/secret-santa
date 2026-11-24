@@ -3,7 +3,7 @@
 - **Dépend de** : 156
 - **Avant** : la bascule (ticket 113)
 - **Migration** : non
-- **Maquettes** : `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilAnnee` (les cartes), `V3FeteOrganisateur` (la page de l'événement)
+- **Maquettes** : `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilAnnee` (les cartes), `V3FeteOrganisateur` (la page de l'événement), `V3FeteReglages` (ses réglages)
 
 ## Objectif
 
@@ -21,7 +21,8 @@ Julien, le 24 novembre 2026, après avoir vu le ticket 156 : la ligne « Gérer 
 - [ ] **L'en-tête de toutes les cartes de l'accueil** : la date passe sous le titre, en petit. Le titre tient sur deux lignes au plus, puis « … ».
 - [ ] **À droite de l'en-tête** : la flèche pour un membre ; pour un organisateur de l'événement, une roue crantée dans un rond de 38 px (`aria-label` « Gérer l'événement », trois langues). Tout l'en-tête reste un seul lien vers la page de l'événement.
 - [ ] **La page de l'événement, pour un organisateur** : plus de roue en haut à droite. La carte des membres gagne une deuxième ligne, « Réglages de l'événement » (une roue, le titre, une flèche), qui ouvre les réglages. Pour un membre, rien ne change.
-- [ ] Les tests qui passaient par la roue du haut ou par la ligne « Gérer l'événement ».
+- [ ] **Les réglages de l'événement** (`V3FeteReglages`) : la section « Secret Santa » et sa ligne « Réglages du Secret Santa 2026 » s'en vont (doublon : on y va depuis le suivi du Secret Santa). Vérifier que le suivi y mène bien ; sinon, le dire dans le compte rendu.
+- [ ] Les tests qui passaient par la roue du haut, par la ligne « Gérer l'événement » ou par cette ligne des réglages.
 
 ## C'est fini quand
 

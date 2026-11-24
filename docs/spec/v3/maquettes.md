@@ -26,7 +26,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3FeteMembresReprendre` | Secret Santa ou liste · « Reprendre ceux d’un autre événement » : on coche qui (le nom du fichier est resté) | 117 |
 | `V3FeteQuitter` | Événement · quitter : ce qui sort, ce qui reste | 104 |
 | `V3FeteAnneePassee` | Événement · une année passée (Noël 2025) : son Secret Santa et ses listes, en lecture seule ; rien à créer, rien à régler | 108 |
-| `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa | 104 |
+| `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa, sans lien d’ici | 104, 159 |
 | `V3FeteMembres` | Événement · ses membres ; sous un prénom, seulement ce qui sort de l’ordinaire (« Organise », « Hors du Secret Santa », « Pas d’adresse email ») ; une seule ligne « Ajouter quelqu’un » | 117, 158 |
 | `V3FeteMembresAjouter` | Événement · « Ajouter quelqu’un » touché, avec plusieurs endroits où le faire : on demande où | 158 |
 | `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |

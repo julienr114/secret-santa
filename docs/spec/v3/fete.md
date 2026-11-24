@@ -26,7 +26,7 @@ Le titre et le texte de chaque ligne : `lignes.md`.
 Maquette : `V3FeteReglages`. Seulement ce qui est à elle :
 
 - **L'événement** : catégorie ; pour un anniversaire, « Pour » (le proche pour qui il est fait, ou « Personne ») ; date (« Le 25 décembre · proposée chaque année ») ; « Revient chaque année ».
-- **Secret Santa** : une ligne « Réglages du Secret Santa 2026 », qui mène aux réglages du Secret Santa (`secret-santa.md`).
+- **Plus de ligne « Réglages du Secret Santa 2026 »** (Julien, 24 novembre 2026 : « ça fait trop doublon avec le reste »). Les réglages d'un Secret Santa s'ouvrent depuis son suivi (`secret-santa.md`), et de nulle part ailleurs.
 - **Organisateurs** : la liste, « Ajouter un organisateur ».
 - « Supprimer l'événement », réservé au super-admin.
 

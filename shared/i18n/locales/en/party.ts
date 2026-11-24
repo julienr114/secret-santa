@@ -141,5 +141,6 @@ export default {
     dateValue: '{date} · offered every year',
     dateValueOnce: '{date}',
     recurring: 'Comes back every year',
+    short: 'Settings',
   },
 } satisfies Dict<typeof fr>;

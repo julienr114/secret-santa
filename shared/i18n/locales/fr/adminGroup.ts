@@ -23,15 +23,14 @@ export default {
     add: 'Ajouter un organisateur',
     addHint: 'Cette personne se connecte avec son adresse, sans mot de passe',
     addTitle: 'Nouvel organisateur',
-    addDescription:
-      'Cette personne pourra gérer {name} comme toi : membres, Secret Santa, envois.',
     emailLabel: 'Son adresse email',
-    emailHelp:
-      'Cette personne n’aura qu’à se connecter avec cette adresse : aucun mot de passe à transmettre.',
     noResults:
-      'Comme toi, cette personne ne verra pas les résultats du tirage.',
+      'Cette personne gère l’événement comme toi, sans voir les résultats du tirage.',
     remove: 'Retirer',
     removeLabel: 'Retirer {email} des organisateurs',
+    firstNameLabel: 'Son prénom',
+    firstNameRequired: 'Écris son prénom.',
+    added: '{name} organise maintenant l’événement',
   },
   deleteGroup: {
     superOnly: 'Réservé au super-admin',

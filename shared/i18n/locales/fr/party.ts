@@ -140,5 +140,6 @@ export default {
     dateValue: 'Le {date} · proposée chaque année',
     dateValueOnce: 'Le {date}',
     recurring: 'Revient chaque année',
+    short: 'Réglages',
   },
 };

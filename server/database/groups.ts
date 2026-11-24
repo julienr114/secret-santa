@@ -119,11 +119,29 @@ export const listOrganizers = (db: Db, groupId: string): Promise<Organizer[]> =>
  */
 export const addOrganizer = async (
   db: Db,
-  { groupId, email, now }: { groupId: string; email: string; now: string },
+  {
+    groupId,
+    firstName,
+    email,
+    now,
+  }: {
+    groupId: string;
+    /** Required on « Nouvel organisateur »; none for a new group's. */
+    firstName?: string | null;
+    email: string;
+    now: string;
+  },
 ): Promise<Organizer> => {
+  // A new account takes the first name written; one that exists keeps its
+  // own (ticket 161).
   const account =
     (await findAccountByEmail(db, email)) ??
-    (await createAccount(db, { email, isSuperAdmin: false, now }));
+    (await createAccount(db, {
+      email,
+      firstName: firstName ?? null,
+      isSuperAdmin: false,
+      now,
+    }));
   if (!(await isOrganizer(db, groupId, account.id))) {
     await db
       .insert(partyOrganisers)

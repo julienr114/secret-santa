@@ -175,6 +175,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Exclusions | `/e/[fête]/exclusions` | Membres | Ajouter une exclusion |
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête (ouverts par la ligne « Réglages de l'événement » sous les membres, ticket 159) | `/e/[fête]/reglages` | La fête | Catégorie, « Pour » (un anniversaire, ticket 118), date, organisateur, suppression de la fête |
+| Nouvel organisateur (le prénom et l'adresse, ticket 161 ; « Ajouter » ramène aux réglages) | `/e/[fête]/reglages/organisateur` | Réglages de la fête | |
 | (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
 | (ancienne adresse) | `/admin/[groupe]/reglages/mot`, puis `/e/[fête]/reglages/mot` (le mot ajouté aux messages, passé au Secret Santa) | mène aux Réglages de la fête (`gonePathOf`, ticket 113) | |
 

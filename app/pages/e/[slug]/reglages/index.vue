@@ -113,8 +113,8 @@ const saveDate = () => {
   patch({ date });
 };
 
-// Organisers: removing asks for a second tap.
-const adding = ref(false);
+// Organisers: adding is a page (ticket 161); removing asks for a second
+// tap.
 const confirmId = ref<string | null>(null);
 /**
  * Removes an organiser.
@@ -230,7 +230,7 @@ const deleting = ref(false);
           icon="i-lucide-plus"
           :title="t('adminGroup.organizers.add')"
           :subtitle="t('adminGroup.organizers.addHint')"
-          :on-click="() => (adding = true)"
+          :to="`/e/${slug}/reglages/organisateur`"
         />
       </UiList>
 
@@ -302,11 +302,6 @@ const deleting = ref(false);
         />
       </template>
     </UiSheet>
-    <AdminOrganizerSheet
-      v-model:open="adding"
-      :slug="slug"
-      :group-name="group?.name ?? ''"
-    />
     <AdminDeleteGroupSheet
       v-if="isSuper && group"
       v-model:open="deleting"

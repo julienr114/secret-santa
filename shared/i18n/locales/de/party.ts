@@ -141,5 +141,6 @@ export default {
     dateValue: 'Am {date} · jedes Jahr vorgeschlagen',
     dateValueOnce: 'Am {date}',
     recurring: 'Jedes Jahr wieder',
+    short: 'Einstellungen',
   },
 } satisfies Dict<typeof fr>;

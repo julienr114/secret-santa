@@ -24,14 +24,14 @@ export default {
     add: 'Organisator hinzufügen',
     addHint: 'Die Person meldet sich mit ihrer Adresse an, ohne Passwort',
     addTitle: 'Neuer Organisator',
-    addDescription:
-      'Kann {name} wie du verwalten: Mitglieder, Wichteln, Versand.',
     emailLabel: 'Die E-Mail-Adresse',
-    emailHelp:
-      'Es reicht, sich mit dieser Adresse anzumelden: kein Passwort weiterzugeben.',
-    noResults: 'Wie du sieht die Person die Ergebnisse der Auslosung nicht.',
+    noResults:
+      'Diese Person verwaltet das Event wie du, ohne die Ergebnisse der Auslosung zu sehen.',
     remove: 'Entfernen',
     removeLabel: '{email} aus den Organisatoren entfernen',
+    firstNameLabel: 'Vorname',
+    firstNameRequired: 'Schreib den Vornamen.',
+    added: '{name} organisiert das Event jetzt mit',
   },
   deleteGroup: {
     superOnly: 'Nur für den Super-Admin',

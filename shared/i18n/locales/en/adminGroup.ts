@@ -25,13 +25,14 @@ export default {
     add: 'Add an organizer',
     addHint: 'They log in with their address, no password',
     addTitle: 'New organizer',
-    addDescription:
-      'They will manage {name} like you: members, Secret Santa, sending.',
     emailLabel: 'Their email address',
-    emailHelp: 'They just log in with this address: no password to hand over.',
-    noResults: 'Like you, they will not see the results of the draw.',
+    noResults:
+      'This person manages the event like you, without seeing the results of the draw.',
     remove: 'Remove',
     removeLabel: 'Remove {email} from the organizers',
+    firstNameLabel: 'Their first name',
+    firstNameRequired: 'Write their first name.',
+    added: '{name} now organises the event',
   },
   deleteGroup: {
     superOnly: 'Super-admin only',

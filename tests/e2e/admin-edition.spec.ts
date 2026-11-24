@@ -405,10 +405,22 @@ test('organisers decide who organises with them', async ({
     }),
   ).toHaveCount(0);
 
-  await page.getByRole('button', { name: /^Ajouter un organisateur/ }).click();
+  // A page with the first name and the address (ticket 161); an address
+  // that has an account keeps its own first name.
+  await page.getByRole('link', { name: /^Ajouter un organisateur/ }).click();
+  await expect(heading(page)).toHaveText('Nouvel organisateur');
+  await page.getByLabel('Son prénom').fill('Pas son prénom');
   await page.getByLabel('Son adresse email').fill(coOrganizer);
   await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  await expect(heading(page)).toHaveText('Réglages de l’événement');
   await expect(section.getByText(coOrganizer)).toBeVisible();
+  const { persons: after } = await (
+    await page.request.get(`/api/admin/${GROUP.slug}/persons`)
+  ).json();
+  expect(
+    after.find((p: { email: string | null }) => p.email === coOrganizer)
+      ?.firstName,
+  ).not.toBe('Pas son prénom');
 
   // Named, the same session manages the group, without logging in again.
   const groups = await (await other.get('/api/admin/groups')).json();

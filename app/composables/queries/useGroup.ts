@@ -134,9 +134,8 @@ export const useOrganizersQuery = (slug: Slug) =>
 
 /** Makes the owner of an address an organiser of the group. */
 export const useAddOrganizerMutation = (slug: Slug) =>
-  useApiMutation<unknown, string>(
-    (email) =>
-      api(`${base(slug)}/organizers`, { method: 'POST', body: { email } }),
+  useApiMutation<unknown, { firstName: string; email: string }>(
+    (body) => api(`${base(slug)}/organizers`, { method: 'POST', body }),
     () => groupKeys(slug),
   );
 

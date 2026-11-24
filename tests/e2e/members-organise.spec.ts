@@ -47,10 +47,27 @@ test('an organiser added from the settings reads « Organise »', async ({
   await hydrated(page);
   await page.getByRole('link', { name: 'Réglages de l’événement' }).click();
   await expect(heading(page)).toHaveText('Réglages de l’événement');
-  await page.getByRole('button', { name: /^Ajouter un organisateur/ }).click();
+  // A page (ticket 161): without a first name, nothing is added.
+  await page.getByRole('link', { name: /^Ajouter un organisateur/ }).click();
+  await expect(heading(page)).toHaveText('Nouvel organisateur');
   await page.getByLabel('Son adresse email').fill(INES);
   await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  await expect(page.getByText('Écris son prénom.')).toBeVisible();
+  await expect(heading(page)).toHaveText('Nouvel organisateur');
+  // Nor by the route.
+  const refused = await page.request.post(
+    `/api/admin/${state.slug}/organizers`,
+    { data: { email: 'sans-prenom@example.com' } },
+  );
+  expect(refused.status()).toBe(400);
+  // With it: her new account takes it; back to the settings, she is there.
+  await page.getByLabel('Son prénom').fill('Inès');
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  await expect(heading(page)).toHaveText('Réglages de l’événement');
   await expect(page.getByTestId('organizers').getByText(INES)).toBeVisible();
+  await expect(
+    page.getByText('Inès organise maintenant l’événement').first(),
+  ).toBeVisible();
 
   const { persons, organising } = (await (
     await page.request.get(`${at}/persons`)
@@ -67,6 +84,8 @@ test('an organiser added from the settings reads « Organise »', async ({
   // Only what sets someone apart (ticket 158): she organises and is not
   // in the Secret Santa; Hugo, in it, has nothing under his name.
   await expect(row(INES)).toContainText(/Organise · hors du Secret Santa$/);
+  // Her first name is the one written for her new account.
+  await expect(row(INES)).toContainText('Inès');
   await expect(row(CAMILLE)).toContainText('Organise');
   await expect(row(HUGO)).not.toContainText('Organise');
   await expect(row(HUGO)).not.toContainText('Secret Santa');

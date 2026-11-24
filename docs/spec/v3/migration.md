@@ -23,7 +23,10 @@ Aujourd'hui, la même chose existe trois fois : les goûts dans `giftPortraits` 
 
 - `giftPortraits` va dans la fiche « Moi » (`familyMembers`, `isSelf`) du compte de la personne. Si les deux existent, la plus récente gagne.
 - `wishes` va dans `giftListIdeas`, dans une liste de la personne placée dans l'événement du tirage et **réservée à celui qui l'a tirée** : personne ne voit après la migration ce qu'il ne voyait pas avant.
-- Pour une personne sans compte, les pistes des années passées restent en lecture seule pour celui qui l'avait tirée ; rien n'est créé à sa place.
+- **Une personne sans compte, mais dont on a l'adresse, et qui a écrit des pistes ou un portrait** (Julien, 24 novembre 2026) : **la migration lui crée son compte**, avec cette adresse et son prénom, puis fait comme pour les autres (la fiche « Moi », la liste réservée à celui qui l'a tirée). C'est la règle de la V3, « le compte se crée tout seul à la première chose écrite » (`listes.md`, « Sans compte »), appliquée à ce qu'elle a déjà écrit. Elle se connecte ensuite avec son adresse, sans mot de passe, comme tout le monde. Celui qui n'a rien écrit n'a pas de compte.
+- **Une personne dont on n'a pas l'adresse** (une seule en production le 24 novembre 2026, sur deux Secret Santa de huit personnes) : rien n'est créé à sa place, ses pistes restent en lecture seule pour celui qui l'a tirée. Le plus simple est de lui ajouter son adresse avant la bascule : elle est alors traitée comme les autres. On n'écrit pas de code pour reprendre ses pistes plus tard.
+- **Un garde-fou, en une règle** : tant qu'il reste d'anciennes pistes pour une participation, celui qui a tiré cette personne les lit, **qu'elle ait un compte ou non**. Aujourd'hui, elles cessent de s'afficher dès qu'un compte existe.
+- Dans les deux cas : **personne ne voit après ce qu'il ne voyait pas avant, et aucune idée écrite ne disparaît**.
 
 ## Les demandes
 

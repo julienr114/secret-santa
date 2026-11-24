@@ -51,14 +51,15 @@ Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque lis
 
 « Tu l'organises » n'est pas un état : on ne l'écrit pas dans un texte. C'est le titre de la ligne de l'organisateur, sur l'accueil, quand je participe aussi.
 
-## La ligne « Gérer l'événement »
+## L'en-tête d'une carte
 
-Julien, le 24 novembre 2026 : on ne voit pas que l'en-tête d'une carte se touche. Maquettes `V3Accueil`, `V3AccueilSansSecret`.
+Julien, le 24 novembre 2026 : on ne voit pas que l'en-tête d'une carte se touche ; une ligne « Gérer l'événement » en plus, « ça fait un peu trop ». Maquettes `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilAnnee`.
 
-- Sur l'accueil, dans la carte d'un événement **que j'organise**, c'est **la première ligne, juste sous l'en-tête**, toujours.
-- Une icône au trait (des réglettes), le titre **« Gérer l'événement »**, dessous le nombre de membres (« 8 membres », « 1 membre »), une flèche.
-- Elle ouvre la page de l'événement, comme l'en-tête, qui se touche toujours.
-- Un membre qui n'organise pas ne la voit pas. Elle n'a jamais de point rouge.
+- **La date est sous le titre**, en petit, dans toutes les cartes : le titre a toute la largeur. Un titre trop long passe sur deux lignes, puis il est coupé par « … ».
+- **À droite, pour un membre** : la flèche, comme avant.
+- **À droite, pour un organisateur de l'événement** : **une roue crantée dans un rond** (38 px) à la place de la flèche. Son nom pour les lecteurs d'écran : « Gérer l'événement ».
+- Tout l'en-tête se touche et ouvre la page de l'événement, roue comprise : la roue ne mène nulle part ailleurs.
+- Il n'y a pas de ligne « Gérer l'événement » dans la carte.
 
 ## La ligne « Devine qui »
 

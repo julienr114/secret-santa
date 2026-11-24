@@ -6,7 +6,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
-| `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas ; ce que j’organise : « Gérer l’événement », et « Tu l’organises » sous « Le Secret Santa » | 103, 156 |
+| `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas ; ce que j’organise : la roue dans l’en-tête de la carte, et « Tu l’organises » sous « Le Secret Santa » | 103, 156, 159 |
 | `V3AccueilSansSecret` | Accueil · un événement que j’organise n’a pas de Secret Santa cette année : sa carte propose « Créer un Secret Santa », puis « Créer une liste de cadeaux » | 151 |
 | `V3AccueilAvantNoel` | Accueil · une fête qui n’est pas Noël et qui vient avant : elle est au-dessus de la saison de Noël, sans titre ; l’accueil suit les dates | 112 |
 | `V3ChargementAccueil` | Chargement · le nouvel accueil : le bonjour, le titre de la saison, des cartes d’événement avec leurs lignes | 099 |
@@ -20,7 +20,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3QuoiDeNeuf` | « Quoi de neuf » · regroupé par fête, la plus récente en haut ; une liste publique où j’ai coché a sa section | 120 |
 | `V3TirageQuelleFete` | Secret Santa · première étape : « Pour quelle occasion ? », une fête que j’organise ou une autre occasion | 105 |
 | `V3Fete` | Événement · vue par un membre : ses membres, son Secret Santa, les listes, les années passées, « Quitter » | 104 |
-| `V3FeteOrganisateur` | Événement · vue par son organisateur : les réglages, « Un autre Secret Santa » ; la ligne des membres ouvre « Membres » | 104 |
+| `V3FeteOrganisateur` | Événement · vue par son organisateur : « Un autre Secret Santa » ; la carte des membres ouvre « Membres », et « Réglages de l’événement » sur sa deuxième ligne | 104, 159 |
 | `V3FeteAnniversaire` | Événement · « pour quelqu’un » (un anniversaire) : sa liste d’abord ; un Secret Santa reste possible | 104 |
 | `V3FeteNouvelle` | Première étape d’un Secret Santa ou d’une liste, quand l’occasion est nouvelle : « Pour quelle occasion ? », la catégorie d’abord, qui remplit le reste ; pas d’étape « membres » | 117 |
 | `V3FeteMembresReprendre` | Secret Santa ou liste · « Reprendre ceux d’un autre événement » : on coche qui (le nom du fichier est resté) | 117 |

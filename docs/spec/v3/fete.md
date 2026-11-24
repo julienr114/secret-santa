@@ -8,12 +8,12 @@ Ce sont les pages du groupe d'aujourd'hui, avec leurs règles (README, sections 
 ## La page d'un événement
 
 - En tête : la catégorie (« Noël · tous les ans »), le nom, la date de l'année et son décompte.
-- Les membres (une ligne, qui ouvre « Membres »).
+- Les membres (une ligne, qui ouvre « Membres »). **Pour un organisateur, la même carte a une deuxième ligne, « Réglages de l'événement »** (une roue, le titre, une flèche ; maquette `V3FeteOrganisateur`) : il n'y a plus de roue en haut à droite de la page (Julien, 24 novembre 2026 : « une ligne qui dit explicitement où ça nous emmène »).
 - Le ou les Secret Santa de l'année.
 - Les listes de ses membres ; « Créer une liste de cadeaux », et « Créer un Secret Santa » quand l'événement n'en a pas cette année (pour ses organisateurs).
 - Les années passées.
 - Pour un membre : « Quitter cet événement ».
-- Pour l'organisateur : les réglages (une roue), « Un autre Secret Santa ».
+- Pour l'organisateur : « Un autre Secret Santa ».
 
 Un événement « pour quelqu'un » (un anniversaire) montre d'abord sa liste ; un Secret Santa reste possible (`V3FeteAnniversaire`).
 

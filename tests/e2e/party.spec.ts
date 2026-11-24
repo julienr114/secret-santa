@@ -64,14 +64,18 @@ test('its settings are only its own', async ({ page }) => {
   await apiLogin(page.request, ORGANISER);
   await page.goto(`/e/${state.slug}`);
   await hydrated(page);
-  await page.getByRole('link', { name: 'Réglages de l’événement' }).click();
+  // No wheel on top: a line under the members (ticket 159).
+  const row = page.getByTestId('party-settings-row');
+  await expect(row).toHaveText('Réglages de l’événement');
+  await row.click();
   await expect(heading(page)).toHaveText('Réglages de l’événement');
   const settings = page.getByTestId('party-settings');
   await expect(settings).toContainText('Anniversaire');
   await expect(settings).toContainText(
     'Le 14 décembre · proposée chaque année',
   );
-  // No Secret Santa yet: nothing of its own to set (ticket 105).
+  // Never a line to the settings of a Secret Santa: they open from its
+  // follow-up (ticket 159).
   await expect(
     page.getByRole('link', { name: /^Réglages du Secret Santa/ }),
   ).toHaveCount(0);

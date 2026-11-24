@@ -141,7 +141,5 @@ export default {
     dateValue: 'Am {date} · jedes Jahr vorgeschlagen',
     dateValueOnce: 'Am {date}',
     recurring: 'Jedes Jahr wieder',
-    secretSanta: 'Wichteln',
-    secretSantaRow: 'Einstellungen des Wichtelns {year}',
   },
 } satisfies Dict<typeof fr>;

@@ -144,36 +144,55 @@ const onLeave = () =>
               {{ when }}
             </p>
           </div>
+        </div>
+
+        <!-- Its members; for an organiser, « Réglages de l'événement »
+             under them (ticket 159, V3FeteOrganisateur): no more wheel on
+             top. -->
+        <div
+          class="flex flex-col overflow-hidden rounded-[28px] bg-default shadow-[0_3px_0_var(--color-peach-200),0_0_0_1.5px_var(--color-peach-200)]"
+        >
+          <component
+            :is="organiser ? NuxtLink : 'div'"
+            :to="organiser ? `/e/${slug}/membres` : undefined"
+            class="flex min-h-14 items-center gap-3 px-3.5"
+            :class="organiser ? 'transition-colors active:bg-muted' : ''"
+            data-testid="party-members"
+          >
+            <UiAvatarStack
+              :avatars="data.members.avatars"
+              :max="5"
+              :label="t('party.members', { count: data.members.count })"
+            />
+            <span class="grow font-semibold">{{
+              t('party.members', { count: data.members.count })
+            }}</span>
+            <UIcon
+              v-if="organiser"
+              name="i-lucide-chevron-right"
+              class="size-5 shrink-0 text-dimmed"
+            />
+          </component>
           <NuxtLink
             v-if="organiser"
             :to="`/e/${slug}/reglages`"
-            :aria-label="t('party.settings')"
-            class="flex size-11 shrink-0 items-center justify-center rounded-full bg-default ring-1 ring-default"
+            class="flex min-h-14 items-center gap-3 border-t border-default px-3.5 transition-colors active:bg-muted"
+            data-testid="party-settings-row"
           >
-            <UIcon name="i-lucide-settings" class="size-5" />
+            <span class="flex w-6.5 shrink-0 justify-center text-toned">
+              <UIcon
+                name="i-lucide-settings"
+                class="size-5"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="grow font-semibold">{{ t('party.settings') }}</span>
+            <UIcon
+              name="i-lucide-chevron-right"
+              class="size-5 shrink-0 text-dimmed"
+            />
           </NuxtLink>
         </div>
-
-        <component
-          :is="organiser ? NuxtLink : 'div'"
-          :to="organiser ? `/e/${slug}/membres` : undefined"
-          class="flex min-h-14 items-center gap-3 rounded-[28px] bg-default px-3.5 shadow-[0_3px_0_var(--color-peach-200),0_0_0_1.5px_var(--color-peach-200)]"
-          data-testid="party-members"
-        >
-          <UiAvatarStack
-            :avatars="data.members.avatars"
-            :max="5"
-            :label="t('party.members', { count: data.members.count })"
-          />
-          <span class="grow font-semibold">{{
-            t('party.members', { count: data.members.count })
-          }}</span>
-          <UIcon
-            v-if="organiser"
-            name="i-lucide-chevron-right"
-            class="size-5 shrink-0 text-dimmed"
-          />
-        </component>
 
         <div
           class="flex flex-col gap-6"

@@ -19,7 +19,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3FetesPassees` | La tuile fait 36 px, comme la maquette ; `categories.md` dit 30 px. | Seul (la maquette) |
 | `V3Accueil` | « Bientôt » (l'anniversaire d'un de mes proches, pas encore un événement) a la tuile de 32 px de la maquette, en dégradé « Anniversaire ». | Seul (la maquette) |
-| `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilJeu` | « Gérer l'événement » (ticket 156) est un `UiListItem` comme les autres lignes : l'icône `sliders-horizontal` dans sa place de 40 px (44 dans la maquette), 60 px de haut au lieu de 58. « Tu l'organises » aligne son texte à 68 px du bord, sous le titre du Secret Santa de l'application (72 dans la maquette, dont l'icône fait 44 px). | Seul |
+| `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilJeu`, `V3AccueilAnnee` | La roue de l'en-tête (ticket 159) est la `settings` de Lucide dans un rond de 38 px au fond `muted` et à l'anneau `accented` (les jetons les plus proches de la maquette). « Tu l'organises » (ticket 156) aligne son texte à 68 px du bord, sous le titre du Secret Santa de l'application (72 dans la maquette, dont l'icône fait 44 px). | Seul |
 | `V3Fete` | L'en-tête de la page d'un événement garde sa pastille de catégorie : la maquette n'y a pas de tuile (le ticket en annonçait une de 44 px). | Seul (la maquette) |
 | `V3QuoiDeNeuf` | La section d'une liste hors de mes événements a la tuile de la catégorie « Autre ». | Seul |
 | `CreateSheet` | « Créer » ne change pas : ses événements gardent leur carré teinté (ticket 143). | Ticket 143 |
@@ -202,7 +202,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3FeteNouvelle` | Le nom est proposé pour Noël (« Noël ») et pour un anniversaire (« L'anniversaire de Zoé », « Mon anniversaire » pour soi) ; vide pour les autres catégories. La date est remplie pour Noël et pour l'anniversaire d'un proche dont on connaît la date de naissance. | Seul |
 | `V3FeteMembresReprendre` | Les pastilles des fêtes se cochent : cocher une fête montre et coche ses membres. Le nombre du bouton me compte. Plus de ligne « Inviter d'autres personnes » : un événement n'a plus de lien d'invitation (ticket 116), et l'étape disparaît avec le ticket 117. Seules les fêtes que j'organise sont proposées. | Seul |
 | `V3FeteNouvelle`, `V3FeteMembresReprendre` | Après « Créer la fête », on arrive sur l'écran d'aujourd'hui de ce qu'on venait créer (création d'une édition, nouvelle liste), sinon sur la fête. | Julien, 20 novembre 2026 |
-| `V3FeteReglages` | La catégorie et la date se changent dans un panneau du bas (comme les autres réglages), pas sur une page. « Réglages du Secret Santa » mène aux réglages du dernier Secret Santa de l'année ; sans Secret Santa cette année, la section n'est pas là. | Seul |
+| `V3FeteReglages` | La catégorie et la date se changent dans un panneau du bas (comme les autres réglages), pas sur une page. Plus de section « Secret Santa » (ticket 159) : ses réglages s'ouvrent depuis son suivi. | Seul |
 | `V3FeteInviter` | « Désactiver le lien » garde sa ligne d'aide (« Plus personne ne pourra s'inscrire »). | Seul |
 
 ## Les dernières retouches de la liste (Correction 30)

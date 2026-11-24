@@ -104,8 +104,8 @@ describe('loadHome', () => {
         game: null,
       },
     ]);
-    // Not its organiser: no « Gérer l'événement ».
-    expect(bySlug('famille').manage).toBeNull();
+    // Not its organiser: the arrow, no wheel.
+    expect(bySlug('famille').organises).toBe(false);
     // Organised without taking part: it speaks to the organiser.
     expect(bySlug('bureau').secretSantas).toEqual([
       {
@@ -123,8 +123,8 @@ describe('loadHome', () => {
         game: null,
       },
     ]);
-    // Its organiser: « Gérer l'événement », with its members (none yet).
-    expect(bySlug('bureau').manage).toEqual({ members: 0 });
+    // Its organiser: the wheel in the header of its card.
+    expect(bySlug('bureau').organises).toBe(true);
   });
 
   it('gives the lists in the party, mine, never one kept for a giver', async () => {

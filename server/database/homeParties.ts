@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   familyMembers,
@@ -55,10 +55,10 @@ export type HomeParty = {
    */
   createSanta: boolean;
   /**
-   * « Gérer l'événement » (ticket 156): I organise it; its members, as
-   * its page counts them. Null for a member who does not organise it.
+   * I organise it: the header of its card has a wheel, « Gérer
+   * l'événement », instead of the arrow (ticket 159).
    */
-  manage: { members: number } | null;
+  organises: boolean;
   /**
    * The Secret Santas of its current year I take part in or organise,
    * with their text (lignes.md) and their « Devine qui ».
@@ -144,7 +144,7 @@ export const loadHome = async (
   const ids = [...new Set([...mine.map((row) => row.partyId), ...organises])];
   if (ids.length === 0) return { parties: [], people, past: null };
 
-  const [rows, years, shares, made, members] = await Promise.all([
+  const [rows, years, shares, made] = await Promise.all([
     db.select().from(parties).where(inArray(parties.id, ids)),
     loadYears(db, ids),
     db
@@ -175,12 +175,6 @@ export const loadHome = async (
       .from(giftLists)
       .where(inArray(giftLists.partyId, ids))
       .orderBy(asc(giftLists.createdAt)),
-    // The members of what I organise, for « Gérer l'événement ».
-    db
-      .select({ partyId: persons.partyId, n: count() })
-      .from(persons)
-      .where(inArray(persons.partyId, anyOf([...organises])))
-      .groupBy(persons.partyId),
   ]);
   // One row per list and event: shared there, else made for there.
   const links = [
@@ -320,12 +314,7 @@ export const loadHome = async (
             today,
           ),
           createSanta: organiser && santas.length === 0,
-          manage: organiser
-            ? {
-                members:
-                  members.find((row) => row.partyId === party.id)?.n ?? 0,
-              }
-            : null,
+          organises: organiser,
           secretSantas: santas
             .filter((santa) => organiser || paths.has(santa.id))
             .map((santa) => {

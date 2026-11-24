@@ -183,13 +183,15 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
       has: page.getByRole('heading', { name, level: 3 }),
     });
   const office = card('Bureau, 3e étage');
-  await expect(office.getByRole('listitem').first()).toHaveAttribute(
-    'data-testid',
-    'home-manage',
-  );
-  await expect(office.getByTestId('home-manage')).toContainText(
-    /Gérer l’événement\d+ membres?/,
-  );
+  // Its header has the wheel, « Gérer l'événement », and its date under
+  // its name; no line « Gérer l'événement » any more (ticket 159).
+  await expect(
+    office.getByRole('img', { name: 'Gérer l’événement' }),
+  ).toBeVisible();
+  await expect(office.getByTestId('home-party-date')).toBeVisible();
+  await expect(office.getByRole('listitem')).not.toContainText([
+    'Gérer l’événement',
+  ]);
   await expect(
     office.getByTestId('home-santa').getByRole('link'),
   ).toHaveAttribute('href', /^\/p\//);

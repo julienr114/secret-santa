@@ -10,11 +10,12 @@ import { usePrepareYearMutation } from '~/composables/queries/useParty';
 // title, its text and maybe a red dot (lignes.md, tickets 112 and 120).
 // The event in its tile in colour, the lines under it with their icon
 // alone (ticket 143).
-// In an event I organise (ticket 156, V3Accueil, V3AccueilSansSecret):
-// « Gérer l'événement » first, under its header, with its members; and
-// under a Secret Santa I take part in, « Tu l'organises », hung to its
-// line (no rule, no icon, its text under the title), which opens the
-// follow-up. Never a red dot on either.
+// Its header (ticket 159): the date under the name, which takes two lines
+// at most; on the right, the arrow, or for its organiser a wheel in a
+// round (« Gérer l'événement »); the whole header opens the event.
+// Under a Secret Santa I take part in and organise (ticket 156), « Tu
+// l'organises », hung to its line (no rule, no icon, its text under the
+// title), which opens the follow-up; never a red dot.
 // At the bottom, what may be made in it (ticket 151): « Créer un Secret
 // Santa », « Créer une liste de cadeaux ». Two months before an event
 // that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 »
@@ -79,33 +80,36 @@ const creates = computed(() => {
   >
     <NuxtLink
       :to="`/e/${party.slug}`"
-      class="flex min-h-14 items-center gap-2.5 px-4 py-2.5 transition-colors active:bg-muted"
+      class="flex min-h-[66px] items-center gap-3 px-4 py-2.5 transition-colors active:bg-muted"
     >
       <UiEventTile :emoji="emoji" :category="party.category" :size="44" />
-      <h3 class="min-w-0 grow font-display text-lg leading-tight font-bold">
-        {{ party.name }}
-      </h3>
+      <span class="flex min-w-0 grow flex-col gap-px">
+        <h3 class="line-clamp-2 font-display text-lg leading-tight font-bold">
+          {{ party.name }}
+        </h3>
+        <span
+          v-if="party.date"
+          class="text-[13px] font-semibold text-toned"
+          data-testid="home-party-date"
+          >{{ formatShortDay(party.date, locale) }}</span
+        >
+      </span>
       <span
-        v-if="party.date"
-        class="shrink-0 text-[13px] font-bold whitespace-nowrap text-toned"
-        >{{ formatShortDay(party.date, locale) }}</span
+        v-if="party.organises"
+        role="img"
+        :aria-label="t('home.manage')"
+        class="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-muted text-toned ring-1 ring-accented"
+        data-testid="home-manage"
       >
+        <UIcon name="i-lucide-settings" class="size-4.5" aria-hidden="true" />
+      </span>
       <UIcon
+        v-else
         name="i-lucide-chevron-right"
         class="size-4.5 shrink-0 text-dimmed"
       />
     </NuxtLink>
     <ul class="divide-y divide-default border-t border-default">
-      <UiListItem
-        v-if="party.manage"
-        icon="i-lucide-sliders-horizontal"
-        icon-tone="neutral"
-        bare-icon
-        :title="t('home.manage')"
-        :subtitle="t('party.members', { count: party.manage.members })"
-        :to="`/e/${party.slug}`"
-        data-testid="home-manage"
-      />
       <template v-for="santa in party.secretSantas" :key="santa.id">
         <UiListItem
           :class="santa.organiser ? 'border-b-0' : ''"

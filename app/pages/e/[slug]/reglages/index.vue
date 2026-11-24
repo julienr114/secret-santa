@@ -25,8 +25,8 @@ import {
 // The settings of the party (docs/spec/v3/fete.md, maquette
 // V3FeteReglages): only what is its own. Its category, its date, whether
 // it comes back; for a birthday, « Pour » (ticket 118), one of my people
-// or « Personne »; a row to the settings of its Secret Santa; its
-// organisers; deleting it, for the super-admin. « Quelqu'un s'inscrit par
+// or « Personne »; its organisers (no row to the settings of its Secret
+// Santa: they open from its follow-up, ticket 159); deleting it, for the super-admin. « Quelqu'un s'inscrit par
 // le lien » is a setting of each Secret Santa (ticket 116). Each saved at once (README 23.3).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
@@ -112,8 +112,6 @@ const saveDate = () => {
   dateOpen.value = false;
   patch({ date });
 };
-/** The latest Secret Santa of the year: its settings (ticket 105). */
-const latestSanta = computed(() => data.value?.secretSantas.at(-1));
 
 // Organisers: removing asks for a second tap.
 const adding = ref(false);
@@ -177,15 +175,6 @@ const deleting = ref(false);
           :checked="data.party.recurring"
           :title="t('party.reglages.recurring')"
           @update:checked="(on) => patch({ recurring: on })"
-        />
-      </UiList>
-
-      <UiList v-if="latestSanta" :title="t('party.reglages.secretSanta')">
-        <UiListItem
-          :title="
-            t('party.reglages.secretSantaRow', { year: latestSanta.year })
-          "
-          :to="`/admin/${slug}/editions/${latestSanta.id}/reglages`"
         />
       </UiList>
 

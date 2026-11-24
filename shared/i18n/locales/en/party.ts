@@ -141,7 +141,5 @@ export default {
     dateValue: '{date} · offered every year',
     dateValueOnce: '{date}',
     recurring: 'Comes back every year',
-    secretSanta: 'Secret Santa',
-    secretSantaRow: 'Settings of the Secret Santa {year}',
   },
 } satisfies Dict<typeof fr>;

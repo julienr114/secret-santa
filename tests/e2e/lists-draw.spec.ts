@@ -483,5 +483,34 @@ test('linked to one Secret Santa, my part offers « Lier à un Secret Santa » f
   await expect(
     page.getByRole('menuitem', { name: 'Lier à un Secret Santa' }),
   ).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  // Linked to two Secret Santa and nothing else (ticket 157): the bar
+  // names both, and has no address; one line each, at its name, the
+  // same as the pills; each cross unlinks its own.
+  await expect(page.getByTestId('share-stage')).toContainText(
+    /(Amis Lilas, Famille Lilas|Famille Lilas, Amis Lilas)/,
+  );
+  await expect(page.getByTestId('share-stage')).toContainText(
+    'Seuls ceux qui t’ont tiré la voient',
+  );
+  await page.getByTestId('share-open').click();
+  const bar = page.getByTestId('sharing-panel');
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  const givers = bar.locator('[data-testid^="sharing-giver-"]');
+  await expect(givers).toHaveCount(2);
+  await expect(givers.first()).toContainText('Secret Santa · Amis Lilas');
+  await expect(givers.first()).toContainText('Celui qui t’a tiré la voit');
+  await givers
+    .filter({ hasText: 'Amis Lilas' })
+    .getByTestId('sharing-remove-giver')
+    .click();
+  await expect(givers).toHaveCount(1);
+  await expect(givers).toContainText('Secret Santa · Famille Lilas');
+  // « Ajouter »: a pill at its name for the one just unlinked.
+  await bar.getByTestId('sharing-add').click();
+  const pill = bar.getByTestId('sharing-add-giver');
+  await expect(pill).toHaveText('Secret Santa · Amis Lilas');
+  await pill.click();
+  await expect(givers).toHaveCount(2);
   await page.close();
 });

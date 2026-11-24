@@ -190,23 +190,33 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
   await expect(page.getByTestId('list-title')).toHaveValue(
     'Idées pour le Secret Santa',
   );
-  // « Modifier » unrolls the bar: « Celui qui m’a tiré » is a line of its
-  // own (V3ListeQuiSecret). The event's members may see it too: two lines
-  // together; taking the event away again leaves « Celui qui m’a tiré ».
+  // « Modifier » unrolls the bar: her Secret Santa is a line of its own,
+  // at its name (V3ListeQuiSecret, ticket 157), and no address: nobody
+  // gets in by the link. The event's members may see it too: two lines
+  // together, and the address; taking the event away again leaves the
+  // Secret Santa alone, without the address.
   await page.getByTestId('share-open').click();
   const sharing = page.getByTestId('sharing-panel');
   const giver = sharing.locator('[data-testid^="sharing-giver-"]');
-  await expect(giver).toContainText('Celui qui m’a tiré');
   await expect(giver).toContainText('Secret Santa · Famille Lutins');
+  await expect(giver).toContainText('Celui qui t’a tiré la voit');
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await expect(sharing.getByTestId('sharing-renew')).toHaveCount(0);
   await expect(sharing.getByTestId('sharing-add')).toHaveAttribute(
     'aria-expanded',
     'false',
   );
   await sharing.getByTestId('sharing-add').click();
-  await sharing.getByRole('button', { name: /Famille Lutins/ }).click();
+  await sharing
+    .locator('[data-testid^="sharing-add-"]')
+    .filter({ hasNotText: 'Secret Santa' })
+    .filter({ hasText: 'Famille Lutins' })
+    .click();
   const event = sharing.locator('[data-testid^="sharing-event-"]');
   await expect(event).toContainText('Famille Lutins');
   await expect(giver).toBeVisible();
+  await expect(page.getByTestId('share-link')).toContainText('/l/');
+  await expect(sharing.getByTestId('sharing-renew')).toBeVisible();
   await expect(page.getByTestId('share-stage')).toContainText('la voi');
   await event.getByTestId('sharing-remove').click();
   await page
@@ -215,6 +225,7 @@ test('before the draw: waiting screen and gift hints', async ({ page }) => {
     .click();
   await expect(event).toHaveCount(0);
   await expect(giver).toBeVisible();
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
   await expect(page.getByTestId('share-stage')).toContainText(
     'Seul celui qui t’a tiré la voit',
   );

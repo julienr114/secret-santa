@@ -137,6 +137,7 @@ export default {
     public: 'Publique',
     publicHint: 'Toute personne qui a le lien la voit',
     giverHint: 'Seul celui qui t’a tiré la voit',
+    giversHint: 'Seuls ceux qui t’ont tiré la voient',
     members: {
       one: '{count} membre la voit',
       other: '{count} membres la voient',
@@ -152,7 +153,7 @@ export default {
       one: '{count} membre',
       other: '{count} membres',
     },
-    giverOnly: 'Celui qui m’a tiré',
+    giverSees: 'Celui qui t’a tiré la voit',
     chosen: 'Qui je veux',
     everyone: 'Tout le monde',
     remove: 'Retirer {name}',

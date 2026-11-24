@@ -23,6 +23,17 @@ export const listStage = (list: {
   return list.givers > 0 ? 'giver' : 'draft';
 };
 
+/**
+ * Whether the link of a list lets anyone in (ticket 157): shared with an
+ * event at least, or open to everyone. Only then does its bar show the
+ * address and « Copier le lien », and « Changer de lien »; a draft, or a
+ * list only those who drew me see, has neither.
+ * @param stage - The stage of its sharing.
+ * @returns Whether the link lets someone in.
+ */
+export const linkLetsIn = (stage: ListStage): boolean =>
+  stage === 'parties' || stage === 'public';
+
 /** Who gets in under a sharing: everyone, or these addresses and accounts. */
 export type Audience = {
   isPublic: boolean;

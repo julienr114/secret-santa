@@ -27,6 +27,8 @@ import {
   secretSantas,
 } from './schema';
 import { newId, nowIso } from '#server/http/context';
+import { invitePlace } from '#server/utils/invite';
+import { subjectSantaName } from '#server/utils/messages';
 import {
   listStage,
   type Audience,
@@ -161,6 +163,12 @@ export type SharingOption = {
   /** I take part there in a Secret Santa not closed: « Celui qui m'a
    * tiré » may be chosen. */
   drawn: boolean;
+  /**
+   * That Secret Santa, named as the pill under my name (ticket 157):
+   * « Famille Camille », « Les enfants · Famille Camille » when its year
+   * has several. Its event's name when I take part in none.
+   */
+  santaName: string;
 };
 
 /**
@@ -353,25 +361,45 @@ export const sharingOptions = async (
   const givers = new Set(
     shared.filter((row) => row.giver).map((row) => row.id),
   );
-  const drawn = new Set(
-    (
-      await db
-        .select({ partyId: secretSantas.partyId })
-        .from(participations)
-        .innerJoin(persons, eq(persons.id, participations.personId))
-        .innerJoin(
-          secretSantas,
-          eq(secretSantas.id, participations.secretSantaId),
-        )
-        .where(
-          and(
-            inArray(secretSantas.partyId, ids),
-            eq(persons.email, account.email),
-            ne(secretSantas.status, 'closed'),
+  const takingPart = await db
+    .select({
+      partyId: secretSantas.partyId,
+      yearId: secretSantas.yearId,
+      label: secretSantas.label,
+    })
+    .from(participations)
+    .innerJoin(persons, eq(persons.id, participations.personId))
+    .innerJoin(secretSantas, eq(secretSantas.id, participations.secretSantaId))
+    .where(
+      and(
+        inArray(secretSantas.partyId, ids),
+        eq(persons.email, account.email),
+        ne(secretSantas.status, 'closed'),
+      ),
+    );
+  const drawn = new Set(takingPart.map((row) => row.partyId));
+  const siblings = await db
+    .select({ yearId: secretSantas.yearId })
+    .from(secretSantas)
+    .where(
+      inArray(secretSantas.yearId, [
+        '',
+        ...new Set(takingPart.map((row) => row.yearId)),
+      ]),
+    );
+  /** The name of my Secret Santa in an event, as under my name. */
+  const santaName = (party: { id: string; name: string }) => {
+    const santa = takingPart.find((row) => row.partyId === party.id);
+    return santa
+      ? invitePlace(
+          party.name,
+          subjectSantaName(
+            santa.label,
+            siblings.filter((one) => one.yearId === santa.yearId).length,
           ),
         )
-    ).map((row) => row.partyId),
-  );
+      : party.name;
+  };
   return rows
     .map((party) => ({
       id: party.id,
@@ -383,6 +411,7 @@ export const sharingOptions = async (
       shared: checked.has(party.id),
       giver: givers.has(party.id),
       drawn: drawn.has(party.id),
+      santaName: santaName(party),
     }))
     .toSorted((a, b) => a.name.localeCompare(b.name));
 };

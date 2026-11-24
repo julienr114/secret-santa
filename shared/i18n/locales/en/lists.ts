@@ -134,6 +134,7 @@ export default {
     public: 'Public',
     publicHint: 'Anyone with the link sees it',
     giverHint: 'Only the one who drew you sees it',
+    giversHint: 'Only those who drew you see it',
     members: {
       one: '{count} member sees it',
       other: '{count} members see it',
@@ -149,7 +150,7 @@ export default {
       one: '{count} member',
       other: '{count} members',
     },
-    giverOnly: 'The one who drew me',
+    giverSees: 'The one who drew you sees it',
     chosen: 'Who I want',
     everyone: 'Everyone',
     remove: 'Remove {name}',

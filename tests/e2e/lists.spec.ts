@@ -36,9 +36,13 @@ test('a list is written in its document, and shared', async ({ page }) => {
   await toggle.click();
   await expect(toggle).toHaveText('Fermer');
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByTestId('share-link')).toContainText('/l/');
+  // A draft lets nobody in by its link: no address, « Qui voit ta
+  // liste ? » first (ticket 157).
+  await expect(page.getByTestId('sharing-panel')).toBeVisible();
+  await expect(page.getByTestId('share-link')).toHaveCount(0);
+  await expect(page.getByTestId('copy-link')).toHaveCount(0);
   // The focus went in; Échap folds it, and gives the focus back.
-  await expect(page.getByTestId('copy-link')).toBeFocused();
+  await expect(page.getByTestId('share-content')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('share-link')).toHaveCount(0);
   await expect(toggle).toBeFocused();

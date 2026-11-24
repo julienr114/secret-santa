@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { SharingOption } from '#server/database/listSharing';
 import {
+  linkLetsIn,
+  listStage,
   sharingAsk,
   sharingView,
   type SharingAsk,
@@ -65,9 +67,15 @@ const view = computed(() =>
   }),
 );
 const unrolled = computed(() => adding.value ?? view.value.nobody);
-/** « Changer de lien » once the link lets someone in. */
-const canRenew = computed(
-  () => isPublic.value || (query.data.value?.invite ?? false),
+/** « Changer de lien » once the link lets someone in (ticket 157). */
+const canRenew = computed(() =>
+  linkLetsIn(
+    listStage({
+      isPublic: isPublic.value,
+      parties: view.value.events.length,
+      givers: view.value.givers.length,
+    }),
+  ),
 );
 const checking = ref(false);
 const busy = computed(
@@ -141,7 +149,7 @@ const onRemoveEvent = async (option: SharingOption) => {
 };
 
 /**
- * The cross of « Celui qui m'a tiré »: it goes at once, as « Délier »
+ * The cross of a Secret Santa: it goes at once, as « Délier »
  * under my name (ticket 148, one way in the code).
  * @param option - The event of the Secret Santa.
  * @returns Nothing.
@@ -173,16 +181,23 @@ const onAddEvent = (option: SharingOption) => {
   });
 };
 
-/** The pill « Celui qui m'a tiré »: every Secret Santa where I take part. */
-const onAddGiver = () => {
+/**
+ * A pill « Secret Santa · Famille Camille » (ticket 157): that one only.
+ * @param id - Its event.
+ */
+const onAddGiver = (id: string) => {
   adding.value = true;
   apply({
-    givers: [
-      ...sharingAsk(options.value, isPublic.value).givers,
-      ...view.value.addGiver,
-    ],
+    givers: [...sharingAsk(options.value, isPublic.value).givers, id],
   });
 };
+/** The pills of the Secret Santa not linked yet, by name. */
+const giverPills = computed(() =>
+  view.value.addGiver.flatMap((id) => {
+    const option = options.value.find((one) => one.id === id);
+    return option ? [option] : [];
+  }),
+);
 
 /**
  * « Qui je veux » or « Tout le monde »: opening it to everyone asks
@@ -325,10 +340,10 @@ const PILL =
             </span>
             <span class="flex min-w-0 grow flex-col">
               <span class="truncate font-semibold">{{
-                t('lists.sharing.giverOnly')
+                t('lists.doc.santa', { name: option.santaName })
               }}</span>
               <span class="truncate text-[13px] text-toned">{{
-                t('lists.doc.santa', { name: option.name })
+                t('lists.sharing.giverSees')
               }}</span>
             </span>
             <button
@@ -337,7 +352,7 @@ const PILL =
               :disabled="busy"
               :aria-label="
                 t('lists.sharing.remove', {
-                  name: t('lists.sharing.giverOnly'),
+                  name: t('lists.doc.santa', { name: option.santaName }),
                 })
               "
               data-testid="sharing-remove-giver"
@@ -378,16 +393,17 @@ const PILL =
               data-testid="sharing-pills"
             >
               <button
-                v-if="view.addGiver.length > 0"
+                v-for="option in giverPills"
+                :key="`giver-${option.id}`"
                 type="button"
                 :class="PILL"
                 class="bg-default ring-1 ring-default"
                 :disabled="busy"
                 data-testid="sharing-add-giver"
-                @click="onAddGiver"
+                @click="onAddGiver(option.id)"
               >
                 <UIcon name="i-lucide-mail" class="size-3.5" />
-                {{ t('lists.sharing.giverOnly') }}
+                {{ t('lists.doc.santa', { name: option.santaName }) }}
               </button>
               <button
                 v-for="option in view.addEvents"

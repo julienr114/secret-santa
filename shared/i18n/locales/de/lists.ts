@@ -136,6 +136,7 @@ export default {
     public: 'Öffentlich',
     publicHint: 'Alle mit dem Link sehen sie',
     giverHint: 'Nur wer dich gezogen hat, sieht sie',
+    giversHint: 'Nur die, die dich gezogen haben, sehen sie',
     members: {
       one: '{count} Mitglied sieht sie',
       other: '{count} Mitglieder sehen sie',
@@ -151,7 +152,7 @@ export default {
       one: '{count} Mitglied',
       other: '{count} Mitglieder',
     },
-    giverOnly: 'Wer mich gezogen hat',
+    giverSees: 'Wer dich gezogen hat, sieht sie',
     chosen: 'Wen ich will',
     everyone: 'Alle',
     remove: '{name} entfernen',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ListDocument } from '#server/http/lists';
+import { linkLetsIn } from '#server/utils/listSharing';
 import {
   shareDepth,
   shareLevelOf,
@@ -45,7 +46,11 @@ const subtitle = computed(() => {
   const { stage, members } = sharing.value;
   if (stage === 'draft') return t('lists.sharing.draftHint');
   if (stage === 'public') return t('lists.sharing.publicHint');
-  if (stage === 'giver') return t('lists.sharing.giverHint');
+  if (stage === 'giver') {
+    return sharing.value.events.length > 1
+      ? t('lists.sharing.giversHint')
+      : t('lists.sharing.giverHint');
+  }
   return members > 0
     ? t('lists.sharing.members', { count: members })
     : t('lists.sharing.nobody');
@@ -60,6 +65,11 @@ const icon = computed(
     })[sharing.value.stage],
 );
 
+/**
+ * The address and « Copier le lien », only when the link lets someone in
+ * (ticket 157): not on a draft, nor for those who drew me alone.
+ */
+const letsIn = computed(() => linkLetsIn(sharing.value.stage));
 const url = computed(() =>
   props.doc.list.shareToken && import.meta.client
     ? `${window.location.origin}/l/${props.doc.list.shareToken}`
@@ -114,8 +124,10 @@ const setOpen = async (on: boolean) => {
     draft.value = { firstName: '', email: '' };
   }
   await nextTick();
+  // In it: its first button, or itself while « Qui voit ta liste ? »
+  // loads (no address to copy, ticket 157).
   (on
-    ? content.value?.querySelector<HTMLElement>('button, a')
+    ? (content.value?.querySelector<HTMLElement>('button, a') ?? content.value)
     : toggle.value
   )?.focus();
 };
@@ -289,6 +301,7 @@ const onCopy = async () => {
           }}</span>
         </span>
         <button
+          v-if="!readonly || letsIn"
           ref="toggle"
           type="button"
           class="relative flex h-9 shrink-0 items-center rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default after:absolute after:inset-x-0 after:-inset-y-1"
@@ -304,7 +317,8 @@ const onCopy = async () => {
         v-if="open"
         :id="contentId"
         ref="content"
-        class="flex min-h-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain pt-2.5 pb-2"
+        class="flex min-h-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain pt-2.5 pb-2 outline-none"
+        tabindex="-1"
         data-testid="share-content"
       >
         <div
@@ -346,6 +360,7 @@ const onCopy = async () => {
               <!-- The corners nest: the button's radius is the field's less
                    the space between them. -->
               <div
+                v-if="letsIn"
                 class="mx-2 flex shrink-0 items-center gap-2 rounded-[16px] bg-muted py-1 pr-1 pl-3"
               >
                 <span

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  linkLetsIn,
   listStage,
   losingClaimers,
   losingMembers,
@@ -23,6 +24,16 @@ describe('listStage', () => {
       'parties',
     );
     expect(listStage({ isPublic: true, parties: 2, givers: 0 })).toBe('public');
+  });
+});
+
+describe('linkLetsIn', () => {
+  it('lets someone in once shared with an event, or open to everyone', () => {
+    expect(linkLetsIn('draft')).toBe(false);
+    // Only those who drew me: they come by their card, not by the link.
+    expect(linkLetsIn('giver')).toBe(false);
+    expect(linkLetsIn('parties')).toBe(true);
+    expect(linkLetsIn('public')).toBe(true);
   });
 });
 

@@ -2,89 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   canInviteToList,
   entersByListLink,
-  entryParts,
+  memberNotes,
   organisingIds,
   placesTaken,
   takenOnce,
 } from './members';
-
-describe('by where a member came in', () => {
-  const event = {
-    santas: [
-      { id: 's1', name: 'Noël 2025', current: false },
-      { id: 's2', name: 'Noël 2026', current: true },
-    ],
-    lists: [{ id: 'l1', holder: 'Camille' }],
-  };
-
-  it('says « Secret Santa » when the event has one this year', () => {
-    expect(entryParts([{ kind: 'santa', santaId: 's2' }], event)).toEqual([
-      { kind: 'santa', name: null },
-    ]);
-  });
-
-  it('says it once for several years', () => {
-    expect(
-      entryParts(
-        [
-          { kind: 'santa', santaId: 's1' },
-          { kind: 'santa', santaId: 's2' },
-        ],
-        event,
-      ),
-    ).toEqual([{ kind: 'santa', name: null }]);
-  });
-
-  it('names the Secret Santa of this year when there are several', () => {
-    const two = {
-      ...event,
-      santas: [
-        ...event.santas,
-        { id: 's3', name: 'Les enfants', current: true },
-      ],
-    };
-    expect(
-      entryParts(
-        [
-          { kind: 'santa', santaId: 's3' },
-          { kind: 'santa', santaId: 's1' },
-        ],
-        two,
-      ),
-    ).toEqual([
-      { kind: 'santa', name: null },
-      { kind: 'santa', name: 'Les enfants' },
-    ]);
-  });
-
-  it('says the list, after the Secret Santa', () => {
-    expect(
-      entryParts(
-        [
-          { kind: 'list', listId: 'l1' },
-          { kind: 'santa', santaId: 's2' },
-        ],
-        event,
-      ),
-    ).toEqual([
-      { kind: 'santa', name: null },
-      { kind: 'list', holder: 'Camille' },
-    ]);
-  });
-
-  it('says nothing of a Secret Santa or a list gone, nor of no entry', () => {
-    expect(
-      entryParts(
-        [
-          { kind: 'santa', santaId: 'gone' },
-          { kind: 'list', listId: 'gone' },
-        ],
-        event,
-      ),
-    ).toEqual([]);
-    expect(entryParts([], event)).toEqual([]);
-  });
-});
 
 describe('inviting someone to a list', () => {
   it('is for who manages a list shared with all the members of its event', () => {
@@ -170,5 +92,49 @@ describe('the members who organise', () => {
     expect(organisingIds([{ id: 'a', email: 'a@example.com' }], [])).toEqual(
       [],
     );
+  });
+});
+
+describe('what « Membres » writes under a first name', () => {
+  const usual = {
+    organises: false,
+    takingPart: ['s1'],
+    notDrawing: [],
+    hasEmail: true,
+  };
+  const one = [{ id: 's1', name: 'Noël 2026' }];
+  const two = [...one, { id: 's2', name: 'Les enfants' }];
+
+  it('says nothing when all is as usual', () => {
+    expect(memberNotes(usual, one)).toEqual([]);
+    expect(memberNotes({ ...usual, takingPart: [] }, [])).toEqual([]);
+  });
+
+  it('says what sets someone apart, in its order', () => {
+    expect(
+      memberNotes(
+        {
+          organises: true,
+          takingPart: [],
+          notDrawing: ['Hugo'],
+          hasEmail: false,
+        },
+        one,
+      ),
+    ).toEqual([
+      { kind: 'organises' },
+      { kind: 'outside' },
+      { kind: 'notDrawing', names: ['Hugo'] },
+      { kind: 'noEmail' },
+    ]);
+  });
+
+  it('names the Secret Santa when there are several this year', () => {
+    expect(memberNotes({ ...usual, takingPart: ['s2', 's1'] }, two)).toEqual([
+      { kind: 'santas', names: ['Noël 2026', 'Les enfants'] },
+    ]);
+    expect(memberNotes({ ...usual, takingPart: [] }, two)).toEqual([
+      { kind: 'noSanta' },
+    ]);
   });
 });

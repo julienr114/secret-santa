@@ -64,12 +64,12 @@ test('an organiser added from the settings reads « Organise »', async ({
   await hydrated(page);
   const row = (email: string) =>
     page.getByTestId('members').locator(`a[href$="/membres/${idOf(email)}"]`);
-  // Neither by a Secret Santa nor by a list: « Organise » alone.
-  await expect(row(INES)).toContainText(/Organise$/);
-  await expect(row(INES)).not.toContainText('·');
+  // Only what sets someone apart (ticket 158): she organises and is not
+  // in the Secret Santa; Hugo, in it, has nothing under his name.
+  await expect(row(INES)).toContainText(/Organise · hors du Secret Santa$/);
   await expect(row(CAMILLE)).toContainText('Organise');
-  await expect(row(HUGO)).toContainText('Secret Santa');
   await expect(row(HUGO)).not.toContainText('Organise');
+  await expect(row(HUGO)).not.toContainText('Secret Santa');
 });
 
 test('a member cannot touch the line of the members', async ({ page }) => {

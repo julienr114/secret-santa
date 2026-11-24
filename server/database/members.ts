@@ -6,7 +6,6 @@ import { memberEntries, persons, type PersonRow } from './schema';
 import { newId } from '#server/http/context';
 import { avatarOf, freshAvatar } from '#server/utils/avatars';
 import { secureRandomInt } from '#server/utils/crypto';
-import type { MemberEntry } from '#shared/utils/members';
 
 // Coming into an event (ticket 117, docs/decisions/2026-11-21-on-entre-
 // par-un-secret-santa-ou-par-une-liste.md): one never comes into an event
@@ -54,31 +53,6 @@ export const entryRow = ({
  */
 export const recordEntry = (db: Db, input: Parameters<typeof entryRow>[0]) =>
   db.insert(memberEntries).values(entryRow(input)).onConflictDoNothing();
-
-/**
- * The ways in of the members of an event.
- * @param db - The database.
- * @param partyId - The event.
- * @returns Each person's ways in.
- */
-export const entriesOfParty = async (
-  db: Db,
-  partyId: string,
-): Promise<Map<string, MemberEntry[]>> => {
-  const rows = await db
-    .select()
-    .from(memberEntries)
-    .where(eq(memberEntries.partyId, partyId));
-  return rows.reduce((map, row) => {
-    const entry: MemberEntry | null = row.secretSantaId
-      ? { kind: 'santa', santaId: row.secretSantaId }
-      : row.listId
-        ? { kind: 'list', listId: row.listId }
-        : null;
-    if (!entry) return map;
-    return map.set(row.personId, [...(map.get(row.personId) ?? []), entry]);
-  }, new Map<string, MemberEntry[]>());
-};
 
 /**
  * The statements that forget the ways in of some people.

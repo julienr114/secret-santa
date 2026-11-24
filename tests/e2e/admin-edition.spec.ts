@@ -109,14 +109,21 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
     .getByRole('button', { name: 'Enregistrer · 5 participants' })
     .click();
   await expect(page).toHaveURL(new RegExp(`${editionUrl}$`));
-  // « Membres » says by where each came in, and adds to the Secret Santa.
+  // « Membres » says only what sets someone apart (ticket 158), and its
+  // one line « Ajouter quelqu'un » goes straight to the one place: the
+  // Secret Santa being prepared.
   await page.goto(`/e/${GROUP.slug}/membres`);
   await hydrated(page);
   await expect(page.getByTestId('members')).toContainText(
-    'Secret Santa · pas d’adresse email',
+    'Pas d’adresse email',
   );
-  await expect(page.getByTestId('members-add-santa')).toContainText(
-    '5 participants',
+  await expect(page.getByTestId('members')).not.toContainText('Secret Santa ·');
+  const add = page.getByTestId('members-add');
+  await expect(add).toContainText('Ajouter quelqu’un');
+  await expect(add).toContainText('Au Secret Santa');
+  await expect(add.getByRole('link')).toHaveAttribute(
+    'href',
+    /\/editions\/[^/]+\/ajouter$/,
   );
   await expect(
     page.getByRole('link', { name: /^Ajouter une personne/ }),

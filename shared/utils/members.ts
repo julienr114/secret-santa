@@ -1,50 +1,63 @@
-// Who is a member of an event, and by where they came in (docs/decisions/
+// Who is a member of an event, and what sets them apart (docs/decisions/
 // 2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md, ticket
 // 117). Nobody is added to an event itself: one comes in by one of its
 // Secret Santa or by one of its lists. Pure.
 
-/** By where a member came in: a Secret Santa, or a list. */
-export type MemberEntry =
-  { kind: 'santa'; santaId: string } | { kind: 'list'; listId: string };
-
-/** What « Membres » writes under a first name, before its words. */
-export type EntryPart =
-  { kind: 'santa'; name: string | null } | { kind: 'list'; holder: string };
+/**
+ * What « Membres » writes under a first name, before its words (docs/
+ * spec/v3/fete.md, « Sous un prénom, seulement ce qui sort de
+ * l'ordinaire », ticket 158).
+ */
+export type MemberNote =
+  | { kind: 'organises' }
+  | { kind: 'outside' }
+  | { kind: 'santas'; names: string[] }
+  | { kind: 'noSanta' }
+  | { kind: 'notDrawing'; names: string[] }
+  | { kind: 'noEmail' };
 
 /**
- * What « Membres » says of where someone came in (docs/spec/v3/fete.md,
- * « Les membres »): « Secret Santa », or its name when the event has
- * several this year; « La liste de Camille » for each list. A Secret
- * Santa or a list gone since says nothing.
- * @param entries - By where the member came in.
- * @param event - What the event has.
- * @param event.santas - Its Secret Santa, with whether they are of this
- *   year.
- * @param event.lists - The lists, with the first name of who made each.
- * @returns The parts, Secret Santa first, then the lists.
+ * What sets a member apart, in this order: « Organise »; the Secret
+ * Santa, when it tells them apart (with one this year, « Hors du Secret
+ * Santa » for who is not in it; with several, the names of theirs, or
+ * « Dans aucun Secret Santa »; with none, nothing); who they never draw;
+ * no address. Nothing when all is as usual. No more « by where they came
+ * in ».
+ * @param member - The member.
+ * @param member.organises - Whether they organise the event.
+ * @param member.takingPart - The Secret Santa of the year they are in.
+ * @param member.notDrawing - The names of those they never draw.
+ * @param member.hasEmail - Whether they have an address.
+ * @param santas - The Secret Santa of the event's year, by name.
+ * @returns The notes, in order.
  */
-export const entryParts = (
-  entries: readonly MemberEntry[],
-  event: {
-    santas: readonly { id: string; name: string; current: boolean }[];
-    lists: readonly { id: string; holder: string }[];
+export const memberNotes = (
+  member: {
+    organises: boolean;
+    takingPart: readonly string[];
+    notDrawing: readonly string[];
+    hasEmail: boolean;
   },
-): EntryPart[] => {
-  const several = event.santas.filter((santa) => santa.current).length > 1;
-  const santas = event.santas.filter((santa) =>
-    entries.some(
-      (entry) => entry.kind === 'santa' && entry.santaId === santa.id,
-    ),
-  );
-  const named = several ? santas.filter((santa) => santa.current) : [];
-  const plain = santas.some((santa) => !named.includes(santa));
-  const lists = event.lists.filter((list) =>
-    entries.some((entry) => entry.kind === 'list' && entry.listId === list.id),
-  );
+  santas: readonly { id: string; name: string }[],
+): MemberNote[] => {
+  const mine = santas.filter((santa) => member.takingPart.includes(santa.id));
+  const santa: MemberNote[] =
+    santas.length === 0
+      ? []
+      : santas.length === 1
+        ? mine.length === 0
+          ? [{ kind: 'outside' }]
+          : []
+        : mine.length === 0
+          ? [{ kind: 'noSanta' }]
+          : [{ kind: 'santas', names: mine.map((one) => one.name) }];
   return [
-    ...(plain ? [{ kind: 'santa' as const, name: null }] : []),
-    ...named.map((santa) => ({ kind: 'santa' as const, name: santa.name })),
-    ...lists.map((list) => ({ kind: 'list' as const, holder: list.holder })),
+    ...(member.organises ? [{ kind: 'organises' as const }] : []),
+    ...santa,
+    ...(member.notDrawing.length > 0
+      ? [{ kind: 'notDrawing' as const, names: [...member.notDrawing] }]
+      : []),
+    ...(member.hasEmail ? [] : [{ kind: 'noEmail' as const }]),
   ];
 };
 

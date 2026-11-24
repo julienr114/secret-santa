@@ -91,7 +91,7 @@ const share = async (
 const membersOf = async (slug: string) =>
   (await ok(await camille().get(`/api/admin/${slug}/persons`))) as {
     persons: { id: string; firstName: string; email: string | null }[];
-    entries: Record<string, { kind: string; holder?: string }[]>;
+    takingPart: Record<string, string[]>;
   };
 
 test.beforeAll(async ({ playwright, baseURL }) => {
@@ -171,19 +171,17 @@ test('shared with all its members, the list invites by an address', async ({
   await expect(page.getByTestId('share-invite')).toHaveCount(0);
 
   // Louis is a member of the list's event, by the list; not of the other.
-  const { persons, entries } = await membersOf(state.slug);
+  const { persons } = await membersOf(state.slug);
   const louis = persons.find((person) => person.email === LOUIS);
   expect(louis).toBeTruthy();
-  expect(entries[louis!.id]).toEqual([{ kind: 'list', holder: 'Camille' }]);
   const other = await membersOf(state.other);
   expect(other.persons.map((person) => person.email)).not.toContain(LOUIS);
-  // « Membres » says so.
+  // « Membres » no longer says by where (ticket 158).
   await page.goto(`/e/${state.slug}/membres`);
   await hydrated(page);
   await expect(
     page.getByTestId('members').getByRole('link', { name: /Louis/ }),
-  ).toContainText('La liste de Camille');
-  await expect(page.getByTestId('members-add-list')).toContainText('Pour Léo');
+  ).not.toContainText('La liste');
 
   // He reads it in « Quoi de neuf », and the list opens for him.
   await apiLogin(page.request, LOUIS);
@@ -206,10 +204,9 @@ test('its link lets a logged-in account into its own event only', async ({
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  const { persons, entries } = await membersOf(state.slug);
+  const { persons } = await membersOf(state.slug);
   const ines = persons.find((person) => person.email === INES);
   expect(ines).toBeTruthy();
-  expect(entries[ines!.id]).toEqual([{ kind: 'list', holder: 'Camille' }]);
   // Shared in « Chez Mamie » too: she is not a member there.
   const other = await membersOf(state.other);
   expect(other.persons.map((person) => person.email)).not.toContain(INES);
@@ -386,7 +383,7 @@ test('« Qui reprendre ? » makes those of another event participants', async ({
   const names = participants.map((p: { firstName: string }) => p.firstName);
   expect(names).toContain('Ines');
   expect(names).not.toContain('Louis');
-  const { persons, entries } = await membersOf(slug);
+  const { persons, takingPart } = await membersOf(slug);
   const ines = persons.find((person) => person.email === INES);
-  expect(entries[ines!.id]).toEqual([{ kind: 'santa', name: null }]);
+  expect(takingPart[ines!.id]).toEqual([edition.id]);
 });

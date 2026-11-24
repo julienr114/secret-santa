@@ -1,20 +1,22 @@
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, or } from 'drizzle-orm';
 import type { Db } from './client';
 import { listEditions, participantCounts } from './editions';
-import { entriesOfParty } from './members';
+import { currentYearOf } from './listSharing';
 import {
-  accounts,
   giftListHolders,
   giftListParties,
   giftListPeople,
   giftLists,
   familyMembers,
+  participations,
+  parties,
 } from './schema';
 import { forWhom, type LinePart } from '#shared/utils/lines';
-import { entryParts, type EntryPart } from '#shared/utils/members';
 
-// « Membres » (V3FeteMembres, ticket 117): by where each member came in,
-// and where I may add someone (« Au Secret Santa », « À ma liste »).
+// « Membres » (V3FeteMembres, tickets 117 and 158): the Secret Santa of
+// the year each member takes part in, and where I may add someone (« Au
+// Secret Santa », « À ma liste de cadeaux »), or what I may create when
+// there is nowhere.
 
 /** A line of « Ajouter quelqu'un ». */
 export type AddPlace =
@@ -30,66 +32,80 @@ export type AddPlace =
 
 /** What « Membres » says beyond the people themselves. */
 export type MembersExtras = {
-  /** By where each member came in, by person. */
-  entries: Record<string, EntryPart[]>;
+  /** The Secret Santa of its year, by name (ticket 158). */
+  santas: { id: string; name: string }[];
+  /** Those each member takes part in, by person. */
+  takingPart: Record<string, string[]>;
   /** « Ajouter quelqu'un ». */
   places: AddPlace[];
+  /**
+   * With nowhere to add someone (ticket 158, as on the home, ticket 151):
+   * « Créer un Secret Santa » when it has none this year, « Créer une
+   * liste de cadeaux » when I hold none in it; the Secret Santa first
+   * at Christmas, the list first elsewhere.
+   */
+  create: { santa: boolean; list: boolean; santaFirst: boolean };
 };
 
 /**
- * By where each member of an event came in, and where I may add someone.
+ * The Secret Santa each member of an event takes part in this year, and
+ * where I may add someone.
  * @param db - The database.
  * @param partyId - The event.
  * @param accountId - Me, who organises it.
- * @returns The ways in, and the places.
+ * @returns The Secret Santa, the places, what may be created.
  */
 export const membersExtras = async (
   db: Db,
   partyId: string,
   accountId: string,
 ): Promise<MembersExtras> => {
-  const [santas, byPerson] = await Promise.all([
+  const [santas, year, [party]] = await Promise.all([
     listEditions(db, partyId),
-    entriesOfParty(db, partyId),
+    currentYearOf(db, partyId),
+    db
+      .select({ category: parties.category })
+      .from(parties)
+      .where(eq(parties.id, partyId))
+      .limit(1),
   ]);
-  const listIds = [
-    ...new Set(
-      [...byPerson.values()].flatMap((entries) =>
-        entries.flatMap((entry) =>
-          entry.kind === 'list' ? [entry.listId] : [],
+  // Those of its current year, as on the home (ticket 108).
+  const current = santas.filter((santa) => santa.year === year?.year);
+  const [taking, held] = await Promise.all([
+    db
+      .select({
+        personId: participations.personId,
+        santaId: participations.secretSantaId,
+      })
+      .from(participations)
+      .where(
+        inArray(participations.secretSantaId, [
+          '',
+          ...current.map((santa) => santa.id),
+        ]),
+      ),
+    // A list I hold in it, made for it or shared there.
+    db
+      .selectDistinct({ id: giftLists.id })
+      .from(giftLists)
+      .innerJoin(giftListHolders, eq(giftListHolders.listId, giftLists.id))
+      .leftJoin(giftListParties, eq(giftListParties.listId, giftLists.id))
+      .where(
+        and(
+          eq(giftListHolders.accountId, accountId),
+          or(
+            eq(giftLists.partyId, partyId),
+            eq(giftListParties.partyId, partyId),
+          ),
         ),
       ),
-    ),
-  ];
-  const makers =
-    listIds.length === 0
-      ? []
-      : await db
-          .select({
-            id: giftLists.id,
-            firstName: accounts.firstName,
-            email: accounts.email,
-          })
-          .from(giftLists)
-          .innerJoin(accounts, eq(accounts.id, giftLists.accountId))
-          .where(inArray(giftLists.id, listIds));
-  const lastYear = Math.max(0, ...santas.map((santa) => santa.year));
-  const event = {
-    santas: santas.map((santa) => ({
-      id: santa.id,
-      name: santa.label,
-      current: santa.year === lastYear,
-    })),
-    lists: makers.map((maker) => ({
-      id: maker.id,
-      holder: maker.firstName ?? maker.email.split('@')[0] ?? '',
-    })),
-  };
-  const entries = Object.fromEntries(
-    [...byPerson].map(([personId, list]) => [
-      personId,
-      entryParts(list, event),
-    ]),
+  ]);
+  const takingPart = taking.reduce<Record<string, string[]>>(
+    (all, row) => ({
+      ...all,
+      [row.personId]: [...(all[row.personId] ?? []), row.santaId],
+    }),
+    {},
   );
   const preparing = santas.filter((santa) => santa.status === 'preparing');
   const counts = await participantCounts(
@@ -140,7 +156,13 @@ export const membersExtras = async (
             ),
           );
   return {
-    entries,
+    santas: current.map((santa) => ({ id: santa.id, name: santa.label })),
+    takingPart,
+    create: {
+      santa: current.length === 0,
+      list: held.length === 0,
+      santaFirst: party?.category === 'christmas',
+    },
     places: [
       ...preparing.map((santa): AddPlace => ({
         kind: 'santa',

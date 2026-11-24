@@ -191,13 +191,8 @@ test('a large group folds its lists, before and after the draw', async ({
   await expect(page.getByTestId('party-full')).toContainText(
     'L’événement est complet',
   );
-  // « Au Secret Santa » says its link is paused, and leads to it.
-  await expect(page.getByTestId('members-add-santa')).toContainText(
-    'En pause · l’événement est complet',
-  );
-  await expect(
-    page.getByTestId('members-add-santa').getByRole('link'),
-  ).toHaveAttribute('href', new RegExp(`/editions/${id}/invitation$`));
+  // The state takes the place of « Ajouter quelqu'un » (ticket 158).
+  await expect(page.getByTestId('members-add')).toHaveCount(0);
 
   await page.goto(`/admin/cas-grand/editions/${id}`);
   await hydrated(page);

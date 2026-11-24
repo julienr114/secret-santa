@@ -30,10 +30,10 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 
 À faire dans cette étape :
 
-- [ ] Essayer `UInputDate` sur un vrai téléphone (iPhone et Android), dans les trois langues : le clavier qui s'ouvre (chiffres ?), l'ordre des segments, le passage d'un segment à l'autre, la lecture par un lecteur d'écran, une date de naissance (une année lointaine) et une date proche.
-- [ ] Essayer `<input type="date">` sur les mêmes téléphones, pour dire ce que chacun ouvre aujourd'hui (calendrier ou roulettes).
-- [ ] Essayer les deux **sur un ordinateur, au clavier seul** : taper « 20 12 2026 » d'une traite, sans souris, doit suffire (le passage d'un segment au suivant, la touche Tab, une date impossible).
-- [ ] Écrire ce que ça donne dans `docs/travail/questions.md`, avec une capture de chaque, et **attendre la réponse** : c'est Julien qui choisit entre les trois pistes ci-dessous. La conception fera la maquette et mettra la spec à jour.
+- [ ] (simulé seulement dans Chrome et WebKit, pas de vrai téléphone ici : à faire par Julien, voir Q-038) Essayer `UInputDate` sur un vrai téléphone (iPhone et Android), dans les trois langues : le clavier qui s'ouvre (chiffres ?), l'ordre des segments, le passage d'un segment à l'autre, la lecture par un lecteur d'écran, une date de naissance (une année lointaine) et une date proche.
+- [ ] (même limite : voir Q-038) Essayer `<input type="date">` sur les mêmes téléphones, pour dire ce que chacun ouvre aujourd'hui (calendrier ou roulettes).
+- [x] Essayer les deux **sur un ordinateur, au clavier seul** : taper « 20 12 2026 » d'une traite, sans souris, doit suffire (le passage d'un segment au suivant, la touche Tab, une date impossible).
+- [x] Écrire ce que ça donne dans `docs/travail/questions.md`, avec une capture de chaque, et **attendre la réponse** : c'est Julien qui choisit entre les trois pistes ci-dessous. La conception fera la maquette et mettra la spec à jour.
 
 ## Les trois pistes
 

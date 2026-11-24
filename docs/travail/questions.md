@@ -4,6 +4,28 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-038 — Une date dans un seul champ : quelle piste ? (ticket 160)
+
+- **Pour** : Julien (le choix), puis la conception (maquette et spec)
+- **Ce qui bloque** : tout le ticket 160 après son premier temps. Les trois listes restent en place.
+- **Ce qu'on a trouvé** : essayé sur une page d'essai, jamais commitée, avec Chrome (ordinateur et téléphone Android simulé) et WebKit, le moteur de Safari (iPhone simulé), en français, anglais et allemand. **Pas sur un vrai téléphone** : je n'en ai pas. La simulation ne montre ni le clavier qui s'ouvre, ni le calendrier ou les roulettes d'iOS et d'Android. Ce point reste à faire à la main : ouvrir les deux champs sur ton iPhone et sur un Android.
+  - **`UInputDate`** (captures `captures/160-webkit-iphone-fr.jpg`, `160-chromium-android-en.jpg`, `160-chromium-ordi-de.jpg`) :
+    - **l'ordre de la langue** : jour/mois/année en français, mois/jour/année en anglais, jour.mois.année en allemand ;
+    - **le clavier** : chaque segment demande des chiffres (`inputmode="numeric"`), donc le pavé numérique sur un téléphone, en principe ;
+    - **taper d'une traite** : au clavier seul, « 20122026 » donne le 20 décembre 2026, en passant seul d'un segment au suivant. Ça marche aussi avec des barres, « 20/12/2026 ». Une naissance, « 15071958 », marche aussi. Tab va au champ suivant, et Retour arrière vide les segments un à un ;
+    - **un piège** : un mois qui commence par 1 attend un second chiffre (ce peut être 10, 11, 12). Pour janvier, « 5 1 2027 » donne donc le 5 décembre 127 ; il faut taper « 01 », une barre ou la flèche droite ;
+    - **une date impossible** : le 31 février devient le 28 février, sans rien dire ;
+    - **hors des bornes** : une date au-delà de `max-value` (2035 pour un événement) s'affiche, marquée invalide, et passe quand même dans la valeur. Il faudrait la refuser nous-mêmes ;
+    - **pour un lecteur d'écran** : trois champs numériques nommés « jour », « mois », « année », traduits dans les trois langues par Nuxt UI. L'ensemble n'a pas de nom : on lui donnerait le nôtre.
+  - **`<input type="date">`** : Chrome sur ordinateur se tape comme les segments (« 20122026 » suffit), avec une icône de calendrier au bout. Mais il suit la langue du navigateur, pas celle de l'application : en allemand, il dit 20/12/2026. Dans WebKit, ma frappe n'a rien rempli. Sur iPhone, d'après la décision du 20 novembre, il ouvre un calendrier.
+- **Les choix** :
+  - A. `UInputDate` partout, habillé comme nos champs : on tape sur un ordinateur, et au pavé numérique sur un téléphone. Pas de roulettes.
+  - B. A sur un ordinateur, plus, sur un téléphone, une ligne « 20 décembre 2026 » qui ouvre notre panneau à trois roulettes. C'est un composant à écrire et à rendre accessible (clavier, lecteur d'écran, `prefers-reduced-motion`), plus deux façons de faire selon l'écran, à tester toutes les deux.
+  - C. `<input type="date">` natif : rien à écrire, mais la langue du navigateur, un calendrier sur iPhone, et un comportement qui change d'un navigateur à l'autre.
+- **Ce que je ferais** : A. Un seul champ, le même partout, qui suit la langue de l'application. Sur un téléphone, le pavé numérique tape la date aussi vite que trois roulettes. Les deux défauts se règlent chez nous : les bornes, en refusant la date hors limites, et une ligne de date en toutes lettres sous le champ (« 20 décembre 2026 ») pour qu'on voie ce qu'on a tapé. B reste possible plus tard, par-dessus A. À vérifier d'abord sur ton iPhone : le pavé numérique s'ouvre-t-il bien ?
+
+## Réponses
+
 ### Q-037 — Quand « Lier à un Secret Santa » est-il dans le menu ? (ticket 155)
 
 - **Pour** : Julien, ou la conception
@@ -13,8 +35,8 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. La spec : l'entrée est là dès qu'un de mes Secret Santa tirés de l'année n'est pas lié à cette liste, lié ailleurs ou non.
   - B. Le ticket : seulement quand l'un d'eux n'a aucune liste ; on ne déplace un lien que depuis la liste qui l'a déjà (par sa pastille) ou depuis la page du Secret Santa.
 - **Ce que je ferais** : A, codé ainsi.
+- **Réponse de la conception (24 novembre 2026)** : A. C'est la spec qui fait foi : le panneau sert à lier **et à déplacer**, donc l'entrée du menu est là dès qu'un de mes Secret Santa tirés de l'année n'est pas lié à cette liste, qu'il soit lié ailleurs ou non. Le ticket 155 disait « ne change pas » à tort : il reprenait la condition d'avant le panneau.
 
-## Réponses
 
 ### Q-036 — « Tu es invité » : une tournure neutre ? (ticket 145)
 

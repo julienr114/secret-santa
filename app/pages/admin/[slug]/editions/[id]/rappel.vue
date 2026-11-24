@@ -5,6 +5,7 @@ import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useGuessReminderMutation,
   useMessagesQuery,
+  useEmailsPausedQuery,
 } from '~/composables/queries/useEdition';
 import { formatEventDate } from '#server/utils/rules';
 
@@ -38,6 +39,9 @@ const screen = computed(() => ({
 }));
 
 const edition = useEditionQuery(slug, id);
+// The emails suspended for everyone (ticket 129): EnvoiSuspendu instead.
+const emailsPaused = useEmailsPausedQuery();
+const paused = computed(() => emailsPaused.data.value?.paused ?? false);
 const guess = computed(() => edition.data.value?.guess);
 const position = computed(
   () => edition.data.value?.rules.messageNotePosition ?? 'after',
@@ -163,156 +167,165 @@ const share = async () => {
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
-      <UiSegmented
-        v-model="audience"
-        :items="audiences"
-        :label="t('adminEdition.game.reminderTitle')"
-        data-testid="reminder-audience"
-      />
+      <AdminEmailsPaused v-if="paused" :to="editionPath" />
+      <template v-else>
+        <UiSegmented
+          v-model="audience"
+          :items="audiences"
+          :label="t('adminEdition.game.reminderTitle')"
+          data-testid="reminder-audience"
+        />
 
-      <template v-if="audience === 'chacun'">
-        <section class="flex flex-col gap-1.5" data-testid="reminder-each">
-          <UiSectionTitle>{{
-            t('adminEdition.screen.emails.previewFor', {
-              name: first ? fullName(first) : '',
-            })
-          }}</UiSectionTitle>
-          <UiMessageBubble
-            :text="first ? preview : undefined"
-            :link="firstMessage?.link"
-            class="max-w-full"
-            :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
-            data-testid="reminder-preview"
-          />
-          <NuxtLink
-            :to="customize('rappel')"
-            class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
-            @click="ticks = selected"
-          >
-            {{ t('adminEdition.screen.sheet.customize') }}
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-4"
-              aria-hidden="true"
+        <template v-if="audience === 'chacun'">
+          <section class="flex flex-col gap-1.5" data-testid="reminder-each">
+            <UiSectionTitle>{{
+              t('adminEdition.screen.emails.previewFor', {
+                name: first ? fullName(first) : '',
+              })
+            }}</UiSectionTitle>
+            <UiMessageBubble
+              :text="first ? preview : undefined"
+              :link="firstMessage?.link"
+              class="max-w-full"
+              :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+              data-testid="reminder-preview"
             />
-          </NuxtLink>
-        </section>
-
-        <section class="flex flex-col gap-1.5">
-          <UiSectionTitle data-testid="reminder-count">{{
-            t('adminEdition.game.notPlayedCount', {
-              count: selected.length,
-              total: people.length,
-            })
-          }}</UiSectionTitle>
-          <UiList>
-            <template v-for="p in people" :key="p.participationId">
-              <UiCheckRow
-                v-if="p.email"
-                :avatar="p.avatar"
-                :title="fullName(p)"
-                :subtitle="p.email"
-                :label="
-                  t('adminEdition.screen.emails.select', { name: fullName(p) })
-                "
-                :checked="isSelected(p.participationId)"
-                @update:checked="(on) => toggle(p.participationId, on)"
+            <NuxtLink
+              :to="customize('rappel')"
+              class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+              @click="ticks = selected"
+            >
+              {{ t('adminEdition.screen.sheet.customize') }}
+              <UIcon
+                name="i-lucide-chevron-right"
+                class="size-4"
+                aria-hidden="true"
               />
-              <li v-else class="flex min-h-15 items-center gap-3 px-4 py-2">
-                <UiAvatar :avatar="p.avatar" />
-                <span class="flex min-w-0 grow flex-col">
-                  <span class="truncate font-semibold">{{ fullName(p) }}</span>
-                  <span
-                    class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
-                  >
-                    <UIcon
-                      name="i-lucide-circle-dashed"
-                      class="size-3.5 shrink-0"
-                    />
-                    <span class="truncate">{{
-                      t('adminEdition.screen.emails.noEmail')
-                    }}</span>
-                  </span>
-                </span>
-                <NuxtLink
-                  :to="`/e/${slug}/membres/${p.id}`"
-                  class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
-                  :aria-label="
-                    t('adminEdition.screen.emails.addEmailLabel', {
+            </NuxtLink>
+          </section>
+
+          <section class="flex flex-col gap-1.5">
+            <UiSectionTitle data-testid="reminder-count">{{
+              t('adminEdition.game.notPlayedCount', {
+                count: selected.length,
+                total: people.length,
+              })
+            }}</UiSectionTitle>
+            <UiList>
+              <template v-for="p in people" :key="p.participationId">
+                <UiCheckRow
+                  v-if="p.email"
+                  :avatar="p.avatar"
+                  :title="fullName(p)"
+                  :subtitle="p.email"
+                  :label="
+                    t('adminEdition.screen.emails.select', {
                       name: fullName(p),
                     })
                   "
-                  >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
-                >
-              </li>
-            </template>
-          </UiList>
-          <p class="px-1 text-[13px] leading-[1.4] text-toned">
-            {{ t('adminEdition.game.noEmailGroup') }}
-            {{ lastLine }}
-          </p>
-        </section>
+                  :checked="isSelected(p.participationId)"
+                  @update:checked="(on) => toggle(p.participationId, on)"
+                />
+                <li v-else class="flex min-h-15 items-center gap-3 px-4 py-2">
+                  <UiAvatar :avatar="p.avatar" />
+                  <span class="flex min-w-0 grow flex-col">
+                    <span class="truncate font-semibold">{{
+                      fullName(p)
+                    }}</span>
+                    <span
+                      class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
+                    >
+                      <UIcon
+                        name="i-lucide-circle-dashed"
+                        class="size-3.5 shrink-0"
+                      />
+                      <span class="truncate">{{
+                        t('adminEdition.screen.emails.noEmail')
+                      }}</span>
+                    </span>
+                  </span>
+                  <NuxtLink
+                    :to="`/e/${slug}/membres/${p.id}`"
+                    class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
+                    :aria-label="
+                      t('adminEdition.screen.emails.addEmailLabel', {
+                        name: fullName(p),
+                      })
+                    "
+                    >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+                  >
+                </li>
+              </template>
+            </UiList>
+            <p class="px-1 text-[13px] leading-[1.4] text-toned">
+              {{ t('adminEdition.game.noEmailGroup') }}
+              {{ lastLine }}
+            </p>
+          </section>
 
-        <UiStickyFooter>
-          <UButton
-            block
-            size="xl"
-            class="h-13 justify-center text-[17px] font-bold"
-            :disabled="!selected.length || !preview || remind.isPending.value"
-            :loading="sending"
-            :label="
-              t('adminEdition.screen.emails.send', { count: selected.length })
-            "
-            data-testid="game-remind-send"
-            @click="onSend"
-          />
-        </UiStickyFooter>
-      </template>
-
-      <template v-else>
-        <section class="flex flex-col gap-1.5" data-testid="game-group">
-          <UiSectionTitle>{{ t('adminEdition.game.message') }}</UiSectionTitle>
-          <UiMessageBubble
-            :text="groupMessage"
-            class="max-w-full"
-            data-testid="game-group-message"
-          />
-          <NuxtLink
-            :to="customize('groupe')"
-            class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
-          >
-            {{ t('adminEdition.screen.sheet.customize') }}
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-4"
-              aria-hidden="true"
+          <UiStickyFooter>
+            <UButton
+              block
+              size="xl"
+              class="h-13 justify-center text-[17px] font-bold"
+              :disabled="!selected.length || !preview || remind.isPending.value"
+              :loading="sending"
+              :label="
+                t('adminEdition.screen.emails.send', { count: selected.length })
+              "
+              data-testid="game-remind-send"
+              @click="onSend"
             />
-          </NuxtLink>
-        </section>
-        <p
-          class="rounded-xl bg-muted px-3.5 py-3 text-sm leading-[1.45] text-toned"
-        >
-          {{ t('adminEdition.game.group.help') }}
-        </p>
-        <UiStickyFooter>
-          <UButton
-            block
-            size="xl"
-            class="h-13 justify-center text-[17px] font-bold"
-            :label="t('adminEdition.game.group.share')"
-            @click="share"
-          />
-          <UButton
-            block
-            size="xl"
-            variant="outline"
-            color="neutral"
-            class="h-12 justify-center font-semibold"
-            :label="t('adminEdition.game.group.copy')"
-            data-testid="game-group-copy"
-            @click="copy"
-          />
-        </UiStickyFooter>
+          </UiStickyFooter>
+        </template>
+
+        <template v-else>
+          <section class="flex flex-col gap-1.5" data-testid="game-group">
+            <UiSectionTitle>{{
+              t('adminEdition.game.message')
+            }}</UiSectionTitle>
+            <UiMessageBubble
+              :text="groupMessage"
+              class="max-w-full"
+              data-testid="game-group-message"
+            />
+            <NuxtLink
+              :to="customize('groupe')"
+              class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+            >
+              {{ t('adminEdition.screen.sheet.customize') }}
+              <UIcon
+                name="i-lucide-chevron-right"
+                class="size-4"
+                aria-hidden="true"
+              />
+            </NuxtLink>
+          </section>
+          <p
+            class="rounded-xl bg-muted px-3.5 py-3 text-sm leading-[1.45] text-toned"
+          >
+            {{ t('adminEdition.game.group.help') }}
+          </p>
+          <UiStickyFooter>
+            <UButton
+              block
+              size="xl"
+              class="h-13 justify-center text-[17px] font-bold"
+              :label="t('adminEdition.game.group.share')"
+              @click="share"
+            />
+            <UButton
+              block
+              size="xl"
+              variant="outline"
+              color="neutral"
+              class="h-12 justify-center font-semibold"
+              :label="t('adminEdition.game.group.copy')"
+              data-testid="game-group-copy"
+              @click="copy"
+            />
+          </UiStickyFooter>
+        </template>
       </template>
     </AdminQueryState>
   </AdminScreen>

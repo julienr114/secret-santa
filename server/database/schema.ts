@@ -4,11 +4,13 @@ import {
   integer,
   uniqueIndex,
   index,
+  primaryKey,
 } from 'drizzle-orm/sqlite-core';
 import { DRAW_MODES } from '../utils/answers';
 import { GUESS_MODES } from '../utils/guesses';
 import { PARTY_CATEGORIES } from '../../shared/utils/categories';
 import { EMAIL_NEWS, NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
+import { COUNTER_NAMES } from '../utils/spend';
 
 // Data model from README section 10, in the shape of the V3
 // (docs/spec/v3/modele.md): a party (the group of before), its years, the
@@ -451,12 +453,29 @@ export const accounts = sqliteTable('accounts', {
 
 // The super-admin's emergency switches (docs/spec/v3/administration.md,
 // « En cas d'urgence »), one row per switch once it has been touched: off
-// without a row. Only « Suspendre les nouveaux Secret Santa » for now.
+// without a row. « Suspendre les nouveaux Secret Santa » (ticket 109),
+// « Suspendre les emails » and « Suspendre les inscriptions » (ticket 129).
 export const appSwitches = sqliteTable('app_switches', {
-  name: text('name', { enum: ['new_secret_santas'] }).primaryKey(),
+  name: text('name', {
+    enum: ['new_secret_santas', 'emails', 'signups'],
+  }).primaryKey(),
   on: integer('on', { mode: 'boolean' }).notNull().default(false),
   updatedAt: text('updated_at').notNull(),
 });
+
+// What the app counts by day, for the dashboard (ticket 129, V3Admin):
+// emails sent and rejected, requests refused for their rate, failed
+// logins, server errors, and the warnings already given. `day` is
+// « 2026-11-24 »; the month adds its days up.
+export const appCounters = sqliteTable(
+  'app_counters',
+  {
+    day: text('day').notNull(),
+    name: text('name', { enum: COUNTER_NAMES }).notNull(),
+    count: integer('count').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.name] })],
+);
 
 export const loginLinks = sqliteTable(
   'login_links',

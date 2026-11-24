@@ -1,3 +1,4 @@
+import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import { z } from 'zod';
 import {
   createAccount,
@@ -38,6 +39,11 @@ export default defineEventHandler(async (event) => {
   if (!inviteLinkUsable(invite, now)) throw refuse();
   const existing = await findAccountByEmail(db, invite.email);
   if (existing?.disabledAt) throw refuse();
+  const superAdmin = superAdminEmails(
+    secretsOf(event).superAdminEmails,
+  ).includes(invite.email);
+  // No new account while sign-ups are suspended (ticket 129).
+  if (!existing) await refuseWhileSignupsPaused(db, superAdmin);
   if (!existing && !body.firstName) {
     throw createError({ statusCode: 400, statusMessage: 'first_name_missing' });
   }
@@ -45,9 +51,7 @@ export default defineEventHandler(async (event) => {
     existing ??
     (await createAccount(db, {
       email: invite.email,
-      isSuperAdmin: superAdminEmails(
-        secretsOf(event).superAdminEmails,
-      ).includes(invite.email),
+      isSuperAdmin: superAdmin,
       language: body.language ?? by.language,
       firstName: body.firstName ?? null,
       now,

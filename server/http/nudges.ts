@@ -149,7 +149,7 @@ export const autoRemind = async (
     }),
   );
   // A failed send changes nothing: the organiser can still remind.
-  if (emails.length > 0) await sendEmails(undefined, emails);
+  if (emails.length > 0) await sendEmails(undefined, emails, { db: ctx.db });
   await recordEvent(ctx.db, {
     type: 'guess_auto_reminder_sent',
     groupId: group.id,
@@ -222,6 +222,7 @@ export const organizerPoint = async (
       ),
       to: r.email,
     })),
+    { db: ctx.db },
   );
 };
 
@@ -269,5 +270,6 @@ export const organizerEnd = async (
       ),
       to: r.email,
     })),
+    { db: ctx.db },
   );
 };

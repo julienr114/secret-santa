@@ -17,6 +17,7 @@ import { useEditionQuery } from '~/composables/queries/useGroup';
 import {
   useMessagesQuery,
   useSendEmailsMutation,
+  useEmailsPausedQuery,
 } from '~/composables/queries/useEdition';
 
 // Sending one message by email to several participants: what it will
@@ -47,6 +48,9 @@ const screen = computed(() => ({
 }));
 
 const edition = useEditionQuery(slug, id);
+// The emails suspended for everyone (ticket 129): EnvoiSuspendu instead.
+const emailsPaused = useEmailsPausedQuery();
+const paused = computed(() => emailsPaused.data.value?.paused ?? false);
 const status = computed(
   () => edition.data.value?.edition.status ?? 'preparing',
 );
@@ -251,181 +255,195 @@ const onSend = () =>
       :pending="edition.isPending.value"
       :error="edition.error.value"
     >
-      <section class="flex flex-col gap-1.5" data-testid="email-message">
-        <UiSectionTitle>{{
-          t('adminEdition.screen.emails.previewFor', {
-            name: first ? fullName(first) : '',
-          })
-        }}</UiSectionTitle>
-        <UiMessageBubble
-          :text="first ? preview : undefined"
-          :link="firstMessage?.link"
-          class="max-w-full"
-          :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
-          data-testid="email-preview"
-        />
-        <p class="text-[13px] leading-[1.4] text-toned">
-          {{ t('adminEdition.screen.emails.each') }}
-        </p>
-        <NuxtLink
-          :to="customizePath"
-          class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
-          @click="ticks = selected"
-        >
-          {{
-            chosen
-              ? t('adminEdition.screen.sheet.editMessage')
-              : t('adminEdition.screen.sheet.customize')
-          }}
-          <UIcon
-            name="i-lucide-chevron-right"
-            class="size-4"
-            aria-hidden="true"
-          />
-        </NuxtLink>
-      </section>
-
-      <section
-        class="flex flex-col gap-1.5 transition-opacity"
-        :class="{
-          'pointer-events-none opacity-50': sendEmails.isPending.value,
-        }"
-        :inert="sendEmails.isPending.value || undefined"
-        :aria-busy="sendEmails.isPending.value || undefined"
-        data-testid="email-people"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <UiSectionTitle aria-live="polite" data-testid="email-count">{{
-            t('adminEdition.screen.emails.selected', {
-              count: selected.length,
-              total: participants.length,
+      <AdminEmailsPaused v-if="paused" :to="editionPath" />
+      <template v-else>
+        <section class="flex flex-col gap-1.5" data-testid="email-message">
+          <UiSectionTitle>{{
+            t('adminEdition.screen.emails.previewFor', {
+              name: first ? fullName(first) : '',
             })
           }}</UiSectionTitle>
-          <button
-            type="button"
-            class="h-11 px-1 text-sm font-bold text-primary-ink underline disabled:opacity-50"
-            :disabled="!withEmail.length"
-            @click="toggleAll"
+          <UiMessageBubble
+            :text="first ? preview : undefined"
+            :link="firstMessage?.link"
+            class="max-w-full"
+            :loading-label="t('adminEdition.screen.sheet.loadingMessage')"
+            data-testid="email-preview"
+          />
+          <p class="text-[13px] leading-[1.4] text-toned">
+            {{ t('adminEdition.screen.emails.each') }}
+          </p>
+          <NuxtLink
+            :to="customizePath"
+            class="flex min-h-11 items-center gap-1 self-start text-sm font-bold text-primary-ink"
+            @click="ticks = selected"
           >
             {{
-              allSelected
-                ? t('adminEdition.screen.emails.selectNone')
-                : t('adminEdition.screen.emails.selectAll')
+              chosen
+                ? t('adminEdition.screen.sheet.editMessage')
+                : t('adminEdition.screen.sheet.customize')
             }}
-          </button>
-        </div>
-        <UiSearchField
-          v-if="searchable"
-          v-model="query"
-          class="mb-1.5"
-          :label="t('adminEdition.screen.lists.search')"
-          :clear-label="t('adminEdition.screen.lists.clear')"
-        />
-        <UiList>
-          <li
-            v-if="view.shown.length === 0"
-            class="px-4 py-3 text-sm text-muted"
-          >
-            {{ t('adminEdition.screen.lists.noMatch') }}
-          </li>
-          <UiFoldedRows
-            :fold="view"
-            :key-of="(p) => p.participationId"
-            :avatar-of="(p) => p.avatar"
-            :more-label="
-              (count) => t('adminEdition.screen.lists.more', { count })
-            "
-            :collapse-label="t('adminEdition.screen.lists.collapse')"
-            @more="expanded = true"
-            @collapse="expanded = false"
-          >
-            <template #row="{ item: p }">
-              <UiCheckRow
-                v-if="p.email"
-                :avatar="p.avatar"
-                :title="fullName(p)"
-                :label="
-                  t('adminEdition.screen.emails.select', { name: fullName(p) })
-                "
-                :checked="isSelected(p.participationId)"
-                @update:checked="(on) => toggle(p.participationId, on)"
-              >
-                <template #subtitle>
-                  <span
-                    v-if="
-                      answering
-                        ? p.answerStatus === 'toNotify'
-                        : followState(p) === 'toNotify'
-                    "
-                    class="truncate"
-                    >{{
-                      answering
-                        ? t('adminEdition.answers.status.toNotify')
-                        : t('adminEdition.screen.lists.series.toNotify')
-                    }}
-                    · {{ p.email }}</span
-                  >
-                  <template v-else>
-                    <UIcon
-                      :name="rowLook(p).icon"
-                      class="size-3.5 shrink-0"
-                      :class="rowLook(p).iconTone"
-                    />
-                    <span class="truncate" :class="rowLook(p).tone">{{
-                      rowLook(p).text
-                    }}</span>
-                  </template>
-                </template>
-              </UiCheckRow>
-              <li v-else class="flex min-h-15 items-center gap-3 px-4 py-2">
-                <UiAvatar :avatar="p.avatar" />
-                <span class="flex min-w-0 grow flex-col">
-                  <span class="truncate font-semibold">{{ fullName(p) }}</span>
-                  <span
-                    class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
-                  >
-                    <UIcon :name="rowLook(p).icon" class="size-3.5 shrink-0" />
-                    <span class="truncate">{{ rowLook(p).text }}</span>
-                  </span>
-                </span>
-                <NuxtLink
-                  :to="`/e/${slug}/membres/${p.id}`"
-                  class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
-                  :aria-label="
-                    t('adminEdition.screen.emails.addEmailLabel', {
+            <UIcon
+              name="i-lucide-chevron-right"
+              class="size-4"
+              aria-hidden="true"
+            />
+          </NuxtLink>
+        </section>
+
+        <section
+          class="flex flex-col gap-1.5 transition-opacity"
+          :class="{
+            'pointer-events-none opacity-50': sendEmails.isPending.value,
+          }"
+          :inert="sendEmails.isPending.value || undefined"
+          :aria-busy="sendEmails.isPending.value || undefined"
+          data-testid="email-people"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <UiSectionTitle aria-live="polite" data-testid="email-count">{{
+              t('adminEdition.screen.emails.selected', {
+                count: selected.length,
+                total: participants.length,
+              })
+            }}</UiSectionTitle>
+            <button
+              type="button"
+              class="h-11 px-1 text-sm font-bold text-primary-ink underline disabled:opacity-50"
+              :disabled="!withEmail.length"
+              @click="toggleAll"
+            >
+              {{
+                allSelected
+                  ? t('adminEdition.screen.emails.selectNone')
+                  : t('adminEdition.screen.emails.selectAll')
+              }}
+            </button>
+          </div>
+          <UiSearchField
+            v-if="searchable"
+            v-model="query"
+            class="mb-1.5"
+            :label="t('adminEdition.screen.lists.search')"
+            :clear-label="t('adminEdition.screen.lists.clear')"
+          />
+          <UiList>
+            <li
+              v-if="view.shown.length === 0"
+              class="px-4 py-3 text-sm text-muted"
+            >
+              {{ t('adminEdition.screen.lists.noMatch') }}
+            </li>
+            <UiFoldedRows
+              :fold="view"
+              :key-of="(p) => p.participationId"
+              :avatar-of="(p) => p.avatar"
+              :more-label="
+                (count) => t('adminEdition.screen.lists.more', { count })
+              "
+              :collapse-label="t('adminEdition.screen.lists.collapse')"
+              @more="expanded = true"
+              @collapse="expanded = false"
+            >
+              <template #row="{ item: p }">
+                <UiCheckRow
+                  v-if="p.email"
+                  :avatar="p.avatar"
+                  :title="fullName(p)"
+                  :label="
+                    t('adminEdition.screen.emails.select', {
                       name: fullName(p),
                     })
                   "
-                  >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+                  :checked="isSelected(p.participationId)"
+                  @update:checked="(on) => toggle(p.participationId, on)"
                 >
-              </li>
-            </template>
-          </UiFoldedRows>
-        </UiList>
-      </section>
+                  <template #subtitle>
+                    <span
+                      v-if="
+                        answering
+                          ? p.answerStatus === 'toNotify'
+                          : followState(p) === 'toNotify'
+                      "
+                      class="truncate"
+                      >{{
+                        answering
+                          ? t('adminEdition.answers.status.toNotify')
+                          : t('adminEdition.screen.lists.series.toNotify')
+                      }}
+                      · {{ p.email }}</span
+                    >
+                    <template v-else>
+                      <UIcon
+                        :name="rowLook(p).icon"
+                        class="size-3.5 shrink-0"
+                        :class="rowLook(p).iconTone"
+                      />
+                      <span class="truncate" :class="rowLook(p).tone">{{
+                        rowLook(p).text
+                      }}</span>
+                    </template>
+                  </template>
+                </UiCheckRow>
+                <li v-else class="flex min-h-15 items-center gap-3 px-4 py-2">
+                  <UiAvatar :avatar="p.avatar" />
+                  <span class="flex min-w-0 grow flex-col">
+                    <span class="truncate font-semibold">{{
+                      fullName(p)
+                    }}</span>
+                    <span
+                      class="flex min-w-0 items-center gap-1.25 text-[13px] text-toned"
+                    >
+                      <UIcon
+                        :name="rowLook(p).icon"
+                        class="size-3.5 shrink-0"
+                      />
+                      <span class="truncate">{{ rowLook(p).text }}</span>
+                    </span>
+                  </span>
+                  <NuxtLink
+                    :to="`/e/${slug}/membres/${p.id}`"
+                    class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
+                    :aria-label="
+                      t('adminEdition.screen.emails.addEmailLabel', {
+                        name: fullName(p),
+                      })
+                    "
+                    >{{ t('adminEdition.screen.emails.addEmail') }}</NuxtLink
+                  >
+                </li>
+              </template>
+            </UiFoldedRows>
+          </UiList>
+        </section>
 
-      <p class="text-sm leading-[1.45] text-toned">
-        {{ t('adminEdition.screen.emails.spam') }}
-      </p>
+        <p class="text-sm leading-[1.45] text-toned">
+          {{ t('adminEdition.screen.emails.spam') }}
+        </p>
 
-      <UiStickyFooter>
-        <UButton
-          block
-          size="xl"
-          icon="i-lucide-mail"
-          class="h-13 justify-center text-[17px] font-bold"
-          :disabled="!selected.length || !preview || sendEmails.isPending.value"
-          :loading="sending"
-          :label="
-            sending
-              ? t('adminEdition.screen.emails.sending', {
-                  count: selected.length,
-                })
-              : t('adminEdition.screen.emails.send', { count: selected.length })
-          "
-          @click="onSend"
-        />
-      </UiStickyFooter>
+        <UiStickyFooter>
+          <UButton
+            block
+            size="xl"
+            icon="i-lucide-mail"
+            class="h-13 justify-center text-[17px] font-bold"
+            :disabled="
+              !selected.length || !preview || sendEmails.isPending.value
+            "
+            :loading="sending"
+            :label="
+              sending
+                ? t('adminEdition.screen.emails.sending', {
+                    count: selected.length,
+                  })
+                : t('adminEdition.screen.emails.send', {
+                    count: selected.length,
+                  })
+            "
+            @click="onSend"
+          />
+        </UiStickyFooter>
+      </template>
     </AdminQueryState>
   </AdminScreen>
 </template>

@@ -1,6 +1,7 @@
 import { avatarOf } from '#server/utils/avatars';
 import { z } from 'zod';
 import { useDb } from '#server/database/client';
+import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import {
   createAccount,
   findAccountByEmail,
@@ -69,6 +70,8 @@ export default defineEventHandler(async (event) => {
   // many: the same answer, and no email.
   if (verdict === 'silent') return { ok: true };
 
+  // No new account while sign-ups are suspended (ticket 129).
+  if (!existing) await refuseWhileSignupsPaused(db, declared);
   // A new account takes the face it had in a Secret Santa, if any.
   const person = existing ? null : await findPersonByEmail(db, email);
   const account =
@@ -104,9 +107,11 @@ export default defineEventHandler(async (event) => {
     `/login/${token}${back ? `?next=${encodeURIComponent(back)}` : ''}`,
   );
   // A failed send changes nothing to the answer: the user asks again.
-  await sendEmails(event, [
-    { ...buildLoginEmail(link, account.language), to: account.email },
-  ]);
+  await sendEmails(
+    event,
+    [{ ...buildLoginEmail(link, account.language), to: account.email }],
+    { db, login: true },
+  );
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return secrets.devLoginLinks ? { ok: true, devLink: link } : { ok: true };
 });

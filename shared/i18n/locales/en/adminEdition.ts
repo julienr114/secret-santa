@@ -481,6 +481,12 @@ export default {
     },
     emails: {
       title: 'Send by email',
+      paused: 'Sending emails is paused for everyone.',
+      pausedWhy:
+        'It isn’t you: the app has reached its limit. Sending will start again by itself.',
+      pausedMeanwhile:
+        'Meanwhile, send each person their link from your phone: that always works, and depends on nothing.',
+      shareLinks: 'Share the links',
       selected: {
         one: '{count} selected of {total}',
         other: '{count} selected of {total}',

@@ -158,7 +158,7 @@ export const afterReveal = async (
       })),
   );
   // A failed send changes nothing: the results are on the pages anyway.
-  if (emails.length > 0) await sendEmails(ctx.event, emails);
+  if (emails.length > 0) await sendEmails(ctx.event, emails, { db: ctx.db });
 };
 
 /**

@@ -53,16 +53,20 @@ export default defineEventHandler(async (event) => {
   // An account is told by its news, by email as it chose (ticket 121);
   // an address without one, by this email.
   if (!invited) {
-    await sendEmails(event, [
-      {
-        ...buildListSharedEmail(
-          { by, title: list.title },
-          link,
-          me?.language ?? 'fr',
-        ),
-        to: email,
-      },
-    ]);
+    await sendEmails(
+      event,
+      [
+        {
+          ...buildListSharedEmail(
+            { by, title: list.title },
+            link,
+            me?.language ?? 'fr',
+          ),
+          to: email,
+        },
+      ],
+      { db },
+    );
   }
   setResponseStatus(event, 201);
   return secretsOf(event).devLoginLinks

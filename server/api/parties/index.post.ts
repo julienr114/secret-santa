@@ -1,4 +1,5 @@
 import { useDb } from '#server/database/client';
+import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import { findAccountById } from '#server/database/accounts';
 import { isMyMember } from '#server/database/forWhom';
 import { createParty } from '#server/database/parties';
@@ -19,6 +20,8 @@ export default defineEventHandler(async (event) => {
   if (!account) {
     throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
+  // No new event while sign-ups are suspended (ticket 129).
+  await refuseWhileSignupsPaused(db, account.isSuperAdmin);
   if (
     body.forMemberId &&
     !(await isMyMember(db, account.id, body.forMemberId))

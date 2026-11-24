@@ -27,6 +27,8 @@ export const keys = {
   account: () => ['account'] as const,
   // The lists I follow (ticket 122).
   follows: () => ['follows'] as const,
+  // « Suspendre les emails » (ticket 129).
+  emailsPaused: () => ['emails-paused'] as const,
   // Personal link: everything under the token is refetched together.
   personal: (token: string) => ['p', token] as const,
   wishes: (token: string) => ['p', token, 'wishes'] as const,

@@ -1,5 +1,7 @@
 import type { H3Event } from 'h3';
-import { ipHashOf, secretsOf } from './context';
+import { useDb } from '#server/database/client';
+import { countUp } from '#server/database/counters';
+import { ipHashOf, nowIso, secretsOf } from './context';
 import {
   RATE_LIMITERS,
   withinRate,
@@ -30,6 +32,8 @@ export const limitRate = async (event: H3Event, limiter: RateLimiter) => {
     `${limiter}:${await ipHashOf(event)}`,
   );
   if (!ok) {
+    // Counted for the dashboard (ticket 129).
+    await countUp(useDb(event), 'rate_limited', nowIso().slice(0, 10));
     throw createError({
       statusCode: 429,
       statusMessage: 'too_many_requests',

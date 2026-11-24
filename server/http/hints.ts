@@ -62,15 +62,19 @@ export const emailParticipant = async (
     return false;
   }
   const link = `${await personalLink(event, row.participation, await dataKeyOf(event))}${path}`;
-  const sent = await sendEmails(event, [
-    {
-      to: row.person.email,
-      ...build(
-        { firstName: row.person.firstName, link },
-        localeOf(row.person.language),
-      ),
-    },
-  ]);
+  const sent = await sendEmails(
+    event,
+    [
+      {
+        to: row.person.email,
+        ...build(
+          { firstName: row.person.firstName, link },
+          localeOf(row.person.language),
+        ),
+      },
+    ],
+    { db },
+  );
   return sent.ok;
 };
 

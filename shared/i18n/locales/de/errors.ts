@@ -103,6 +103,10 @@ export default {
     'Du organisierst schon 3 Wichteln: Mehr geht mit einem Konto nicht.',
   secret_santa_paused:
     'Neue Wichteln sind pausiert. Die bestehenden laufen weiter.',
+  emails_paused:
+    'Das Senden von E-Mails ist für alle pausiert. Schick allen ihren Link von deinem Handy aus.',
+  signups_paused:
+    'Anmeldungen sind pausiert: vorerst kein neues Konto und keine neue Veranstaltung. Komm in ein paar Tagen wieder.',
   already_member:
     'Diese Adresse gehört schon einem Mitglied des Events: Die Liste ist für sie offen.',
   list_not_open:

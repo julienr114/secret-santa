@@ -4,6 +4,27 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-039 — Les jauges « Requêtes, aujourd'hui » et « Dépense, ce mois » : d'où viennent les chiffres ? (ticket 129)
+
+- **Pour** : Julien
+- **Ce qui bloque** : deux jauges des plafonds de `V3Admin` ne sont pas là. Le reste du ticket est fait.
+- **Ce qu'on a trouvé** : l'application ne voit ni le nombre de requêtes du jour ni la dépense du mois : ce sont des chiffres de Cloudflare. Les compter nous-mêmes voudrait dire une écriture en base à chaque requête, donc une dépense de plus. Ceux de Cloudflare se lisent par son API d'analyse (GraphQL), avec un jeton en lecture seule gardé en secret.
+- **Les choix** :
+  - A. Un jeton Cloudflare en lecture seule (`NUXT_CLOUDFLARE_API_TOKEN`), que Julien crée. Le tableau de bord lit les deux chiffres, au plus une fois par heure. À faire avec le ticket 127, le reste du tableau de bord.
+  - B. Pas de jauge pour ces deux chiffres : la limite de dépense et l'alerte de budget de Cloudflare (la case de Julien) protègent déjà. Une ligne du tableau de bord mène au tableau de bord de Cloudflare.
+  - C. Compter les requêtes en base : non recommandé (une écriture par requête).
+- **Ce que je ferais** : B tout de suite, A avec le ticket 127.
+
+### Q-040 — « Suspendre les inscriptions » dit qu'une adresse n'a pas de compte (ticket 129)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. C'est codé comme A.
+- **Ce qu'on a trouvé** : demander un lien de connexion ne dit jamais si l'adresse a un compte (README 22.5). Avec les inscriptions suspendues, une adresse inconnue reçoit « Les inscriptions sont en pause », et une adresse connue reçoit son lien : la réponse dit alors si l'adresse a un compte, le temps de la pause.
+- **Les choix** :
+  - A. Garder ainsi : c'est une pause d'urgence, courte, et la personne doit savoir pourquoi rien n'arrive.
+  - B. La même réponse pour tous (« lien envoyé »), mais aucun email pour une adresse inconnue : rien ne se dit, et la personne attend un email qui ne vient pas.
+- **Ce que je ferais** : A.
+
 ### Q-038 — Une date dans un seul champ : quelle piste ? (ticket 160)
 
 - **Pour** : Julien (le choix), puis la conception (maquette et spec)

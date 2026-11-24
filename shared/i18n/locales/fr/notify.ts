@@ -15,6 +15,18 @@ export default {
   hello: 'Bonjour {firstName},',
   helloNoName: 'Bonjour,',
   settings: 'Changer ce réglage',
+  // To the super-admins, at 70 % of a cap of the emails (ticket 129).
+  capWarning: {
+    subject: {
+      day: 'Under the Tree : 70 % des emails du jour',
+      month: 'Under the Tree : 70 % des emails du mois',
+    },
+    body: {
+      day: '{used} emails envoyés aujourd’hui, sur {cap}.',
+      month: '{used} emails envoyés ce mois-ci, sur {cap}.',
+    },
+    next: 'À 100 % du mois, les emails se suspendent tout seuls, sauf les liens de connexion.',
+  },
   unfollow: 'Ne plus suivre une liste',
   news: {
     subject: {

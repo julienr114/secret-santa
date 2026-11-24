@@ -14,6 +14,17 @@ export default {
   hello: 'Hello {firstName},',
   helloNoName: 'Hello,',
   settings: 'Change this setting',
+  capWarning: {
+    subject: {
+      day: 'Under the Tree: 70% of today’s emails',
+      month: 'Under the Tree: 70% of this month’s emails',
+    },
+    body: {
+      day: '{used} emails sent today, out of {cap}.',
+      month: '{used} emails sent this month, out of {cap}.',
+    },
+    next: 'At 100% of the month, emails stop by themselves, except login links.',
+  },
   unfollow: 'Stop following a list',
   news: {
     subject: {

@@ -25,5 +25,6 @@ export const notifyOrganizers = async (
       ...build(localeOf(language)),
       to: email,
     })),
+    { db: context.db },
   );
 };

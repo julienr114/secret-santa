@@ -1,3 +1,4 @@
+import { isSwitchOn } from '#server/database/switches';
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
@@ -53,6 +54,10 @@ export default defineEventHandler(async (event) => {
       statusCode: 409,
       statusMessage: 'message_not_available',
     });
+  }
+  // Suspended for everyone (ticket 129): said before anything else.
+  if (await isSwitchOn(db, 'emails')) {
+    throw createError({ statusCode: 503, statusMessage: 'emails_paused' });
   }
   if (!emailConfigured(event)) {
     throw createError({
@@ -112,7 +117,7 @@ export default defineEventHandler(async (event) => {
       return { ...email, to: person.email };
     }),
   );
-  unwrap(await sendEmails(event, emails));
+  unwrap(await sendEmails(event, emails, { db }));
 
   const events = unwrap(
     all(

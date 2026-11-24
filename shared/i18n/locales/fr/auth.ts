@@ -118,6 +118,22 @@ export default {
     emergency: 'En cas d’urgence',
     pauseSecretSantas: 'Suspendre les nouveaux Secret Santa',
     pauseSecretSantasHelp: 'Ceux qui existent continuent',
+    // Ticket 129 (V3Admin).
+    pauseEmails: 'Suspendre les emails',
+    pauseEmailsHelp: 'Plus aucun email ne part, sauf les liens de connexion',
+    pauseSignups: 'Suspendre les inscriptions',
+    pauseSignupsHelp: 'Ni nouveau compte, ni nouvel événement',
+    emergencyHint:
+      'Les emails se suspendent tout seuls quand ceux du mois atteignent leur plafond.',
+    rateLimited: 'Requêtes refusées pour débit, aujourd’hui',
+    loginFailed: 'Connexions échouées, aujourd’hui',
+    emailsRejected: 'Emails rejetés, aujourd’hui',
+    serverErrors: 'Erreurs du serveur, aujourd’hui',
+    caps: 'Les plafonds',
+    emailsDay: 'Emails, aujourd’hui',
+    emailsMonth: 'Emails, ce mois',
+    capValue: '{used} sur {cap}',
+    capsHint: 'À 70 % d’un plafond, un email te prévient.',
     members: { one: '{count} membre', other: '{count} membres' },
     draw: {
       preparing: 'à préparer',

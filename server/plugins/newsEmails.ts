@@ -15,11 +15,12 @@ export default defineNitroPlugin((nitroApp) => {
     if (!d1 || !secretsOf().resendApiKey) return;
     const key = await importDataKey(secretsOf().dataKey);
     if (!key.ok) return;
-    await sendNewsEmails(dbOf(d1), {
+    const db = dbOf(d1);
+    await sendNewsEmails(db, {
       dataKey: key.value,
       now: nowIso(),
       url: (path) => appUrl(undefined, path),
-      send: (emails) => sendEmails(undefined, emails),
+      send: (emails) => sendEmails(undefined, emails, { db }),
     }).catch(() => 0);
   });
 });

@@ -63,20 +63,24 @@ export const sendHolderInvite = async (
   // Never to an account that wants no email (ticket 121): the
   // invitation is in its « Quoi de neuf ».
   if (!ownEmailGoes(invited?.emailNews ?? null)) return link;
-  await sendEmails(event, [
-    {
-      ...buildHolderInviteEmail(
-        {
-          by: me?.firstName ?? me?.email.split('@')[0] ?? '',
-          title: invite.title,
-          level: invite.level,
-          expiresAt: invite.expiresAt,
-        },
-        link,
-        invited?.language ?? me?.language ?? 'fr',
-      ),
-      to: invite.email,
-    },
-  ]);
+  await sendEmails(
+    event,
+    [
+      {
+        ...buildHolderInviteEmail(
+          {
+            by: me?.firstName ?? me?.email.split('@')[0] ?? '',
+            title: invite.title,
+            level: invite.level,
+            expiresAt: invite.expiresAt,
+          },
+          link,
+          invited?.language ?? me?.language ?? 'fr',
+        ),
+        to: invite.email,
+      },
+    ],
+    { db },
+  );
   return link;
 };

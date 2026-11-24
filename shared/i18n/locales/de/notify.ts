@@ -15,6 +15,17 @@ export default {
   hello: 'Hallo {firstName},',
   helloNoName: 'Hallo,',
   settings: 'Diese Einstellung ändern',
+  capWarning: {
+    subject: {
+      day: 'Under the Tree: 70 % der E-Mails von heute',
+      month: 'Under the Tree: 70 % der E-Mails dieses Monats',
+    },
+    body: {
+      day: '{used} E-Mails heute gesendet, von {cap}.',
+      month: '{used} E-Mails diesen Monat gesendet, von {cap}.',
+    },
+    next: 'Bei 100 % des Monats werden E-Mails von selbst ausgesetzt, außer Anmeldelinks.',
+  },
   unfollow: 'Einer Liste nicht mehr folgen',
   news: {
     subject: {

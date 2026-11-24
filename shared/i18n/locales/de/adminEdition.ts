@@ -491,6 +491,12 @@ export default {
     },
     emails: {
       title: 'Per E-Mail senden',
+      paused: 'Das Senden von E-Mails ist für alle pausiert.',
+      pausedWhy:
+        'Das liegt nicht an dir: Die App hat ihre Grenze erreicht. Das Senden geht von selbst weiter.',
+      pausedMeanwhile:
+        'Schick in der Zwischenzeit allen ihren Link von deinem Handy aus: Das klappt immer und hängt von nichts ab.',
+      shareLinks: 'Links teilen',
       selected: {
         one: '{count} von {total} ausgewählt',
         other: '{count} von {total} ausgewählt',

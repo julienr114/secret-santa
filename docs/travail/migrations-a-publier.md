@@ -6,3 +6,4 @@ La production est à `0047_v3_hints_without_account` (la bascule, ticket 113). L
 |---|---|---|---|
 | 1 | `0048_v3_news_by_email` | 121 | Le réglage « Par email » de chaque compte (« Un résumé le matin » pour tous au départ), le jour de son dernier résumé ; pour chaque nouveauté, si elle peut partir par email et quand elle est partie. Les nouveautés d'avant sont marquées parties : personne ne reçoit d'un coup trente jours de nouveautés. |
 | 2 | `0049_v3_list_follows` | 122 | La table `gift_list_follows` : ce qu'un compte suit sur une liste, toute la liste ou une personne. |
+| 3 | `0050_v3_app_counters` | 129 | La table `app_counters` : ce que l'application compte par jour (emails envoyés et rejetés, requêtes refusées pour débit, connexions échouées, erreurs du serveur, avertissements donnés). Les deux nouveaux interrupteurs sont des lignes de `app_switches`, sans changement de table. |

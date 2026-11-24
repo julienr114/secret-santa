@@ -102,6 +102,11 @@ export default {
     'Tu organises déjà 3 Secret Santa : c’est le maximum pour un compte.',
   secret_santa_paused:
     'Les nouveaux Secret Santa sont en pause. Ceux qui existent continuent.',
+  // Ticket 129: the emergency switches.
+  emails_paused:
+    'L’envoi d’emails est en pause pour tout le monde. Envoie à chacun son lien depuis ton téléphone.',
+  signups_paused:
+    'Les inscriptions sont en pause : pas de nouveau compte ni de nouvel événement pour l’instant. Reviens dans quelques jours.',
   already_member:
     'Cette adresse est déjà celle d’un membre de l’événement : la liste lui est ouverte.',
   list_not_open:

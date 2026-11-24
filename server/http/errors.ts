@@ -24,6 +24,8 @@ const STATUS_BY_REASON: Record<string, number> = {
   email_failed: 502,
   secret_santa_limit_reached: 403,
   secret_santa_paused: 403,
+  emails_paused: 503,
+  signups_paused: 403,
   too_many_members: 409,
   cannot_disable_self: 409,
   session_current: 409,

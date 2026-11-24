@@ -118,15 +118,28 @@ const rows = computed(() => {
     },
   ];
 });
+/**
+ * Who takes part already, and that the participants are added right
+ * after (ticket 154, V3TirageNouveau, V3TirageNouveauSeul): never
+ * « 1 membre », « Il n'y a que toi pour l'instant. » then.
+ */
 const takenOver = computed(() =>
-  previous.value
-    ? t('adminEdition.newEdition.takenOverFrom', {
-        count: members.value.length,
-        year: previous.value.year,
-      })
-    : t('adminEdition.newEdition.partyMembers', {
-        count: members.value.length,
-      }),
+  members.value.length <= 1
+    ? {
+        who: t('adminEdition.newEdition.alone'),
+        next: t('adminEdition.newEdition.aloneNext'),
+      }
+    : {
+        who: previous.value
+          ? t('adminEdition.newEdition.takenOverFrom', {
+              count: members.value.length,
+              year: previous.value.year,
+            })
+          : t('adminEdition.newEdition.partyMembers', {
+              count: members.value.length,
+            }),
+        next: t('adminEdition.newEdition.othersNext'),
+      },
 );
 
 const saving = ref(false);
@@ -211,7 +224,11 @@ const onCreate = async () => {
           :label="t('common.count.participants', { count: members.length })"
           class="shrink-0"
         />
-        <p class="text-sm leading-[1.4] font-bold">{{ takenOver }}</p>
+        <p class="text-sm leading-[1.4] text-toned">
+          <strong class="font-bold text-default">{{
+            takenOver.who
+          }}</strong><br />{{ takenOver.next }}
+        </p>
       </UiCard>
       <UAlert
         v-if="failure"

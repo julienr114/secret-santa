@@ -63,6 +63,10 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByTestId('guess-pitch')).toHaveText(
     'À partir de quatre participants.',
   );
+  // Alone in the event: the participants come right after (ticket 154).
+  await expect(page.getByTestId('taken-over')).toHaveText(
+    'Il n’y a que toi pour l’instant.Tu ajoutes les participants juste après.',
+  );
   // Chosen in place, without opening a page: this one goes without.
   await game.getByText('Sans', { exact: true }).click();
   await expect(game.getByRole('radio', { name: 'Sans' })).toBeChecked();

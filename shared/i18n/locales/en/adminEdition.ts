@@ -17,6 +17,10 @@ export default {
       one: '{count} member of the event.',
       other: '{count} members of the event.',
     },
+    /** Ticket 154: alone in the event, then what comes after. */
+    alone: 'It’s just you for now.',
+    aloneNext: 'You add the participants right after.',
+    othersNext: 'You add or remove some right after.',
     dateLabel: 'Date',
     budgetLabel: 'Budget',
     optional: '(optional)',

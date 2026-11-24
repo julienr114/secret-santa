@@ -16,13 +16,22 @@ Julien, le 24 novembre 2026 : dans un événement tout neuf, le formulaire de cr
 
 ## À faire
 
-- [ ] La carte a deux lignes : la première en gras (ce qu'elle dit aujourd'hui), la seconde en texte discret, dans le même paragraphe (voir la maquette).
-- [ ] Je suis le seul membre (avec ou sans Secret Santa précédent) : « Il n'y a que toi pour l'instant. » puis « Tu ajoutes les participants juste après. ». On n'écrit plus « 1 membre… ».
-- [ ] Plusieurs membres : la phrase d'aujourd'hui (« 5 membres repris du Secret Santa 2026. » ou « 5 membres de l'événement. ») puis « Tu en ajoutes ou en retires juste après. ».
-- [ ] Trois langues, tournures neutres (pas de « seul » accordé).
-- [ ] Les tests qui lisaient « 1 membre de l'événement. ».
+- [x] La carte a deux lignes : la première en gras (ce qu'elle dit aujourd'hui), la seconde en texte discret, dans le même paragraphe (voir la maquette).
+- [x] Je suis le seul membre (avec ou sans Secret Santa précédent) : « Il n'y a que toi pour l'instant. » puis « Tu ajoutes les participants juste après. ». On n'écrit plus « 1 membre… ».
+- [x] Plusieurs membres : la phrase d'aujourd'hui (« 5 membres repris du Secret Santa 2026. » ou « 5 membres de l'événement. ») puis « Tu en ajoutes ou en retires juste après. ».
+- [x] Trois langues, tournures neutres (pas de « seul » accordé).
+- [x] Les tests qui lisaient « 1 membre de l'événement. ».
 
 ## C'est fini quand
 
-- [ ] Dans un événement où je suis seul, le formulaire dit que j'ajoute les participants juste après.
-- [ ] `/controle` passe.
+- [x] Dans un événement où je suis seul, le formulaire dit que j'ajoute les participants juste après.
+- [x] `/controle` passe.
+
+## Compte rendu
+
+- La carte de ceux qui participent déjà (`taken-over`, `admin/[slug]/editions/nouvelle/index.vue`) a deux lignes dans un paragraphe : en gras, qui y est ; dessous, en texte discret, ce qui vient après.
+- Seul membre (`members.length <= 1`), avec ou sans Secret Santa précédent : « Il n'y a que toi pour l'instant. » / « Tu ajoutes les participants juste après. ». Plusieurs : la phrase d'avant, puis « Tu en ajoutes ou en retires juste après. ».
+- Clés `adminEdition.newEdition.alone`, `aloneNext`, `othersNext`, trois langues, tournures neutres (« Bisher bist nur du dabei. », « It’s just you for now. »).
+- Aucun test ne lisait « 1 membre de l'événement. » sur ce formulaire (celui d'`edition-cases.spec.ts` est la page « Choisir les participants », qui ne change pas). `admin-edition.spec.ts` vérifie maintenant la carte de l'organisateur seul.
+- Contrôle : `pnpm controle` passé, et `admin-edition.spec.ts` ; le Playwright complet tourne à la fin des trois tickets (156).
+

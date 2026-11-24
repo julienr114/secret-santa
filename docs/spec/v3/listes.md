@@ -300,6 +300,25 @@ Julien, en écrivant la liste de son enfant : plusieurs boîtes de Playmobil à 
 - **La ligne qui part de l'icône de la personne ne s'interrompt pas** : elle traverse le point du titre comme elle traverse les cases.
 - Un titre ne compte pas comme une idée (« 5 idées »), et supprimer un titre ne supprime aucune idée.
 
+### Le rythme d'une liste
+
+Julien, le 24 novembre 2026, en remplissant une vraie liste : toutes les lignes avaient la même marge, un titre flottait à égale distance de ce qui précède et de ce qui suit. Maquette `V3ListeTitres`.
+
+**Plus deux choses vont ensemble, plus elles sont proches.** Du plus serré au plus large :
+
+| Entre | Espace |
+|---|---|
+| un titre et sa première idée | 10 px |
+| deux idées (ou une idée et « J'offre autre chose à… ») | 20 px |
+| ce qui précède un titre, et ce titre | 36 px |
+| la fin d'une personne et le nom de la suivante | 48 px |
+
+- Un titre qui est la première ligne d'une personne n'a pas ses 36 px : il vient juste sous le nom, comme une idée.
+- Le lien, les étoiles et les pastilles d'une idée font partie d'elle : l'espace se mesure après eux.
+- Le nom d'une personne suit la même logique, un cran au-dessus : ses lignes juste dessous, le grand écart avant la personne suivante.
+- **Le même rythme partout** : quand on lit la liste, quand on l'écrit, par son lien, pour un visiteur. La carte blanche de la ligne qu'on écrit ne décale pas ses voisines.
+- Une case reste facile à toucher : sa cible de 42 px ne chevauche pas celle de la ligne voisine.
+
 ### Supprimer la ligne
 
 C'est ce que fait aujourd'hui une ligne vidée : l'idée s'en va, **après avoir demandé quand quelqu'un l'a déjà cochée**. Vider la ligne continue de marcher.

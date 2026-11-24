@@ -498,14 +498,11 @@ export default {
   },
   link: {
     action: 'Lier à un Secret Santa',
-    what: 'Celui qui t’a tiré voit cette liste, en commençant par ta partie.',
-    see: 'Voir mon Secret Santa',
-    unlink: 'Délier',
+    intro: 'Celui qui t’a tiré verra cette liste pour choisir ton cadeau.',
+    linkedTo: 'Lié à « {title} »',
+    linked: 'Liste liée',
+    linkedMoved: 'Liste liée. « {title} » ne l’est plus.',
     unlinked: 'Liste déliée',
-    askTitle: 'Lier à ton Secret Santa ?',
-    ask: 'Celui qui t’a tiré dans « {name} » verra cette liste, en commençant par ta partie.',
-    moves: 'Il ne sera plus lié à « {title} ».',
-    submit: 'Lier',
   },
   tour: {
     of: '{at} sur {count}',

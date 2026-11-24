@@ -174,18 +174,19 @@ test('a list made from my Secret Santa has me on it, first, and starts from last
   await expect(page.getByTestId('list-title')).toHaveValue(
     'Idées pour le Secret Santa',
   );
-  // The pill opens what the link means, and leads to her page.
+  // The pill opens her Secret Santa of the year, this one ticked
+  // (ticket 155); never who drew her.
   const santa = people.first().getByTestId('person-santa');
   await expect(santa).toContainText('Secret Santa · Famille Lilas');
   await santa.click();
   const sheet = page.getByTestId('link-sheet');
   await expect(sheet).toContainText(
-    'Celui qui t’a tiré voit cette liste, en commençant par ta partie.',
+    'Celui qui t’a tiré verra cette liste pour choisir ton cadeau.',
   );
-  await expect(sheet.getByTestId('link-see').getByRole('link')).toHaveAttribute(
-    'href',
-    `/p/${state.tokens['Inès']}`,
-  );
+  await expect(
+    sheet.getByRole('checkbox', { name: 'Famille Lilas' }),
+  ).toBeChecked();
+  await expect(sheet.getByRole('link')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(sheet).toHaveCount(0);
   // « Repartir d'une liste », under her, before « Ajouter quelqu'un »:
@@ -335,12 +336,17 @@ test('from the list, the link is undone, made again, and moves', async () => {
   const api = as('Inès').request;
   const page = await open('Inès', `/listes/${state.inesList}`);
   const me = page.getByTestId('list-person').first();
-  // « Délier »: the pill goes, « Lier à un Secret Santa » comes in the
-  // menu of her part; the list and its ideas stay; her Secret Santa asks
-  // again.
+  // Unticked from the pill: unlinked at once, the sheet stays open; the
+  // pill goes, « Lier à un Secret Santa » comes in the menu of her part;
+  // the list and its ideas stay; her Secret Santa asks again.
   await me.getByTestId('person-santa').click();
-  await page.getByTestId('link-unlink').click();
+  const sheet = page.getByTestId('link-sheet');
+  const lilas = sheet.getByRole('checkbox', { name: 'Famille Lilas' });
+  await lilas.uncheck();
   await expect(page.getByText('Liste déliée', { exact: true })).toBeVisible();
+  await expect(lilas).not.toBeChecked();
+  await expect(sheet).toBeVisible();
+  await page.keyboard.press('Escape');
   await expect(me.getByTestId('person-santa')).toHaveCount(0);
   await expect(me.getByTestId('idea-text')).toHaveText([
     'Un bon couteau de cuisine',
@@ -350,15 +356,14 @@ test('from the list, the link is undone, made again, and moves', async () => {
   expect(asked.choices.map((one: { id: string }) => one.id)).toContain(
     state.inesList,
   );
-  // « Lier », after its question; closing it would have cancelled.
+  // Ticked from the menu: the same sheet, linked at once.
   await me.getByTestId('person-menu').click();
   await page.getByRole('menuitem', { name: 'Lier à un Secret Santa' }).click();
-  const ask = page.getByRole('dialog', { name: 'Lier à ton Secret Santa ?' });
-  await expect(ask).toContainText(
-    'Celui qui t’a tiré dans « Famille Lilas » verra cette liste, en commençant par ta partie.',
-  );
-  await ask.getByTestId('link-submit').click();
-  await expect(ask).toHaveCount(0);
+  await expect(sheet).toBeVisible();
+  await lilas.check();
+  await expect(page.getByText('Liste liée', { exact: true })).toBeVisible();
+  await expect(lilas).toBeChecked();
+  await page.keyboard.press('Escape');
   await expect(me.getByTestId('person-santa')).toContainText(
     'Secret Santa · Famille Lilas',
   );
@@ -387,9 +392,33 @@ test('from the list, the link is undone, made again, and moves', async () => {
   expect(refused.ok()).toBe(false);
   const moved = await ok(await api.get(`/api/lists/${other}`));
   expect(moved.linkable).toEqual([
-    { partyId, name: 'Famille Lilas', linkedTo: 'Idées pour le Secret Santa' },
+    expect.objectContaining({
+      partyId,
+      name: 'Famille Lilas',
+      linkedTo: 'Idées pour le Secret Santa',
+    }),
   ]);
-  await ok(await api.put(`/api/lists/${other}/draw/${partyId}`));
+  // Ticked there, it moves, and the message says so.
+  const there = await open('Inès', `/listes/${other}`);
+  await there
+    .getByTestId('list-person')
+    .filter({ has: there.getByTestId('me-tag') })
+    .getByTestId('person-menu')
+    .click();
+  await there.getByRole('menuitem', { name: 'Lier à un Secret Santa' }).click();
+  const row = there
+    .getByTestId('link-sheet')
+    .getByTestId('link-row')
+    .filter({ hasText: 'Famille Lilas' });
+  await expect(row).toContainText('Lié à « Idées pour le Secret Santa »');
+  await row.getByRole('checkbox').check();
+  await expect(
+    there.getByText(
+      'Liste liée. « Idées pour le Secret Santa » ne l’est plus.',
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await there.close();
   expect(
     (await ok(await api.get(`/api/p/${state.tokens['Inès']}/list`))).list,
   ).toBe(other);
@@ -436,11 +465,14 @@ test('linked to one Secret Santa, my part offers « Lier à un Secret Santa » f
   const items = page.getByRole('menuitem');
   await expect(items.nth(1)).toHaveText('Lier à un Secret Santa');
   await items.nth(1).click();
-  const ask = page.getByRole('dialog', { name: 'Lier à ton Secret Santa ?' });
-  await expect(ask).toContainText('Amis Lilas');
-  await ask.getByText('Amis Lilas').click();
-  await ask.getByTestId('link-submit').click();
-  await expect(ask).toHaveCount(0);
+  const sheet = page.getByTestId('link-sheet');
+  await expect(sheet.getByTestId('link-row')).toHaveText([
+    /Famille Lilas/,
+    /Amis Lilas/,
+  ]);
+  await sheet.getByRole('checkbox', { name: 'Amis Lilas' }).check();
+  await expect(page.getByText('Liste liée', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
   // The sooner first.
   await expect(me.getByTestId('person-santa')).toHaveText([
     /Amis Lilas/,

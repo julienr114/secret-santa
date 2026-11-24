@@ -498,14 +498,12 @@ export default {
   },
   link: {
     action: 'Mit einem Secret Santa verknüpfen',
-    what: 'Wer dich gezogen hat, sieht diese Liste, beginnend mit deinem Teil.',
-    see: 'Mein Secret Santa ansehen',
-    unlink: 'Verknüpfung lösen',
+    intro:
+      'Wer dich gezogen hat, sieht diese Liste, um dein Geschenk auszusuchen.',
+    linkedTo: 'Verknüpft mit „{title}“',
+    linked: 'Liste verknüpft',
+    linkedMoved: 'Liste verknüpft. „{title}“ ist es nicht mehr.',
     unlinked: 'Verknüpfung gelöst',
-    askTitle: 'Mit deinem Secret Santa verknüpfen?',
-    ask: 'Wer dich in „{name}“ gezogen hat, wird diese Liste sehen, beginnend mit deinem Teil.',
-    moves: 'Es ist dann nicht mehr mit „{title}“ verknüpft.',
-    submit: 'Verknüpfen',
   },
   tour: {
     of: '{at} von {count}',

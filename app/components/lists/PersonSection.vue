@@ -222,16 +222,15 @@ const planned = computed(
     props.person.offList.length,
 );
 /**
- * « Lier à un Secret Santa » (ticket 153): in my part, while one of my
- * Secret Santa of the year has no list, even when mine is linked to
- * another; it opens the sheet of ListsDrawLink.
+ * « Lier à un Secret Santa » (tickets 153, 155): in my part, while one of
+ * my Secret Santa of the year, drawn, is not linked to this list (linked
+ * to another, it moves here: docs/spec/v3/listes.md, « Lier et délier »);
+ * it opens the sheet of ListsDrawLink.
  */
 const drawLink = ref<{ ask: () => void } | null>(null);
 const canLink = computed(
   () =>
-    member.value.isSelf &&
-    props.manages &&
-    (props.linkable ?? []).some((one) => one.linkedTo === null),
+    member.value.isSelf && props.manages && (props.linkable ?? []).length > 0,
 );
 const menuOpen = ref(false);
 const confirming = ref(false);

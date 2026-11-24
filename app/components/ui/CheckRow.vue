@@ -6,9 +6,11 @@ import type { Avatar } from '#server/utils/avatars';
 // whole row ticks. With `radio`, a round button instead of the box: one
 // person among the rows that share its `name` (« Qui l'offre ? »).
 // `small`, in the bar of a list (ticket 141): 48 px, its name in 15 px.
+// The `leading` slot takes the place of the icon (an event's tile,
+// ticket 155).
 defineProps<{
   /** Null for someone without an icon of their own. */
-  avatar: Avatar | null;
+  avatar?: Avatar | null;
   title: string;
   subtitle?: string;
   /** "Sélectionner Inès", the name of the box. */
@@ -33,7 +35,9 @@ const checked = defineModel<boolean>('checked', { required: true });
         disabled ? 'cursor-default' : 'cursor-pointer',
       ]"
     >
-      <UiAvatar :avatar="avatar" :size="small ? 'sm' : 'md'" />
+      <slot name="leading">
+        <UiAvatar :avatar="avatar ?? null" :size="small ? 'sm' : 'md'" />
+      </slot>
       <span class="flex min-w-0 grow flex-col">
         <span class="truncate font-semibold">{{ title }}</span>
         <span

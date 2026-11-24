@@ -349,6 +349,9 @@ export const unlinkElsewhere = async (
 /** A Secret Santa « Lier à mon Secret Santa » offers (ticket 148). */
 export type LinkChoice = {
   partyId: string;
+  /** Its event's category and emoji, for its tile (ticket 155). */
+  category: PartyCategory;
+  emoji: string | null;
   /** The event, with the Secret Santa between brackets when it has several. */
   name: string;
   /** The list it is linked to now, by name, or null. */
@@ -356,8 +359,8 @@ export type LinkChoice = {
 };
 
 /**
- * What « Lier à mon Secret Santa » offers on a list I hold and figure on
- * (V3ListeSecretLier): my Secret Santa of their current year whose draw is
+ * What « Lier à un Secret Santa » offers on a list I hold and figure on,
+ * not ticked (V3ListeSecretLierConfirmer, ticket 155): my Secret Santa of their current year whose draw is
  * done, not linked to this list, each with the list it is linked to.
  * Never who drew me.
  * @param db - The database.
@@ -376,6 +379,8 @@ export const linkChoicesOf = async (
     .select({
       partyId: parties.id,
       partyName: parties.name,
+      category: parties.category,
+      iconEmoji: parties.iconEmoji,
       yearId: secretSantas.yearId,
       label: secretSantas.label,
     })
@@ -407,6 +412,8 @@ export const linkChoicesOf = async (
       );
       return {
         partyId: row.partyId,
+        category: row.category,
+        emoji: partyEmoji(row),
         name: invitePlace(
           row.partyName,
           subjectSantaName(

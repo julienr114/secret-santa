@@ -493,14 +493,11 @@ export default {
   },
   link: {
     action: 'Link to a Secret Santa',
-    what: 'The one who drew you sees this list, starting with your part.',
-    see: 'See my Secret Santa',
-    unlink: 'Unlink',
+    intro: 'The one who drew you will see this list to choose your gift.',
+    linkedTo: 'Linked to “{title}”',
+    linked: 'List linked',
+    linkedMoved: 'List linked. “{title}” no longer is.',
     unlinked: 'List unlinked',
-    askTitle: 'Link to your Secret Santa?',
-    ask: 'The one who drew you in “{name}” will see this list, starting with your part.',
-    moves: 'It will no longer be linked to “{title}”.',
-    submit: 'Link',
   },
   tour: {
     of: '{at} of {count}',

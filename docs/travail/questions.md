@@ -4,7 +4,15 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-037 — Quand « Lier à un Secret Santa » est-il dans le menu ? (ticket 155)
+
+- **Pour** : Julien, ou la conception
+- **Ce qui bloque** : rien. Codé comme la spec, en attendant.
+- **Ce qu'on a trouvé** : le ticket 155 dit que la condition de l'entrée du menu « ne change pas » (un de mes Secret Santa de l'année n'a **aucune** liste). La spec (`listes.md`, « Lier et délier ») dit : « quand j'ai cette année un Secret Santa tiré qui **n'est pas lié à cette liste** ». Avec la condition du ticket, un Secret Santa déjà lié à « Noël 2026 » ne peut pas être déplacé depuis une autre liste où je figure : il n'y a ni pastille (rien n'est lié ici) ni entrée de menu pour ouvrir le panneau, alors que le ticket demande de pouvoir le cocher là, « Lié à « Noël 2026 » » sous son nom.
+- **Les choix** :
+  - A. La spec : l'entrée est là dès qu'un de mes Secret Santa tirés de l'année n'est pas lié à cette liste, lié ailleurs ou non.
+  - B. Le ticket : seulement quand l'un d'eux n'a aucune liste ; on ne déplace un lien que depuis la liste qui l'a déjà (par sa pastille) ou depuis la page du Secret Santa.
+- **Ce que je ferais** : A, codé ainsi.
 
 ## Réponses
 

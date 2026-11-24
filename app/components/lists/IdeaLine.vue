@@ -335,13 +335,19 @@ watch(draft, sayWriting);
 onBeforeUnmount(() => {
   if (writing.value) live?.idle();
 });
-// A text that changes shows it by a short movement, not on arrival.
-const settled = ref(false);
+// A text that changes shows it by a short movement, not on arrival: only
+// a text other than the one the line settled with (ticket 168: putting
+// the class on the text already there played it on every line, 0.4 s
+// after the list opened).
+const settledOn = ref<string | null>(null);
 onMounted(() => {
   window.setTimeout(() => {
-    settled.value = true;
+    settledOn.value = name.value;
   }, 400);
 });
+const changedSince = computed(
+  () => settledOn.value !== null && name.value !== settledOn.value,
+);
 
 /**
  * Starts writing the line.
@@ -832,7 +838,7 @@ const onFocusOut = (event: FocusEvent) => {
           >
             <span
               :key="lockedBy ? 'live' : name"
-              :class="settled && !lockedBy ? 'text-changed' : ''"
+              :class="changedSince && !lockedBy ? 'text-changed' : ''"
               ><template v-if="lockedBy"
                 >{{ lockedBy.text.slice(0, lockedBy.caret)
                 }}<span

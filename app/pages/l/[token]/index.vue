@@ -4,6 +4,7 @@ import { shoeSizesShown } from '#shared/utils/memberFields';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
 import {
+  lineKey,
   useJoinByLinkMutation,
   useLinkQuery,
   useRemoveOffListMutation,
@@ -440,7 +441,7 @@ const writes = (person: PersonLine) =>
         >
           <ListsIdeaLine
             v-for="(idea, at) in person.ideas"
-            :key="idea.id"
+            :key="lineKey(idea.id)"
             :via="via"
             :list-person-id="person.id"
             :for-name="person.member.firstName"

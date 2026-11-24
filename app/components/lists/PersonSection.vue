@@ -4,7 +4,10 @@ import type { Avatar } from '#server/utils/avatars';
 import { MEMBER_NAME_MAX } from '#server/utils/lists';
 import { shoeSizesShown } from '#shared/utils/memberFields';
 import { AVATAR_SHADES } from '~/utils/avatars';
-import { useUpdateMemberMutation } from '~/composables/queries/useLists';
+import {
+  lineKey,
+  useUpdateMemberMutation,
+} from '~/composables/queries/useLists';
 
 // A person on a list, as its holder writes it (README 22.19, 22.20,
 // maquettes ListeTeneur, ListeGroupeFil): two columns and a thread
@@ -475,7 +478,7 @@ const explained = ref<string | null>(null);
     >
       <template
         v-for="row in rows"
-        :key="row.kind === 'drop' ? 'drop' : lineId(row)"
+        :key="row.kind === 'drop' ? 'drop' : lineKey(lineId(row))"
       >
         <li
           v-if="row.kind === 'drop'"

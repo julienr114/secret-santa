@@ -328,6 +328,11 @@ test('axe finds nothing on a list held and a list visited', async () => {
     await page.goto(path);
     await hydrated(page);
     await expect(page.getByText('Circuit de billes')).toBeVisible();
+    // Contrasts read at rest: a text just changed fades in (ticket 168:
+    // a slow machine caught it half way).
+    await page.evaluate(() =>
+      Promise.all(document.getAnimations().map((a) => a.finished)),
+    );
     const { violations } = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .analyze();

@@ -100,9 +100,12 @@ describe('loadHome', () => {
         label: 'Noël 2026',
         to: '/p/jeton-hugo',
         line: { parts: [{ key: 'lines.santa.notDrawn' }], dot: false },
+        organiser: null,
         game: null,
       },
     ]);
+    // Not its organiser: no « Gérer l'événement ».
+    expect(bySlug('famille').manage).toBeNull();
     // Organised without taking part: it speaks to the organiser.
     expect(bySlug('bureau').secretSantas).toEqual([
       {
@@ -116,9 +119,12 @@ describe('loadHome', () => {
           ],
           dot: false,
         },
+        organiser: null,
         game: null,
       },
     ]);
+    // Its organiser: « Gérer l'événement », with its members (none yet).
+    expect(bySlug('bureau').manage).toEqual({ members: 0 });
   });
 
   it('gives the lists in the party, mine, never one kept for a giver', async () => {

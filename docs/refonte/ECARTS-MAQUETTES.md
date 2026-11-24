@@ -19,6 +19,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3FetesPassees` | La tuile fait 36 px, comme la maquette ; `categories.md` dit 30 px. | Seul (la maquette) |
 | `V3Accueil` | « Bientôt » (l'anniversaire d'un de mes proches, pas encore un événement) a la tuile de 32 px de la maquette, en dégradé « Anniversaire ». | Seul (la maquette) |
+| `V3Accueil`, `V3AccueilSansSecret`, `V3AccueilJeu` | « Gérer l'événement » (ticket 156) est un `UiListItem` comme les autres lignes : l'icône `sliders-horizontal` dans sa place de 40 px (44 dans la maquette), 60 px de haut au lieu de 58. « Tu l'organises » aligne son texte à 68 px du bord, sous le titre du Secret Santa de l'application (72 dans la maquette, dont l'icône fait 44 px). | Seul |
 | `V3Fete` | L'en-tête de la page d'un événement garde sa pastille de catégorie : la maquette n'y a pas de tuile (le ticket en annonçait une de 44 px). | Seul (la maquette) |
 | `V3QuoiDeNeuf` | La section d'une liste hors de mes événements a la tuile de la catégorie « Autre ». | Seul |
 | `CreateSheet` | « Créer » ne change pas : ses événements gardent leur carré teinté (ticket 143). | Ticket 143 |

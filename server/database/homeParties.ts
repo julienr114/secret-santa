@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   familyMembers,
@@ -55,6 +55,11 @@ export type HomeParty = {
    */
   createSanta: boolean;
   /**
+   * « Gérer l'événement » (ticket 156): I organise it; its members, as
+   * its page counts them. Null for a member who does not organise it.
+   */
+  manage: { members: number } | null;
+  /**
    * The Secret Santas of its current year I take part in or organise,
    * with their text (lignes.md) and their « Devine qui ».
    */
@@ -63,6 +68,11 @@ export type HomeParty = {
     label: string;
     to: string | null;
     line: LineText | null;
+    /**
+     * « Tu l'organises » (ticket 156): I take part and organise it; its
+     * organiser's text and its follow-up. Null otherwise.
+     */
+    organiser: { line: LineText; to: string } | null;
     game: { line: LineText; to: string } | null;
   }[];
   /** Its lists I may see: in the party for all its members, or mine. */
@@ -134,7 +144,7 @@ export const loadHome = async (
   const ids = [...new Set([...mine.map((row) => row.partyId), ...organises])];
   if (ids.length === 0) return { parties: [], people, past: null };
 
-  const [rows, years, shares, made] = await Promise.all([
+  const [rows, years, shares, made, members] = await Promise.all([
     db.select().from(parties).where(inArray(parties.id, ids)),
     loadYears(db, ids),
     db
@@ -165,6 +175,12 @@ export const loadHome = async (
       .from(giftLists)
       .where(inArray(giftLists.partyId, ids))
       .orderBy(asc(giftLists.createdAt)),
+    // The members of what I organise, for « Gérer l'événement ».
+    db
+      .select({ partyId: persons.partyId, n: count() })
+      .from(persons)
+      .where(inArray(persons.partyId, anyOf([...organises])))
+      .groupBy(persons.partyId),
   ]);
   // One row per list and event: shared there, else made for there.
   const links = [
@@ -304,21 +320,28 @@ export const loadHome = async (
             today,
           ),
           createSanta: organiser && santas.length === 0,
+          manage: organiser
+            ? {
+                members:
+                  members.find((row) => row.partyId === party.id)?.n ?? 0,
+              }
+            : null,
           secretSantas: santas
             .filter((santa) => organiser || paths.has(santa.id))
             .map((santa) => {
               const path = paths.get(santa.id) ?? null;
               const line = lines.santas.get(santa.id);
+              const follow = `/admin/${party.slug}/editions/${santa.id}`;
               return {
                 id: santa.id,
                 label: santa.label,
                 // My own page first; the organiser's otherwise.
-                to:
-                  path ??
-                  (organiser
-                    ? `/admin/${party.slug}/editions/${santa.id}`
-                    : null),
+                to: path ?? (organiser ? follow : null),
                 line: line?.line ?? null,
+                organiser:
+                  path && organiser && line
+                    ? { line: line.organiser, to: follow }
+                    : null,
                 game:
                   line?.game && path
                     ? { line: line.game, to: gamePath(path, line.game) }

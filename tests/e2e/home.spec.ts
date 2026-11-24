@@ -86,16 +86,55 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
     name: 'Chez Mamie',
     date: `${christmas}-12-24`,
   });
-  await createParty(page.request, {
+  const bureau = await createParty(page.request, {
     category: 'christmas',
     name: 'Bureau, 3e étage',
     date: `${christmas}-12-19`,
   });
-  await createParty(page.request, {
+  const tonton = await createParty(page.request, {
     category: 'birthday',
     name: 'Les 40 ans de Tonton',
     date: inDays(80),
   });
+  // A Secret Santa he organises and takes part in (Bureau: its organiser
+  // is taken at once), and one he organises without taking part (Tonton:
+  // he takes himself out) (ticket 156).
+  const santaOf = async (
+    slug: string,
+    date: string,
+    people: { firstName: string; email: string }[],
+  ) => {
+    const made = await page.request.post(`/api/admin/${slug}/editions`, {
+      data: {
+        label: 'Le Secret Santa',
+        year: Number(date.slice(0, 4)),
+        eventDate: date,
+      },
+    });
+    expect(made.status()).toBe(201);
+    const id = (await made.json()).edition.id as string;
+    await addPeople(page.request, `/api/admin/${slug}`, id, people);
+    return id;
+  };
+  const bureauSanta = await santaOf(bureau, `${christmas}-12-19`, [
+    { firstName: 'Inès', email: 'ines-accueil@example.com' },
+  ]);
+  const tontonSanta = await santaOf(tonton, inDays(80), [
+    { firstName: 'Tonton', email: 'tonton-accueil@example.com' },
+  ]);
+  const { participants } = await (
+    await page.request.get(`/api/admin/${tonton}/editions/${tontonSanta}`)
+  ).json();
+  const himself = participants.find(
+    (one: { firstName: string }) => one.firstName === 'Hugo',
+  );
+  expect(
+    (
+      await page.request.delete(
+        `/api/admin/${tonton}/editions/${tontonSanta}/participants/${himself.participationId}`,
+      )
+    ).ok(),
+  ).toBe(true);
   const zoe = await page.request.post('/api/family', {
     data: { firstName: 'Zoé', avatar: { emoji: '🦄', color: 'pine' } },
   });
@@ -135,6 +174,43 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
       .nth(1)
       .locator('[data-testid^="home-create-"]'),
   ).toHaveText(['Créer un Secret Santa', 'Créer une liste de cadeaux']);
+
+  // What he organises: « Gérer l'événement » first, with its members;
+  // « Tu l'organises » under the Secret Santa he also takes part in,
+  // which opens its follow-up, before anything else. Neither has a dot.
+  const card = (name: string) =>
+    page.getByTestId('home-party').filter({
+      has: page.getByRole('heading', { name, level: 3 }),
+    });
+  const office = card('Bureau, 3e étage');
+  await expect(office.getByRole('listitem').first()).toHaveAttribute(
+    'data-testid',
+    'home-manage',
+  );
+  await expect(office.getByTestId('home-manage')).toContainText(
+    /Gérer l’événement\d+ membres?/,
+  );
+  await expect(
+    office.getByTestId('home-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/p\//);
+  const organise = office.getByTestId('home-organise');
+  await expect(organise).toContainText('Tu l’organises');
+  await expect(organise.getByRole('link')).toHaveAttribute(
+    'href',
+    `/admin/${bureau}/editions/${bureauSanta}`,
+  );
+  await expect(office.getByTestId('new-dot')).toHaveCount(0);
+  // Organised without taking part: one line, to the follow-up.
+  const birthday = card('Les 40 ans de Tonton');
+  await expect(birthday.getByTestId('home-manage')).toBeVisible();
+  await expect(
+    birthday.getByTestId('home-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/admin\//);
+  await expect(birthday.getByTestId('home-organise')).toHaveCount(0);
+  // A member who does not organise: neither.
+  const camilles = card('Famille Camille');
+  await expect(camilles.getByTestId('home-manage')).toHaveCount(0);
+  await expect(camilles.getByTestId('home-organise')).toHaveCount(0);
 
   const soon = page.getByTestId('home-soon');
   await expect(soon).toContainText('L’anniversaire de Zoé');

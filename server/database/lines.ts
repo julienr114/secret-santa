@@ -73,7 +73,18 @@ export const listKey = (listId: string, partyId: string) =>
 
 /** The lines of a page. */
 export type Lines = {
-  santas: Map<string, { line: LineText; game: LineText | null }>;
+  santas: Map<
+    string,
+    {
+      line: LineText;
+      game: LineText | null;
+      /**
+       * The text of its organiser, without a dot: « Tu l'organises » on the
+       * home, under the line of one who also takes part (ticket 156).
+       */
+      organiser: LineText;
+    }
+  >;
   lists: Map<string, { title: LinePart; line: LineText }>;
 };
 
@@ -149,14 +160,15 @@ const santaLines = async (
       const counted = counts.find((one) => one.secretSantaId === santa.id);
       const me = myRows.find((one) => one.secretSantaId === santa.id);
       const drawn = row.status !== 'preparing';
+      const organiser = organiserLine({
+        status: row.status,
+        revealed: Boolean(row.revealedAt),
+        participants: counted?.all ?? 0,
+        viewed: counted?.viewed ?? 0,
+      });
       const line =
         santa.as === 'organiser'
-          ? organiserLine({
-              status: row.status,
-              revealed: Boolean(row.revealedAt),
-              participants: counted?.all ?? 0,
-              viewed: counted?.viewed ?? 0,
-            })
+          ? organiser
           : participantLine({
               drawn,
               opened: Boolean(me?.firstViewedAt),
@@ -178,7 +190,9 @@ const santaLines = async (
         playNews: waits(unseen, 'game_open', santa.id),
         endsAt: row.guessEndsAt,
       });
-      return [[santa.id, { line, game }]];
+      return [
+        [santa.id, { line, game, organiser: { ...organiser, dot: false } }],
+      ];
     }),
   );
 };

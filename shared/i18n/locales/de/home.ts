@@ -1,5 +1,8 @@
 // The home of the V3 (docs/spec/v3/accueil-et-creation.md, ticket 103).
 export default {
+  /** Ticket 156: the rows of what I organise. */
+  manage: 'Event verwalten',
+  organise: 'Du organisierst es',
   title: 'Startseite',
   hello: 'Hallo {name}',
   helloNobody: 'Hallo',

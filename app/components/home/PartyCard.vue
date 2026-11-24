@@ -10,6 +10,11 @@ import { usePrepareYearMutation } from '~/composables/queries/useParty';
 // title, its text and maybe a red dot (lignes.md, tickets 112 and 120).
 // The event in its tile in colour, the lines under it with their icon
 // alone (ticket 143).
+// In an event I organise (ticket 156, V3Accueil, V3AccueilSansSecret):
+// « Gérer l'événement » first, under its header, with its members; and
+// under a Secret Santa I take part in, « Tu l'organises », hung to its
+// line (no rule, no icon, its text under the title), which opens the
+// follow-up. Never a red dot on either.
 // At the bottom, what may be made in it (ticket 151): « Créer un Secret
 // Santa », « Créer une liste de cadeaux ». Two months before an event
 // that comes back (ticket 108, V3AccueilAnnee): « Préparer Noël 2027 »
@@ -91,8 +96,19 @@ const creates = computed(() => {
       />
     </NuxtLink>
     <ul class="divide-y divide-default border-t border-default">
+      <UiListItem
+        v-if="party.manage"
+        icon="i-lucide-sliders-horizontal"
+        icon-tone="neutral"
+        bare-icon
+        :title="t('home.manage')"
+        :subtitle="t('party.members', { count: party.manage.members })"
+        :to="`/e/${party.slug}`"
+        data-testid="home-manage"
+      />
       <template v-for="santa in party.secretSantas" :key="santa.id">
         <UiListItem
+          :class="santa.organiser ? 'border-b-0' : ''"
           icon="i-lucide-mail"
           icon-tone="neutral"
           bare-icon
@@ -106,6 +122,25 @@ const creates = computed(() => {
           :to="santa.to ?? undefined"
           data-testid="home-santa"
         />
+        <li v-if="santa.organiser" data-testid="home-organise">
+          <NuxtLink
+            :to="santa.organiser.to"
+            class="flex min-h-[54px] items-center gap-3 pr-4 pb-2 pl-[68px] transition-colors active:bg-muted"
+          >
+            <span class="min-w-0 grow">
+              <span class="line-clamp-2 font-semibold">{{
+                t('home.organise')
+              }}</span>
+              <span class="line-clamp-2 text-[13px] text-toned">{{
+                words.line(santa.organiser.line)
+              }}</span>
+            </span>
+            <UIcon
+              name="i-lucide-chevron-right"
+              class="size-5 shrink-0 text-dimmed"
+            />
+          </NuxtLink>
+        </li>
         <UiListItem
           v-if="santa.game"
           icon="i-lucide-search"

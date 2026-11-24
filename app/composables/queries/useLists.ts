@@ -16,6 +16,8 @@ import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { SharingAsk } from '#server/utils/listSharing';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import type { ListOrder } from '#shared/utils/reorder';
+import type { FollowChoice, FollowState } from '#server/utils/follows';
+import type { FollowedList } from '#server/database/follows';
 import { keys } from './keys';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import {
@@ -642,6 +644,8 @@ export type LinkDocument = VisitorDocument & {
   mode: ListMode;
   /** My visit before this one, or null (ticket 120). */
   since: string | null;
+  /** What I follow on it (ticket 122); null for its holders, or logged out. */
+  follow: FollowState | null;
 };
 
 /**
@@ -668,6 +672,61 @@ export const useListModeMutation = (token: Token) =>
   >(
     (body) => api(`/api/l/${toValue(token)}/mode`, { method: 'PUT', body }),
     () => [keys.link(toValue(token))],
+  );
+
+/**
+ * « Suivre » (ticket 122): what I follow on a list by its link, in place
+ * of what I followed; shown at once.
+ */
+export const useFollowMutation = (token: Token) => {
+  const queryClient = useQueryClient();
+  const key = () => keys.link(toValue(token));
+  return useMutation<
+    FollowState,
+    Error,
+    FollowChoice,
+    { before?: LinkDocument }
+  >({
+    mutationFn: (body) =>
+      api(`/api/l/${toValue(token)}/follow`, { method: 'PUT', body }),
+    onMutate: async (choice) => {
+      await queryClient.cancelQueries({ queryKey: key() });
+      const before = queryClient.getQueryData<LinkDocument>(key());
+      if (before) {
+        queryClient.setQueryData<LinkDocument>(key(), {
+          ...before,
+          follow: choice.list
+            ? { kind: 'list' }
+            : choice.people.length > 0
+              ? { kind: 'people', listPersonIds: choice.people }
+              : { kind: 'none' },
+        });
+      }
+      return { before };
+    },
+    onError: (_error, _choice, context) => {
+      if (context?.before) queryClient.setQueryData(key(), context.before);
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: key() }),
+        queryClient.invalidateQueries({ queryKey: keys.follows() }),
+      ]),
+  });
+};
+
+/** The lists I follow, for « Me prévenir » (ticket 122). */
+export const useFollowsQuery = () =>
+  useApiQuery<{ lists: FollowedList[] }>(
+    () => keys.follows(),
+    () => '/api/follows',
+  );
+
+/** « Ne plus suivre » a list, from « Me prévenir ». */
+export const useUnfollowMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (listId) => api(`/api/follows/${listId}`, { method: 'DELETE' }),
+    () => [keys.follows()],
   );
 
 /** The page's own data of a list: what a line ticked changes at once. */

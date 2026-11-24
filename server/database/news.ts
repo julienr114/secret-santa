@@ -42,6 +42,7 @@ export const addNews = async (
       accountId: news.accountId,
       kind: news.kind,
       targetId: news.targetId,
+      name: news.name,
       count: news.count,
       createdAt: news.createdAt,
     })

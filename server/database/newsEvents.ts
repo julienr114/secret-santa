@@ -13,6 +13,7 @@ import {
   secretSantas,
 } from './schema';
 import { findGiverParticipationId } from './draw';
+import { followersOf, listPersonName } from './follows';
 import { guessesOpen } from '#server/utils/guesses';
 import {
   accountsOfEmails,
@@ -358,10 +359,13 @@ export const tellJoinedGift = (
  * whoever drew one who holds it, in a Secret Santa of these events, is
  * told about their own Secret Santa instead (« De nouvelles idées
  * t'attendent »). Its holders and the author are not told. A draft tells
- * nobody.
+ * nobody. Those who follow the list, or the person the idea is for, are
+ * told by a news of their own, that goes by email (ticket 122) : « 3
+ * nouvelles idées pour Léo », grouped by person and by day.
  * @param db - The database.
- * @param input - The list, who wrote, the key of the draws.
+ * @param input - The list, the person, who wrote, the key of the draws.
  * @param input.listId - The list.
+ * @param input.listPersonId - The person the idea is for.
  * @param input.by - Who wrote.
  * @param input.dataKey - The key of the draws.
  * @param now - Now (ISO).
@@ -369,7 +373,12 @@ export const tellJoinedGift = (
  */
 export const tellNewIdeas = (
   db: Db,
-  input: { listId: string; by: string; dataKey: CryptoKey },
+  input: {
+    listId: string;
+    listPersonId: string | null;
+    by: string;
+    dataKey: CryptoKey;
+  },
   now: string,
 ) =>
   quietly(async () => {
@@ -478,9 +487,19 @@ export const tellNewIdeas = (
         : [];
     });
     const giverAccountIds = new Set(giverNews.map((one) => one.accountId));
+    const [followers, personName] = await Promise.all([
+      followersOf(db, {
+        listId: input.listId,
+        happened: { kind: 'idea', listPersonId: input.listPersonId },
+        by: input.by,
+      }),
+      listPersonName(db, input.listPersonId),
+    ]);
     const told = new Set([
       input.by,
       ...holders.map((holder) => holder.accountId),
+      // A follower has the news of what they follow, not this one too.
+      ...followers,
     ]);
     const readers = [
       ...(await memberAccounts(
@@ -510,8 +529,52 @@ export const tellNewIdeas = (
           readers.filter((id) => giverAccountIds.has(id)),
           { kind: 'new_ideas', targetId: input.listId, partyId: null },
         ),
+        ...newsFor(followers, {
+          kind: 'followed_ideas',
+          targetId: input.listId,
+          partyId: null,
+          name: personName,
+        }),
         ...giverNews,
       ],
+      now,
+    );
+  });
+
+/**
+ * A person added to a list (ticket 122): those who follow the whole list
+ * are told, « Zoé est sur la liste ».
+ * @param db - The database.
+ * @param input - The list, the person, who added them.
+ * @param input.listId - The list.
+ * @param input.listPersonId - The person on the list.
+ * @param input.by - Who added them.
+ * @param now - Now (ISO).
+ * @returns Once written.
+ */
+export const tellPersonAdded = (
+  db: Db,
+  input: { listId: string; listPersonId: string; by: string },
+  now: string,
+) =>
+  quietly(async () => {
+    const [followers, name] = await Promise.all([
+      followersOf(db, {
+        listId: input.listId,
+        happened: { kind: 'person' },
+        by: input.by,
+      }),
+      listPersonName(db, input.listPersonId),
+    ]);
+    if (!name) return;
+    await addNews(
+      db,
+      newsFor(followers, {
+        kind: 'followed_person',
+        targetId: input.listId,
+        partyId: null,
+        name,
+      }),
       now,
     );
   });

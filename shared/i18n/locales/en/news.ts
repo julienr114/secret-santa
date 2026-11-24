@@ -16,6 +16,10 @@ export default {
     instantHint: 'An email for each piece of news.',
     none: 'No email',
     noneHint: 'Except to log in.',
+    following: 'What I follow',
+    wholeList: 'The whole list',
+    unfollow: 'Stop following',
+    unfollowList: 'Stop following {title}',
     urgent: 'What’s urgent',
     urgentText:
       'Your envelope is waiting, an invitation, someone asking you for gift ideas: with the summary, those emails still go right away, unless you’ve already seen the news.',
@@ -45,5 +49,14 @@ export default {
     santa_added: '{name} added you to the Secret Santa',
     game_open: 'Devine qui: your turn',
     list_shared: '{name} shared their list with you',
+    followed_ideas: {
+      one: '{count} new idea for {name}',
+      other: '{count} new ideas for {name}',
+    },
+    followed_ideasList: {
+      one: '{count} new idea on the list',
+      other: '{count} new ideas on the list',
+    },
+    followed_person: '{name} is on the list',
   },
 };

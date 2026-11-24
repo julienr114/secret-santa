@@ -20,6 +20,8 @@ export const NEWS_KINDS = [
   'santa_added',
   'list_shared',
   'game_open',
+  'followed_ideas',
+  'followed_person',
 ] as const;
 export type NewsKind = (typeof NEWS_KINDS)[number];
 
@@ -63,6 +65,9 @@ export const NEWS_SHAPE: Record<
   list_shared: { level: 'other', target: 'list' },
   // Ticket 142: « Devine qui » opens, « À toi de jouer » has its line.
   game_open: { level: 'other', target: 'game' },
+  // Ticket 122: a list, or a person of it, that I follow.
+  followed_ideas: { level: 'other', target: 'list' },
+  followed_person: { level: 'other', target: 'list' },
 };
 
 /**
@@ -78,7 +83,8 @@ export type EmailNews = (typeof EMAIL_NEWS)[number];
  * news, at once or in the summary; `own`, by an email of its own that
  * carries more (the link of an invitation, a personal link, who has not
  * looked yet), which goes at once as what presses does; `never`, not
- * yet (new ideas on a list wait for ticket 122).
+ * by email (new ideas on a list: those who follow it are told by
+ * `followed_ideas`, ticket 122).
  */
 export const NEWS_EMAIL: Record<NewsKind, 'news' | 'own' | 'never'> = {
   envelope: 'news',
@@ -96,6 +102,8 @@ export const NEWS_EMAIL: Record<NewsKind, 'news' | 'own' | 'never'> = {
   santa_added: 'news',
   list_shared: 'news',
   game_open: 'news',
+  followed_ideas: 'news',
+  followed_person: 'news',
 };
 
 /** Thirty days after it was seen, a news is gone (README 22.22). */
@@ -145,6 +153,7 @@ export type PendingNews = {
   accountId: string;
   kind: NewsKind;
   targetId: string;
+  name?: string | null;
   count: number;
   createdAt: string;
 };
@@ -168,8 +177,14 @@ export const groupNews = (
   added: (NewNews & { count: number })[];
 } => {
   const day = now.slice(0, 10);
-  const keyOf = (news: { accountId: string; kind: string; targetId: string }) =>
-    `${news.accountId}|${news.kind}|${news.targetId}`;
+  // The ideas of a list I follow group by person (ticket 122).
+  const keyOf = (news: {
+    accountId: string;
+    kind: string;
+    targetId: string;
+    name?: string | null;
+  }) =>
+    `${news.accountId}|${news.kind}|${news.targetId}${news.kind === 'followed_ideas' ? `|${news.name ?? ''}` : ''}`;
   const today = new Map(
     pending
       .filter((news) => news.createdAt.slice(0, 10) === day)
@@ -297,6 +312,10 @@ export const newsText = (
   };
   if (line.kind === 'new_ideas' && !line.name) {
     return { key: 'news.kind.new_ideasCount', params };
+  }
+  // A list without people: its ideas are the list's (ticket 122).
+  if (line.kind === 'followed_ideas' && !line.name) {
+    return { key: 'news.kind.followed_ideasList', params };
   }
   // « Hugo s'inscrit par le lien (Les adultes) », when the event has
   // several Secret Santa that year (ticket 116).

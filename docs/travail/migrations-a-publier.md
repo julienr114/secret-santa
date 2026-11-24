@@ -5,3 +5,4 @@ La production est à `0047_v3_hints_without_account` (la bascule, ticket 113). L
 | Ordre | Migration | Ticket | Ce qu'elle change |
 |---|---|---|---|
 | 1 | `0048_v3_news_by_email` | 121 | Le réglage « Par email » de chaque compte (« Un résumé le matin » pour tous au départ), le jour de son dernier résumé ; pour chaque nouveauté, si elle peut partir par email et quand elle est partie. Les nouveautés d'avant sont marquées parties : personne ne reçoit d'un coup trente jours de nouveautés. |
+| 2 | `0049_v3_list_follows` | 122 | La table `gift_list_follows` : ce qu'un compte suit sur une liste, toute la liste ou une personne. |

@@ -16,6 +16,10 @@ export default {
     instantHint: 'Eine E-Mail für jede Neuigkeit.',
     none: 'Keine E-Mail',
     noneHint: 'Außer zum Anmelden.',
+    following: 'Dem ich folge',
+    wholeList: 'Die ganze Liste',
+    unfollow: 'Nicht mehr folgen',
+    unfollowList: '{title} nicht mehr folgen',
     urgent: 'Was eilt',
     urgentText:
       'Dein Umschlag wartet, eine Einladung, jemand bittet dich um Geschenkideen: Mit der Zusammenfassung gehen diese E-Mails trotzdem sofort raus, außer du hast die Neuigkeit schon gesehen.',
@@ -45,5 +49,14 @@ export default {
     santa_added: '{name} hat dich zum Wichteln hinzugefügt',
     game_open: 'Devine qui: Du bist dran',
     list_shared: '{name} hat die eigene Liste mit dir geteilt',
+    followed_ideas: {
+      one: '{count} neue Idee für {name}',
+      other: '{count} neue Ideen für {name}',
+    },
+    followed_ideasList: {
+      one: '{count} neue Idee auf der Liste',
+      other: '{count} neue Ideen auf der Liste',
+    },
+    followed_person: '{name} steht auf der Liste',
   },
 };

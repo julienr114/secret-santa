@@ -235,3 +235,69 @@ describe('planNewsEmails', () => {
     expect(plan.summaries.size).toBe(0);
   });
 });
+
+describe('the emails of a list I follow (ticket 122)', () => {
+  const settings = 'https://app.test/compte/me-prevenir';
+  it('say the person, and how to stop following', () => {
+    const email = buildNewsEmail(
+      {
+        firstName: 'Hugo',
+        news: {
+          kind: 'followed_ideas',
+          count: 3,
+          name: 'Léo',
+          detail: null,
+          place: 'Noël 2026',
+          link: 'https://app.test/l/tok',
+        },
+        settings,
+      },
+      'fr',
+    );
+    expect(email.subject).toBe('Noël 2026 : 3 nouvelles idées pour Léo');
+    expect(email.text).toContain('Ne plus suivre une liste');
+    expect(email.text).toContain(`${settings}#suivis`);
+  });
+
+  it('say the list when it has no people', () => {
+    const email = buildNewsEmail(
+      {
+        firstName: null,
+        news: {
+          kind: 'followed_ideas',
+          count: 1,
+          name: null,
+          detail: null,
+          place: 'Mariage',
+          link: 'https://app.test/l/tok',
+        },
+        settings,
+      },
+      'en',
+    );
+    expect(email.subject).toBe('Mariage: 1 new idea on the list');
+  });
+
+  it('put the stop line under a summary that tells of one', () => {
+    const blocks = (kind: 'followed_person' | 'ticked') => [
+      {
+        title: 'Noël',
+        link: 'https://app.test/e/noel',
+        opens: 'party' as const,
+        news: [{ kind, count: 1, name: 'Zoé', detail: null }],
+      },
+    ];
+    expect(
+      buildSummaryEmail(
+        { firstName: 'Hugo', blocks: blocks('followed_person'), settings },
+        'fr',
+      ).text,
+    ).toContain('Ne plus suivre une liste');
+    expect(
+      buildSummaryEmail(
+        { firstName: 'Hugo', blocks: blocks('ticked'), settings },
+        'fr',
+      ).text,
+    ).not.toContain('Ne plus suivre');
+  });
+});

@@ -577,6 +577,14 @@ export default {
     holder: 'Die Liste von {name}',
     holderOn: '{date} · die Liste von {name}',
     youHold: 'Du führst diese Liste: Du siehst, wer was schenkt.',
+    follow: {
+      person: '{name} folgen',
+      unfollowPerson: '{name} nicht mehr folgen',
+      list: 'Der ganzen Liste folgen',
+      unfollowList: 'Nicht mehr folgen',
+      followingList: 'Du folgst den neuen Ideen der ganzen Liste.',
+      followingPeople: 'Du folgst den neuen Ideen für {names}.',
+    },
     openDoc: 'Meine Liste bearbeiten',
     giving: 'Du schenkst es',
     taken: 'Vergeben',
@@ -701,6 +709,9 @@ export default {
   login: {
     noName: 'Ohne Vornamen hakst du anonym ab.',
     title: 'Deine E-Mail-Adresse, zum Abhaken',
+    titleFollow: 'Deine E-Mail-Adresse, um zu folgen',
+    introFollow:
+      'Sie dient dazu, dich über neue Ideen zu benachrichtigen, so wie du es wählst. Kein Passwort: Du bekommst einen Link.',
     intro:
       'Damit findest du wieder, was du abgehakt hast, und kannst es zurücknehmen. Kein Passwort: Du bekommst einen Link.',
     email: 'E-Mail-Adresse',

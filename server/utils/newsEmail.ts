@@ -131,6 +131,31 @@ const a = (href: string, label: string) =>
   `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
 const small = 'margin:0 0 14px;font-size:13px;color:#6b5a7a';
 
+/** A news of a list I follow (ticket 122): its email says how to stop. */
+const followed = (kind: NewsKind) =>
+  kind === 'followed_ideas' || kind === 'followed_person';
+
+/**
+ * The line that stops following, under an email that tells of a list I
+ * follow: « Me prévenir » lists them, each with « Ne plus suivre ».
+ * @param kinds - The kinds the email tells.
+ * @param link - « Me prévenir ».
+ * @param locale - The language.
+ * @returns Its text and its HTML, or nothing.
+ */
+const stopLine = (
+  kinds: readonly NewsKind[],
+  link: string,
+  locale: Locale,
+): { text: string[]; html: string[] } => {
+  if (!kinds.some(followed)) return { text: [], html: [] };
+  const label = translate(locale, 'notify.unfollow');
+  return {
+    text: [label, `${link}#suivis`],
+    html: [p(a(`${link}#suivis`, label), small)],
+  };
+};
+
 /**
  * The email of one news (« Tout de suite », or what presses): its
  * subject names the event (secret-santa.md, « Les objets des emails »),
@@ -153,11 +178,16 @@ export const buildNewsEmail = (
   const said = translateKey(locale, key, params);
   const footer = translate(locale, 'notify.news.footer');
   const settings = translate(locale, 'notify.settings');
+  const stop = stopLine([data.news.kind], data.settings, locale);
   return {
     subject: emailSubject(
       locale,
       { event: data.news.place },
-      translateKey(locale, `notify.news.subject.${data.news.kind}`, params),
+      translateKey(
+        locale,
+        `notify.news.subject.${data.news.kind}${data.news.kind === 'followed_ideas' && !data.news.name ? 'List' : ''}`,
+        params,
+      ),
     ),
     text: [
       hello,
@@ -167,12 +197,14 @@ export const buildNewsEmail = (
       '',
       `${footer} ${settings}`,
       data.settings,
+      ...stop.text,
     ].join('\n'),
     html: html([
       p(escapeHtml(hello)),
       p(escapeHtml(said)),
       p(a(data.news.link, data.news.link), 'margin:0 0 20px'),
       p(`${escapeHtml(footer)} ${a(data.settings, settings)}`, small),
+      ...stop.html,
     ]),
   };
 };
@@ -212,6 +244,11 @@ export const buildSummaryEmail = (
   const footer = translate(locale, 'notify.summary.footer');
   const settings = translate(locale, 'notify.settings');
   const app = translate(locale, 'common.appName');
+  const stop = stopLine(
+    data.blocks.flatMap((block) => block.news.map((news) => news.kind)),
+    data.settings,
+    locale,
+  );
   const blocks = data.blocks.map((block) => ({
     ...block,
     lines: block.news.map((news) => {
@@ -242,6 +279,7 @@ export const buildSummaryEmail = (
       '',
       `${footer} ${settings}`,
       data.settings,
+      ...stop.text,
     ].join('\n'),
     html: html([
       p(escapeHtml(hello)),
@@ -257,6 +295,7 @@ export const buildSummaryEmail = (
       ),
       p(escapeHtml(app)),
       p(`${escapeHtml(footer)} ${a(data.settings, settings)}`, small),
+      ...stop.html,
     ]),
   };
 };

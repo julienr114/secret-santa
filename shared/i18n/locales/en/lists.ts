@@ -571,6 +571,14 @@ export default {
     holder: '{name}’s list',
     holderOn: '{date} · {name}’s list',
     youHold: 'You hold this list: you see who gives what.',
+    follow: {
+      person: 'Follow {name}',
+      unfollowPerson: 'Stop following {name}',
+      list: 'Follow the whole list',
+      unfollowList: 'Stop following',
+      followingList: 'You follow the new ideas of the whole list.',
+      followingPeople: 'You follow the new ideas for {names}.',
+    },
     openDoc: 'Edit my list',
     giving: 'You give it',
     taken: 'Taken',
@@ -692,6 +700,9 @@ export default {
   login: {
     noName: 'Without a first name, you tick anonymously.',
     title: 'Your email address, to tick',
+    titleFollow: 'Your email address, to follow',
+    introFollow:
+      'It’s used to tell you about new ideas, the way you choose. No password: you get a link.',
     intro:
       'It lets you find what you ticked and untick it. No password: you get a link.',
     email: 'Email address',

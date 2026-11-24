@@ -15,6 +15,7 @@ export default {
   hello: 'Hallo {firstName},',
   helloNoName: 'Hallo,',
   settings: 'Diese Einstellung ändern',
+  unfollow: 'Einer Liste nicht mehr folgen',
   news: {
     subject: {
       envelope: 'Dein Umschlag wartet auf dich',
@@ -30,6 +31,15 @@ export default {
       santa_added: '{name} hat dich zum Wichteln hinzugefügt',
       list_shared: '{name} hat die eigene Liste mit dir geteilt',
       game_open: 'Du bist dran bei Devine qui',
+      followed_ideas: {
+        one: '{count} neue Idee für {name}',
+        other: '{count} neue Ideen für {name}',
+      },
+      followed_ideasList: {
+        one: '{count} neue Idee auf der Liste',
+        other: '{count} neue Ideen auf der Liste',
+      },
+      followed_person: '{name} steht auf der Liste',
     },
     footer: 'Eine E-Mail für jede Neuigkeit.',
   },

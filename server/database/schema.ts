@@ -712,6 +712,27 @@ export const giftListPeople = sqliteTable(
   ],
 );
 
+// What an account follows on a list it may open without holding it
+// (ticket 122): the whole list (no person), or one person of it.
+export const giftListFollows = sqliteTable(
+  'gift_list_follows',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    listPersonId: text('list_person_id').references(() => giftListPeople.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    index('gift_list_follows_list_idx').on(t.listId),
+    index('gift_list_follows_account_idx').on(t.accountId),
+  ],
+);
+
 // One idea of a person on a list: a line of text and maybe a link.
 export const giftListIdeas = sqliteTable(
   'gift_list_ideas',

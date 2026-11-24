@@ -6,6 +6,7 @@ import { formatEventDate } from '#server/utils/rules';
 import {
   lineKey,
   useJoinByLinkMutation,
+  useFollowMutation,
   useLinkQuery,
   useRemoveOffListMutation,
   useTickMutation,
@@ -15,6 +16,7 @@ import { keys } from '~/composables/queries/keys';
 import { usePartyQuery } from '~/composables/queries/useParty';
 import { partyEmoji } from '#shared/utils/categories';
 import { LIST_EDITING } from '~/composables/useListEditing';
+import { toggledFollow, type FollowState } from '#server/utils/follows';
 
 // A list by its link (README 22.19, maquettes ListeVisiteur,
 // ListeVisiteurMes, ListePlusieursLigne): readable without an account.
@@ -254,6 +256,77 @@ onMounted(async () => {
   router.replace({ query: {} });
 });
 
+// « Suivre » (ticket 122, ListeSuivre): a bell at the end of each
+// person's name, and under the word of the list where I am, with
+// « Suivre toute la liste ». Those who hold it have none. Without an
+// account, a bell asks for an address first (`/connexion`), and the
+// follow is set on coming back (`?suivre=`).
+const followSave = useFollowMutation(token);
+/** Whether the bells are there: not for those who hold the list. */
+const canFollow = computed(
+  () =>
+    Boolean(doc.value) &&
+    !doc.value?.holds &&
+    (!loggedIn.value || doc.value?.follow !== null),
+);
+const followState = computed<FollowState>(
+  () => doc.value?.follow ?? { kind: 'none' },
+);
+const followPeople = computed(() =>
+  (doc.value?.people ?? []).map((person) => person.id),
+);
+/**
+ * Whether I follow a person.
+ * @param person - The person on the list.
+ * @returns True when I do, or follow the whole list.
+ */
+const followsPerson = (person: PersonLine) =>
+  followState.value.kind === 'list' ||
+  (followState.value.kind === 'people' &&
+    followState.value.listPersonIds.includes(person.id));
+/** The names of the people I follow: « Léo et Zoé ». */
+const followedNames = computed(() =>
+  new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
+    (doc.value?.people ?? [])
+      .filter((person) => followsPerson(person))
+      .map((person) => person.member.firstName),
+  ),
+);
+/**
+ * A bell touched: the list, or a person.
+ * @param touched - The list, or the person on it.
+ * @returns Nothing.
+ */
+const onFollow = (
+  touched: { kind: 'list' } | { kind: 'person'; listPersonId: string },
+) => {
+  if (!loggedIn.value) {
+    return navigateTo(
+      `/l/${token.value}/connexion?suivre=${encodeURIComponent(
+        touched.kind === 'list' ? 'liste' : touched.listPersonId,
+      )}`,
+    );
+  }
+  followSave.mutate(
+    toggledFollow(followState.value, touched, followPeople.value),
+    { onError: (error) => toast.failed(errorMessage(error)) },
+  );
+};
+// Back from the login link: what was touched is followed.
+onMounted(async () => {
+  const waiting = route.query.suivre;
+  if (typeof waiting !== 'string' || !loggedIn.value) return;
+  await query.suspense();
+  const person = doc.value?.people.find((one) => one.id === waiting);
+  if (waiting === 'liste' && followState.value.kind !== 'list') {
+    onFollow({ kind: 'list' });
+  } else if (person && !followsPerson(person)) {
+    onFollow({ kind: 'person', listPersonId: person.id });
+  }
+  const { suivre: _done, ...rest } = route.query;
+  void router.replace({ query: rest });
+});
+
 // The sheets: « Changer » and « Se joindre ».
 const changing = ref<{ idea: IdeaLine; forName: string } | null>(null);
 const joining = ref<{ idea: IdeaLine; forName: string } | null>(null);
@@ -382,6 +455,46 @@ const writes = (person: PersonLine) =>
         >
           {{ noteText }}
         </p>
+        <!-- Where I am, and the bell of the whole list (ticket 122). -->
+        <div
+          v-if="canFollow"
+          class="flex flex-wrap items-center gap-x-2 gap-y-1"
+          data-testid="follow-state"
+        >
+          <p
+            v-if="followState.kind !== 'none'"
+            class="flex items-center gap-2 text-sm leading-[1.45] text-toned"
+          >
+            <UIcon
+              name="i-lucide-bell-ring"
+              class="size-5 shrink-0 text-primary"
+            />
+            {{
+              followState.kind === 'list'
+                ? t('lists.visitor.follow.followingList')
+                : t('lists.visitor.follow.followingPeople', {
+                    names: followedNames,
+                  })
+            }}
+          </p>
+          <UButton
+            size="sm"
+            color="neutral"
+            variant="outline"
+            :icon="
+              followState.kind === 'list'
+                ? 'i-lucide-bell-off'
+                : 'i-lucide-bell'
+            "
+            :label="
+              followState.kind === 'list'
+                ? t('lists.visitor.follow.unfollowList')
+                : t('lists.visitor.follow.list')
+            "
+            data-testid="follow-list"
+            @click="onFollow({ kind: 'list' })"
+          />
+        </div>
         <p
           v-if="doc.holds"
           class="text-sm text-toned"
@@ -431,6 +544,20 @@ const writes = (person: PersonLine) =>
               {{ details(person) }}
             </p>
           </div>
+          <ListsFollowBell
+            v-if="canFollow && !writes(person)"
+            class="ml-auto"
+            :on="followsPerson(person)"
+            :label="
+              t(
+                followsPerson(person)
+                  ? 'lists.visitor.follow.unfollowPerson'
+                  : 'lists.visitor.follow.person',
+                { name: person.member.firstName },
+              )
+            "
+            @toggle="onFollow({ kind: 'person', listPersonId: person.id })"
+          />
         </header>
         <ListsPersonTastes v-if="!doc.single" :member="person.member" />
         <TransitionGroup

@@ -357,3 +357,13 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `Compte` | La maquette n'a pas de ligne vers « Me prévenir » : une carte d'une ligne, « Me prévenir », le choix à droite, entre « Mon profil » et « Mes appareils ». | Seul |
 | `V3QuoiDeNeuf` | « Choisir ce qui me prévient » avec la cloche, « Ce que tu as vu s'efface au bout de trente jours » dessous, sur la ligne, comme la maquette. | — |
 | `NotifEmailResume` | Un bloc par événement, au nom de l'événement (« Famille Camille ») et non « Secret Santa de Famille Camille » (`accueil-et-creation.md`) ; son lien ouvre l'événement (« Ouvrir l'événement »), ou la liste pour une liste publique (« Ouvrir la liste »). Les liens « Ne plus recevoir d'emails » et « Ce que l'application fait de tes données » attendent les tickets 130 et 131. | Seul (la spec) |
+
+## Suivre une liste, ou une personne (ticket 122)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ListeSuivre` | « Tu suis les nouvelles idées pour Léo. » et « Tu suis les nouvelles idées de toute la liste. » plutôt que « Tu es prévenu… » : une tournure neutre (`CLAUDE.md`). | Seul |
+| `ListeSuivre` | « Suivre toute la liste » et « Ne plus suivre » sont un petit bouton à contour, avec sa cloche, pas un lien rouge souligné : une action est une ligne ou un bouton (`regles-d-ecran.md`, « Ce qui reste vrai »). Sans rien suivre, le bouton est seul, sans phrase. | Seul |
+| `ListeSuivre` | La cloche se pose au bout de l'en-tête de chaque personne de la liste d'aujourd'hui (son icône de 40 px, son nom, ses tailles), pas sur la ligne de la maquette d'avant la V3. Ma propre partie (« C'est toi ») n'en a pas. Une liste sans personne n'a que le bouton de toute la liste. | Seul |
+| — | Sans compte, la cloche mène à la page de l'adresse de la liste (`ListeConnexion`), dite « Ton adresse email, pour suivre », sans le prénom : personne ne voit qui suit. | Seul |
+| `NotifReglage` | « Ce que je suis » : une carte, une ligne par liste (son nom, les personnes ou « Toute la liste »), et « Ne plus suivre » au bout ; aucune maquette ne la dessine. | Seul |

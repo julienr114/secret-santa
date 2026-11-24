@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { EMAIL_NEWS, type EmailNews } from '#shared/utils/news';
 import type { Choice } from '~/components/ui/ChoiceList.vue';
+import {
+  useFollowsQuery,
+  useUnfollowMutation,
+} from '~/composables/queries/useLists';
 
 // « Me prévenir » (ticket 121, NotifReglage, README 22.22), from « Mon
 // compte » and from the foot of « Quoi de neuf »: « Par email », three
 // choices, saved as soon as one is chosen. With the summary, what
-// presses goes at once anyway: said under the choices. The phone comes
-// with ticket 124.
+// presses goes at once anyway: said under the choices. Then the lists I
+// follow (ticket 122), each with « Ne plus suivre », where the emails of
+// a list I follow lead (`#suivis`). The phone comes with ticket 124.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t } = useT();
+const { t, locale } = useT();
 useHead({
   title: () => `${t('news.settings.title')} — ${t('common.appName')}`,
 });
@@ -22,6 +27,19 @@ const choices = computed<Choice<EmailNews>[]>(() =>
     hint: t(`news.settings.${value}Hint`),
   })),
 );
+const follows = useFollowsQuery();
+const unfollow = useUnfollowMutation();
+const toast = useMessages();
+const errorMessage = useErrorMessage();
+/**
+ * Whom I follow on a list: its people, or all of it.
+ * @param people - The first names; none for the whole list.
+ * @returns The words.
+ */
+const whom = (people: string[]) =>
+  people.length === 0
+    ? t('news.settings.wholeList')
+    : new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(people);
 const mode = computed({
   get: () => shown.value.emailNews ?? 'summary',
   set: (emailNews: EmailNews) => save({ emailNews }),
@@ -55,6 +73,43 @@ const mode = computed({
           {{ t('news.settings.urgentText') }}
         </p>
       </section>
+      <UiList
+        v-if="(follows.data.value?.lists.length ?? 0) > 0"
+        id="suivis"
+        :title="t('news.settings.following')"
+        class="scroll-mt-20"
+        data-testid="following"
+      >
+        <UiListItem
+          v-for="list in follows.data.value?.lists ?? []"
+          :key="list.listId"
+          icon="i-lucide-bell-ring"
+          :title="list.title"
+          :subtitle="whom(list.people)"
+        >
+          <template #trailing>
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="outline"
+              :label="t('news.settings.unfollow')"
+              :aria-label="
+                t('news.settings.unfollowList', { title: list.title })
+              "
+              :loading="
+                unfollow.isPending.value &&
+                unfollow.variables.value === list.listId
+              "
+              data-testid="unfollow"
+              @click="
+                unfollow.mutate(list.listId, {
+                  onError: (error) => toast.failed(errorMessage(error)),
+                })
+              "
+            />
+          </template>
+        </UiListItem>
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

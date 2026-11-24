@@ -576,6 +576,15 @@ export default {
     holder: 'La liste de {name}',
     holderOn: '{date} · la liste de {name}',
     youHold: 'Tu tiens cette liste : tu vois qui offre quoi.',
+    // Ticket 122 (ListeSuivre): the bells, and where I am.
+    follow: {
+      person: 'Suivre {name}',
+      unfollowPerson: 'Ne plus suivre {name}',
+      list: 'Suivre toute la liste',
+      unfollowList: 'Ne plus suivre',
+      followingList: 'Tu suis les nouvelles idées de toute la liste.',
+      followingPeople: 'Tu suis les nouvelles idées pour {names}.',
+    },
     openDoc: 'Modifier ma liste',
     giving: 'Tu l’offres',
     taken: 'C’est pris',
@@ -699,6 +708,10 @@ export default {
   login: {
     noName: 'Sans prénom, tu coches en anonyme.',
     title: 'Ton adresse email, pour cocher',
+    // A bell touched without an account (ticket 122).
+    titleFollow: 'Ton adresse email, pour suivre',
+    introFollow:
+      'Elle sert à te prévenir des nouvelles idées, comme tu le choisis. Pas de mot de passe : tu reçois un lien.',
     intro:
       'Elle sert à retrouver ce que tu as coché et à le décocher. Pas de mot de passe : tu reçois un lien.',
     email: 'Adresse email',

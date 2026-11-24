@@ -104,7 +104,7 @@ export default defineEventHandler(async (event) => {
     await createIdea(db, listId, listPersonId, { text, url: null }, null);
     await tellNewIdeas(
       db,
-      { listId, by: account.id, dataKey: await dataKeyOf(event) },
+      { listId, listPersonId, by: account.id, dataKey: await dataKeyOf(event) },
       now,
     );
   }

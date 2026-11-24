@@ -1,4 +1,5 @@
 import { recordVisit } from '#server/database/claims';
+import { myFollowState } from '#server/database/follows';
 import { optionalAccount } from '#server/http/auth';
 import { openMode } from '#server/http/anonymous';
 import { listOfLink } from '#server/http/listLink';
@@ -22,17 +23,23 @@ export default defineEventHandler(async (event) => {
     // Someone whose address a holder gave becomes that person by coming.
     await settleArrivals(db, accountId);
     const { role } = await roleOnList(db, list, accountId);
-    if (role === 'holder') return { mode: null, since: null };
+    if (role === 'holder') return { mode: null, since: null, follow: null };
     const since = await recordVisit(db, list.id, accountId);
-    return { mode: await openMode(event, db, list, accountId), since };
+    return {
+      mode: await openMode(event, db, list, accountId),
+      since,
+      // What I follow on it (ticket 122).
+      follow: await myFollowState(db, accountId, list.id),
+    };
   };
-  const { mode, since } = user
+  const { mode, since, follow } = user
     ? await modeOf(user.accountId)
-    : { mode: null, since: null };
+    : { mode: null, since: null, follow: null };
   return {
     ...(await visitorDocument(db, list, user?.accountId ?? null)),
     mode,
     // The visit before this one: what came since has a dot (ticket 120).
     since,
+    follow,
   };
 });

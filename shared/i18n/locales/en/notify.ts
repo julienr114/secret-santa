@@ -14,6 +14,7 @@ export default {
   hello: 'Hello {firstName},',
   helloNoName: 'Hello,',
   settings: 'Change this setting',
+  unfollow: 'Stop following a list',
   news: {
     subject: {
       envelope: 'your envelope is waiting',
@@ -29,6 +30,15 @@ export default {
       santa_added: '{name} added you to the Secret Santa',
       list_shared: '{name} shared their list with you',
       game_open: 'your turn to play Devine qui',
+      followed_ideas: {
+        one: '{count} new idea for {name}',
+        other: '{count} new ideas for {name}',
+      },
+      followed_ideasList: {
+        one: '{count} new idea on the list',
+        other: '{count} new ideas on the list',
+      },
+      followed_person: '{name} is on the list',
     },
     footer: 'One email for each piece of news.',
   },

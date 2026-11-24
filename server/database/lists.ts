@@ -11,6 +11,7 @@ import {
   giftListIdeas,
   giftListInvites,
   giftListVisits,
+  giftListFollows,
   giftOffList,
   giftListPeople,
   giftLists,
@@ -414,6 +415,9 @@ export const deleteMember = (
     db.delete(giftGiverClaims).where(inArray(giftGiverClaims.ideaId, ideaIds)),
     db.delete(giftOffList).where(inArray(giftOffList.listPersonId, personIds)),
     db
+      .delete(giftListFollows)
+      .where(inArray(giftListFollows.listPersonId, personIds)),
+    db
       .delete(giftListIdeas)
       .where(inArray(giftListIdeas.listPersonId, personIds)),
     db.delete(giftListPeople).where(inArray(giftListPeople.id, personIds)),
@@ -647,6 +651,7 @@ export const deleteList = (db: Db, id: string) =>
     db.delete(giftListGivers).where(eq(giftListGivers.listId, id)),
     db.delete(giftOffList).where(eq(giftOffList.listId, id)),
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
+    db.delete(giftListFollows).where(eq(giftListFollows.listId, id)),
     deleteNewsOf(db, [id]),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
     db.delete(giftListPeople).where(eq(giftListPeople.listId, id)),
@@ -938,6 +943,14 @@ export const removePersonFromList = async (
         and(
           eq(giftListIdeas.listId, listId),
           eq(giftListIdeas.listPersonId, id),
+        ),
+      ),
+    db
+      .delete(giftListFollows)
+      .where(
+        and(
+          eq(giftListFollows.listId, listId),
+          eq(giftListFollows.listPersonId, id),
         ),
       ),
     db

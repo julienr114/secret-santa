@@ -206,11 +206,10 @@ const longView = computed(() =>
 const notifyOn = ref(true);
 const sheetOpen = reactive({
   choice: false,
-  text: false,
   number: false,
   date: false,
 });
-const settings = reactive({ years: 1, note: '', places: 10, until: '' });
+const settings = reactive({ years: 1, places: 10, until: '' });
 const YEAR_CHOICES = [
   { value: 0, label: 'Non, peu importe' },
   { value: 1, label: 'Pas la même que l’an dernier' },
@@ -901,11 +900,6 @@ const undone = ref(0);
           subtitle="Un email à chaque arrivée par le lien"
         />
         <UiListItem
-          title="Mot ajouté aux messages"
-          :value="settings.note || 'Aucun'"
-          :on-click="() => (sheetOpen.text = true)"
-        />
-        <UiListItem
           title="Places restantes"
           :value="String(settings.places)"
           :on-click="() => (sheetOpen.number = true)"
@@ -917,8 +911,9 @@ const undone = ref(0);
         />
       </UiList>
       <p class="px-1 text-xs text-muted">
-        Panneaux : UiChoiceSheet, UiTextSheet, UiNumberSheet et AdminDateSheet,
-        tous sur UiSettingSheet (Valider, Annuler, ligne d'erreur).
+        Panneaux : UiChoiceSheet, UiNumberSheet et AdminDateSheet (un texte
+        court s'écrit sur sa ligne, plus haut), tous sur UiSettingSheet
+        (Valider, Annuler, ligne d'erreur).
       </p>
       <UiChoiceSheet
         v-model:open="sheetOpen.choice"
@@ -929,19 +924,6 @@ const undone = ref(0);
         :validate-label="t('common.actions.validate')"
         :cancel-label="t('common.actions.cancel')"
         @validate="(v) => ((settings.years = v), (sheetOpen.choice = false))"
-      />
-      <UiTextSheet
-        v-model:open="sheetOpen.text"
-        title="Mot ajouté aux messages"
-        description="Ajouté tel quel à chaque message envoyé aux participants."
-        label="Ton mot"
-        :value="settings.note"
-        :maxlength="500"
-        hint="Envoyé tel quel, quelle que soit la langue."
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        error="Exemple de ligne d'erreur : le panneau reste ouvert."
-        @validate="(v) => ((settings.note = v), (sheetOpen.text = false))"
       />
       <UiNumberSheet
         v-model:open="sheetOpen.number"

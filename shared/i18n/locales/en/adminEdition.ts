@@ -2,6 +2,30 @@ import type fr from '../fr/adminEdition';
 import type { Dict } from '../../types';
 
 export default {
+  /** The page « Budget » (ticket 164). */
+  budget: {
+    amount: '€{amount}',
+    unlimited: 'No limit',
+    infinity: '∞',
+    names: {
+      n5: 'The challenge',
+      n15: 'The classic',
+      n30: 'A real present',
+      n50: 'A treat',
+      n75: 'The big one',
+    },
+    amounts: 'An amount',
+    or: 'or',
+    free: 'Your way',
+    freePlaceholder: 'Write what you like',
+    ideasLabel: 'Ideas to take',
+    ideas: {
+      kind: 'Whatever you like',
+      handmade: 'Handmade',
+      kitsch: 'As kitsch as possible',
+      upcycled: 'Upcycled only',
+    },
+  },
   general: {
     journalPreview: 'What the members will read in the journal',
     editionFallback: 'Secret Santa',
@@ -298,8 +322,6 @@ export default {
     budget: 'Budget {budget}',
     rules: {
       none: 'None yet',
-      budgetHelp: 'Shown with each result.',
-      budgetPlaceholder: '€20',
       wordLabel: 'Your word',
     },
     now: 'To do now',

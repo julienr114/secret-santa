@@ -116,8 +116,10 @@ const onValidate = () => {
         }}
       </p>
     </div>
+    <!-- The budget: its page of proposals (ticket 164). -->
+    <AdminBudgetPicker v-if="field === 'budget'" v-model="text" />
     <UiTextField
-      v-if="isText(field)"
+      v-else-if="isText(field)"
       :id="`new-secret-santa-${field}`"
       v-model="text"
       :label="title"

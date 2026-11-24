@@ -288,8 +288,21 @@ test('the budget and the word change on the edition, until it is closed', async 
   await expect(name).toHaveValue('Les adultes');
   const budget = page.getByTestId('rule-budget');
   await expect(budget).toContainText('Aucun');
+  // The same page of proposals as at the creation (ticket 164): a tile,
+  // chosen again when the page opens; written on the line, it lets go.
   await budget.click();
-  await page.getByRole('textbox').fill('25 €');
+  await expect(page).toHaveURL(/\/budget$/);
+  const tile = page.getByRole('radio', { name: /^15 €/ });
+  await tile.click();
+  await expect(tile).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('15 €');
+  await budget.click();
+  await expect(tile).toHaveAttribute('aria-checked', 'true');
+  const free = page.getByLabel('À ta façon');
+  await free.fill('25 €');
+  await free.press('Enter');
+  await expect(tile).toHaveAttribute('aria-checked', 'false');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('25 €');
   const word = page.getByTestId('rule-word');
@@ -320,8 +333,12 @@ test('the budget and the word change on the edition, until it is closed', async 
   await expect(
     page.getByTestId('setting-name').getByRole('textbox'),
   ).toHaveValue('Les adultes');
+  // Another tile; « ∞ » is read « Sans limite » by a screen reader.
   await budget.click();
-  await page.getByRole('textbox').fill('30 €');
+  await expect(
+    page.getByRole('radio', { name: 'Sans limite', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('radio', { name: /^30 €/ }).click();
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('30 €');
   const { messages } = await (

@@ -1,6 +1,30 @@
 // Organizer screens of one edition: creation, cockpit, participant,
 // adding people, cancelling the draw and the last-resort reveal.
 export default {
+  /** The page « Budget » (ticket 164). */
+  budget: {
+    amount: '{amount} €',
+    unlimited: 'Sans limite',
+    infinity: '∞',
+    names: {
+      n5: 'Le défi',
+      n15: 'Le classique',
+      n30: 'Un vrai cadeau',
+      n50: 'On se fait plaisir',
+      n75: 'Le grand jeu',
+    },
+    amounts: 'Un montant',
+    or: 'ou',
+    free: 'À ta façon',
+    freePlaceholder: 'Écris ce que tu veux',
+    ideasLabel: 'Des idées à reprendre',
+    ideas: {
+      kind: 'À votre bon cœur',
+      handmade: 'Fait main',
+      kitsch: 'Le plus kitsch possible',
+      upcycled: 'Que de la récup’',
+    },
+  },
   general: {
     journalPreview: 'Ce que les membres liront dans le journal',
     editionFallback: 'Secret Santa',
@@ -297,8 +321,6 @@ export default {
     budget: 'Budget {budget}',
     rules: {
       none: 'Aucun pour l’instant',
-      budgetHelp: 'Affiché avec le résultat de chacun.',
-      budgetPlaceholder: '20 €',
       wordLabel: 'Ton mot',
     },
     now: 'À faire maintenant',

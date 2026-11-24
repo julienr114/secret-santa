@@ -195,6 +195,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
 | Réglages du Secret Santa (ouverts depuis son suivi seulement, ticket 159) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, Supprimer ce Secret Santa (pas encore tiré ; ensuite : la fête) |
+| Budget (la page de propositions, la même qu'à la création, ticket 164) | `…/editions/[id]/budget` | Réglages du Secret Santa | |
 | Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
 | Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |

@@ -80,9 +80,25 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // A budget of its own, shown in the edition's header.
   const budget = page.getByTestId('new-secret-santa-budget');
   await expect(budget).toContainText('Aucun');
+  // Its page of proposals (ticket 164): an idea goes on the line « À ta
+  // façon », taken in red; emptied, no budget; a text of one's own.
   await budget.click();
   await expect(page).toHaveURL(/\/editions\/nouvelle\/budget$/);
-  await page.getByLabel(/^Budget/).fill('20 €');
+  await expect(page.getByTestId('budget-tile')).toHaveCount(6);
+  const free = page.getByLabel('À ta façon');
+  await page.getByRole('button', { name: 'Fait main' }).click();
+  await expect(free).toHaveValue('Fait main');
+  await expect(page.getByRole('button', { name: 'Fait main' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await free.fill('');
+  await free.press('Enter');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('Aucun');
+  await budget.click();
+  await free.fill('20 €');
+  await free.press('Enter');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('20 €');
   // The word, on its own page too; the form is kept (README 23.3).

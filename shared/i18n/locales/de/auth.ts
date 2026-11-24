@@ -173,9 +173,6 @@ export default {
     revoked: 'Gerät abgemeldet',
     revokeAllHint: 'Dieses Gerät eingeschlossen',
     revokeAllConfirm: 'Von allen Geräten abmelden?',
-    firstNameHelp: 'Wird übernommen, wenn du ein Event erstellst.',
-    lastNameHelp:
-      'Optional. Unterscheidet dich von einer Person gleichen Namens.',
     profileHint:
       'Dein Vorname und dein Symbol werden übernommen, wenn du einem Event beitrittst oder eines erstellst. Die Sprache ist die deiner E-Mails.',
     language: 'Sprache',

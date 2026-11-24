@@ -50,17 +50,15 @@ test('they create their group and organise up to 3 Secret Santa', async ({
   await page.goto('/compte');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Mon compte');
-  const firstName = page
-    .getByTestId('profile')
-    .getByRole('button', { name: /^Prénom/ });
-  await firstName.click();
-  await page.getByRole('textbox').fill('Nina');
+  // Written on its row (ticket 162).
+  const firstName = page.getByTestId('profile').getByLabel('Prénom');
+  await firstName.fill('Nina');
   const saved = page.waitForResponse(
     (r) => r.url().endsWith('/api/auth/profile') && r.ok(),
   );
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(firstName).toContainText('Nina');
+  await firstName.press('Enter');
   await saved;
+  await expect(firstName).toHaveValue('Nina');
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour Nina');
@@ -119,12 +117,11 @@ test('they create their group and organise up to 3 Secret Santa', async ({
   await expect(page).toHaveURL(
     new RegExp(`/admin/${GROUP.slug}/editions/nouvelle$`),
   );
-  await page.getByTestId('new-secret-santa-nom').click();
-  await page.getByLabel(/^Nom/).fill('Les enfants');
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page.getByTestId('new-secret-santa-nom')).toContainText(
-    'Les enfants',
-  );
+  // The name is written on its row (ticket 162).
+  const name = page.getByTestId('new-secret-santa-nom').getByRole('textbox');
+  await name.fill('Les enfants');
+  await name.press('Enter');
+  await expect(name).toHaveValue('Les enfants');
   await page.getByRole('button', { name: 'Créer le Secret Santa' }).click();
   await expect(page).toHaveURL(
     new RegExp(`/admin/${GROUP.slug}/editions/[^/]+$`),

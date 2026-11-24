@@ -128,7 +128,6 @@ export default {
     comeBack: 'Wieder in das Event aufnehmen',
     fallbackTitle: 'Person',
     notFound: 'Person nicht gefunden.',
-    saved: 'Gespeichert',
     doesNotDraw: 'Zieht nicht',
     deleteForever: 'Endgültig löschen',
     deleteHint: 'Nur, wenn sie noch nie teilgenommen hat',
@@ -136,8 +135,8 @@ export default {
   },
   personForm: {
     languageRow: 'Sprache der Nachrichten',
-    emailHelpPerson:
-      'Um den Link zu senden, und damit die Person ihre Wichteln beim Anmelden findet.',
+    emailWriting:
+      'Diese Person bekommt eine E-Mail, dass du sie hinzugefügt hast. Sie kann die E-Mails der App ablehnen.',
     emailHelpNew:
       'Um den Link zu senden. Ohne Adresse teilst du ihn selbst per WhatsApp oder SMS.',
     emailPlaceholder: 'name@beispiel.de',
@@ -145,7 +144,6 @@ export default {
     firstNameLabel: 'Vorname',
     firstNameRequired: 'Vorname erforderlich',
     lastNameLabel: 'Nachname',
-    lastNameHelp: 'Nur nützlich, wenn zwei Personen denselben Vornamen haben',
     emailLabel: 'E-Mail',
     emailHelp:
       'Optional. Damit wird der Link per E-Mail verschickt, und die Person kann sich anmelden, um ihre Wichteln zu finden. Ohne Adresse teilst du den Link vom Handy aus.',

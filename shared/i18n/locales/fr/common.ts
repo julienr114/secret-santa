@@ -1,5 +1,7 @@
 export default {
   appName: 'Under the Tree',
+  /** A row written in place was saved (ticket 162). */
+  saved: 'Enregistré',
   loading: 'Chargement',
   loadError: {
     title: 'On n’arrive pas à charger cette page',

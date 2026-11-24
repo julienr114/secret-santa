@@ -10,7 +10,8 @@ import { LOGIN, useLogoutMutation } from '~/composables/queries/useSession';
 import { formatDay } from '~/utils/labels';
 
 // « Mon compte »: the icon with its pencil and the address, the profile
-// in rows each changed in its sheet and saved at once, the devices the
+// in rows saved at once, the names written on their rows (ticket 162),
+// the language in its sheet, the devices the
 // account is logged in on (this one, and « Déconnecter » for the others),
 // then « Déconnecter partout » and « Se déconnecter de cet appareil ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -20,7 +21,7 @@ const toast = useMessages();
 useHead({ title: () => `${t('auth.account.title')} — ${t('common.appName')}` });
 const screen = computed(() => ({ back: '/' }));
 
-const { account, shown, save, saving } = useProfileSaver();
+const { account, shown, save, saving, commit } = useProfileSaver();
 const data = computed(() => account.data.value);
 /** The address, and « Super-admin » for one. */
 const subtitle = computed(() =>
@@ -33,45 +34,17 @@ const avatar = computed({
   set: (next: Avatar) => save({ avatar: next }),
 });
 
-const editing = ref<null | 'firstName' | 'lastName' | 'language'>(null);
-const sheet = (which: 'firstName' | 'lastName' | 'language') =>
-  computed({
-    get: () => editing.value === which,
-    set: (value) => {
-      editing.value = value ? which : null;
-    },
-  });
-const firstNameOpen = sheet('firstName');
-const lastNameOpen = sheet('lastName');
-const languageOpen = sheet('language');
+const languageOpen = ref(false);
 const languages = computed(() =>
   LOCALES.map((value) => ({ value, label: tk(`common.language.${value}`) })),
 );
-/**
- * Keeps a first name, unless it was emptied.
- * @param value - The name typed.
- * @returns Nothing.
- */
-const onFirstName = (value: string) => {
-  editing.value = null;
-  if (value) save({ firstName: value });
-};
-/**
- * Keeps a last name; emptied, there is none.
- * @param value - The name typed.
- * @returns Nothing.
- */
-const onLastName = (value: string) => {
-  editing.value = null;
-  save({ lastName: value || null });
-};
 /**
  * Keeps the language of the emails.
  * @param language - The language.
  * @returns Nothing.
  */
 const onLanguage = (language: Locale) => {
-  editing.value = null;
+  languageOpen.value = false;
   save({ language });
 };
 
@@ -135,26 +108,28 @@ const onLogout = () =>
           :footer="t('auth.account.profileHint')"
           data-testid="profile"
         >
-          <UiListItem
-            :title="t('adminGroup.personForm.firstNameLabel')"
-            :value="shown.firstName ?? t('common.actions.add')"
-            :busy="saving('firstName')"
-            :busy-label="t('common.actions.saving')"
-            :on-click="() => (editing = 'firstName')"
+          <!-- Written on their rows (ticket 162). -->
+          <UiInlineTextRow
+            :label="t('adminGroup.personForm.firstNameLabel')"
+            :value="shown.firstName ?? null"
+            required
+            :maxlength="60"
+            :save="(firstName) => commit({ firstName })"
+            data-testid="account-first-name"
           />
-          <UiListItem
-            :title="t('adminGroup.personForm.lastNameLabel')"
-            :value="shown.lastName || t('common.actions.add')"
-            :busy="saving('lastName')"
-            :busy-label="t('common.actions.saving')"
-            :on-click="() => (editing = 'lastName')"
+          <UiInlineTextRow
+            :label="t('adminGroup.personForm.lastNameLabel')"
+            :value="shown.lastName ?? null"
+            :maxlength="60"
+            :save="(lastName) => commit({ lastName: lastName || null })"
+            data-testid="account-last-name"
           />
           <UiListItem
             :title="t('auth.account.language')"
             :value="tk(`common.language.${shown.language ?? locale}`)"
             :busy="saving('language')"
             :busy-label="t('common.actions.saving')"
-            :on-click="() => (editing = 'language')"
+            :on-click="() => (languageOpen = true)"
           />
         </UiList>
 
@@ -254,28 +229,6 @@ const onLogout = () =>
       </template>
     </AdminQueryState>
 
-    <UiTextSheet
-      v-model:open="firstNameOpen"
-      :title="t('adminGroup.personForm.firstNameLabel')"
-      :description="t('auth.account.firstNameHelp')"
-      :label="t('adminGroup.personForm.firstNameLabel')"
-      :value="shown.firstName ?? ''"
-      :maxlength="60"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="onFirstName"
-    />
-    <UiTextSheet
-      v-model:open="lastNameOpen"
-      :title="t('adminGroup.personForm.lastNameLabel')"
-      :description="t('auth.account.lastNameHelp')"
-      :label="t('adminGroup.personForm.lastNameLabel')"
-      :value="shown.lastName ?? ''"
-      :maxlength="60"
-      :validate-label="t('common.actions.validate')"
-      :cancel-label="t('common.actions.cancel')"
-      @validate="onLastName"
-    />
     <UiChoiceSheet
       v-model:open="languageOpen"
       :title="t('auth.account.language')"

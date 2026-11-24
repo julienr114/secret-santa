@@ -10,9 +10,9 @@ import { useNewSecretSantaQuery } from '~/composables/queries/useHome';
 import { usePartyQuery } from '~/composables/queries/useParty';
 
 // A new Secret Santa (docs/spec/v3/secret-santa.md, « Le créer »,
-// V3TirageNouveau): five rows of the same shape, the value on the right,
-// each opening its page (regles-d-ecran.md, « Des lignes, pas des
-// champs »), then the card of « Devine qui », chosen in place (ticket
+// V3TirageNouveau): five rows of the same shape, the value on the right;
+// the name written on its row (ticket 162), the others each opening its
+// page (regles-d-ecran.md, « Des lignes, pas des champs »), then the card of « Devine qui », chosen in place (ticket
 // 150). The values start from the party and from the previous Secret
 // Santa; a first one plays every pair. Below, who is taken over, then « Créer le Secret Santa »;
 // the participants are adjusted on the next screen. An account at its
@@ -88,12 +88,20 @@ onBeforeRouteLeave((to) => {
 });
 
 const none = computed(() => t('adminEdition.newEdition.messageNone'));
-/** The five rows, in the order of the mockup. */
+/**
+ * The name, written on its row (ticket 162): kept in the form until the
+ * Secret Santa is created.
+ * @param label - The name written.
+ * @returns At once.
+ */
+const onName = async (label: string) => {
+  if (draft.value) draft.value.label = label;
+};
+/** The rows that open their page, after the name, in the mockup's order. */
 const rows = computed(() => {
   const d = draft.value;
   if (!d) return [];
   return [
-    { key: 'nom', title: t('adminEdition.newEdition.nameRow'), value: d.label },
     {
       key: 'date',
       title: t('adminEdition.newEdition.dateLabel'),
@@ -200,6 +208,16 @@ const onCreate = async () => {
         <UiPageTitle>{{ title }}</UiPageTitle>
       </div>
       <UiList data-testid="new-secret-santa">
+        <UiInlineTextRow
+          v-if="draft"
+          :label="t('adminEdition.newEdition.nameRow')"
+          :value="draft.label"
+          required
+          quiet
+          :maxlength="60"
+          :save="onName"
+          data-testid="new-secret-santa-nom"
+        />
         <UiListItem
           v-for="row in rows"
           :key="row.key"

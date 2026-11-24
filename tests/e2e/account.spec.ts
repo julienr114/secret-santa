@@ -148,19 +148,20 @@ test('my account lists the devices, and logging out everywhere closes them all',
   await expect(page.getByText(/^Connecté le /)).toHaveCount(1);
   await expect(page.getByText(/^Vu le /)).toHaveCount(3);
 
-  // The profile in rows: a last name, typed in its sheet, saved at once.
-  const lastName = page
-    .getByTestId('profile')
-    .getByRole('button', { name: /^Nom de famille/ });
-  await expect(lastName).toContainText('Ajouter');
-  await lastName.click();
-  await page.getByRole('textbox').fill('Martin');
+  // The profile in rows: a last name, written on its row (ticket 162),
+  // saved by Entrée, no sheet.
+  const lastName = page.getByLabel('Nom de famille');
+  await expect(lastName).toHaveValue('');
+  await expect(lastName).toHaveAttribute('placeholder', 'Ajouter');
+  await lastName.fill('Martin');
   const saved = page.waitForResponse(
     (r) => r.url().endsWith('/api/auth/profile') && r.ok(),
   );
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(lastName).toContainText('Martin');
+  await lastName.press('Enter');
   await saved;
+  await expect(page.getByText('Enregistré').first()).toBeVisible();
+  await expect(lastName).toHaveValue('Martin');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   const profile = await (await page.request.get('/api/auth/sessions')).json();
   expect(profile.lastName).toBe('Martin');
   const sessions = await (await page.request.get('/api/auth/sessions')).json();

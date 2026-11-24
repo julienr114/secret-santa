@@ -125,7 +125,6 @@ export default {
     comeBack: 'Remettre dans l’événement',
     fallbackTitle: 'Personne',
     notFound: 'Personne introuvable.',
-    saved: 'Enregistré',
     doesNotDraw: 'Ne tire pas',
     deleteForever: 'Supprimer définitivement',
     deleteHint: "Seulement si elle n'a jamais participé",
@@ -133,8 +132,8 @@ export default {
   },
   personForm: {
     languageRow: 'Langue de ses messages',
-    emailHelpPerson:
-      'Pour lui envoyer son lien, et pour que cette personne retrouve ses Secret Santa en se connectant.',
+    emailWriting:
+      'Cette personne recevra un email qui dit que c’est toi qui l’as ajoutée. Elle pourra refuser les emails de l’application.',
     emailHelpNew:
       'Pour lui envoyer son lien. Sans adresse, tu le partageras toi-même par WhatsApp ou SMS.',
     emailPlaceholder: 'prenom@exemple.fr',
@@ -142,7 +141,6 @@ export default {
     firstNameLabel: 'Prénom',
     firstNameRequired: 'Prénom requis',
     lastNameLabel: 'Nom de famille',
-    lastNameHelp: 'Utile seulement si deux personnes ont le même prénom',
     emailLabel: 'Adresse email',
     emailHelp:
       'Facultatif. Sert à lui envoyer son lien par email, et lui permet de se connecter pour retrouver ses Secret Santa. Sans adresse, tu partages son lien depuis ton téléphone.',

@@ -48,12 +48,16 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   // 117): its organiser alone is taken, people come in by the Secret
   // Santa.
   await page.getByRole('link', { name: 'Créer un Secret Santa' }).click();
-  // Five rows, each opening its page (V3TirageNouveau); the day of the
-  // party is already there.
+  // Five rows (V3TirageNouveau): the name written on its row (ticket
+  // 162), the four others each opening its page; the day of the party is
+  // already there.
   await expect(heading(page)).toHaveText(/^Le Secret Santa \d{4}$/);
   await expect(
     page.getByTestId('new-secret-santa').getByRole('link'),
-  ).toHaveCount(5);
+  ).toHaveCount(4);
+  await expect(
+    page.getByTestId('new-secret-santa-nom').getByRole('textbox'),
+  ).not.toHaveValue('');
   // « Devine qui » on its card, every pair for a first Secret Santa
   // (ticket 150); with the organiser alone, it says when it opens.
   const game = page.getByTestId('guess-card');

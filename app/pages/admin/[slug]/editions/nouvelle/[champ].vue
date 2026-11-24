@@ -25,7 +25,6 @@ const screen = computed(() => ({ back: parent.value }));
 
 /** What each row keeps, with its title and its limits. */
 const FIELDS = {
-  nom: { key: 'label', max: 60 },
   budget: { key: 'budget', max: 60 },
   mot: { key: 'guardianMessage', max: 300 },
   message: { key: 'messageNote', max: 500 },
@@ -37,7 +36,6 @@ type TextField = keyof typeof FIELDS;
 const isText = (value: string): value is TextField => value in FIELDS;
 
 const titles = computed<Record<string, string>>(() => ({
-  nom: t('adminEdition.newEdition.nameRow'),
   date: t('adminEdition.newEdition.dateLabel'),
   budget: t('adminEdition.newEdition.budgetLabel'),
   mot: t('adminEdition.newEdition.messageLabel'),
@@ -73,12 +71,8 @@ watch(
   { immediate: true },
 );
 const years = partyYears(new Date().getFullYear());
-/** The name is required, and so is a full date. */
-const invalid = computed(
-  () =>
-    (field.value === 'nom' && !text.value.trim()) ||
-    (field.value === 'date' && !dateOf(date.value)),
-);
+/** A full date is required (the name is written on its row, ticket 162). */
+const invalid = computed(() => field.value === 'date' && !dateOf(date.value));
 
 /**
  * Keeps the value in the form and goes back to it.

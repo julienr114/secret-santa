@@ -170,8 +170,6 @@ export default {
     revoked: 'Appareil déconnecté',
     revokeAllHint: 'Y compris cet appareil',
     revokeAllConfirm: 'Déconnecter tous les appareils ?',
-    firstNameHelp: 'Repris quand tu crées un événement.',
-    lastNameHelp: 'Facultatif. Te distingue d’un homonyme.',
     profileHint:
       'Ton prénom et ton icône sont repris quand tu rejoins ou crées un événement. La langue est celle de tes emails.',
     language: 'Langue',

@@ -58,8 +58,22 @@ test('the guardian adds addresses and sends to those who have one', async ({
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.getByTestId('party-members').click();
   await page.getByText('Ada', { exact: true }).click();
-  await page.getByLabel(/^Adresse email/).fill('Ada@Example.com');
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  // Written on its row (ticket 162): what it sets off said under it while
+  // one writes; no « Enregistrer ».
+  const email = page.getByLabel('Adresse email');
+  await email.fill('pas-une-adresse');
+  await expect(
+    page.getByText('Cette personne recevra un email', { exact: false }),
+  ).toBeVisible();
+  await email.press('Enter');
+  await expect(page.getByTestId('inline-error')).toHaveText(
+    'Adresse email invalide',
+  );
+  await expect(page.getByRole('button', { name: 'Enregistrer' })).toHaveCount(
+    0,
+  );
+  await email.fill('Ada@Example.com');
+  await email.press('Enter');
   await expect(page.getByText('Enregistré').first()).toBeVisible();
   const { persons } = await (await page.request.get(`${ADMIN}/persons`)).json();
   expect(
@@ -79,18 +93,14 @@ test('the guardian adds addresses and sends to those who have one', async ({
     data: { email: 'ADA@example.com' },
   });
   expect(taken.status()).toBe(409);
-  // On screen, the form says why.
+  // On screen, the row says why, under itself (an error of the server).
   await page.goto(`/admin/${SLUG}/personnes/${bob.id}`);
   await hydrated(page);
-  await page.getByLabel(/^Adresse email/).fill('ada@example.com');
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(
-    page
-      .getByText(
-        'Cette adresse est déjà celle d’une autre personne de l’événement.',
-      )
-      .first(),
-  ).toBeVisible();
+  await page.getByLabel('Adresse email').fill('ada@example.com');
+  await page.getByLabel('Adresse email').press('Enter');
+  await expect(page.getByTestId('inline-error')).toHaveText(
+    'Cette adresse est déjà celle d’une autre personne de l’événement.',
+  );
 
   await page.goto(`/admin/${SLUG}/editions/${state.editionId}`);
   await hydrated(page);
@@ -200,7 +210,7 @@ test('a participant logs in with their address and finds their draw', async ({
 
   // A second organiser: the page now speaks of « tes organisateurs ».
   await api.post(`${ADMIN}/organizers`, {
-    data: { email: 'second-courrier@example.com' },
+    data: { firstName: 'Second', email: 'second-courrier@example.com' },
   });
   await santa.click();
   await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}$/);

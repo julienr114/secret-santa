@@ -184,7 +184,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Écran | Adresse | Parent | Panneaux |
 |---|---|---|---|
 | Un nouveau Secret Santa (« Le Secret Santa 2027 ») | `/admin/[fête]/editions/nouvelle` | La fête | |
-| Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[nom, date, budget, mot, message]` (« Devine qui » se choisit sur la carte du formulaire, ticket 150) | Le nouveau Secret Santa | |
+| Une ligne du nouveau Secret Santa (gardée dans le formulaire, `useNewEditionDraft`) | `…/editions/nouvelle/[date, budget, mot, message]` (le nom s'écrit sur sa ligne, ticket 162 ; « Devine qui » se choisit sur la carte du formulaire, ticket 150) | Le nouveau Secret Santa | |
 | L'édition (Préparer, Réponses, Tirage fait, Fêter, Clôturée) | `/admin/[groupe]/editions/[id]` | La fête ; l'accueil ou « Quoi de neuf » quand on en vient | Lancer le tirage, Le tirage a déjà été fait ?, Valider le tirage, Un souci ?, Envoi à une personne, Dévoiler, Date de la fête, Devine qui |
 | Choisir les participants | `…/editions/[id]/ajouter` | L'édition | |
 | Nouvelle personne (elle rejoint l'événement et ce Secret Santa, ticket 117) | `…/editions/[id]/nouvelle-personne` | Choisir les participants | |

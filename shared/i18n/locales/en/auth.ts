@@ -172,8 +172,6 @@ export default {
     revoked: 'Device logged out',
     revokeAllHint: 'This device included',
     revokeAllConfirm: 'Log out of every device?',
-    firstNameHelp: 'Reused when you create an event.',
-    lastNameHelp: 'Optional. Tells you apart from a namesake.',
     profileHint:
       'Your first name and your icon are used when you join or create an event. The language is the one of your emails.',
     language: 'Language',

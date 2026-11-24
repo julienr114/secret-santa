@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { z } from 'zod';
+import { LOCALES, type Locale } from '#shared/i18n';
+import type { Avatar } from '#server/utils/avatars';
 import { byName, fullName } from '#server/utils/people';
 import { notDrawnBy } from '#shared/utils/exclusions';
 import {
@@ -8,14 +11,16 @@ import {
   useEditionQuery,
   usePeopleQuery,
   useUpdatePersonMutation,
+  type PersonPatch,
 } from '~/composables/queries/useGroup';
 
-// A person of the group: their icon, first name and address, the
-// language of their messages and their last name, who they never draw,
-// « Enregistrer », then taking them out of the group, which keeps their
-// history.
+// A person of the group: their icon; one card of rows, their first name,
+// address and last name written on their rows (ticket 162, GroupePersonne)
+// and the language of their messages in its sheet, each saved on its own
+// (no « Enregistrer »); who they never draw; then taking them out of the
+// group, which keeps their history.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t } = useT();
+const { t, tk } = useT();
 const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 const route = useRoute();
@@ -39,7 +44,6 @@ const current = useEditionQuery(slug, currentId, () =>
 const update = useUpdatePersonMutation(slug);
 const removeExclusion = useDeleteExclusionMutation(slug);
 const remove = useDeletePersonMutation(slug);
-const saving = useBusy(() => update.isPending.value);
 const context = useScreenContext(slug);
 
 const persons = computed(() => people.data.value?.persons ?? []);
@@ -79,42 +83,46 @@ const notDrawn = computed(() =>
 );
 const exclusionOpen = ref(false);
 
-// The draft starts from the person once they are known, and is not
-// reset when the group is read again (after an exclusion changes).
-const { draft, errors, check, value } = usePersonDraft({
-  avatar: { emoji: '🎁', color: 'brick' },
-});
-watch(
-  () => person.value?.id,
-  () => {
-    const p = person.value;
-    if (!p) return;
-    Object.assign(draft, {
-      firstName: p.firstName,
-      lastName: p.lastName ?? '',
-      email: p.email ?? '',
-      language: p.language,
-      avatar: p.avatar,
-    });
-  },
-  { immediate: true },
-);
-const lastNameOpen = ref(false);
-/** Longest last name the server takes. */
-const LAST_NAME_MAX = 60;
 /**
- * Saves the draft, then says so.
- * @returns Nothing: the mutation reports by itself.
+ * Saves one field of the person, written on its row or chosen.
+ * @param patch - What changes.
+ * @returns Once saved; a failure is the row's to say.
  */
-const onSave = () =>
-  check() &&
-  update.mutate(
-    { id: id.value, ...value.value },
-    {
-      onSuccess: () => toast.done(t('adminGroup.person.saved')),
-      onError,
-    },
+const saveField = (patch: Omit<PersonPatch, 'id'>) =>
+  update.mutateAsync({ id: id.value, ...patch });
+/**
+ * An address, if any, must be one (ticket 162: said under its row).
+ * @param email - The address written.
+ * @returns The words of the error, or null.
+ */
+const checkEmail = (email: string) =>
+  email === '' || z.email().safeParse(email).success
+    ? null
+    : t('adminGroup.personForm.emailInvalid');
+/**
+ * A new icon, saved at once.
+ * @param avatar - The icon chosen.
+ * @returns Nothing: a failure is told in a toast.
+ */
+const onAvatar = (avatar: Avatar) =>
+  saveField({ avatarEmoji: avatar.emoji, avatarColor: avatar.color }).catch(
+    onError,
   );
+const languageOpen = ref(false);
+const languages = computed(() =>
+  LOCALES.map((value) => ({ value, label: tk(`common.language.${value}`) })),
+);
+/**
+ * The language of their messages, saved at once.
+ * @param language - The language chosen.
+ * @returns Nothing: « Enregistré », or a failure in a toast.
+ */
+const onLanguage = (language: Locale) => {
+  languageOpen.value = false;
+  saveField({ language })
+    .then(() => toast.done(t('common.saved')))
+    .catch(onError);
+};
 
 // Taking out of the group (and back), or deleting someone who never
 // took part, each with a second tap.
@@ -161,40 +169,61 @@ const onDelete = () =>
       </p>
       <template v-else>
         <AdminPersonHeader
-          v-model:avatar="draft.avatar"
+          :avatar="person.avatar"
           :title="fullName(person)"
           :subtitle="subtitle"
           :context="context.parts.value"
+          @update:avatar="onAvatar"
         />
-        <AdminPersonFields
-          v-model:draft="draft"
-          :errors="errors"
-          :email-help="t('adminGroup.personForm.emailHelpPerson')"
-        >
-          <template #rows>
-            <UiListItem
-              :title="t('adminGroup.personForm.lastNameLabel')"
-              :subtitle="t('adminGroup.personForm.lastNameHelp')"
-              :value="draft.lastName || t('common.actions.add')"
-              :on-click="() => (lastNameOpen = true)"
-            />
-          </template>
-        </AdminPersonFields>
-        <UiTextSheet
-          v-model:open="lastNameOpen"
-          :title="t('adminGroup.personForm.lastNameLabel')"
-          :description="t('adminGroup.personForm.lastNameHelp')"
-          :label="t('adminGroup.personForm.lastNameLabel')"
-          :value="draft.lastName"
-          :maxlength="LAST_NAME_MAX"
+        <UiList data-testid="person-fields">
+          <UiInlineTextRow
+            :label="t('adminGroup.personForm.firstNameLabel')"
+            :value="person.firstName"
+            required
+            :maxlength="60"
+            :save="(firstName) => saveField({ firstName })"
+            data-testid="person-first-name"
+          />
+          <UiInlineTextRow
+            :label="t('adminGroup.personForm.emailLabel')"
+            :value="person.email"
+            type="email"
+            :maxlength="254"
+            :check="checkEmail"
+            :save="(email) => saveField({ email: email.toLowerCase() || null })"
+            data-testid="person-email"
+          >
+            <template #writing>
+              {{ t('adminGroup.personForm.emailWriting') }}
+            </template>
+          </UiInlineTextRow>
+          <UiInlineTextRow
+            :label="t('adminGroup.personForm.lastNameLabel')"
+            :value="person.lastName"
+            :maxlength="60"
+            :save="(lastName) => saveField({ lastName: lastName || null })"
+            data-testid="person-last-name"
+          />
+          <UiListItem
+            :title="t('adminGroup.personForm.languageRow')"
+            :value="tk(`common.language.${person.language}`)"
+            :busy="
+              update.isPending.value &&
+              update.variables.value?.language !== undefined
+            "
+            :busy-label="t('common.actions.saving')"
+            :on-click="() => (languageOpen = true)"
+          />
+        </UiList>
+        <UiChoiceSheet
+          v-model:open="languageOpen"
+          :title="t('adminGroup.personForm.languageRow')"
+          :description="t('adminGroup.personForm.languageHelp')"
+          :choices="languages"
+          :value="person.language"
           :validate-label="t('common.actions.validate')"
           :cancel-label="t('common.actions.cancel')"
-          @validate="
-            (text) => {
-              draft.lastName = text;
-              lastNameOpen = false;
-            }
-          "
+          @validate="onLanguage"
         />
 
         <UiList
@@ -241,18 +270,6 @@ const onDelete = () =>
           v-model:open="exclusionOpen"
           :slug="slug"
           :giver-id="id"
-        />
-
-        <UButton
-          block
-          size="xl"
-          class="h-12 justify-center font-bold"
-          :disabled="update.isPending.value"
-          :loading="saving"
-          :label="
-            saving ? t('common.actions.saving') : t('common.actions.save')
-          "
-          @click="onSave"
         />
 
         <UiList v-if="person.active">

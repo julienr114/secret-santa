@@ -125,7 +125,6 @@ export default {
     comeBack: 'Bring back into the event',
     fallbackTitle: 'Person',
     notFound: 'Person not found.',
-    saved: 'Saved',
     doesNotDraw: 'Does not draw',
     deleteForever: 'Delete permanently',
     deleteHint: 'Only if they have never taken part',
@@ -133,8 +132,8 @@ export default {
   },
   personForm: {
     languageRow: 'Language of their messages',
-    emailHelpPerson:
-      'To send them their link, and so they find their Secret Santas by logging in.',
+    emailWriting:
+      'This person will get an email saying you added them. They can refuse the app’s emails.',
     emailHelpNew:
       'To send them their link. Without an address, you will share it yourself by WhatsApp or SMS.',
     emailPlaceholder: 'name@example.com',
@@ -142,7 +141,6 @@ export default {
     firstNameLabel: 'First name',
     firstNameRequired: 'First name required',
     lastNameLabel: 'Last name',
-    lastNameHelp: 'Only useful if two people share a first name',
     emailLabel: 'Email',
     emailHelp:
       'Optional. Used to email them their link, and lets them log in to find their Secret Santas. Without an address, you share their link from your phone.',

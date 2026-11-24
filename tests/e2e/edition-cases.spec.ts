@@ -269,13 +269,23 @@ test('the budget and the word change on the edition, until it is closed', async 
   // First the rows of the creation form, in its order (V3TirageReglages,
   // Q-015).
   await expect(page.getByTestId('edition-settings')).toContainText(
-    /Le Secret SantaNom.+Date.+BudgetAucunPetit mot pour les participantsAucun/,
+    /Le Secret SantaNom.*Date.+BudgetAucunPetit mot pour les participantsAucun/,
   );
-  const name = page.getByTestId('setting-name');
-  await name.click();
-  await page.getByRole('textbox').fill('Les adultes');
-  await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(name).toContainText('Les adultes');
+  // The name is written on its row (ticket 162): Échap gives it up,
+  // Entrée keeps it, « Enregistré » says so.
+  const name = page.getByTestId('setting-name').getByRole('textbox');
+  const before = await name.inputValue();
+  await name.fill('Pas gardé');
+  await name.press('Escape');
+  await expect(name).toHaveValue(before);
+  await name.fill('Les adultes');
+  await name.press('Enter');
+  await expect(page.getByText('Enregistré').first()).toBeVisible();
+  await expect(name).toHaveValue('Les adultes');
+  // Emptied, a required name takes the old one back.
+  await name.fill('');
+  await name.press('Enter');
+  await expect(name).toHaveValue('Les adultes');
   const budget = page.getByTestId('rule-budget');
   await expect(budget).toContainText('Aucun');
   await budget.click();
@@ -307,9 +317,9 @@ test('the budget and the word change on the edition, until it is closed', async 
     'Budget 25 € · petit mot',
   );
   await page.getByTestId('settings-row').click();
-  await expect(page.getByTestId('edition-settings')).toContainText(
-    'Le Secret SantaNomLes adultesDate',
-  );
+  await expect(
+    page.getByTestId('setting-name').getByRole('textbox'),
+  ).toHaveValue('Les adultes');
   await budget.click();
   await page.getByRole('textbox').fill('30 €');
   await page.getByRole('button', { name: 'Valider' }).click();

@@ -3,6 +3,8 @@ import type { Dict } from '../../types';
 
 export default {
   appName: 'Under the Tree',
+  /** A row written in place was saved (ticket 162). */
+  saved: 'Saved',
   loading: 'Loading',
   loadError: {
     title: 'We cannot load this page',

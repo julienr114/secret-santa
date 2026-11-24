@@ -98,6 +98,7 @@ const BADGES = ['sent', 'wishes', 'viewed'];
 /** A person's icon used throughout the examples. */
 const sample = { emoji: '🥨', color: 'mustard' } as const;
 const text = ref('');
+const inlineName = ref('Camille');
 const choice = ref<NotePosition>('after');
 /** The link of the message bubble example. */
 const BUBBLE_LINK = 'https://under-the-tree.party/p/aIFR42';
@@ -1034,6 +1035,44 @@ const undone = ref(0);
           subtitle="Toute la ligne coche"
           label="Cocher l'exemple"
         />
+      </UiList>
+    </section>
+
+    <section class="flex flex-col gap-3" data-testid="guide-inline">
+      <UiSectionTitle
+        >Un texte court s’écrit sur sa ligne (UiInlineTextRow)</UiSectionTitle
+      >
+      <p class="text-sm text-toned">
+        Au repos : la valeur à l’encre, pas de flèche ; vide, « Ajouter » en
+        gris. Touchée : on écrit là, le label et la bordure en rouge. Entrée ou
+        toucher ailleurs enregistre, Échap annule. Une adresse fausse dit son
+        erreur sous la ligne, qui reste ouverte.
+      </p>
+      <UiList>
+        <UiInlineTextRow
+          label="Prénom"
+          :value="inlineName"
+          required
+          :save="async (value) => (inlineName = value)"
+        />
+        <UiInlineTextRow
+          label="Nom de famille"
+          :value="null"
+          quiet
+          :save="async () => undefined"
+        />
+        <UiInlineTextRow
+          label="Adresse email"
+          :value="null"
+          type="email"
+          quiet
+          :check="
+            (value) => (value.includes('@') ? null : 'Adresse email invalide')
+          "
+          :save="async () => undefined"
+        >
+          <template #writing>Ce que l’écriture déclenche se dit ici.</template>
+        </UiInlineTextRow>
       </UiList>
     </section>
 

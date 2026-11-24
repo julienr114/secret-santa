@@ -21,7 +21,25 @@ Un formulaire ne mélange pas des champs pleine largeur et des lignes. Dès qu'u
 
 Exemple : la création d'un Secret Santa (`V3TirageNouveau`).
 
+### Un texte court s'écrit sur sa ligne
+
+Julien, le 24 novembre 2026 : pour un prénom ou un nom, ni panneau ni page, « on peut le taper direct ». Maquettes `V3TirageNouveau` (au repos), `V3TirageNouveauEcrire` (on écrit), `Compte`, `GroupePersonne` (la fiche d'un membre).
+
+- **Quoi** : une ligne dont la valeur est **un texte d'une ligne** (un prénom, un nom, une adresse email). **Un choix, une date ou un texte long ouvre sa page**, comme avant.
+- **Au repos** : la ligne n'a **pas de flèche**, et sa valeur est **à l'encre**, pas en gris. Une valeur vide garde son invite en gris (« Ajouter »).
+- **On la touche** : on écrit là, le curseur au bout de la valeur, le clavier s'ouvre. **La ligne reste blanche et ne bouge pas** : seuls **son label et sa bordure passent au rouge** de l'application. La bordure suit les traits qui existent déjà, de la même épaisseur, et les coins de la carte quand c'est sa première ou sa dernière ligne. Pas de fond teinté, pas de carte qui flotte.
+- **Enregistrer** : la touche « OK » ou Entrée, ou toucher ailleurs. Un message en bas, « Enregistré ». Rien n'est envoyé si la valeur n'a pas changé.
+- **Annuler** : Échap. Une valeur obligatoire qu'on a vidée reprend l'ancienne.
+- **Une erreur** : sous la ligne, dans la carte ; la ligne reste ouverte.
+- **Pas de phrase d'aide** : sur place, il n'y a pas d'endroit pour elle. Si elle manque vraiment, elle passe en placeholder.
+- **Ce que l'écriture déclenche se dit sous la ligne, pendant qu'on écrit** et seulement là : sous « Adresse email » d'un membre, « Cette personne recevra un email qui dit que c'est toi qui l'as ajoutée. Elle pourra refuser les emails de l'application. ».
+- **Un écran dont tout s'écrit sur place n'a pas de bouton « Enregistrer »** : chaque ligne s'enregistre seule.
+- **Où** : « Prénom » et « Nom de famille » dans « Mon compte » ; **« Prénom », « Adresse email » et « Nom de famille » sur la fiche d'un membre**, les trois de la même façon (Julien : « le même type d'input »), dans une seule carte avec « Langue de ses messages », qui garde sa flèche ; « Nom » d'un Secret Santa, dans ses réglages comme à sa création.
+- **Le budget n'en fait pas partie** : il ouvre une page qui fait des propositions (`secret-santa.md`).
+
 Un écran sans aucune ligne garde ses champs sur place (« Pour quelle occasion ? », `V3FeteNouvelle`).
+
+**Un panneau ne porte jamais de champ où écrire** (rappelé par Julien le 24 novembre 2026, devant « Nouvel organisateur »). Un panneau propose des choix ou demande une confirmation ; dès qu'il faut écrire, c'est sur la ligne (un texte court) ou sur une page. **Exception : dans une liste, les petites saisies restent dans leur panneau** (Julien : « c'est des petits trucs ») : le prénom de « Quelqu'un d'autre », « Qui l'offre ? » pour quelqu'un d'autre, la note quand on coche un cadeau. Les confirmations à recopier, les nombres, l'heure et la recherche restent aussi où ils sont. Le recensement : `docs/decisions/2026-11-24-ou-l-on-ecrit-ligne-page-panneau.md`.
 
 ## Les dates
 

@@ -28,6 +28,8 @@ Maquette : `V3FeteReglages`. Seulement ce qui est à elle :
 - **L'événement** : catégorie ; pour un anniversaire, « Pour » (le proche pour qui il est fait, ou « Personne ») ; date (« Le 25 décembre · proposée chaque année ») ; « Revient chaque année ».
 - **Plus de ligne « Réglages du Secret Santa 2026 »** (Julien, 24 novembre 2026 : « ça fait trop doublon avec le reste »). Les réglages d'un Secret Santa s'ouvrent depuis son suivi (`secret-santa.md`), et de nulle part ailleurs.
 - **Organisateurs** : la liste, « Ajouter un organisateur ».
+  - **« Ajouter un organisateur » ouvre une page, pas un panneau** (Julien, 24 novembre 2026 : un panneau ne porte jamais de champ où écrire, `regles-d-ecran.md` ; maquette `V3FeteOrganisateurNouveau`, qui remplace `PanneauOrganisateur`). Au-dessus du titre, « Famille Camille · Réglages » ; le titre, « Nouvel organisateur » ; deux champs, **« Son prénom »** et **« Son adresse email »**, obligatoires tous les deux ; une phrase, « Cette personne gère l'événement comme toi, sans voir les résultats du tirage. » ; « Ajouter », qui revient aux réglages.
+  - **Le prénom est obligatoire parce qu'un compte est créé** pour cette adresse si elle n'en a pas. Si elle en a déjà un, il garde son prénom : celui qu'on vient d'écrire n'est pas utilisé.
 - « Supprimer l'événement », réservé au super-admin.
 
 Ce qui ne concerne que le Secret Santa n'est pas ici.

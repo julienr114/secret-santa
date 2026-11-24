@@ -18,7 +18,7 @@ C'est l'« édition » d'aujourd'hui : le tirage, ses règles, le suivi de l'org
 | Petit mot pour les participants | « Aucun » |
 | Mot ajouté aux messages | celui du Secret Santa précédent, sinon « Aucun » |
 
-Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : la carte « Devine qui », la carte de ceux qui participent déjà, puis « Créer le Secret Santa ».
+« Nom » s'écrit sur sa ligne ; les quatre autres ouvrent leur page (`regles-d-ecran.md`, « Un texte court s'écrit sur sa ligne » ; maquette `V3TirageNouveauEcrire`). Sous les lignes : la carte « Devine qui », la carte de ceux qui participent déjà, puis « Créer le Secret Santa ».
 
 **La carte de ceux qui participent déjà dit aussi que les participants s'ajoutent juste après** (Julien, 24 novembre 2026 ; maquettes `V3TirageNouveau`, `V3TirageNouveauSeul`). Deux lignes : en gras, qui y est déjà ; dessous, ce qui vient après.
 
@@ -29,6 +29,18 @@ Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : la cart
 | Pas de Secret Santa précédent, plusieurs membres | « 5 membres de l'événement. » | « Tu en ajoutes ou en retires juste après. » |
 
 Le premier cas vaut dès que je suis seul, qu'il y ait eu un Secret Santa avant ou non : on n'écrit jamais « 1 membre ».
+
+**« Budget » ouvre une page qui fait des propositions** (Julien, 24 novembre 2026 : « c'est jamais facile de savoir quoi mettre » ; maquettes `V3TirageBudget`, `V3TirageBudgetLibre`). La même page à la création et dans les réglages :
+
+- **Six tuiles**, trois par rangée : **« 5 € »** · « Le défi », **« 15 € »** · « Le classique », **« 30 € »** · « Un vrai cadeau », **« 50 € »** · « On se fait plaisir », **« 75 € »** · « Le grand jeu », et **« ∞ »** · « Sans limite ». Des montants bien écartés : 5, 10 et 15 € se ressemblaient trop.
+- **« À ta façon »** : une ligne pleine largeur, comme les lignes des autres pages (le label à gauche, la valeur à droite), **qui s'écrit sur place** (`regles-d-ecran.md`, « Un texte court s'écrit sur sa ligne »). Vide, elle invite en gris : « Écris ce que tu veux ».
+- **Entre les tuiles et la ligne, « ou »** : un trait fin de chaque côté, le mot au milieu, en gris, **avec de l'air** (28 px au-dessus et au-dessous : la page a la place).
+- **Des suggestions pour la ligne, dans le même bloc blanc qu'elle**, juste dessous, sans trait entre les deux : « À votre bon cœur », « Fait main », « Le plus kitsch possible », « Que de la récup' ». Des pastilles plus petites que les tuiles (30 px), en pêche, sans contour : elles se lisent comme des idées pour la ligne, pas comme d'autres choix. En toucher une l'écrit sur la ligne ; on peut encore la changer.
+- **Un seul choix à la fois** : toucher une tuile vide la ligne ; écrire sur la ligne, ou toucher une idée, désélectionne la tuile. La ligne vidée sans tuile choisie : pas de budget (« Aucun » sur la ligne du formulaire).
+- Ici, écrire sur la ligne n'enregistre rien tout seul : c'est « Valider » qui enregistre le choix de la page.
+- **Ce qui est choisi** : le fond blanc ; le trait et le texte passent au rouge (la tuile, la suggestion reprise). Pas de fond teinté.
+- « Valider » enregistre et revient. La ligne « Budget » montre le montant (« 15 € »), « Sans limite », ou le texte écrit.
+- Un budget déjà écrit autrement (« 20 € », d'un Secret Santa d'avant) arrive sur la ligne « À ta façon », tel quel.
 
 **« Devine qui » est mis en avant** (Julien, 23 novembre 2026 : « c'est le petit truc en plus de notre appli » ; maquettes `V3TirageNouveau`, `V3TirageNouveauQui`, `V3TirageNouveauSans`). Il sort des lignes :
 

@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-90 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+94 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -29,12 +29,16 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa, sans lien d’ici | 104, 159 |
 | `V3FeteMembres` | Événement · ses membres ; sous un prénom, seulement ce qui sort de l’ordinaire (« Organise », « Hors du Secret Santa », « Pas d’adresse email ») ; une seule ligne « Ajouter quelqu’un » | 117, 158 |
 | `V3FeteMembresAjouter` | Événement · « Ajouter quelqu’un » touché, avec plusieurs endroits où le faire : on demande où | 158 |
+| `V3FeteOrganisateurNouveau` | Événement · « Ajouter un organisateur » : une page, un prénom et une adresse, « Ajouter » (remplace `PanneauOrganisateur`) | 161 |
 | `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |
 | `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « On t’invite au Secret Santa » (le nom du fichier est resté) | 116 |
 | `V3FeteMembresComplet` | Événement · complet, vu par l’organisateur : 30 membres, le lien du Secret Santa en pause | 117 |
 | `V3TirageNouveau` | Secret Santa · celui de l’année : cinq lignes, puis la carte « Devine qui » sur « Toutes les paires » | 105, 150 |
 | `V3TirageNouveauQui` | Secret Santa · nouveau, « Devine qui » sur « Qui m’offre ? » : la phrase dit ce qui va se passer | 150 |
 | `V3TirageNouveauSans` | Secret Santa · nouveau, « Devine qui » sur « Sans » : le jeu est éteint | 150 |
+| `V3TirageNouveauEcrire` | Secret Santa · nouveau, « Nom » touché : il s’écrit sur sa ligne, le label et la bordure en rouge | 162 |
+| `V3TirageBudget` | Secret Santa · « Budget » : cinq montants et « Sans limite » en tuiles, une ligne « À ta façon » qui s’écrit, des idées à toucher | 164 |
+| `V3TirageBudgetLibre` | Secret Santa · « Budget », « À votre bon cœur » touché : l’idée s’écrit sur la ligne « À ta façon », on peut encore la changer | 164 |
 | `V3TirageNouveauSeul` | Secret Santa · nouveau, dans un événement où je suis seul : « Il n’y a que toi pour l’instant. Tu ajoutes les participants juste après. » | 154 |
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |

@@ -836,6 +836,19 @@ Décision du 13 novembre 2026. Le partage par téléphone reste le fonctionnemen
 - **Envoi à plusieurs** : un écran à part (`…/editions/[id]/emails`), à barre de titre (« Annuler », le titre et « {Groupe} · {Édition} » dessous) : en haut, « Aperçu, pour {premier coché} » avec le message entier et « Personnaliser le message › » ; puis la liste où ceux qui ont une adresse et restent à prévenir sont cochés d'avance (`preselectedForEmail`) et où toute la ligne coche, l'état de chacun avec son icône, un lien « Ajouter » pour ceux sans adresse ; la phrase sur le spam ; enfin « Envoyer N emails », seul dans le pied collant. L'API prend `participationIds` ; `audience` reste accepté.
 - Les tests de bout en bout tournent sans clé (`scripts/e2e-server.sh` ignore le `.env` du poste) : aucun test n'envoie de vrai email.
 
+### 13.4 Ne plus recevoir d'emails, et les garde-fous (ticket 130)
+
+Ce qu'a décidé le 22.25, tel que c'est codé.
+
+- **Un seul passage** : tout email part par `sendEmails` (`server/http/email.ts`), qui demande la base. Une adresse bloquée ne reçoit rien, quel que soit l'événement, la liste ou la personne qui l'a saisie. **Seule exception** : le lien de connexion qu'elle demande elle-même (`login: true`).
+- **Les adresses bloquées** (`email_blocks`) sont gardées par leur **empreinte** (HMAC de l'adresse avec le secret du serveur), jamais en clair, avec la cause (`person`, `bounce`, `complaint`) et la date.
+- **Le pied de chaque email** (hors connexion) : « Tu ne veux pas de ces emails ? Ne plus recevoir d'emails d'Under the Tree », un lien signé qui porte l'adresse (`/arreter/[jeton]`). Ouvrir la page ne bloque rien, seul « Oui, ne plus m'écrire » bloque ; puis « C'est noté », avec « Annuler ». L'en-tête `List-Unsubscribe` (et `List-Unsubscribe-Post`, RFC 8058) mène à `POST /api/stop/[jeton]`, qui bloque d'un clic.
+- **Un seul refus** : pour une adresse qui a un compte, bloquer met aussi « Par email » sur « Aucun email » (22.22). « Aucun email » seul n'arrête que les emails automatiques ; un organisateur peut encore écrire lui-même, ce que « Me prévenir » dit. Seule la personne lève son blocage, par le lien ou dans « Me prévenir ».
+- **Le premier email à une adresse** (`email_seen`, par empreinte) dit ce que l'application sait d'elle, et qui l'a donnée quand on le sait.
+- **« Signaler cet envoi »** : sous les emails qu'un organisateur envoie lui-même, un lien signé (l'événement et le compte) vers `/signaler/[jeton]`. Le super-admin voit les signalements par événement (`/admin/envois-signales`) et peut couper les emails de l'événement (`parties.emails_off`).
+- **Celui qui saisit une adresse bloquée le voit** (la fiche d'une personne, l'ajout d'une personne, l'invitation à tenir une liste, le partage d'une liste) : `UiEmailBlockNote`. L'envoi groupé la range avec ceux à prévenir autrement.
+- **Les retours du fournisseur** : le webhook de Resend (`POST /api/email/events`, signé, secret `NUXT_RESEND_WEBHOOK_SECRET`) bloque une adresse qui n'existe pas ou qui s'est plainte.
+
 ---
 
 ## 14. Arborescence

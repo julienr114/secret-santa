@@ -62,6 +62,7 @@ export default defineEventHandler(async (event) => {
     rules: {},
     createdBy: account.id,
     createdAt: now,
+    emailsOff: false,
   };
   await db.insert(parties).values(group);
   // One after the other: an address given twice must not race itself.

@@ -155,6 +155,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`), r
 | Administration | `/admin` | Accueil | « Suspendre les nouveaux Secret Santa » |
 | Toutes les fêtes | `/admin/groupes` | Administration | |
 | Nouveau groupe | `/admin/groupes/nouveau` | Tous les groupes (super-admin), sinon Accueil | |
+| Envois signalés (ticket 130) | `/admin/envois-signales` | Administration | Par événement, avec « Couper ses emails » |
 | Comptes | `/admin/comptes` | Administration ; les comptes désactivés : Comptes | |
 | Un compte | `/admin/comptes/[id]` | Comptes | Limite de Secret Santa, désactivation |
 | Guide de style | `/admin/guide-de-style` | Administration | |
@@ -243,6 +244,8 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 |---|---|---|---|
 | La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène ; depuis la carte du résultat, `?anonyme=1&p=…&personne=[proche]`, la liste filtrée sur la personne tirée, et `&tout=1` pour « Toute la liste », ticket 136) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
+| Ne plus recevoir d'emails (ticket 130) | `/arreter/[jeton]` | — (le lien en bas d'un email, sans session) | La question, puis « C'est noté » et « Annuler » |
+| Signaler cet envoi (ticket 130) | `/signaler/[jeton]` | — (le lien en bas d'un email d'organisateur) | |
 | Ton adresse, pour suivre (ticket 122) | `/l/[jeton]/connexion?suivre=` | La liste, par son lien | Le lien reçu ramène à la liste, et la personne (ou toute la liste) est suivie |
 
 Une liste d'une année passée (ticket 119), par son document comme par son lien, a un bandeau en haut : « Liste de Noël 2025 » · « Une année passée ». Son bouton « Noël 2026 », quand une liste de cette année en a été reprise et que j'ai le droit de l'ouvrir, mène à celle-ci : son document (`/listes/[id]`) si je la tiens, sinon son lien (`/l/[jeton]`).

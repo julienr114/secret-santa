@@ -13,6 +13,7 @@ vi.mock('#server/http/context', async (original) => ({
   ...(await original<typeof import('#server/http/context')>()),
   secretsOf: () => ({
     resendApiKey: 'test-key',
+    dataKey: 'test-secret',
     emailFrom: 'app@test',
     superAdminEmails: 'admin@test',
     baseUrl: 'https://app.test',
@@ -86,5 +87,88 @@ describe('sending emails', () => {
     expect(await isSwitchOn(db, 'emails')).toBe(true);
     const after = await sendEmails(undefined, [email('b@x.fr')], { db });
     expect(after.ok).toBe(false);
+  });
+});
+
+describe('the addresses that refused (ticket 130)', () => {
+  const bodies: Record<string, unknown>[][] = [];
+  beforeEach(() => {
+    bodies.length = 0;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string, init: { body: string }) => {
+        bodies.push(JSON.parse(init.body) as Record<string, unknown>[]);
+        return new Response('{}', { status: 200 });
+      }),
+    );
+  });
+
+  it('sends nothing to an address that refused, but its login link', async () => {
+    const { db } = testDb();
+    const { emailPrint } = await import('#server/utils/stopEmail');
+    const { blockAddress } = await import('#server/database/emailBlocks');
+    await blockAddress(
+      db,
+      await emailPrint('Hugo@x.fr', 'test-secret'),
+      'person',
+      '2026-11-24',
+    );
+    const app = await sendEmails(
+      undefined,
+      [email('hugo@x.fr'), email('zoe@x.fr')],
+      { db },
+    );
+    expect(app.ok && app.value.count).toBe(1);
+    expect(bodies.at(-1)!.map((one) => (one.to as string[])[0])).toEqual([
+      'zoe@x.fr',
+    ]);
+    await sendEmails(undefined, [email('hugo@x.fr')], { db, login: true });
+    expect(bodies.at(-1)!.map((one) => (one.to as string[])[0])).toEqual([
+      'hugo@x.fr',
+    ]);
+  });
+
+  it('says on a first email who gave the address, then no more', async () => {
+    const { db } = testDb();
+    await sendEmails(undefined, [{ ...email('lea@x.fr'), by: 'Camille' }], {
+      db,
+    });
+    await sendEmails(undefined, [{ ...email('lea@x.fr'), by: 'Camille' }], {
+      db,
+    });
+    const [first, second] = bodies.map((batch) => batch[0]!);
+    expect(first!.text).toContain('donnés par Camille');
+    expect(second!.text).not.toContain('donnés par Camille');
+    expect(second!.text).toContain('Ne plus recevoir d’emails');
+    expect(first!.headers).toMatchObject({
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    });
+  });
+
+  it('puts « Signaler cet envoi » under what an organiser sent, and stops what an event cut', async () => {
+    const { db, sqlite } = testDb();
+    sqlite.exec(`
+      INSERT INTO parties (id, slug, name, rules, created_at) VALUES
+        ('p1', 'p1', 'Famille', '{}', '2026-11-24'),
+        ('p2', 'p2', 'Coupée', '{}', '2026-11-24');
+      UPDATE parties SET emails_off = 1 WHERE id = 'p2';
+    `);
+    const sentBy = (partyId: string) => ({
+      partyId,
+      accountId: 'a1',
+      name: 'Camille',
+    });
+    await sendEmails(
+      undefined,
+      [
+        { ...email('lea@x.fr'), sentBy: sentBy('p1') },
+        { ...email('tom@x.fr'), sentBy: sentBy('p2') },
+      ],
+      { db },
+    );
+    expect(bodies[0]!.map((one) => (one.to as string[])[0])).toEqual([
+      'lea@x.fr',
+    ]);
+    expect(bodies[0]![0]!.text).toContain('Tu ne connais pas Camille ?');
   });
 });

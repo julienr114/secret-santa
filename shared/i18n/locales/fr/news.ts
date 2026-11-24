@@ -17,6 +17,11 @@ export default {
     instantHint: 'Un email à chaque nouveauté.',
     none: 'Aucun email',
     noneHint: 'Sauf pour te connecter.',
+    noneDiffers:
+      'Un organisateur peut encore t’écrire lui-même. Pour ne plus rien recevoir, même de lui : « Ne plus recevoir d’emails », en bas de chaque email.',
+    blocked:
+      'Tu as demandé à ne plus recevoir d’emails d’Under the Tree : aucun ne te parvient, sauf pour te connecter.',
+    unblock: 'Recevoir à nouveau les emails',
     following: 'Ce que je suis',
     wholeList: 'Toute la liste',
     unfollow: 'Ne plus suivre',

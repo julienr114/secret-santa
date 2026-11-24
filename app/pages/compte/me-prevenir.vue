@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { EMAIL_NEWS, type EmailNews } from '#shared/utils/news';
 import type { Choice } from '~/components/ui/ChoiceList.vue';
+import { useQueryClient } from '@tanstack/vue-query';
+import { api } from '~/composables/queries/useApi';
+import { keys } from '~/composables/queries/keys';
 import {
   useFollowsQuery,
   useUnfollowMutation,
@@ -40,6 +43,20 @@ const whom = (people: string[]) =>
   people.length === 0
     ? t('news.settings.wholeList')
     : new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(people);
+const queryClient = useQueryClient();
+const unblocking = ref(false);
+/** Lifts the block of my address (ticket 130). */
+const onUnblock = async () => {
+  unblocking.value = true;
+  try {
+    await api('/api/auth/email-block', { method: 'DELETE' });
+    await queryClient.invalidateQueries({ queryKey: keys.account() });
+  } catch (error) {
+    toast.failed(errorMessage(error));
+  } finally {
+    unblocking.value = false;
+  }
+};
 const mode = computed({
   get: () => shown.value.emailNews ?? 'summary',
   set: (emailNews: EmailNews) => save({ emailNews }),
@@ -67,6 +84,30 @@ const mode = computed({
         titled
         data-testid="notify-email"
       />
+      <!-- Ticket 130: refused by the link; only the person lifts it. -->
+      <div
+        v-if="account.data.value?.emailBlocked"
+        class="flex flex-col gap-3 rounded-2xl bg-lilac-100 p-3.5 text-[15px] leading-[1.45] text-lilac-700"
+        data-testid="email-blocked"
+      >
+        <p>{{ t('news.settings.blocked') }}</p>
+        <UButton
+          color="neutral"
+          variant="outline"
+          class="self-start"
+          :loading="unblocking"
+          :label="t('news.settings.unblock')"
+          data-testid="email-unblock"
+          @click="onUnblock"
+        />
+      </div>
+      <p
+        v-else-if="mode === 'none'"
+        class="px-1 text-sm text-toned"
+        data-testid="none-differs"
+      >
+        {{ t('news.settings.noneDiffers') }}
+      </p>
       <section v-if="mode === 'summary'" class="flex flex-col gap-1.5">
         <UiSectionTitle>{{ t('news.settings.urgent') }}</UiSectionTitle>
         <p class="px-1 text-sm text-toned">

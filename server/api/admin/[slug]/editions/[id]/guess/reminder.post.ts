@@ -92,6 +92,10 @@ export default defineEventHandler(async (event) => {
           ),
         ),
         to: person.email!,
+        locale: person.language,
+        by: sender,
+        // « Signaler cet envoi » (ticket 130).
+        sentBy: { partyId: group.id, accountId: user.accountId, name: sender },
       };
     }),
   );

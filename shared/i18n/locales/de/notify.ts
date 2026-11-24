@@ -15,6 +15,17 @@ export default {
   hello: 'Hallo {firstName},',
   helloNoName: 'Hallo,',
   settings: 'Diese Einstellung ändern',
+  foot: {
+    first:
+      'Was die App über dich weiß: deinen Vornamen und diese Adresse. Sonst nichts.',
+    firstBy:
+      'Was die App über dich weiß: deinen Vornamen und diese Adresse, angegeben von {name}. Sonst nichts.',
+    stopAsk: 'Du willst diese E-Mails nicht?',
+    stop: 'Keine E-Mails mehr von Under the Tree erhalten',
+    reportAsk: 'Kommt dir diese E-Mail seltsam vor?',
+    reportAskBy: 'Du kennst {name} nicht?',
+    report: 'Diese E-Mail melden',
+  },
   capWarning: {
     subject: {
       day: 'Under the Tree: 70 % der E-Mails von heute',

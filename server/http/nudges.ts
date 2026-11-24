@@ -145,6 +145,7 @@ export const autoRemind = async (
           localeOf(member.person.language),
         ),
         to: member.email!,
+        locale: localeOf(member.person.language),
       };
     }),
   );
@@ -221,6 +222,7 @@ export const organizerPoint = async (
         localeOf(r.language),
       ),
       to: r.email,
+      locale: localeOf(r.language),
     })),
     { db: ctx.db },
   );
@@ -269,6 +271,7 @@ export const organizerEnd = async (
         localeOf(r.language),
       ),
       to: r.email,
+      locale: localeOf(r.language),
     })),
     { db: ctx.db },
   );

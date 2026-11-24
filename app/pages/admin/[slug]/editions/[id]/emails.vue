@@ -19,6 +19,8 @@ import {
   useSendEmailsMutation,
   useEmailsPausedQuery,
 } from '~/composables/queries/useEdition';
+import { useEmailStatusMutation } from '~/composables/queries/useEmailStatus';
+import type { BlockWarning } from '#server/utils/stopEmail';
 
 // Sending one message by email to several participants: what it will
 // look like, with « Personnaliser le message » to pick another or add a
@@ -54,8 +56,33 @@ const paused = computed(() => emailsPaused.data.value?.paused ?? false);
 const status = computed(
   () => edition.data.value?.edition.status ?? 'preparing',
 );
+// An address that receives nothing (ticket 130, StopEnvoi): the person
+// is told otherwise, with those who have no address, and says why.
+const statuses = useEmailStatusMutation();
+const warnings = ref<Record<string, BlockWarning>>({});
+watch(
+  () =>
+    (edition.data.value?.participants ?? [])
+      .flatMap((p) => (p.email ? [p.email.toLowerCase()] : []))
+      .join(' '),
+  (joined) => {
+    if (!joined) return;
+    statuses.mutate(
+      { emails: joined.split(' ') },
+      {
+        onSuccess: (answer) => {
+          warnings.value = answer.warnings;
+        },
+      },
+    );
+  },
+  { immediate: true },
+);
 const participants = computed(() => {
-  const list = edition.data.value?.participants ?? [];
+  const list = (edition.data.value?.participants ?? []).map((p) => {
+    const blocked = p.email ? warnings.value[p.email.toLowerCase()] : undefined;
+    return blocked ? { ...p, email: null, blocked } : { ...p, blocked: null };
+  });
   // While answers are collected, in the order of the « Réponses » list.
   return answering.value
     ? sortByAnswer(
@@ -102,17 +129,28 @@ const { answerLook } = useAnswerLook();
  * @param p - The participant.
  * @returns The icon, the tone classes of the icon and the words, the words.
  */
-const rowLook = (p: Participant) =>
-  p.email
-    ? answering.value
-      ? answerLook(p.answerStatus ?? 'toNotify')
-      : lookOf(p)
-    : {
-        icon: 'i-lucide-circle-dashed',
+const rowLook = (p: Participant & { blocked: BlockWarning | null }) =>
+  p.blocked
+    ? {
+        icon: 'i-lucide-mail-x',
         iconTone: 'text-toned',
         tone: 'text-toned',
-        text: t('adminEdition.screen.emails.noEmail'),
-      };
+        text: t(
+          p.blocked === 'refused'
+            ? 'common.emailBlock.refusedShort'
+            : 'common.emailBlock.unknownShort',
+        ),
+      }
+    : p.email
+      ? answering.value
+        ? answerLook(p.answerStatus ?? 'toNotify')
+        : lookOf(p)
+      : {
+          icon: 'i-lucide-circle-dashed',
+          iconTone: 'text-toned',
+          tone: 'text-toned',
+          text: t('adminEdition.screen.emails.noEmail'),
+        };
 // The ticks: those still to notify at first, then as changed here; kept
 // when going to « Personnaliser le message », which previews for them.
 const ticks = useEmailSelection(id);
@@ -402,6 +440,7 @@ const onSend = () =>
                     </span>
                   </span>
                   <NuxtLink
+                    v-if="!p.blocked"
                     :to="`/e/${slug}/membres/${p.id}`"
                     class="flex min-h-11 shrink-0 items-center px-1 text-sm font-bold text-primary underline"
                     :aria-label="

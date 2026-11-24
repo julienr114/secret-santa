@@ -123,6 +123,7 @@ describe('the tab lit on each page', () => {
       '/admin',
       '/admin/comptes',
       '/admin/comptes/[id]',
+      '/admin/envois-signales',
       '/admin/groupes',
       '/admin/groupes/nouveau',
       '/admin/guide-de-style',

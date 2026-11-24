@@ -15,6 +15,18 @@ export default {
   hello: 'Bonjour {firstName},',
   helloNoName: 'Bonjour,',
   settings: 'Changer ce réglage',
+  // The foot of every email (ticket 130, StopEmail).
+  foot: {
+    first:
+      'Ce que l’application sait de toi : ton prénom et cette adresse. Rien d’autre.',
+    firstBy:
+      'Ce que l’application sait de toi : ton prénom et cette adresse, donnés par {name}. Rien d’autre.',
+    stopAsk: 'Tu ne veux pas de ces emails ?',
+    stop: 'Ne plus recevoir d’emails d’Under the Tree',
+    reportAsk: 'Cet envoi te semble anormal ?',
+    reportAskBy: 'Tu ne connais pas {name} ?',
+    report: 'Signaler cet envoi',
+  },
   // To the super-admins, at 70 % of a cap of the emails (ticket 129).
   capWarning: {
     subject: {

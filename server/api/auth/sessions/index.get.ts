@@ -1,6 +1,7 @@
 import { useDb } from '#server/database/client';
 import { findAccountById, listActiveSessions } from '#server/database/accounts';
 import { requireAccount } from '#server/http/auth';
+import { blockedAddresses } from '#server/http/emailStatus';
 import { nowIso } from '#server/http/context';
 import { deviceLabel } from '#server/utils/accounts';
 import { avatarOf } from '#server/utils/avatars';
@@ -22,6 +23,10 @@ export default defineEventHandler(async (event) => {
     isSuperAdmin: account?.isSuperAdmin ?? false,
     // « Me prévenir », « Par email » (ticket 121).
     emailNews: account?.emailNews ?? 'summary',
+    // « Ne plus recevoir d'emails », asked by the link (ticket 130).
+    emailBlocked: account
+      ? (await blockedAddresses(event, db, [account.email])).size > 0
+      : false,
     sessions: rows.map((row) => ({
       id: row.id,
       current: row.id === user.sessionId,

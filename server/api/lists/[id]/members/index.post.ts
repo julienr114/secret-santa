@@ -63,6 +63,8 @@ export default defineEventHandler(async (event) => {
             me?.language ?? 'fr',
           ),
           to: email,
+          locale: me?.language ?? 'fr',
+          by: me?.firstName ?? null,
         },
       ],
       { db },

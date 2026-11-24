@@ -29,6 +29,8 @@ export type AppToday = {
   loginFailed: number;
   emailsRejected: number;
   serverErrors: number;
+  refused: number;
+  reportedSends: number;
 };
 /** The caps of the emails, with their gauges (ticket 129). */
 export type AppCaps = { emailsDay: Gauge; emailsMonth: Gauge };

@@ -57,3 +57,11 @@ describe('which routes are limited', () => {
     expect(rateLimiterFor('GET', '/l/tok')).toBeNull();
   });
 });
+
+describe('the links at the foot of the emails (ticket 130)', () => {
+  it('are limited, read or written', () => {
+    expect(rateLimiterFor('GET', '/api/stop/abc')).toBe('ask');
+    expect(rateLimiterFor('POST', '/api/stop/abc')).toBe('ask');
+    expect(rateLimiterFor('POST', '/api/report-send/abc')).toBe('ask');
+  });
+});

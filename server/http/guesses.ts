@@ -155,6 +155,7 @@ export const afterReveal = async (
           localeOf(person.language),
         ),
         to: person.email!,
+        locale: localeOf(person.language),
       })),
   );
   // A failed send changes nothing: the results are on the pages anyway.

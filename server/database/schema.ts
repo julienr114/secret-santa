@@ -46,6 +46,10 @@ export const parties = sqliteTable('parties', {
   // The account that created the party: it counts against its quota.
   createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),
+  // The super-admin cut the emails its organisers send (ticket 130).
+  emailsOff: integer('emails_off', { mode: 'boolean' })
+    .notNull()
+    .default(false),
 });
 
 export const persons = sqliteTable(
@@ -475,6 +479,36 @@ export const appCounters = sqliteTable(
     count: integer('count').notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.day, t.name] })],
+);
+
+// « Ne plus recevoir d'emails » (ticket 130, README 22.25): the addresses
+// that receive nothing, by their print (with the pepper of the server),
+// never in clear; why (the person, an address that does not exist, a
+// complaint), and since when.
+export const emailBlocks = sqliteTable('email_blocks', {
+  emailPrint: text('email_print').primaryKey(),
+  cause: text('cause', { enum: ['person', 'bounce', 'complaint'] }).notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+// The addresses already written to, by their print: the first email to
+// an address says who gave it and what is known of it (ticket 130).
+export const emailSeen = sqliteTable('email_seen', {
+  emailPrint: text('email_print').primaryKey(),
+  firstAt: text('first_at').notNull(),
+});
+
+// « Signaler cet envoi » (ticket 130): an email an organiser sent, which
+// its reader found wrong; by event and by account, for the super-admin.
+export const emailReports = sqliteTable(
+  'email_reports',
+  {
+    id: text('id').primaryKey(),
+    partyId: text('party_id').notNull(),
+    accountId: text('account_id'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('email_reports_party_idx').on(t.partyId)],
 );
 
 export const loginLinks = sqliteTable(

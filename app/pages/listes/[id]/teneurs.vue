@@ -410,6 +410,8 @@ const onResend = (expired: Invite) =>
               size="xl"
               :ui="{ base: 'h-12 text-base' }"
             />
+            <!-- Ticket 130 (StopSaisie). -->
+            <UiEmailBlockNote :email="email" />
             <p class="text-sm leading-[1.45] text-toned">
               {{ t('lists.holders.emailHelp') }}
             </p>

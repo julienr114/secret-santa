@@ -78,6 +78,8 @@ export const sendHolderInvite = async (
           invited?.language ?? me?.language ?? 'fr',
         ),
         to: invite.email,
+        locale: invited?.language ?? me?.language ?? 'fr',
+        by: me?.firstName ?? null,
       },
     ],
     { db },

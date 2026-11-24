@@ -215,6 +215,8 @@ const onDelete = () =>
             :on-click="() => (languageOpen = true)"
           />
         </UiList>
+        <!-- An address that receives nothing (ticket 130, StopSaisie). -->
+        <UiEmailBlockNote :email="person.email" />
         <UiChoiceSheet
           v-model:open="languageOpen"
           :title="t('adminGroup.personForm.languageRow')"

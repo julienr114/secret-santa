@@ -3,6 +3,9 @@ import { loadGroupOverviews } from '#server/database/overview';
 import { appStats, listAdminAccounts } from '#server/database/quota';
 import { isSwitchOn } from '#server/database/switches';
 import { countersOf } from '#server/database/counters';
+import { refusedCount } from '#server/database/emailBlocks';
+import { emailReports } from '#server/database/schema';
+import { count } from 'drizzle-orm';
 import { nowIso } from '#server/http/context';
 import { EMAIL_CAPS, gaugeOf } from '#server/utils/spend';
 import { requireSuperAdmin } from '#server/http/auth';
@@ -16,16 +19,27 @@ export default defineEventHandler(async (event) => {
   const user = await requireSuperAdmin(event);
   const db = useDb(event);
   const day = nowIso().slice(0, 10);
-  const [accounts, stats, overviews, paused, emails, signups, counters] =
-    await Promise.all([
-      listAdminAccounts(db),
-      appStats(db),
-      loadGroupOverviews(db),
-      isSwitchOn(db, 'new_secret_santas'),
-      isSwitchOn(db, 'emails'),
-      isSwitchOn(db, 'signups'),
-      countersOf(db, day),
-    ]);
+  const [
+    accounts,
+    stats,
+    overviews,
+    paused,
+    emails,
+    signups,
+    counters,
+    refused,
+    reported,
+  ] = await Promise.all([
+    listAdminAccounts(db),
+    appStats(db),
+    loadGroupOverviews(db),
+    isSwitchOn(db, 'new_secret_santas'),
+    isSwitchOn(db, 'emails'),
+    isSwitchOn(db, 'signups'),
+    countersOf(db, day),
+    refusedCount(db),
+    db.select({ n: count() }).from(emailReports),
+  ]);
   return {
     accounts: accounts.map((account) => ({
       ...account,
@@ -43,6 +57,9 @@ export default defineEventHandler(async (event) => {
       loginFailed: counters.day.login_failed ?? 0,
       emailsRejected: counters.day.emails_rejected ?? 0,
       serverErrors: counters.day.server_error ?? 0,
+      // Ticket 130: not of the day, all of them.
+      refused,
+      reportedSends: reported[0]?.n ?? 0,
     },
     caps: {
       emailsDay: gaugeOf(counters.day.emails_sent ?? 0, EMAIL_CAPS.day),

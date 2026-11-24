@@ -58,4 +58,15 @@ export default {
     en: 'English',
     de: 'Deutsch',
   },
+  // Under an address that receives nothing (ticket 130, StopSaisie).
+  emailBlock: {
+    refused:
+      'La personne qui a cette adresse a demandé à ne plus recevoir d’emails d’Under the Tree.',
+    refusedNext:
+      'Tu peux garder l’adresse, mais aucun email ne lui partira. Envoie-lui son lien autrement.',
+    unknown:
+      'Cette adresse ne semble pas exister : aucun email ne lui partira.',
+    refusedShort: 'A demandé à ne plus recevoir d’emails',
+    unknownShort: 'Adresse qui ne semble pas exister',
+  },
 };

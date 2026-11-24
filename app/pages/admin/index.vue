@@ -197,6 +197,18 @@ const groupsLine = computed(() =>
           :value="String(stats.fullParties)"
           data-testid="watch-full-parties"
         />
+        <!-- Ticket 130: the addresses that refused, the sends reported. -->
+        <UiListItem
+          :title="t('auth.admin.refused')"
+          :value="number(query.data.value?.today.refused ?? 0)"
+          data-testid="watch-refused"
+        />
+        <UiListItem
+          to="/admin/envois-signales"
+          :title="t('auth.admin.reportedSends')"
+          :value="number(query.data.value?.today.reportedSends ?? 0)"
+          data-testid="watch-reported"
+        />
         <UiListItem
           v-for="line in today"
           :key="line.key"

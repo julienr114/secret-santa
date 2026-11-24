@@ -67,6 +67,7 @@ export const emailParticipant = async (
     [
       {
         to: row.person.email,
+        locale: localeOf(row.person.language),
         ...build(
           { firstName: row.person.firstName, link },
           localeOf(row.person.language),

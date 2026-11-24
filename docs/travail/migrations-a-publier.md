@@ -7,3 +7,9 @@ La production est à `0047_v3_hints_without_account` (la bascule, ticket 113). L
 | 1 | `0048_v3_news_by_email` | 121 | Le réglage « Par email » de chaque compte (« Un résumé le matin » pour tous au départ), le jour de son dernier résumé ; pour chaque nouveauté, si elle peut partir par email et quand elle est partie. Les nouveautés d'avant sont marquées parties : personne ne reçoit d'un coup trente jours de nouveautés. |
 | 2 | `0049_v3_list_follows` | 122 | La table `gift_list_follows` : ce qu'un compte suit sur une liste, toute la liste ou une personne. |
 | 3 | `0050_v3_app_counters` | 129 | La table `app_counters` : ce que l'application compte par jour (emails envoyés et rejetés, requêtes refusées pour débit, connexions échouées, erreurs du serveur, avertissements donnés). Les deux nouveaux interrupteurs sont des lignes de `app_switches`, sans changement de table. |
+| 4 | `0051_v3_email_blocks` | 130 | Les tables `email_blocks` (les adresses bloquées, par empreinte), `email_seen` (les adresses déjà écrites) et `email_reports` (« Signaler cet envoi ») ; la colonne `parties.emails_off`. |
+
+Avec `0051`, deux réglages chez le fournisseur d'email, pour que les rejets et les plaintes bloquent l'adresse :
+
+- dans Resend, un webhook vers `https://under-the-tree.party/api/email/events`, pour les événements `email.bounced` et `email.complained` ;
+- son secret (« whsec_… ») dans le secret Cloudflare `NUXT_RESEND_WEBHOOK_SECRET` (`pnpm wrangler secret put NUXT_RESEND_WEBHOOK_SECRET`). Sans lui, le webhook est refusé et rien n'est bloqué par un rejet.

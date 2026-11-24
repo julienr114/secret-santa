@@ -16,6 +16,11 @@ export default {
     instantHint: 'Eine E-Mail für jede Neuigkeit.',
     none: 'Keine E-Mail',
     noneHint: 'Außer zum Anmelden.',
+    noneDiffers:
+      'Eine Organisatorin oder ein Organisator kann dir noch selbst schreiben. Um gar nichts mehr zu erhalten: „Keine E-Mails mehr erhalten“, unten in jeder E-Mail.',
+    blocked:
+      'Du möchtest keine E-Mails mehr von Under the Tree erhalten: Keine erreicht dich, außer zum Anmelden.',
+    unblock: 'Wieder E-Mails erhalten',
     following: 'Dem ich folge',
     wholeList: 'Die ganze Liste',
     unfollow: 'Nicht mehr folgen',

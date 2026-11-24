@@ -12,6 +12,7 @@ import { auditInsert } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { emailConfigured, sendEmails } from '#server/http/email';
+import { blockedAddresses } from '#server/http/emailStatus';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 import { auditEvent } from '#server/utils/audit';
@@ -72,8 +73,19 @@ export default defineEventHandler(async (event) => {
       .from(participations)
       .where(eq(participations.secretSantaId, edition.id)),
   ]);
+  // An address that refused the emails is as one without (ticket 130,
+  // StopEnvoi): the person is told otherwise.
+  const blocked = await blockedAddresses(
+    event,
+    db,
+    people.map((person) => person.email),
+  );
   const { targets, withoutEmail, left } = emailTargets(
-    people,
+    people.map((person) =>
+      person.email && blocked.has(person.email.toLowerCase())
+        ? { ...person, email: null }
+        : person,
+    ),
     audience,
     participationIds,
   );
@@ -114,7 +126,14 @@ export default defineEventHandler(async (event) => {
           notePosition,
         ),
       );
-      return { ...email, to: person.email };
+      return {
+        ...email,
+        to: person.email,
+        locale: person.language,
+        by: sender,
+        // « Signaler cet envoi » (ticket 130).
+        sentBy: { partyId: group.id, accountId: user.accountId, name: sender },
+      };
     }),
   );
   unwrap(await sendEmails(event, emails, { db }));

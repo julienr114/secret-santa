@@ -62,6 +62,9 @@ export default defineNuxtConfig({
     // applies it, « off » sends none.
     cspMode: '',
     resendApiKey: '',
+    // The secret of the provider's webhook (« whsec_… »): its bounces and
+    // complaints block the address (ticket 130). Without it, none is read.
+    resendWebhookSecret: '',
     emailFrom: 'Under the Tree <gardien@under-the-tree.party>',
     // 30 days; each session is also a row that can be revoked.
     session: { maxAge: 60 * 60 * 24 * 30, cookie: { sameSite: 'lax' } },

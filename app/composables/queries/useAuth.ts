@@ -24,6 +24,7 @@ export type AccountPayload = {
   avatar: Avatar;
   isSuperAdmin: boolean;
   emailNews: EmailNews;
+  emailBlocked: boolean;
   sessions: AccountSession[];
 };
 

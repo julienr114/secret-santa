@@ -16,6 +16,11 @@ export default {
     instantHint: 'An email for each piece of news.',
     none: 'No email',
     noneHint: 'Except to log in.',
+    noneDiffers:
+      'An organiser can still write to you themselves. To receive nothing at all, even from them: “Stop receiving emails”, at the bottom of every email.',
+    blocked:
+      'You asked to stop receiving emails from Under the Tree: none reach you, except to log in.',
+    unblock: 'Receive emails again',
     following: 'What I follow',
     wholeList: 'The whole list',
     unfollow: 'Stop following',

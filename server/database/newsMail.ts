@@ -9,7 +9,7 @@ import {
   type SummaryBlock,
 } from '#server/utils/newsEmail';
 import type { Email } from '#server/utils/messages';
-import { localeOf } from '#shared/i18n';
+import { localeOf, type Locale } from '#shared/i18n';
 import { NEWS_EMAIL, NEWS_KINDS } from '#shared/utils/news';
 
 // The emails of the news (ticket 121, README 22.22), sent by the
@@ -45,7 +45,9 @@ export const sendNewsEmails = async (
     dataKey: CryptoKey;
     now: string;
     url: (path: string) => string;
-    send: (emails: (Email & { to: string })[]) => Promise<unknown>;
+    send: (
+      emails: (Email & { to: string; locale?: Locale })[],
+    ) => Promise<unknown>;
   },
 ): Promise<number> => {
   const { now } = tools;
@@ -155,6 +157,7 @@ export const sendNewsEmails = async (
           localeOf(owner.language),
         ),
         to: owner.email,
+        locale: localeOf(owner.language),
       },
     ];
   });
@@ -194,6 +197,7 @@ export const sendNewsEmails = async (
           localeOf(owner.language),
         ),
         to: owner.email,
+        locale: localeOf(owner.language),
       },
     ];
   });

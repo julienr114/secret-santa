@@ -213,22 +213,16 @@ test('a participant learns their own result only, and only by asking', async () 
     ).json();
     const body = JSON.stringify(reveal);
     expect(body).not.toMatch(FORBIDDEN);
-    if (NAMES.includes(receiver.firstName)) {
-      // No account: the reveal gives the hints they left before the V3,
-      // theirs and nobody else's.
-      expect(reveal.hints.ideas).toEqual([
-        { label: `${WISH} de ${receiver.firstName}`, url: null },
-      ]);
-      expect(reveal.hints.portrait.texts.avoid).toBe(
-        `${WISH} évité par ${receiver.firstName}`,
-      );
-      expect(body.match(new RegExp(WISH, 'g'))).toHaveLength(2);
-    } else {
-      // An account (ticket 107): their help comes from their list and
-      // their card, never from the hints of before, theirs or anyone's.
-      expect(reveal.hints.ideas).toEqual([]);
-      expect(body).not.toContain(WISH);
-    }
+    // The reveal gives the hints they left before the V3, theirs and
+    // nobody else's, with an account or not (ticket 165: no list was made
+    // of them at the switch, so nothing written is lost).
+    expect(reveal.hints.ideas).toEqual([
+      { label: `${WISH} de ${receiver.firstName}`, url: null },
+    ]);
+    expect(reveal.hints.portrait.texts.avoid).toBe(
+      `${WISH} évité par ${receiver.firstName}`,
+    );
+    expect(body.match(new RegExp(WISH, 'g'))).toHaveLength(2);
   }
 });
 

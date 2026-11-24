@@ -32,7 +32,6 @@ const KEPT = [
   'guesses',
   'draw_answers',
   'audit_log',
-  'accounts',
   'gift_claims',
   'gift_list_givers',
   'gift_giver_claims',
@@ -227,18 +226,46 @@ const keptProblems = (before: Query, after: Query): string[] => {
 };
 
 /**
- * The participations whose gift hints become a list (0038): a person with
- * an account, ideas left, a Secret Santa not closed, no list linked.
+ * The participations whose gift hints become a list (0038, and 0047 for
+ * those without an account, ticket 165): a person with an address, ideas
+ * left, a Secret Santa not closed, no list linked. Who has no address
+ * keeps their hints as they are.
  */
 const hintsOf = (before: Query) =>
   before(
-    `SELECT p.id, e.group_id, a.id AS account_id FROM participations p
+    `SELECT p.id, e.group_id, lower(ps.email) AS email FROM participations p
      JOIN persons ps ON ps.id = p.person_id
-     JOIN accounts a ON a.email = lower(ps.email)
      JOIN editions e ON e.id = p.edition_id
      WHERE e.status != 'closed' AND p.gift_list_id IS NULL
+       AND ps.email IS NOT NULL AND trim(ps.email) != ''
        AND p.id IN (SELECT participation_id FROM wishes)`,
   );
+
+/**
+ * Every account is kept, and one more for each address that wrote hints
+ * or a portrait without one (0047, ticket 165): no other.
+ */
+const accountsProblems = (before: Query, after: Query): string[] => {
+  const kept = new Set(after('SELECT id FROM accounts').map((r) => r.id));
+  const lost = before('SELECT id FROM accounts').filter(
+    (row) => !kept.has(row.id),
+  );
+  const expected = before(
+    `SELECT DISTINCT lower(ps.email) AS email FROM participations p
+     JOIN persons ps ON ps.id = p.person_id
+     WHERE ps.email IS NOT NULL AND trim(ps.email) != ''
+       AND (p.id IN (SELECT participation_id FROM wishes)
+         OR p.id IN (SELECT participation_id FROM gift_portraits))
+       AND lower(ps.email) NOT IN (SELECT email FROM accounts)`,
+  ).length;
+  const made = countOf(after, 'accounts') - countOf(before, 'accounts');
+  return [
+    ...lost.map((row) => `compte ${row.id} : perdu`),
+    ...(made === expected
+      ? []
+      : [`comptes : ${made} créés, ${expected} attendus (pistes sans compte)`]),
+  ];
+};
 
 /**
  * Each list keeps its holders, its title, its ideas and its ticks; one
@@ -297,17 +324,15 @@ const hintsProblems = (before: Query, after: Query): string[] => {
     )[0]?.id;
     if (!list) return [`pistes ${hint.id} : aucune liste`];
     const owner = after(
-      `SELECT account_id FROM gift_lists WHERE id = ${quoted(list)}`,
-    )[0]?.account_id;
+      `SELECT a.email FROM gift_lists l JOIN accounts a ON a.id = l.account_id WHERE l.id = ${quoted(list)}`,
+    )[0]?.email;
     const shared = after(
       `SELECT visibility FROM gift_list_parties WHERE list_id = ${quoted(list)} AND party_id = ${quoted(hint.group_id)}`,
     );
     const texts = (query: Query, sql: string) =>
       query(sql).map((row) => [row.text, row.url ?? null]);
     return [
-      ...(owner === hint.account_id
-        ? []
-        : [`pistes ${hint.id} : pas sa liste`]),
+      ...(owner === hint.email ? [] : [`pistes ${hint.id} : pas sa liste`]),
       ...(shared.length === 1 && shared[0]?.visibility === 'giver'
         ? []
         : [`pistes ${hint.id} : pas réservées à celui qui l'a tiré`]),
@@ -417,6 +442,7 @@ export const compareV3 = (before: Query, after: Query): string[] => [
   ...entriesProblems(before, after),
   ...keptProblems(before, after),
   ...listsKept(before, after),
+  ...accountsProblems(before, after),
   ...hintsProblems(before, after),
   ...listsProblems(before, after),
   ...ideasPlain(before, after),

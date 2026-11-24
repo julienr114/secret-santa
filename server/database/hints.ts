@@ -19,6 +19,7 @@ import {
   HINT_ANSWERS,
   hasHints,
   portraitOfCard,
+  portraitWithOld,
   type HintAnswer,
   type Portrait,
 } from '#shared/utils/hints';
@@ -220,9 +221,10 @@ export const receiverHintsOf = async (
 /**
  * What the one who drew someone reads under their result (ticket 107,
  * docs/spec/v3/secret-santa.md, « Le résultat »): with an account, the
- * tastes of their « Moi » card; without one, the portrait and ideas they
- * left before the V3, read only. And whether the giver already asked for
- * ideas. Who they are stays on the server: only the account and their
+ * tastes of their « Moi » card; and, with an account or not, the portrait
+ * and ideas they left before the V3, read only, as long as no list was
+ * made of them at the switch (ticket 165: nothing written is lost, nothing
+ * is read twice). And whether the giver already asked for ideas. Who they are stays on the server: only the account and their
  * card, for finding their list.
  * @param db - The database.
  * @param receiver - Who receives.
@@ -244,6 +246,18 @@ export const giverHelp = async (
   const requested = Boolean(
     await findHintRequest(db, receiver.participationId),
   );
+  // The hints left before the V3, unless the switch made a list of them.
+  const [participation] = await db
+    .select({ listId: participations.giftListId })
+    .from(participations)
+    .where(eq(participations.id, receiver.participationId))
+    .limit(1);
+  const [oldPortrait, oldIdeas] = participation?.listId
+    ? [null, []]
+    : await Promise.all([
+        findPortrait(db, receiver.participationId),
+        listWishes(db, receiver.participationId),
+      ]);
   if (account) {
     const [card] = await db
       .select({
@@ -261,21 +275,20 @@ export const giverHelp = async (
       .limit(1);
     return {
       mode: 'full' as const,
-      portrait: portraitOfCard(card ?? { answers: null, texts: null }),
-      ideas: [],
+      portrait: portraitWithOld(
+        portraitOfCard(card ?? { answers: null, texts: null }),
+        oldPortrait,
+      ),
+      ideas: oldIdeas,
       requested,
       accountId: account.id,
       selfMemberId: card?.id ?? null,
     };
   }
-  const [portrait, ideas] = await Promise.all([
-    findPortrait(db, receiver.participationId),
-    listWishes(db, receiver.participationId),
-  ]);
   return {
     mode: 'full' as const,
-    portrait,
-    ideas,
+    portrait: oldPortrait ?? portraitOfCard({ answers: null, texts: null }),
+    ideas: oldIdeas,
     requested,
     accountId: null,
     selfMemberId: null,

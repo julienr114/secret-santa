@@ -6,6 +6,7 @@ import {
   hasHints,
   isPortraitEmpty,
   portraitOfCard,
+  portraitWithOld,
   portraitTexts,
   questionsFor,
   type Portrait,
@@ -114,5 +115,24 @@ describe('portraitOfCard', () => {
     expect(hasHints(portraitOfCard({ answers: null, texts: null }), 0)).toBe(
       false,
     );
+  });
+});
+
+describe('portraitWithOld', () => {
+  const blank = portraitOfCard({ answers: null, texts: null });
+  it('keeps what the card says, the old portrait where it is silent', () => {
+    const card = portraitOfCard({
+      answers: { usefulOrSurprising: 'first' },
+      texts: null,
+    });
+    const old = portraitOfCard({
+      answers: { usefulOrSurprising: 'second', objectOrMoment: 'first' },
+      texts: { lately: 'Le tricot' },
+    });
+    const both = portraitWithOld(card, old);
+    expect(both.answers.usefulOrSurprising).toBe('first');
+    expect(both.answers.objectOrMoment).toBe('first');
+    expect(both.texts.lately).toBe('Le tricot');
+    expect(portraitWithOld(blank, null)).toBe(blank);
   });
 });

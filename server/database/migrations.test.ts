@@ -9,7 +9,7 @@ import { compareV3 } from './v3Compare';
 // 0033 (« Cocher pour quelqu'un », from main), then rows covering the
 // cases of docs/spec/v3/migration.md, then 0034, in one transaction as D1
 // applies it, foreign keys on. The migrations of the V3 come after the
-// one of main since ticket 098: 0034 to 0046, compared all together at the
+// one of main since ticket 098: 0034 to 0047, compared all together at the
 // end (ticket 113).
 
 const DIR = join(__dirname, 'migrations');
@@ -908,12 +908,124 @@ describe('the place of a gift not on the list (Julien, 24 November 2026)', () =>
   });
 });
 
+describe('the hints of those without an account (ticket 165)', () => {
+  const HINTS = '0047_v3_hints_without_account.sql';
+  const db = v2();
+  const HINTS_AT = '2026-11-12T08:00:00.000Z';
+  // Léa, without an account but with an address, wrote a portrait and two
+  // ideas in « Noël 2026 », drawn; she is also, by the same address in
+  // capitals, in « Noël 2024 », closed, with an idea. Inès, without an
+  // address, an idea. Tom, an address, nothing written.
+  db.exec(`
+INSERT INTO persons (id, group_id, first_name, email, created_at) VALUES
+  ('p5', 'g1', 'Léa', 'lea@example.com', '${NOW}'),
+  ('p6', 'g2', 'Léa', 'LEA@example.com', '${NOW}'),
+  ('p7', 'g1', 'Tom', 'tom@example.com', '${NOW}');
+INSERT INTO participations (id, edition_id, person_id, token_hash, token_enc, token_iv, hints_updated_at) VALUES
+  ('pa6', 'e2', 'p5', 'h6', 'x', 'x', '${HINTS_AT}'),
+  ('pa7', 'e4', 'p6', 'h7', 'x', 'x', NULL),
+  ('pa8', 'e2', 'p7', 'h8', 'x', 'x', NULL);
+INSERT INTO gift_portraits (participation_id, useful_or_surprising, lately, updated_at) VALUES
+  ('pa6', 'useful', 'Le tricot', '${HINTS_AT}');
+INSERT INTO wishes (id, participation_id, position, label, url, created_at) VALUES
+  ('w1', 'pa6', 0, 'Des aiguilles', NULL, '${HINTS_AT}'),
+  ('w2', 'pa6', 1, 'De la laine', 'https://laine.example', '${HINTS_AT}'),
+  ('w3', 'pa2', 0, 'Un livre', NULL, '${NOW}'),
+  ('w4', 'pa7', 0, 'Un vieux souhait', NULL, '${NOW}');
+`);
+  files
+    .filter((file) => file >= V3 && file <= HINTS)
+    .forEach((file) => apply(db, file));
+  const lea = () =>
+    all(
+      db,
+      "SELECT id, first_name FROM accounts WHERE email = 'lea@example.com'",
+    );
+
+  it('makes one account per address that wrote something, with its first name', () => {
+    expect(lea()).toEqual([{ id: expect.any(String), first_name: 'Léa' }]);
+    // Nothing written, or no address: no account.
+    expect(
+      all(db, "SELECT id FROM accounts WHERE email = 'tom@example.com'"),
+    ).toEqual([]);
+    const card = one(
+      db,
+      'SELECT answers, texts FROM family_members WHERE account_id = ? AND is_self = 1',
+      String(lea()[0]?.id),
+    );
+    expect(JSON.parse(String(card.answers)).usefulOrSurprising).toBe('useful');
+    expect(JSON.parse(String(card.texts)).lately).toBe('Le tricot');
+  });
+
+  it('puts the ideas on a list kept for the one who drew, dated by the hints', () => {
+    const [list] = all(
+      db,
+      "SELECT l.id, l.account_id, l.created_at, l.updated_at, l.shared_at FROM gift_lists l JOIN participations p ON p.gift_list_id = l.id WHERE p.id = 'pa6'",
+    );
+    expect(list).toMatchObject({
+      account_id: lea()[0]?.id,
+      // Not the day of the switch: it never reads as new ideas.
+      created_at: HINTS_AT,
+      updated_at: HINTS_AT,
+      shared_at: null,
+    });
+    expect(
+      all(
+        db,
+        'SELECT party_id AS party, visibility, giver FROM gift_list_parties WHERE list_id = ?',
+        String(list?.id),
+      ),
+    ).toEqual([{ party: 'g1', visibility: 'giver', giver: 1 }]);
+    expect(
+      all(
+        db,
+        'SELECT text, url FROM gift_list_ideas WHERE list_id = ? ORDER BY position',
+        String(list?.id),
+      ),
+    ).toEqual([
+      { text: 'Des aiguilles', url: null },
+      { text: 'De la laine', url: 'https://laine.example' },
+    ]);
+  });
+
+  it('makes no list for a Secret Santa closed, nor for a person without an address', () => {
+    expect(
+      one(db, "SELECT gift_list_id AS l FROM participations WHERE id = 'pa7'")
+        .l,
+    ).toBeNull();
+    expect(
+      one(db, "SELECT gift_list_id AS l FROM participations WHERE id = 'pa2'")
+        .l,
+    ).toBeNull();
+    // Every hint is still there.
+    expect(all(db, 'SELECT id FROM wishes ORDER BY id')).toHaveLength(4);
+  });
+
+  it('tells nobody: no news written', () => {
+    expect(all(db, 'SELECT id FROM news')).toEqual([]);
+  });
+
+  it('leaves no foreign key broken, nor its working tables', () => {
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([]);
+    expect(
+      all(db, "SELECT name FROM sqlite_master WHERE name LIKE '_v3_new%'"),
+    ).toEqual([]);
+  });
+});
+
 describe('the comparison after every migration of the V3 (ticket 113)', () => {
   // What production holds the day of the switch: hints of Camille (an
   // account) and of Inès (none) in « Noël 2026 », drawn, Inès not having
   // opened her envelope; ideas and ticks on « Les 7 ans de Léo », shared
-  // by link; the list of Hugo, linked to a draw, its sharing stopped.
+  // by link; the list of Hugo, linked to a draw, its sharing stopped;
+  // and Léa, an address but no account, an idea (ticket 165).
   const cases = `
+INSERT INTO persons (id, group_id, first_name, email, created_at) VALUES
+  ('p9', 'g1', 'Léa', 'lea@example.com', '${NOW}');
+INSERT INTO participations (id, edition_id, person_id, token_hash, token_enc, token_iv) VALUES
+  ('pa9', 'e2', 'p9', 'h9', 'x', 'x');
+INSERT INTO wishes (id, participation_id, position, label, url, created_at) VALUES
+  ('w9', 'pa9', 0, 'De la laine', NULL, '${NOW}');
 UPDATE participations SET first_viewed_at = '${NOW}' WHERE id = 'pa1';
 UPDATE gift_lists SET shared_at = '${NOW}' WHERE id = 'l3';
 INSERT INTO gift_portraits (participation_id, useful_or_surprising, updated_at) VALUES ('pa1', 'first', '${NOW}');
@@ -968,11 +1080,20 @@ DELETE FROM gift_claims WHERE id = 'c1';
     ]);
   });
 
+  it('sees a list of hints without an account left undone', () => {
+    const broken = migrated();
+    broken.exec(`
+PRAGMA foreign_keys = OFF;
+UPDATE participations SET gift_list_id = NULL WHERE id = 'pa9';
+`);
+    expect(compare(broken)).toContain('pistes pa9 : aucune liste');
+  });
+
   it('sees a list left shared with an event after its sharing stopped', () => {
     const broken = migrated();
     broken.exec(
       "INSERT INTO gift_list_parties (id, list_id, party_id, visibility, created_at) VALUES ('x', 'l2', 'g2', 'party', '2026-11-20')",
     );
-    expect(compare(broken)).toEqual(['listes : 5 rattachements, 4 attendus']);
+    expect(compare(broken)).toEqual(['listes : 6 rattachements, 5 attendus']);
   });
 });

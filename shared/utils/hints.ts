@@ -179,3 +179,26 @@ export const portraitOfCard = (card: {
     }),
   ) as HintTexts,
 });
+
+/**
+ * A « Moi » card and the portrait left before the V3, together (ticket
+ * 165): what the card says, and the old portrait where the card is
+ * silent, so that nothing written is lost to the one who drew them.
+ * @param card - The portrait of the card.
+ * @param old - The portrait left before, or null.
+ * @returns The portrait read.
+ */
+export const portraitWithOld = (
+  card: Portrait,
+  old: Portrait | null,
+): Portrait =>
+  old
+    ? {
+        answers: Object.fromEntries(
+          HINT_QUESTIONS.map((q) => [q, card.answers[q] ?? old.answers[q]]),
+        ) as HintAnswers,
+        texts: Object.fromEntries(
+          HINT_TEXTS.map((x) => [x, card.texts[x] ?? old.texts[x]]),
+        ) as HintTexts,
+      }
+    : card;

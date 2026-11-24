@@ -6,7 +6,7 @@ Toutes ces commandes se lancent par Julien, depuis la racine du dépôt. Claude 
 
 ## Ce qu'il faut savoir
 
-- La production est à `0033_claims_for_someone`. La V3 publie **treize migrations d'un coup**, de `0034_v3_parties` à `0046_v3_off_list_position`. Elles ne se défont pas : on ne revient en arrière qu'en restaurant la base.
+- La production est à `0033_claims_for_someone`. La V3 publie **quatorze migrations d'un coup**, de `0034_v3_parties` à `0047_v3_hints_without_account`. Elles ne se défont pas : on ne revient en arrière qu'en restaurant la base.
 - **L'ordre : la migration, puis le code.** Entre les deux, la V2 tourne sur la base de la V3 et peut afficher des erreurs : quelques dizaines de secondes, si le code est construit d'avance.
 - **Les tâches planifiées** (`wrangler.toml`, `[triggers]`) :
   - `0 8 * * *`, chaque matin à 8 h UTC (9 h à Paris en hiver) : les rappels aux organisateurs (`server/plugins/reminders.ts`) ;
@@ -27,12 +27,12 @@ cat sauvegardes/prod-schema.sql sauvegardes/prod-donnees.sql > sauvegardes/prod.
 pnpm v3:essai sauvegardes/prod.sql --garder
 ```
 
-- `v3:essai` charge l'export, applique chaque migration qu'il n'a pas encore (de `0034` à `0046`, une transaction chacune, clés étrangères actives, comme D1), puis compare les deux bases.
+- `v3:essai` charge l'export, applique chaque migration qu'il n'a pas encore (de `0034` à `0047`, une transaction chacune, clés étrangères actives, comme D1), puis compare les deux bases.
 - Il doit finir par « ✓ Tout est là, sous sa nouvelle forme, sans clé étrangère cassée. » La comparaison vérifie : autant d'événements que de groupes ; chaque Secret Santa avec ses participants, leur lien, s'ils ont ouvert leur enveloppe, et ses enveloppes (scellées, jamais lues) ; chaque liste avec ceux qui la tiennent, ses idées et ses coches ; une liste partagée par lien garde son lien ; les pistes devenues une liste réservée à celui qui a tiré ; une liste dont le partage était coupé devient un brouillon ; aucune idée n'a d'étoiles ni n'est un titre (ticket 152).
 - Un écart, ou une erreur : **on ne publie pas**. On garde les fichiers et on demande à Claude Code.
-- `--garder` laisse `sauvegardes/v3-essai-avant.sqlite` et `sauvegardes/v3-essai-apres.sqlite` pour les trois contrôles. On peut rejouer la comparaison seule : `pnpm v3:compare sauvegardes/v3-essai-avant.sqlite sauvegardes/v3-essai-apres.sqlite`.
+- `--garder` laisse `sauvegardes/v3-essai-avant.sqlite` et `sauvegardes/v3-essai-apres.sqlite` pour les quatre contrôles. On peut rejouer la comparaison seule : `pnpm v3:compare sauvegardes/v3-essai-avant.sqlite sauvegardes/v3-essai-apres.sqlite`.
 
-### Les trois contrôles, sur la copie
+### Les quatre contrôles, sur la copie
 
 Sur la base migrée (`sqlite3 -header sauvegardes/v3-essai-apres.sqlite`), chaque requête rend des lignes à regarder :
 
@@ -48,12 +48,24 @@ Sur la base migrée (`sqlite3 -header sauvegardes/v3-essai-apres.sqlite`), chaqu
    SELECT pa.slug AS evenement, ps.first_name, l.share_token AS lien, lp.visibility, (SELECT count(*) FROM gift_list_ideas i WHERE i.list_id = l.id) AS idees FROM participations p JOIN persons ps ON ps.id = p.person_id JOIN secret_santas s ON s.id = p.secret_santa_id JOIN parties pa ON pa.id = s.party_id JOIN gift_lists l ON l.id = p.gift_list_id JOIN gift_list_parties lp ON lp.list_id = l.id AND lp.party_id = s.party_id WHERE s.status <> 'closed' AND p.id IN (SELECT participation_id FROM wishes);
    ```
 
-   Ceux qui n'ont pas de compte n'y sont pas : leurs pistes restent en lecture seule pour celui qui les a tirés (`migration.md`).
+   Ceux qui n'avaient pas de compte mais une adresse y sont aussi : la migration `0047` leur a créé leur compte (ticket 165). Ceux qui n'ont pas d'adresse n'y sont pas : leurs pistes restent en lecture seule pour celui qui les a tirés (`migration.md`). **Avant la bascule**, ajouter son adresse à quelqu'un qui a écrit des pistes sans en avoir : il est alors traité comme les autres. Pour les trouver :
+
+   ```sql
+   SELECT pa.slug AS evenement, ps.first_name FROM participations p JOIN persons ps ON ps.id = p.person_id JOIN editions e ON e.id = p.edition_id JOIN groups pa ON pa.id = e.group_id WHERE (ps.email IS NULL OR trim(ps.email) = '') AND (p.id IN (SELECT participation_id FROM wishes) OR p.id IN (SELECT participation_id FROM gift_portraits));
+   ```
+
+   (sur l'export, avant la migration : `editions` et `groups` y ont encore leurs noms de la V2).
 
 3. **Quelqu'un dont la liste était partagée par lien** : elle est publique (`shared_at` rempli), son lien n'a pas changé, ses idées et ses coches sont là.
 
    ```sql
    SELECT l.title, l.share_token AS lien, (SELECT count(*) FROM gift_list_ideas i WHERE i.list_id = l.id) AS idees, (SELECT count(*) FROM gift_claims c WHERE c.list_id = l.id) + (SELECT count(*) FROM gift_giver_claims g WHERE g.list_id = l.id) AS coches FROM gift_lists l WHERE l.shared_at IS NOT NULL;
+   ```
+
+4. **Quelqu'un qui n'avait pas de compte, mais une adresse et des pistes** (ticket 165) : il a un compte à cette adresse, avec son prénom, sa fiche « Moi » et sa liste, réservée à celui qui l'a tiré, datée de ses pistes et non du jour de la bascule (pas encore connecté : `last_login_at` vide).
+
+   ```sql
+   SELECT a.email, a.first_name, l.title, l.created_at AS liste_datee, lp.visibility, lp.giver, (SELECT count(*) FROM gift_list_ideas i WHERE i.list_id = l.id) AS idees FROM accounts a JOIN gift_lists l ON l.account_id = a.id JOIN gift_list_parties lp ON lp.list_id = l.id WHERE a.last_login_at IS NULL AND lp.giver = 1 AND l.created_at < a.created_at;
    ```
 
 Noter un cas de chaque (l'événement, le prénom, le lien) : on les revérifie en production.
@@ -77,7 +89,7 @@ Noter un cas de chaque (l'événement, le prénom, le lien) : on les revérifie 
 5. **Sauvegarder** :
    - le signet de Time Travel, à noter quelque part hors de la base : `pnpm -s wrangler d1 time-travel info secret-santa` ;
    - si la répétition date de plus de quelques heures, refaire les deux exports de la partie 1 sous d'autres noms (`sauvegardes/avant-v3-schema.sql`, `sauvegardes/avant-v3-donnees.sql`).
-6. **La migration** : `pnpm db:migrate` (c'est `wrangler d1 migrations apply secret-santa --remote`). Elle liste `0034` à `0046` et demande de confirmer. Si elle échoue en route : **ne pas déployer**, restaurer la base (partie 3, étape 2) et garder le message d'erreur.
+6. **La migration** : `pnpm db:migrate` (c'est `wrangler d1 migrations apply secret-santa --remote`). Elle liste `0034` à `0047` et demande de confirmer. Si elle échoue en route : **ne pas déployer**, restaurer la base (partie 3, étape 2) et garder le message d'erreur.
 7. **Le code, aussitôt** : `pnpm -s wrangler deploy` (le build de l'étape 2). Les deux tâches planifiées reviennent avec lui : le vérifier dans Trigger Events.
 8. **Les trois contrôles en production**, avec les cas notés à la répétition :
    1. Dans le suivi d'un Secret Santa tiré que j'organise (`/admin/[événement]/editions/[id]`), ceux qui n'avaient pas ouvert leur enveloppe ne l'ont toujours pas ouverte. Ne rien « Découvrir » à la place de quelqu'un.
@@ -129,7 +141,7 @@ Puis mettre le `database_id` de `secret-santa-retour` dans le `wrangler.toml` de
 Une base de forme V2 (la base locale de `sauvegardes/state-v2`, montée à `0033`, avec en plus des pistes et un portrait sur un Secret Santa tiré et une coche « pour quelqu'un »), dans un dossier `--persist-to` à part :
 
 1. sauvegarde : l'export complet, le schéma, les données (`wrangler d1 export --local`) ;
-2. migration : `wrangler d1 migrations apply --local`, `0034` à `0046` ;
+2. migration : `wrangler d1 migrations apply --local`, `0034` à `0047` ;
 3. restauration dans une base vide : le schéma, puis les données (`wrangler d1 execute --local --file`) ; l'export complet, lui, est refusé (« no such table: main.persons ») ;
 4. comparaison table par table avec la base d'avant : **identique** (72 tables et index), `d1_migrations` revenu à `0033` ;
 5. le code de `main` (construit dans un `git worktree`) démarre sur la base restaurée : la page d'un Secret Santa par son lien (enveloppe toujours fermée), une liste par son lien sans compte, l'ancienne adresse des pistes.

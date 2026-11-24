@@ -36,6 +36,9 @@ test('ten events on a small screen: the bar stays on top, its content scrolls', 
   });
   expect(made.ok()).toBe(true);
   const { id } = (await made.json()) as { id: string };
+  // A draft has no address in its bar (ticket 157): a shorter screen
+  // keeps its content taller than it.
+  await page.setViewportSize({ width: 320, height: 480 });
   await page.goto(`/listes/${id}`);
   await hydrated(page);
 

@@ -13,7 +13,8 @@ import { emailSchema, nameSchema } from '#server/utils/people';
 // « Par son adresse email » (V3ListeInviter, ticket 117): a first name and
 // an address. The person is a member of the list's event at once, by the
 // list, and gets an email in my name (V3ListePartageEmail) with the link
-// of the list; with an account, a news too. Someone already a member is
+// of the list; with an account, a news instead, which goes by email as
+// they chose (ticket 121). Someone already a member is
 // told so: they see the list already.
 const bodySchema = z.object({ firstName: nameSchema, email: emailSchema });
 
@@ -49,16 +50,20 @@ export default defineEventHandler(async (event) => {
     now,
   );
   const link = appUrl(event, `/l/${list.shareToken}`);
-  await sendEmails(event, [
-    {
-      ...buildListSharedEmail(
-        { by, title: list.title },
-        link,
-        invited?.language ?? me?.language ?? 'fr',
-      ),
-      to: email,
-    },
-  ]);
+  // An account is told by its news, by email as it chose (ticket 121);
+  // an address without one, by this email.
+  if (!invited) {
+    await sendEmails(event, [
+      {
+        ...buildListSharedEmail(
+          { by, title: list.title },
+          link,
+          me?.language ?? 'fr',
+        ),
+        to: email,
+      },
+    ]);
+  }
   setResponseStatus(event, 201);
   return secretsOf(event).devLoginLinks
     ? { ok: true, devLink: link }

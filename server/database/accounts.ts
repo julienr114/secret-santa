@@ -59,6 +59,8 @@ export const createAccount = async (
     disabledAt: null,
     listTourSeen: false,
     firstLineNoteSeen: false,
+    emailNews: 'summary',
+    summarySentOn: null,
   };
   await db.insert(accounts).values(account);
   return account;

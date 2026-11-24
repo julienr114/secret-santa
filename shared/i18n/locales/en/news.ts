@@ -6,6 +6,20 @@ export default {
   today: 'Today, {time}',
   yesterday: 'Yesterday, {time}',
   close: 'Close',
+  settings: {
+    title: 'Notify me',
+    choose: 'Choose what notifies me',
+    byEmail: 'By email',
+    summary: 'A summary in the morning',
+    summaryHint: 'Just one email, with what you haven’t seen yet.',
+    instant: 'Right away',
+    instantHint: 'An email for each piece of news.',
+    none: 'No email',
+    noneHint: 'Except to log in.',
+    urgent: 'What’s urgent',
+    urgentText:
+      'Your envelope is waiting, an invitation, someone asking you for gift ideas: with the summary, those emails still go right away, unless you’ve already seen the news.',
+  },
   kind: {
     envelope: 'The draw is done: your envelope is waiting',
     hint_request: 'Someone is asking you for gift ideas',

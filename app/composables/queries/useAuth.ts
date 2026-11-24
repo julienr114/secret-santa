@@ -2,6 +2,7 @@ import type { PartyCategory } from '#shared/utils/categories';
 import type { SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
 import type { Locale } from '#shared/i18n';
+import type { EmailNews } from '#shared/utils/news';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -22,6 +23,7 @@ export type AccountPayload = {
   language: Locale;
   avatar: Avatar;
   isSuperAdmin: boolean;
+  emailNews: EmailNews;
   sessions: AccountSession[];
 };
 
@@ -82,6 +84,7 @@ export type ProfileBody = Partial<{
   language: Locale;
   avatarEmoji: Avatar['emoji'];
   avatarColor: Avatar['color'];
+  emailNews: EmailNews;
 }>;
 
 /** Saves the profile of the account. */

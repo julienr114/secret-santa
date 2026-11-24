@@ -337,6 +337,13 @@
       "when": 1795522862590,
       "tag": "0047_v3_hints_without_account",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "6",
+      "when": 1795545819917,
+      "tag": "0048_v3_news_by_email",
+      "breakpoints": true
     }
   ]
 }

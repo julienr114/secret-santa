@@ -21,6 +21,8 @@ import { listPathFromDraw } from './anonymous';
 
 import { dataKeyOf } from './context';
 import { emailConfigured, sendEmails } from './email';
+import { emailChoicesOf } from '#server/database/news';
+import { ownEmailGoes } from '#server/utils/newsEmail';
 
 import type { Email } from '#server/utils/messages';
 
@@ -54,6 +56,11 @@ export const emailParticipant = async (
 ): Promise<boolean> => {
   const row = await findWithPerson(db, participationId);
   if (!row?.person.email || !emailConfigured(event)) return false;
+  // Never to an account that wants no email (ticket 121).
+  const choices = await emailChoicesOf(db, [row.person.email]);
+  if (!ownEmailGoes(choices.get(row.person.email.toLowerCase()) ?? null)) {
+    return false;
+  }
   const link = `${await personalLink(event, row.participation, await dataKeyOf(event))}${path}`;
   const sent = await sendEmails(event, [
     {

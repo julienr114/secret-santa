@@ -11,7 +11,7 @@ import { formatDay } from '~/utils/labels';
 
 // « Mon compte »: the icon with its pencil and the address, the profile
 // in rows saved at once, the names written on their rows (ticket 162),
-// the language in its sheet, the devices the
+// the language in its sheet, « Me prévenir » (ticket 121), the devices the
 // account is logged in on (this one, and « Déconnecter » for the others),
 // then « Déconnecter partout » and « Se déconnecter de cet appareil ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -130,6 +130,16 @@ const onLogout = () =>
             :busy="saving('language')"
             :busy-label="t('common.actions.saving')"
             :on-click="() => (languageOpen = true)"
+          />
+        </UiList>
+
+        <!-- « Me prévenir » (ticket 121): its page, its choice on the row. -->
+        <UiList>
+          <UiListItem
+            :title="t('news.settings.title')"
+            :value="t(`news.settings.${shown.emailNews ?? 'summary'}`)"
+            to="/compte/me-prevenir"
+            data-testid="account-notify"
           />
         </UiList>
 

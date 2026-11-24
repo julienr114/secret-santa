@@ -6,6 +6,7 @@ import {
   forgetBefore,
   groupNews,
   NEWS_SHAPE,
+  type EmailNews,
   type NewNews,
   type NewsKind,
   type NewsTarget,
@@ -57,7 +58,8 @@ export const addNews = async (
     ...counted.map((one) =>
       db
         .update(news)
-        .set({ count: one.count, updatedAt: now })
+        // Counted again, it may go by email again (ticket 121).
+        .set({ count: one.count, updatedAt: now, emailedAt: null })
         .where(eq(news.id, one.id)),
     ),
     ...added.map((one) =>
@@ -72,6 +74,7 @@ export const addNews = async (
         name: one.name,
         detail: one.detail,
         count: one.count,
+        mailable: one.mailable ?? true,
         createdAt: now,
         updatedAt: now,
       }),
@@ -273,6 +276,29 @@ export const accountsOfEmails = async (
     .from(accounts)
     .where(inArray(accounts.email, wanted));
   return new Map(rows.map((row) => [row.email, row.id]));
+};
+
+/**
+ * « Par email » of the accounts of some addresses (ticket 121): an email
+ * of its own goes to an address without an account, never to one that
+ * wants no email.
+ * @param db - The database.
+ * @param emails - The addresses, any case.
+ * @returns The choice of each address that has an account, lower case.
+ */
+export const emailChoicesOf = async (
+  db: Db,
+  emails: readonly (string | null)[],
+): Promise<Map<string, EmailNews>> => {
+  const wanted = [
+    ...new Set(emails.flatMap((email) => (email ? [email.toLowerCase()] : []))),
+  ];
+  if (wanted.length === 0) return new Map();
+  const rows = await db
+    .select({ email: accounts.email, mode: accounts.emailNews })
+    .from(accounts)
+    .where(inArray(accounts.email, wanted));
+  return new Map(rows.map((row) => [row.email, row.mode]));
 };
 
 /**

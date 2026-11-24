@@ -1,4 +1,4 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, ne } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import {
   accounts,
@@ -10,6 +10,8 @@ import { gameMembers } from '#server/database/guesses';
 import { santaNameForSubject } from '#server/database/editions';
 import { personalPath } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
+import { emailChoicesOf } from '#server/database/news';
+import { ownEmailGoes } from '#server/utils/newsEmail';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
 import {
@@ -66,6 +68,8 @@ const newsRecipients = (db: Db, groupId: string) =>
         eq(partyOrganisers.partyId, groupId),
         eq(partyOrganisers.guessNews, true),
         isNull(accounts.disabledAt),
+        // « Aucun email » (ticket 121).
+        ne(accounts.emailNews, 'none'),
       ),
     );
 
@@ -105,8 +109,17 @@ export const autoRemind = async (
     daysLeft(edition.guessEndsAt, now, edition.guessTimeZone),
   );
   const santaName = await santaNameForSubject(ctx.db, edition);
+  // Never to an account that wants no email (ticket 121).
+  const choices = await emailChoicesOf(
+    ctx.db,
+    targets.map(({ id }) => members.find((m) => m.id === id)?.email ?? null),
+  );
+  const reached = targets.filter(({ id }) => {
+    const email = members.find((m) => m.id === id)?.email;
+    return ownEmailGoes(choices.get(email?.toLowerCase() ?? '') ?? null);
+  });
   const emails = await Promise.all(
-    targets.map(async ({ id, text }) => {
+    reached.map(async ({ id, text }) => {
       const member = members.find((m) => m.id === id)!;
       const page = appUrl(
         undefined,
@@ -136,7 +149,7 @@ export const autoRemind = async (
     }),
   );
   // A failed send changes nothing: the organiser can still remind.
-  await sendEmails(undefined, emails);
+  if (emails.length > 0) await sendEmails(undefined, emails);
   await recordEvent(ctx.db, {
     type: 'guess_auto_reminder_sent',
     groupId: group.id,

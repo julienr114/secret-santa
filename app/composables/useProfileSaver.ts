@@ -1,4 +1,5 @@
 import type { Locale } from '#shared/i18n';
+import type { EmailNews } from '#shared/utils/news';
 import type { Avatar } from '#server/utils/avatars';
 import {
   useAccountQuery,
@@ -12,6 +13,7 @@ type ProfilePatch = Partial<{
   lastName: string | null;
   language: Locale;
   avatar: Avatar;
+  emailNews: EmailNews;
 }>;
 /** The parts of the profile a row shows. */
 type ProfileField = keyof ProfilePatch;

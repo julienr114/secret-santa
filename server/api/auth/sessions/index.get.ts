@@ -20,6 +20,8 @@ export default defineEventHandler(async (event) => {
     language: localeOf(account?.language),
     avatar: avatarOf({ id: user.accountId, ...account }),
     isSuperAdmin: account?.isSuperAdmin ?? false,
+    // « Me prévenir », « Par email » (ticket 121).
+    emailNews: account?.emailNews ?? 'summary',
     sessions: rows.map((row) => ({
       id: row.id,
       current: row.id === user.sessionId,

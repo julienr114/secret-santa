@@ -124,6 +124,8 @@ export const forgetGameOpen = (db: Db, secretSantaId: string) =>
  * @param input.name - The first name of who signed up by the link.
  * @param input.detail - The Secret Santa they signed up to, when the
  *   event has several the same year (ticket 116).
+ * @param input.mailable - Whether it may go by email: the setting of the
+ *   Secret Santa for its kind (ticket 121).
  * @param now - Now (ISO).
  * @returns Once written.
  */
@@ -135,6 +137,7 @@ export const tellOrganisers = (
     targetId: string;
     name?: string | null;
     detail?: string | null;
+    mailable?: boolean;
   },
   now: string,
 ) =>
@@ -147,6 +150,7 @@ export const tellOrganisers = (
         partyId: input.partyId,
         name: input.name ?? null,
         detail: input.detail ?? null,
+        mailable: input.mailable ?? true,
       }),
       now,
     ),

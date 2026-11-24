@@ -1,4 +1,6 @@
 import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { EMAIL_NEWS } from '#shared/utils/news';
 import { useDb } from '#server/database/client';
 import {
   listsFiguringOn,
@@ -14,8 +16,10 @@ import { profileSchema } from '#server/utils/people';
 // The profile of the logged-in account: first name, last name, avatar and
 // language. It only gives defaults for the groups created later; people
 // already in a group keep what the group says.
-// Each screen sends its own part: the names, the avatar or the language.
+// Each screen sends its own part: the names, the avatar or the language;
+// « Me prévenir » its choice for the emails (ticket 121).
 const bodySchema = profileSchema
+  .extend({ emailNews: z.enum(EMAIL_NEWS) })
   .partial()
   .refine((body) => Object.keys(body).length > 0, 'nothing to update');
 

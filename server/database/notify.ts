@@ -1,5 +1,5 @@
 import { SCHEDULED } from '#server/utils/limits';
-import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull, ne } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
@@ -12,14 +12,21 @@ import {
 
 // What the emails to the organisers need (README 22.2).
 
-/** The organisers of a group who can be written to, with their language. */
+/**
+ * The organisers of a group who can be written to, with their language:
+ * not those who want no email (« Aucun email », ticket 121).
+ */
 export const organizerRecipients = (db: Db, groupId: string) =>
   db
     .select({ email: accounts.email, language: accounts.language })
     .from(partyOrganisers)
     .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
     .where(
-      and(eq(partyOrganisers.partyId, groupId), isNull(accounts.disabledAt)),
+      and(
+        eq(partyOrganisers.partyId, groupId),
+        isNull(accounts.disabledAt),
+        ne(accounts.emailNews, 'none'),
+      ),
     );
 
 /** How many take part in an edition, and how many have looked. */

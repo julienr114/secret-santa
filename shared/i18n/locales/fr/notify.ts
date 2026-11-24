@@ -1,14 +1,7 @@
-// Emails to the organisers (README 22.2).
+// Emails: the reminder to the organisers (README 22.2), and the emails of
+// the news of an account, one by one or in the morning summary (ticket
+// 121, NotifEmailResume). Never who asks for ideas, never a result.
 export default {
-  joined: {
-    subject: '{name} s’inscrit par le lien',
-    body: '{name} vient de s’inscrire au Secret Santa « {group} » avec le lien d’invitation.',
-    next: 'Pense à ses exclusions (couple, fratrie).',
-  },
-  allViewed: {
-    subject: 'toutes les enveloppes sont ouvertes',
-    body: 'Pour {edition} dans « {group} », chacun sait maintenant à qui il offre. Il ne reste plus qu’à trouver les cadeaux.',
-  },
   reminder: {
     subject: 'le jour J approche',
     body: '{edition}, c’est le {date}.',
@@ -18,5 +11,36 @@ export default {
         '{count} personnes n’ont pas encore ouvert leur enveloppe : {names}.',
     },
     next: 'Tu peux leur renvoyer leur lien depuis le Secret Santa.',
+  },
+  hello: 'Bonjour {firstName},',
+  helloNoName: 'Bonjour,',
+  settings: 'Changer ce réglage',
+  news: {
+    subject: {
+      envelope: 'ton enveloppe t’attend',
+      ticked: {
+        one: '{count} cadeau a été coché sur ta liste',
+        other: '{count} cadeaux ont été cochés sur ta liste',
+      },
+      joined_gift: '{name} se joint à ton cadeau à plusieurs',
+      revealed: 'le tirage est dévoilé',
+      palmares: 'le palmarès de Devine qui est là',
+      joined: '{name} s’inscrit par le lien',
+      all_viewed: 'tout le monde a découvert son tirage',
+      santa_added: '{name} t’ajoute au Secret Santa',
+      list_shared: '{name} a partagé sa liste avec toi',
+      game_open: 'à toi de jouer à Devine qui',
+    },
+    footer: 'Un email à chaque nouveauté.',
+  },
+  summary: {
+    subject: {
+      one: 'Under the Tree : {count} nouveauté depuis hier',
+      other: 'Under the Tree : {count} nouveautés depuis hier',
+    },
+    intro: 'Voici ce qui t’attend.',
+    openParty: 'Ouvrir l’événement',
+    openList: 'Ouvrir la liste',
+    footer: 'Un seul résumé par jour, et seulement s’il y a du nouveau.',
   },
 };

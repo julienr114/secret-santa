@@ -65,6 +65,39 @@ export const NEWS_SHAPE: Record<
   game_open: { level: 'other', target: 'game' },
 };
 
+/**
+ * « Me prévenir », « Par email » (ticket 121, README 22.22): a summary
+ * in the morning (the default), an email at each news, or none but the
+ * login ones.
+ */
+export const EMAIL_NEWS = ['summary', 'instant', 'none'] as const;
+export type EmailNews = (typeof EMAIL_NEWS)[number];
+
+/**
+ * How a news reaches an inbox (ticket 121): `news`, by the email of the
+ * news, at once or in the summary; `own`, by an email of its own that
+ * carries more (the link of an invitation, a personal link, who has not
+ * looked yet), which goes at once as what presses does; `never`, not
+ * yet (new ideas on a list wait for ticket 122).
+ */
+export const NEWS_EMAIL: Record<NewsKind, 'news' | 'own' | 'never'> = {
+  envelope: 'news',
+  hint_request: 'own',
+  list_invite: 'own',
+  reminder: 'own',
+  new_ideas: 'never',
+  receiver_ideas: 'never',
+  ticked: 'news',
+  joined_gift: 'news',
+  revealed: 'news',
+  palmares: 'news',
+  joined: 'news',
+  all_viewed: 'news',
+  santa_added: 'news',
+  list_shared: 'news',
+  game_open: 'news',
+};
+
 /** Thirty days after it was seen, a news is gone (README 22.22). */
 export const FORGET_DAYS = 30;
 
@@ -99,6 +132,11 @@ export type NewNews = {
   name: string | null;
   /** The gift, for « se joint à » only. */
   detail: string | null;
+  /**
+   * Whether it may go by email (ticket 121): not when the organiser said
+   * no to the email of its kind. True when not said.
+   */
+  mailable?: boolean;
 };
 
 /** A news already written and not seen yet. */
@@ -233,4 +271,37 @@ export const listSection = (
   );
   const coming = dated.find((event) => (event.date ?? '9999') >= today);
   return (coming ?? dated.at(-1))?.partyId ?? null;
+};
+
+/** What a line of « Quoi de neuf » needs to say its news. */
+export type NewsWords = {
+  kind: NewsKind;
+  count: number;
+  name: string | null;
+  detail: string | null;
+};
+
+/**
+ * The words of a news, as a key of `news.kind` and its values: the same
+ * in « Quoi de neuf » and in the emails (ticket 121).
+ * @param line - The news.
+ * @returns The key and its values.
+ */
+export const newsText = (
+  line: NewsWords,
+): { key: string; params: { count: number; name: string; detail: string } } => {
+  const params = {
+    count: line.count,
+    name: line.name ?? '',
+    detail: line.detail ?? '',
+  };
+  if (line.kind === 'new_ideas' && !line.name) {
+    return { key: 'news.kind.new_ideasCount', params };
+  }
+  // « Hugo s'inscrit par le lien (Les adultes) », when the event has
+  // several Secret Santa that year (ticket 116).
+  if (line.kind === 'joined' && line.detail) {
+    return { key: 'news.kind.joinedIn', params };
+  }
+  return { key: `news.kind.${line.kind}`, params };
 };

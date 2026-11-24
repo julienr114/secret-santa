@@ -7,6 +7,7 @@ import { INVITE_TTL_MS, type HolderLevel } from '#server/utils/listAccess';
 import { buildHolderInviteEmail } from '#server/utils/listEmail';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
+import { ownEmailGoes } from '#server/utils/newsEmail';
 import { tellInvited } from '#server/database/newsEvents';
 
 // Sending an invitation to hold a list (lot 25 bis, README 22.20): a
@@ -59,6 +60,9 @@ export const sendHolderInvite = async (
     { listId: invite.listId, email: invite.email, by: me?.firstName ?? null },
     nowIso(),
   );
+  // Never to an account that wants no email (ticket 121): the
+  // invitation is in its « Quoi de neuf ».
+  if (!ownEmailGoes(invited?.emailNews ?? null)) return link;
   await sendEmails(event, [
     {
       ...buildHolderInviteEmail(

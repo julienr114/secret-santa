@@ -8,7 +8,7 @@ import {
 import { DRAW_MODES } from '../utils/answers';
 import { GUESS_MODES } from '../utils/guesses';
 import { PARTY_CATEGORIES } from '../../shared/utils/categories';
-import { NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
+import { EMAIL_NEWS, NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
 
 // Data model from README section 10, in the shape of the V3
 // (docs/spec/v3/modele.md): a party (the group of before), its years, the
@@ -440,6 +440,13 @@ export const accounts = sqliteTable('accounts', {
   firstLineNoteSeen: integer('first_line_note_seen', { mode: 'boolean' })
     .notNull()
     .default(false),
+  // « Me prévenir », « Par email » (ticket 121, README 22.22): a summary
+  // in the morning, at once, or no email but the login ones.
+  emailNews: text('email_news', { enum: EMAIL_NEWS })
+    .notNull()
+    .default('summary'),
+  // The day (« 2026-11-24 ») of the last morning summary.
+  summarySentOn: text('summary_sent_on'),
 });
 
 // The super-admin's emergency switches (docs/spec/v3/administration.md,
@@ -900,9 +907,15 @@ export const news = sqliteTable(
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
     seenAt: text('seen_at'),
+    // Ticket 121: whether it may go by email (an email of its own goes
+    // for some kinds, none for others, the organiser may say no), and
+    // when it went; counted again, it may go again.
+    mailable: integer('mailable', { mode: 'boolean' }).notNull().default(true),
+    emailedAt: text('emailed_at'),
   },
   (t) => [
     index('news_account_idx').on(t.accountId, t.seenAt),
+    index('news_mail_idx').on(t.emailedAt, t.seenAt),
     index('news_target_idx').on(t.targetType, t.targetId),
   ],
 );
@@ -925,6 +938,7 @@ export type FamilyMemberRow = typeof familyMembers.$inferSelect;
 export type GiftListRow = typeof giftLists.$inferSelect;
 export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
+export type NewsRow = typeof news.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;
 export type SessionRow = typeof sessions.$inferSelect;
 export type PartyRow = typeof parties.$inferSelect;

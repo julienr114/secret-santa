@@ -6,6 +6,20 @@ export default {
   today: 'Heute, {time}',
   yesterday: 'Gestern, {time}',
   close: 'Schließen',
+  settings: {
+    title: 'Mich benachrichtigen',
+    choose: 'Wählen, was mich benachrichtigt',
+    byEmail: 'Per E-Mail',
+    summary: 'Eine Zusammenfassung am Morgen',
+    summaryHint: 'Eine einzige E-Mail mit dem, was du noch nicht gesehen hast.',
+    instant: 'Sofort',
+    instantHint: 'Eine E-Mail für jede Neuigkeit.',
+    none: 'Keine E-Mail',
+    noneHint: 'Außer zum Anmelden.',
+    urgent: 'Was eilt',
+    urgentText:
+      'Dein Umschlag wartet, eine Einladung, jemand bittet dich um Geschenkideen: Mit der Zusammenfassung gehen diese E-Mails trotzdem sofort raus, außer du hast die Neuigkeit schon gesehen.',
+  },
   kind: {
     envelope: 'Die Auslosung ist erfolgt: Dein Umschlag wartet',
     hint_request: 'Jemand bittet dich um Geschenkideen',

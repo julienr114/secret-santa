@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { partyEmoji } from '#shared/utils/categories';
 import { clockTime } from '#shared/utils/dates';
-import { NEWS_SHAPE, newsWhen } from '#shared/utils/news';
+import { NEWS_SHAPE, newsText, newsWhen } from '#shared/utils/news';
 import type { NewsLine, NewsSection } from '#server/database/newsPage';
 import { api } from '~/composables/queries/useApi';
 import { keys } from '~/composables/queries/keys';
@@ -13,8 +13,9 @@ import { useQueryClient } from '@tanstack/vue-query';
 // event, the one with the latest news on top; a public list where I
 // ticked has its own. A news not seen yet is in bold with a red dot; it
 // goes when I open the thing, never by opening this page. At the top,
-// the word of the app, until closed; at the bottom, that everything goes
-// after thirty days. Read again on coming back to the page.
+// the word of the app, until closed; at the bottom, « Choisir ce qui me
+// prévient » (ticket 121), that everything goes after thirty days under
+// it. Read again on coming back to the page.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t, tk, locale } = useT();
 useHead({
@@ -55,20 +56,8 @@ const when = (at: string): string => {
  * @returns Its words.
  */
 const text = (line: NewsLine): string => {
-  const params = {
-    count: line.count,
-    name: line.name ?? '',
-    detail: line.detail ?? '',
-  };
-  if (line.kind === 'new_ideas' && !line.name) {
-    return t('news.kind.new_ideasCount', params);
-  }
-  // « Hugo s'inscrit par le lien (Les adultes) », when the event has
-  // several Secret Santa that year (ticket 116).
-  if (line.kind === 'joined' && line.detail) {
-    return t('news.kind.joinedIn', params);
-  }
-  return tk(`news.kind.${line.kind}`, params);
+  const { key, params } = newsText(line);
+  return tk(key, params);
 };
 /** A list's news show a list; the others an envelope, or people. */
 const iconOf = (line: NewsLine) => {
@@ -171,7 +160,16 @@ const closeNote = async () => {
         </UiList>
       </section>
 
-      <p class="px-1 text-[13px] text-toned">{{ t('news.forget') }}</p>
+      <!-- « Me prévenir » (ticket 121), the thirty days under it. -->
+      <UiList>
+        <UiListItem
+          icon="i-lucide-bell"
+          :title="t('news.settings.choose')"
+          :subtitle="t('news.forget')"
+          to="/compte/me-prevenir"
+          data-testid="news-settings"
+        />
+      </UiList>
     </AdminQueryState>
   </AdminScreen>
 </template>

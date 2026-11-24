@@ -6,6 +6,21 @@ export default {
   today: 'Aujourd’hui, {time}',
   yesterday: 'Hier, {time}',
   close: 'Fermer',
+  // « Me prévenir », in « Mon compte » (ticket 121, NotifReglage).
+  settings: {
+    title: 'Me prévenir',
+    choose: 'Choisir ce qui me prévient',
+    byEmail: 'Par email',
+    summary: 'Un résumé le matin',
+    summaryHint: 'Un seul email, avec ce que tu n’as pas encore vu.',
+    instant: 'Tout de suite',
+    instantHint: 'Un email à chaque nouveauté.',
+    none: 'Aucun email',
+    noneHint: 'Sauf pour te connecter.',
+    urgent: 'Ce qui presse',
+    urgentText:
+      'Ton enveloppe t’attend, une invitation, quelqu’un te demande des idées : avec le résumé, ces emails-là partent quand même tout de suite, sauf si tu as déjà vu la nouveauté.',
+  },
   kind: {
     envelope: 'Le tirage est fait : ton enveloppe t’attend',
     hint_request: 'Quelqu’un te demande des idées de cadeaux',

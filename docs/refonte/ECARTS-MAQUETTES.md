@@ -346,3 +346,14 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeLigneMenu` | Sur ordinateur, la poignée qui apparaît au survol d'une ligne se pose à droite, sur la ligne, par-dessus la fin d'un texte long. | Seul |
 | `V3ListeLigneDeplacer` | Aucun message après un déplacement, ni « Déplacée vers Zoé » ni « {name} déplacé » après un glisser (Julien, 24 novembre 2026) : seul un lecteur d'écran entend où la ligne est arrivée. Après « Monter » ou « Descendre », la ligne reste ouverte à l'écriture, comme avec `Alt` + une flèche. | Seul |
 | `V3ListeTitres` | Un titre garde la ligne ouverte à l'écriture après « En faire un titre » (le clavier revient), comme après les étoiles. | Seul (la spec : « revient après un choix qui laisse dans la ligne ») |
+
+## « Me prévenir » et le résumé par email (ticket 121)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `NotifReglage` | Pas de phrase sous le titre (« Dans l'appli, une pastille signale toujours… ») : elle explique l'écran (`regles-d-ecran.md`, « Le moins de phrases possible »). | Seul (la règle du 24 novembre) |
+| `NotifReglage` | La section « Sur ce téléphone » et « Installer l'application sur un autre téléphone » ne sont pas là : elles viennent avec le ticket 124. | Le ticket |
+| `NotifReglage` | « Ce qui presse » et sa phrase ne se montrent qu'avec « Un résumé le matin » : la phrase ne parle que de ce choix. Les trois choix sont la carte de `UiChoiceList`, la ligne choisie teintée. | Seul |
+| `Compte` | La maquette n'a pas de ligne vers « Me prévenir » : une carte d'une ligne, « Me prévenir », le choix à droite, entre « Mon profil » et « Mes appareils ». | Seul |
+| `V3QuoiDeNeuf` | « Choisir ce qui me prévient » avec la cloche, « Ce que tu as vu s'efface au bout de trente jours » dessous, sur la ligne, comme la maquette. | — |
+| `NotifEmailResume` | Un bloc par événement, au nom de l'événement (« Famille Camille ») et non « Secret Santa de Famille Camille » (`accueil-et-creation.md`) ; son lien ouvre l'événement (« Ouvrir l'événement »), ou la liste pour une liste publique (« Ouvrir la liste »). Les liens « Ne plus recevoir d'emails » et « Ce que l'application fait de tes données » attendent les tickets 130 et 131. | Seul (la spec) |

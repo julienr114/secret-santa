@@ -51,7 +51,7 @@ Sur une liste qui n'est pas la mienne, je peux demander à être prévenu des no
   - `followed_ideas`, « 3 nouvelles idées pour Léo », regroupée par personne et par jour, ou « sur la liste » pour une liste sans personne ;
   - `followed_person`, « Zoé est sur la liste ».
 
-  Qui suit reçoit celle-là à la place de « Camille a ajouté des idées à sa liste », qui reste le point dans l'application pour les autres lecteurs, sans email. Un idée pour une personne que je ne suis pas reste ce point-là.
+  Qui suit reçoit celle-là à la place de « Camille a ajouté des idées à sa liste », qui reste le point dans l'application pour les autres lecteurs, sans email. Une idée pour une personne que je ne suis pas reste ce point-là.
 - **La cloche** (`ListsFollowBell`) au bout du nom de chaque personne, sur la liste ouverte par son lien, pour qui ne la tient pas. Elle porte `aria-pressed` et se lit « Suivre Léo » ou « Ne plus suivre Léo » ; on la touche sur 44 px. Sous le mot de la liste, une ligne dit où j'en suis, avec « Suivre toute la liste » ou « Ne plus suivre ». Le choix se montre tout de suite et revient en arrière si l'envoi échoue (`useFollowMutation`).
 - **Sans compte**, sur une liste publique : la cloche mène à `/l/[jeton]/connexion?suivre=`, « Ton adresse email, pour suivre », sans prénom. Le lien reçu ramène à la liste, et le suivi est posé.
 - **« Me prévenir »** : « Ce que je suis », une ligne par liste (les personnes, ou « Toute la liste ») avec « Ne plus suivre ». Les emails qui disent une liste suivie, seuls ou dans le résumé, finissent par « Ne plus suivre une liste », qui y mène (`#suivis`).

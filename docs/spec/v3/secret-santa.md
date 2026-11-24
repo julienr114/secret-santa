@@ -18,7 +18,17 @@ C'est l'« édition » d'aujourd'hui : le tirage, ses règles, le suivi de l'org
 | Petit mot pour les participants | « Aucun » |
 | Mot ajouté aux messages | celui du Secret Santa précédent, sinon « Aucun » |
 
-Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : la carte « Devine qui », « 5 membres repris du Secret Santa 2026. », puis « Créer le Secret Santa ».
+Toucher une ligne ouvre sa page (`regles-d-ecran.md`). Sous les lignes : la carte « Devine qui », la carte de ceux qui participent déjà, puis « Créer le Secret Santa ».
+
+**La carte de ceux qui participent déjà dit aussi que les participants s'ajoutent juste après** (Julien, 24 novembre 2026 ; maquettes `V3TirageNouveau`, `V3TirageNouveauSeul`). Deux lignes : en gras, qui y est déjà ; dessous, ce qui vient après.
+
+| Cas | En gras | Dessous |
+|---|---|---|
+| Je suis le seul membre de l'événement | « Il n'y a que toi pour l'instant. » | « Tu ajoutes les participants juste après. » |
+| Un Secret Santa précédent, plusieurs membres repris | « 5 membres repris du Secret Santa 2026. » | « Tu en ajoutes ou en retires juste après. » |
+| Pas de Secret Santa précédent, plusieurs membres | « 5 membres de l'événement. » | « Tu en ajoutes ou en retires juste après. » |
+
+Le premier cas vaut dès que je suis seul, qu'il y ait eu un Secret Santa avant ou non : on n'écrit jamais « 1 membre ».
 
 **« Devine qui » est mis en avant** (Julien, 23 novembre 2026 : « c'est le petit truc en plus de notre appli » ; maquettes `V3TirageNouveau`, `V3TirageNouveauQui`, `V3TirageNouveauSans`). Il sort des lignes :
 

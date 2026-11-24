@@ -21,7 +21,9 @@ Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque lis
 
 **Qui voit quoi** :
 
-- Sur l'accueil, la ligne me parle comme participant si je participe ; elle ouvre ma page. Si je l'organise sans participer, elle parle à l'organisateur et ouvre le suivi.
+- Sur l'accueil, la ligne me parle comme participant si je participe ; elle ouvre ma page.
+- **Sur l'accueil, si je participe et que je l'organise, une deuxième ligne est accrochée dessous** (Julien, 24 novembre 2026 : « il faut qu'on distingue bien qu'il y en a une en tant que participant, et l'autre en tant qu'organisateur » ; maquettes `V3Accueil`, `V3AccueilJeu`). Titre : **« Tu l'organises »** ; dessous, le texte de l'organisateur ; elle ouvre le suivi. Elle est accrochée à la ligne du Secret Santa : pas de trait entre les deux, pas d'icône, son texte aligné sous « Le Secret Santa », sa propre flèche, et la hauteur d'une ligne (54 px) pour se toucher sans gêne. Elle vient juste après, donc avant « Devine qui ». Elle n'a jamais de point rouge.
+- Sur l'accueil, si je l'organise sans participer, il n'y a qu'une ligne : elle parle à l'organisateur et ouvre le suivi.
 - Sur la page d'un événement, un organisateur voit le texte de l'organisateur, et la ligne ouvre le suivi ; un membre voit le texte du participant, et la ligne ouvre sa page.
 - Je ne participe pas et je ne l'organise pas : la ligne n'est pas montrée.
 
@@ -47,7 +49,16 @@ Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque lis
 | Dévoilé | « Dévoilé » |
 | Clôturé | « Terminé » |
 
-On n'écrit plus « tu l'organises » : ce n'est pas un état.
+« Tu l'organises » n'est pas un état : on ne l'écrit pas dans un texte. C'est le titre de la ligne de l'organisateur, sur l'accueil, quand je participe aussi.
+
+## La ligne « Gérer l'événement »
+
+Julien, le 24 novembre 2026 : on ne voit pas que l'en-tête d'une carte se touche. Maquettes `V3Accueil`, `V3AccueilSansSecret`.
+
+- Sur l'accueil, dans la carte d'un événement **que j'organise**, c'est **la première ligne, juste sous l'en-tête**, toujours.
+- Une icône au trait (des réglettes), le titre **« Gérer l'événement »**, dessous le nombre de membres (« 8 membres », « 1 membre »), une flèche.
+- Elle ouvre la page de l'événement, comme l'en-tête, qui se touche toujours.
+- Un membre qui n'organise pas ne la voit pas. Elle n'a jamais de point rouge.
 
 ## La ligne « Devine qui »
 

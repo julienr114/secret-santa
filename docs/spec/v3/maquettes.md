@@ -2,11 +2,11 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-88 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+89 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
-| `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas | 103 |
+| `V3Accueil` | Accueil · mes fêtes : leurs Secret Santa et les listes de leurs membres ; un anniversaire proposé ; ce que j’offre ailleurs ; l’onglet « Créer » dans la barre du bas ; ce que j’organise : « Gérer l’événement », et « Tu l’organises » sous « Le Secret Santa » | 103, 156 |
 | `V3AccueilSansSecret` | Accueil · un événement que j’organise n’a pas de Secret Santa cette année : sa carte propose « Créer un Secret Santa », puis « Créer une liste de cadeaux » | 151 |
 | `V3AccueilAvantNoel` | Accueil · une fête qui n’est pas Noël et qui vient avant : elle est au-dessus de la saison de Noël, sans titre ; l’accueil suit les dates | 112 |
 | `V3ChargementAccueil` | Chargement · le nouvel accueil : le bonjour, le titre de la saison, des cartes d’événement avec leurs lignes | 099 |
@@ -34,6 +34,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3TirageNouveau` | Secret Santa · celui de l’année : cinq lignes, puis la carte « Devine qui » sur « Toutes les paires » | 105, 150 |
 | `V3TirageNouveauQui` | Secret Santa · nouveau, « Devine qui » sur « Qui m’offre ? » : la phrase dit ce qui va se passer | 150 |
 | `V3TirageNouveauSans` | Secret Santa · nouveau, « Devine qui » sur « Sans » : le jeu est éteint | 150 |
+| `V3TirageNouveauSeul` | Secret Santa · nouveau, dans un événement où je suis seul : « Il n’y a que toi pour l’instant. Tu ajoutes les participants juste après. » | 154 |
 | `V3TirageLimite` | Secret Santa · la limite : 3 par compte, sans demande à personne | 105 |
 | `V3TirageVersListe` | Secret Santa · du résultat à la liste de cadeaux d’Inès, sans lien ; le mode anonyme s’active seul | 107 |
 | `V3TirageNeutre` | Secret Santa · hors de Noël (catégorie « Autre ») : il garde son nom, « Secret Santa » ; aucun « Père Noël » | 105 |
@@ -72,9 +73,9 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeAideLien` | Liste · pour celui qui « aide à écrire » : « Le lien » déroule la barre, qui ne contient que le lien à copier | 135 |
 | `V3ListeSecretNouvelle` | Liste · créée depuis mon Secret Santa : j’y suis déjà, en premier ; sous mon prénom, le Secret Santa | 136 |
 | `V3ListeMotAccueil` | Liste · « Ajouter un mot d’accueil » touché : le mot de départ de la catégorie est proposé, prêt à être changé ; vidé, la liste n’a pas de mot | 147 |
-| `V3ListeSecretLie` | Liste · la pastille « Secret Santa · Famille Camille » touchée : ce que le lien veut dire, « Voir mon Secret Santa », « Délier » | 148 |
-| `V3ListeSecretLier` | Liste · j’y figure, et mon Secret Santa de l’année n’a pas de liste : « Lier à mon Secret Santa », sous mon prénom | 148 |
-| `V3ListeSecretLierConfirmer` | Liste · « Lier à mon Secret Santa » touché : la conséquence, « Lier » | 148 |
+| `V3ListeSecretLie` | Liste · la pastille « Secret Santa · Famille Camille » touchée : mes Secret Santa de l’année, à cocher ; décocher délie | 148, 155 |
+| `V3ListeSecretLier` | Liste · j’y figure, et un de mes Secret Santa de l’année n’a pas de liste : « Lier à un Secret Santa », dans le menu « … » de ma partie | 148, 153 |
+| `V3ListeSecretLierConfirmer` | Liste · « Lier à un Secret Santa » touché : mes Secret Santa de l’année, à cocher ; l’un est lié à une autre liste | 148, 153, 155 |
 | `V3ListeVisiteSecret1` à `V3ListeVisiteSecret6` | Visite · liste créée depuis un Secret Santa : ma partie, une idée par ligne, qui la voit, le nom et la date, repartir d’une liste, ajouter quelqu’un | 149 |
 | `V3ListeVisiteCreer1` à `V3ListeVisiteCreer3` | Visite · liste créée depuis « Créer » : le nom et la date, pour qui, personne ne la voit encore | 149 |
 | `V3ListeVisiteIdee` | Visite · depuis « Créer », la première personne ajoutée : une note sur sa première ligne | 149 |

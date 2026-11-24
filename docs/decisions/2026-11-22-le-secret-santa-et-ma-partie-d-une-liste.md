@@ -29,4 +29,9 @@ Depuis son Secret Santa, chacun écrit une liste pour celui qui l'a tiré. Chaqu
 - Le lien se voit et se défait : la pastille sous mon prénom ouvre un panneau, avec « Délier » ; une liste où je figure propose « Lier à mon Secret Santa ». Un Secret Santa n'a qu'une liste.
 - La liste créée depuis un Secret Santa s'appelle « Idées pour le Secret Santa ».
 
+## Le 24 novembre 2026 : « Lier à un Secret Santa », dans le menu
+
+- Sous le prénom, à côté de la pastille d'un Secret Santa déjà lié, « Lier à mon Secret Santa » se lisait mal. L'entrée passe dans le menu « … » de ma partie et s'appelle « Lier à un Secret Santa ».
+- Un seul panneau pour lier et délier : mes Secret Santa de l'année, à cocher. La pastille et l'entrée du menu l'ouvrent toutes les deux. Il remplace « Voir mon Secret Santa », « Délier » et la question « Lier à ton Secret Santa ? ».
+
 Le détail : `docs/spec/v3/listes.md`, « Depuis mon Secret Santa » et « Lier et délier ».

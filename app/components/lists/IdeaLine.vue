@@ -114,11 +114,23 @@ const closeMenu = async (back = false) => {
   if (writing.value) field.value?.focus();
   else handle.value?.focus();
 };
-const onStars = (stars: number) => {
+/**
+ * The stars just chosen, shown until the list is read again: the menu
+ * opened again at once knows them, and the last lit takes them all.
+ */
+const starsChosen = ref<number | null>(null);
+const stars = computed(() => starsChosen.value ?? props.idea?.stars ?? 0);
+const onStars = (count: number) => {
   if (!props.idea) return;
+  starsChosen.value = count;
   update.mutate(
-    { ideaId: props.idea.id, stars },
-    { onError: (error) => toast.failed(errorMessage(error)) },
+    { ideaId: props.idea.id, stars: count },
+    {
+      onError: (error) => toast.failed(errorMessage(error)),
+      onSettled: () => {
+        if (starsChosen.value === count) starsChosen.value = null;
+      },
+    },
   );
   void closeMenu(true);
 };
@@ -136,7 +148,9 @@ const onStepLine = (step: -1 | 1) => {
 };
 const canMove = computed(
   () =>
-    Boolean(editing.moveTo) && (editing.canMove?.(props.listPersonId) ?? false),
+    !claimed.value &&
+    Boolean(editing.moveTo) &&
+    (editing.canMove?.(props.listPersonId) ?? false),
 );
 const onMoveTo = () => {
   void closeMenu();
@@ -183,6 +197,11 @@ const taken = computed(
     view.value.kind === 'taken' ||
     (view.value.kind === 'group' && view.value.closed),
 );
+/**
+ * Someone gives it: it neither becomes a title nor goes to another
+ * person (Julien, 24 November 2026).
+ */
+const claimed = computed(() => view.value.kind !== 'free');
 /** Whether the box does something: give, give up, change or join. */
 const boxActive = computed(
   () =>
@@ -631,6 +650,7 @@ const onFocusOut = (event: FocusEvent) => {
     :data-line="line"
     :data-drag="idea && drag ? 'idea' : undefined"
     :data-drag-id="idea && drag ? idea.id : undefined"
+    :data-drag-stay="idea && drag && claimed ? '' : undefined"
     @focusout="onFocusOut"
   >
     <!-- A title: a dot on the thread of the person, no box (ticket 152). -->
@@ -847,7 +867,7 @@ const onFocusOut = (event: FocusEvent) => {
             data-testid="idea-carried"
           />
           <ListsStars
-            :count="idea.stars"
+            :count="stars"
             :class="taken && !mine ? 'opacity-50' : ''"
           />
         </component>
@@ -973,7 +993,7 @@ const onFocusOut = (event: FocusEvent) => {
             : 'absolute top-2 right-0 hidden [@media(hover:hover)]:group-hover:flex'
       "
     >
-      <ListsStars v-if="writing" :count="idea.stars" class="mt-[9px] ml-0" />
+      <ListsStars v-if="writing" :count="stars" class="mt-[9px] ml-0" />
       <button
         ref="handle"
         type="button"
@@ -991,8 +1011,9 @@ const onFocusOut = (event: FocusEvent) => {
       </button>
       <ListsLineMenu
         v-if="menuOpen"
-        :stars="idea.stars"
+        :stars="stars"
         :title="idea.title"
+        :can-title="idea.title || !claimed"
         :can-up="Boolean(drag) && !first"
         :can-down="Boolean(drag) && !last"
         :can-move="canMove"

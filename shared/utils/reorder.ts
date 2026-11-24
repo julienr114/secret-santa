@@ -85,16 +85,19 @@ export const placeOfIdea = (
 /**
  * An idea moved one step up or down, as `Alt` + an arrow does: among the
  * ideas of its person, then on to the end of the person above, or the
- * start of the one below. At either end of the list, nothing moves.
+ * start of the one below. At either end of the list, nothing moves. An
+ * idea someone gives stays with its person.
  * @param order - The order as it stands.
  * @param ideaId - The idea.
  * @param step - -1 up, 1 down.
+ * @param stay - Whether it stays among the ideas of its person.
  * @returns The new order, the same one when it cannot move.
  */
 export const stepIdea = (
   order: ListOrder,
   ideaId: string,
   step: -1 | 1,
+  stay = false,
 ): ListOrder => {
   const place = placeOfIdea(order, ideaId);
   if (!place) return order;
@@ -102,6 +105,7 @@ export const stepIdea = (
   if (to >= 0 && to < place.count) {
     return moveIdea(order, ideaId, { personId: place.personId, index: to });
   }
+  if (stay) return order;
   const at = order.findIndex((section) => section.id === place.personId);
   const next = order[at + step];
   if (!next) return order;
@@ -241,3 +245,22 @@ export const orderWrites = (
     ),
   };
 };
+
+/**
+ * The ideas an order moves to another person: those someone gives may
+ * not (Julien, 24 November 2026).
+ * @param current - The order stored.
+ * @param writes - What the order wanted changes.
+ * @returns The ideas that change person.
+ */
+export const ideasChangingPerson = (
+  current: ListOrder,
+  writes: OrderWrites,
+): string[] =>
+  writes.ideas.flatMap(({ id, listPersonId }) =>
+    current.some(
+      (section) => section.id !== listPersonId && section.ideas.includes(id),
+    )
+      ? [id]
+      : [],
+  );

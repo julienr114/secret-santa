@@ -6,7 +6,9 @@ import type { InjectionKey, Ref } from 'vue';
 // markup, and this reads it back:
 //   [data-drag-section][data-drag-id]  a person's section;
 //   [data-drag="person"][data-drag-id] its header, lifted by a long press;
-//   [data-drag="idea"][data-drag-id]   an idea's line.
+//   [data-drag="idea"][data-drag-id]   an idea's line;
+//   [data-drag-stay]                   on it, someone gives it: it stays
+//                                      with its person.
 // Nothing is saved from here: the screen is told what was lifted, where
 // it would fall, and where it was dropped.
 
@@ -106,8 +108,15 @@ export const useListDrag = (
         index: others.filter((section) => middle(section) < y).length,
       };
     }
-    // The section the pointer is in, or the nearest one.
-    const section = sections
+    // The section the pointer is in, or the nearest one; its own for an
+    // idea someone gives.
+    const row = root.querySelector<HTMLElement>(
+      `[data-drag="idea"][data-drag-id="${what.id}"]`,
+    );
+    const own = row?.hasAttribute('data-drag-stay')
+      ? row.closest<HTMLElement>('[data-drag-section]')
+      : null;
+    const section = (own ? [own] : sections)
       .map((el) => {
         const box = el.getBoundingClientRect();
         const away = y < box.top ? box.top - y : Math.max(0, y - box.bottom);

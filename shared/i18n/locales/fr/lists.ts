@@ -12,7 +12,6 @@ export default {
     drag: {
       handle: 'Déplacer : {name}',
       placed: '{name}, position {position} sur {count}',
-      moved: '{name} déplacé',
       up: 'Monter',
       down: 'Descendre',
       ideas: { one: '{count} idée', other: '{count} idées' },
@@ -569,7 +568,6 @@ export default {
     down: 'Descendre',
     moveTo: 'Déplacer vers…',
     moveTitle: 'Déplacer vers',
-    moved: 'Déplacée vers {name}',
     remove: 'Supprimer la ligne',
   },
   visitor: {

@@ -360,19 +360,15 @@ const nameOf = (what: Lifted) =>
         },
       );
 /**
- * Shows an order and saves it; « Annuler » puts the one before back.
+ * Shows an order and saves it, without a message (Julien, 24 November
+ * 2026): only screen readers are told where it went.
  * @param next - The order wanted.
- * @param what - What moved, to say so; nothing when undoing.
+ * @param what - What moved, to say so.
  */
-const saveOrder = (
-  next: ListOrder,
-  what: Lifted | null,
-  /** The message, when not « {name} déplacé ». */
-  said?: string,
-) => {
+const saveOrder = (next: ListOrder, what: Lifted) => {
   const before = orderNow();
   if (sameOrder(before, next)) return;
-  const name = what ? nameOf(what) : '';
+  const name = nameOf(what);
   wanted.value = next;
   reorder.mutate(next, {
     onError: (error) => {
@@ -384,7 +380,6 @@ const saveOrder = (
       );
     },
   });
-  if (!what) return;
   const place =
     what.kind === 'idea'
       ? placeOfIdea(next, what.id)
@@ -397,19 +392,26 @@ const saveOrder = (
     position: (place?.index ?? 0) + 1,
     count: place?.count ?? 0,
   });
-  toast.undo(
-    said ?? t('lists.doc.drag.moved', { name }),
-    () => {
-      toast.remove('moved');
-      saveOrder(before, null);
-    },
-    { id: 'moved', duration: 5000 },
-  );
 };
 const board = ref<HTMLElement | null>(null);
+/** The ideas someone gives: they stay with their person (Julien). */
+const given = computed(
+  () =>
+    new Set(
+      people.value.flatMap((person) =>
+        person.ideas.flatMap((idea) =>
+          idea.view.kind === 'free' ? [] : [idea.id],
+        ),
+      ),
+    ),
+);
+const leavesPerson = (what: Lifted, place: DropPlace) =>
+  given.value.has(what.id) &&
+  place.kind === 'idea' &&
+  placeOfIdea(orderNow(), what.id)?.personId !== place.personId;
 const onDrop = (what: Lifted, place: DropPlace) =>
   saveOrder(
-    what.kind === 'idea' && place.kind === 'idea'
+    what.kind === 'idea' && place.kind === 'idea' && !leavesPerson(what, place)
       ? moveIdea(orderNow(), what.id, place)
       : what.kind === 'person' && place.kind === 'person'
         ? movePerson(orderNow(), what.id, place.index)
@@ -419,7 +421,7 @@ const onDrop = (what: Lifted, place: DropPlace) =>
 const onStep = async (what: Lifted, step: -1 | 1) => {
   saveOrder(
     what.kind === 'idea'
-      ? stepIdea(orderNow(), what.id, step)
+      ? stepIdea(orderNow(), what.id, step, given.value.has(what.id))
       : stepPerson(orderNow(), what.id, step),
     what,
   );
@@ -460,7 +462,6 @@ const onSend = (target: PersonLine) => {
       index: target.ideas.filter((idea) => idea.id !== line.idea.id).length,
     }),
     { kind: 'idea', id: line.idea.id },
-    t('lists.line.moved', { name: target.member.firstName }),
   );
 };
 /** The card under the finger: what it says, and where the list is. */

@@ -10,7 +10,6 @@ export default {
     drag: {
       handle: 'Verschieben: {name}',
       placed: '{name}, Position {position} von {count}',
-      moved: '{name} verschoben',
       up: 'Nach oben',
       down: 'Nach unten',
       ideas: { one: '{count} Idee', other: '{count} Ideen' },
@@ -569,7 +568,6 @@ export default {
     down: 'Nach unten',
     moveTo: 'Verschieben zu…',
     moveTitle: 'Verschieben zu',
-    moved: 'Verschoben zu {name}',
     remove: 'Zeile löschen',
   },
   visitor: {

@@ -112,11 +112,20 @@ test('on a phone, a long press lifts a line and drops it elsewhere', async ({
   expect(
     await page.evaluate(() => document.activeElement?.tagName ?? ''),
   ).not.toBe('TEXTAREA');
-  // Said to screen readers, and « Annuler » puts it back.
+  // Said to screen readers only: no message on the screen (Julien).
   await expect(page.getByTestId('list-announce')).toContainText(
     'Circuit, position 3 sur 3',
   );
-  await page.getByRole('button', { name: 'Annuler' }).click();
+  await expect(page.getByText('Circuit déplacé')).toHaveCount(0);
+  // Back where it was, by the same gesture.
+  await ideasOf(page, 'Léo')
+    .nth(0)
+    .evaluate((el) =>
+      window.scrollTo(0, window.scrollY + el.getBoundingClientRect().top - 250),
+    );
+  const back = await centre(ideasOf(page, 'Léo').nth(2));
+  const top = await centre(ideasOf(page, 'Léo').nth(0));
+  await touch.drag(back, { x: top.x, y: top.y - 14 });
   await expect(ideasOf(page, 'Léo')).toHaveText(['Circuit', 'Vélo', 'Puzzle']);
 
   // An idea, to another person: it changes hands. Both are brought away

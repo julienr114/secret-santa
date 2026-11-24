@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyOrder,
+  ideasChangingPerson,
   moveIdea,
   movePerson,
   orderWrites,
@@ -72,6 +73,27 @@ describe('the order of a list', () => {
     expect(stepIdea(order, 'd', 1)[2]?.ideas).toEqual(['d']);
     const last = stepIdea(order, 'd', 1);
     expect(stepIdea(last, 'd', 1)).toBe(last);
+  });
+
+  it('keeps an idea someone gives with its person', () => {
+    expect(stepIdea(order, 'b', 1, true)[0]?.ideas).toEqual(['a', 'c', 'b']);
+    expect(stepIdea(order, 'c', 1, true)).toBe(order);
+    expect(stepIdea(order, 'd', -1, true)).toBe(order);
+  });
+
+  it('tells which ideas change person', () => {
+    const among = orderWrites(order, [
+      { id: 'leo', ideas: ['b', 'a', 'c'] },
+      { id: 'zoe', ideas: ['d'] },
+      { id: 'hugo', ideas: [] },
+    ]);
+    expect(among && ideasChangingPerson(order, among)).toEqual([]);
+    const away = orderWrites(order, [
+      { id: 'leo', ideas: ['b', 'c'] },
+      { id: 'zoe', ideas: ['d', 'a'] },
+      { id: 'hugo', ideas: [] },
+    ]);
+    expect(away && ideasChangingPerson(order, away)).toEqual(['a']);
   });
 
   it('steps a person up and down', () => {

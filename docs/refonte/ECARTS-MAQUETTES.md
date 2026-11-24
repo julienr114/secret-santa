@@ -341,5 +341,5 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3ListeLigneMenu`, `V3ListeLigneEtoiles` | L'étoile est dessinée en SVG (le contour de l'étoile Lucide), pleine en `rating` (`#f08a6c`), en contour `rating-off` (pêche 300) ; 14 px au bout du texte, 22 px dans le menu. Les icônes du menu sont Lucide : `heading`, `arrow-up`, `arrow-down`, `corner-down-right`, `trash-2`. | Seul |
 | `V3ListeLigneMenu` | Sur ordinateur, la poignée qui apparaît au survol d'une ligne se pose à droite, sur la ligne, par-dessus la fin d'un texte long. | Seul |
-| `V3ListeLigneDeplacer` | « Déplacée vers Zoé » est le message des déplacements, avec « Annuler » comme après un glisser. Après « Monter » ou « Descendre », la ligne reste ouverte à l'écriture, comme avec `Alt` + une flèche. | Seul |
+| `V3ListeLigneDeplacer` | Aucun message après un déplacement, ni « Déplacée vers Zoé » ni « {name} déplacé » après un glisser (Julien, 24 novembre 2026) : seul un lecteur d'écran entend où la ligne est arrivée. Après « Monter » ou « Descendre », la ligne reste ouverte à l'écriture, comme avec `Alt` + une flèche. | Seul |
 | `V3ListeTitres` | Un titre garde la ligne ouverte à l'écriture après « En faire un titre » (le clavier revient), comme après les étoiles. | Seul (la spec : « revient après un choix qui laisse dans la ligne ») |

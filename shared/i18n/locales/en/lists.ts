@@ -10,7 +10,6 @@ export default {
     drag: {
       handle: 'Move: {name}',
       placed: '{name}, position {position} of {count}',
-      moved: '{name} moved',
       up: 'Move up',
       down: 'Move down',
       ideas: { one: '{count} idea', other: '{count} ideas' },
@@ -564,7 +563,6 @@ export default {
     down: 'Move down',
     moveTo: 'Move to…',
     moveTitle: 'Move to',
-    moved: 'Moved to {name}',
     remove: 'Delete the line',
   },
   visitor: {

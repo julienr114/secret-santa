@@ -108,6 +108,25 @@ test('a line becomes a title, gets stars, moves and goes, from its handle', asyn
     'data-stars',
     '3',
   );
+  // Touching the last one lit again takes them all; then one, then none.
+  await openMenu(page, camion);
+  await page.getByTestId('line-star-3').click();
+  await expect(camion.getByTestId('idea-stars')).toHaveCount(0);
+  await openMenu(page, camion);
+  await page.getByTestId('line-star-1').click();
+  await expect(camion.getByTestId('idea-stars')).toHaveAttribute(
+    'data-stars',
+    '1',
+  );
+  await openMenu(page, camion);
+  await page.getByTestId('line-star-1').click();
+  await expect(camion.getByTestId('idea-stars')).toHaveCount(0);
+  await openMenu(page, camion);
+  await page.getByTestId('line-star-3').click();
+  await expect(camion.getByTestId('idea-stars')).toHaveAttribute(
+    'data-stars',
+    '3',
+  );
 
   // « Monter », one step; the first line has no « Monter ».
   await openMenu(page, camion);
@@ -126,7 +145,7 @@ test('a line becomes a title, gets stars, moves and goes, from its handle', asyn
   await expect(page.getByTestId('line-up')).toHaveCount(0);
   await page.keyboard.press('Escape');
 
-  // « Déplacer vers… »: to the end of Zoé's part, said at the bottom.
+  // « Déplacer vers… »: to the end of Zoé's part, with no message.
   const bateau = line(page, 'Léo', 'Le bateau pirate');
   await openMenu(page, bateau);
   await page.getByTestId('line-move').click();
@@ -135,7 +154,7 @@ test('a line becomes a title, gets stars, moves and goes, from its handle', asyn
     'Poupée',
     'Le bateau pirate',
   ]);
-  await expect(page.getByText('Déplacée vers Zoé')).toBeVisible();
+  await expect(page.getByText('Déplacée vers Zoé')).toHaveCount(0);
 });
 
 test('everyone reads the stars and the titles; a title is never ticked', async ({
@@ -186,7 +205,46 @@ test('everyone reads the stars and the titles; a title is never ticked', async (
   );
   expect(titled.status()).toBe(409);
   expect((await titled.json()).statusMessage).toBe('idea_claimed');
+  // Nor does it go to another person.
+  const list = await (
+    await holder.request.get(`/api/lists/${state.listId}`)
+  ).json();
+  const order = list.people.map(
+    (person: { id: string; ideas: { id: string }[] }) => ({
+      id: person.id,
+      ideas: person.ideas.map((idea) => idea.id),
+    }),
+  );
+  const poupee = idOf('Poupée');
+  const away = order.map((section: { id: string; ideas: string[] }) => ({
+    id: section.id,
+    ideas: section.ideas.includes(poupee)
+      ? section.ideas.filter((id) => id !== poupee)
+      : section === order[0]
+        ? [...section.ideas, poupee]
+        : section.ideas,
+  }));
+  const moved = await holder.request.put(`/api/lists/${state.listId}/order`, {
+    data: { order: away },
+  });
+  expect(moved.status()).toBe(409);
+  expect((await moved.json()).statusMessage).toBe('idea_claimed');
   await holder.close();
+});
+
+test('an idea someone gives keeps its stars, without « En faire un titre » nor « Déplacer vers… »', async ({
+  page,
+}) => {
+  await apiLogin(page.request, HOLDER);
+  await page.goto(`/listes/${state.listId}`);
+  await hydrated(page);
+  const poupee = line(page, 'Zoé', 'Poupée');
+  await openMenu(page, poupee);
+  await expect(page.getByTestId('line-star-1')).toBeVisible();
+  await expect(page.getByTestId('line-title')).toHaveCount(0);
+  await expect(page.getByTestId('line-move')).toHaveCount(0);
+  await expect(page.getByTestId('line-remove')).toBeVisible();
+  await page.keyboard.press('Escape');
 });
 
 test('« Supprimer la ligne » takes a title away, and no idea with it', async ({

@@ -5,11 +5,14 @@
 // when there is no room below. For an idea: « Envie » and its three
 // stars, « En faire un titre », « Monter », « Descendre », « Déplacer
 // vers… », then « Supprimer la ligne ». A title has no stars, and turns
-// back into an idea. A touch outside or Échap closes it; the arrows go
+// back into an idea; an idea someone gives does not become one (Julien,
+// 24 November 2026). A touch outside or Échap closes it; the arrows go
 // from one item to the next.
 const props = defineProps<{
   stars: number;
   title: boolean;
+  /** « En faire un titre »: not for an idea someone gives. */
+  canTitle: boolean;
   canUp: boolean;
   canDown: boolean;
   canMove: boolean;
@@ -109,6 +112,7 @@ onBeforeUnmount(() =>
       <span class="my-1 h-px bg-divider" aria-hidden="true" />
     </template>
     <button
+      v-if="canTitle"
       type="button"
       role="menuitem"
       class="flex h-11 items-center gap-2.5 rounded-[10px] px-2.5 text-left text-[15px] font-semibold outline-none hover:bg-muted focus-visible:bg-muted"

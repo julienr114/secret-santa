@@ -12,7 +12,7 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && simple-git-hooks",
-    "lint": "eslint --config eslint.config.ts .",
+    "lint": "eslint --config eslint.config.ts --cache --cache-location node_modules/.cache/eslint/ .",
     "lint:fix": "eslint --config eslint.config.ts . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

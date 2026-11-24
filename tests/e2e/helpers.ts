@@ -54,7 +54,8 @@ export const loginAsOrganizer = async (
 
 /**
  * Writes rows the screens can no longer make (the gift hints of before
- * the V3, ticket 107) straight into the database of the test server.
+ * the V3, ticket 107) straight into the database of the test server of
+ * this run.
  * @param sql - The statements.
  * @returns Once written.
  */
@@ -69,7 +70,8 @@ export const seedSql = async (sql: string) => {
       'secret-santa',
       '--local',
       '--persist-to',
-      '.wrangler/e2e',
+      // The database of this run's server (ticket 168: one each).
+      `.wrangler/e2e-${process.env.E2E_PORT ?? 3100}`,
       '--command',
       sql,
     ],

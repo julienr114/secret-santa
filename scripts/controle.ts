@@ -1,9 +1,15 @@
 // `pnpm controle`: one command that says whether a ticket can be called
 // done (ticket 100, the /controle skill). The quick text checks first,
-// then lint, types and unit tests; `--e2e` adds Playwright. Stops at the
-// first failure.
+// then lint, types and unit tests; `--e2e` adds every end-to-end test,
+// several servers side by side (scripts/e2e.ts, ticket 168). Stops at the
+// first failure, and says how long each step took.
+//
+// `--vite [files…]`, for the time of a ticket (ticket 168): the texts,
+// lint and types, then only the unit tests related to the files changed
+// since `main` (committed or not), and only the end-to-end files named.
+// Before saying « fini », `--e2e`, the whole of it, once.
 import { spawnSync } from 'node:child_process';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
@@ -64,6 +70,15 @@ const fail = (title: string, lines: string[]): never => {
 
 const pass = (title: string) => console.log(`✓ ${title}`);
 
+/** Each step with its time (ticket 168): what is slow shows. */
+const timed = <T>(title: string, step: () => T): T => {
+  const start = performance.now();
+  const result = step();
+  const seconds = ((performance.now() - start) / 1000).toFixed(1);
+  console.log(`  ⏱ ${title} : ${seconds} s`);
+  return result;
+};
+
 const checkLanguages = (dictionaries: Record<string, Texts>) => {
   const missing = missingKeys(dictionaries);
   if (missing.length > 0) {
@@ -108,19 +123,70 @@ const checkHardCodedTexts = () => {
   pass('Aucun texte en dur dans les gabarits de app/');
 };
 
-const run = (script: string) => {
-  console.log(`\n→ pnpm ${script}`);
-  const { status } = spawnSync('pnpm', [script], { stdio: 'inherit' });
-  if (status !== 0) fail(`pnpm ${script} a échoué`, []);
-  pass(`pnpm ${script}`);
+const run = (script: string, ...args: string[]) => {
+  const command = ['pnpm', script, ...args].join(' ');
+  console.log(`\n→ ${command}`);
+  const { status } = spawnSync('pnpm', [script, ...args], { stdio: 'inherit' });
+  if (status !== 0) fail(`${command} a échoué`, []);
+  pass(command);
 };
 
+/** The files changed since `main`, committed or not, and new ones. */
+const changedFiles = (): string[] => {
+  const git = (...args: string[]) =>
+    spawnSync('git', args, { encoding: 'utf8' }).stdout.trim();
+  const base = git('merge-base', 'main', 'HEAD');
+  return [
+    ...new Set(
+      [
+        git('diff', '--name-only', base),
+        git('ls-files', '--others', '--exclude-standard'),
+      ]
+        .join('\n')
+        .split('\n')
+        .filter((file) => file && existsSync(file)),
+    ),
+  ];
+};
+
+/** The end-to-end tests, several servers side by side (ticket 168). */
+const e2e = (files: string[]) => {
+  console.log(`\n→ parcours${files.length > 0 ? ` : ${files.join(' ')}` : ''}`);
+  const { status } = spawnSync(
+    'node',
+    ['--experimental-strip-types', '--no-warnings', 'scripts/e2e.ts', ...files],
+    { stdio: 'inherit' },
+  );
+  if (status !== 0) fail('Les parcours ont échoué', []);
+  pass('les parcours');
+};
+
+const quick = process.argv.includes('--vite');
+const named = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
+const started = performance.now();
 const dictionaries = await loadDictionaries();
-checkLanguages(dictionaries);
-checkWords(dictionaries);
-checkHardCodedTexts();
-run('lint');
-run('typecheck');
-run('test');
-if (process.argv.includes('--e2e')) run('test:e2e');
-console.log('\npnpm controle : tout est passé.');
+timed('les textes', () => {
+  checkLanguages(dictionaries);
+  checkWords(dictionaries);
+  checkHardCodedTexts();
+});
+timed('lint', () => run('lint'));
+timed('types', () => run('typecheck'));
+if (quick) {
+  const changed = changedFiles().filter((file) => /\.(ts|vue|mjs)$/.test(file));
+  timed('tests unitaires liés', () =>
+    changed.length > 0
+      ? run('exec', 'vitest', 'related', '--run', ...changed)
+      : console.log('\n→ aucun fichier changé : pas de test unitaire'),
+  );
+  if (named.length > 0) e2e(named);
+  console.log(
+    `\npnpm controle --vite : passé (${((performance.now() - started) / 1000).toFixed(0)} s). Avant de dire « fini » : pnpm controle --e2e.`,
+  );
+  process.exit(0);
+}
+timed('tests unitaires', () => run('test'));
+if (process.argv.includes('--e2e')) e2e([]);
+console.log(
+  `\npnpm controle : tout est passé (${((performance.now() - started) / 1000).toFixed(0)} s).`,
+);

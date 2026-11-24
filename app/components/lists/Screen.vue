@@ -42,7 +42,12 @@ useHead({ title: () => t('common.appName') });
   <div
     class="flex min-h-[100dvh] flex-col pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
-    <header class="pt-[env(safe-area-inset-top)]">
+    <!-- Stuck on top, as on every screen of the app (AdminScreen): the bar
+         of a list, its mode included, stays under it (Julien, 24 November
+         2026). -->
+    <header
+      class="sticky top-0 z-20 border-b border-default bg-page/90 pt-[env(safe-area-inset-top)] backdrop-blur"
+    >
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
         <div>
           <UButton

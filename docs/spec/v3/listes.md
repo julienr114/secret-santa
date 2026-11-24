@@ -49,12 +49,12 @@ Julien, le 23 novembre 2026 : « il y a un concept de liaison ». Maquettes `V3L
 - **Un seul panneau pour lier et délier** (Julien, le 24 novembre 2026 : « une liste où on choisit tous les Secret Santa qui sont liés ou pas à celle-là » ; il remplace le panneau du lien et la question « Lier à ton Secret Santa ? »). Titre : **« Lier à un Secret Santa »**. Une phrase : « Celui qui t'a tiré verra cette liste pour choisir ton cadeau. ». Puis **mes Secret Santa de l'année, une ligne chacun** : la tuile de l'événement, son nom (« Famille Camille » ; « Famille Camille · Les enfants » quand l'événement en a plusieurs), une case à cocher à droite. Y sont : ceux qui sont liés à cette liste, cochés, et ceux dont le tirage est fait, pas cochés.
 - **Il s'ouvre de deux endroits** : la pastille sous mon prénom (n'importe laquelle, quand ma partie est liée à plusieurs), et **« Lier à un Secret Santa »**, dans le menu « … » de ma partie, entre la fiche et « Retirer de cette liste ». L'entrée du menu est là quand j'ai cette année un Secret Santa tiré qui n'est pas lié à cette liste ; elle n'est plus sous mon prénom, où elle se lisait mal à côté de la pastille. Rien ne s'affiche plus sous le prénom que les pastilles.
 - **Cocher lie, décocher délie, tout de suite** : pas de bouton, le panneau reste ouvert, un message en bas (« Liste liée », « Liste déliée »).
-- **Délier** ne supprime rien : la pastille s'en va, celui qui m'a tiré ne voit plus la liste par ce chemin (il la voit encore s'il est membre d'un événement avec qui elle est partagée), et ma page du Secret Santa propose de nouveau « Ma liste de cadeaux ». C'est le même geste que la croix de « Celui qui m'a tiré » dans « Qui voit ta liste ? ».
+- **Délier** ne supprime rien : la pastille s'en va, celui qui m'a tiré ne voit plus la liste par ce chemin (il la voit encore s'il est membre d'un événement avec qui elle est partagée), et ma page du Secret Santa propose de nouveau « Ma liste de cadeaux ». C'est le même geste que la croix de la ligne du Secret Santa dans « Qui voit ta liste ? ».
 - **Un Secret Santa n'a qu'une liste** : celui qui est lié à une autre liste le dit sous son nom (« Lié à « Noël 2026 » »). Le cocher le déplace ici, et le message le dit : « Liste liée. « Noël 2026 » ne l'est plus. ».
 - Le panneau ne mène plus à la page de mon Secret Santa (« Voir mon Secret Santa » disparaît) : on y va par l'accueil.
 - L'autre chemin ne change pas : « Ma liste de cadeaux », sur la page de mon Secret Santa, propose « Quelle liste pour ton Secret Santa ? » dès que je tiens une liste de l'année où je figure.
 
-« Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`) : « Celui qui m'a tiré » y est une ligne comme les autres. Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
+« Modifier » déroule la barre pour changer qui voit la liste (`V3ListeQuiSecret`) : son Secret Santa y est une ligne comme les autres. Tant qu'elle n'a aucune idée, la liste propose aussi « Repartir d'une liste » (plus bas).
 
 ## La barre du haut d'une liste
 
@@ -66,6 +66,7 @@ Décision de Julien, 22 novembre 2026 : la barre est **repliée**, et **elle se 
 |---|---|---|
 | Brouillon (`V3ListeNouvelle`, `V3ListeReprise`) | « Brouillon » · « Toi seul la vois » | « Partager » |
 | Celui qui m'a tiré (`V3ListeSecret`) | le nom de l'événement · « Seul celui qui t'a tiré la voit » | « Modifier » |
+| Ceux qui m'ont tiré, quand ma partie est liée à plusieurs Secret Santa et à rien d'autre | les noms des événements, séparés par une virgule · « Seuls ceux qui t'ont tiré la voient » | « Modifier » |
 | Des événements (`V3Liste`) | « Famille Camille, Chez Mamie » · « 21 membres la voient » | « Modifier » |
 | Publique (`V3ListePublique`) | « Publique » · « Toute personne qui a le lien la voit » | « Modifier » |
 | Pour celui qui « aide à écrire » (`ListeAidePartage`) | les mêmes textes | « Le lien » |
@@ -76,10 +77,10 @@ Le nom et la phrase tiennent **chacun sur une ligne**, jamais plus : trop longs,
 
 Dedans, dans cet ordre :
 
-1. **L'adresse de la liste et « Copier le lien »** (« Copié », un instant). C'est le seul endroit où l'adresse est écrite : repliée, la barre ne la montre pas.
+1. **L'adresse de la liste et « Copier le lien »** (« Copié », un instant). C'est le seul endroit où l'adresse est écrite : repliée, la barre ne la montre pas. **Elles n'y sont que si le lien fait entrer quelqu'un** (Julien, 24 novembre 2026 ; maquettes `V3ListeQui`, `V3ListeQuiSecret`) : la liste est partagée avec un événement au moins, ou ouverte à tout le monde. Sur un brouillon, ou sur une liste que seul celui qui m'a tiré voit, la barre commence par « Qui voit ta liste ? » : je ne sais pas qui m'a tiré, je n'ai personne à qui envoyer ce lien, et lui arrive par sa carte de résultat. C'est la règle de « Changer de lien ».
 2. Pour ceux qui gèrent la liste : **« Qui voit ta liste ? »** (plus bas). **Il n'y a pas de bouton pour enregistrer** : chaque geste s'applique tout de suite, et la phrase de la barre suit (« 21 membres la voient »).
 
-Celui qui « aide à écrire » n'a que l'adresse et « Copier le lien » (`V3ListeAideLien`).
+Celui qui « aide à écrire » n'a que l'adresse et « Copier le lien » (`V3ListeAideLien`). Quand le lien ne fait entrer personne, sa barre n'a rien à dérouler : elle n'a pas de bouton.
 
 Celui qui « gère la liste » a les mêmes boutons que celui qui l'a créée (`ListeTeneurs`). Les maquettes de liste d'avant (`ListeTeneur`, `ListeGlisser`…) ont cette barre, repliée.
 
@@ -95,8 +96,8 @@ C'est ce que contient la barre du haut quand elle est déroulée, sous l'adresse
 
 - **On ne voit que ceux qui voient la liste**, une ligne chacun, avec une croix pour le retirer :
   - un événement : son icône, son nom, « 12 membres » ;
-  - **« Celui qui m'a tiré »** · « Secret Santa · Famille Camille », une ligne par Secret Santa auquel ma partie de la liste est liée (« Depuis mon Secret Santa »). Elle peut être là en même temps que l'événement : l'une dit que ma partie sert à mon Secret Santa, l'autre que tous les membres voient la liste.
-- **« Ajouter »**, dessous, se déroule sur place en pastilles : mes autres événements, « Celui qui m'a tiré » (si je participe à un Secret Santa et que je figure dans la liste), et **« Quelqu'un d'autre »**. Toucher une pastille l'ajoute aux lignes du dessus, tout de suite. Toucher « Ajouter » une seconde fois le replie.
+  - **un Secret Santa, à son nom** (Julien, 24 novembre 2026 : « Celui qui m'a tiré », en titre, n'était « pas clair du tout » ; maquette `V3ListeQuiSecret`) : l'enveloppe, **« Secret Santa · Famille Camille »** (le même texte que la pastille sous mon prénom ; son nom à lui quand l'événement en a plusieurs : « Les enfants · Famille Camille »), et dessous **« Celui qui t'a tiré la voit »**. Une ligne par Secret Santa auquel ma partie de la liste est liée (« Depuis mon Secret Santa ») ; chaque croix ne délie que le sien. Elle peut être là en même temps que l'événement : l'une dit que ma partie sert à mon Secret Santa, l'autre que tous les membres voient la liste.
+- **« Ajouter »**, dessous, se déroule sur place en pastilles : mes autres événements, **une pastille par Secret Santa** où je participe et qui n'est pas encore lié, si je figure dans la liste : l'enveloppe et « Secret Santa · Famille Camille », avant les événements (maquettes `V3ListeQui`, `V3ListeQuiAjouter`), et **« Quelqu'un d'autre »**. Toucher une pastille l'ajoute aux lignes du dessus, tout de suite. Toucher « Ajouter » une seconde fois le replie.
 - **Personne encore** (un brouillon) : aucune ligne, et « Ajouter » est déjà ouvert.
 - **« Quelqu'un d'autre »** fait glisser la barre vers un niveau plus loin, sans quitter la liste (« Inviter quelqu'un », plus bas). La pastille n'est là que si la liste est déjà partagée avec les membres de son événement, puisque celui qu'on invite en devient membre.
 - **« Changer de lien »**, en dernière ligne, dès que le lien fait entrer quelqu'un (la liste est partagée avec son événement). Pas sur un brouillon, ni sur une liste que seul celui qui m'a tiré voit.

@@ -2,7 +2,7 @@
 
 Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'événement ». Dans le dépôt : la source dans `docs/refonte/maquettes/<Nom>.html`, la référence visuelle dans `docs/refonte/maquettes-sorbet/<Nom>.html`.
 
-89 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
+90 maquettes, dans l'ordre du canevas (une rangée par sujet). Depuis le 21 novembre 2026 elles disent « événement » ; leurs noms de fichiers gardent « Fete » (ils sont cités partout). Quinze d'entre elles datent du 20 novembre 2026 au soir (tickets de conception D01 à D12, `docs/travail/conception/`).
 
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
@@ -27,7 +27,8 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3FeteQuitter` | Événement · quitter : ce qui sort, ce qui reste | 104 |
 | `V3FeteAnneePassee` | Événement · une année passée (Noël 2025) : son Secret Santa et ses listes, en lecture seule ; rien à créer, rien à régler | 108 |
 | `V3FeteReglages` | Événement · réglages : la catégorie, la date, la récurrence, les organisateurs ; ceux du Secret Santa sont sur le Secret Santa | 104 |
-| `V3FeteMembres` | Événement · ses membres, et par où chacun est entré (un Secret Santa, une liste) ; « Ajouter quelqu’un » mène au Secret Santa ou à ma liste, jamais à l’événement lui-même | 117 |
+| `V3FeteMembres` | Événement · ses membres ; sous un prénom, seulement ce qui sort de l’ordinaire (« Organise », « Hors du Secret Santa », « Pas d’adresse email ») ; une seule ligne « Ajouter quelqu’un » | 117, 158 |
+| `V3FeteMembresAjouter` | Événement · « Ajouter quelqu’un » touché, avec plusieurs endroits où le faire : on demande où | 158 |
 | `V3FeteInviter` | Secret Santa · inviter par lien : on s’inscrit au Secret Santa, et l’on devient membre de son événement (le nom du fichier est resté) | 116 |
 | `V3FeteRejoindre` | Secret Santa · son lien d’invitation, sans compte : « On t’invite au Secret Santa » (le nom du fichier est resté) | 116 |
 | `V3FeteMembresComplet` | Événement · complet, vu par l’organisateur : 30 membres, le lien du Secret Santa en pause | 117 |
@@ -58,7 +59,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3ListeLienChanger` | Liste · « Changer de lien » touché : un niveau plus loin dans la barre, la conséquence, « Changer » ; le retour annule | 139, 141 |
 | `V3ListeLienNouveau` | Liste · le lien vient de changer : la nouvelle adresse est dans la barre, « Nouveau lien créé » | 139 |
 | `V3ListeQuiModifier` | Liste · « Modifier » touché : deux choix, « Qui je veux » ou « Tout le monde » ; dessous, seulement ceux qui la voient, chacun avec sa croix, « Ajouter », et « Changer de lien » | 106, 135, 138, 139 |
-| `V3ListeQuiAjouter` | Liste · « Ajouter » touché : mes autres événements, « Celui qui m’a tiré » et « Quelqu’un d’autre », en pastilles ; en toucher une l’ajoute | 139 |
+| `V3ListeQuiAjouter` | Liste · « Ajouter » touché : mes autres événements, une pastille par Secret Santa et « Quelqu’un d’autre » ; en toucher une l’ajoute | 139, 157 |
 | `V3ListeQuiOuvrir` | Liste · « Tout le monde » touché : un niveau plus loin dans la barre, la conséquence, « Ouvrir » ; le retour annule | 139, 141 |
 | `V3ListeQuiRetirer` | Liste · la croix touchée : un niveau plus loin dans la barre, la conséquence, « Retirer » ; le retour annule | 139, 141 |
 | `V3ListeOccasion` | Liste · première étape : « Pour quelle occasion ? » ; la liste y naît en brouillon | 106 |

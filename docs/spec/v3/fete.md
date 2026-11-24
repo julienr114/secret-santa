@@ -38,12 +38,23 @@ Maquette : `V3FeteMembres`. Décision : `2026-11-21-on-entre-par-un-secret-santa
 
 - **C'est la page des organisateurs** (Q-029) : un membre ne l'ouvre pas. Pour lui, la ligne des membres de la page de l'événement dit combien ils sont, sans mener nulle part (pas de chevron). Elle montre les exclusions du tirage et l'absence d'adresse, que les membres ne lisent nulle part ailleurs.
 - **On n'ajoute personne à un événement.** On en devient membre en entrant dans un de ses Secret Santa ou dans une de ses listes (`modele.md`, « Deux sortes de personnes »).
-- La page montre qui est là et, sous chaque prénom, **par où il est entré** : « Secret Santa » (son nom s'il y en a plusieurs), « La liste de Camille », les deux séparés par une virgule. L'organisateur lit à la suite « ne tire pas Hugo » et « pas d'adresse email » ; l'adresse elle-même est sur la fiche de la personne.
-- **Un organisateur est membre** dès qu'on l'ajoute dans les réglages de l'événement, sans passer par un Secret Santa ni par une liste (Q-031) : c'est la seule exception. Sa ligne commence par **« Organise »** : « Organise · Secret Santa · ne tire pas Hugo », ou « Organise » seul. Pas « Organisateur » : l'application ne connaît pas le genre.
-- Sous les membres, **« Ajouter quelqu'un »**, avec une ligne par endroit où je peux le faire :
-  - **« Au Secret Santa »**, pour son organisateur, une ligne par Secret Santa en préparation (son nom s'il y en a plusieurs) · « 5 participants · lien actif ». Elle ouvre « Choisir les participants » (`secret-santa.md`).
-  - **« À ma liste »**, une ligne par liste que je gère et qui est partagée avec les membres de cet événement · les prénoms de la liste. Elle ouvre « Inviter quelqu'un » (`listes.md`). Seul un organisateur qui gère aussi une liste la voit ici ; un membre invite depuis sa liste (« Qui voit ta liste ? », « Ajouter », « Quelqu'un d'autre »).
-  - Sans Secret Santa en préparation ni liste à moi, il n'y a pas de section.
+- **Sous un prénom, seulement ce qui sort de l'ordinaire** (Julien, 24 novembre 2026 : « par où il est entré », répété sur chaque ligne, ne dit rien à quelqu'un qui crée son premier Secret Santa ; maquette `V3FeteMembres`). Quand tout est normal, la ligne n'a que le prénom. Sinon, dans cet ordre, séparés par « · », le premier avec une majuscule :
+  1. **« Organise »** (pas « Organisateur » : l'application ne connaît pas le genre) ;
+  2. **le Secret Santa, quand ça distingue quelqu'un** :
+     - l'événement a un seul Secret Santa cette année : rien pour qui y participe, **« Hors du Secret Santa »** pour qui n'y est pas ;
+     - il en a plusieurs : le nom de ceux où la personne participe (« Les enfants », « Les enfants, Les adultes »), **« Dans aucun Secret Santa »** sinon ;
+     - il n'en a pas cette année : rien ;
+  3. **« ne tire pas Hugo »** (les exclusions du tirage) ;
+  4. **« pas d'adresse email »** ; l'adresse elle-même est sur la fiche de la personne.
+  - Exemples : « Organise · ne tire pas Hugo », « Ne tire pas Camille », « Hors du Secret Santa », « Pas d'adresse email ».
+  - **On ne dit plus par quelle liste quelqu'un est entré** (« La liste de Camille » disparaît).
+- **Un organisateur est membre** dès qu'on l'ajoute dans les réglages de l'événement, sans passer par un Secret Santa ni par une liste (Q-031) : c'est la seule exception.
+- Sous les membres, **une seule ligne, « Ajouter quelqu'un »** (Julien, 24 novembre 2026 : « on peut se demander pourquoi on a la liste des personnes et on ne peut pas en ajouter une directement là » ; maquettes `V3FeteMembres`, `V3FeteMembresAjouter`). La règle ne change pas, on entre par un Secret Santa ou par une liste, mais elle ne se montre que quand il faut choisir :
+  - **les endroits où je peux ajouter quelqu'un** : chaque Secret Santa en préparation que j'organise, et chaque liste que je gère et qui est partagée avec les membres de cet événement ;
+  - **un seul endroit** : la ligne le dit sous son titre (« Au Secret Santa », « À ma liste de cadeaux ») et y mène tout droit : « Choisir les participants » (`secret-santa.md`) ou « Inviter quelqu'un » (`listes.md`) ;
+  - **plusieurs endroits** : la ligne n'a que son titre, et ouvre un panneau du bas, « Ajouter quelqu'un », une ligne par endroit : **« Au Secret Santa »** · « Pour participer au tirage » (son nom s'il y en a plusieurs : « Au Secret Santa « Les enfants » ») ; **« À ma liste de cadeaux »** · « Pour voir la liste et cocher un cadeau » (avec plusieurs listes, les prénoms de chacune à la place) ;
+  - **aucun endroit** (pas de Secret Santa en préparation, pas de liste à moi) : à la place, les deux lignes qui en créent un, « Créer un Secret Santa » et « Créer une liste de cadeaux », comme sur la carte de l'accueil.
+  - Un membre invite toujours depuis sa liste (« Qui voit ta liste ? », « Ajouter », « Quelqu'un d'autre »).
 - L'organisateur retire quelqu'un depuis sa fiche : la personne sort des Secret Santa pas encore tirés, et ne voit plus les listes de l'événement.
 - Certains membres n'ont pas de compte : ils participent au Secret Santa, ils ne voient pas les listes.
 

@@ -109,5 +109,5 @@ Ce qui reste : « il » quand il reprend **un mot** masculin, pas une personne (
 ## Ce qui ne change pas
 
 - Les textes d'une liste ne disent jamais « Père Noël » ni « famille ».
-- « Celui qui m'a tiré » : la personne qui m'offre, dans un Secret Santa. L'application ne connaît pas le genre : pas de « celle ».
+- « Celui qui m'a tiré » : la personne qui m'offre, dans un Secret Santa. L'application ne connaît pas le genre : pas de « celle ». **Ce n'est jamais le titre d'une ligne ni d'une pastille à choisir** : ce qu'on choisit, c'est un Secret Santa, à son nom (« Secret Santa · Famille Camille ») ; « celui qui t'a tiré » dit seulement la conséquence, dans le texte du dessous.
 - « Cocher » ce qu'on offre, jamais « réserver ».

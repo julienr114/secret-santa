@@ -66,6 +66,8 @@ export const rateLimiterFor = (
     [
       '/api/auth/link',
       '/api/auth/confirm',
+      // Ticket 123: the six digits of the installed app.
+      '/api/auth/code',
       '/api/auth/group-requests',
     ].includes(path)
   ) {

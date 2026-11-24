@@ -138,7 +138,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`), r
 « Quoi de neuf » (ticket 120) : chaque ligne ouvre la chose qu'elle signale : ma page d'un Secret Santa (`/p/[jeton]`), le palmarès (`/p/[jeton]/devine/palmares`), le suivi de l'organisateur (`/admin/[fête]/editions/[id]`), les membres d'un événement (`/e/[fête]/membres`), une liste (`/listes/[id]` si je la tiens ou si l'on m'invite à la tenir, sinon `/l/[jeton]`). En bas, « Choisir ce qui me prévient » ouvre `/compte/me-prevenir` (ticket 121).
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
-| Connexion | `/login` | — | |
+| Connexion | `/login` | — | Dans l'application installée (ticket 123), l'adresse mène à « Tape ton code » sur la même page, sans lien |
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
 | Me prévenir (ticket 121) | `/compte/me-prevenir` | Mon compte | « Par email » : un résumé le matin, tout de suite, aucun ; aussi ouverte par « Choisir ce qui me prévient », en bas de « Quoi de neuf ». « Ce que je suis » (`#suivis`, ticket 122), où mènent les emails d'une liste suivie |

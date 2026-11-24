@@ -8,6 +8,8 @@ export default {
     emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
     emailInvalid: 'Cette adresse a l’air incomplète',
     submit: 'Recevoir un lien de connexion',
+    // The installed app (ticket 123).
+    submitCode: 'Recevoir un code',
     sentTitle: 'Regarde ta boîte mail',
     again: 'Utiliser une autre adresse',
     devLink: 'Mode développement : ouvrir le lien de connexion',
@@ -233,6 +235,28 @@ export default {
     connectedOn: 'Connecté le {date}',
     revokeShort: 'Déconnecter',
     logoutHere: 'Se déconnecter de cet appareil',
+  },
+  // The email of a login code (ticket 123, ConnexionCodeEmail).
+  codeEmail: {
+    subject: 'Ton code Under the Tree : {code}',
+    hello: 'Bonjour,',
+    intro: 'Voici ton code pour te connecter dans l’application :',
+    validity:
+      'Il est valable 15 minutes et ne sert qu’une fois, sur le téléphone qui l’a demandé.',
+    ignore: 'Si ce n’est pas toi, ignore ce message.',
+    why: 'Tu reçois cet email parce que tu viens de le demander.',
+  },
+  // The screen of the code (ticket 123, ConnexionCode).
+  code: {
+    title: 'Tape ton code',
+    sentBefore: 'Six chiffres envoyés à',
+    sentAfter: '. Le code est valable 15 minutes.',
+    digit: 'Chiffre {n} sur 6',
+    label: 'Le code reçu par email',
+    again: 'Renvoyer un code',
+    sentAgain: 'Un nouveau code est parti.',
+    other: 'Utiliser une autre adresse',
+    checking: 'Vérification…',
   },
   email: {
     subject: 'Ton lien de connexion à Under the Tree',

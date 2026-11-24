@@ -79,6 +79,8 @@ export default {
     'Les résultats restent secrets tant que le Secret Santa n’est pas clôturé.',
   login_link_invalid:
     "Ce lien de connexion n'est plus valable : demande-en un nouveau.",
+  login_code_invalid:
+    'Ce code ne marche pas : vérifie les six chiffres, ou demande-en un autre.',
   cannot_remove_self:
     'Tu ne peux pas te retirer toi-même : demande à un autre organisateur.',
   organizer_not_found:

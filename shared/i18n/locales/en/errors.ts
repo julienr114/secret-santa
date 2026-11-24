@@ -72,6 +72,8 @@ export default {
   wrong_sentence: 'Copy the requested sentence exactly.',
   results_secret: 'Results stay secret until the Secret Santa is closed.',
   login_link_invalid: 'This login link is no longer valid: ask for a new one.',
+  login_code_invalid:
+    'This code doesn’t work: check the six digits, or ask for another one.',
   cannot_remove_self: 'You cannot remove yourself: ask another organizer.',
   organizer_not_found:
     'Organizer not found. Reload the page: the list may have changed.',

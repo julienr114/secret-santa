@@ -8,6 +8,7 @@ La production est à `0047_v3_hints_without_account` (la bascule, ticket 113). L
 | 2 | `0049_v3_list_follows` | 122 | La table `gift_list_follows` : ce qu'un compte suit sur une liste, toute la liste ou une personne. |
 | 3 | `0050_v3_app_counters` | 129 | La table `app_counters` : ce que l'application compte par jour (emails envoyés et rejetés, requêtes refusées pour débit, connexions échouées, erreurs du serveur, avertissements donnés). Les deux nouveaux interrupteurs sont des lignes de `app_switches`, sans changement de table. |
 | 4 | `0051_v3_email_blocks` | 130 | Les tables `email_blocks` (les adresses bloquées, par empreinte), `email_seen` (les adresses déjà écrites) et `email_reports` (« Signaler cet envoi ») ; la colonne `parties.emails_off`. |
+| 5 | `0052_v3_login_codes` | 123 | La table `login_codes` : les codes de connexion de l'application installée, par leur empreinte liée à l'appareil, jamais en clair. |
 
 Avec `0051`, deux réglages chez le fournisseur d'email, pour que les rejets et les plaintes bloquent l'adresse :
 

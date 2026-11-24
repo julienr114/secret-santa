@@ -387,3 +387,11 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `StopSaisie` | L'avis est une carte lilas sous le champ, sans le bouton « Partager son lien » : la fiche a déjà ses façons de partager. Aussi sous l'ajout d'une personne, l'invitation à tenir une liste et le partage d'une liste par adresse. | Seul |
 | `StopEnvoi` | « Envoyer par email » garde sa liste d'une seule pièce : la personne bloquée y est décochée, « A demandé à ne plus recevoir d'emails » sous son nom, sans « Ajouter ». Les deux titres « Recevront l'email » et « À prévenir autrement » ne sont pas là. | Seul |
 | — | `/admin/envois-signales` n'a pas de maquette : une carte par événement, le nombre de signalements et la date du dernier, qui a envoyé, et « Couper ses emails ». | Seul |
+
+## La connexion par code (ticket 123)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ConnexionCode` | « Tape ton code » remplace, sur la page de connexion, l'écran « Lien envoyé », dans l'application installée seulement. Les six cases sont dessinées au-dessus d'un seul champ (`autocomplete="one-time-code"`) : le téléphone propose le code de l'email, et un collage remplit les six. Pas de phrase « Il se valide tout seul au sixième chiffre » : elle explique l'écran. Sans le sélecteur de langue de l'en-tête. | Seul (la règle du 24 novembre) |
+| `ConnexionCode` | Le bouton de l'adresse dit « Recevoir un code » dans l'application installée ; dans un navigateur, rien ne change. | Seul |
+| `ConnexionCodeEmail` | Sans « Ce que l'application fait de tes données » (ticket 131), ni le pied « Ne plus recevoir d'emails » : un email de connexion part toujours (ticket 130). | Le ticket 130 |

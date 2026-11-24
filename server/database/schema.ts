@@ -532,6 +532,30 @@ export const loginLinks = sqliteTable(
   ],
 );
 
+// The login codes of the installed app (ticket 123): the print of the
+// code, bound to the device that asked, never the code; good for 15
+// minutes, once, five tries.
+export const loginCodes = sqliteTable(
+  'login_codes',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    codePrint: text('code_print').notNull(),
+    createdAt: text('created_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    usedAt: text('used_at'),
+    attempts: integer('attempts').notNull().default(0),
+    // Who asked, hashed, for throttling, as the links.
+    ipHash: text('ip_hash').notNull(),
+  },
+  (t) => [
+    index('login_codes_account_idx').on(t.accountId, t.createdAt),
+    index('login_codes_ip_idx').on(t.ipHash, t.createdAt),
+  ],
+);
+
 export const sessions = sqliteTable(
   'sessions',
   {

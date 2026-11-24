@@ -34,17 +34,30 @@ export type AccountPayload = {
  */
 export const useRequestLinkMutation = () =>
   useApiMutation<
-    { ok: true; devLink?: string },
-    { email: string; next?: string | null; firstName?: string }
-  >(({ email, next, firstName }) =>
+    { ok: true; devLink?: string; devCode?: string },
+    {
+      email: string;
+      next?: string | null;
+      firstName?: string;
+      /** The installed app: a code instead of a link (ticket 123). */
+      code?: boolean;
+    }
+  >(({ email, next, firstName, code }) =>
     api('/api/auth/link', {
       method: 'POST',
       body: {
         email,
         ...(next ? { next } : {}),
         ...(firstName ? { firstName } : {}),
+        ...(code ? { code: true } : {}),
       },
     }),
+  );
+
+/** The six digits of the installed app (ticket 123). */
+export const useLoginCodeMutation = () =>
+  useApiMutation<{ user: SessionUser }, { email: string; code: string }>(
+    (body) => api('/api/auth/code', { method: 'POST', body }),
   );
 
 /**

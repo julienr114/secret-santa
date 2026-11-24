@@ -80,6 +80,8 @@ export default {
     'Die Ergebnisse bleiben geheim, bis das Wichteln abgeschlossen ist.',
   login_link_invalid:
     'Dieser Anmeldelink ist nicht mehr gültig: fordere einen neuen an.',
+  login_code_invalid:
+    'Dieser Code funktioniert nicht: Prüfe die sechs Ziffern oder fordere einen neuen an.',
   cannot_remove_self:
     'Du kannst dich nicht selbst entfernen: bitte einen anderen Organisator.',
   organizer_not_found:

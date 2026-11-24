@@ -155,10 +155,25 @@ const onGiftKey = (event: KeyboardEvent, id: string) => {
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const update = useUpdateMemberMutation(() => props.person.member.id);
-const save = (patch: { firstName?: string; avatar?: Avatar }) =>
+/**
+ * The first name or icon just chosen, shown at once until the list is
+ * read again (ticket 166); a failure says so and puts the old one back.
+ */
+const chosen = ref<{ firstName?: string; avatar?: Avatar }>({});
+const save = (patch: { firstName?: string; avatar?: Avatar }) => {
+  chosen.value = { ...chosen.value, ...patch };
   update.mutate(patch, {
     onError: (error) => toast.failed(errorMessage(error)),
+    // Only what this change set: a later one keeps showing.
+    onSettled: () => {
+      chosen.value = Object.fromEntries(
+        Object.entries(chosen.value).filter(
+          ([key, value]) => value !== patch[key as keyof typeof patch],
+        ),
+      );
+    },
   });
+};
 const iconOpen = ref(false);
 const onIcon = (avatar: Avatar) => {
   iconOpen.value = false;
@@ -180,7 +195,7 @@ const { lockedBy: nameLock } = useLiveWriting(
 );
 const startName = async () => {
   if (nameLock.value) return;
-  nameDraft.value = props.person.member.firstName;
+  nameDraft.value = member.value.firstName;
   naming.value = true;
   await nextTick();
   nameField.value?.focus();
@@ -189,14 +204,15 @@ const saveName = () => {
   if (!naming.value) return;
   naming.value = false;
   const name = nameDraft.value.replace(/\s+/g, ' ').trim();
-  if (name && name !== props.person.member.firstName) {
+  // Against the name shown: one just chosen counts (ticket 166).
+  if (name && name !== member.value.firstName) {
     save({ firstName: name });
   }
 };
 const cancelName = () => {
   naming.value = false;
 };
-const member = computed(() => props.person.member);
+const member = computed(() => ({ ...props.person.member, ...chosen.value }));
 /** « 6 ans · taille 6 ans, pointure 30 ». */
 const details = computed(() => {
   const m = member.value;

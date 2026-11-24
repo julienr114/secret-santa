@@ -115,31 +115,18 @@ const closeMenu = async (back = false) => {
   else handle.value?.focus();
 };
 /**
- * The stars just chosen, shown until the list is read again: the menu
- * opened again at once knows them, and the last lit takes them all.
+ * The stars and the title show at once: the line changes in the page's
+ * data at the gesture (ticket 166), a failure says so.
  */
-const starsChosen = ref<number | null>(null);
-const stars = computed(() => starsChosen.value ?? props.idea?.stars ?? 0);
+const stars = computed(() => props.idea?.stars ?? 0);
 const onStars = (count: number) => {
   if (!props.idea) return;
-  starsChosen.value = count;
-  update.mutate(
-    { ideaId: props.idea.id, stars: count },
-    {
-      onError: (error) => toast.failed(errorMessage(error)),
-      onSettled: () => {
-        if (starsChosen.value === count) starsChosen.value = null;
-      },
-    },
-  );
+  update.mutate({ ideaId: props.idea.id, stars: count });
   void closeMenu(true);
 };
 const onTitle = () => {
   if (!props.idea) return;
-  update.mutate(
-    { ideaId: props.idea.id, title: !props.idea.title },
-    { onError: (error) => toast.failed(errorMessage(error)) },
-  );
+  update.mutate({ ideaId: props.idea.id, title: !props.idea.title });
   void closeMenu(true);
 };
 const onStepLine = (step: -1 | 1) => {
@@ -429,11 +416,14 @@ const save = async (): Promise<boolean> => {
   }
   const url = link || null;
   if (text || url) {
+    // Shown at once, under an id of its own until the server gives one
+    // (ticket 166).
     create.mutate({
       listPersonId: props.listPersonId,
       text,
       ...(url ? { url } : {}),
       after: props.after ?? null,
+      tempId: `new-${crypto.randomUUID()}`,
     });
     draft.value = '';
     address.value = '';

@@ -16,6 +16,7 @@ import {
   useDeleteListMutation,
   useListQuery,
   useRemovePersonMutation,
+  lineIdNow,
   useReorderMutation,
   useCreateListMutation,
   useUntickForMutation,
@@ -31,6 +32,7 @@ import {
   applyOrder,
   moveIdea,
   movePerson,
+  orderWithIds,
   placeOfIdea,
   sameOrder,
   stepIdea,
@@ -219,7 +221,18 @@ const removal = useDelayedRemoval((personId, done) =>
 // from the keyboard and the menu. The screen shows the new order at
 // once; the list is read again once it is saved.
 const reorder = useReorderMutation(id);
-const wanted = ref<ListOrder | null>(null);
+const chosenOrder = ref<ListOrder | null>(null);
+/**
+ * The order shown until the list read again says the same, a line just
+ * written under the id the server gave it as soon as it has one (ticket
+ * 166).
+ */
+const wanted = computed({
+  get: () => chosenOrder.value && orderWithIds(chosenOrder.value, lineIdNow),
+  set: (order: ListOrder | null) => {
+    chosenOrder.value = order;
+  },
+});
 // Live (lot 26, README 22.20): what the others do arrives by itself, and
 // those who hold the list see who else is there, and who writes what.
 const live = useListLive(
@@ -329,7 +342,14 @@ const people = computed(() => {
       unticking.leaving.value
         ? { ...person, ideas: person.ideas.map(withoutLeaving) }
         : person,
-    );
+    )
+    // A line just written takes the id the server gave it at once, as the
+    // order shown does (ticket 166).
+    .map((person) => ({
+      ...person,
+      ideas: person.ideas.map((idea) => ({ ...idea, id: lineIdNow(idea.id) })),
+      lines: person.lines.map(lineIdNow),
+    }));
   return wanted.value
     ? withLines(
         applyOrder(there, wanted.value, (idea) => idea.id),

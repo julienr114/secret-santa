@@ -336,3 +336,16 @@ export const withLines = <
     );
     return { ...section, lines: [...wanted, ...rest] };
   });
+
+/**
+ * An order with the ids of its ideas read again (ticket 166): a line just
+ * written has an id of this screen until the server gives it its own.
+ * @param order - The order.
+ * @param idOf - The id an idea has now.
+ * @returns The same order, its ideas renamed.
+ */
+export const orderWithIds = (
+  order: ListOrder,
+  idOf: (id: string) => string,
+): ListOrder =>
+  order.map((section) => ({ ...section, ideas: section.ideas.map(idOf) }));

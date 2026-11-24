@@ -5,6 +5,7 @@ import {
   mergeLines,
   moveIdea,
   movePerson,
+  orderWithIds,
   orderWrites,
   placeOfIdea,
   sameOrder,
@@ -224,5 +225,11 @@ describe('the order of a list', () => {
     expect(
       withLines([leo], [{ id: 'leo', ideas: ['b', 'a'] }])[0]?.lines,
     ).toEqual(['b', 'a', 'x']);
+  });
+
+  it('renames the ideas of an order, a line just written once named', () => {
+    expect(
+      orderWithIds(order, (id) => (id === 'b' ? 'b-server' : id))[0]?.ideas,
+    ).toEqual(['a', 'b-server', 'c']);
   });
 });

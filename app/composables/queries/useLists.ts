@@ -23,6 +23,12 @@ import {
   untickedLine,
   withLine,
 } from '#shared/utils/optimisticTick';
+import {
+  withIdeaAdded,
+  withIdeaChanged,
+  withListChanged,
+  withoutIdea,
+} from '#shared/utils/optimisticList';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
 // Gift lists (README 22.19, lot 21): the document of a
@@ -119,11 +125,41 @@ export type ListPatch = {
   icon?: { emoji: string; color: string };
 };
 
-export const useUpdateListMutation = (id: Id) =>
-  useApiMutation<{ ok: true }, ListPatch>(
-    (body) => api(`/api/lists/${toValue(id)}`, { method: 'PATCH', body }),
-    () => listKeys(toValue(id)),
-  );
+/**
+ * « Modifier » a list: its name, date, icon or word show at once (ticket
+ * 166); a failure says so, and the list read again puts it back.
+ * @param id - The list.
+ * @returns The mutation.
+ */
+export const useUpdateListMutation = (id: Id) => {
+  const queryClient = useQueryClient();
+  const toast = useMessages();
+  const errorMessage = useErrorMessage();
+  return useMutation<{ ok: true }, Error, ListPatch>({
+    mutationFn: (body) =>
+      api(`/api/lists/${toValue(id)}`, { method: 'PATCH', body }),
+    onMutate: (body) => {
+      const key = keys.list(toValue(id));
+      const before = queryClient.getQueryData<ListDocument>(key);
+      if (!before) return;
+      void queryClient.cancelQueries(
+        { queryKey: key, exact: true },
+        { revert: false, silent: true },
+      );
+      queryClient.setQueryData(key, {
+        ...before,
+        list: withListChanged(before.list, body),
+      });
+    },
+    onError: (error) => toast.failed(errorMessage(error)),
+    onSettled: () =>
+      Promise.all(
+        listKeys(toValue(id)).map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
+  });
+};
 
 /** « Supprimer la liste », on purpose: any list, shared or not. */
 export const useDeleteListForGoodMutation = () =>
@@ -274,54 +310,143 @@ export const useDeclineInvitationMutation = (token: Id) =>
     () => [['invitation', toValue(token)]],
   );
 
+/** A new idea: `tempId` names it on this screen until the server does. */
+export type NewIdea = {
+  listPersonId: string;
+  text: string;
+  url?: string | null;
+  after: string | null;
+  tempId?: string;
+};
+
+/**
+ * Its line as it shows until the server answers (ticket 166).
+ * @param idea - What was written.
+ * @param id - Its id on this screen.
+ * @returns The line.
+ */
+const draftLine = (idea: NewIdea, id: string): IdeaLine => ({
+  id,
+  text: idea.text,
+  url: idea.url ?? null,
+  createdAt: new Date().toISOString(),
+  stars: 0,
+  title: false,
+  view: { kind: 'free' },
+  mine: null,
+  carried: false,
+  claims: [],
+  notes: [],
+  who: null,
+  pending: true,
+});
+
 export const useCreateIdeaMutation = (via: Via) =>
-  useApiMutation<
-    { id: string },
-    {
-      listPersonId: string;
-      text: string;
-      url?: string | null;
-      after: string | null;
-    }
-  >(
-    (body) => api(ideasUrl(toValue(via)), { method: 'POST', body }),
-    () => claimKeys(toValue(via)),
+  useOptimisticEdit<{ id: string }, NewIdea>(
+    via,
+    ({ tempId, ...body }) => {
+      const sent = inTurn(tempId ?? body.listPersonId, () =>
+        api<{ id: string }>(ideasUrl(toValue(via)), { method: 'POST', body }),
+      );
+      if (tempId) {
+        createdIds.set(
+          tempId,
+          sent.then((created) => {
+            namedIds.set(tempId, created.id);
+            return created.id;
+          }),
+        );
+      }
+      return sent;
+    },
+    (doc, idea) =>
+      idea.tempId
+        ? withIdeaAdded(
+            doc,
+            idea.listPersonId,
+            idea.after,
+            draftLine(idea, idea.tempId),
+          )
+        : doc,
   );
 
+/** What a line changes: its text, its link, its stars, a title. */
+export type IdeaPatch = {
+  ideaId: string;
+  text?: string;
+  url?: string | null;
+  /** Its stars, 0 to 3, and whether it is a title (ticket 152). */
+  stars?: number;
+  title?: boolean;
+};
+
 export const useUpdateIdeaMutation = (via: Via) =>
-  useApiMutation<
-    { ok: true },
-    {
-      ideaId: string;
-      text?: string;
-      url?: string | null;
-      /** Its stars, 0 to 3, and whether it is a title (ticket 152). */
-      stars?: number;
-      title?: boolean;
-    }
-  >(
+  useOptimisticEdit<{ ok: true }, IdeaPatch>(
+    via,
     ({ ideaId, ...body }) =>
-      api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'PATCH', body }),
-    () => claimKeys(toValue(via)),
+      inTurn(ideaId, async () =>
+        api(`${ideasUrl(toValue(via))}/${await serverIdOf(ideaId)}`, {
+          method: 'PATCH',
+          body,
+        }),
+      ),
+    (doc, { ideaId, ...patch }) =>
+      withIdeaChanged(doc, ideaId, {
+        ...patch,
+        // A title has neither link nor stars (ticket 152).
+        ...(patch.title ? { url: null, stars: 0 } : {}),
+      }),
   );
 
 export const useDeleteIdeaMutation = (via: Via) =>
-  useApiMutation<{ ok: true }, string>(
+  useOptimisticEdit<{ ok: true }, string>(
+    via,
     (ideaId) =>
-      api(`${ideasUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
-    () => claimKeys(toValue(via)),
+      inTurn(ideaId, async () =>
+        api(`${ideasUrl(toValue(via))}/${await serverIdOf(ideaId)}`, {
+          method: 'DELETE',
+        }),
+      ),
+    (doc, ideaId) => withoutIdea(doc, ideaId),
   );
 
-/** Saves the order of a list: its people, each with their ideas. */
-export const useReorderMutation = (id: Id) =>
-  useApiMutation<{ ok: true }, ListOrder>(
-    (order) =>
+/**
+ * Saves the order of a list: its people, each with their ideas. A line
+ * just written is moved too: the order waits for the server to name it
+ * (ticket 166). Counted with the other changes of the page: the list is
+ * read again once they are all answered.
+ * @param id - The list.
+ * @returns The mutation.
+ */
+export const useReorderMutation = (id: Id) => {
+  const queryClient = useQueryClient();
+  return useMutation<{ ok: true }, Error, ListOrder>({
+    mutationFn: async (order) =>
       api(`/api/lists/${toValue(id)}/order`, {
         method: 'PUT',
-        body: { order },
+        body: {
+          order: await Promise.all(
+            order.map(async (section) => ({
+              ...section,
+              ideas: await Promise.all(section.ideas.map(serverIdOf)),
+            })),
+          ),
+        },
       }),
-    () => listKeys(toValue(id)),
-  );
+    onMutate: () => {
+      claimsPending.value += 1;
+    },
+    onSettled: async () => {
+      claimsPending.value -= 1;
+      if (claimsPending.value > 0) return;
+      await Promise.all(
+        listKeys(toValue(id)).map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      );
+    },
+  });
+};
 
 export const useShareListMutation = (id: Id) =>
   useApiMutation<{ token: string | null; shared: boolean }, { ask: ShareAsk }>(
@@ -496,7 +621,11 @@ export type MemberPatch = {
 
 export const useUpdateMemberMutation = (id: Id) =>
   useApiMutation<{ ok: true }, MemberPatch>(
-    (body) => api(`/api/family/${toValue(id)}`, { method: 'PATCH', body }),
+    // One after the other, in the order of the gestures (ticket 166).
+    (body) =>
+      inTurn(`member:${toValue(id)}`, () =>
+        api(`/api/family/${toValue(id)}`, { method: 'PATCH', body }),
+      ),
     // The member shows on every list: refetch them all. The icon of
     // « Moi » is the account's too.
     () => [keys.family(), keys.lists(), keys.account(), keys.home()],
@@ -625,6 +754,88 @@ const useOptimisticClaim = <TData, TVariables>(
   });
 };
 
+/** The ids the server gives to the lines written on this screen. */
+const createdIds = new Map<string, Promise<string>>();
+/** Those it gave already: the order shown reads them at once. */
+const namedIds = reactive(new Map<string, string>());
+/**
+ * The id of a line on the server: a line just written waits for it.
+ * @param id - Its id on this screen.
+ * @returns Its id on the server.
+ */
+const serverIdOf = (id: string) => createdIds.get(id) ?? Promise.resolve(id);
+/**
+ * The id a line has now: its server's once given, else its own.
+ * @param id - Its id on this screen.
+ * @returns The id.
+ */
+export const lineIdNow = (id: string) => namedIds.get(id) ?? id;
+
+/** The page's data of a list, as these changes touch it. */
+type EditedDoc = {
+  people: { id: string; ideas: IdeaLine[]; lines?: string[] }[];
+};
+
+/**
+ * A change of a list that shows at once (Julien, 24 November 2026,
+ * ticket 166), as a tick does: the page's data changes at the gesture;
+ * the requests of a line leave in the order of the gestures (the caller
+ * puts them `inTurn`); once every change and tick of the page is
+ * answered, the list is read again and the server has the last word. A
+ * failure says so at the bottom; the reading puts the list back.
+ * @param via - The list, by its link or as one who holds it.
+ * @param request - The request.
+ * @param change - What becomes of the page's data.
+ * @returns The mutation.
+ */
+const useOptimisticEdit = <TData, TVariables>(
+  via: Via,
+  request: (variables: TVariables) => Promise<TData>,
+  change: (doc: EditedDoc, variables: TVariables) => EditedDoc,
+) => {
+  const queryClient = useQueryClient();
+  const toast = useMessages();
+  const errorMessage = useErrorMessage();
+  return useMutation<TData, Error, TVariables>({
+    mutationFn: request,
+    onMutate: (variables) => {
+      claimsPending.value += 1;
+      const key = docKey(toValue(via));
+      const before = queryClient.getQueryData<EditedDoc>(key);
+      if (!before) return;
+      // A reading under way would bring the list back as it was.
+      void queryClient.cancelQueries(
+        { queryKey: key, exact: true },
+        { revert: false, silent: true },
+      );
+      // The lines just written under the ids the server gave them, as
+      // the screen shows them.
+      const named: EditedDoc = {
+        ...before,
+        people: before.people.map((person) => ({
+          ...person,
+          ideas: person.ideas.map((idea) => ({
+            ...idea,
+            id: lineIdNow(idea.id),
+          })),
+          ...(person.lines ? { lines: person.lines.map(lineIdNow) } : {}),
+        })),
+      };
+      queryClient.setQueryData(key, change(named, variables));
+    },
+    onError: (error) => toast.failed(errorMessage(error)),
+    onSettled: async () => {
+      claimsPending.value -= 1;
+      if (claimsPending.value > 0) return;
+      await Promise.all(
+        claimKeys(toValue(via)).map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      );
+    },
+  });
+};
+
 export const useTickMutation = (via: Via) =>
   useOptimisticClaim<
     { ok: true; joined: boolean },
@@ -636,7 +847,12 @@ export const useTickMutation = (via: Via) =>
     }
   >(
     via,
-    (body) => api(claimsUrl(toValue(via)), { method: 'POST', body }),
+    // A line just written is ticked once the server has named it.
+    async (body) =>
+      api(claimsUrl(toValue(via)), {
+        method: 'POST',
+        body: { ...body, ideaId: await serverIdOf(body.ideaId) },
+      }),
     (body) => body.ideaId,
     // Alone only: a group waits for the server.
     (body, anonymous) =>
@@ -664,8 +880,10 @@ export const useChangeClaimMutation = (via: Via) =>
 export const useUntickMutation = (via: Via) =>
   useOptimisticClaim<{ ok: true }, string>(
     via,
-    (ideaId) =>
-      api(`${claimsUrl(toValue(via))}/${ideaId}`, { method: 'DELETE' }),
+    async (ideaId) =>
+      api(`${claimsUrl(toValue(via))}/${await serverIdOf(ideaId)}`, {
+        method: 'DELETE',
+      }),
     (ideaId) => ideaId,
     () => untickedLine,
   );

@@ -18,6 +18,7 @@ const { t } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
+const parentOfPage = useParentOfPage();
 const query = useListQuery(id);
 const remove = useDeleteListForGoodMutation();
 const doc = computed(() => query.data.value);
@@ -47,7 +48,10 @@ const onRemove = () =>
   remove.mutate(id.value, {
     onSuccess: () => {
       toast.done(t('lists.delete.done'));
-      return navigateTo('/listes', { replace: true });
+      // Where « Retour » would have led from the list.
+      return navigateTo(parentOfPage(`/listes/${id.value}`, '/'), {
+        replace: true,
+      });
     },
     onError: (error) => toast.failed(errorMessage(error)),
   });

@@ -1,3 +1,4 @@
+import type { MembersExtras } from '#server/database/membersPage';
 import type { JournalPersonCard } from '#server/database/journal';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import type { PublicGroup } from '#server/database/groups';
@@ -24,7 +25,9 @@ export type Dashboard = {
 export type PeoplePayload = {
   persons: PublicPerson[];
   exclusions: ExclusionRow[];
-};
+  /** The members who organise: their line begins with « Organise ». */
+  organising: string[];
+} & MembersExtras;
 /** A participant, with their answer status while answers are collected. */
 export type EditionParticipant = Participant & {
   answerStatus?: AnswerStatus;
@@ -55,6 +58,8 @@ export type GuessSummary = {
   nudge: boolean;
   /** The game can be turned on: before the draw, or four people drawn. */
   possible: boolean;
+  /** A Christmas party: elsewhere, never « Père Noël » (vocabulaire.md). */
+  christmas: boolean;
 };
 /** Where the answers of a draw made elsewhere stand (README 22.12). */
 export type AnswersSummary = {
@@ -73,6 +78,20 @@ export type EditionPayload = {
   guess: GuessSummary;
   /** Drawn again after a cancelled draw. */
   redrawn: boolean;
+  /** Its name, when the event has several the same year. */
+  santaName: string | null;
+  /** Its invitation link (ticket 116). */
+  invite: {
+    /** Null when closed. */
+    code: string | null;
+    until: string | null;
+    places: number | null;
+    message: string | null;
+    /** The places the link really offers: none at 30 members. */
+    placesLeft: number;
+    /** What the event can still take before 30 members. */
+    room: number;
+  };
 };
 
 type Slug = MaybeRefOrGetter<string>;
@@ -115,9 +134,8 @@ export const useOrganizersQuery = (slug: Slug) =>
 
 /** Makes the owner of an address an organiser of the group. */
 export const useAddOrganizerMutation = (slug: Slug) =>
-  useApiMutation<unknown, string>(
-    (email) =>
-      api(`${base(slug)}/organizers`, { method: 'POST', body: { email } }),
+  useApiMutation<unknown, { firstName: string; email: string }>(
+    (body) => api(`${base(slug)}/organizers`, { method: 'POST', body }),
     () => groupKeys(slug),
   );
 
@@ -133,12 +151,6 @@ export const usePeopleQuery = (slug: Slug) =>
   useApiQuery<PeoplePayload>(
     () => keys.people(toValue(slug)),
     () => `${base(slug)}/persons`,
-  );
-
-export const useRulesQuery = (slug: Slug) =>
-  useApiQuery<{ rules: Rules }>(
-    () => keys.rules(toValue(slug)),
-    () => `${base(slug)}/rules`,
   );
 
 export const useEditionQuery = (
@@ -164,9 +176,17 @@ export type PersonPatch = Partial<PersonBody & { active: boolean }> & {
   id: string;
 };
 
-export const useCreatePersonMutation = (slug: Slug) =>
+/**
+ * « Créer une personne »: someone new, in the event and this Secret Santa
+ * together (ticket 117).
+ */
+export const useCreateSantaPersonMutation = (slug: Slug, id: Slug) =>
   useApiMutation<{ person: PublicPerson }, PersonBody>(
-    (body) => api(`${base(slug)}/persons`, { method: 'POST', body }),
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/persons`, {
+        method: 'POST',
+        body,
+      }),
     () => groupKeys(slug),
   );
 
@@ -201,12 +221,6 @@ export const useDeleteExclusionMutation = (slug: Slug) =>
     () => groupKeys(slug),
   );
 
-export const useUpdateRulesMutation = (slug: Slug) =>
-  useApiMutation<{ rules: Rules }, RulesPatch>(
-    (body) => api(`${base(slug)}/rules`, { method: 'PATCH', body }),
-    () => groupKeys(slug),
-  );
-
 export const useCreateEditionMutation = (slug: Slug) =>
   useApiMutation<
     { edition: PublicEdition },
@@ -216,6 +230,10 @@ export const useCreateEditionMutation = (slug: Slug) =>
       eventDate: string;
       budget?: string;
       guardianMessage?: string;
+      messageNote?: string;
+      guess?:
+        | { mode: 'none' }
+        | { mode: 'santa' | 'all'; endsAt: string; timeZone: string };
     }
   >(
     (body) => api(`${base(slug)}/editions`, { method: 'POST', body }),
@@ -237,8 +255,8 @@ export const useUpdateEditionMutation = (slug: Slug) =>
     () => groupKeys(slug),
   );
 
-/** Opens, renews or closes the invitation link of a group. */
-export const useInviteLinkMutation = (slug: Slug) =>
+/** Opens, renews or closes the invitation link of a Secret Santa. */
+export const useInviteLinkMutation = (slug: Slug, id: Slug) =>
   useApiMutation<
     { inviteCode: string | null },
     {
@@ -249,6 +267,10 @@ export const useInviteLinkMutation = (slug: Slug) =>
       message?: string | null;
     }
   >(
-    (body) => api(`${base(slug)}/invite`, { method: 'POST', body }),
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/invite`, {
+        method: 'POST',
+        body,
+      }),
     () => groupKeys(slug),
   );

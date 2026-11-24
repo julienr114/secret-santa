@@ -25,9 +25,7 @@ a{color:#c93425}a:hover{color:#c93425}
       <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
       Under the Tree
     </div>
-    <button aria-label="Menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; color: #2b1b3d; display: flex; align-items: center; justify-content: center; padding: 0">
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
+    <button aria-label="Mon compte" aria-haspopup="menu" style="justify-self: end; width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0"><span aria-hidden="true" style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(150deg, #ffffff 0%, #ffe9a8 42%, #f4b82e 135%); box-shadow: 0 0 0 2px #ffffff, 0 2px 5px rgba(90, 40, 60, 0.2); display: flex; align-items: center; justify-content: center; font-size: 18px">🐧</span></button>
   </header>
 
   <main style="display: flex; flex-direction: column; gap: 24px; padding: 20px 16px 32px">
@@ -38,21 +36,33 @@ a{color:#c93425}a:hover{color:#c93425}
         <p style="margin: 0; font-size: 15px; color: #6b5a7a">Famille Camille · participe à Noël 2026</p>
       </div>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <label for="fn" style="font-size: 15px; font-weight: 600">Prénom</label>
-      <input id="fn" type="text" value="Hugo" placeholder="" style="height: 48px; box-sizing: border-box; padding: 0 12px; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; color: #2b1b3d; font-family: inherit; font-size: 16px">
-      
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <label for="em" style="font-size: 15px; font-weight: 600">Adresse email <span style="font-weight: 400; color: #6b5a7a">(facultatif)</span></label>
-      <input id="em" type="text" value="hugo-demo@example.com" placeholder="" style="height: 48px; box-sizing: border-box; padding: 0 12px; border: 1px solid #f5b8a5; border-radius: 16px; background: #ffffff; color: #2b1b3d; font-family: inherit; font-size: 16px">
-        <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #6b5a7a">Elle recevra un email qui dit que c’est toi qui l’as ajoutée. Elle pourra refuser les emails de l’application.</p>
-      <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #6b5a7a">Pour lui envoyer son lien, et pour qu’il retrouve ses tirages en se connectant.</p>
-    </div>
     <section style="display: flex; flex-direction: column; gap: 6px">
-      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
-        <li>
+      <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc"><li data-surplace="1">
           <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d">
+            
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+              <span style="font-weight: 600; font-size: 16px">Prénom</span>
+            </span>
+            <span style="font-size: 15px; color: #2b1b3d; flex-shrink: 0; max-width: 220px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Hugo</span>
+          </a>
+        </li><li data-surplace="1">
+          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc; text-decoration: none; color: #2b1b3d">
+            
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+              <span style="font-weight: 600; font-size: 16px">Adresse email</span>
+            </span>
+            <span style="font-size: 15px; color: #2b1b3d; flex-shrink: 0; max-width: 220px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">hugo-demo@example.com</span>
+          </a>
+        </li><li data-surplace="1">
+          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc; text-decoration: none; color: #2b1b3d">
+            
+            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+              <span style="font-weight: 600; font-size: 16px">Nom de famille</span>
+            </span>
+            <span style="font-size: 15px; color: #6b5a7a; flex-shrink: 0; max-width: 150px; text-align: right">Ajouter</span>
+          </a>
+        </li><li>
+          <a href="#" style="border-top: 1px solid #ffd9cc; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #2b1b3d">
             
             <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
               <span style="font-weight: 600; font-size: 16px">Langue de ses messages</span>
@@ -60,18 +70,7 @@ a{color:#c93425}a:hover{color:#c93425}
             </span>
             <span style="font-size: 15px; color: #6b5a7a; flex-shrink: 0; max-width: 150px; text-align: right">Français</span><span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
           </a>
-        </li>
-        <li>
-          <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #ffd9cc; text-decoration: none; color: #2b1b3d">
-            
-            <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Nom de famille</span>
-              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Utile seulement si deux personnes ont le même prénom</span>
-            </span>
-            <span style="font-size: 15px; color: #6b5a7a; flex-shrink: 0; max-width: 150px; text-align: right">Ajouter</span><span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-          </a>
-        </li>
-      </ul>
+        </li></ul>
     </section>
     <section style="display: flex; flex-direction: column; gap: 6px">
       <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #6b5a7a">Ne tire pas</h2>
@@ -93,15 +92,14 @@ a{color:#c93425}a:hover{color:#c93425}
         </li>
       </ul>
     </section>
-    <button style="height: 48px; border: 0; border-radius: 16px; background: #d93a2b; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700">Enregistrer</button>
     <section style="display: flex; flex-direction: column; gap: 6px">
       <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #ffffff; border-top: 1px solid #ffd9cc; border-bottom: 1px solid #ffd9cc">
         <li>
           <a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; text-decoration: none; color: #961d35">
             <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #fbe1e5; color: #961d35; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/></svg></span>
             <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-              <span style="font-weight: 600; font-size: 16px">Retirer du groupe</span>
-              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Hugo ne sera plus repris dans les prochaines éditions. Son historique est conservé.</span>
+              <span style="font-weight: 600; font-size: 16px">Retirer de l’événement</span>
+              <span style="font-size: 14px; line-height: 1.35; color: #6b5a7a">Hugo ne sera plus repris dans les prochains Secret Santa. Son historique est conservé.</span>
             </span>
             <span style="color: #796987; display: flex; flex-shrink: 0"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
           </a>

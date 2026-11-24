@@ -13,7 +13,9 @@ import { languageSchema } from '#server/utils/people';
 const bodySchema = z.object({ language: languageSchema });
 
 export default defineEventHandler(async (event) => {
-  const { db, person, group, edition } = await requirePersonalLink(event);
+  const { db, person, group, edition } = await requirePersonalLink(event, {
+    afterTheYear: true,
+  });
   const { language } = await validatedBody(event, bodySchema);
   if (language === person.language) return { language };
   await db.update(persons).set({ language }).where(eq(persons.id, person.id));

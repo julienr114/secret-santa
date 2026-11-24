@@ -52,3 +52,31 @@ export const buildHolderInviteEmail = (
       translate(locale, 'lists.invitation.about'),
     ],
   });
+
+/**
+ * The email to someone a list is shared with by their address (ticket
+ * 117, maquette V3ListePartageEmail): who shares it, which list, what to
+ * do there, one link to the list, and a word on what the app is. They are
+ * a member of its event already. No image.
+ * @param share - Who shares it, and the name of the list.
+ * @param share.by - The first name of the one who shares it.
+ * @param share.title - The name of the list.
+ * @param link - The address of the list.
+ * @param locale - Language of the email.
+ * @returns Subject, text and HTML.
+ */
+export const buildListSharedEmail = (
+  share: { by: string; title: string },
+  link: string,
+  locale: Locale,
+): Email =>
+  plainEmail({
+    subject: translate(locale, 'lists.sharedEmail.subject', share),
+    before: [
+      translate(locale, 'lists.sharedEmail.hello'),
+      translate(locale, 'lists.sharedEmail.intro', share),
+      translate(locale, 'lists.sharedEmail.action'),
+    ],
+    link,
+    after: [translate(locale, 'lists.invitation.about')],
+  });

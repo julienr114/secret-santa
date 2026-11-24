@@ -45,6 +45,8 @@ pnpm test              Vitest
 pnpm test:e2e          Playwright
 pnpm db:generate       une migration Drizzle depuis le schéma
 pnpm db:migrate:local  l'appliquer en local
+pnpm seed:v3           les données d'essai de la V3, sur un serveur local sans clé d'email
+                       (NUXT_DEV_LOGIN_LINKS=true NUXT_RESEND_API_KEY= NUXT_SUPER_ADMIN_EMAILS=admin@example.com pnpm dev)
 ```
 
 ## Les règles qui ne se discutent pas

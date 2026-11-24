@@ -2,6 +2,7 @@ import { deleteAnswersOf, findAnswers } from '#server/database/answers';
 import { drawStatements } from '#server/database/draw';
 import { listParticipants } from '#server/database/editions';
 import { recordEvent } from '#server/database/audit';
+import { tellGameOpen, tellParticipants } from '#server/database/newsEvents';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { unwrap } from '#server/http/errors';
@@ -47,5 +48,17 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     meta: { count: pairs.length },
   });
+  // « Ton enveloppe t'attend », in the app (ticket 120).
+  await tellParticipants(
+    db,
+    { secretSantaId: edition.id, partyId: group.id, kind: 'envelope' },
+    nowIso(),
+  );
+  // « À toi de jouer », when « Devine qui » is on (ticket 142).
+  await tellGameOpen(
+    db,
+    { secretSantaId: edition.id, partyId: group.id },
+    nowIso(),
+  );
   return { ok: true, count: pairs.length };
 });

@@ -13,6 +13,10 @@ Depuis le 20 novembre 2026, ce dossier remplace `docs/refonte/PLAN.md` (gelé, g
 
 Changer d'état, c'est déplacer le fichier (`git mv`). L'historique se lit dans `fait/` (quoi), dans `docs/decisions/` (pourquoi) et dans Git (quand).
 
+## La conception a ses tickets aussi
+
+`conception/` contient ce qui reste à dessiner (`a-dessiner/`) et ce qui l'a été (`dessine/`), avec ce qui a été décidé seul et ce qui a été contrôlé. C'est à la conception : Claude Code n'a rien à y lire pour coder. Mode d'emploi : `conception/README.md`.
+
 ## L'ordre
 
 Les tickets portent un numéro. Dans `a-faire/`, on prend **le plus petit numéro dont les dépendances sont dans `fait/`**. La ligne « Dépend de » du ticket fait foi.

@@ -2,13 +2,20 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { findAccountById } from '#server/database/accounts';
 import {
+  findParticipationOf,
   findPersonByGroupEmail,
-  joinDrawInPreparation,
+  joinSecretSanta,
+  participantCount,
 } from '#server/database/invite';
+import { checkParticipantCount } from '#server/utils/editions';
 import { personalPath } from '#server/database/participations';
-import { insertPersonFromAccount } from '#server/database/people';
+import { tellOrganisers } from '#server/database/newsEvents';
+import {
+  countActiveMembers,
+  insertPersonFromAccount,
+} from '#server/database/people';
 import { requireInvite } from '#server/http/invite';
-import { accounts, groups, persons } from '#server/database/schema';
+import { accounts, persons, secretSantas } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { appUrl, dataKeyOf, newId, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
@@ -16,51 +23,55 @@ import { buildJoinedEmail } from '#server/utils/notifications';
 import { mergeRules } from '#server/utils/rules';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
-import { canJoinGroup } from '#server/utils/invite';
+import { canSignUp, linkPlaces } from '#server/utils/invite';
 import { nameSchema } from '#server/utils/people';
 
-// Joins a group by its invitation link, as the logged-in account: it
-// becomes a person of the group, copied from its profile (or its own, if
-// the organiser already added that address), and a participant of the
-// draw being prepared, if any (decided on 17 November 2026; a draw already
-// done is left alone). The first name given here names the person, and
-// completes the profile when it has none. Each newcomer takes one place
-// of the link; joining twice changes nothing. The organisers are told by
-// email, unless the group turned it off. The answer gives the way to the
-// draw when the person is in it.
+// Signs up to a Secret Santa by its invitation link, as the logged-in
+// account (ticket 116): it takes part in this Secret Santa, and becomes a
+// member of its event when it was not (a person copied from its profile,
+// or its own, if the organiser already added that address). Only while
+// the draw has not taken place. The first name given here names the
+// person, and completes the profile when it has none. Each newcomer to the
+// event takes one place of the link, never past the 30 members of an
+// event; a member takes none, and signing up twice changes nothing. The
+// organisers are told, by email unless this Secret Santa turned it off.
+// The answer gives the way to the person's page.
 const bodySchema = z.object({ firstName: nameSchema });
 
 export default defineEventHandler(async (event) => {
   const user = await requireAccount(event);
-  const { db, group, edition } = await requireInvite(event);
+  const { db, group, santa, santaName } = await requireInvite(event);
   const { firstName } = await validatedBody(event, bodySchema);
   const found = await findAccountById(db, user.accountId);
   if (!found) {
     throw createError({ statusCode: 401, statusMessage: 'unauthorized' });
   }
   const existing = await findPersonByGroupEmail(db, group.id, found.email);
+  const member = Boolean(existing?.active);
   const dataKey = await dataKeyOf(event);
-  /**
-   * The way to the person's draw, once they are in it.
-   * @param personId - The person.
-   * @returns Their personal page, or null.
-   */
-  const pathOf = async (personId: string) => {
-    const participation = await joinDrawInPreparation(db, {
-      edition,
-      personId,
-      dataKey,
-    });
-    return participation ? await personalPath(participation, dataKey) : null;
-  };
-  if (existing?.active) return { ok: true, path: await pathOf(existing.id) };
+  const already =
+    existing && member
+      ? await findParticipationOf(db, santa.id, existing.id)
+      : null;
+  if (already) {
+    return { ok: true, path: await personalPath(already, dataKey) };
+  }
   const now = nowIso();
   unwrap(
-    canJoinGroup(
-      { until: group.inviteUntil, places: group.invitePlaces ?? 0 },
+    canSignUp(
+      {
+        status: santa.status,
+        until: santa.inviteUntil,
+        places: linkPlaces(
+          santa.invitePlaces,
+          await countActiveMembers(db, group.id),
+        ),
+        member,
+      },
       now.slice(0, 10),
     ),
   );
+  unwrap(checkParticipantCount((await participantCount(db, santa.id)) + 1));
   if (!found.firstName) {
     await db
       .update(accounts)
@@ -68,12 +79,12 @@ export default defineEventHandler(async (event) => {
       .where(eq(accounts.id, found.id));
   }
   const personId = existing?.id ?? newId();
-  if (existing) {
+  if (existing && !member) {
     await db
       .update(persons)
       .set({ active: true })
       .where(eq(persons.id, existing.id));
-  } else {
+  } else if (!existing) {
     await insertPersonFromAccount(db, {
       groupId: group.id,
       account: { ...found, firstName },
@@ -81,19 +92,40 @@ export default defineEventHandler(async (event) => {
       id: personId,
     });
   }
-  const path = await pathOf(personId);
-  await db
-    .update(groups)
-    .set({ invitePlaces: (group.invitePlaces ?? 1) - 1 })
-    .where(eq(groups.id, group.id));
-  const rules = mergeRules(group.rules);
+  const participation = await joinSecretSanta(db, {
+    santa,
+    personId,
+    dataKey,
+  });
+  const path = participation
+    ? await personalPath(participation, dataKey)
+    : null;
+  if (!member) {
+    await db
+      .update(secretSantas)
+      .set({ invitePlaces: (santa.invitePlaces ?? 1) - 1 })
+      .where(eq(secretSantas.id, santa.id));
+  }
+  await tellOrganisers(
+    db,
+    {
+      partyId: group.id,
+      kind: 'joined',
+      targetId: group.id,
+      name: firstName,
+      detail: santaName,
+    },
+    now,
+  );
+  const rules = mergeRules(santa.rules);
   if (rules.ok && rules.value.notifyJoined) {
     await notifyOrganizers({ db, event }, group.id, (locale) =>
       buildJoinedEmail(
         {
           groupName: group.name,
+          santaName,
           firstName,
-          link: appUrl(event, `/admin/${group.slug}/personnes`),
+          link: appUrl(event, `/e/${group.slug}/membres`),
         },
         locale,
       ),

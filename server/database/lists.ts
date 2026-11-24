@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gt, inArray, isNull, ne, or } from 'drizzle-orm';
+import { mergeLines } from '#shared/utils/reorder';
 import type { Db } from './client';
 import {
   accounts,
@@ -13,14 +14,23 @@ import {
   giftOffList,
   giftListPeople,
   giftLists,
+  parties,
   type FamilyMemberRow,
   type GiftListRow,
 } from './schema';
+import { deleteNewsOf } from './news';
 import { newId, nowIso } from '#server/http/context';
+import {
+  createOwnParty,
+  deleteListPartyStatements,
+  joinOwnParty,
+  renameOwnParty,
+} from './listParties';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import type { HolderLevel } from '#server/utils/listAccess';
 import {
   carriedIdeas,
+  mergeResumed,
   resumedList,
   type ResumablePerson,
 } from '#server/utils/lists';
@@ -376,7 +386,8 @@ export const claimedIdeas = async (
 
 /**
  * Deletes a person of my family for good: their page and tastes, their
- * places on my lists, their ideas there and what was ticked.
+ * places on my lists, their ideas there and what was ticked; a birthday
+ * made for them is for nobody any more.
  * @param db - The database.
  * @param memberId - The person.
  * @param places - Where they are, from `placesOfMember`.
@@ -390,8 +401,15 @@ export const deleteMember = (
   const personIds = places.map((place) => place.personId);
   const ideaIds = places.flatMap((place) => place.ideaIds);
   const gone = db.delete(familyMembers).where(eq(familyMembers.id, memberId));
-  if (personIds.length === 0) return db.batch([gone]);
+  // A birthday made for them keeps its name, and loses whom it is for
+  // (ticket 118).
+  const forNobody = db
+    .update(parties)
+    .set({ forMemberId: null })
+    .where(eq(parties.forMemberId, memberId));
+  if (personIds.length === 0) return db.batch([forNobody, gone]);
   return db.batch([
+    forNobody,
     db.delete(giftClaims).where(inArray(giftClaims.ideaId, ideaIds)),
     db.delete(giftGiverClaims).where(inArray(giftGiverClaims.ideaId, ideaIds)),
     db.delete(giftOffList).where(inArray(giftOffList.listPersonId, personIds)),
@@ -491,6 +509,10 @@ export type ListPerson = {
     createdAt: string;
     /** Taken from an old list (lot 27), and not changed since. */
     carried: boolean;
+    /** How much it is wanted, 0 to 3 (ticket 152). */
+    stars: number;
+    /** A title over the ideas that follow (ticket 152). */
+    title: boolean;
   }[];
 };
 
@@ -523,13 +545,15 @@ export const peopleOfLists = async (
       member: memberOf(member),
       ideas: ideas
         .filter((idea) => idea.listPersonId === person.id)
-        .map(({ id, text, url, position, createdAt, carriedFrom }) => ({
-          id,
-          text,
-          url,
-          position,
-          createdAt,
-          carried: carriedFrom !== null,
+        .map((idea) => ({
+          id: idea.id,
+          text: idea.text,
+          url: idea.url,
+          position: idea.position,
+          createdAt: idea.createdAt,
+          carried: idea.carriedFrom !== null,
+          stars: idea.stars,
+          title: idea.isTitle,
         })),
     });
   }
@@ -544,6 +568,8 @@ export const createList = async (
     icon: { emoji: string; color: string };
     title: string;
     eventDate: string | null;
+    /** The event it is made for (ticket 106), if any. */
+    partyId?: string;
   },
 ): Promise<string> => {
   const id = newId();
@@ -556,6 +582,10 @@ export const createList = async (
       iconColor: list.icon.color,
       title: list.title,
       eventDate: list.eventDate,
+      // Its link from the start, and its occasion: the event it is made
+      // for, else its own (ticket 106).
+      shareToken: newId(),
+      partyId: list.partyId ?? id,
       createdAt: now,
       updatedAt: now,
     }),
@@ -564,6 +594,21 @@ export const createList = async (
       .insert(giftListHolders)
       .values({ id: newId(), listId: id, accountId, createdAt: now }),
   ]);
+  // A list made for an event is a draft in it, shared nowhere yet;
+  // without one, it has a party of its own, as on the screens of before.
+  if (list.partyId) return id;
+  await createOwnParty(
+    db,
+    {
+      id,
+      accountId,
+      title: list.title,
+      iconEmoji: list.icon.emoji,
+      iconColor: list.icon.color,
+      eventDate: list.eventDate,
+    },
+    now,
+  );
   return id;
 };
 
@@ -585,19 +630,24 @@ export const updateList = (
     >
   >,
 ) =>
-  db
-    .update(giftLists)
-    .set({ ...patch, updatedAt: nowIso() })
-    .where(eq(giftLists.id, id));
+  Promise.all([
+    db
+      .update(giftLists)
+      .set({ ...patch, updatedAt: nowIso() })
+      .where(eq(giftLists.id, id)),
+    renameOwnParty(db, id, patch),
+  ]);
 
-/** Deletes a list with its people and ideas. */
+/** Deletes a list with its people and ideas, out of every party. */
 export const deleteList = (db: Db, id: string) =>
   db.batch([
+    ...deleteListPartyStatements(db, id),
     db.delete(giftClaims).where(eq(giftClaims.listId, id)),
     db.delete(giftGiverClaims).where(eq(giftGiverClaims.listId, id)),
     db.delete(giftListGivers).where(eq(giftListGivers.listId, id)),
     db.delete(giftOffList).where(eq(giftOffList.listId, id)),
     db.delete(giftListVisits).where(eq(giftListVisits.listId, id)),
+    deleteNewsOf(db, [id]),
     db.delete(giftListIdeas).where(eq(giftListIdeas.listId, id)),
     db.delete(giftListPeople).where(eq(giftListPeople.listId, id)),
     db.delete(giftListInvites).where(eq(giftListInvites.listId, id)),
@@ -649,6 +699,8 @@ export const addPersonToList = async (
       url: idea.url,
       position: idea.position,
       planned: plannedIdeaIds.has(idea.id),
+      stars: idea.stars,
+      title: idea.isTitle,
     })),
   );
   const id = newId();
@@ -664,6 +716,8 @@ export const addPersonToList = async (
         listPersonId: id,
         text: idea.text,
         url: idea.url,
+        stars: idea.stars,
+        isTitle: idea.title,
         position: index,
         createdAt: now,
       }),
@@ -695,6 +749,9 @@ export const resumableOfLists = async (
       memberId: giftListPeople.memberId,
       position: giftListPeople.position,
       placeholder: familyMembers.placeholder,
+      ownerId: familyMembers.accountId,
+      isSelf: familyMembers.isSelf,
+      linkedAccountId: familyMembers.linkedAccountId,
     })
     .from(giftListPeople)
     .innerJoin(familyMembers, eq(familyMembers.id, giftListPeople.memberId))
@@ -710,6 +767,7 @@ export const resumableOfLists = async (
   for (const person of people) {
     byList.get(person.listId)?.push({
       memberId: person.memberId,
+      accountId: person.isSelf ? person.ownerId : person.linkedAccountId,
       position: person.position,
       placeholder: person.placeholder,
       ideas: ideas
@@ -719,6 +777,8 @@ export const resumableOfLists = async (
           url: idea.url,
           position: idea.position,
           planned: planned.has(idea.id),
+          stars: idea.stars,
+          title: idea.isTitle,
         })),
     });
   }
@@ -726,18 +786,25 @@ export const resumableOfLists = async (
 };
 
 /**
- * Starts an empty draft from an old list (lot 27, README 22.20): its
- * icon, its word, its people and the ideas nobody ticked, each marked
- * as taken from that list. The old list does not change.
+ * Starts a list from an old one (lot 27, README 22.20): its icon, its
+ * word (unless the holder already wrote theirs), its people and the ideas
+ * nobody ticked. While the new list has no idea, it may already have
+ * people (Q-032, ticket 136): they keep their place, the others come
+ * after, nobody twice, and the ideas of someone already there go under
+ * their name. The ideas are marked as taken from that list while it is
+ * a draft: the mark is for the time of sorting, before it is shared. The
+ * old list does not change.
  * @param db - The database.
- * @param list - The new list, an empty draft.
+ * @param list - The new list, with no idea yet.
  * @param source - The old list.
+ * @param marked - Whether the ideas carry the mark (a draft).
  * @returns Once written.
  */
 export const resumeList = async (
   db: Db,
   list: GiftListRow,
   source: GiftListRow,
+  marked = true,
 ) => {
   const taken = resumedList({
     icon: { emoji: source.iconEmoji, color: source.iconColor },
@@ -745,20 +812,55 @@ export const resumeList = async (
     noteEdited: source.noteEdited,
     people: (await resumableOfLists(db, [source.id])).get(source.id) ?? [],
   });
+  const there = (await resumableOfLists(db, [list.id])).get(list.id) ?? [];
+  const places = await db
+    .select({ id: giftListPeople.id, memberId: giftListPeople.memberId })
+    .from(giftListPeople)
+    .where(eq(giftListPeople.listId, list.id));
+  const { into, added } = mergeResumed(
+    places.map((place) => ({
+      id: place.id,
+      memberId: place.memberId,
+      accountId:
+        there.find((one) => one.memberId === place.memberId)?.accountId ?? null,
+    })),
+    taken.people,
+  );
   const now = nowIso();
-  const rows = taken.people.map((person, position) => ({
+  const after = Math.max(-1, ...there.map((person) => person.position)) + 1;
+  const rows = added.map((person, index) => ({
     id: newId(),
-    position,
+    position: after + index,
     ...person,
   }));
+  const ideasOf = (
+    listPersonId: string,
+    ideas: (typeof rows)[number]['ideas'],
+  ) =>
+    ideas.map((idea, index) =>
+      db.insert(giftListIdeas).values({
+        id: newId(),
+        listId: list.id,
+        listPersonId,
+        text: idea.text,
+        url: idea.url,
+        stars: idea.stars,
+        isTitle: idea.title,
+        position: index,
+        carriedFrom: marked ? source.id : null,
+        createdAt: now,
+      }),
+    );
   await db.batch([
     db
       .update(giftLists)
       .set({
         iconEmoji: taken.icon.emoji,
         iconColor: taken.icon.color,
-        note: taken.note,
-        noteEdited: taken.noteEdited,
+        // A word the holder already wrote stays theirs.
+        ...(list.noteEdited
+          ? {}
+          : { note: taken.note, noteEdited: taken.noteEdited }),
         carriedFrom: source.id,
         updatedAt: now,
       })
@@ -771,41 +873,26 @@ export const resumeList = async (
         position: person.position,
       }),
     ),
-    ...rows.flatMap((person) =>
-      person.ideas.map((idea, index) =>
-        db.insert(giftListIdeas).values({
-          id: newId(),
-          listId: list.id,
-          listPersonId: person.id,
-          text: idea.text,
-          url: idea.url,
-          position: index,
-          carriedFrom: source.id,
-          createdAt: now,
-        }),
-      ),
+    ...into.flatMap(({ listPersonId, person }) =>
+      ideasOf(listPersonId, person.ideas),
     ),
+    ...rows.flatMap((person) => ideasOf(person.id, person.ideas)),
   ]);
 };
 
 /**
- * The marks of a list taken up again go: at its first share, nothing
- * says any more where the list or its ideas came from.
+ * The marks of a list taken up again go at its first share: no idea says
+ * any more where it came from. The list keeps where it was taken from,
+ * for the band of the old one to lead to it (ticket 119).
  * @param db - The database.
  * @param listId - The list.
  * @returns Once erased.
  */
 export const forgetCarried = (db: Db, listId: string) =>
-  db.batch([
-    db
-      .update(giftLists)
-      .set({ carriedFrom: null })
-      .where(eq(giftLists.id, listId)),
-    db
-      .update(giftListIdeas)
-      .set({ carriedFrom: null })
-      .where(eq(giftListIdeas.listId, listId)),
-  ]);
+  db
+    .update(giftListIdeas)
+    .set({ carriedFrom: null })
+    .where(eq(giftListIdeas.listId, listId));
 
 /** A person's place on a list, or null when not on it. */
 export const findListPerson = async (db: Db, listId: string, id: string) =>
@@ -883,21 +970,39 @@ export const createIdea = async (
   idea: { text: string; url: string | null },
   after: string | null,
 ): Promise<string> => {
-  const siblings = await db
-    .select({ id: giftListIdeas.id, position: giftListIdeas.position })
-    .from(giftListIdeas)
-    .where(
-      and(
-        eq(giftListIdeas.listId, listId),
-        eq(giftListIdeas.listPersonId, listPersonId),
+  const [ideas, gifts] = await Promise.all([
+    db
+      .select({
+        id: giftListIdeas.id,
+        position: giftListIdeas.position,
+        createdAt: giftListIdeas.createdAt,
+      })
+      .from(giftListIdeas)
+      .where(
+        and(
+          eq(giftListIdeas.listId, listId),
+          eq(giftListIdeas.listPersonId, listPersonId),
+        ),
       ),
-    )
-    .orderBy(asc(giftListIdeas.position), asc(giftListIdeas.createdAt));
-  const at = after ? siblings.findIndex((s) => s.id === after) + 1 : 0;
+    db
+      .select({
+        id: giftOffList.id,
+        position: giftOffList.position,
+        createdAt: giftOffList.createdAt,
+      })
+      .from(giftOffList)
+      .where(eq(giftOffList.listPersonId, listPersonId)),
+  ]);
+  // The gifts not on the list placed among the ideas keep their place in
+  // the count (Julien, 24 November 2026); those not placed stay after.
+  const placed = gifts.filter((gift) => gift.position !== null);
+  const giftIds = new Set(placed.map((gift) => gift.id));
+  const siblings = mergeLines(ideas, placed);
+  const at = after ? siblings.indexOf(after) + 1 : 0;
   const order = [
-    ...siblings.slice(0, at > 0 ? at : siblings.length).map((s) => s.id),
+    ...siblings.slice(0, at > 0 ? at : siblings.length),
     '',
-    ...siblings.slice(at > 0 ? at : siblings.length).map((s) => s.id),
+    ...siblings.slice(at > 0 ? at : siblings.length),
   ];
   const id = newId();
   const now = nowIso();
@@ -915,10 +1020,15 @@ export const createIdea = async (
       .map((ideaId, position) => ({ ideaId, position }))
       .filter(({ ideaId }) => ideaId !== '')
       .map(({ ideaId, position }) =>
-        db
-          .update(giftListIdeas)
-          .set({ position })
-          .where(eq(giftListIdeas.id, ideaId)),
+        giftIds.has(ideaId)
+          ? db
+              .update(giftOffList)
+              .set({ position })
+              .where(eq(giftOffList.id, ideaId))
+          : db
+              .update(giftListIdeas)
+              .set({ position })
+              .where(eq(giftListIdeas.id, ideaId)),
       ),
   ]);
   return id;
@@ -1089,6 +1199,7 @@ export const acceptInvite = async (
       createdAt: now,
     })
     .onConflictDoNothing();
+  await joinOwnParty(db, invite.listId, accountId, now);
   return true;
 };
 

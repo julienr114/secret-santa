@@ -1,17 +1,9 @@
-import {
-  and,
-  count,
-  desc,
-  eq,
-  inArray,
-  isNull,
-  lt,
-  type SQLWrapper,
-} from 'drizzle-orm';
+import { and, count, eq, inArray, type SQLWrapper } from 'drizzle-orm';
 import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
 import type { Db } from './client';
 import {
-  editions,
+  accounts,
+  familyMembers,
   giftPortraits,
   hintRequests,
   participations,
@@ -20,12 +12,14 @@ import {
 import { listWishes } from './wishes';
 import { findReceiverParticipationId } from './draw';
 import { giverHintsState, type GiverHintsState } from '#server/utils/hints';
-import { touchHints } from './participations';
+
 import { nowIso } from '#server/http/context';
 import {
   EMPTY_PORTRAIT,
   HINT_ANSWERS,
   hasHints,
+  portraitOfCard,
+  portraitWithOld,
   type HintAnswer,
   type Portrait,
 } from '#shared/utils/hints';
@@ -71,47 +65,6 @@ export const findPortrait = async (
     .where(eq(giftPortraits.participationId, participationId))
     .limit(1);
   return portraitOf(row);
-};
-
-/** Writes the whole portrait of a participation, and dates its hints. */
-export const savePortrait = (
-  db: Db,
-  participationId: string,
-  portrait: Portrait,
-) => {
-  const updatedAt = nowIso();
-  const values = { ...portrait.answers, ...portrait.texts, updatedAt };
-  return db.batch([
-    db
-      .insert(giftPortraits)
-      .values({ participationId, ...values })
-      .onConflictDoUpdate({
-        target: giftPortraits.participationId,
-        set: values,
-      }),
-    touchHints(db, participationId, updatedAt),
-  ]);
-};
-
-/**
- * Whether the giver was already told this draw that hints arrived, and
- * marks it: true only for the first caller.
- */
-export const markHintsAnnounced = async (
-  db: Db,
-  participationId: string,
-): Promise<boolean> => {
-  const rows = await db
-    .update(participations)
-    .set({ hintsAnnouncedAt: nowIso() })
-    .where(
-      and(
-        eq(participations.id, participationId),
-        isNull(participations.hintsAnnouncedAt),
-      ),
-    )
-    .returning({ id: participations.id });
-  return rows.length > 0;
 };
 
 /** How many precise ideas a participation wrote. */
@@ -166,37 +119,6 @@ export const participationsWithHints = async (
   );
 };
 
-/**
- * The most recent earlier participation of the same person, in the same
- * group, that left hints: what « Reprendre mes pistes » copies.
- */
-export const findPreviousHints = async (
-  db: Db,
-  current: { personId: string; groupId: string; editionCreatedAt: string },
-): Promise<{ participationId: string; editionLabel: string } | null> => {
-  const rows = await db
-    .select({
-      participationId: participations.id,
-      editionLabel: editions.label,
-    })
-    .from(participations)
-    .innerJoin(editions, eq(editions.id, participations.editionId))
-    .where(
-      and(
-        eq(participations.personId, current.personId),
-        eq(editions.groupId, current.groupId),
-        lt(editions.createdAt, current.editionCreatedAt),
-      ),
-    )
-    .orderBy(desc(editions.createdAt))
-    .limit(5);
-  const withHints = await participationsWithHints(
-    db,
-    rows.map((row) => row.participationId),
-  );
-  return rows.find((row) => withHints.has(row.participationId)) ?? null;
-};
-
 /** The request made for a receiver in the current draw, if any. */
 export const findHintRequest = async (
   db: Db,
@@ -217,24 +139,12 @@ export const insertHintRequest = (
 ) =>
   db
     .insert(hintRequests)
-    .values({ ...request, requestedAt: nowIso() })
+    .values({
+      receiverParticipationId: request.receiverParticipationId,
+      secretSantaId: request.editionId,
+      requestedAt: nowIso(),
+    })
     .onConflictDoNothing();
-
-/** The hints arrived and the one who asked was told: never twice. */
-export const markHintRequestAnswered = (
-  db: Db,
-  receiverParticipationId: string,
-) =>
-  db
-    .update(hintRequests)
-    .set({ answeredAt: nowIso() })
-    .where(
-      and(
-        eq(hintRequests.receiverParticipationId, receiverParticipationId),
-        isNull(hintRequests.answeredAt),
-      ),
-    )
-    .returning({ answeredAt: hintRequests.answeredAt });
 
 /**
  * Statements that forget the requests of an edition: a new draw gives new
@@ -242,7 +152,7 @@ export const markHintRequestAnswered = (
  * tirage »).
  */
 export const deleteHintRequestsOf = (db: Db, editionId: string) =>
-  db.delete(hintRequests).where(eq(hintRequests.editionId, editionId));
+  db.delete(hintRequests).where(eq(hintRequests.secretSantaId, editionId));
 
 /** Rows whose column is one of the ids, a list or a subquery. */
 const inIds = (column: AnySQLiteColumn, ids: string[] | SQLWrapper) =>
@@ -262,25 +172,6 @@ export const deleteHintsOf = (
       .delete(hintRequests)
       .where(inIds(hintRequests.receiverParticipationId, participationIds)),
   ] as const;
-
-/**
- * What the giver reads on their result (README 22.11): the portrait, the
- * precise ideas when the group keeps them, and whether they already asked
- * for hints (only the giver of a receiver can ask, so a request on the
- * receiver is theirs).
- */
-export const giverHints = async (
-  db: Db,
-  receiverParticipationId: string,
-  mode: 'full' | 'portrait',
-) => {
-  const [portrait, ideas, request] = await Promise.all([
-    findPortrait(db, receiverParticipationId),
-    mode === 'full' ? listWishes(db, receiverParticipationId) : [],
-    findHintRequest(db, receiverParticipationId),
-  ]);
-  return { mode, portrait, ideas, requested: Boolean(request) };
-};
 
 /**
  * The hints of the person a giver gives to, as the giver sees them (lot
@@ -324,5 +215,82 @@ export const receiverHintsOf = async (
     }),
     receiverParticipationId,
     hintsUpdatedAt,
+  };
+};
+
+/**
+ * What the one who drew someone reads under their result (ticket 107,
+ * docs/spec/v3/secret-santa.md, « Le résultat »): with an account, the
+ * tastes of their « Moi » card; and, with an account or not, the portrait
+ * and ideas they left before the V3, read only, as long as no list was
+ * made of them at the switch (ticket 165: nothing written is lost, nothing
+ * is read twice). And whether the giver already asked for ideas. Who they are stays on the server: only the account and their
+ * card, for finding their list.
+ * @param db - The database.
+ * @param receiver - Who receives.
+ * @param receiver.participationId - Their participation.
+ * @param receiver.email - Their address, if any.
+ * @returns The portrait, the ideas, the request, and their account.
+ */
+export const giverHelp = async (
+  db: Db,
+  receiver: { participationId: string; email: string | null },
+) => {
+  const [account] = receiver.email
+    ? await db
+        .select({ id: accounts.id })
+        .from(accounts)
+        .where(eq(accounts.email, receiver.email.toLowerCase()))
+        .limit(1)
+    : [];
+  const requested = Boolean(
+    await findHintRequest(db, receiver.participationId),
+  );
+  // The hints left before the V3, unless the switch made a list of them.
+  const [participation] = await db
+    .select({ listId: participations.giftListId })
+    .from(participations)
+    .where(eq(participations.id, receiver.participationId))
+    .limit(1);
+  const [oldPortrait, oldIdeas] = participation?.listId
+    ? [null, []]
+    : await Promise.all([
+        findPortrait(db, receiver.participationId),
+        listWishes(db, receiver.participationId),
+      ]);
+  if (account) {
+    const [card] = await db
+      .select({
+        id: familyMembers.id,
+        answers: familyMembers.answers,
+        texts: familyMembers.texts,
+      })
+      .from(familyMembers)
+      .where(
+        and(
+          eq(familyMembers.accountId, account.id),
+          eq(familyMembers.isSelf, true),
+        ),
+      )
+      .limit(1);
+    return {
+      mode: 'full' as const,
+      portrait: portraitWithOld(
+        portraitOfCard(card ?? { answers: null, texts: null }),
+        oldPortrait,
+      ),
+      ideas: oldIdeas,
+      requested,
+      accountId: account.id,
+      selfMemberId: card?.id ?? null,
+    };
+  }
+  return {
+    mode: 'full' as const,
+    portrait: oldPortrait ?? portraitOfCard({ answers: null, texts: null }),
+    ideas: oldIdeas,
+    requested,
+    accountId: null,
+    selfMemberId: null,
   };
 };

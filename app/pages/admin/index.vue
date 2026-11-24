@@ -1,65 +1,63 @@
 <script setup lang="ts">
-import { APP_GROUPS_COMFORT } from '#server/utils/quota';
-import { fullName } from '#server/utils/people';
+import { APP_GROUPS_COMFORT, remainingSecretSantas } from '#server/utils/quota';
 import {
   useAdminAccountsQuery,
-  type PendingRequest,
+  useSwitchMutation,
 } from '~/composables/queries/useAdmin';
-import { formatDay } from '~/utils/labels';
 
-// The administration, for super-admins only: the oldest request for a
-// group in a card (« Traiter » opens its page, where it is accepted or
-// refused), laid on a stack when more wait, « À traiter · 1 sur N »; once
-// answered, it leaves and the next one rises in its place. None, a line. Then how full the app is, and
-// the accounts, the groups and the style guide.
+// The administration, for super-admins only (docs/spec/v3/administration.md,
+// V3Admin): how full the app is, the accounts, the parties and the style
+// guide; then what to watch, numbers and not badges since nothing waits
+// (the accounts at their limit of Secret Santa, the parties at 30
+// members); then « Suspendre les nouveaux Secret Santa ». No request to
+// answer any more. The rest of V3Admin comes with ticket 127.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
-const { t, locale } = useT();
+const { t } = useT();
 useHead({ title: () => `${t('auth.admin.title')} — ${t('common.appName')}` });
 const screen = computed(() => ({ back: '/' }));
 
 const query = useAdminAccountsQuery();
 const accounts = computed(() => query.data.value?.accounts ?? []);
-const requests = computed(() => query.data.value?.requests ?? []);
 const stats = computed(
   () =>
-    query.data.value?.stats ?? { groups: 0, active: 0, load: 'ok' as const },
+    query.data.value?.stats ?? {
+      groups: 0,
+      active: 0,
+      fullParties: 0,
+      load: 'ok' as const,
+    },
 );
-/** The request in the card: the oldest. */
-const first = computed(() => requests.value[0] ?? null);
-const kicker = computed(() =>
-  requests.value.length > 1
-    ? t('auth.admin.oneOf', { count: requests.value.length })
-    : t('auth.admin.oneRequest'),
+const atLimit = computed(
+  () =>
+    accounts.value.filter(
+      (account) => !account.disabled && remainingSecretSantas(account) === 0,
+    ).length,
+);
+const errorMessage = useErrorMessage();
+const toast = useMessages();
+const switches = useSwitchMutation();
+/** The switch as just tapped, until the server has it. */
+const pausing = ref<boolean | null>(null);
+const paused = computed(
+  () => pausing.value ?? query.data.value?.switches.newSecretSantas ?? false,
 );
 /**
- * The account that made a request.
- * @param request - The request.
- * @returns Its account, if listed.
+ * Pauses new Secret Santa, or lets them be created again.
+ * @param on - True to pause them.
+ * @returns Nothing: errors are told in a toast.
  */
-const accountOf = (request: PendingRequest) =>
-  accounts.value.find((account) => account.id === request.accountId);
-/**
- * How someone asking is named: their name, or their address.
- * @param request - The request.
- * @returns The name to show.
- */
-const nameOf = (request: PendingRequest) => {
-  const account = accountOf(request);
-  return (account && fullName(account)) || request.email;
+const onPause = (on: boolean) => {
+  pausing.value = on;
+  switches.mutate(
+    { newSecretSantas: on },
+    {
+      onSettled: () => {
+        pausing.value = null;
+      },
+      onError: (error) => toast.failed(errorMessage(error)),
+    },
+  );
 };
-/**
- * The line under the name: the address, unless it is the title, and the
- * day of the request.
- * @param request - The request.
- * @returns « lea@example.com · le 14 novembre », or « le 14 novembre ».
- */
-const lineOf = (request: PendingRequest) =>
-  [
-    nameOf(request) !== request.email && request.email,
-    t('auth.admin.onDay', { date: formatDay(request.createdAt, locale.value) }),
-  ]
-    .filter(Boolean)
-    .join(' · ');
 const disabledCount = computed(
   () => accounts.value.filter((account) => account.disabled).length,
 );
@@ -78,17 +76,6 @@ const groupsLine = computed(() =>
     t('auth.admin.activeDraws', { count: stats.value.active }),
   ].join(' · '),
 );
-/** What accepting every request waiting would make of the app. */
-const capacityCaption = computed(() =>
-  requests.value.length > 0
-    ? t('auth.admin.ifAllAccepted', {
-        count: requests.value.length,
-        groups: t('auth.admin.groupsCount', {
-          count: stats.value.groups + requests.value.length,
-        }),
-      })
-    : t('auth.admin.capacityHint'),
-);
 </script>
 
 <template>
@@ -103,75 +90,6 @@ const capacityCaption = computed(() =>
       :skeleton="['card', 'card', 'list']"
       :rows="3"
     >
-      <!-- Once answered, the card leaves to the left and the next one
-           rises from the stack. -->
-      <Transition
-        mode="out-in"
-        enter-active-class="transition duration-250 ease-out motion-reduce:transition-none"
-        enter-from-class="opacity-0 motion-safe:translate-y-3 motion-safe:scale-[0.97]"
-        leave-active-class="transition duration-200 ease-in motion-reduce:transition-none"
-        leave-to-class="opacity-0 motion-safe:-translate-x-10"
-      >
-        <UiStack v-if="first" :key="first.id" :behind="requests.length - 1">
-          <UiCard
-            padding="lg"
-            class="flex flex-col gap-3.5"
-            data-testid="admin-request"
-          >
-            <div class="flex flex-col gap-1">
-              <p
-                class="text-xs font-bold tracking-[0.04em] text-primary-ink uppercase"
-              >
-                {{ kicker }}
-              </p>
-              <div class="flex items-center gap-2.5">
-                <UiAvatar
-                  v-if="accountOf(first)"
-                  :avatar="accountOf(first)!.avatar"
-                  class="size-10 text-lg"
-                />
-                <div class="flex min-w-0 flex-col">
-                  <h2
-                    class="truncate font-display text-xl leading-[1.2] font-semibold"
-                  >
-                    {{ nameOf(first) }}
-                  </h2>
-                  <p class="truncate text-[13px] text-toned">
-                    {{ lineOf(first) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <p
-              class="rounded-md bg-muted px-3 py-2.5 text-[15px] leading-[1.45] break-words whitespace-pre-line"
-            >
-              {{ first.message }}
-            </p>
-            <UButton
-              block
-              class="h-12 justify-center text-base font-bold"
-              :label="t('auth.admin.handle')"
-              :to="`/admin/demandes/${first.id}`"
-            />
-          </UiCard>
-        </UiStack>
-        <UiCard
-          v-else
-          key="none"
-          padding="none"
-          class="flex items-center gap-3 px-4 py-3.5"
-          data-testid="admin-request"
-        >
-          <span
-            class="flex size-8 shrink-0 items-center justify-center rounded-full bg-success-soft text-success-ink"
-            aria-hidden="true"
-          >
-            <UIcon name="i-lucide-check" class="size-4" />
-          </span>
-          <p class="font-semibold">{{ t('auth.admin.noRequest') }}</p>
-        </UiCard>
-      </Transition>
-
       <UiCard padding="lg" class="flex flex-col gap-3" data-testid="capacity">
         <div class="flex items-baseline justify-between gap-2">
           <h2 class="font-display text-xl font-semibold">
@@ -186,7 +104,10 @@ const capacityCaption = computed(() =>
             }}
           </p>
         </div>
-        <AdminCapacityBar :groups="stats.groups" :caption="capacityCaption" />
+        <AdminCapacityBar
+          :groups="stats.groups"
+          :caption="t('auth.admin.capacityHint')"
+        />
       </UiCard>
 
       <UiList :title="t('auth.admin.seeAll')">
@@ -208,6 +129,32 @@ const capacityCaption = computed(() =>
           icon-tone="neutral"
           :title="t('auth.admin.styleGuide')"
           :subtitle="t('auth.admin.styleGuideHint')"
+        />
+      </UiList>
+
+      <UiList :title="t('auth.admin.watch')" data-testid="watch">
+        <UiListItem
+          to="/admin/comptes"
+          :title="t('auth.admin.atLimitCount')"
+          :value="String(atLimit)"
+          data-testid="watch-at-limit"
+        />
+        <UiListItem
+          to="/admin/groupes"
+          :title="t('auth.admin.fullParties')"
+          :value="String(stats.fullParties)"
+          data-testid="watch-full-parties"
+        />
+      </UiList>
+
+      <UiList :title="t('auth.admin.emergency')">
+        <UiListItem
+          :checked="paused"
+          :title="t('auth.admin.pauseSecretSantas')"
+          :subtitle="t('auth.admin.pauseSecretSantasHelp')"
+          :busy="switches.isPending.value"
+          data-testid="pause-secret-santas"
+          @update:checked="(on) => onPause(Boolean(on))"
         />
       </UiList>
     </AdminQueryState>

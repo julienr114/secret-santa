@@ -21,44 +21,6 @@ export const canReveal = (status: EditionStatus): Result<true> =>
 export const canEditAvatar = (status: EditionStatus): Result<true> =>
   status === 'closed' ? fail('edition_closed') : ok(true);
 
-/**
- * For a draw made elsewhere (README 22.12): their answer is still to
- * give, or given; null otherwise.
- */
-export type HomeAnswer = 'toGive' | 'given' | null;
-
-export const DRAW_STEPS = [
-  'giveAnswer',
-  'answerGiven',
-  'addHints',
-  'wait',
-  'discover',
-  'seeAgain',
-  'closed',
-] as const;
-export type DrawStep = (typeof DRAW_STEPS)[number];
-
-/**
- * What a participant has to do next, for the home page.
- * @param draw - Status of the edition, whether the result was already
- *   seen, whether the group uses gift hints and whether they left some;
- *   for a draw made elsewhere, whether their answer is still to give.
- * @returns The next step.
- */
-export const nextStep = (draw: {
-  status: EditionStatus;
-  revealed: boolean;
-  hintsOn: boolean;
-  hasHints: boolean;
-  answer?: HomeAnswer;
-}): DrawStep => {
-  if (draw.status === 'closed') return 'closed';
-  if (draw.status === 'drawn') return draw.revealed ? 'seeAgain' : 'discover';
-  if (draw.answer === 'toGive') return 'giveAnswer';
-  if (draw.answer === 'given') return 'answerGiven';
-  return draw.hintsOn && !draw.hasHints ? 'addHints' : 'wait';
-};
-
 /** Where a step of the participant's timeline stands. */
 export type StepState = 'done' | 'current' | 'todo';
 
@@ -147,25 +109,6 @@ export const envelopeState = (
   if (hasError) return 'locked';
   if (phase === 'waiting') return 'pending';
   return revealed ? 'opened' : 'sealed';
-};
-
-/**
- * The tile « Mes pistes de cadeaux » on the page of a draw (README 22.16):
- * waiting for hints while they can be left, done once some are, and gone
- * when the group has none, or the edition is closed without any (decided
- * by Julien on 17 November 2026).
- * @param p - The group's setting, whether they left hints, whether they
- *   can still change them.
- * @returns `todo`, `done`, or null for no tile.
- */
-export const hintsTile = (p: {
-  giftHints: string;
-  hasHints: boolean;
-  hintsEditable: boolean;
-}): 'todo' | 'done' | null => {
-  if (p.giftHints === 'none') return null;
-  if (p.hasHints) return 'done';
-  return p.hintsEditable ? 'todo' : null;
 };
 
 /** Where the tile « Devine qui » stands (README 22.17). */

@@ -46,7 +46,7 @@ test('a code file gone from the server reloads the page', async ({ page }) => {
   await page.evaluate(() => {
     (window as { oldTab?: boolean }).oldTab = true;
   });
-  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Mon compte' }).click();
   await expect(heading(page)).toHaveText('Mon compte');
   await expect(page).toHaveURL(/\/compte$/);

@@ -10,6 +10,8 @@ import {
   shoeSizesShown,
   shoeSizesText,
   toggleShoeSize,
+  dateOf,
+  partyYears,
 } from './memberFields';
 
 describe('the shoe sizes of someone', () => {
@@ -107,5 +109,17 @@ describe('a date of birth, in three lists', () => {
   it('refuses a date still to come', () => {
     expect(birthDateOf({ day: 19, month: 11, year: 2026 }, TODAY)).toBe(TODAY);
     expect(birthDateOf({ day: 20, month: 11, year: 2026 }, TODAY)).toBeNull();
+  });
+});
+
+describe('dateOf and partyYears', () => {
+  it('gives the ISO day once the three parts exist', () => {
+    expect(dateOf({ day: 25, month: 12, year: 2026 })).toBe('2026-12-25');
+    expect(dateOf({ day: 29, month: 2, year: 2027 })).toBeNull();
+    expect(dateOf({ day: 3, month: null, year: 2026 })).toBeNull();
+  });
+
+  it('offers this year and the two after, for a party', () => {
+    expect(partyYears(2026)).toEqual([2026, 2027, 2028]);
   });
 });

@@ -101,7 +101,7 @@ const subtitle = computed(() =>
         <UiListItem
           v-for="group in shown"
           :key="group.id"
-          :to="`/admin/${group.slug}`"
+          :to="`/e/${group.slug}`"
           icon="i-lucide-users"
           icon-tone="neutral"
           :title="group.name"

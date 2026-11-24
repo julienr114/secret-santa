@@ -10,6 +10,16 @@ import { newId, nowIso } from '#server/http/context';
 import { capRefusal } from '#server/utils/limits';
 import { countJournal } from './caps';
 
+/**
+ * A journal event as the table stores it: the journal still speaks of a
+ * group and an edition, the table of a party and a Secret Santa.
+ */
+export const auditInsert = ({ groupId, editionId, ...rest }: AuditRow) => ({
+  ...rest,
+  partyId: groupId,
+  secretSantaId: editionId,
+});
+
 /** Builds and stores a journal event. Invalid events are a programming error. */
 export const recordEvent = async (
   db: Db,
@@ -33,7 +43,7 @@ export const recordEvent = async (
     ),
   );
   if (refusal) throw createError({ statusCode: 429, statusMessage: refusal });
-  await db.insert(auditLog).values(built.value);
+  await db.insert(auditLog).values(auditInsert(built.value));
   return built.value;
 };
 
@@ -55,8 +65,8 @@ export const wasDrawCancelled = async (
     .from(auditLog)
     .where(
       and(
-        eq(auditLog.groupId, groupId),
-        eq(auditLog.editionId, editionId),
+        eq(auditLog.partyId, groupId),
+        eq(auditLog.secretSantaId, editionId),
         eq(auditLog.type, 'draw_cancelled'),
       ),
     )

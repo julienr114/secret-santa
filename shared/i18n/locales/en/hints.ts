@@ -2,40 +2,8 @@ import type fr from '../fr/hints';
 import type { Dict } from '../../types';
 
 export default {
-  title: 'My gift hints',
-  intro: 'Give a hand to the person giving you a gift. Everything is optional.',
-  whoSees:
-    'Only the person who gives you a present will see them, once the draw is done.',
-  requested: {
-    title: 'The person who gives you a present is looking for inspiration.',
-    body: 'Six multiple-choice questions are enough: thirty seconds.',
-    bodyPortrait: 'Five multiple-choice questions are enough: thirty seconds.',
-  },
-  readOnly: 'Your hints are set: that’s a wrap for this year.',
-  until: 'You can change them until the party.',
-  start: {
-    label: 'To begin',
-    title: 'Six questions, thirty seconds',
-    titlePortrait: 'Five questions, thirty seconds',
-    examples: 'Useful or surprising? A thing or a moment?',
-    body: 'One tap per answer, nothing to write.',
-    action: 'Start',
-  },
-  copy: {
-    action: 'Reuse my hints from {edition}',
-    hint: 'You can touch them up',
-    done: 'Hints from {edition} reused',
-  },
-  me: {
-    title: 'When it comes to presents, I prefer…',
-    context: 'Me and presents',
-  },
   question: {
-    context: 'question {index} of {count}',
-    clear: 'Clear my answer',
-    later: 'Later',
     both: 'Either is fine',
-    footer: 'One tap, and on to the next. You can change your mind.',
     progress: 'Question {index} of {count}',
   },
   questions: {
@@ -77,7 +45,7 @@ export default {
     surprise: {
       title: 'Surprise me, or I’d rather know?',
       first: 'Surprise me',
-      firstHelp: 'I’ll find out on the day of the party.',
+      firstHelp: 'I’ll find out on the big day.',
       second: 'I’d rather know',
       secondHelp: 'I give a precise idea further down.',
     },
@@ -179,73 +147,41 @@ export default {
     },
   },
   ideas: {
-    title: 'A specific idea, just in case',
     giver: 'If you’re stuck',
-    add: 'Add an idea',
-    addHint: 'An item, with a link if you like',
-    left: {
-      one: '{count} more possible',
-      other: '{count} more possible',
-    },
-    why: 'A precise idea spoils nothing: many prefer a safe bet.',
   },
   list: {
     title: 'My gift list',
-    help: 'The person giving you a gift will see a link to it. What they tick there is anonymous: nobody will know it is them, not even you.',
-    add: 'Link a gift list',
-    addHint: 'The person giving you a gift will see a link to it',
-    change: 'Change',
-    mine: 'Your list, published',
-    figuring: 'A list you are on, published',
-    published: 'Published',
-    unshared: 'It is no longer published: the link no longer shows.',
-    login: 'Log in to link one of your gift lists.',
-    loginAction: 'Log in',
-    sheetTitle: 'Which list?',
-    sheetHelp:
-      'The lists you hold, and those you are on. Only a published list can be linked.',
-    rowMine: 'Your list · published',
-    rowFiguring: '{name}’s list · you are on it',
-    rowDraft: 'Draft: publish it first',
-    none: 'No list',
-    validate: 'Confirm',
-    untitled: 'Untitled list',
-    done: 'List linked to your hints',
-    removed: 'No list linked to your hints any more',
   },
   result: {
-    list: 'Their gift list: {title}',
+    listOf: '{name}’s gift list',
+    newIdeas: {
+      one: '{count} new idea since your last visit',
+      other: '{count} new ideas since your last visit',
+    },
+    nothing: '{name} hasn’t written anything yet.',
     listHelp: 'Anonymous mode will be on for you there.',
     title: 'To help you choose',
-    isNew: 'New',
-    updatedOn: 'Hints updated on {date}',
-    none: '{name} hasn’t left any hints yet.',
-    ask: 'Ask for hints',
-    sentEmailNamed: '{name} just got an email.',
-    sentPageNamed: '{name} will see it on their hints page.',
+    ask: 'Ask for ideas',
     askHint: 'Without saying it comes from you.',
     sent: 'Request sent.',
     sentEmail: '{name} just got an email, without knowing it comes from you.',
     sentPage:
-      '{name} will see it on their hints page, without knowing it comes from you.',
-    willEmail: 'You will get an email as soon as hints arrive.',
-    willSee: 'Come back here: the hints will show as soon as they arrive.',
+      '{name} will see it when opening their link, without knowing it comes from you.',
+    willEmail: 'You will get an email as soon as ideas arrive.',
+    willSee: 'Come back here: the ideas will show as soon as they arrive.',
   },
   request: {
-    title: 'Ask {name} for hints?',
+    title: 'Ask {name} for ideas?',
     bodyEmail:
       '{name} gets an email inviting them to note their tastes and what is better avoided.',
     bodyPage:
-      '{name} will see it on their hints page, inviting them to note their tastes and what is better avoided.',
-    named: 'Your name is given',
-    namedHelp:
-      'The draw is revealed: {name} will know the request comes from you.',
+      '{name} will see it on their ideas page, inviting them to note their tastes and what is better avoided.',
     anonymous: 'Your name appears nowhere',
     anonymousHelp: {
       one: 'Not in the email, not in the journal, not to the organizer.',
       other: 'Not in the email, not in the journal, not to the organizers.',
     },
-    once: 'One request per draw',
+    once: 'One request per Secret Santa',
     onceHelp: 'No reminders: we don’t pester anyone.',
     send: 'Send the request',
     sending: 'Sending the request…',
@@ -253,46 +189,20 @@ export default {
   },
   state: {
     hintsLeft: {
-      one: '{count} of {total} left hints',
-      other: '{count} of {total} left hints',
+      one: '{count} of {total} wrote their list',
+      other: '{count} of {total} wrote their list',
     },
-    none: 'Nothing yet',
-    filledEditable: 'Filled in · can be changed until the party',
-    filledLocked: 'Filled in · can no longer be changed',
-    left: 'Left hints',
-  },
-  setting: {
-    title: 'Gift hints',
-    help: 'What everyone can note to help the person who gives them a present.',
-    full: 'Portrait and precise ideas',
-    fullHelp: 'The six questions, current interests, and item ideas',
-    portrait: 'Portrait only',
-    portraitHelp: 'No item idea: the surprise stays whole',
-    none: 'No hints',
-    noneHelp: 'Everyone manages on their own',
+    left: 'Wrote their list',
   },
   email: {
     request: {
-      subject:
-        '{group} Secret Santa: someone is looking for a gift idea for you',
+      subject: 'someone is looking for a gift idea for you',
       greeting: 'Hello {name},',
-      body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
-      bodyPortrait:
-        'The person who gives you a present for {edition} ({group}) doesn’t know what to choose. Help them: five multiple-choice questions, thirty seconds, and a few words if you like.',
-      subjectFrom:
-        '{group} Secret Santa: {from} is looking for a gift idea for you',
-      bodyFrom:
-        '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: six multiple-choice questions, thirty seconds, and a few words if you like.',
-      bodyPortraitFrom:
-        '{from} gives you a present for {edition} ({group}) and doesn’t know what to choose. Help them: five multiple-choice questions, thirty seconds, and a few words if you like.',
-      cta: 'Leave a few hints:',
-      anonymous: 'We won’t tell you who is asking: it’s a Secret Santa.',
-      once: 'You will only get this message once.',
-    },
-    arrived: {
-      subject: '{group} Secret Santa: gift hints are waiting for you',
-      greeting: 'Hello {name},',
-      body: 'The person you give a present to for {edition} ({group}) left some hints. Open your link to read them:',
+      body: 'The person who gives you a present for {edition} ({group}) doesn’t know what to choose.',
+      help: 'Help them: write your gift list, or a few words about what you like.',
+      cta: 'Write my list',
+      anonymous:
+        'We won’t tell you who is asking: it’s a Secret Santa. You will only get this message once.',
     },
   },
 } satisfies Dict<typeof fr>;

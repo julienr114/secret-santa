@@ -1,11 +1,6 @@
-import type { GiverHintsState } from '#server/utils/hints';
-import type { PublicGroup } from '#server/database/groups';
-import type { HomeEditionState } from '#server/utils/home';
-import type { EditionStatus } from '#server/utils/editions';
-import type { DrawStep, HomeAnswer } from '#server/utils/personal';
-import type { Role, SessionUser } from '#server/utils/auth';
+import type { PartyCategory } from '#shared/utils/categories';
+import type { SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
-import type { JournalSignal } from '#server/utils/audit';
 import type { Locale } from '#shared/i18n';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
@@ -72,92 +67,6 @@ export const useConfirmLinkMutation = () => {
   });
 };
 
-/** One draw the account takes part in, opened through its personal link. */
-export type HomeDraw = {
-  /** Alerts of its journal since the last visit; null when none. */
-  journal: JournalSignal | null;
-  id: string;
-  path: string;
-  groupId: string;
-  groupName: string;
-  editionLabel: string;
-  year: number;
-  status: EditionStatus;
-  /** What the participant has to do next. */
-  step: DrawStep;
-  /** The result was seen at least once. */
-  revealed: boolean;
-  /** Revealed before the party: who they give to (README 22.18). */
-  opened: { name: string; avatar: Avatar } | null;
-  /** The group uses gift hints (README 22.11). */
-  hintsOn: boolean;
-  /** They left hints. */
-  hasHints: boolean;
-  /** The hints of the person they give to: none, some, or new. */
-  receiverHints: GiverHintsState;
-  /** A draw made elsewhere: their answer to give, or given (22.12). */
-  answer: HomeAnswer;
-  /** « Devine qui » (22.17). */
-  game: {
-    open: boolean;
-    played: boolean;
-    palmares: boolean;
-    seen: boolean;
-    endsAt: string | null;
-    mode: 'none' | 'santa' | 'all';
-    skipped: boolean;
-    canSkip: boolean;
-    count: { played: number; total: number };
-  } | null;
-  /** The date of the party: an ISO day, or older free text. */
-  eventDate: string;
-  firstName: string;
-  avatar: Avatar;
-};
-/** Where the account's latest request for a group stands. */
-export type HomeRequest = {
-  status: 'pending' | 'approved' | 'refused';
-  createdAt: string;
-  /** What the account wrote. */
-  message: string;
-  /** The super-admin's word with the answer, if any. */
-  note: string | null;
-};
-export type HomePayload = {
-  role: Role;
-  /** From the profile; null until the account gives one. */
-  firstName: string | null;
-  lastName: string | null;
-  avatar: Avatar;
-  draws: HomeDraw[];
-  /** The groups the account organises, with their current edition. */
-  groups: (PublicGroup & { current: HomeEditionState | null })[];
-  canCreateGroup: boolean;
-  /** How many more groups the account may create; null without limit. */
-  groupsLeft: number | null;
-  request: HomeRequest | null;
-  /** Requests awaiting the super-admin; 0 for everyone else. */
-  pendingRequests: number;
-  /** For a super-admin: who has been waiting the longest, and since when. */
-  oldestRequest: { name: string; since: string } | null;
-};
-
-/** The home of the account: its draws and the groups it manages. */
-export const useHomeQuery = (enabled: MaybeRefOrGetter<boolean> = true) =>
-  useApiQuery<HomePayload>(
-    () => keys.home(),
-    () => '/api/auth/home',
-    enabled,
-  );
-
-/** Asks the super-admins for the right to create a group. */
-export const useRequestGroupMutation = () =>
-  useApiMutation<{ ok: true }, string>(
-    (message) =>
-      api('/api/auth/group-requests', { method: 'POST', body: { message } }),
-    () => [keys.home()],
-  );
-
 /** "My account": the address and the devices it is logged in on. */
 export const useAccountQuery = () =>
   useApiQuery<AccountPayload>(
@@ -202,43 +111,48 @@ export const useRevokeAllMutation = () => {
   });
 };
 
-/** What an invitation link shows. */
+/** What the invitation link of a Secret Santa shows (ticket 116). */
 export type InvitePayload = {
   groupName: string;
-  /** How many organisers the group has (« tes organisateurs »). */
+  /** The Secret Santa's name, when its event has several that year. */
+  santaName: string | null;
+  /** The event: its category and the day. */
+  party: {
+    category: PartyCategory;
+    iconEmoji: string | null;
+    date: string | null;
+  };
+  /** How many organisers the event has (« tes organisateurs »). */
   organizers: number;
   /** The organiser's words, if any. */
   message: string | null;
-  /** The draw in progress of the group, if any. */
+  /** The Secret Santa of the link. */
   edition: {
     label: string;
     status: 'preparing' | 'drawn' | 'closed';
-    /** Whether the participants may leave gift hints. */
-    hintsOn: boolean;
-    eventDate: string;
     participants: number;
-  } | null;
-  /** Why the link no longer lets anyone in, or null. */
+  };
   /** The last day an expired link worked. */
   expiredAfter: string | null;
-  closed: 'invite_expired' | 'invite_full' | null;
-  /** For a logged-in account: its first name, and whether it is in. */
+  /** Why the link no longer lets this visitor in, or null. */
+  closed: 'invite_drawn' | 'invite_expired' | 'invite_full' | null;
+  /** For a logged-in account: its first name, and whether it takes part. */
   account: {
     email: string;
     firstName: string | null;
-    member: boolean;
+    joined: boolean;
     path: string | null;
   } | null;
 };
 
-/** The group an invitation link leads to. */
+/** The Secret Santa an invitation link leads to. */
 export const useInviteQuery = (code: MaybeRefOrGetter<string>) =>
   useApiQuery<InvitePayload>(
     () => ['invite', toValue(code)],
     () => `/api/invite/${toValue(code)}`,
   );
 
-/** Joins the group of an invitation link. */
+/** Signs up to the Secret Santa of an invitation link. */
 export const useJoinMutation = (code: MaybeRefOrGetter<string>) =>
   useApiMutation<{ ok: true; path: string | null }, { firstName: string }>(
     (body) =>

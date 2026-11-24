@@ -256,7 +256,7 @@ describe('cocher pour quelqu’un', () => {
     });
   });
 
-  it('offers me, those who hold the list, those who ticked, the names written, once each', () => {
+  it('offers me, those who hold the list, those who ticked, the members of its events, the names written, once each', () => {
     const candidates = listCandidates({
       viewer: { accountId: 'me', name: 'Camille', avatar: null },
       holders: [
@@ -279,6 +279,19 @@ describe('cocher pour quelqu’un', () => {
         who({ id: 'c5', key: 'g:p', name: 'Parrain' }),
         who({ id: 'c6', key: 'a:m', name: 'Mamie', createdAt: '2026-11-13' }),
       ],
+      members: [
+        {
+          accountId: 'm',
+          name: 'Mamie',
+          avatar: { emoji: '🦌', color: 'brick' },
+        },
+        { accountId: 'z', name: 'Zoé', avatar: { emoji: '🦊', color: 'pine' } },
+        {
+          accountId: 'h',
+          name: 'Hugo',
+          avatar: { emoji: '🐧', color: 'brick' },
+        },
+      ],
       written: [
         { id: 't', name: 'Tata', email: null },
         { id: 'p', name: 'Parrain', email: 'parrain@example.com' },
@@ -289,6 +302,7 @@ describe('cocher pour quelqu’un', () => {
       ['a:h', 'holder'],
       ['a:m', 'ticker'],
       ['a:t', 'ticker'],
+      ['a:z', 'member'],
       ['g:t', 'written'],
       ['g:p', 'written'],
     ]);

@@ -5,7 +5,7 @@ export default {
   someone: 'Jemand',
   unknown: 'Unbekanntes Ereignis',
   events: {
-    edition_created: 'Die Ausgabe {label} wurde erstellt',
+    edition_created: 'Das Wichteln {label} wurde erstellt',
     participant_added: '{name} ist dabei',
     participant_removed: '{name} macht nicht mehr mit',
     rules_changed: 'Der Organisator hat die Regeln der Auslosung geändert',
@@ -19,13 +19,13 @@ export default {
     },
     draw_cancelled: 'Die Auslosung wurde aufgehoben. Grund: {reason}',
     results_revealed:
-      'Der Organisator hat die Ergebnisse vor der Feier aufgedeckt',
+      'Der Organisator hat die Ergebnisse vor dem großen Tag aufgedeckt',
     result_revealed:
       'Der Organisator hat das Ergebnis von {name} eingesehen (Notzugriff)',
     result_viewed: '{name} hat den eigenen Umschlag geöffnet',
     avatar_changed: '{name} hat das eigene Symbol geändert',
     language_changed: '{name} hat die eigene Sprache geändert ({language})',
-    edition_closed: 'Die Ausgabe {label} ist abgeschlossen',
+    edition_closed: 'Das Wichteln {label} ist abgeschlossen',
     draw_revealed:
       'Der Organisator hat die Ergebnisse der Auslosung aufgedeckt',
     answers_started:
@@ -128,8 +128,8 @@ export default {
     notesBody:
       'Die Auslosung, jeden gesendeten oder erneuerten Link, jeden geöffneten Umschlag und jeden Blick des Organisators in einen Umschlag.',
     never: 'Es verrät nie',
-    neverBody: 'Wer wen beschenkt, noch die Geschenk-Hinweise der anderen.',
-    who: 'Die ganze Gruppe sieht es',
+    neverBody: 'Wer wen beschenkt, noch die Geschenkideen der anderen.',
+    who: 'Alle Mitglieder sehen es',
     whoBody: 'Teilnehmer und Organisatoren, mit denselben Zeilen.',
   },
   alert: {
@@ -142,29 +142,28 @@ export default {
       title: 'Zugriff im Notfall',
       happened:
         'Der Organisator hat nachgesehen, wen {name} beschenkt. Er hat nur dieses eine Ergebnis gesehen.',
-      forOthers:
-        'Nichts: Dein Umschlag und deine Hinweise wurden nicht gesehen.',
+      forOthers: 'Nichts: Dein Umschlag und deine Ideen wurden nicht gesehen.',
       forMe:
         'Er weiß, wen du beschenkst. Sonst hat es niemand gesehen, und dein Umschlag ändert sich nicht.',
-      why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
+      why: 'Bei Zweifel oder Streit muss man nachprüfen können. Der Organisator muss einen Satz abschreiben und akzeptieren, dass alle Mitglieder es erfahren.',
       changes:
-        'Die anderen Ergebnisse und die Geschenk-Hinweise wurden nicht gesehen.',
+        'Die anderen Ergebnisse und die Geschenkideen wurden nicht gesehen.',
     },
     results_revealed: {
-      title: 'Ergebnisse vor der Feier aufgedeckt',
+      title: 'Ergebnisse vor dem großen Tag aufgedeckt',
       happened:
-        'Der Organisator hat aufgedeckt, wer wen beschenkt, noch vor der Feier.',
-      why: 'Aufdecken ist ab dem Tag der Feier erlaubt. Früher muss der Organisator einen Satz abschreiben und akzeptieren, dass die ganze Gruppe es erfährt.',
+        'Der Organisator hat aufgedeckt, wer wen beschenkt, noch vor dem großen Tag.',
+      why: 'Aufdecken ist ab dem großen Tag erlaubt. Früher muss der Organisator einen Satz abschreiben und akzeptieren, dass alle Mitglieder es erfahren.',
       changes:
-        'Dein Umschlag ändert sich nicht, und die ganze Gruppe sieht, wer wen beschenkt. Die Auslosung kann nicht mehr aufgehoben werden.',
+        'Dein Umschlag ändert sich nicht, und alle Mitglieder sehen, wer wen beschenkt. Die Auslosung kann nicht mehr aufgehoben werden.',
     },
     draw_cancelled: {
       title: 'Auslosung abgesagt',
       happened:
         'Der Organisator hat die Auslosung abgesagt, aus dem oben genannten Grund. Die alten Ergebnisse sind gelöscht.',
-      why: 'Eine Absage, ein Vergessener: Lieber neu auslosen als eine falsche Auslosung behalten. Der Grund steht für die ganze Gruppe im Protokoll.',
+      why: 'Eine Absage, ein Vergessener: Lieber neu auslosen als eine falsche Auslosung behalten. Der Grund steht für alle Mitglieder im Protokoll.',
       changes:
-        'Alle bekommen eine neue Nachricht und öffnen einen neuen Umschlag. Die Links und die Geschenk-Hinweise bleiben gleich.',
+        'Alle bekommen eine neue Nachricht und öffnen einen neuen Umschlag. Die Links und die Geschenkideen bleiben gleich.',
     },
   },
 } satisfies Dict<typeof fr>;

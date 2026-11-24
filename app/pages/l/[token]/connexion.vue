@@ -104,7 +104,7 @@ const onSend = () =>
           @click="onSend"
         />
         <p v-if="idea" class="text-center text-[13px] text-toned">
-          {{ t('lists.login.waiting', { idea: idea.text }) }}
+          {{ t('lists.login.waiting', { idea: ideaName(idea) }) }}
         </p>
       </UiStickyFooter>
     </template>

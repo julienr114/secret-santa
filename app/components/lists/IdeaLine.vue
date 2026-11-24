@@ -12,19 +12,22 @@ import {
 } from '~/composables/queries/useLists';
 import { AVATAR_SHADES } from '~/utils/avatars';
 import { ideaChips, namesInOne } from '~/utils/givers';
-import { asAddress, linkHost, shownAddress } from '~/utils/ideaLink';
+import { asAddress, ideaName, linkHost, shownAddress } from '~/utils/ideaLink';
 import { splitIdea } from '#server/utils/lists';
 
 // One line of a person's ideas, written where it shows (README 22.19 and
 // 22.20, maquettes ListeIdee, ListeIdeeLien, ListeIdeeLienFait): its box,
-// its text and its link, and, for the holder, who gives it. The holder
+// its text and its link, and, for the holder, who gives it. Without a
+// text, the name of its site takes its place, and is touched to write it
+// (ticket 140). The holder
 // ticks too, their « Moi » included: the box gives the idea alone,
 // touched again it unticks. What they give says so under it, as by the
 // link: « Tu l'offres › », which opens its sheet; a gift given by several
 // is joined from here too. The grey box of someone else's tick unticks it
 // at once, for those who may (Correction 30).
-// Touched, the text turns into a field; the return key saves it and goes
-// to the next line, touching elsewhere saves it too; a line left empty
+// Touched, the text turns into a field, in a white card that moves
+// neither the box nor the text (ticket 144); the return key saves it and
+// goes to the next line, touching elsewhere saves it too; a line left empty
 // goes, and so does a line with nothing in it when the erase key is
 // pressed again, the caret going up to the line above. Nothing sits above
 // the keyboard: while one is in the line, its
@@ -35,6 +38,12 @@ import { splitIdea } from '#server/utils/lists';
 // « Une autre idée… », where a new one is written. Where the list is
 // held, a line moves: lifted by a long press, pulled by its handle with a
 // mouse, or `Alt` + an arrow while it is written (lot 24 ter).
+// One handle, on the right (ticket 152): in the card of the line being
+// written, and on any line a mouse hovers. A touch or a click opens its
+// menu (the stars, « En faire un titre », « Monter », « Descendre »,
+// « Déplacer vers… », « Supprimer la ligne »); a long press, or the mouse
+// pulled, moves the line. A title has no box: a dot on the thread, its
+// text bold. The stars are read at the end of the text.
 const props = defineProps<{
   /** Where the list is written: its document, or its link. */
   via: ClaimRoute;
@@ -48,6 +57,14 @@ const props = defineProps<{
   placeholder?: string;
   /** Where the line is, for « retour » to find the next one. */
   line: string;
+  /**
+   * The visit of a new list on this empty line (ticket 149): the step
+   * « Une idée par ligne », or the note of the first line.
+   */
+  tour?: 'line' | 'firstLine' | null;
+  /** First or last of the person's lines: no « Monter », no « Descendre ». */
+  first?: boolean;
+  last?: boolean;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -69,8 +86,77 @@ const toast = useMessages();
 const errorMessage = useErrorMessage();
 const queryClient = useQueryClient();
 const afterRelease = usePointerHeld();
+/** The handle of the line, and its menu (ticket 152). */
+const handle = ref<HTMLElement | null>(null);
+const menuOpen = ref(false);
+const menuAbove = ref(false);
+/** Opens the menu under the handle, above it when the screen ends. */
+const toggleMenu = () => {
+  if (menuOpen.value) {
+    menuOpen.value = false;
+    return;
+  }
+  const box = handle.value?.getBoundingClientRect();
+  menuAbove.value = Boolean(
+    box && box.bottom + 360 > window.innerHeight && box.top > 360,
+  );
+  menuOpen.value = true;
+};
+/**
+ * Closes the menu; after a choice that keeps one in the line, the
+ * keyboard comes back.
+ * @param back - Whether writing goes on in the line.
+ */
+const closeMenu = async (back = false) => {
+  menuOpen.value = false;
+  if (!back) return;
+  await nextTick();
+  if (writing.value) field.value?.focus();
+  else handle.value?.focus();
+};
+/**
+ * The stars and the title show at once: the line changes in the page's
+ * data at the gesture (ticket 166), a failure says so.
+ */
+const stars = computed(() => props.idea?.stars ?? 0);
+const onStars = (count: number) => {
+  if (!props.idea) return;
+  update.mutate({ ideaId: props.idea.id, stars: count });
+  void closeMenu(true);
+};
+const onTitle = () => {
+  if (!props.idea) return;
+  update.mutate({ ideaId: props.idea.id, title: !props.idea.title });
+  void closeMenu(true);
+};
+const onStepLine = (step: -1 | 1) => {
+  void closeMenu();
+  if (props.idea && drag) drag.step({ kind: 'idea', id: props.idea.id }, step);
+};
+const canMove = computed(
+  () =>
+    !claimed.value &&
+    Boolean(editing.moveTo) &&
+    (editing.canMove?.(props.listPersonId) ?? false),
+);
+const onMoveTo = () => {
+  void closeMenu();
+  if (props.idea) editing.moveTo?.(props.idea, props.listPersonId);
+};
+const onRemoveLine = async () => {
+  void closeMenu();
+  await removeIdea();
+  leave();
+};
 
 const row = ref<HTMLElement | null>(null);
+const listTour = useListTour();
+const tourStop = useTourStop(
+  () => (props.tour === 'line' ? 'line' : null),
+  row,
+);
+/** The note of the first line, while nothing is written on it. */
+const firstLineNote = computed(() => props.tour === 'firstLine');
 const field = ref<HTMLTextAreaElement | null>(null);
 /** The copy of the text under its field, which gives the field its height. */
 const mirror = ref<HTMLElement | null>(null);
@@ -98,6 +184,11 @@ const taken = computed(
     view.value.kind === 'taken' ||
     (view.value.kind === 'group' && view.value.closed),
 );
+/**
+ * Someone gives it: it neither becomes a title nor goes to another
+ * person (Julien, 24 November 2026).
+ */
+const claimed = computed(() => view.value.kind !== 'free');
 /** Whether the box does something: give, give up, change or join. */
 const boxActive = computed(
   () =>
@@ -158,6 +249,9 @@ const claims = computed(() =>
 // by first name, my own state in one pill, « Se joindre » last.
 const chips = computed(() => ideaChips(view.value, Boolean(editing.untickFor)));
 const host = computed(() => (props.idea?.url ? linkHost(props.idea.url) : ''));
+/** Its name: its text, or the name of its site when it has only a link
+ * (ticket 140). */
+const name = computed(() => (props.idea ? ideaName(props.idea) : ''));
 /** The first names of the others who give it, in one go. */
 const giverNames = computed(() =>
   namesInOne(
@@ -170,9 +264,9 @@ const joinLabel = computed(() =>
   giverNames.value
     ? t('lists.chips.joinWith', {
         names: giverNames.value,
-        idea: props.idea?.text ?? '',
+        idea: name.value,
       })
-    : t('lists.chips.joinIdea', { idea: props.idea?.text ?? '' }),
+    : t('lists.chips.joinIdea', { idea: name.value }),
 );
 /**
  * « Qui l'offre ? » (21 November 2026): for those who hold the list, the
@@ -322,11 +416,14 @@ const save = async (): Promise<boolean> => {
   }
   const url = link || null;
   if (text || url) {
+    // Shown at once, under an id of its own until the server gives one
+    // (ticket 166).
     create.mutate({
       listPersonId: props.listPersonId,
       text,
       ...(url ? { url } : {}),
       after: props.after ?? null,
+      tempId: `new-${crypto.randomUUID()}`,
     });
     draft.value = '';
     address.value = '';
@@ -518,7 +615,7 @@ const onFocusOut = (event: FocusEvent) => {
 <template>
   <li
     ref="row"
-    class="group relative flex scroll-mt-32 items-start gap-[var(--line-gap,12px)] py-[13px]"
+    class="group relative flex scroll-mt-32 items-start gap-[var(--line-gap,12px)]"
     :style="
       lockShade
         ? {
@@ -530,33 +627,34 @@ const onFocusOut = (event: FocusEvent) => {
     :data-locked="lockedBy ? '' : undefined"
     :class="[
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
+      // Being written: a white card over the line, which moves neither
+      // the box nor the text (ticket 144).
       writing
-        ? '-mr-4 -ml-[calc(16px_+_var(--line-in,0px))] border-l-[3px] border-primary bg-default pr-4 pb-2.5 pl-[calc(13px_+_var(--line-in,0px))]'
-        : '',
+        ? '-my-1 -mr-2 -ml-2.5 rounded-[16px] bg-default pt-[17px] pr-2 pb-3.5 pl-2.5 shadow-line-card'
+        : 'py-[13px]',
       liftedHere ? 'opacity-30' : '',
-      guided ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5' : '',
+      guided || tourStop.active.value || firstLineNote
+        ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5'
+        : '',
     ]"
     :data-line="line"
     :data-drag="idea && drag ? 'idea' : undefined"
     :data-drag-id="idea && drag ? idea.id : undefined"
+    :data-drag-stay="idea && drag && claimed ? '' : undefined"
     @focusout="onFocusOut"
   >
-    <!-- With a mouse, a handle shows on the left as the line is hovered;
-         on a phone a long press lifts the line. -->
-    <button
-      v-if="idea && drag && !writing"
-      type="button"
-      tabindex="-1"
-      class="absolute top-1.5 -left-6 hidden size-7 cursor-grab items-center justify-center rounded-md text-toned group-hover:flex"
-      :aria-label="t('lists.doc.drag.handle', { name: idea.text })"
-      data-testid="drag-handle"
-      data-no-drag
-      @mousedown="drag.grab($event, { kind: 'idea', id: idea.id })"
+    <!-- A title: a dot on the thread of the person, no box (ticket 152). -->
+    <span
+      v-if="idea?.title"
+      class="flex w-[22px] shrink-0 justify-center self-center"
+      aria-hidden="true"
+      data-testid="title-dot"
     >
-      <UIcon name="i-lucide-grip-vertical" class="size-4" />
-    </button>
+      <span class="size-2.5 rounded-full bg-line-strong ring-4 ring-page" />
+    </span>
     <component
       :is="idea ? 'button' : 'span'"
+      v-else
       v-bind="
         idea
           ? {
@@ -564,12 +662,12 @@ const onFocusOut = (event: FocusEvent) => {
               role: 'checkbox',
               'aria-checked': mine || taken,
               'aria-label': mine
-                ? t('lists.visitor.untick', { idea: idea.text })
+                ? t('lists.visitor.untick', { idea: name })
                 : openGroup
                   ? joinLabel
                   : taken && claims.length > 0
                     ? untickForLabel
-                    : t('lists.visitor.tick', { idea: idea.text }),
+                    : t('lists.visitor.tick', { idea: name }),
               disabled: !boxActive && claims.length === 0,
             }
           : { 'aria-hidden': 'true' }
@@ -606,7 +704,14 @@ const onFocusOut = (event: FocusEvent) => {
       <template v-if="writing || !idea">
         <!-- A long text goes on to the next row: the field is as tall as
              its text, measured by a copy of it under the field. -->
-        <div class="grid min-w-0 text-base/[22px]">
+        <div
+          class="grid min-w-0"
+          :class="
+            idea?.title
+              ? 'font-display text-[19px]/[25px] font-bold'
+              : 'text-base/[22px]'
+          "
+        >
           <span
             ref="mirror"
             class="invisible col-start-1 row-start-1 break-words whitespace-pre-wrap"
@@ -646,7 +751,7 @@ const onFocusOut = (event: FocusEvent) => {
              address and a cross to take it off. Out of the way of the tab
              key, which goes from line to line. -->
         <div
-          v-if="writing"
+          v-if="writing && !idea?.title"
           class="mt-1.5 flex min-h-8 items-center gap-1.5 border-t pt-1.5 text-sm/[1.4]"
           :class="linkError ? 'border-error' : 'border-muted'"
           data-testid="idea-link-row"
@@ -706,7 +811,14 @@ const onFocusOut = (event: FocusEvent) => {
         </div>
       </template>
       <template v-else>
-        <p class="text-base/[22px]">
+        <component
+          :is="idea.title ? 'h3' : 'p'"
+          :class="
+            idea.title
+              ? 'font-display text-[19px]/[25px] font-bold'
+              : 'text-base/[22px]'
+          "
+        >
           <button
             type="button"
             class="text-left"
@@ -719,7 +831,7 @@ const onFocusOut = (event: FocusEvent) => {
             @click="start"
           >
             <span
-              :key="lockedBy ? 'live' : idea.text"
+              :key="lockedBy ? 'live' : name"
               :class="settled && !lockedBy ? 'text-changed' : ''"
               ><template v-if="lockedBy"
                 >{{ lockedBy.text.slice(0, lockedBy.caret)
@@ -731,7 +843,7 @@ const onFocusOut = (event: FocusEvent) => {
                   aria-hidden="true"
                   data-testid="live-caret"
                 />{{ lockedBy.text.slice(lockedBy.caret) }}</template
-              ><template v-else>{{ idea.text }}</template></span
+              ><template v-else>{{ name }}</template></span
             >
           </button>
           <!-- Taken from an old list and not changed since (lot 27): a small
@@ -744,7 +856,11 @@ const onFocusOut = (event: FocusEvent) => {
             :aria-label="t('lists.resume.mark')"
             data-testid="idea-carried"
           />
-        </p>
+          <ListsStars
+            :count="stars"
+            :class="taken && !mine ? 'opacity-50' : ''"
+          />
+        </component>
         <ListsIdeaLink v-if="idea.url && host" :url="idea.url" :host="host" />
         <!-- The row of pills: never struck through. -->
         <div
@@ -790,8 +906,7 @@ const onFocusOut = (event: FocusEvent) => {
               }}</UiChip
             >
             <span class="sr-only"
-              >{{ givenBy }}
-              {{ t('lists.who.change', { idea: idea.text }) }}</span
+              >{{ givenBy }} {{ t('lists.who.change', { idea: name }) }}</span
             >
           </button>
           <template v-else>
@@ -820,10 +935,11 @@ const onFocusOut = (event: FocusEvent) => {
             button
             :aria-label="
               chips.mine === 'group'
-                ? t('lists.chips.mineGroupLabel', { idea: idea.text })
-                : t('lists.chips.mineLabel', { idea: idea.text })
+                ? t('lists.chips.mineGroupLabel', { idea: name })
+                : t('lists.chips.mineLabel', { idea: name })
             "
             :data-testid="chips.mine === 'group' ? 'idea-joined' : 'idea-mine'"
+            :disabled="idea?.pending"
             data-no-drag
             @click="onMine"
           />
@@ -853,6 +969,73 @@ const onFocusOut = (event: FocusEvent) => {
         />
         {{ t('lists.live.writing', { name: lockedBy.name }) }}
       </p>
+    </div>
+    <!-- The handle (ticket 152): in the card of the line being written,
+         and on any line a mouse hovers; its stars just before it. -->
+    <div
+      v-if="idea"
+      class="shrink-0 items-start gap-1"
+      :class="
+        writing
+          ? 'relative -mt-[5px] -mr-1 flex'
+          : menuOpen
+            ? 'absolute top-2 right-0 flex'
+            : 'absolute top-2 right-0 hidden [@media(hover:hover)]:group-hover:flex'
+      "
+    >
+      <ListsStars v-if="writing" :count="stars" class="mt-[9px] ml-0" />
+      <button
+        ref="handle"
+        type="button"
+        class="flex size-8 cursor-grab items-center justify-center rounded-[10px] text-dimmed"
+        :class="menuOpen ? 'bg-peach-100' : 'bg-default'"
+        :aria-label="t('lists.line.handle')"
+        aria-haspopup="menu"
+        :aria-expanded="menuOpen"
+        data-line-handle
+        data-testid="line-handle"
+        @mousedown="drag?.grab($event, { kind: 'idea', id: idea.id })"
+        @click="toggleMenu"
+      >
+        <UIcon name="i-lucide-grip-vertical" class="size-4" />
+      </button>
+      <ListsLineMenu
+        v-if="menuOpen"
+        :stars="stars"
+        :title="idea.title"
+        :can-title="idea.title || !claimed"
+        :can-up="Boolean(drag) && !first"
+        :can-down="Boolean(drag) && !last"
+        :can-move="canMove"
+        :above="menuAbove"
+        @stars="onStars"
+        @title="onTitle"
+        @up="onStepLine(-1)"
+        @down="onStepLine(1)"
+        @move="onMoveTo"
+        @remove="onRemoveLine"
+        @close="closeMenu(true)"
+      />
+    </div>
+    <ListsTourNote
+      v-if="tourStop.active.value"
+      step="line"
+      :placement="tourStop.placement.value"
+    />
+    <div
+      v-else-if="firstLineNote"
+      class="absolute inset-x-2.5 top-[calc(100%+8px)] z-10"
+      data-testid="tour-first-line"
+    >
+      <ListsVeilNote
+        tone="plum"
+        tip="left"
+        name="tour"
+        tour
+        :title="t('lists.tour.firstLine.title')"
+        :body="t('lists.tour.firstLine.body')"
+        @understood="listTour.firstLineSeen()"
+      />
     </div>
     <div
       v-if="guided && idea"

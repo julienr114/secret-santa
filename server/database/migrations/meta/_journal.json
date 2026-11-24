@@ -239,6 +239,104 @@
       "when": 1795300832206,
       "tag": "0033_claims_for_someone",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1795300833206,
+      "tag": "0034_v3_parties",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1795300834206,
+      "tag": "0035_v3_secret_santa_limit",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1795300835206,
+      "tag": "0036_v3_switches",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "6",
+      "when": 1795300836206,
+      "tag": "0037_v3_list_sharing",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1795300837206,
+      "tag": "0038_v3_hints_to_lists",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "6",
+      "when": 1795340526165,
+      "tag": "0039_v3_news",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "6",
+      "when": 1795346103297,
+      "tag": "0040_v3_secret_santa_invite",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "6",
+      "when": 1795348327019,
+      "tag": "0041_v3_member_entries",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "6",
+      "when": 1795350866740,
+      "tag": "0042_v3_birthday_for",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "6",
+      "when": 1795423118000,
+      "tag": "0043_v3_giver_with_members",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "6",
+      "when": 1795448459273,
+      "tag": "0044_v3_list_tours",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "6",
+      "when": 1795453639354,
+      "tag": "0045_v3_idea_stars_titles",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "6",
+      "when": 1795510275664,
+      "tag": "0046_v3_off_list_position",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "6",
+      "when": 1795522862590,
+      "tag": "0047_v3_hints_without_account",
+      "breakpoints": true
     }
   ]
 }

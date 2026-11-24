@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { GROUP_QUOTA_MAX, remainingGroups } from '#server/utils/quota';
+import {
+  SECRET_SANTA_LIMIT_MAX,
+  remainingSecretSantas,
+} from '#server/utils/quota';
 import { fullName } from '#server/utils/people';
 import {
   useAdminAccountsQuery,
@@ -9,11 +12,11 @@ import {
 import { formatDay } from '~/utils/labels';
 
 // Super-admin only: one account, read and not edited (its profile is its
-// own, decided on 16 November 2026). Who it is and its last visit; its
-// groups: a request waiting (answered in a sheet), how many it may
-// create, changed with « moins » and « plus » and shown at once, the
-// groups it organises (members, draw) and those it takes part in; then
-// its access.
+// own, decided on 16 November 2026), V3AdminCompte. Who it is and its last
+// visit; how many Secret Santa it may organise at once, changed with
+// « moins » and « plus » and shown at once (docs/spec/v3/administration.md);
+// its parties, with its role, and for those it organises their members
+// and their Secret Santa; then its access.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
@@ -24,13 +27,6 @@ const toast = useMessages();
 const query = useAdminAccountsQuery();
 const account = computed(() =>
   query.data.value?.accounts.find((a) => a.id === id.value),
-);
-const request = computed(() =>
-  query.data.value?.requests.find((r) => r.accountId === id.value),
-);
-const stats = computed(
-  () =>
-    query.data.value?.stats ?? { groups: 0, active: 0, load: 'ok' as const },
 );
 const name = computed(() => (account.value ? fullName(account.value) : ''));
 useHead({
@@ -56,21 +52,24 @@ const visit = computed(() => {
 });
 
 const update = useUpdateAccountMutation();
-/** A quota chosen and not yet confirmed: shown at once. */
+/** A limit chosen and not yet confirmed: shown at once. */
 const pendingQuota = ref<number | null>(null);
 const quota = computed(
-  () => pendingQuota.value ?? account.value?.groupQuota ?? 0,
+  () => pendingQuota.value ?? account.value?.secretSantaLimit ?? 0,
 );
 /**
- * Moves the quota by one, shown at once, put back on failure.
+ * Moves the limit by one, shown at once, put back on failure.
  * @param step - +1 or -1.
  * @returns Nothing: errors are told in a toast.
  */
 const onQuota = (step: number) => {
-  const next = Math.min(GROUP_QUOTA_MAX, Math.max(0, quota.value + step));
+  const next = Math.min(
+    SECRET_SANTA_LIMIT_MAX,
+    Math.max(0, quota.value + step),
+  );
   pendingQuota.value = next;
   update.mutate(
-    { id: id.value, groupQuota: next },
+    { id: id.value, secretSantaLimit: next },
     {
       onSettled: () => {
         if (pendingQuota.value === next) pendingQuota.value = null;
@@ -79,34 +78,35 @@ const onQuota = (step: number) => {
     },
   );
 };
-/** « 2 déjà créés · il lui en reste 1 ». */
+/** « 2 en cours · il lui en reste 1 ». */
 const quotaLine = computed(() => {
   const a = account.value;
   if (!a) return '';
-  const left = remainingGroups({ ...a, groupQuota: quota.value });
+  const left = remainingSecretSantas({ ...a, secretSantaLimit: quota.value });
   return [
-    t('auth.admin.created', { count: a.createdCount }),
+    t('auth.admin.inProgress', { count: a.organisedCount }),
     Number.isFinite(left) && t('auth.admin.left', { count: left }),
   ]
     .filter(Boolean)
     .join(' · ');
 });
 
-const { membersPart, drawPart } = useGroupLine();
+const { membersPart } = useGroupLine();
 /**
- * The line under one of its groups.
- * @param group - The group.
- * @returns « Organise · 5 membres · tirage fait », or « Participe ».
+ * The line under one of its parties.
+ * @param group - The party.
+ * @returns « Organise · 5 membres · Secret Santa tiré », or « Membre ».
  */
 const groupLine = (group: AdminAccountGroup) =>
   group.role === 'organizer'
     ? [
         t('auth.admin.role.organizer'),
         membersPart(group.members),
-        drawPart(group.draw),
-      ].join(' · ')
+        group.draw && t(`auth.admin.santa.${group.draw.status}`),
+      ]
+        .filter(Boolean)
+        .join(' · ')
     : t('auth.admin.role.participant');
-const requestOpen = ref(false);
 // Disabling asks for a second tap; restoring does not.
 const confirming = ref(false);
 /**
@@ -161,25 +161,9 @@ const setDisabled = (disabled: boolean) =>
           </div>
         </div>
 
-        <UiList :title="t('auth.admin.groupsShort')">
+        <UiList :title="t('auth.admin.secretSantaSection')">
           <UiListItem
-            v-if="request"
-            icon="i-lucide-inbox"
-            :title="t('auth.admin.requestPending')"
-            :subtitle="request.message"
-            :on-click="() => (requestOpen = true)"
-            chevron
-            data-testid="request-row"
-          >
-            <template #trailing>
-              <span
-                class="shrink-0 rounded-full bg-warning-soft px-2 py-0.5 text-[13px] font-bold text-warning-ink"
-                >{{ t('auth.admin.toHandle') }}</span
-              >
-            </template>
-          </UiListItem>
-          <UiListItem
-            :title="t('auth.admin.mayCreate', { count: quota })"
+            :title="t('auth.admin.mayOrganise', { count: quota })"
             :subtitle="quotaLine"
             :chevron="false"
           >
@@ -208,17 +192,24 @@ const setDisabled = (disabled: boolean) =>
                   color="neutral"
                   icon="i-lucide-plus"
                   class="size-11 justify-center rounded-full"
-                  :disabled="quota >= GROUP_QUOTA_MAX"
+                  :disabled="quota >= SECRET_SANTA_LIMIT_MAX"
                   :aria-label="t('auth.admin.quotaMore')"
                   @click="onQuota(1)"
                 />
               </div>
             </template>
           </UiListItem>
+        </UiList>
+
+        <UiList
+          v-if="account.groups.length > 0"
+          :title="t('auth.admin.groupsShort')"
+          data-testid="account-parties"
+        >
           <UiListItem
             v-for="group in account.groups"
             :key="group.slug"
-            :to="`/admin/${group.slug}`"
+            :to="`/e/${group.slug}`"
             icon="i-lucide-users"
             icon-tone="neutral"
             :title="group.name"
@@ -273,14 +264,6 @@ const setDisabled = (disabled: boolean) =>
         <p v-else class="text-[13px] leading-[1.4] text-toned">
           {{ t('auth.admin.profileOwn') }}
         </p>
-
-        <AdminRequestSheet
-          v-if="request"
-          v-model:open="requestOpen"
-          :account="account"
-          :request="request"
-          :stats="stats"
-        />
       </template>
     </AdminQueryState>
   </AdminScreen>

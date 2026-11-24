@@ -107,7 +107,7 @@ describe('describeEvent', () => {
   it('renders the README examples', () => {
     expect(
       describeEvent(ev('edition_created', { label: 'Noël 2026' }), { names }),
-    ).toBe("L'édition Noël 2026 a été créée");
+    ).toBe('Le Secret Santa Noël 2026 a été créé');
     expect(describeEvent(ev('participant_added'), { names })).toBe(
       'Léa est de la partie',
     );
@@ -137,7 +137,7 @@ describe('describeEvent', () => {
       describeEvent(ev('edition_closed', { label: 'Noël 2026' }, null), {
         names,
       }),
-    ).toBe("L'édition Noël 2026 est clôturée");
+    ).toBe('Le Secret Santa Noël 2026 est clôturé');
   });
 
   it('has a description for every type and copes with missing data', () => {

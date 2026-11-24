@@ -1,7 +1,7 @@
 import { canUseEmail } from '#server/utils/people';
 import { findPersonByGroupEmail } from '#server/database/invite';
 import { eq } from 'drizzle-orm';
-import { findAccountById } from '#server/database/accounts';
+import { adoptPersonAvatar, findAccountById } from '#server/database/accounts';
 import { persons } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
 import { unwrap } from '#server/http/errors';
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   unwrap(
     canUseEmail(
       account.email,
-      await findPersonByGroupEmail(db, person.groupId, account.email),
+      await findPersonByGroupEmail(db, person.partyId, account.email),
       person.id,
     ),
   );
@@ -32,5 +32,7 @@ export default defineEventHandler(async (event) => {
       .set({ email: account.email })
       .where(eq(persons.id, person.id));
   }
+  // An account with no face of its own takes the one of the Secret Santa.
+  await adoptPersonAvatar(db, account, person);
   return { ok: true };
 });

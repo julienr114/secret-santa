@@ -9,7 +9,7 @@ import {
   type SQLWrapper,
 } from 'drizzle-orm';
 import type { Db } from './client';
-import { editions, guesses, participations, persons } from './schema';
+import { secretSantas, guesses, participations, persons } from './schema';
 import type { Guess } from '#server/utils/guesses';
 import type { GameMember } from '#server/utils/nudges';
 
@@ -31,9 +31,9 @@ const toGuess = (row: typeof guesses.$inferSelect): Guess => ({
  * @returns The guesses.
  */
 export const listGuesses = async (db: Db, editionId: string) =>
-  (await db.select().from(guesses).where(eq(guesses.editionId, editionId))).map(
-    toGuess,
-  );
+  (
+    await db.select().from(guesses).where(eq(guesses.secretSantaId, editionId))
+  ).map(toGuess);
 
 /**
  * One player's guesses.
@@ -49,7 +49,7 @@ export const guessesOf = async (db: Db, editionId: string, guesserId: string) =>
       .from(guesses)
       .where(
         and(
-          eq(guesses.editionId, editionId),
+          eq(guesses.secretSantaId, editionId),
           eq(guesses.guesserPersonId, guesserId),
         ),
       )
@@ -67,7 +67,7 @@ export const playersOf = async (db: Db, editionId: string) =>
       await db
         .selectDistinct({ id: guesses.guesserPersonId })
         .from(guesses)
-        .where(eq(guesses.editionId, editionId))
+        .where(eq(guesses.secretSantaId, editionId))
     ).map((row) => row.id),
   );
 
@@ -93,7 +93,7 @@ export const replaceGuessesOf = (
       .delete(guesses)
       .where(
         and(
-          eq(guesses.editionId, editionId),
+          eq(guesses.secretSantaId, editionId),
           eq(guesses.guesserPersonId, guesserId),
         ),
       ),
@@ -101,7 +101,7 @@ export const replaceGuessesOf = (
     ...mine.map((g) =>
       db.insert(guesses).values({
         id: newId(),
-        editionId,
+        secretSantaId: editionId,
         guesserPersonId: g.guesserId,
         recipientPersonId: g.recipientId,
         giverPersonId: g.giverId,
@@ -124,8 +124,8 @@ export const deleteGuessesOf = (db: Db, editionIds: string[] | SQLWrapper) =>
     .delete(guesses)
     .where(
       Array.isArray(editionIds)
-        ? inArray(guesses.editionId, editionIds)
-        : inArray(guesses.editionId, editionIds),
+        ? inArray(guesses.secretSantaId, editionIds)
+        : inArray(guesses.secretSantaId, editionIds),
     );
 
 /**
@@ -137,17 +137,17 @@ export const deleteGuessesOf = (db: Db, editionIds: string[] | SQLWrapper) =>
 export const gamesToWatch = (db: Db) =>
   db
     .select()
-    .from(editions)
+    .from(secretSantas)
     .where(
       and(
-        ne(editions.guessMode, 'none'),
-        eq(editions.status, 'drawn'),
-        isNull(editions.guessResultsSentAt),
+        ne(secretSantas.guessMode, 'none'),
+        eq(secretSantas.status, 'drawn'),
+        isNull(secretSantas.guessResultsSentAt),
       ),
     )
     // Bounded (lot 38 A): the soonest to end first; a game looked after
     // leaves the set, and the next ones come.
-    .orderBy(asc(editions.guessEndsAt))
+    .orderBy(asc(secretSantas.guessEndsAt))
     .limit(SCHEDULED.gamesPerRun);
 
 /**
@@ -177,7 +177,7 @@ export const gameMembers = async (db: Db, editionId: string) => {
       .select({ participation: participations, person: persons })
       .from(participations)
       .innerJoin(persons, eq(persons.id, participations.personId))
-      .where(eq(participations.editionId, editionId)),
+      .where(eq(participations.secretSantaId, editionId)),
     listGuesses(db, editionId),
   ]);
   return rows.map(({ participation, person }) => {

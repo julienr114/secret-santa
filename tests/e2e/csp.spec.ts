@@ -64,13 +64,7 @@ test('the pages send a strict policy, and would break nothing of it', async ({
   const { token } = await (
     await page.request.post(`/api/lists/${id}/share`, { data: {} })
   ).json();
-  for (const path of [
-    '/',
-    '/listes',
-    `/listes/${id}`,
-    '/compte',
-    `/l/${token}`,
-  ]) {
+  for (const path of ['/', `/listes/${id}`, '/compte', `/l/${token}`]) {
     await page.goto(path);
     await hydrated(page);
     // Icons and fonts come after the page: leave them the time to load.

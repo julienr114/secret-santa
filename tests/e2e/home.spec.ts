@@ -1,144 +1,242 @@
-import { expect, test } from '@playwright/test';
-import { apiLogin } from './helpers';
+import { expect, test, type APIRequestContext } from '@playwright/test';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
-// The home of an account (README 11 and 22.10). What its top card needs
-// comes from the home route: for each group organised, where its current
-// edition stands.
-test.describe.configure({ mode: 'serial' });
+// The home of the V3 (ticket 103, V3Accueil and V3AccueilVide): a new
+// account sees two cards; an account with three Christmas parties and a
+// birthday sees the season of Christmas and its countdown, « Bientôt »
+// for the birthday of one of its people, « Plus tard » for the rest.
 
-const SLUG = 'famille-accueil';
-const SUPER = 'super-home@example.com';
-const ORGANIZER = 'orga-accueil@example.com';
-const ADMIN = `/api/admin/${SLUG}`;
+const NEW = 'nouveau-accueil@example.com';
+const HUGO = 'hugo-accueil@example.com';
+const CAMILLE = 'camille-accueil@example.com';
 
-test('the home tells an organiser where their edition stands', async ({
-  playwright,
-  baseURL,
-}) => {
-  const admin = await playwright.request.newContext({ baseURL });
-  await apiLogin(admin, SUPER);
-  await admin.post('/api/admin/groups', {
-    data: { slug: SLUG, name: 'Famille Accueil', organizers: [ORGANIZER] },
+/** A day from today, ISO. */
+const inDays = (days: number) =>
+  new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+const today = inDays(0);
+/** The Christmas the countdown is for. */
+const christmas =
+  today <= `${today.slice(0, 4)}-12-25`
+    ? Number(today.slice(0, 4))
+    : Number(today.slice(0, 4)) + 1;
+
+const createParty = async (
+  api: APIRequestContext,
+  data: { category: string; name: string; date: string },
+) => {
+  const created = await api.post('/api/parties', {
+    data: { ...data, recurring: true, memberIds: [] },
   });
-  for (const firstName of ['Ada', 'Bob', 'Cléo']) {
-    await admin.post(`${ADMIN}/persons`, { data: { firstName } });
-  }
-  const created = await admin.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël accueil', year: 2026, eventDate: '2026-12-24' },
-  });
-  const editionId = (await created.json()).edition.id;
+  expect(created.ok(), data.name).toBe(true);
+  return ((await created.json()) as { slug: string }).slug;
+};
 
-  const organizer = await playwright.request.newContext({ baseURL });
-  await apiLogin(organizer, ORGANIZER);
-  const current = async () =>
-    (await (await organizer.get('/api/auth/home')).json()).groups[0].current;
-
-  // To prepare: the draw is checked, nobody is counted as to notify yet.
-  expect(await current()).toMatchObject({
-    id: editionId,
-    status: 'preparing',
-    eventDate: '2026-12-24',
-    drawPossible: true,
-  });
-
-  // Drawn: everyone is to notify, nobody has looked.
-  expect((await admin.post(`${ADMIN}/editions/${editionId}/draw`)).ok()).toBe(
-    true,
+test('a new account is asked where to start', async ({ page }) => {
+  await apiLogin(page.request, NEW);
+  await page.goto('/');
+  await hydrated(page);
+  await expect(page.getByText('Par quoi on commence ?')).toBeVisible();
+  await expect(page.getByTestId('home-empty-secretSanta')).toContainText(
+    'Chacun tire au sort la personne à qui il offre un cadeau.',
   );
-  const drawn = await current();
-  expect(drawn).toMatchObject({ status: 'drawn', notOpened: 0, viewed: 0 });
-  expect(drawn.toNotify).toBe(drawn.participants);
-  expect(drawn.toNotify).toBeGreaterThanOrEqual(3);
-
-  await admin.dispose();
-  await organizer.dispose();
+  await expect(page.getByTestId('home-empty-list')).toContainText(
+    'Écrire ma liste',
+  );
+  await expect(page.getByTestId('home-season')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Créer un Secret Santa' }).click();
+  await expect(heading(page)).toHaveText('Pour quelle occasion ?');
 });
 
-test('the home says when the journal of a draw has news', async ({
+test('the parties of the season of Christmas, a birthday soon, the rest later', async ({
   page,
   playwright,
   baseURL,
 }) => {
-  const SLUG2 = 'famille-signal';
-  const AT = `/api/admin/${SLUG2}`;
-  const ZOE = 'zoe-signal@example.com';
-  const admin = await playwright.request.newContext({ baseURL });
-  await apiLogin(admin, SUPER);
-  await admin.post('/api/admin/groups', {
-    data: { slug: SLUG2, name: 'Famille Signal' },
+  // Camille's party, where Hugo is a member.
+  const camille = await playwright.request.newContext({ baseURL });
+  await apiLogin(camille, CAMILLE);
+  const famille = await createParty(camille, {
+    category: 'christmas',
+    name: 'Famille Camille',
+    date: `${christmas}-12-25`,
   });
-  const ids: Record<string, string> = {};
-  for (const [firstName, email] of [
-    ['Zoé', ZOE],
-    ['Yann', null],
-    ['Xavier', null],
-  ] as const) {
-    const { person } = await (
-      await admin.post(`${AT}/persons`, {
-        data: { firstName, ...(email ? { email } : {}) },
-      })
-    ).json();
-    ids[firstName] = person.id;
-  }
-  const { edition } = await (
-    await admin.post(`${AT}/editions`, {
-      data: { label: 'Noël signal', year: 2026, eventDate: '2099-12-24' },
-    })
-  ).json();
-  await admin.post(`${AT}/editions/${edition.id}/draw`);
+  // Hugo comes in by its Secret Santa (ticket 117).
+  const santa = await camille.post(`/api/admin/${famille}/editions`, {
+    data: {
+      label: `Noël ${christmas}`,
+      year: christmas,
+      eventDate: `${christmas}-12-25`,
+    },
+  });
+  expect(santa.status()).toBe(201);
+  await addPeople(
+    camille,
+    `/api/admin/${famille}`,
+    (await santa.json()).edition.id,
+    [{ firstName: 'Hugo', email: HUGO }],
+  );
+
+  // Hugo's own parties, and Zoé, one of his people, soon a year older.
+  await apiLogin(page.request, HUGO);
+  await page.request.put('/api/auth/profile', {
+    data: { firstName: 'Hugo' },
+  });
+  await createParty(page.request, {
+    category: 'christmas',
+    name: 'Chez Mamie',
+    date: `${christmas}-12-24`,
+  });
+  const bureau = await createParty(page.request, {
+    category: 'christmas',
+    name: 'Bureau, 3e étage',
+    date: `${christmas}-12-19`,
+  });
+  const tonton = await createParty(page.request, {
+    category: 'birthday',
+    name: 'Les 40 ans de Tonton',
+    date: inDays(80),
+  });
+  // A Secret Santa he organises and takes part in (Bureau: its organiser
+  // is taken at once), and one he organises without taking part (Tonton:
+  // he takes himself out) (ticket 156).
+  const santaOf = async (
+    slug: string,
+    date: string,
+    people: { firstName: string; email: string }[],
+  ) => {
+    const made = await page.request.post(`/api/admin/${slug}/editions`, {
+      data: {
+        label: 'Le Secret Santa',
+        year: Number(date.slice(0, 4)),
+        eventDate: date,
+      },
+    });
+    expect(made.status()).toBe(201);
+    const id = (await made.json()).edition.id as string;
+    await addPeople(page.request, `/api/admin/${slug}`, id, people);
+    return id;
+  };
+  const bureauSanta = await santaOf(bureau, `${christmas}-12-19`, [
+    { firstName: 'Inès', email: 'ines-accueil@example.com' },
+  ]);
+  const tontonSanta = await santaOf(tonton, inDays(80), [
+    { firstName: 'Tonton', email: 'tonton-accueil@example.com' },
+  ]);
   const { participants } = await (
-    await admin.get(`${AT}/editions/${edition.id}`)
+    await page.request.get(`/api/admin/${tonton}/editions/${tontonSanta}`)
   ).json();
-  const zoe = participants.find(
-    (p: { firstName: string }) => p.firstName === 'Zoé',
+  const himself = participants.find(
+    (one: { firstName: string }) => one.firstName === 'Hugo',
   );
-  // Her link is renewed: she alone is told.
-  await admin.post(`${AT}/participations/${zoe.participationId}/regenerate`);
-
-  await apiLogin(page.request, ZOE);
-  const signal = async () =>
-    (await (await page.request.get('/api/auth/home')).json()).draws[0].journal;
-  expect(await signal()).toMatchObject({
-    count: 1,
-    alert: { type: 'link_regenerated' },
+  expect(
+    (
+      await page.request.delete(
+        `/api/admin/${tonton}/editions/${tontonSanta}/participants/${himself.participationId}`,
+      )
+    ).ok(),
+  ).toBe(true);
+  const zoe = await page.request.post('/api/family', {
+    data: { firstName: 'Zoé', avatar: { emoji: '🦄', color: 'pine' } },
   });
+  const birth = inDays(24);
+  await page.request.patch(`/api/family/${(await zoe.json()).id}`, {
+    data: { birthDate: `${Number(birth.slice(0, 4)) - 4}${birth.slice(4)}` },
+  });
+
   await page.goto('/');
-  await expect(page.getByTestId('journal-signal')).toContainText(
-    /Du nouveau au journal\. Ton lien a été régénéré le .+\./,
+  await hydrated(page);
+  await expect(heading(page)).toHaveText('Bonjour Hugo');
+  const season = page.getByTestId('home-season');
+  await expect(season.getByRole('heading', { level: 2 })).toHaveText(
+    `Noël ${christmas}`,
+  );
+  // Three Christmas parties, the nearest first, whatever their names.
+  await expect(season.getByRole('heading', { level: 3 })).toHaveText([
+    'Bureau, 3e étage',
+    'Chez Mamie',
+    'Famille Camille',
+  ]);
+  // Hugo has no list in Camille's party yet.
+  await expect(
+    season.getByTestId('home-party').nth(2).getByRole('link', {
+      name: 'Créer une liste de cadeaux',
+    }),
+  ).toBeVisible();
+  // He does not organise it: no « Créer un Secret Santa » there (ticket
+  // 151). In Chez Mamie, his, without one: the Secret Santa first, it is
+  // Christmas, then the list.
+  await expect(
+    season.getByTestId('home-party').nth(2).getByTestId('home-create-santa'),
+  ).toHaveCount(0);
+  await expect(
+    season
+      .getByTestId('home-party')
+      .nth(1)
+      .locator('[data-testid^="home-create-"]'),
+  ).toHaveText(['Créer un Secret Santa', 'Créer une liste de cadeaux']);
+
+  // What he organises: « Gérer l'événement » first, with its members;
+  // « Tu l'organises » under the Secret Santa he also takes part in,
+  // which opens its follow-up, before anything else. Neither has a dot.
+  const card = (name: string) =>
+    page.getByTestId('home-party').filter({
+      has: page.getByRole('heading', { name, level: 3 }),
+    });
+  const office = card('Bureau, 3e étage');
+  // Its header has the wheel, « Gérer l'événement », and its date under
+  // its name; no line « Gérer l'événement » any more (ticket 159).
+  await expect(
+    office.getByRole('img', { name: 'Gérer l’événement' }),
+  ).toBeVisible();
+  await expect(office.getByTestId('home-party-date')).toBeVisible();
+  await expect(office.getByRole('listitem')).not.toContainText([
+    'Gérer l’événement',
+  ]);
+  await expect(
+    office.getByTestId('home-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/p\//);
+  const organise = office.getByTestId('home-organise');
+  await expect(organise).toContainText('Tu l’organises');
+  await expect(organise.getByRole('link')).toHaveAttribute(
+    'href',
+    `/admin/${bureau}/editions/${bureauSanta}`,
+  );
+  await expect(office.getByTestId('new-dot')).toHaveCount(0);
+  // Organised without taking part: one line, to the follow-up.
+  const birthday = card('Les 40 ans de Tonton');
+  await expect(birthday.getByTestId('home-manage')).toBeVisible();
+  await expect(
+    birthday.getByTestId('home-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/admin\//);
+  await expect(birthday.getByTestId('home-organise')).toHaveCount(0);
+  // A member who does not organise: neither.
+  const camilles = card('Famille Camille');
+  await expect(camilles.getByTestId('home-manage')).toHaveCount(0);
+  await expect(camilles.getByTestId('home-organise')).toHaveCount(0);
+
+  const soon = page.getByTestId('home-soon');
+  await expect(soon).toContainText('L’anniversaire de Zoé');
+  await expect(soon).toContainText('dans 24 jours · ses 4 ans');
+  await expect(page.getByTestId('home-later')).toContainText(
+    'Les 40 ans de Tonton',
+  );
+  // « Les événements passés » waits for an event over (ticket 108).
+  await expect(page.getByTestId('home-past')).toHaveCount(0);
+  // « Ce que j'offre ailleurs » waits for a public list where I offer
+  // something (ticket 106).
+  await expect(page.getByTestId('home-elsewhere')).toHaveCount(0);
+
+  // « Préparer » opens « Pour quelle occasion ? » already filled.
+  await soon.getByRole('link', { name: 'Préparer' }).click();
+  await expect(heading(page)).toHaveText('Pour quelle occasion ?');
+  await expect(page.getByTestId('party-name')).toHaveValue(
+    'L’anniversaire de Zoé',
   );
 
-  // The organiser looks at Yann's result: two alerts, one line.
-  await admin.post(`${AT}/editions/${edition.id}/reveal-one`, {
-    data: { personId: ids.Yann, sentence: 'JE VEUX VOIR LE TIRAGE' },
-  });
-  await page.reload();
-  await expect(page.getByTestId('journal-signal')).toContainText(
-    '2 alertes depuis ta dernière visite.',
-  );
-  // Opening the journal clears it.
-  const seen = page.waitForResponse(
-    (r) => r.url().endsWith('/journal-seen') && r.ok(),
-  );
-  await page.getByTestId('journal-signal').click();
-  await seen;
-  expect(await signal()).toBeNull();
-
-  // Xavier never opened the journal: a draw cancelled then made again
-  // is still told to him, the count starting from the edition.
-  await admin.post(`${AT}/editions/${edition.id}/redraw`, {
-    data: { reason: 'Un oubli' },
-  });
-  await admin.post(`${AT}/editions/${edition.id}/draw`);
-  const xavier = participants.find(
-    (p: { firstName: string }) => p.firstName === 'Xavier',
-  );
-  const { link } = await (
-    await admin.post(`${AT}/participations/${xavier.participationId}/link`)
-  ).json();
-  const state = await (
-    await page.request.get(`/api/p/${new URL(link).pathname.split('/').pop()}`)
-  ).json();
-  // The access to Yann's result and the cancelled draw.
-  expect(state.journalAlerts).toBe(2);
-  await admin.dispose();
+  // The header of a card opens its party.
+  await page.goto('/');
+  await hydrated(page);
+  await page.getByRole('link', { name: /^Famille Camille/ }).click();
+  await expect(page).toHaveURL(new RegExp(`/e/${famille}$`));
+  await camille.dispose();
 });

@@ -1,5 +1,6 @@
 import { deadlineOf } from '#server/utils/nudges';
 import type { GuessSummary } from '~/composables/queries/useGroup';
+import { santaKey, type MessageKey, type Params } from '#shared/i18n';
 
 /**
  * The message « Au groupe » of « Rappeler le jeu » (README 22.17,
@@ -11,7 +12,7 @@ import type { GuessSummary } from '~/composables/queries/useGroup';
  * @returns A function giving the message for a game and a word.
  */
 export const useGroupReminder = () => {
-  const { t } = useT();
+  const { t: base } = useT();
   const endText = useGuessEnd();
   const zone = ref<string | null>(null);
   onMounted(() => {
@@ -19,6 +20,9 @@ export const useGroupReminder = () => {
   });
   return (guess: GuessSummary | undefined, note: string) => {
     if (!guess) return '';
+    // « Père Noël » only in a Christmas party (vocabulaire.md).
+    const t = (key: MessageKey, params?: Params) =>
+      base(santaKey(key, guess.christmas) as MessageKey, params);
     const { endsAt, players, total } = guess;
     const deadline =
       endsAt && zone.value

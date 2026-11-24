@@ -1,6 +1,12 @@
 import { count, eq, ne, sql } from 'drizzle-orm';
 import type { Db } from './client';
-import { editions, groups, participations, persons } from './schema';
+import {
+  partyYears,
+  secretSantas,
+  parties,
+  participations,
+  persons,
+} from './schema';
 import { groupOverviews, type GroupOverview } from '#server/utils/overview';
 
 // Members and draw in progress of every group, for the super-admin's
@@ -12,31 +18,38 @@ export const loadGroupOverviews = async (
   db: Db,
 ): Promise<Record<string, GroupOverview>> => {
   const [groupRows, memberRows, editionRows, countRows] = await Promise.all([
-    db.select({ id: groups.id }).from(groups),
     db
-      .select({ groupId: persons.groupId, n: count() })
+      .select({ id: parties.id })
+      .from(parties)
+      .where(eq(parties.fromList, false)),
+    db
+      .select({ groupId: persons.partyId, n: count() })
       .from(persons)
       .where(eq(persons.active, true))
-      .groupBy(persons.groupId),
+      .groupBy(persons.partyId),
     db
       .select({
-        id: editions.id,
-        groupId: editions.groupId,
-        year: editions.year,
-        status: editions.status,
-        createdAt: editions.createdAt,
+        id: secretSantas.id,
+        groupId: secretSantas.partyId,
+        year: partyYears.year,
+        status: secretSantas.status,
+        createdAt: secretSantas.createdAt,
       })
-      .from(editions),
+      .from(secretSantas)
+      .innerJoin(partyYears, eq(partyYears.id, secretSantas.yearId)),
     db
       .select({
-        editionId: participations.editionId,
+        editionId: participations.secretSantaId,
         participants: count(),
         viewed: sql<number>`sum(case when ${participations.viewCount} > 0 then 1 else 0 end)`,
       })
       .from(participations)
-      .innerJoin(editions, eq(editions.id, participations.editionId))
-      .where(ne(editions.status, 'closed'))
-      .groupBy(participations.editionId),
+      .innerJoin(
+        secretSantas,
+        eq(secretSantas.id, participations.secretSantaId),
+      )
+      .where(ne(secretSantas.status, 'closed'))
+      .groupBy(participations.secretSantaId),
   ]);
   return groupOverviews(
     groupRows.map((row) => row.id),

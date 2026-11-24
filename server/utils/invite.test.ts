@@ -3,12 +3,14 @@ import {
   INVITE_CODE_SHAPE,
   buildInviteMessage,
   canClaim,
-  canJoinGroup,
+  canSignUp,
+  invitePlace,
   defaultInvitePlaces,
+  linkPlaces,
   generateInviteCode,
   safeNext,
 } from './invite';
-import { MAX_PARTICIPANTS } from './editions';
+import { MAX_PARTY_MEMBERS } from './parties';
 import { failureOf } from '~~/tests/helpers';
 
 describe('generateInviteCode', () => {
@@ -19,34 +21,69 @@ describe('generateInviteCode', () => {
   });
 });
 
-describe('canJoinGroup', () => {
-  const limits = { until: '2026-12-20', places: 3 };
+describe('canSignUp', () => {
+  const door = {
+    status: 'preparing',
+    until: '2026-12-20',
+    places: 3,
+    member: false,
+  } as const;
 
   it('lets people in until the last day, while places remain', () => {
-    expect(canJoinGroup(limits, '2026-12-01').ok).toBe(true);
-    expect(canJoinGroup(limits, '2026-12-20').ok).toBe(true);
-    expect(canJoinGroup({ until: null, places: 1 }, '2030-01-01').ok).toBe(
-      true,
-    );
+    expect(canSignUp(door, '2026-12-01').ok).toBe(true);
+    expect(canSignUp(door, '2026-12-20').ok).toBe(true);
+    expect(canSignUp({ ...door, until: null }, '2030-01-01').ok).toBe(true);
   });
 
   it('refuses after the last day', () => {
-    expect(failureOf(canJoinGroup(limits, '2026-12-21')).reason).toBe(
+    expect(failureOf(canSignUp(door, '2026-12-21')).reason).toBe(
       'invite_expired',
     );
   });
 
-  it('refuses once the places are taken', () => {
+  it('refuses a newcomer once the places are taken, not a member', () => {
     expect(
-      failureOf(canJoinGroup({ ...limits, places: 0 }, '2026-12-01')).reason,
+      failureOf(canSignUp({ ...door, places: 0 }, '2026-12-01')).reason,
     ).toBe('invite_full');
+    expect(
+      canSignUp({ ...door, places: 0, member: true }, '2026-12-01').ok,
+    ).toBe(true);
+  });
+
+  it('lets nobody in once the draw is done', () => {
+    expect(
+      failureOf(canSignUp({ ...door, status: 'drawn' }, '2026-12-01')).reason,
+    ).toBe('invite_drawn');
+    expect(
+      failureOf(
+        canSignUp({ ...door, status: 'closed', member: true }, '2026-12-01'),
+      ).reason,
+    ).toBe('invite_drawn');
+  });
+});
+
+describe('invitePlace', () => {
+  it('adds the Secret Santa between brackets only when it must be said', () => {
+    expect(invitePlace('Famille Camille', null)).toBe('Famille Camille');
+    expect(invitePlace('Famille Camille', 'Les adultes')).toBe(
+      'Famille Camille (Les adultes)',
+    );
   });
 });
 
 describe('defaultInvitePlaces', () => {
-  it('offers what a draw can still take', () => {
-    expect(defaultInvitePlaces(8)).toBe(MAX_PARTICIPANTS - 8);
-    expect(defaultInvitePlaces(MAX_PARTICIPANTS + 5)).toBe(0);
+  it('offers what the party can still take before 30 members', () => {
+    expect(defaultInvitePlaces(8)).toBe(MAX_PARTY_MEMBERS - 8);
+    expect(defaultInvitePlaces(MAX_PARTY_MEMBERS + 5)).toBe(0);
+  });
+});
+
+describe('linkPlaces', () => {
+  it('never offers more than what is left before 30 members', () => {
+    expect(linkPlaces(10, 5)).toBe(10);
+    expect(linkPlaces(10, 25)).toBe(5);
+    expect(linkPlaces(10, MAX_PARTY_MEMBERS)).toBe(0);
+    expect(linkPlaces(null, 5)).toBe(0);
   });
 });
 
@@ -86,16 +123,28 @@ describe('safeNext', () => {
 
 describe('buildInviteMessage', () => {
   const invite = {
-    groupName: 'Famille Démo',
+    place: 'Famille Démo',
     url: 'https://under-the-tree.party/rejoindre/abcdefghijklmnop',
     until: '2026-12-20',
   };
 
-  it('names the group, says until when, ends on the link alone', () => {
+  it('names the Secret Santa, says until when, ends on the link alone', () => {
     const text = buildInviteMessage(invite, 'fr');
     expect(text).toContain('Famille Démo');
     expect(text).toContain('20 décembre');
     expect(text.split('\n').at(-1)).toBe(invite.url);
+  });
+
+  it('invites to the Secret Santa, its name between brackets when needed', () => {
+    expect(buildInviteMessage(invite, 'fr')).toContain(
+      'Je t’invite au Secret Santa « Famille Démo »',
+    );
+    expect(
+      buildInviteMessage(
+        { ...invite, place: invitePlace('Famille Démo', 'Les adultes') },
+        'fr',
+      ),
+    ).toContain('« Famille Démo (Les adultes) »');
   });
 
   it('leaves the deadline out when there is none', () => {

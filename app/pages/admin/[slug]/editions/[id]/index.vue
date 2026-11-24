@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { fullName } from '#server/utils/people';
 import { gamePossible } from '#server/utils/guesses';
 import { formatEventDate, isIsoDay, partyIsOver } from '#server/utils/rules';
@@ -26,6 +27,8 @@ const route = useRoute();
 const router = useRouter();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
+// The follow-up opened: its news are seen (ticket 120).
+useSeen(() => ({ target: 'follow', targetId: id.value }));
 const toast = useMessages();
 const { t, locale } = useT();
 const errorMessage = useErrorMessage();
@@ -69,7 +72,10 @@ const label = computed(
     t('adminEdition.general.editionFallback'),
 );
 useHead({ title: () => `${label.value} — ${t('common.appName')}` });
-const screen = computed(() => ({ back: `/admin/${slug.value}` }));
+// « Retour »: its event, or the home or « Quoi de neuf » when opened from
+// there.
+const back = useParent('edition', () => `/e/${slug.value}`);
+const screen = computed(() => ({ back: back.value }));
 const subtitle = computed(() =>
   [
     dashboard.data.value?.group.name,
@@ -344,7 +350,6 @@ const dateOpen = ref(false);
         :slug="slug"
         :edition-id="id"
         :participants="participants"
-        :hints-on="rules?.giftHints !== 'none'"
         :redrawn="redrawn"
         :party-reached="partyReached"
         :can-close="canClose"
@@ -408,7 +413,7 @@ const dateOpen = ref(false);
             "
           />
           <UiListItem
-            :to="`/admin/${slug}/journal`"
+            :to="`/e/${slug}/journal`"
             icon="i-lucide-file-text"
             icon-tone="neutral"
             :title="t('adminEdition.screen.closed.journal')"

@@ -3,9 +3,9 @@ import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
-  editions,
-  groupMembers,
-  groups,
+  secretSantas,
+  partyOrganisers,
+  parties,
   participations,
   persons,
 } from './schema';
@@ -16,9 +16,11 @@ import {
 export const organizerRecipients = (db: Db, groupId: string) =>
   db
     .select({ email: accounts.email, language: accounts.language })
-    .from(groupMembers)
-    .innerJoin(accounts, eq(accounts.id, groupMembers.accountId))
-    .where(and(eq(groupMembers.groupId, groupId), isNull(accounts.disabledAt)));
+    .from(partyOrganisers)
+    .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
+    .where(
+      and(eq(partyOrganisers.partyId, groupId), isNull(accounts.disabledAt)),
+    );
 
 /** How many take part in an edition, and how many have looked. */
 export const viewCounts = async (db: Db, editionId: string) => {
@@ -28,7 +30,7 @@ export const viewCounts = async (db: Db, editionId: string) => {
       viewed: count(participations.firstViewedAt),
     })
     .from(participations)
-    .where(eq(participations.editionId, editionId));
+    .where(eq(participations.secretSantaId, editionId));
   return { participants: row?.participants ?? 0, viewed: row?.viewed ?? 0 };
 };
 
@@ -44,7 +46,7 @@ export const missingViewers = async (
       .innerJoin(persons, eq(persons.id, participations.personId))
       .where(
         and(
-          eq(participations.editionId, editionId),
+          eq(participations.secretSantaId, editionId),
           isNull(participations.firstViewedAt),
         ),
       )
@@ -54,10 +56,15 @@ export const missingViewers = async (
 /** Drawn editions not reminded yet, with their group. */
 export const editionsToRemind = (db: Db) =>
   db
-    .select({ edition: editions, group: groups })
-    .from(editions)
-    .innerJoin(groups, eq(groups.id, editions.groupId))
-    .where(and(eq(editions.status, 'drawn'), isNull(editions.reminderSentAt)))
+    .select({ edition: secretSantas, group: parties })
+    .from(secretSantas)
+    .innerJoin(parties, eq(parties.id, secretSantas.partyId))
+    .where(
+      and(
+        eq(secretSantas.status, 'drawn'),
+        isNull(secretSantas.reminderSentAt),
+      ),
+    )
     // Bounded (lot 38 A): the most recent first, where the due ones are.
-    .orderBy(desc(editions.createdAt))
+    .orderBy(desc(secretSantas.createdAt))
     .limit(SCHEDULED.remindersRead);

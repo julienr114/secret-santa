@@ -1,11 +1,12 @@
 import { ok, fail, type Result } from './result';
-import { MAX_PARTICIPANTS } from './editions';
+import { membersLeft } from './parties';
 import { formatEventDate } from './rules';
 import { translate, type Locale } from '#shared/i18n';
 import { randomBytes, toBase64Url } from './crypto';
 
-// Joining a group by an invitation link, and linking a draw opened by
-// its personal link to an account. Pure, but for the random code.
+// Signing up to a Secret Santa by its invitation link (ticket 116; an
+// event has no link), and linking a draw opened by its personal link to an
+// account. Pure, but for the random code.
 
 /** 96 random bits: 16 URL-safe characters. */
 export const INVITE_CODE_SHAPE = /^[A-Za-z0-9_-]{16}$/;
@@ -16,36 +17,63 @@ export const INVITE_CODE_SHAPE = /^[A-Za-z0-9_-]{16}$/;
  */
 export const generateInviteCode = (): string => toBase64Url(randomBytes(12));
 
-/** What decides whether a group's link still lets people in. */
-export type InviteLimits = {
+/** What decides whether a Secret Santa's link still lets someone in. */
+export type InviteDoor = {
+  /** The Secret Santa: the link lives until its draw. */
+  status: 'preparing' | 'drawn' | 'closed';
   /** Last day the link works (ISO day), or null for no limit. */
   until: string | null;
-  /** How many may still join by the link. */
+  /** How many newcomers may still come in by the link. */
   places: number;
+  /** Already a member of the event: takes no place (secret-santa.md). */
+  member: boolean;
 };
 
 /**
- * Whether someone may join the group by its link on `today`.
- * @param limits - The deadline and the places left.
+ * Whether someone may sign up by the link on `today`: not once drawn, not
+ * after its last day; a newcomer needs a place, a member does not.
+ * @param door - The Secret Santa, the deadline, the places, who signs up.
  * @param today - ISO day.
- * @returns Ok, `invite_expired` or `invite_full`.
+ * @returns Ok, `invite_drawn`, `invite_expired` or `invite_full`.
  */
-export const canJoinGroup = (
-  limits: InviteLimits,
-  today: string,
-): Result<true> => {
-  if (limits.until && today > limits.until) return fail('invite_expired');
-  return limits.places > 0 ? ok(true) : fail('invite_full');
+export const canSignUp = (door: InviteDoor, today: string): Result<true> => {
+  if (door.status !== 'preparing') return fail('invite_drawn');
+  if (door.until && today > door.until) return fail('invite_expired');
+  return door.member || door.places > 0 ? ok(true) : fail('invite_full');
 };
 
 /**
- * How many places a new link offers by default: what a draw can still
- * take, given the active people of the group.
- * @param activePeople - Active people in the group.
+ * The event and, when it has several Secret Santa the same year, the one
+ * of the link between brackets: « Famille Camille (Les adultes) »
+ * (secret-santa.md, « Inviter par lien »).
+ * @param event - The event's name.
+ * @param santa - The Secret Santa's name when it must be said, else null.
+ * @returns The name to show.
+ */
+export const invitePlace = (event: string, santa: string | null): string =>
+  santa ? `${event} (${santa})` : event;
+
+/**
+ * How many places a new link offers by default: what the event can still
+ * take before its 30 members.
+ * @param activePeople - Active people in the party.
  * @returns The places left, never below zero.
  */
 export const defaultInvitePlaces = (activePeople: number): number =>
-  Math.max(0, MAX_PARTICIPANTS - activePeople);
+  membersLeft(activePeople);
+
+/**
+ * The places a link really offers: never more than what is left before
+ * 30 members, so a full party pauses its link by itself, and a member who
+ * leaves opens it again (docs/spec/v3/fete.md, « 30 membres au plus »).
+ * @param places - The places the organiser gave the link.
+ * @param activePeople - Active people in the party.
+ * @returns The places one may still take by the link.
+ */
+export const linkPlaces = (
+  places: number | null,
+  activePeople: number,
+): number => Math.min(places ?? 0, membersLeft(activePeople));
 
 /**
  * Whether a draw opened by its personal link may be linked to an account:
@@ -81,19 +109,20 @@ export const safeNext = (next: unknown): string | null =>
 export const INVITE_MESSAGE_MAX = 500;
 
 /**
- * The message to share with the link, like the messages of a draw: who
- * invites to what, until when, and the link alone on its line.
- * @param invite - Name of the group, link, last day (optional).
+ * The message to share with the link, like the messages of a draw: to
+ * which Secret Santa, until when, and the link alone on its line.
+ * @param invite - The event (with the Secret Santa's name when it must be
+ *   said), link, last day (optional).
  * @param locale - Language of the message.
  * @returns The text, ready to copy or share.
  */
 export const buildInviteMessage = (
-  invite: { groupName: string; url: string; until: string | null },
+  invite: { place: string; url: string; until: string | null },
   locale: Locale,
 ): string =>
   [
     translate(locale, 'adminEdition.invite.message.intro', {
-      group: invite.groupName,
+      group: invite.place,
     }),
     translate(locale, 'adminEdition.invite.message.how'),
     ...(invite.until

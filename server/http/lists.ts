@@ -1,7 +1,9 @@
 import type { H3Event } from 'h3';
+import { eq } from 'drizzle-orm';
 import { useDb, type Db } from '#server/database/client';
 import {
   claimsOfLists,
+  giverOf,
   linkWrittenGiversOf,
   offListOfLists,
   writtenGiversOf,
@@ -22,9 +24,26 @@ import {
   type ListHolder,
   type ListPerson,
 } from '#server/database/lists';
-import type { GiftListRow } from '#server/database/schema';
+import { giftLists, parties, type GiftListRow } from '#server/database/schema';
+import type { PartyCategory } from '#shared/utils/categories';
+import { listYear, pastBand, type PastBand } from '#shared/utils/years';
+import { mergeLines } from '#shared/utils/reorder';
+import { loadYears, timelineOf } from '#server/database/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
+import {
+  linkChoicesOf,
+  santaLinesOf,
+  type LinkChoice,
+  type SantaLine,
+} from '#server/database/drawLists';
+import {
+  accountsWhereShared,
+  membersSeeing,
+  memberWhereShared,
+  sharedEventsOf,
+} from '#server/database/listSharing';
+import { listStage, type ListStage } from '#server/utils/listSharing';
 import { requireAccount } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { nowIso } from '#server/http/context';
@@ -55,6 +74,7 @@ import {
   canWriteIdeas,
   holderMay,
   invitesAccepted,
+  listArrival,
   listRole,
   seesGivers,
   type HolderLevel,
@@ -235,7 +255,13 @@ export type MyClaim = {
 export type IdeaLine = {
   id: string;
   text: string;
+  /** When it was written: new since my last visit or not (ticket 120). */
+  createdAt: string;
   url: string | null;
+  /** How much it is wanted, 0 to 3, read by everyone (ticket 152). */
+  stars: number;
+  /** A title over the ideas that follow: no box, never ticked. */
+  title: boolean;
   view: IdeaView;
   /** Mine, when I give it. */
   mine: MyClaim | null;
@@ -261,6 +287,11 @@ export type IdeaLine = {
    * list; null when it does not open (free, or an anonymous tick).
    */
   who: IdeaWho | null;
+  /**
+   * Never sent: ticked or unticked on this screen, the server has not
+   * answered yet (shared/utils/optimisticTick.ts).
+   */
+  pending?: boolean;
 };
 
 /** A person on a list, with their ideas and the gifts not on the list. */
@@ -269,6 +300,11 @@ export type PersonLine = {
   member: MemberView;
   ideas: IdeaLine[];
   offList: (OffListView & { id: string })[];
+  /**
+   * The ids of their ideas and of the gifts not on the list, in the order
+   * they show (Julien, 24 November 2026).
+   */
+  lines: string[];
   /** Whether the one looking may write, correct and delete these ideas. */
   mine: boolean;
 };
@@ -308,7 +344,10 @@ const linesOf = (
       return {
         id: idea.id,
         text: idea.text,
+        createdAt: idea.createdAt,
         url: idea.url,
+        stars: idea.stars,
+        title: idea.title,
         view: ideaView(on, sees),
         who: ideaWho(on, sees),
         carried: sees.holds && idea.carried,
@@ -344,6 +383,10 @@ const linesOf = (
     offList: offList
       .filter((gift) => gift.listPersonId === person.id)
       .map((gift) => ({ id: gift.id, ...offListView(gift, sees) })),
+    lines: mergeLines(
+      person.ideas,
+      offList.filter((gift) => gift.listPersonId === person.id),
+    ),
   }));
   const ideaIds = new Set(people.flatMap((p) => p.ideas.map((i) => i.id)));
   const onList = claims.filter((c) => ideaIds.has(c.ideaId));
@@ -389,11 +432,34 @@ export type ListDocument = {
   holders: HolderView[];
   /** The one looking manages the list: shares, invites, deletes. */
   manages: boolean;
+  /** What its top bar says of its sharing (ticket 106). */
+  sharing: SharingSummary;
   /**
-   * The list this one was started from (lot 27), until it is shared:
-   * its name, empty when it has none or is gone.
+   * The list it was taken from, while it is a draft: its title, or, taken from the year before
+   * of the same event (ticket 108), that year (« Reprise de Noël 2026 »).
    */
-  resumedFrom: { title: string } | null;
+  resumedFrom: {
+    title: string;
+    year: { category: PartyCategory; year: number } | null;
+  } | null;
+  /** The band of a list of a year over (ticket 119), or null. */
+  past: PastListBand | null;
+  /**
+   * « Secret Santa · Famille Camille » under my own name (tickets 136,
+   * 148, V3ListeSecret): one per Secret Santa where I take part whose
+   * event the list is linked to, each leading to my page there.
+   */
+  santas: SantaLine[];
+  /**
+   * What « Lier à mon Secret Santa » offers under my name (ticket 148),
+   * for one who manages the list and figures on it: empty otherwise.
+   */
+  linkable: LinkChoice[];
+  /**
+   * What the one looking has seen of the visit of a new list (ticket
+   * 149), on any device: the visit, and the note on the first line.
+   */
+  tours: { visit: boolean; firstLine: boolean };
   /**
    * Who the sheet « Qui l'offre ? » offers (« Cocher pour quelqu'un »):
    * me, those who hold the list with me, those who ticked on it without
@@ -409,10 +475,145 @@ export type ListDocument = {
  * @param accountId - The holder looking.
  * @returns What the screen shows.
  */
+/** The stage of a list's sharing, as its top bar says it. */
+export type SharingSummary = {
+  stage: ListStage;
+  /** The events it is shared in, all members or the one who drew. */
+  events: string[];
+  /** How many members of these events see it, its holders aside. */
+  members: number;
+};
+
+/**
+ * What the top bar of a list says of its sharing (docs/spec/v3/listes.md,
+ * « La barre du haut d'une liste »).
+ * @param db - The database.
+ * @param list - The list.
+ * @param holders - Those who hold it.
+ * @returns The stage, the events and how many see it.
+ */
+const sharingSummary = async (
+  db: Db,
+  list: GiftListRow,
+  holders: readonly { email: string }[],
+): Promise<SharingSummary> => {
+  const events = await sharedEventsOf(db, list.id);
+  const all = events.filter((row) => row.visibility === 'party');
+  const stage = listStage({
+    isPublic: list.sharedAt !== null,
+    parties: all.length,
+    givers: events.length - all.length,
+  });
+  return {
+    stage,
+    events: (stage === 'giver' ? events : all).map((row) => row.name),
+    members: await membersSeeing(
+      db,
+      all.map((row) => row.id),
+      holders.map((holder) => holder.email),
+    ),
+  };
+};
+
+/**
+ * Where a list taken up again comes from: the old list's title, and its
+ * year when it was a year before of the same event (ticket 108).
+ * @param db - The database.
+ * @param list - The new list.
+ * @param sourceId - The old one.
+ * @returns What the note of the document says.
+ */
+const resumedFromOf = async (
+  db: Db,
+  list: GiftListRow,
+  sourceId: string,
+): Promise<ListDocument['resumedFrom']> => {
+  const source = await findList(db, sourceId);
+  if (!source) return { title: '', year: null };
+  const sameEvent = source.partyId !== null && source.partyId === list.partyId;
+  const [party] = sameEvent
+    ? await db
+        .select({ category: parties.category })
+        .from(parties)
+        .where(eq(parties.id, source.partyId ?? ''))
+        .limit(1)
+    : [];
+  return {
+    title: source.title,
+    year: party ? { category: party.category, year: listYear(source) } : null,
+  };
+};
+
+/** The band of a list of a year over, with the category of its event. */
+export type PastListBand = PastBand & { category: PartyCategory };
+
+/**
+ * The band of a list of a year over (docs/spec/v3/listes.md, « Une liste
+ * d'une année passée », ticket 119), for whoever opens it: its year, and
+ * the list of this year taken from it when I may open it (I hold it: its
+ * document; it is public, or shared in an event I am a member of: its
+ * link).
+ * @param db - The database.
+ * @param list - The list.
+ * @param accountId - The one looking, or null without a session.
+ * @returns The band, or null for a list of this year.
+ */
+export const pastBandOf = async (
+  db: Db,
+  list: GiftListRow,
+  accountId: string | null,
+): Promise<PastListBand | null> => {
+  if (!list.partyId) return null;
+  const [party] = await db
+    .select({
+      id: parties.id,
+      category: parties.category,
+      recurring: parties.recurring,
+      usualDate: parties.usualDate,
+    })
+    .from(parties)
+    .where(eq(parties.id, list.partyId))
+    .limit(1);
+  if (!party) return null;
+  const timeline = timelineOf(party, await loadYears(db, [party.id]));
+  const current = timeline.current?.year;
+  const taken = (
+    await db.select().from(giftLists).where(eq(giftLists.carriedFrom, list.id))
+  ).filter((one) => listYear(one) === current);
+  const account =
+    accountId && taken.length > 0 ? await findAccountById(db, accountId) : null;
+  const where = async (one: GiftListRow): Promise<string | null> => {
+    if (account && (await findHolding(db, account.id, one.id))) {
+      return `/listes/${one.id}`;
+    }
+    const arrival = listArrival({
+      loggedIn: account !== null,
+      holder: false,
+      isPublic: one.sharedAt !== null,
+      member: account ? await memberWhereShared(db, one.id, account) : false,
+      giver: false,
+    });
+    return arrival === 'open' && one.shareToken ? `/l/${one.shareToken}` : null;
+  };
+  const band = pastBand(
+    timeline,
+    list,
+    await Promise.all(
+      taken.map(async (one) => ({
+        year: listYear(one),
+        createdAt: one.createdAt,
+        to: await where(one),
+      })),
+    ),
+  );
+  return band ? { ...band, category: party.category } : null;
+};
+
 export const listDocument = async (
   db: Db,
   list: GiftListRow,
   accountId: string,
+  dataKey: CryptoKey,
 ): Promise<ListDocument> => {
   const viewer: Viewer = { accountId, role: 'holder' };
   const people = (await peopleOfLists(db, [list.id])).get(list.id) ?? [];
@@ -430,13 +631,15 @@ export const listDocument = async (
   const manages = holders.some(
     (holder) => holder.accountId === accountId && holder.level === 'manage',
   );
+  const sharing = await sharingSummary(db, list, holders);
   return {
     list: {
       ...headOf(list),
-      // Who helps to write gets the link only while the list is shared:
-      // they may send it, never turn the sharing on (Correction 28).
-      shareToken: manages || list.sharedAt ? list.shareToken : null,
+      // Every list has its link, which its holders copy at any time;
+      // who gets in is decided on arrival (ticket 106).
+      shareToken: list.shareToken,
     },
+    sharing,
     people: lines,
     single: isSingleList(people),
     planned,
@@ -449,10 +652,68 @@ export const listDocument = async (
       })),
     holders: holders.map((holder) => holderView(holder, accountId)),
     manages,
-    resumedFrom: list.carriedFrom
-      ? { title: (await findList(db, list.carriedFrom))?.title ?? '' }
-      : null,
+    // Kept once shared, to lead from the old list to this one (ticket
+    // 119); the sentence of its marks goes at the first share.
+    resumedFrom:
+      list.carriedFrom && sharing.stage === 'draft'
+        ? await resumedFromOf(db, list, list.carriedFrom)
+        : null,
+    past: await pastBandOf(db, list, accountId),
+    ...(await mySantaLines(
+      db,
+      list.id,
+      people,
+      { id: accountId, manages },
+      dataKey,
+    )),
     candidates: await candidatesOf(db, list.id, accountId, holders, claims),
+    tours: await toursOf(db, accountId),
+  };
+};
+
+/**
+ * What an account has seen of the visit of a new list (ticket 149).
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns The visit, and the note on the first line.
+ */
+const toursOf = async (db: Db, accountId: string) => {
+  const account = await findAccountById(db, accountId);
+  return {
+    visit: account?.listTourSeen ?? true,
+    firstLine: account?.firstLineNoteSeen ?? true,
+  };
+};
+
+/**
+ * The Secret Santa under my name on a list, when I figure on it (tickets
+ * 136, 148): those it is linked to, and those it may be linked to when I
+ * manage it; none otherwise.
+ * @param db - The database.
+ * @param listId - The list.
+ * @param people - Its people.
+ * @param viewer - The holder looking.
+ * @param viewer.id - Their account.
+ * @param viewer.manages - Whether they manage the list.
+ * @param dataKey - The key of the personal links.
+ * @returns The pills and the choices of « Lier ».
+ */
+const mySantaLines = async (
+  db: Db,
+  listId: string,
+  people: readonly ListPerson[],
+  viewer: { id: string; manages: boolean },
+  dataKey: CryptoKey,
+): Promise<{ santas: SantaLine[]; linkable: LinkChoice[] }> => {
+  const none = { santas: [], linkable: [] };
+  if (!people.some((person) => person.member.accountId === viewer.id)) {
+    return none;
+  }
+  const account = await findAccountById(db, viewer.id);
+  if (!account) return none;
+  return {
+    santas: await santaLinesOf(db, listId, account, dataKey),
+    linkable: viewer.manages ? await linkChoicesOf(db, listId, account) : [],
   };
 };
 
@@ -482,6 +743,12 @@ export const candidatesOf = async (
     },
     holders: views,
     claims,
+    // In the V3, the app knows the members of the events the list is
+    // shared in too (ticket 098).
+    members: (await accountsWhereShared(db, listId)).map((account) => ({
+      accountId: account.id,
+      ...giverOf(account),
+    })),
     written: await writtenGiversOf(db, listId),
   });
 };
@@ -499,7 +766,8 @@ export type VisitorDocument = {
   figures: boolean;
   /** Whether I am logged in. */
   loggedIn: boolean;
-  mine: number;
+  /** The band of a list of a year over (ticket 119), or null. */
+  past: PastListBand | null;
 };
 
 /**
@@ -541,7 +809,7 @@ export const visitorDocument = async (
   accountId: string | null,
 ): Promise<VisitorDocument> => {
   const { role, holders, people } = await roleOnList(db, list, accountId);
-  const { lines, mine } = linesOf(
+  const { lines } = linesOf(
     people,
     await claimsOfLists(db, [list.id]),
     await offListOfLists(db, [list.id]),
@@ -568,7 +836,7 @@ export const visitorDocument = async (
     holds: role === 'holder',
     figures: role === 'linked',
     loggedIn: accountId !== null,
-    mine,
+    past: await pastBandOf(db, list, accountId),
   };
 };
 
@@ -669,7 +937,10 @@ export const listCards = async (
       sentence: cardSentence({ planned, mine }, holds),
       noIdeas: holds
         ? onList
-            .filter((p) => p.ideas.length === 0 && !p.member.placeholder)
+            .filter(
+              (p) =>
+                !p.ideas.some((idea) => !idea.title) && !p.member.placeholder,
+            )
             .map((p) => p.member.firstName)
         : [],
       planned,

@@ -5,9 +5,12 @@ import type { Avatar } from '#server/utils/avatars';
 // `subtitle` slot, to give it an icon), and a 24 px box on the right. The
 // whole row ticks. With `radio`, a round button instead of the box: one
 // person among the rows that share its `name` (« Qui l'offre ? »).
+// `small`, in the bar of a list (ticket 141): 48 px, its name in 15 px.
+// The `leading` slot takes the place of the icon (an event's tile,
+// ticket 155).
 defineProps<{
   /** Null for someone without an icon of their own. */
-  avatar: Avatar | null;
+  avatar?: Avatar | null;
   title: string;
   subtitle?: string;
   /** "Sélectionner Inès", the name of the box. */
@@ -16,14 +19,25 @@ defineProps<{
   radio?: boolean;
   /** The group of the round buttons. */
   name?: string;
+  /** Cannot be ticked: the box stays empty. */
+  disabled?: boolean;
+  small?: boolean;
 }>();
 const checked = defineModel<boolean>('checked', { required: true });
 </script>
 
 <template>
   <li>
-    <label class="flex min-h-15 cursor-pointer items-center gap-3 px-4 py-2">
-      <UiAvatar :avatar="avatar" />
+    <label
+      class="flex items-center gap-3"
+      :class="[
+        small ? 'min-h-12 px-3.5 py-1 text-[15px]' : 'min-h-15 px-4 py-2',
+        disabled ? 'cursor-default' : 'cursor-pointer',
+      ]"
+    >
+      <slot name="leading">
+        <UiAvatar :avatar="avatar ?? null" :size="small ? 'sm' : 'md'" />
+      </slot>
       <span class="flex min-w-0 grow flex-col">
         <span class="truncate font-semibold">{{ title }}</span>
         <span
@@ -50,6 +64,7 @@ const checked = defineModel<boolean>('checked', { required: true });
         v-model="checked"
         type="checkbox"
         class="size-6 shrink-0 tick"
+        :disabled="disabled"
         :aria-label="label"
       />
     </label>

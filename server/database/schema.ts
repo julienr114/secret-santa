@@ -7,25 +7,41 @@ import {
 } from 'drizzle-orm/sqlite-core';
 import { DRAW_MODES } from '../utils/answers';
 import { GUESS_MODES } from '../utils/guesses';
+import { PARTY_CATEGORIES } from '../../shared/utils/categories';
+import { NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
 
-// Data model from README section 10. Ids are text (nanoid), dates are ISO
-// 8601 UTC strings, booleans are integers. Every query must filter on the
-// group, directly or through a join (README 8.5).
+// Data model from README section 10, in the shape of the V3
+// (docs/spec/v3/modele.md): a party (the group of before), its years, the
+// Secret Santas of a year (the editions of before), and the lists put in
+// parties. Ids are text (nanoid), dates are ISO 8601 UTC strings, booleans
+// are integers. Every query must filter on the party, directly or through
+// a join (README 8.5).
 
-export const groups = sqliteTable('groups', {
+export const parties = sqliteTable('parties', {
   id: text('id').primaryKey(),
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
+  // docs/spec/v3/categories.md: the starting settings, nothing forbidden.
+  category: text('category', { enum: PARTY_CATEGORIES })
+    .notNull()
+    .default('christmas'),
+  // The icon of the party and of its lists; null: its category's.
+  iconEmoji: text('icon_emoji'),
+  iconColor: text('icon_color'),
+  // The usual day, `MM-DD`, and whether it comes back each year.
+  usualDate: text('usual_date'),
+  recurring: integer('recurring', { mode: 'boolean' }).notNull().default(false),
+  // A birthday: the one of my people it is for (ticket 118), or null
+  // (« Quelqu'un d'autre », « Personne »). No foreign key: the person may
+  // be deleted, the event keeps its name.
+  forMemberId: text('for_member_id'),
+  // Made for a list kept apart before the V3 (ticket 101): hidden from
+  // the screens of a group until the pages of a party come (ticket 104).
+  fromList: integer('from_list', { mode: 'boolean' }).notNull().default(false),
+  // The party's own settings (notifyJoined), and the starting values of
+  // its next Secret Santa.
   rules: text('rules', { mode: 'json' }).notNull().default('{}'),
-  // Invitation link to join the group: its code (null when closed), the
-  // last day it works (optional), how many may still join by it, and the
-  // organiser's words on its page.
-  inviteCode: text('invite_code').unique(),
-  inviteUntil: text('invite_until'),
-  invitePlaces: integer('invite_places'),
-  // Words of the organiser, shown on the invitation page.
-  inviteMessage: text('invite_message'),
-  // The account that created the group: it counts against its quota.
+  // The account that created the party: it counts against its quota.
   createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),
 });
@@ -34,9 +50,9 @@ export const persons = sqliteTable(
   'persons',
   {
     id: text('id').primaryKey(),
-    groupId: text('group_id')
+    partyId: text('party_id')
       .notNull()
-      .references(() => groups.id),
+      .references(() => parties.id),
     firstName: text('first_name').notNull(),
     lastName: text('last_name'),
     // Optional: where their link is emailed, and the address they log in
@@ -52,16 +68,16 @@ export const persons = sqliteTable(
     active: integer('active', { mode: 'boolean' }).notNull().default(true),
     createdAt: text('created_at').notNull(),
   },
-  (t) => [index('persons_group_idx').on(t.groupId)],
+  (t) => [index('persons_party_idx').on(t.partyId)],
 );
 
 export const manualExclusions = sqliteTable(
   'manual_exclusions',
   {
     id: text('id').primaryKey(),
-    groupId: text('group_id')
+    partyId: text('party_id')
       .notNull()
-      .references(() => groups.id),
+      .references(() => parties.id),
     giverId: text('giver_id')
       .notNull()
       .references(() => persons.id),
@@ -72,24 +88,44 @@ export const manualExclusions = sqliteTable(
       .notNull()
       .default(false),
   },
-  (t) => [index('manual_exclusions_group_idx').on(t.groupId)],
+  (t) => [index('manual_exclusions_party_idx').on(t.partyId)],
 );
 
-export const EDITION_STATUSES = ['preparing', 'drawn', 'closed'] as const;
-
-export const editions = sqliteTable(
-  'editions',
+// The year of a party (« Noël 2026 »), with its real date: what its Secret
+// Santas and its lists hang from.
+export const partyYears = sqliteTable(
+  'party_years',
   {
     id: text('id').primaryKey(),
-    groupId: text('group_id')
+    partyId: text('party_id')
       .notNull()
-      .references(() => groups.id),
-    label: text('label').notNull(),
+      .references(() => parties.id),
     year: integer('year').notNull(),
-    status: text('status', { enum: EDITION_STATUSES })
+    // An ISO day; null while nobody gave it.
+    date: text('date'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [uniqueIndex('party_years_party_year_idx').on(t.partyId, t.year)],
+);
+
+export const SECRET_SANTA_STATUSES = ['preparing', 'drawn', 'closed'] as const;
+
+export const secretSantas = sqliteTable(
+  'secret_santas',
+  {
+    id: text('id').primaryKey(),
+    partyId: text('party_id')
+      .notNull()
+      .references(() => parties.id),
+    yearId: text('year_id')
+      .notNull()
+      .references(() => partyYears.id),
+    label: text('label').notNull(),
+    status: text('status', { enum: SECRET_SANTA_STATUSES })
       .notNull()
       .default('preparing'),
-    rulesOverride: text('rules_override', { mode: 'json' }),
+    // Its draw settings, complete: they no longer depend on the party.
+    rules: text('rules', { mode: 'json' }).notNull().default('{}'),
     rulesSnapshot: text('rules_snapshot', { mode: 'json' }),
     // Previous-year pairs the guardian allowed again for this edition.
     historyWaivers: text('history_waivers', { mode: 'json' }),
@@ -125,18 +161,25 @@ export const editions = sqliteTable(
     guessEnabledAt: text('guess_enabled_at'),
     guessPointSentAt: text('guess_point_sent_at'),
     guessEndSentAt: text('guess_end_sent_at'),
+    // Its invitation link (ticket 116; an event has none): its code (null
+    // when closed), the last day it works (optional), how many may still
+    // sign up by it, and the organiser's words on its page.
+    inviteCode: text('invite_code').unique(),
+    inviteUntil: text('invite_until'),
+    invitePlaces: integer('invite_places'),
+    inviteMessage: text('invite_message'),
     createdAt: text('created_at').notNull(),
   },
-  (t) => [index('editions_group_idx').on(t.groupId)],
+  (t) => [index('secret_santas_party_idx').on(t.partyId)],
 );
 
 export const participations = sqliteTable(
   'participations',
   {
     id: text('id').primaryKey(),
-    editionId: text('edition_id')
+    secretSantaId: text('secret_santa_id')
       .notNull()
-      .references(() => editions.id),
+      .references(() => secretSantas.id),
     personId: text('person_id')
       .notNull()
       .references(() => persons.id),
@@ -169,10 +212,36 @@ export const participations = sqliteTable(
     giftListId: text('gift_list_id'),
   },
   (t) => [
-    uniqueIndex('participations_edition_person_idx').on(
-      t.editionId,
+    uniqueIndex('participations_secret_santa_person_idx').on(
+      t.secretSantaId,
       t.personId,
     ),
+  ],
+);
+
+// By where each member came into an event (ticket 117, docs/decisions/
+// 2026-11-21-on-entre-par-un-secret-santa-ou-par-une-liste.md): one of
+// its Secret Santa, or one of its lists. Nobody is added to an event
+// itself. One row per way in; a member may have both, or none (those of
+// before ticket 117 who never took part). No foreign key: a Secret Santa
+// or a list gone since simply says nothing.
+export const memberEntries = sqliteTable(
+  'member_entries',
+  {
+    id: text('id').primaryKey(),
+    partyId: text('party_id').notNull(),
+    personId: text('person_id').notNull(),
+    secretSantaId: text('secret_santa_id'),
+    listId: text('list_id'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    index('member_entries_party_idx').on(t.partyId),
+    uniqueIndex('member_entries_person_santa_idx').on(
+      t.personId,
+      t.secretSantaId,
+    ),
+    uniqueIndex('member_entries_person_list_idx').on(t.personId, t.listId),
   ],
 );
 
@@ -180,9 +249,9 @@ export const assignments = sqliteTable(
   'assignments',
   {
     id: text('id').primaryKey(),
-    editionId: text('edition_id')
+    secretSantaId: text('secret_santa_id')
       .notNull()
-      .references(() => editions.id),
+      .references(() => secretSantas.id),
     giverPersonId: text('giver_person_id')
       .notNull()
       .references(() => persons.id),
@@ -192,8 +261,8 @@ export const assignments = sqliteTable(
     createdAt: text('created_at').notNull(),
   },
   (t) => [
-    uniqueIndex('assignments_edition_giver_idx').on(
-      t.editionId,
+    uniqueIndex('assignments_secret_santa_giver_idx').on(
+      t.secretSantaId,
       t.giverPersonId,
     ),
   ],
@@ -244,14 +313,14 @@ export const hintRequests = sqliteTable(
     receiverParticipationId: text('receiver_participation_id')
       .primaryKey()
       .references(() => participations.id),
-    editionId: text('edition_id')
+    secretSantaId: text('secret_santa_id')
       .notNull()
-      .references(() => editions.id),
+      .references(() => secretSantas.id),
     requestedAt: text('requested_at').notNull(),
     // When the hints arrived and the one who asked was told.
     answeredAt: text('answered_at'),
   },
-  (t) => [index('hint_requests_edition_idx').on(t.editionId)],
+  (t) => [index('hint_requests_secret_santa_idx').on(t.secretSantaId)],
 );
 
 // « Devine qui » (README 22.17): `guesser` thinks `giver` gives to
@@ -260,9 +329,9 @@ export const guesses = sqliteTable(
   'guesses',
   {
     id: text('id').primaryKey(),
-    editionId: text('edition_id')
+    secretSantaId: text('secret_santa_id')
       .notNull()
-      .references(() => editions.id),
+      .references(() => secretSantas.id),
     guesserPersonId: text('guesser_person_id')
       .notNull()
       .references(() => persons.id),
@@ -282,8 +351,8 @@ export const guesses = sqliteTable(
       .default([]),
   },
   (t) => [
-    uniqueIndex('guesses_edition_guesser_recipient_idx').on(
-      t.editionId,
+    uniqueIndex('guesses_secret_santa_guesser_recipient_idx').on(
+      t.secretSantaId,
       t.guesserPersonId,
       t.recipientPersonId,
     ),
@@ -299,14 +368,14 @@ export const drawAnswers = sqliteTable(
     participationId: text('participation_id')
       .primaryKey()
       .references(() => participations.id),
-    editionId: text('edition_id')
+    secretSantaId: text('secret_santa_id')
       .notNull()
-      .references(() => editions.id),
+      .references(() => secretSantas.id),
     receiverEnc: text('receiver_enc').notNull(),
     receiverIv: text('receiver_iv').notNull(),
     answeredAt: text('answered_at').notNull(),
   },
-  (t) => [index('draw_answers_edition_idx').on(t.editionId)],
+  (t) => [index('draw_answers_secret_santa_idx').on(t.secretSantaId)],
 );
 
 export const AUDIT_ACTORS = [
@@ -320,10 +389,10 @@ export const auditLog = sqliteTable(
   'audit_log',
   {
     id: text('id').primaryKey(),
-    groupId: text('group_id')
+    partyId: text('party_id')
       .notNull()
-      .references(() => groups.id),
-    editionId: text('edition_id').references(() => editions.id),
+      .references(() => parties.id),
+    secretSantaId: text('secret_santa_id').references(() => secretSantas.id),
     type: text('type').notNull(),
     personId: text('person_id').references(() => persons.id),
     actor: text('actor', { enum: AUDIT_ACTORS }).notNull(),
@@ -331,7 +400,7 @@ export const auditLog = sqliteTable(
     meta: text('meta', { mode: 'json' }),
     createdAt: text('created_at').notNull(),
   },
-  (t) => [index('audit_log_group_created_idx').on(t.groupId, t.createdAt)],
+  (t) => [index('audit_log_party_created_idx').on(t.partyId, t.createdAt)],
 );
 
 // --- Accounts (plan v2, README 22.5) ---------------------------------------
@@ -351,8 +420,9 @@ export const accounts = sqliteTable('accounts', {
   isSuperAdmin: integer('is_super_admin', { mode: 'boolean' })
     .notNull()
     .default(false),
-  // How many groups the account may create; nobody may by default.
-  groupQuota: integer('group_quota').notNull().default(0),
+  // How many Secret Santa in progress the account may organise at once
+  // (docs/spec/v3/modele.md, « Les limites »); a super-admin may change it.
+  secretSantaLimit: integer('secret_santa_limit').notNull().default(3),
   language: text('language', { enum: ['fr', 'en', 'de'] })
     .notNull()
     .default('fr'),
@@ -360,6 +430,25 @@ export const accounts = sqliteTable('accounts', {
   lastLoginAt: text('last_login_at'),
   // A disabled account cannot log in and its sessions stop working.
   disabledAt: text('disabled_at'),
+  // The visit of a new list, seen or skipped, on any device (ticket 149):
+  // one visit per account, whichever.
+  listTourSeen: integer('list_tour_seen', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+  // The note on the first line, once the first person is added to a list
+  // made from « Créer » (ticket 149, V3ListeVisiteIdee).
+  firstLineNoteSeen: integer('first_line_note_seen', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+});
+
+// The super-admin's emergency switches (docs/spec/v3/administration.md,
+// « En cas d'urgence »), one row per switch once it has been touched: off
+// without a row. Only « Suspendre les nouveaux Secret Santa » for now.
+export const appSwitches = sqliteTable('app_switches', {
+  name: text('name', { enum: ['new_secret_santas'] }).primaryKey(),
+  on: integer('on', { mode: 'boolean' }).notNull().default(false),
+  updatedAt: text('updated_at').notNull(),
 });
 
 export const loginLinks = sqliteTable(
@@ -400,14 +489,14 @@ export const sessions = sqliteTable(
   (t) => [index('sessions_account_idx').on(t.accountId)],
 );
 
-// The organisers of a group: accounts that may manage it. Super-admins
-// manage every group without being listed here.
-export const groupMembers = sqliteTable(
-  'group_members',
+// The organisers of a party: accounts that may manage it. Super-admins
+// manage every party without being listed here. Its members are `persons`.
+export const partyOrganisers = sqliteTable(
+  'party_organisers',
   {
-    groupId: text('group_id')
+    partyId: text('party_id')
       .notNull()
-      .references(() => groups.id),
+      .references(() => parties.id),
     accountId: text('account_id')
       .notNull()
       .references(() => accounts.id),
@@ -419,41 +508,8 @@ export const groupMembers = sqliteTable(
     createdAt: text('created_at').notNull(),
   },
   (t) => [
-    uniqueIndex('group_members_pair_idx').on(t.groupId, t.accountId),
-    index('group_members_account_idx').on(t.accountId),
-  ],
-);
-
-export const GROUP_REQUEST_STATUSES = [
-  'pending',
-  'approved',
-  'refused',
-] as const;
-
-// An account asks for the right to create a group (README 22.2): a
-// super-admin approves it by raising the account's quota, or refuses.
-export const groupRequests = sqliteTable(
-  'group_requests',
-  {
-    id: text('id').primaryKey(),
-    accountId: text('account_id')
-      .notNull()
-      .references(() => accounts.id),
-    // What the group is for, in the asker's words.
-    message: text('message').notNull(),
-    status: text('status', { enum: GROUP_REQUEST_STATUSES })
-      .notNull()
-      .default('pending'),
-    createdAt: text('created_at').notNull(),
-    decidedAt: text('decided_at'),
-    decidedBy: text('decided_by').references(() => accounts.id),
-    // The super-admin's words with the answer, in its email and on the
-    // asker's home (lot 12 of the redesign).
-    decisionNote: text('decision_note'),
-  },
-  (t) => [
-    index('group_requests_account_idx').on(t.accountId, t.createdAt),
-    index('group_requests_status_idx').on(t.status),
+    uniqueIndex('party_organisers_pair_idx').on(t.partyId, t.accountId),
+    index('party_organisers_account_idx').on(t.accountId),
   ],
 );
 
@@ -521,11 +577,18 @@ export const giftLists = sqliteTable(
     noteEdited: integer('note_edited', { mode: 'boolean' })
       .notNull()
       .default(false),
-    // The public link, made at the first share; a new one replaces it.
+    // Its link, from its creation (ticket 106): whoever arrives on it gets
+    // in or not by the stage of its sharing. A new one replaces it.
     shareToken: text('share_token').unique(),
+    // Public since (« Tout le monde, avec le lien »), or null.
     sharedAt: text('shared_at'),
-    // The list this one was started from (lot 27), until it is first
-    // shared. No foreign key: the old list may be deleted meanwhile.
+    // The occasion it was made for (ticket 106): its card shows the list
+    // to those who hold it, even as a draft. The events it is shared in
+    // are in gift_list_parties. No foreign key: the event may go first.
+    partyId: text('party_id'),
+    // The list this one was started from (lot 27): its document says it
+    // while a draft, the old list's band leads here (ticket 119). No
+    // foreign key: the old list may be deleted meanwhile.
     carriedFrom: text('carried_from'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
@@ -594,6 +657,36 @@ export const giftListInvites = sqliteTable(
   ],
 );
 
+// The parties a list is in (docs/spec/v3/modele.md), with the same ticks
+// everywhere. In each: seen by the whole party, or only by the one who
+// drew its holder. « Everyone with a link » stays on the list
+// (`share_token`), on top.
+export const LIST_VISIBILITIES = ['party', 'giver'] as const;
+
+export const giftListParties = sqliteTable(
+  'gift_list_parties',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    partyId: text('party_id')
+      .notNull()
+      .references(() => parties.id),
+    visibility: text('visibility', { enum: LIST_VISIBILITIES })
+      .notNull()
+      .default('party'),
+    // « Celui qui m'a tiré » (ticket 139): my part of the list serves my
+    // Secret Santa there, with or without all the members.
+    giver: integer('giver', { mode: 'boolean' }).notNull().default(false),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('gift_list_parties_list_party_idx').on(t.listId, t.partyId),
+    index('gift_list_parties_party_idx').on(t.partyId),
+  ],
+);
+
 // The people on a list, in their order.
 export const giftListPeople = sqliteTable(
   'gift_list_people',
@@ -629,6 +722,11 @@ export const giftListIdeas = sqliteTable(
     // The list this idea was taken from (lot 27): a mark for those who
     // hold the list, gone once the idea is changed or the list shared.
     carriedFrom: text('carried_from'),
+    // How much it is wanted, 0 to 3 stars (ticket 152); none on a title.
+    stars: integer('stars').notNull().default(0),
+    // A title over the ideas that follow it (ticket 152): no box, never
+    // ticked, not counted as an idea.
+    isTitle: integer('is_title', { mode: 'boolean' }).notNull().default(false),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('gift_list_ideas_list_idx').on(t.listId)],
@@ -743,6 +841,9 @@ export const giftOffList = sqliteTable(
     anonymous: integer('anonymous', { mode: 'boolean' })
       .notNull()
       .default(false),
+    // Its place among the ideas of its person, in the same count as
+    // theirs (Julien, 24 November 2026); none: after them all.
+    position: integer('position'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('gift_off_list_list_idx').on(t.listId)],
@@ -772,16 +873,64 @@ export const giftListVisits = sqliteTable(
   ],
 );
 
+// The news of an account (« Quoi de neuf » and the red dots, ticket 120;
+// README 22.22): what happened, where (the place it points at, and the
+// event), when, how many times that day, and whether it was seen, by
+// opening that place. Accounts only. Never a result of a draw, never the
+// name of whoever asks for ideas: `name` is a first name the text says
+// (who invites, who joins a gift, whose list). Gone after thirty days.
+export const news = sqliteTable(
+  'news',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    kind: text('kind', { enum: NEWS_KINDS }).notNull(),
+    level: text('level', { enum: ['urgent', 'other'] }).notNull(),
+    targetType: text('target_type', { enum: NEWS_TARGETS }).notNull(),
+    // No foreign key: the thing may go first, and its news with it.
+    targetId: text('target_id').notNull(),
+    // The event; null for a list, which finds its own when read.
+    partyId: text('party_id'),
+    name: text('name'),
+    // The gift, for « se joint à ».
+    detail: text('detail'),
+    count: integer('count').notNull().default(1),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    seenAt: text('seen_at'),
+  },
+  (t) => [
+    index('news_account_idx').on(t.accountId, t.seenAt),
+    index('news_target_idx').on(t.targetType, t.targetId),
+  ],
+);
+
+// « Le mot de l'application » (ticket 120), closed by an account: it is
+// not shown to it again.
+export const noteDismissals = sqliteTable(
+  'note_dismissals',
+  {
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    noteId: text('note_id').notNull(),
+    dismissedAt: text('dismissed_at').notNull(),
+  },
+  (t) => [uniqueIndex('note_dismissals_pair_idx').on(t.accountId, t.noteId)],
+);
+
 export type FamilyMemberRow = typeof familyMembers.$inferSelect;
 export type GiftListRow = typeof giftLists.$inferSelect;
 export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;
-export type GroupRequestRow = typeof groupRequests.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;
 export type SessionRow = typeof sessions.$inferSelect;
-export type GroupRow = typeof groups.$inferSelect;
+export type PartyRow = typeof parties.$inferSelect;
+export type PartyYearRow = typeof partyYears.$inferSelect;
 export type PersonRow = typeof persons.$inferSelect;
 export type ExclusionRow = typeof manualExclusions.$inferSelect;
-export type EditionRow = typeof editions.$inferSelect;
+export type SecretSantaRow = typeof secretSantas.$inferSelect;
 export type ParticipationRow = typeof participations.$inferSelect;
 export type AuditRowInsert = typeof auditLog.$inferInsert;

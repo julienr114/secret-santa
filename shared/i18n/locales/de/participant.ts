@@ -2,6 +2,22 @@ import type fr from '../fr/participant';
 import type { Dict } from '../../types';
 
 export default {
+  myList: {
+    which: {
+      title: 'Welche Liste für dein Secret Santa?',
+      new: 'Eine neue Liste',
+      continue: 'Weiter',
+    },
+    ideaLabel: 'Eine Geschenkidee',
+    add: 'Hinzufügen',
+    accountNote:
+      'Mit deiner Adresse {email} wird ein Konto erstellt, damit du deine Liste wiederfindest.',
+    title: 'Deine E-Mail-Adresse, um deine Liste zu schreiben',
+    label: 'Deine E-Mail-Adresse',
+    submit: 'Bestätigen',
+    confirm: 'Du bekommst einen Link, um sie zu bestätigen.',
+    sent: 'Link an {email} gesendet: Öffne ihn, um deine Liste zu schreiben. Schau auch im Spam nach.',
+  },
   revealed: {
     bannerTitle: 'Die Auslosung ist kein Geheimnis mehr.',
     bannerBy:
@@ -22,11 +38,11 @@ export default {
     santaIs: { before: 'Dein Geschenk kommt von', after: '.' },
     santaIsPast: { before: 'Dein Geschenk kam von', after: '.' },
     all: 'Die ganze Auslosung ansehen',
-    allHint: 'Wer wen beschenkt, für die ganze Gruppe',
-    allHintPast: 'Wer wen beschenkt hat, in der ganzen Gruppe',
+    allHint: 'Wer wen beschenkt, für alle Teilnehmenden',
+    allHintPast: 'Wer wen beschenkt hat, für alle Teilnehmenden',
     gaveTo: 'Du hast beschenkt:',
     afterBody:
-      'Die Feier ist vorbei. Die Auslosung ist aufgedeckt: Alle sehen, wer wen beschenkt hat.',
+      'Der große Tag ist vorbei. Die Auslosung ist aufgedeckt: Alle sehen, wer wen beschenkt hat.',
     closedBody: 'Für dieses Jahr ist Schluss. Bis nächstes Jahr?',
     pageTitle: 'Wer beschenkt wen',
     pageBody:
@@ -40,7 +56,7 @@ export default {
   },
   home: {
     greeting: 'Hallo {firstName}!',
-    facts: { budget: 'Budget:', party: 'Feier am' },
+    facts: { budget: 'Budget:', party: 'Großer Tag' },
     note: {
       title: {
         one: 'Die Nachricht des Organisators',
@@ -50,19 +66,19 @@ export default {
     },
     changeAvatar: 'Mein Symbol ändern',
     steps: {
-      label: 'Schritte der Auslosung',
+      label: 'Schritte des Wichtelns',
       invitation: 'Einladung',
       drawSoon: 'Auslosung · bald',
       answer: 'Deine Antwort',
       drawRevealed: 'Auslosung aufgedeckt',
       drawDone: 'Auslosung erfolgt',
-      party: 'Fest',
+      party: 'Großer Tag',
       partyIn: {
-        one: 'Fest · in {count} Tag',
-        other: 'Fest · in {count} Tagen',
+        one: 'Großer Tag · in {count} Tag',
+        other: 'Großer Tag · in {count} Tagen',
       },
-      partyToday: 'Fest · heute',
-      partyOver: 'Fest vorbei',
+      partyToday: 'Großer Tag · heute',
+      partyOver: 'Großer Tag vorbei',
     },
     waiting: {
       title: 'Noch ein wenig Geduld',
@@ -71,14 +87,14 @@ export default {
         other:
           'Die Auslosung steht noch aus. Deine Organisatoren melden sich; behalte diesen Link, hier spielt sich alles ab.',
       },
-      action: 'Meine Geschenk-Hinweise hinterlassen',
+      action: 'Meine Wunschliste schreiben',
       hint: 'Greif in der Zwischenzeit der Person unter die Arme, die dich ziehen wird.',
     },
     ready: {
       title: 'Dein Umschlag wartet auf dich',
       body: 'Die Auslosung ist erfolgt. Schau kurz, ob dir niemand über die Schulter guckt, und öffne ihn dann.',
       bodyHints:
-        'Die Auslosung ist erfolgt, und drinnen warten Geschenk-Hinweise auf dich. Schau kurz, ob dir niemand über die Schulter guckt, und öffne ihn dann.',
+        'Die Auslosung ist erfolgt, und drinnen warten Geschenkideen auf dich. Schau kurz, ob dir niemand über die Schulter guckt, und öffne ihn dann.',
       reveal: 'Erfahren, wen ich beschenke',
       revealing: 'Umschlag wird geöffnet…',
       hint: 'Dein Umschlag schließt sich von selbst, sobald du die Seite verlässt.',
@@ -91,27 +107,29 @@ export default {
       title: 'Gedächtnislücke?',
       body: 'Dein Umschlag ist noch da. Schau kurz, ob dir niemand über die Schulter guckt.',
       bodyHints:
-        'Dein Umschlag ist noch da, samt Geschenk-Hinweisen. Schau kurz, ob dir niemand über die Schulter guckt.',
-      newTitle: 'Neue Hinweise warten auf dich',
+        'Dein Umschlag ist noch da, samt Geschenkideen. Schau kurz, ob dir niemand über die Schulter guckt.',
+      newTitle: 'Neue Ideen warten auf dich',
       newBody:
         'Die Person, die du beschenkst, hat seit deinem letzten Besuch welche hinterlassen. Schau kurz, ob dir niemand über die Schulter guckt.',
-      revealWithHints: 'Noch einmal sehen, wen ich beschenke, samt Hinweisen',
+      revealWithHints: 'Noch einmal sehen, wen ich beschenke, samt Ideen',
       noHintsYet:
-        'Noch keine Hinweise. Du kannst darum bitten, ohne dich zu verraten.',
+        'Noch keine Ideen. Du kannst darum bitten, ohne dich zu verraten.',
       revealAgain: 'Noch einmal sehen, wen ich beschenke',
     },
     closed: {
-      title: 'Das Fest ist vorbei',
+      title: 'Der große Tag ist vorbei',
       body: 'Für dieses Jahr ist Schluss. Du kannst noch sehen, wen du beschenkt hast.',
       bodyNotSeen:
         'Für dieses Jahr ist Schluss. Du kannst noch erfahren, wen du beschenken solltest.',
     },
     tiles: {
-      hintsTodo: 'Auszufüllen',
-      hintsEditable: 'Ausgefüllt, änderbar bis zur Feier',
-      hintsLocked: 'Ausgefüllt, nicht mehr änderbar',
-      hintsShort: 'Ausgefüllt',
-      hintsShortLocked: 'Nicht mehr änderbar',
+      list: {
+        none: 'Noch nicht geschrieben',
+        draft: 'Entwurf, nur du siehst sie',
+        giver: 'Nur sichtbar für die Person, die mich gezogen hat',
+        parties: 'Sichtbar für die Mitglieder des Events',
+        public: 'Sichtbar für alle mit dem Link',
+      },
       game: {
         skipped: 'Du setzt aus',
         count: {
@@ -125,13 +143,13 @@ export default {
         lastDay: 'Letzter Tag',
         play: 'Gib deinen Tipp ab',
         played: 'Tipp abgegeben',
-        waiting: 'Antwort bei der Feier',
+        waiting: 'Antwort am großen Tag',
         palmares: 'Die Rangliste wartet',
         answers: 'Die Antworten ansehen',
       },
     },
     journal: {
-      title: 'Protokoll der Gruppe',
+      title: 'Protokoll des Events',
       subtitle: 'Alles, was passiert ist, für alle sichtbar',
       alerts: {
         one: '{count} Hinweis seit deinem letzten Besuch',
@@ -145,43 +163,31 @@ export default {
   },
   wishes: {
     openLink: 'Link von „{label}“ öffnen',
-    sheet: {
-      new: 'Neue Idee',
-      edit: 'Idee bearbeiten',
-      description: 'Eine kurze Idee und ein Link, falls du einen hast.',
-      idea: 'Idee',
-      ideaPlaceholder: 'Ein Buch, Socken…',
-      link: 'Link (optional)',
-      linkLabel: 'Link',
-      optional: '(optional)',
-      linkHelp:
-        'Füge die Adresse einer Seite ein: Sie öffnet sich in einem neuen Tab.',
-      remove: 'Idee löschen',
-    },
   },
   journal: {
-    title: 'Protokoll der Gruppe',
-    intro: 'Alle sehen dieses Protokoll. Es verrät nie, wer wen beschenkt.',
-    allEditions: 'Alle Ausgaben',
-    edition: 'Ausgabe',
+    title: 'Protokoll des Events',
+    intro:
+      'Alle Mitglieder sehen dieses Protokoll. Es verrät nie, wer wen beschenkt.',
+    allEditions: 'Alle Wichteln',
+    edition: 'Wichteln',
     empty: 'Alles ruhig. Ein gutes Zeichen.',
   },
   invalid: { title: 'Hoppla, dieser Link funktioniert nicht mehr' },
   account: {
-    title: 'Behalte deine Auslosungen an einem Ort',
-    body: 'Erstelle ein Konto mit deiner E-Mail-Adresse: Du findest diese Auslosung und die nächsten, ohne den Link zu suchen.',
+    title: 'Behalte deine Wichteln an einem Ort',
+    body: 'Erstelle ein Konto mit deiner E-Mail-Adresse: Du findest dieses Wichteln und die nächsten, ohne den Link zu suchen.',
     bodyClaim:
-      'Füge diese Auslosung deinem Konto hinzu, um sie auf deiner Startseite zu finden.',
+      'Füge dieses Wichteln deinem Konto hinzu, um es auf deiner Startseite zu finden.',
     create: 'Mein Konto erstellen',
     claim: 'Zu meinem Konto hinzufügen',
-    added: 'Auslosung zu deinem Konto hinzugefügt',
+    added: 'Wichteln zu deinem Konto hinzugefügt',
     sendTo: 'Meinen Link an {email} senden',
     sent: 'Link an {email} gesendet: Öffne ihn, um dein Konto zu erstellen. Schau auch im Spam-Ordner nach.',
   },
   answer: {
     card: {
       title: 'Wen beschenkst du?',
-      body: 'Die Auslosung fand außerhalb der App statt. Sag hier, wen du beschenkst, um die Geschenk-Hinweise zu sehen. Schau kurz, ob dir niemand über die Schulter guckt.',
+      body: 'Die Auslosung fand außerhalb der App statt. Sag hier, wen du beschenkst, um die Geschenkideen zu sehen. Schau kurz, ob dir niemand über die Schulter guckt.',
       action: 'Sagen, wen ich beschenke',
       hint: {
         one: 'Deine Antwort bleibt geheim, selbst für den Organisator.',
@@ -189,9 +195,9 @@ export default {
       },
       savedTitle: 'Ist notiert',
       savedBody: {
-        one: 'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antwort von {total}.',
+        one: 'Du siehst die Geschenkideen deiner Person, sobald alle geantwortet haben. Bisher {count} Antwort von {total}.',
         other:
-          'Du siehst die Geschenk-Hinweise deiner Person, sobald alle geantwortet haben. Bisher {count} Antworten von {total}.',
+          'Du siehst die Geschenkideen deiner Person, sobald alle geantwortet haben. Bisher {count} Antworten von {total}.',
       },
       review: 'Meine Antwort ansehen oder korrigieren',
       savedHint:
@@ -231,19 +237,26 @@ export default {
     whoGivesMeShort: 'Wer beschenkt dich?',
     whoGivesTo: 'Wer beschenkt {name}?',
     myGuess: 'Mein Tipp',
-    surprise: 'Bei der Feier wartet eine Überraschung auf die Gruppe.',
+    surprise: 'Am großen Tag wartet eine Überraschung auf alle.',
     surpriseMore: 'Je mehr von euch spielen, desto schöner wird sie.',
     challenge: {
       one: 'Letztes Jahr hat {count} von {total} Personen den eigenen Wichtel erraten. Zu schlagen.',
       other:
         'Letztes Jahr haben {count} von {total} Personen ihren Wichtel erraten. Zu schlagen.',
     },
+    challengeNeutral: {
+      one: 'Letztes Jahr hat {count} von {total} Personen erraten, von wem das eigene Geschenk kam. Zu schlagen.',
+      other:
+        'Letztes Jahr haben {count} von {total} Personen erraten, von wem das eigene Geschenk kam. Zu schlagen.',
+    },
     challengeNone:
       'Letztes Jahr hat niemand den eigenen Wichtel erraten. Zu schlagen.',
+    challengeNoneNeutral:
+      'Letztes Jahr hat niemand erraten, von wem das eigene Geschenk kam. Zu schlagen.',
     skip: 'Ich setze aus',
     skippedTitle: 'Du setzt aus',
     skippedBody:
-      'Wir erinnern dich nicht an das Spiel. Die Überraschung siehst du bei der Feier trotzdem.',
+      'Wir erinnern dich nicht an das Spiel. Die Überraschung siehst du am großen Tag trotzdem.',
     unskip: 'Doch, ich spiele',
     unskipUntil: 'Möglich bis {end}.',
     skipConfirm: 'Aussetzen?',
@@ -255,22 +268,23 @@ export default {
       other: '{count} Tipps von {total}.',
     },
     progressLeft: {
-      one: 'Noch einer, und du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+      one: 'Noch einer, und du hast die Runde gemacht: Die Überraschung am großen Tag wird umso schöner.',
       other:
-        'Noch {n}, und du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+        'Noch {n}, und du hast die Runde gemacht: Die Überraschung am großen Tag wird umso schöner.',
     },
     progressDone:
-      'Du hast die Runde gemacht: Die Überraschung bei der Feier wird umso schöner.',
+      'Du hast die Runde gemacht: Die Überraschung am großen Tag wird umso schöner.',
     inviteTitle: 'Und du: Wer beschenkt dich?',
     inviteCount: {
-      one: '{count} von {total} hat schon getippt. Antwort bei der Feier.',
-      other: '{count} von {total} haben schon getippt. Antwort bei der Feier.',
+      one: '{count} von {total} hat schon getippt. Antwort am großen Tag.',
+      other: '{count} von {total} haben schon getippt. Antwort am großen Tag.',
     },
-    inviteNone: 'Antwort bei der Feier.',
+    inviteNone: 'Antwort am großen Tag.',
     makeGuess: 'Meinen Tipp abgeben',
     changeMind: 'Meine Meinung ändern',
-    secret: 'Niemand sieht deinen Tipp vor der Feier.',
+    secret: 'Niemand sieht deinen Tipp vor dem großen Tag.',
     mySanta: 'Mein Wichtel',
+    mySantaNeutral: 'Wer mich beschenkt',
     others: 'Die anderen',
     mine: 'Meine Tipps',
     choose: '+ Wählen',
@@ -279,15 +293,15 @@ export default {
     you: 'dich',
     noGuess: 'Kein Tipp',
     count: {
-      one: '{count} Tipp. Niemand sieht ihn vor der Feier.',
-      other: '{count} Tipps. Niemand sieht sie vor der Feier.',
+      one: '{count} Tipp. Niemand sieht ihn vor dem großen Tag.',
+      other: '{count} Tipps. Niemand sieht sie vor dem großen Tag.',
     },
     canChange: 'Du kannst deine Meinung ändern.',
     oneGift: 'Eine Person macht nur ein Geschenk.',
     movedFrom: 'Dein Tipp für {name}: Ihn zu wählen verschiebt ihn hierher',
     movedFromMe: 'Dein Tipp für dich: Ihn zu wählen verschiebt ihn hierher',
     clear: 'Diesen Tipp löschen',
-    atParty: 'Antwort bei der Feier',
+    atParty: 'Antwort am großen Tag',
     atPartyBody: {
       one: 'Die Antworten kommen, wenn dein Organisator die Auslosung aufdeckt. Mit einer Überraschung.',
       other:
@@ -300,12 +314,16 @@ export default {
     discover: 'Die Rangliste entdecken',
     rewatch: 'Die Rangliste noch einmal ansehen',
     palmaresHint: 'Dein Wichtel, der Detektiv, die am besten Versteckten…',
+    palmaresHintNeutral:
+      'Wer dich beschenkt, der Detektiv, die am besten Versteckten…',
     palmaresHintSmall: 'Dein Wichtel, endlich enttarnt',
+    palmaresHintSmallNeutral: 'Wer dich beschenkt, endlich enttarnt',
     mineScore: {
       one: 'Meine Tipps · {right} richtig von {count}',
       other: 'Meine Tipps · {right} richtig von {count}',
     },
     mySantaWas: 'Dein Wichtel: {name}',
+    mySantaWasNeutral: 'Wer dich beschenkt: {name}',
     theirSantaWas: 'Der von {name}: {giver}',
     right: 'Gut erkannt',
     youSaid: 'Du sagtest {name}',
@@ -319,11 +337,15 @@ export default {
         title: 'Enttarnt',
         titleMany: 'Enttarnt',
         body: 'Hat den eigenen Wichtel erraten.',
+        bodyNeutral: 'Hat erraten, von wem das eigene Geschenk kam.',
         bodyMany: 'Sie haben ihren Wichtel erraten.',
+        bodyManyNeutral: 'Sie haben erraten, von wem ihr Geschenk kam.',
         share: '{n} von {m}',
         crowdOf: 'Personen von {total}',
         shareBody: 'haben ihren Wichtel erraten.',
+        shareBodyNeutral: 'haben erraten, von wem ihr Geschenk kam.',
         all: 'Die Wichtel konnten nichts verbergen.',
+        allNeutral: 'Niemand konnte etwas verbergen.',
         most: 'Ein gutes Jahr für Detektive.',
       },
       detective: {
@@ -371,8 +393,11 @@ export default {
         title: 'Der ideale Verdächtige',
         titleMany: 'Die idealen Verdächtigen',
         never: '{count}-mal als Wichtel genannt. Jedes Mal zu Unrecht.',
+        neverNeutral: '{count}-mal genannt. Jedes Mal zu Unrecht.',
         body: '{count}-mal zu Unrecht als Wichtel genannt.',
+        bodyNeutral: '{count}-mal zu Unrecht genannt.',
         bodyMany: 'Je {count}-mal zu Unrecht als Wichtel genannt.',
+        bodyManyNeutral: 'Je {count}-mal zu Unrecht genannt.',
       },
       twins: {
         title: 'Die Zwillinge',
@@ -412,13 +437,19 @@ export default {
         same: 'Per Zufall hättet ihr {chance} gehabt. Der Zufall hätte es genauso gut gemacht.',
         worse:
           'Per Zufall hättet ihr {chance} gehabt. Die Wichtel waren gut versteckt.',
+        worseNeutral:
+          'Per Zufall hättet ihr {chance} gehabt. Alle waren gut versteckt.',
       },
       closeCall: {
         title: 'So knapp',
         big: 'Fast!',
         body: 'Du hattest den Wichtel von {name} gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
+        bodyNeutral:
+          'Du hattest gefunden, wer {name} beschenkt… und dann umentschieden. Das Bauchgefühl hatte recht.',
         bodyMe:
           'Du hattest deinen Wichtel gefunden… und dann umentschieden. Das Bauchgefühl hatte recht.',
+        bodyMeNeutral:
+          'Du hattest gefunden, wer dich beschenkt… und dann umentschieden. Das Bauchgefühl hatte recht.',
       },
     },
     story: {
@@ -430,8 +461,10 @@ export default {
       openingBody:
         '{players} Spieler, {guesses} Tipps. Mal sehen, was sie wert waren.',
       mySanta: 'Dein Wichtel',
+      mySantaNeutral: 'Wer dich beschenkt',
       youSaid: 'Du hattest\n{name} gesagt…',
       noGuess: 'Und dein Wichtel war…',
+      noGuessNeutral: 'Und dich beschenkt hat…',
       soWell: 'Und, gut erkannt?',
       right: 'Es war\ntatsächlich {name}!',
       was: 'Es war {name}.',
@@ -445,9 +478,13 @@ export default {
       },
       wrongBody: 'Daneben: Du hattest {name} gesagt.',
       noGuessBody: 'Du hattest keinen Tipp abgegeben. Nächstes Jahr?',
+      noGuessBodyOnce: 'Du hattest keinen Tipp abgegeben.',
       endEyebrow: 'Das war es für dieses Jahr',
+      endEyebrowOnce: 'Das war es',
       endTitle: 'Frohe Weihnachten,\n{name}',
       endTitleAlone: 'Frohe Weihnachten!',
+      endTitleNeutral: 'Danke fürs Mitspielen,\n{name}',
+      endTitleAloneNeutral: 'Danke an alle!',
       allResults: 'Alle Ergebnisse ansehen',
       again: 'Von vorne ansehen',
       tapNext: 'Tippe, um weiterzumachen',

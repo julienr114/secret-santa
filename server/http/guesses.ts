@@ -1,15 +1,16 @@
 import type { H3Event } from 'h3';
 import { and, eq, isNull } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
-import { editions, participations, persons } from '#server/database/schema';
-import type { EditionRow } from '#server/database/schema';
+import { secretSantas, participations, persons } from '#server/database/schema';
+import type { SecretSantaRow } from '#server/database/schema';
 import { gameMembers, guessesOf, listGuesses } from '#server/database/guesses';
-import { listEditions } from '#server/database/editions';
+import { listEditions, santaNameForSubject } from '#server/database/editions';
 import { organizerCount } from '#server/database/groups';
 import { editionPersons } from '#server/database/answers';
 import { readPairs } from '#server/database/draw';
 import { personalPath } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
+import { tellParticipants } from '#server/database/newsEvents';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
 import {
@@ -34,7 +35,7 @@ import type { Actor } from '#server/utils/audit';
 // one email of the results). Used by the routes and by the scheduled task.
 
 type Context = { db: Db; event?: H3Event; dataKey: CryptoKey };
-type Group = { id: string; name: string };
+type Group = { id: string; name: string; category: string };
 
 /**
  * Writes « les pronostics sont fermés » in the journal, once.
@@ -46,16 +47,21 @@ type Group = { id: string; name: string };
  */
 export const closeGuesses = async (
   ctx: { db: Db },
-  edition: Pick<EditionRow, 'id' | 'guessMode' | 'guessesClosedAt'>,
+  edition: Pick<SecretSantaRow, 'id' | 'guessMode' | 'guessesClosedAt'>,
   groupId: string,
   actor: Actor,
 ) => {
   if (edition.guessMode === 'none' || edition.guessesClosedAt) return;
   const done = await ctx.db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessesClosedAt: nowIso() })
-    .where(and(eq(editions.id, edition.id), isNull(editions.guessesClosedAt)))
-    .returning({ id: editions.id });
+    .where(
+      and(
+        eq(secretSantas.id, edition.id),
+        isNull(secretSantas.guessesClosedAt),
+      ),
+    )
+    .returning({ id: secretSantas.id });
   if (done.length === 0) return;
   await recordEvent(ctx.db, {
     type: 'guesses_closed',
@@ -78,19 +84,22 @@ export const closeGuesses = async (
  */
 export const afterReveal = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   actor: Actor,
 ) => {
   if (edition.guessMode === 'none') return;
   await closeGuesses(ctx, edition, group.id, actor);
   const claimed = await ctx.db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessResultsSentAt: nowIso() })
     .where(
-      and(eq(editions.id, edition.id), isNull(editions.guessResultsSentAt)),
+      and(
+        eq(secretSantas.id, edition.id),
+        isNull(secretSantas.guessResultsSentAt),
+      ),
     )
-    .returning({ id: editions.id });
+    .returning({ id: secretSantas.id });
   if (claimed.length === 0) return;
   const [guesses, pairs] = await Promise.all([
     listGuesses(ctx.db, edition.id),
@@ -107,11 +116,17 @@ export const afterReveal = async (
     editionId: edition.id,
     actor: 'system',
   });
+  await tellParticipants(
+    ctx.db,
+    { secretSantaId: edition.id, partyId: group.id, kind: 'palmares' },
+    nowIso(),
+  );
   const rows = await ctx.db
     .select({ participation: participations, person: persons })
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
-    .where(eq(participations.editionId, edition.id));
+    .where(eq(participations.secretSantaId, edition.id));
+  const santaName = await santaNameForSubject(ctx.db, edition);
   const emails = await Promise.all(
     rows
       .filter(({ person }) => person.email)
@@ -121,6 +136,7 @@ export const afterReveal = async (
             firstName: person.firstName,
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: appUrl(
               ctx.event,
               `${await personalPath(participation, ctx.dataKey)}/devine`,
@@ -146,10 +162,10 @@ export const afterReveal = async (
  */
 const lastYearChallenge = async (
   db: Db,
-  edition: Pick<EditionRow, 'id' | 'groupId' | 'createdAt'>,
+  edition: Pick<SecretSantaRow, 'id' | 'partyId' | 'createdAt'>,
   dataKey: CryptoKey,
 ) => {
-  const previous = (await listEditions(db, edition.groupId))
+  const previous = (await listEditions(db, edition.partyId))
     .filter(
       (e) =>
         e.id !== edition.id &&
@@ -183,7 +199,7 @@ export type GamePerson = { id: string; name: string; avatar: Avatar };
  */
 export const gamePayload = async (
   ctx: Pick<PersonalContext, 'db' | 'edition' | 'person' | 'participation'> & {
-    group: { name: string };
+    group: { name: string; category: string; recurring: boolean };
     rules: { eventDate: string };
   },
   dataKey: CryptoKey,
@@ -208,8 +224,12 @@ export const gamePayload = async (
     // The language of the page, like every read of a personal link.
     language: localeOf(person.language),
     groupName: ctx.group.name,
+    // « Père Noël » is only said in a Christmas party (vocabulaire.md).
+    christmas: ctx.group.category === 'christmas',
+    // « C'est tout pour cette année » only in a party that comes back.
+    recurring: ctx.group.recurring,
     // « ton organisateur » or « tes organisateurs ».
-    organizers: await organizerCount(db, edition.groupId),
+    organizers: await organizerCount(db, edition.partyId),
     firstName: person.firstName,
     editionLabel: edition.label,
     mode: edition.guessMode as GuessMode,

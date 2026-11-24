@@ -1,8 +1,11 @@
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { editions, participations } from '#server/database/schema';
-import { listParticipants } from '#server/database/editions';
+import { secretSantas, participations } from '#server/database/schema';
+import {
+  listParticipants,
+  santaNameForSubject,
+} from '#server/database/editions';
 import { gameMembers } from '#server/database/guesses';
 import { toRemind } from '#server/utils/nudges';
 import { personalLink } from '#server/database/participations';
@@ -43,7 +46,7 @@ export default defineEventHandler(async (event) => {
     db
       .select()
       .from(participations)
-      .where(eq(participations.editionId, edition.id)),
+      .where(eq(participations.secretSantaId, edition.id)),
   ]);
   const left = new Set(toRemind(members).map((m) => m.id));
   const targets = people.filter(
@@ -57,6 +60,7 @@ export default defineEventHandler(async (event) => {
   }
   // The email is signed by the organiser who sends it (their first name).
   const sender = (await findAccountById(db, user.accountId))?.firstName ?? null;
+  const santaName = await santaNameForSubject(db, edition);
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
     targets.map(async (person) => {
@@ -69,11 +73,13 @@ export default defineEventHandler(async (event) => {
               firstName: person.firstName,
               groupName: group.name,
               sender,
+              santaName,
               editionLabel: edition.label,
               link: await personalLink(event, row, dataKey),
               guessEndsAt: edition.guessEndsAt,
               guessTimeZone: edition.guessTimeZone,
               guessMode: edition.guessMode as 'none' | 'santa' | 'all',
+              christmas: group.category === 'christmas',
             },
             person.language,
             note,
@@ -87,9 +93,9 @@ export default defineEventHandler(async (event) => {
   unwrap(await sendEmails(event, emails));
   // The last reminder, for « Dernier rappel le… » and the automatic one.
   await db
-    .update(editions)
+    .update(secretSantas)
     .set({ guessReminderSentAt: nowIso() })
-    .where(eq(editions.id, edition.id));
+    .where(eq(secretSantas.id, edition.id));
   await recordEvent(db, {
     type: 'guess_reminder_sent',
     groupId: group.id,

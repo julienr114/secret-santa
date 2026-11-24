@@ -40,14 +40,125 @@ export const loginAsSuper = async (page: Page, email: string) => {
   await expect(heading(page)).toHaveText('Bonjour');
 };
 
-/** Logs an organiser in and opens their group. */
+/** Logs an organiser in and opens their party (the group of before). */
 export const loginAsOrganizer = async (
   page: Page,
   slug: string,
   email: string,
 ) => {
   await apiLogin(page.request, email);
-  await page.goto(`/admin/${slug}`);
+  await page.goto(`/e/${slug}`);
   await hydrated(page);
-  await expect(page).toHaveURL(new RegExp(`/admin/${slug}$`));
+  await expect(page).toHaveURL(new RegExp(`/e/${slug}$`));
+};
+
+/**
+ * Writes rows the screens can no longer make (the gift hints of before
+ * the V3, ticket 107) straight into the database of the test server.
+ * @param sql - The statements.
+ * @returns Once written.
+ */
+export const seedSql = async (sql: string) => {
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(
+    'pnpm',
+    [
+      'wrangler',
+      'd1',
+      'execute',
+      'secret-santa',
+      '--local',
+      '--persist-to',
+      '.wrangler/e2e',
+      '--command',
+      sql,
+    ],
+    { stdio: 'pipe' },
+  );
+};
+
+/**
+ * Opens one of my lists by its name, as the page « Listes » did: it is
+ * gone (ticket 114), its answer (`/api/lists`) still says which lists
+ * are mine.
+ * @param page - The page, logged in.
+ * @param title - The name of the list.
+ * @returns The id of the list.
+ */
+export const openList = async (page: Page, title: string) => {
+  type Card = { id: string; title: string; holder: { token: string } | null };
+  const { coming, past } = (await (
+    await page.request.get('/api/lists')
+  ).json()) as Record<'coming' | 'past', Card[]>;
+  const list = [...coming, ...past].find((card) => card.title === title);
+  expect(list, `no list « ${title} »`).toBeTruthy();
+  // Held, its document; else, by its link.
+  await page.goto(
+    list!.holder ? `/l/${list!.holder.token}` : `/listes/${list!.id}`,
+  );
+  await hydrated(page);
+  return list!.id;
+};
+
+/**
+ * Adds people to a Secret Santa being prepared, through the API: nobody
+ * comes into an event but by a Secret Santa or a list (ticket 117), so
+ * each is created in the event and in the Secret Santa together.
+ * @param api - A context logged in as an organiser (or the super-admin).
+ * @param at - The admin path of the event, `/api/admin/[slug]`.
+ * @param editionId - The Secret Santa.
+ * @param people - Their first names, with an address or not.
+ * @returns Their persons, in order.
+ */
+export const addPeople = async (
+  api: APIRequestContext,
+  at: string,
+  editionId: string,
+  people: readonly (string | { firstName: string; email?: string | null })[],
+): Promise<{ id: string; firstName: string; email: string | null }[]> => {
+  const added: { id: string; firstName: string; email: string | null }[] = [];
+  for (const one of people) {
+    const data = typeof one === 'string' ? { firstName: one } : one;
+    const created = await api.post(`${at}/editions/${editionId}/persons`, {
+      data: {
+        firstName: data.firstName,
+        ...(data.email ? { email: data.email } : {}),
+      },
+    });
+    expect(created.status(), `adding ${data.firstName}`).toBe(201);
+    added.push((await created.json()).person);
+  }
+  return added;
+};
+
+/**
+ * Makes people members of an event straight in the database, as the
+ * members of before ticket 117 are (no way in kept): for the specs where
+ * adding them by a Secret Santa would change what is tested, or that
+ * need them before any Secret Santa.
+ * @param slug - The event.
+ * @param people - Their first names, with an address or not.
+ * @returns Their ids, by first name.
+ */
+export const seedMembers = async (
+  slug: string,
+  people: readonly (readonly [string, string | null] | string)[],
+): Promise<Record<string, string>> => {
+  const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
+  const rows = people.map((one) =>
+    typeof one === 'string' ? ([one, null] as const) : one,
+  );
+  const ids = Object.fromEntries(
+    rows.map(([firstName]) => [firstName, `seed-${slug}-${firstName}`]),
+  );
+  const now = new Date().toISOString();
+  await seedSql(
+    rows
+      .map(
+        ([firstName, email]) =>
+          `INSERT INTO persons (id, party_id, first_name, email, language, active, created_at) VALUES (${quote(ids[firstName]!)}, (SELECT id FROM parties WHERE slug = ${quote(slug)}), ${quote(firstName)}, ${email ? quote(email) : 'NULL'}, 'fr', 1, ${quote(now)});`,
+      )
+      .join(' '),
+  );
+  return ids;
 };

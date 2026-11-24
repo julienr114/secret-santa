@@ -1,41 +1,8 @@
 // Gift hints (README 22.11): the participant's page, the six questions,
 // what the giver reads, the request and its emails.
 export default {
-  title: 'Mes pistes de cadeaux',
-  intro:
-    'Donne un coup de pouce à la personne qui t’offre un cadeau. Tout est facultatif.',
-  whoSees:
-    'Seule la personne qui t’offre un cadeau les verra, une fois le tirage fait.',
-  requested: {
-    title: 'La personne qui t’offre un cadeau cherche l’inspiration.',
-    body: 'Six questions à choix suffisent, trente secondes.',
-    bodyPortrait: 'Cinq questions à choix suffisent, trente secondes.',
-  },
-  readOnly: 'Tes pistes ne bougent plus : c’est terminé pour cette année.',
-  until: 'Tu peux les modifier jusqu’à la fête.',
-  start: {
-    label: 'Pour commencer',
-    title: 'Six questions, trente secondes',
-    titlePortrait: 'Cinq questions, trente secondes',
-    examples: 'Utile ou surprenant ? Un objet ou un moment ?',
-    body: 'Tu réponds d’un doigt, sans rien écrire.',
-    action: 'Commencer',
-  },
-  copy: {
-    action: 'Reprendre mes pistes de {edition}',
-    hint: 'Tu pourras les retoucher',
-    done: 'Pistes de {edition} reprises',
-  },
-  me: {
-    title: 'Côté cadeaux, je préfère…',
-    context: 'Moi et les cadeaux',
-  },
   question: {
-    context: 'question {index} sur {count}',
-    clear: 'Effacer ma réponse',
-    later: 'Plus tard',
     both: 'Les deux me vont',
-    footer: 'Un appui, et on passe à la suite. Tu pourras changer d’avis.',
     progress: 'Question {index} sur {count}',
   },
   questions: {
@@ -77,7 +44,7 @@ export default {
     surprise: {
       title: 'Surprends-moi, ou je préfère savoir ?',
       first: 'Surprends-moi',
-      firstHelp: 'Je découvrirai le jour de la fête.',
+      firstHelp: 'Je découvrirai le jour J.',
       second: 'Je préfère savoir',
       secondHelp: 'Je donne une idée précise plus bas.',
     },
@@ -181,75 +148,43 @@ export default {
     },
   },
   ideas: {
-    title: 'Une idée précise, au cas où',
     giver: 'Si tu sèches',
-    add: 'Ajouter une idée',
-    addHint: 'Un objet, avec un lien si tu veux',
-    left: {
-      one: 'Encore {count} possible',
-      other: 'Encore {count} possibles',
-    },
-    why: 'Une idée précise ne gâche rien : beaucoup préfèrent offrir à coup sûr.',
   },
   // On the giver's result.
   list: {
     title: 'Ma liste de cadeaux',
-    help: 'La personne qui t’offre un cadeau verra un lien vers elle. Ce qu’elle y coche est anonyme : personne ne saura que c’est elle, pas même toi.',
-    add: 'Relier une liste de cadeaux',
-    addHint: 'La personne qui t’offre un cadeau verra un lien vers elle',
-    change: 'Changer',
-    mine: 'Ta liste, publiée',
-    figuring: 'Une liste où tu figures, publiée',
-    published: 'Publiée',
-    unshared: 'Elle n’est plus publiée : le lien ne s’affiche plus.',
-    login: 'Connecte-toi pour relier une de tes listes de cadeaux.',
-    loginAction: 'Me connecter',
-    sheetTitle: 'Quelle liste ?',
-    sheetHelp:
-      'Les listes que tu tiens, et celles où tu figures. Seule une liste publiée peut être reliée.',
-    rowMine: 'Ta liste · publiée',
-    rowFiguring: 'La liste de {name} · tu y figures',
-    rowDraft: 'Brouillon : publie-la d’abord',
-    none: 'Aucune liste',
-    validate: 'Valider',
-    untitled: 'Liste sans nom',
-    done: 'Liste reliée à tes pistes',
-    removed: 'Plus de liste reliée à tes pistes',
   },
   result: {
-    list: 'Sa liste de cadeaux : {title}',
+    listOf: 'La liste de cadeaux de {name}',
+    newIdeas: {
+      one: '{count} nouvelle idée depuis ta dernière visite',
+      other: '{count} nouvelles idées depuis ta dernière visite',
+    },
+    nothing: '{name} n’a encore rien écrit.',
     listHelp: 'Le mode anonyme y sera activé pour toi.',
     title: 'Pour t’aider à choisir',
-    isNew: 'Nouveau',
-    updatedOn: 'Pistes mises à jour le {date}',
-    none: '{name} n’a pas encore laissé de pistes.',
-    ask: 'Lui demander des pistes',
-    sentEmailNamed: '{name} vient de recevoir un email.',
-    sentPageNamed: '{name} le verra sur sa page de pistes.',
+    ask: 'Lui demander des idées',
     askHint: 'Sans dire que ça vient de toi.',
     sent: 'Demande envoyée.',
     sentEmail:
       '{name} vient de recevoir un email, sans savoir que ça vient de toi.',
     sentPage:
-      '{name} le verra sur sa page de pistes, sans savoir que ça vient de toi.',
-    willEmail: 'Tu recevras un email dès que des pistes arrivent.',
-    willSee: 'Reviens ici : les pistes s’afficheront dès qu’elles arrivent.',
+      '{name} le verra en ouvrant son lien, sans savoir que ça vient de toi.',
+    willEmail: 'Tu recevras un email dès que des idées arrivent.',
+    willSee: 'Reviens ici : les idées s’afficheront dès qu’elles arrivent.',
   },
   request: {
-    title: 'Demander des pistes à {name} ?',
+    title: 'Demander des idées à {name} ?',
     bodyEmail:
       '{name} reçoit un email qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     bodyPage:
-      '{name} le verra sur sa page de pistes, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
-    named: 'Ton nom est donné',
-    namedHelp:
-      'Le tirage est dévoilé : {name} saura que la demande vient de toi.',
+      '{name} le verra sur sa page d’idées, qui l’invite à noter ses goûts et ce qu’il vaut mieux éviter.',
     anonymous: 'Ton nom n’apparaît nulle part',
     anonymousHelp: {
       one: 'Ni dans l’email, ni dans le journal, ni pour l’organisateur.',
       other: 'Ni dans l’email, ni dans le journal, ni pour les organisateurs.',
     },
-    once: 'Une seule demande par tirage',
+    once: 'Une seule demande par Secret Santa',
     onceHelp: 'Pas de relance possible : on ne harcèle personne.',
     send: 'Envoyer la demande',
     sending: 'Envoi de la demande…',
@@ -258,46 +193,20 @@ export default {
   // Lines that say where someone's hints stand.
   state: {
     hintsLeft: {
-      one: '{count} sur {total} a laissé des pistes',
-      other: '{count} sur {total} ont laissé des pistes',
+      one: '{count} sur {total} a écrit sa liste',
+      other: '{count} sur {total} ont écrit leur liste',
     },
-    none: 'Rien pour l’instant',
-    filledEditable: 'Remplies · modifiables jusqu’à la fête',
-    filledLocked: 'Remplies · plus modifiables',
-    left: 'A laissé des pistes',
-  },
-  setting: {
-    title: 'Pistes de cadeaux',
-    help: 'Ce que chacun peut noter pour aider la personne qui lui offre un cadeau.',
-    full: 'Portrait et idées précises',
-    fullHelp: 'Les six questions, les envies du moment, et des idées d’objets',
-    portrait: 'Portrait seulement',
-    portraitHelp: 'Sans idée d’objet : la surprise reste entière',
-    none: 'Aucune piste',
-    noneHelp: 'Chacun se débrouille',
+    left: 'A écrit sa liste',
   },
   email: {
     request: {
-      subject:
-        'Secret Santa de {group} : quelqu’un cherche une idée de cadeau pour toi',
+      subject: 'quelqu’un cherche une idée de cadeau pour toi',
       greeting: 'Bonjour {name},',
-      body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : six questions à choix, trente secondes, et quelques mots si tu veux.',
-      bodyPortrait:
-        'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir. Aide-la : cinq questions à choix, trente secondes, et quelques mots si tu veux.',
-      subjectFrom:
-        'Secret Santa de {group} : {from} cherche une idée de cadeau pour toi',
-      bodyFrom:
-        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Six questions à choix, trente secondes, et quelques mots si tu veux.',
-      bodyPortraitFrom:
-        '{from} t’offre un cadeau pour {edition} ({group}) et ne sait pas quoi choisir. Un coup de main ? Cinq questions à choix, trente secondes, et quelques mots si tu veux.',
-      cta: 'Donner quelques pistes :',
-      anonymous: 'On ne te dira pas qui demande : c’est un Secret Santa.',
-      once: 'Tu ne recevras ce message qu’une fois.',
-    },
-    arrived: {
-      subject: 'Secret Santa de {group} : des pistes de cadeaux t’attendent',
-      greeting: 'Bonjour {name},',
-      body: 'La personne à qui tu offres un cadeau pour {edition} ({group}) a laissé des pistes. Ouvre ton lien pour les lire :',
+      body: 'La personne qui t’offre un cadeau pour {edition} ({group}) ne sait pas quoi choisir.',
+      help: 'Aide-la : écris ta liste de cadeaux, ou quelques mots sur ce que tu aimes.',
+      cta: 'Écrire ma liste',
+      anonymous:
+        'On ne te dira pas qui demande : c’est un Secret Santa. Tu ne recevras ce message qu’une fois.',
     },
   },
 };

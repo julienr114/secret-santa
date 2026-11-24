@@ -195,11 +195,50 @@
   /* A card: no blurred shadow, a peach edge and a plain band under it. */
   --shadow-card:
     0 3px 0 var(--color-peach-200), 0 0 0 1.5px var(--color-peach-200);
+  /* What floats over the page, unrolled (the bar of a list): a blurred
+     shadow, deeper than a card's. */
+  --shadow-raised: 0 18px 40px rgb(41 37 36 / 0.24);
   /* The palmarès in the journal: a plain green card on its darker band. */
   --shadow-award: 0 3px 0 var(--color-mint-700);
+
+  /* The tile of an event (ticket 143, categories.md): the gradient of its
+     category, from light to strong, and the white edge with a light
+     shadow, smaller under 32 px. */
+  --color-tile-christmas-from: #d9f5df;
+  --color-tile-christmas-to: #58c07a;
+  --color-tile-birthday-from: #fff0b8;
+  --color-tile-birthday-to: #f4b82e;
+  --color-tile-birth-from: #dcefff;
+  --color-tile-birth-to: #6eb0f2;
+  --color-tile-wedding-from: #f7dcec;
+  --color-tile-wedding-to: #d977ae;
+  --color-tile-housewarming-from: #ffe1d6;
+  --color-tile-housewarming-to: #f08a6c;
+  --color-tile-other-from: #efe6fb;
+  --color-tile-other-to: #a98be0;
+  /* The stars of an idea (ticket 152): strong peach, full; off, a light
+     peach outline. */
+  --color-rating: #f08a6c;
+  --color-rating-off: var(--color-peach-300);
+  /* « Devine qui » (ticket 150): the light green of the game, its edge,
+     the track of its choices, its text; its round is mint 500. */
+  --color-game-tint: #e9f7f1;
+  --color-game-ring: #bfe6d6;
+  --color-game-track: #d2eee2;
+  --color-game-ink: #4d6b60;
+  --color-game-strong: #0b5c45;
+  /* The line being written, and the line lifted (ticket 144): a white
+     card, its thin peach edge and a light shadow tinted red, deeper once
+     lifted. */
+  --shadow-line-card:
+    0 0 0 1px var(--color-peach-100), 0 6px 16px rgb(184 72 58 / 0.1);
+  --shadow-line-lifted:
+    0 0 0 1px var(--color-peach-100), 0 12px 26px rgb(184 72 58 / 0.2);
+  --shadow-tile: 0 0 0 2px #ffffff, 0 3px 8px rgb(90 40 60 / 0.22);
+  --shadow-tile-sm: 0 0 0 1.5px #ffffff, 0 1px 3px rgb(90 40 60 / 0.2);
 }
 
-/* The room the bar « Tirages / Listes » takes at the bottom of a screen:
+/* The room the bottom bar takes at the bottom of a screen:
    none without a session (README 22.21). */
 :root {
   --tab-bar: 0px;

@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { and, eq, isNull } from 'drizzle-orm';
-import { editions, persons } from '#server/database/schema';
+import { secretSantas, persons } from '#server/database/schema';
 import { findAccountById } from '#server/database/accounts';
 import { recordEvent } from '#server/database/audit';
+import { tellParticipants } from '#server/database/newsEvents';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, nowIso } from '#server/http/context';
 import { afterReveal } from '#server/http/guesses';
@@ -24,17 +25,21 @@ import { mergeRules } from '#server/utils/rules';
 const bodySchema = z.object({ early: z.boolean().default(false) });
 
 export default defineEventHandler(async (event) => {
-  const { user, group, db, edition } = await requireEdition(event);
+  const { user, group, db, edition } = await requireEdition(event, {
+    afterTheYear: true,
+  });
   const { early } = await validatedBody(event, bodySchema);
-  const rules = unwrap(mergeRules(group.rules, edition.rulesOverride));
+  const rules = unwrap(mergeRules(edition.rules));
   const today = nowIso().slice(0, 10);
   const allowed = unwrap(canRevealDraw(edition, rules.eventDate, today, early));
   // Only once: two organisers cannot both reveal.
   const revealed = await db
-    .update(editions)
+    .update(secretSantas)
     .set({ revealedAt: nowIso() })
-    .where(and(eq(editions.id, edition.id), isNull(editions.revealedAt)))
-    .returning({ id: editions.id });
+    .where(
+      and(eq(secretSantas.id, edition.id), isNull(secretSantas.revealedAt)),
+    )
+    .returning({ id: secretSantas.id });
   if (revealed.length === 0) {
     throw createError({
       statusCode: 409,
@@ -47,7 +52,7 @@ export default defineEventHandler(async (event) => {
         .select({ id: persons.id })
         .from(persons)
         .where(
-          and(eq(persons.groupId, group.id), eq(persons.email, account.email)),
+          and(eq(persons.partyId, group.id), eq(persons.email, account.email)),
         )
         .limit(1)
     : [];
@@ -58,6 +63,11 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     ...(by ? { meta: { by: by.id } } : {}),
   });
+  await tellParticipants(
+    db,
+    { secretSantaId: edition.id, partyId: group.id, kind: 'revealed' },
+    nowIso(),
+  );
   // « Devine qui » (README 22.17): the guesses close, the results come.
   await afterReveal(
     { db, event, dataKey: await dataKeyOf(event) },

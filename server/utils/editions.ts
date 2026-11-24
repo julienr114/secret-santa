@@ -31,6 +31,19 @@ export const editionInputSchema = z.object({
   eventDate: eventDateSchema,
   budget: rulesPatchSchema.shape.budget,
   guardianMessage: rulesPatchSchema.shape.guardianMessage,
+  // « Mot ajouté aux messages » and « Devine qui », chosen on the form of
+  // a new Secret Santa (V3TirageNouveau); left out, the previous one's.
+  messageNote: rulesPatchSchema.shape.messageNote,
+  guess: z
+    .discriminatedUnion('mode', [
+      z.object({ mode: z.literal('none') }),
+      z.object({
+        mode: z.enum(['santa', 'all']),
+        endsAt: z.iso.datetime(),
+        timeZone: z.string().min(1).max(64),
+      }),
+    ])
+    .optional(),
 });
 
 export const editionPatchSchema = z

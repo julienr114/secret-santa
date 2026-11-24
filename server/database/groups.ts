@@ -2,10 +2,10 @@ import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { Db } from './client';
 import {
   accounts,
-  groupMembers,
-  groups,
+  partyOrganisers,
+  parties,
   persons,
-  type GroupRow,
+  type PartyRow,
 } from './schema';
 import { createAccount, findAccountByEmail } from './accounts';
 import { insertPersonFromAccount } from './people';
@@ -16,26 +16,14 @@ export type PublicGroup = {
   slug: string;
   name: string;
   createdAt: string;
-  /** Code of the invitation link to the group, null when closed. */
-  inviteCode: string | null;
-  /** Last day the link works, if any. */
-  inviteUntil: string | null;
-  /** How many may still join by the link. */
-  invitePlaces: number | null;
-  /** The organiser's words on the invitation page. */
-  inviteMessage: string | null;
 };
 
 /** What the admin API exposes about a group. */
-export const publicGroup = (group: GroupRow): PublicGroup => ({
+export const publicGroup = (group: PartyRow): PublicGroup => ({
   id: group.id,
   slug: group.slug,
   name: group.name,
   createdAt: group.createdAt,
-  inviteCode: group.inviteCode,
-  inviteUntil: group.inviteUntil,
-  invitePlaces: group.invitePlaces,
-  inviteMessage: group.inviteMessage,
 });
 
 // --- Organisers (README 22.5) ---------------------------------------------
@@ -47,17 +35,23 @@ export const isOrganizer = async (
   accountId: string,
 ): Promise<boolean> => {
   const [row] = await db
-    .select({ groupId: groupMembers.groupId })
-    .from(groupMembers)
+    .select({ groupId: partyOrganisers.partyId })
+    .from(partyOrganisers)
     .where(
       and(
-        eq(groupMembers.groupId, groupId),
-        eq(groupMembers.accountId, accountId),
+        eq(partyOrganisers.partyId, groupId),
+        eq(partyOrganisers.accountId, accountId),
       ),
     )
     .limit(1);
   return Boolean(row);
 };
+
+/**
+ * A party the screens of a group show: not one made for a list kept
+ * apart before the V3 (ticket 101), until the pages of a party come.
+ */
+export const isGroup = eq(parties.fromList, false);
 
 /** How many groups the account organises. */
 export const organizedGroupCount = async (
@@ -66,8 +60,9 @@ export const organizedGroupCount = async (
 ): Promise<number> => {
   const [row] = await db
     .select({ n: count() })
-    .from(groupMembers)
-    .where(eq(groupMembers.accountId, accountId));
+    .from(partyOrganisers)
+    .innerJoin(parties, eq(parties.id, partyOrganisers.partyId))
+    .where(and(eq(partyOrganisers.accountId, accountId), isGroup));
   return row?.n ?? 0;
 };
 
@@ -75,17 +70,17 @@ export const organizedGroupCount = async (
 export const listOrganizedGroups = async (db: Db, accountId: string) => {
   const ids = (
     await db
-      .select({ groupId: groupMembers.groupId })
-      .from(groupMembers)
-      .where(eq(groupMembers.accountId, accountId))
+      .select({ groupId: partyOrganisers.partyId })
+      .from(partyOrganisers)
+      .where(eq(partyOrganisers.accountId, accountId))
   ).map((row) => row.groupId);
   return ids.length === 0
     ? []
     : db
         .select()
-        .from(groups)
-        .where(inArray(groups.id, ids))
-        .orderBy(asc(groups.name));
+        .from(parties)
+        .where(and(inArray(parties.id, ids), isGroup))
+        .orderBy(asc(parties.name));
 };
 
 /**
@@ -95,9 +90,9 @@ export const listOrganizedGroups = async (db: Db, accountId: string) => {
 export const listManagedGroups = async (
   db: Db,
   user: Pick<SessionUser, 'role' | 'accountId'>,
-): Promise<GroupRow[]> => {
+): Promise<PartyRow[]> => {
   if (user.role === 'super_admin') {
-    return db.select().from(groups).orderBy(asc(groups.name));
+    return db.select().from(parties).where(isGroup).orderBy(asc(parties.name));
   }
   return user.role === 'guardian'
     ? listOrganizedGroups(db, user.accountId)
@@ -110,9 +105,9 @@ export type Organizer = { accountId: string; email: string };
 export const listOrganizers = (db: Db, groupId: string): Promise<Organizer[]> =>
   db
     .select({ accountId: accounts.id, email: accounts.email })
-    .from(groupMembers)
-    .innerJoin(accounts, eq(accounts.id, groupMembers.accountId))
-    .where(eq(groupMembers.groupId, groupId))
+    .from(partyOrganisers)
+    .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
+    .where(eq(partyOrganisers.partyId, groupId))
     .orderBy(asc(accounts.email));
 
 /**
@@ -124,20 +119,38 @@ export const listOrganizers = (db: Db, groupId: string): Promise<Organizer[]> =>
  */
 export const addOrganizer = async (
   db: Db,
-  { groupId, email, now }: { groupId: string; email: string; now: string },
+  {
+    groupId,
+    firstName,
+    email,
+    now,
+  }: {
+    groupId: string;
+    /** Required on « Nouvel organisateur »; none for a new group's. */
+    firstName?: string | null;
+    email: string;
+    now: string;
+  },
 ): Promise<Organizer> => {
+  // A new account takes the first name written; one that exists keeps its
+  // own (ticket 161).
   const account =
     (await findAccountByEmail(db, email)) ??
-    (await createAccount(db, { email, isSuperAdmin: false, now }));
+    (await createAccount(db, {
+      email,
+      firstName: firstName ?? null,
+      isSuperAdmin: false,
+      now,
+    }));
   if (!(await isOrganizer(db, groupId, account.id))) {
     await db
-      .insert(groupMembers)
-      .values({ groupId, accountId: account.id, createdAt: now });
+      .insert(partyOrganisers)
+      .values({ partyId: groupId, accountId: account.id, createdAt: now });
   }
   const [person] = await db
     .select({ id: persons.id })
     .from(persons)
-    .where(and(eq(persons.groupId, groupId), eq(persons.email, account.email)))
+    .where(and(eq(persons.partyId, groupId), eq(persons.email, account.email)))
     .limit(1);
   if (!person) await insertPersonFromAccount(db, { groupId, account, now });
   return { accountId: account.id, email: account.email };
@@ -146,14 +159,14 @@ export const addOrganizer = async (
 /** Takes an organiser off a group; returns the removed row, if any. */
 export const removeOrganizer = (db: Db, groupId: string, accountId: string) =>
   db
-    .delete(groupMembers)
+    .delete(partyOrganisers)
     .where(
       and(
-        eq(groupMembers.groupId, groupId),
-        eq(groupMembers.accountId, accountId),
+        eq(partyOrganisers.partyId, groupId),
+        eq(partyOrganisers.accountId, accountId),
       ),
     )
-    .returning({ accountId: groupMembers.accountId });
+    .returning({ accountId: partyOrganisers.accountId });
 
 /**
  * How many organisers a group has: the participant's texts say « ton

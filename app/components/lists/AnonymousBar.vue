@@ -53,7 +53,7 @@ const onUnderstood = () => {
 
 <template>
   <div
-    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] -mt-1 rounded-[24px] motion-safe:transition-colors motion-safe:duration-200"
+    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 rounded-[24px] motion-safe:transition-colors motion-safe:duration-200"
     :class="[
       // Over the veil, which is over everything else.
       notice ? 'z-50' : 'z-10',

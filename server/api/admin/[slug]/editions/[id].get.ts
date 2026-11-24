@@ -5,8 +5,12 @@ import {
   findEdition,
   listParticipants,
   publicEdition,
+  santaNameForSubject,
   type Participant,
 } from '#server/database/editions';
+import { countActiveMembers } from '#server/database/people';
+import { linkPlaces } from '#server/utils/invite';
+import { membersLeft } from '#server/utils/parties';
 import { findAnswers } from '#server/database/answers';
 import { mergeRules } from '#server/utils/rules';
 import { wasDrawCancelled } from '#server/database/audit';
@@ -18,7 +22,7 @@ import {
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
 import { and, eq } from 'drizzle-orm';
-import { groupMembers } from '#server/database/schema';
+import { partyOrganisers } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
 import { gamePossible, guessesOpen } from '#server/utils/guesses';
 import { nudgeTime, playedCount, toRemind } from '#server/utils/nudges';
@@ -64,9 +68,11 @@ export default defineEventHandler(async (event) => {
   const { group, db, user } = await requireGroupAccess(event);
   const edition = await findEdition(db, group.id, getRouterParam(event, 'id'));
   if (!edition) throw notFound('edition_not_found');
-  const [participants, cancelled] = await Promise.all([
+  const [participants, cancelled, active, santaName] = await Promise.all([
     listParticipants(db, edition.id),
     wasDrawCancelled(db, group.id, edition.id),
+    countActiveMembers(db, group.id),
+    santaNameForSubject(db, edition),
   ]);
   const collecting =
     edition.status === 'preparing' && edition.drawMode === 'elsewhere';
@@ -85,12 +91,12 @@ export default defineEventHandler(async (event) => {
   const open = guessesOpen(edition, now);
   // « Me tenir au courant » is each organiser's own (Correction 15).
   const [membership] = await db
-    .select({ guessNews: groupMembers.guessNews })
-    .from(groupMembers)
+    .select({ guessNews: partyOrganisers.guessNews })
+    .from(partyOrganisers)
     .where(
       and(
-        eq(groupMembers.groupId, group.id),
-        eq(groupMembers.accountId, user.accountId),
+        eq(partyOrganisers.partyId, group.id),
+        eq(partyOrganisers.accountId, user.accountId),
       ),
     )
     .limit(1);
@@ -114,10 +120,12 @@ export default defineEventHandler(async (event) => {
     // game cannot be turned on (Correction 12).
     possible:
       edition.status === 'preparing' || gamePossible(participants.length),
+    // « Père Noël » is only said in a Christmas party (vocabulaire.md).
+    christmas: group.category === 'christmas',
   };
   return {
     edition: publicEdition(edition, participants.length),
-    rules: unwrap(mergeRules(group.rules, edition.rulesOverride)),
+    rules: unwrap(mergeRules(edition.rules)),
     participants: answers.participants.map((p) => ({
       ...p,
       played: players.has(p.id),
@@ -132,5 +140,19 @@ export default defineEventHandler(async (event) => {
     // Drawn again after a cancelled draw: « Nouveau tirage » is the
     // message to send.
     redrawn: edition.status === 'drawn' && cancelled,
+    // Its name when the event has several the same year (« Famille Camille
+    // (Les adultes) »).
+    santaName,
+    // Its invitation link (ticket 116): the code (null when closed), its
+    // settings, the places it really offers (paused at 30 members), and
+    // what the event can still take.
+    invite: {
+      code: edition.inviteCode,
+      until: edition.inviteUntil,
+      places: edition.invitePlaces,
+      message: edition.inviteMessage,
+      placesLeft: linkPlaces(edition.invitePlaces, active),
+      room: membersLeft(active),
+    },
   };
 });

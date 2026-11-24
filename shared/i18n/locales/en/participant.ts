@@ -2,6 +2,22 @@ import type fr from '../fr/participant';
 import type { Dict } from '../../types';
 
 export default {
+  myList: {
+    which: {
+      title: 'Which list for your Secret Santa?',
+      new: 'A new list',
+      continue: 'Continue',
+    },
+    ideaLabel: 'A gift idea',
+    add: 'Add',
+    accountNote:
+      'An account will be created with your address {email}, to find your list again.',
+    title: 'Your email address, to write your list',
+    label: 'Your email address',
+    submit: 'Confirm',
+    confirm: 'You get a link to confirm it.',
+    sent: 'Link sent to {email}: open it to write your list. Remember to check your spam.',
+  },
   revealed: {
     bannerTitle: 'The draw is no longer secret.',
     bannerBy:
@@ -21,11 +37,11 @@ export default {
     santaIs: { before: 'It’s', after: 'who gives you your present.' },
     santaIsPast: { before: 'It was', after: 'who gave you your present.' },
     all: 'See the whole draw',
-    allHint: 'Who gives to whom, for the whole group',
-    allHintPast: 'Who gave to whom, in the whole group',
+    allHint: 'Who gives to whom, for all the participants',
+    allHintPast: 'Who gave to whom, for all the participants',
     gaveTo: 'You gave a present to',
     afterBody:
-      'The party is over. The draw is revealed: everyone can see who gave to whom.',
+      'The big day is over. The draw is revealed: everyone can see who gave to whom.',
     closedBody: 'That’s a wrap for this year. Same time next year?',
     pageTitle: 'Who gives to whom',
     pageBody:
@@ -39,26 +55,26 @@ export default {
   },
   home: {
     greeting: 'Hi {firstName}!',
-    facts: { budget: 'Budget:', party: 'Party on' },
+    facts: { budget: 'Budget:', party: 'Big day' },
     note: {
       title: { one: "The organizer's note", other: 'The organizers’ note' },
       more: 'Read more',
     },
     changeAvatar: 'Change my icon',
     steps: {
-      label: 'Steps of the draw',
+      label: 'Steps of the Secret Santa',
       invitation: 'Invitation',
       drawSoon: 'Draw · soon',
       answer: 'Your answer',
       drawRevealed: 'Draw revealed',
       drawDone: 'Draw done',
-      party: 'Party',
+      party: 'Big day',
       partyIn: {
-        one: 'Party · in {count} day',
-        other: 'Party · in {count} days',
+        one: 'Big day · in {count} day',
+        other: 'Big day · in {count} days',
       },
-      partyToday: 'Party · today',
-      partyOver: 'Party over',
+      partyToday: 'Big day · today',
+      partyOver: 'Big day over',
     },
     waiting: {
       title: 'Just a little longer',
@@ -67,14 +83,14 @@ export default {
         other:
           'The draw hasn’t happened yet. Your organizers will give you a shout; keep this link, this is where it all happens.',
       },
-      action: 'Leave my gift hints',
+      action: 'Write my gift list',
       hint: 'In the meantime, give a hand to whoever draws your name.',
     },
     ready: {
       title: 'Your envelope is waiting',
       body: 'The draw is done. Check nobody’s reading over your shoulder, then open it.',
       bodyHints:
-        'The draw is done, and gift hints are waiting inside. Check nobody’s reading over your shoulder, then open it.',
+        'The draw is done, and gift ideas are waiting inside. Check nobody’s reading over your shoulder, then open it.',
       reveal: 'Find out who I am giving a gift to',
       revealing: 'Opening the envelope…',
       hint: 'Your envelope closes by itself as soon as you leave the page.',
@@ -87,27 +103,29 @@ export default {
       title: 'Slipped your mind?',
       body: 'Your envelope is still here. Check nobody’s reading over your shoulder.',
       bodyHints:
-        'Your envelope is still here, with their gift hints. Check nobody’s reading over your shoulder.',
-      newTitle: 'New hints are waiting for you',
+        'Your envelope is still here, with their gift ideas. Check nobody’s reading over your shoulder.',
+      newTitle: 'New ideas are waiting for you',
       newBody:
         'The person you’re giving to has left some since your last visit. Check nobody’s reading over your shoulder.',
-      revealWithHints: 'See who I’m giving to, and their hints',
+      revealWithHints: 'See who I’m giving to, and their ideas',
       noHintsYet:
-        'No hints yet. You can ask for some, without giving yourself away.',
+        'No ideas yet. You can ask for some, without giving yourself away.',
       revealAgain: 'See who I am giving to again',
     },
     closed: {
-      title: 'The party is over',
+      title: 'The big day is over',
       body: 'That’s a wrap for this year. You can still see who you gave a gift to.',
       bodyNotSeen:
         'That’s a wrap for this year. You can still find out who you were giving a gift to.',
     },
     tiles: {
-      hintsTodo: 'To fill in',
-      hintsEditable: 'Filled in, can be changed until the party',
-      hintsLocked: 'Filled in, can no longer be changed',
-      hintsShort: 'Filled in',
-      hintsShortLocked: 'No longer editable',
+      list: {
+        none: 'Not written yet',
+        draft: 'Draft, only you see it',
+        giver: 'Seen only by the one who drew me',
+        parties: 'Seen by the members of the event',
+        public: 'Seen by anyone with the link',
+      },
       game: {
         skipped: 'Sitting this one out',
         count: {
@@ -121,13 +139,13 @@ export default {
         lastDay: 'Last day',
         play: 'Make your guess',
         played: 'Guess made',
-        waiting: 'Answer at the party',
+        waiting: 'Answer on the big day',
         palmares: 'The palmarès is waiting',
         answers: 'See the answers',
       },
     },
     journal: {
-      title: 'Group journal',
+      title: 'Event journal',
       subtitle: 'Everything that happened, for all to see',
       alerts: {
         one: '{count} alert since your last visit',
@@ -141,41 +159,30 @@ export default {
   },
   wishes: {
     openLink: 'Open the link of "{label}"',
-    sheet: {
-      new: 'New idea',
-      edit: 'Edit the idea',
-      description: 'A short idea, and a link if you have one.',
-      idea: 'Idea',
-      ideaPlaceholder: 'A book, some socks…',
-      link: 'Link (optional)',
-      linkLabel: 'Link',
-      optional: '(optional)',
-      linkHelp: 'Paste the address of a page: it will open in a new tab.',
-      remove: 'Delete the idea',
-    },
   },
   journal: {
-    title: 'Group journal',
-    intro: 'Everyone can see this journal. It never says who gives to whom.',
-    allEditions: 'All editions',
-    edition: 'Edition',
+    title: 'Event journal',
+    intro: 'All the members see this journal. It never says who gives to whom.',
+    allEditions: 'All the Secret Santas',
+    edition: 'Secret Santa',
     empty: 'All quiet. That’s a good sign.',
   },
   invalid: { title: 'Oops, this link no longer works' },
   account: {
-    title: 'Keep your draws in one place',
-    body: 'Create an account with your email address: you will find this draw, and the next ones, without looking for the link.',
-    bodyClaim: 'Add this draw to your account to find it from your home page.',
+    title: 'Keep your Secret Santas in one place',
+    body: 'Create an account with your email address: you will find this Secret Santa, and the next ones, without looking for the link.',
+    bodyClaim:
+      'Add this Secret Santa to your account to find it from your home page.',
     create: 'Create my account',
     claim: 'Add to my account',
-    added: 'Draw added to your account',
+    added: 'Secret Santa added to your account',
     sendTo: 'Get my link at {email}',
     sent: 'Link sent to {email}: open it to create your account. Remember to look in your spam folder.',
   },
   answer: {
     card: {
       title: 'Who are you giving a gift to?',
-      body: 'The draw was made outside the app. Say here who you’re giving to, to see their gift hints. Check nobody’s reading over your shoulder.',
+      body: 'The draw was made outside the app. Say here who you’re giving to, to see their gift ideas. Check nobody’s reading over your shoulder.',
       action: "Say who I'm giving to",
       hint: {
         one: 'Your answer stays secret, even from the organizer.',
@@ -183,9 +190,9 @@ export default {
       },
       savedTitle: 'Got it',
       savedBody: {
-        one: "You'll see your person's gift hints once everyone has answered. {count} answer out of {total} so far.",
+        one: 'You’ll see your person’s gift ideas once everyone has answered. {count} answer out of {total} so far.',
         other:
-          "You'll see your person's gift hints once everyone has answered. {count} answers out of {total} so far.",
+          'You’ll see your person’s gift ideas once everyone has answered. {count} answers out of {total} so far.',
       },
       review: 'See or correct my answer',
       savedHint: 'Your answer stays hidden: it only shows if you ask for it.',
@@ -223,18 +230,25 @@ export default {
     whoGivesMeShort: 'Who gives to you?',
     whoGivesTo: 'Who gives to {name}?',
     myGuess: 'My guess',
-    surprise: 'A surprise awaits the group at the party.',
+    surprise: 'A surprise awaits everyone on the big day.',
     surpriseMore: 'The more of you play, the better it will be.',
     challenge: {
       one: 'Last year, {count} person out of {total} guessed their Secret Santa. Beat that.',
       other:
         'Last year, {count} people out of {total} guessed their Secret Santa. Beat that.',
     },
+    challengeNeutral: {
+      one: 'Last year, {count} person out of {total} guessed who was giving to them. Beat that.',
+      other:
+        'Last year, {count} people out of {total} guessed who was giving to them. Beat that.',
+    },
     challengeNone: 'Last year, nobody guessed their Secret Santa. Beat that.',
+    challengeNoneNeutral:
+      'Last year, nobody guessed who was giving to them. Beat that.',
     skip: 'I’ll sit this one out',
     skippedTitle: 'You’re sitting this one out',
     skippedBody:
-      'We won’t remind you of the game. You’ll still see the surprise at the party.',
+      'We won’t remind you of the game. You’ll still see the surprise on the big day.',
     unskip: 'Actually, I’ll play',
     unskipUntil: 'Possible until {end}.',
     skipConfirm: 'Sit this one out?',
@@ -246,23 +260,24 @@ export default {
       other: '{count} guesses out of {total}.',
     },
     progressLeft: {
-      one: 'One more and you’ll have done the round: the surprise at the party will be all the better.',
+      one: 'One more and you’ll have done the round: the surprise on the big day will be all the better.',
       other:
-        '{n} more and you’ll have done the round: the surprise at the party will be all the better.',
+        '{n} more and you’ll have done the round: the surprise on the big day will be all the better.',
     },
     progressDone:
-      'You’ve done the round: the surprise at the party will be all the better.',
+      'You’ve done the round: the surprise on the big day will be all the better.',
     inviteTitle: 'And you, who gives you your present?',
     inviteCount: {
-      one: '{count} out of {total} has already made a guess. Answer at the party.',
+      one: '{count} out of {total} has already made a guess. Answer on the big day.',
       other:
-        '{count} out of {total} have already made a guess. Answer at the party.',
+        '{count} out of {total} have already made a guess. Answer on the big day.',
     },
-    inviteNone: 'Answer at the party.',
+    inviteNone: 'Answer on the big day.',
     makeGuess: 'Make my guess',
     changeMind: 'Change my mind',
-    secret: 'Nobody sees your guess before the party.',
+    secret: 'Nobody sees your guess before the big day.',
     mySanta: 'My Secret Santa',
+    mySantaNeutral: 'Who gives to me',
     others: 'The others',
     mine: 'My guesses',
     choose: '+ Choose',
@@ -271,15 +286,15 @@ export default {
     you: 'you',
     noGuess: 'No guess',
     count: {
-      one: '{count} guess. Nobody sees it before the party.',
-      other: '{count} guesses. Nobody sees them before the party.',
+      one: '{count} guess. Nobody sees it before the big day.',
+      other: '{count} guesses. Nobody sees them before the big day.',
     },
     canChange: 'You can change your mind.',
     oneGift: 'A person gives only one gift.',
     movedFrom: 'Your guess for {name}: choosing it moves it here',
     movedFromMe: 'Your guess for you: choosing it moves it here',
     clear: 'Delete this guess',
-    atParty: 'Answer at the party',
+    atParty: 'Answer on the big day',
     atPartyBody: {
       one: 'The answers come when your organizer reveals the draw. With a surprise.',
       other:
@@ -291,12 +306,15 @@ export default {
     discover: 'Discover the palmarès',
     rewatch: 'Watch the palmarès again',
     palmaresHint: 'Your Secret Santa, the detective, the best hidden…',
+    palmaresHintNeutral: 'Who gives to you, the detective, the best hidden…',
     palmaresHintSmall: 'Your Secret Santa, unmasked at last',
+    palmaresHintSmallNeutral: 'Who gives to you, unmasked at last',
     mineScore: {
       one: 'My guesses · {right} right out of {count}',
       other: 'My guesses · {right} right out of {count}',
     },
     mySantaWas: 'Your Secret Santa: {name}',
+    mySantaWasNeutral: 'Who gives to you: {name}',
     theirSantaWas: "{name}'s: {giver}",
     right: 'Well spotted',
     youSaid: 'You said {name}',
@@ -310,11 +328,15 @@ export default {
         title: 'Unmasked',
         titleMany: 'Unmasked',
         body: 'Guessed their Secret Santa.',
+        bodyNeutral: 'Guessed who was giving to them.',
         bodyMany: 'They guessed their Secret Santa.',
+        bodyManyNeutral: 'They guessed who was giving to them.',
         share: '{n} out of {m}',
         crowdOf: 'people out of {total}',
         shareBody: 'guessed their Secret Santa.',
+        shareBodyNeutral: 'guessed who was giving to them.',
         all: 'The Santas couldn’t hide a thing.',
+        allNeutral: 'Nobody could hide a thing.',
         most: 'A great year for detectives.',
       },
       detective: {
@@ -361,8 +383,11 @@ export default {
         title: 'The ideal suspect',
         titleMany: 'The ideal suspects',
         never: 'Named {count} times as Secret Santa. Wrongly, every time.',
+        neverNeutral: 'Named {count} times, wrongly. Every time.',
         body: 'Named wrongly {count} times as Secret Santa.',
+        bodyNeutral: 'Named {count} times, wrongly.',
         bodyMany: 'Each named wrongly {count} times as Secret Santa.',
+        bodyManyNeutral: 'Each named {count} times, wrongly.',
       },
       twins: {
         title: 'The twins',
@@ -402,13 +427,19 @@ export default {
         same: 'By chance, you would have had {chance}. Chance would have done as well.',
         worse:
           'By chance, you would have had {chance}. The Santas were well hidden.',
+        worseNeutral:
+          'By chance, you would have had {chance}. Everyone was well hidden.',
       },
       closeCall: {
         title: 'So close',
         big: 'Almost!',
         body: 'You had found {name}’s Secret Santa… then you changed your mind. Your instinct was right.',
+        bodyNeutral:
+          'You had found who was giving to {name}… then you changed your mind. Your instinct was right.',
         bodyMe:
           'You had found your Secret Santa… then you changed your mind. Your instinct was right.',
+        bodyMeNeutral:
+          'You had found who was giving to you… then you changed your mind. Your instinct was right.',
       },
     },
     story: {
@@ -420,8 +451,10 @@ export default {
       openingBody:
         "{players} players, {guesses} guesses. Let's see what they were worth.",
       mySanta: 'Your Secret Santa',
+      mySantaNeutral: 'Who gives to you',
       youSaid: 'You said\n{name}…',
       noGuess: 'And your Secret Santa was…',
+      noGuessNeutral: 'And the one giving to you was…',
       soWell: 'So, well spotted?',
       right: 'It was\n{name} indeed!',
       was: 'It was {name}.',
@@ -434,9 +467,13 @@ export default {
       },
       wrongBody: 'Missed: you said {name}.',
       noGuessBody: 'You hadn’t made a guess. Next year?',
+      noGuessBodyOnce: 'You hadn’t made a guess.',
       endEyebrow: "That's all for this year",
+      endEyebrowOnce: "That's all",
       endTitle: 'Merry Christmas,\n{name}',
       endTitleAlone: 'Merry Christmas!',
+      endTitleNeutral: 'Thanks for playing,\n{name}',
+      endTitleAloneNeutral: 'Thanks, everyone!',
       allResults: 'See every result',
       again: 'Watch again from the start',
       tapNext: 'Tap to continue',

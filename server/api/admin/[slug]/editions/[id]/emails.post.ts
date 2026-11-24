@@ -1,9 +1,13 @@
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
-import { listParticipants } from '#server/database/editions';
+import {
+  listParticipants,
+  santaNameForSubject,
+} from '#server/database/editions';
 import { personalLink } from '#server/database/participations';
 import { auditLog, participations } from '#server/database/schema';
+import { auditInsert } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { emailConfigured, sendEmails } from '#server/http/email';
@@ -61,7 +65,7 @@ export default defineEventHandler(async (event) => {
     db
       .select()
       .from(participations)
-      .where(eq(participations.editionId, edition.id)),
+      .where(eq(participations.secretSantaId, edition.id)),
   ]);
   const { targets, withoutEmail, left } = emailTargets(
     people,
@@ -75,6 +79,7 @@ export default defineEventHandler(async (event) => {
 
   // The email is signed by the organiser who sends it (their first name).
   const sender = (await findAccountById(db, user.accountId))?.firstName ?? null;
+  const santaName = await santaNameForSubject(db, edition);
   const dataKey = await dataKeyOf(event);
   const emails = await Promise.all(
     targets.map(async (person) => {
@@ -87,6 +92,7 @@ export default defineEventHandler(async (event) => {
             firstName: person.firstName,
             groupName: group.name,
             sender,
+            santaName,
             editionLabel: edition.label,
             link: await personalLink(event, row, dataKey),
             budget: rules.budget,
@@ -96,6 +102,7 @@ export default defineEventHandler(async (event) => {
               edition.guessMode === 'none' ? null : edition.guessEndsAt,
             guessTimeZone: edition.guessTimeZone,
             guessMode: edition.guessMode as 'none' | 'santa' | 'all',
+            christmas: group.category === 'christmas',
           },
           person.language,
           note,
@@ -135,7 +142,7 @@ export default defineEventHandler(async (event) => {
           targets.map((p) => p.participationId),
         ),
       ),
-    ...events.map((row) => db.insert(auditLog).values(row)),
+    ...events.map((row) => db.insert(auditLog).values(auditInsert(row))),
   ]);
   return { sent: targets.length, withoutEmail, left };
 });

@@ -4,7 +4,7 @@ export default {
   someone: "Quelqu'un",
   unknown: 'Événement inconnu',
   events: {
-    edition_created: "L'édition {label} a été créée",
+    edition_created: 'Le Secret Santa {label} a été créé',
     participant_added: '{name} est de la partie',
     participant_removed: '{name} ne participe plus',
     rules_changed: "L'organisateur a modifié les règles du tirage",
@@ -17,13 +17,13 @@ export default {
       other: 'Le tirage est fait, pour {count} participants',
     },
     draw_cancelled: 'Le tirage a été annulé. Motif : {reason}',
-    results_revealed: "L'organisateur a dévoilé les résultats avant la fête",
+    results_revealed: 'L’organisateur a dévoilé les résultats avant le jour J',
     result_revealed:
       "L'organisateur a consulté le résultat de {name} (accès de dernier recours)",
     result_viewed: '{name} a ouvert son enveloppe',
     avatar_changed: '{name} a changé son icône',
     language_changed: '{name} a changé sa langue ({language})',
-    edition_closed: "L'édition {label} est clôturée",
+    edition_closed: 'Le Secret Santa {label} est clôturé',
     draw_revealed: "L'organisateur a dévoilé les résultats du tirage",
     answers_started:
       "L'organisateur a indiqué que le tirage a été fait ailleurs : chacun donne sa réponse",
@@ -125,8 +125,8 @@ export default {
     notesBody:
       'Le tirage, chaque lien envoyé ou régénéré, chaque enveloppe ouverte, et tout accès de l’organisateur à une enveloppe.',
     never: 'Il ne dit jamais',
-    neverBody: 'Qui offre à qui, ni les pistes de cadeaux de chacun.',
-    who: 'Tout le groupe le voit',
+    neverBody: 'Qui offre à qui, ni les idées de cadeaux de chacun.',
+    who: 'Tous les membres le voient',
     whoBody: 'Participants et organisateurs, avec les mêmes lignes.',
   },
   alert: {
@@ -139,27 +139,27 @@ export default {
       title: 'Accès de dernier recours',
       happened:
         'L’organisateur a regardé à qui {name} offre un cadeau. Il n’a vu que ce résultat-là.',
-      forOthers: 'Rien : ton enveloppe et tes pistes n’ont pas été vues.',
+      forOthers: 'Rien : ton enveloppe et tes idées n’ont pas été vues.',
       forMe:
         'Il sait à qui tu offres un cadeau. Personne d’autre ne l’a vu, et ton enveloppe ne change pas.',
-      why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
+      why: 'En cas de doute ou de désaccord, il faut pouvoir vérifier. L’organisateur doit recopier une phrase et accepter que tous les membres le sachent.',
       changes:
-        'Les autres résultats et les pistes de cadeaux n’ont pas été vus.',
+        'Les autres résultats et les idées de cadeaux n’ont pas été vus.',
     },
     results_revealed: {
-      title: 'Résultats dévoilés avant la fête',
-      happened: 'L’organisateur a dévoilé qui offre à qui, avant la fête.',
-      why: 'Dévoiler est permis dès le jour de la fête. Plus tôt, l’organisateur doit recopier une phrase et accepter que tout le groupe le sache.',
+      title: 'Résultats dévoilés avant le jour J',
+      happened: 'L’organisateur a dévoilé qui offre à qui, avant le jour J.',
+      why: 'Dévoiler est permis dès le jour J. Plus tôt, l’organisateur doit recopier une phrase et accepter que tous les membres le sachent.',
       changes:
-        'Ton enveloppe ne change pas, et tout le groupe peut voir qui offre à qui. Le tirage ne peut plus être annulé.',
+        'Ton enveloppe ne change pas, et tous les membres peuvent voir qui offre à qui. Le tirage ne peut plus être annulé.',
     },
     draw_cancelled: {
       title: 'Tirage annulé',
       happened:
         'L’organisateur a annulé le tirage, pour le motif écrit ci-dessus. Les anciens résultats sont effacés.',
-      why: 'Un désistement, un oubli : mieux vaut relancer que garder un tirage faux. Le motif est écrit au journal pour tout le groupe.',
+      why: 'Un désistement, un oubli : mieux vaut relancer que garder un tirage faux. Le motif est écrit au journal pour tous les membres.',
       changes:
-        'Chacun recevra un nouveau message et ouvrira une nouvelle enveloppe. Les liens et les pistes de cadeaux ne changent pas.',
+        'Chacun recevra un nouveau message et ouvrira une nouvelle enveloppe. Les liens et les idées de cadeaux ne changent pas.',
     },
   },
 };

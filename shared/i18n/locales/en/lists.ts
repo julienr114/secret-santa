@@ -1,60 +1,15 @@
 // Gift lists (README 22.19, lots 21 and 22). See the French file.
 export default {
-  tabs: { draws: 'Draws', lists: 'Lists', label: 'Sections' },
   home: {
     title: 'Lists',
-    intro: 'Everyone ticks what they give.',
-    family: 'My people',
-    new: 'New list',
-    coming: 'Coming up',
-    past: 'Past',
-    youHold: 'You hold this list',
-    notShared: 'Not shared',
-    listOf: '{name}’s list',
-    for: 'For',
     on: '{date}',
-    inDays: { one: 'in {count} day', other: 'in {count} days' },
-    today: 'today',
-    planned: {
-      one: '{count} gift already planned',
-      other: '{count} gifts already planned',
-    },
-    plannedMine: ', {mine} of them by you.',
-    plannedEnd: '.',
-    giving: {
-      one: 'You give {count} gift.',
-      other: 'You give {count} gifts.',
-    },
-    nothingYet: 'You haven’t ticked anything yet.',
-    noneYet: 'No gift planned yet.',
-    noIdeas: {
-      one: '{names} has no ideas yet.',
-      other: '{names} have no ideas yet.',
-    },
-    newIdeas: { one: '{count} new idea', other: '{count} new ideas' },
-    offered: { one: '{count} gift given', other: '{count} gifts given' },
-    offeredTo: {
-      one: '{count} gift given to {name}',
-      other: '{count} gifts given to {name}',
-    },
-    youGave: {
-      one: 'you gave {count} gift',
-      other: 'you gave {count} gifts',
-    },
     untitled: 'Untitled',
-    sent: 'A list someone sent you shows up here as soon as you open its link while logged in.',
-    empty: {
-      title: 'No more double gifts',
-      body: 'Write down your people’s gift ideas for Christmas or a birthday, share the link, and everyone ticks what they give.',
-      create: 'Create my first list',
-      sent: 'Someone sent you a list? Open its link: it will show up here.',
-    },
   },
   doc: {
+    santa: 'Secret Santa · {name}',
     drag: {
       handle: 'Move: {name}',
       placed: '{name}, position {position} of {count}',
-      moved: '{name} moved',
       up: 'Move up',
       down: 'Move down',
       ideas: { one: '{count} idea', other: '{count} ideas' },
@@ -82,15 +37,15 @@ export default {
     noteLabel: 'Your welcome note',
     noteDefault:
       'A few ideas to save you the search. Tick what you give, and nobody will have the same idea. Got another one? It’s welcome.',
-    noteDefaultHint: 'A starting text: tap it to write your own.',
     noteAdd: 'Add a welcome note',
-    noteHelp: 'Erased, the list has no note.',
     plannedHolder: {
       one: '{count} gift already planned. Only you see the names.',
       other: '{count} gifts already planned. Only you see the names.',
     },
-    touchToEdit: 'Tap a text to change it.',
     me: 'Me',
+    meTag: '(me)',
+    drawTitle: 'Ideas for the Secret Santa',
+    drawTitleOf: 'Ideas for the Secret Santa ({name})',
     age: { one: '{count} year old', other: '{count} years old' },
     size: 'size {size}',
     shoe: 'shoe size {size}',
@@ -156,31 +111,87 @@ export default {
     },
   },
   share: {
-    onBy: 'Turned on by {name}',
-    offBy: 'Not turned on by {name} yet',
-    title: 'Sharing by link',
-    message:
-      '🎁 Our gift list for {title} is ready: {names}. Tick what you give, so that nobody has the same idea:',
     and: 'and',
-    me: 'me',
-    footer:
-      'Made with Under the Tree, for gift lists and Secret Santas with those close to you.',
-    personalize: 'Personalise the message',
-    personalizeHelp: 'The link and the last sentence stay at the end.',
-    personalizeLabel: 'The message',
-    copy: 'Copy',
-    send: 'Share',
     copyFailed: 'Could not copy here: select the link to copy it.',
     copied: 'Copied',
-    help: 'Anyone with the link sees the list and can tick.',
-    changeLink: 'Change the link',
-    changeConfirm: 'The old link will stop working.',
-    change: 'Change',
     changed: 'New link created',
-    stopped: 'Sharing by link stopped',
-    missing: {
-      title: 'Give the event a name.',
-      people: 'Add at least one person to the list.',
+  },
+  elsewhere: {
+    title: 'What I’m giving elsewhere',
+    gifts: { one: '{count} gift', other: '{count} gifts' },
+    lists: { one: '{count} list', other: '{count} lists' },
+    line: '{date} · you give: {gifts}',
+    lineNoDate: 'You give: {gifts}',
+  },
+  accountCreated: {
+    title: 'It’s saved',
+    body: 'An account was created with your address, to find your list again.',
+    ok: 'Got it',
+  },
+  sharing: {
+    draft: 'Draft',
+    draftHint: 'Only you see it',
+    public: 'Public',
+    publicHint: 'Anyone with the link sees it',
+    giverHint: 'Only the one who drew you sees it',
+    giversHint: 'Only those who drew you see it',
+    members: {
+      one: '{count} member sees it',
+      other: '{count} members see it',
+    },
+    nobody: 'Nobody else sees it',
+    share: 'Share',
+    edit: 'Edit',
+    close: 'Close',
+    theLink: 'The link',
+    copyLink: 'Copy the link',
+    title: 'Who sees your list?',
+    membersOf: {
+      one: '{count} member',
+      other: '{count} members',
+    },
+    giverSees: 'The one who drew you sees it',
+    chosen: 'Who I want',
+    everyone: 'Everyone',
+    remove: 'Remove {name}',
+    add: 'Add',
+    someoneElse: 'Someone else',
+    open: {
+      title: 'Open to everyone?',
+      body: 'Anyone with the link will be able to see your list and tick a gift, without an account.',
+      submit: 'Open',
+    },
+    changeLink: 'Change the link',
+    renew: {
+      title: 'Change the link?',
+      body: 'The old link will stop working: you will have to send the new one. Those who already ticked a gift keep the list.',
+      submit: 'Change',
+    },
+    narrow: {
+      title: 'Remove “{name}”?',
+      everyoneTitle: 'Remove “Everyone”?',
+      members: {
+        one: 'Its member will no longer see your list.',
+        other: 'Its {count} members will no longer see your list.',
+      },
+      claimersOf: {
+        one: '{count} of them ticked a gift and will no longer be able to open it. Their gift is still planned.',
+        other:
+          '{count} of them ticked a gift and will no longer be able to open it. Their gifts are still planned.',
+      },
+      claimers: {
+        one: '{count} person ticked a gift and will no longer open the list. Their gift is still planned.',
+        other:
+          '{count} people ticked a gift and will no longer open the list. Their gifts are still planned.',
+      },
+      submit: 'Remove',
+    },
+    closed: {
+      loginTitle: 'This list is not open to everyone',
+      loginBody: 'If it was shared with you, log in to open it.',
+      login: 'Log in',
+      title: 'This list is not shared with you',
+      body: 'Ask the person who sent you the link to open it to you.',
     },
   },
   live: {
@@ -238,7 +249,18 @@ export default {
     noIdeas: 'no idea to take up',
     title: 'Start from a list',
     untitled: 'Unnamed list',
-    people: { one: '{count} person', other: '{count} people' },
+    names: {
+      me: 'Me',
+      one: '{a}',
+      two: '{a} and {b}',
+      three: '{a}, {b} and {c}',
+      more: {
+        one: '{a}, {b} and {count} other',
+        other: '{a}, {b} and {count} others',
+      },
+      twoMe: '{a} and me',
+      threeMe: '{a}, {b} and me',
+    },
     ideas: {
       one: '{count} idea not given yet',
       other: '{count} ideas not given yet',
@@ -249,8 +271,20 @@ export default {
     fromUntitled: 'Taken up from another list.',
     marksBefore: 'The ideas marked',
     marksAfter:
-      'were not given: keep them or erase them. Only you see this mark, and it goes when the list is shared.',
+      'were not given: keep them or erase them. Only you see this mark.',
     mark: 'Taken up from the old list',
+  },
+  // A list of a year over (ticket 119, V3ListeAnneePassee).
+  past: {
+    title: {
+      christmas: 'Christmas list {year}',
+      birthday: 'Birthday list {year}',
+      birth: 'Baby list {year}',
+      wedding: 'Wedding list {year}',
+      housewarming: 'Housewarming list {year}',
+      other: 'List of {year}',
+    },
+    subtitle: 'A past year',
   },
   holders: {
     here: 'Here right now',
@@ -301,6 +335,33 @@ export default {
     lastManager: 'Someone has to manage the list.',
     notManager: 'Only those who manage the list can do that.',
   },
+  // The email to someone a list is shared with by their address (ticket
+  // 117, V3ListePartageEmail).
+  // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
+  // into its event, by it.
+  inviteMembers: {
+    firstName: 'First name',
+    email: 'Email address',
+    hint: 'They get an email in your name, and become a member of “{name}”.',
+    submit: 'Invite',
+    sent: 'Invitation sent',
+    takeTitle: 'Take those of',
+    takeSubmit: {
+      one: 'Invite · {count} person',
+      other: 'Invite · {count} people',
+    },
+    taken: {
+      one: '{count} invitation sent',
+      other: '{count} invitations sent',
+    },
+  },
+  sharedEmail: {
+    subject: '{by} shared their list “{title}” with you',
+    hello: 'Hello,',
+    intro:
+      '{by} shared their gift list “{title}” with you. Tick what you give, and nobody will have the same idea.',
+    action: 'See the list:',
+  },
   inviteEmail: {
     subject: '{by} invites you to hold the list “{title}”',
     hello: 'Hello,',
@@ -325,7 +386,7 @@ export default {
     managing:
       'You can share the list, invite someone and delete it, like {by}.',
     firstName: 'Your first name',
-    firstNameHelp: 'Seen by those you hold a list or do a draw with.',
+    firstNameHelp: 'Seen by those you hold a list or do a Secret Santa with.',
     address:
       'Your account will be created at {email}, where you received the invitation. Nothing else to fill in.',
     acceptCreate: 'Accept, and create my account',
@@ -431,17 +492,84 @@ export default {
     },
     none: 'Nothing',
   },
-  visitor: {
-    figures: '{name}’s list. You are on it: you can write your own ideas.',
-    itsYou: 'That’s you',
-    ideaForMe: 'An idea for me…',
-    anotherForMe: 'Another idea for me…',
-    holder: '{name}’s list.',
-    whoSees: 'Nobody but {name} sees who ticked what.',
-    mine: {
-      one: 'You give {count} gift: nobody but {name} knows it’s you.',
-      other: 'You give {count} gifts: nobody but {name} knows it’s you.',
+  link: {
+    action: 'Link to a Secret Santa',
+    intro: 'The one who drew you will see this list to choose your gift.',
+    linkedTo: 'Linked to “{title}”',
+    linked: 'List linked',
+    linkedMoved: 'List linked. “{title}” no longer is.',
+    unlinked: 'List unlinked',
+  },
+  tour: {
+    of: '{at} of {count}',
+    skip: 'Skip',
+    next: 'Next',
+    secret: {
+      me: {
+        title: 'Your part',
+        body: 'It is linked to your Secret Santa: the one who drew you reads it as soon as you write.',
+      },
+      line: {
+        title: 'One idea per line',
+        body: 'Add a link if you found the item.',
+      },
+      share: {
+        title: 'Who sees it',
+        body: 'For now, the one who drew you, and only them. “Edit” opens it to others.',
+      },
+      name: {
+        title: 'The name and the date',
+        body: 'Tap a text to change it.',
+      },
+      resume: {
+        title: 'Your ideas from before',
+        body: 'Take back those nobody gave.',
+      },
+      add: {
+        title: 'A list for several',
+        body: 'Add your children or someone close: each has their part.',
+      },
     },
+    create: {
+      name: {
+        title: 'The name and the date',
+        body: 'They come from the occasion. Tap a text to change it.',
+      },
+      add: {
+        title: 'For whom?',
+        body: 'One part per person: you, your children, someone close.',
+      },
+      share: {
+        title: 'Nobody sees it yet',
+        body: '“Share” chooses who, whenever you want.',
+      },
+    },
+    firstLine: {
+      title: 'One idea per line',
+      body: 'Add a link if you found the item.',
+    },
+  },
+  line: {
+    handle: 'Move, or open the options of this line',
+    menu: 'Line options',
+    wish: 'Wish',
+    star: { one: '{count} star', other: '{count} stars' },
+    stars: 'Wish: {count} of 3',
+    toTitle: 'Make it a heading',
+    toIdea: 'Make it an idea again',
+    up: 'Move up',
+    down: 'Move down',
+    moveTo: 'Move to…',
+    moveTitle: 'Move to',
+    remove: 'Delete the line',
+  },
+  visitor: {
+    wholeList: 'The whole list',
+    filterLabel: 'What you see of the list',
+    ideaForMe: 'An idea for you…',
+    anotherForMe: 'Another idea for you…',
+    holder: '{name}’s list',
+    holderOn: '{date} · {name}’s list',
     youHold: 'You hold this list: you see who gives what.',
     openDoc: 'Edit my list',
     giving: 'You give it',
@@ -456,7 +584,6 @@ export default {
     offListAction: 'I’m giving {name} something else',
     tick: 'I give it: {idea}',
     untick: 'I no longer give it: {idea}',
-    unshared: 'This list is no longer shared.',
     gone: 'This link no longer works. Ask whoever holds the list for the new one.',
   },
   claim: {
@@ -559,7 +686,7 @@ export default {
     on: 'On: when you tick a gift, nobody sees your first name, not even those who hold the list. They see “Anonymous”.',
     noticeTitle: 'We turned anonymous mode on for you',
     noticeBody:
-      'You are giving a gift in a draw to someone on this list: your ticks will not say your first name. You can turn it off up there, for instance to also give a gift under your first name.',
+      'You are giving a gift in a Secret Santa to someone on this list: your ticks will not say your first name. You can turn it off up there, for instance to also give a gift under your first name.',
     understood: 'Got it',
   },
   login: {

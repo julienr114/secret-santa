@@ -1,129 +1,268 @@
 <script setup lang="ts">
 import type { ListDocument } from '#server/http/lists';
-import { shareMissing, type ShareAsk } from '#server/utils/lists';
-import { useShareListMutation } from '~/composables/queries/useLists';
+import { linkLetsIn } from '#server/utils/listSharing';
+import {
+  shareDepth,
+  shareLevelOf,
+  type ShareLevel,
+} from '#shared/utils/navigation';
+import type { ShareQuestion } from '~/components/lists/ShareConfirm.vue';
 
-// « Partage par lien », the bar on top of the document of a list (README
-// 22.19, maquettes ListeEtatBrouillon, ListeEtatPubliee): one row, an
-// icon, a title that names neither an action nor a state, and the switch,
-// which says whether the list has its link. Not shared: a padlock, nothing
-// to unfold; the switch is off. Turned on while the list has no name or
-// nobody on it, it stays off and the bar says what is missing, as an
-// error, until it is there. Shared: the bar stays white, only the switch
-// and the globe are green; the title unfolds, in place, the link and
-// « Copier », « Partager » (the phone's share sheet, with a ready-made
-// message, shown only where there is one; no « Par email », asked by
-// Julien on 19 November 2026: the share sheet has the mail app too), « Personnaliser le message » and
-// « Changer de lien ». Nothing full nor
-// red. Turned off, sharing stops at once, with « Annuler » in the toast;
-// turned on again, the link is the same. The bar stays stuck under the
-// top bar while the list scrolls.
-// Someone who « aide à écrire » (lot 25 bis; Correction 28, maquettes
-// ListeAidePartage, ListeAideSansPartage) cannot turn the sharing on, but
-// may send the link once it is: the globe, « Activé par Camille » and a
-// button « Partager » (the phone's share sheet, else the link copied);
-// or the padlock and « Pas encore activé par Camille », nothing to touch.
-// No switch, no « Changer de lien », no « Personnaliser le message ».
-// The name being typed counts at once (`title`): it is saved as it is
-// typed, and the list read again a moment later.
+// The bar on top of a list (docs/spec/v3/listes.md, « La barre du haut
+// d'une liste »): folded, one row, the stage of the sharing and a button
+// (« Partager » on a draft, « Modifier » after, « Le lien » for who « aide
+// à écrire »: ListeAidePartage); its name and its sentence on one line
+// each, cut by « … » (ticket 141). The button unrolls
+// it where it is, over the list, which does not move (ticket 138): the
+// address with « Copier le lien », then « Qui verra ta liste ? » for who
+// manages the list (V3ListeQui…, V3ListeAideLien). It stays stuck under
+// the top bar, its content scrolls when taller than the screen;
+// « Fermer », Échap or a touch outside folds it without changing
+// anything.
+// Unrolled, it has its own navigation (« On reste dans la barre », ticket
+// 139): under its head, which stays, « Quelqu'un d'autre » and « Reprendre
+// ceux d'un autre événement » are levels further (`?partage=inviter`,
+// `reprendre`), which come in from the right in a quarter of a second, the
+// height following; « ‹ » and the back of the phone go back one level.
+// A question before a step is such a level too (`confirmer`, ticket 141):
+// the back cancels it.
+// Folded from anywhere, it opens again on the first level, what was
+// written forgotten.
 const props = defineProps<{
   doc: ListDocument;
   readonly?: boolean;
-  title?: string;
-  /** Who manages the list, for who only helps to write. */
-  managerName?: string;
 }>();
-const { t, tk } = useT();
+const { t } = useT();
 const toast = useMessages();
-const errorMessage = useErrorMessage();
-const id = computed(() => props.doc.list.id);
-const share = useShareListMutation(id);
 
-const stored = computed(() => props.doc.list.status !== 'draft');
-/** What the switch was just asked, until the list says so itself. */
-const asked = ref<boolean | null>(null);
-const shared = computed(() => asked.value ?? stored.value);
-const missing = computed(() =>
-  shareMissing({
-    title: props.title ?? props.doc.list.title,
-    peopleCount: props.doc.people.length,
-  }),
-);
-const blocked = computed(() => !shared.value && missing.value.length > 0);
-/** The switch was touched while something was missing. */
-const tried = ref(false);
-
-const open = ref(false);
-// The bar stays under the top bar while the list scrolls (lot 24 bis);
-// unfolded, it folds back as soon as one scrolls, so as not to hide the
-// list.
-// Unfolding moves the page by itself (the browser keeps what one was
-// reading in place): only what scrolls after that counts.
-const openedAt = ref<number | null>(null);
-watch(open, (now) => {
-  openedAt.value = null;
-  if (!now) return;
-  window.setTimeout(() => {
-    if (open.value) openedAt.value = window.scrollY;
-  }, 300);
+const sharing = computed(() => props.doc.sharing);
+const title = computed(() => {
+  const { stage, events } = sharing.value;
+  if (stage === 'draft') return t('lists.sharing.draft');
+  if (stage === 'public') return t('lists.sharing.public');
+  return events.join(', ');
 });
-const onScroll = () => {
-  if (
-    open.value &&
-    openedAt.value !== null &&
-    Math.abs(window.scrollY - openedAt.value) > 24
-  ) {
-    open.value = false;
-    confirming.value = false;
+const subtitle = computed(() => {
+  const { stage, members } = sharing.value;
+  if (stage === 'draft') return t('lists.sharing.draftHint');
+  if (stage === 'public') return t('lists.sharing.publicHint');
+  if (stage === 'giver') {
+    return sharing.value.events.length > 1
+      ? t('lists.sharing.giversHint')
+      : t('lists.sharing.giverHint');
   }
-};
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }));
-onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
-const confirming = ref(false);
+  return members > 0
+    ? t('lists.sharing.members', { count: members })
+    : t('lists.sharing.nobody');
+});
+const icon = computed(
+  () =>
+    ({
+      draft: 'i-lucide-lock',
+      giver: 'i-lucide-user-round',
+      parties: 'i-lucide-users',
+      public: 'i-lucide-globe',
+    })[sharing.value.stage],
+);
+
+/**
+ * The address and « Copier le lien », only when the link lets someone in
+ * (ticket 157): not on a draft, nor for those who drew me alone.
+ */
+const letsIn = computed(() => linkLetsIn(sharing.value.stage));
 const url = computed(() =>
-  stored.value && props.doc.list.shareToken && import.meta.client
+  props.doc.list.shareToken && import.meta.client
     ? `${window.location.origin}/l/${props.doc.list.shareToken}`
     : '',
 );
-const { whole } = useListMessage(id, () => props.doc, url);
-const send = (ask: ShareAsk, then: () => void) =>
-  share.mutate(
-    { ask },
-    {
-      onSuccess: then,
-      onError: (error) => toast.failed(errorMessage(error)),
-      onSettled: () => {
-        asked.value = null;
-      },
-    },
-  );
-const turnOn = () => {
-  asked.value = true;
-  send('on', () => {
-    open.value = true;
-  });
+const route = useRoute();
+const router = useRouter();
+/** The question asked, while its level shows. */
+const question = ref<ShareQuestion | null>(null);
+const asked = computed<ShareLevel>(() =>
+  props.readonly ? '' : shareLevelOf(route.query.partage),
+);
+// A question known only to this page: an address that asks for it alone
+// gives the first level.
+const level = computed<ShareLevel>(() =>
+  asked.value === 'confirmer' && !question.value ? '' : asked.value,
+);
+const open = ref(false);
+/** The levels this bar pushed in the history: « ‹ » goes back by it. */
+const pushed = ref(0);
+/** What was touched at each level left, to give it the focus back. */
+const touched = ref<string[]>([]);
+/** Forward or back, for the way the levels slide. */
+const forward = ref(true);
+const contentId = useId();
+const toggle = useTemplateRef<HTMLButtonElement>('toggle');
+const content = useTemplateRef<HTMLElement>('content');
+const card = useTemplateRef<HTMLElement>('card');
+// Unrolled, the bar keeps the room of its folded row and floats over
+// the rest: its height, read as it unrolls.
+const folded = ref(0);
+const label = computed(() => {
+  if (open.value) return t('lists.sharing.close');
+  if (props.readonly) return t('lists.sharing.theLink');
+  return sharing.value.stage === 'draft'
+    ? t('lists.sharing.share')
+    : t('lists.sharing.edit');
+});
+
+/**
+ * Unrolls or folds the bar: the focus goes into it, then back to its
+ * button.
+ * @param on - Unrolled.
+ * @returns Once the focus has moved.
+ */
+const setOpen = async (on: boolean) => {
+  if (on) folded.value = card.value?.offsetHeight ?? 0;
+  open.value = on;
+  if (!on) {
+    toFirst();
+    adding.value = null;
+    draft.value = { firstName: '', email: '' };
+  }
+  await nextTick();
+  // In it: its first button, or itself while « Qui voit ta liste ? »
+  // loads (no address to copy, ticket 157).
+  (on
+    ? (content.value?.querySelector<HTMLElement>('button, a') ?? content.value)
+    : toggle.value
+  )?.focus();
 };
-const turnOff = () => {
-  asked.value = false;
-  open.value = false;
-  confirming.value = false;
-  send('off', () => toast.undo(t('lists.share.stopped'), turnOn));
+
+/**
+ * The address of a level, the rest of the query kept.
+ * @param to - The level.
+ * @returns The route.
+ */
+const at = (to: ShareLevel) => {
+  const { partage: _level, ...query } = route.query;
+  return { query: to ? { ...query, partage: to } : query };
 };
-const onSwitch = (on: boolean) => {
-  if (on && blocked.value) {
-    tried.value = true;
+/**
+ * One level further: what was touched is remembered for the way back.
+ * @param to - The level.
+ * @param from - The `data-share-focus` of what was touched.
+ * @returns Once there.
+ */
+const goTo = async (to: ShareLevel, from: string) => {
+  touched.value = [...touched.value, from];
+  await router.push(at(to));
+};
+/** « ‹ »: one level back, by the history when this bar went forward. */
+const goBack = async () => {
+  if (pushed.value > 0) {
+    router.back();
     return;
   }
-  tried.value = false;
-  return on ? turnOn() : turnOff();
+  await router.replace(at(level.value === 'reprendre' ? 'inviter' : ''));
 };
-const onRenew = () =>
-  send('renew', () => {
-    confirming.value = false;
-    toast.done(t('lists.share.changed'));
-  });
+/** Back to the first level, from anywhere. */
+function toFirst() {
+  if (pushed.value > 0) router.go(-pushed.value);
+  else if (level.value !== '') void router.replace(at(''));
+}
+// The level moves (« ‹ », the back of the phone, `toFirst`): the way it
+// slides, and the focus, on the title of a level further or back on what
+// was touched.
+watch(level, async (now, before) => {
+  const depth = shareDepth(now);
+  const was = shareDepth(before);
+  if (now !== 'confirmer') question.value = null;
+  forward.value = depth > was;
+  // Pushed here or by the forward of the browser, gone back by any way.
+  pushed.value = Math.max(0, pushed.value + depth - was);
+  const back = depth < was ? touched.value[depth] : undefined;
+  touched.value = touched.value.slice(0, depth);
+  if (!open.value) return;
+  await nextTick();
+  (back
+    ? content.value?.querySelector<HTMLElement>(`[data-share-focus="${back}"]`)
+    : content.value?.querySelector<HTMLElement>('[data-share-title]')
+  )?.focus();
+});
+/** « Ajouter » unrolled, kept while the bar is. */
+const adding = ref<boolean | null>(null);
+/** What « Quelqu'un d'autre » holds, kept while the bar is unrolled. */
+const draft = ref({ firstName: '', email: '' });
+/**
+ * A question before a step, one level further.
+ * @param asking - The question.
+ * @param from - The `data-share-focus` of what was touched.
+ * @returns Once there.
+ */
+const onAsk = (asking: ShareQuestion, from: string) => {
+  question.value = asking;
+  return goTo('confirmer', from);
+};
+/** Sent: back to the first level, « Ajouter » folded. */
+const onSent = () => {
+  adding.value = false;
+  touched.value = [];
+  toFirst();
+};
 
-// « Copier » answers where it was touched: « Copié », for a moment.
+// The height follows the level that comes in, in the same quarter of a
+// second; the level that goes lies over it meanwhile.
+const stage = useTemplateRef<HTMLElement>('stage');
+const height = ref<number | null>(null);
+const onBeforeLeave = (el: Element) => {
+  height.value = (el as HTMLElement).offsetHeight;
+};
+const onEnter = (el: Element) => {
+  requestAnimationFrame(() => {
+    height.value = (el as HTMLElement).offsetHeight;
+  });
+};
+const onAfterEnter = () => {
+  height.value = null;
+};
+const slide = computed(() =>
+  forward.value
+    ? { from: 'translate-x-full', to: '-translate-x-full' }
+    : { from: '-translate-x-full', to: 'translate-x-full' },
+);
+
+/**
+ * A touch outside the unrolled bar folds it, and does only that: what
+ * was under the finger is neither focused nor pressed.
+ * @param event - The touch, caught before the page sees it.
+ */
+const onOutside = (event: PointerEvent) => {
+  if (!(event.target instanceof Node) || card.value?.contains(event.target)) {
+    return;
+  }
+  event.preventDefault();
+  event.stopPropagation();
+  const swallow = (click: MouseEvent) => {
+    click.preventDefault();
+    click.stopPropagation();
+  };
+  document.addEventListener('click', swallow, { capture: true, once: true });
+  // A touch that scrolled instead never clicks: the next touch is free.
+  document.addEventListener(
+    'pointerdown',
+    () => document.removeEventListener('click', swallow, { capture: true }),
+    { capture: true, once: true },
+  );
+  void setOpen(false);
+};
+watch(open, (on) => {
+  if (on) document.addEventListener('pointerdown', onOutside, true);
+  else document.removeEventListener('pointerdown', onOutside, true);
+});
+onBeforeUnmount(() =>
+  document.removeEventListener('pointerdown', onOutside, true),
+);
+
+// Asked by an address (« À ma liste » in « Membres »): unrolled at once.
+onMounted(() => {
+  if (level.value !== '') void setOpen(true);
+});
+
+// « Copier le lien » answers where it was touched: « Copié », for a moment.
 const copied = ref(false);
 const onCopy = async () => {
   if (!(await copyText(url.value))) {
@@ -135,178 +274,124 @@ const onCopy = async () => {
     copied.value = false;
   }, 2000);
 };
-// « Partager » only where the device has a share sheet: elsewhere (a
-// computer), « Copier » is enough. The sheet must open right on the tap,
-// before any wait (Safari).
-const canShare = ref(false);
-onMounted(() => {
-  canShare.value = typeof navigator.share === 'function';
-});
-const onSend = () => navigator.share({ text: whole.value }).catch(() => null);
-/** « Partager », for who helps to write: the share sheet, or the link. */
-const onHelperShare = () => (canShare.value ? onSend() : onCopy());
 </script>
 
 <template>
   <div
-    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-10 -mt-1 rounded-[24px] bg-default shadow-card ring-1 ring-default"
+    class="sticky top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-20 -mt-1"
+    :style="open ? { height: `${folded}px` } : undefined"
     data-testid="share-bar"
+    @keydown.esc="open && setOpen(false)"
   >
     <div
-      v-if="readonly"
-      class="flex min-h-12 items-center gap-2 pr-2 pl-3.5"
-      data-testid="share-readonly"
-    >
-      <UIcon
-        :name="shared ? 'i-lucide-globe' : 'i-lucide-lock'"
-        class="size-5 shrink-0"
-        :class="shared ? 'text-success' : 'text-toned'"
-      />
-      <span class="flex min-h-11 min-w-0 grow flex-col justify-center">
-        <span class="text-sm font-bold">{{ t('lists.share.title') }}</span>
-        <span class="text-[13px] leading-[1.3] text-toned">{{
-          shared
-            ? t('lists.share.onBy', { name: managerName ?? '' })
-            : t('lists.share.offBy', { name: managerName ?? '' })
-        }}</span>
-      </span>
-      <button
-        v-if="shared && url"
-        type="button"
-        class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3.5 text-sm font-bold ring-1 ring-default"
-        data-testid="share-helper"
-        @click="onHelperShare"
-      >
-        <UIcon
-          :name="copied ? 'i-lucide-check' : 'i-lucide-send'"
-          class="size-[18px]"
-        />
-        <span aria-live="polite">{{
-          copied ? t('lists.share.copied') : t('lists.share.send')
-        }}</span>
-      </button>
-    </div>
-    <div v-else class="flex min-h-12 items-center gap-2 pr-2 pl-3.5">
-      <UIcon
-        :name="shared ? 'i-lucide-globe' : 'i-lucide-lock'"
-        class="size-5 shrink-0"
-        :class="shared ? 'text-success' : 'text-toned'"
-      />
-      <button
-        v-if="shared"
-        type="button"
-        class="flex min-h-11 min-w-0 grow items-center gap-1 text-left text-sm font-bold"
-        :aria-expanded="open"
-        aria-controls="share-panel"
-        data-testid="share-title"
-        @click="open = !open"
-      >
-        {{ t('lists.share.title') }}
-        <UIcon
-          :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          class="size-5 text-toned"
-        />
-      </button>
-      <span v-else class="min-w-0 grow text-sm font-bold">{{
-        t('lists.share.title')
-      }}</span>
-      <USwitch
-        :model-value="shared"
-        color="success"
-        size="lg"
-        :disabled="share.isPending.value"
-        :aria-label="t('lists.share.title')"
-        data-testid="share-switch"
-        @update:model-value="onSwitch"
-      />
-    </div>
-    <p
-      v-if="!readonly && blocked && tried"
-      class="px-3.5 pb-3 text-[13px] leading-[1.45] font-medium text-error"
-      role="alert"
-      data-testid="share-missing"
-    >
-      {{ missing.map((what) => tk(`lists.share.missing.${what}`)).join(' ') }}
-    </p>
-    <div
-      v-if="shared && open && url && !readonly"
-      id="share-panel"
-      class="flex flex-col gap-2.5 px-3.5 pb-3.5"
-      data-testid="share-panel"
+      ref="card"
+      class="flex max-h-[calc(100dvh-3.5rem-env(safe-area-inset-top)-1rem-var(--tab-bar)-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-[24px] bg-default ring-1 ring-default"
+      :class="open ? 'absolute inset-x-0 top-0 shadow-raised' : 'shadow-card'"
+      data-testid="share-card"
     >
       <div
-        class="flex items-center gap-2.5 rounded-[18px] bg-muted py-2 pr-2 pl-3"
+        class="flex min-h-13 shrink-0 items-center gap-2.5 pr-2 pl-3.5"
+        :class="{ '-mb-1.5': open }"
       >
-        <span
-          class="min-w-0 grow overflow-x-auto text-[15px] font-semibold whitespace-nowrap select-all [scrollbar-width:none]"
-          data-testid="share-link"
-          >{{ url.replace(/^https?:\/\//, '') }}</span
-        >
-        <button
-          type="button"
-          class="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default"
-          data-testid="copy-link"
-          @click="onCopy"
-        >
-          <UIcon
-            :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
-            class="size-[18px]"
-          />
-          <span aria-live="polite">{{
-            copied ? t('lists.share.copied') : t('lists.share.copy')
+        <UIcon :name="icon" class="size-5 shrink-0 text-success" />
+        <span class="flex min-w-0 grow flex-col" data-testid="share-stage">
+          <span class="truncate text-sm font-bold">{{ title }}</span>
+          <span class="truncate text-[13px] leading-[1.3] text-toned">{{
+            subtitle
           }}</span>
+        </span>
+        <button
+          v-if="!readonly || letsIn"
+          ref="toggle"
+          type="button"
+          class="relative flex h-9 shrink-0 items-center rounded-full bg-default px-3 text-sm font-bold ring-1 ring-default after:absolute after:inset-x-0 after:-inset-y-1"
+          :aria-expanded="open"
+          :aria-controls="contentId"
+          data-testid="share-open"
+          @click="setOpen(!open)"
+        >
+          {{ label }}
         </button>
       </div>
-      <UButton
-        v-if="canShare"
-        block
-        variant="outline"
-        color="neutral"
-        icon="i-lucide-send"
-        class="h-12 justify-center text-base font-bold"
-        :label="t('lists.share.send')"
-        data-testid="share-send"
-        @click="onSend"
-      />
-      <p class="text-[13px] leading-[1.45] text-toned">
-        {{ t('lists.share.help') }}
-      </p>
       <div
-        v-if="confirming"
-        class="flex flex-wrap items-center gap-x-4 text-sm"
-        data-testid="share-renew"
+        v-if="open"
+        :id="contentId"
+        ref="content"
+        class="flex min-h-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain pt-2.5 pb-2 outline-none"
+        tabindex="-1"
+        data-testid="share-content"
       >
-        <p class="grow">{{ t('lists.share.changeConfirm') }}</p>
-        <button
-          type="button"
-          class="flex min-h-11 items-center font-bold underline underline-offset-2"
-          :disabled="share.isPending.value"
-          @click="onRenew"
+        <div
+          ref="stage"
+          class="relative shrink-0 transition-[height] duration-250 ease-out motion-reduce:transition-none"
+          :style="height === null ? undefined : { height: `${height}px` }"
         >
-          {{ t('lists.share.change') }}
-        </button>
-        <button
-          type="button"
-          class="flex min-h-11 items-center font-bold text-toned underline underline-offset-2"
-          @click="confirming = false"
-        >
-          {{ t('common.actions.cancel') }}
-        </button>
+          <Transition
+            :enter-from-class="slide.from"
+            enter-active-class="transition-transform duration-250 ease-out motion-reduce:transition-none"
+            :leave-to-class="slide.to"
+            leave-active-class="absolute inset-x-0 top-0 transition-transform duration-250 ease-out motion-reduce:transition-none"
+            @before-leave="onBeforeLeave"
+            @enter="onEnter"
+            @after-enter="onAfterEnter"
+          >
+            <ListsShareInvite
+              v-if="level === 'inviter'"
+              v-model="draft"
+              :list-id="doc.list.id"
+              @back="goBack"
+              @sent="onSent"
+              @take="goTo('reprendre', 'take')"
+            />
+            <ListsShareTake
+              v-else-if="level === 'reprendre'"
+              :list-id="doc.list.id"
+              @back="goBack"
+              @sent="onSent"
+            />
+            <ListsShareConfirm
+              v-else-if="level === 'confirmer' && question"
+              :list-id="doc.list.id"
+              :question="question"
+              @back="goBack"
+              @done="toFirst"
+            />
+            <div v-else class="flex flex-col gap-2">
+              <!-- The corners nest: the button's radius is the field's less
+                   the space between them. -->
+              <div
+                v-if="letsIn"
+                class="mx-2 flex shrink-0 items-center gap-2 rounded-[16px] bg-muted py-1 pr-1 pl-3"
+              >
+                <span
+                  class="min-w-0 grow truncate text-sm font-semibold"
+                  data-testid="share-link"
+                  >{{ url.replace(/^https?:\/\//, '') }}</span
+                >
+                <button
+                  type="button"
+                  class="relative flex h-9 shrink-0 items-center gap-1.5 rounded-[12px] bg-default px-3 text-sm font-bold ring-1 ring-default after:absolute after:inset-x-0 after:-inset-y-1"
+                  data-testid="copy-link"
+                  @click="onCopy"
+                >
+                  <span aria-live="polite">{{
+                    copied
+                      ? t('lists.share.copied')
+                      : t('lists.sharing.copyLink')
+                  }}</span>
+                </button>
+              </div>
+              <ListsSharingPanel
+                v-if="!readonly"
+                v-model:adding="adding"
+                :list-id="doc.list.id"
+                @someone-else="goTo('inviter', 'someone-else')"
+                @ask="onAsk"
+              />
+            </div>
+          </Transition>
+        </div>
       </div>
-      <p v-else class="flex flex-wrap gap-x-4 text-sm font-bold text-toned">
-        <NuxtLink
-          :to="`/listes/${id}/message`"
-          class="flex min-h-11 items-center underline underline-offset-2"
-          >{{ t('lists.share.personalize') }}</NuxtLink
-        >
-        <button
-          type="button"
-          class="flex min-h-11 items-center underline underline-offset-2"
-          @click="confirming = true"
-        >
-          {{ t('lists.share.changeLink') }}
-        </button>
-      </p>
     </div>
   </div>
 </template>

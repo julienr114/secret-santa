@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // The main action of a screen, at its bottom (README 23.3).
 // On a long screen where one chooses, it is a white band stuck to the
-// bottom, in reach at all times, above the bar « Tirages / Listes » when
+// bottom, in reach at all times, above the bottom bar when
 // there is one. The band reaches down over the screen's and the layout's
 // padding. On a wide screen the band and its top line run the whole width
 // of the window, while the button stays in the column: the border image

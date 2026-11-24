@@ -3,5 +3,4 @@ import type { Dict } from '../../types';
 
 export default {
   changeLanguage: 'Change language',
-  menu: 'Menu',
 } satisfies Dict<typeof fr>;

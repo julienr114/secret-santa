@@ -3,6 +3,7 @@ import {
   canDeleteList,
   addPersonRefusal,
   canResumeInto,
+  mergeResumed,
   isSingleList,
   singleRefusal,
   resumeSummary,
@@ -17,6 +18,8 @@ import {
   listStatus,
   memberRemoval,
   noteOf,
+  drawListTitle,
+  listIconOfParty,
   randomListIcon,
   shareChange,
   shareMissing,
@@ -73,12 +76,15 @@ describe('lists', () => {
       shareToken: 'old',
       sharedAt: 'now',
     });
-    // Another link, only while the list is shared.
+    // Another link, for any list (ticket 117), its sharing unchanged.
     expect(shareChange(shared, 'renew', fresh)).toEqual({
       shareToken: 'new',
       sharedAt: 'then',
     });
-    expect(shareChange(stopped, 'renew', fresh)).toEqual(stopped);
+    expect(shareChange(stopped, 'renew', fresh)).toEqual({
+      shareToken: 'new',
+      sharedAt: null,
+    });
     expect(shareChange(never, 'off', fresh)).toEqual(never);
   });
 
@@ -94,8 +100,8 @@ describe('lists', () => {
     expect(isWorthKeeping({ title: 'Noël', peopleCount: 0 })).toBe(true);
   });
 
-  it('keeps the starting word until changed, and nothing once erased', () => {
-    expect(noteOf(null, false)).toEqual({ kind: 'default' });
+  it('has no word until one is written, and none once erased', () => {
+    expect(noteOf(null, false)).toEqual({ kind: 'none' });
     expect(noteOf('  ', true)).toEqual({ kind: 'none' });
     expect(noteOf(null, true)).toEqual({ kind: 'none' });
     expect(noteOf('À vous !', true)).toEqual({
@@ -186,16 +192,24 @@ describe('lists', () => {
     });
   });
 
-  it('carries over the ideas nobody gave, in their order', () => {
+  it('carries over the ideas nobody gave, in their order, with their stars and titles', () => {
     expect(
       carriedIdeas([
-        { text: 'B', url: null, position: 2, planned: false },
+        { text: 'B', url: null, position: 2, planned: false, stars: 2 },
         { text: 'A', url: 'https://a', position: 1, planned: false },
         { text: 'C', url: null, position: 0, planned: true },
+        {
+          text: 'Playmobil',
+          url: null,
+          position: 3,
+          planned: false,
+          title: true,
+        },
       ]),
     ).toEqual([
-      { text: 'A', url: 'https://a' },
-      { text: 'B', url: null },
+      { text: 'A', url: 'https://a', stars: 0, title: false },
+      { text: 'B', url: null, stars: 2, title: false },
+      { text: 'Playmobil', url: null, stars: 0, title: true },
     ]);
   });
 
@@ -348,12 +362,54 @@ describe('taking a list up again (lot 27)', () => {
     ).toEqual({ people: 1, ideas: 1, single: true });
   });
 
-  it('only starts an empty draft from another list', () => {
-    expect(canResumeInto({ sharedAt: null, peopleCount: 0 })).toBe(true);
-    expect(canResumeInto({ sharedAt: null, peopleCount: 1 })).toBe(false);
+  it('starts a list from another while it has no idea (Q-032)', () => {
+    expect(canResumeInto({ ideas: 0, single: false })).toBe(true);
+    expect(canResumeInto({ ideas: 1, single: false })).toBe(false);
+    // A list without people keeps its shape.
+    expect(canResumeInto({ ideas: 0, single: true })).toBe(false);
+  });
+
+  it('keeps those already there in place, and adds the others after', () => {
+    const merged = mergeResumed(
+      [{ id: 'p-camille', memberId: 'camille', accountId: 'acc-camille' }],
+      [
+        { memberId: 'leo', accountId: null, ideas: ['Billes'] },
+        { memberId: 'camille', accountId: 'acc-camille', ideas: ['Couteau'] },
+        { memberId: 'zoe', accountId: null, ideas: [] },
+      ],
+    );
+    expect(merged.into).toEqual([
+      {
+        listPersonId: 'p-camille',
+        person: {
+          memberId: 'camille',
+          accountId: 'acc-camille',
+          ideas: ['Couteau'],
+        },
+      },
+    ]);
+    expect(merged.added.map((person) => person.memberId)).toEqual([
+      'leo',
+      'zoe',
+    ]);
+  });
+
+  it('knows the same person by their account, under two families', () => {
+    const merged = mergeResumed(
+      [{ id: 'p-me', memberId: 'my-self', accountId: 'acc-me' }],
+      [
+        { memberId: 'julien-linked', accountId: 'acc-me' },
+        { memberId: 'hugo', accountId: null },
+        { memberId: 'hugo', accountId: null },
+      ],
+    );
+    expect(merged.into.map((one) => one.listPersonId)).toEqual(['p-me']);
+    // Nobody twice.
+    expect(merged.added.map((person) => person.memberId)).toEqual(['hugo']);
+    // Nobody there: all come, in their order.
     expect(
-      canResumeInto({ sharedAt: '2026-11-19T10:00:00.000Z', peopleCount: 0 }),
-    ).toBe(false);
+      mergeResumed([], [{ memberId: 'a' }, { memberId: 'b' }]).added,
+    ).toEqual([{ memberId: 'a' }, { memberId: 'b' }]);
   });
 });
 
@@ -405,5 +461,26 @@ describe('a list without people', () => {
     // A list by person takes people shared or not.
     expect(addPersonRefusal({ sharedAt: SHARED, people: [leo] })).toBeNull();
     expect(addPersonRefusal({ sharedAt: SHARED, people: [] })).toBeNull();
+  });
+});
+
+describe('listIconOfParty', () => {
+  it('takes the icon of the event, and draws what a list may not carry', () => {
+    expect(listIconOfParty({ emoji: '🎄', color: 'pine' }, () => 0)).toEqual({
+      emoji: '🎄',
+      color: 'pine',
+    });
+    const drawn = listIconOfParty({ emoji: '🛸', color: null }, () => 0);
+    expect(drawn).toEqual(randomListIcon(() => 0));
+  });
+});
+
+describe('drawListTitle', () => {
+  it('names the list for the Secret Santa, its name between brackets when needed', () => {
+    expect(drawListTitle('fr', null)).toBe('Idées pour le Secret Santa');
+    expect(drawListTitle('fr', 'Les adultes')).toBe(
+      'Idées pour le Secret Santa (Les adultes)',
+    );
+    expect(drawListTitle('en', null)).toBe('Ideas for the Secret Santa');
   });
 });

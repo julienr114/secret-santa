@@ -1,12 +1,15 @@
+import { forgetEntries } from '#server/database/members';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
 import {
   assignments,
   auditLog,
-  editions,
-  groups,
-  groupMembers,
+  giftListParties,
+  secretSantas,
+  parties,
+  partyOrganisers,
+  partyYears,
   manualExclusions,
   participations,
   persons,
@@ -18,8 +21,8 @@ import { requireSuperAdmin } from '#server/http/auth';
 import { notFound } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
 
-// Deletes a group with everything it owns: people, exclusions, editions,
-// draws, wish lists and journal. Super-admin only, and irreversible, so
+// Deletes a group with everything it owns: people, exclusions, years,
+// editions, draws, wish lists and journal; its lists leave it. Super-admin only, and irreversible, so
 // the request must repeat the group's identifier (a POST with a body: a
 // body on DELETE is not carried reliably by every runtime). One
 // transaction, in the order the foreign keys allow.
@@ -32,35 +35,40 @@ export default defineEventHandler(async (event) => {
   const db = useDb(event);
   const [group] = await db
     .select()
-    .from(groups)
-    .where(eq(groups.id, id))
+    .from(parties)
+    .where(eq(parties.id, id))
     .limit(1);
   if (!group) throw notFound('group_not_found');
   if (confirm.trim() !== group.slug) {
     throw createError({ statusCode: 400, statusMessage: 'wrong_confirmation' });
   }
   const editionIds = db
-    .select({ id: editions.id })
-    .from(editions)
-    .where(eq(editions.groupId, id));
+    .select({ id: secretSantas.id })
+    .from(secretSantas)
+    .where(eq(secretSantas.partyId, id));
   const participationIds = db
     .select({ id: participations.id })
     .from(participations)
-    .where(inArray(participations.editionId, editionIds));
+    .where(inArray(participations.secretSantaId, editionIds));
   await db.batch([
     ...deleteHintsOf(db, participationIds),
     deleteAnswersOfParticipations(db, participationIds),
     deleteGuessesOf(db, editionIds),
-    db.delete(assignments).where(inArray(assignments.editionId, editionIds)),
-    db.delete(auditLog).where(eq(auditLog.groupId, id)),
+    db
+      .delete(assignments)
+      .where(inArray(assignments.secretSantaId, editionIds)),
+    db.delete(auditLog).where(eq(auditLog.partyId, id)),
     db
       .delete(participations)
-      .where(inArray(participations.editionId, editionIds)),
-    db.delete(manualExclusions).where(eq(manualExclusions.groupId, id)),
-    db.delete(editions).where(eq(editions.groupId, id)),
-    db.delete(persons).where(eq(persons.groupId, id)),
-    db.delete(groupMembers).where(eq(groupMembers.groupId, id)),
-    db.delete(groups).where(eq(groups.id, id)),
+      .where(inArray(participations.secretSantaId, editionIds)),
+    db.delete(manualExclusions).where(eq(manualExclusions.partyId, id)),
+    db.delete(secretSantas).where(eq(secretSantas.partyId, id)),
+    db.delete(partyYears).where(eq(partyYears.partyId, id)),
+    db.delete(giftListParties).where(eq(giftListParties.partyId, id)),
+    forgetEntries(db, { partyId: id }),
+    db.delete(persons).where(eq(persons.partyId, id)),
+    db.delete(partyOrganisers).where(eq(partyOrganisers.partyId, id)),
+    db.delete(parties).where(eq(parties.id, id)),
   ]);
   return { ok: true };
 });

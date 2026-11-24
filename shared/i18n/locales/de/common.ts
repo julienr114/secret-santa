@@ -3,6 +3,8 @@ import type { Dict } from '../../types';
 
 export default {
   appName: 'Under the Tree',
+  /** A row written in place was saved (ticket 162). */
+  saved: 'Gespeichert',
   loading: 'Wird geladen',
   loadError: {
     title: 'Diese Seite lässt sich nicht laden',
@@ -15,7 +17,7 @@ export default {
     drawn: 'Ausgelost',
     closed: 'Abgeschlossen',
   },
-  badge: { sent: 'gesendet', hints: 'Hinweise', viewed: 'Umschlag geöffnet' },
+  badge: { sent: 'gesendet', hints: 'Liste', viewed: 'Umschlag geöffnet' },
   messageType: {
     invitation: 'Einladung',
     drawn: 'Auslosung erfolgt',
@@ -28,6 +30,18 @@ export default {
   },
   count: {
     participants: { one: '{count} Teilnehmer', other: '{count} Teilnehmer' },
+  },
+  tabs: {
+    home: 'Start',
+    create: 'Erstellen',
+    news: 'Neuigkeiten',
+    admin: 'Admin',
+    label: 'Bereiche',
+  },
+  create: {
+    title: 'Erstellen',
+    secretSanta: 'Ein Wichteln',
+    list: 'Eine Geschenkliste',
   },
   context: 'Du bist hier',
   actions: {

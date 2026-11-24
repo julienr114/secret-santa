@@ -35,6 +35,19 @@ const props = defineProps<{
    * at the edge.
    */
   single?: boolean;
+  /**
+   * « Secret Santa · Famille Camille » under my own name (tickets 136,
+   * 148, V3ListeSecret): a pill that opens the sheet of the link.
+   */
+  santas?: ListDocument['santas'];
+  /** What « Lier à un Secret Santa » offers, in my menu (tickets 148, 153). */
+  linkable?: ListDocument['linkable'];
+  /** Whether I manage the list. */
+  manages?: boolean;
+  /** My name and my pill, a step of the visit (ticket 149). */
+  tourMe?: boolean;
+  /** What the visit puts on my empty line (ticket 149). */
+  tourLine?: 'line' | 'firstLine' | null;
 }>();
 const { t } = useT();
 const editing = useListEditing();
@@ -46,15 +59,44 @@ const liftedHere = computed(
     drag?.lifted.value?.kind === 'person' &&
     drag.lifted.value.id === props.person.id,
 );
-type Row =
+type Person = ListDocument['people'][number];
+type Line =
   | {
       kind: 'idea';
-      idea: ListDocument['people'][number]['ideas'][number];
+      idea: Person['ideas'][number];
+      /** Its place among the ideas. */
       index: number;
+      /** Its place among the lines. */
+      at: number;
     }
-  | { kind: 'drop' };
+  | { kind: 'gift'; gift: Person['offList'][number]; at: number };
+type Row = Line | { kind: 'drop' };
 /**
- * The ideas, with the red line where the idea lifted would fall: its
+ * The lines in order: the ideas, and the gifts not on the list placed
+ * among them (Julien, 24 November 2026).
+ */
+const lines = computed<Line[]>(() => {
+  const ideas = new Map(
+    props.person.ideas.map((idea, index) => [idea.id, { idea, index }]),
+  );
+  const gifts = new Map(props.person.offList.map((gift) => [gift.id, gift]));
+  // What the lines do not name yet comes after, never lost.
+  const ids = [
+    ...new Set([...props.person.lines, ...ideas.keys(), ...gifts.keys()]),
+  ];
+  return ids
+    .flatMap((id): Line[] => {
+      const idea = ideas.get(id);
+      if (idea) return [{ kind: 'idea', ...idea, at: 0 }];
+      const gift = gifts.get(id);
+      return gift ? [{ kind: 'gift', gift, at: 0 }] : [];
+    })
+    .map((line, at) => ({ ...line, at }));
+});
+const lineId = (line: Line) =>
+  line.kind === 'idea' ? line.idea.id : line.gift.id;
+/**
+ * The lines, with the red line where the one lifted would fall: its
  * place is counted among the others, the one lifted left out.
  */
 const rows = computed<Row[]>(() => {
@@ -64,16 +106,16 @@ const rows = computed<Row[]>(() => {
     place?.kind === 'idea' && place.personId === props.person.id
       ? place.index
       : -1;
-  const laid = props.person.ideas.reduce<{ rows: Row[]; others: number }>(
-    (acc, idea, index) => {
-      const isLifted = lifted?.kind === 'idea' && lifted.id === idea.id;
+  const laid = lines.value.reduce<{ rows: Row[]; others: number }>(
+    (acc, line) => {
+      const isLifted = lifted?.kind === 'idea' && lifted.id === lineId(line);
       return {
         rows: [
           ...acc.rows,
           ...(!isLifted && acc.others === at
             ? [{ kind: 'drop' as const }]
             : []),
-          { kind: 'idea' as const, idea, index },
+          line,
         ],
         others: acc.others + (isLifted ? 0 : 1),
       };
@@ -82,13 +124,56 @@ const rows = computed<Row[]>(() => {
   );
   return at === laid.others ? [...laid.rows, { kind: 'drop' }] : laid.rows;
 });
+/**
+ * The menu of a gift not on the list (Julien, 24 November 2026): its
+ * handle, shown once the line is touched or under a mouse; « Monter »
+ * and « Descendre » in it.
+ */
+const giftMenu = ref<{ id: string; above: boolean } | null>(null);
+const onGiftHandle = (event: MouseEvent, id: string) => {
+  if (giftMenu.value?.id === id) {
+    giftMenu.value = null;
+    return;
+  }
+  const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  giftMenu.value = {
+    id,
+    above: box.bottom + 160 > window.innerHeight && box.top > 160,
+  };
+};
+const onGiftStep = (id: string, step: -1 | 1) => {
+  giftMenu.value = null;
+  drag?.step({ kind: 'idea', id }, step);
+};
+/** Moves a gift not on the list one step with `Alt` + an arrow. */
+const onGiftKey = (event: KeyboardEvent, id: string) => {
+  if (!drag || !event.altKey) return;
+  if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+  event.preventDefault();
+  drag.step({ kind: 'idea', id }, event.key === 'ArrowUp' ? -1 : 1);
+};
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const update = useUpdateMemberMutation(() => props.person.member.id);
-const save = (patch: { firstName?: string; avatar?: Avatar }) =>
+/**
+ * The first name or icon just chosen, shown at once until the list is
+ * read again (ticket 166); a failure says so and puts the old one back.
+ */
+const chosen = ref<{ firstName?: string; avatar?: Avatar }>({});
+const save = (patch: { firstName?: string; avatar?: Avatar }) => {
+  chosen.value = { ...chosen.value, ...patch };
   update.mutate(patch, {
     onError: (error) => toast.failed(errorMessage(error)),
+    // Only what this change set: a later one keeps showing.
+    onSettled: () => {
+      chosen.value = Object.fromEntries(
+        Object.entries(chosen.value).filter(
+          ([key, value]) => value !== patch[key as keyof typeof patch],
+        ),
+      );
+    },
   });
+};
 const iconOpen = ref(false);
 const onIcon = (avatar: Avatar) => {
   iconOpen.value = false;
@@ -110,7 +195,7 @@ const { lockedBy: nameLock } = useLiveWriting(
 );
 const startName = async () => {
   if (nameLock.value) return;
-  nameDraft.value = props.person.member.firstName;
+  nameDraft.value = member.value.firstName;
   naming.value = true;
   await nextTick();
   nameField.value?.focus();
@@ -119,15 +204,16 @@ const saveName = () => {
   if (!naming.value) return;
   naming.value = false;
   const name = nameDraft.value.replace(/\s+/g, ' ').trim();
-  if (name && name !== props.person.member.firstName) {
+  // Against the name shown: one just chosen counts (ticket 166).
+  if (name && name !== member.value.firstName) {
     save({ firstName: name });
   }
 };
 const cancelName = () => {
   naming.value = false;
 };
-const member = computed(() => props.person.member);
-/** « 6 ans · taille 6 ans, pointure 30 », or « Moi ». */
+const member = computed(() => ({ ...props.person.member, ...chosen.value }));
+/** « 6 ans · taille 6 ans, pointure 30 ». */
 const details = computed(() => {
   const m = member.value;
   const sizes = [
@@ -139,7 +225,6 @@ const details = computed(() => {
       : null,
   ].filter(Boolean);
   return [
-    m.isSelf ? t('lists.doc.me') : null,
     m.age === null ? null : t('lists.doc.age', { count: m.age }),
     sizes.length > 0 ? sizes.join(', ') : null,
   ]
@@ -151,6 +236,17 @@ const planned = computed(
   () =>
     props.person.ideas.filter((idea) => idea.view.kind !== 'free').length +
     props.person.offList.length,
+);
+/**
+ * « Lier à un Secret Santa » (tickets 153, 155): in my part, while one of
+ * my Secret Santa of the year, drawn, is not linked to this list (linked
+ * to another, it moves here: docs/spec/v3/listes.md, « Lier et délier »);
+ * it opens the sheet of ListsDrawLink.
+ */
+const drawLink = ref<{ ask: () => void } | null>(null);
+const canLink = computed(
+  () =>
+    member.value.isSelf && props.manages && (props.linkable ?? []).length > 0,
 );
 const menuOpen = ref(false);
 const confirming = ref(false);
@@ -181,6 +277,15 @@ const menu = computed(() =>
             icon: 'i-lucide-user',
             to: `/famille/${member.value.id}?liste=${props.listId}&place=${props.person.id}`,
           },
+          ...(canLink.value
+            ? [
+                {
+                  label: t('lists.link.action'),
+                  icon: 'i-lucide-mail',
+                  onSelect: () => drawLink.value?.ask(),
+                },
+              ]
+            : []),
           // The same as dragging, without dragging.
           ...(drag && !props.first
             ? [
@@ -255,93 +360,107 @@ const explained = ref<string | null>(null);
     :data-drag-id="person.id"
   >
     <ListsPersonThread v-if="!single && !liftedHere" />
-    <header
-      v-if="!single"
-      class="flex items-center gap-2.5"
-      :data-drag="drag ? 'person' : undefined"
-      :data-drag-id="drag ? person.id : undefined"
-    >
-      <!-- Someone with an account of their own chooses their icon; « Moi »
+    <ListsTourStop v-if="!single" :step="tourMe ? 'me' : null">
+      <header
+        class="flex items-center gap-2.5"
+        :data-drag="drag ? 'person' : undefined"
+        :data-drag-id="drag ? person.id : undefined"
+      >
+        <!-- Someone with an account of their own chooses their icon; « Moi »
            changes mine from here. -->
-      <UiAvatar
-        v-if="member.linked && !member.isSelf"
-        :avatar="member.avatar"
-        :px="40"
-        class="shrink-0"
-      />
-      <button
-        v-else
-        type="button"
-        class="relative shrink-0"
-        :aria-label="t('lists.person.icon', { name: member.firstName })"
-        data-testid="person-icon"
-        @click="iconOpen = true"
-      >
-        <UiAvatar :avatar="member.avatar" :px="40" />
-        <!-- The pencil of the list's tile: this icon changes by touching it. -->
-        <span
-          class="absolute -right-1.5 -bottom-1 flex size-5 items-center justify-center rounded-full bg-default ring-1 ring-default"
-          aria-hidden="true"
-        >
-          <UIcon name="i-lucide-pencil" class="size-2.5" />
-        </span>
-      </button>
-      <div class="flex min-w-0 grow flex-col gap-0.5">
-        <h2 class="font-display text-2xl leading-[1.15] font-bold">
-          <ListsLiveLock v-if="nameLock" :by="nameLock" />
-          <input
-            v-else-if="naming"
-            ref="nameField"
-            v-model="nameDraft"
-            type="text"
-            enterkeyhint="done"
-            :maxlength="MEMBER_NAME_MAX"
-            class="w-full bg-transparent outline-none select-text"
-            :aria-label="t('lists.person.name')"
-            data-testid="person-name-field"
-            @keydown.enter.prevent="saveName"
-            @keydown.esc.prevent="cancelName"
-            @blur="saveName"
-          />
-          <template v-else-if="member.linked">{{ member.firstName }}</template>
-          <button
-            v-else
-            type="button"
-            class="text-left"
-            data-testid="person-name"
-            @click="startName"
-          >
-            {{ member.firstName }}
-          </button>
-        </h2>
-        <p v-if="details" class="text-sm leading-[1.4] text-toned">
-          {{ details }}
-        </p>
-      </div>
-      <UDropdownMenu
-        v-model:open="menuOpen"
-        :items="menu"
-        :content="{ align: 'end' }"
-        :ui="{
-          content:
-            'max-w-[280px] min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
-          group: 'p-0',
-          label: 'px-3.5 pt-3 pb-1 text-sm font-normal text-default',
-          item: 'min-h-12 items-center px-3.5 text-base',
-          itemLeadingIcon: 'size-5',
-        }"
-      >
-        <UButton
-          variant="ghost"
-          color="neutral"
-          icon="i-lucide-ellipsis"
-          class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
-          :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
-          data-testid="person-menu"
-          data-no-drag
+        <UiAvatar
+          v-if="member.linked && !member.isSelf"
+          :avatar="member.avatar"
+          :px="40"
+          class="shrink-0"
         />
-      </UDropdownMenu>
-    </header>
+        <button
+          v-else
+          type="button"
+          class="relative shrink-0"
+          :aria-label="t('lists.person.icon', { name: member.firstName })"
+          data-testid="person-icon"
+          @click="iconOpen = true"
+        >
+          <UiAvatar :avatar="member.avatar" :px="40" />
+          <!-- The pencil of the list's tile: this icon changes by touching it. -->
+          <span
+            class="absolute -right-1.5 -bottom-1 flex size-5 items-center justify-center rounded-full bg-default ring-1 ring-default"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-pencil" class="size-2.5" />
+          </span>
+        </button>
+        <div class="flex min-w-0 grow flex-col gap-0.5">
+          <h2 class="font-display text-2xl leading-[1.15] font-bold">
+            <ListsLiveLock v-if="nameLock" :by="nameLock" />
+            <input
+              v-else-if="naming"
+              ref="nameField"
+              v-model="nameDraft"
+              type="text"
+              enterkeyhint="done"
+              :maxlength="MEMBER_NAME_MAX"
+              class="w-full bg-transparent outline-none select-text"
+              :aria-label="t('lists.person.name')"
+              data-testid="person-name-field"
+              @keydown.enter.prevent="saveName"
+              @keydown.esc.prevent="cancelName"
+              @blur="saveName"
+            />
+            <template v-else-if="member.linked">{{
+              member.firstName
+            }}</template>
+            <button
+              v-else
+              type="button"
+              class="text-left"
+              data-testid="person-name"
+              @click="startName"
+            >
+              {{ member.firstName }}
+            </button>
+            <template v-if="member.isSelf && !naming && !nameLock">
+              {{ ' ' }}<ListsMeTag />
+            </template>
+          </h2>
+          <p v-if="details" class="text-sm leading-[1.4] text-toned">
+            {{ details }}
+          </p>
+          <ListsDrawLink
+            v-if="member.isSelf"
+            ref="drawLink"
+            :list-id="listId"
+            :santas="santas ?? []"
+            :linkable="linkable ?? []"
+            :manages="manages"
+          />
+        </div>
+        <UDropdownMenu
+          v-model:open="menuOpen"
+          :items="menu"
+          :content="{ align: 'end' }"
+          :ui="{
+            content:
+              'max-w-[280px] min-w-[230px] rounded-xl shadow-[0_8px_24px_rgba(60,30,10,0.14)]',
+            group: 'p-0',
+            label: 'px-3.5 pt-3 pb-1 text-sm font-normal text-default',
+            item: 'min-h-12 items-center px-3.5 text-base',
+            itemLeadingIcon: 'size-5',
+          }"
+        >
+          <UButton
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-ellipsis"
+            class="ml-auto size-10 shrink-0 justify-center rounded-full text-toned"
+            :aria-label="t('lists.doc.personMenu', { name: member.firstName })"
+            data-testid="person-menu"
+            data-no-drag
+          />
+        </UDropdownMenu>
+      </header>
+    </ListsTourStop>
     <!-- What the others read of their tastes, the same paragraph. -->
     <ListsPersonTastes v-if="!single && !liftedHere" :member="member" />
     <!-- A person lifted is folded: their ideas wait, out of the way. -->
@@ -356,65 +475,119 @@ const explained = ref<string | null>(null);
     >
       <template
         v-for="row in rows"
-        :key="row.kind === 'idea' ? row.idea.id : 'drop'"
+        :key="row.kind === 'drop' ? 'drop' : lineId(row)"
       >
         <li
           v-if="row.kind === 'drop'"
-          class="my-0.5 h-1 rounded-full bg-primary"
+          class="my-0.5 h-1 rounded-full bg-peach-300"
           aria-hidden="true"
           data-testid="drop-line"
         />
         <ListsIdeaLine
-          v-else
+          v-else-if="row.kind === 'idea'"
           :via="via"
           :list-person-id="person.id"
           :for-name="single ? '' : member.firstName"
           :idea="row.idea"
           :line="`${person.id}:${row.index}`"
+          :first="row.at === 0"
+          :last="row.at === lines.length - 1"
         />
-      </template>
-      <li
-        v-for="gift in person.offList"
-        :key="gift.id"
-        class="relative flex flex-col py-[13px]"
-        data-testid="holder-off-list"
-      >
-        <button
-          type="button"
-          class="flex items-start gap-[var(--line-gap,12px)] text-left"
-          :aria-expanded="explained === gift.id"
-          @click="explained = explained === gift.id ? null : gift.id"
+        <!-- A gift not on the list: lifted and dropped among the ideas of
+             its person, never at another (Julien, 24 November 2026). -->
+        <li
+          v-else
+          class="group relative flex flex-col py-[13px]"
+          :class="
+            drag?.lifted.value?.kind === 'idea' &&
+            drag.lifted.value.id === row.gift.id
+              ? 'opacity-30'
+              : ''
+          "
+          :data-drag="drag ? 'idea' : undefined"
+          :data-drag-id="drag ? row.gift.id : undefined"
+          :data-drag-stay="drag ? '' : undefined"
+          data-testid="holder-off-list"
+          @mousedown="drag?.grab($event, { kind: 'idea', id: row.gift.id })"
+          @keydown="onGiftKey($event, row.gift.id)"
         >
-          <span
-            class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
-            aria-hidden="true"
+          <button
+            type="button"
+            class="flex items-start gap-[var(--line-gap,12px)] text-left"
+            :class="drag ? 'pr-9' : ''"
+            :aria-expanded="explained === row.gift.id"
+            @click="explained = explained === row.gift.id ? null : row.gift.id"
           >
-            <UIcon name="i-lucide-check" class="size-3.5" />
-          </span>
-          <span class="flex flex-col items-start text-base/[22px]">
-            <span class="text-toned line-through">{{
-              t('lists.doc.offList', {
-                text: gift.kind === 'surprise' ? '' : gift.text,
-              })
-            }}</span>
-            <UiChip v-if="gift.kind === 'holder'" class="mt-1.5">{{
-              gift.by ?? t('lists.doc.anonymous')
-            }}</UiChip>
-          </span>
-        </button>
-        <p
-          v-if="explained === gift.id"
-          class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
-          role="status"
-          data-testid="off-list-notice"
-        >
-          {{
-            gift.kind === 'holder' && gift.by
-              ? t('lists.doc.offListNotice', { name: gift.by })
-              : t('lists.doc.offListNoticeAnonymous')
-          }}
-        </p>
-      </li>
+            <span
+              class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
+              aria-hidden="true"
+            >
+              <UIcon name="i-lucide-check" class="size-3.5" />
+            </span>
+            <span class="flex flex-col items-start text-base/[22px]">
+              <span class="text-toned line-through">{{
+                t('lists.doc.offList', {
+                  text: row.gift.kind === 'surprise' ? '' : row.gift.text,
+                })
+              }}</span>
+              <UiChip v-if="row.gift.kind === 'holder'" class="mt-1.5">{{
+                row.gift.by ?? t('lists.doc.anonymous')
+              }}</UiChip>
+            </span>
+          </button>
+          <div
+            v-if="drag && lines.length > 1"
+            class="absolute top-2 right-0"
+            :class="
+              explained === row.gift.id || giftMenu?.id === row.gift.id
+                ? 'flex'
+                : 'hidden [@media(hover:hover)]:group-hover:flex'
+            "
+          >
+            <button
+              type="button"
+              class="flex size-8 cursor-grab items-center justify-center rounded-[10px] text-dimmed"
+              :class="
+                giftMenu?.id === row.gift.id ? 'bg-peach-100' : 'bg-default'
+              "
+              :aria-label="t('lists.line.handle')"
+              aria-haspopup="menu"
+              :aria-expanded="giftMenu?.id === row.gift.id"
+              data-line-handle
+              data-testid="line-handle"
+              @click="onGiftHandle($event, row.gift.id)"
+            >
+              <UIcon name="i-lucide-grip-vertical" class="size-4" />
+            </button>
+            <ListsLineMenu
+              v-if="giftMenu?.id === row.gift.id"
+              gift
+              :stars="0"
+              :title="false"
+              :can-title="false"
+              :can-up="row.at > 0"
+              :can-down="row.at < lines.length - 1"
+              :can-move="false"
+              :above="giftMenu.above"
+              @up="onGiftStep(row.gift.id, -1)"
+              @down="onGiftStep(row.gift.id, 1)"
+              @close="giftMenu = null"
+            />
+          </div>
+          <p
+            v-if="explained === row.gift.id"
+            class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
+            role="status"
+            data-testid="off-list-notice"
+          >
+            {{
+              row.gift.kind === 'holder' && row.gift.by
+                ? t('lists.doc.offListNotice', { name: row.gift.by })
+                : t('lists.doc.offListNoticeAnonymous')
+            }}
+          </p>
+        </li>
+      </template>
       <li
         v-if="ghost"
         key="ghost"
@@ -455,17 +628,22 @@ const explained = ref<string | null>(null);
       </li>
       <ListsIdeaLine
         key="new"
+        :tour="tourLine ?? null"
         :via="via"
         :list-person-id="person.id"
         :for-name="single ? '' : member.firstName"
         :idea="null"
         :after="null"
         :placeholder="
-          person.ideas.length > 0
-            ? t('lists.doc.anotherIdea')
-            : single
-              ? t('lists.single.firstIdea')
-              : t('lists.doc.ideaFor', { name: member.firstName })
+          member.isSelf && !single
+            ? person.ideas.length > 0
+              ? t('lists.visitor.anotherForMe')
+              : t('lists.visitor.ideaForMe')
+            : person.ideas.length > 0
+              ? t('lists.doc.anotherIdea')
+              : single
+                ? t('lists.single.firstIdea')
+                : t('lists.doc.ideaFor', { name: member.firstName })
         "
         :line="`${person.id}:new`"
       />

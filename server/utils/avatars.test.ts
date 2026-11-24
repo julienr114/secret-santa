@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  adoptedAvatar,
   AVATAR_COLORS,
   AVATAR_EMOJIS,
   AVATAR_GROUPS,
@@ -95,5 +96,25 @@ describe('freshAvatar', () => {
       AVATAR_COLORS.map((color) => ({ emoji, color })),
     );
     expect(AVATAR_EMOJIS).toContain(freshAvatar(taken, () => 0).emoji);
+  });
+});
+
+describe('adoptedAvatar', () => {
+  it('gives a new account the face it had in the Secret Santa', () => {
+    const person = { id: 'p1', avatarEmoji: '🦊', avatarColor: 'frost' };
+    expect(adoptedAvatar({ avatarEmoji: null }, person)).toEqual({
+      emoji: '🦊',
+      color: 'frost',
+    });
+    // Without a chosen one, the one the Secret Santa showed.
+    expect(adoptedAvatar({ avatarEmoji: null }, { id: 'p2' })).toEqual(
+      avatarOf({ id: 'p2' }),
+    );
+  });
+
+  it('never replaces an avatar the account chose', () => {
+    expect(
+      adoptedAvatar({ avatarEmoji: '🐧' }, { id: 'p1', avatarEmoji: '🦊' }),
+    ).toBeNull();
   });
 });

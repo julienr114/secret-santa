@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
     expiresAt,
   });
   const link = await sendHolderInvite(event, db, {
+    listId: list.id,
     title: list.title,
     email: invite.email,
     level: invite.level,

@@ -7,6 +7,7 @@ import {
   hasMessage,
   localeFromHeader,
   localeOf,
+  santaKey,
   translate,
   translateKey,
   translator,
@@ -139,5 +140,31 @@ describe('locales', () => {
     expect(localeFromHeader('es-ES,en-GB;q=0.8')).toBe('en');
     expect(localeFromHeader('ja')).toBe('fr');
     expect(localeFromHeader(undefined)).toBe('fr');
+  });
+});
+
+describe('santaKey', () => {
+  it('keeps « Père Noël » at Christmas', () => {
+    expect(santaKey('participant.game.mySanta', true)).toBe(
+      'participant.game.mySanta',
+    );
+  });
+
+  it('takes the variant elsewhere, when there is one', () => {
+    expect(santaKey('participant.game.mySanta', false)).toBe(
+      'participant.game.mySantaNeutral',
+    );
+    expect(santaKey('common.appName', false)).toBe('common.appName');
+  });
+
+  it('leaves no « Père Noël » in a variant, in any language', () => {
+    const santa = /Père Noël|Pères Noël|\bSantas?\b(?! *Secret)|Weihnachtsm/;
+    [fr, en, de].forEach((dictionary) => {
+      Object.entries(flatten(dictionary as unknown as Tree))
+        .filter(([key]) => /Neutral(\.|$)/.test(key))
+        .forEach(([key, text]) => {
+          expect(text.replace(/Secret Santa/g, ''), key).not.toMatch(santa);
+        });
+    });
   });
 });

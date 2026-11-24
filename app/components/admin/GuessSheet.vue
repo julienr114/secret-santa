@@ -21,7 +21,8 @@ const props = defineProps<{
   eventDate: string;
 }>();
 const open = defineModel<boolean>('open', { required: true });
-const { t, locale } = useT();
+// « Père Noël » only in a Christmas party (docs/spec/v3/vocabulaire.md).
+const { t, locale } = useT({ christmas: () => props.guess.christmas });
 const errorMessage = useErrorMessage();
 const save = useSetGuessMutation(
   () => props.slug,

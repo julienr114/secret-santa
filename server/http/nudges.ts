@@ -2,11 +2,12 @@ import { and, eq, isNull } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import {
   accounts,
-  editions,
-  groupMembers,
-  type EditionRow,
+  secretSantas,
+  partyOrganisers,
+  type SecretSantaRow,
 } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
+import { santaNameForSubject } from '#server/database/editions';
 import { personalPath } from '#server/database/participations';
 import { recordEvent } from '#server/database/audit';
 import { appUrl, nowIso } from './context';
@@ -34,7 +35,7 @@ import { localeOf } from '#shared/i18n';
 // two runs never send twice. Never who guessed what.
 
 type Context = { db: Db; dataKey: CryptoKey };
-type Group = { id: string; name: string; slug: string };
+type Group = { id: string; name: string; slug: string; category: string };
 
 /** Sets a column once; false when another run already did. */
 const claim = async (
@@ -43,10 +44,10 @@ const claim = async (
   column: 'guessAutoReminderSentAt' | 'guessPointSentAt' | 'guessEndSentAt',
 ): Promise<boolean> => {
   const done = await db
-    .update(editions)
+    .update(secretSantas)
     .set({ [column]: nowIso() })
-    .where(and(eq(editions.id, editionId), isNull(editions[column])))
-    .returning({ id: editions.id });
+    .where(and(eq(secretSantas.id, editionId), isNull(secretSantas[column])))
+    .returning({ id: secretSantas.id });
   return done.length > 0;
 };
 
@@ -58,12 +59,12 @@ const newsRecipients = (db: Db, groupId: string) =>
       language: accounts.language,
       firstName: accounts.firstName,
     })
-    .from(groupMembers)
-    .innerJoin(accounts, eq(accounts.id, groupMembers.accountId))
+    .from(partyOrganisers)
+    .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
     .where(
       and(
-        eq(groupMembers.groupId, groupId),
-        eq(groupMembers.guessNews, true),
+        eq(partyOrganisers.partyId, groupId),
+        eq(partyOrganisers.guessNews, true),
         isNull(accounts.disabledAt),
       ),
     );
@@ -82,7 +83,7 @@ const newsRecipients = (db: Db, groupId: string) =>
  */
 export const autoRemind = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   now: string,
 ) => {
@@ -103,6 +104,7 @@ export const autoRemind = async (
     1,
     daysLeft(edition.guessEndsAt, now, edition.guessTimeZone),
   );
+  const santaName = await santaNameForSubject(ctx.db, edition);
   const emails = await Promise.all(
     targets.map(async ({ id, text }) => {
       const member = members.find((m) => m.id === id)!;
@@ -116,8 +118,10 @@ export const autoRemind = async (
             firstName: member.person.firstName,
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: page,
             skipLink: `${page}?passer=1`,
+            christmas: group.category === 'christmas',
             guessEndsAt: edition.guessEndsAt!,
             guessTimeZone: edition.guessTimeZone,
             played: count.played,
@@ -154,7 +158,7 @@ export const autoRemind = async (
  */
 export const organizerPoint = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
   now: string,
 ) => {
@@ -178,6 +182,7 @@ export const organizerPoint = async (
     edition.guessAutoReminder && !edition.guessAutoReminderSentAt
       ? Math.max(1, daysLeft(autoAt, now, edition.guessTimeZone))
       : null;
+  const santaName = await santaNameForSubject(ctx.db, edition);
   await sendEmails(
     undefined,
     recipients.map((r) => ({
@@ -186,6 +191,7 @@ export const organizerPoint = async (
           firstName: r.firstName ?? '',
           groupName: group.name,
           editionLabel: edition.label,
+          santaName,
           link: appUrl(
             undefined,
             `/admin/${group.slug}/editions/${edition.id}`,
@@ -217,7 +223,7 @@ export const organizerPoint = async (
  */
 export const organizerEnd = async (
   ctx: Context,
-  edition: EditionRow,
+  edition: SecretSantaRow,
   group: Group,
 ) => {
   if (edition.guessEndSentAt || edition.revealedAt || !edition.guessEndsAt) {
@@ -227,6 +233,7 @@ export const organizerEnd = async (
   const recipients = await newsRecipients(ctx.db, group.id);
   if (recipients.length === 0) return;
   const count = playedCount(await gameMembers(ctx.db, edition.id));
+  const santaName = await santaNameForSubject(ctx.db, edition);
   await sendEmails(
     undefined,
     recipients.map((r) => ({
@@ -243,6 +250,7 @@ export const organizerEnd = async (
           guessTimeZone: edition.guessTimeZone,
           played: count.played,
           total: count.total,
+          santaName,
         },
         localeOf(r.language),
       ),

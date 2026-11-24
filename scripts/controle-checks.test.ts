@@ -46,6 +46,12 @@ describe('forbiddenUses', () => {
     en: { a: 'Group settings' },
   };
 
+  it('does not read the placeholders, which are never shown', () => {
+    expect(
+      forbiddenUses(['edition'], { en: { a: 'For {edition} ({group})' } }),
+    ).toEqual([]);
+  });
+
   it('matches at the start of a word, whatever the case', () => {
     expect(forbiddenUses(['groupe'], dictionaries)).toEqual([
       { locale: 'fr', key: 'a', word: 'groupe', text: 'Les Groupes de Léa' },

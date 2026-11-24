@@ -59,7 +59,7 @@ const rows = computed(() =>
   sheetPeople(props.candidates, from.value, written.value),
 );
 const subtitle = computed(() => {
-  const idea = ideaShort(props.idea.text);
+  const idea = ideaShort(ideaName(props.idea));
   return props.forName
     ? t('lists.who.forName', { idea, name: props.forName })
     : idea;

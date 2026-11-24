@@ -2,14 +2,12 @@ import { describe, it, expect } from 'vitest';
 import {
   EMPTY_PORTRAIT,
   answeredCount,
-  firstUnanswered,
   giverPortrait,
   hasHints,
   isPortraitEmpty,
-  nextQuestion,
-  portraitTags,
+  portraitOfCard,
+  portraitWithOld,
   portraitTexts,
-  questionAt,
   questionsFor,
   type Portrait,
 } from './hints';
@@ -41,34 +39,6 @@ describe('hints', () => {
     expect(hasHints(EMPTY_PORTRAIT, 0)).toBe(false);
     expect(hasHints(EMPTY_PORTRAIT, 1)).toBe(true);
     expect(hasHints(portrait, 0)).toBe(true);
-  });
-
-  it('gives one tag per answer on the own page, both included', () => {
-    expect(portraitTags(portrait.answers)).toEqual([
-      { question: 'usefulOrSurprising', answer: 'first' },
-      { question: 'surprise', answer: 'both' },
-    ]);
-    // Without the precise ideas, the surprise question is not asked.
-    expect(portraitTags(portrait.answers, 'portrait')).toEqual([
-      { question: 'usefulOrSurprising', answer: 'first' },
-    ]);
-  });
-
-  it('starts the questions at the first one without an answer', () => {
-    expect(firstUnanswered(EMPTY_PORTRAIT.answers)).toBe('usefulOrSurprising');
-    expect(firstUnanswered(portrait.answers)).toBe('objectOrMoment');
-    const allButSurprise = {
-      usefulOrSurprising: 'first',
-      objectOrMoment: 'first',
-      keepOrConsume: 'first',
-      selfOrShared: 'first',
-      secondHand: 'first',
-      surprise: null,
-    } as const;
-    expect(firstUnanswered(allButSurprise)).toBe('surprise');
-    expect(firstUnanswered(allButSurprise, 'portrait')).toBe(
-      'usefulOrSurprising',
-    );
   });
 
   it('says the answers to the giver in sentences', () => {
@@ -118,21 +88,51 @@ describe('hints', () => {
     ]);
   });
 
-  it('walks through the six questions', () => {
-    expect(nextQuestion('usefulOrSurprising')).toBe('objectOrMoment');
-    expect(nextQuestion('surprise')).toBeNull();
-    expect(questionAt('2')).toBe('objectOrMoment');
-    expect(questionAt(6)).toBe('surprise');
-    expect(questionAt('9')).toBe('usefulOrSurprising');
-    expect(questionAt(undefined)).toBe('usefulOrSurprising');
-  });
-
   it('asks five questions without the precise ideas', () => {
     expect(questionsFor('full')).toHaveLength(6);
     expect(questionsFor('portrait')).not.toContain('surprise');
     expect(questionsFor('portrait')).toHaveLength(5);
-    expect(nextQuestion('secondHand', 'portrait')).toBeNull();
-    expect(nextQuestion('secondHand', 'full')).toBe('surprise');
-    expect(questionAt('6', 'portrait')).toBe('usefulOrSurprising');
+  });
+});
+
+describe('portraitOfCard', () => {
+  it('reads the known answers and texts of a « Moi » card, nothing else', () => {
+    const portrait = portraitOfCard({
+      answers: { usefulOrSurprising: 'first', unknown: 'first', surprise: 'x' },
+      texts: { lately: '  La course à pied ', avoid: '   ', other: 'non' },
+    });
+    expect(portrait.answers.usefulOrSurprising).toBe('first');
+    expect(portrait.answers.surprise).toBeNull();
+    expect(Object.keys(portrait.answers)).not.toContain('unknown');
+    expect(portrait.texts).toEqual({
+      lately: 'La course à pied',
+      wouldHelp: null,
+      avoid: null,
+    });
+  });
+
+  it('is empty for a card never written', () => {
+    expect(hasHints(portraitOfCard({ answers: null, texts: null }), 0)).toBe(
+      false,
+    );
+  });
+});
+
+describe('portraitWithOld', () => {
+  const blank = portraitOfCard({ answers: null, texts: null });
+  it('keeps what the card says, the old portrait where it is silent', () => {
+    const card = portraitOfCard({
+      answers: { usefulOrSurprising: 'first' },
+      texts: null,
+    });
+    const old = portraitOfCard({
+      answers: { usefulOrSurprising: 'second', objectOrMoment: 'first' },
+      texts: { lately: 'Le tricot' },
+    });
+    const both = portraitWithOld(card, old);
+    expect(both.answers.usefulOrSurprising).toBe('first');
+    expect(both.answers.objectOrMoment).toBe('first');
+    expect(both.texts.lately).toBe('Le tricot');
+    expect(portraitWithOld(blank, null)).toBe(blank);
   });
 });

@@ -46,18 +46,20 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       organizers: [ORGANIZER],
     },
   });
-  await api().post(`${ADMIN}/persons`, {
-    data: { firstName: 'Greta', language: 'de' },
-  });
-  await api().post(`${ADMIN}/persons`, { data: { firstName: 'Paul' } });
-  const refused = await api().post(`${ADMIN}/persons`, {
-    data: { firstName: 'Zed', language: 'es' },
-  });
-  expect(refused.status()).toBe(400);
   const edition = await api().post(`${ADMIN}/editions`, {
     data: { label: 'Noël 2026', year: 2026, eventDate: '2026-12-24' },
   });
   state.editionId = (await edition.json()).edition.id;
+  // Each comes into the event by its Secret Santa (ticket 117).
+  const persons = `${ADMIN}/editions/${state.editionId}/persons`;
+  await api().post(persons, {
+    data: { firstName: 'Greta', language: 'de' },
+  });
+  await api().post(persons, { data: { firstName: 'Paul' } });
+  const refused = await api().post(persons, {
+    data: { firstName: 'Zed', language: 'es' },
+  });
+  expect(refused.status()).toBe(400);
   state.link = new URL((await messageOf('Greta')).link).pathname;
 });
 
@@ -84,8 +86,8 @@ test('a personal page follows the preferred language, and can change it', async 
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByText('Noch ein wenig Geduld')).toBeVisible();
 
-  await page.getByRole('link', { name: /Protokoll der Gruppe/ }).click();
-  await expect(heading(page)).toHaveText('Protokoll der Gruppe');
+  await page.getByRole('link', { name: /Protokoll des Events/ }).click();
+  await expect(heading(page)).toHaveText('Protokoll des Events');
   await expect(page.getByText('Greta nimmt an der Ausgabe teil')).toHaveCount(
     0,
   );
@@ -99,7 +101,7 @@ test('a personal page follows the preferred language, and can change it', async 
   expect((await messageOf('Greta')).text).toMatch(/^Hi Greta! 🎁/);
 
   // Like every change made with a link, it is written to the journal.
-  await page.getByRole('link', { name: /Group journal/ }).click();
+  await page.getByRole('link', { name: /Event journal/ }).click();
   // A change of language is left out of the essentials: it is in
   // « Everything ».
   await expect(page.getByTestId('journal')).toBeVisible();
@@ -130,23 +132,31 @@ test('the admin side follows the choice made on the device', async ({
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await expect(heading(page)).toHaveText('Famille Polyglotte');
-  // Language and log out live in one menu; the logo is always there.
+  // Language and log out live in one menu, opened by one's icon; the
+  // logo is always there.
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
   await expect(
     page.getByRole('menuitem', { name: 'Se déconnecter' }),
   ).toBeVisible();
-  await page.getByRole('menuitemcheckbox', { name: 'Deutsch' }).click();
-  await expect(page.getByRole('button', { name: 'Menü' })).toBeVisible();
+  await page.getByRole('menuitem', { name: /^Langue/ }).click();
+  const languages = page.getByRole('dialog', { name: 'Langue' });
+  await languages.getByText('Deutsch').click();
+  await languages.getByRole('button', { name: 'Valider' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Mein Konto', exact: true }),
+  ).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   // Remembered across pages and reloads, without changing anyone's
   // preferred language.
   await page.reload();
   await hydrated(page);
-  await expect(page.getByRole('button', { name: 'Menü' })).toBeVisible();
-  await page.getByRole('link', { name: /^Mitglieder/ }).click();
+  await expect(
+    page.getByRole('button', { name: 'Mein Konto', exact: true }),
+  ).toBeVisible();
+  await page.getByTestId('party-members').click();
   await expect(
     page.getByRole('link', { name: /Under the Tree/ }),
   ).toBeVisible();

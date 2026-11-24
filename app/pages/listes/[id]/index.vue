@@ -1,54 +1,68 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { namesInOne } from '~/utils/givers';
 import type { IdeaLine, PersonLine } from '#server/http/lists';
 import { formatEventDate } from '#server/utils/rules';
+import { tourKindOf } from '#shared/utils/listTour';
 import {
   LIST_COLORS,
   LIST_ICON_GROUP_KEYS,
   LIST_ICON_GROUPS,
   LIST_TITLE_MAX,
+  canResumeInto,
   isWorthKeeping,
 } from '#server/utils/lists';
 import {
   useDeleteListMutation,
   useListQuery,
   useRemovePersonMutation,
+  lineIdNow,
   useReorderMutation,
   useCreateListMutation,
   useUntickForMutation,
   useUntickMutation,
   useUpdateListMutation,
 } from '~/composables/queries/useLists';
+import { useQueryClient } from '@tanstack/vue-query';
 import { keys } from '~/composables/queries/keys';
+import { api } from '~/composables/queries/useApi';
 import { LIST_EDITING } from '~/composables/useListEditing';
 import { LIST_SHADES } from '~/utils/listShades';
 import {
   applyOrder,
   moveIdea,
   movePerson,
+  orderWithIds,
   placeOfIdea,
   sameOrder,
   stepIdea,
   stepPerson,
+  withLines,
   type ListOrder,
 } from '#shared/utils/reorder';
 import type { DropPlace, Lifted } from '~/composables/useListDrag';
 
 // The document of a list, for the one who holds it (README 22.19,
-// maquettes ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
-// document, not a form: the bar « Partage par lien » on top, with its
-// switch (ListsShareBar); then its square tile, its name, its day, the word for the
-// family, the people and their ideas, « Ajouter quelqu'un ». Every text
+// maquettes V3ListeNouvelle, ListeTeneur, ListeIdee, ListeIcone). A
+// document, not a form: the bar of its sharing on top, its stage and its
+// link (ListsShareBar, ticket 106); then its square tile, its name, its
+// day, the word for the family, the people and their ideas, « Ajouter
+// quelqu'un ». Every text
 // changes by touching it, and is saved as it is left: no « Enregistrer ».
 // Left without a name and without anyone, a draft is not kept.
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const id = computed(() => String(route.params.id));
+// « Retour »: where the list was opened from, or the home
+// (docs/spec/v3/navigation.md).
+const back = useParent('list', '/');
 const { t, tk, locale } = useT();
 const query = useListQuery(id);
 const update = useUpdateListMutation(id);
 const remove = useDeleteListMutation();
 const doc = computed(() => query.data.value);
+// The list opened: its news are seen (ticket 120).
+useSeen(() => (doc.value ? { target: 'list', targetId: id.value } : null));
 const list = computed(() => doc.value?.list);
 useHead({
   title: () =>
@@ -75,6 +89,64 @@ onMounted(async () => {
     titleField.value?.textareaRef?.focus();
   }
 });
+
+// The visit of a list just made (ticket 149): `?visite=secret|creer`,
+// once per account, for one who manages it. The address keeps it: once
+// seen, the account says so, and nothing opens again.
+// After the visit from « Créer », a note on the first line once the
+// first person is added (V3ListeVisiteIdee).
+const tour = useListTour();
+const queryClient = useQueryClient();
+onMounted(async () => {
+  await query.suspense();
+  const current = doc.value;
+  const asked = route.query.visite;
+  if (!asked || !current || !list.value) return;
+  const kind = tourKindOf(asked, current.tours.visit);
+  if (!kind || !current.manages) return;
+  // « Repartir d'une liste » is a step only when it shows a list.
+  const listId = list.value.id;
+  const resume =
+    resumable.value && list.value.status !== 'past'
+      ? (
+          await queryClient
+            .ensureQueryData({
+              queryKey: [...keys.list(listId), 'resumable'],
+              queryFn: () => api<unknown[]>(`/api/lists/${listId}/resumable`),
+            })
+            .catch(() => [])
+        ).length > 0
+      : false;
+  tour.start(kind, listId, resume);
+});
+onBeforeUnmount(() => tour.leave());
+/**
+ * What the visit puts on a person's empty line: the step « Une idée par
+ * ligne » on mine, the note of the first line on the first person.
+ * @param person - The person.
+ * @param index - Their place.
+ * @returns The step, the note, or null.
+ */
+const lineTour = (
+  person: PersonLine,
+  index: number,
+): 'line' | 'firstLine' | null => {
+  const first =
+    index === 0 &&
+    tour.firstLineOf.value === list.value?.id &&
+    !doc.value?.tours.firstLine;
+  if (first) return 'firstLine';
+  return person.member.isSelf ? 'line' : null;
+};
+
+// The account just made by the first idea (Q-018, V3ListeCompteCree):
+// said once, then gone from the address.
+const accountMade = ref(route.query.compte === '1');
+const onAccountSeen = () => {
+  accountMade.value = false;
+  const { compte: _seen, ...rest } = route.query;
+  void navigateTo({ query: rest }, { replace: true });
+};
 
 // The day.
 const dateOpen = ref(false);
@@ -130,6 +202,10 @@ provide(LIST_EDITING, {
   who: (idea, forName) => {
     naming.value = { idea, forName };
   },
+  canMove: () => people.value.length > 1,
+  moveTo: (idea, from) => {
+    moving.value = { idea, from };
+  },
 });
 
 // « Retirer de cette liste » (README 22.19): the person goes at once,
@@ -145,7 +221,18 @@ const removal = useDelayedRemoval((personId, done) =>
 // from the keyboard and the menu. The screen shows the new order at
 // once; the list is read again once it is saved.
 const reorder = useReorderMutation(id);
-const wanted = ref<ListOrder | null>(null);
+const chosenOrder = ref<ListOrder | null>(null);
+/**
+ * The order shown until the list read again says the same, a line just
+ * written under the id the server gave it as soon as it has one (ticket
+ * 166).
+ */
+const wanted = computed({
+  get: () => chosenOrder.value && orderWithIds(chosenOrder.value, lineIdNow),
+  set: (order: ListOrder | null) => {
+    chosenOrder.value = order;
+  },
+});
 // Live (lot 26, README 22.20): what the others do arrives by itself, and
 // those who hold the list see who else is there, and who writes what.
 const live = useListLive(
@@ -255,16 +342,24 @@ const people = computed(() => {
       unticking.leaving.value
         ? { ...person, ideas: person.ideas.map(withoutLeaving) }
         : person,
-    );
+    )
+    // A line just written takes the id the server gave it at once, as the
+    // order shown does (ticket 166).
+    .map((person) => ({
+      ...person,
+      ideas: person.ideas.map((idea) => ({ ...idea, id: lineIdNow(idea.id) })),
+      lines: person.lines.map(lineIdNow),
+    }));
   return wanted.value
-    ? applyOrder(there, wanted.value, (idea) => idea.id)
+    ? withLines(
+        applyOrder(there, wanted.value, (idea) => idea.id),
+        wanted.value,
+      )
     : there;
 });
+/** The order: each person with their lines, ideas and gifts not on the list. */
 const orderNow = (): ListOrder =>
-  people.value.map((person) => ({
-    id: person.id,
-    ideas: person.ideas.map((idea) => idea.id),
-  }));
+  people.value.map((person) => ({ id: person.id, ideas: [...person.lines] }));
 // The order shown stays until the list read again says the same: letting
 // go of it sooner would put the lines back for an instant, and take the
 // line being written from under the keyboard.
@@ -272,26 +367,40 @@ watch(doc, (fresh) => {
   if (!wanted.value || !fresh) return;
   const stored = fresh.people.map((person) => ({
     id: person.id,
-    ideas: person.ideas.map((idea) => idea.id),
+    ideas: [...person.lines],
   }));
   if (sameOrder(stored, wanted.value)) wanted.value = null;
 });
 /** What was just moved, said to screen readers. */
 const announced = ref('');
+/** What a gift not on the list is called, empty for an idea. */
+const giftName = (id: string) => {
+  const gift = people.value.flatMap((p) => p.offList).find((g) => g.id === id);
+  return gift
+    ? t('lists.doc.offList', {
+        text: gift.kind === 'surprise' ? '' : gift.text,
+      })
+    : '';
+};
 const nameOf = (what: Lifted) =>
   what.kind === 'person'
     ? (people.value.find((p) => p.id === what.id)?.member.firstName ?? '')
-    : (people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id)
-        ?.text ?? '');
+    : giftName(what.id) ||
+      ideaName(
+        people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id) ?? {
+          text: '',
+        },
+      );
 /**
- * Shows an order and saves it; « Annuler » puts the one before back.
+ * Shows an order and saves it, without a message (Julien, 24 November
+ * 2026): only screen readers are told where it went.
  * @param next - The order wanted.
- * @param what - What moved, to say so; nothing when undoing.
+ * @param what - What moved, to say so.
  */
-const saveOrder = (next: ListOrder, what: Lifted | null) => {
+const saveOrder = (next: ListOrder, what: Lifted) => {
   const before = orderNow();
   if (sameOrder(before, next)) return;
-  const name = what ? nameOf(what) : '';
+  const name = nameOf(what);
   wanted.value = next;
   reorder.mutate(next, {
     onError: (error) => {
@@ -303,7 +412,6 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
       );
     },
   });
-  if (!what) return;
   const place =
     what.kind === 'idea'
       ? placeOfIdea(next, what.id)
@@ -316,19 +424,30 @@ const saveOrder = (next: ListOrder, what: Lifted | null) => {
     position: (place?.index ?? 0) + 1,
     count: place?.count ?? 0,
   });
-  toast.undo(
-    t('lists.doc.drag.moved', { name }),
-    () => {
-      toast.remove('moved');
-      saveOrder(before, null);
-    },
-    { id: 'moved', duration: 5000 },
-  );
 };
 const board = ref<HTMLElement | null>(null);
+/**
+ * The ideas someone gives, and the gifts not on the list: they stay with
+ * their person (Julien).
+ */
+const given = computed(
+  () =>
+    new Set(
+      people.value.flatMap((person) => [
+        ...person.ideas.flatMap((idea) =>
+          idea.view.kind === 'free' ? [] : [idea.id],
+        ),
+        ...person.offList.map((gift) => gift.id),
+      ]),
+    ),
+);
+const leavesPerson = (what: Lifted, place: DropPlace) =>
+  given.value.has(what.id) &&
+  place.kind === 'idea' &&
+  placeOfIdea(orderNow(), what.id)?.personId !== place.personId;
 const onDrop = (what: Lifted, place: DropPlace) =>
   saveOrder(
-    what.kind === 'idea' && place.kind === 'idea'
+    what.kind === 'idea' && place.kind === 'idea' && !leavesPerson(what, place)
       ? moveIdea(orderNow(), what.id, place)
       : what.kind === 'person' && place.kind === 'person'
         ? movePerson(orderNow(), what.id, place.index)
@@ -338,7 +457,7 @@ const onDrop = (what: Lifted, place: DropPlace) =>
 const onStep = async (what: Lifted, step: -1 | 1) => {
   saveOrder(
     what.kind === 'idea'
-      ? stepIdea(orderNow(), what.id, step)
+      ? stepIdea(orderNow(), what.id, step, given.value.has(what.id))
       : stepPerson(orderNow(), what.id, step),
     what,
   );
@@ -355,6 +474,32 @@ const onStep = async (what: Lifted, step: -1 | 1) => {
   }, 60);
 };
 const dragging = useListDrag(board, { drop: onDrop, step: onStep });
+
+// « Déplacer vers… » (ticket 152, V3ListeLigneDeplacer): a sheet with the
+// other people of the list; the line goes to the end of their part, with
+// its tick if it has one.
+const moving = ref<{ idea: IdeaLine; from: string } | null>(null);
+const movingOpen = computed({
+  get: () => moving.value !== null,
+  set: (open: boolean) => {
+    if (!open) moving.value = null;
+  },
+});
+const moveTargets = computed(() =>
+  people.value.filter((person) => person.id !== moving.value?.from),
+);
+const onSend = (target: PersonLine) => {
+  const line = moving.value;
+  moving.value = null;
+  if (!line) return;
+  saveOrder(
+    moveIdea(orderNow(), line.idea.id, {
+      personId: target.id,
+      index: target.lines.filter((id) => id !== line.idea.id).length,
+    }),
+    { kind: 'idea', id: line.idea.id },
+  );
+};
 /** The card under the finger: what it says, and where the list is. */
 const ghost = computed(() => {
   const what = dragging.lifted.value;
@@ -370,7 +515,9 @@ const ghost = computed(() => {
     label: nameOf(what),
     avatar: person?.member.avatar,
     detail: person
-      ? t('lists.doc.drag.ideas', { count: person.ideas.length })
+      ? t('lists.doc.drag.ideas', {
+          count: person.ideas.filter((idea) => !idea.title).length,
+        })
       : undefined,
   };
 });
@@ -398,6 +545,13 @@ const sections = computed(() => {
   );
   return at === laid.others ? [...laid.rows, null] : laid.rows;
 });
+/** « Repartir d'une liste », while nothing is written (Q-032). */
+const resumable = computed(() =>
+  canResumeInto({
+    ideas: people.value.reduce((sum, person) => sum + person.ideas.length, 0),
+    single: doc.value?.single ?? false,
+  }),
+);
 const onRemovePerson = (person: PersonLine) =>
   removal.start(
     person.id,
@@ -485,21 +639,16 @@ onBeforeRouteLeave((to) => {
 </script>
 
 <template>
-  <AdminScreen back="/listes">
+  <AdminScreen :back="back">
     <AdminQueryState
       :pending="query.isPending.value"
       :error="query.error.value"
-      :skeleton="['card', 'title', 'card']"
+      :skeleton="['bar', 'doc', 'list']"
     >
       <template v-if="doc && list">
-        <ListsShareBar
-          :doc="doc"
-          :readonly="!doc.manages"
-          :title="title"
-          :manager-name="
-            doc.holders.find((holder) => holder.level === 'manage')?.name
-          "
-        />
+        <ListsTourStop step="share">
+          <ListsShareBar :doc="doc" :readonly="!doc.manages" />
+        </ListsTourStop>
         <ListsHoldersLine
           v-if="doc.manages || doc.holders.length > 1"
           :list-id="list.id"
@@ -525,63 +674,66 @@ onBeforeRouteLeave((to) => {
             t('lists.live.visitors', { count: visitors })
           }}</span>
         </p>
+        <ListsPastBand v-if="doc.past" :band="doc.past" />
 
-        <div class="flex flex-col gap-2">
-          <button
-            type="button"
-            class="relative self-start"
-            :aria-label="t('lists.doc.changeIcon')"
-            data-testid="list-icon"
-            @click="iconOpen = true"
-          >
-            <ListsTile :icon="list.icon" size="lg" />
-            <span
-              class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
-              aria-hidden="true"
+        <ListsTourStop step="name">
+          <div class="flex flex-col gap-2">
+            <button
+              type="button"
+              class="relative self-start"
+              :aria-label="t('lists.doc.changeIcon')"
+              data-testid="list-icon"
+              @click="iconOpen = true"
             >
-              <UIcon name="i-lucide-pencil" class="size-3.5" />
-            </span>
-          </button>
-          <ListsLiveLock
-            v-if="titleLock"
-            :by="titleLock"
-            :fallback="t('lists.doc.titlePlaceholder')"
-            class="font-display text-[36px] leading-[1.1] font-bold"
-          />
-          <UTextarea
-            v-else
-            ref="titleField"
-            v-model="title"
-            autoresize
-            :rows="1"
-            :maxlength="LIST_TITLE_MAX"
-            variant="none"
-            :placeholder="t('lists.doc.titlePlaceholder')"
-            :aria-label="t('lists.doc.titleLabel')"
-            class="w-full"
-            :ui="{
-              base: 'overflow-hidden p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
-            }"
-            data-testid="list-title"
-            @keydown.enter.prevent="($event.target as HTMLElement).blur()"
-            @focus="titleActive = true"
-            @blur="
-              titleActive = false;
-              saveTitle();
-            "
-          />
-          <button
-            type="button"
-            class="self-start text-[15px]"
-            :class="
-              list.eventDate ? 'text-toned' : 'font-semibold text-primary-ink'
-            "
-            data-testid="list-date"
-            @click="dateOpen = true"
-          >
-            {{ dateLine || t('lists.doc.addDate') }}
-          </button>
-        </div>
+              <ListsTile :icon="list.icon" size="lg" />
+              <span
+                class="absolute -right-2 -bottom-2 flex size-7 items-center justify-center rounded-full bg-default ring-1 ring-default"
+                aria-hidden="true"
+              >
+                <UIcon name="i-lucide-pencil" class="size-3.5" />
+              </span>
+            </button>
+            <ListsLiveLock
+              v-if="titleLock"
+              :by="titleLock"
+              :fallback="t('lists.doc.titlePlaceholder')"
+              class="font-display text-[36px] leading-[1.1] font-bold"
+            />
+            <UTextarea
+              v-else
+              ref="titleField"
+              v-model="title"
+              autoresize
+              :rows="1"
+              :maxlength="LIST_TITLE_MAX"
+              variant="none"
+              :placeholder="t('lists.doc.titlePlaceholder')"
+              :aria-label="t('lists.doc.titleLabel')"
+              class="w-full"
+              :ui="{
+                base: 'overflow-hidden p-0 font-display text-[36px] md:text-[36px] leading-[1.1] font-bold placeholder:text-dimmed',
+              }"
+              data-testid="list-title"
+              @keydown.enter.prevent="($event.target as HTMLElement).blur()"
+              @focus="titleActive = true"
+              @blur="
+                titleActive = false;
+                saveTitle();
+              "
+            />
+            <button
+              type="button"
+              class="self-start text-[15px]"
+              :class="
+                list.eventDate ? 'text-toned' : 'font-semibold text-primary-ink'
+              "
+              data-testid="list-date"
+              @click="dateOpen = true"
+            >
+              {{ dateLine || t('lists.doc.addDate') }}
+            </button>
+          </div>
+        </ListsTourStop>
 
         <ListsNote :list-id="list.id" :note="list.note" />
 
@@ -593,9 +745,13 @@ onBeforeRouteLeave((to) => {
           data-testid="resumed-from"
         >
           {{
-            doc.resumedFrom.title
-              ? t('lists.resume.from', { title: doc.resumedFrom.title })
-              : t('lists.resume.fromUntitled')
+            doc.resumedFrom.year
+              ? t('lists.resume.from', {
+                  title: `${tk(`party.category.${doc.resumedFrom.year.category}`)} ${doc.resumedFrom.year.year}`,
+                })
+              : doc.resumedFrom.title
+                ? t('lists.resume.from', { title: doc.resumedFrom.title })
+                : t('lists.resume.fromUntitled')
           }}
           {{ t('lists.resume.marksBefore') }}
           <UIcon
@@ -618,15 +774,12 @@ onBeforeRouteLeave((to) => {
           @click="onAgain"
         />
 
-        <div
-          v-if="people.length > 0"
-          class="flex flex-col gap-0.5 text-sm text-toned"
+        <p
+          v-if="people.length > 0 && doc.planned > 0"
+          class="text-sm text-toned"
         >
-          <p v-if="doc.planned > 0">
-            {{ t('lists.doc.plannedHolder', { count: doc.planned }) }}
-          </p>
-          <p>{{ t('lists.doc.touchToEdit') }}</p>
-        </div>
+          {{ t('lists.doc.plannedHolder', { count: doc.planned }) }}
+        </p>
 
         <!-- The board: what moves by dragging. A long press must lift a
              line, not select its text nor open the browser's menu. -->
@@ -649,25 +802,36 @@ onBeforeRouteLeave((to) => {
               :first="row.index === 0"
               :last="row.index === people.length - 1"
               :single="doc.single"
+              :santas="row.person.member.isSelf ? doc.santas : []"
+              :linkable="row.person.member.isSelf ? doc.linkable : []"
+              :manages="doc.manages"
+              :tour-me="row.person.member.isSelf"
+              :tour-line="lineTour(row.person, row.index)"
             />
           </template>
         </div>
-        <p class="sr-only" aria-live="polite">{{ announced }}</p>
+        <p class="sr-only" aria-live="polite" data-testid="list-announce">
+          {{ announced }}
+        </p>
 
-        <!-- An empty draft may start from another list. -->
-        <ListsResumeFrom
-          v-if="people.length === 0 && list.status === 'draft'"
-          :list-id="list.id"
-        />
+        <!-- A list with no idea yet may start from another, people or
+             not (Q-032): under the people, before « Ajouter quelqu'un ». -->
+        <ListsTourStop v-if="resumable && list.status !== 'past'" step="resume">
+          <ListsResumeFrom :list-id="list.id" />
+        </ListsTourStop>
         <!-- A list without people keeps the block until it is shared:
              its shape no longer changes then (lot 27 bis). -->
-        <ListsAddSomeone
+        <ListsTourStop
           v-if="!(doc.single && list.status !== 'draft')"
-          :list-id="list.id"
-          :family="doc.family"
-          :on-list="people"
-          :single="doc.single"
-        />
+          step="add"
+        >
+          <ListsAddSomeone
+            :list-id="list.id"
+            :family="doc.family"
+            :on-list="people"
+            :single="doc.single"
+          />
+        </ListsTourStop>
         <!-- The red line of what cannot be taken back, for those who
              manage the list; it leads to the page that says what is lost. -->
         <UiList v-if="doc.manages">
@@ -749,5 +913,37 @@ onBeforeRouteLeave((to) => {
       :idea="joining.idea"
       :for-name="joining.forName"
     />
+    <UiSheet
+      :open="accountMade"
+      :title="t('lists.accountCreated.title')"
+      :description="t('lists.accountCreated.body')"
+      @update:open="(open) => !open && onAccountSeen()"
+    >
+      <template #footer>
+        <UButton
+          block
+          size="xl"
+          class="h-13 justify-center text-[17px] font-bold"
+          :label="t('lists.accountCreated.ok')"
+          data-testid="account-created-ok"
+          @click="onAccountSeen"
+        />
+      </template>
+    </UiSheet>
+    <UiSheet v-model:open="movingOpen" :title="t('lists.line.moveTitle')">
+      <ul
+        class="-mx-4 divide-y divide-divider border-y border-divider"
+        data-testid="move-sheet"
+      >
+        <UiListItem
+          v-for="person in moveTargets"
+          :key="person.id"
+          :avatar="person.member.avatar"
+          :title="person.member.firstName"
+          :chevron="false"
+          :on-click="() => onSend(person)"
+        />
+      </ul>
+    </UiSheet>
   </AdminScreen>
 </template>

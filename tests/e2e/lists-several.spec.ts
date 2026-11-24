@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { apiLogin, heading, hydrated, openList } from './helpers';
 
 // Gift lists held by several, and a person linked to their own account
 // (README 22.20, lot 25): invited by address, an invitation still
@@ -97,13 +97,11 @@ test('invited by address, Hugo holds the list by coming, and manages it', async 
   );
   expect(again.status()).toBe(409);
 
-  // The list is among Hugo's as soon as he opens his lists.
+  // The list is among Hugo's as soon as he opens his home.
   const hugo = await as('hugo');
-  await hugo.goto('/listes');
+  await hugo.goto('/');
   await hydrated(hugo);
-  const card = hugo.getByTestId('list-card').filter({ hasText: 'Noël à deux' });
-  await expect(card).toContainText('Tu tiens cette liste');
-  await card.click();
+  await openList(hugo, 'Noël à deux');
   await expect(hugo.getByTestId('holders-line')).toContainText(
     'Tu tiens cette liste avec Camille.',
   );
@@ -184,23 +182,19 @@ test('linked to his account, Hugo writes his own ideas, and only his', async () 
 
   // The list is among his, before he ever opened it.
   const hugo = await as('hugo');
-  await hugo.goto('/listes');
+  await hugo.goto('/');
   await hydrated(hugo);
-  const card = hugo.getByTestId('list-card').filter({ hasText: 'Noël à deux' });
-  await expect(card).toContainText('Liste de Camille');
-  await card.click();
-  await expect(hugo.getByTestId('visitor-sentence')).toContainText(
-    'Tu y figures : tu peux écrire tes propres idées.',
-  );
-  // His section first, « C'est toi », where he writes in place.
+  await openList(hugo, 'Noël à deux');
+  await expect(hugo.getByTestId('visitor-sentence')).toHaveCount(0);
+  // His section first, « Hugo (moi) », where he writes in place.
   const first = hugo.getByTestId('visitor-person').first();
-  await expect(first.getByTestId('its-you')).toBeVisible();
-  await first.getByPlaceholder('Une idée pour moi…').click();
+  await expect(first.getByTestId('me-tag')).toHaveText('(moi)');
+  await first.getByPlaceholder('Une idée pour toi…').click();
   await hugo.keyboard.type('Un bon couteau');
   await hugo.keyboard.press('Enter');
   await expect(first.getByTestId('idea-text')).toHaveText('Un bon couteau');
   await expect(
-    first.getByPlaceholder('Une autre idée pour moi…'),
+    first.getByPlaceholder('Une autre idée pour toi…'),
   ).toBeVisible();
   // Not for anyone else, and he does not see who gives what.
   const forLeo = await hugo.request.post(`/api/l/${state.token}/ideas`, {

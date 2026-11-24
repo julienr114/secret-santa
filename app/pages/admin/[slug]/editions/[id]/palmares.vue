@@ -13,6 +13,8 @@ const id = computed(() => String(route.params.id));
 const editionPath = computed(() => `/admin/${slug.value}/editions/${id.value}`);
 type Results = Palmares & {
   editionLabel: string;
+  christmas: boolean;
+  recurring: boolean;
   people: { id: string; name: string; avatar: Avatar }[];
   unmasked: number;
 };
@@ -35,6 +37,8 @@ watch(
   <ParticipantStories
     v-if="results && results.size !== 'none'"
     :edition-label="results.editionLabel"
+    :christmas="results.christmas"
+    :recurring="results.recurring"
     :people="results.people"
     :players="results.players"
     :guesses="results.guesses"

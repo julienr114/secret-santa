@@ -1,5 +1,7 @@
 export default {
   appName: 'Under the Tree',
+  /** A row written in place was saved (ticket 162). */
+  saved: 'Enregistré',
   loading: 'Chargement',
   loadError: {
     title: 'On n’arrive pas à charger cette page',
@@ -12,7 +14,7 @@ export default {
     drawn: 'Tirage fait',
     closed: 'Clôturée',
   },
-  badge: { sent: 'envoyé', hints: 'pistes', viewed: 'enveloppe ouverte' },
+  badge: { sent: 'envoyé', hints: 'liste', viewed: 'enveloppe ouverte' },
   messageType: {
     invitation: 'Invitation',
     drawn: 'Tirage fait',
@@ -25,6 +27,18 @@ export default {
   },
   count: {
     participants: { one: '{count} participant', other: '{count} participants' },
+  },
+  tabs: {
+    home: 'Accueil',
+    create: 'Créer',
+    news: 'Quoi de neuf',
+    admin: 'Admin',
+    label: 'Sections',
+  },
+  create: {
+    title: 'Créer',
+    secretSanta: 'Un Secret Santa',
+    list: 'Une liste de cadeaux',
   },
   context: 'Tu es ici',
   actions: {

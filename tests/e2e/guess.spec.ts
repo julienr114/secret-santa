@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // « Devine qui » (README 22.17): after the draw, each one may guess who
 // gives to whom; nobody sees anyone else's guess before the party; at
@@ -62,18 +62,20 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { name: 'Famille Devine' },
     }),
   );
-  for (const firstName of NAMES) {
-    const { person } = await ok(
-      await admin().post(`${ADMIN}/persons`, { data: { firstName } }),
-    );
-    state.ids[firstName] = person.id;
-  }
   const created = await ok(
     await admin().post(`${ADMIN}/editions`, {
       data: { label: 'Noël devine', year: 2026, eventDate: '2099-12-24' },
     }),
   );
   state.editionId = created.edition.id;
+  for (const person of await addPeople(
+    admin(),
+    ADMIN,
+    state.editionId,
+    NAMES,
+  )) {
+    state.ids[person.firstName] = person.id;
+  }
   const { participants } = await ok(await admin().get(edition()));
   const { messages } = await ok(
     await admin().get(`${edition()}/messages?type=invitation`),
@@ -297,14 +299,12 @@ const smallGroup = async (slug: string, names: string[]) => {
     await admin().post('/api/admin/groups', { data: { name: slug } }),
   );
   expect(made.slug).toBe(slug);
-  for (const firstName of names) {
-    await ok(await admin().post(`${group}/persons`, { data: { firstName } }));
-  }
   const created = await ok(
     await admin().post(`${group}/editions`, {
       data: { label: 'Noël', year: 2026, eventDate: '2099-12-24' },
     }),
   );
+  await addPeople(admin(), group, created.edition.id, names);
   const base = `${group}/editions/${created.edition.id}`;
   const { participants } = await ok(await admin().get(base));
   const { messages } = await ok(
@@ -447,4 +447,22 @@ test('one player: the small palmarès, four screens', async ({ page }) => {
   );
   await stories.click({ position: { x: 350, y: 400 } });
   await expect(stories).toHaveAttribute('data-screen', 'end');
+  await expect(stories).toContainText('C’est tout pour cette année');
+  await expect(stories).toContainText('Joyeux Noël,');
+
+  // A birthday that does not come back: no « Noël », no « cette année »
+  // (docs/spec/v3/vocabulaire.md, « Devine qui hors de Noël »).
+  await ok(
+    await admin().patch(`/api/parties/famille-petit`, {
+      data: { category: 'birthday', recurring: false },
+    }),
+  );
+  await open(page, `/p/${tokens.Noé}/devine/palmares`);
+  for (const _ of Array.from({ length: 3 })) {
+    await stories.click({ position: { x: 350, y: 400 } });
+  }
+  await expect(stories).toHaveAttribute('data-screen', 'end');
+  await expect(stories).toContainText('Merci d’avoir joué,');
+  await expect(stories).not.toContainText('Joyeux');
+  await expect(stories).not.toContainText('cette année');
 });

@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { z } from 'zod';
-import { formatEventDate } from '#server/utils/rules';
+import { partyEmoji } from '#shared/utils/categories';
+import { invitePlace } from '#server/utils/invite';
 import { dayAfter } from '#shared/utils/dates';
 import { formatDay } from '~/utils/labels';
 import { useInviteQuery, useJoinMutation } from '~/composables/queries/useAuth';
 import { HOME, useLogoutMutation } from '~/composables/queries/useSession';
 
-// An invitation link to a group (README 22.2), in four states: the
-// invitation with the login form; logged in, a first name and « Rejoindre
-// le groupe »; joined (in the draw being prepared, or in the group only
-// when the draw is done); and the link that no longer lets anyone in (no
-// place left, past its last day, turned off or unknown).
+// The invitation link of a Secret Santa (ticket 116, V3FeteRejoindre,
+// RejoindreConnecte, RejoindreFait, RejoindreFerme), in four states: the
+// invitation with the login form; logged in, a first name and
+// « Participer »; signed up (a participant of this Secret Santa, and so a
+// member of its event); and the link that no longer lets anyone in (the
+// draw has taken place, no place left, past its last day, turned off or
+// unknown).
 const route = useRoute();
 const code = computed(() => String(route.params.code));
-const { t, locale } = useT();
+const { t, tk, locale } = useT();
 const organizers = useOrganizers();
 const errorMessage = useErrorMessage();
 const invite = useInviteQuery(code);
@@ -23,21 +26,31 @@ const { loggedIn } = useUserSession();
 
 const data = computed(() => invite.data.value);
 const edition = computed(() => data.value?.edition ?? null);
-/** « Noël 2026 · échange le 25 décembre · 5 personnes inscrites ». */
-const editionLine = computed(() =>
-  edition.value
-    ? [
-        edition.value.label,
-        edition.value.eventDate &&
-          t('auth.invite.party', {
-            date: formatEventDate(edition.value.eventDate, locale.value),
-          }),
-        t('auth.invite.count', { count: edition.value.participants }),
-      ]
-        .filter(Boolean)
-        .join(' · ')
-    : null,
+/** The event, and the Secret Santa between brackets when it has several. */
+const place = computed(() =>
+  data.value ? invitePlace(data.value.groupName, data.value.santaName) : '',
 );
+/** « 🎄 Noël · le 25 décembre 2026 · 5 inscrits » (V3FeteRejoindre). */
+const partyLine = computed(() => {
+  const party = data.value?.party;
+  if (!party) return null;
+  const emoji = partyEmoji(party);
+  return [
+    [emoji, tk(`party.category.${party.category}`)].filter(Boolean).join(' '),
+    party.date &&
+      t('auth.invite.party', {
+        date: new Intl.DateTimeFormat(locale.value, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'UTC',
+        }).format(new Date(`${party.date}T12:00:00Z`)),
+      }),
+    t('auth.invite.signedUp', { count: edition.value?.participants ?? 0 }),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+});
 
 // The first name the group will see, from the profile when it has one.
 const firstName = ref('');
@@ -61,27 +74,20 @@ const signedAs = computed(
 const onSwitch = () =>
   logout.mutate(undefined, { onSuccess: () => invite.refetch() });
 
-/** In the group: just joined, or already a member. */
+/** Signed up: just now, or already a participant. */
 const joined = computed(
-  () => join.isSuccess.value || Boolean(data.value?.account?.member),
+  () => join.isSuccess.value || Boolean(data.value?.account?.joined),
 );
-/** The way to their draw, when they are in it. */
+/** The way to their page of the Secret Santa. */
 const path = computed(
   () => join.data.value?.path ?? data.value?.account?.path ?? null,
 );
 /** What the welcome says under its title. */
 const welcomeText = computed(() => {
   const label = edition.value?.label ?? '';
-  if (path.value) {
-    return edition.value?.status === 'preparing'
-      ? `${t('auth.invite.inDraw', { label })} ${t('auth.invite.notDrawnYet', { count: organizers.value })}`
-      : t('auth.invite.inDraw', { label });
-  }
-  if (!edition.value)
-    return t('auth.invite.nextDraw', { count: organizers.value });
-  return edition.value.status === 'preparing'
-    ? t('auth.invite.addLater', { label, count: organizers.value })
-    : t('auth.invite.drawnAlready', { label });
+  return edition.value?.status === 'preparing'
+    ? `${t('auth.invite.inDraw', { label })} ${t('auth.invite.notDrawnYet', { count: organizers.value })}`
+    : t('auth.invite.inDraw', { label });
 });
 
 /** Why nobody can come in by this link, as a title and a line. */
@@ -91,6 +97,12 @@ const closed = computed(() => {
     return {
       title: t('auth.invite.invalid.title'),
       body: t('auth.invite.invalid.body'),
+    };
+  }
+  if (data.value?.closed === 'invite_drawn') {
+    return {
+      title: t('auth.invite.drawn.title'),
+      body: t('auth.invite.drawn.body', { group, count: organizers.value }),
     };
   }
   if (data.value?.closed === 'invite_full') {
@@ -116,11 +128,13 @@ const closed = computed(() => {
 
 <template>
   <AuthScreen>
-    <USkeleton
+    <!-- Its shape while it loads (regles-d-ecran.md), not a grey block. -->
+    <UiSkeleton
       v-if="invite.isPending.value"
-      class="h-48 rounded-2xl bg-skeleton"
-      aria-busy="true"
-      :aria-label="t('common.loading')"
+      :parts="['title', 'card']"
+      :rows="2"
+      :label="t('common.loading')"
+      class="pt-6"
     />
 
     <div
@@ -145,8 +159,8 @@ const closed = computed(() => {
           {{ t('auth.invite.meanwhile') }}
         </h2>
         <UButton
-          v-if="edition?.hintsOn && edition.status === 'preparing'"
-          :to="`${path}/pistes`"
+          v-if="edition?.status === 'preparing'"
+          :to="`${path}/liste`"
           block
           size="xl"
           class="h-12 justify-center font-bold"
@@ -156,11 +170,7 @@ const closed = computed(() => {
           :to="path"
           block
           size="xl"
-          :variant="
-            edition?.hintsOn && edition.status === 'preparing'
-              ? 'link'
-              : 'solid'
-          "
+          :variant="edition?.status === 'preparing' ? 'link' : 'solid'"
           class="h-12 justify-center font-bold"
           :label="t('auth.invite.seeDraw')"
         />
@@ -204,10 +214,10 @@ const closed = computed(() => {
         <h1
           class="font-display text-[34px] leading-[1.05] font-bold text-primary-ink"
         >
-          {{ data.groupName }}
+          {{ place }}
         </h1>
-        <p v-if="editionLine" class="text-[15px] text-toned">
-          {{ editionLine }}
+        <p v-if="partyLine" class="text-[15px] text-toned">
+          {{ partyLine }}
         </p>
       </div>
 

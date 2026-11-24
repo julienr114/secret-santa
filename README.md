@@ -875,7 +875,7 @@ secret-santa/
 │                                  draw, rules, crypto, audit, messages, wishes,
 │                                  editions, people, personal, avatars, auth, result
 ├── shared/i18n/                 ← dictionnaires fr/en/de typés, translate()
-├── scripts/                     ← seed-demo.ts, e2e-server.sh
+├── scripts/                     ← seed-v3.ts (les données locales, pnpm seed:v3), e2e-server.sh
 └── tests/e2e/                   ← admin-edition, email, language, participant, security
 ```
 
@@ -2164,10 +2164,13 @@ Définis dans `app/assets/css/main.css`, aux valeurs du style « Sorbet » (23.5
 | `note`, `incognito` | Le voile (à 35 %) et le filet d'une note pointée sur quelque chose, sur toute l'application : prune foncé après la première coche, aubergine pour le mode anonyme (`ListsVeilNote`) |
 | `person-thread` | Le fil d'une personne sur une liste, de son icône à sa dernière case |
 | `success-ring`, `incognito-ring`, `incognito-tint` | Le filet de « Tu l'offres › » (menthe, ou plus clair sur l'aubergine) ; le fond du choix « en anonyme » dans le panneau |
-| `shadow-card` | Le bord pêche de 1,5 px et la bande de 3 px sous une carte ; `shadow-award` la bande verte de l'entrée « palmarès » du journal |
+| `shadow-card` | Le bord pêche de 1,5 px et la bande de 3 px sous une carte ; `shadow-award` la bande verte de l'entrée « palmarès » du journal ; `shadow-raised` l'ombre de ce qui flotte au-dessus de la page (la barre d'une liste déroulée) ; `shadow-line-card` et `shadow-line-lifted` le liseré pêche et l'ombre teintée de rouge de la carte blanche d'une ligne qu'on écrit, puis qu'on soulève (ticket 144) |
 | `envelope`, `envelope-fold`, `envelope-line`, `shade`, `star`, `star-soft`, `wood` | Les illustrations : le papier, du clair au soutenu, son filet, l'ombre sous les choses, l'étoile lilas (aussi devant une idée précise) et son ton clair, le tronc du sapin |
+| `game-tint`, `game-ring`, `game-track`, `game-ink`, `game-strong` | « Devine qui » (ticket 150) : le vert clair de sa carte, son liseré, la piste de ses choix (`UiSegmented` `tone="game"`), son texte, le choix pris ; son rond est `mint-500` |
+| `rating`, `rating-off` | Les étoiles « Envie » d'une idée (ticket 152, `UiRatingStar`) : pêche soutenu, pleines ; pêche clair en contour, éteintes dans le menu |
 | `thread`, `alert`, `alert-ink`, `alert-link` | Le fil du journal ; une alerte du journal (rond violet à l'icône blanche, texte et lien posés sur le fond lilas). L'utilitaire `knot` entoure un nœud du fil de la couleur de la page |
 | `restricted`, `restricted-ring` | Le cadre en pointillés de ce qui n'est qu'au super-admin |
+| `tile-*-from`, `tile-*-to`, `shadow-tile`, `shadow-tile-sm` | La tuile d'un événement (`UiEventTile`, ticket 143) : le dégradé de chaque catégorie (`christmas`, `birthday`, `birth`, `wedding`, `housewarming`, `other`), son liseré blanc et son ombre |
 | `stack`, `stack-back` | Les bords des cartes en attente sous la première d'une pile |
 | `*-tint`, `*-soft`, `*-ink` (`primary`, `success`, `warning`, plus `warning-ring`, `error-soft`, `error-ink`) | Teintes d'une couleur de sens : `tint` le fond d'un pavé ou d'un encadré, `soft` celui d'un halo, d'un bouton rond à presser, d'un rond d'état ou d'un surlignage (la même teinte que `tint` dans Sorbet), `ink` le texte et les icônes posés dessus |
 | `primary-deep`, `success-deep`, `error-deep` | Un cran plus foncé : un bouton plein pressé, le texte d'un encadré de danger |
@@ -2201,7 +2204,7 @@ Sans aucun texte ni logique métier ; les composants de `admin/` et `participant
 | `UiCounters` | Trois pavés chiffre et libellé, tons `primary`, `warning`, `success` |
 | `UiAvatarStack` | Quatre icônes de personne au plus qui se recouvrent, puis « +N » (`stackOf`) |
 | `UiSheet` | Panneau du bas autour de `UDrawer` : titre (Outfit 22 px), description, corps, pied (action et sortie), en-tête remplaçable ; `busy` l'empêche de se refermer pendant une action ; `ui` ajoute des classes au titre, à la description ou à l'espacement (le panneau du journal, plus serré). Le corps a 4 px de marge en haut et en bas, pour que le cadre d'un encadré collé au bord ne soit pas coupé |
-| `UiSkeleton` | Un écran qui arrive, en pièces grises à la place et à la taille de ce qu'elles annoncent (dont `journal`, une frise verticale) ; `AdminQueryState` et `ParticipantScreen` s'en servent |
+| `UiSkeleton` | Un écran qui arrive, en pièces grises à la place et à la taille de ce qu'elles annoncent (dont `journal`, une frise verticale ; en V3 `greeting`, `parties` les cartes d'événement de l'accueil, `head`, `members`, `sections` et `icons` des lignes à icône, `settings`, `chips`, `bar` et `doc` pour une liste), l'espace entre les pièces au choix (`gap`) ; `UiSkeletonLines` en dessine les lignes à icône ; `AdminQueryState` et `ParticipantScreen` s'en servent |
 | `UiCountBadge` | Un nombre dans une pastille corail au bout d'une ligne ou d'un élément de menu (les demandes à traiter), lu en toutes lettres par les lecteurs d'écran |
 | `UiStack` | Une carte posée sur une pile : un bord de carte par élément en attente derrière, deux au plus |
 | `UiRestricted` | Ce que seul un super-admin voit sur un écran que tout le monde voit : un cadre en pointillés titré sur sa bordure (bouclier et « Super-admin »), sans phrase d'explication ; `flush` pour des lignes bord à bord |
@@ -2239,7 +2242,7 @@ Composants construits dessus et réutilisés : `AdminAvatarSheet` (choisir l'ic�
 
 Journal (section 9) : `JournalView` (les vues, l'édition, les panneaux), `JournalList` (la frise), `JournalGroup` (une ligne repliée), `JournalHelpSheet`, `JournalAlertSheet` ; l'allure de chaque événement est dans `app/utils/journalLook.ts`.
 
-Panneaux et états communs de l'administration : `AdminDateSheet`, un jour dans un panneau de réglage (calendrier, jour en toutes lettres et compte à rebours, facultatif avec `clear-label`), dont `AdminPartyDateSheet` (date de la fête d'une édition) est un usage ; `AdminQueryState`, le chargement (`UiSkeleton`, composé par l'écran de `title`, `header`, `stepper`, `steps`, `card`, `envelope`, `groups`, `journal`, `list` : l'édition, l'accueil et la page d'un tirage ont chacun le leur ; il n'apparaît qu'après 200 ms) et l'erreur (carte avec « Réessayer », qui relance les requêtes de l'écran, et un retour ; accès refusé ou page introuvable : la phrase et le retour à l'accueil).
+Panneaux et états communs de l'administration : `AdminDateSheet`, un jour dans un panneau de réglage (calendrier, jour en toutes lettres et compte à rebours, facultatif avec `clear-label`), dont `AdminPartyDateSheet` (date de la fête d'une édition) est un usage ; `AdminQueryState`, le chargement (`UiSkeleton`, composé par l'écran des pièces de `UiSkeleton`, avec `skeleton-gap` : chaque écran a le sien, à sa forme ; il n'apparaît qu'après 200 ms et seulement tant que l'écran n'a jamais eu ses données) et l'erreur (carte avec « Réessayer », qui relance les requêtes de l'écran, et un retour ; accès refusé ou page introuvable : la phrase et le retour à l'accueil).
 
 Écran d'une édition (section 11), construit sur ces composants : `AdminEditionHeader`, `AdminEditionPrepare`, `AdminEditionFollow`, `AdminEditionRuleRows` (budget et petit mot), `AdminDrawSheet`, `AdminSendSheet`, `AdminDateSheet`, `AdminPartyDateCard`.
 

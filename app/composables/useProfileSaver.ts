@@ -17,11 +17,22 @@ type ProfilePatch = Partial<{
 type ProfileField = keyof ProfilePatch;
 
 /**
+ * What the server takes for a change: the icon in its two parts.
+ * @param patch - The change.
+ * @returns The body to send.
+ */
+const bodyOf = ({ avatar, ...rest }: ProfilePatch): ProfileBody => ({
+  ...rest,
+  ...(avatar ? { avatarEmoji: avatar.emoji, avatarColor: avatar.color } : {}),
+});
+
+/**
  * The account and its profile, each change saved on its own as soon as
  * it is chosen, like the settings (README 23.3): the new value shows at
  * once, the row says it is saving, and an error puts the old value back
  * with a toast.
- * @returns The account, the profile as shown, `save` and `saving`.
+ * @returns The account, the profile as shown, `save`, `saving`, and
+ * `commit` for a row written in place.
  */
 export const useProfileSaver = () => {
   const account = useAccountQuery();
@@ -45,14 +56,7 @@ export const useProfileSaver = () => {
         Object.entries(pending.value).filter(([key]) => !fields.includes(key)),
       );
     };
-    const { avatar, ...rest } = patch;
-    const body: ProfileBody = {
-      ...rest,
-      ...(avatar
-        ? { avatarEmoji: avatar.emoji, avatarColor: avatar.color }
-        : {}),
-    };
-    update.mutate(body, {
+    update.mutate(bodyOf(patch), {
       onSettled: settle,
       onError: (error) => toast.failed(errorMessage(error)),
     });
@@ -63,5 +67,22 @@ export const useProfileSaver = () => {
    * @returns True while its change is on its way.
    */
   const saving = (field: ProfileField) => field in pending.value;
-  return { account, shown, save, saving };
+  /**
+   * Saves one change written on its row (ticket 162): shown at once, a
+   * failure handed back to the row, which says it under itself.
+   * @param patch - The fields that change.
+   * @returns Once the server answered.
+   */
+  const commit = async (patch: ProfilePatch) => {
+    pending.value = { ...pending.value, ...patch };
+    const fields = Object.keys(patch);
+    try {
+      await update.mutateAsync(bodyOf(patch));
+    } finally {
+      pending.value = Object.fromEntries(
+        Object.entries(pending.value).filter(([key]) => !fields.includes(key)),
+      );
+    }
+  };
+  return { account, shown, save, saving, commit };
 };

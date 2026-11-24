@@ -1,8 +1,9 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import {
+  addPeople,
+  apiLogin,
   heading,
   hydrated,
-  apiLogin,
   loginAsOrganizer,
   loginAsSuper,
 } from './helpers';
@@ -29,13 +30,11 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     data: { slug: SLUG, name: 'Famille Courrier', organizers: [ORGANIZER] },
   });
   state.groupId = (await created.json()).group.id;
-  for (const firstName of ['Ada', 'Bob', 'Cléo']) {
-    await api.post(`${ADMIN}/persons`, { data: { firstName } });
-  }
   const edition = await api.post(`${ADMIN}/editions`, {
     data: { label: 'Noël courrier', year: 2026, eventDate: '2026-12-25' },
   });
   state.editionId = (await edition.json()).edition.id;
+  await addPeople(api, ADMIN, state.editionId, ['Ada', 'Bob', 'Cléo']);
   // The organiser is a person of the group, with an address: this
   // edition goes without them, so that only Ada can be emailed.
   const { participants } = await (
@@ -57,10 +56,24 @@ test('the guardian adds addresses and sends to those who have one', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.getByRole('link', { name: /^Membres/ }).click();
+  await page.getByTestId('party-members').click();
   await page.getByText('Ada', { exact: true }).click();
-  await page.getByLabel(/^Adresse email/).fill('Ada@Example.com');
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  // Written on its row (ticket 162): what it sets off said under it while
+  // one writes; no « Enregistrer ».
+  const email = page.getByLabel('Adresse email');
+  await email.fill('pas-une-adresse');
+  await expect(
+    page.getByText('Cette personne recevra un email', { exact: false }),
+  ).toBeVisible();
+  await email.press('Enter');
+  await expect(page.getByTestId('inline-error')).toHaveText(
+    'Adresse email invalide',
+  );
+  await expect(page.getByRole('button', { name: 'Enregistrer' })).toHaveCount(
+    0,
+  );
+  await email.fill('Ada@Example.com');
+  await email.press('Enter');
   await expect(page.getByText('Enregistré').first()).toBeVisible();
   const { persons } = await (await page.request.get(`${ADMIN}/persons`)).json();
   expect(
@@ -68,25 +81,26 @@ test('the guardian adds addresses and sends to those who have one', async ({
   ).toBe('ada@example.com');
   // One address, one person of the group: neither a new person nor Bob
   // can take Ada's.
-  const twin = await page.request.post(`${ADMIN}/persons`, {
-    data: { firstName: 'Ada bis', email: 'ada@example.com' },
-  });
+  const twin = await page.request.post(
+    `${ADMIN}/editions/${state.editionId}/persons`,
+    {
+      data: { firstName: 'Ada bis', email: 'ada@example.com' },
+    },
+  );
   expect(twin.status()).toBe(409);
   const bob = persons.find((p: { firstName: string }) => p.firstName === 'Bob');
   const taken = await page.request.patch(`${ADMIN}/persons/${bob.id}`, {
     data: { email: 'ADA@example.com' },
   });
   expect(taken.status()).toBe(409);
-  // On screen, the form says why.
+  // On screen, the row says why, under itself (an error of the server).
   await page.goto(`/admin/${SLUG}/personnes/${bob.id}`);
   await hydrated(page);
-  await page.getByLabel(/^Adresse email/).fill('ada@example.com');
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(
-    page
-      .getByText('Cette adresse est déjà celle d’une autre personne du groupe.')
-      .first(),
-  ).toBeVisible();
+  await page.getByLabel('Adresse email').fill('ada@example.com');
+  await page.getByLabel('Adresse email').press('Enter');
+  await expect(page.getByTestId('inline-error')).toHaveText(
+    'Cette adresse est déjà celle d’une autre personne de l’événement.',
+  );
 
   await page.goto(`/admin/${SLUG}/editions/${state.editionId}`);
   await hydrated(page);
@@ -165,83 +179,51 @@ test('a participant logs in with their address and finds their draw', async ({
 }) => {
   const api = state.api!;
   const email = 'dana-accueil@example.com';
-  const person = await api.post(`${ADMIN}/persons`, {
-    data: { firstName: 'Dana', email },
-  });
-  const personId = (await person.json()).person.id;
+  // She comes into the event by its Secret Santa (ticket 117).
+  await addPeople(api, ADMIN, state.editionId, [{ firstName: 'Dana', email }]);
 
   // The address is known through the person: it gets a link and a home,
-  // empty as long as she takes part in no edition.
+  // where the party is.
   await apiLogin(page.request, email);
   await page.goto('/');
   await hydrated(page);
   await expect(heading(page)).toHaveText('Bonjour');
-  await expect(page.getByText(/Aucun tirage pour l’instant/)).toBeVisible();
-  await expect(page.getByTestId('home-organize')).toContainText(
-    'Demander à créer un groupe',
-  );
-
-  const added = await api.post(
-    `${ADMIN}/editions/${state.editionId}/participants`,
-    { data: { personId } },
-  );
-  expect(added.ok()).toBe(true);
-  await page.reload();
-  await hydrated(page);
-  // Her only draw is the card of the home: where it stands, what to do.
-  const draw = page.getByTestId('draw-card');
-  await expect(draw).toContainText('Famille Courrier · Noël courrier');
-  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
+  const card = page.getByTestId('home-party');
+  await expect(card).toContainText('Famille Courrier');
+  // Her Secret Santa is a line of the party's card.
+  const santa = card.getByRole('link', { name: 'Le Secret Santa' });
+  await expect(santa).toBeVisible();
 
   // A member has no admin: neither the API nor the screens.
   expect((await page.request.get('/api/admin/groups')).status()).toBe(403);
   expect((await page.request.get(`${ADMIN}/persons`)).status()).toBe(403);
+  // The old address of the group leads to its party, which a member sees
+  // without its settings (ticket 104).
   await page.goto(`/admin/${SLUG}`);
-  await expect(heading(page)).toHaveText('Bonjour');
-
-  // No hint left yet: the card leads straight to the gift hints.
-  await draw
-    .getByRole('link', { name: 'Laisser mes pistes de cadeaux' })
-    .click();
-  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}\/pistes$/);
-  // Opened from home, the page says which draw it belongs to.
-  await expect(page.getByRole('navigation', { name: 'Tu es ici' })).toHaveText(
-    /Famille Courrier\s*·\s*Noël courrier/,
-  );
-  const personal = new URL(page.url()).pathname.replace(/\/pistes$/, '');
-  // « Retour » goes up the tree (docs/ARBORESCENCE.md): to the draw
-  // page, then, opened from home, home.
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(new RegExp(`${personal}$`));
-  await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(heading(page)).toHaveText('Bonjour');
-
-  // With a precise idea left, the card waits for the draw, and opens it.
-  await page.request.put(`/api${personal}/wishes`, {
-    data: { wishes: [{ label: 'Un livre' }] },
-  });
-  await page.reload();
-  await hydrated(page);
-  await expect(draw).toContainText('Le tirage n’a pas encore eu lieu');
+  await expect(page).toHaveURL(new RegExp(`/e/${SLUG}$`));
+  await expect(heading(page)).toHaveText('Famille Courrier');
   await expect(
-    draw.getByRole('link', { name: 'Laisser mes pistes de cadeaux' }),
+    page.getByRole('link', { name: 'Réglages de l’événement' }),
   ).toHaveCount(0);
+  await page.goto('/');
+  await hydrated(page);
+
   // A second organiser: the page now speaks of « tes organisateurs ».
   await api.post(`${ADMIN}/organizers`, {
-    data: { email: 'second-courrier@example.com' },
+    data: { firstName: 'Second', email: 'second-courrier@example.com' },
   });
-  await draw.getByRole('link', { name: /Famille Courrier/ }).click();
-  await expect(page).toHaveURL(new RegExp(`${personal}$`));
+  await santa.click();
+  await expect(page).toHaveURL(/\/p\/[A-Za-z0-9_-]{43}$/);
   await expect(page.getByText('Dana')).toBeVisible();
   await expect(
     page.getByText(/Tes organisateurs te feront signe/),
   ).toBeVisible();
-  // Opened from home, the draw shows the way back; opened from its link
-  // (here a reload), it does not.
+  // Logged in, the draw shows the way back, opened from home or from its
+  // link (here a reload): to the home (ticket 114).
   await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();
   await page.reload();
   await hydrated(page);
-  await expect(page.getByRole('button', { name: 'Retour' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Retour' })).toBeVisible();
   // The name of the app still leads home.
   await page.getByRole('link', { name: /Under the Tree/ }).click();
   await expect(heading(page)).toHaveText('Bonjour');
@@ -251,11 +233,13 @@ test('the word added to the messages is written on its own page', async ({
   page,
 }) => {
   await loginAsOrganizer(page, SLUG, ORGANIZER);
-  await page.goto(`/admin/${SLUG}/reglages`);
+  // A setting of the Secret Santa (ticket 105).
+  const settings = `/admin/${SLUG}/editions/${state.editionId}/reglages`;
+  await page.goto(settings);
   await hydrated(page);
   const row = page.getByTestId('group-note');
   await row.click();
-  await expect(page).toHaveURL(/\/reglages\/mot$/);
+  await expect(page).toHaveURL(/\/mot-messages$/);
   // « Retour » gives it up (README 23.3).
   await page.getByLabel(/^Ton mot/).fill('Oublié');
   await page.getByRole('button', { name: 'Retour' }).click();
@@ -264,9 +248,11 @@ test('the word added to the messages is written on its own page', async ({
   await page.getByLabel(/^Ton mot/).fill('Rendez-vous à 19 h !');
   await page.getByText('Au-dessus du message').click();
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page).toHaveURL(new RegExp(`/${SLUG}/reglages$`));
+  await expect(page).toHaveURL(new RegExp(`${settings}$`));
   await expect(row).toContainText('Rendez-vous à 19 h !');
-  const { rules } = await (await page.request.get(`${ADMIN}/rules`)).json();
+  const { rules } = await (
+    await page.request.get(`${ADMIN}/editions/${state.editionId}`)
+  ).json();
   expect(rules).toMatchObject({
     messageNote: 'Rendez-vous à 19 h !',
     messageNotePosition: 'before',
@@ -279,7 +265,7 @@ test('only the super-admin can delete a group, with everything in it', async ({
   await loginAsOrganizer(page, SLUG, ORGANIZER);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await expect(page.getByText('Supprimer le groupe')).toHaveCount(0);
+  await expect(page.getByText('Supprimer l’événement')).toHaveCount(0);
   const refused = await page.request.post(
     `/api/admin/groups/${state.groupId}/delete`,
     { data: { confirm: SLUG } },
@@ -296,15 +282,15 @@ test('only the super-admin can delete a group, with everything in it', async ({
   expect(careless.status()).toBe(400);
   await page.goto(`/admin/${SLUG}/reglages`);
   await hydrated(page);
-  await page.getByText('Supprimer le groupe').click();
+  await page.getByText('Supprimer l’événement').click();
   await expect(
-    page.getByRole('button', { name: 'Garder le groupe' }),
+    page.getByRole('button', { name: 'Garder l’événement' }),
   ).toBeVisible();
   const confirm = page.getByRole('button', {
     name: 'Supprimer définitivement',
   });
   await expect(confirm).toBeDisabled();
-  await page.getByLabel(/Recopie l’identifiant du groupe/).fill(SLUG);
+  await page.getByLabel(/Recopie l’identifiant de l’événement/).fill(SLUG);
   await confirm.click();
   await expect(heading(page)).toHaveText('Bonjour');
   await expect(page.getByText('Famille Courrier')).toHaveCount(0);

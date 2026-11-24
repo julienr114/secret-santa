@@ -20,17 +20,6 @@ const props = defineProps<{
 }>();
 const { t, setLocale } = useT();
 const { loggedIn } = useUserSession();
-const fromHome = useDrawFromHome();
-// "Retour" follows the history, like the rest of the app: a sub-screen
-// goes back to where the user came from (the draw, or the home page), or
-// to `back` when opened directly. The draw page itself has one only when
-// it was opened from the home page.
-const fromHomeHere = computed(
-  () =>
-    loggedIn.value &&
-    !props.error &&
-    fromHome.value?.path === `/p/${props.token}`,
-);
 const goBack = useGoBack();
 const errorMessage = useErrorMessage();
 // A string in <component :is> does not resolve global components.
@@ -60,13 +49,13 @@ const onLanguage = (locale: Locale) => {
       <UContainer class="grid h-14 grid-cols-[1fr_auto_1fr] items-center">
         <div>
           <UButton
-            v-if="(back || fromHomeHere) && !error"
+            v-if="back && !error"
             variant="ghost"
             color="neutral"
             icon="i-lucide-chevron-left"
             :aria-label="t('common.actions.back')"
             class="-ml-2"
-            @click="goBack(back ?? HOME)"
+            @click="goBack(back)"
           />
         </div>
         <component

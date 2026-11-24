@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { H3Event } from 'h3';
 import type { Db } from './client';
-import { editions, groups, participations, persons } from './schema';
+import { secretSantas, parties, participations, persons } from './schema';
 import { decrypt } from '#server/utils/crypto';
 import { appUrl } from '#server/http/context';
 
@@ -14,16 +14,16 @@ export const findParticipation = async (
   const [row] = await db
     .select({
       participation: participations,
-      edition: editions,
+      edition: secretSantas,
       person: persons,
     })
     .from(participations)
-    .innerJoin(editions, eq(editions.id, participations.editionId))
+    .innerJoin(secretSantas, eq(secretSantas.id, participations.secretSantaId))
     .innerJoin(persons, eq(persons.id, participations.personId))
     .where(
       and(
         eq(participations.id, participationId),
-        eq(editions.groupId, groupId),
+        eq(secretSantas.partyId, groupId),
       ),
     )
     .limit(1);
@@ -66,14 +66,14 @@ export const findParticipationByTokenHash = async (
   const [row] = await db
     .select({
       participation: participations,
-      edition: editions,
+      edition: secretSantas,
       person: persons,
-      group: groups,
+      group: parties,
     })
     .from(participations)
-    .innerJoin(editions, eq(editions.id, participations.editionId))
+    .innerJoin(secretSantas, eq(secretSantas.id, participations.secretSantaId))
     .innerJoin(persons, eq(persons.id, participations.personId))
-    .innerJoin(groups, eq(groups.id, editions.groupId))
+    .innerJoin(parties, eq(parties.id, secretSantas.partyId))
     .where(eq(participations.tokenHash, tokenHash))
     .limit(1);
   return row ?? null;
@@ -85,14 +85,4 @@ export const listEditionPeople = (db: Db, editionId: string) =>
     .select({ person: persons, participationId: participations.id })
     .from(participations)
     .innerJoin(persons, eq(persons.id, participations.personId))
-    .where(eq(participations.editionId, editionId));
-
-/**
- * The statement that dates the hints of a participation: its giver sees
- * them as new until they open their result again (lot 16 bis).
- */
-export const touchHints = (db: Db, participationId: string, at: string) =>
-  db
-    .update(participations)
-    .set({ hintsUpdatedAt: at })
-    .where(eq(participations.id, participationId));
+    .where(eq(participations.secretSantaId, editionId));

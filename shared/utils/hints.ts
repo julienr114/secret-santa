@@ -90,39 +90,6 @@ export const questionsFor = (mode: GiftHintsMode): readonly HintQuestion[] =>
     ? HINT_QUESTIONS.filter((question) => question !== 'surprise')
     : HINT_QUESTIONS;
 
-/** One tag of « Moi et les cadeaux »: a question and its answer. */
-export type HintTag = { question: HintQuestion; answer: HintAnswer };
-
-/**
- * The tags of the participant's own page, in the order of the questions
- * asked: one per answer, « Les deux me vont » included.
- * @param answers - The answers, null where none.
- * @param mode - The group setting: a question not asked shows nothing.
- * @returns One tag per answer.
- */
-export const portraitTags = (
-  answers: HintAnswers,
-  mode: GiftHintsMode = 'full',
-): HintTag[] =>
-  questionsFor(mode).flatMap((question) => {
-    const answer = answers[question];
-    return answer ? [{ question, answer }] : [];
-  });
-
-/**
- * The first question asked that has no answer: where « Commencer » starts.
- * @param answers - The answers, null where none.
- * @param mode - The group setting.
- * @returns The question, or the first one when all are answered.
- */
-export const firstUnanswered = (
-  answers: HintAnswers,
-  mode: GiftHintsMode = 'full',
-): HintQuestion => {
-  const asked = questionsFor(mode);
-  return asked.find((question) => !answers[question]) ?? asked[0]!;
-};
-
 /** The questions said as « X plutôt que Y » to the giver. */
 export const PREFERENCE_QUESTIONS = [
   'usefulOrSurprising',
@@ -188,31 +155,50 @@ export const portraitTexts = (
   });
 
 /**
- * Which question comes after one, in the flow of « Moi et les cadeaux ».
- * @param question - The question just answered.
- * @param mode - The group setting.
- * @returns The next one, or null after the last.
+ * The tastes written on a « Moi » card, as a portrait (ticket 107): what
+ * the one who drew me reads. Only the known questions, answers and texts.
+ * @param card - Its answers and texts, as kept.
+ * @param card.answers - The answers, by question.
+ * @param card.texts - The texts, by name.
+ * @returns The portrait.
  */
-export const nextQuestion = (
-  question: HintQuestion,
-  mode: GiftHintsMode = 'full',
-): HintQuestion | null => {
-  const asked = questionsFor(mode);
-  return asked[asked.indexOf(question) + 1] ?? null;
-};
+export const portraitOfCard = (card: {
+  answers: Record<string, string | null> | null;
+  texts: Record<string, string | null> | null;
+}): Portrait => ({
+  answers: Object.fromEntries(
+    HINT_QUESTIONS.map((question) => {
+      const answer = card.answers?.[question];
+      return [question, HINT_ANSWERS.find((known) => known === answer) ?? null];
+    }),
+  ) as HintAnswers,
+  texts: Object.fromEntries(
+    HINT_TEXTS.map((text) => {
+      const said = card.texts?.[text]?.trim();
+      return [text, said ? said : null];
+    }),
+  ) as HintTexts,
+});
 
 /**
- * Reads a question from an address (`?n=2`, from 1 to the number asked).
- * @param value - The query value.
- * @param mode - The group setting.
- * @returns The question, the first one when the value is not a number in
- *   range.
+ * A « Moi » card and the portrait left before the V3, together (ticket
+ * 165): what the card says, and the old portrait where the card is
+ * silent, so that nothing written is lost to the one who drew them.
+ * @param card - The portrait of the card.
+ * @param old - The portrait left before, or null.
+ * @returns The portrait read.
  */
-export const questionAt = (
-  value: unknown,
-  mode: GiftHintsMode = 'full',
-): HintQuestion => {
-  const asked = questionsFor(mode);
-  const index = Number(value) - 1;
-  return asked[Number.isInteger(index) ? index : 0] ?? 'usefulOrSurprising';
-};
+export const portraitWithOld = (
+  card: Portrait,
+  old: Portrait | null,
+): Portrait =>
+  old
+    ? {
+        answers: Object.fromEntries(
+          HINT_QUESTIONS.map((q) => [q, card.answers[q] ?? old.answers[q]]),
+        ) as HintAnswers,
+        texts: Object.fromEntries(
+          HINT_TEXTS.map((x) => [x, card.texts[x] ?? old.texts[x]]),
+        ) as HintTexts,
+      }
+    : card;

@@ -1,3 +1,4 @@
+import { adoptedAvatar } from '#server/utils/avatars';
 import { and, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import type { Db } from './client';
 import { accounts, loginLinks, persons, sessions } from './schema';
@@ -31,12 +32,15 @@ export const createAccount = async (
     isSuperAdmin,
     language = 'fr',
     firstName = null,
+    avatar = null,
     now,
   }: {
     email: string;
     isSuperAdmin: boolean;
     language?: Locale;
     firstName?: string | null;
+    /** The face it had in a Secret Santa, if it had one. */
+    avatar?: { emoji: string; color: string } | null;
     now: string;
   },
 ) => {
@@ -45,14 +49,16 @@ export const createAccount = async (
     email,
     firstName,
     lastName: null,
-    avatarEmoji: null,
-    avatarColor: null,
+    avatarEmoji: avatar?.emoji ?? null,
+    avatarColor: avatar?.color ?? null,
     isSuperAdmin,
-    groupQuota: 0,
+    secretSantaLimit: 3,
     language,
     createdAt: now,
     lastLoginAt: null,
     disabledAt: null,
+    listTourSeen: false,
+    firstLineNoteSeen: false,
   };
   await db.insert(accounts).values(account);
   return account;
@@ -61,11 +67,46 @@ export const createAccount = async (
 /** A person some organiser registered with this address, if any. */
 export const findPersonByEmail = async (db: Db, email: string) => {
   const [person] = await db
-    .select({ language: persons.language })
+    .select({
+      id: persons.id,
+      language: persons.language,
+      avatarEmoji: persons.avatarEmoji,
+      avatarColor: persons.avatarColor,
+    })
     .from(persons)
     .where(eq(persons.email, email))
     .limit(1);
   return person ?? null;
+};
+
+/**
+ * Gives an account the face of the person it becomes in a Secret Santa,
+ * when it has none of its own (`adoptedAvatar`).
+ * @param db - The database.
+ * @param account - The account.
+ * @param account.id - Its id.
+ * @param account.avatarEmoji - Its own emoji, or null.
+ * @param person - The person, as the Secret Santa shows them.
+ * @param person.id - Their id.
+ * @param person.avatarEmoji - Their emoji, or null.
+ * @param person.avatarColor - Their colour, or null.
+ * @returns Once done.
+ */
+export const adoptPersonAvatar = async (
+  db: Db,
+  account: { id: string; avatarEmoji: string | null },
+  person: {
+    id: string;
+    avatarEmoji?: string | null;
+    avatarColor?: string | null;
+  },
+) => {
+  const avatar = adoptedAvatar(account, person);
+  if (!avatar) return;
+  await db
+    .update(accounts)
+    .set({ avatarEmoji: avatar.emoji, avatarColor: avatar.color })
+    .where(eq(accounts.id, account.id));
 };
 
 /** The account behind an id, or null. */

@@ -58,7 +58,7 @@ watch(
   },
   { immediate: true },
 );
-const short = computed(() => ideaShort(props.idea.text));
+const short = computed(() => ideaShort(ideaName(props.idea)));
 const proposing = computed(
   () => mode.value === 'group' && mine.value?.mode === 'alone',
 );

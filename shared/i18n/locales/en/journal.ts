@@ -5,7 +5,7 @@ export default {
   someone: 'Someone',
   unknown: 'Unknown event',
   events: {
-    edition_created: 'The edition {label} was created',
+    edition_created: 'The Secret Santa {label} was created',
     participant_added: '{name} is in',
     participant_removed: '{name} is no longer taking part',
     rules_changed: 'The organizer changed the rules of the draw',
@@ -18,13 +18,13 @@ export default {
       other: 'The draw is done, for {count} participants',
     },
     draw_cancelled: 'The draw was cancelled. Reason: {reason}',
-    results_revealed: 'The organizer revealed the results before the party',
+    results_revealed: 'The organizer revealed the results before the big day',
     result_revealed:
       "The organizer looked at {name}'s result (last-resort access)",
     result_viewed: '{name} opened their envelope',
     avatar_changed: '{name} changed their icon',
     language_changed: '{name} changed their language ({language})',
-    edition_closed: 'The edition {label} is closed',
+    edition_closed: 'The Secret Santa {label} is closed',
     draw_revealed: 'The organizer revealed the results of the draw',
     answers_started:
       'The organizer said the draw was made elsewhere: everyone gives their answer',
@@ -123,8 +123,8 @@ export default {
     notesBody:
       'The draw, each link sent or renewed, each envelope opened, and any look by the organizer in an envelope.',
     never: 'It never says',
-    neverBody: 'Who gives to whom, nor anyone’s gift hints.',
-    who: 'The whole group sees it',
+    neverBody: 'Who gives to whom, nor anyone’s gift ideas.',
+    who: 'All the members see it',
     whoBody: 'Participants and organizers, with the same lines.',
   },
   alert: {
@@ -137,26 +137,26 @@ export default {
       title: 'Last-resort access',
       happened:
         'The organizer looked at who {name} gives a gift to. They saw only that result.',
-      forOthers: 'Nothing: your envelope and your hints were not seen.',
+      forOthers: 'Nothing: your envelope and your ideas were not seen.',
       forMe:
         'They know who you give a gift to. Nobody else saw it, and your envelope does not change.',
-      why: 'In case of doubt or disagreement, it must be possible to check. The organizer has to copy a sentence and accept that the whole group will know.',
-      changes: 'The other results and the gift hints were not seen.',
+      why: 'In case of doubt or disagreement, it must be possible to check. The organizer has to copy a sentence and accept that all the members will know.',
+      changes: 'The other results and the gift ideas were not seen.',
     },
     results_revealed: {
-      title: 'Results revealed before the party',
-      happened: 'The organizer revealed who gives to whom, before the party.',
-      why: 'Revealing is allowed from the day of the party. Earlier, the organizer has to copy a sentence and accept that the whole group will know.',
+      title: 'Results revealed before the big day',
+      happened: 'The organizer revealed who gives to whom, before the big day.',
+      why: 'Revealing is allowed from the big day. Earlier, the organizer has to copy a sentence and accept that all the members will know.',
       changes:
-        'Your envelope does not change, and the whole group can see who gives to whom. The draw can no longer be cancelled.',
+        'Your envelope does not change, and all the members can see who gives to whom. The draw can no longer be cancelled.',
     },
     draw_cancelled: {
       title: 'Draw cancelled',
       happened:
         'The organizer cancelled the draw, for the reason written above. The old results are erased.',
-      why: 'Someone dropping out, someone forgotten: better to run it again than keep a wrong draw. The reason is written in the journal for the whole group.',
+      why: 'Someone dropping out, someone forgotten: better to run it again than keep a wrong draw. The reason is written in the journal for all the members.',
       changes:
-        'Everyone will get a new message and open a new envelope. The links and the gift hints do not change.',
+        'Everyone will get a new message and open a new envelope. The links and the gift ideas do not change.',
     },
   },
 } satisfies Dict<typeof fr>;

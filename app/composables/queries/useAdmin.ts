@@ -5,24 +5,19 @@ import type { AdminAccount } from '#server/database/quota';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
-// The super-admin's pages: accounts, requests for a group, every group
-// (README 22.2).
+// The super-admin's pages: accounts and every group (README 22.2).
 
-/** A request for a group awaiting a decision. */
-export type PendingRequest = {
-  id: string;
-  accountId: string;
-  email: string;
-  message: string;
-  createdAt: string;
-};
-/** How loaded the app is, to weigh a new group. */
+/** How loaded the app is, to weigh a new party. */
 export type AppStats = {
   groups: number;
-  /** Groups with a draw in progress. */
+  /** The Secret Santa in progress. */
   active: number;
+  /** The parties at 30 active members. */
+  fullParties: number;
   load: 'ok' | 'near' | 'over';
 };
+/** The emergency switches, on or off. */
+export type AppSwitches = { newSecretSantas: boolean };
 /** An account as the admin sees it; `me` marks the logged-in one. */
 /** A group of an account, with its members and its draw in progress. */
 export type AdminAccountGroup = AdminAccount['groups'][number] & GroupOverview;
@@ -33,24 +28,24 @@ export type AdminAccountRow = Omit<AdminAccount, 'groups'> & {
 /** A group of the app, with its members and its draw in progress. */
 export type AdminGroupRow = PublicGroup & GroupOverview;
 
-/** The pending requests and every account. */
+/** Every account, how loaded the app is, and the emergency switches. */
 export const useAdminAccountsQuery = () =>
   useApiQuery<{
-    requests: PendingRequest[];
     accounts: AdminAccountRow[];
     stats: AppStats;
+    switches: AppSwitches;
   }>(
     () => keys.adminAccounts(),
     () => '/api/admin/accounts',
   );
 
-/** Changes the profile or the quota of an account, or its access. */
+/** Changes the profile or the limit of an account, or its access. */
 export const useUpdateAccountMutation = () =>
   useApiMutation<
     { ok: true },
     {
       id: string;
-      groupQuota?: number;
+      secretSantaLimit?: number;
       disabled?: boolean;
       firstName?: string;
       lastName?: string | null;
@@ -60,19 +55,14 @@ export const useUpdateAccountMutation = () =>
   >(
     ({ id, ...body }) =>
       api(`/api/admin/accounts/${id}`, { method: 'PATCH', body }),
-    // Raising a quota may answer a request: the bottom bar counts them.
-    () => [keys.adminAccounts(), keys.home()],
+    () => [keys.adminAccounts()],
   );
 
-/** Approves or refuses a request for a group. */
-export const useDecideRequestMutation = () =>
-  useApiMutation<{ ok: true }, { id: string; approve: boolean; note?: string }>(
-    ({ id, approve, note }) =>
-      api(`/api/admin/group-requests/${id}/decide`, {
-        method: 'POST',
-        body: { approve, ...(note ? { note } : {}) },
-      }),
-    () => [keys.adminAccounts(), keys.home()],
+/** Turns an emergency switch on or off. */
+export const useSwitchMutation = () =>
+  useApiMutation<{ ok: true }, AppSwitches>(
+    (body) => api('/api/admin/switches', { method: 'PATCH', body }),
+    () => [keys.adminAccounts(), keys.newSecretSanta()],
   );
 
 /** Every group of the app. */

@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const deleted = await db
     .delete(manualExclusions)
     .where(
-      and(eq(manualExclusions.groupId, group.id), eq(manualExclusions.id, id)),
+      and(eq(manualExclusions.partyId, group.id), eq(manualExclusions.id, id)),
     )
     .returning({ id: manualExclusions.id });
   if (deleted.length === 0) throw notFound('exclusion_not_found');

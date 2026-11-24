@@ -281,8 +281,12 @@ export type Candidate = {
   name: string;
   /** Null for a first name written: no icon of its own. */
   avatar: Avatar | null;
-  /** The one looking (« Moi »), one who holds the list with them, one who ticked, or a first name written. */
-  kind: 'me' | 'holder' | 'ticker' | 'written';
+  /**
+   * The one looking (« Moi »), one who holds the list with them, one who
+   * ticked, a member of an event the list is shared in (V3), or a first
+   * name written.
+   */
+  kind: 'me' | 'holder' | 'ticker' | 'member' | 'written';
   /** For a first name written: its address, or null. */
   email: string | null;
 };
@@ -290,13 +294,15 @@ export type Candidate = {
 /**
  * Those the sheet offers for any idea of a list, in its order: « Moi »,
  * those who hold the list with me, those who ticked on it without being
- * anonymous, the first names written on it. Those who give the idea come
+ * anonymous, the members of the events it is shared in (the V3, ticket
+ * 098: the app knows them too), the first names written on it. Those who give the idea come
  * right after « Moi », on the screen (`sheetPeople`). An account that only
  * ticked anonymously is not offered: nothing says it ticked.
  * @param input - What the list knows.
  * @param input.viewer - The one looking, who holds the list.
  * @param input.holders - Those who hold the list, the one looking among them.
  * @param input.claims - The ticks of the list, of accounts and of names.
+ * @param input.members - The accounts of the events it is shared in.
  * @param input.written - The first names written on the list.
  * @returns Each one once.
  */
@@ -304,6 +310,7 @@ export const listCandidates = (input: {
   viewer: { accountId: string; name: string; avatar: Avatar | null };
   holders: readonly { accountId: string; name: string; avatar: Avatar }[];
   claims: readonly WhoClaim[];
+  members?: readonly { accountId: string; name: string; avatar: Avatar }[];
   written: readonly { id: string; name: string; email: string | null }[];
 }): Candidate[] => {
   const me: Candidate = {
@@ -331,6 +338,13 @@ export const listCandidates = (input: {
       kind: 'ticker',
       email: null,
     }));
+  const members = (input.members ?? []).map((member): Candidate => ({
+    key: accountKey(member.accountId),
+    name: member.name,
+    avatar: member.avatar,
+    kind: 'member',
+    email: null,
+  }));
   const written = input.written.map((giver): Candidate => ({
     key: writtenKey(giver.id),
     name: giver.name,
@@ -338,7 +352,7 @@ export const listCandidates = (input: {
     kind: 'written',
     email: giver.email,
   }));
-  return [me, ...holders, ...tickers, ...written].filter(
+  return [me, ...holders, ...tickers, ...members, ...written].filter(
     (candidate, index, all) =>
       all.findIndex((other) => other.key === candidate.key) === index,
   );

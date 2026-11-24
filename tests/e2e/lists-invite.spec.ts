@@ -129,19 +129,13 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
   await expect(hugo.getByTestId('holders-line')).toContainText(
     'Tu tiens cette liste avec Camille.',
   );
-  // He reads the sharing, and does not touch it (Correction 28,
-  // maquette ListeAideSansPartage): no switch, and the link is not his
-  // to have while the list is not shared.
-  await expect(hugo.getByTestId('share-readonly')).toContainText(
-    'Pas encore activé par Camille',
-  );
-  await expect(hugo.getByTestId('share-switch')).toHaveCount(0);
-  await expect(hugo.getByTestId('share-helper')).toHaveCount(0);
-  const asHugo = () =>
-    context.request
-      .get(`/api/lists/${state.listId}`)
-      .then((answer) => answer.json());
-  expect((await asHugo()).list.shareToken).toBeNull();
+  // He reads the sharing, and does not touch it (ListeAidePartage): the
+  // stage, not who chose it (ticket 141). A draft lets nobody in by its
+  // link: his bar has nothing to unroll, no button (ticket 157).
+  await expect(hugo.getByTestId('share-stage')).toContainText('Brouillon');
+  await expect(hugo.getByTestId('share-stage')).not.toContainText('choisi par');
+  await expect(hugo.getByTestId('share-open')).toHaveCount(0);
+  await expect(hugo.getByTestId('share-link')).toHaveCount(0);
   expect(
     (
       await context.request.post(`/api/lists/${state.listId}/share`, {
@@ -149,24 +143,24 @@ test('invited by his pill, Hugo accepts with his account and helps write', async
       })
     ).status(),
   ).toBe(403);
-  // Camille shares: he may send the link, nothing more (ListeAidePartage).
-  const shared = await (
-    await camille.request.post(`/api/lists/${state.listId}/share`, { data: {} })
-  ).json();
+  expect(
+    (
+      await context.request.put(`/api/lists/${state.listId}/sharing`, {
+        data: { parties: [], isPublic: true },
+      })
+    ).status(),
+  ).toBe(403);
+  // Camille makes it public: he reads it, still with « Le lien » only.
+  await camille.request.put(`/api/lists/${state.listId}/sharing`, {
+    data: { parties: [], isPublic: true },
+  });
   await hugo.reload();
   await hydrated(hugo);
-  await expect(hugo.getByTestId('share-readonly')).toContainText(
-    'Activé par Camille',
-  );
-  await expect(hugo.getByTestId('share-helper')).toHaveText('Partager');
-  await expect(hugo.getByTestId('share-switch')).toHaveCount(0);
-  await expect(hugo.getByTestId('share-panel')).toHaveCount(0);
-  expect((await asHugo()).list.shareToken).toBe(shared.token);
-  // Stopped: the link is no longer sent to him, though it is kept.
-  await camille.request.post(`/api/lists/${state.listId}/share`, {
-    data: { ask: 'off' },
+  await expect(hugo.getByTestId('share-stage')).toContainText('Publique');
+  await expect(hugo.getByTestId('share-open')).toHaveText('Le lien');
+  await camille.request.put(`/api/lists/${state.listId}/sharing`, {
+    data: { parties: [], isPublic: false },
   });
-  expect((await asHugo()).list.shareToken).toBeNull();
   await hugo.reload();
   await hydrated(hugo);
   // He writes everywhere.
@@ -289,8 +283,7 @@ test('an address without an account creates it by the link, once', async ({
   // Logged in without a second email, on the list, which he manages.
   await tonton.waitForURL(`**/listes/${state.listId}`);
   await hydrated(tonton);
-  await expect(tonton.getByTestId('share-switch')).toBeEnabled();
-  await expect(tonton.getByTestId('share-readonly')).toHaveCount(0);
+  await expect(tonton.getByTestId('share-open')).not.toHaveText('Le lien');
   const mine = await (
     await context.request.get(`/api/lists/${state.listId}/holders`)
   ).json();

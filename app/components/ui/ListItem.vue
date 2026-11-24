@@ -22,8 +22,16 @@ const props = withDefaults(
     muted?: boolean;
     /** Keeps the title on one line, cut with « … » (an email address). */
     oneLine?: boolean;
-    /** The colour of the round icon: coral for what to do, grey otherwise. */
-    iconTone?: 'primary' | 'neutral';
+    /**
+     * The colour of the round icon: coral for what to do, grey otherwise,
+     * lilac for a list (V3).
+     */
+    iconTone?: 'primary' | 'neutral' | 'lilac';
+    /**
+     * The icon alone, in its colour, without its round (a line under an
+     * event, ticket 143): at the same place and width.
+     */
+    bareIcon?: boolean;
     /** The current value of a setting, shown on the right. */
     value?: string;
     /** The name of the row, when its texts do not say what a tap does. */
@@ -33,6 +41,13 @@ const props = withDefaults(
     busyLabel?: string;
     /** Makes the row a button (otherwise a link with `to`, or plain). */
     onClick?: () => void;
+    /**
+     * Something new since my last visit (lignes.md): a red dot before the
+     * chevron, and these words for screen readers.
+     */
+    dot?: string;
+    /** The title in bold, as a news not seen yet (V3QuoiDeNeuf). */
+    strong?: boolean;
   }>(),
   {
     to: undefined,
@@ -45,11 +60,14 @@ const props = withDefaults(
     muted: false,
     oneLine: false,
     iconTone: 'primary',
+    bareIcon: false,
     value: undefined,
     label: undefined,
     busy: false,
     busyLabel: undefined,
     onClick: undefined,
+    dot: undefined,
+    strong: false,
   },
 );
 /** A setting turned on or off; no switch when left unbound. */
@@ -61,7 +79,15 @@ const checked = defineModel<boolean | undefined>('checked', {
 const ICON_TONES = {
   primary: 'bg-primary-soft text-primary',
   neutral: 'bg-muted text-toned',
+  lilac: 'bg-lilac-100 text-lilac-800',
   danger: 'bg-error-soft text-error-ink',
+};
+/** The colour of the icon alone, by tone. */
+const BARE_TONES = {
+  primary: 'text-primary',
+  neutral: 'text-toned',
+  lilac: 'text-lilac-800',
+  danger: 'text-error-ink',
 };
 // A string in <component :is> does not resolve global components.
 const NuxtLink = resolveComponent('NuxtLink');
@@ -84,7 +110,11 @@ const NuxtLink = resolveComponent('NuxtLink');
       <span
         v-else-if="emoji || icon"
         class="flex size-10 shrink-0 items-center justify-center rounded-full"
-        :class="ICON_TONES[tone === 'danger' ? 'danger' : iconTone]"
+        :class="
+          bareIcon
+            ? BARE_TONES[tone === 'danger' ? 'danger' : iconTone]
+            : ICON_TONES[tone === 'danger' ? 'danger' : iconTone]
+        "
         aria-hidden="true"
       >
         <span v-if="emoji" class="text-lg">{{ emoji }}</span>
@@ -92,8 +122,8 @@ const NuxtLink = resolveComponent('NuxtLink');
       </span>
       <span class="min-w-0 grow">
         <span
-          class="font-semibold"
           :class="[
+            strong ? 'font-bold' : 'font-semibold',
             oneLine ? 'block truncate' : 'line-clamp-2',
             tone === 'danger' ? 'text-error-ink' : muted ? 'text-muted' : '',
           ]"
@@ -127,6 +157,14 @@ const NuxtLink = resolveComponent('NuxtLink');
         class="flex min-h-11 shrink-0 items-center"
       />
       <slot name="trailing" />
+      <template v-if="dot">
+        <span
+          class="size-2.25 shrink-0 rounded-full bg-coral-500"
+          aria-hidden="true"
+          data-testid="new-dot"
+        />
+        <span class="sr-only">{{ dot }}</span>
+      </template>
       <UiSpinner
         v-if="busy && checked === undefined"
         :label="busyLabel ?? title"

@@ -2,8 +2,12 @@
 // « Une surprise attend le groupe à la fête » (README 22.17, Correction 15,
 // DevineUniquePrix): the prizes stay a surprise, never named nor counted
 // before the party. With last year's figure to beat, when there is one.
-defineProps<{ challenge: { found: number; total: number } | null }>();
-const { t } = useT();
+const props = defineProps<{
+  challenge: { found: number; total: number } | null;
+  /** A Christmas party: elsewhere, never « Père Noël » (vocabulaire.md). */
+  christmas: boolean;
+}>();
+const { t } = useT({ christmas: () => props.christmas });
 </script>
 
 <template>

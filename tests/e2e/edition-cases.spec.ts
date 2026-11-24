@@ -4,7 +4,7 @@ import {
   test,
   type APIRequestContext,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { addPeople, apiLogin, hydrated } from './helpers';
 
 // The edition screen in its edge cases (docs/refonte, lot 1): no
 // participant yet, a draw that cannot be made, and a large group whose
@@ -24,13 +24,13 @@ const setUp = async (slug: string, names: string[]) => {
   const api = state.api!;
   await api.post('/api/admin/groups', { data: { slug, name: slug } });
   const at = `/api/admin/${slug}`;
-  for (const firstName of names) {
-    await api.post(`${at}/persons`, { data: { firstName } });
-  }
   const created = await api.post(`${at}/editions`, {
     data: { label: 'Noël cas', year: 2026, eventDate: '2026-12-24' },
   });
-  return { at, id: (await created.json()).edition.id as string };
+  const id = (await created.json()).edition.id as string;
+  // Nobody comes into an event but by a Secret Santa (ticket 117).
+  await addPeople(api, at, id, names);
+  return { at, id };
 };
 
 test.beforeAll(async ({ playwright, baseURL }) => {
@@ -93,9 +93,10 @@ test('an edition without participants says to add them', async ({ page }) => {
   await expect(
     card.getByRole('link', { name: 'Ajouter des participants' }),
   ).toBeVisible();
+  // The link of this Secret Santa (ticket 116).
   await expect(
     card.getByRole('link', { name: 'Inviter par lien' }),
-  ).toBeVisible();
+  ).toHaveAttribute('href', /\/editions\/[^/]+\/invitation$/);
   await expect(page.getByText('Personne pour l’instant.')).toBeVisible();
 });
 
@@ -107,7 +108,7 @@ test('choosing the participants adds and removes them at once', async ({
   await page.goto(`/admin/cas-choix/editions/${id}`);
   await hydrated(page);
   await page.getByRole('link', { name: 'Choisir les participants' }).click();
-  await expect(page.getByText('3 membres du groupe')).toBeVisible();
+  await expect(page.getByText('3 membres de l’événement')).toBeVisible();
   await page.getByRole('checkbox', { name: 'Faire participer Bob' }).uncheck();
   // Someone new joins the group and comes back ticked, Bob still unticked.
   await page.getByRole('link', { name: /^Créer une personne/ }).click();
@@ -158,14 +159,41 @@ test('an impossible draw names who blocks it, and how to fix it', async ({
 test('a large group folds its lists, before and after the draw', async ({
   page,
 }) => {
+  // A party holds 30 members at most (ticket 105).
   const names = Array.from(
-    { length: 60 },
+    { length: 30 },
     (_, i) => `Grand${String(i).padStart(2, '0')}`,
   );
   const { at, id } = await setUp('cas-grand', names);
   const total = (await (await state.api!.get(`${at}/editions/${id}`)).json())
     .participants.length as number;
   await apiLogin(page.request, SUPER);
+
+  // Full at 30 (V3FeteMembresComplet): the server refuses the thirty-first,
+  // the page says so, and the link of its Secret Santa is paused by itself
+  // (ticket 116).
+  const more = await state.api!.post(`${at}/editions/${id}/persons`, {
+    data: { firstName: 'Trente-et-un' },
+  });
+  expect(more.status()).toBe(409);
+  expect((await more.json()).statusMessage).toBe('too_many_members');
+  const { inviteCode } = await (
+    await state.api!.post(`${at}/editions/${id}/invite`, {
+      data: { open: true, places: 5 },
+    })
+  ).json();
+  expect(
+    (await (await page.request.get(`/api/invite/${inviteCode}`)).json()).closed,
+  ).toBe('invite_full');
+  await page.goto('/e/cas-grand/membres');
+  await hydrated(page);
+  await expect(page.getByTestId('members-count')).toHaveText('30 sur 30');
+  await expect(page.getByTestId('party-full')).toContainText(
+    'L’événement est complet',
+  );
+  // The state takes the place of « Ajouter quelqu'un » (ticket 158).
+  await expect(page.getByTestId('members-add')).toHaveCount(0);
+
   await page.goto(`/admin/cas-grand/editions/${id}`);
   await hydrated(page);
 
@@ -176,10 +204,10 @@ test('a large group folds its lists, before and after the draw', async ({
   await list
     .getByRole('button', { name: `Voir les ${total - 6} autres` })
     .click();
-  await expect(list.getByText('Grand59', { exact: true })).toBeVisible();
+  await expect(list.getByText('Grand29', { exact: true })).toBeVisible();
   await expect(list.getByRole('button', { name: /^Voir les/ })).toHaveCount(0);
   await list.getByRole('button', { name: 'Replier la liste' }).click();
-  await expect(list.getByText('Grand59', { exact: true })).toHaveCount(0);
+  await expect(list.getByText('Grand29', { exact: true })).toHaveCount(0);
   await expect(
     list.getByRole('button', { name: `Voir les ${total - 6} autres` }),
   ).toBeVisible();
@@ -238,10 +266,43 @@ test('the budget and the word change on the edition, until it is closed', async 
   );
   await expect(page.getByTestId('rule-budget')).toHaveCount(0);
   await page.getByTestId('settings-row').click();
+  // First the rows of the creation form, in its order (V3TirageReglages,
+  // Q-015).
+  await expect(page.getByTestId('edition-settings')).toContainText(
+    /Le Secret SantaNom.*Date.+BudgetAucunPetit mot pour les participantsAucun/,
+  );
+  // The name is written on its row (ticket 162): Échap gives it up,
+  // Entrée keeps it, « Enregistré » says so.
+  const name = page.getByTestId('setting-name').getByRole('textbox');
+  const before = await name.inputValue();
+  await name.fill('Pas gardé');
+  await name.press('Escape');
+  await expect(name).toHaveValue(before);
+  await name.fill('Les adultes');
+  await name.press('Enter');
+  await expect(page.getByText('Enregistré').first()).toBeVisible();
+  await expect(name).toHaveValue('Les adultes');
+  // Emptied, a required name takes the old one back.
+  await name.fill('');
+  await name.press('Enter');
+  await expect(name).toHaveValue('Les adultes');
   const budget = page.getByTestId('rule-budget');
-  await expect(budget).toContainText('Aucun pour l’instant');
+  await expect(budget).toContainText('Aucun');
+  // The same page of proposals as at the creation (ticket 164): a tile,
+  // chosen again when the page opens; written on the line, it lets go.
   await budget.click();
-  await page.getByRole('textbox').fill('25 €');
+  await expect(page).toHaveURL(/\/budget$/);
+  const tile = page.getByRole('radio', { name: /^15 €/ });
+  await tile.click();
+  await expect(tile).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('button', { name: 'Valider' }).click();
+  await expect(budget).toContainText('15 €');
+  await budget.click();
+  await expect(tile).toHaveAttribute('aria-checked', 'true');
+  const free = page.getByLabel('À ta façon');
+  await free.fill('25 €');
+  await free.press('Enter');
+  await expect(tile).toHaveAttribute('aria-checked', 'false');
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('25 €');
   const word = page.getByTestId('rule-word');
@@ -269,11 +330,15 @@ test('the budget and the word change on the edition, until it is closed', async 
     'Budget 25 € · petit mot',
   );
   await page.getByTestId('settings-row').click();
-  await expect(page.getByTestId('edition-settings')).toContainText(
-    'La fêteDate',
-  );
+  await expect(
+    page.getByTestId('setting-name').getByRole('textbox'),
+  ).toHaveValue('Les adultes');
+  // Another tile; « ∞ » is read « Sans limite » by a screen reader.
   await budget.click();
-  await page.getByRole('textbox').fill('30 €');
+  await expect(
+    page.getByRole('radio', { name: 'Sans limite', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('radio', { name: /^30 €/ }).click();
   await page.getByRole('button', { name: 'Valider' }).click();
   await expect(budget).toContainText('30 €');
   const { messages } = await (
@@ -336,7 +401,7 @@ test('a screen reached by its address says where it belongs, and leads back', as
     .getByRole('navigation', { name: 'Tu es ici' })
     .getByRole('link', { name: 'cas-contexte' })
     .click();
-  await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
+  await expect(page).toHaveURL(/\/e\/cas-contexte$/);
 
   // « Retour » goes up the tree, not back in the history
   // (docs/ARBORESCENCE.md): the settings of the edition, opened from the
@@ -348,7 +413,7 @@ test('a screen reached by its address says where it belongs, and leads back', as
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(page).toHaveURL(new RegExp(`/editions/${id}$`));
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(page).toHaveURL(/\/admin\/cas-contexte$/);
+  await expect(page).toHaveURL(/\/e\/cas-contexte$/);
 });
 
 test.describe('on an iPhone', () => {
@@ -437,18 +502,18 @@ test('before the party, revealing asks for a phrase', async ({ page }) => {
   await hydrated(page);
   // Before the party, revealing is in « Un souci ? ».
   await page.getByTestId('trouble-row').click();
-  await page.getByText('Dévoiler avant la fête').click();
+  await page.getByText('Dévoiler avant le jour J').click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByTestId('reveal-early')).toContainText(
     'Le secret s’arrête ici, pour de bon',
   );
   const anyway = sheet.getByRole('button', { name: 'Dévoiler quand même' });
   await expect(anyway).toBeDisabled();
-  await sheet.getByRole('textbox').fill('Dévoiler avant la fête');
+  await sheet.getByRole('textbox').fill('Dévoiler avant le jour J');
   await anyway.click();
   await expect(page.getByTestId('revealed-notice')).toBeVisible();
   const { entries } = await (await api.get(`${at}/journal`)).json();
   expect(entries[0].text).toBe(
-    "L'organisateur a dévoilé les résultats avant la fête",
+    'L’organisateur a dévoilé les résultats avant le jour J',
   );
 });

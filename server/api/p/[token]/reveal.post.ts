@@ -1,9 +1,11 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { assignments, participations } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
-import { giverHints, receiverHintsOf } from '#server/database/hints';
-import { receiverList } from '#server/http/hints';
+import { santaNameForSubject } from '#server/database/editions';
+import { resultHelp } from '#server/http/hints';
 import { recordEvent } from '#server/database/audit';
+import { tellOrganisers } from '#server/database/newsEvents';
+import { markSeenByEmail } from '#server/database/news';
 import { requirePersonalLink } from '#server/http/personal';
 import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
@@ -23,14 +25,14 @@ import { canReveal } from '#server/utils/personal';
 // journaled.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules } =
-    await requirePersonalLink(event);
+    await requirePersonalLink(event, { afterTheYear: true });
   unwrap(canReveal(edition.status));
   const [assignment] = await db
     .select()
     .from(assignments)
     .where(
       and(
-        eq(assignments.editionId, edition.id),
+        eq(assignments.secretSantaId, edition.id),
         eq(assignments.giverPersonId, person.id),
       ),
     )
@@ -47,23 +49,16 @@ export default defineEventHandler(async (event) => {
   if (!receiver) {
     throw createError({ statusCode: 500, statusMessage: 'result_unreadable' });
   }
-  const hints =
-    rules.giftHints === 'none'
-      ? null
-      : await giverHints(db, receiver.participationId, rules.giftHints);
-  // New since the last opening? Read before this opening counts, which
-  // makes them old (lot 16 bis): the badge shows once.
-  const news = hints
-    ? await receiverHintsOf(
-        db,
-        {
-          editionId: edition.id,
-          personId: person.id,
-          lastViewedAt: participation.lastViewedAt,
-        },
-        await dataKeyOf(event),
-      )
-    : null;
+  // « Pour t'aider à choisir » (ticket 107): their list, their tastes.
+  const help = await resultHelp(event, db, {
+    receiver: {
+      participationId: receiver.participationId,
+      email: receiver.person.email,
+    },
+    partyId: edition.partyId,
+    giverParticipationId: participation.id,
+    giverEmail: person.email,
+  });
 
   const now = nowIso();
   const [updated] = await db
@@ -76,21 +71,33 @@ export default defineEventHandler(async (event) => {
     .where(eq(participations.id, participation.id))
     .returning({ viewCount: participations.viewCount });
   const viewCount = updated?.viewCount ?? participation.viewCount + 1;
+  // « Ton enveloppe t'attend » is seen, here and on the home (ticket 120).
+  await markSeenByEmail(db, person.email, 'santa', edition.id, now, [
+    'envelope',
+  ]);
   // Only the first consultation goes to the public journal. Later ones are
   // still counted for the organiser, but journaling them would let the
   // group match "Léa updated her list" with "Tom viewed his result" and
   // guess who gives to whom.
   if (viewCount === 1) {
-    // The last one to look completes the edition: the organisers are told.
-    if (
-      rules.notifyAllViewed &&
-      isEveryoneViewed(await viewCounts(db, edition.id))
-    ) {
+    // The last one to look completes the edition: the organisers are told,
+    // in the app always (ticket 120), by email if they want it.
+    const everyone = isEveryoneViewed(await viewCounts(db, edition.id));
+    if (everyone) {
+      await tellOrganisers(
+        db,
+        { partyId: group.id, kind: 'all_viewed', targetId: edition.id },
+        now,
+      );
+    }
+    if (rules.notifyAllViewed && everyone) {
+      const santaName = await santaNameForSubject(db, edition);
       await notifyOrganizers({ db, event }, group.id, (locale) =>
         buildAllViewedEmail(
           {
             groupName: group.name,
             editionLabel: edition.label,
+            santaName,
             link: appUrl(event, `/admin/${group.slug}/editions/${edition.id}`),
           },
           locale,
@@ -117,22 +124,10 @@ export default defineEventHandler(async (event) => {
     budget: rules.budget,
     eventDate: rules.eventDate,
     guardianMessage: rules.guardianMessage,
-    // « Sa liste de cadeaux » (lot 27 ter): a link, nothing of the list.
-    list: hints
-      ? await receiverList(
-          event,
-          db,
-          hints.mode,
-          receiver.participationId,
-          participation.id,
-        )
-      : null,
-    hints: hints && {
-      ...hints,
-      isNew: news?.state === 'new',
-      updatedAt: news?.hintsUpdatedAt ?? null,
-    },
-    // For the words under « Lui demander des pistes ».
+    // « La liste de cadeaux d'Inès »: a line, nothing of the list.
+    list: help.list,
+    hints: help.hints,
+    // For the words under « Lui demander des idées ».
     receiverHasEmail: Boolean(receiver.person.email),
     requesterHasEmail: Boolean(person.email),
     viewCount,

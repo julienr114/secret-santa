@@ -2,7 +2,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { apiLogin, hydrated } from './helpers';
 
 // « Une liste sans personne » (lot 27 bis, README 22.20, maquettes
-// ListeNouvelle, ListeSansPersonne, ListeSansPersonneVisiteur): for a
+// V3ListeNouvelle, ListeSansPersonne, ListeSansPersonneVisiteur): for a
 // wedding, a housewarming, the ideas one under the other, without a part
 // by person. A pill in the empty document makes the list one; the first
 // person added later takes the ideas already written; once shared its
@@ -131,6 +131,12 @@ test('shared, it shows no person by its link, and keeps its shape', async () => 
   // By the link: the ideas, without a header of person nor their tastes;
   // « J'offre autre chose » once, at the bottom, without a name.
   const page = await open('mamie', `/l/${state.token}`);
+  // Whose it is (beside its date, when it has one); no sentence under
+  // the word (ticket 147).
+  await expect(page.getByTestId('visitor-date')).toContainText(
+    'La liste de Camille',
+  );
+  await expect(page.getByTestId('visitor-sentence')).toHaveCount(0);
   const part = page.getByTestId('visitor-person');
   await expect(part).toHaveCount(1);
   await expect(part.getByRole('heading')).toHaveCount(0);
@@ -219,7 +225,9 @@ test('the first person added takes the ideas already written', async () => {
 test('taken up again, a list without people stays one', async () => {
   const fresh = await (
     await api().post('/api/lists', {
-      data: { icon: { emoji: '🎁', color: 'pine' }, title: '' },
+      // A wedding too: « Repartir d'une liste » offers only the lists
+      // that look like it (ticket 119).
+      data: { icon: { emoji: '💍', color: 'pine' }, title: '' },
     })
   ).json();
   const page = await open('camille', `/listes/${fresh.id}`);

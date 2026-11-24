@@ -14,7 +14,14 @@ import { ideaChips, namesInOne } from '~/utils/givers';
 // say it is me, « Finalement, je ne l'offre plus »); its green box, above
 // that button, unticks at once, without the sheet (asked by Julien on 20
 // November 2026). Taken by someone else: crossed out, nothing more.
-const props = defineProps<{ idea: IdeaLine }>();
+const props = defineProps<{
+  idea: IdeaLine;
+  /**
+   * Written since my last visit (ticket 120, NotifListe): a dot in the
+   * margin, and « nouveau » for screen readers.
+   */
+  fresh?: boolean;
+}>();
 const emit = defineEmits<{
   tick: [];
   untick: [];
@@ -31,6 +38,8 @@ const crossed = computed(
 );
 const openGroup = computed(() => chips.value.join);
 const host = computed(() => (props.idea.url ? linkHost(props.idea.url) : ''));
+/** Its name: its text, or the name of its site (ticket 140). */
+const name = computed(() => ideaName(props.idea));
 const names = computed(() =>
   namesInOne(
     chips.value.givers.map((pill) => pill.name ?? ''),
@@ -40,12 +49,12 @@ const names = computed(() =>
 /** « Se joindre à Mamie et Tonton pour Vélo 16 pouces ». */
 const joinLabel = computed(() =>
   names.value
-    ? t('lists.chips.joinWith', { names: names.value, idea: props.idea.text })
-    : t('lists.chips.joinIdea', { idea: props.idea.text }),
+    ? t('lists.chips.joinWith', { names: names.value, idea: name.value })
+    : t('lists.chips.joinIdea', { idea: name.value }),
 );
 /** « Circuit de billes, tu l'offres en anonyme : modifier ou ne plus l'offrir ». */
 const mineLabel = computed(() => {
-  const idea = props.idea.text;
+  const idea = name.value;
   if (chips.value.mine === 'anonymous') {
     return t('lists.chips.mineAnonymousLabel', { idea });
   }
@@ -80,6 +89,12 @@ onBeforeUnmount(() => {
     ]"
     data-testid="visitor-idea"
   >
+    <span
+      v-if="fresh"
+      class="absolute top-4.5 -left-3 size-1.75 rounded-full bg-coral-500"
+      aria-hidden="true"
+      data-testid="idea-new"
+    />
     <!-- An idea I give: the whole line is the button of its sheet. Its
          link, above it, stays a link. -->
     <button
@@ -96,7 +111,7 @@ onBeforeUnmount(() => {
       type="button"
       role="checkbox"
       aria-checked="true"
-      :aria-label="t('lists.visitor.untick', { idea: idea.text })"
+      :aria-label="t('lists.visitor.untick', { idea: name })"
       class="relative z-10 -m-2.5 flex size-[42px] shrink-0 items-center justify-center"
       data-testid="idea-box"
       @click="emit('untick')"
@@ -108,13 +123,22 @@ onBeforeUnmount(() => {
         <UIcon name="i-lucide-check" class="size-3.5" />
       </span>
     </button>
+    <!-- A title: a dot on the thread, no box (ticket 152). -->
+    <span
+      v-else-if="idea.title"
+      class="flex w-[22px] shrink-0 justify-center self-center"
+      aria-hidden="true"
+      data-testid="title-dot"
+    >
+      <span class="size-2.5 rounded-full bg-line-strong ring-4 ring-page" />
+    </span>
     <button
       v-else
       type="button"
       role="checkbox"
       :aria-checked="crossed"
       :aria-label="
-        openGroup ? joinLabel : t('lists.visitor.tick', { idea: idea.text })
+        openGroup ? joinLabel : t('lists.visitor.tick', { idea: name })
       "
       :disabled="crossed"
       class="-m-2.5 flex size-[42px] shrink-0 items-center justify-center"
@@ -137,15 +161,20 @@ onBeforeUnmount(() => {
       </span>
     </button>
     <div class="pointer-events-none flex min-w-0 grow flex-col">
-      <p
-        class="text-base/[22px]"
+      <component
+        :is="idea.title ? 'h3' : 'p'"
         :class="[
+          idea.title
+            ? 'font-display text-[19px]/[25px] font-bold'
+            : 'text-base/[22px]',
           crossed ? 'text-toned line-through' : '',
           chips.mine ? 'font-semibold' : '',
         ]"
       >
-        {{ idea.text }}
-      </p>
+        {{ name
+        }}<span v-if="fresh" class="sr-only"> ({{ t('lines.dot') }})</span
+        ><ListsStars :count="idea.stars" :class="crossed ? 'opacity-50' : ''" />
+      </component>
       <ListsIdeaLink
         v-if="idea.url && host"
         :url="idea.url"

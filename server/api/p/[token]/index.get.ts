@@ -1,3 +1,6 @@
+import type { H3Event } from 'h3';
+import type { Db } from '#server/database/client';
+import { myListStage } from '#server/database/listSharing';
 import { and, eq, gt, inArray } from 'drizzle-orm';
 import { auditLog } from '#server/database/schema';
 import {
@@ -8,7 +11,7 @@ import {
 import { dataKeyOf } from '#server/http/context';
 import { requirePersonalLink } from '#server/http/personal';
 import { optionalAccount } from '#server/http/auth';
-import { findAccountById } from '#server/database/accounts';
+import { findAccountByEmail, findAccountById } from '#server/database/accounts';
 import { avatarOf } from '#server/utils/avatars';
 import { ALERT_TYPES, unseenAlerts } from '#server/utils/audit';
 import { localeOf } from '#shared/i18n';
@@ -23,28 +26,49 @@ import { answersState } from '#server/utils/answers';
 import { gamePayload } from '#server/http/guesses';
 import { organizerCount } from '#server/database/groups';
 
+/**
+ * The stage of my list for the event, for an account logged in with the
+ * person's address; null otherwise, or without a list.
+ * @param event - The request.
+ * @param db - The database.
+ * @param person - The person of the link.
+ * @param person.email - Their address, if any.
+ * @param partyId - The event.
+ * @returns The stage, or null.
+ */
+const myListLine = async (
+  event: H3Event,
+  db: Db,
+  person: { email: string | null },
+  partyId: string,
+) => {
+  const viewer = await optionalAccount(event);
+  const account = viewer ? await findAccountById(db, viewer.accountId) : null;
+  return account && person.email === account.email
+    ? myListStage(db, account.id, partyId)
+    : null;
+};
+
 // State of a participation for the personal page (README 4.3). Never the
 // result, and never counted as a consultation: link previews call this.
 export default defineEventHandler(async (event) => {
   const { db, participation, edition, person, group, rules, ...rest } =
     await requirePersonalLink(event);
-  const hintsOn = rules.giftHints !== 'none';
   // Once drawn, the page says whether the person they give to left hints,
   // and whether they are new since the result was last opened (lot 16
   // bis); never who it is.
   const revealed = participation.viewCount > 0 && canReveal(edition.status).ok;
-  const receiver =
-    hintsOn && canReveal(edition.status).ok
-      ? await receiverHintsOf(
-          db,
-          {
-            editionId: edition.id,
-            personId: person.id,
-            lastViewedAt: participation.lastViewedAt,
-          },
-          await dataKeyOf(event),
-        )
-      : null;
+  const receiver = canReveal(edition.status).ok
+    ? await receiverHintsOf(
+        db,
+        {
+          editionId: edition.id,
+          personId: person.id,
+          lastViewedAt: participation.lastViewedAt,
+        },
+        await dataKeyOf(event),
+      )
+    : null;
   const request = receiver?.receiverParticipationId
     ? await findHintRequest(db, receiver.receiverParticipationId)
     : null;
@@ -90,7 +114,7 @@ export default defineEventHandler(async (event) => {
     .from(auditLog)
     .where(
       and(
-        eq(auditLog.groupId, group.id),
+        eq(auditLog.partyId, group.id),
         gt(auditLog.createdAt, since),
         inArray(auditLog.type, ALERT_TYPES),
       ),
@@ -100,6 +124,12 @@ export default defineEventHandler(async (event) => {
     // Their own address, if the organiser gave one: to create an account
     // without typing it.
     email: linked === null ? (person.email ?? null) : null,
+    // Whether that address already has an account (Q-018): the first idea
+    // then asks to log in, never opens it.
+    emailHasAccount:
+      linked === null && person.email
+        ? Boolean(await findAccountByEmail(db, person.email))
+        : false,
     firstName: person.firstName,
     language: localeOf(person.language),
     avatar: avatarOf(person),
@@ -124,9 +154,9 @@ export default defineEventHandler(async (event) => {
     // page (lot 16 bis): no secret, the messages give them to all.
     budget: rules.budget,
     guardianMessage: rules.guardianMessage,
-    giftHints: rules.giftHints,
-    hintsEditable: canEditHints(edition.status, rules.giftHints).ok,
-    hasHints: hintsOn && (await participationHasHints(db, participation.id)),
+    // « Pistes de cadeaux » is no longer a setting (ticket 107).
+    hintsEditable: canEditHints(edition.status, 'full').ok,
+    hasHints: await participationHasHints(db, participation.id),
     revealed,
     // Revealed by the organiser: visible to the whole group (README 22.18).
     drawRevealed: Boolean(edition.revealedAt),
@@ -134,11 +164,14 @@ export default defineEventHandler(async (event) => {
     // « Tu pourras lui en demander », while a request is possible.
     canAskHints: canRequestHints({
       status: edition.status,
-      mode: rules.giftHints,
+      mode: 'full',
       receiverHasHints: receiver?.state !== 'none',
       alreadyRequested: Boolean(request),
     }).ok,
     journalAlerts: unseenAlerts(alertRows, person.id, since),
+    // « Ma liste de cadeaux » (ticket 107): the stage of my list for the
+    // event, known to my account when it is the person's.
+    myList: await myListLine(event, db, person, group.id),
     guess: game
       ? {
           mode: game.mode,

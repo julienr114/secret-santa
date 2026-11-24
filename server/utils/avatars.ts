@@ -469,3 +469,25 @@ export const avatarOf = (person: {
     color: color.success ? color.data : pick(AVATAR_COLORS, h >>> 8),
   };
 };
+
+/**
+ * The avatar an account takes from the person it becomes in a Secret
+ * Santa: the one it had there, as long as the account has none of its
+ * own (an account made from a Secret Santa keeps the same face, asked by
+ * Julien on 21 November 2026).
+ * @param account - The account, with its own avatar if it has one.
+ * @param account.avatarEmoji - Its emoji, or null.
+ * @param person - The person, as the Secret Santa shows them.
+ * @param person.id - Their id.
+ * @param person.avatarEmoji - Their emoji, or null.
+ * @param person.avatarColor - Their colour, or null.
+ * @returns The avatar to take, or null when the account keeps its own.
+ */
+export const adoptedAvatar = (
+  account: { avatarEmoji: string | null },
+  person: {
+    id: string;
+    avatarEmoji?: string | null;
+    avatarColor?: string | null;
+  },
+): Avatar | null => (account.avatarEmoji ? null : avatarOf(person));

@@ -98,6 +98,7 @@ const BADGES = ['sent', 'wishes', 'viewed'];
 /** A person's icon used throughout the examples. */
 const sample = { emoji: '🥨', color: 'mustard' } as const;
 const text = ref('');
+const inlineName = ref('Camille');
 const choice = ref<NotePosition>('after');
 /** The link of the message bubble example. */
 const BUBBLE_LINK = 'https://under-the-tree.party/p/aIFR42';
@@ -149,7 +150,7 @@ const checklist = [
     key: 'missing',
     state: 'warning' as const,
     title: 'Léa ne participe pas encore',
-    detail: 'Elle est dans le groupe mais pas dans cette édition.',
+    detail: 'Elle est dans l’événement mais pas dans ce Secret Santa.',
   },
   {
     key: 'info',
@@ -205,11 +206,10 @@ const longView = computed(() =>
 const notifyOn = ref(true);
 const sheetOpen = reactive({
   choice: false,
-  text: false,
   number: false,
   date: false,
 });
-const settings = reactive({ years: 1, note: '', places: 10, until: '' });
+const settings = reactive({ years: 1, places: 10, until: '' });
 const YEAR_CHOICES = [
   { value: 0, label: 'Non, peu importe' },
   { value: 1, label: 'Pas la même que l’an dernier' },
@@ -217,7 +217,7 @@ const YEAR_CHOICES = [
   {
     value: 3,
     label: 'Pas la même que les 3 dernières années',
-    hint: 'Le tirage devient très contraint dans un petit groupe',
+    hint: 'Le tirage devient très contraint dans un petit événement',
   },
 ];
 const yearLabel = computed(
@@ -494,8 +494,8 @@ const undone = ref(0);
     </section>
 
     <section class="flex flex-col gap-3">
-      <UiSectionTitle>Pilotage d'une édition</UiSectionTitle>
-      <UiStepper :steps="steps" label="Étapes de l'édition" />
+      <UiSectionTitle>Pilotage d’un Secret Santa</UiSectionTitle>
+      <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
       <UiActionCard
         eyebrow="UiActionCard"
         title="Préviens chacun que le tirage est fait"
@@ -564,7 +564,7 @@ const undone = ref(0);
       <UiJournalPreview
         label="UiJournalPreview"
         icon="i-lucide-eye"
-        text="La ligne que tout le groupe lira dans le journal."
+        text="La ligne que tous les membres liront dans le journal."
       />
       <UiConfirmBox v-model="confirmed" label="UiConfirmBox : je comprends" />
       <UButton
@@ -651,6 +651,23 @@ const undone = ref(0);
         </template>
       </UiListItem>
       <UiListItem emoji="🎄" title="Ligne avec un emoji" :chevron="false" />
+      <UiListItem
+        to="/admin/guide-de-style"
+        icon="i-lucide-mail"
+        icon-tone="neutral"
+        title="Ligne avec du nouveau"
+        subtitle="Un point rouge avant la flèche, « nouveau » pour un lecteur d'écran"
+        :dot="t('lines.dot')"
+      />
+      <UiListItem
+        to="/admin/guide-de-style"
+        icon="i-lucide-list-checks"
+        icon-tone="lilac"
+        title="Nouveauté pas encore vue, en gras"
+        subtitle="Quoi de neuf"
+        strong
+        :dot="t('lines.dot')"
+      />
       <UiListItem
         icon="i-lucide-plus"
         :title="t('adminGroup.exclusions.add')"
@@ -781,14 +798,14 @@ const undone = ref(0);
       <UiTile
         to="#"
         icon="i-lucide-list-checks"
-        title="Mes pistes de cadeaux"
+        title="Mes idées de cadeaux"
         state="todo"
         text="À remplir"
       />
       <UiTile
         to="#"
         icon="i-lucide-list-checks"
-        title="Mes pistes de cadeaux"
+        title="Mes idées de cadeaux"
         state="done"
         text="Remplies, modifiables jusqu’à la fête"
       />
@@ -796,7 +813,7 @@ const undone = ref(0);
         <UiTile
           to="#"
           icon="i-lucide-list-checks"
-          title="Mes pistes de cadeaux"
+          title="Mes idées de cadeaux"
           state="done"
           text="Remplies"
           compact
@@ -883,11 +900,6 @@ const undone = ref(0);
           subtitle="Un email à chaque arrivée par le lien"
         />
         <UiListItem
-          title="Mot ajouté aux messages"
-          :value="settings.note || 'Aucun'"
-          :on-click="() => (sheetOpen.text = true)"
-        />
-        <UiListItem
           title="Places restantes"
           :value="String(settings.places)"
           :on-click="() => (sheetOpen.number = true)"
@@ -899,8 +911,9 @@ const undone = ref(0);
         />
       </UiList>
       <p class="px-1 text-xs text-muted">
-        Panneaux : UiChoiceSheet, UiTextSheet, UiNumberSheet et AdminDateSheet,
-        tous sur UiSettingSheet (Valider, Annuler, ligne d'erreur).
+        Panneaux : UiChoiceSheet, UiNumberSheet et AdminDateSheet (un texte
+        court s'écrit sur sa ligne, plus haut), tous sur UiSettingSheet
+        (Valider, Annuler, ligne d'erreur).
       </p>
       <UiChoiceSheet
         v-model:open="sheetOpen.choice"
@@ -911,19 +924,6 @@ const undone = ref(0);
         :validate-label="t('common.actions.validate')"
         :cancel-label="t('common.actions.cancel')"
         @validate="(v) => ((settings.years = v), (sheetOpen.choice = false))"
-      />
-      <UiTextSheet
-        v-model:open="sheetOpen.text"
-        title="Mot ajouté aux messages"
-        description="Ajouté tel quel à chaque message envoyé aux participants."
-        label="Ton mot"
-        :value="settings.note"
-        :maxlength="500"
-        hint="Envoyé tel quel, quelle que soit la langue."
-        :validate-label="t('common.actions.validate')"
-        :cancel-label="t('common.actions.cancel')"
-        error="Exemple de ligne d'erreur : le panneau reste ouvert."
-        @validate="(v) => ((settings.note = v), (sheetOpen.text = false))"
       />
       <UiNumberSheet
         v-model:open="sheetOpen.number"
@@ -970,6 +970,24 @@ const undone = ref(0);
         :parts="['header', 'steps', 'envelope', 'groups']"
         label="UiSkeleton"
       />
+      <UiSectionTitle>L’accueil arrive</UiSectionTitle>
+      <UiSkeleton
+        :parts="['greeting', 'parties']"
+        gap="sm"
+        label="UiSkeleton accueil"
+      />
+      <UiSectionTitle>Un événement arrive</UiSectionTitle>
+      <UiSkeleton
+        :parts="['head', 'members', 'sections']"
+        gap="md"
+        label="UiSkeleton événement"
+      />
+      <UiSectionTitle>Une liste, des réglages, des choix</UiSectionTitle>
+      <UiSkeleton
+        :parts="['bar', 'doc', 'icons', 'settings', 'chips']"
+        :rows="2"
+        label="UiSkeleton liste"
+      />
     </section>
 
     <section class="flex flex-col gap-3">
@@ -999,6 +1017,44 @@ const undone = ref(0);
           subtitle="Toute la ligne coche"
           label="Cocher l'exemple"
         />
+      </UiList>
+    </section>
+
+    <section class="flex flex-col gap-3" data-testid="guide-inline">
+      <UiSectionTitle
+        >Un texte court s’écrit sur sa ligne (UiInlineTextRow)</UiSectionTitle
+      >
+      <p class="text-sm text-toned">
+        Au repos : la valeur à l’encre, pas de flèche ; vide, « Ajouter » en
+        gris. Touchée : on écrit là, le label et la bordure en rouge. Entrée ou
+        toucher ailleurs enregistre, Échap annule. Une adresse fausse dit son
+        erreur sous la ligne, qui reste ouverte.
+      </p>
+      <UiList>
+        <UiInlineTextRow
+          label="Prénom"
+          :value="inlineName"
+          required
+          :save="async (value) => (inlineName = value)"
+        />
+        <UiInlineTextRow
+          label="Nom de famille"
+          :value="null"
+          quiet
+          :save="async () => undefined"
+        />
+        <UiInlineTextRow
+          label="Adresse email"
+          :value="null"
+          type="email"
+          quiet
+          :check="
+            (value) => (value.includes('@') ? null : 'Adresse email invalide')
+          "
+          :save="async () => undefined"
+        >
+          <template #writing>Ce que l’écriture déclenche se dit ici.</template>
+        </UiInlineTextRow>
       </UiList>
     </section>
 
@@ -1040,9 +1096,8 @@ const undone = ref(0);
       />
       <p class="px-1 text-xs text-muted">
         UiStickyFooter garde le bouton d'un long écran en bas, au-dessus de la
-        barre « Tirages / Listes ». Sur une page où l'on rédige (inline), le
-        bouton est dans la page, à la fin du contenu : rien ne se place
-        au-dessus du clavier.
+        barre du bas. Sur une page où l'on rédige (inline), le bouton est dans
+        la page, à la fin du contenu : rien ne se place au-dessus du clavier.
       </p>
     </section>
 

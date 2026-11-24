@@ -1,7 +1,7 @@
 import {
   isLocale,
   localeFromHeader,
-  translate,
+  santaKey,
   translateKey,
   type Locale,
   type MessageKey,
@@ -38,12 +38,22 @@ export const useLocale = () => {
 /**
  * `t` for keys known at compile time (checked against the dictionaries),
  * `tk` for keys built at run time (`common.status.${status}`).
+ * @param options - `christmas`, on a screen of one party: outside a
+ * Christmas party, a text that says « Père Noël » reads its variant
+ * (docs/spec/v3/vocabulaire.md).
+ * @returns The two, the language and a way to change it.
  */
-export const useT = () => {
+export const useT = (
+  options: { christmas?: MaybeRefOrGetter<boolean> } = {},
+) => {
   const { locale, setLocale } = useLocale();
+  const keyOf = (key: string) =>
+    options.christmas === undefined
+      ? key
+      : santaKey(key, toValue(options.christmas));
   const t = (key: MessageKey, params?: Params): string =>
-    translate(locale.value, key, params);
+    translateKey(locale.value, keyOf(key), params);
   const tk = (key: string, params?: Params): string =>
-    translateKey(locale.value, key, params);
+    translateKey(locale.value, keyOf(key), params);
   return { t, tk, locale, setLocale };
 };

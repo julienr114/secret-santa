@@ -2,64 +2,16 @@
 // document of a list, sharing it, « Mes proches ». The French
 // texts of the maquettes `Liste*` are the reference.
 export default {
-  tabs: { draws: 'Tirages', lists: 'Listes', label: 'Sections' },
   home: {
     title: 'Listes',
-    intro: 'Chacun coche ce qu’il offre.',
-    family: 'Mes proches',
-    new: 'Nouvelle liste',
-    coming: 'À venir',
-    past: 'Passées',
-    youHold: 'Tu tiens cette liste',
-    notShared: 'Pas partagée',
-    listOf: 'Liste de {name}',
-    for: 'Pour',
     on: 'Le {date}',
-    inDays: { one: 'dans {count} jour', other: 'dans {count} jours' },
-    today: 'aujourd’hui',
-    planned: {
-      one: '{count} cadeau déjà prévu',
-      other: '{count} cadeaux déjà prévus',
-    },
-    plannedMine: ', dont {mine} par toi.',
-    plannedEnd: '.',
-    giving: {
-      one: 'Tu offres {count} cadeau.',
-      other: 'Tu offres {count} cadeaux.',
-    },
-    nothingYet: 'Tu n’as encore rien coché.',
-    noneYet: 'Aucun cadeau prévu pour l’instant.',
-    noIdeas: {
-      one: '{names} n’a pas encore d’idées.',
-      other: '{names} n’ont pas encore d’idées.',
-    },
-    newIdeas: {
-      one: '{count} nouvelle idée',
-      other: '{count} nouvelles idées',
-    },
-    offered: { one: '{count} cadeau offert', other: '{count} cadeaux offerts' },
-    offeredTo: {
-      one: '{count} cadeau offert à {name}',
-      other: '{count} cadeaux offerts à {name}',
-    },
-    youGave: {
-      one: 'tu as offert {count} cadeau',
-      other: 'tu as offert {count} cadeaux',
-    },
     untitled: 'Sans nom',
-    sent: 'Une liste qu’on t’a envoyée apparaît ici dès que tu ouvres son lien en étant connecté.',
-    empty: {
-      title: 'Fini, les cadeaux en double',
-      body: 'Écris les idées de cadeaux de tes proches pour Noël ou un anniversaire, partage le lien, et chacun coche ce qu’il offre.',
-      create: 'Créer ma première liste',
-      sent: 'On t’a envoyé une liste ? Ouvre son lien : elle apparaîtra ici.',
-    },
   },
   doc: {
+    santa: 'Secret Santa · {name}',
     drag: {
       handle: 'Déplacer : {name}',
       placed: '{name}, position {position} sur {count}',
-      moved: '{name} déplacé',
       up: 'Monter',
       down: 'Descendre',
       ideas: { one: '{count} idée', other: '{count} idées' },
@@ -87,15 +39,15 @@ export default {
     noteLabel: 'Ton mot d’accueil',
     noteDefault:
       'Quelques idées pour t’éviter de chercher. Coche ce que tu offres, et personne n’aura la même idée. Tu en as une autre ? Elle est la bienvenue.',
-    noteDefaultHint: 'Un texte de départ : touche-le pour écrire le tien.',
     noteAdd: 'Ajouter un mot d’accueil',
-    noteHelp: 'Effacé, la liste n’a pas de mot.',
     plannedHolder: {
       one: '{count} cadeau déjà prévu. Toi seul vois les prénoms.',
       other: '{count} cadeaux déjà prévus. Toi seul vois les prénoms.',
     },
-    touchToEdit: 'Touche un texte pour le modifier.',
     me: 'Moi',
+    meTag: '(moi)',
+    drawTitle: 'Idées pour le Secret Santa',
+    drawTitleOf: 'Idées pour le Secret Santa ({name})',
     age: { one: '{count} an', other: '{count} ans' },
     size: 'taille {size}',
     shoe: 'pointure {size}',
@@ -138,7 +90,8 @@ export default {
     },
     newPerson: {
       title: 'Quelqu’un d’autre',
-      description: 'Il rejoint tes proches, gardés d’une liste à l’autre.',
+      description:
+        'Cette personne rejoint tes proches, gardés d’une liste à l’autre.',
       label: 'Prénom',
       add: 'Ajouter',
     },
@@ -161,31 +114,87 @@ export default {
     },
   },
   share: {
-    onBy: 'Activé par {name}',
-    offBy: 'Pas encore activé par {name}',
-    title: 'Partage par lien',
-    message:
-      '🎁 Notre liste de cadeaux pour {title} est prête : {names}. Coche ce que tu offres, pour que personne n’ait la même idée :',
     and: 'et',
-    me: 'moi',
-    footer:
-      'Fait avec Under the Tree, pour les listes de cadeaux et les Secret Santa entre proches.',
-    personalize: 'Personnaliser le message',
-    personalizeHelp: 'Le lien et la dernière phrase restent à la fin.',
-    personalizeLabel: 'Le message',
-    copy: 'Copier',
-    send: 'Partager',
     copyFailed: 'Copie impossible ici : sélectionne le lien pour le copier.',
     copied: 'Copié',
-    help: 'Toute personne qui a le lien voit la liste et peut cocher.',
-    changeLink: 'Changer de lien',
-    changeConfirm: 'L’ancien lien ne marchera plus.',
-    change: 'Changer',
     changed: 'Nouveau lien créé',
-    stopped: 'Partage par lien arrêté',
-    missing: {
-      title: 'Donne un nom à l’événement.',
-      people: 'Ajoute au moins une personne à la liste.',
+  },
+  elsewhere: {
+    title: 'Ce que j’offre ailleurs',
+    gifts: { one: '{count} cadeau', other: '{count} cadeaux' },
+    lists: { one: '{count} liste', other: '{count} listes' },
+    line: 'Le {date} · tu offres : {gifts}',
+    lineNoDate: 'Tu offres : {gifts}',
+  },
+  accountCreated: {
+    title: 'C’est enregistré',
+    body: 'Un compte a été créé avec ton adresse, pour retrouver ta liste.',
+    ok: 'Compris',
+  },
+  sharing: {
+    draft: 'Brouillon',
+    draftHint: 'Toi seul la vois',
+    public: 'Publique',
+    publicHint: 'Toute personne qui a le lien la voit',
+    giverHint: 'Seul celui qui t’a tiré la voit',
+    giversHint: 'Seuls ceux qui t’ont tiré la voient',
+    members: {
+      one: '{count} membre la voit',
+      other: '{count} membres la voient',
+    },
+    nobody: 'Personne d’autre ne la voit',
+    share: 'Partager',
+    edit: 'Modifier',
+    close: 'Fermer',
+    theLink: 'Le lien',
+    copyLink: 'Copier le lien',
+    title: 'Qui voit ta liste ?',
+    membersOf: {
+      one: '{count} membre',
+      other: '{count} membres',
+    },
+    giverSees: 'Celui qui t’a tiré la voit',
+    chosen: 'Qui je veux',
+    everyone: 'Tout le monde',
+    remove: 'Retirer {name}',
+    add: 'Ajouter',
+    someoneElse: 'Quelqu’un d’autre',
+    open: {
+      title: 'Ouvrir à tout le monde ?',
+      body: 'Toute personne qui a le lien pourra voir ta liste et cocher un cadeau, sans compte.',
+      submit: 'Ouvrir',
+    },
+    changeLink: 'Changer de lien',
+    renew: {
+      title: 'Changer de lien ?',
+      body: 'L’ancien lien ne marchera plus : il faudra renvoyer le nouveau. Ceux qui ont déjà coché un cadeau gardent la liste.',
+      submit: 'Changer',
+    },
+    narrow: {
+      title: 'Retirer « {name} » ?',
+      everyoneTitle: 'Retirer « Tout le monde » ?',
+      members: {
+        one: 'Son membre ne verra plus ta liste.',
+        other: 'Ses {count} membres ne verront plus ta liste.',
+      },
+      claimersOf: {
+        one: '{count} d’entre eux a coché un cadeau et ne pourra plus l’ouvrir. Son cadeau reste prévu.',
+        other:
+          '{count} d’entre eux ont coché un cadeau et ne pourront plus l’ouvrir. Leurs cadeaux restent prévus.',
+      },
+      claimers: {
+        one: '{count} personne a coché un cadeau et ne pourra plus ouvrir la liste. Son cadeau reste prévu.',
+        other:
+          '{count} personnes ont coché un cadeau et ne pourront plus ouvrir la liste. Leurs cadeaux restent prévus.',
+      },
+      submit: 'Retirer',
+    },
+    closed: {
+      loginTitle: 'Cette liste n’est pas ouverte à tout le monde',
+      loginBody: 'Si elle a été partagée avec toi, connecte-toi pour l’ouvrir.',
+      login: 'Se connecter',
+      title: 'Cette liste n’est pas partagée avec toi',
+      body: 'Demande à la personne qui t’a envoyé le lien de te l’ouvrir.',
     },
   },
   live: {
@@ -243,7 +252,18 @@ export default {
     noIdeas: 'aucune idée à reprendre',
     title: 'Repartir d’une liste',
     untitled: 'Liste sans nom',
-    people: { one: '{count} personne', other: '{count} personnes' },
+    names: {
+      me: 'Moi',
+      one: '{a}',
+      two: '{a} et {b}',
+      three: '{a}, {b} et {c}',
+      more: {
+        one: '{a}, {b} et {count} autre',
+        other: '{a}, {b} et {count} autres',
+      },
+      twoMe: '{a} et moi',
+      threeMe: '{a}, {b} et moi',
+    },
     ideas: {
       one: '{count} idée pas encore offerte',
       other: '{count} idées pas encore offertes',
@@ -254,8 +274,20 @@ export default {
     fromUntitled: 'Reprise d’une autre liste.',
     marksBefore: 'Les idées marquées',
     marksAfter:
-      'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque, elle disparaît au partage.',
+      'n’avaient pas été offertes : garde-les ou efface-les. Toi seul vois cette marque.',
     mark: 'Reprise de l’ancienne liste',
+  },
+  // A list of a year over (ticket 119, V3ListeAnneePassee).
+  past: {
+    title: {
+      christmas: 'Liste de Noël {year}',
+      birthday: 'Liste d’anniversaire {year}',
+      birth: 'Liste de naissance {year}',
+      wedding: 'Liste de mariage {year}',
+      housewarming: 'Liste de crémaillère {year}',
+      other: 'Liste de {year}',
+    },
+    subtitle: 'Une année passée',
   },
   holders: {
     here: 'Là en ce moment',
@@ -269,7 +301,7 @@ export default {
       manage: 'En plus : partager, inviter, supprimer la liste.',
     },
     levelOf: 'Le niveau de {name}',
-    invited: 'Invitée le {date} · valable jusqu’au {until}',
+    invited: 'Invitation du {date} · valable jusqu’au {until}',
     expired: 'Invitation expirée · le {date}',
     declined: 'A refusé · le {date}',
     resend: 'Renvoyer',
@@ -279,8 +311,8 @@ export default {
     someoneElse: 'Quelqu’un d’autre',
     emailLabel: 'Son adresse email',
     emailHelp:
-      'Elle sert à lui envoyer l’invitation. Il verra que c’est toi qui l’invites.',
-    can: 'Ce qu’il pourra faire',
+      'Elle sert à envoyer l’invitation, qui dit que c’est toi qui invites.',
+    can: 'Ce que cette personne pourra faire',
     choice: {
       write: {
         title: 'Aider à écrire',
@@ -294,7 +326,7 @@ export default {
     inviteName: 'Inviter {name}',
     send: 'Envoyer l’invitation',
     inviteHelp:
-      'Il reçoit un email, et peut refuser. L’invitation vaut 7 jours.',
+      'Cette personne reçoit un email, et peut refuser. L’invitation vaut 7 jours.',
     seesAll:
       'Ceux qui tiennent la liste voient tout, y compris ce qu’on leur offre s’ils y figurent.',
     alreadyHolder: 'Cette personne tient déjà la liste.',
@@ -305,6 +337,33 @@ export default {
     left: 'Tu ne tiens plus cette liste',
     lastManager: 'Il faut que quelqu’un gère la liste.',
     notManager: 'Seuls ceux qui gèrent la liste peuvent faire ça.',
+  },
+  // The email to someone a list is shared with by their address (ticket
+  // 117, V3ListePartageEmail).
+  // « Inviter quelqu'un » to see a list (ticket 117, V3ListeInviter):
+  // into its event, by it.
+  inviteMembers: {
+    firstName: 'Prénom',
+    email: 'Adresse email',
+    hint: 'Cette personne reçoit un email à ton nom, et devient membre de « {name} ».',
+    submit: 'Inviter',
+    sent: 'Invitation envoyée',
+    takeTitle: 'Reprendre ceux de',
+    takeSubmit: {
+      one: 'Inviter · {count} personne',
+      other: 'Inviter · {count} personnes',
+    },
+    taken: {
+      one: '{count} invitation envoyée',
+      other: '{count} invitations envoyées',
+    },
+  },
+  sharedEmail: {
+    subject: '{by} a partagé sa liste « {title} » avec toi',
+    hello: 'Bonjour,',
+    intro:
+      '{by} a partagé avec toi sa liste de cadeaux « {title} ». Coche ce que tu offres, et personne n’aura la même idée.',
+    action: 'Voir la liste :',
   },
   inviteEmail: {
     subject: '{by} t’invite à tenir la liste « {title} »',
@@ -330,7 +389,8 @@ export default {
     managing:
       'Tu peux partager la liste, inviter quelqu’un et la supprimer, comme {by}.',
     firstName: 'Ton prénom',
-    firstNameHelp: 'Vu par ceux avec qui tu tiens une liste ou fais un tirage.',
+    firstNameHelp:
+      'Vu par ceux avec qui tu tiens une liste ou fais un Secret Santa.',
     address:
       'Ton compte sera créé à l’adresse {email}, celle où tu as reçu l’invitation. Rien d’autre à remplir.',
     acceptCreate: 'Accepter, et créer mon compte',
@@ -437,19 +497,84 @@ export default {
     },
     none: 'Rien',
   },
-  visitor: {
-    figures:
-      'La liste de {name}. Tu y figures : tu peux écrire tes propres idées.',
-    itsYou: 'C’est toi',
-    ideaForMe: 'Une idée pour moi…',
-    anotherForMe: 'Une autre idée pour moi…',
-    holder: 'La liste de {name}.',
-    whoSees: 'Personne d’autre que {name} ne voit qui a coché quoi.',
-    mine: {
-      one: 'Tu offres {count} cadeau : personne d’autre que {name} ne sait que c’est toi.',
-      other:
-        'Tu offres {count} cadeaux : personne d’autre que {name} ne sait que c’est toi.',
+  link: {
+    action: 'Lier à un Secret Santa',
+    intro: 'Celui qui t’a tiré verra cette liste pour choisir ton cadeau.',
+    linkedTo: 'Lié à « {title} »',
+    linked: 'Liste liée',
+    linkedMoved: 'Liste liée. « {title} » ne l’est plus.',
+    unlinked: 'Liste déliée',
+  },
+  tour: {
+    of: '{at} sur {count}',
+    skip: 'Passer',
+    next: 'Suivant',
+    secret: {
+      me: {
+        title: 'Ta partie',
+        body: 'Elle est liée à ton Secret Santa : celui qui t’a tiré la lit dès que tu écris.',
+      },
+      line: {
+        title: 'Une idée par ligne',
+        body: 'Ajoute un lien si tu as trouvé l’objet.',
+      },
+      share: {
+        title: 'Qui la voit',
+        body: 'Pour l’instant, celui qui t’a tiré, et lui seul. « Modifier » l’ouvre à d’autres.',
+      },
+      name: {
+        title: 'Le nom et la date',
+        body: 'Touche un texte pour le changer.',
+      },
+      resume: {
+        title: 'Tes idées d’avant',
+        body: 'Reprends celles qui n’ont pas été offertes.',
+      },
+      add: {
+        title: 'Une liste pour plusieurs',
+        body: 'Ajoute tes enfants ou un proche : chacun a sa partie.',
+      },
     },
+    create: {
+      name: {
+        title: 'Le nom et la date',
+        body: 'Ils viennent de l’occasion. Touche un texte pour le changer.',
+      },
+      add: {
+        title: 'Pour qui ?',
+        body: 'Une partie par personne : toi, tes enfants, un proche.',
+      },
+      share: {
+        title: 'Personne ne la voit encore',
+        body: '« Partager » choisit qui, quand tu veux.',
+      },
+    },
+    firstLine: {
+      title: 'Une idée par ligne',
+      body: 'Ajoute un lien si tu as trouvé l’objet.',
+    },
+  },
+  line: {
+    handle: 'Déplacer, ou ouvrir les options de cette ligne',
+    menu: 'Options de la ligne',
+    wish: 'Envie',
+    star: { one: '{count} étoile', other: '{count} étoiles' },
+    stars: 'Envie : {count} sur 3',
+    toTitle: 'En faire un titre',
+    toIdea: 'En refaire une idée',
+    up: 'Monter',
+    down: 'Descendre',
+    moveTo: 'Déplacer vers…',
+    moveTitle: 'Déplacer vers',
+    remove: 'Supprimer la ligne',
+  },
+  visitor: {
+    wholeList: 'Toute la liste',
+    filterLabel: 'Ce que tu vois de la liste',
+    ideaForMe: 'Une idée pour toi…',
+    anotherForMe: 'Une autre idée pour toi…',
+    holder: 'La liste de {name}',
+    holderOn: '{date} · la liste de {name}',
     youHold: 'Tu tiens cette liste : tu vois qui offre quoi.',
     openDoc: 'Modifier ma liste',
     giving: 'Tu l’offres',
@@ -464,7 +589,6 @@ export default {
     offListAction: 'J’offre autre chose à {name}',
     tick: 'Je l’offre : {idea}',
     untick: 'Je ne l’offre plus : {idea}',
-    unshared: 'Cette liste n’est plus partagée.',
     gone: 'Ce lien ne marche plus. Demande le nouveau à celui qui tient la liste.',
   },
   claim: {
@@ -569,7 +693,7 @@ export default {
     on: 'Activé : quand tu coches un cadeau, personne ne voit ton prénom, pas même ceux qui tiennent la liste. Ils voient « Anonyme ».',
     noticeTitle: 'On a activé le mode anonyme pour toi',
     noticeBody:
-      'Tu offres un cadeau dans un tirage à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',
+      'Tu offres un cadeau dans un Secret Santa à quelqu’un de cette liste : tes coches ne diront pas ton prénom. Tu peux le désactiver là-haut, par exemple pour offrir aussi un cadeau sous ton prénom.',
     understood: 'Compris',
   },
   login: {

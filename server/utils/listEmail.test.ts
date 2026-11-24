@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { buildHolderInviteEmail, inviteDay } from './listEmail';
+import {
+  buildHolderInviteEmail,
+  buildListSharedEmail,
+  inviteDay,
+} from './listEmail';
 
 describe('the invitation to hold a list', () => {
   const invite = {
@@ -50,6 +54,34 @@ describe('the invitation to hold a list', () => {
   it('is written in the three languages', () => {
     for (const locale of ['en', 'de'] as const) {
       const email = buildHolderInviteEmail(invite, link, locale);
+      expect(email.subject).toContain('Camille');
+      expect(email.subject).toContain('Noël 2026');
+      expect(email.text).not.toContain('lists.');
+    }
+  });
+});
+
+describe('the email of a list shared by an address', () => {
+  const share = { by: 'Camille', title: 'Noël 2026' };
+  const link = 'https://exemple.fr/l/k3Fq9xT2';
+
+  it('says who shares which list, and what to do there, with the link alone', () => {
+    const email = buildListSharedEmail(share, link, 'fr');
+    expect(email.subject).toBe(
+      'Camille a partagé sa liste « Noël 2026 » avec toi',
+    );
+    expect(email.text).toContain(
+      'Camille a partagé avec toi sa liste de cadeaux « Noël 2026 ». Coche ce que tu offres, et personne n’aura la même idée.',
+    );
+    expect(email.text.split('\n')).toContain(link);
+    expect(email.text).toContain('gratuite et sans publicité');
+    expect(email.html.match(/<a /g)).toHaveLength(1);
+    expect(email.html).not.toContain('<img');
+  });
+
+  it('is written in the three languages', () => {
+    for (const locale of ['en', 'de'] as const) {
+      const email = buildListSharedEmail(share, link, locale);
       expect(email.subject).toContain('Camille');
       expect(email.subject).toContain('Noël 2026');
       expect(email.text).not.toContain('lists.');

@@ -31,3 +31,15 @@ export const linkHost = (url: string): string =>
  */
 export const shownAddress = (url: string): string =>
   url.replace(/^https:\/\//i, '').replace(/^([^/?#]+)\/$/, '$1');
+
+/**
+ * What names an idea (ticket 140): its text, or, when it has only a link,
+ * the name of its site, as its line shows it in the place of its text.
+ * Nothing is saved in the place of the person.
+ * @param idea - The idea.
+ * @param idea.text - What was written, maybe nothing.
+ * @param idea.url - Its link, maybe none.
+ * @returns Its name.
+ */
+export const ideaName = (idea: { text: string; url?: string | null }): string =>
+  idea.text || (idea.url ? linkHost(idea.url) : '');

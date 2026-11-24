@@ -20,7 +20,10 @@ export default defineEventHandler(async (event) => {
     .select()
     .from(participations)
     .where(
-      and(eq(participations.id, id), eq(participations.editionId, edition.id)),
+      and(
+        eq(participations.id, id),
+        eq(participations.secretSantaId, edition.id),
+      ),
     )
     .limit(1);
   if (!row) throw notFound('participation_not_found');

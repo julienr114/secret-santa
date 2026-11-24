@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyOrder,
+  ideasChangingPerson,
+  mergeLines,
   moveIdea,
   movePerson,
+  orderWithIds,
   orderWrites,
   placeOfIdea,
   sameOrder,
   stepIdea,
   stepPerson,
+  withLines,
   type ListOrder,
 } from './reorder';
 
@@ -74,6 +78,27 @@ describe('the order of a list', () => {
     expect(stepIdea(last, 'd', 1)).toBe(last);
   });
 
+  it('keeps an idea someone gives with its person', () => {
+    expect(stepIdea(order, 'b', 1, true)[0]?.ideas).toEqual(['a', 'c', 'b']);
+    expect(stepIdea(order, 'c', 1, true)).toBe(order);
+    expect(stepIdea(order, 'd', -1, true)).toBe(order);
+  });
+
+  it('tells which ideas change person', () => {
+    const among = orderWrites(order, [
+      { id: 'leo', ideas: ['b', 'a', 'c'] },
+      { id: 'zoe', ideas: ['d'] },
+      { id: 'hugo', ideas: [] },
+    ]);
+    expect(among && ideasChangingPerson(order, among)).toEqual([]);
+    const away = orderWrites(order, [
+      { id: 'leo', ideas: ['b', 'c'] },
+      { id: 'zoe', ideas: ['d', 'a'] },
+      { id: 'hugo', ideas: [] },
+    ]);
+    expect(away && ideasChangingPerson(order, away)).toEqual(['a']);
+  });
+
   it('steps a person up and down', () => {
     expect(stepPerson(order, 'zoe', -1).map((s) => s.id)).toEqual([
       'zoe',
@@ -133,6 +158,7 @@ describe('the order of a list', () => {
       ideas: [
         { id: 'b', listPersonId: 'leo', position: 0 },
         { id: 'c', listPersonId: 'leo', position: 1 },
+        { id: 'd', listPersonId: 'zoe', position: 0 },
         { id: 'a', listPersonId: 'zoe', position: 1 },
       ],
     });
@@ -162,5 +188,48 @@ describe('the order of a list', () => {
         { id: 'hugo', ideas: [] },
       ]),
     ).toBeNull();
+  });
+
+  it('puts the gifts not on the list among the ideas', () => {
+    const at = (id: string, position: number | null, createdAt = '1') => ({
+      id,
+      position,
+      createdAt,
+    });
+    expect(
+      mergeLines(
+        [at('a', 0), at('b', 2), at('c', 3)],
+        [at('x', 1), at('y', null, '2'), at('z', null, '1')],
+      ),
+    ).toEqual(['a', 'x', 'b', 'c', 'z', 'y']);
+    // At the same place, the idea first.
+    expect(mergeLines([at('a', 1)], [at('x', 1)])).toEqual(['a', 'x']);
+  });
+
+  it('lays the lines of each person as an order wants them', () => {
+    const leo = {
+      id: 'leo',
+      ideas: [{ id: 'a' }, { id: 'b' }],
+      offList: [{ id: 'x' }],
+      lines: ['a', 'b', 'x'],
+    };
+    const zoe = { id: 'zoe', ideas: [{ id: 'c' }], offList: [], lines: [] };
+    expect(withLines([leo], null)[0]?.lines).toEqual(['a', 'b', 'x']);
+    expect(
+      withLines([leo], [{ id: 'leo', ideas: ['x', 'a', 'b'] }])[0]?.lines,
+    ).toEqual(['x', 'a', 'b']);
+    // An idea come from someone else; one the order does not name yet.
+    expect(withLines([leo, zoe], [{ id: 'zoe', ideas: [] }])[1]?.lines).toEqual(
+      ['c'],
+    );
+    expect(
+      withLines([leo], [{ id: 'leo', ideas: ['b', 'a'] }])[0]?.lines,
+    ).toEqual(['b', 'a', 'x']);
+  });
+
+  it('renames the ideas of an order, a line just written once named', () => {
+    expect(
+      orderWithIds(order, (id) => (id === 'b' ? 'b-server' : id))[0]?.ideas,
+    ).toEqual(['a', 'b-server', 'c']);
   });
 });

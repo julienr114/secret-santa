@@ -9,15 +9,9 @@ import type { JournalEntry } from '#server/utils/audit';
 import type { EditionStatus } from '#server/utils/editions';
 import type { PersonalPhase } from '#server/utils/personal';
 import type { Locale } from '#shared/i18n';
-import type {
-  GiftHintsMode,
-  HintAnswer,
-  HintQuestion,
-  HintText,
-  Portrait,
-} from '#shared/utils/hints';
+import type { Portrait } from '#shared/utils/hints';
 import { keys } from './keys';
-import { api, useApiMutation, useApiQuery } from './useApi';
+import { api, useApiMutation } from './useApi';
 
 // Participant side (README 4.3): everything goes through the personal link.
 
@@ -31,6 +25,8 @@ export type PersonalState = {
   linked: 'mine' | 'free' | 'other' | null;
   /** Their own address, offered for an account while logged out. */
   email: string | null;
+  /** That address already has an account (Q-018). */
+  emailHasAccount: boolean;
   firstName: string;
   language: Locale;
   avatar: Avatar;
@@ -47,7 +43,6 @@ export type PersonalState = {
   /** The organiser's words to the participants, or empty. */
   guardianMessage: string;
   /** What the group lets participants note (README 22.11). */
-  giftHints: GiftHintsMode;
   hintsEditable: boolean;
   /** They left hints of their own. */
   hasHints: boolean;
@@ -63,6 +58,8 @@ export type PersonalState = {
   /** « Lui demander des pistes » is still possible. */
   canAskHints: boolean;
   /** Alerts of the journal since it was last opened from this page. */
+  /** The stage of my list for the event (ticket 107), or null. */
+  myList: 'draft' | 'giver' | 'parties' | 'public' | null;
   journalAlerts: number;
   /** Drawn by the app, or already elsewhere (README 22.12). */
   drawMode: 'app' | 'elsewhere';
@@ -106,42 +103,12 @@ export type GiverHints = {
   /** When they last changed. */
   updatedAt: string | null;
 };
-/** The page « Mes pistes de cadeaux ». */
-export type HintsPayload = {
-  mode: GiftHintsMode;
-  editable: boolean;
-  ideasEditable: boolean;
-  portrait: Portrait;
-  ideas: WishItem[];
-  maxIdeas: number;
-  /** Someone asked for hints and none arrived yet. */
-  requested: boolean;
-  /** The earlier edition whose hints can be reused, on an empty page. */
-  previousEdition: string | null;
-  /**
-   * « Ma liste de cadeaux » (lot 27 ter); null where the group keeps no
-   * precise ideas. `holds` is known to my account only.
-   */
-  list: {
-    loggedIn: boolean;
-    linked: (ListTile & { holds: boolean | null }) | null;
-  } | null;
-  language: Locale;
-};
 /** A gift list, as the hints name it. */
 export type ListTile = {
   id: string;
   title: string;
   icon: { emoji: string; color: string };
   shared: boolean;
-};
-/** A gift list I may link to my hints. */
-export type LinkableList = ListTile & { holds: boolean; holder: string };
-export type WishesPayload = {
-  wishes: WishItem[];
-  maxWishes: number;
-  editable: boolean;
-  language: Locale;
 };
 export type Reveal = {
   receiver: { name: string; avatar: Avatar };
@@ -150,11 +117,16 @@ export type Reveal = {
   guardianMessage: string;
   /** What the receiver left; null when the group has no hints. */
   hints: GiverHints | null;
-  /** « Sa liste de cadeaux »: a link, in anonymous mode (lot 27 ter). */
+  /**
+   * « La liste de cadeaux d'Inès » (ticket 107): where it opens, in
+   * anonymous mode on her part, and how many ideas came since my last
+   * visit.
+   */
   list?: {
     title: string;
     icon: { emoji: string; color: string };
     path: string;
+    newIdeas: number;
   } | null;
   receiverHasEmail: boolean;
   requesterHasEmail: boolean;
@@ -246,57 +218,6 @@ export const useOpenDrawQuery = (token: Token, enabled: () => boolean) =>
     enabled,
   );
 
-export const useWishesQuery = (token: Token) =>
-  usePersonalRead<WishesPayload>(
-    () => keys.wishes(toValue(token)),
-    () => `${base(token)}/wishes`,
-  );
-
-/** « Mes pistes de cadeaux » (README 22.11). */
-export const useHintsQuery = (token: Token) =>
-  usePersonalRead<HintsPayload>(
-    () => keys.hints(toValue(token)),
-    () => `${base(token)}/hints`,
-  );
-
-/** One answer or one text: only the keys given change. */
-export type HintsPatch = {
-  answers?: Partial<Record<HintQuestion, HintAnswer | null>>;
-  texts?: Partial<Record<HintText, string | null>>;
-};
-
-export const useSaveHintsMutation = (token: Token) =>
-  useApiMutation<HintsPayload, HintsPatch>(
-    (patch) => api(`${base(token)}/hints`, { method: 'PATCH', body: patch }),
-    () => [keys.personal(toValue(token))],
-  );
-
-/** « Quelle liste ? »: the gift lists of my account, once logged in. */
-export const useLinkableListsQuery = (
-  token: Token,
-  enabled: MaybeRefOrGetter<boolean>,
-) =>
-  useApiQuery<LinkableList[]>(
-    () => [...keys.hints(toValue(token)), 'lists'],
-    () => `${base(token)}/hints/lists`,
-    enabled,
-  );
-
-/** « Ma liste de cadeaux »: one of my lists, or none. */
-export const useLinkListMutation = (token: Token) =>
-  useApiMutation<HintsPayload, string | null>(
-    (listId) =>
-      api(`${base(token)}/hints/list`, { method: 'PUT', body: { listId } }),
-    () => [keys.personal(toValue(token))],
-  );
-
-/** « Reprendre mes pistes de {édition} », on an empty page. */
-export const useCopyHintsMutation = (token: Token) =>
-  useApiMutation<HintsPayload, undefined>(
-    () => api(`${base(token)}/hints/copy`, { method: 'POST' }),
-    () => [keys.personal(toValue(token))],
-  );
-
 /**
  * « Lui demander des pistes »: once per draw, anonymous. Nothing is
  * refetched: the result lives in the page's state, and only says now that
@@ -311,13 +232,6 @@ export const useJournalQuery = (token: Token) =>
   usePersonalRead<JournalPayload>(
     () => keys.journal(toValue(token)),
     () => `${base(token)}/journal`,
-  );
-
-export const useSaveWishesMutation = (token: Token) =>
-  useApiMutation<WishesPayload, WishItem[]>(
-    (wishes) =>
-      api(`${base(token)}/wishes`, { method: 'PUT', body: { wishes } }),
-    () => [keys.personal(toValue(token))],
   );
 
 export const useSaveAvatarMutation = (token: Token) =>

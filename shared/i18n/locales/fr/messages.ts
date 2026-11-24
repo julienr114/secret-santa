@@ -5,53 +5,48 @@ export default {
   invitation: {
     greeting: 'Salut {firstName} ! 🎁',
     body: 'Tu es de la partie : le Secret Santa de {groupName} ({editionLabel}).',
-    cta: 'Ouvre ton lien et laisse quelques pistes de cadeaux :',
-    subject: 'Secret Santa de {groupName} : ton lien, {firstName}',
+    cta: 'Ouvre ton lien et écris ta liste de cadeaux :',
+    subject: 'ton lien, {firstName}',
   },
   drawn: {
     greeting:
       '{firstName}, les jeux sont faits pour le Secret Santa de {groupName} ! 🎁',
     cta: 'Ouvre ton lien pour découvrir à qui tu offres un cadeau :',
-    subject:
-      'Secret Santa de {groupName} : {firstName}, les jeux sont faits, ton enveloppe t’attend',
+    subject: 'ton enveloppe t’attend',
   },
   reminder: {
     greeting:
       '{firstName}, ton enveloppe du Secret Santa de {groupName} prend la poussière. Ouvre-la vite !',
     cta: 'Ton lien :',
-    subject:
-      'Secret Santa de {groupName} : {firstName}, ton enveloppe t’attend toujours',
+    subject: '{firstName}, ton enveloppe t’attend toujours',
   },
   redraw: {
     greeting:
       '{firstName}, on rebat les cartes dans le Secret Santa de {groupName}. Un nouveau tirage a eu lieu : oublie l’ancien.',
     cta: 'Ton lien ne change pas :',
-    subject:
-      'Secret Santa de {groupName} : {firstName}, on rebat les cartes, nouveau tirage',
+    subject: '{firstName}, on rebat les cartes, nouveau tirage',
   },
   answerRequest: {
     greeting: 'Salut {firstName} ! 🎁',
     body: 'Le tirage du Secret Santa de {groupName} ({editionLabel}) est déjà fait, hors de l’application. Pour la suite, on se retrouve dans l’application.',
     how: 'Le principe : sur ta page, tu dis à qui tu offres ton cadeau. Ta réponse reste secrète, personne d’autre ne la voit.',
     hints:
-      'Tu peux déjà laisser tes pistes de cadeaux pour la personne qui t’offre le tien. Quand tout le monde a répondu, chacun lit celles de la personne à qui il offre : il suffit d’une réponse manquante pour qu’elles restent fermées.',
-    game: '🔍 Et pour s’amuser : Devine qui, un jeu de pronostics où chacun essaie de deviner qui lui offre son cadeau. Réponse à la fête !',
+      'Tu peux déjà écrire ta liste de cadeaux pour la personne qui t’offre le tien. Quand tout le monde a répondu, chacun lit celle de la personne à qui il offre : il suffit d’une réponse manquante pour que les listes restent fermées.',
+    game: '🔍 Et pour s’amuser : Devine qui, un jeu de pronostics où chacun essaie de deviner qui lui offre son cadeau. Réponse le jour J !',
     cta: 'Ton lien personnel, pour répondre :',
-    subject:
-      'Secret Santa de {groupName} : à qui offres-tu un cadeau, {firstName} ?',
+    subject: 'à qui offres-tu un cadeau, {firstName} ?',
   },
   answerReminder: {
     greeting:
       '{firstName}, le Secret Santa de {groupName} n’attend plus que toi ! 🎁',
-    cta: 'Dis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit les pistes de cadeaux de sa personne.',
-    subject: 'Secret Santa de {groupName} : on attend ta réponse, {firstName}',
+    cta: 'Dis à qui tu offres un cadeau : dès que tout le monde a répondu, chacun voit la liste de cadeaux de sa personne.',
+    subject: 'on attend ta réponse, {firstName}',
   },
   answerCheck: {
     greeting: '{firstName}, peux-tu vérifier ta réponse ? 🎁',
     body: 'Il y a un nœud dans le Secret Santa de {groupName} : deux réponses ne vont pas ensemble.',
     cta: 'Vérifie à qui tu offres un cadeau, et corrige-la si besoin :',
-    subject:
-      'Secret Santa de {groupName} : peux-tu vérifier ta réponse, {firstName} ?',
+    subject: 'peux-tu vérifier ta réponse, {firstName} ?',
   },
   guessLine:
     '🔍 Devine qui, le jeu de pronostics du Secret Santa : qui t’offre ton cadeau ? Tes pronostics jusqu’au {guessEnd}.',
@@ -62,15 +57,15 @@ export default {
       'Le principe : tu essaies de deviner qui t’offre ton cadeau. Un seul pronostic, que tu peux changer jusqu’au {guessEnd}.',
     howAll:
       'Le principe : tu essaies de deviner qui offre à qui, à commencer par ton propre Père Noël. Autant de pronostics que tu veux, jusqu’au {guessEnd}.',
+    howAllNeutral:
+      'Le principe : tu essaies de deviner qui offre à qui, à commencer par qui t’offre. Autant de pronostics que tu veux, jusqu’au {guessEnd}.',
     secret:
-      'Personne ne voit tes pronostics avant la fête. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour le groupe : plus vous êtes nombreux à jouer, plus elle sera belle.',
+      'Personne ne voit tes pronostics avant le jour J. Les réponses tombent quand le tirage est dévoilé, avec une surprise pour tous les membres : plus vous êtes nombreux à jouer, plus elle sera belle.',
     cta: 'Ton lien, pour jouer :',
-    subject:
-      'Secret Santa de {groupName} : devine qui t’offre ton cadeau, {firstName}',
+    subject: 'devine qui t’offre ton cadeau, {firstName}',
   },
   guessAuto: {
-    subject:
-      'Secret Santa de {groupName} : plus que {days} jours pour deviner qui t’offre ton cadeau',
+    subject: 'plus que {days} jours pour deviner qui t’offre ton cadeau',
     greeting: 'Bonjour {firstName},',
     body: {
       one: 'Au Secret Santa de {groupName} ({editionLabel}), on joue à Devine qui : deviner qui offre à qui. {count} personne sur {total} a déjà fait son pronostic. Et toi, qui t’offre ton cadeau ?',
@@ -79,7 +74,7 @@ export default {
     },
     nobody:
       'Au Secret Santa de {groupName} ({editionLabel}), on joue à Devine qui : deviner qui offre à qui. Personne n’a encore fait de pronostic. Et toi, qui t’offre ton cadeau ?',
-    until: 'Tu as jusqu’au {guessEnd}. Réponse à la fête, avec une surprise.',
+    until: 'Tu as jusqu’au {guessEnd}. Réponse le jour J, avec une surprise.',
     cta: 'Faire mon pronostic',
     skipBefore: 'Pas envie de jouer ? ',
     skip: 'Je passe mon tour',
@@ -88,18 +83,18 @@ export default {
     signature: 'Le Secret Santa de {groupName}',
   },
   guessMore: {
-    subject:
-      'Secret Santa de {groupName} : encore quelques pronostics avant la fin ?',
+    subject: 'encore quelques pronostics avant la fin ?',
     greeting: 'Bonjour {firstName},',
     body: 'Tu as fait ton pronostic sur ton Père Noël à Devine qui, le jeu du Secret Santa de {groupName} ({editionLabel}). Bien joué.',
-    more: 'Il te reste {days} jours pour deviner aussi qui offre aux autres. Plus il y a de pronostics, plus la surprise de la fête sera belle.',
+    bodyNeutral:
+      'Tu as fait ton pronostic sur qui t’offre à Devine qui, le jeu du Secret Santa de {groupName} ({editionLabel}). Bien joué.',
+    more: 'Il te reste {days} jours pour deviner aussi qui offre aux autres. Plus il y a de pronostics, plus la surprise du jour J sera belle.',
     cta: 'Continuer mes pronostics',
   },
   guessPoint: {
     subject: {
-      one: 'Devine qui, {groupName} : {count} personne n’a pas encore joué',
-      other:
-        'Devine qui, {groupName} : {count} personnes n’ont pas encore joué',
+      one: '{count} personne n’a pas encore joué à Devine qui',
+      other: '{count} personnes n’ont pas encore joué à Devine qui',
     },
     greeting: 'Bonjour {firstName},',
     body: 'Pour {editionLabel} ({groupName}), {played} personnes sur {total} ont fait un pronostic.',
@@ -122,7 +117,7 @@ export default {
     signature: 'Under the Tree, l’application de votre Secret Santa',
   },
   guessEnd: {
-    subject: 'Devine qui, {groupName} : les pronostics sont fermés',
+    subject: 'les pronostics de Devine qui sont fermés',
     greeting: 'Bonjour {firstName},',
     body: {
       one: 'Pour {editionLabel} ({groupName}), {count} personne sur {total} a joué. Le palmarès est prêt : il se lance dès que tu dévoiles le tirage.',
@@ -135,14 +130,19 @@ export default {
     signature: 'Under the Tree, l’application de votre Secret Santa',
   },
   guessResults: {
-    subject:
-      'Secret Santa de {groupName} : le palmarès de Devine qui est arrivé',
+    subject: 'le palmarès de Devine qui est arrivé',
     greeting: 'Bonjour {firstName},',
     body: 'Le tirage du Secret Santa de {groupName} ({editionLabel}) est dévoilé, et Devine qui, le jeu de pronostics, a son palmarès. Tu peux enfin savoir qui t’a offert ton cadeau, et qui avait deviné.',
     giftFirst: 'Si tu n’as pas encore ouvert ton cadeau, fais-le d’abord.',
     cta: 'Découvrir le palmarès',
     once: 'Tu ne recevras ce message qu’une fois.',
     signature: 'Le Secret Santa de {groupName}',
+  },
+  // The subject of every email: the event first, then the Secret Santa
+  // when the event has several the same year (ticket 110).
+  subject: {
+    event: '{event} : {text}',
+    santa: '{event} ({santa}) : {text}',
   },
   budget: 'Budget : {budget}.',
   eventDate: 'Rendez-vous le {eventDate}.',

@@ -1,71 +1,56 @@
 import { z } from 'zod';
 import { ok, fail, type Result } from './result';
 
-// Who may create a group, and who may ask for it (README 22.2). Pure.
+// The limit of the V3 on organising (docs/spec/v3/modele.md, « Les
+// limites »): no request to anyone, 3 Secret Santa in progress per account.
+// The 30 members of a party are in ./parties. Pure.
 
-export const GROUP_QUOTA_MAX = 50;
-export const REQUEST_MESSAGE_MAX = 500;
+/** The limit of a new account. */
+export const SECRET_SANTA_LIMIT = 3;
+/** The most a super-admin may give one account. */
+export const SECRET_SANTA_LIMIT_MAX = 50;
 
-export const groupQuotaSchema = z.number().int().min(0).max(GROUP_QUOTA_MAX);
-export const requestMessageSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .max(REQUEST_MESSAGE_MAX);
+export const secretSantaLimitSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(SECRET_SANTA_LIMIT_MAX);
 
-/** What the quota rules need to know about an account. */
+/** What the limit needs to know about an account. */
 export type QuotaAccount = {
   isSuperAdmin: boolean;
-  groupQuota: number;
-  /** How many groups the account has created and that still exist. */
-  createdCount: number;
+  secretSantaLimit: number;
+  /** The Secret Santa it organises that are not closed. */
+  organisedCount: number;
 };
 
 /**
- * How many more groups the account may create.
- * @param account - Its flag, quota and number of created groups.
+ * How many more Secret Santa the account may organise.
+ * @param account - Its flag, limit and Secret Santa in progress.
  * @returns The remaining count; infinite for a super-admin.
  */
-export const remainingGroups = (account: QuotaAccount): number =>
+export const remainingSecretSantas = (account: QuotaAccount): number =>
   account.isSuperAdmin
     ? Number.POSITIVE_INFINITY
-    : Math.max(0, account.groupQuota - account.createdCount);
+    : Math.max(0, account.secretSantaLimit - account.organisedCount);
 
 /**
- * Whether the account may create a group now.
- * @param account - Its flag, quota and number of created groups.
- * @returns Ok, or `group_quota_reached`.
+ * Whether the account may organise one more Secret Santa now. While the
+ * super-admin has paused new Secret Santa, nobody may, a super-admin
+ * neither: the switch says « les nouveaux ».
+ * @param account - Its flag, limit and Secret Santa in progress.
+ * @param paused - Whether new Secret Santa are paused.
+ * @returns Ok, `secret_santa_paused` or `secret_santa_limit_reached`.
  */
-export const canCreateGroup = (account: QuotaAccount): Result<true> =>
-  remainingGroups(account) > 0 ? ok(true) : fail('group_quota_reached');
-
-/**
- * Whether the account may ask for a group: not while it can already
- * create one, and one request at a time.
- * @param account - Its flag, quota and number of created groups.
- * @param hasPending - Whether a request of the account awaits a decision.
- * @returns Ok, `group_request_useless` or `group_request_pending`.
- */
-export const canRequestGroup = (
+export const canOrganiseSecretSanta = (
   account: QuotaAccount,
-  hasPending: boolean,
+  paused = false,
 ): Result<true> => {
-  if (remainingGroups(account) > 0) return fail('group_request_useless');
-  return hasPending ? fail('group_request_pending') : ok(true);
+  if (paused) return fail('secret_santa_paused');
+  return remainingSecretSantas(account) > 0
+    ? ok(true)
+    : fail('secret_santa_limit_reached');
 };
-
-/**
- * The quota after a request is approved: room for exactly one more group.
- * @param account - Its quota and number of created groups.
- * @returns The new quota, capped.
- */
-export const quotaAfterApproval = (
-  account: Pick<QuotaAccount, 'groupQuota' | 'createdCount'>,
-): number =>
-  Math.min(
-    GROUP_QUOTA_MAX,
-    Math.max(account.groupQuota, account.createdCount) + 1,
-  );
 
 /**
  * A super-admin may disable any account but their own: a slip would lock

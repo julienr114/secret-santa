@@ -120,3 +120,54 @@ describe('notification emails', () => {
     });
   });
 });
+
+describe('the subjects of the organisers’ emails (ticket 110)', () => {
+  const santa = (santaName: string | null) => ({
+    groupName: 'Famille Camille',
+    editionLabel: 'Noël 2026',
+    santaName,
+    link: LINK,
+  });
+  const reminder = (santaName: string | null) =>
+    buildReminderEmail(
+      { ...santa(santaName), eventDate: '2026-12-25', missing: ['Léa'] },
+      'fr',
+    ).subject;
+
+  it('names the event first', () => {
+    expect(
+      buildJoinedEmail(
+        { groupName: 'Famille Camille', firstName: 'Zoé', link: LINK },
+        'fr',
+      ).subject,
+    ).toBe('Famille Camille : Zoé s’inscrit par le lien');
+    const several = buildJoinedEmail(
+      {
+        groupName: 'Famille Camille',
+        santaName: 'Les adultes',
+        firstName: 'Zoé',
+        link: LINK,
+      },
+      'fr',
+    );
+    expect(several.subject).toBe(
+      'Famille Camille (Les adultes) : Zoé s’inscrit par le lien',
+    );
+    expect(several.text).toContain(
+      'au Secret Santa « Famille Camille (Les adultes) »',
+    );
+    expect(buildAllViewedEmail(santa(null), 'fr').subject).toBe(
+      'Famille Camille : toutes les enveloppes sont ouvertes',
+    );
+    expect(reminder(null)).toBe('Famille Camille : le jour J approche');
+  });
+
+  it('adds the Secret Santa when the event has two that year', () => {
+    expect(buildAllViewedEmail(santa('Les enfants'), 'fr').subject).toBe(
+      'Famille Camille (Les enfants) : toutes les enveloppes sont ouvertes',
+    );
+    expect(reminder('Les enfants')).toBe(
+      'Famille Camille (Les enfants) : le jour J approche',
+    );
+  });
+});

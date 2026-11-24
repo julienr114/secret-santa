@@ -15,7 +15,10 @@ export default defineEventHandler(async (event) => {
   }
   const dataKey = await dataKeyOf(event);
   const [rows, participants] = await Promise.all([
-    db.select().from(assignments).where(eq(assignments.editionId, edition.id)),
+    db
+      .select()
+      .from(assignments)
+      .where(eq(assignments.secretSantaId, edition.id)),
     listParticipants(db, edition.id),
   ]);
   const pairs = await Promise.all(

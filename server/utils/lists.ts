@@ -6,6 +6,7 @@
 // from one list to the next.
 import { z } from 'zod';
 import type { Avatar } from './avatars';
+import { translate, type Locale } from '#shared/i18n';
 
 export const LIST_TITLE_MAX = 80;
 export const LIST_NOTE_MAX = 500;
@@ -80,6 +81,25 @@ export const randomListIcon = (random: (n: number) => number): ListIcon => ({
   color: LIST_COLORS[random(LIST_COLORS.length)]!,
 });
 
+/**
+ * The icon of a list made for an event (ticket 106): the event's, as far
+ * as a list may carry it; what it may not, chosen at random.
+ * @param party - The emoji and the colour of the event, if any.
+ * @param party.emoji - Its emoji, or null.
+ * @param party.color - Its colour, or null.
+ * @param random - A random integer below its argument.
+ * @returns The icon.
+ */
+export const listIconOfParty = (
+  party: { emoji: string | null; color: string | null },
+  random: (n: number) => number,
+): ListIcon => {
+  const fallback = randomListIcon(random);
+  const emoji = LIST_EMOJIS.find((e) => e === party.emoji);
+  const color = LIST_COLORS.find((c) => c === party.color);
+  return { emoji: emoji ?? fallback.emoji, color: color ?? fallback.color };
+};
+
 /** A draft only its holder sees; shared once its link exists; past after its day. */
 export type ListStatus = 'draft' | 'shared' | 'past';
 
@@ -123,10 +143,10 @@ export const shareChange = (
   fresh: { token: string; now: string },
 ): { shareToken: string | null; sharedAt: string | null } => {
   if (ask === 'off') return { shareToken: list.shareToken, sharedAt: null };
+  // « Changer de lien » works for any list (ticket 117): the old link
+  // lets nobody in any more, and the sharing stays as it was.
   if (ask === 'renew') {
-    return list.sharedAt
-      ? { shareToken: fresh.token, sharedAt: list.sharedAt }
-      : { shareToken: list.shareToken, sharedAt: null };
+    return { shareToken: fresh.token, sharedAt: list.sharedAt };
   }
   return {
     shareToken: list.shareToken ?? fresh.token,
@@ -167,18 +187,18 @@ export const isWorthKeeping = (list: {
 }): boolean => shareMissing(list).length < 2;
 
 /**
- * The word for the family: the starting text until it is changed, the
- * holder's own text after, nothing once erased.
+ * The word for the family, in option (V3ListeNouvelle, ticket 147): the
+ * holder's text once written, nothing otherwise. A list never touched has
+ * none: the starting text was never stored.
  * @param note - What is stored: null while untouched.
  * @param edited - Whether it was ever changed.
- * @returns `default` for the starting text, `none`, or the text.
+ * @returns `none`, or the text.
  */
 export const noteOf = (
   note: string | null,
   edited: boolean,
-): { kind: 'default' } | { kind: 'none' } | { kind: 'text'; text: string } => {
-  if (!edited) return { kind: 'default' };
-  const text = note?.trim() ?? '';
+): { kind: 'none' } | { kind: 'text'; text: string } => {
+  const text = edited ? (note?.trim() ?? '') : '';
   return text ? { kind: 'text', text } : { kind: 'none' };
 };
 
@@ -316,25 +336,37 @@ export const cardSentence = (
     : { key: 'nothingYet' };
 };
 
+/** An idea of an old list, as a new list reads it. */
+type OldIdea = {
+  text: string;
+  url: string | null;
+  position: number;
+  planned: boolean;
+  /** Its stars and whether it is a title follow it (ticket 152). */
+  stars?: number;
+  title?: boolean;
+};
+
 /**
  * The ideas a person brings to a new list: those of their last list that
- * nobody gave (README 22.19, « Ajouter quelqu'un »), in their order.
+ * nobody gave (README 22.19, « Ajouter quelqu'un »), in their order, with
+ * their stars, and the titles among them (ticket 152).
  * @param previous - Their ideas on their last list, each with whether it
  *   was planned.
- * @returns The text and link of each idea carried over.
+ * @returns The text, link, stars and kind of each line carried over.
  */
 export const carriedIdeas = (
-  previous: readonly {
-    text: string;
-    url: string | null;
-    position: number;
-    planned: boolean;
-  }[],
-): { text: string; url: string | null }[] =>
+  previous: readonly OldIdea[],
+): { text: string; url: string | null; stars: number; title: boolean }[] =>
   previous
     .filter((idea) => !idea.planned)
     .toSorted((a, b) => a.position - b.position)
-    .map(({ text, url }) => ({ text, url }));
+    .map(({ text, url, stars, title }) => ({
+      text,
+      url,
+      stars: stars ?? 0,
+      title: title ?? false,
+    }));
 
 /**
  * Whether a list may be deleted. An empty document goes by itself when
@@ -406,15 +438,15 @@ export const addPersonRefusal = (list: {
 /** A person of a list, with their ideas, as taking it up again reads it. */
 export type ResumablePerson = {
   memberId: string;
+  /**
+   * The account this person is (« Moi » of its owner, or linked), or
+   * null: the same person may be two rows of two families.
+   */
+  accountId?: string | null;
   position: number;
   /** The hidden part of a list without people. */
   placeholder?: boolean;
-  ideas: readonly {
-    text: string;
-    url: string | null;
-    position: number;
-    planned: boolean;
-  }[];
+  ideas: readonly OldIdea[];
 };
 
 /**
@@ -443,6 +475,7 @@ export const resumedList = (source: {
     .toSorted((a, b) => a.position - b.position)
     .map((person) => ({
       memberId: person.memberId,
+      accountId: person.accountId ?? null,
       ideas: carriedIdeas(person.ideas),
     })),
 });
@@ -464,24 +497,76 @@ export const resumeSummary = (
       member: { placeholder: person.placeholder === true },
     })),
   ),
+  // A title is not an idea (ticket 152).
   ideas: people.reduce(
-    (sum, person) => sum + carriedIdeas(person.ideas).length,
+    (sum, person) =>
+      sum + carriedIdeas(person.ideas).filter((idea) => !idea.title).length,
     0,
   ),
 });
 
 /**
- * Whether a list can be started from another: only while it is still an
- * empty draft, so that nothing written is ever mixed with what comes.
+ * Whether a list can be started from another: while it has no idea, even
+ * with people on it (Q-032, ticket 136), so that nothing written is ever
+ * mixed with what comes. A list without people keeps its shape.
  * @param list - The new list.
- * @param list.sharedAt - When it was shared, or null.
- * @param list.peopleCount - How many people are on it.
- * @returns True for a draft nobody is on.
+ * @param list.ideas - How many ideas are on it.
+ * @param list.single - Whether it is a list without people.
+ * @returns True while nothing is written on it.
  */
 export const canResumeInto = (list: {
-  sharedAt: string | null;
-  peopleCount: number;
-}): boolean => !list.sharedAt && list.peopleCount === 0;
+  ideas: number;
+  single: boolean;
+}): boolean => list.ideas === 0 && !list.single;
+
+/** A person already on the list taken up into, as the merge reads them. */
+export type PersonThere = {
+  /** Their place on the list. */
+  id: string;
+  memberId: string;
+  accountId: string | null;
+};
+
+/**
+ * How the people of an old list join those already on the new one (Q-032,
+ * ticket 136): those already there keep their place, the others come
+ * after in their order, nobody twice; the ideas of someone already there
+ * go under their name. The same person is the same row of a family, or
+ * the same account (« Moi » here, linked there).
+ * @param there - The people already on the new list, in their order.
+ * @param taken - The people of the old list, as `resumedList` gives them.
+ * @returns The ideas for those there, by their place, and the people to
+ *   add after them.
+ */
+export const mergeResumed = <
+  T extends { memberId: string; accountId?: string | null },
+>(
+  there: readonly PersonThere[],
+  taken: readonly T[],
+): { into: { listPersonId: string; person: T }[]; added: T[] } => {
+  const placeOf = (person: T) =>
+    there.find(
+      (one) =>
+        one.memberId === person.memberId ||
+        (one.accountId !== null &&
+          one.accountId === (person.accountId ?? null)),
+    );
+  const into = taken.flatMap((person) => {
+    const place = placeOf(person);
+    return place ? [{ listPersonId: place.id, person }] : [];
+  });
+  const added = taken.filter(
+    (person, index) =>
+      !placeOf(person) &&
+      // Twice on the old list under two rows: once here.
+      taken.findIndex(
+        (other) =>
+          other.memberId === person.memberId ||
+          (Boolean(person.accountId) && other.accountId === person.accountId),
+      ) === index,
+  );
+  return { into, added };
+};
 
 /**
  * How many days until a list's day.
@@ -586,3 +671,17 @@ export const memberRemoval = (
       places.reduce((sum, place) => sum + place.offList, 0),
   };
 };
+
+/**
+ * The name of a list made from my Secret Santa (docs/spec/v3/listes.md,
+ * « Depuis mon Secret Santa », ticket 148): not the event's, already in
+ * the bar and on the home; the Secret Santa between brackets when the
+ * event has several that year.
+ * @param locale - My language.
+ * @param santa - The Secret Santa's name when it must be said, or null.
+ * @returns « Idées pour le Secret Santa (Les adultes) ».
+ */
+export const drawListTitle = (locale: Locale, santa: string | null): string =>
+  santa
+    ? translate(locale, 'lists.doc.drawTitleOf', { name: santa })
+    : translate(locale, 'lists.doc.drawTitle');

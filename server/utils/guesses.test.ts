@@ -253,7 +253,7 @@ describe('carriedGame', () => {
           guessMode: 'all',
           guessEndsAt: '2025-12-24T19:00:00.000Z',
           guessTimeZone: 'Europe/Paris',
-          rulesOverride: { eventDate: '2025-12-24' },
+          rules: { eventDate: '2025-12-24' },
         },
         '2026-12-25',
       ),

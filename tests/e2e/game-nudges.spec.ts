@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, hydrated } from './helpers';
+import { apiLogin, hydrated, seedMembers, seedSql } from './helpers';
 
 // « Devine qui » : donner envie de jouer, et rappeler (README 22.17,
 // Correction 15). Last year's figure to beat, the surprise, « Je passe mon
@@ -67,14 +67,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       data: { name: 'Famille Relance' },
     }),
   );
-  for (const firstName of NAMES) {
-    const { person } = await ok(
-      await admin().post(`${ADMIN}/persons`, { data: { firstName } }),
-    );
-    state.ids[firstName] = person.id;
-  }
+  // Members of before ticket 117: they are in every Secret Santa below.
+  Object.assign(state.ids, await seedMembers(SLUG, NAMES));
   // Last year: the game, two players, Ada found her Santa.
-  const last = await newEdition('Noël 2025', 2025);
+  // Made this year, then moved to last year: nothing is made in a year
+  // over (ticket 108).
+  const last = await newEdition('Noël 2025', 2026);
   await ok(await admin().post(`${last.base}/draw`));
   await ok(await admin().put(`${last.base}/guess`, { data: game('santa') }));
   // Everyone finds out whom they give to; then each names a Santa.
@@ -102,6 +100,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     await admin().post(`${last.base}/reveal`, { data: { early: true } }),
   );
   await ok(await admin().post(`${last.base}/close`));
+  await seedSql(`
+INSERT INTO party_years (id, party_id, year, date, created_at)
+  SELECT 'y-relance-2025', party_id, 2025, '2025-12-25', created_at
+  FROM secret_santas WHERE id = '${last.id}';
+UPDATE secret_santas SET year_id = 'y-relance-2025' WHERE id = '${last.id}';
+`);
 
   // This year: the game is carried over.
   const now = await newEdition('Noël 2026', 2026);
@@ -121,13 +125,36 @@ test('the game page: the surprise, and last year’s figure to beat', async ({
 }) => {
   await open(page, `/p/${state.tokens.Cy}/devine`);
   await expect(page.getByTestId('game-surprise')).toContainText(
-    'Une surprise attend le groupe à la fête.',
+    'Une surprise attend tout le monde le jour J.',
   );
   await expect(page.getByTestId('game-challenge')).toHaveText(
     'L’an dernier, 1 personne sur 2 avait deviné son Père Noël. À battre.',
   );
   // Nothing names a prize before the party.
   await expect(page.locator('body')).not.toContainText(/détective|caché/i);
+
+  // Outside a Christmas event, « Père Noël » is said nowhere, the game
+  // included (docs/spec/v3/vocabulaire.md, ticket 102).
+  await ok(
+    await admin().patch(`/api/parties/${SLUG}`, {
+      data: { category: 'other' },
+    }),
+  );
+  try {
+    await open(page, `/p/${state.tokens.Cy}/devine`);
+    await expect(page.getByTestId('game-challenge')).toHaveText(
+      'L’an dernier, 1 personne sur 2 avait deviné qui lui offrait. À battre.',
+    );
+    await expect(page.locator('body')).not.toContainText(/Père Noël/);
+    await open(page, `/p/${state.tokens.Cy}`);
+    await expect(page.locator('body')).not.toContainText(/Père Noël/);
+  } finally {
+    await ok(
+      await admin().patch(`/api/parties/${SLUG}`, {
+        data: { category: 'christmas' },
+      }),
+    );
+  }
 });
 
 test('the card under the result, then « Je passe mon tour »', async ({
@@ -147,7 +174,7 @@ test('the card under the result, then « Je passe mon tour »', async ({
   const invite = page.getByTestId('game-invite');
   await expect(invite).toContainText('Et toi, qui t’offre ton cadeau ?');
   await expect(invite).toContainText(
-    '2 sur 5 ont déjà fait leur pronostic. Réponse à la fête.',
+    '2 sur 5 ont déjà fait leur pronostic. Réponse le jour J.',
   );
   await invite.getByTestId('game-skip').click();
   await expect(invite).toHaveCount(0);
@@ -222,7 +249,7 @@ test('the organiser: the settings, and the message to the group', async ({
   ).toBeVisible();
   await expect(page.getByTestId('game-remind-send')).toBeDisabled();
 
-  await page.getByTestId('reminder-audience').getByText('Au groupe').click();
+  await page.getByTestId('reminder-audience').getByText('À tous').click();
   await expect(page).toHaveURL(/vers=groupe/);
   const message = page.getByTestId('game-group-message');
   await expect(message).toContainText('2 sur 4 ont déjà fait leur pronostic.');

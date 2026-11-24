@@ -5,52 +5,48 @@ export default {
   invitation: {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Du bist dabei: das Wichteln von {groupName} ({editionLabel}).',
-    cta: 'Öffne deinen Link und hinterlass ein paar Geschenk-Hinweise:',
-    subject: 'Wichteln {groupName}: dein Link, {firstName}',
+    cta: 'Öffne deinen Link und schreib deine Wunschliste:',
+    subject: 'Dein Link, {firstName}',
   },
   drawn: {
     greeting:
       '{firstName}, beim Wichteln von {groupName} sind die Lose gezogen! 🎁',
     cta: 'Öffne deinen Link, um zu erfahren, wen du beschenkst:',
-    subject:
-      'Wichteln {groupName}: {firstName}, die Lose sind gezogen, dein Umschlag wartet',
+    subject: 'Dein Umschlag wartet',
   },
   reminder: {
     greeting:
       '{firstName}, dein Umschlag beim Wichteln von {groupName} setzt Staub an. Mach ihn schnell auf!',
     cta: 'Dein Link:',
-    subject:
-      'Wichteln {groupName}: {firstName}, dein Umschlag wartet immer noch',
+    subject: '{firstName}, dein Umschlag wartet immer noch',
   },
   redraw: {
     greeting:
       '{firstName}, beim Wichteln von {groupName} werden die Karten neu gemischt. Es gab eine neue Auslosung: vergiss die alte.',
     cta: 'Dein Link bleibt derselbe:',
-    subject:
-      'Wichteln {groupName}: {firstName}, die Karten werden neu gemischt, neue Auslosung',
+    subject: '{firstName}, die Karten werden neu gemischt, neue Auslosung',
   },
   answerRequest: {
     greeting: 'Hallo {firstName}! 🎁',
     body: 'Die Auslosung beim Wichteln von {groupName} ({editionLabel}) ist schon gemacht, außerhalb der App. Für alles Weitere treffen wir uns in der App.',
     how: 'So geht’s: Auf deiner Seite sagst du, wen du beschenkst. Deine Antwort bleibt geheim, niemand sonst sieht sie.',
     hints:
-      'Du kannst schon jetzt deine Geschenk-Hinweise für die Person hinterlassen, die dich beschenkt. Sobald alle geantwortet haben, liest jeder die Hinweise der Person, die er beschenkt: Fehlt eine einzige Antwort, bleiben sie zu.',
-    game: '🔍 Und zum Spaß: Devine qui, ein Tippspiel, bei dem jeder rät, wer ihn beschenkt. Antwort bei der Feier!',
+      'Du kannst schon jetzt deine Wunschliste für die Person schreiben, die dich beschenkt. Sobald alle geantwortet haben, liest jeder die Liste der Person, die er beschenkt: Fehlt eine einzige Antwort, bleiben die Listen zu.',
+    game: '🔍 Und zum Spaß: Devine qui, ein Tippspiel, bei dem jeder rät, wer ihn beschenkt. Antwort am großen Tag!',
     cta: 'Dein persönlicher Link, zum Antworten:',
-    subject: 'Wichteln {groupName}: Wen beschenkst du, {firstName}?',
+    subject: 'Wen beschenkst du, {firstName}?',
   },
   answerReminder: {
     greeting:
       '{firstName}, beim Wichteln von {groupName} fehlt nur noch deine Antwort! 🎁',
-    cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Geschenk-Hinweise seiner Person.',
-    subject: 'Wichteln {groupName}: Wir warten auf deine Antwort, {firstName}',
+    cta: 'Sag, wen du beschenkst: Sobald alle geantwortet haben, sieht jeder die Wunschliste seiner Person.',
+    subject: 'Wir warten auf deine Antwort, {firstName}',
   },
   answerCheck: {
     greeting: '{firstName}, kannst du deine Antwort prüfen? 🎁',
     body: 'Beim Wichteln von {groupName} hat sich ein Knoten gebildet: zwei Antworten passen nicht zusammen.',
     cta: 'Prüfe, wen du beschenkst, und korrigiere es bei Bedarf:',
-    subject:
-      'Wichteln {groupName}: Kannst du deine Antwort prüfen, {firstName}?',
+    subject: 'Kannst du deine Antwort prüfen, {firstName}?',
   },
   guessLine:
     '🔍 Devine qui, das Tippspiel zum Wichteln: Wer beschenkt dich? Deine Tipps bis {guessEnd}.',
@@ -61,14 +57,15 @@ export default {
       'So geht’s: Du versuchst zu erraten, wer dich beschenkt. Ein einziger Tipp, den du bis {guessEnd} ändern kannst.',
     howAll:
       'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen bei deinem eigenen Wichtel. So viele Tipps, wie du willst, bis {guessEnd}.',
+    howAllNeutral:
+      'So geht’s: Du versuchst zu erraten, wer wen beschenkt, angefangen damit, wer dich beschenkt. So viele Tipps, wie du willst, bis {guessEnd}.',
     secret:
-      'Niemand sieht deine Tipps vor der Feier. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für die Gruppe: Je mehr von euch spielen, desto schöner wird sie.',
+      'Niemand sieht deine Tipps vor dem großen Tag. Die Antworten kommen, wenn die Auslosung aufgedeckt wird, mit einer Überraschung für alle Mitglieder: Je mehr von euch spielen, desto schöner wird sie.',
     cta: 'Dein Link, zum Spielen:',
-    subject: 'Wichteln {groupName}: Rate, wer dich beschenkt, {firstName}',
+    subject: 'Rate, wer dich beschenkt, {firstName}',
   },
   guessAuto: {
-    subject:
-      'Wichteln {groupName}: Nur noch {days} Tage, um zu erraten, wer dich beschenkt',
+    subject: 'Nur noch {days} Tage, um zu erraten, wer dich beschenkt',
     greeting: 'Hallo {firstName},',
     body: {
       one: 'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. {count} von {total} Personen hat schon getippt. Und du: Wer beschenkt dich?',
@@ -78,7 +75,7 @@ export default {
     nobody:
       'Beim Wichteln von {groupName} ({editionLabel}) spielen wir Devine qui: raten, wer wen beschenkt. Noch niemand hat getippt. Und du: Wer beschenkt dich?',
     until:
-      'Du hast Zeit bis {guessEnd}. Antwort bei der Feier, mit einer Überraschung.',
+      'Du hast Zeit bis {guessEnd}. Antwort am großen Tag, mit einer Überraschung.',
     cta: 'Meinen Tipp abgeben',
     skipBefore: 'Keine Lust zu spielen? ',
     skip: 'Ich setze aus',
@@ -87,17 +84,18 @@ export default {
     signature: 'Das Wichteln von {groupName}',
   },
   guessMore: {
-    subject: 'Wichteln {groupName}: Noch ein paar Tipps vor dem Ende?',
+    subject: 'Noch ein paar Tipps vor dem Ende?',
     greeting: 'Hallo {firstName},',
     body: 'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), deinen Tipp zu deinem Wichtel abgegeben. Gut gemacht.',
-    more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung bei der Feier.',
+    bodyNeutral:
+      'Du hast bei Devine qui, dem Spiel zum Wichteln von {groupName} ({editionLabel}), getippt, wer dich beschenkt. Gut gemacht.',
+    more: 'Dir bleiben {days} Tage, um auch zu erraten, wer die anderen beschenkt. Je mehr Tipps, desto schöner die Überraschung am großen Tag.',
     cta: 'Weiter tippen',
   },
   guessPoint: {
     subject: {
-      one: 'Devine qui, {groupName}: {count} Person hat noch nicht gespielt',
-      other:
-        'Devine qui, {groupName}: {count} Personen haben noch nicht gespielt',
+      one: '{count} Person hat bei Devine qui noch nicht gespielt',
+      other: '{count} Personen haben bei Devine qui noch nicht gespielt',
     },
     greeting: 'Hallo {firstName},',
     body: 'Für {editionLabel} ({groupName}) haben {played} von {total} Personen getippt.',
@@ -120,7 +118,7 @@ export default {
     signature: 'Under the Tree, die App für euer Wichteln',
   },
   guessEnd: {
-    subject: 'Devine qui, {groupName}: Die Tipps sind geschlossen',
+    subject: 'Die Tipps bei Devine qui sind geschlossen',
     greeting: 'Hallo {firstName},',
     body: {
       one: 'Für {editionLabel} ({groupName}) hat {count} von {total} Personen gespielt. Die Rangliste ist bereit: Sie startet, sobald du die Auslosung aufdeckst.',
@@ -134,7 +132,7 @@ export default {
     signature: 'Under the Tree, die App für euer Wichteln',
   },
   guessResults: {
-    subject: 'Wichteln {groupName}: Die Rangliste von Devine qui ist da',
+    subject: 'Die Rangliste von Devine qui ist da',
     greeting: 'Hallo {firstName},',
     body: 'Die Auslosung beim Wichteln von {groupName} ({editionLabel}) ist aufgedeckt, und Devine qui, das Tippspiel, hat seine Rangliste. Endlich erfährst du, wer dich beschenkt hat und wer es erraten hatte.',
     giftFirst:
@@ -142,6 +140,10 @@ export default {
     cta: 'Die Rangliste entdecken',
     once: 'Du bekommst diese Nachricht nur einmal.',
     signature: 'Das Wichteln von {groupName}',
+  },
+  subject: {
+    event: '{event}: {text}',
+    santa: '{event} ({santa}): {text}',
   },
   budget: 'Budget: {budget}.',
   eventDate: 'Wir sehen uns am {eventDate}.',

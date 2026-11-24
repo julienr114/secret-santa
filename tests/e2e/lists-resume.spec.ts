@@ -47,7 +47,7 @@ test.beforeAll(async ({ browser }) => {
   const mamie = await login(MAMIE, 'Mamie');
   const { id } = await (
     await api().post('/api/lists', {
-      data: { icon: { emoji: '❄️', color: 'night' }, title: 'Noël 2025' },
+      data: { icon: { emoji: '🎄', color: 'night' }, title: 'Noël 2025' },
     })
   ).json();
   await api().patch(`/api/lists/${id}`, {
@@ -93,14 +93,21 @@ test.afterAll(async () => {
 });
 
 test('an empty new list starts from an old one', async () => {
-  const page = await open('/listes/nouvelle');
-  await expect(page).toHaveURL(/nouvelle=1/);
-  state.newId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
-  // « Repartir d'une liste »: my lists, with what each would bring.
+  // A new Christmas list: the old one, a Christmas too, looks like it
+  // (ticket 119).
+  const { id } = await (
+    await api().post('/api/lists', {
+      data: { icon: { emoji: '🎄', color: 'pine' }, title: '' },
+    })
+  ).json();
+  state.newId = id;
+  const page = await open(`/listes/${id}?nouvelle=1`);
+  // « Repartir d'une liste »: my lists that look like it, with the first
+  // names of their people and what each would bring.
   const block = page.getByTestId('resume-from');
   await expect(block.getByRole('heading')).toHaveText('Repartir d’une liste');
   const old = block.getByTestId('resume-list').filter({ hasText: 'Noël 2025' });
-  await expect(old).toContainText('2 personnes · 3 idées pas encore offertes');
+  await expect(old).toContainText('Léo et Zoé · 3 idées pas encore offertes');
   await old.click();
 
   // The people, in their order, with the ideas nobody ticked.
@@ -123,13 +130,13 @@ test('an empty new list starts from an old one', async () => {
     'Reprise de Noël 2025. Les idées marquées',
   );
   await expect(page.getByTestId('resumed-from')).toContainText(
-    'Toi seul vois cette marque, elle disparaît au partage.',
+    'Toi seul vois cette marque.',
   );
   await expect(page.getByTestId('idea-carried')).toHaveCount(3);
 
   // The icon and the word came; the name and the day are to be filled in.
   const doc = await (await api().get(`/api/lists/${state.newId}`)).json();
-  expect(doc.list.icon).toEqual({ emoji: '❄️', color: 'night' });
+  expect(doc.list.icon).toEqual({ emoji: '🎄', color: 'night' });
   expect(doc.list.note).toEqual({
     kind: 'text',
     text: 'Pas de peluches cette année.',
@@ -163,8 +170,11 @@ test('an empty new list starts from an old one', async () => {
           .title,
     )
     .toBe('Noël 2026');
-  await page.getByTestId('share-switch').click();
-  await expect(page.getByTestId('share-panel')).toBeVisible();
+  await page.getByTestId('share-open').click();
+  const sheet = page.getByTestId('sharing-panel');
+  await sheet.getByText('Tout le monde', { exact: true }).click();
+  await page.getByTestId('share-confirm-submit').click();
+  await expect(page.getByTestId('share-stage')).toContainText('Publique');
   await expect(page.getByTestId('idea-carried')).toHaveCount(0);
   await expect(page.getByTestId('resumed-from')).toHaveCount(0);
   await page.close();
@@ -196,8 +206,8 @@ test('a past list is taken up again from its document', async () => {
   await page.close();
 });
 
-test('only an empty draft starts from a list, and only from one I hold', async () => {
-  // The new list has people now: nothing is mixed into it.
+test('only a list with no idea starts from a list, and only from one I hold', async () => {
+  // The new list has ideas now: nothing is mixed into it (Q-032).
   const full = await api().post(`/api/lists/${state.newId}/resume`, {
     data: { from: state.oldId },
   });

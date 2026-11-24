@@ -2,41 +2,8 @@ import type fr from '../fr/hints';
 import type { Dict } from '../../types';
 
 export default {
-  title: 'Meine Geschenk-Hinweise',
-  intro:
-    'Greif der Person unter die Arme, die dich beschenkt. Alles ist freiwillig.',
-  whoSees:
-    'Nur die Person, die dich beschenkt, sieht sie, sobald ausgelost ist.',
-  requested: {
-    title: 'Die Person, die dich beschenkt, sucht nach Inspiration.',
-    body: 'Sechs Auswahlfragen reichen, dreißig Sekunden.',
-    bodyPortrait: 'Fünf Auswahlfragen reichen, dreißig Sekunden.',
-  },
-  readOnly: 'Deine Hinweise stehen fest: für dieses Jahr ist Schluss.',
-  until: 'Du kannst sie bis zur Feier ändern.',
-  start: {
-    label: 'Zum Anfang',
-    title: 'Sechs Fragen, dreißig Sekunden',
-    titlePortrait: 'Fünf Fragen, dreißig Sekunden',
-    examples: 'Nützlich oder überraschend? Ein Ding oder ein Erlebnis?',
-    body: 'Ein Tipp pro Antwort, nichts zu schreiben.',
-    action: 'Loslegen',
-  },
-  copy: {
-    action: 'Meine Hinweise von {edition} übernehmen',
-    hint: 'Du kannst sie danach anpassen',
-    done: 'Hinweise von {edition} übernommen',
-  },
-  me: {
-    title: 'Bei Geschenken mag ich lieber…',
-    context: 'Ich und Geschenke',
-  },
   question: {
-    context: 'Frage {index} von {count}',
-    clear: 'Meine Antwort löschen',
-    later: 'Später',
     both: 'Beides ist mir recht',
-    footer: 'Ein Tipp, und weiter geht’s. Du kannst es dir anders überlegen.',
     progress: 'Frage {index} von {count}',
   },
   questions: {
@@ -78,7 +45,7 @@ export default {
     surprise: {
       title: 'Überrasch mich, oder lieber wissen?',
       first: 'Überrasch mich',
-      firstHelp: 'Ich lasse mich am Tag der Feier überraschen.',
+      firstHelp: 'Ich lasse mich am großen Tag überraschen.',
       second: 'Lieber wissen',
       secondHelp: 'Weiter unten gebe ich eine genaue Idee an.',
     },
@@ -180,77 +147,44 @@ export default {
     },
   },
   ideas: {
-    title: 'Eine genaue Idee, für alle Fälle',
     giver: 'Falls nichts einfällt',
-    add: 'Idee hinzufügen',
-    addHint: 'Ein Ding, gern mit Link',
-    left: {
-      one: 'Noch {count} möglich',
-      other: 'Noch {count} möglich',
-    },
-    why: 'Eine genaue Idee schadet nicht: Viele schenken lieber auf Nummer sicher.',
   },
   list: {
     title: 'Meine Geschenkliste',
-    help: 'Die Person, die dir etwas schenkt, sieht einen Link dorthin. Was sie dort abhakt, ist anonym: Niemand erfährt, dass sie es ist, auch du nicht.',
-    add: 'Eine Geschenkliste verknüpfen',
-    addHint: 'Die Person, die dir etwas schenkt, sieht einen Link dorthin',
-    change: 'Ändern',
-    mine: 'Deine Liste, veröffentlicht',
-    figuring: 'Eine Liste, auf der du stehst, veröffentlicht',
-    published: 'Veröffentlicht',
-    unshared:
-      'Sie ist nicht mehr veröffentlicht: Der Link wird nicht mehr angezeigt.',
-    login: 'Melde dich an, um eine deiner Geschenklisten zu verknüpfen.',
-    loginAction: 'Anmelden',
-    sheetTitle: 'Welche Liste?',
-    sheetHelp:
-      'Die Listen, die du führst, und die, auf denen du stehst. Nur eine veröffentlichte Liste kann verknüpft werden.',
-    rowMine: 'Deine Liste · veröffentlicht',
-    rowFiguring: 'Die Liste von {name} · du stehst darauf',
-    rowDraft: 'Entwurf: Veröffentliche sie zuerst',
-    none: 'Keine Liste',
-    validate: 'Bestätigen',
-    untitled: 'Liste ohne Namen',
-    done: 'Liste mit deinen Hinweisen verknüpft',
-    removed: 'Keine Liste mehr mit deinen Hinweisen verknüpft',
   },
   result: {
-    list: 'Ihre Geschenkliste: {title}',
+    listOf: 'Die Wunschliste von {name}',
+    newIdeas: {
+      one: '{count} neue Idee seit deinem letzten Besuch',
+      other: '{count} neue Ideen seit deinem letzten Besuch',
+    },
+    nothing: '{name} hat noch nichts geschrieben.',
     listHelp: 'Der anonyme Modus ist dort für dich aktiviert.',
     title: 'Damit du besser wählst',
-    isNew: 'Neu',
-    updatedOn: 'Hinweise aktualisiert am {date}',
-    none: '{name} hat noch keine Hinweise hinterlassen.',
-    ask: 'Um Hinweise bitten',
-    sentEmailNamed: '{name} hat gerade eine E-Mail bekommen.',
-    sentPageNamed: '{name} sieht es auf der eigenen Hinweis-Seite.',
+    ask: 'Um Ideen bitten',
     askHint: 'Ohne zu verraten, dass es von dir kommt.',
     sent: 'Anfrage gesendet.',
     sentEmail:
       '{name} hat gerade eine E-Mail bekommen, ohne zu wissen, dass sie von dir kommt.',
     sentPage:
-      '{name} sieht es auf der eigenen Hinweis-Seite, ohne zu wissen, dass es von dir kommt.',
-    willEmail: 'Du bekommst eine E-Mail, sobald Hinweise da sind.',
+      '{name} sieht es beim Öffnen des eigenen Links, ohne zu wissen, dass es von dir kommt.',
+    willEmail: 'Du bekommst eine E-Mail, sobald Ideen da sind.',
     willSee:
-      'Schau wieder hier vorbei: Die Hinweise erscheinen, sobald sie da sind.',
+      'Schau wieder hier vorbei: Die Ideen erscheinen, sobald sie da sind.',
   },
   request: {
-    title: '{name} um Hinweise bitten?',
+    title: '{name} um Ideen bitten?',
     bodyEmail:
       '{name} bekommt eine E-Mail mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     bodyPage:
-      '{name} sieht es auf der eigenen Hinweis-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
-    named: 'Dein Name wird genannt',
-    namedHelp:
-      'Die Auslosung ist aufgedeckt: {name} weiß, dass die Anfrage von dir kommt.',
+      '{name} sieht es auf der eigenen Ideen-Seite, mit der Bitte, Vorlieben zu notieren und was man besser meidet.',
     anonymous: 'Dein Name erscheint nirgends',
     anonymousHelp: {
       one: 'Weder in der E-Mail noch im Protokoll noch für den Organisator.',
       other:
         'Weder in der E-Mail noch im Protokoll noch für die Organisatoren.',
     },
-    once: 'Eine einzige Anfrage pro Auslosung',
+    once: 'Eine einzige Anfrage pro Wichteln',
     onceHelp: 'Keine Erinnerung möglich: wir bedrängen niemanden.',
     send: 'Anfrage senden',
     sending: 'Anfrage wird gesendet…',
@@ -258,44 +192,20 @@ export default {
   },
   state: {
     hintsLeft: {
-      one: '{count} von {total} hat Hinweise hinterlassen',
-      other: '{count} von {total} haben Hinweise hinterlassen',
+      one: '{count} von {total} hat die Liste geschrieben',
+      other: '{count} von {total} haben ihre Liste geschrieben',
     },
-    none: 'Noch nichts',
-    filledEditable: 'Ausgefüllt · änderbar bis zur Feier',
-    filledLocked: 'Ausgefüllt · nicht mehr änderbar',
-    left: 'Hat Hinweise hinterlassen',
-  },
-  setting: {
-    title: 'Geschenk-Hinweise',
-    help: 'Was jeder notieren kann, um der Person zu helfen, die ihn beschenkt.',
-    full: 'Porträt und genaue Ideen',
-    fullHelp: 'Die sechs Fragen, aktuelle Interessen und Geschenkideen',
-    portrait: 'Nur Porträt',
-    portraitHelp: 'Ohne Geschenkidee: Die Überraschung bleibt ganz',
-    none: 'Keine Hinweise',
-    noneHelp: 'Jeder kommt allein zurecht',
+    left: 'Hat die Liste geschrieben',
   },
   email: {
     request: {
-      subject: 'Wichteln {group}: Jemand sucht eine Geschenkidee für dich',
+      subject: 'Jemand sucht eine Geschenkidee für dich',
       greeting: 'Hallo {name},',
-      body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      bodyPortrait:
-        'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll. Hilf ihr: fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      subjectFrom: 'Wichteln {group}: {from} sucht eine Geschenkidee für dich',
-      bodyFrom:
-        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Sechs Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      bodyPortraitFrom:
-        '{from} beschenkt dich zu {edition} ({group}) und weiß nicht, was es sein soll. Kleine Hilfe? Fünf Auswahlfragen, dreißig Sekunden, und ein paar Worte, wenn du magst.',
-      cta: 'Ein paar Hinweise geben:',
-      anonymous: 'Wir verraten dir nicht, wer fragt: Es ist Wichteln.',
-      once: 'Du bekommst diese Nachricht nur einmal.',
-    },
-    arrived: {
-      subject: 'Wichteln {group}: Geschenkhinweise warten auf dich',
-      greeting: 'Hallo {name},',
-      body: 'Die Person, die du zu {edition} ({group}) beschenkst, hat Hinweise hinterlassen. Öffne deinen Link, um sie zu lesen:',
+      body: 'Die Person, die dich zu {edition} ({group}) beschenkt, weiß nicht, was sie wählen soll.',
+      help: 'Hilf ihr: Schreib deine Wunschliste, oder ein paar Worte darüber, was du magst.',
+      cta: 'Meine Liste schreiben',
+      anonymous:
+        'Wir verraten dir nicht, wer fragt: Es ist Wichteln. Du bekommst diese Nachricht nur einmal.',
     },
   },
 } satisfies Dict<typeof fr>;

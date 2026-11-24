@@ -257,7 +257,10 @@ test('what one writes or ticks arrives at the others by itself', async () => {
   await hugo.keyboard.type('Après le retour');
   await hugo.keyboard.press('Enter');
   await expect(leo(camille).getByTestId('idea-text')).toHaveCount(4);
-  await hugo.getByText('Touche un texte pour le modifier.').click();
+  // Out of the field: what is written is saved.
+  await hugo.evaluate(() =>
+    (document.activeElement as HTMLElement | null)?.blur(),
+  );
 
   // Hugo leaves: Camille is alone again; the visitor is still counted.
   await hugo.close();
@@ -298,7 +301,7 @@ test('who figures on the list and writes by its link is live too', async ({
   await hydrated(papi);
   const camille = await open('camille', `/listes/${state.listId}`);
   const mine = papi.getByTestId('visitor-person').first();
-  await expect(mine.getByTestId('its-you')).toBeVisible();
+  await expect(mine.getByTestId('me-tag')).toHaveText('(moi)');
   const his = camille
     .getByTestId('list-person')
     .filter({ has: camille.getByRole('heading', { name: 'Papi' }) });
@@ -309,7 +312,7 @@ test('who figures on the list and writes by its link is live too', async ({
   await expect(papi.locator('body')).not.toContainText('en ce moment');
 
   // He writes an idea: Camille sees it grow, under his name, then saved.
-  await mine.getByPlaceholder('Une idée pour moi…').click();
+  await mine.getByPlaceholder('Une idée pour toi…').click();
   await papi.keyboard.type('Des bottes');
   const ghost = his.getByTestId('line-ghost');
   await expect(ghost).toContainText('Des bottes');
@@ -317,7 +320,7 @@ test('who figures on the list and writes by its link is live too', async ({
   await papi.keyboard.press('Enter');
   await expect(ghost).toHaveCount(0);
   await expect(his.getByTestId('idea-text')).toHaveText(['Des bottes']);
-  await papi.getByTestId('visitor-sentence').click();
+  await papi.getByRole('heading', { level: 1 }).click();
 
   // Camille corrects that line: it is hers at Papi's, who cannot write it.
   await his.getByTestId('idea-text').click();
@@ -331,7 +334,10 @@ test('who figures on the list and writes by its link is live too', async ({
   await expect(mine.getByTestId('idea-text')).toHaveText([
     'Des bottes de pêche',
   ]);
-  await camille.getByText('Touche un texte pour le modifier.').click();
+  // Out of the field: what is written is saved.
+  await camille.evaluate(() =>
+    (document.activeElement as HTMLElement | null)?.blur(),
+  );
   await leo(camille).getByTestId('idea-text').first().click();
   await camille.keyboard.type('!');
   await expect(camille.locator('textarea:focus')).toHaveCount(1);

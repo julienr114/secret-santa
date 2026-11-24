@@ -7,47 +7,35 @@ import {
 // The word for the participants of an edition, on a page of its own
 // (README 23.3, Correction 18, maquette EditionMot): « Valider » fixed at
 // the bottom, « Retour » gives the change up. Opened by « Petit mot » of
-// the edition's settings, saved as the edition's own rule; or, with
-// `nouvelle` as the edition, by « Nouvelle édition », whose form keeps it
-// until the edition is created.
+// the edition's settings, saved as the edition's own rule. The word of a
+// new Secret Santa has its own page (nouvelle/[champ].vue).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
 const id = computed(() => String(route.params.id));
-const isNew = computed(() => id.value === 'nouvelle');
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
-const context = useScreenContext(slug, () => (isNew.value ? '' : id.value));
+const context = useScreenContext(slug, id);
 useHead({
   title: () => context.titleOf(t('adminEdition.settings.wordTitle')),
 });
-const parent = computed(() =>
-  isNew.value
-    ? `/admin/${slug.value}/editions/nouvelle`
-    : `/admin/${slug.value}/editions/${id.value}/reglages`,
+const parent = computed(
+  () => `/admin/${slug.value}/editions/${id.value}/reglages`,
 );
 const screen = computed(() => ({ back: parent.value }));
 
 const WORD_MAX = 300;
-const draft = useNewEditionDraft(slug);
-const edition = useEditionQuery(slug, id, () => !isNew.value);
+const edition = useEditionQuery(slug, id);
 const update = useUpdateEditionMutation(slug);
 const word = ref('');
 watch(
-  () =>
-    isNew.value
-      ? (draft.value?.guardianMessage ?? '')
-      : (edition.data.value?.rules.guardianMessage ?? ''),
+  () => edition.data.value?.rules.guardianMessage ?? '',
   (value) => {
     word.value = value;
   },
   { immediate: true },
 );
-// Without its form, a new edition's word has nowhere to go.
-onMounted(() => {
-  if (isNew.value && !draft.value) navigateTo(parent.value, { replace: true });
-});
 const saving = computed(() => update.isPending.value);
 const failure = computed(() =>
   update.isError.value ? errorMessage(update.error.value) : null,
@@ -61,11 +49,6 @@ const failure = computed(() =>
  */
 const onValidate = () => {
   const value = word.value.trim();
-  if (isNew.value) {
-    if (draft.value) draft.value.guardianMessage = value;
-    goBack(parent.value);
-    return;
-  }
   update.mutate(
     {
       id: id.value,
@@ -82,8 +65,8 @@ const onValidate = () => {
 <template>
   <AdminScreen v-bind="screen">
     <AdminQueryState
-      :pending="!isNew && edition.isPending.value"
-      :error="isNew ? null : edition.error.value"
+      :pending="edition.isPending.value"
+      :error="edition.error.value"
       :skeleton="['title', 'card']"
     >
       <div class="flex flex-col gap-1">
@@ -92,6 +75,10 @@ const onValidate = () => {
           :label="t('common.context')"
         />
         <UiPageTitle>{{ t('adminEdition.settings.wordTitle') }}</UiPageTitle>
+        <!-- Where it goes (ticket 150, EditionMot). -->
+        <p class="mt-1 text-[15px] leading-[1.45] text-toned">
+          {{ t('adminEdition.settings.wordWhere') }}
+        </p>
       </div>
       <UiTextField
         id="edition-word"
@@ -100,7 +87,6 @@ const onValidate = () => {
         :optional="t('adminEdition.newEdition.optional')"
         :maxlength="WORD_MAX"
         :placeholder="t('adminEdition.newEdition.messagePlaceholder')"
-        :hint="t('adminEdition.screen.rules.wordHelp')"
       />
       <p v-if="failure" class="text-sm font-medium text-error" role="alert">
         {{ failure }}
@@ -111,10 +97,7 @@ const onValidate = () => {
           size="xl"
           class="h-13 justify-center text-[17px] font-bold"
           :loading="saving"
-          :disabled="
-            saving ||
-            (!isNew && edition.data.value?.edition.status === 'closed')
-          "
+          :disabled="saving || edition.data.value?.edition.status === 'closed'"
           :label="t('common.actions.validate')"
           data-testid="word-validate"
           @click="onValidate"

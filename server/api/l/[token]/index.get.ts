@@ -22,13 +22,17 @@ export default defineEventHandler(async (event) => {
     // Someone whose address a holder gave becomes that person by coming.
     await settleArrivals(db, accountId);
     const { role } = await roleOnList(db, list, accountId);
-    if (role === 'holder') return null;
-    await recordVisit(db, list.id, accountId);
-    return openMode(event, db, list, accountId);
+    if (role === 'holder') return { mode: null, since: null };
+    const since = await recordVisit(db, list.id, accountId);
+    return { mode: await openMode(event, db, list, accountId), since };
   };
-  const mode = user ? await modeOf(user.accountId) : null;
+  const { mode, since } = user
+    ? await modeOf(user.accountId)
+    : { mode: null, since: null };
   return {
     ...(await visitorDocument(db, list, user?.accountId ?? null)),
     mode,
+    // The visit before this one: what came since has a dot (ticket 120).
+    since,
   };
 });

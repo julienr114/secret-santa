@@ -4,9 +4,17 @@ import type { H3Event } from 'h3';
 import { eq } from 'drizzle-orm';
 import type { Db } from '#server/database/client';
 import { deleteClaimsOfIdeas } from '#server/database/claims';
-import { createIdea, findIdea, findListPerson } from '#server/database/lists';
+import {
+  claimedIdeas,
+  createIdea,
+  findIdea,
+  findListPerson,
+} from '#server/database/lists';
 import { giftListIdeas, type GiftListRow } from '#server/database/schema';
 import { notFound } from '#server/http/errors';
+import { markKindSeen } from '#server/database/news';
+import { tellNewIdeas } from '#server/database/newsEvents';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { validatedBody } from '#server/http/validate';
 import { splitIdea } from '#server/utils/lists';
 import { ideaPatchSchema, newIdeaSchema } from '#server/utils/listSchemas';
@@ -26,6 +34,7 @@ type May = (listPersonId: string) => boolean | Promise<boolean>;
  * @param db - The database.
  * @param list - The list.
  * @param may - Who may write for whom.
+ * @param by - The account that writes.
  * @returns The id of the idea.
  */
 export const addIdea = async (
@@ -33,6 +42,7 @@ export const addIdea = async (
   db: Db,
   list: GiftListRow,
   may: May,
+  by: string,
 ) => {
   const body = await validatedBody(event, newIdeaSchema);
   if (
@@ -54,6 +64,15 @@ export const addIdea = async (
     { text: split?.text ?? '', url },
     body.after,
   );
+  // The news (ticket 120): those who may open the list are told; and
+  // whoever asked me for ideas has had some.
+  const now = nowIso();
+  await tellNewIdeas(
+    db,
+    { listId: list.id, by, dataKey: await dataKeyOf(event) },
+    now,
+  );
+  await markKindSeen(db, by, 'hint_request', now);
   setResponseStatus(event, 201);
   return { id };
 };
@@ -85,7 +104,12 @@ export const changeIdea = async (
 ) => {
   const idea = await ideaOf(event, db, list, may);
   const body = await validatedBody(event, ideaPatchSchema);
+  // Someone gives it: it stays an idea (ticket 152).
+  if (body.title && (await claimedIdeas(db, [idea.id])).size > 0) {
+    throw createError({ statusCode: 409, statusMessage: 'idea_claimed' });
+  }
   const split = body.text === undefined ? null : splitIdea(body.text);
+  const title = body.title ?? idea.isTitle;
   await db
     .update(giftListIdeas)
     .set({
@@ -97,6 +121,10 @@ export const changeIdea = async (
         : split?.url
           ? { url: split.url }
           : {}),
+      ...(body.stars === undefined ? {} : { stars: body.stars }),
+      ...(body.title === undefined ? {} : { isTitle: body.title }),
+      // A title has neither link nor stars.
+      ...(title ? { url: null, stars: 0 } : {}),
     })
     .where(eq(giftListIdeas.id, idea.id));
   return { ok: true };

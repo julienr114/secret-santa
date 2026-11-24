@@ -16,6 +16,15 @@ const ok = async (response: Awaited<ReturnType<APIRequestContext['get']>>) => {
   return response.json();
 };
 
+/** The names of the lists of the account logged in. */
+const titlesOf = async (api: APIRequestContext) => {
+  const { coming, past } = (await ok(await api.get('/api/lists'))) as Record<
+    'coming' | 'past',
+    { title: string }[]
+  >;
+  return [...coming, ...past].map((card) => card.title);
+};
+
 test.beforeAll(async ({ playwright, baseURL }) => {
   const api = await playwright.request.newContext({ baseURL });
   await apiLogin(api, HOLDER);
@@ -72,14 +81,13 @@ test('without an account, the list reads, and a box asks for an address', async 
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Noël 2026');
-  await expect(page.getByTestId('visitor-sentence')).toContainText(
-    'La liste de Camille.',
-  );
+  // No sentence under the word (ticket 147).
+  await expect(page.getByTestId('visitor-sentence')).toHaveCount(0);
   // Without a session (README 22.21): the language button, no menu, no bar.
   await expect(
     page.getByRole('button', { name: 'Changer de langue' }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Menu' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Mon compte' })).toHaveCount(0);
   await expect(page.getByTestId('tab-bar')).toHaveCount(0);
   await page.getByRole('checkbox', { name: /Circuit de billes/ }).click();
   await expect(page).toHaveURL(/\/connexion\?cocher=/);
@@ -94,13 +102,13 @@ test('without an account, the list reads, and a box asks for an address', async 
   await expect(page.getByTestId('idea-mine')).toHaveText('Tu l’offres');
   await expect(page.getByText('Changer', { exact: true })).toHaveCount(0);
   // Logged in, by the same link: the menu in place of the language, and
-  // the bar, on « Listes ».
-  await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
+  // the bar, on « Accueil ».
+  await expect(page.getByRole('button', { name: 'Mon compte' })).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Changer de langue' }),
   ).toHaveCount(0);
   await expect(
-    page.getByTestId('tab-bar').getByRole('link', { name: 'Listes' }),
+    page.getByTestId('tab-bar').getByRole('link', { name: 'Accueil' }),
   ).toHaveAttribute('aria-current', 'page');
 });
 
@@ -212,12 +220,8 @@ test('something else, and what the holder sees', async ({ page }) => {
   await expect(page.getByTestId('off-list')).toContainText(
     'Tu offres hors liste : un jeu de société',
   );
-  // The list is in Tonton's tab.
-  await page.goto('/listes');
-  await hydrated(page);
-  const card = page.getByTestId('list-card').filter({ hasText: 'Noël 2026' });
-  await expect(card).toContainText('Liste de Camille');
-  await expect(card).toContainText('Tu offres 2 cadeaux.');
+  // The list is among Tonton's.
+  expect(await titlesOf(page.request)).toContain('Noël 2026');
 
   // The holder sees who gives what.
   await apiLogin(page.request, HOLDER);
@@ -239,7 +243,7 @@ test('something else, and what the holder sees', async ({ page }) => {
   );
 });
 
-test('sharing stopped: the link says so, the list leaves the tab, the ticks stay', async ({
+test('no longer public: the link says nothing of the list, the ticks stay', async ({
   page,
   playwright,
   baseURL,
@@ -248,27 +252,38 @@ test('sharing stopped: the link says so, the list leaves the tab, the ticks stay
   const holder = await playwright.request.newContext({ baseURL });
   await apiLogin(holder, HOLDER);
   await ok(
-    await holder.post(`/api/lists/${state.listId}/share`, {
-      data: { ask: 'off' },
+    await holder.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], isPublic: false },
     }),
   );
+  // Logged out: log in first, if it was shared with you (V3ListeFermee).
+  await page.goto(`/l/${state.token}`);
+  await hydrated(page);
+  await expect(page.getByTestId('list-login')).toContainText(
+    'Cette liste n’est pas ouverte à tout le monde',
+  );
+  await expect(page.getByTestId('list-login')).not.toContainText('Noël 2026');
+  await expect(
+    page.getByRole('link', { name: 'Se connecter' }),
+  ).toHaveAttribute(
+    'href',
+    `/login?next=${encodeURIComponent(`/l/${state.token}`)}`,
+  );
+  // Logged in: not shared with you (V3ListeFermeeConnecte).
   await apiLogin(page.request, TONTON);
   await page.goto(`/l/${state.token}`);
   await hydrated(page);
-  await expect(page.getByTestId('list-gone')).toContainText(
-    'Cette liste n’est plus partagée.',
+  await expect(page.getByTestId('list-closed')).toContainText(
+    'Cette liste n’est pas partagée avec toi',
   );
-  await page.goto('/listes');
-  await hydrated(page);
-  await expect(
-    page.getByTestId('list-card').filter({ hasText: 'Noël 2026' }),
-  ).toHaveCount(0);
+  expect(await titlesOf(page.request)).not.toContain('Noël 2026');
 
-  // Shared again: the same link, and what was ticked is still there.
-  const again = await ok(
-    await holder.post(`/api/lists/${state.listId}/share`, { data: {} }),
+  // Public again: the same link, and what was ticked is still there.
+  await ok(
+    await holder.put(`/api/lists/${state.listId}/sharing`, {
+      data: { parties: [], isPublic: true },
+    }),
   );
-  expect(again.token).toBe(state.token);
   await holder.dispose();
   await page.goto(`/l/${state.token}`);
   await hydrated(page);

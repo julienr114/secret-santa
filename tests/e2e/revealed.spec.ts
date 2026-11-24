@@ -4,7 +4,7 @@ import {
   type APIRequestContext,
   type Page,
 } from '@playwright/test';
-import { apiLogin, heading, hydrated } from './helpers';
+import { addPeople, apiLogin, heading, hydrated } from './helpers';
 
 // A revealed draw (README 22.18): visible to the whole group. Before the
 // reveal, no participant route gives anyone else's result; after it, each
@@ -41,18 +41,6 @@ test.beforeAll(async ({ playwright, baseURL }) => {
     }),
   );
   // The organiser is Camille, a person of the group: she reveals.
-  for (const [firstName, email] of [
-    ['Camille', SUPER],
-    ['Hugo', HUGO],
-    ['Inès', null],
-    ['Louis', null],
-  ]) {
-    await ok(
-      await admin().post(`${ADMIN}/persons`, {
-        data: { firstName, ...(email ? { email } : {}) },
-      }),
-    );
-  }
   const created = await ok(
     await admin().post(`${ADMIN}/editions`, {
       data: { label: 'Noël dévoilé', year: 2026, eventDate: '2099-12-24' },
@@ -60,6 +48,12 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   );
   state.editionId = created.edition.id;
   state.base = `${ADMIN}/editions/${created.edition.id}`;
+  await addPeople(admin(), ADMIN, state.editionId, [
+    { firstName: 'Camille', email: SUPER },
+    { firstName: 'Hugo', email: HUGO },
+    'Inès',
+    'Louis',
+  ]);
   const { participants } = await ok(await admin().get(state.base));
   const { messages } = await ok(
     await admin().get(`${state.base}/messages?type=invitation`),
@@ -123,13 +117,13 @@ test('the page of the draw, open at once', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: /Découvrir|Cacher/ }),
   ).toHaveCount(0);
-  // The request for hints is no longer anonymous.
+  // The request for ideas stays anonymous, even revealed (ticket 110).
   if (draw.hints && !draw.hints.requested) {
-    await expect(page.getByText('Sans dire que ça vient de toi.')).toHaveCount(
-      0,
-    );
-    await page.getByRole('button', { name: 'Lui demander des pistes' }).click();
-    await expect(page.getByText('Ton nom est donné')).toBeVisible();
+    await expect(
+      page.getByText('Sans dire que ça vient de toi.'),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Lui demander des idées' }).click();
+    await expect(page.getByText('Ton nom n’apparaît nulle part')).toBeVisible();
     await page.getByRole('button', { name: 'Pas maintenant' }).click();
   }
   // « Qui m'offre mon cadeau ? », folded, then shown.
@@ -160,19 +154,6 @@ test('the one who revealed reads « Tu l’as dévoilé »', async ({ page }) =>
   await expect(page.getByTestId('revealed-banner')).toContainText(
     'Tu l’as dévoilé le',
   );
-});
-
-test('the home says who one gives to', async ({ page }) => {
-  const draw = await ok(
-    await page.request.get(`/api/p/${state.tokens.Hugo}/draw`),
-  );
-  await apiLogin(page.request, HUGO);
-  await open(page, '/');
-  const card = page.getByTestId('draw-card');
-  await expect(card).toContainText(
-    `Tu offres un cadeau à ${draw.receiver.name}`,
-  );
-  await expect(card).toContainText('Le tirage n’est plus secret.');
 });
 
 test('closed and revealed: the past, no secret', async ({ page }) => {

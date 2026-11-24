@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useSeen } from '~/composables/queries/useNews';
 import { isIsoDay } from '#server/utils/rules';
 import type { Avatar } from '#server/utils/avatars';
 import {
   envelopeState,
   gameTile,
-  hintsTile,
   participantSteps,
   type ParticipantStep,
   type StepNote,
@@ -33,6 +33,14 @@ import {
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const personal = usePersonalQuery(token);
+// « Retour », for someone logged in: where the page was opened from, or the
+// home (docs/spec/v3/navigation.md). Opened by its link without a
+// session, none.
+const { loggedIn } = useUserSession();
+const parent = useParent('draw', '/');
+const back = computed(() => (loggedIn.value ? parent.value : undefined));
+// My page opened: its news are seen (ticket 120).
+useSeen(() => ({ token: token.value, target: 'santa' }));
 useOrganizersOf(() => personal.data.value?.organizers);
 const revealMutation = useRevealMutation(token);
 const revealing = useBusy(() => revealMutation.isPending.value);
@@ -172,38 +180,24 @@ const onConfirmAnswer = (personId: string) =>
   });
 
 /**
- * The things to do on the page, one tile each (README 22.16): for now
- * « Mes pistes de cadeaux », when the group uses them. Waiting for an
- * action, or done; once they can no longer be changed, only if some were
- * left (decided by Julien on 17 November 2026).
+ * The things to do on the page, one tile each (README 22.16): « Ma liste
+ * de cadeaux » (ticket 107), with the stage of my list for the event, the
+ * one who drew me first; until the Secret Santa is closed.
  */
 const tiles = computed(() => {
   const state = me.value;
-  const kind = state ? hintsTile(state) : null;
-  if (!state || !kind) return [];
-  const hints =
-    kind === 'done'
-      ? {
-          state: 'done' as const,
-          text: state.hintsEditable
-            ? t('participant.home.tiles.hintsEditable')
-            : t('participant.home.tiles.hintsLocked'),
-          short: state.hintsEditable
-            ? t('participant.home.tiles.hintsShort')
-            : t('participant.home.tiles.hintsShortLocked'),
-        }
-      : {
-          state: 'todo' as const,
-          text: t('participant.home.tiles.hintsTodo'),
-          short: t('participant.home.tiles.hintsTodo'),
-        };
+  if (!state || state.status === 'closed') return [];
+  const stage = state.myList;
+  const text = t(`participant.home.tiles.list.${stage ?? 'none'}`);
   return [
     {
-      key: 'hints',
-      to: `/p/${token.value}/pistes`,
+      key: 'list',
+      to: `/p/${token.value}/liste`,
       icon: 'i-lucide-list-checks',
-      title: t('hints.title'),
-      ...hints,
+      title: t('hints.list.title'),
+      state: stage ? ('done' as const) : ('todo' as const),
+      text,
+      short: text,
     },
   ];
 });
@@ -451,6 +445,7 @@ const card = computed(() => {
 <template>
   <ParticipantScreen
     :token="token"
+    :back="back"
     :pending="personal.isPending.value"
     :error="personal.error.value"
     :skeleton="['header', 'steps', 'envelope', 'list']"
@@ -635,7 +630,7 @@ const card = computed(() => {
         />
         <UButton
           v-else-if="view === 'waiting' && me.hintsEditable"
-          :to="`/p/${token}/pistes`"
+          :to="`/p/${token}/liste`"
           block
           size="xl"
           icon="i-lucide-list-checks"

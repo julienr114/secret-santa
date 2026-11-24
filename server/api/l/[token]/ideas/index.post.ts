@@ -5,6 +5,6 @@ import { requireLinkWriter } from '#server/http/listLink';
 // 22.19). By the link (lot 25): a person linked to their account
 // writes their own ideas, and nobody else's.
 export default defineEventHandler(async (event) => {
-  const { db, list, may } = await requireLinkWriter(event);
-  return addIdea(event, db, list, may);
+  const { db, list, may, user } = await requireLinkWriter(event);
+  return addIdea(event, db, list, may, user.accountId);
 });

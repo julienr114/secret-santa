@@ -3,21 +3,21 @@ import type { Dict } from '../../types';
 
 export default {
   joined: {
-    subject: '{name} joined “{group}”',
-    body: '{name} just joined the group “{group}” with the invitation link.',
-    next: 'Remember to add them to the current draw and to their exclusions (partner, siblings).',
+    subject: '{name} signed up with the link',
+    body: '{name} just signed up to the Secret Santa “{group}” with the invitation link.',
+    next: 'Remember their exclusions (partner, siblings).',
   },
   allViewed: {
-    subject: 'Every envelope is open in “{group}”',
+    subject: 'every envelope is open',
     body: 'For {edition} in “{group}”, everyone now knows who they’re giving to. All that’s left is finding the gifts.',
   },
   reminder: {
-    subject: 'The party is near in “{group}”',
-    body: 'The party for {edition} is on {date}.',
+    subject: 'the big day is near',
+    body: '{edition} is on {date}.',
     missing: {
       one: '{count} person hasn’t opened their envelope yet: {names}.',
       other: '{count} people haven’t opened their envelope yet: {names}.',
     },
-    next: 'You can send them their link again from the edition.',
+    next: 'You can send them their link again from the Secret Santa.',
   },
 } satisfies Dict<typeof fr>;

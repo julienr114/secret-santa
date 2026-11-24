@@ -22,7 +22,9 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const { user, group, db, edition } = await requireEdition(event);
+  const { user, group, db, edition } = await requireEdition(event, {
+    afterTheYear: true,
+  });
   if (edition.status !== 'drawn') {
     throw createError({ statusCode: 409, statusMessage: 'invalid_transition' });
   }
@@ -35,7 +37,7 @@ export default defineEventHandler(async (event) => {
     .from(assignments)
     .where(
       and(
-        eq(assignments.editionId, edition.id),
+        eq(assignments.secretSantaId, edition.id),
         eq(assignments.giverPersonId, personId),
       ),
     )

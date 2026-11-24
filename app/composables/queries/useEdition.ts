@@ -111,6 +111,20 @@ export const useAddParticipantMutation = (slug: Ref, id: Ref) =>
     () => groupKeys(slug),
   );
 
+/**
+ * « Qui reprendre ? »: those ticked in my other events become
+ * participants, and members of the event (ticket 117).
+ */
+export const useTakeParticipantsMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<{ count: number }, string[]>(
+    (personIds) =>
+      api(`${base(slug)}/editions/${toValue(id)}/participants/taken`, {
+        method: 'POST',
+        body: { personIds },
+      }),
+    () => groupKeys(slug),
+  );
+
 export const useRemoveParticipantMutation = (slug: Ref, id: Ref) =>
   useApiMutation<{ ok: true }, string>(
     (participationId) =>
@@ -213,4 +227,11 @@ export const useRevealOneMutation = (slug: Ref, id: Ref) =>
         method: 'POST',
         body,
       }),
+  );
+
+/** « Supprimer ce Secret Santa », while it is not drawn (ticket 108). */
+export const useDeleteSecretSantaMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<{ ok: true }, undefined>(
+    () => api(`${base(slug)}/editions/${toValue(id)}`, { method: 'DELETE' }),
+    () => [...groupKeys(slug), keys.home()],
   );

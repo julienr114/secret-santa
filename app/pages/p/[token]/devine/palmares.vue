@@ -38,6 +38,8 @@ const onSeen = () => {
     <ParticipantStories
       v-if="game && results && results.size !== 'none'"
       :edition-label="game.editionLabel"
+      :christmas="game.christmas"
+      :recurring="game.recurring"
       :people="game.people"
       :players="results.players"
       :guesses="results.guesses"

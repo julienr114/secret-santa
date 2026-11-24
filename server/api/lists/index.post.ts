@@ -4,11 +4,16 @@ import { createList, findHeldList, resumeList } from '#server/database/lists';
 import { notFound } from '#server/http/errors';
 import { requireRoom } from '#server/http/caps';
 import { requireAccount } from '#server/http/auth';
+import { partyFor } from '#server/http/party';
+import { occasionDate } from '#server/database/listSharing';
 import { validatedBody } from '#server/http/validate';
 import { newListSchema } from '#server/utils/listSchemas';
+import { listIconOfParty } from '#server/utils/lists';
+import { partyEmoji } from '#shared/utils/categories';
 
-// A new list, as a draft (README 22.19): made by the document's first
-// change, a name or a date, so that a document left empty is never kept.
+// A new list, as a draft (docs/spec/v3/listes.md, « Une nouvelle liste »):
+// for one of my events, whose name, date and icon it takes, or made by the
+// document's first change on the screens of before.
 // Any account may hold lists, without a quota, up to a wide cap (lot
 // 38 A).
 export default defineEventHandler(async (event) => {
@@ -21,7 +26,26 @@ export default defineEventHandler(async (event) => {
     ? await findHeldList(db, user.accountId, body.from)
     : null;
   if (body.from && !source) throw notFound();
-  const id = await createList(db, user.accountId, body);
+  // Made for one of my events: its name, its date and its icon.
+  const occasion = body.party ? await partyFor(db, user, body.party) : null;
+  const id = await createList(
+    db,
+    user.accountId,
+    occasion
+      ? {
+          icon: listIconOfParty(
+            {
+              emoji: partyEmoji(occasion.party),
+              color: occasion.party.iconColor,
+            },
+            (n) => crypto.getRandomValues(new Uint32Array(1))[0]! % n,
+          ),
+          title: occasion.party.name,
+          eventDate: await occasionDate(db, occasion.party),
+          partyId: occasion.party.id,
+        }
+      : body,
+  );
   if (source) {
     const list = await findHeldList(db, user.accountId, id);
     if (list) await resumeList(db, list, source);

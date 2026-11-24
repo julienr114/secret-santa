@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { apiLogin } from './helpers';
+import { addPeople, apiLogin, seedSql } from './helpers';
 
 // The secret of the draw, checked from the outside (README 8.6 and 18):
 // once drawn, nothing the admin API answers may say who gives to whom, nor
@@ -75,22 +75,26 @@ test.beforeAll(async ({ playwright, baseURL }) => {
   });
   await apiLogin(ctx('guardian'), ORGANIZER);
   const guardian = ctx('guardian');
-  const ids: string[] = [];
-  for (const firstName of NAMES) {
-    const created = await guardian.post(`${ADMIN}/persons`, {
-      data: { firstName, email: `${firstName.toLowerCase()}@example.com` },
-    });
-    ids.push((await created.json()).person.id);
-  }
+  const edition = await guardian.post(`${ADMIN}/editions`, {
+    data: { label: 'Noël du coffre', year: 2026, eventDate: '2026-12-25' },
+  });
+  state.editionId = (await edition.json()).edition.id;
+  const ids = (
+    await addPeople(
+      guardian,
+      ADMIN,
+      state.editionId,
+      NAMES.map((firstName) => ({
+        firstName,
+        email: `${firstName.toLowerCase()}@example.com`,
+      })),
+    )
+  ).map((person) => person.id);
   // An exclusion pairs two ids on purpose: the check below must tell such
   // a rule from a result.
   await guardian.post(`${ADMIN}/exclusions`, {
     data: { giverId: ids[0], receiverId: ids[1], reciprocal: true },
   });
-  const edition = await guardian.post(`${ADMIN}/editions`, {
-    data: { label: 'Noël du coffre', year: 2026, eventDate: '2026-12-25' },
-  });
-  state.editionId = (await edition.json()).edition.id;
   const { participants } = await (
     await guardian.get(`${ADMIN}/editions/${state.editionId}`)
   ).json();
@@ -105,15 +109,17 @@ test.beforeAll(async ({ playwright, baseURL }) => {
       .split('/')
       .at(-1);
     state.tokens[person.id] = token ?? '';
-    const saved = await ctx('anonymous').put(`/api/p/${token}/wishes`, {
-      data: { wishes: [{ label: `${WISH} de ${person.firstName}` }] },
-    });
-    expect(saved.ok()).toBe(true);
-    const portrait = await ctx('anonymous').patch(`/api/p/${token}/hints`, {
-      data: { texts: { avoid: `${WISH} évité par ${person.firstName}` } },
-    });
-    expect(portrait.ok()).toBe(true);
   }
+  // The hints of before the V3 (ticket 107): no screen writes them any
+  // more; they stay, read only by the one who drew.
+  await seedSql(
+    state.people
+      .map(
+        (person) =>
+          `INSERT INTO wishes (id, participation_id, position, label, created_at) VALUES ('w-${person.participationId}', '${person.participationId}', 0, '${WISH} de ${person.firstName}', '2026-11-21T00:00:00.000Z'); INSERT INTO gift_portraits (participation_id, avoid, updated_at) VALUES ('${person.participationId}', '${WISH} évité par ${person.firstName}', '2026-11-21T00:00:00.000Z');`,
+      )
+      .join(' '),
+  );
 });
 
 test.afterAll(async () => {
@@ -188,30 +194,36 @@ test('no admin answer tells who gives to whom, nor any wish', async () => {
 });
 
 test('a participant learns their own result only, and only by asking', async () => {
-  const { giver, receiver } = state.pairs[0] ?? {};
-  if (!giver || !receiver) throw new Error('no pair');
-  const token = state.tokens[giver.id];
-  for (const path of ['', '/wishes', '/hints', '/journal']) {
-    const text = await (
-      await ctx('anonymous').get(`/api/p/${token}${path}`)
-    ).text();
-    expect(text, path).not.toContain(receiver.id);
-    expect(text, path).not.toContain(`${WISH} de ${receiver.firstName}`);
-    expect(text, path).not.toContain(`par ${receiver.firstName}`);
-    expect(text, path).not.toMatch(FORBIDDEN);
+  // Every pair, not only the first: the draw is random, and the organiser
+  // (the only one with an account) must be checked as a receiver too.
+  expect(state.pairs).toHaveLength(NAMES.length + 1);
+  for (const { giver, receiver } of state.pairs) {
+    const token = state.tokens[giver.id];
+    for (const path of ['', '/journal']) {
+      const text = await (
+        await ctx('anonymous').get(`/api/p/${token}${path}`)
+      ).text();
+      expect(text, path).not.toContain(receiver.id);
+      expect(text, path).not.toContain(`${WISH} de ${receiver.firstName}`);
+      expect(text, path).not.toContain(`par ${receiver.firstName}`);
+      expect(text, path).not.toMatch(FORBIDDEN);
+    }
+    const reveal = await (
+      await ctx('anonymous').post(`/api/p/${token}/reveal`)
+    ).json();
+    const body = JSON.stringify(reveal);
+    expect(body).not.toMatch(FORBIDDEN);
+    // The reveal gives the hints they left before the V3, theirs and
+    // nobody else's, with an account or not (ticket 165: no list was made
+    // of them at the switch, so nothing written is lost).
+    expect(reveal.hints.ideas).toEqual([
+      { label: `${WISH} de ${receiver.firstName}`, url: null },
+    ]);
+    expect(reveal.hints.portrait.texts.avoid).toBe(
+      `${WISH} évité par ${receiver.firstName}`,
+    );
+    expect(body.match(new RegExp(WISH, 'g'))).toHaveLength(2);
   }
-  // The reveal gives the receiver's hints and nobody else's.
-  const reveal = await (
-    await ctx('anonymous').post(`/api/p/${token}/reveal`)
-  ).json();
-  expect(reveal.hints.ideas).toEqual([
-    { label: `${WISH} de ${receiver.firstName}`, url: null },
-  ]);
-  expect(reveal.hints.portrait.texts.avoid).toBe(
-    `${WISH} évité par ${receiver.firstName}`,
-  );
-  expect(JSON.stringify(reveal).match(new RegExp(WISH, 'g'))).toHaveLength(2);
-  expect(JSON.stringify(reveal)).not.toMatch(FORBIDDEN);
 });
 
 test('without a session every admin route is closed', async () => {
@@ -224,7 +236,7 @@ test('without a session every admin route is closed', async () => {
     `${ADMIN}/editions/${state.editionId}/close`,
     `${ADMIN}/editions/${state.editionId}/emails`,
     `${ADMIN}/editions/${state.editionId}/reveal-one`,
-    `${ADMIN}/persons`,
+    `${ADMIN}/editions/${state.editionId}/persons`,
     `${ADMIN}/exclusions`,
   ];
   for (const url of writes) {
@@ -289,12 +301,12 @@ test('the link of a list leaks nowhere, and another site cannot write', async ()
   }
   // A write sent from another site is refused before anything else; the
   // same from the application itself goes on to its usual answer.
-  const foreign = await ctx('guardian').post(`${ADMIN}/persons`, {
+  const foreign = await ctx('guardian').post(`${ADMIN}/exclusions`, {
     data: {},
     headers: { origin: 'https://evil.example' },
   });
   expect(foreign.status()).toBe(403);
-  const own = await ctx('guardian').post(`${ADMIN}/persons`, {
+  const own = await ctx('guardian').post(`${ADMIN}/exclusions`, {
     data: {},
     headers: { origin: new URL(foreign.url()).origin },
   });

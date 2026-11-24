@@ -1,1 +1,1 @@
-export default { changeLanguage: 'Changer de langue', menu: 'Menu' };
+export default { changeLanguage: 'Changer de langue' };

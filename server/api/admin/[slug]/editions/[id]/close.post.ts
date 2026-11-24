@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { editions } from '#server/database/schema';
+import { secretSantas } from '#server/database/schema';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
 import { nowIso } from '#server/http/context';
@@ -8,7 +8,9 @@ import { nextStatus } from '#server/utils/editions';
 
 // After the party: read only, and history for next year's exclusions.
 export default defineEventHandler(async (event) => {
-  const { user, group, db, edition } = await requireEdition(event);
+  const { user, group, db, edition } = await requireEdition(event, {
+    afterTheYear: true,
+  });
   const status = unwrap(nextStatus(edition.status, 'close'));
   // « Devine qui » (README 22.17): its answers come with the reveal, so
   // closing without revealing waits until the game is turned off.
@@ -16,9 +18,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'guess_game_on' });
   }
   await db
-    .update(editions)
+    .update(secretSantas)
     .set({ status, closedAt: nowIso() })
-    .where(eq(editions.id, edition.id));
+    .where(eq(secretSantas.id, edition.id));
   await recordEvent(db, {
     type: 'edition_closed',
     groupId: group.id,

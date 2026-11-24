@@ -70,6 +70,6 @@ export const countJournal = (db: Db, groupId: string, since: string) =>
       .select(n)
       .from(auditLog)
       .where(
-        and(eq(auditLog.groupId, groupId), gte(auditLog.createdAt, since)),
+        and(eq(auditLog.partyId, groupId), gte(auditLog.createdAt, since)),
       ),
   );

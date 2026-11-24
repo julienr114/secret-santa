@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { editions } from '#server/database/schema';
+import { secretSantas } from '#server/database/schema';
 import { deleteAnswersOf } from '#server/database/answers';
 import { recordEvent } from '#server/database/audit';
 import { requireEdition } from '#server/http/edition';
@@ -15,9 +15,9 @@ export default defineEventHandler(async (event) => {
   await db.batch([
     deleteAnswersOf(db, edition.id),
     db
-      .update(editions)
+      .update(secretSantas)
       .set({ drawMode: 'app' })
-      .where(eq(editions.id, edition.id)),
+      .where(eq(secretSantas.id, edition.id)),
   ]);
   await recordEvent(db, {
     type: 'answers_abandoned',

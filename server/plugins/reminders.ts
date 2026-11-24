@@ -1,7 +1,10 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbOf, type D1Binding } from '#server/database/client';
 import { editionsToRemind, missingViewers } from '#server/database/notify';
-import { editions } from '#server/database/schema';
+import { secretSantas } from '#server/database/schema';
+import { santaNameForSubject } from '#server/database/editions';
+import { forgetNews } from '#server/database/news';
+import { tellOrganisers } from '#server/database/newsEvents';
 import { appUrl, nowIso } from '#server/http/context';
 import { notifyOrganizers } from '#server/http/notify';
 import { buildReminderEmail, isReminderDue } from '#server/utils/notifications';
@@ -24,11 +27,13 @@ export default defineNitroPlugin((nitroApp) => {
     const db = dbOf(d1);
     const now = nowIso();
     const today = now.slice(0, 10);
+    // The news of more than thirty days are forgotten (ticket 120).
+    await forgetNews(db, now).catch(() => undefined);
     // Bounded (lot 38 A): one run sends so many reminders; the others
     // wait for the next morning rather than make the run fail half-way.
     const due = dueBatch(
       (await editionsToRemind(db)).flatMap(({ edition, group }) => {
-        const rules = mergeRules(group.rules, edition.rulesOverride);
+        const rules = mergeRules(edition.rules);
         return rules.ok ? [{ edition, group, rules: rules.value }] : [];
       }),
       ({ edition, rules }) =>
@@ -49,15 +54,27 @@ export default defineNitroPlugin((nitroApp) => {
           // Marked first, and only once: a run played again, or two at
           // the same time, never send the same reminder twice.
           const claimed = await db
-            .update(editions)
+            .update(secretSantas)
             .set({ reminderSentAt: now })
             .where(
-              and(eq(editions.id, edition.id), isNull(editions.reminderSentAt)),
+              and(
+                eq(secretSantas.id, edition.id),
+                isNull(secretSantas.reminderSentAt),
+              ),
             )
-            .returning({ id: editions.id });
+            .returning({ id: secretSantas.id });
           if (claimed.length === 0) return;
           const missing = await missingViewers(db, edition.id);
+          // In the app always (ticket 120), by email if they want it.
+          if (missing.length > 0) {
+            await tellOrganisers(
+              db,
+              { partyId: group.id, kind: 'reminder', targetId: edition.id },
+              now,
+            );
+          }
           if (!rules.notifyReminder || missing.length === 0) return;
+          const santaName = await santaNameForSubject(db, edition);
           await notifyOrganizers({ db }, group.id, (locale) =>
             buildReminderEmail(
               {
@@ -65,6 +82,7 @@ export default defineNitroPlugin((nitroApp) => {
                 editionLabel: edition.label,
                 eventDate: rules.eventDate,
                 missing,
+                santaName,
                 link: appUrl(
                   undefined,
                   `/admin/${group.slug}/editions/${edition.id}`,

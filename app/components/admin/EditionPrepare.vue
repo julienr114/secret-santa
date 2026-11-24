@@ -119,7 +119,7 @@ const missingText = computed(() =>
         :label="t('adminEdition.screen.prepare.add')"
       />
       <UButton
-        :to="`/admin/${slug}/invitation`"
+        :to="`${base}/invitation`"
         block
         variant="ghost"
         class="h-11 justify-center text-[15px] font-semibold text-primary-ink"
@@ -268,7 +268,7 @@ const missingText = computed(() =>
         <template #row="{ item: p }">
           <UiListItem
             :avatar="p.avatar"
-            :to="`/admin/${slug}/personnes/${p.id}`"
+            :to="`/e/${slug}/membres/${p.id}`"
             :title="fullName(p)"
             :subtitle="subtitleOf(p)"
           />

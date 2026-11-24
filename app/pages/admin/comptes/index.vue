@@ -4,9 +4,8 @@ import {
   type AdminAccountRow,
 } from '~/composables/queries/useAdmin';
 
-// Super-admin only: the accounts in use, those awaiting an answer first,
-// the oldest request first, with a search by name or address; the
-// disabled ones behind their own row (`?desactives`).
+// Super-admin only: the accounts in use, with a search by name or
+// address; the disabled ones behind their own row (`?desactives`).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
 const route = useRoute();
@@ -22,15 +21,6 @@ const screen = computed(() => ({
 }));
 
 const query = useAdminAccountsQuery();
-const requestOf = computed(
-  () =>
-    new Map(
-      (query.data.value?.requests ?? []).map((request) => [
-        request.accountId,
-        request,
-      ]),
-    ),
-);
 const search = ref('');
 /**
  * Whether an account matches the search, by name or address.
@@ -47,32 +37,15 @@ const matches = (account: AdminAccountRow) => {
   );
 };
 const everyone = computed(() => query.data.value?.accounts ?? []);
-/** Accounts awaiting an answer, oldest request first. */
-const asking = computed(() =>
-  (query.data.value?.requests ?? []).flatMap((request) =>
-    everyone.value.filter((account) => account.id === request.accountId),
-  ),
-);
-const inUse = computed(() => [
-  ...asking.value,
-  ...everyone.value.filter((a) => !a.disabled && !requestOf.value.has(a.id)),
-]);
-const disabled = computed(() =>
-  everyone.value.filter((a) => a.disabled && !requestOf.value.has(a.id)),
-);
+const inUse = computed(() => everyone.value.filter((a) => !a.disabled));
+const disabled = computed(() => everyone.value.filter((a) => a.disabled));
 const shown = computed(() =>
   (disabledView.value ? disabled.value : inUse.value).filter(matches),
 );
 const subtitle = computed(() =>
   disabledView.value
     ? t('auth.admin.accounts', { count: disabled.value.length })
-    : [
-        t('auth.admin.activeAccounts', { count: inUse.value.length }),
-        asking.value.length > 0 &&
-          t('auth.admin.requests', { count: asking.value.length }),
-      ]
-        .filter(Boolean)
-        .join(' · '),
+    : t('auth.admin.activeAccounts', { count: inUse.value.length }),
 );
 </script>
 
@@ -95,14 +68,7 @@ const subtitle = computed(() =>
         :label="t('auth.admin.search')"
         :clear-label="t('adminEdition.screen.lists.clear')"
       />
-      <UiList
-        :footer="
-          !disabledView && asking.length > 0
-            ? t('auth.admin.requestsFirst')
-            : undefined
-        "
-        data-testid="accounts"
-      >
+      <UiList data-testid="accounts">
         <li v-if="shown.length === 0" class="px-4 py-3 text-sm text-muted">
           {{ t('auth.admin.noMatch') }}
         </li>
@@ -110,7 +76,6 @@ const subtitle = computed(() =>
           v-for="account in shown"
           :key="account.id"
           :account="account"
-          :request="requestOf.get(account.id)"
         />
       </UiList>
       <UiList v-if="!disabledView && disabled.length > 0">

@@ -54,18 +54,19 @@ type Invite = ListHolders['invites'][number];
 useHead({
   title: () => `${t('lists.holders.title')} — ${t('common.appName')}`,
 });
-const context = computed(() => [
-  { label: t('lists.home.title'), to: '/listes' },
-  ...(list.data.value?.list.title
+// Above the title, the list only: the tab « Listes » is gone (ticket 114).
+const context = computed(() =>
+  list.data.value?.list.title
     ? [{ label: list.data.value.list.title, to: `/listes/${id.value}` }]
-    : []),
-]);
+    : [],
+);
+const parentOfPage = useParentOfPage();
 const day = (iso: string, month = true) =>
   new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
     ...(month ? { month: 'long' as const } : {}),
   }).format(new Date(iso));
-/** « Invitée le 18 novembre · valable jusqu'au 25 », the month said once. */
+/** « Invitation du 18 novembre · valable jusqu'au 25 », the month said once. */
 const waitingLine = (waiting: Invite) => {
   const sameMonth =
     waiting.sentAt.slice(0, 7) === waiting.expiresAt.slice(0, 7);
@@ -105,8 +106,13 @@ const onRemove = (holder: Holder) =>
           ? t('lists.holders.left')
           : t('lists.holders.removed', { name: holder.name }),
       );
-      // The list I left is no longer mine to open.
-      if (holder.me) return navigateTo('/listes', { replace: true });
+      // The list I left is no longer mine to open: where « Retour » would
+      // have led from it.
+      if (holder.me) {
+        return navigateTo(parentOfPage(`/listes/${id.value}`, '/'), {
+          replace: true,
+        });
+      }
     },
     onError,
   });

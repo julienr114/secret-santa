@@ -67,12 +67,34 @@ const onDecline = () =>
 
 <template>
   <AuthScreen>
+    <!-- On its way, the shape of the invitation: the tile, the pill, the
+         name, its three lines, the two buttons (regles-d-ecran.md). -->
     <div
       v-if="query.isPending.value"
-      class="flex justify-center pt-10"
+      class="flex flex-col gap-6"
+      aria-busy="true"
+      :aria-label="t('common.loading')"
       data-testid="invitation-loading"
     >
-      <UiSpinner :label="t('common.loading')" />
+      <div class="flex flex-col items-center gap-3 pt-2">
+        <USkeleton class="size-18 rounded-[22px] bg-skeleton" />
+        <USkeleton class="h-9 w-3/5 rounded-full bg-skeleton-soft" />
+        <USkeleton class="h-8 w-4/5 rounded-md bg-skeleton" />
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <div
+          v-for="width in ['w-3/4', 'w-2/3', 'w-4/5']"
+          :key="width"
+          class="flex items-center gap-2.5"
+        >
+          <USkeleton class="size-[22px] shrink-0 rounded-full bg-skeleton" />
+          <USkeleton class="h-4 rounded bg-skeleton-soft" :class="width" />
+        </div>
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <USkeleton class="h-13 rounded-md bg-skeleton" />
+        <USkeleton class="h-12 rounded-md bg-skeleton-soft" />
+      </div>
     </div>
     <UiCard
       v-else-if="unknown || !data"

@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gt, inArray, isNull, ne, or } from 'drizzle-orm';
+import { mergeLines } from '#shared/utils/reorder';
 import type { Db } from './client';
 import {
   accounts,
@@ -969,21 +970,39 @@ export const createIdea = async (
   idea: { text: string; url: string | null },
   after: string | null,
 ): Promise<string> => {
-  const siblings = await db
-    .select({ id: giftListIdeas.id, position: giftListIdeas.position })
-    .from(giftListIdeas)
-    .where(
-      and(
-        eq(giftListIdeas.listId, listId),
-        eq(giftListIdeas.listPersonId, listPersonId),
+  const [ideas, gifts] = await Promise.all([
+    db
+      .select({
+        id: giftListIdeas.id,
+        position: giftListIdeas.position,
+        createdAt: giftListIdeas.createdAt,
+      })
+      .from(giftListIdeas)
+      .where(
+        and(
+          eq(giftListIdeas.listId, listId),
+          eq(giftListIdeas.listPersonId, listPersonId),
+        ),
       ),
-    )
-    .orderBy(asc(giftListIdeas.position), asc(giftListIdeas.createdAt));
-  const at = after ? siblings.findIndex((s) => s.id === after) + 1 : 0;
+    db
+      .select({
+        id: giftOffList.id,
+        position: giftOffList.position,
+        createdAt: giftOffList.createdAt,
+      })
+      .from(giftOffList)
+      .where(eq(giftOffList.listPersonId, listPersonId)),
+  ]);
+  // The gifts not on the list placed among the ideas keep their place in
+  // the count (Julien, 24 November 2026); those not placed stay after.
+  const placed = gifts.filter((gift) => gift.position !== null);
+  const giftIds = new Set(placed.map((gift) => gift.id));
+  const siblings = mergeLines(ideas, placed);
+  const at = after ? siblings.indexOf(after) + 1 : 0;
   const order = [
-    ...siblings.slice(0, at > 0 ? at : siblings.length).map((s) => s.id),
+    ...siblings.slice(0, at > 0 ? at : siblings.length),
     '',
-    ...siblings.slice(at > 0 ? at : siblings.length).map((s) => s.id),
+    ...siblings.slice(at > 0 ? at : siblings.length),
   ];
   const id = newId();
   const now = nowIso();
@@ -1001,10 +1020,15 @@ export const createIdea = async (
       .map((ideaId, position) => ({ ideaId, position }))
       .filter(({ ideaId }) => ideaId !== '')
       .map(({ ideaId, position }) =>
-        db
-          .update(giftListIdeas)
-          .set({ position })
-          .where(eq(giftListIdeas.id, ideaId)),
+        giftIds.has(ideaId)
+          ? db
+              .update(giftOffList)
+              .set({ position })
+              .where(eq(giftOffList.id, ideaId))
+          : db
+              .update(giftListIdeas)
+              .set({ position })
+              .where(eq(giftListIdeas.id, ideaId)),
       ),
   ]);
   return id;

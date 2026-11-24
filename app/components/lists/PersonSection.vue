@@ -59,15 +59,44 @@ const liftedHere = computed(
     drag?.lifted.value?.kind === 'person' &&
     drag.lifted.value.id === props.person.id,
 );
-type Row =
+type Person = ListDocument['people'][number];
+type Line =
   | {
       kind: 'idea';
-      idea: ListDocument['people'][number]['ideas'][number];
+      idea: Person['ideas'][number];
+      /** Its place among the ideas. */
       index: number;
+      /** Its place among the lines. */
+      at: number;
     }
-  | { kind: 'drop' };
+  | { kind: 'gift'; gift: Person['offList'][number]; at: number };
+type Row = Line | { kind: 'drop' };
 /**
- * The ideas, with the red line where the idea lifted would fall: its
+ * The lines in order: the ideas, and the gifts not on the list placed
+ * among them (Julien, 24 November 2026).
+ */
+const lines = computed<Line[]>(() => {
+  const ideas = new Map(
+    props.person.ideas.map((idea, index) => [idea.id, { idea, index }]),
+  );
+  const gifts = new Map(props.person.offList.map((gift) => [gift.id, gift]));
+  // What the lines do not name yet comes after, never lost.
+  const ids = [
+    ...new Set([...props.person.lines, ...ideas.keys(), ...gifts.keys()]),
+  ];
+  return ids
+    .flatMap((id): Line[] => {
+      const idea = ideas.get(id);
+      if (idea) return [{ kind: 'idea', ...idea, at: 0 }];
+      const gift = gifts.get(id);
+      return gift ? [{ kind: 'gift', gift, at: 0 }] : [];
+    })
+    .map((line, at) => ({ ...line, at }));
+});
+const lineId = (line: Line) =>
+  line.kind === 'idea' ? line.idea.id : line.gift.id;
+/**
+ * The lines, with the red line where the one lifted would fall: its
  * place is counted among the others, the one lifted left out.
  */
 const rows = computed<Row[]>(() => {
@@ -77,16 +106,16 @@ const rows = computed<Row[]>(() => {
     place?.kind === 'idea' && place.personId === props.person.id
       ? place.index
       : -1;
-  const laid = props.person.ideas.reduce<{ rows: Row[]; others: number }>(
-    (acc, idea, index) => {
-      const isLifted = lifted?.kind === 'idea' && lifted.id === idea.id;
+  const laid = lines.value.reduce<{ rows: Row[]; others: number }>(
+    (acc, line) => {
+      const isLifted = lifted?.kind === 'idea' && lifted.id === lineId(line);
       return {
         rows: [
           ...acc.rows,
           ...(!isLifted && acc.others === at
             ? [{ kind: 'drop' as const }]
             : []),
-          { kind: 'idea' as const, idea, index },
+          line,
         ],
         others: acc.others + (isLifted ? 0 : 1),
       };
@@ -95,6 +124,13 @@ const rows = computed<Row[]>(() => {
   );
   return at === laid.others ? [...laid.rows, { kind: 'drop' }] : laid.rows;
 });
+/** Moves a gift not on the list one step with `Alt` + an arrow. */
+const onGiftKey = (event: KeyboardEvent, id: string) => {
+  if (!drag || !event.altKey) return;
+  if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+  event.preventDefault();
+  drag.step({ kind: 'idea', id }, event.key === 'ArrowUp' ? -1 : 1);
+};
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const update = useUpdateMemberMutation(() => props.person.member.id);
@@ -381,7 +417,7 @@ const explained = ref<string | null>(null);
     >
       <template
         v-for="row in rows"
-        :key="row.kind === 'idea' ? row.idea.id : 'drop'"
+        :key="row.kind === 'drop' ? 'drop' : lineId(row)"
       >
         <li
           v-if="row.kind === 'drop'"
@@ -390,58 +426,70 @@ const explained = ref<string | null>(null);
           data-testid="drop-line"
         />
         <ListsIdeaLine
-          v-else
+          v-else-if="row.kind === 'idea'"
           :via="via"
           :list-person-id="person.id"
           :for-name="single ? '' : member.firstName"
           :idea="row.idea"
           :line="`${person.id}:${row.index}`"
-          :first="row.index === 0"
-          :last="row.index === person.ideas.length - 1"
+          :first="row.at === 0"
+          :last="row.at === lines.length - 1"
         />
-      </template>
-      <li
-        v-for="gift in person.offList"
-        :key="gift.id"
-        class="relative flex flex-col py-[13px]"
-        data-testid="holder-off-list"
-      >
-        <button
-          type="button"
-          class="flex items-start gap-[var(--line-gap,12px)] text-left"
-          :aria-expanded="explained === gift.id"
-          @click="explained = explained === gift.id ? null : gift.id"
+        <!-- A gift not on the list: lifted and dropped among the ideas of
+             its person, never at another (Julien, 24 November 2026). -->
+        <li
+          v-else
+          class="relative flex flex-col py-[13px]"
+          :class="
+            drag?.lifted.value?.kind === 'idea' &&
+            drag.lifted.value.id === row.gift.id
+              ? 'opacity-30'
+              : ''
+          "
+          :data-drag="drag ? 'idea' : undefined"
+          :data-drag-id="drag ? row.gift.id : undefined"
+          :data-drag-stay="drag ? '' : undefined"
+          data-testid="holder-off-list"
+          @mousedown="drag?.grab($event, { kind: 'idea', id: row.gift.id })"
+          @keydown="onGiftKey($event, row.gift.id)"
         >
-          <span
-            class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
-            aria-hidden="true"
+          <button
+            type="button"
+            class="flex items-start gap-[var(--line-gap,12px)] text-left"
+            :aria-expanded="explained === row.gift.id"
+            @click="explained = explained === row.gift.id ? null : row.gift.id"
           >
-            <UIcon name="i-lucide-check" class="size-3.5" />
-          </span>
-          <span class="flex flex-col items-start text-base/[22px]">
-            <span class="text-toned line-through">{{
-              t('lists.doc.offList', {
-                text: gift.kind === 'surprise' ? '' : gift.text,
-              })
-            }}</span>
-            <UiChip v-if="gift.kind === 'holder'" class="mt-1.5">{{
-              gift.by ?? t('lists.doc.anonymous')
-            }}</UiChip>
-          </span>
-        </button>
-        <p
-          v-if="explained === gift.id"
-          class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
-          role="status"
-          data-testid="off-list-notice"
-        >
-          {{
-            gift.kind === 'holder' && gift.by
-              ? t('lists.doc.offListNotice', { name: gift.by })
-              : t('lists.doc.offListNoticeAnonymous')
-          }}
-        </p>
-      </li>
+            <span
+              class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm bg-line-strong text-highlighted"
+              aria-hidden="true"
+            >
+              <UIcon name="i-lucide-check" class="size-3.5" />
+            </span>
+            <span class="flex flex-col items-start text-base/[22px]">
+              <span class="text-toned line-through">{{
+                t('lists.doc.offList', {
+                  text: row.gift.kind === 'surprise' ? '' : row.gift.text,
+                })
+              }}</span>
+              <UiChip v-if="row.gift.kind === 'holder'" class="mt-1.5">{{
+                row.gift.by ?? t('lists.doc.anonymous')
+              }}</UiChip>
+            </span>
+          </button>
+          <p
+            v-if="explained === row.gift.id"
+            class="mt-1.5 ml-[calc(22px_+_var(--line-gap,12px))] rounded-[18px] bg-muted px-3 py-2 text-sm leading-[1.35] text-toned"
+            role="status"
+            data-testid="off-list-notice"
+          >
+            {{
+              row.gift.kind === 'holder' && row.gift.by
+                ? t('lists.doc.offListNotice', { name: row.gift.by })
+                : t('lists.doc.offListNoticeAnonymous')
+            }}
+          </p>
+        </li>
+      </template>
       <li
         v-if="ghost"
         key="ghost"

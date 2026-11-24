@@ -35,6 +35,7 @@ import {
   sameOrder,
   stepIdea,
   stepPerson,
+  withLines,
   type ListOrder,
 } from '#shared/utils/reorder';
 import type { DropPlace, Lifted } from '~/composables/useListDrag';
@@ -330,14 +331,15 @@ const people = computed(() => {
         : person,
     );
   return wanted.value
-    ? applyOrder(there, wanted.value, (idea) => idea.id)
+    ? withLines(
+        applyOrder(there, wanted.value, (idea) => idea.id),
+        wanted.value,
+      )
     : there;
 });
+/** The order: each person with their lines, ideas and gifts not on the list. */
 const orderNow = (): ListOrder =>
-  people.value.map((person) => ({
-    id: person.id,
-    ideas: person.ideas.map((idea) => idea.id),
-  }));
+  people.value.map((person) => ({ id: person.id, ideas: [...person.lines] }));
 // The order shown stays until the list read again says the same: letting
 // go of it sooner would put the lines back for an instant, and take the
 // line being written from under the keyboard.
@@ -345,16 +347,26 @@ watch(doc, (fresh) => {
   if (!wanted.value || !fresh) return;
   const stored = fresh.people.map((person) => ({
     id: person.id,
-    ideas: person.ideas.map((idea) => idea.id),
+    ideas: [...person.lines],
   }));
   if (sameOrder(stored, wanted.value)) wanted.value = null;
 });
 /** What was just moved, said to screen readers. */
 const announced = ref('');
+/** What a gift not on the list is called, empty for an idea. */
+const giftName = (id: string) => {
+  const gift = people.value.flatMap((p) => p.offList).find((g) => g.id === id);
+  return gift
+    ? t('lists.doc.offList', {
+        text: gift.kind === 'surprise' ? '' : gift.text,
+      })
+    : '';
+};
 const nameOf = (what: Lifted) =>
   what.kind === 'person'
     ? (people.value.find((p) => p.id === what.id)?.member.firstName ?? '')
-    : ideaName(
+    : giftName(what.id) ||
+      ideaName(
         people.value.flatMap((p) => p.ideas).find((i) => i.id === what.id) ?? {
           text: '',
         },
@@ -394,15 +406,19 @@ const saveOrder = (next: ListOrder, what: Lifted) => {
   });
 };
 const board = ref<HTMLElement | null>(null);
-/** The ideas someone gives: they stay with their person (Julien). */
+/**
+ * The ideas someone gives, and the gifts not on the list: they stay with
+ * their person (Julien).
+ */
 const given = computed(
   () =>
     new Set(
-      people.value.flatMap((person) =>
-        person.ideas.flatMap((idea) =>
+      people.value.flatMap((person) => [
+        ...person.ideas.flatMap((idea) =>
           idea.view.kind === 'free' ? [] : [idea.id],
         ),
-      ),
+        ...person.offList.map((gift) => gift.id),
+      ]),
     ),
 );
 const leavesPerson = (what: Lifted, place: DropPlace) =>
@@ -459,7 +475,7 @@ const onSend = (target: PersonLine) => {
   saveOrder(
     moveIdea(orderNow(), line.idea.id, {
       personId: target.id,
-      index: target.ideas.filter((idea) => idea.id !== line.idea.id).length,
+      index: target.lines.filter((id) => id !== line.idea.id).length,
     }),
     { kind: 'idea', id: line.idea.id },
   );

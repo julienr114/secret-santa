@@ -1,0 +1,1 @@
+ALTER TABLE `gift_off_list` ADD `position` integer;

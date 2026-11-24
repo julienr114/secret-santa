@@ -9,7 +9,7 @@ import { compareV3 } from './v3Compare';
 // 0033 (« Cocher pour quelqu'un », from main), then rows covering the
 // cases of docs/spec/v3/migration.md, then 0034, in one transaction as D1
 // applies it, foreign keys on. The migrations of the V3 come after the
-// one of main since ticket 098: 0034 to 0045, compared all together at the
+// one of main since ticket 098: 0034 to 0046, compared all together at the
 // end (ticket 113).
 
 const DIR = join(__dirname, 'migrations');
@@ -881,6 +881,30 @@ describe('the stars and the titles of a list (ticket 152)', () => {
         .map((row) => row.name)
         .toSorted(),
     ).toEqual(Object.keys(snapshot.tables.gift_list_ideas!.columns).toSorted());
+  });
+});
+
+describe('the place of a gift not on the list (Julien, 24 November 2026)', () => {
+  const PLACE = '0046_v3_off_list_position.sql';
+  const db = v2();
+  files
+    .filter((file) => file <= PLACE)
+    .forEach((file) => {
+      if (file >= V3) apply(db, file);
+    });
+
+  it('matches the Drizzle snapshot of the table, placed nowhere yet', () => {
+    const snapshot = JSON.parse(
+      readFileSync(join(DIR, 'meta', '0046_snapshot.json'), 'utf8'),
+    ) as { tables: Record<string, { columns: Record<string, unknown> }> };
+    expect(
+      all(db, 'PRAGMA table_info(`gift_off_list`)')
+        .map((row) => row.name)
+        .toSorted(),
+    ).toEqual(Object.keys(snapshot.tables.gift_off_list!.columns).toSorted());
+    expect(
+      all(db, 'SELECT id FROM gift_off_list WHERE position IS NOT NULL'),
+    ).toEqual([]);
   });
 });
 

@@ -27,6 +27,7 @@ import {
 import { giftLists, parties, type GiftListRow } from '#server/database/schema';
 import type { PartyCategory } from '#shared/utils/categories';
 import { listYear, pastBand, type PastBand } from '#shared/utils/years';
+import { mergeLines } from '#shared/utils/reorder';
 import { loadYears, timelineOf } from '#server/database/years';
 import { avatarOf, type Avatar } from '#server/utils/avatars';
 import { findAccountById } from '#server/database/accounts';
@@ -299,6 +300,11 @@ export type PersonLine = {
   member: MemberView;
   ideas: IdeaLine[];
   offList: (OffListView & { id: string })[];
+  /**
+   * The ids of their ideas and of the gifts not on the list, in the order
+   * they show (Julien, 24 November 2026).
+   */
+  lines: string[];
   /** Whether the one looking may write, correct and delete these ideas. */
   mine: boolean;
 };
@@ -377,6 +383,10 @@ const linesOf = (
     offList: offList
       .filter((gift) => gift.listPersonId === person.id)
       .map((gift) => ({ id: gift.id, ...offListView(gift, sees) })),
+    lines: mergeLines(
+      person.ideas,
+      offList.filter((gift) => gift.listPersonId === person.id),
+    ),
   }));
   const ideaIds = new Set(people.flatMap((p) => p.ideas.map((i) => i.id)));
   const onList = claims.filter((c) => ideaIds.has(c.ideaId));

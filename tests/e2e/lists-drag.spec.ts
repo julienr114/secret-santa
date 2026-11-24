@@ -240,3 +240,126 @@ test('by the link, nothing moves', async ({ page }) => {
   });
   expect(refused.status()).toBe(404);
 });
+
+test('a gift not on the list moves among the ideas of its person, never to another', async ({
+  page,
+  playwright,
+  baseURL,
+}) => {
+  // A list of its own: Léo with two ideas, Zoé with one, and a pull
+  // knitted by Mamie for Léo, not on the list.
+  const api = await playwright.request.newContext({ baseURL });
+  await apiLogin(api, 'drag-gift-holder@example.com');
+  const { id } = await (
+    await api.post('/api/lists', {
+      data: { icon: { emoji: '❄️', color: 'night' }, title: 'Noël tricoté' },
+    })
+  ).json();
+  const person = async (firstName: string, ideas: string[]) => {
+    const place = await (
+      await api.post(`/api/lists/${id}/people`, {
+        data: {
+          newMember: { firstName, avatar: { emoji: '🚀', color: 'pine' } },
+        },
+      })
+    ).json();
+    for (const text of ideas) {
+      await api.post(`/api/lists/${id}/ideas`, {
+        data: { listPersonId: place.id, text },
+      });
+    }
+    return place.id as string;
+  };
+  const leoId = await person('Léo', ['Circuit', 'Vélo']);
+  await person('Zoé', ['Poupée']);
+  const { token } = await (
+    await api.post(`/api/lists/${id}/share`, { data: {} })
+  ).json();
+  const mamie = await playwright.request.newContext({ baseURL });
+  await apiLogin(mamie, 'drag-gift-mamie@example.com');
+  await mamie.post(`/api/l/${token}/off-list`, {
+    data: { listPersonId: leoId, text: 'Un pull tricoté' },
+  });
+  await mamie.dispose();
+
+  await apiLogin(page.request, 'drag-gift-holder@example.com');
+  await page.goto(`/listes/${id}`);
+  await hydrated(page);
+  const linesOf = (name: string) =>
+    section(page, name).locator('[data-drag="idea"]');
+  await expect(linesOf('Léo')).toHaveText([
+    'Circuit',
+    'Vélo',
+    /Un pull tricoté/,
+  ]);
+  const touch = await finger(page);
+
+  // Over Circuit: the first line of Léo, saved for good.
+  const pull = section(page, 'Léo').getByTestId('holder-off-list');
+  await pull.evaluate((el) =>
+    window.scrollTo(0, window.scrollY + el.getBoundingClientRect().top - 300),
+  );
+  const from = await centre(pull);
+  const top = await centre(ideasOf(page, 'Léo').nth(0));
+  await touch.drag(from, { x: top.x, y: top.y - 14 });
+  await expect(linesOf('Léo')).toHaveText([
+    /Un pull tricoté/,
+    'Circuit',
+    'Vélo',
+  ]);
+  await page.reload();
+  await hydrated(page);
+  await expect(linesOf('Léo')).toHaveText([
+    /Un pull tricoté/,
+    'Circuit',
+    'Vélo',
+  ]);
+
+  // Towards Zoé: it stays at Léo's, at the end of his part.
+  await pull.evaluate((el) =>
+    window.scrollTo(0, window.scrollY + el.getBoundingClientRect().top - 250),
+  );
+  const again = await centre(pull);
+  const poupee = await centre(ideasOf(page, 'Zoé').nth(0));
+  await touch.drag(again, { x: poupee.x, y: poupee.y + 14 });
+  await expect(linesOf('Zoé')).toHaveText(['Poupée']);
+  await expect(linesOf('Léo')).toHaveText([
+    'Circuit',
+    'Vélo',
+    /Un pull tricoté/,
+  ]);
+
+  // An idea written after Circuit leaves the pull where it is.
+  const doc = await (await api.get(`/api/lists/${id}`)).json();
+  const leo = doc.people.find(
+    (p: { member: { firstName: string } }) => p.member.firstName === 'Léo',
+  );
+  await api.post(`/api/lists/${id}/ideas`, {
+    data: { listPersonId: leoId, text: 'Livre', after: leo.ideas[0].id },
+  });
+  await page.reload();
+  await hydrated(page);
+  await expect(linesOf('Léo')).toHaveText([
+    'Circuit',
+    'Livre',
+    'Vélo',
+    /Un pull tricoté/,
+  ]);
+
+  // Nor by the route.
+  const fresh = await (await api.get(`/api/lists/${id}`)).json();
+  const giftId = leo.offList[0].id;
+  const order = fresh.people.map((p: { id: string; lines: string[] }) => ({
+    id: p.id,
+    ideas:
+      p.id === leoId
+        ? p.lines.filter((line) => line !== giftId)
+        : [...p.lines, giftId],
+  }));
+  const refused = await api.put(`/api/lists/${id}/order`, {
+    data: { order },
+  });
+  expect(refused.status()).toBe(409);
+  expect((await refused.json()).statusMessage).toBe('idea_claimed');
+  await api.dispose();
+});

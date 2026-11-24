@@ -344,6 +344,7 @@ export const offListOfLists = async (db: Db, listIds: readonly string[]) => {
     accountId: gift.accountId,
     text: gift.text,
     anonymous: gift.anonymous,
+    position: gift.position,
     createdAt: gift.createdAt,
     ...giverOf(account),
   }));

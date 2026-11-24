@@ -236,12 +236,19 @@ export const orderWrites = (
         ? []
         : [{ id: section.id, position }],
     ),
+    // A person whose lines changed has them all written again, so that
+    // their places count from 0 with no gap: a gift not on the list takes
+    // the same count (Julien, 24 November 2026).
     ideas: wanted.flatMap((section) =>
-      section.ideas.flatMap((id, position) =>
-        before.get(id) === `${section.id}:${position}`
-          ? []
-          : [{ id, listPersonId: section.id, position }],
-      ),
+      section.ideas.every(
+        (id, position) => before.get(id) === `${section.id}:${position}`,
+      )
+        ? []
+        : section.ideas.map((id, position) => ({
+            id,
+            listPersonId: section.id,
+            position,
+          })),
     ),
   };
 };
@@ -264,3 +271,68 @@ export const ideasChangingPerson = (
       ? [id]
       : [],
   );
+
+/** A line of a person, with what places it. */
+type Placed = { id: string; position: number | null; createdAt: string };
+
+/**
+ * The lines of a person in order: their ideas, and the gifts not on the
+ * list, which take the same count (Julien, 24 November 2026). A gift not
+ * placed yet comes after them all; at the same place, the idea first.
+ * @param ideas - Their ideas.
+ * @param gifts - The gifts not on the list given to them.
+ * @returns The ids of the lines, in order.
+ */
+export const mergeLines = (
+  ideas: readonly Placed[],
+  gifts: readonly Placed[],
+): string[] =>
+  [
+    ...ideas.map((line) => ({ ...line, gift: 0 })),
+    ...gifts.map((line) => ({ ...line, gift: 1 })),
+  ]
+    .toSorted(
+      (a, b) =>
+        (a.position ?? Infinity) - (b.position ?? Infinity) ||
+        a.gift - b.gift ||
+        a.createdAt.localeCompare(b.createdAt),
+    )
+    .map((line) => line.id);
+
+/**
+ * The lines of each person as an order wants them, their ideas and the
+ * gifts not on the list mixed (Julien, 24 November 2026); what the order
+ * does not name keeps its place after, as it came.
+ * @param sections - The people, their ideas already in the order.
+ * @param order - The order wanted, or null for the lines as they came.
+ * @returns The people, each with their lines.
+ */
+export const withLines = <
+  S extends {
+    id: string;
+    ideas: readonly { id: string }[];
+    offList: readonly { id: string }[];
+    lines: readonly string[];
+  },
+>(
+  sections: readonly S[],
+  order: ListOrder | null,
+): S[] =>
+  sections.map((section) => {
+    const known = new Set([
+      ...section.ideas.map((idea) => idea.id),
+      ...section.offList.map((gift) => gift.id),
+    ]);
+    const wanted = (
+      order?.find((s) => s.id === section.id)?.ideas ?? []
+    ).filter((id) => known.has(id));
+    const named = new Set(wanted);
+    const rest = [
+      ...section.lines,
+      ...section.ideas.map((idea) => idea.id),
+    ].filter(
+      (id, at, all) =>
+        known.has(id) && !named.has(id) && all.indexOf(id) === at,
+    );
+    return { ...section, lines: [...wanted, ...rest] };
+  });

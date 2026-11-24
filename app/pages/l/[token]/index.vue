@@ -314,6 +314,26 @@ const confirmOpen = computed({
   },
 });
 /** For whom a gift is: nobody on a list without people. */
+/**
+ * The lines of a person in the order of the list: the gifts not on it
+ * among the ideas, where those who hold it put them (Julien, 24 November
+ * 2026); what the order does not name yet comes after.
+ */
+type VisitorRow =
+  | { kind: 'idea'; idea: IdeaLine }
+  | { kind: 'gift'; gift: PersonLine['offList'][number] };
+const linesOf = (person: PersonLine): VisitorRow[] => {
+  const ideas = new Map(person.ideas.map((idea) => [idea.id, idea]));
+  const gifts = new Map(person.offList.map((gift) => [gift.id, gift]));
+  return [
+    ...new Set([...person.lines, ...ideas.keys(), ...gifts.keys()]),
+  ].flatMap((id): VisitorRow[] => {
+    const idea = ideas.get(id);
+    if (idea) return [{ kind: 'idea', idea }];
+    const gift = gifts.get(id);
+    return gift ? [{ kind: 'gift', gift }] : [];
+  });
+};
 const nameOf = (person: PersonLine) =>
   doc.value?.single ? '' : person.member.firstName;
 /** My own section, where I write. */
@@ -449,59 +469,62 @@ const writes = (person: PersonLine) =>
           class="flex flex-col"
           :class="doc.single ? '' : 'person-lines mt-1.5'"
         >
-          <ListsVisitorLine
-            v-for="idea in person.ideas"
-            :key="idea.id"
-            :idea="idea"
-            :fresh="isFresh(idea)"
-            @tick="onTick(idea)"
-            @untick="onUntick(idea)"
-            @change="changing = { idea, forName: nameOf(person) }"
-            @join="onJoin(idea, nameOf(person))"
-          />
-          <li
-            v-for="gift in person.offList"
-            :key="gift.id"
-            class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
-            data-testid="off-list"
+          <template
+            v-for="line in linesOf(person)"
+            :key="line.kind === 'idea' ? line.idea.id : line.gift.id"
           >
-            <span
-              class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm"
-              :class="
-                gift.kind === 'mine'
-                  ? 'bg-success text-white'
-                  : 'bg-line-strong text-highlighted'
-              "
-              aria-hidden="true"
+            <ListsVisitorLine
+              v-if="line.kind === 'idea'"
+              :idea="line.idea"
+              :fresh="isFresh(line.idea)"
+              @tick="onTick(line.idea)"
+              @untick="onUntick(line.idea)"
+              @change="changing = { idea: line.idea, forName: nameOf(person) }"
+              @join="onJoin(line.idea, nameOf(person))"
+            />
+            <li
+              v-else
+              class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
+              data-testid="off-list"
             >
-              <UIcon name="i-lucide-check" class="size-3.5" />
-            </span>
-            <div class="flex min-w-0 grow flex-col text-base leading-[1.45]">
-              <template v-if="gift.kind === 'mine'">
-                <span class="font-semibold">{{
-                  t('lists.visitor.myOffList', { text: gift.text })
-                }}</span>
-                <button
-                  type="button"
-                  class="flex min-h-11 items-center self-start text-sm font-bold text-toned underline underline-offset-2"
-                  @click="removeOffList.mutate(gift.id, { onError })"
-                >
-                  {{ t('lists.doc.removeLine') }}
-                </button>
-              </template>
               <span
-                v-else-if="gift.kind === 'holder'"
-                class="text-toned line-through"
-                >{{ t('lists.doc.offList', { text: gift.text }) }}
-                <span class="no-underline"
-                  >· {{ gift.by ?? t('lists.doc.anonymous') }}</span
-                ></span
+                class="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-sm"
+                :class="
+                  line.gift.kind === 'mine'
+                    ? 'bg-success text-white'
+                    : 'bg-line-strong text-highlighted'
+                "
+                aria-hidden="true"
               >
-              <span v-else class="text-toned line-through">{{
-                t('lists.visitor.surprise')
-              }}</span>
-            </div>
-          </li>
+                <UIcon name="i-lucide-check" class="size-3.5" />
+              </span>
+              <div class="flex min-w-0 grow flex-col text-base leading-[1.45]">
+                <template v-if="line.gift.kind === 'mine'">
+                  <span class="font-semibold">{{
+                    t('lists.visitor.myOffList', { text: line.gift.text })
+                  }}</span>
+                  <button
+                    type="button"
+                    class="flex min-h-11 items-center self-start text-sm font-bold text-toned underline underline-offset-2"
+                    @click="removeOffList.mutate(line.gift.id, { onError })"
+                  >
+                    {{ t('lists.doc.removeLine') }}
+                  </button>
+                </template>
+                <span
+                  v-else-if="line.gift.kind === 'holder'"
+                  class="text-toned line-through"
+                  >{{ t('lists.doc.offList', { text: line.gift.text }) }}
+                  <span class="no-underline"
+                    >· {{ line.gift.by ?? t('lists.doc.anonymous') }}</span
+                  ></span
+                >
+                <span v-else class="text-toned line-through">{{
+                  t('lists.visitor.surprise')
+                }}</span>
+              </div>
+            </li>
+          </template>
           <ListsOffListLine
             key="off-list-new"
             :token="token"

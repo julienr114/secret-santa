@@ -841,6 +841,9 @@ export const giftOffList = sqliteTable(
     anonymous: integer('anonymous', { mode: 'boolean' })
       .notNull()
       .default(false),
+    // Its place among the ideas of its person, in the same count as
+    // theirs (Julien, 24 November 2026); none: after them all.
+    position: integer('position'),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('gift_off_list_list_idx').on(t.listId)],

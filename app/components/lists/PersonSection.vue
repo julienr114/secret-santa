@@ -500,7 +500,7 @@ const explained = ref<string | null>(null);
              its person, never at another (Julien, 24 November 2026). -->
         <li
           v-else
-          class="group relative flex flex-col py-[13px]"
+          class="list-line group relative flex flex-col"
           :class="
             drag?.lifted.value?.kind === 'idea' &&
             drag.lifted.value.id === row.gift.id

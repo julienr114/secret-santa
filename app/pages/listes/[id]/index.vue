@@ -785,7 +785,7 @@ onBeforeRouteLeave((to) => {
              line, not select its text nor open the browser's menu. -->
         <div
           ref="board"
-          class="flex flex-col gap-16 select-none [-webkit-touch-callout:none]"
+          class="list-people flex flex-col select-none [-webkit-touch-callout:none]"
           data-testid="drag-board"
         >
           <template v-for="row in sections" :key="row ? row.person.id : 'drop'">

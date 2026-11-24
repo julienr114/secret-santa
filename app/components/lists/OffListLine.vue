@@ -78,7 +78,7 @@ const onFocusOut = (event: FocusEvent) => {
   <li
     v-if="writing"
     ref="row"
-    class="relative -my-1 -mr-2 -ml-2.5 flex items-start gap-[var(--line-gap,12px)] rounded-[16px] bg-default py-3 pr-2 pl-2.5 shadow-line-card"
+    class="list-line list-writing relative -mr-2 -ml-2.5 flex items-start gap-[var(--line-gap,12px)] rounded-[16px] bg-default pr-2 pl-2.5 shadow-line-card"
     data-testid="off-list-line"
     @focusout="onFocusOut"
   >
@@ -129,7 +129,7 @@ const onFocusOut = (event: FocusEvent) => {
   <li v-else class="relative">
     <button
       type="button"
-      class="flex min-h-11 items-start gap-[var(--line-gap,12px)] py-[13px] text-left text-base/[22px] font-bold text-primary-ink"
+      class="list-line flex min-h-11 items-start gap-[var(--line-gap,12px)] text-left text-base/[22px] font-bold text-primary-ink"
       :disabled="add.isPending.value"
       data-testid="off-list-action"
       @click="start"

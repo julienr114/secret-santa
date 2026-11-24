@@ -409,7 +409,7 @@ const writes = (person: PersonLine) =>
         v-for="(person, index) in shownPeople"
         :id="`personne-${person.member.id}`"
         :key="person.id"
-        class="relative flex scroll-mt-32 flex-col gap-0.5"
+        class="list-person relative flex scroll-mt-32 flex-col gap-0.5"
         :class="index > 0 ? 'mt-11' : ''"
         data-testid="visitor-person"
       >
@@ -485,7 +485,7 @@ const writes = (person: PersonLine) =>
             />
             <li
               v-else
-              class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
+              class="list-line relative flex items-start gap-[var(--line-gap,12px)]"
               data-testid="off-list"
             >
               <span

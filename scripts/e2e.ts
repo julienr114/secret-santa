@@ -10,7 +10,7 @@
 // memory, 2 take 237 s, one alone 453 s (measured on AC power, ticket 168).
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const files = process.argv.slice(2);
 const wanted = Number(process.env.E2E_SERVERS ?? 3);
@@ -98,6 +98,12 @@ const summary = (output: string) =>
     )
     .map((line) => line.trim())
     .join(', ');
+// Each part's whole output, kept for after (a failure seen once is read
+// again there): test-results/e2e-<port>.log.
+mkdirSync('test-results', { recursive: true });
+for (const part of parts) {
+  writeFileSync(`test-results/e2e-${3099 + part.index}.log`, part.output);
+}
 const failed = parts.filter((part) => part.status !== 0);
 for (const part of parts) {
   console.log(

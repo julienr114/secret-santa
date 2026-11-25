@@ -64,6 +64,11 @@ new_sqlite_classes = ["ListRoom"]
 
 [vars]
 NUXT_PUBLIC_BASE_URL = "https://under-the-tree.party"
+# The public half of the app's VAPID key (ticket 124): phones subscribe to
+# notifications with it. Its secret half is the secret
+# NUXT_VAPID_PRIVATE_KEY. Never change the pair: subscribed phones would
+# receive nothing any more.
+NUXT_PUBLIC_VAPID_PUBLIC_KEY = "BIFT-9LvQRNBmVpZR7TGAPEdcRsAvKUJgmb7ZF5vFotXtChJdHigtYFB8cABjS_Q_upeKEsn_T0yFBvMl91Ij1k"
 
 # Every morning at 8:00 UTC: reminders to the organisers before an
 # exchange (server/plugins/reminders.ts); every 15 minutes, « Devine

@@ -13,12 +13,12 @@ export const useNewsQuery = () =>
   );
 
 /**
- * How many news wait, for the tab.
+ * How many news wait, for the tab; and those sent to the phones.
  * @param enabled - Only for someone logged in.
  * @returns The query.
  */
 export const useNewsCountQuery = (enabled: MaybeRefOrGetter<boolean>) =>
-  useApiQuery<{ count: number }>(
+  useApiQuery<{ count: number; pushed: string[] }>(
     () => keys.newsCount(),
     () => '/api/news/count',
     enabled,

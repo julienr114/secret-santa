@@ -1,4 +1,14 @@
-import { and, count, eq, inArray, isNull, lt } from 'drizzle-orm';
+import {
+  and,
+  count,
+  desc,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+} from 'drizzle-orm';
+import { KEPT_MAX } from '#shared/utils/notifications';
 import type { Db } from './client';
 import { accounts, news, partyOrganisers, persons } from './schema';
 import { newId } from '#server/http/context';
@@ -237,6 +247,32 @@ export const countUnseen = async (
     .where(and(eq(news.accountId, accountId), isNull(news.seenAt)));
   return row?.n ?? 0;
 };
+
+/**
+ * The news sent to the phones of an account and not seen yet, the latest
+ * first (ticket 175): the notifications that stay on its phones.
+ * @param db - The database.
+ * @param accountId - Me.
+ * @returns Their ids.
+ */
+export const pushedUnseen = async (
+  db: Db,
+  accountId: string,
+): Promise<string[]> =>
+  (
+    await db
+      .select({ id: news.id })
+      .from(news)
+      .where(
+        and(
+          eq(news.accountId, accountId),
+          isNull(news.seenAt),
+          isNotNull(news.pushedAt),
+        ),
+      )
+      .orderBy(desc(news.updatedAt))
+      .limit(KEPT_MAX)
+  ).map((row) => row.id);
 
 /**
  * Forgets the news seen more than thirty days ago (the morning task);

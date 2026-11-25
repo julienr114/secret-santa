@@ -5,6 +5,8 @@
 // push service carries it without reading it. Pure, but for the crypto
 // of the platform.
 
+import { KEPT_MAX, newsTag } from '#shared/utils/notifications';
+
 const encoder = new TextEncoder();
 
 /**
@@ -199,6 +201,10 @@ export type PushMessage = {
   url: string;
   /** The news not seen yet, for the badge of the icon. */
   badge: number;
+  /** Its news, so that it is taken away once seen (ticket 175). */
+  tag: string;
+  /** The news sent to the phone and still waiting: the others go. */
+  keep: string[];
 };
 
 /**
@@ -216,18 +222,23 @@ export const deviceGone = (status: number): boolean =>
  * opens. Only what a news holds: never a result of a draw, never who
  * asks for ideas.
  * @param news - The news, its place and where it opens.
+ * @param news.id - The news.
  * @param news.words - What happened, already in the language of the account.
  * @param news.place - The event, or the list.
  * @param news.to - The screen it opens, or nothing.
  * @param badge - The news not seen yet.
+ * @param waiting - The news sent to the phone and not seen yet.
  * @returns The notification.
  */
 export const pushMessageOf = (
-  news: { words: string; place: string; to: string | null },
+  news: { id: string; words: string; place: string; to: string | null },
   badge: number,
+  waiting: readonly string[],
 ): PushMessage => ({
   title: news.place,
   body: news.words,
   url: news.to ?? '/quoi-de-neuf',
   badge,
+  tag: newsTag(news.id),
+  keep: waiting.slice(0, KEPT_MAX).map(newsTag),
 });

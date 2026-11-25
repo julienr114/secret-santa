@@ -1,7 +1,7 @@
 import { and, asc, eq, exists, inArray, isNull } from 'drizzle-orm';
 import type { Db } from './client';
 import { accounts, news, pushSubscriptions } from './schema';
-import { countUnseen } from './news';
+import { countUnseen, pushedUnseen } from './news';
 import { newsSectionsOf } from './newsPage';
 import { newId } from '#server/http/context';
 import {
@@ -164,7 +164,14 @@ export const sendNewsPushes = async (
       ),
     Promise.all(
       owners.map(
-        async (owner) => [owner.id, await countUnseen(db, owner.id)] as const,
+        async (owner) =>
+          [
+            owner.id,
+            {
+              badge: await countUnseen(db, owner.id),
+              waiting: await pushedUnseen(db, owner.id),
+            },
+          ] as const,
       ),
     ).then((pairs) => new Map(pairs)),
   ]);
@@ -176,13 +183,16 @@ export const sendNewsPushes = async (
       const line = section?.news.find((one) => one.id === row.id);
       if (!section || !line) return [];
       const { key, params } = newsText(line);
+      const counts = badges.get(account.id);
       const message = pushMessageOf(
         {
+          id: row.id,
           words: translateKey(localeOf(account.language), key, params),
           place: section.title,
           to: line.to,
         },
-        badges.get(account.id) ?? 0,
+        counts?.badge ?? 0,
+        counts?.waiting ?? [row.id],
       );
       return devices
         .filter((device) => device.accountId === account.id)

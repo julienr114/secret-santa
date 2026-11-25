@@ -153,17 +153,21 @@ describe('pushMessageOf', () => {
     expect(
       pushMessageOf(
         {
+          id: 'n2',
           words: 'Quelqu’un te demande des idées de cadeaux',
           place: 'Famille Camille',
           to: '/p/abc',
         },
         3,
+        ['n2', 'n1'],
       ),
     ).toEqual({
       title: 'Famille Camille',
       body: 'Quelqu’un te demande des idées de cadeaux',
       url: '/p/abc',
       badge: 3,
+      tag: 'news-n2',
+      keep: ['news-n2', 'news-n1'],
     });
   });
 });
@@ -184,7 +188,11 @@ describe('what a locked phone shows (ticket 124)', () => {
           const words = translateKey(locale, key, params);
           expect(words, `${locale} ${kind}`).not.toContain('Camille');
           expect(
-            pushMessageOf({ words, place: 'Famille', to: null }, 1).body,
+            pushMessageOf(
+              { id: 'n1', words, place: 'Famille', to: null },
+              1,
+              [],
+            ).body,
           ).not.toContain('Camille');
         },
       );

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { tabOf, type Tab } from '#shared/utils/navigation';
+import { staleNotifications } from '#shared/utils/notifications';
 import { useNewsCountQuery } from '~/composables/queries/useNews';
 
 // The bar at the bottom of every screen of someone logged in
@@ -16,13 +17,38 @@ const { user, loggedIn } = useUserSession();
 const newsCount = useNewsCountQuery(loggedIn);
 const unseen = computed(() => newsCount.data.value?.count ?? 0);
 // The same count on the icon of the installed app (ticket 124), where
-// the phone shows it.
-watch(unseen, (count) => {
-  if (import.meta.server || !('setAppBadge' in navigator)) return;
-  void (
-    count > 0 ? navigator.setAppBadge(count) : navigator.clearAppBadge()
-  ).catch(() => undefined);
-});
+// the phone shows it, from the opening of the app on (ticket 175).
+watch(
+  () => newsCount.data.value?.count,
+  (count) => {
+    if (import.meta.server || count === undefined) return;
+    if (!('setAppBadge' in navigator)) return;
+    void (
+      count > 0 ? navigator.setAppBadge(count) : navigator.clearAppBadge()
+    ).catch(() => undefined);
+  },
+  { immediate: true },
+);
+// A notification whose news is now seen leaves the phone (ticket 175).
+const pushed = computed(() => newsCount.data.value?.pushed.join(' ') ?? null);
+watch(
+  pushed,
+  async (waiting) => {
+    if (import.meta.server || waiting === null) return;
+    if (!('serviceWorker' in navigator)) return;
+    const registration = await navigator.serviceWorker.getRegistration();
+    const shown =
+      (await registration?.getNotifications().catch(() => [])) ?? [];
+    const stale = new Set(
+      staleNotifications(
+        shown.map((one) => one.tag),
+        waiting ? waiting.split(' ') : [],
+      ),
+    );
+    shown.filter((one) => stale.has(one.tag)).forEach((one) => one.close());
+  },
+  { immediate: true },
+);
 watch(
   () => route.path,
   () => {

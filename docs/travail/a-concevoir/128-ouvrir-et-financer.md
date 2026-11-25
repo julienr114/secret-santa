@@ -1,17 +1,46 @@
 # 128 — Ouvrir l'envoi d'emails et tenir la charge, avec 100 € par an
 
-- **Vient de** : l'ancien plan, « Lot 34 » (10 cases ouvertes), ancien plan, section 7.6
-- **Dépend de** : la V3 (tickets 101 à 107)
+- **État** : réécrit pour la V3 le 24 novembre 2026. Attend les réponses de Julien (rapport de conception du 25 novembre, questions sur le 128) avant de passer dans `a-faire/`.
+- **Vient de** : l'ancien plan, « Lot 34 » et section 7
+- **Dépend de** : 129 (les plafonds, « Suspendre les emails »), 130 (ne plus recevoir d'emails)
+- **Migration** : à voir (les plafonds par événement et par compte)
+- **Maquettes** : `EnvoiSuspendu` (ce que voit l'organisateur quand l'envoi est coupé) ; pas d'autre écran nouveau
 
 ## Objectif
 
-Celui du lot 34 : il est écrit dans `docs/refonte/PLAN.md`, section « Lot 34 », avec ses maquettes et ses règles.
+Aujourd'hui l'envoi d'emails tient sur une offre gratuite : 3 000 emails par mois et 100 par jour. Dès que quelques événements envoient leurs liens le même jour, ça bloque. Ce ticket passe l'envoi sur un abonnement payant et bon marché, garde le fournisseur d'aujourd'hui en secours, et pose des plafonds pour qu'un abus ne coûte rien.
+
+## Ce qui a changé depuis l'ancien plan
+
+- **Plus de demandes** : un compte organise 3 Secret Santa sans rien demander (ticket 109), un événement a 30 membres au plus (ticket 117). Les « groupes par compte », les « participants par édition » et la « demande pour en avoir plus » de l'ancien lot n'existent plus.
+- **Les prix relevés le 24 novembre 2026**, à relire par Julien avant de s'abonner : l'envoi d'emails de Cloudflare est en bêta publique, réservé à l'offre payante de Workers, avec 3 000 emails compris par mois puis 0,35 $ les 1 000 (https://developers.cloudflare.com/email-service/platform/pricing/). L'offre gratuite de Resend reste à 3 000 emails par mois et 100 par jour ; son offre payante commence à 20 $ par mois pour 50 000 emails (https://resend.com/pricing).
+
+## À lire d'abord
+
+- `docs/refonte/PLAN.md`, « Lot 34 » et section 7 : les raisons et les chiffres d'origine
+- `server/http/email.ts`, ce que le ticket 129 a codé (les plafonds, l'interrupteur)
+- `docs/spec/v3/administration.md`
+
+## À faire
+
+- [ ] **Julien** : passer le compte Cloudflare sur l'offre payante de Workers ; vérifier que le domaine est géré chez Cloudflare ; activer l'envoi d'emails et laisser poser ses enregistrements DNS ; fixer la limite de dépense (case du ticket 129).
+- [ ] **L'envoi par deux fournisseurs** (`server/http/email.ts`) : Cloudflare d'abord ; Resend en secours si l'envoi échoue ou si le quota du jour est atteint. Les emails ne changent pas. Le tableau de bord compte les deux.
+- [ ] **Un plafond d'emails par événement et par jour, et un par compte et par jour** (les chiffres : voir les questions). Au-delà, l'organisateur partage les liens par son téléphone, ce qui ne coûte rien, et l'écran le lui dit avant qu'il touche la limite.
+- [ ] **Un plafond d'emails par mois pour toute l'application**, réglable par le super-admin : à 70 % il est prévenu, à 100 % « Suspendre les emails » se déclenche (ticket 129). Les liens de connexion partent toujours.
+- [ ] **Les textes de capacité** d'aujourd'hui (« L'application approche de sa capacité gratuite… ») s'en vont.
+- [ ] README 7.2, 8, 13.3, 15 et 16 à jour ; tests des plafonds et du secours.
+
+## Hors périmètre
+
+- La page de présentation et « Un café ? » (tickets 125 et 126).
+
+## C'est fini quand
+
+- [ ] Un email part par Cloudflare ; si Cloudflare échoue, il part par Resend, et le tableau de bord le montre.
+- [ ] Un événement qui dépasse son plafond du jour le sait avant d'envoyer, et peut encore partager ses liens à la main.
+- [ ] `/controle` passe.
 
 ## Ce qui manque
 
-- **Une relecture après la V3.** Ce lot a été écrit pour l'application d'avant : il parle de groupes, d'éditions, de tirages et de pistes, et ses écrans passent par des pages que la V3 change. Avant de le coder, la conception le réécrit ici comme un vrai ticket (`docs/travail/MODELE-TICKET.md`), avec ses maquettes mises à jour, et le pose dans `a-faire/`.
-- L'ordre entre ces lots n'est pas arrêté : voir `docs/travail/questions.md`, Q-004.
-
-## Ne pas coder depuis ce fichier
-
-C'est une souche : elle garde la trace de ce qui reste à faire, pas de quoi le faire.
+- Les chiffres : les deux plafonds par jour, le plafond du mois, le budget.
+- La décision de Julien de s'abonner, et quand.

@@ -1,19 +1,47 @@
 # 125 — La page de présentation
 
-- **Vient de** : l'ancien plan, « Lot 32 » (16 cases ouvertes), README 22.23
-- **Dépend de** : la V3 (tickets 101 à 107)
+- **État** : réécrit pour la V3 le 24 novembre 2026. Attend les réponses de Julien (rapport de conception du 25 novembre, questions sur le 125) avant de passer dans `a-faire/`.
+- **Vient de** : l'ancien plan, « Lot 32 » ; README 22.23
+- **Dépend de** : 126 (le lien « Qui a fait ça, et pourquoi ? ») ; chaque bloc dépend du ticket qui fait ce qu'il promet (voir « Ne montrer que ce qui existe »)
+- **Migration** : non
+- **Maquettes** : `Landing` (téléphone), `LandingDesktop` (écran large)
 
 ## Objectif
 
-Celui du lot 32 : il est écrit dans `docs/refonte/PLAN.md`, section « Lot 32 », avec ses maquettes et ses règles.
+Quelqu'un qui arrive sur `/` sans être connecté comprend en un écran ce qu'est Under the Tree, et peut créer un compte ou se connecter. Aujourd'hui il tombe sur la connexion.
+
+## À lire d'abord
+
+- `docs/refonte/PLAN.md`, « Lot 32 » et ses points à relire (section 6)
+- `docs/spec/v3/vocabulaire.md`
+- les deux maquettes
+
+## À faire
+
+- [ ] **`/` sans session** devient la page de présentation ; avec une session, rien ne change. « Créer un compte » et « Se connecter » mènent aux écrans de connexion, qui gardent leurs adresses.
+- [ ] **L'accroche** : « Le Secret Santa et les listes de cadeaux, pour toutes les occasions. », puis « Chacun découvre en secret à qui il offre. Personne ne triche, et personne n'offre deux fois la même chose. ».
+- [ ] **L'encadré « Tu as reçu un lien personnel ? »** juste sous les boutons.
+- [ ] **Quatre blocs, « Ce qu'on y fait »**, chacun avec sa tuile (44 px à gauche du titre sur téléphone, 52 px au-dessus du texte sur un écran large) : le Secret Santa, les idées, « Devine qui », les listes de cadeaux. Les textes : ceux de la maquette, une fois relus par Julien.
+- [ ] **Ne montrer que ce qui existe** : un bloc, ou une ligne de « Et aussi », ne s'affiche que si son ticket est fait. « Tes données » attend le 131 ; « Sur ton téléphone, comme une application » le 124 ; « Prévenu quand il faut » les 121 et 124 ; « un code reçu par email » le 123 ; « Bientôt » (l'assistant) le 133.
+- [ ] **Ne rien promettre de faux sur le secret** : la phrase sur l'organisateur dit le dernier recours (« S'il regarde un résultat en dernier recours, tous les membres le savent »), comme le demande le ticket 131.
+- [ ] **Sur un écran large** : l'en-tête avec « Se connecter » et « Créer un compte » à droite, le titre à gauche de deux captures, les blocs qui alternent texte et capture, « Et aussi » sur trois colonnes. Une seule page qui s'adapte.
+- [ ] **Les captures, sur un écran large seulement** : de vraies captures de la V3, faites par un script à partir des données de démonstration, à 390 px, dans les trois langues, légères et chargées à la demande. Jamais de données réelles. Écrans : l'enveloppe à ouvrir, une liste avec ses titres et ses étoiles, deux écrans du palmarès, une liste par son lien. Sur téléphone, pas de capture : l'icône seule.
+- [ ] **Un téléphone dessiné** autour de chaque capture, incliné vers son texte (`docs/refonte/sorbet/capture.py` fait foi).
+- [ ] **La fin de page** : « Prêt pour cette année ? », « Un compte suffit, pour tenir une liste comme pour organiser un Secret Santa. », les deux boutons, les trois langues, « Qui a fait ça, et pourquoi ? ».
+- [ ] **Pour les moteurs de recherche et le partage du lien** : un titre, une description et une image d'aperçu par langue, rendus côté serveur.
+- [ ] Trois langues, tests de parcours (sans session : la page ; connecté : l'accueil), README 11 et 22.23 à jour.
+
+## Hors périmètre
+
+- La page « Qui a fait ça » (ticket 126) et « Tes données, en clair » (ticket 131).
+
+## C'est fini quand
+
+- [ ] Sans session, `/` montre la page ; connecté, l'accueil.
+- [ ] Aucun bloc ne promet une chose qui n'est pas encore en ligne.
+- [ ] `/controle` passe.
 
 ## Ce qui manque
 
-- Le 20 novembre 2026 au soir : l'accroche devient « Le Secret Santa et les listes de cadeaux, pour toutes les occasions. », une ligne dit qu'on invite ses proches une fois, et l'image du résultat est celle de la V3 (ticket de conception D10).
-- **Une relecture après la V3.** Ce lot a été écrit pour l'application d'avant : il parle de groupes, d'éditions, de tirages et de pistes, et ses écrans passent par des pages que la V3 change. Avant de le coder, la conception le réécrit ici comme un vrai ticket (`docs/travail/MODELE-TICKET.md`), avec ses maquettes mises à jour, et le pose dans `a-faire/`.
-- Le 20 novembre 2026, le paragraphe sur les idées a été réécrit (plus de « six questions », plus de « Père Noël ») : ticket de conception D07. Reste à montrer les événements et les occasions : D10.
-- L'ordre entre ces lots n'est pas arrêté : voir `docs/travail/questions.md`, Q-004.
-
-## Ne pas coder depuis ce fichier
-
-C'est une souche : elle garde la trace de ce qui reste à faire, pas de quoi le faire.
+- La relecture des textes par Julien, et ses réponses sur deux titres de blocs.
+- Les deux maquettes sont à reprendre une fois les textes arrêtés (les captures montrent encore des écrans d'avant la V3).

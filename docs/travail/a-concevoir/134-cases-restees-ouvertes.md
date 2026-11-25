@@ -1,18 +1,16 @@
 # 134 — Les cases restées ouvertes dans l'ancien plan
 
+- **État** : triées le 24 novembre 2026. Il reste quatre choses pour Julien (rapport de conception du 25 novembre), une pour Claude Code. Ce fichier se ferme quand elles sont faites.
 - **Vient de** : `docs/refonte/PLAN.md`, des lots et des corrections par ailleurs terminés
 - **Dépend de** : rien
 
-Sept cases isolées, gardées ici pour ne pas les perdre. Chacune devient un ticket, une ligne d'un autre ticket, ou se ferme.
-
-| Où (ancien plan) | Ce qui reste | Ce qu'il faut pour avancer |
+| Où (ancien plan) | Ce qui reste | Ce que la conception en fait |
 |---|---|---|
-| Lot 6, journal | `JournalPersonne` : le filtre « Moi », seulement si les événements portent déjà la personne concernée | Vérifier dans le code ; à fondre dans le ticket 110 |
-| Correction 17 | Dire qui a fait quoi entre organisateurs (« Dernier rappel le 20 décembre, par Hugo ») ; demande de garder qui a fait l'action | Une décision de Julien : garder cette donnée ou non |
-| Correction 23 | **Julien, dix minutes** : la double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin | Rien à coder |
-| Correction 29 | axe (`@axe-core/playwright`) sur une liste tenue et une liste visitée : l'installation avait été refusée par les permissions de la session | Julien autorise l'installation |
-| Lot 27 bis | « Suivre » une liste sans personne : une seule cloche pour toute la liste | Avec le ticket 122 |
-| Lot 38 A | La politique de contenu (CSP) : faite en mode rapport, à passer pour de bon après une semaine de rapports | Julien lit les rapports |
-| Lot 38 A | La clé des résultats : changer `NUXT_DATA_KEY` n'est pas possible sans un script de re-chiffrement | Décider si ce script vaut un ticket |
-
-**Et une chose à faire par Julien avant tout le reste : publier les listes.** Les migrations `0028_list_holders`, `0029_holder_levels`, `0030_carried_from`, `0031_amusing_pete_wisdom` et `0032_anonymous_mode` sont à appliquer avant de déployer, dans cet ordre ; le premier déploiement crée l'objet durable des listes en direct (Correction 30 de l'ancien plan).
+| « Publier les listes » (migrations 0028 à 0032) | Rien | **Fermé** : la production était à 0033 avant la bascule, et la V3 est en ligne. |
+| Lot 27 bis | « Suivre » une liste sans personne : une seule cloche | **Rangé dans le ticket 122** (une case ajoutée). |
+| Lot 6, journal | `JournalPersonne` : le filtre « Moi » | **Pour Claude Code** : vérifier en cinq minutes si les lignes du journal portent la personne concernée. Si oui, une case dans un ticket de ménage ; sinon, on ferme. |
+| Correction 23 | La double authentification sur Cloudflare, GitHub, Resend et la boîte email du super-admin | **Fermé** : déjà fait (Julien, 24 novembre 2026). Rien à coder. |
+| Lot 38 A | La politique de contenu (CSP) est en mode rapport | **Pour Julien** : lire une semaine de rapports sur la V3, puis demander à Claude Code de la passer pour de bon (un petit ticket). |
+| Correction 29 | axe (`@axe-core/playwright`) sur une liste tenue et une liste visitée | **Pour Julien** : autoriser l'installation. La conception le recommande : c'est le seul contrôle d'accessibilité automatique. |
+| Correction 17 | Dire qui a fait quoi entre organisateurs (« Dernier rappel le 20 décembre, par Hugo ») | **Une décision de Julien** : garder ou non qui a fait l'action. La conception propose de le garder pour les envois seulement. |
+| Lot 38 A | Changer `NUXT_DATA_KEY` demande un script de re-chiffrement | **Une décision de Julien** : la conception propose un ticket, après les 130 à 132. Sans ce script, une clé qui fuit ne se change pas. |

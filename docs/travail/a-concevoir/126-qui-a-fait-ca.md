@@ -1,17 +1,41 @@
 # 126 — « Qui a fait ça, et pourquoi ? », et le café
 
-- **Vient de** : l'ancien plan, « Lot 33 » (8 cases ouvertes), README 22.24
-- **Dépend de** : la V3 (tickets 101 à 107)
+- **État** : réécrit pour la V3 le 24 novembre 2026. Attend les textes et les réponses de Julien (rapport de conception du 25 novembre, questions sur le 126) avant de passer dans `a-faire/`.
+- **Vient de** : l'ancien plan, « Lot 33 » ; README 22.24
+- **Dépend de** : rien ; se fait avec le 125 ou avant lui
+- **Migration** : non
+- **Maquettes** : `APropos` (ses textes sont un brouillon)
 
 ## Objectif
 
-Celui du lot 33 : il est écrit dans `docs/refonte/PLAN.md`, section « Lot 33 », avec ses maquettes et ses règles.
+Une page publique dit qui a fait Under the Tree et pourquoi, donne un moyen d'écrire à Julien, et propose de lui offrir un café. Elle ne demande rien dans l'application et ne suit personne.
+
+## À lire d'abord
+
+- `docs/refonte/PLAN.md`, « Lot 33 » et ses points à relire (section 6)
+- la maquette `APropos`
+
+## À faire
+
+- [ ] **La page `/a-propos`**, publique, rendue côté serveur : l'icône et « Salut, moi c'est Julien », « Pourquoi j'ai fait ça », « Mon métier », « Un café ? », « Une idée, un souci ? Écris-moi ».
+- [ ] **Les textes sont ceux de Julien** : ne rien coder ni traduire avant qu'il les ait écrits ou validés.
+- [ ] **« Mon métier »** : deux liens en texte, LinkedIn et GitHub, dont les adresses sont dans la configuration ; sans adresse, le lien ne s'affiche pas. Pas de logo de marque.
+- [ ] **Le code reste privé** : le lien GitHub mène au profil, jamais au dépôt. Vérifier avant la mise en ligne : le dépôt est privé ; aucune adresse du dépôt dans les pages, les emails ni les fichiers servis ; pas de fichiers `.map` servis au navigateur.
+- [ ] **« M'offrir un café »** : un lien vers le service de dons, dans un nouvel onglet (`rel="noopener"`). Son adresse est dans la configuration ; sans adresse, le bloc « Un café ? » ne s'affiche pas. Aucun script ni traceur du service.
+- [ ] **« Écris-moi »** : l'adresse de contact de la configuration, une adresse créée pour ça sur le domaine. **Jamais l'adresse personnelle de Julien.** Sans adresse, la ligne ne s'affiche pas.
+- [ ] **Les liens vers la page** : en bas de la page de présentation (ticket 125) et dans « Mon compte ».
+- [ ] Trois langues, tests de parcours (la page sans session, chaque bloc absent quand son adresse manque), README 11 et 22.24 à jour.
+
+## Hors périmètre
+
+- Comment déclarer des dons : à voir par Julien avec un comptable.
+
+## C'est fini quand
+
+- [ ] La page s'ouvre sans compte, dans les trois langues, avec les textes de Julien.
+- [ ] Sans adresse de dons ni de contact dans la configuration, la page n'en parle pas.
+- [ ] `/controle` passe.
 
 ## Ce qui manque
 
-- **Une relecture après la V3.** Ce lot a été écrit pour l'application d'avant : il parle de groupes, d'éditions, de tirages et de pistes, et ses écrans passent par des pages que la V3 change. Avant de le coder, la conception le réécrit ici comme un vrai ticket (`docs/travail/MODELE-TICKET.md`), avec ses maquettes mises à jour, et le pose dans `a-faire/`.
-- L'ordre entre ces lots n'est pas arrêté : voir `docs/travail/questions.md`, Q-004.
-
-## Ne pas coder depuis ce fichier
-
-C'est une souche : elle garde la trace de ce qui reste à faire, pas de quoi le faire.
+- Les textes de Julien ; son icône ; le service de dons ; l'adresse de contact.

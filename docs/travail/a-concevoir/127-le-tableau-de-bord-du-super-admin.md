@@ -1,17 +1,52 @@
 # 127 — Le tableau de bord du super-admin
 
-- **Vient de** : l'ancien plan, « Lot 37 » (16 cases ouvertes), README 22.27
-- **Dépend de** : la V3 (tickets 101 à 107)
+- **État** : réécrit pour la V3 le 24 novembre 2026. Attend les réponses de Julien (rapport de conception du 25 novembre, questions sur le 127) avant de passer dans `a-faire/`.
+- **Vient de** : l'ancien plan, « Lot 37 » ; README 22.27
+- **Dépend de** : 129 (les interrupteurs, les chiffres du jour, les plafonds) ; 132 pour la ligne « Signalements » ; 121 pour « Résumé du matin »
+- **Migration** : oui (les compteurs par jour, le dernier passage des tâches planifiées), si le 129 ne les a pas déjà posés
+- **Maquettes** : `V3Admin` (toute la page), `AdminOnglet` (la pastille), `V3AdminComptes`, `AdminGroupes` (les événements)
 
 ## Objectif
 
-Celui du lot 37 : il est écrit dans `docs/refonte/PLAN.md`, section « Lot 37 », avec ses maquettes et ses règles.
+Le super-admin ouvre « Admin » et voit en une page si l'application va bien : qui s'en sert, ce qui attend une décision, ce qu'il faut surveiller, ce que coûte le mois, et si ce qui tourne tout seul a bien tourné. Aujourd'hui la page a une jauge « Capacité », deux listes et un interrupteur.
+
+## Ce que le 129 a déjà fait (ne pas le refaire)
+
+Les trois interrupteurs d'urgence ; les chiffres du jour (requêtes refusées pour débit, connexions échouées, erreurs du serveur, adresses qui refusent, emails rejetés) ; les plafonds avec leur jauge et l'avertissement à 70 %. Ce ticket les range dans la page et ajoute le reste.
+
+## À lire d'abord
+
+- `docs/spec/v3/administration.md`
+- `docs/refonte/PLAN.md`, « Lot 37 » et ses points à relire (section 6) : l'intention, pas les mots (il parle encore de groupes et de demandes)
+- `app/pages/admin/index.vue`, ce que le ticket 129 a codé
+
+## À faire
+
+- [ ] **L'ordre de la page**, celui de `V3Admin` : « Qui s'en sert », « À traiter et à surveiller », « Les plafonds », « En cas d'urgence », « Ce qui tourne tout seul », « Version en ligne », « Outils ». La jauge « Capacité », sa phrase et le bloc « Tout voir » disparaissent.
+- [ ] **Le cœur, en fonctions pures**, testé d'abord : additionner des compteurs par jour sur une période ; la part d'un plafond ; ce qui entre dans la pastille.
+- [ ] **Base** : un compteur par jour et par nature (comptes créés, comptes actifs, événements créés, listes créées, emails envoyés, emails rejetés, requêtes, erreurs), **sans identifiant de personne**. Un compte actif se compte une fois par jour, à partir d'une empreinte qui change chaque jour. Les totaux « depuis le début » se lisent dans les tables qui existent.
+- [ ] **« Qui s'en sert », quatre tuiles** : comptes (« +12 · 61 actifs »), événements (« +3 · 9 Secret Santa en cours »), listes (« +9 · 27 partagées »), emails envoyés (« +212 »). Le grand chiffre est le total depuis le début ; la ligne dessous suit la période.
+- [ ] **La période**, sous les tuiles, dans `UiSegmented` : « 7 jours », « 30 jours », « 12 mois ». Une phrase dessous dit ce que les chiffres comptent.
+- [ ] **Où mènent les tuiles** : « comptes » à la liste des comptes, « événements » à la liste des événements. « listes » et « emails envoyés » : voir les questions.
+- [ ] **« À traiter et à surveiller », une seule liste** : en tête ce qui attend une décision, avec une pastille (« Signalements », quand le 132 est fait) ; dessous, de simples chiffres. Une ligne n'a une flèche que si elle mène à une liste qui existe (les comptes à leur limite, les événements à 30 membres, les adresses qui ont refusé).
+- [ ] **La pastille de l'onglet « Admin »** ne compte que ce qui attend une décision (`administration.md`) : les signalements. Un plafond à 70 % n'y entre pas : il arrive dans « Quoi de neuf » du super-admin, comme une nouveauté qui presse.
+- [ ] **« Ce qui tourne tout seul »** : une ligne par tâche planifiée (le résumé du matin, les rappels avant le jour J, « Devine qui »), avec son dernier passage et ce qu'il a fait (« Passé aujourd'hui à 8 h 02 · 34 emails »). Une tâche qui n'est pas passée depuis plus d'un jour, ou qui a échoué, le dit en rouge.
+- [ ] **« Version en ligne »** : l'identifiant du commit déployé et sa date, inscrits au moment du déploiement.
+- [ ] Aucun outil de mesure extérieur, aucun cookie de plus.
+- [ ] Trois langues, tournures neutres, tests.
+
+## Hors périmètre
+
+- Des courbes : des chiffres et des jauges suffisent pour cette version.
+- Les demandes de l'ancien plan : elles n'existent plus (la limite de 3 Secret Santa par compte, la pause).
+
+## C'est fini quand
+
+- [ ] La page a les sept blocs de `V3Admin`, dans l'ordre, avec de vrais chiffres.
+- [ ] Changer la période change la ligne sous chaque tuile, pas le grand chiffre.
+- [ ] Aucune donnée de comptage ne permet de retrouver une personne.
+- [ ] `/controle` passe.
 
 ## Ce qui manque
 
-- **Une relecture après la V3.** Ce lot a été écrit pour l'application d'avant : il parle de groupes, d'éditions, de tirages et de pistes, et ses écrans passent par des pages que la V3 change. Avant de le coder, la conception le réécrit ici comme un vrai ticket (`docs/travail/MODELE-TICKET.md`), avec ses maquettes mises à jour, et le pose dans `a-faire/`.
-- L'ordre entre ces lots n'est pas arrêté : voir `docs/travail/questions.md`, Q-004.
-
-## Ne pas coder depuis ce fichier
-
-C'est une souche : elle garde la trace de ce qui reste à faire, pas de quoi le faire.
+- Les réponses de Julien : où mènent les tuiles « listes » et « emails envoyés » ; comment compter les requêtes ; d'où vient la dépense du mois.

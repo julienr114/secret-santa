@@ -99,7 +99,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
 | `MenuAvatar`, `MenuAvatarOuvert` | L’icône du compte à la place du burger, et son menu | 103 |
-| `ProcheNaissance` | Les trois listes d’une date | 105 |
+| `ProcheNaissance` | Une date dans un seul champ, la date en toutes lettres dessous | 105 |
 | `ListeGroupeFil`, `ListeGroupeFilDeplie` | Le dessin d’une liste (Correction 30) | 106 |
 | `ListeAidePartage` | La barre du haut pour celui qui aide à tenir la liste : repliée, avec « Le lien » à la place de « Modifier » | 106, 135 |
 | `RejoindreFerme` | Ce que voit celui qui ouvre le lien d’une fête complète | 105 |

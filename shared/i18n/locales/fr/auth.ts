@@ -173,6 +173,8 @@ export default {
     cutEmails: 'Couper ses emails',
     cutEmailsHelp: 'Ce que ses organisateurs envoient ne part plus',
     caps: 'Les plafonds',
+    cloudflare: 'Requêtes et dépense',
+    cloudflareHelp: 'Sur le tableau de bord de Cloudflare',
     emailsDay: 'Emails, aujourd’hui',
     emailsMonth: 'Emails, ce mois',
     capValue: '{used} sur {cap}',

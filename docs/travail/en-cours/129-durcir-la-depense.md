@@ -1,7 +1,13 @@
 # 129 — Durcir : la dépense
 
 - **Dépend de** : 109, 113
-- **Migration** : non
+- **Migration** : oui, finalement (`0050_v3_app_counters`, les compteurs du jour)
+
+> **Reste à Julien, chez Cloudflare. Le ticket reste dans `en-cours/` jusque-là :**
+>
+> 1. **La limite de dépense** sur Workers et sur les objets durables (« Spend Management »), 5 $ par mois au-dessus de l'abonnement.
+> 2. **L'alerte de budget** pour tout le compte.
+> 3. **La règle de débit du pare-feu** : « Security » puis « WAF » puis « Rate limiting rules ». Si le chemin est `/api/auth/link` et la méthode `POST`, par adresse IP, 5 requêtes par 10 secondes, puis bloquer 10 secondes.
 - **Maquettes** : `V3Admin` (« En cas d'urgence », « À traiter et à surveiller », « Les plafonds »), `EnvoiSuspendu`, `V3TiragePause`
 
 ## Objectif
@@ -18,7 +24,7 @@ Une attaque ou un emballement ne peut pas coûter plus qu'un montant fixé d'ava
 - [ ] **Julien, le jour de l'abonnement** : une limite de dépense sur Workers et sur les objets durables (Cloudflare, « Spend Management » : au seuil, les requêtes sont refusées jusqu'au cycle suivant), et une alerte de budget pour tout le compte. Montant proposé : 5 $ par mois au-dessus de l'abonnement.
 - [x] **Les interrupteurs d'urgence** : « Suspendre les emails » (plus aucun email ne part, sauf les liens de connexion) et « Suspendre les inscriptions » (ni nouveau compte, ni nouvel événement), à côté de « Suspendre les nouveaux Secret Santa », fait au ticket 109. Le premier se déclenche tout seul quand le plafond d'emails du mois est atteint, et l'organisateur qui veut envoyer voit `EnvoiSuspendu`.
 - [x] **Savoir qu'on est attaqué** (« Adresses qui ont refusé les emails » et « Envois signalés » sont venus avec le ticket 130) : le tableau de bord compte les requêtes refusées pour débit, les connexions échouées, les erreurs du serveur, les adresses qui refusent les emails et les emails rejetés du jour. Ce qui attend une décision entre dans la pastille de l'onglet ; le reste est un chiffre.
-- [ ] (en partie : les emails du jour et du mois ; les requêtes du jour et la dépense du mois attendent Q-039) **Les plafonds**, avec leur jauge : emails du jour et du mois, requêtes du jour, dépense du mois ; un avertissement au super-admin à 70 %.
+- [x] (Q-039, B : les emails du jour et du mois ont leur jauge ; les requêtes du jour et la dépense du mois se lisent sur le tableau de bord de Cloudflare, par une ligne ; les lire ici vient avec le ticket 127) **Les plafonds**, avec leur jauge : emails du jour et du mois, requêtes du jour, dépense du mois ; un avertissement au super-admin à 70 %.
 - [ ] (à Julien, dans le tableau de bord de Cloudflare : voir le compte rendu) **La règle de débit du pare-feu** (une seule sur l'offre gratuite) : sur la demande de lien de connexion, devant le Worker, pour que les requêtes refusées ne soient pas comptées.
 - [x] **Les connexions en direct**, si elles existent au moment de ce ticket : la mise en sommeil, le nombre maximal de connexions par liste, la fermeture après inactivité.
 - [x] Tests des interrupteurs et des plafonds.
@@ -80,3 +86,10 @@ Une attaque ou un emballement ne peut pas coûter plus qu'un montant fixé d'ava
 **Rangé** : dans `en-cours/` : la case de Julien (l'abonnement, le pare-feu) et les deux jauges de Q-039 attendent. « Adresses qui refusent les emails » s'ajoute avec le ticket 130.
 
 **Commit** : `feat(admin): hardening the spend, emergency switches, today's counts and the caps of the emails`.
+
+**Suite, le 25 novembre 2026 (réponses à Q-039 et Q-040).**
+
+- **Q-039, B** : « Les plafonds » finit par une ligne « Requêtes et dépense · Sur le tableau de bord de Cloudflare », qui l'ouvre. Il n'y a pas de jauge pour ces deux chiffres. Le jeton en lecture seule qui les lira (`NUXT_CLOUDFLARE_API_TOKEN`) vient avec le ticket 127. Le test `emergency.spec.ts` vérifie la ligne.
+- **Q-040, A** : rien à changer.
+- **Reste** : les trois gestes de Julien chez Cloudflare, en tête du ticket.
+- **Contrôle** : `pnpm controle --e2e`, tout est passé : 1 089 tests Vitest et 239 parcours. Commit : `feat(admin): the requests and the spend, on Cloudflare's dashboard`.

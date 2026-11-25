@@ -172,6 +172,8 @@ export default {
     cutEmails: 'Ihre E-Mails stoppen',
     cutEmailsHelp: 'Was die Organisierenden senden, geht nicht mehr raus',
     caps: 'Die Obergrenzen',
+    cloudflare: 'Anfragen und Kosten',
+    cloudflareHelp: 'Im Cloudflare-Dashboard',
     emailsDay: 'E-Mails, heute',
     emailsMonth: 'E-Mails, diesen Monat',
     capValue: '{used} von {cap}',

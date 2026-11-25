@@ -169,6 +169,8 @@ export default {
     cutEmails: 'Cut its emails',
     cutEmailsHelp: 'What its organisers send no longer goes out',
     caps: 'The caps',
+    cloudflare: 'Requests and spend',
+    cloudflareHelp: 'On the Cloudflare dashboard',
     emailsDay: 'Emails, today',
     emailsMonth: 'Emails, this month',
     capValue: '{used} of {cap}',

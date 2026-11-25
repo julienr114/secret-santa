@@ -54,6 +54,10 @@ test('the dashboard shows today, the caps and three switches', async ({
   }
   await expect(page.getByTestId('cap-emailsDay')).toContainText('sur 100');
   await expect(page.getByTestId('cap-emailsMonth')).toContainText('sur 3');
+  // Q-039: the requests and the spend, on Cloudflare's own dashboard.
+  await expect(
+    page.getByTestId('cap-cloudflare').getByRole('link'),
+  ).toHaveAttribute('href', 'https://dash.cloudflare.com/');
   for (const id of ['pause-emails', 'pause-signups', 'pause-secret-santas']) {
     await expect(page.getByTestId(id).getByRole('switch')).not.toBeChecked();
   }

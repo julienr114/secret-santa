@@ -372,7 +372,7 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 
 | Maquette | Ce que fait le code | Décidé par |
 |---|---|---|
-| `V3Admin` | « Les plafonds » n'a que les emails du jour (sur 100) et du mois (sur 3 000), avec leur jauge, l'écriture en lilas à 70 %. Les requêtes du jour et la dépense du mois attendent Q-039. « À 70 % d'un plafond, un email te prévient. » plutôt que « tu es prévenu » : une tournure neutre. | Seul (Q-039) |
+| `V3Admin` | « Les plafonds » n'a de jauge que pour les emails du jour (sur 100) et du mois (sur 3 000), l'écriture en lilas à 70 %. Les requêtes du jour et la dépense du mois sont une ligne qui ouvre le tableau de bord de Cloudflare (Q-039, B ; la lecture ici vient avec le ticket 127). « À 70 % d'un plafond, un email te prévient. » plutôt que « tu es prévenu » : une tournure neutre. | Julien (Q-039) |
 | `V3Admin` | « À traiter et à surveiller » : quatre chiffres du jour de plus (les requêtes refusées pour débit, les connexions échouées, les emails rejetés, les erreurs du serveur). « Adresses qui ont refusé les emails » vient avec le ticket 130. Pas de phrase « Une pastille : … Un chiffre : … » : elle explique l'écran. | Seul (la règle du 24 novembre) |
 | `V3Admin` | La phrase sous « En cas d'urgence » dit que les emails se suspendent tout seuls quand **ceux du mois** atteignent leur plafond, comme le ticket, et non quand la dépense l'atteint : l'application ne voit pas la dépense (Q-039). | Le ticket |
 | `V3Admin` | Les chiffres de tête, « Ce qui tourne tout seul » et la version en ligne attendent le ticket 127. | Le ticket |

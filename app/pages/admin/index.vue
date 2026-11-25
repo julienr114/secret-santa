@@ -68,6 +68,8 @@ const onSwitch = (name: keyof AppSwitches, on: boolean) => {
     },
   );
 };
+/** Where the requests of the day and the spend of the month are read. */
+const CLOUDFLARE_DASHBOARD = 'https://dash.cloudflare.com/';
 const EMERGENCY = [
   {
     name: 'emails',
@@ -249,6 +251,16 @@ const groupsLine = computed(() =>
             :color="cap.gauge.warn ? 'warning' : 'primary'"
           />
         </li>
+        <!-- Q-039 (B): the requests and the spend are Cloudflare's numbers,
+             read on its own dashboard; read here with ticket 127. -->
+        <UiListItem
+          :to="CLOUDFLARE_DASHBOARD"
+          icon="i-lucide-external-link"
+          icon-tone="neutral"
+          :title="t('auth.admin.cloudflare')"
+          :subtitle="t('auth.admin.cloudflareHelp')"
+          data-testid="cap-cloudflare"
+        />
       </UiList>
 
       <UiList

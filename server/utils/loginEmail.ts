@@ -26,8 +26,10 @@ export const buildLoginEmail = (link: string, locale: Locale): Email =>
 /**
  * The email carrying a login code (ticket 123, ConnexionCodeEmail): the
  * code in its subject and large in the email, no link (it would open in
- * the browser, not in the installed app). It says nothing about the
- * account either.
+ * the browser, not in the installed app). In the email, six digits in one
+ * block, no space, so that a double tap takes it whole (ticket 174): the
+ * gap is only a spacing of the letters. It says nothing about the account
+ * either.
  * @param code - Six digits.
  * @param locale - Language of the account.
  * @returns Subject, text and HTML.
@@ -51,7 +53,7 @@ export const buildCodeEmail = (code: string, locale: Locale): Email => {
       '',
       lines.intro,
       '',
-      spaced,
+      code,
       '',
       lines.validity,
       lines.ignore,
@@ -65,8 +67,8 @@ export const buildCodeEmail = (code: string, locale: Locale): Email => {
       p(lines.hello),
       p(lines.intro),
       p(
-        spaced,
-        'margin:8px 0 16px;font-size:32px;font-weight:700;letter-spacing:0.12em',
+        code,
+        'margin:8px 0 16px;font-size:32px;font-weight:700;letter-spacing:0.18em',
       ),
       p(lines.validity),
       p(lines.ignore),

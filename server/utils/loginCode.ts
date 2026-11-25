@@ -41,6 +41,20 @@ export const spacedCode = (code: string): string =>
 export const codeDigits = (typed: string): string =>
   typed.replace(/\D/g, '').slice(0, 6);
 
+/**
+ * The code in what was pasted (ticket 174): « 123456 », « 123 456 », the
+ * code with a dot or a space after it, or the whole line of the email
+ * (« Voici ton code … : 482 913 »). Six digits in a row, or three and
+ * three around one space, win over any other figure; else the first six
+ * digits.
+ * @param pasted - What was pasted.
+ * @returns The digits, six at most.
+ */
+export const codeFromPaste = (pasted: string): string => {
+  const found = /(?<!\d)(\d{3})[\s\u00a0]?(\d{3})(?!\d)/.exec(pasted);
+  return found ? `${found[1]}${found[2]}` : codeDigits(pasted);
+};
+
 /** Where a code stands, before its digits are compared. */
 export type CodeState = 'open' | 'expired' | 'used' | 'spent';
 

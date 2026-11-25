@@ -3,12 +3,15 @@ import {
   useLoginCodeMutation,
   useRequestLinkMutation,
 } from '~/composables/queries/useAuth';
-import { codeDigits } from '#server/utils/loginCode';
+import { codeDigits, codeFromPaste } from '#server/utils/loginCode';
 
 // « Tape ton code » (ticket 123, ConnexionCode), in the installed app
 // only: six boxes, validated at the sixth digit; « Renvoyer un code »;
-// « Utiliser une autre adresse ». One field under the six boxes, so that
-// the phone offers the code of the email and a paste fills all six.
+// « Utiliser une autre adresse ». One field over the six boxes, so that
+// the phone offers the code of the email and a paste fills all six. The
+// field is there for the finger (ticket 174): not hidden by its opacity,
+// which made the iPhone offer no « Coller », only its letters and caret
+// are transparent; and a paste takes the code out of whatever was copied.
 const props = defineProps<{ email: string; next?: string | null }>();
 const emit = defineEmits<{ other: [] }>();
 const { t } = useT();
@@ -36,6 +39,17 @@ watch(digits, async (code) => {
     },
   );
 });
+/**
+ * A paste: the code out of what was copied (« 482 913 », the code and a
+ * dot, the whole line of the email), the six boxes filled at once.
+ * @param event - The paste.
+ */
+const onPaste = (event: ClipboardEvent) => {
+  const pasted = event.clipboardData?.getData('text') ?? '';
+  if (!pasted) return;
+  event.preventDefault();
+  typed.value = codeFromPaste(pasted);
+};
 const onAgain = () => {
   check.reset();
   typed.value = '';
@@ -73,11 +87,11 @@ const onAgain = () => {
         v-model="typed"
         inputmode="numeric"
         autocomplete="one-time-code"
-        maxlength="12"
         autofocus
-        class="absolute inset-0 size-full cursor-text opacity-0"
+        class="absolute inset-0 size-full cursor-text bg-transparent text-base text-transparent caret-transparent outline-none selection:bg-transparent [-webkit-text-fill-color:transparent]"
         :disabled="check.isPending.value"
         data-testid="login-code-field"
+        @paste="onPaste"
       />
     </label>
     <p

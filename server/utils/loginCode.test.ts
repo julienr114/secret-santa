@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CODE_TRIES,
   codeDigits,
+  codeFromPaste,
   codeOf,
   codePrint,
   codeState,
@@ -53,5 +54,33 @@ describe('codePrint', () => {
     expect(print).not.toContain('482913');
     expect(print).toBe(await codePrint('482913', 'phone', 'secret'));
     expect(print).not.toBe(await codePrint('482913', 'laptop', 'secret'));
+  });
+});
+
+describe('codeFromPaste (ticket 174)', () => {
+  it('takes what people copy', () => {
+    expect(codeFromPaste('482913')).toBe('482913');
+    expect(codeFromPaste('482 913')).toBe('482913');
+    expect(codeFromPaste('482\u00a0913')).toBe('482913');
+    expect(codeFromPaste('482913.')).toBe('482913');
+    expect(codeFromPaste(' 482913 ')).toBe('482913');
+  });
+
+  it('finds the code in a whole line of the email', () => {
+    expect(
+      codeFromPaste(
+        'Voici ton code pour te connecter dans l’application : 482913',
+      ),
+    ).toBe('482913');
+    expect(
+      codeFromPaste(
+        'Ton code : 482 913. Il est valable 15 minutes et ne sert qu’une fois.',
+      ),
+    ).toBe('482913');
+  });
+
+  it('keeps the first digits of anything else', () => {
+    expect(codeFromPaste('12')).toBe('12');
+    expect(codeFromPaste('1-2-3-4-5-6-7')).toBe('123456');
   });
 });

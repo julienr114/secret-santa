@@ -117,3 +117,41 @@ test('the sixth try is refused, even with the right code', async ({
     await phone.dispose();
   }
 });
+
+test('the code is pasted whole, in what people copy (ticket 174)', async ({
+  page,
+}) => {
+  await page.addInitScript(installed);
+  await page.goto('/login');
+  await hydrated(page);
+  await page.getByLabel('Adresse email').fill('code-paste@example.com');
+  const asked = page.waitForResponse((r) => r.url().endsWith('/api/auth/link'));
+  await page.getByRole('button', { name: 'Recevoir un code' }).click();
+  const { devCode } = await (await asked).json();
+  const field = page.getByTestId('login-code-field');
+  // There for the finger: not hidden by its opacity, so that a long press
+  // offers « Coller ».
+  expect(await field.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  /** Pastes some text in the field, as the phone does. */
+  const paste = (text: string) =>
+    field.evaluate((el, value) => {
+      const data = new DataTransfer();
+      data.setData('text/plain', value);
+      el.dispatchEvent(
+        new ClipboardEvent('paste', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    }, text);
+  // The whole line of the email, the code spaced as in its subject.
+  await paste(
+    `Voici ton code pour te connecter dans l’application : ${devCode.slice(0, 3)} ${devCode.slice(3)}.`,
+  );
+  await expect(page).toHaveURL(/\/$/);
+  await hydrated(page);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'Bonjour',
+  );
+});

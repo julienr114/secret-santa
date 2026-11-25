@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLoginEmail } from './loginEmail';
+import { buildCodeEmail, buildLoginEmail } from './loginEmail';
 
 const LINK = 'https://under-the-tree.party/login/abc_DEF-123';
 
@@ -24,5 +24,16 @@ describe('buildLoginEmail', () => {
     expect(buildLoginEmail('https://x.test/?a=1&b="2"', 'fr').html).toContain(
       'https://x.test/?a=1&amp;b=&quot;2&quot;',
     );
+  });
+});
+
+describe('buildCodeEmail (ticket 174)', () => {
+  it('writes the code in one block, so that a double tap takes it whole', () => {
+    const email = buildCodeEmail('482913', 'fr');
+    expect(email.subject).toBe('Ton code Under the Tree : 482 913');
+    expect(email.text).toContain('\n482913\n');
+    expect(email.text).not.toContain('482 913');
+    expect(email.html).toContain('>482913</p>');
+    expect(email.html).not.toContain('482 913');
   });
 });

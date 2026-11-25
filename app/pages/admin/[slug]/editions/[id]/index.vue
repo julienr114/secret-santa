@@ -117,6 +117,12 @@ const missing = computed(() => {
     .map(fullName);
 });
 const avatars = computed(() => participants.value.map((p) => p.avatar));
+/** Those the app cannot email after the draw (ticket 169). */
+const unreached = computed(() =>
+  participants.value
+    .filter((p) => (p.reach ?? 'noAddress') !== 'email')
+    .map((p) => p.firstName),
+);
 /** How many exclusions the draw applied, for a closed edition. */
 const appliedExclusions = computed(
   () => edition.data.value?.edition.exclusionsAtDraw?.length ?? 0,
@@ -439,6 +445,7 @@ const onSent = () => {
       :avatars="avatars"
       :exclusion-count="exclusionCount"
       :missing="missing"
+      :unreached="unreached"
       :game-off="gameOff"
       :loading="drawMutation.isPending.value"
       @confirm="runDraw"

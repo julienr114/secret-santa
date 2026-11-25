@@ -261,8 +261,8 @@ export default {
       collapse: 'Replier la liste',
       series: {
         toNotify: 'Pas encore envoyé',
-        notOpened: 'Envoyé, pas encore ouvert',
-        viewed: 'Enveloppe ouverte',
+        notOpened: 'Envoyé, pas encore consulté',
+        viewed: 'Résultat consulté',
       },
       search: 'Chercher un prénom',
       clear: 'Effacer la recherche',
@@ -287,10 +287,6 @@ export default {
           'Il y a trop d’exclusions pour {count} participants. Retire-en une, ou ajoute quelqu’un.',
       },
       exclusions: 'Voir les exclusions',
-    },
-    notifyCount: {
-      one: 'Prévenir par email',
-      other: 'Prévenir les {count} par email',
     },
     sentTo: {
       one: '{names} est prévenu.',
@@ -360,6 +356,13 @@ export default {
         other: '{count} exclusions · personne ne se tire soi-même',
       },
       rulesDetailNone: 'Aucune exclusion · personne ne se tire soi-même',
+      emails: 'Chacun reçoit son lien par email',
+      emailsDetail: 'Dès que le tirage est fait',
+      emailsButOne: 'Sauf {name}, sans adresse : tu lui partageras son lien',
+      emailsButMany:
+        'Sauf {count} personnes sans adresse : tu leur partageras leur lien',
+      emailsNone: 'Personne n’a d’adresse email',
+      emailsNoneDetail: 'Tu partageras chaque lien après le tirage',
       missingOne: '{name} ne participe pas encore',
       missingMany: '{count} personnes ne participent pas encore',
       missingOneDetail:
@@ -377,17 +380,30 @@ export default {
       notYet: 'Pas encore',
     },
     follow: {
-      title: 'Préviens chacun que le tirage est fait',
-      titleDone: 'Tout le monde est prévenu',
+      byHandOne: 'Partage son lien à {name}',
+      byHandMany: 'Partage leur lien à {count} personnes',
+      noAddress: { one: 'sans adresse email', other: 'sans adresse email' },
+      shareLinkOf: 'Partager le lien de {name}',
+      othersEmailed: {
+        one: 'L’autre a reçu son lien par email.',
+        other: 'Les {count} autres ont reçu leur lien par email.',
+      },
+      allEmailed: 'Chacun a reçu son lien par email',
+      emailsFailed: 'Les emails ne sont pas partis',
+      sendAgain: 'Renvoyer les emails',
+      emailsSent: {
+        one: '{count} email envoyé',
+        other: '{count} emails envoyés',
+      },
       toNotify: 'à prévenir',
       notOpened: { one: 'pas encore ouvert', other: 'pas encore ouverts' },
       viewed: { one: 'a découvert', other: 'ont découvert' },
-      actionReminder: 'Relancer par email',
-      help: 'Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.',
       state: {
         toNotify: 'Pas encore envoyé',
-        notOpened: 'Envoyé, pas encore ouvert',
-        viewed: 'Enveloppe ouverte · {count}×',
+        notOpened: 'Envoyé, pas encore consulté',
+        viewed: 'Résultat consulté · {count}×',
+        noAddress: 'Pas d’adresse email',
+        noEmails: 'Ne reçoit pas d’emails',
       },
       later: 'Plus tard, ou en cas de pépin',
       closeRow: 'Clôturer le Secret Santa',
@@ -479,6 +495,11 @@ export default {
     },
     emails: {
       title: 'Envoyer par email',
+      reminderTitle: 'Envoyer un rappel',
+      sendReminders: {
+        one: 'Envoyer {count} rappel',
+        other: 'Envoyer {count} rappels',
+      },
       // Ticket 129 (EnvoiSuspendu).
       paused: 'L’envoi d’emails est en pause pour tout le monde.',
       pausedWhy:
@@ -522,6 +543,9 @@ export default {
       loadingMessage: 'Chargement du message',
       sending: 'Envoi en cours…',
       sendTo: 'Envoyer à {name}',
+      linkOf: 'Le lien de {name}',
+      addAddress: 'Ajouter son adresse email',
+      linkGoes: 'Son lien partira par email',
       resendTo: 'Renvoyer à {name}',
       close: 'Fermer',
       byEmail: 'Envoyer par email',

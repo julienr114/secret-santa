@@ -4,7 +4,8 @@ import type { NoticeItem } from '~/components/ui/Notice.vue';
 import { stackOf } from '#shared/utils/lists';
 
 // "Lancer le tirage ?": what is about to be drawn (the participants, the
-// rules, who of the group is left out) and that it is final, then
+// rules, that everyone gets their link by email, who of the group is
+// left out) and that it is final, then
 // "Tirer au sort" or "Pas encore".
 const props = defineProps<{
   slug: string;
@@ -13,6 +14,8 @@ const props = defineProps<{
   exclusionCount: number;
   /** First names of active people of the group left out of the edition. */
   missing: string[];
+  /** First names of those the app cannot email: their link goes by hand. */
+  unreached: string[];
   /** « Devine qui » is on, and a draw of three turns it off. */
   gameOff?: boolean;
   loading: boolean;
@@ -32,6 +35,29 @@ const missingNames = computed(() => {
       })
     : list.format(shown);
 });
+/** Au tirage, l'application prévient chacun (ticket 169). */
+const emailsLine = computed(() => {
+  const count = props.unreached.length;
+  if (count > 0 && count === props.avatars.length) {
+    return {
+      title: t('adminEdition.screen.drawSheet.emailsNone'),
+      detail: t('adminEdition.screen.drawSheet.emailsNoneDetail'),
+    };
+  }
+  const title = t('adminEdition.screen.drawSheet.emails');
+  if (count === 0) {
+    return { title, detail: t('adminEdition.screen.drawSheet.emailsDetail') };
+  }
+  return {
+    title,
+    detail:
+      count === 1
+        ? t('adminEdition.screen.drawSheet.emailsButOne', {
+            name: props.unreached[0] ?? '',
+          })
+        : t('adminEdition.screen.drawSheet.emailsButMany', { count }),
+  };
+});
 const items = computed<NoticeItem[]>(() => [
   {
     key: 'people',
@@ -50,6 +76,11 @@ const items = computed<NoticeItem[]>(() => [
             count: props.exclusionCount,
           })
         : t('adminEdition.screen.drawSheet.rulesDetailNone'),
+  },
+  {
+    key: 'emails',
+    state: 'ok',
+    ...emailsLine.value,
   },
   ...(props.missing.length === 0
     ? []

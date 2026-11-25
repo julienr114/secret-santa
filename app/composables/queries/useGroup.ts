@@ -1,3 +1,4 @@
+import type { Reach } from '#server/utils/drawEmails';
 import type { MembersExtras } from '#server/database/membersPage';
 import type { JournalPersonCard } from '#server/database/journal';
 import { toValue, type MaybeRefOrGetter } from 'vue';
@@ -35,6 +36,8 @@ export type EditionParticipant = Participant & {
   played?: boolean;
   /** Passed their turn (Correction 15). */
   skipped?: boolean;
+  /** How they get their link after the draw (ticket 169). */
+  reach?: Reach;
 };
 /** « Devine qui » on the edition (README 22.17). */
 export type GuessSummary = {

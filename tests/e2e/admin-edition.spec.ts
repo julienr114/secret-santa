@@ -214,16 +214,18 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByRole('button', { name: 'Pas encore' })).toBeDisabled();
   await expect(page.getByText('Les jeux sont faits').first()).toBeVisible();
   await page.unroute('**/draw');
+  // The app emails the one with an address (ticket 169); the test
+  // server sends nothing, so it says so and offers to send again.
   await expect(
-    page.getByText('Préviens chacun que le tirage est fait'),
+    page.getByRole('heading', { name: 'Les emails ne sont pas partis' }),
   ).toBeVisible();
   // The cockpit never shows who drew whom.
   const body = await page.locator('main').innerText();
   expect(body).not.toMatch(/offre|→|receiver/i);
-  // Each one is sent their link in a sheet, which then moves on to the
-  // next one still to notify. Nobody here has an address: share or copy.
+  // Each one without an address gets « Le lien de Léa », in a sheet:
+  // share or copy.
   await page.getByRole('button', { name: 'Envoyer le lien de Léa' }).click();
-  await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
+  await expect(page.getByText('Le lien de Léa').first()).toBeVisible();
   await expect(page.getByTestId('send-preview')).toContainText('Léa');
   // Only what it takes to send; « Personnaliser le message » is a screen
   // of its own, which brings the sheet back with the message chosen.
@@ -233,24 +235,15 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(page.getByRole('radio', { name: 'Tirage fait' })).toBeChecked();
   await page.getByLabel(/^Un mot en plus/).fill('À bientôt !');
   await page.getByRole('button', { name: 'Valider' }).click();
-  await expect(page.getByText('Envoyer à Léa').first()).toBeVisible();
+  await expect(page.getByText('Le lien de Léa').first()).toBeVisible();
   await expect(page.getByTestId('send-preview')).toContainText('À bientôt !');
   await expect(
     page.getByRole('button', { name: /^Modifier le message/ }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Copier le message' }).click();
-  // Once sent, the sheet closes, and the address forgets Léa: coming back
-  // to it from the email screen must not open her sheet again.
+  await page.getByRole('button', { name: 'Copier', exact: true }).click();
+  // Once sent, the sheet closes, and the address forgets Léa.
   await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   await expect(page).not.toHaveURL(/envoyer=/);
-  await page
-    .getByRole('link', { name: /par email$/ })
-    .first()
-    .click();
-  await expect(heading(page)).toHaveText('Envoyer par email');
-  await page.goBack();
-  await expect(page.getByText('Préviens chacun').first()).toBeVisible();
-  await expect(page.getByTestId('send-sheet')).toHaveCount(0);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^Léa, les jeux sont faits/);
   expect(copied).toMatch(/\/p\/[A-Za-z0-9_-]{43}/);

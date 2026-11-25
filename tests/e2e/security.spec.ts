@@ -133,7 +133,13 @@ test('the draw answers with a count, never with a pair', async () => {
     `${ADMIN}/editions/${state.editionId}/draw`,
   );
   // The organiser takes part too: a person of the group by default.
-  expect(await draw.json()).toEqual({ ok: true, count: NAMES.length + 1 });
+  // And what the emails of the draw did (ticket 169): the test server
+  // has no email key.
+  expect(await draw.json()).toEqual({
+    ok: true,
+    count: NAMES.length + 1,
+    emails: { sent: 0, failed: 'email_not_configured' },
+  });
 
   // The real pairs, as each participant sees their own.
   for (const giver of state.people) {

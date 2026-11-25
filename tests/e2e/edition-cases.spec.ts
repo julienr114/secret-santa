@@ -215,12 +215,15 @@ test('a large group folds its lists, before and after the draw', async ({
   await list.getByPlaceholder('Chercher un prénom').fill('zz');
   await expect(list.getByText('Aucun prénom ne correspond.')).toBeVisible();
 
-  // Drawn: everyone is still to notify; the series shows three rows.
+  // Drawn: nobody has an address, everyone gets their link by hand
+  // (ticket 169); the series shows three rows.
   await state.api!.post(`${at}/editions/${id}/draw`);
   await page.reload();
   await hydrated(page);
   await expect(
-    page.getByRole('link', { name: `Prévenir les ${total} par email` }),
+    page.getByRole('heading', {
+      name: `Partage leur lien à ${total} personnes`,
+    }),
   ).toBeVisible();
   const fold = page.getByRole('button', {
     name: `Voir les ${total - 3} autres`,

@@ -26,6 +26,8 @@ import { partyOrganisers } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
 import { gamePossible, guessesOpen } from '#server/utils/guesses';
 import { nudgeTime, playedCount, toRemind } from '#server/utils/nudges';
+import { reachesOf } from '#server/http/drawEmails';
+import type { Reach } from '#server/utils/drawEmails';
 
 /**
  * Where the answers of a draw made elsewhere stand (README 22.12): who
@@ -84,6 +86,8 @@ export default defineEventHandler(async (event) => {
   const members =
     edition.guessMode === 'none' ? [] : await gameMembers(db, edition.id);
   const players = new Set(members.filter((m) => m.played).map((m) => m.id));
+  // How each one gets their link after the draw (ticket 169).
+  const reaches = await reachesOf(event, db, participants);
   const skipped = new Set(members.filter((m) => m.skipped).map((m) => m.id));
   const count = playedCount(members);
   const left = toRemind(members).length;
@@ -130,10 +134,12 @@ export default defineEventHandler(async (event) => {
       ...p,
       played: players.has(p.id),
       skipped: skipped.has(p.id),
+      reach: reaches.get(p.id) ?? 'noAddress',
     })) as (Participant & {
       answerStatus?: AnswerStatus;
       played: boolean;
       skipped: boolean;
+      reach: Reach;
     })[],
     guess,
     answers: answers.answers,

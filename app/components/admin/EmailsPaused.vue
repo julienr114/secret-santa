@@ -3,8 +3,8 @@
 // organiser who wants to send: it does not come from them, and the links
 // can still be shared from the phone, one by one.
 defineProps<{
-  /** Where the links are shared one by one: the follow-up. */
-  to: string;
+  /** Where the links are shared one by one: the follow-up; none on it. */
+  to?: string;
 }>();
 const { t } = useT();
 </script>
@@ -25,6 +25,7 @@ const { t } = useT();
       {{ t('adminEdition.screen.emails.pausedMeanwhile') }}
     </p>
     <UButton
+      v-if="to"
       :to="to"
       block
       size="xl"

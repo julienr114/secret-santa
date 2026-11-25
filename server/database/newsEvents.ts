@@ -43,6 +43,7 @@ const anyOf = (ids: readonly string[]) => (ids.length === 0 ? [''] : [...ids]);
  * @param input.secretSantaId - The Secret Santa.
  * @param input.partyId - Its event.
  * @param input.kind - What happened.
+ * @param input.mailable - Whether it may go by the email of the news.
  * @param now - Now (ISO).
  * @returns Once written.
  */
@@ -52,6 +53,8 @@ export const tellParticipants = (
     secretSantaId: string;
     partyId: string;
     kind: 'envelope' | 'revealed' | 'palmares' | 'game_open';
+    /** False: in the app only, the email already went (ticket 169). */
+    mailable?: boolean;
   },
   now: string,
 ) =>
@@ -71,6 +74,7 @@ export const tellParticipants = (
         kind: input.kind,
         targetId: input.secretSantaId,
         partyId: input.partyId,
+        ...(input.mailable === false ? { mailable: false } : {}),
       }),
       now,
     );

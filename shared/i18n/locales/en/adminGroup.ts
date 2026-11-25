@@ -212,7 +212,7 @@ export default {
       'Nobody gives to someone they already had in the last years.',
     messageNote: 'Word added to messages',
     messageNoteHelp:
-      'When you send someone their link, or a reminder, your word goes with it. You can still change it when sending.',
+      'Your word goes with the email of the draw and with your reminders.',
     yourWord: 'Your word',
     asTyped: 'Sent as is, whatever the language.',
     where: 'Where to put it',

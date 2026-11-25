@@ -4,7 +4,16 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-042 — Après le tirage, ceux qui ne reçoivent pas d'emails, et un envoi qui a échoué : que dit le bloc du suivi ? (ticket 169)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. C'est codé comme A et C.
+- **Ce qu'on a trouvé** : la spec (« Au tirage, l'application prévient chacun ») ne dit pas où compter, dans « À faire maintenant », quelqu'un qui a une adresse mais ne reçoit pas d'emails (adresse qui a refusé, compte réglé sur « Aucun email ») : la maquette `Suivi` n'a que « sans adresse email ». Elle ne dessine pas non plus le bloc « Les emails ne sont pas partis ».
+- **Les choix** :
+  - A. Les compter dans « sans adresse email » : eux aussi reçoivent leur lien à la main ; sous leur prénom, « Ne reçoit pas d'emails ».
+  - B. Un chiffre de plus, « ne reçoit pas d'emails ».
+  - C. L'envoi échoué : « À faire maintenant », « Les emails ne sont pas partis », les trois chiffres (« à prévenir », « pas encore ouvert », « a découvert »), « Renvoyer les emails » ; quand les emails sont suspendus, l'avis d'`EnvoiSuspendu` à la place du bouton.
+- **Ce que je ferais** : A et C, codés ainsi.
 
 ## Réponses
 

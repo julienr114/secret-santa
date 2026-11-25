@@ -1,5 +1,6 @@
 import { drawStatements, loadDrawContext } from '#server/database/draw';
-import { recordEvent } from '#server/database/audit';
+import { recordEvent, wasDrawCancelled } from '#server/database/audit';
+import { sendDrawEmails } from '#server/http/drawEmails';
 import { tellGameOpen, tellParticipants } from '#server/database/newsEvents';
 import { requireEdition } from '#server/http/edition';
 import { dataKeyOf, newId, nowIso } from '#server/http/context';
@@ -51,10 +52,16 @@ export default defineEventHandler(async (event) => {
     actor: user.role,
     meta: { count: pairs.length },
   });
-  // « Ton enveloppe t'attend », in the app (ticket 120).
+  // « Ton enveloppe t'attend », in the app (ticket 120); by email, the
+  // message of the draw says it (ticket 169).
   await tellParticipants(
     db,
-    { secretSantaId: edition.id, partyId: group.id, kind: 'envelope' },
+    {
+      secretSantaId: edition.id,
+      partyId: group.id,
+      kind: 'envelope',
+      mailable: false,
+    },
     nowIso(),
   );
   // « À toi de jouer », when « Devine qui » is on (ticket 142).
@@ -63,5 +70,17 @@ export default defineEventHandler(async (event) => {
     { secretSantaId: edition.id, partyId: group.id },
     nowIso(),
   );
-  return { ok: true, count: pairs.length };
+  // Au tirage, l'application prévient chacun (ticket 169): the draw is
+  // made whatever the sending does.
+  const emails = await sendDrawEmails(event, {
+    db,
+    group,
+    edition,
+    rules,
+    type: (await wasDrawCancelled(db, group.id, edition.id))
+      ? 'redraw'
+      : 'drawn',
+    accountId: user.accountId,
+  }).catch(() => ({ sent: 0, failed: 'email_failed' }));
+  return { ok: true, count: pairs.length, emails };
 });

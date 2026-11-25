@@ -11,6 +11,11 @@ import {
   type FollowState,
 } from '#server/utils/editions';
 import { FOLD_FROM, foldList, listView, type Fold } from '#shared/utils/lists';
+import { drawEmailsState } from '#server/utils/drawEmails';
+import {
+  useDrawEmailsMutation,
+  useEmailsPausedQuery,
+} from '~/composables/queries/useEdition';
 
 // After the draw: what to do now (let everyone know; from the day of the
 // party, reveal the results, or close without revealing once it is
@@ -49,7 +54,6 @@ const emit = defineEmits<{
 }>();
 const { t } = useT();
 
-const base = computed(() => `/admin/${props.slug}/editions/${props.editionId}`);
 const sorted = computed(() => sortParticipants(props.participants, 'drawn'));
 const counts = computed(() => participantCounters(props.participants));
 /**
@@ -59,18 +63,76 @@ const counts = computed(() => participantCounters(props.participants));
 const withHints = computed(
   () => props.participants.filter((p) => p.hasHints).length,
 );
-const allNotified = computed(() => counts.value.toNotify === 0);
-/** The message the email screen opens on. */
-const emailType = computed(() => {
-  if (allNotified.value) return 'reminder';
-  return props.redrawn ? 'redraw' : 'drawn';
+// Au tirage, l'application prévient chacun (ticket 169): the card says
+// who is left to tell by hand, that everyone has their email, or that
+// the emails did not go out.
+const reached = computed(() =>
+  props.participants.map((p) => ({ ...p, reach: p.reach ?? 'noAddress' })),
+);
+const emails = computed(() => drawEmailsState(reached.value));
+/** Those left to tell by hand: no address, or no emails. */
+const byHand = computed(() =>
+  sortParticipants(
+    reached.value.filter(
+      (p) => p.reach !== 'email' && !p.messageSentAt && p.viewCount === 0,
+    ),
+    'drawn',
+  ),
+);
+const cardTitle = computed(() => {
+  if (emails.value === 'failed') {
+    return t('adminEdition.screen.follow.emailsFailed');
+  }
+  if (emails.value === 'sent')
+    return t('adminEdition.screen.follow.allEmailed');
+  return byHand.value.length === 1
+    ? t('adminEdition.screen.follow.byHandOne', {
+        name: fullName(byHand.value[0]!),
+      })
+    : t('adminEdition.screen.follow.byHandMany', {
+        count: byHand.value.length,
+      });
 });
+const emailsPaused = useEmailsPausedQuery();
+const paused = computed(() => emailsPaused.data.value?.paused ?? false);
+const drawEmails = useDrawEmailsMutation(
+  () => props.slug,
+  () => props.editionId,
+);
+const resending = useBusy(() => drawEmails.isPending.value);
+const errorMessage = useErrorMessage();
+const toast = useMessages();
+/**
+ * « Renvoyer les emails »: the message of the draw to those it missed.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const sendAgain = () =>
+  drawEmails.mutate(
+    {},
+    {
+      onSuccess: ({ sent }) =>
+        toast.done(t('adminEdition.screen.follow.emailsSent', { count: sent })),
+      onError: (error) => toast.failed(errorMessage(error)),
+    },
+  );
 const counters = computed(() => [
-  {
-    value: counts.value.toNotify,
-    label: t('adminEdition.screen.follow.toNotify'),
-    tone: 'primary' as const,
-  },
+  ...(emails.value === 'sent'
+    ? []
+    : [
+        {
+          value:
+            emails.value === 'failed'
+              ? counts.value.toNotify
+              : byHand.value.length,
+          label:
+            emails.value === 'failed'
+              ? t('adminEdition.screen.follow.toNotify')
+              : t('adminEdition.screen.follow.noAddress', {
+                  count: byHand.value.length,
+                }),
+          tone: 'primary' as const,
+        },
+      ]),
   {
     value: counts.value.notOpened,
     label: t('adminEdition.screen.follow.notOpened', {
@@ -262,29 +324,46 @@ const partyTitle = computed(() =>
   </UiActionCard>
   <UiActionCard
     v-else
-    :eyebrow="t('adminEdition.screen.now')"
-    :title="
-      allNotified
-        ? t('adminEdition.screen.follow.titleDone')
-        : t('adminEdition.screen.follow.title')
+    :eyebrow="emails === 'sent' ? undefined : t('adminEdition.screen.now')"
+    :title="cardTitle"
+    :help="
+      emails === 'manual'
+        ? t('adminEdition.screen.follow.othersEmailed', {
+            count: participants.length - byHand.length,
+          })
+        : undefined
     "
-    :help="t('adminEdition.screen.follow.help')"
     data-testid="action-card"
   >
     <UiCounters :items="counters" />
-    <template #action>
+    <AdminEmailsPaused v-if="emails === 'failed' && paused" />
+    <template v-if="emails !== 'sent'" #action>
       <UButton
+        v-if="emails === 'failed' && !paused"
         block
         size="xl"
         class="h-12 justify-center font-bold"
         :ui="{ leadingIcon: 'size-5' }"
         icon="i-lucide-mail"
-        :to="`${base}/emails?type=${emailType}`"
+        :loading="resending"
+        :disabled="drawEmails.isPending.value"
+        :label="t('adminEdition.screen.follow.sendAgain')"
+        data-testid="send-again"
+        @click="sendAgain"
+      />
+      <UButton
+        v-else-if="emails === 'manual' && byHand.length === 1"
+        block
+        size="xl"
+        class="h-12 justify-center font-bold"
+        :ui="{ leadingIcon: 'size-5' }"
+        icon="i-lucide-share-2"
         :label="
-          allNotified
-            ? t('adminEdition.screen.follow.actionReminder')
-            : t('adminEdition.screen.notifyCount', { count: counts.toNotify })
+          t('adminEdition.screen.follow.shareLinkOf', {
+            name: fullName(byHand[0]!),
+          })
         "
+        @click="emit('send', byHand[0]!.participationId)"
       />
     </template>
   </UiActionCard>

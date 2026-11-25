@@ -10,7 +10,7 @@ import {
 import { listView, stackOf } from '#shared/utils/lists';
 import {
   addNote,
-  messageTypesFor,
+  emailTypesFor,
   type MessageType,
 } from '#server/utils/messages';
 import { useEditionQuery } from '~/composables/queries/useGroup';
@@ -37,19 +37,22 @@ const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
 const context = useScreenContext(slug, id);
-useHead({
-  title: () => context.titleOf(t('adminEdition.screen.emails.title')),
-});
+const edition = useEditionQuery(slug, id);
+const pageTitle = computed(() =>
+  edition.data.value?.edition.status === 'drawn'
+    ? t('adminEdition.screen.emails.reminderTitle')
+    : t('adminEdition.screen.emails.title'),
+);
+useHead({ title: () => context.titleOf(pageTitle.value) });
 const screen = computed(() => ({
   back: editionPath.value,
   bar: {
-    title: t('adminEdition.screen.emails.title'),
+    title: pageTitle.value,
     context: context.parts.value.map((part) => part.label).join(' · '),
     cancel: t('common.actions.cancel'),
   },
 }));
 
-const edition = useEditionQuery(slug, id);
 // The emails suspended for everyone (ticket 129): EnvoiSuspendu instead.
 const emailsPaused = useEmailsPausedQuery();
 const paused = computed(() => emailsPaused.data.value?.paused ?? false);
@@ -100,7 +103,9 @@ const drawMode = computed(() => edition.data.value?.edition.drawMode ?? 'app');
 const answering = computed(
   () => status.value === 'preparing' && drawMode.value === 'elsewhere',
 );
-const types = computed(() => messageTypesFor(status.value, drawMode.value));
+const types = computed(() => emailTypesFor(status.value, drawMode.value));
+/** After the draw, only the reminder (ticket 169). */
+const reminding = computed(() => status.value === 'drawn');
 const asked = computed(() => String(route.query.type ?? ''));
 const choice = useMessageChoice(id);
 const chosen = computed(() =>
@@ -159,7 +164,9 @@ const preselected = computed(() =>
     .filter((p) =>
       answering.value
         ? preselectedForAnswers(type.value, p)
-        : preselectedForEmail(p),
+        : reminding.value
+          ? Boolean(p.email) && followState(p) === 'notOpened'
+          : preselectedForEmail(p),
     )
     .map((p) => p.participationId),
 );
@@ -475,9 +482,13 @@ const onSend = () =>
                 ? t('adminEdition.screen.emails.sending', {
                     count: selected.length,
                   })
-                : t('adminEdition.screen.emails.send', {
-                    count: selected.length,
-                  })
+                : reminding
+                  ? t('adminEdition.screen.emails.sendReminders', {
+                      count: selected.length,
+                    })
+                  : t('adminEdition.screen.emails.send', {
+                      count: selected.length,
+                    })
             "
             @click="onSend"
           />

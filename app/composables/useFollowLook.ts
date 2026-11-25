@@ -1,5 +1,6 @@
 import type { Participant } from '#server/database/editions';
 import { followState, type FollowState } from '#server/utils/editions';
+import type { Reach } from '#server/utils/drawEmails';
 
 /** Icon of each state after the draw, its colour and that of the words. */
 const STATES: Record<
@@ -36,12 +37,18 @@ export const useFollowLook = () => {
    * @param p - The participant.
    * @returns The icon, the tone classes of the icon and the words, the words.
    */
-  const lookOf = (p: Participant) => {
+  const lookOf = (p: Participant & { reach?: Reach }) => {
     const state = followState(p);
+    // After the draw, someone the app does not email is said so
+    // (ticket 169): « Pas encore envoyé » only when the sending failed.
+    const byHand =
+      state === 'toNotify' && p.reach && p.reach !== 'email' ? p.reach : null;
     return {
       ...STATES[state],
-      text:
-        state === 'viewed'
+      ...(byHand ? { icon: 'i-lucide-mail-x' } : {}),
+      text: byHand
+        ? t(`adminEdition.screen.follow.state.${byHand}`)
+        : state === 'viewed'
           ? t('adminEdition.screen.follow.state.viewed', { count: p.viewCount })
           : t(`adminEdition.screen.follow.state.${state}`),
     };

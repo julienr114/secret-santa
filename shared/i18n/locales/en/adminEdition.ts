@@ -262,8 +262,8 @@ export default {
       collapse: 'Fold the list',
       series: {
         toNotify: 'Not sent yet',
-        notOpened: 'Sent, not opened yet',
-        viewed: 'Envelope opened',
+        notOpened: 'Sent, not looked at yet',
+        viewed: 'Result looked at',
       },
       search: 'Search a first name',
       clear: 'Clear the search',
@@ -288,10 +288,6 @@ export default {
           'There are too many exclusions for {count} participants. Remove one, or add someone.',
       },
       exclusions: 'See the exclusions',
-    },
-    notifyCount: {
-      one: 'Notify by email',
-      other: 'Notify the {count} by email',
     },
     sentTo: {
       one: '{names} has been notified.',
@@ -361,6 +357,14 @@ export default {
         other: '{count} exclusions · nobody draws themselves',
       },
       rulesDetailNone: 'No exclusion · nobody draws themselves',
+      emails: 'Everyone gets their link by email',
+      emailsDetail: 'As soon as the draw is made',
+      emailsButOne:
+        'Except {name}, without an address: you’ll share their link',
+      emailsButMany:
+        'Except {count} people without an address: you’ll share their links',
+      emailsNone: 'Nobody has an email address',
+      emailsNoneDetail: 'You’ll share each link after the draw',
       missingOne: '{name} does not take part yet',
       missingMany: '{count} people do not take part yet',
       missingOneDetail:
@@ -378,17 +382,30 @@ export default {
       notYet: 'Not yet',
     },
     follow: {
-      title: 'Let everyone know the draw is done',
-      titleDone: 'Everyone’s been told',
+      byHandOne: 'Share their link with {name}',
+      byHandMany: 'Share their links with {count} people',
+      noAddress: {
+        one: 'without an email address',
+        other: 'without an email address',
+      },
+      shareLinkOf: 'Share {name}’s link',
+      othersEmailed: {
+        one: 'The other one got their link by email.',
+        other: 'The {count} others got their link by email.',
+      },
+      allEmailed: 'Everyone got their link by email',
+      emailsFailed: 'The emails did not go out',
+      sendAgain: 'Send the emails again',
+      emailsSent: { one: '{count} email sent', other: '{count} emails sent' },
       toNotify: 'to notify',
       notOpened: { one: 'not opened yet', other: 'not opened yet' },
       viewed: { one: 'has discovered', other: 'have discovered' },
-      actionReminder: 'Remind by email',
-      help: 'No email address? The button of each row shares the link by WhatsApp or SMS.',
       state: {
         toNotify: 'Not sent yet',
-        notOpened: 'Sent, not opened yet',
-        viewed: 'Envelope opened · {count}×',
+        notOpened: 'Sent, not looked at yet',
+        viewed: 'Result looked at · {count}×',
+        noAddress: 'No email address',
+        noEmails: 'Gets no emails',
       },
       later: 'Later, or if something goes wrong',
       closeRow: 'Close the Secret Santa',
@@ -479,6 +496,11 @@ export default {
     },
     emails: {
       title: 'Send by email',
+      reminderTitle: 'Send a reminder',
+      sendReminders: {
+        one: 'Send {count} reminder',
+        other: 'Send {count} reminders',
+      },
       paused: 'Sending emails is paused for everyone.',
       pausedWhy:
         'It isn’t you: the app has reached its limit. Sending will start again by itself.',
@@ -521,6 +543,9 @@ export default {
       loadingMessage: 'Loading the message',
       sending: 'Sending…',
       sendTo: 'Send to {name}',
+      linkOf: '{name}’s link',
+      addAddress: 'Add their email address',
+      linkGoes: 'Their link will go by email',
       resendTo: 'Send again to {name}',
       close: 'Close',
       byEmail: 'Send by email',

@@ -5,7 +5,8 @@
 // of help under it, and a last row across the card (`footer`), set apart
 // by a line. An illustration may head the card (`illustration`).
 defineProps<{
-  eyebrow: string;
+  /** Left out when nothing is left to do. */
+  eyebrow?: string;
   title: string;
   help?: string;
   /** `warning` when something must be fixed first: the label turns lilac. */
@@ -20,6 +21,7 @@ defineProps<{
     </div>
     <div class="flex flex-col gap-1">
       <p
+        v-if="eyebrow"
         class="text-xs font-bold tracking-[0.04em] uppercase"
         :class="tone === 'warning' ? 'text-warning-ink' : 'text-primary-ink'"
       >

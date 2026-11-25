@@ -25,7 +25,7 @@ import {
   NOTE_POSITIONS,
   buildEmail,
   emailTargets,
-  messageTypesFor,
+  emailTypesFor,
 } from '#server/utils/messages';
 
 // Bulk sending by email. Sharing from the phone stays the default way; this only saves the
@@ -50,7 +50,9 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
   const { type, audience, participationIds, note, notePosition } =
     await validatedBody(event, bodySchema);
-  if (!messageTypesFor(edition.status, edition.drawMode).includes(type)) {
+  // The message of the draw goes from the app (ticket 169): the
+  // organiser keeps the reminders.
+  if (!emailTypesFor(edition.status, edition.drawMode).includes(type)) {
     throw createError({
       statusCode: 409,
       statusMessage: 'message_not_available',

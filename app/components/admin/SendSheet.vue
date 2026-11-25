@@ -11,6 +11,7 @@ import {
   type NotePosition,
 } from '#server/utils/messages';
 import {
+  useDrawEmailsMutation,
   useLinkCopiedMutation,
   useMessagesQuery,
   useSendEmailsMutation,
@@ -45,6 +46,21 @@ const errorMessage = useErrorMessage();
 const toast = useMessages();
 
 const resend = computed(() => Boolean(props.participant.messageSentAt));
+// After the draw, the message of the draw goes from the app (ticket 169):
+// someone it does not email gets « Le lien de Rose », shared from the
+// phone; an address added makes their email leave at once.
+const drawn = computed(() => props.status === 'drawn');
+const byHand = computed(
+  () => drawn.value && (props.participant.reach ?? 'email') !== 'email',
+);
+/** Sent by email from here: an address the app may write to. */
+const emailable = computed(
+  () => Boolean(props.participant.email) && !byHand.value,
+);
+const drawEmails = useDrawEmailsMutation(
+  () => props.slug,
+  () => props.editionId,
+);
 const types = computed(() => messageTypesFor(props.status, props.drawMode));
 /** While the answers of a draw made elsewhere are collected. */
 const answering = computed(
@@ -96,8 +112,12 @@ const sendEmails = useSendEmailsMutation(
   () => props.slug,
   () => props.editionId,
 );
-const waiting = computed(() => !text.value || sendEmails.isPending.value);
-const sending = useBusy(() => sendEmails.isPending.value);
+const waiting = computed(
+  () => !text.value || sendEmails.isPending.value || drawEmails.isPending.value,
+);
+const sending = useBusy(
+  () => sendEmails.isPending.value || drawEmails.isPending.value,
+);
 /**
  * The message is on its way: forgets the choice, then closes.
  * @returns Nothing.
@@ -145,7 +165,11 @@ const onCopyLink = async () => {
  * Emails the message to this participant, then moves on.
  * @returns Nothing: the mutation reports by itself.
  */
-const onEmail = () =>
+const onEmail = () => {
+  if (type.value === 'drawn' || type.value === 'redraw') {
+    sendDrawEmail();
+    return;
+  }
   sendEmails.mutate(
     {
       type: type.value,
@@ -166,14 +190,45 @@ const onEmail = () =>
       onError,
     },
   );
+};
+/**
+ * The message of the draw, from the app, to this participant: after a
+ * failed sending, or once their address is added.
+ * @returns Nothing: the mutation reports by itself.
+ */
+const sendDrawEmail = () =>
+  drawEmails.mutate(
+    { participationIds: [props.participant.participationId] },
+    {
+      onSuccess: () => {
+        toast.done(
+          t('adminEdition.screen.sheet.emailSent', {
+            name: fullName(props.participant),
+          }),
+        );
+        done();
+      },
+      onError,
+    },
+  );
+/**
+ * Their address is saved: after the draw, their email leaves at once.
+ * @returns Nothing.
+ */
+const onAddressSaved = () => {
+  editingEmail.value = false;
+  if (drawn.value && !resend.value) sendDrawEmail();
+};
 const name = computed(() => fullName(props.participant));
 const title = computed(() =>
   answering.value
     ? tk(`adminEdition.answers.sheet.${type.value}`, { name: name.value })
     : t(
-        resend.value
-          ? 'adminEdition.screen.sheet.resendTo'
-          : 'adminEdition.screen.sheet.sendTo',
+        byHand.value && !resend.value
+          ? 'adminEdition.screen.sheet.linkOf'
+          : resend.value
+            ? 'adminEdition.screen.sheet.resendTo'
+            : 'adminEdition.screen.sheet.sendTo',
         { name: name.value },
       ),
 );
@@ -294,7 +349,7 @@ watch(
 
       <div class="mt-4 flex flex-col gap-2.5">
         <UButton
-          v-if="participant.email"
+          v-if="emailable"
           block
           icon="i-lucide-mail"
           :disabled="waiting"
@@ -316,7 +371,7 @@ watch(
           </span>
         </UButton>
         <UButton
-          v-else
+          v-else-if="!byHand"
           block
           icon="i-lucide-share-2"
           :disabled="waiting"
@@ -325,7 +380,7 @@ watch(
           @click="onShare"
         />
         <div
-          v-if="participant.email && !resend"
+          v-if="(emailable && !resend) || byHand"
           class="grid grid-cols-2 gap-2.5"
         >
           <UButton
@@ -350,7 +405,7 @@ watch(
           />
         </div>
         <UButton
-          v-else-if="!participant.email"
+          v-else-if="!emailable"
           block
           variant="outline"
           color="neutral"
@@ -365,9 +420,23 @@ watch(
           :slug="slug"
           :person-id="participant.id"
           :label="t('adminEdition.screen.sheet.emailLabel', { name })"
-          :help="t('adminEdition.screen.sheet.emailHelp', { name })"
-          @saved="editingEmail = false"
+          :help="
+            drawn
+              ? t('adminEdition.screen.sheet.linkGoes')
+              : t('adminEdition.screen.sheet.emailHelp', { name })
+          "
+          @saved="onAddressSaved"
         />
+        <UiList v-else-if="!participant.email && drawn && !resend">
+          <UiListItem
+            icon="i-lucide-mail-plus"
+            :title="t('adminEdition.screen.sheet.addAddress')"
+            :subtitle="t('adminEdition.screen.sheet.linkGoes')"
+            :on-click="() => (editingEmail = true)"
+            chevron
+            data-testid="add-address"
+          />
+        </UiList>
         <div
           v-else-if="!participant.email"
           class="flex items-center gap-2.5 rounded-md bg-muted px-3 py-2.5"

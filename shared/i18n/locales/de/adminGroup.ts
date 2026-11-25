@@ -216,7 +216,7 @@ export default {
       'Niemand beschenkt jemanden, den er in den letzten Jahren schon hatte.',
     messageNote: 'Wort in den Nachrichten',
     messageNoteHelp:
-      'Wenn du jemandem den Link oder eine Erinnerung schickst, geht dein Wort mit. Du kannst es beim Senden noch ändern.',
+      'Dein Wort geht mit der E-Mail der Auslosung und mit deinen Erinnerungen raus.',
     yourWord: 'Dein Wort',
     asTyped: 'Wird unverändert gesendet, egal in welcher Sprache.',
     where: 'Wo platzieren',

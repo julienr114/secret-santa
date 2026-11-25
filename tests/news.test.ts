@@ -155,6 +155,21 @@ describe('writing news', () => {
     expect(await countUnseen(db, 'ac')).toBe(1);
   });
 
+  it('the envelope of a draw stays in the app: its email went (ticket 169)', async () => {
+    const { db } = await setup();
+    await tellParticipants(
+      db,
+      { secretSantaId: 's1', partyId: 'p1', kind: 'envelope', mailable: false },
+      NOW,
+    );
+    const rows = await db
+      .select({ mailable: news.mailable })
+      .from(news)
+      .where(eq(news.kind, 'envelope'));
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((row) => !row.mailable)).toBe(true);
+  });
+
   it('reading « Quoi de neuf » marks nothing', async () => {
     const { db, key, account } = await setup();
     await tellParticipants(

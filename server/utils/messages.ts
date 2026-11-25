@@ -52,6 +52,21 @@ export const messageTypesFor = (
 };
 
 /**
+ * The messages the organiser sends by email: after the draw, its message
+ * goes from the app (ticket 169), the organiser keeps the reminder.
+ * @param status - Status of the edition.
+ * @param mode - How it is drawn: by the app, or elsewhere.
+ * @returns The messages.
+ */
+export const emailTypesFor = (
+  status: string,
+  mode: string = 'app',
+): MessageType[] =>
+  messageTypesFor(status, mode).filter(
+    (type) => type !== 'drawn' && type !== 'redraw',
+  );
+
+/**
  * The message offered first when a sheet opens for someone (README 13.2):
  * before the draw, the invitation, then its reminder; after the draw, the
  * draw done, its reminder once sent, and the new draw after a redraw.

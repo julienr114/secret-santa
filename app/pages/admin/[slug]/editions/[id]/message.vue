@@ -5,6 +5,7 @@ import {
   NOTE_MAX,
   addNote,
   defaultMessageType,
+  emailTypesFor,
   messageTypesFor,
   type MessageType,
 } from '#server/utils/messages';
@@ -94,7 +95,12 @@ const count = computed(() => selection.value?.length ?? 0);
 // The draft starts from what was chosen before, or the message for them.
 const choice = useMessageChoice(id);
 const drawMode = computed(() => edition.data.value?.edition.drawMode ?? 'app');
-const types = computed(() => messageTypesFor(status.value, drawMode.value));
+// Several by email: after the draw, only the reminder (ticket 169).
+const types = computed(() =>
+  many.value
+    ? emailTypesFor(status.value, drawMode.value)
+    : messageTypesFor(status.value, drawMode.value),
+);
 const asked = computed(() => String(route.query.type ?? ''));
 /**
  * The message the draft starts from.

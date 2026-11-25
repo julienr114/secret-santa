@@ -211,8 +211,7 @@ export default {
     excludePreviousYearsHelp:
       "Personne n'offre à quelqu'un qu'il a déjà eu ces dernières années.",
     messageNote: 'Mot ajouté aux messages',
-    messageNoteHelp:
-      'Quand tu envoies son lien à quelqu’un, ou un rappel, ton mot part avec. Tu peux encore le changer au moment d’envoyer.',
+    messageNoteHelp: 'Ton mot part avec l’email du tirage et avec tes rappels.',
     yourWord: 'Ton mot',
     asTyped: 'Envoyé tel quel, quelle que soit la langue.',
     where: 'Où le placer',

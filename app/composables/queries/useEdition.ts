@@ -198,6 +198,23 @@ export const useSendEmailsMutation = (slug: Ref, id: Ref) =>
     () => groupKeys(slug),
   );
 
+/**
+ * The message of the draw, from the app (ticket 169): sent again after a
+ * failure, or to someone whose address was just added.
+ * @param slug - The event.
+ * @param id - The Secret Santa.
+ * @returns The mutation.
+ */
+export const useDrawEmailsMutation = (slug: Ref, id: Ref) =>
+  useApiMutation<{ sent: number }, { participationIds?: string[] }>(
+    (body) =>
+      api(`${base(slug)}/editions/${toValue(id)}/draw-emails`, {
+        method: 'POST',
+        body,
+      }),
+    () => groupKeys(slug),
+  );
+
 export type DrawPair = { giverId: string; receiverId: string | null };
 
 export const useWaiveMutation = (slug: Ref, id: Ref) =>

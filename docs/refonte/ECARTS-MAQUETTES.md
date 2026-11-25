@@ -410,3 +410,12 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `Installer` | Un panneau du bas, sur l'accueil ou depuis « Me prévenir », plutôt qu'une carte sur l'accueil ; « savoir tout de suite quand ton enveloppe t'attend » plutôt que « être prévenu » (tournure neutre). Sur Android, un seul bouton « Installer » à la place des trois gestes. | Seul |
 | `NotifAutoriser` | Titre « Des notifications sur ce téléphone ? » plutôt que « Être prévenu sur ce téléphone ? » (tournure neutre) ; « Tu pourras changer d'avis dans « Me prévenir » » plutôt que « dans « Mon compte » », là où est l'interrupteur. | Seul |
 | `NotifReglage` | « Sur ce téléphone » n'apparaît que sur un téléphone : « Installer l'application » dans un navigateur, l'interrupteur « Notifications » (« Tout de suite, quand quelque chose presse », Q-041) une fois installée ou là où le navigateur le permet. Pas de lien « Installer l'application sur un autre téléphone ». | Seul |
+
+## Au tirage, l'application prévient chacun (ticket 169)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `Suivi` | Le premier chiffre « sans adresse email » compte aussi ceux qui ne reçoivent pas d'emails (adresse qui a refusé, compte réglé sur « Aucun email ») : eux aussi reçoivent leur lien à la main. Quand l'envoi a échoué, le bloc dit « Les emails ne sont pas partis », avec « à prévenir » comme premier chiffre et « Renvoyer les emails » ; aucune maquette ne le dessine. Les séries repliées (plus de douze personnes) gardent leur titre « Pas encore envoyé ». | Seul (Q à la conception) |
+| `Envoi` | « Ajouter son adresse email » est une ligne qui ouvre le champ dans le panneau, comme avant le ticket (le champ en ligne d'une fiche), et non une page. Une fois l'adresse enregistrée, l'email du tirage part et le panneau se ferme. | Seul |
+| `SelectionEmail` | Pas redessinée : le titre devient « Envoyer un rappel », le bouton « Envoyer N rappels », et sont cochés d'avance ceux qui ont une adresse et n'ont pas encore ouvert. | Le ticket |
+

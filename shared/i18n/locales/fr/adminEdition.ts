@@ -383,6 +383,7 @@ export default {
       byHandOne: 'Partage son lien à {name}',
       byHandMany: 'Partage leur lien à {count} personnes',
       noAddress: { one: 'sans adresse email', other: 'sans adresse email' },
+      byHand: 'à prévenir à la main',
       shareLinkOf: 'Partager le lien de {name}',
       othersEmailed: {
         one: 'L’autre a reçu son lien par email.',

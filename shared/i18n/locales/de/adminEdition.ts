@@ -394,6 +394,7 @@ export default {
       byHandOne: 'Teile {name} den Link',
       byHandMany: 'Teile {count} Personen ihren Link',
       noAddress: { one: 'ohne E-Mail-Adresse', other: 'ohne E-Mail-Adresse' },
+      byHand: 'selbst zu benachrichtigen',
       shareLinkOf: 'Link von {name} teilen',
       othersEmailed: {
         one: 'Die andere Person hat ihren Link per E-Mail bekommen.',

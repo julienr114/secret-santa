@@ -127,9 +127,13 @@ const counters = computed(() => [
           label:
             emails.value === 'failed'
               ? t('adminEdition.screen.follow.toNotify')
-              : t('adminEdition.screen.follow.noAddress', {
-                  count: byHand.value.length,
-                }),
+              : // « à prévenir à la main » once one of them has an
+                // address but gets no emails (Q-042).
+                byHand.value.some((p) => p.reach === 'noEmails')
+                ? t('adminEdition.screen.follow.byHand')
+                : t('adminEdition.screen.follow.noAddress', {
+                    count: byHand.value.length,
+                  }),
           tone: 'primary' as const,
         },
       ]),

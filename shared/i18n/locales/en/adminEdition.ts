@@ -388,6 +388,7 @@ export default {
         one: 'without an email address',
         other: 'without an email address',
       },
+      byHand: 'to tell by hand',
       shareLinkOf: 'Share {name}’s link',
       othersEmailed: {
         one: 'The other one got their link by email.',

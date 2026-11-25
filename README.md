@@ -907,6 +907,8 @@ secret-santa/
 | `CSP_MODE` | La politique de contenu : `report` par défaut (le navigateur signale sans refuser), `enforce` pour l'appliquer, `off` |
 | `NUXT_SESSION_PASSWORD` | Clé de scellement des cookies de session (32 caractères minimum) |
 | `DATA_KEY` | Clé AES-256 (base64) pour chiffrer receveurs et jetons |
+| `PRINT_KEY` | Le poivre des empreintes d'adresses (refus, « déjà écrit ») ; vaut `DATA_KEY` tant qu'il n'est pas posé. Posé à l'ancienne clé quand `DATA_KEY` change (Q-043) |
+| `DATA_KEY_PREVIOUS` | L'ancienne `DATA_KEY` après un changement, pendant trois mois : les liens « stop » et « signaler » des emails déjà partis marchent encore (Q-043). Puis la retirer |
 | `PUBLIC_BASE_URL` | URL publique, pour construire les liens |
 | `RESEND_API_KEY` | Clé d'API Resend pour l'envoi groupé par email (facultative, une clé limitée à l'envoi suffit) |
 | `EMAIL_FROM` | Expéditeur des emails, sur un domaine vérifié chez Resend |
@@ -944,9 +946,9 @@ Développement local : base D1 locale émulée par Miniflare (`nitro dev`), éta
 | Quoi | Comment | Quand la clé change |
 |---|---|---|
 | À qui chacun offre (`assignments`), les réponses d'un tirage fait ailleurs (`draw_answers`), les liens personnels (`participations.token_enc`) | Chiffrés (AES-GCM) | **Rechiffrés** par le script |
-| Les adresses qui ont refusé nos emails (`email_blocks`), celles déjà écrites (`email_seen`) | Empreintes (HMAC) | **Recalculées** pour les adresses que la base connaît encore ; un refus d'une adresse inconnue arrête le script (Q-043) ; un « déjà écrit » inconnu se perd sans gravité (la phrase du premier email revient) |
+| Les adresses qui ont refusé nos emails (`email_blocks`), celles déjà écrites (`email_seen`) | Empreintes (HMAC), avec `NUXT_PRINT_KEY` (qui vaut la clé tant qu'il n'est pas posé) | **Inchangées** : on pose `NUXT_PRINT_KEY` à l'ancienne clé (Q-043), aucun refus ne se perd |
 | Les codes de connexion de l'application installée | Empreintes (HMAC) | Perdus, sans gravité : un code vit un quart d'heure |
-| Les liens « Ne plus recevoir d'emails » et « Signaler cet envoi » des emails déjà partis | Signés (HMAC) | Ne marchent plus (Q-043) ; ceux des emails suivants, si |
+| Les liens « Ne plus recevoir d'emails » et « Signaler cet envoi » des emails déjà partis | Signés (HMAC) | Marchent encore tant que `NUXT_DATA_KEY_PREVIOUS` garde l'ancienne clé (trois mois, Q-043) |
 | Le `p=` signé d'un lien de liste ouvert depuis un tirage, les tickets du direct des listes | Signés (HMAC) | Recréés à la visite suivante, sans gravité |
 
 Le reste de la base est en clair. **Clé perdue : ce qui est chiffré est perdu**, sans recours ; les listes de cadeaux, elles, n'en dépendent pas.
@@ -972,12 +974,13 @@ Le fichier contient des adresses email et des prénoms : il se range comme la cl
 
 1. **Exporter la base** (ci-dessus) dans `sauvegardes/`, et garder cet export : c'est le retour en arrière.
 2. **Créer la nouvelle clé** : `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. La ranger comme l'ancienne (gestionnaire, copie hors ligne), avec la date, **avant** de la poser chez Cloudflare.
-3. **À blanc** : `ANCIENNE_CLE=… NOUVELLE_CLE=… pnpm cle:changer sauvegardes/<export>.sql`. Il dit combien de valeurs il réécrira, combien l'ancienne clé n'ouvre pas (il en faut 0), combien d'empreintes il recalcule et combien sont sans adresse connue. S'il y a un refus sans adresse connue, s'arrêter là (Q-043).
+3. **À blanc** : `ANCIENNE_CLE=… NOUVELLE_CLE=… pnpm cle:changer sauvegardes/<export>.sql`. Il dit combien de valeurs il réécrira, et combien l'ancienne clé n'ouvre pas (il en faut 0).
 4. **Essayer sur une copie locale de la production** : écrire le fichier (`… --ecrire sauvegardes/changer-la-cle.sql`), le coller au bout de l'export (`cat sauvegardes/<export>.sql sauvegardes/changer-la-cle.sql > sauvegardes/essai.sql`), puis `ANCIENNE_CLE=<nouvelle> NOUVELLE_CLE=<n'importe laquelle> pnpm cle:changer sauvegardes/essai.sql` à blanc : « l'ancienne clé n'ouvre pas : 0 » dit que la nouvelle clé ouvre tout ce que l'ancienne ouvrait. Le script charge l'export dans une base SQLite à côté, qu'il supprime à la fin (`wrangler d1 execute --local` refuse un export, voir `pnpm v3:essai`).
-5. **En production**, d'un trait : refaire un export, réécrire le fichier depuis cet export (ce qui a été créé entre-temps y est), poser le secret (`printf %s '<nouvelle clé>' | pnpm wrangler secret put NUXT_DATA_KEY`), puis appliquer le fichier (`pnpm wrangler d1 execute secret-santa --remote --file sauvegardes/changer-la-cle.sql`). Entre le secret et le fichier, quelques secondes où les liens ne s'ouvrent pas.
+5. **En production**, d'un trait : refaire un export, réécrire le fichier depuis cet export (ce qui a été créé entre-temps y est), poser les secrets : `NUXT_PRINT_KEY` à l'ancienne clé s'il n'est pas déjà posé, `NUXT_DATA_KEY_PREVIOUS` à l'ancienne clé, puis `NUXT_DATA_KEY` à la nouvelle (chacun par `printf %s '<valeur>' | pnpm wrangler secret put <NOM>`), puis appliquer le fichier (`pnpm wrangler d1 execute secret-santa --remote --file sauvegardes/changer-la-cle.sql`). Entre le secret et le fichier, quelques secondes où les liens ne s'ouvrent pas.
 6. **Vérifier** : un nouvel export, puis `ANCIENNE_CLE=<nouvelle> NOUVELLE_CLE=<n'importe laquelle> pnpm cle:changer <nouvel export>` à blanc : « l'ancienne clé n'ouvre pas : 0 » dit que la nouvelle ouvre tout. S'il en reste qui ne s'ouvrent pas, ce sont des lignes écrites avec l'ancienne clé juste avant le changement : relancer l'étape 5 avec l'ancienne clé (les lignes déjà réécrites ne bougent pas). Ouvrir un tirage et un lien personnel.
-7. **Revenir en arrière** : remettre l'ancienne clé (`wrangler secret put`), puis, si le fichier a été appliqué, soit remettre l'export de l'étape 1 sur une base vide (on perd ce qui a été écrit depuis), soit relancer le script dans l'autre sens (`ANCIENNE_CLE=<nouvelle> NOUVELLE_CLE=<ancienne>`), qui ne perd rien.
+7. **Revenir en arrière** : remettre l'ancienne clé dans `NUXT_DATA_KEY` (`wrangler secret put`), retirer `NUXT_DATA_KEY_PREVIOUS`, puis, si le fichier a été appliqué, soit remettre l'export de l'étape 1 sur une base vide (on perd ce qui a été écrit depuis), soit relancer le script dans l'autre sens (`ANCIENNE_CLE=<nouvelle> NOUVELLE_CLE=<ancienne>`), qui ne perd rien.
 8. Supprimer les fichiers SQL : ils contiennent des adresses et des liens chiffrés.
+9. **Trois mois plus tard**, retirer `NUXT_DATA_KEY_PREVIOUS` (`pnpm wrangler secret delete NUXT_DATA_KEY_PREVIOUS`). `NUXT_PRINT_KEY` reste : c'est lui qui garde les refus.
 
 Tant qu'elle n'a pas été changée, si la clé fuit : régénérer les liens personnels des tirages en cours (chaque organisateur, depuis la page du participant), et tenir pour lus les résultats des tirages non clôturés.
 

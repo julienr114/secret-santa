@@ -18,7 +18,7 @@ export const blockedAddresses = async (
   db: Db,
   emails: readonly (string | null)[],
 ): Promise<Map<string, BlockCause>> => {
-  const secret = secretsOf(event).dataKey;
+  const secret = secretsOf(event).printKey;
   const plain = [
     ...new Set(emails.flatMap((email) => (email ? [plainAddress(email)] : []))),
   ];

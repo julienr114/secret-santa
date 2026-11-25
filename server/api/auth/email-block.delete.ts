@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   if (account) {
     await unblockAddress(
       db,
-      await emailPrint(account.email, secretsOf(event).dataKey),
+      await emailPrint(account.email, secretsOf(event).printKey),
     );
   }
   return { ok: true };

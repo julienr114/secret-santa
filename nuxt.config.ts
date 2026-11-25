@@ -43,6 +43,13 @@ export default defineNuxtConfig({
   // in production). See README section 15.
   runtimeConfig: {
     dataKey: '',
+    // The pepper of the address prints (ticket 171, Q-043): the data key
+    // until set. Set to the old data key when the key changes, so that no
+    // refusal of our emails is lost.
+    printKey: '',
+    // The data key before a change (Q-043): still accepted, for a few
+    // months, to read the signed links of emails already sent.
+    dataKeyPrevious: '',
     // Bulk sending by email (Resend). Without a key the feature answers
     // "not configured"; sharing from the phone never depends on it.
     // Accounts (README 22.5). Addresses that become super-admins on their

@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
       blocks.emails.map(async (email) =>
         blockAddress(
           db,
-          await emailPrint(email, secrets.dataKey),
+          await emailPrint(email, secrets.printKey),
           blocks.cause,
           now,
         ),

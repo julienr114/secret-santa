@@ -96,6 +96,25 @@ export const verifyStop = (
   secret: string,
 ): Promise<string | null> => verify('email-stop', token, secret);
 
+/**
+ * What a signed link carries, read with the key in use, else with the
+ * key before a change (Q-043): the links of emails already sent keep
+ * working for a while.
+ * @param secrets - The keys, the one in use first; empty ones skipped.
+ * @param read - Reads the link with one key.
+ * @returns What it carries, or null.
+ */
+export const readWithEither = async <T>(
+  secrets: readonly string[],
+  read: (secret: string) => Promise<T | null>,
+): Promise<T | null> =>
+  secrets
+    .filter(Boolean)
+    .reduce<Promise<T | null>>(
+      async (found, secret) => (await found) ?? read(secret),
+      Promise.resolve(null),
+    );
+
 /** Who sent an email at an organiser's request, for « Signaler cet envoi ». */
 export type SentBy = { partyId: string; accountId: string | null };
 

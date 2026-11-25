@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   blockWarning,
   mayReceive,
+  readWithEither,
   signReport,
   signStop,
   verifyReport,
@@ -96,5 +97,21 @@ describe('withFoot', () => {
     );
     expect(footed.text).toContain('Stop receiving emails from Under the Tree');
     expect(footed.text).not.toContain('Report');
+  });
+});
+
+describe('a signed link after a change of key (Q-043)', () => {
+  it('is read with the key in use, else with the one before', async () => {
+    const old = await signStop('lea@example.com', 'ancienne');
+    const read = (token: string, secrets: string[]) =>
+      readWithEither(secrets, (secret) => verifyStop(token, secret));
+    expect(await read(old, ['nouvelle', 'ancienne'])).toBe('lea@example.com');
+    expect(await read(old, ['nouvelle', ''])).toBeNull();
+    expect(
+      await read(await signStop('lea@example.com', 'nouvelle'), [
+        'nouvelle',
+        'ancienne',
+      ]),
+    ).toBe('lea@example.com');
   });
 });

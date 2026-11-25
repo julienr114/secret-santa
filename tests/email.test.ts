@@ -14,6 +14,7 @@ vi.mock('#server/http/context', async (original) => ({
   secretsOf: () => ({
     resendApiKey: 'test-key',
     dataKey: 'test-secret',
+    printKey: 'test-secret',
     emailFrom: 'app@test',
     superAdminEmails: 'admin@test',
     baseUrl: 'https://app.test',

@@ -10,7 +10,8 @@ import { blockedOf } from '#server/database/emailBlocks';
 
 // Changing the key of the server on a test base (ticket 171): after the
 // change, a result is read, a personal link opens, a blocked address
-// stays blocked; and applying the statements twice does no harm.
+// stays blocked (its print does not change: `NUXT_PRINT_KEY` keeps the
+// old key, Q-043); and applying the statements twice does no harm.
 
 const NOW = '2026-11-25T10:00:00.000Z';
 const SETUP = `
@@ -68,7 +69,6 @@ describe('changing the key of the server', () => {
     });
     if (!planned.ok) throw new Error(planned.reason);
     const plan = planned.value;
-    expect(plan.unknownPrints).toEqual([]);
     const statements = rotationStatements(plan).join('\n');
     sqlite.exec(statements);
     // Twice: the rows already written are not touched again.
@@ -90,7 +90,7 @@ describe('changing the key of the server', () => {
         key,
       ),
     ).toBe('/p/jeton-h1');
-    const print = await emailPrint('zoe@x.fr', newKey);
+    const print = await emailPrint('zoe@x.fr', oldKey);
     expect((await blockedOf(db, [print])).get(print)).toBe('person');
   });
 });

@@ -11,6 +11,10 @@ export const nowIso = (): string => new Date().toISOString();
 
 export type Secrets = {
   dataKey: string;
+  /** The pepper of the address prints: the data key until set (Q-043). */
+  printKey: string;
+  /** The data key before a change, for the signed links (Q-043). */
+  dataKeyPrevious: string;
   baseUrl: string;
   resendApiKey: string;
   superAdminEmails: string;
@@ -34,8 +38,11 @@ export type Secrets = {
  */
 export const secretsOf = (event?: H3Event): Secrets => {
   const config = useRuntimeConfig(event);
+  const dataKey = String(config.dataKey ?? '');
   return {
-    dataKey: String(config.dataKey ?? ''),
+    dataKey,
+    printKey: String(config.printKey ?? '') || dataKey,
+    dataKeyPrevious: String(config.dataKeyPrevious ?? ''),
     baseUrl: String(config.public.baseUrl ?? ''),
     resendApiKey: String(config.resendApiKey ?? ''),
     superAdminEmails: String(config.superAdminEmails ?? ''),

@@ -4,7 +4,7 @@ import { useDb } from '#server/database/client';
 import { accounts } from '#server/database/schema';
 import { secretsOf } from './context';
 import { emailPrint } from '#server/utils/emailPrint';
-import { verifyStop } from '#server/utils/stopEmail';
+import { readWithEither, verifyStop } from '#server/utils/stopEmail';
 
 /**
  * The address of a link « Ne plus recevoir d'emails », signed by the
@@ -13,8 +13,11 @@ import { verifyStop } from '#server/utils/stopEmail';
  * @returns The database, the address and its print.
  */
 export const stopOf = async (event: H3Event) => {
-  const secret = secretsOf(event).dataKey;
-  const email = await verifyStop(getRouterParam(event, 'token') ?? '', secret);
+  const { dataKey, dataKeyPrevious, printKey } = secretsOf(event);
+  const token = getRouterParam(event, 'token') ?? '';
+  const email = await readWithEither([dataKey, dataKeyPrevious], (secret) =>
+    verifyStop(token, secret),
+  );
   if (!email) {
     throw createError({ statusCode: 404, statusMessage: 'not_found' });
   }
@@ -27,7 +30,7 @@ export const stopOf = async (event: H3Event) => {
   return {
     db,
     email,
-    print: await emailPrint(email, secret),
+    print: await emailPrint(email, printKey),
     accountId: account?.id ?? null,
   };
 };

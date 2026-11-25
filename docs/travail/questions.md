@@ -4,6 +4,19 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-042 — Après le tirage, ceux qui ne reçoivent pas d'emails, et un envoi qui a échoué : que dit le bloc du suivi ? (ticket 169)
+
+- **Pour** : la conception
+- **Ce qui bloque** : rien. C'est codé comme A et C.
+- **Ce qu'on a trouvé** : la spec (« Au tirage, l'application prévient chacun ») ne dit pas où compter, dans « À faire maintenant », quelqu'un qui a une adresse mais ne reçoit pas d'emails (adresse qui a refusé, compte réglé sur « Aucun email ») : la maquette `Suivi` n'a que « sans adresse email ». Elle ne dessine pas non plus le bloc « Les emails ne sont pas partis ».
+- **Les choix** :
+  - A. Les compter dans « sans adresse email » : eux aussi reçoivent leur lien à la main ; sous leur prénom, « Ne reçoit pas d'emails ».
+  - B. Un chiffre de plus, « ne reçoit pas d'emails ».
+  - C. L'envoi échoué : « À faire maintenant », « Les emails ne sont pas partis », les trois chiffres (« à prévenir », « pas encore ouvert », « a découvert »), « Renvoyer les emails » ; quand les emails sont suspendus, l'avis d'`EnvoiSuspendu` à la place du bouton.
+- **Ce que je ferais** : A et C, codés ainsi.
+
+## Réponses
+
 ### Q-044 — « Chez deux prestataires, et nulle part ailleurs » : et les services de notifications des téléphones ? (ticket 131)
 
 - **Pour** : la conception, puis Julien
@@ -13,6 +26,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Le dire sur la page : « Si tu actives les notifications, le service de ton téléphone (Apple, Google) porte un message chiffré qu'il ne peut pas lire. »
   - B. Ne pas le dire : ce n'est pas un prestataire choisi par l'application, mais celui de la personne.
 - **Ce que je ferais** : A, puisque la page promet de tout dire. Le brouillon du registre (`docs/donnees-personnelles.md`) le note déjà.
+- **Réponse de Julien (25 novembre 2026)** : d'accord, A : la page le dit. À reporter dans la maquette `Confidentialite` (conception) ; le registre le note déjà.
 
 ### Q-043 — Changer la clé du serveur : les refus d'adresses que la base ne connaît plus, et les liens « stop » des emails déjà partis (ticket 171)
 
@@ -26,19 +40,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - B. Une variable `NUXT_DATA_KEY_PREVIOUS`, lue seulement pour reconnaître une empreinte ou un lien signé avec l'ancienne clé, pendant quelques mois ; puis on la retire. Les refus inconnus seraient alors réécrits à la première visite… mais on ne connaît toujours pas l'adresse : ils restent sous l'ancienne clé tant que la variable existe.
   - C. On les perd (`--perdre-refus`), et les liens des anciens emails ne marchent plus : la personne refuse de nouveau depuis le prochain email.
 - **Ce que je ferais** : A pour les empreintes (un refus ne se perd jamais, et la fuite de la clé ne dit que « cette adresse a refusé »), et B pour les liens signés, le temps que les anciens emails ne servent plus (trois mois). Rien de cela n'est codé : le script recalcule les empreintes connues et s'arrête devant les autres.
-
-### Q-042 — Après le tirage, ceux qui ne reçoivent pas d'emails, et un envoi qui a échoué : que dit le bloc du suivi ? (ticket 169)
-
-- **Pour** : la conception
-- **Ce qui bloque** : rien. C'est codé comme A et C.
-- **Ce qu'on a trouvé** : la spec (« Au tirage, l'application prévient chacun ») ne dit pas où compter, dans « À faire maintenant », quelqu'un qui a une adresse mais ne reçoit pas d'emails (adresse qui a refusé, compte réglé sur « Aucun email ») : la maquette `Suivi` n'a que « sans adresse email ». Elle ne dessine pas non plus le bloc « Les emails ne sont pas partis ».
-- **Les choix** :
-  - A. Les compter dans « sans adresse email » : eux aussi reçoivent leur lien à la main ; sous leur prénom, « Ne reçoit pas d'emails ».
-  - B. Un chiffre de plus, « ne reçoit pas d'emails ».
-  - C. L'envoi échoué : « À faire maintenant », « Les emails ne sont pas partis », les trois chiffres (« à prévenir », « pas encore ouvert », « a découvert »), « Renvoyer les emails » ; quand les emails sont suspendus, l'avis d'`EnvoiSuspendu` à la place du bouton.
-- **Ce que je ferais** : A et C, codés ainsi.
-
-## Réponses
+- **Réponse de Julien (25 novembre 2026)** : d'accord, A et B. Codé dans le ticket 171 : `NUXT_PRINT_KEY` (posé à l'ancienne clé au changement) et `NUXT_DATA_KEY_PREVIOUS` (trois mois, pour les liens signés) ; README 15 et 16.
 
 ### Q-041 — Les notifications du téléphone : chaque nouveauté, ou ce qui presse ? (ticket 124)
 

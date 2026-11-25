@@ -138,11 +138,11 @@ const footed = async (
   emails: OutgoingEmail[],
   login: boolean,
 ) => {
-  const secret = secretsOf(event).dataKey;
+  const { dataKey: secret, printKey } = secretsOf(event);
   const printed = await Promise.all(
     emails.map(async (email) => ({
       email,
-      print: await emailPrint(email.to, secret),
+      print: await emailPrint(email.to, printKey),
     })),
   );
   const prints = printed.map((one) => one.print);

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { decrypt, encrypt, generateDataKey, importDataKey } from './crypto';
-import { emailPrint } from './emailPrint';
 import { planRotation, rotationStatements } from './rotateKey';
 import { failureOf, valueOf } from '~~/tests/helpers';
 
@@ -29,8 +28,6 @@ describe('changing the key of the server (ticket 171)', () => {
             ...sealed,
           },
         ],
-        prints: [],
-        addresses: [],
       }),
     );
     expect(plan.rewritten).toHaveLength(1);
@@ -65,41 +62,10 @@ describe('changing the key of the server (ticket 171)', () => {
             ...already,
           },
         ],
-        prints: [],
-        addresses: [],
       }),
     );
     expect(plan.rewritten).toHaveLength(0);
     expect(plan.unreadable).toHaveLength(1);
-  });
-
-  it('computes the prints again from the known addresses, and says the rest', async () => {
-    const oldKey = generateDataKey();
-    const newKey = generateDataKey();
-    const blocked = await emailPrint('Lea@Example.com', oldKey);
-    const stranger = await emailPrint('gone@example.com', oldKey);
-    const plan = valueOf(
-      await planRotation({
-        oldKey,
-        newKey,
-        rows: [],
-        prints: [
-          { table: 'email_blocks', print: blocked },
-          { table: 'email_blocks', print: stranger },
-        ],
-        addresses: ['lea@example.com', 'tom@example.com'],
-      }),
-    );
-    expect(plan.reprinted).toEqual([
-      {
-        table: 'email_blocks',
-        print: blocked,
-        newPrint: await emailPrint('lea@example.com', newKey),
-      },
-    ]);
-    expect(plan.unknownPrints).toEqual([
-      { table: 'email_blocks', print: stranger },
-    ]);
   });
 
   it('writes statements that touch a row only as it was read', async () => {
@@ -118,12 +84,9 @@ describe('changing the key of the server (ticket 171)', () => {
         },
       ],
       unreadable: [],
-      reprinted: [{ table: 'email_seen', print: 'aa', newPrint: 'bb' }],
-      unknownPrints: [],
     });
     expect(statements).toEqual([
       "UPDATE participations SET token_enc = 'new', token_iv = 'newiv' WHERE id = 'p''1' AND token_enc = 'old';",
-      "UPDATE OR IGNORE email_seen SET email_print = 'bb' WHERE email_print = 'aa';",
     ]);
   });
 
@@ -135,8 +98,6 @@ describe('changing the key of the server (ticket 171)', () => {
           oldKey: key,
           newKey: 'x',
           rows: [],
-          prints: [],
-          addresses: [],
         }),
       ).reason,
     ).toBe('invalid_data_key');
@@ -146,8 +107,6 @@ describe('changing the key of the server (ticket 171)', () => {
           oldKey: key,
           newKey: key,
           rows: [],
-          prints: [],
-          addresses: [],
         }),
       ).reason,
     ).toBe('same_key');

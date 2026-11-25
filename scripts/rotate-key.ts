@@ -1,4 +1,4 @@
-// `pnpm cle:changer <export.sql> [--ecrire <sortie.sql>] [--perdre-refus]`
+// `pnpm cle:changer <export.sql> [--ecrire <sortie.sql>]`
 // (ticket 171, README 16): plans the change of `NUXT_DATA_KEY` on an
 // export of the database (`wrangler d1 export … --remote`), all locally.
 // The keys come from the environment, never from the command line:
@@ -6,8 +6,8 @@
 // only says what it would do. With it, it writes the SQL to apply with
 // `wrangler d1 execute … --file`: each statement only touches a row still
 // as it was read, so applying it twice, or after a stop, does no harm.
-// A blocked address the base no longer knows cannot get its print again
-// (Q-043): the script stops, unless `--perdre-refus` says to lose them.
+// The prints of the addresses do not change: `NUXT_PRINT_KEY` keeps the
+// old key (Q-043, README 16).
 // The database loaded from the export is deleted at the end: it holds
 // people's data.
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -20,12 +20,11 @@ const args = process.argv.slice(2);
 const dump = args.find((arg) => !arg.startsWith('--'));
 const outIndex = args.indexOf('--ecrire');
 const out = outIndex >= 0 ? args[outIndex + 1] : undefined;
-const loseRefusals = args.includes('--perdre-refus');
 const oldKey = process.env.ANCIENNE_CLE ?? '';
 const newKey = process.env.NOUVELLE_CLE ?? '';
 if (!dump || (outIndex >= 0 && !out) || !oldKey || !newKey) {
   console.error(
-    'Usage : ANCIENNE_CLE=… NOUVELLE_CLE=… pnpm cle:changer <export.sql> [--ecrire <sortie.sql>] [--perdre-refus]',
+    'Usage : ANCIENNE_CLE=… NOUVELLE_CLE=… pnpm cle:changer <export.sql> [--ecrire <sortie.sql>]',
   );
   process.exit(2);
 }
@@ -50,28 +49,14 @@ const run = async () => {
     return;
   }
   const plan = planned.value;
-  const blocked = plan.unknownPrints.filter(
-    (row) => row.table === 'email_blocks',
-  );
   console.log(
     `Valeurs à réécrire avec la nouvelle clé : ${plan.rewritten.length}.`,
   );
   console.log(
     `Valeurs que l'ancienne clé n'ouvre pas (déjà réécrites, ou abîmées) : ${plan.unreadable.length}.`,
   );
-  console.log(`Empreintes d'adresses recalculées : ${plan.reprinted.length}.`);
-  console.log(
-    `Empreintes sans adresse connue : ${blocked.length} refus, ${plan.unknownPrints.length - blocked.length} « déjà écrit » (sans gravité).`,
-  );
   if (!out) {
     console.log('À blanc : rien n’est écrit. Ajouter --ecrire <sortie.sql>.');
-    return;
-  }
-  if (blocked.length > 0 && !loseRefusals) {
-    console.error(
-      `${blocked.length} adresse(s) qui ont refusé nos emails ne sont plus dans la base : leur refus serait perdu. Rien n'est écrit (Q-043).`,
-    );
-    process.exitCode = 1;
     return;
   }
   writeFileSync(out, `${rotationStatements(plan).join('\n')}\n`);

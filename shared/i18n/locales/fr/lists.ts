@@ -34,7 +34,6 @@ export default {
     titleLabel: 'Nom de l’événement',
     addDate: 'Ajouter une date',
     date: 'Date',
-    dateHelp: 'Elle range les listes et dit quand une liste est passée.',
     noDate: 'Sans date',
     noteLabel: 'Ton mot d’accueil',
     noteDefault:
@@ -454,9 +453,6 @@ export default {
     field: {
       birth: 'Sa date de naissance',
       birthMine: 'Ma date de naissance',
-      day: 'Jour',
-      month: 'Mois',
-      year: 'Année',
       clearDate: 'Effacer la date',
       shoe: 'Sa ou ses pointures',
       shoeMine: 'Ma ou mes pointures',

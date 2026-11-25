@@ -395,3 +395,10 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `ConnexionCode` | « Tape ton code » remplace, sur la page de connexion, l'écran « Lien envoyé », dans l'application installée seulement. Les six cases sont dessinées au-dessus d'un seul champ (`autocomplete="one-time-code"`) : le téléphone propose le code de l'email, et un collage remplit les six. Pas de phrase « Il se valide tout seul au sixième chiffre » : elle explique l'écran. Sans le sélecteur de langue de l'en-tête. | Seul (la règle du 24 novembre) |
 | `ConnexionCode` | Le bouton de l'adresse dit « Recevoir un code » dans l'application installée ; dans un navigateur, rien ne change. | Seul |
 | `ConnexionCodeEmail` | Sans « Ce que l'application fait de tes données » (ticket 131), ni le pied « Ne plus recevoir d'emails » : un email de connexion part toujours (ticket 130). | Le ticket 130 |
+
+## Une date dans un seul champ (ticket 160)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3FeteNouvelle`, `ProcheNaissance` | Le champ est `UInputDate` de Nuxt UI, habillé comme nos champs (52 px, l'arrondi de 14 px) ; ses segments se lisent « jour », « mois », « année » dans la langue de l'application. Une date hors de ses années (ou à venir, pour une naissance) remplace la date en toutes lettres par « Une date entre 2026 et 2028. » (ou « Une date déjà passée. »), en rouge, et « Valider » reste éteint. | Seul (la spec dit « refusée par nous », pas comment) |
+| — | La date d'un Secret Santa (depuis son suivi ou ses réglages), la date d'une liste, la date limite du lien d'invitation et la date de l'événement dans ses réglages ouvrent chacune **une page** (`AdminDatePage`), et non plus un calendrier dans un panneau : « le même champ partout », et un panneau ne porte jamais de champ (`regles-d-ecran.md`). Aucune maquette ne dessine ces pages : celle de `ProcheNaissance`, avec ce que disait le panneau sous le champ. | Seul (la spec) |

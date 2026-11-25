@@ -7,9 +7,9 @@ import {
 } from '#shared/utils/memberFields';
 
 // The date of birth of one of my people (Correction 27, maquette
-// ProcheNaissance): three lists, day, month and year, no calendar
-// (UiDateSelects). The years from this one back to 110 years ago, the
-// most recent first. An incomplete date cannot be validated. « Effacer la
+// ProcheNaissance): one field, the date in full under it (UiDateField,
+// ticket 160). The years from this one back to 110 years ago; not a day
+// still to come. An incomplete date cannot be validated. « Effacer la
 // date » under « Valider ».
 definePageMeta({ middleware: 'admin', layout: 'admin' });
 const { t } = useT();
@@ -31,9 +31,10 @@ const date = computed(() => birthDateOf(parts.value, today));
     :clear-patch="{ birthDate: null }"
   >
     <template #default>
-      <UiDateSelects
+      <UiDateField
         v-model="parts"
         :years="years"
+        :until="today"
         :label="t('lists.person.birth')"
         testid="birth"
       />

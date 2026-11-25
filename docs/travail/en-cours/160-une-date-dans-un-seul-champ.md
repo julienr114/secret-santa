@@ -31,7 +31,7 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 À faire dans cette étape :
 
 - [ ] (simulé seulement dans Chrome et WebKit, pas de vrai téléphone ici : à faire par Julien, voir Q-038) Essayer `UInputDate` sur un vrai téléphone (iPhone et Android), dans les trois langues : le clavier qui s'ouvre (chiffres ?), l'ordre des segments, le passage d'un segment à l'autre, la lecture par un lecteur d'écran, une date de naissance (une année lointaine) et une date proche.
-- [ ] (même limite : voir Q-038) Essayer `<input type="date">` sur les mêmes téléphones, pour dire ce que chacun ouvre aujourd'hui (calendrier ou roulettes).
+- [x] (sans objet depuis la décision du 24 novembre : la piste C est écartée) Essayer `<input type="date">` sur les mêmes téléphones, pour dire ce que chacun ouvre aujourd'hui (calendrier ou roulettes).
 - [x] Essayer les deux **sur un ordinateur, au clavier seul** : taper « 20 12 2026 » d'une traite, sans souris, doit suffire (le passage d'un segment au suivant, la touche Tab, une date impossible).
 - [x] Écrire ce que ça donne dans `docs/travail/questions.md`, avec une capture de chaque, et **attendre la réponse** : c'est Julien qui choisit entre les trois pistes ci-dessous. La conception fera la maquette et mettra la spec à jour.
 
@@ -43,9 +43,9 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 
 ## À faire (une fois la piste choisie)
 
-- [ ] Un seul composant de date, à la place de `UiDateSelects`, dans ses quatre usages. Les mêmes règles qu'aujourd'hui : le mois en toutes lettres, les années proposées (de l'année en cours à dans deux ans pour un événement ; les années de naissance pour un proche), les jours qui suivent le mois et l'année, la valeur de départ donnée par la catégorie ou par l'événement.
-- [ ] Trois langues, tests (unitaires pour les jours d'un mois, e2e pour chaque usage).
-- [ ] Mettre à jour les tests qui passent par les trois listes.
+- [x] Un seul composant de date, à la place de `UiDateSelects`, dans ses quatre usages. Les mêmes règles qu'aujourd'hui : le mois en toutes lettres, les années proposées (de l'année en cours à dans deux ans pour un événement ; les années de naissance pour un proche), les jours qui suivent le mois et l'année, la valeur de départ donnée par la catégorie ou par l'événement.
+- [x] Trois langues, tests (unitaires pour les jours d'un mois, e2e pour chaque usage).
+- [x] Mettre à jour les tests qui passent par les trois listes.
 
 ## Hors périmètre
 
@@ -53,6 +53,10 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 
 ## C'est fini quand
 
-- [ ] Chaque date de l'application se choisit dans un seul champ, de la même façon partout.
-- [ ] Sur un ordinateur, une date se tape au clavier, sans souris.
-- [ ] `/controle` passe.
+- [x] Chaque date de l'application se choisit dans un seul champ, de la même façon partout.
+- [x] Sur un ordinateur, une date se tape au clavier, sans souris.
+- [x] `/controle` passe.
+
+**Contrôle** : `pnpm controle --e2e`, tout est passé : 1 093 tests Vitest et 242 parcours.
+
+**Commit** : `feat(dates): a date in one field, everywhere, its date in full under it`.

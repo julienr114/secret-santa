@@ -178,6 +178,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête (ouverts par la ligne « Réglages de l'événement » sous les membres, ticket 159) | `/e/[fête]/reglages` | La fête | Catégorie, « Pour » (un anniversaire, ticket 118), date, organisateur, suppression de la fête |
 | Nouvel organisateur (le prénom et l'adresse, ticket 161 ; « Ajouter » ramène aux réglages) | `/e/[fête]/reglages/organisateur` | Réglages de la fête | |
+| La date de l'événement (un seul champ, ticket 160) | `/e/[fête]/reglages/date` | Réglages de la fête | |
 | (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
 | (ancienne adresse) | `/admin/[groupe]/reglages/mot`, puis `/e/[fête]/reglages/mot` (le mot ajouté aux messages, passé au Secret Santa) | mène aux Réglages de la fête (`gonePathOf`, ticket 113) | |
 
@@ -193,11 +194,13 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Qui reprendre ? (ceux d'un autre événement que j'organise, ticket 117) | `…/editions/[id]/reprendre` | Choisir les participants | |
 | Inviter par lien (le lien de ce Secret Santa, ticket 116 ; ouvert depuis « Préparer » sans participant et depuis « Choisir les participants ») | `…/editions/[id]/invitation` | L'édition | Places restantes, date limite |
 | Ton mot sur la page | `…/editions/[id]/invitation/mot` | Inviter par lien | |
+| Date limite du lien (un seul champ, ticket 160 ; « Pas de date limite ») | `…/editions/[id]/invitation/date` | Inviter par lien | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
 | Réglages du Secret Santa (ouverts depuis son suivi seulement, ticket 159) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, Supprimer ce Secret Santa (pas encore tiré ; ensuite : la fête) |
 | Budget (la page de propositions, la même qu'à la création, ticket 164) | `…/editions/[id]/budget` | Réglages du Secret Santa | |
+| Date de la fête (un seul champ, ticket 160 ; ouverte depuis le suivi, ou depuis les réglages avec `?depuis=reglages`) | `…/editions/[id]/date` | Le suivi, ou ses réglages | |
 | Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
 | Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |
@@ -228,6 +231,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | La liste (le document ; sa barre du haut se déroule sur place, sans panneau, ticket 135 : l'adresse et « Qui voit ta liste ? » ; plus loin dans la barre, sans quitter la liste, « Quelqu'un d'autre » (`?partage=inviter`, ouvert aussi par « À ma liste de cadeaux » des Membres), « Reprendre ceux de » (`?partage=reprendre`) et les confirmations (`?partage=confirmer`), où « ‹ » et le retour du téléphone reculent d'un niveau, tickets 139 et 141 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
+| La date d'une liste (un seul champ, ticket 160 ; « Pas de date ») | `/listes/[id]/date` | La liste | |
 | Supprimer la liste (supprimée : là où « Retour » menait depuis la liste) | `/listes/[id]/supprimer` | La liste | |
 | (anciennes adresses) | `/listes/[id]/inviter` et ses pages, `/listes/[id]/message` | mènent à la liste (`gonePathOf`, ticket 139) | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |

@@ -32,7 +32,6 @@ export default {
     titleLabel: 'Name of the event',
     addDate: 'Add a date',
     date: 'Date',
-    dateHelp: 'It sorts the lists and says when a list is over.',
     noDate: 'No date',
     noteLabel: 'Your welcome note',
     noteDefault:
@@ -449,9 +448,6 @@ export default {
     field: {
       birth: 'Their date of birth',
       birthMine: 'My date of birth',
-      day: 'Day',
-      month: 'Month',
-      year: 'Year',
       clearDate: 'Clear the date',
       shoe: 'Their shoe size or sizes',
       shoeMine: 'My shoe size or sizes',

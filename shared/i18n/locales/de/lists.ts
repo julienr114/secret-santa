@@ -33,7 +33,6 @@ export default {
     titleLabel: 'Name des Anlasses',
     addDate: 'Datum hinzufügen',
     date: 'Datum',
-    dateHelp: 'Es ordnet die Listen und sagt, wann eine Liste vorbei ist.',
     noDate: 'Ohne Datum',
     noteLabel: 'Dein Willkommenswort',
     noteDefault:
@@ -454,9 +453,6 @@ export default {
     field: {
       birth: 'Geburtsdatum',
       birthMine: 'Mein Geburtsdatum',
-      day: 'Tag',
-      month: 'Monat',
-      year: 'Jahr',
       clearDate: 'Datum löschen',
       shoe: 'Schuhgröße oder -größen',
       shoeMine: 'Meine Schuhgröße oder -größen',

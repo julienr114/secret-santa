@@ -240,7 +240,6 @@ export default {
     more: 'One place more',
     until: 'Last day',
     untilHelp: 'Optional. The link stops working after this day.',
-    dateLabel: 'Date',
     noUntil: 'No last day',
     none: 'None',
     messageRow: 'Your words on the page',
@@ -474,7 +473,6 @@ export default {
     },
     dateSheet: {
       title: 'Date',
-      description: 'The day gifts are exchanged.',
       seen: 'Participants see it on their page, with the countdown.',
       journal: 'The change is written in the event journal.',
       saved: 'Date saved',

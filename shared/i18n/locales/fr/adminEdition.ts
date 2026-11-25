@@ -239,7 +239,6 @@ export default {
     more: 'Une place de plus',
     until: 'Date limite',
     untilHelp: 'Facultatif. Le lien ne marche plus après ce jour.',
-    dateLabel: 'Date',
     noUntil: 'Pas de date limite',
     none: 'Aucune',
     messageRow: 'Ton mot sur la page',
@@ -474,7 +473,6 @@ export default {
     },
     dateSheet: {
       title: 'Date',
-      description: 'Le jour où vous échangez les cadeaux.',
       seen: 'Les participants la voient sur leur page, avec le compte à rebours.',
       journal: 'Le changement est inscrit au journal de l’événement.',
       saved: 'Date enregistrée',

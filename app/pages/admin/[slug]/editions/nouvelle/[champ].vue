@@ -131,10 +131,11 @@ const onValidate = () => {
           : undefined
       "
     />
-    <UiDateSelects
+    <UiDateField
       v-else-if="field === 'date'"
       v-model="date"
       :years="years"
+      weekday
       :label="title"
       testid="new-secret-santa-date"
     />

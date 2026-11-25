@@ -246,7 +246,6 @@ export default {
     more: 'Ein Platz mehr',
     until: 'Letzter Tag',
     untilHelp: 'Optional. Nach diesem Tag funktioniert der Link nicht mehr.',
-    dateLabel: 'Datum',
     noUntil: 'Kein letzter Tag',
     none: 'Keiner',
     messageRow: 'Dein Wort auf der Seite',
@@ -484,7 +483,6 @@ export default {
     },
     dateSheet: {
       title: 'Datum',
-      description: 'Der Tag, an dem ihr die Geschenke austauscht.',
       seen: 'Die Teilnehmenden sehen es auf ihrer Seite, mit dem Countdown.',
       journal: 'Die Änderung wird im Protokoll des Events vermerkt.',
       saved: 'Datum gespeichert',

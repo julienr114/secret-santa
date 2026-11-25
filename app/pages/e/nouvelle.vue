@@ -16,7 +16,7 @@ import { useCreatePartyMutation } from '~/composables/queries/useParty';
 
 // « Pour quelle occasion ? » (docs/spec/v3/accueil-et-creation.md,
 // maquette V3FeteNouvelle): the category in six tiles fills the rest;
-// « Pour qui ? » for a birthday, which the event keeps (ticket 118); the name, the date in three lists, « Elle
+// « Pour qui ? » for a birthday, which the event keeps (ticket 118); the name, the date in one field (ticket 160), « Elle
 // revient chaque année »; then « Continuer » creates it. Nobody else is
 // asked for: people come in by its Secret Santa or its list (ticket 117).
 // Opened with ?categorie=birthday&proche=<id>, it comes filled
@@ -206,12 +206,11 @@ const emojiOf = (category: PartyCategory) =>
       </UFormField>
 
       <div class="flex flex-col gap-2">
-        <span class="text-[13px] font-semibold text-toned">{{
-          t('party.create.date')
-        }}</span>
-        <UiDateSelects
+        <span class="text-sm font-bold">{{ t('party.create.date') }}</span>
+        <UiDateField
           v-model="form.date"
           :years="years"
+          weekday
           :label="t('party.create.date')"
           testid="party-date"
         />

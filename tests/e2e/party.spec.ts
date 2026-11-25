@@ -33,8 +33,10 @@ test('a birthday party comes filled, and is created with me alone', async ({
   await expect(page.getByTestId('party-name')).toHaveValue(
     'L’anniversaire de Zoé',
   );
-  await expect(page.getByTestId('party-date-day')).toHaveValue('14');
-  await expect(page.getByTestId('party-date-month')).toHaveValue('12');
+  // The date in one field, the date in full under it (ticket 160).
+  await expect(page.getByTestId('party-date-full')).toContainText(
+    '14 décembre',
+  );
   // Nobody else is asked for (ticket 117): « Continuer » creates it.
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(page).toHaveURL(/\/e\/l-anniversaire-de-zoe$/);

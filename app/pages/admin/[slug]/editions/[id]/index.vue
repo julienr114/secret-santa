@@ -270,7 +270,6 @@ const onCustomize = async (participationId: string) => {
 const onSent = () => {
   sendId.value = null;
 };
-const dateOpen = ref(false);
 </script>
 
 <template>
@@ -286,7 +285,7 @@ const dateOpen = ref(false);
         :date-text="
           status === 'closed' || revealed || partyReached ? null : dateText
         "
-        @edit-date="dateOpen = true"
+        @edit-date="navigateTo(`/admin/${slug}/editions/${id}/date`)"
       />
       <UiStepper :steps="steps" :label="t('adminEdition.screen.steps.label')" />
 
@@ -479,12 +478,6 @@ const dateOpen = ref(false);
       :participants="participants"
       :loading="revealDraw.isPending.value"
       @confirm="onReveal"
-    />
-    <AdminPartyDateSheet
-      v-model:open="dateOpen"
-      :slug="slug"
-      :edition-id="id"
-      :value="eventDate"
     />
   </AdminScreen>
 </template>

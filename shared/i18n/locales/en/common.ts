@@ -61,6 +61,10 @@ export default {
     en: 'English',
     de: 'Deutsch',
   },
+  date: {
+    outside: 'A date between {from} and {to}.',
+    future: 'A date already past.',
+  },
   emailBlock: {
     refused:
       'The person with this address asked to stop receiving emails from Under the Tree.',

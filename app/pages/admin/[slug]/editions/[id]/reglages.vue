@@ -43,7 +43,6 @@ const screen = computed(() => ({
 }));
 
 const eventDate = computed(() => edition.data.value?.rules.eventDate ?? '');
-const dateOpen = ref(false);
 
 const rename = useUpdateEditionMutation(slug);
 const name = computed(() => edition.data.value?.edition.label ?? '');
@@ -137,8 +136,11 @@ const noteValue = computed(() =>
               ? formatEventDate(eventDate, locale)
               : t('adminEdition.newEdition.dateToChoose')
           "
-          :chevron="!closed"
-          :on-click="closed ? undefined : () => (dateOpen = true)"
+          :to="
+            closed
+              ? undefined
+              : `/admin/${slug}/editions/${id}/date?depuis=reglages`
+          "
           data-testid="setting-date"
         />
         <AdminEditionRuleRows
@@ -232,13 +234,6 @@ const noteValue = computed(() =>
           save({ excludePreviousYears: years });
         }
       "
-    />
-    <AdminPartyDateSheet
-      v-if="!closed"
-      v-model:open="dateOpen"
-      :slug="slug"
-      :edition-id="id"
-      :value="eventDate"
     />
     <AdminDeleteSecretSantaSheet
       v-if="deletable && edition.data.value"

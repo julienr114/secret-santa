@@ -164,3 +164,27 @@ export const seedMembers = async (
   );
   return ids;
 };
+
+/**
+ * Types a date in a field of one date (ticket 160, UiDateField): what it
+ * held is emptied, then the digits are typed in one go, in the order of
+ * the language (« 14032020 » in French).
+ * @param page - The page.
+ * @param testid - The `data-testid` of the field.
+ * @param digits - The digits, as typed.
+ * @returns Once typed.
+ */
+export const typeDate = async (page: Page, testid: string, digits: string) => {
+  const segments = page
+    .getByTestId(testid)
+    .locator(
+      '[data-reka-date-field-segment]:not([data-reka-date-field-segment="literal"])',
+    );
+  await segments.last().click();
+  await Array.from({ length: 10 }).reduce<Promise<void>>(
+    (done) => done.then(() => page.keyboard.press('Backspace')),
+    Promise.resolve(),
+  );
+  await segments.first().click();
+  await page.keyboard.type(digits);
+};

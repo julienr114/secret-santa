@@ -419,3 +419,8 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `Envoi` | « Ajouter son adresse email » est une ligne qui ouvre le champ dans le panneau, comme avant le ticket (le champ en ligne d'une fiche), et non une page. Une fois l'adresse enregistrée, l'email du tirage part et le panneau se ferme. | Seul |
 | `SelectionEmail` | Pas redessinée : le titre devient « Envoyer un rappel », le bouton « Envoyer N rappels », et sont cochés d'avance ceux qui ont une adresse et n'ont pas encore ouvert. | Le ticket |
 
+## Les données personnelles (ticket 131, commencé)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `Connexion`, `ConnexionCreer` | La ligne « Ton adresse sert à te connecter… » est là, sans le lien « Tes données, en clair » : la page n'est pas publiée tant que l'adresse de contact n'existe pas. | Julien (pas de page sans l'adresse) |

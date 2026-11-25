@@ -143,7 +143,7 @@ export default {
       title: 'J’évite, ou j’ai déjà',
       empty: 'Dire ce que j’évite',
       help: 'Ce qu’il vaut mieux ne pas t’offrir.',
-      placeholder: 'Une allergie, ce que tu as en trop…',
+      placeholder: 'Ce que tu n’aimes pas, ce que tu as en trop…',
       giver: 'À éviter',
     },
   },

@@ -142,7 +142,7 @@ export default {
       title: 'Lieber nicht, oder schon da',
       empty: 'Sagen, was ich meide',
       help: 'Was man dir besser nicht schenkt.',
-      placeholder: 'Eine Allergie, wovon du zu viel hast…',
+      placeholder: 'Was du nicht magst, wovon du zu viel hast…',
       giver: 'Lieber nicht',
     },
   },

@@ -28,14 +28,14 @@ Chacun sait ce que l'application garde sur lui et qui le voit, peut le télécha
 - [ ] **« Mes données »** dans « Mon compte » (`CompteDonnees`).
 - [ ] **L'accès de dernier recours de l'organisateur**, dit sous « À qui tu offres » : un résultat à la fois, lu par tous les membres dans le journal ; et le dévoilement du tirage à tous. Aucun écran ne dit plus « même l'organisateur ne voit pas » sans cette précision, page de présentation comprise.
 - [ ] **La CNIL**, sur les deux pages : « Si sa réponse ne te convient pas, tu peux saisir la CNIL », avec le lien.
-- [ ] **Qui verra ce que j'écris** (README 23.3) : la ligne sous chaque champ de donnée personnelle. Passer en revue tout champ du code : la connexion et la création de compte, rejoindre un événement, ajouter une personne ou son adresse, inviter quelqu'un à tenir une liste, la fiche d'une personne d'une liste (un enfant : prénom, âge, tailles), les goûts de la fiche « Moi », « Mon compte ».
-- [ ] **« Une allergie… »** disparaît de l'exemple du champ « J'évite, ou j'ai déjà » : on n'invite pas à écrire des données de santé.
+- [ ] (en partie : la connexion et la création de compte) **Qui verra ce que j'écris** (README 23.3) : la ligne sous chaque champ de donnée personnelle. Passer en revue tout champ du code : la connexion et la création de compte, rejoindre un événement, ajouter une personne ou son adresse, inviter quelqu'un à tenir une liste, la fiche d'une personne d'une liste (un enfant : prénom, âge, tailles), les goûts de la fiche « Moi », « Mon compte ».
+- [x] **« Une allergie… »** disparaît de l'exemple du champ « J'évite, ou j'ai déjà » : on n'invite pas à écrire des données de santé.
 - [ ] **Le pied de chaque email** : refuser les emails (ticket 130), « Ce que l'application fait de tes données » ; l'email de connexion dit seulement pourquoi il part.
 - [ ] **« Télécharger mes données »** (mon profil, mes événements, mes listes) et **« Supprimer mon compte »**. Supprimer un compte ne casse ni un Secret Santa en cours ni l'historique d'un événement : dire ce qui est effacé et ce qui est rendu anonyme.
 - [ ] **Le retrait d'une personne sans compte**, sur demande : la marche à suivre pour le super-admin.
 - [ ] **La purge** : une tâche planifiée. Un compte sans visite depuis trois ans reçoit un email qui prévient, puis est supprimé ; des anciens Secret Santa, il ne reste que ce qui sert à la règle « pas la même personne ».
-- [ ] **Les listes** : l'âge plutôt que la date de naissance là où il suffit ; un mot à celui qui rend publique une liste où figurent des enfants ; une liste publique n'est pas lisible par les moteurs de recherche.
-- [ ] **Le registre** : `docs/donnees-personnelles.md`, un tableau des traitements, et la marche à suivre en cas de fuite.
+- [ ] (en partie : une liste publique n'est déjà pas lisible par les moteurs de recherche, en-tête et balise `noindex`, vérifiés par `security.spec.ts`) **Les listes** : l'âge plutôt que la date de naissance là où il suffit ; un mot à celui qui rend publique une liste où figurent des enfants ; une liste publique n'est pas lisible par les moteurs de recherche.
+- [ ] (brouillon écrit, à relire par Julien) **Le registre** : `docs/donnees-personnelles.md`, un tableau des traitements, et la marche à suivre en cas de fuite.
 
 ## Hors périmètre
 
@@ -55,4 +55,17 @@ Chacun sait ce que l'application garde sur lui et qui le voit, peut le télécha
 
 ## Compte rendu
 
-À remplir par Claude Code à la fin : ce qui a été fait, ce qui a été décidé seul (et pourquoi), les écarts avec les maquettes, les questions posées, les commits.
+**Commencé le 25 novembre 2026, en fin de séance, sans l'adresse de contact** : aucune page qui en a besoin n'est faite. `Confidentialite`, « Mentions légales » et `CompteDonnees` (qui porte « Télécharger mes données », « Supprimer mon compte », et la ligne « Une question ? Écris à Julien ») attendent l'adresse ; la purge et la suppression d'un compte vont avec eux (la même migration, ce qui est rendu anonyme). Les textes de ces pages restent à faire relire par Julien : ce compte rendu ne dit nulle part qu'ils sont « conformes ».
+
+Fait :
+- **« Une allergie… »** sort de l'exemple de « J'évite, ou j'ai déjà » : « Ce que tu n'aimes pas, ce que tu as en trop… », comme le dit le README 22.26, en trois langues.
+- **Qui verra ce que j'écris, à la connexion** (`Connexion`, `ConnexionCreer`) : sous l'adresse, « Ton adresse sert à te connecter et à te prévenir. Les organisateurs des événements que tu rejoins la voient, personne d'autre. » ; sous le prénom, « Celui que verront les autres dans tes Secret Santa. ». Le lien « Tes données, en clair » de la maquette attend sa page (noté dans `ECARTS-MAQUETTES.md`). Les autres champs (`PersonneNouvelle`, `EnvoiAjouterEmail` avaient déjà leur ligne) restent à passer en revue.
+- **Les moteurs de recherche** : une liste publique envoie déjà `X-Robots-Tag: noindex` et la balise `robots`, vérifiés par `tests/e2e/security.spec.ts`. Rien à changer.
+- **Le registre**, en brouillon : `docs/donnees-personnelles.md`, les traitements (données, qui les voit, durées décidées), où sont les données, et la marche à suivre en cas de fuite. À relire par Julien.
+- **Les phrases « personne, toi compris, ne voit »** des écrans de l'organisateur (`ConfirmerTirage`, le suivi : « Personne, organisateur compris, ne voit les résultats ici ») suivent leurs maquettes ; la page de présentation d'aujourd'hui n'en dit rien. Laissées telles quelles : la précision de l'accès de dernier recours viendra avec `Confidentialite` (« À qui tu offres ») et la nouvelle page de présentation.
+
+Question : Q-044 (les services de notifications des téléphones, absents de « deux prestataires »).
+
+Tests : `tests/e2e/account.spec.ts` lit la ligne sous l'adresse. `pnpm controle --e2e` passé.
+
+**Reste** : tout ce qui n'est pas coché, dont les pages qui attendent l'adresse de contact.

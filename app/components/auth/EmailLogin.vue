@@ -171,13 +171,14 @@ const onAgain = () => {
     <UFormField
       v-if="mode === 'signup'"
       :label="t('adminGroup.personForm.firstNameLabel')"
+      :help="t('auth.login.firstNameWhoSees')"
+      :ui="{ help: 'text-[13px] text-toned' }"
       required
     >
       <UInput v-model="firstName" autocomplete="given-name" class="w-full" />
     </UFormField>
     <UFormField
       :label="t('auth.login.emailLabel')"
-      :help="t('auth.login.emailHelp')"
       :required="tabs"
       :ui="{
         label: 'text-[15px] font-semibold',
@@ -195,6 +196,15 @@ const onAgain = () => {
         class="w-full"
         :ui="{ base: 'h-12' }"
       />
+      <!-- Who sees the address (README 23.3, Connexion). -->
+      <template #help>
+        <span class="flex flex-col gap-1.5">
+          <span>{{ t('auth.login.emailHelp') }}</span>
+          <span data-testid="email-who-sees">{{
+            t('auth.login.emailWhoSees')
+          }}</span>
+        </span>
+      </template>
     </UFormField>
     <!-- A client that asks too much (maquette TropDeDemandes): what
          happened, then what to do. -->

@@ -7,6 +7,9 @@ export default {
     tooManyHelp:
       'Wait a few minutes before trying again. If you already asked for a link, look in your emails: it is good for 15 minutes.',
     emailLabel: 'Email address',
+    emailWhoSees:
+      'Your address is for logging in and letting you know. The organisers of the events you join see it, nobody else.',
+    firstNameWhoSees: 'The one the others will see in your Secret Santas.',
     emailHelp: 'No password: you get a link valid for 15 minutes.',
     emailInvalid: 'This address looks incomplete',
     submit: 'Get a login link',

@@ -5,6 +5,9 @@ export default {
     tooManyHelp:
       'Attends quelques minutes avant de réessayer. Si tu as déjà demandé un lien, regarde dans tes emails : il est valable 15 minutes.',
     emailLabel: 'Adresse email',
+    emailWhoSees:
+      'Ton adresse sert à te connecter et à te prévenir. Les organisateurs des événements que tu rejoins la voient, personne d’autre.',
+    firstNameWhoSees: 'Celui que verront les autres dans tes Secret Santa.',
     emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
     emailInvalid: 'Cette adresse a l’air incomplète',
     submit: 'Recevoir un lien de connexion',

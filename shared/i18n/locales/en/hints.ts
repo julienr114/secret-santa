@@ -142,7 +142,7 @@ export default {
       title: 'I avoid, or already have',
       empty: 'Say what I avoid',
       help: 'What is better not to give you.',
-      placeholder: 'An allergy, what you have too much of…',
+      placeholder: 'What you don’t like, what you have too much of…',
       giver: 'To avoid',
     },
   },

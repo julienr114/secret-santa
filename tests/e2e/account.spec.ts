@@ -17,6 +17,10 @@ const requestLink = async (api: APIRequestContext, email: string) => {
 test('an address that is not one is refused', async ({ page }) => {
   await page.goto('/login');
   await hydrated(page);
+  // Who sees the address (ticket 131, README 23.3).
+  await expect(page.getByTestId('email-who-sees')).toHaveText(
+    'Ton adresse sert à te connecter et à te prévenir. Les organisateurs des événements que tu rejoins la voient, personne d’autre.',
+  );
   await page.getByLabel('Adresse email').fill('pas-une-adresse');
   await expect(
     page.getByRole('button', { name: 'Recevoir un lien' }),

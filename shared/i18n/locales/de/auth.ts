@@ -7,6 +7,9 @@ export default {
     tooManyHelp:
       'Warte ein paar Minuten, bevor du es erneut versuchst. Wenn du schon einen Link angefordert hast, sieh in deinen E-Mails nach: Er gilt 15 Minuten.',
     emailLabel: 'E-Mail-Adresse',
+    emailWhoSees:
+      'Deine Adresse dient zum Anmelden und um dich zu benachrichtigen. Die Organisatoren der Events, denen du beitrittst, sehen sie, sonst niemand.',
+    firstNameWhoSees: 'Den sehen die anderen in deinen Secret Santas.',
     emailHelp:
       'Kein Passwort: Du erhältst einen Link, der 15 Minuten gültig ist.',
     emailInvalid: 'Diese Adresse sieht unvollständig aus',

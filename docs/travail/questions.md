@@ -4,6 +4,16 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-044 — « Chez deux prestataires, et nulle part ailleurs » : et les services de notifications des téléphones ? (ticket 131)
+
+- **Pour** : la conception, puis Julien
+- **Ce qui bloque** : rien. La page `Confidentialite` n'est pas publiée (l'adresse de contact manque).
+- **Ce qu'on a trouvé** : la maquette `Confidentialite` dit « Où sont les données : chez deux prestataires, et nulle part ailleurs : Cloudflare… Resend… ». Depuis le ticket 124, une notification du téléphone passe par le service de notifications de l'appareil (Apple pour un iPhone, Google pour Android et Chrome, Mozilla pour Firefox). Il reçoit l'adresse de l'appareil et un message chiffré pour l'appareil seul, qu'il ne peut pas lire (RFC 8291).
+- **Les choix** :
+  - A. Le dire sur la page : « Si tu actives les notifications, le service de ton téléphone (Apple, Google) porte un message chiffré qu'il ne peut pas lire. »
+  - B. Ne pas le dire : ce n'est pas un prestataire choisi par l'application, mais celui de la personne.
+- **Ce que je ferais** : A, puisque la page promet de tout dire. Le brouillon du registre (`docs/donnees-personnelles.md`) le note déjà.
+
 ### Q-043 — Changer la clé du serveur : les refus d'adresses que la base ne connaît plus, et les liens « stop » des emails déjà partis (ticket 171)
 
 - **Pour** : Julien

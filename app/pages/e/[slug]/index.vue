@@ -208,6 +208,7 @@ const onLeave = () =>
           >
             <template v-for="santa in data.secretSantas" :key="santa.id">
               <UiListItem
+                :class="santa.organiser ? 'border-b-0' : ''"
                 icon="i-lucide-mail"
                 icon-tone="neutral"
                 bare-icon
@@ -220,6 +221,13 @@ const onLeave = () =>
                 :dot="santa.line?.dot ? t('lines.dot') : undefined"
                 :to="santa.to ?? undefined"
                 data-testid="party-santa"
+              />
+              <!-- I organise it and take part (ticket 173): as on the home. -->
+              <UiOrganiseRow
+                v-if="santa.organiser"
+                :line="santa.organiser.line"
+                :to="santa.organiser.to"
+                data-testid="party-organise"
               />
               <UiListItem
                 v-if="santa.game"

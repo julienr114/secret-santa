@@ -126,25 +126,12 @@ const creates = computed(() => {
           :to="santa.to ?? undefined"
           data-testid="home-santa"
         />
-        <li v-if="santa.organiser" data-testid="home-organise">
-          <NuxtLink
-            :to="santa.organiser.to"
-            class="flex min-h-[54px] items-center gap-3 pr-4 pb-2 pl-[68px] transition-colors active:bg-muted"
-          >
-            <span class="min-w-0 grow">
-              <span class="line-clamp-2 font-semibold">{{
-                t('home.organise')
-              }}</span>
-              <span class="line-clamp-2 text-[13px] text-toned">{{
-                words.line(santa.organiser.line)
-              }}</span>
-            </span>
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-5 shrink-0 text-dimmed"
-            />
-          </NuxtLink>
-        </li>
+        <UiOrganiseRow
+          v-if="santa.organiser"
+          :line="santa.organiser.line"
+          :to="santa.organiser.to"
+          data-testid="home-organise"
+        />
         <UiListItem
           v-if="santa.game"
           icon="i-lucide-search"

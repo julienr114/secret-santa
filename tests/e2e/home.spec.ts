@@ -226,6 +226,29 @@ test('the parties of the season of Christmas, a birthday soon, the rest later', 
   // something (ticket 106).
   await expect(page.getByTestId('home-elsewhere')).toHaveCount(0);
 
+  // The same pair on the page of the event (ticket 173): my result, then
+  // « Tu l'organises » to the follow-up; organised without taking part,
+  // one line.
+  await page.goto(`/e/${bureau}`);
+  await hydrated(page);
+  await expect(
+    page.getByTestId('party-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/p\//);
+  const organiseHere = page.getByTestId('party-organise');
+  await expect(organiseHere).toContainText('Tu l’organises');
+  await expect(organiseHere.getByRole('link')).toHaveAttribute(
+    'href',
+    `/admin/${bureau}/editions/${bureauSanta}`,
+  );
+  await page.goto(`/e/${tonton}`);
+  await hydrated(page);
+  await expect(
+    page.getByTestId('party-santa').getByRole('link'),
+  ).toHaveAttribute('href', /^\/admin\//);
+  await expect(page.getByTestId('party-organise')).toHaveCount(0);
+  await page.goto('/');
+  await hydrated(page);
+
   // « Préparer » opens « Pour quelle occasion ? » already filled.
   await soon.getByRole('link', { name: 'Préparer' }).click();
   await expect(heading(page)).toHaveText('Pour quelle occasion ?');

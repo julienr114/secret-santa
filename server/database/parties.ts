@@ -65,7 +65,7 @@ export type PartyPage = {
   members: { count: number; avatars: Avatar[] };
   /**
    * The Secret Santas of the year I organise or take part in, with their
-   * text: the organiser's for an organiser, mine otherwise (lignes.md).
+   * text: mine when I take part, the organiser's otherwise (lignes.md).
    */
   secretSantas: {
     id: string;
@@ -73,6 +73,11 @@ export type PartyPage = {
     label: string;
     to: string | null;
     line: LineText | null;
+    /**
+     * « Tu l'organises » (ticket 173), when I organise it and take part:
+     * the organiser's text and its follow-up. Null otherwise.
+     */
+    organiser: { line: LineText; to: string } | null;
     game: { line: LineText; to: string } | null;
   }[];
   /**
@@ -208,25 +213,25 @@ export const loadPartyPage = async (
         ).map((row) => [row.id, row]),
   );
   const ofYear = santas.filter((santa) => santa.yearId === year?.id);
-  const mine =
-    role === 'organiser' || !me
-      ? []
-      : await db
-          .select({
-            secretSantaId: participations.secretSantaId,
-            tokenEnc: participations.tokenEnc,
-            tokenIv: participations.tokenIv,
-          })
-          .from(participations)
-          .where(
-            and(
-              eq(participations.personId, me.id),
-              inArray(
-                participations.secretSantaId,
-                ofYear.length === 0 ? [''] : ofYear.map((santa) => santa.id),
-              ),
+  // My own pages, an organiser's too when they take part (ticket 173).
+  const mine = !me
+    ? []
+    : await db
+        .select({
+          secretSantaId: participations.secretSantaId,
+          tokenEnc: participations.tokenEnc,
+          tokenIv: participations.tokenIv,
+        })
+        .from(participations)
+        .where(
+          and(
+            eq(participations.personId, me.id),
+            inArray(
+              participations.secretSantaId,
+              ofYear.length === 0 ? [''] : ofYear.map((santa) => santa.id),
             ),
-          );
+          ),
+        );
   const paths = new Map(
     await Promise.all(
       mine.map(async (row) => {
@@ -253,9 +258,11 @@ export const loadPartyPage = async (
       {
         accountId: account.id,
         persons: me ? [me.id] : [],
+        // As on the home (ticket 173): it speaks to me as one who takes
+        // part if I do; the organiser's row comes under it.
         santas: santasShown.map((santa) => ({
           id: santa.id,
-          as: role === 'organiser' ? 'organiser' : 'participant',
+          as: paths.has(santa.id) ? 'participant' : 'organiser',
         })),
         lists: listsShown.map((list) => ({ id: list.id, partyId: party.id })),
       },
@@ -299,15 +306,19 @@ export const loadPartyPage = async (
     secretSantas: santasShown.map((santa) => {
       const path = paths.get(santa.id) ?? null;
       const line = lines.santas.get(santa.id);
+      const follow = `/admin/${party.slug}/editions/${santa.id}`;
+      const organises = role === 'organiser';
       return {
         id: santa.id,
         year: santa.year,
         label: santa.label,
-        to:
-          role === 'organiser'
-            ? `/admin/${party.slug}/editions/${santa.id}`
-            : path,
+        // My own page first; the organiser's otherwise.
+        to: path ?? (organises ? follow : null),
         line: line?.line ?? null,
+        organiser:
+          path && organises && line
+            ? { line: line.organiser, to: follow }
+            : null,
         game:
           line?.game && path
             ? { line: line.game, to: gamePath(path, line.game) }

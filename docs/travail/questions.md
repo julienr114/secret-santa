@@ -72,7 +72,7 @@ Aucune.
   - le groupe porte le nom du champ pour un lecteur d'écran ;
   - pas de roulettes dans ce ticket.
   - **Reste à Julien** : l'essai sur son iPhone (le pavé numérique s'ouvre-t-il ?). Il a choisi A sans l'avoir fait ; si le pavé ne s'ouvre pas, le dire ici avant de fermer le ticket.
-  - **Julien, 25 novembre 2026** : « c'est bon ». La conception le lit comme : l'essai sur son iPhone est fait et le pavé numérique s'ouvre. Elle lui a demandé de le confirmer ; le ticket 160 peut se fermer s'il ne dit pas le contraire.
+  - **Julien, 25 novembre 2026, après la publication** : essayé sur son iPhone, dans l'application installée. C'est bien le pavé numérique qui s'ouvre. Le ticket 160 peut se fermer ; l'essai sur un Android n'a pas été fait.
 
 
 

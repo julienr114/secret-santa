@@ -1,4 +1,4 @@
-# 174 — Une notification vue s'efface du téléphone
+# 175 — Une notification vue s'efface du téléphone
 
 - **Dépend de** : 124
 - **Migration** : non

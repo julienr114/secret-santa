@@ -54,7 +54,8 @@ export const loginAsOrganizer = async (
 
 /**
  * Writes rows the screens can no longer make (the gift hints of before
- * the V3, ticket 107) straight into the database of the test server.
+ * the V3, ticket 107) straight into the database of the test server of
+ * this run.
  * @param sql - The statements.
  * @returns Once written.
  */
@@ -69,7 +70,8 @@ export const seedSql = async (sql: string) => {
       'secret-santa',
       '--local',
       '--persist-to',
-      '.wrangler/e2e',
+      // The database of this run's server (ticket 168: one each).
+      `.wrangler/e2e-${process.env.E2E_PORT ?? 3100}`,
       '--command',
       sql,
     ],
@@ -161,4 +163,28 @@ export const seedMembers = async (
       .join(' '),
   );
   return ids;
+};
+
+/**
+ * Types a date in a field of one date (ticket 160, UiDateField): what it
+ * held is emptied, then the digits are typed in one go, in the order of
+ * the language (« 14032020 » in French).
+ * @param page - The page.
+ * @param testid - The `data-testid` of the field.
+ * @param digits - The digits, as typed.
+ * @returns Once typed.
+ */
+export const typeDate = async (page: Page, testid: string, digits: string) => {
+  const segments = page
+    .getByTestId(testid)
+    .locator(
+      '[data-reka-date-field-segment]:not([data-reka-date-field-segment="literal"])',
+    );
+  await segments.last().click();
+  await Array.from({ length: 10 }).reduce<Promise<void>>(
+    (done) => done.then(() => page.keyboard.press('Backspace')),
+    Promise.resolve(),
+  );
+  await segments.first().click();
+  await page.keyboard.type(digits);
 };

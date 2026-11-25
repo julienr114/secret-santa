@@ -240,7 +240,6 @@ export default {
     more: 'One place more',
     until: 'Last day',
     untilHelp: 'Optional. The link stops working after this day.',
-    dateLabel: 'Date',
     noUntil: 'No last day',
     none: 'None',
     messageRow: 'Your words on the page',
@@ -474,13 +473,18 @@ export default {
     },
     dateSheet: {
       title: 'Date',
-      description: 'The day gifts are exchanged.',
       seen: 'Participants see it on their page, with the countdown.',
       journal: 'The change is written in the event journal.',
       saved: 'Date saved',
     },
     emails: {
       title: 'Send by email',
+      paused: 'Sending emails is paused for everyone.',
+      pausedWhy:
+        'It isn’t you: the app has reached its limit. Sending will start again by itself.',
+      pausedMeanwhile:
+        'Meanwhile, send each person their link from your phone: that always works, and depends on nothing.',
+      shareLinks: 'Share the links',
       selected: {
         one: '{count} selected of {total}',
         other: '{count} selected of {total}',

@@ -1,3 +1,4 @@
+import { listChangesPending } from '~/composables/queries/useLists';
 import type { InjectionKey, Ref } from 'vue';
 import { useQueryClient, type QueryKey } from '@tanstack/vue-query';
 import {
@@ -108,10 +109,16 @@ export const useListLive = (
     left: false,
   };
 
+  // Changes of this page on their way: the list is read again after the
+  // last of them, with what others changed too (ticket 168).
   const reload = () =>
-    Promise.all(
-      refetch().map((queryKey) => queryClient.invalidateQueries({ queryKey })),
-    );
+    listChangesPending()
+      ? Promise.resolve([])
+      : Promise.all(
+          refetch().map((queryKey) =>
+            queryClient.invalidateQueries({ queryKey }),
+          ),
+        );
   /**
    * Says something to the room.
    * @param message - What to say.

@@ -24,6 +24,8 @@ export const notifyOrganizers = async (
     recipients.map(({ email, language }) => ({
       ...build(localeOf(language)),
       to: email,
+      locale: localeOf(language),
     })),
+    { db: context.db },
   );
 };

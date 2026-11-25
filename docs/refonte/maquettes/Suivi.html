@@ -60,15 +60,15 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
     <section style="background: #fffdf9; border-radius: 16px; box-shadow: 0 1px 2px rgba(60, 30, 10, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 20px; display: flex; flex-direction: column; gap: 16px">
       <div style="display: flex; flex-direction: column; gap: 4px">
         <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #8a2f27">À faire maintenant</p>
-        <h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.2">Préviens chacun que le tirage est fait</h2>
+        <h2 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.2">Partage son lien à Rose</h2>
       </div>
       <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
         <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 10px; background: #fbf3f1">
-          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 26px; line-height: 1; color: #8a2f27">3</dd>
-          <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #702a24">à prévenir</dt>
+          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 26px; line-height: 1; color: #8a2f27">1</dd>
+          <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #702a24">sans adresse email</dt>
         </div>
         <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 10px; background: #fdf8ea">
-          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 26px; line-height: 1; color: #79511d">1</dd>
+          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 26px; line-height: 1; color: #79511d">3</dd>
           <dt style="font-size: 12px; font-weight: 600; line-height: 1.25; color: #66431d">pas encore ouvert</dt>
         </div>
         <div style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 10px; background: #f0f6f1">
@@ -77,11 +77,11 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
         </div>
       </dl>
       <div style="display: flex; flex-direction: column; gap: 4px">
-        <a href="SelectionEmail.dc.html" style="height: 48px; border-radius: 6px; background: #b8483a; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
-        Prévenir par email
+        <a data-envoi-auto="1" href="Envoi.dc.html" style="height: 48px; border-radius: 6px; background: #b8483a; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        Partager le lien de Rose
       </a>
-      <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #57534e; text-align: center">Sans adresse email ? Le bouton de chaque ligne partage le lien par WhatsApp ou SMS.</p>
+      <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #57534e; text-align: center">Les 4 autres ont reçu leur lien par email.</p>
       </div>
     </section>
 
@@ -89,38 +89,34 @@ a{color:#a43a2f}a:hover{color:#8a2f27}
       <h2 style="margin: 0; padding: 0 4px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #57534e">5 participants</h2>
       <ul style="list-style: none; margin: 0 -16px; padding: 0; background: #fffdf9; border-top: 1px solid #dccbad; border-bottom: 1px solid #dccbad">
         <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box;">
-          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🍭</span>
-          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-            <span style="font-weight: 600; font-size: 16px">Inès</span>
-            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #57534e"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#57534e" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
-          </span>
-          <button aria-label="Envoyer le lien de Inès" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f6e2dd; color: #a43a2f; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
-        </li>
-        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
-          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🎄</span>
-          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
-            <span style="font-weight: 600; font-size: 16px">Louis</span>
-            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #57534e"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#57534e" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
-          </span>
-          <button aria-label="Envoyer le lien de Louis" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f6e2dd; color: #a43a2f; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
-        </li>
-        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
           <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ead2e2; box-shadow: 0 0 0 1px #c493b4; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🐧</span>
           <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
             <span style="font-weight: 600; font-size: 16px">Rose</span>
-            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #57534e"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#57534e" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas encore envoyé</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #57534e"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#57534e" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.500 4"><circle cx="12" cy="12" r="9"/></svg>Pas d’adresse email</span>
           </span>
-          <button aria-label="Envoyer le lien de Rose" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f6e2dd; color: #a43a2f; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
-        </li>
-        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
+          <button aria-label="Partager le lien de Rose" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f6e2dd; color: #a43a2f; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li><li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🍭</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Inès</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #79511d"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#79511d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Envoyé, pas encore consulté</span>
+          </span>
+          <button aria-label="Renvoyer le lien de Inès" style="width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #dccbad; border-radius: 50%; background: transparent; color: #57534e; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li><li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🎄</span>
+          <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 16px">Louis</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #79511d"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#79511d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Envoyé, pas encore consulté</span>
+          </span>
+          <button aria-label="Renvoyer le lien de Louis" style="width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #dccbad; border-radius: 50%; background: transparent; color: #57534e; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        </li><li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
           <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #f6e3ad; box-shadow: 0 0 0 1px #e6b94a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🐧</span>
           <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
             <span style="font-weight: 600; font-size: 16px">Hugo</span>
             <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: #79511d"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#79511d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Envoyé, pas encore consulté</span>
           </span>
           <button aria-label="Renvoyer le lien de Hugo" style="width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #dccbad; border-radius: 50%; background: transparent; color: #57534e; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
-        </li>
-        <li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
+        </li><li style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border-top: 1px solid #e9dcc5;">
           <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #ead2e2; box-shadow: 0 0 0 1px #c493b4; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0">🦌</span>
           <span style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
             <span style="font-weight: 600; font-size: 16px">Camille</span>

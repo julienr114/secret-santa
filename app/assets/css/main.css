@@ -370,6 +370,53 @@
     0 2px 6px 3px rgb(90 40 60 / 0.06);
 }
 
+/* The rhythm of a list (docs/spec/v3/listes.md, « Le rythme d'une
+   liste », ticket 167, V3ListeTitres): the closer two things go
+   together, the closer they are. 10 px between a title and its first
+   idea, 20 px between two ideas, 36 px above a title, 48 px between two
+   people. Here only: every view of a list reads them. */
+:root {
+  --rhythm-line: 10px;
+  --rhythm-title: 26px;
+  --rhythm-people: 48px;
+}
+/* A line of a list: 10 px above and below (an idea, a gift not on the
+   list, « J'offre autre chose à… »). */
+@utility list-line {
+  padding-top: calc(
+    var(--line-top, var(--rhythm-line)) + var(--line-writing, 0px)
+  );
+  padding-bottom: calc(
+    var(--line-bottom, var(--rhythm-line)) + var(--line-writing, 0px)
+  );
+}
+/* A title: away from what comes before (26 px more), right on its ideas
+   (nothing below); first line of a person, under the name like an idea. */
+@utility list-title {
+  --line-top: var(--rhythm-title);
+  --line-bottom: 0px;
+  &:first-child {
+    --line-top: var(--rhythm-line);
+  }
+}
+/* The line being written: its white card goes 4 px past the line on each
+   side, and its neighbours do not move. */
+@utility list-writing {
+  --line-writing: 4px;
+  margin-block: -4px;
+}
+/* People one under the other: in a column of their own… */
+@utility list-people {
+  row-gap: var(--rhythm-people);
+}
+/* …or in the column of a screen, which keeps 24 px (gap-6) between its
+   blocks: a person after another adds the rest. */
+@utility list-person {
+  & + & {
+    margin-top: calc(var(--rhythm-people) - 1.5rem);
+  }
+}
+
 /* The lines of a person on a list (Correction 30, maquette
    ListeGroupeFil): their boxes in the left column, under the middle of
    their icon of 40 px, and their text on one edge, 50 px in, with their

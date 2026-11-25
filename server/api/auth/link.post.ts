@@ -1,20 +1,24 @@
 import { avatarOf } from '#server/utils/avatars';
 import { z } from 'zod';
 import { useDb } from '#server/database/client';
+import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import {
   createAccount,
   findAccountByEmail,
   findPersonByEmail,
   recentLinkRequests,
+  replaceLoginCode,
   replaceLoginLink,
 } from '#server/database/accounts';
+import { deviceOf } from '#server/http/device';
+import { codeOf, codePrint } from '#server/utils/loginCode';
 import { appUrl, ipHashOf, nowIso, secretsOf } from '#server/http/context';
 import { sendEmails } from '#server/http/email';
 import { validatedBody } from '#server/http/validate';
 import { accountEmailSchema, superAdminEmails } from '#server/utils/accounts';
 import { LINK_LIMITS, linkVerdict } from '#server/utils/limits';
 import { generateToken, hashToken } from '#server/utils/crypto';
-import { buildLoginEmail } from '#server/utils/loginEmail';
+import { buildCodeEmail, buildLoginEmail } from '#server/utils/loginEmail';
 import { safeNext } from '#server/utils/invite';
 import { localeOf } from '#shared/i18n';
 import { eq } from 'drizzle-orm';
@@ -36,10 +40,16 @@ const bodySchema = z.object({
   next: z.string().max(100).optional(),
   // Given when signing up: the first name of the new account.
   firstName: nameSchema.optional(),
+  // The installed app (ticket 123): a code of six digits instead of a
+  // link, bound to this device.
+  code: z.boolean().optional(),
 });
 
 export default defineEventHandler(async (event) => {
-  const { email, next, firstName } = await validatedBody(event, bodySchema);
+  const { email, next, firstName, code } = await validatedBody(
+    event,
+    bodySchema,
+  );
   const db = useDb(event);
   const secrets = secretsOf(event);
   const now = nowIso();
@@ -69,6 +79,8 @@ export default defineEventHandler(async (event) => {
   // many: the same answer, and no email.
   if (verdict === 'silent') return { ok: true };
 
+  // No new account while sign-ups are suspended (ticket 129).
+  if (!existing) await refuseWhileSignupsPaused(db, declared);
   // A new account takes the face it had in a Secret Santa, if any.
   const person = existing ? null : await findPersonByEmail(db, email);
   const account =
@@ -91,6 +103,24 @@ export default defineEventHandler(async (event) => {
       .where(eq(accounts.id, account.id));
   }
 
+  // The installed app: a code, and the email without a link (ticket 123).
+  if (code) {
+    const value = codeOf(() => crypto.getRandomValues(new Uint32Array(1)));
+    await replaceLoginCode(db, {
+      accountId: account.id,
+      codePrint: await codePrint(value, await deviceOf(event), secrets.dataKey),
+      ipHash,
+      now,
+    });
+    await sendEmails(
+      event,
+      [{ ...buildCodeEmail(value, account.language), to: account.email }],
+      { db, login: true },
+    );
+    setResponseHeader(event, 'Cache-Control', 'no-store');
+    return secrets.devLoginLinks ? { ok: true, devCode: value } : { ok: true };
+  }
+
   const token = generateToken();
   await replaceLoginLink(db, {
     accountId: account.id,
@@ -104,9 +134,11 @@ export default defineEventHandler(async (event) => {
     `/login/${token}${back ? `?next=${encodeURIComponent(back)}` : ''}`,
   );
   // A failed send changes nothing to the answer: the user asks again.
-  await sendEmails(event, [
-    { ...buildLoginEmail(link, account.language), to: account.email },
-  ]);
+  await sendEmails(
+    event,
+    [{ ...buildLoginEmail(link, account.language), to: account.email }],
+    { db, login: true },
+  );
   setResponseHeader(event, 'Cache-Control', 'no-store');
   return secrets.devLoginLinks ? { ok: true, devLink: link } : { ok: true };
 });

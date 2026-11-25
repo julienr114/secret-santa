@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { apiLogin, heading, hydrated, openList } from './helpers';
+import { apiLogin, heading, hydrated, openList, typeDate } from './helpers';
 
 // Gift lists, for the one who holds them (README 22.19, lot 21): a
 // document written in place, the people of my family, sharing. Any
@@ -461,34 +461,28 @@ test('a person of my family keeps their details from list to list', async ({
   await validate.click();
   await expect(page.getByTestId('member-shoe')).toContainText('30 ou 31');
 
-  // The date of birth: three lists, no calendar; incomplete, no « Valider ».
+  // The date of birth (ticket 160): one field, the date in full under it;
+  // incomplete or to come, no « Valider ».
   await page.getByTestId('member-birth').click();
   await expect(heading(page)).toHaveText('Sa date de naissance');
-  await page.getByTestId('birth-month').selectOption({ label: 'février' });
-  await page.getByTestId('birth-year').selectOption('2020');
   await expect(validate).toBeDisabled();
-  // 2020 is a leap year: February has its 29, not a 30.
-  await expect(
-    page.getByTestId('birth-day').locator('option[value="29"]'),
-  ).toHaveCount(1);
-  await expect(
-    page.getByTestId('birth-day').locator('option[value="30"]'),
-  ).toHaveCount(0);
-  await page.getByTestId('birth-day').selectOption('29');
-  // The day follows the year: 2021 has no 29 February.
-  await page.getByTestId('birth-year').selectOption('2021');
-  await expect(page.getByTestId('birth-day')).toHaveValue('');
+  // A birth still to come is refused by us, and said.
+  await typeDate(page, 'birth', `0101${new Date().getFullYear() + 1}`);
+  await expect(page.getByTestId('birth-full')).toContainText('Une date entre');
   await expect(validate).toBeDisabled();
-  await page.getByTestId('birth-month').selectOption({ label: 'mars' });
-  await page.getByTestId('birth-day').selectOption('14');
-  await page.getByTestId('birth-year').selectOption('2020');
+  await typeDate(page, 'birth', '14032020');
+  await expect(page.getByTestId('birth-full')).toHaveText('14 mars 2020');
+  await expect(page.getByTestId('birth')).toHaveAttribute(
+    'aria-label',
+    'Date de naissance',
+  );
   await validate.click();
   await expect(page.getByTestId('member-birth')).toContainText(
     '14 mars 2020 · 6 ans',
   );
   // « Effacer la date » under « Valider ».
   await page.getByTestId('member-birth').click();
-  await expect(page.getByTestId('birth-day')).toHaveValue('14');
+  await expect(page.getByTestId('birth-full')).toHaveText('14 mars 2020');
   await page.getByRole('button', { name: 'Effacer la date' }).click();
   await expect(page.getByTestId('member-birth')).toContainText('Aucune');
 

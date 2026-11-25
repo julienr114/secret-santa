@@ -227,11 +227,5 @@ export default {
       noneShort: 'No',
       short: { one: 'Only last year', other: 'Last {count} years' },
     },
-    eventDate: 'Date',
-    eventDatePick: 'Choose a date',
-    eventDatePlaceholder: 'dd/mm/yyyy',
-    eventDateHelp: 'Closing is only offered after this date.',
-    eventDateSuggest: 'Suggest {date}',
-    eventDateClear: 'Clear the date',
   },
 } satisfies Dict<typeof fr>;

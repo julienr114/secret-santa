@@ -5,7 +5,6 @@ import {
   birthParts,
   birthYears,
   daysIn,
-  settleBirth,
   shoeSizesOf,
   shoeSizesShown,
   shoeSizesText,
@@ -84,13 +83,6 @@ describe('a date of birth, in three lists', () => {
     expect(birthParts('2020-03-14')).toEqual({ day: 14, month: 3, year: 2020 });
     expect(birthParts(null)).toEqual(none);
     expect(birthParts('14/03/2020')).toEqual(none);
-  });
-
-  it('leaves a day the month no longer has to be chosen again', () => {
-    expect(settleBirth({ day: 31, month: 4, year: 2020 }).day).toBeNull();
-    expect(settleBirth({ day: 29, month: 2, year: 2021 }).day).toBeNull();
-    expect(settleBirth({ day: 29, month: 2, year: 2020 }).day).toBe(29);
-    expect(settleBirth({ day: 14, month: null, year: null }).day).toBe(14);
   });
 
   it('saves a complete date, and only that', () => {

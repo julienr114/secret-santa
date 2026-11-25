@@ -96,6 +96,8 @@ const onInvite = () => {
             />
           </div>
         </div>
+        <!-- Ticket 130 (StopSaisie). -->
+        <UiEmailBlockNote :email="draft.email" />
         <p
           v-if="members.data.value?.partyName"
           class="px-3.5 text-[13px] leading-[1.4] text-toned"

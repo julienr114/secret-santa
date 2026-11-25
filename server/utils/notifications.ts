@@ -2,11 +2,10 @@ import { emailSubject, plainEmail, type Email } from './messages';
 import { daysUntil, formatEventDate } from './rules';
 import type { EditionStatus } from './editions';
 import { translate, type Locale } from '#shared/i18n';
-import { invitePlace } from './invite';
 
-// Emails to the organisers of an event (README 22.2): someone signed up to
-// a Secret Santa by its link, everyone discovered their result, the exchange is near and some
-// have not. Pure.
+// The reminder to the organisers of an event (README 22.2): the exchange
+// is near and some have not discovered their result. The other emails to
+// the organisers are news now, sent as each chose (ticket 121). Pure.
 
 /** How many days before the exchange the reminder goes. */
 export const REMINDER_DAYS = 3;
@@ -40,69 +39,6 @@ export const isReminderDue = (
   const days = daysUntil(edition.eventDate, today);
   return days !== null && days <= REMINDER_DAYS;
 };
-
-/**
- * Someone signed up to a Secret Santa by its invitation link (ticket 116).
- * @param data - Event, Secret Santa (its name when the event has several
- *   that year), first name of the newcomer, link to the members.
- * @param locale - Language of the organiser.
- * @returns The email.
- */
-export const buildJoinedEmail = (
-  data: {
-    groupName: string;
-    santaName?: string | null;
-    firstName: string;
-    link: string;
-  },
-  locale: Locale,
-): Email =>
-  plainEmail({
-    subject: emailSubject(
-      locale,
-      { event: data.groupName, santa: data.santaName },
-      translate(locale, 'notify.joined.subject', { name: data.firstName }),
-    ),
-    before: [
-      translate(locale, 'notify.joined.body', {
-        name: data.firstName,
-        group: invitePlace(data.groupName, data.santaName ?? null),
-      }),
-      translate(locale, 'notify.joined.next'),
-    ],
-    link: data.link,
-  });
-
-/**
- * Everyone discovered their result.
- * @param data - Event, edition (its name when the event has several that
- *   year), link to the edition.
- * @param locale - Language of the organiser.
- * @returns The email.
- */
-export const buildAllViewedEmail = (
-  data: {
-    groupName: string;
-    editionLabel: string;
-    santaName?: string | null;
-    link: string;
-  },
-  locale: Locale,
-): Email =>
-  plainEmail({
-    subject: emailSubject(
-      locale,
-      { event: data.groupName, santa: data.santaName },
-      translate(locale, 'notify.allViewed.subject'),
-    ),
-    before: [
-      translate(locale, 'notify.allViewed.body', {
-        edition: data.editionLabel,
-        group: data.groupName,
-      }),
-    ],
-    link: data.link,
-  });
 
 /**
  * The exchange is near and some have not discovered their result.

@@ -57,10 +57,14 @@ const sentTo = computed(() => {
   }).split('\u0000');
   return { before, after };
 });
+// In the installed app, a code instead of a link (ticket 123): the link
+// would open in the browser. In a browser, nothing changes.
+const installed = useInstalledApp();
 /** The words of the button, which say when it works. */
 const submitLabel = computed(() => {
   if (request.isPending.value) return t('auth.login.sending');
   if (mode.value === 'signup') return t('auth.login.signupSubmit');
+  if (installed.value) return t('auth.login.submitCode');
   return props.tabs ? t('auth.login.submit') : t('auth.login.submitMine');
 });
 const devLink = computed(() => request.data.value?.devLink);
@@ -70,6 +74,7 @@ const onSubmit = () => {
       email: email.value.trim(),
       next: props.next,
       ...(mode.value === 'signup' ? { firstName: firstName.value.trim() } : {}),
+      ...(installed.value ? { code: true } : {}),
     });
   }
 };
@@ -80,8 +85,14 @@ const onAgain = () => {
 </script>
 
 <template>
+  <AuthLoginCode
+    v-if="sent && request.variables.value?.code"
+    :email="request.variables.value.email"
+    :next="next"
+    @other="onAgain"
+  />
   <div
-    v-if="sent"
+    v-else-if="sent"
     class="flex flex-col items-center gap-3.5 text-center"
     role="status"
     data-testid="login-sent"

@@ -231,11 +231,5 @@ export default {
       noneShort: 'Nein',
       short: { one: 'Nur letztes Jahr', other: 'Letzte {count} Jahre' },
     },
-    eventDate: 'Datum',
-    eventDatePick: 'Datum wählen',
-    eventDatePlaceholder: 'TT.MM.JJJJ',
-    eventDateHelp: 'Das Abschließen wird erst nach diesem Datum angeboten.',
-    eventDateSuggest: '{date} vorschlagen',
-    eventDateClear: 'Datum löschen',
   },
 } satisfies Dict<typeof fr>;

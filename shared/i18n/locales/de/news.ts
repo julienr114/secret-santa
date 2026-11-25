@@ -6,6 +6,29 @@ export default {
   today: 'Heute, {time}',
   yesterday: 'Gestern, {time}',
   close: 'Schließen',
+  settings: {
+    title: 'Mich benachrichtigen',
+    choose: 'Wählen, was mich benachrichtigt',
+    byEmail: 'Per E-Mail',
+    summary: 'Eine Zusammenfassung am Morgen',
+    summaryHint: 'Eine einzige E-Mail mit dem, was du noch nicht gesehen hast.',
+    instant: 'Sofort',
+    instantHint: 'Eine E-Mail für jede Neuigkeit.',
+    none: 'Keine E-Mail',
+    noneHint: 'Außer zum Anmelden.',
+    noneDiffers:
+      'Eine Organisatorin oder ein Organisator kann dir noch selbst schreiben. Um gar nichts mehr zu erhalten: „Keine E-Mails mehr erhalten“, unten in jeder E-Mail.',
+    blocked:
+      'Du möchtest keine E-Mails mehr von Under the Tree erhalten: Keine erreicht dich, außer zum Anmelden.',
+    unblock: 'Wieder E-Mails erhalten',
+    following: 'Dem ich folge',
+    wholeList: 'Die ganze Liste',
+    unfollow: 'Nicht mehr folgen',
+    unfollowList: '{title} nicht mehr folgen',
+    urgent: 'Was eilt',
+    urgentText:
+      'Dein Umschlag wartet, eine Einladung, jemand bittet dich um Geschenkideen: Mit der Zusammenfassung gehen diese E-Mails trotzdem sofort raus, außer du hast die Neuigkeit schon gesehen.',
+  },
   kind: {
     envelope: 'Die Auslosung ist erfolgt: Dein Umschlag wartet',
     hint_request: 'Jemand bittet dich um Geschenkideen',
@@ -31,5 +54,14 @@ export default {
     santa_added: '{name} hat dich zum Wichteln hinzugefügt',
     game_open: 'Devine qui: Du bist dran',
     list_shared: '{name} hat die eigene Liste mit dir geteilt',
+    followed_ideas: {
+      one: '{count} neue Idee für {name}',
+      other: '{count} neue Ideen für {name}',
+    },
+    followed_ideasList: {
+      one: '{count} neue Idee auf der Liste',
+      other: '{count} neue Ideen auf der Liste',
+    },
+    followed_person: '{name} steht auf der Liste',
   },
 };

@@ -61,4 +61,17 @@ export default {
     en: 'English',
     de: 'Deutsch',
   },
+  date: {
+    outside: 'A date between {from} and {to}.',
+    future: 'A date already past.',
+  },
+  emailBlock: {
+    refused:
+      'The person with this address asked to stop receiving emails from Under the Tree.',
+    refusedNext:
+      'You can keep the address, but no email will go to it. Send them their link another way.',
+    unknown: 'This address doesn’t seem to exist: no email will go to it.',
+    refusedShort: 'Asked to stop receiving emails',
+    unknownShort: 'Address that doesn’t seem to exist',
+  },
 } satisfies Dict<typeof fr>;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { partyYears, type BirthParts } from '#shared/utils/memberFields';
 import {
   UiIllusTree,
   UiIllusTreeEmpty,
@@ -117,7 +118,12 @@ const toggle = ref(true);
 const ticked = ref(true);
 /** The box of the UiConfirmBox example. */
 const confirmed = ref(false);
-const date = ref('');
+const date = ref<BirthParts>({
+  day: 25,
+  month: 12,
+  year: new Date().getFullYear(),
+});
+const dateYears = partyYears(new Date().getFullYear());
 const sheet = ref(false);
 /** The four states of the envelope of a draw. */
 const ENVELOPES = ['pending', 'sealed', 'opened', 'locked'] as const;
@@ -189,7 +195,6 @@ const pickable = (count: number) =>
     name,
     avatar: crowd[index % crowd.length]!,
   }));
-const christmasDay = `${new Date().getFullYear()}-12-25`;
 /** Examples of the long lists and the settings rows and sheets. */
 const longList = pickable(12);
 const expanded = ref(false);
@@ -207,9 +212,8 @@ const notifyOn = ref(true);
 const sheetOpen = reactive({
   choice: false,
   number: false,
-  date: false,
 });
-const settings = reactive({ years: 1, places: 10, until: '' });
+const settings = reactive({ years: 1, places: 10 });
 const YEAR_CHOICES = [
   { value: 0, label: 'Non, peu importe' },
   { value: 1, label: 'Pas la même que l’an dernier' },
@@ -904,16 +908,11 @@ const undone = ref(0);
           :value="String(settings.places)"
           :on-click="() => (sheetOpen.number = true)"
         />
-        <UiListItem
-          title="Date limite"
-          :value="settings.until || 'Aucune'"
-          :on-click="() => (sheetOpen.date = true)"
-        />
       </UiList>
       <p class="px-1 text-xs text-muted">
-        Panneaux : UiChoiceSheet, UiNumberSheet et AdminDateSheet (un texte
-        court s'écrit sur sa ligne, plus haut), tous sur UiSettingSheet
-        (Valider, Annuler, ligne d'erreur).
+        Panneaux : UiChoiceSheet et UiNumberSheet (un texte court s'écrit sur sa
+        ligne, plus haut ; une date ouvre sa page, AdminDatePage), tous sur
+        UiSettingSheet (Valider, Annuler, ligne d'erreur).
       </p>
       <UiChoiceSheet
         v-model:open="sheetOpen.choice"
@@ -938,15 +937,6 @@ const undone = ref(0);
         :validate-label="t('common.actions.validate')"
         :cancel-label="t('common.actions.cancel')"
         @validate="(v) => ((settings.places = v), (sheetOpen.number = false))"
-      />
-      <AdminDateSheet
-        v-model:open="sheetOpen.date"
-        title="Date limite"
-        description="Facultatif. Le lien ne marche plus après ce jour."
-        label="Date"
-        :value="settings.until"
-        clear-label="Pas de date limite"
-        @validate="(v) => ((settings.until = v), (sheetOpen.date = false))"
       />
     </section>
 
@@ -1073,9 +1063,14 @@ const undone = ref(0);
         orientation="horizontal"
       />
       <USwitch v-model="toggle" label="Interrupteur" />
-      <UFormField :label="t('adminGroup.rules.eventDate')">
-        <AdminDateField v-model="date" :suggestion="christmasDay" />
-      </UFormField>
+      <!-- A date in one field, the date in full under it (ticket 160). -->
+      <UiDateField
+        v-model="date"
+        :years="dateYears"
+        weekday
+        label="UiDateField : une date"
+        testid="style-date"
+      />
       <UiPersonField
         label="UiPersonField : une personne"
         :person="{ name: 'Hugo', avatar: sample }"

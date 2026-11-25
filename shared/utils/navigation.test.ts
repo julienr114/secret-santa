@@ -305,3 +305,10 @@ describe('the levels of the bar of a list (ticket 139)', () => {
     expect(SHARE_LEVELS.map(shareDepth)).toEqual([0, 1, 2, 1]);
   });
 });
+
+describe('the reported sends (ticket 130)', () => {
+  it('stay a page of the super-admin, not an event', () => {
+    expect(partyPathOf('/admin/envois-signales')).toBeNull();
+    expect(tabOf('/admin/envois-signales')).toBe('admin');
+  });
+});

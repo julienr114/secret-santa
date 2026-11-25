@@ -1,3 +1,4 @@
+import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import {
@@ -54,6 +55,8 @@ export default defineEventHandler(async (event) => {
   if (await findAccountByEmail(db, person.email)) {
     throw refuse('account_exists');
   }
+  // No new account while sign-ups are suspended (ticket 129).
+  await refuseWhileSignupsPaused(db);
   const now = nowIso();
   const account = await createAccount(db, {
     email: person.email,
@@ -104,7 +107,7 @@ export default defineEventHandler(async (event) => {
     await createIdea(db, listId, listPersonId, { text, url: null }, null);
     await tellNewIdeas(
       db,
-      { listId, by: account.id, dataKey: await dataKeyOf(event) },
+      { listId, listPersonId, by: account.id, dataKey: await dataKeyOf(event) },
       now,
     );
   }

@@ -148,8 +148,7 @@ const onAccountSeen = () => {
   void navigateTo({ query: rest }, { replace: true });
 };
 
-// The day.
-const dateOpen = ref(false);
+// The day, on its page (ticket 160).
 const dateLine = computed(() =>
   list.value?.eventDate
     ? t('lists.home.on', {
@@ -157,10 +156,6 @@ const dateLine = computed(() =>
       })
     : '',
 );
-const onDate = (date: string) => {
-  dateOpen.value = false;
-  update.mutate({ eventDate: date || null });
-};
 
 // The icon, on its square tile.
 const iconOpen = ref(false);
@@ -728,7 +723,7 @@ onBeforeRouteLeave((to) => {
                 list.eventDate ? 'text-toned' : 'font-semibold text-primary-ink'
               "
               data-testid="list-date"
-              @click="dateOpen = true"
+              @click="navigateTo(`/listes/${list.id}/date`)"
             >
               {{ dateLine || t('lists.doc.addDate') }}
             </button>
@@ -785,7 +780,7 @@ onBeforeRouteLeave((to) => {
              line, not select its text nor open the browser's menu. -->
         <div
           ref="board"
-          class="flex flex-col gap-16 select-none [-webkit-touch-callout:none]"
+          class="list-people flex flex-col select-none [-webkit-touch-callout:none]"
           data-testid="drag-board"
         >
           <template v-for="row in sections" :key="row ? row.person.id : 'drop'">
@@ -847,16 +842,6 @@ onBeforeRouteLeave((to) => {
     </AdminQueryState>
 
     <ListsDragGhost v-if="ghost" :y="dragging.pointer.value.y" v-bind="ghost" />
-    <AdminDateSheet
-      v-if="list"
-      v-model:open="dateOpen"
-      :title="t('lists.doc.date')"
-      :description="t('lists.doc.dateHelp')"
-      :label="t('lists.doc.date')"
-      :value="list.eventDate ?? ''"
-      :clear-label="t('lists.doc.noDate')"
-      @validate="onDate"
-    />
     <UiIconSheet
       v-if="list"
       v-model:open="iconOpen"

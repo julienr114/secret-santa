@@ -337,6 +337,48 @@
       "when": 1795522862590,
       "tag": "0047_v3_hints_without_account",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "6",
+      "when": 1795545819917,
+      "tag": "0048_v3_news_by_email",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "6",
+      "when": 1795546644983,
+      "tag": "0049_v3_list_follows",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "6",
+      "when": 1795548106813,
+      "tag": "0050_v3_app_counters",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "6",
+      "when": 1795549140795,
+      "tag": "0051_v3_email_blocks",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "6",
+      "when": 1795550371688,
+      "tag": "0052_v3_login_codes",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "6",
+      "when": 1795596480637,
+      "tag": "0053_v3_push_subscriptions",
+      "breakpoints": true
     }
   ]
 }

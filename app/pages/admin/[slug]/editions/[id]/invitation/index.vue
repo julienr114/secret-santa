@@ -88,8 +88,8 @@ const settings = computed(() => ({
   message: invite.value?.message ?? null,
   ...pending.value,
 }));
-const editing = ref<null | 'places' | 'until'>(null);
-const sheetOpen = (which: 'places' | 'until') =>
+const editing = ref<null | 'places'>(null);
+const sheetOpen = (which: 'places') =>
   computed({
     get: () => editing.value === which,
     set: (value) => {
@@ -97,7 +97,6 @@ const sheetOpen = (which: 'places' | 'until') =>
     },
   });
 const placesOpen = sheetOpen('places');
-const untilOpen = sheetOpen('until');
 /**
  * Whether a setting is being saved.
  * @param key - The setting.
@@ -269,7 +268,7 @@ const messageValue = computed(() =>
             :value="untilValue"
             :busy="savingKey('until')"
             :busy-label="t('common.actions.saving')"
-            :on-click="() => (editing = 'until')"
+            :to="`/admin/${slug}/editions/${id}/invitation/date`"
           />
           <UiListItem
             :title="t('adminEdition.invite.messageRow')"
@@ -350,15 +349,6 @@ const messageValue = computed(() =>
       :validate-label="t('common.actions.validate')"
       :cancel-label="t('common.actions.cancel')"
       @validate="(places) => save({ places })"
-    />
-    <AdminDateSheet
-      v-model:open="untilOpen"
-      :title="t('adminEdition.invite.until')"
-      :description="t('adminEdition.invite.untilHelp')"
-      :label="t('adminEdition.invite.dateLabel')"
-      :value="settings.until ?? ''"
-      :clear-label="t('adminEdition.invite.noUntil')"
-      @validate="(until) => save({ until: until || null })"
     />
   </AdminScreen>
 </template>

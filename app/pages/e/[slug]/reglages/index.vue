@@ -5,12 +5,6 @@ import {
   type PartyCategory,
 } from '#shared/utils/categories';
 import {
-  birthParts,
-  dateOf,
-  partyYears,
-  type BirthParts,
-} from '#shared/utils/memberFields';
-import {
   useDashboardQuery,
   useOrganizersQuery,
   usePeopleQuery,
@@ -86,14 +80,7 @@ const forChoices = computed(() => [
   { value: NOBODY, label: t('party.reglages.nobody') },
 ]);
 
-// The date, in three lists in its sheet.
-const dateOpen = ref(false);
-const years = partyYears(Number(new Date().toISOString().slice(0, 4)));
-const parts = ref<BirthParts>({ day: null, month: null, year: null });
-const openDate = () => {
-  parts.value = birthParts(data.value?.year?.date ?? null);
-  dateOpen.value = true;
-};
+// The date opens its page (ticket 160): a sheet never carries a field.
 const dateValue = computed(() => {
   const date = data.value?.year?.date;
   if (!date) return undefined;
@@ -106,12 +93,6 @@ const dateValue = computed(() => {
     ? t('party.reglages.dateValue', { date: day })
     : t('party.reglages.dateValueOnce', { date: day });
 });
-const saveDate = () => {
-  const date = dateOf(parts.value);
-  if (!date) return;
-  dateOpen.value = false;
-  patch({ date });
-};
 
 // Organisers: adding is a page (ticket 161); removing asks for a second
 // tap.
@@ -167,8 +148,8 @@ const deleting = ref(false);
         <UiListItem
           :title="t('party.reglages.date')"
           :subtitle="dateValue"
-          :chevron="true"
-          :on-click="openDate"
+          :to="`/e/${slug}/reglages/date`"
+          data-testid="party-date-row"
         />
         <UiListItem
           v-if="data"
@@ -279,29 +260,6 @@ const deleting = ref(false);
         }
       "
     />
-    <UiSheet v-model:open="dateOpen" :title="t('party.reglages.date')">
-      <UiDateSelects
-        v-model="parts"
-        :years="years"
-        :label="t('party.reglages.date')"
-        testid="party-date"
-      />
-      <template #footer>
-        <UButton
-          block
-          :disabled="!dateOf(parts)"
-          :label="t('common.actions.validate')"
-          @click="saveDate"
-        />
-        <UButton
-          block
-          color="neutral"
-          variant="ghost"
-          :label="t('common.actions.cancel')"
-          @click="dateOpen = false"
-        />
-      </template>
-    </UiSheet>
     <AdminDeleteGroupSheet
       v-if="isSuper && group"
       v-model:open="deleting"

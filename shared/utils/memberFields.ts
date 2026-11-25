@@ -133,18 +133,6 @@ export const birthParts = (iso: string | null | undefined): BirthParts => {
 };
 
 /**
- * The parts after one of them changed: a day the month no longer has
- * (the 31 of April, the 29 of February of a plain year) is left to be
- * chosen again.
- * @param parts - The parts chosen.
- * @returns The same, the day emptied when it no longer exists.
- */
-export const settleBirth = (parts: BirthParts): BirthParts =>
-  parts.day !== null && parts.day > daysIn(parts.month, parts.year)
-    ? { ...parts, day: null }
-    : parts;
-
-/**
  * The date to save, once its three parts are chosen. An incomplete date
  * cannot be validated; nor one still to come.
  * @param parts - The parts chosen.

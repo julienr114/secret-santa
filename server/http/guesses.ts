@@ -13,6 +13,7 @@ import { recordEvent } from '#server/database/audit';
 import { tellParticipants } from '#server/database/newsEvents';
 import { appUrl, nowIso } from './context';
 import { sendEmails } from './email';
+import { emailChoicesOf } from '#server/database/news';
 import {
   correctedGuesses,
   countedGuesses,
@@ -127,9 +128,18 @@ export const afterReveal = async (
     .innerJoin(persons, eq(persons.id, participations.personId))
     .where(eq(participations.secretSantaId, edition.id));
   const santaName = await santaNameForSubject(ctx.db, edition);
+  // An account is told by the news of the palmarès, as it chose (ticket
+  // 121); someone without an account, by this email.
+  const choices = await emailChoicesOf(
+    ctx.db,
+    rows.map(({ person }) => person.email),
+  );
   const emails = await Promise.all(
     rows
-      .filter(({ person }) => person.email)
+      .filter(
+        ({ person }) =>
+          person.email && !choices.has(person.email.toLowerCase()),
+      )
       .map(async ({ participation, person }) => ({
         ...buildGuessResultsEmail(
           {
@@ -145,10 +155,11 @@ export const afterReveal = async (
           localeOf(person.language),
         ),
         to: person.email!,
+        locale: localeOf(person.language),
       })),
   );
   // A failed send changes nothing: the results are on the pages anyway.
-  if (emails.length > 0) await sendEmails(ctx.event, emails);
+  if (emails.length > 0) await sendEmails(ctx.event, emails, { db: ctx.db });
 };
 
 /**

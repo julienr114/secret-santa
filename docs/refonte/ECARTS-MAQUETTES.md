@@ -346,3 +346,67 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 | `V3ListeLigneMenu` | Sur ordinateur, la poignée qui apparaît au survol d'une ligne se pose à droite, sur la ligne, par-dessus la fin d'un texte long. | Seul |
 | `V3ListeLigneDeplacer` | Aucun message après un déplacement, ni « Déplacée vers Zoé » ni « {name} déplacé » après un glisser (Julien, 24 novembre 2026) : seul un lecteur d'écran entend où la ligne est arrivée. Après « Monter » ou « Descendre », la ligne reste ouverte à l'écriture, comme avec `Alt` + une flèche. | Seul |
 | `V3ListeTitres` | Un titre garde la ligne ouverte à l'écriture après « En faire un titre » (le clavier revient), comme après les étoiles. | Seul (la spec : « revient après un choix qui laisse dans la ligne ») |
+
+## « Me prévenir » et le résumé par email (ticket 121)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `NotifReglage` | Pas de phrase sous le titre (« Dans l'appli, une pastille signale toujours… ») : elle explique l'écran (`regles-d-ecran.md`, « Le moins de phrases possible »). | Seul (la règle du 24 novembre) |
+| `NotifReglage` | La section « Sur ce téléphone » et « Installer l'application sur un autre téléphone » ne sont pas là : elles viennent avec le ticket 124. | Le ticket |
+| `NotifReglage` | « Ce qui presse » et sa phrase ne se montrent qu'avec « Un résumé le matin » : la phrase ne parle que de ce choix. Les trois choix sont la carte de `UiChoiceList`, la ligne choisie teintée. | Seul |
+| `Compte` | La maquette n'a pas de ligne vers « Me prévenir » : une carte d'une ligne, « Me prévenir », le choix à droite, entre « Mon profil » et « Mes appareils ». | Seul |
+| `V3QuoiDeNeuf` | « Choisir ce qui me prévient » avec la cloche, « Ce que tu as vu s'efface au bout de trente jours » dessous, sur la ligne, comme la maquette. | — |
+| `NotifEmailResume` | Un bloc par événement, au nom de l'événement (« Famille Camille ») et non « Secret Santa de Famille Camille » (`accueil-et-creation.md`) ; son lien ouvre l'événement (« Ouvrir l'événement »), ou la liste pour une liste publique (« Ouvrir la liste »). Les liens « Ne plus recevoir d'emails » et « Ce que l'application fait de tes données » attendent les tickets 130 et 131. | Seul (la spec) |
+
+## Suivre une liste, ou une personne (ticket 122)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ListeSuivre` | « Tu suis les nouvelles idées pour Léo. » et « Tu suis les nouvelles idées de toute la liste. » plutôt que « Tu es prévenu… » : une tournure neutre (`CLAUDE.md`). | Seul |
+| `ListeSuivre` | « Suivre toute la liste » et « Ne plus suivre » sont un petit bouton à contour, avec sa cloche, pas un lien rouge souligné : une action est une ligne ou un bouton (`regles-d-ecran.md`, « Ce qui reste vrai »). Sans rien suivre, le bouton est seul, sans phrase. | Seul |
+| `ListeSuivre` | La cloche se pose au bout de l'en-tête de chaque personne de la liste d'aujourd'hui (son icône de 40 px, son nom, ses tailles), pas sur la ligne de la maquette d'avant la V3. Ma propre partie (« C'est toi ») n'en a pas. Une liste sans personne n'a que le bouton de toute la liste. | Seul |
+| — | Sans compte, la cloche mène à la page de l'adresse de la liste (`ListeConnexion`), dite « Ton adresse email, pour suivre », sans le prénom : personne ne voit qui suit. | Seul |
+| `NotifReglage` | « Ce que je suis » : une carte, une ligne par liste (son nom, les personnes ou « Toute la liste »), et « Ne plus suivre » au bout ; aucune maquette ne la dessine. | Seul |
+
+## Durcir la dépense (ticket 129)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3Admin` | « Les plafonds » n'a de jauge que pour les emails du jour (sur 100) et du mois (sur 3 000), l'écriture en lilas à 70 %. Les requêtes du jour et la dépense du mois sont une ligne qui ouvre le tableau de bord de Cloudflare (Q-039, B ; la lecture ici vient avec le ticket 127). « À 70 % d'un plafond, un email te prévient. » plutôt que « tu es prévenu » : une tournure neutre. | Julien (Q-039) |
+| `V3Admin` | « À traiter et à surveiller » : quatre chiffres du jour de plus (les requêtes refusées pour débit, les connexions échouées, les emails rejetés, les erreurs du serveur). « Adresses qui ont refusé les emails » vient avec le ticket 130. Pas de phrase « Une pastille : … Un chiffre : … » : elle explique l'écran. | Seul (la règle du 24 novembre) |
+| `V3Admin` | La phrase sous « En cas d'urgence » dit que les emails se suspendent tout seuls quand **ceux du mois** atteignent leur plafond, comme le ticket, et non quand la dépense l'atteint : l'application ne voit pas la dépense (Q-039). | Le ticket |
+| `V3Admin` | Les chiffres de tête, « Ce qui tourne tout seul » et la version en ligne attendent le ticket 127. | Le ticket |
+| `EnvoiSuspendu` | Sur « Envoyer par email » et sur le rappel de Devine qui. « Partager les liens » ouvre le suivi du Secret Santa, d'où chaque lien se partage depuis le téléphone. | Seul |
+
+## Ne plus recevoir d'emails (ticket 130)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `StopEmail` | Le pied se pose sous chaque email, hors connexion : la phrase du premier email (« Ce que l'application sait de toi : ton prénom et cette adresse, donnés par Camille. Rien d'autre. ») seulement au premier email à l'adresse, et sans « donnés par » quand l'application ne sait pas qui l'a donnée ; « Signaler cet envoi » seulement sous ce qu'un organisateur envoie lui-même. « Ce que l'application fait de tes données » attend le ticket 131. | Seul |
+| `StopDemande`, `StopConfirme` | Sans le sélecteur de langue ni le lien des données (ticket 131). « Non, je garde les emails » mène à l'accueil. Après « Annuler », la page repose la question. | Seul |
+| `StopSaisie` | L'avis est une carte lilas sous le champ, sans le bouton « Partager son lien » : la fiche a déjà ses façons de partager. Aussi sous l'ajout d'une personne, l'invitation à tenir une liste et le partage d'une liste par adresse. | Seul |
+| `StopEnvoi` | « Envoyer par email » garde sa liste d'une seule pièce : la personne bloquée y est décochée, « A demandé à ne plus recevoir d'emails » sous son nom, sans « Ajouter ». Les deux titres « Recevront l'email » et « À prévenir autrement » ne sont pas là. | Seul |
+| — | `/admin/envois-signales` n'a pas de maquette : une carte par événement, le nombre de signalements et la date du dernier, qui a envoyé, et « Couper ses emails ». | Seul |
+
+## La connexion par code (ticket 123)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `ConnexionCode` | « Tape ton code » remplace, sur la page de connexion, l'écran « Lien envoyé », dans l'application installée seulement. Les six cases sont dessinées au-dessus d'un seul champ (`autocomplete="one-time-code"`) : le téléphone propose le code de l'email, et un collage remplit les six. Pas de phrase « Il se valide tout seul au sixième chiffre » : elle explique l'écran. Sans le sélecteur de langue de l'en-tête. | Seul (la règle du 24 novembre) |
+| `ConnexionCode` | Le bouton de l'adresse dit « Recevoir un code » dans l'application installée ; dans un navigateur, rien ne change. | Seul |
+| `ConnexionCodeEmail` | Sans « Ce que l'application fait de tes données » (ticket 131), ni le pied « Ne plus recevoir d'emails » : un email de connexion part toujours (ticket 130). | Le ticket 130 |
+
+## Une date dans un seul champ (ticket 160)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `V3FeteNouvelle`, `ProcheNaissance` | Le champ est `UInputDate` de Nuxt UI, habillé comme nos champs (52 px, l'arrondi de 14 px) ; ses segments se lisent « jour », « mois », « année » dans la langue de l'application. Une date hors de ses années (ou à venir, pour une naissance) remplace la date en toutes lettres par « Une date entre 2026 et 2028. » (ou « Une date déjà passée. »), en rouge, et « Valider » reste éteint. | Seul (la spec dit « refusée par nous », pas comment) |
+| — | La date d'un Secret Santa (depuis son suivi ou ses réglages), la date d'une liste, la date limite du lien d'invitation et la date de l'événement dans ses réglages ouvrent chacune **une page** (`AdminDatePage`), et non plus un calendrier dans un panneau : « le même champ partout », et un panneau ne porte jamais de champ (`regles-d-ecran.md`). Aucune maquette ne dessine ces pages : celle de `ProcheNaissance`, avec ce que disait le panneau sous le champ. | Seul (la spec) |
+
+## L'application installée (ticket 124)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `Installer` | Un panneau du bas, sur l'accueil ou depuis « Me prévenir », plutôt qu'une carte sur l'accueil ; « savoir tout de suite quand ton enveloppe t'attend » plutôt que « être prévenu » (tournure neutre). Sur Android, un seul bouton « Installer » à la place des trois gestes. | Seul |
+| `NotifAutoriser` | Titre « Des notifications sur ce téléphone ? » plutôt que « Être prévenu sur ce téléphone ? » (tournure neutre) ; « Tu pourras changer d'avis dans « Me prévenir » » plutôt que « dans « Mon compte » », là où est l'interrupteur. | Seul |
+| `NotifReglage` | « Sur ce téléphone » n'apparaît que sur un téléphone : « Installer l'application » dans un navigateur, l'interrupteur « Notifications » (« Tout de suite, quand quelque chose presse », Q-041) une fois installée ou là où le navigateur le permet. Pas de lien « Installer l'application sur un autre téléphone ». | Seul |

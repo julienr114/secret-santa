@@ -69,7 +69,12 @@ export const addIdea = async (
   const now = nowIso();
   await tellNewIdeas(
     db,
-    { listId: list.id, by, dataKey: await dataKeyOf(event) },
+    {
+      listId: list.id,
+      listPersonId: body.listPersonId,
+      by,
+      dataKey: await dataKeyOf(event),
+    },
     now,
   );
   await markKindSeen(db, by, 'hint_request', now);

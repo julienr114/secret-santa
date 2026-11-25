@@ -135,12 +135,13 @@ La barre du bas (« Accueil », « Créer », « Quoi de neuf », et « Admin »
 L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`), roue comprise pour son organisateur (ticket 159) ; dans un événement que j'organise (ticket 156), « Tu l'organises », accrochée sous un Secret Santa où je participe, ouvre son suivi (`/admin/[fête]/editions/[id]`) ; ses lignes ouvrent le Secret Santa (ma page par mon lien, sinon l'édition pour l'organisateur) et les listes (la mienne, celle d'un autre par son lien) ; la ligne « Devine qui » (ticket 112), sous un Secret Santa où le jeu est ouvert, ouvre `/p/[jeton]/devine`, ou `/p/[jeton]/devine/palmares` une fois le palmarès sorti ; En bas d'une carte, ce qu'on peut y créer (ticket 151) : « Créer un Secret Santa » (pour son organisateur, quand il n'en a pas cette année) ouvre `/admin/[fête]/editions/nouvelle` ; « Créer une liste de cadeaux » (quand je n'y tiens aucune liste) ouvre `/listes/nouvelle?pour=[événement]`, qui crée la liste pour cet événement et l'ouvre sur sa visite (`?visite=creer`, ticket 149) ; à Noël le Secret Santa d'abord, ailleurs la liste. « Préparer », dans « Bientôt », ouvre `/e/nouvelle?categorie=birthday&proche=[id]`. Deux mois avant un événement qui revient (ticket 108) : « Préparer Noël 2027 », pour son organisateur, recrée sur place les Secret Santa de l'an dernier (la carte les montre aussitôt) ; « Reprendre ma liste de l'an dernier » ouvre `/listes/nouvelle?pour=[événement]&reprendre=[liste]`, qui crée la liste de l'année et l'ouvre. En bas, « Les événements passés », montrée dès qu'il y en a un, ouvre `/evenements-passes`, et « Ce que j'offre ailleurs », montrée seulement quand j'offre quelque chose sur une liste publique (même sans aucun événement), ouvre `/offert-ailleurs`. Sans aucune fête, les deux cartes ouvrent « Pour quelle occasion ? ».
 | Quoi de neuf | `/quoi-de-neuf` | — (barre du bas) | |
 
-« Quoi de neuf » (ticket 120) : chaque ligne ouvre la chose qu'elle signale : ma page d'un Secret Santa (`/p/[jeton]`), le palmarès (`/p/[jeton]/devine/palmares`), le suivi de l'organisateur (`/admin/[fête]/editions/[id]`), les membres d'un événement (`/e/[fête]/membres`), une liste (`/listes/[id]` si je la tiens ou si l'on m'invite à la tenir, sinon `/l/[jeton]`).
+« Quoi de neuf » (ticket 120) : chaque ligne ouvre la chose qu'elle signale : ma page d'un Secret Santa (`/p/[jeton]`), le palmarès (`/p/[jeton]/devine/palmares`), le suivi de l'organisateur (`/admin/[fête]/editions/[id]`), les membres d'un événement (`/e/[fête]/membres`), une liste (`/listes/[id]` si je la tiens ou si l'on m'invite à la tenir, sinon `/l/[jeton]`). En bas, « Choisir ce qui me prévient » ouvre `/compte/me-prevenir` (ticket 121).
 | La limite de Secret Santa | `/secret-santa/limite` | Accueil | |
 | Les nouveaux Secret Santa en pause | `/secret-santa/pause` | Accueil | |
-| Connexion | `/login` | — | |
+| Connexion | `/login` | — | Dans l'application installée (ticket 123), l'adresse mène à « Tape ton code » sur la même page, sans lien |
 | Le lien de connexion | `/login/[jeton]` | — | |
 | Mon compte | `/compte` | Accueil | Prénom, nom, langue des emails, icône |
+| Me prévenir (ticket 121) | `/compte/me-prevenir` | Mon compte | « Par email » : un résumé le matin, tout de suite, aucun ; aussi ouverte par « Choisir ce qui me prévient », en bas de « Quoi de neuf ». « Ce que je suis » (`#suivis`, ticket 122), où mènent les emails d'une liste suivie |
 | Les événements passés | `/evenements-passes` | Accueil | |
 | (ancienne adresse) | `/tirages-passes` | mène aux Événements passés (`pastPathOf`) | |
 | (ancienne adresse) | `/listes` | mène à l'accueil (`listsPathOf`, ticket 114) | |
@@ -154,6 +155,7 @@ L'accueil (ticket 103) : l'en-tête d'une carte ouvre la fête (`/e/[fête]`), r
 | Administration | `/admin` | Accueil | « Suspendre les nouveaux Secret Santa » |
 | Toutes les fêtes | `/admin/groupes` | Administration | |
 | Nouveau groupe | `/admin/groupes/nouveau` | Tous les groupes (super-admin), sinon Accueil | |
+| Envois signalés (ticket 130) | `/admin/envois-signales` | Administration | Par événement, avec « Couper ses emails » |
 | Comptes | `/admin/comptes` | Administration ; les comptes désactivés : Comptes | |
 | Un compte | `/admin/comptes/[id]` | Comptes | Limite de Secret Santa, désactivation |
 | Guide de style | `/admin/guide-de-style` | Administration | |
@@ -176,6 +178,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Journal | `/e/[fête]/journal` | La fête | À quoi sert-il ?, une alerte |
 | Réglages de la fête (ouverts par la ligne « Réglages de l'événement » sous les membres, ticket 159) | `/e/[fête]/reglages` | La fête | Catégorie, « Pour » (un anniversaire, ticket 118), date, organisateur, suppression de la fête |
 | Nouvel organisateur (le prénom et l'adresse, ticket 161 ; « Ajouter » ramène aux réglages) | `/e/[fête]/reglages/organisateur` | Réglages de la fête | |
+| La date de l'événement (un seul champ, ticket 160) | `/e/[fête]/reglages/date` | Réglages de la fête | |
 | (ancienne adresse) | `/e/[fête]/organisateurs` | mène aux Réglages de la fête | |
 | (ancienne adresse) | `/admin/[groupe]/reglages/mot`, puis `/e/[fête]/reglages/mot` (le mot ajouté aux messages, passé au Secret Santa) | mène aux Réglages de la fête (`gonePathOf`, ticket 113) | |
 
@@ -191,11 +194,13 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 | Qui reprendre ? (ceux d'un autre événement que j'organise, ticket 117) | `…/editions/[id]/reprendre` | Choisir les participants | |
 | Inviter par lien (le lien de ce Secret Santa, ticket 116 ; ouvert depuis « Préparer » sans participant et depuis « Choisir les participants ») | `…/editions/[id]/invitation` | L'édition | Places restantes, date limite |
 | Ton mot sur la page | `…/editions/[id]/invitation/mot` | Inviter par lien | |
+| Date limite du lien (un seul champ, ticket 160 ; « Pas de date limite ») | `…/editions/[id]/invitation/date` | Inviter par lien | |
 | Envoyer par email | `…/editions/[id]/emails` | L'édition | |
 | Rappeler le jeu (À chacun, par email ; Au groupe) | `…/editions/[id]/rappel` (`?vers=groupe`) | L'édition | |
 | Personnaliser le message | `…/editions/[id]/message?pour=` | L'édition, panneau d'envoi rouvert (`?envoyer=`) pour une personne ; Envoyer par email pour plusieurs ; Rappeler le jeu pour `rappel` et `groupe` | Langue du message |
 | Réglages du Secret Santa (ouverts depuis son suivi seulement, ticket 159) | `…/editions/[id]/reglages` | L'édition | Éviter la même personne, Devine qui, date, budget, Supprimer ce Secret Santa (pas encore tiré ; ensuite : la fête) |
 | Budget (la page de propositions, la même qu'à la création, ticket 164) | `…/editions/[id]/budget` | Réglages du Secret Santa | |
+| Date de la fête (un seul champ, ticket 160 ; ouverte depuis le suivi, ou depuis les réglages avec `?depuis=reglages`) | `…/editions/[id]/date` | Le suivi, ou ses réglages | |
 | Petit mot | `…/editions/[id]/mot` | Réglages du Secret Santa | |
 | Mot ajouté aux messages | `…/editions/[id]/mot-messages` | Réglages du Secret Santa | |
 | Exclusions de l'édition | `…/editions/[id]/exclusions` | L'édition | |
@@ -226,6 +231,7 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 | La liste (le document ; sa barre du haut se déroule sur place, sans panneau, ticket 135 : l'adresse et « Qui voit ta liste ? » ; plus loin dans la barre, sans quitter la liste, « Quelqu'un d'autre » (`?partage=inviter`, ouvert aussi par « À ma liste de cadeaux » des Membres), « Reprendre ceux de » (`?partage=reprendre`) et les confirmations (`?partage=confirmer`), où « ‹ » et le retour du téléphone reculent d'un niveau, tickets 139 et 141 ; sous mon prénom, « Secret Santa · Famille Camille » mène à ma page du tirage, `/p/[jeton]`, ticket 136) | `/listes/[id]` (`?nouvelle=1` à sa création) | D'où l'on vient (l'accueil, un de ses événements, « Quoi de neuf », « Ce que j'offre ailleurs », une année passée), sinon l'accueil | l'icône de la liste, la date, quelqu'un d'autre, le lien d'une idée, supprimer une idée cochée, « Qui l'offre ? » et son « Quelqu'un d'autre » (ticket 098) |
 | Ce que j'offre ailleurs | `/offert-ailleurs` | Accueil | |
 | Ceux qui tiennent la liste (cesser de la tenir : là où « Retour » menait depuis la liste) | `/listes/[id]/teneurs` | La liste | |
+| La date d'une liste (un seul champ, ticket 160 ; « Pas de date ») | `/listes/[id]/date` | La liste | |
 | Supprimer la liste (supprimée : là où « Retour » menait depuis la liste) | `/listes/[id]/supprimer` | La liste | |
 | (anciennes adresses) | `/listes/[id]/inviter` et ses pages, `/listes/[id]/message` | mènent à la liste (`gonePathOf`, ticket 139) | |
 | L'invitation à tenir une liste | `/invitation/[jeton]` | Le lien de l'email | Sans session ; accepter connecte et ouvre la liste |
@@ -242,5 +248,8 @@ L'onglet « Listes » a disparu de la barre du bas (ticket 103), sa page aussi (
 |---|---|---|---|
 | La liste, par son lien | `/l/[jeton]` (`?cocher=` au retour du lien magique ; `?depuis=[événement]` depuis un événement, avec la pastille qui y ramène ; depuis la carte du résultat, `?anonyme=1&p=…&personne=[proche]`, la liste filtrée sur la personne tirée, et `&tout=1` pour « Toute la liste », ticket 136) | Connecté : comme la liste, d'où l'on vient, sinon l'accueil ; sans session, pas de « Retour » | Changer (seul, à plusieurs, au complet), Se joindre. Fermée : « Se connecter » (`/login?next=`) sans session, sinon « pas partagée avec toi ». Connecté, son lien fait entrer dans son événement quand elle est partagée avec tous ses membres (ticket 117) : la liste s'ouvre |
 | Ton adresse, pour cocher | `/l/[jeton]/connexion?cocher=` | La liste, par son lien | |
+| Ne plus recevoir d'emails (ticket 130) | `/arreter/[jeton]` | — (le lien en bas d'un email, sans session) | La question, puis « C'est noté » et « Annuler » |
+| Signaler cet envoi (ticket 130) | `/signaler/[jeton]` | — (le lien en bas d'un email d'organisateur) | |
+| Ton adresse, pour suivre (ticket 122) | `/l/[jeton]/connexion?suivre=` | La liste, par son lien | Le lien reçu ramène à la liste, et la personne (ou toute la liste) est suivie |
 
 Une liste d'une année passée (ticket 119), par son document comme par son lien, a un bandeau en haut : « Liste de Noël 2025 » · « Une année passée ». Son bouton « Noël 2026 », quand une liste de cette année en a été reprise et que j'ai le droit de l'ouvrir, mène à celle-ci : son document (`/listes/[id]`) si je la tiens, sinon son lien (`/l/[jeton]`).

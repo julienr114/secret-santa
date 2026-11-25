@@ -80,6 +80,8 @@ export default {
     'Die Ergebnisse bleiben geheim, bis das Wichteln abgeschlossen ist.',
   login_link_invalid:
     'Dieser Anmeldelink ist nicht mehr gültig: fordere einen neuen an.',
+  login_code_invalid:
+    'Dieser Code funktioniert nicht: Prüfe die sechs Ziffern oder fordere einen neuen an.',
   cannot_remove_self:
     'Du kannst dich nicht selbst entfernen: bitte einen anderen Organisator.',
   organizer_not_found:
@@ -103,6 +105,10 @@ export default {
     'Du organisierst schon 3 Wichteln: Mehr geht mit einem Konto nicht.',
   secret_santa_paused:
     'Neue Wichteln sind pausiert. Die bestehenden laufen weiter.',
+  emails_paused:
+    'Das Senden von E-Mails ist für alle pausiert. Schick allen ihren Link von deinem Handy aus.',
+  signups_paused:
+    'Anmeldungen sind pausiert: vorerst kein neues Konto und keine neue Veranstaltung. Komm in ein paar Tagen wieder.',
   already_member:
     'Diese Adresse gehört schon einem Mitglied des Events: Die Liste ist für sie offen.',
   list_not_open:

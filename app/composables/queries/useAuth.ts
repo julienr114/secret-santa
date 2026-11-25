@@ -2,6 +2,7 @@ import type { PartyCategory } from '#shared/utils/categories';
 import type { SessionUser } from '#server/utils/auth';
 import type { Avatar } from '#server/utils/avatars';
 import type { Locale } from '#shared/i18n';
+import type { EmailNews } from '#shared/utils/news';
 import { keys } from './keys';
 import { api, useApiMutation, useApiQuery } from './useApi';
 
@@ -22,6 +23,8 @@ export type AccountPayload = {
   language: Locale;
   avatar: Avatar;
   isSuperAdmin: boolean;
+  emailNews: EmailNews;
+  emailBlocked: boolean;
   sessions: AccountSession[];
 };
 
@@ -31,17 +34,30 @@ export type AccountPayload = {
  */
 export const useRequestLinkMutation = () =>
   useApiMutation<
-    { ok: true; devLink?: string },
-    { email: string; next?: string | null; firstName?: string }
-  >(({ email, next, firstName }) =>
+    { ok: true; devLink?: string; devCode?: string },
+    {
+      email: string;
+      next?: string | null;
+      firstName?: string;
+      /** The installed app: a code instead of a link (ticket 123). */
+      code?: boolean;
+    }
+  >(({ email, next, firstName, code }) =>
     api('/api/auth/link', {
       method: 'POST',
       body: {
         email,
         ...(next ? { next } : {}),
         ...(firstName ? { firstName } : {}),
+        ...(code ? { code: true } : {}),
       },
     }),
+  );
+
+/** The six digits of the installed app (ticket 123). */
+export const useLoginCodeMutation = () =>
+  useApiMutation<{ user: SessionUser }, { email: string; code: string }>(
+    (body) => api('/api/auth/code', { method: 'POST', body }),
   );
 
 /**
@@ -82,6 +98,7 @@ export type ProfileBody = Partial<{
   language: Locale;
   avatarEmoji: Avatar['emoji'];
   avatarColor: Avatar['color'];
+  emailNews: EmailNews;
 }>;
 
 /** Saves the profile of the account. */

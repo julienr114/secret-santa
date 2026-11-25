@@ -72,6 +72,8 @@ export default {
   wrong_sentence: 'Copy the requested sentence exactly.',
   results_secret: 'Results stay secret until the Secret Santa is closed.',
   login_link_invalid: 'This login link is no longer valid: ask for a new one.',
+  login_code_invalid:
+    'This code doesn’t work: check the six digits, or ask for another one.',
   cannot_remove_self: 'You cannot remove yourself: ask another organizer.',
   organizer_not_found:
     'Organizer not found. Reload the page: the list may have changed.',
@@ -94,6 +96,10 @@ export default {
     'You already organise 3 Secret Santas: that’s the most for one account.',
   secret_santa_paused:
     'New Secret Santas are paused. Those that exist carry on.',
+  emails_paused:
+    'Sending emails is paused for everyone. Send each person their link from your phone.',
+  signups_paused:
+    'Sign-ups are paused: no new account or new event for now. Come back in a few days.',
   already_member:
     'This address is already that of a member of the event: the list is open to them.',
   list_not_open: 'Your list is not shared with all the members of its event.',

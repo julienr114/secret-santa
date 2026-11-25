@@ -42,7 +42,7 @@ Maquette : `V3ListeQui`. Ce n'est plus la première étape d'une liste : elle na
 Maquette : `V3FeteNouvelle` (titre : « Pour quelle occasion ? »).
 
 1. La catégorie, en six tuiles : elle remplit le reste (`categories.md`).
-2. Le nom, la date (trois listes, `regles-d-ecran.md`), « Elle revient chaque année ».
+2. Le nom, la date (un seul champ, `regles-d-ecran.md`), « Elle revient chaque année ».
 
 Puis on arrive droit sur le Secret Santa ou sur la liste qu'on venait créer. **On ne demande pas qui en fait partie** : les gens entreront par le Secret Santa ou par la liste (`fete.md`, « Les membres »). Si on s'arrête là, l'événement existe, avec moi seul.
 

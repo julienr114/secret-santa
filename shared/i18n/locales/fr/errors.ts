@@ -79,6 +79,8 @@ export default {
     'Les résultats restent secrets tant que le Secret Santa n’est pas clôturé.',
   login_link_invalid:
     "Ce lien de connexion n'est plus valable : demande-en un nouveau.",
+  login_code_invalid:
+    'Ce code ne marche pas : vérifie les six chiffres, ou demande-en un autre.',
   cannot_remove_self:
     'Tu ne peux pas te retirer toi-même : demande à un autre organisateur.',
   organizer_not_found:
@@ -102,6 +104,11 @@ export default {
     'Tu organises déjà 3 Secret Santa : c’est le maximum pour un compte.',
   secret_santa_paused:
     'Les nouveaux Secret Santa sont en pause. Ceux qui existent continuent.',
+  // Ticket 129: the emergency switches.
+  emails_paused:
+    'L’envoi d’emails est en pause pour tout le monde. Envoie à chacun son lien depuis ton téléphone.',
+  signups_paused:
+    'Les inscriptions sont en pause : pas de nouveau compte ni de nouvel événement pour l’instant. Reviens dans quelques jours.',
   already_member:
     'Cette adresse est déjà celle d’un membre de l’événement : la liste lui est ouverte.',
   list_not_open:

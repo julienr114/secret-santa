@@ -1,7 +1,18 @@
 import { adoptedAvatar } from '#server/utils/avatars';
-import { and, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
+import {
+  and,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNull,
+  lt,
+  sql,
+  type SQL,
+} from 'drizzle-orm';
+import { CODE_TRIES, CODE_TTL_MS } from '#server/utils/loginCode';
 import type { Db } from './client';
-import { accounts, loginLinks, persons, sessions } from './schema';
+import { accounts, loginCodes, loginLinks, persons, sessions } from './schema';
 import type { Locale } from '#shared/i18n';
 import { sessionsToClose } from '#server/utils/limits';
 import { newId } from '#server/http/context';
@@ -59,6 +70,8 @@ export const createAccount = async (
     disabledAt: null,
     listTourSeen: false,
     firstLineNoteSeen: false,
+    emailNews: 'summary',
+    summarySentOn: null,
   };
   await db.insert(accounts).values(account);
   return account;
@@ -132,21 +145,42 @@ export const recentLinkRequests = async (
   }: { accountId: string | null; ipHash: string; now: string },
 ) => {
   const since = isoAfter(now, -LINK_REQUESTS_WINDOW_MS);
-  const count = async (where: ReturnType<typeof eq>) => {
-    const [row] = await db
-      .select({ n: sql<number>`count(*)` })
-      .from(loginLinks)
-      .where(and(where, gt(loginLinks.createdAt, since)));
-    return row?.n ?? 0;
+  const dayAgo = isoAfter(now, -24 * 60 * 60 * 1000);
+  // The codes of the installed app count with the links (ticket 123).
+  const both = async (links: SQL | undefined, codes: SQL | undefined) => {
+    const [[link], [code]] = await Promise.all([
+      db
+        .select({ n: sql<number>`count(*)` })
+        .from(loginLinks)
+        .where(links),
+      db
+        .select({ n: sql<number>`count(*)` })
+        .from(loginCodes)
+        .where(codes),
+    ]);
+    return (link?.n ?? 0) + (code?.n ?? 0);
   };
-  const [day] = await db
-    .select({ n: sql<number>`count(*)` })
-    .from(loginLinks)
-    .where(gt(loginLinks.createdAt, isoAfter(now, -24 * 60 * 60 * 1000)));
   return {
-    forEmail: accountId ? await count(eq(loginLinks.accountId, accountId)) : 0,
-    fromIp: await count(eq(loginLinks.ipHash, ipHash)),
-    today: day?.n ?? 0,
+    forEmail: accountId
+      ? await both(
+          and(
+            eq(loginLinks.accountId, accountId),
+            gt(loginLinks.createdAt, since),
+          ),
+          and(
+            eq(loginCodes.accountId, accountId),
+            gt(loginCodes.createdAt, since),
+          ),
+        )
+      : 0,
+    fromIp: await both(
+      and(eq(loginLinks.ipHash, ipHash), gt(loginLinks.createdAt, since)),
+      and(eq(loginCodes.ipHash, ipHash), gt(loginCodes.createdAt, since)),
+    ),
+    today: await both(
+      gt(loginLinks.createdAt, dayAgo),
+      gt(loginCodes.createdAt, dayAgo),
+    ),
   };
 };
 
@@ -312,3 +346,97 @@ export const listActiveSessions = async (
         ),
       )
   ).toSorted((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt));
+
+/**
+ * Stores a new login code (ticket 123) and puts an end to the codes of
+ * the account not used yet: only the latest works.
+ * @param db - The database.
+ * @param input - The account, the print of the code, who asked.
+ * @param input.accountId - The account.
+ * @param input.codePrint - The print of the code, bound to the device.
+ * @param input.ipHash - Who asked, hashed.
+ * @param input.now - Now (ISO).
+ * @returns Once stored.
+ */
+export const replaceLoginCode = (
+  db: Db,
+  input: { accountId: string; codePrint: string; ipHash: string; now: string },
+) =>
+  db.batch([
+    db
+      .update(loginCodes)
+      .set({ usedAt: input.now })
+      .where(
+        and(
+          eq(loginCodes.accountId, input.accountId),
+          isNull(loginCodes.usedAt),
+        ),
+      ),
+    db.insert(loginCodes).values({
+      id: newId(),
+      accountId: input.accountId,
+      codePrint: input.codePrint,
+      createdAt: input.now,
+      expiresAt: isoAfter(input.now, CODE_TTL_MS),
+      usedAt: null,
+      attempts: 0,
+      ipHash: input.ipHash,
+    }),
+  ]);
+
+/**
+ * The latest code of an account, with the account.
+ * @param db - The database.
+ * @param accountId - The account.
+ * @returns The code, or null.
+ */
+export const latestLoginCode = async (db: Db, accountId: string) =>
+  (await db
+    .select()
+    .from(loginCodes)
+    .where(eq(loginCodes.accountId, accountId))
+    .orderBy(desc(loginCodes.createdAt))
+    .limit(1)
+    .get()) ?? null;
+
+/**
+ * Counts one try of a code; true for the try that may compare, false
+ * once its tries are spent (two tries at once never both pass).
+ * @param db - The database.
+ * @param id - The code.
+ * @returns Whether this try counts.
+ */
+export const tryLoginCode = async (db: Db, id: string): Promise<boolean> => {
+  const done = await db
+    .update(loginCodes)
+    .set({ attempts: sql`${loginCodes.attempts} + 1` })
+    .where(
+      and(
+        eq(loginCodes.id, id),
+        isNull(loginCodes.usedAt),
+        lt(loginCodes.attempts, CODE_TRIES),
+      ),
+    )
+    .returning({ id: loginCodes.id });
+  return done.length > 0;
+};
+
+/**
+ * Uses a code, once.
+ * @param db - The database.
+ * @param id - The code.
+ * @param now - Now (ISO).
+ * @returns True for the one that used it.
+ */
+export const useLoginCode = async (
+  db: Db,
+  id: string,
+  now: string,
+): Promise<boolean> =>
+  (
+    await db
+      .update(loginCodes)
+      .set({ usedAt: now })
+      .where(and(eq(loginCodes.id, id), isNull(loginCodes.usedAt)))
+      .returning({ id: loginCodes.id })
+  ).length > 0;

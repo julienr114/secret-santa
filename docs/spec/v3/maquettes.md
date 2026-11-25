@@ -20,7 +20,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `V3QuoiDeNeuf` | « Quoi de neuf » · regroupé par fête, la plus récente en haut ; une liste publique où j’ai coché a sa section | 120 |
 | `V3TirageQuelleFete` | Secret Santa · première étape : « Pour quelle occasion ? », une fête que j’organise ou une autre occasion | 105 |
 | `V3Fete` | Événement · vue par un membre : ses membres, son Secret Santa, les listes, les années passées, « Quitter » | 104 |
-| `V3FeteOrganisateur` | Événement · vue par son organisateur : « Un autre Secret Santa » ; la carte des membres ouvre « Membres », et « Réglages de l’événement » sur sa deuxième ligne | 104, 159 |
+| `V3FeteOrganisateur` | Événement · vue par son organisateur : « Un autre Secret Santa » ; la carte des membres ouvre « Membres », et « Réglages de l’événement » sur sa deuxième ligne ; « Le Secret Santa » puis « Tu l’organises », comme sur l’accueil | 104, 159, 173 |
 | `V3FeteAnniversaire` | Événement · « pour quelqu’un » (un anniversaire) : sa liste d’abord ; un Secret Santa reste possible | 104 |
 | `V3FeteNouvelle` | Première étape d’un Secret Santa ou d’une liste, quand l’occasion est nouvelle : « Pour quelle occasion ? », la catégorie d’abord, qui remplit le reste ; pas d’étape « membres » | 117 |
 | `V3FeteMembresReprendre` | Secret Santa ou liste · « Reprendre ceux d’un autre événement » : on coche qui (le nom du fichier est resté) | 117 |
@@ -99,7 +99,7 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | Maquette | Ce qu’elle montre | Ticket |
 |---|---|---|
 | `MenuAvatar`, `MenuAvatarOuvert` | L’icône du compte à la place du burger, et son menu | 103 |
-| `ProcheNaissance` | Les trois listes d’une date | 105 |
+| `ProcheNaissance` | Une date dans un seul champ, la date en toutes lettres dessous | 105 |
 | `ListeGroupeFil`, `ListeGroupeFilDeplie` | Le dessin d’une liste (Correction 30) | 106 |
 | `ListeAidePartage` | La barre du haut pour celui qui aide à tenir la liste : repliée, avec « Le lien » à la place de « Modifier » | 106, 135 |
 | `RejoindreFerme` | Ce que voit celui qui ouvre le lien d’une fête complète | 105 |
@@ -108,6 +108,8 @@ Le canevas : https://claude.ai/artifact/6XYdmH9di9ctyAZxzLD9Ns, page « V3 · L'
 | `AdminSignalement`, `ListePartageSuspendu`, `ModerationEmail` | Un signalement arrête le lien public d’une liste, pas sa présence dans ses fêtes | 132 |
 | `ListeCocherPourMoi`, `ListeCocherPourDepart`, `ListeCocherPourChoix`, `ListeCocherPourLigne`, `ListeCocherPour`, `ListeCocherPourAutre` | Cocher pour quelqu’un, dans l’ordre du parcours : je coche (à mon nom), « Tu l’offres › » ouvre « Qui l’offre ? », je touche Mamie, enregistré, à plusieurs, quelqu’un d’autre ; fait sur `main`, sans ticket | — |
 | `PersonnaliserMessage` | Personnaliser le message d’un envoi de Secret Santa. Ne sert plus aux listes : « Le message qui accompagne le lien » disparaît (ticket 139) | 106 |
+| `ConfirmerTirage`, `Suivi`, `Envoi` | Au tirage, l’application prévient chacun : la ligne « Chacun reçoit son lien par email » avant, ce qui est parti après, et « Le lien de Rose » pour qui n’a pas d’adresse | 169 |
+| `MenuAvatarOuvert`, `APropos` | Le menu de l’avatar a une entrée « À propos », qui mène à « Qui a fait ça » (textes validés le 25 novembre 2026) | 126 |
 
 ## Les maquettes d'avant, passées à la V3
 

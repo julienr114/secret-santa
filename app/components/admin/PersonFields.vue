@@ -66,6 +66,8 @@ const onLanguage = (language: Locale) => {
       :ui="{ base: 'h-12' }"
     />
   </UFormField>
+  <!-- An address that receives nothing (ticket 130, StopSaisie). -->
+  <UiEmailBlockNote :email="draft.email" />
   <UiList>
     <UiListItem
       :title="t('adminGroup.personForm.languageRow')"

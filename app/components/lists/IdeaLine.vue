@@ -335,13 +335,19 @@ watch(draft, sayWriting);
 onBeforeUnmount(() => {
   if (writing.value) live?.idle();
 });
-// A text that changes shows it by a short movement, not on arrival.
-const settled = ref(false);
+// A text that changes shows it by a short movement, not on arrival: only
+// a text other than the one the line settled with (ticket 168: putting
+// the class on the text already there played it on every line, 0.4 s
+// after the list opened).
+const settledOn = ref<string | null>(null);
 onMounted(() => {
   window.setTimeout(() => {
-    settled.value = true;
+    settledOn.value = name.value;
   }, 400);
 });
+const changedSince = computed(
+  () => settledOn.value !== null && name.value !== settledOn.value,
+);
 
 /**
  * Starts writing the line.
@@ -629,9 +635,13 @@ const onFocusOut = (event: FocusEvent) => {
       lockedBy ? 'pointer-events-none -mx-2 rounded-xl px-2' : '',
       // Being written: a white card over the line, which moves neither
       // the box nor the text (ticket 144).
+      // The rhythm of the list (ticket 167): a title away from what
+      // comes before, close to its ideas.
+      'list-line',
+      idea?.title ? 'list-title' : '',
       writing
-        ? '-my-1 -mr-2 -ml-2.5 rounded-[16px] bg-default pt-[17px] pr-2 pb-3.5 pl-2.5 shadow-line-card'
-        : 'py-[13px]',
+        ? 'list-writing -mr-2 -ml-2.5 rounded-[16px] bg-default pr-2 pl-2.5 shadow-line-card'
+        : '',
       liftedHere ? 'opacity-30' : '',
       guided || tourStop.active.value || firstLineNote
         ? 'z-50 -mx-2.5 rounded-2xl bg-page px-2.5'
@@ -832,7 +842,7 @@ const onFocusOut = (event: FocusEvent) => {
           >
             <span
               :key="lockedBy ? 'live' : name"
-              :class="settled && !lockedBy ? 'text-changed' : ''"
+              :class="changedSince && !lockedBy ? 'text-changed' : ''"
               ><template v-if="lockedBy"
                 >{{ lockedBy.text.slice(0, lockedBy.caret)
                 }}<span

@@ -9,6 +9,8 @@ import { useLinkQuery } from '~/composables/queries/useLists';
 const route = useRoute();
 const token = computed(() => String(route.params.token));
 const ideaId = computed(() => String(route.query.cocher ?? ''));
+// A bell touched (ticket 122): followed on coming back.
+const follow = computed(() => String(route.query.suivre ?? ''));
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const query = useLinkQuery(token);
@@ -29,7 +31,9 @@ const onSend = () =>
       firstName: firstName.value.trim() || undefined,
       next: ideaId.value
         ? `${parent.value}?cocher=${ideaId.value}`
-        : parent.value,
+        : follow.value
+          ? `${parent.value}?suivre=${encodeURIComponent(follow.value)}`
+          : parent.value,
     },
     {
       onSuccess: () => {
@@ -47,9 +51,11 @@ const onSend = () =>
   >
     <div class="flex flex-col gap-1">
       <p class="text-sm text-toned">{{ query.data.value?.list.title }}</p>
-      <UiPageTitle>{{ t('lists.login.title') }}</UiPageTitle>
+      <UiPageTitle>{{
+        t(follow ? 'lists.login.titleFollow' : 'lists.login.title')
+      }}</UiPageTitle>
       <p class="mt-1 text-[15px] leading-[1.45] text-toned">
-        {{ t('lists.login.intro') }}
+        {{ t(follow ? 'lists.login.introFollow' : 'lists.login.intro') }}
       </p>
     </div>
     <p
@@ -69,7 +75,9 @@ const onSend = () =>
         inputmode="email"
         :placeholder="t('lists.login.emailPlaceholder')"
       />
+      <!-- Following asks for no name: nobody sees who follows. -->
       <UiTextField
+        v-if="!follow"
         id="visitor-name"
         v-model="firstName"
         :label="t('lists.login.firstName')"
@@ -82,7 +90,11 @@ const onSend = () =>
       />
       <!-- The first name is optional (lot 27 ter): without one, the
            ticks are anonymous. -->
-      <p class="-mt-2 text-sm text-toned" data-testid="login-no-name">
+      <p
+        v-if="!follow"
+        class="-mt-2 text-sm text-toned"
+        data-testid="login-no-name"
+      >
         {{ t('lists.login.noName') }}
       </p>
       <p

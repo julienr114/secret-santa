@@ -6,6 +6,30 @@ export default {
   today: 'Aujourd’hui, {time}',
   yesterday: 'Hier, {time}',
   close: 'Fermer',
+  // « Me prévenir », in « Mon compte » (ticket 121, NotifReglage).
+  settings: {
+    title: 'Me prévenir',
+    choose: 'Choisir ce qui me prévient',
+    byEmail: 'Par email',
+    summary: 'Un résumé le matin',
+    summaryHint: 'Un seul email, avec ce que tu n’as pas encore vu.',
+    instant: 'Tout de suite',
+    instantHint: 'Un email à chaque nouveauté.',
+    none: 'Aucun email',
+    noneHint: 'Sauf pour te connecter.',
+    noneDiffers:
+      'Un organisateur peut encore t’écrire lui-même. Pour ne plus rien recevoir, même de lui : « Ne plus recevoir d’emails », en bas de chaque email.',
+    blocked:
+      'Tu as demandé à ne plus recevoir d’emails d’Under the Tree : aucun ne te parvient, sauf pour te connecter.',
+    unblock: 'Recevoir à nouveau les emails',
+    following: 'Ce que je suis',
+    wholeList: 'Toute la liste',
+    unfollow: 'Ne plus suivre',
+    unfollowList: 'Ne plus suivre {title}',
+    urgent: 'Ce qui presse',
+    urgentText:
+      'Ton enveloppe t’attend, une invitation, quelqu’un te demande des idées : avec le résumé, ces emails-là partent quand même tout de suite, sauf si tu as déjà vu la nouveauté.',
+  },
   kind: {
     envelope: 'Le tirage est fait : ton enveloppe t’attend',
     hint_request: 'Quelqu’un te demande des idées de cadeaux',
@@ -31,5 +55,14 @@ export default {
     santa_added: '{name} t’ajoute au Secret Santa',
     game_open: 'Devine qui : à toi de jouer',
     list_shared: '{name} a partagé sa liste avec toi',
+    followed_ideas: {
+      one: '{count} nouvelle idée pour {name}',
+      other: '{count} nouvelles idées pour {name}',
+    },
+    followed_ideasList: {
+      one: '{count} nouvelle idée sur la liste',
+      other: '{count} nouvelles idées sur la liste',
+    },
+    followed_person: '{name} est sur la liste',
   },
 };

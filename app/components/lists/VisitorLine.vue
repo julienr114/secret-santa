@@ -80,8 +80,9 @@ onBeforeUnmount(() => {
 
 <template>
   <li
-    class="relative flex items-start gap-[var(--line-gap,12px)] py-[13px]"
+    class="list-line relative flex items-start gap-[var(--line-gap,12px)]"
     :class="[
+      idea.title ? 'list-title' : '',
       chips.mine
         ? '-mx-2.5 rounded-2xl px-2.5 has-[[data-line-button]:active]:bg-muted'
         : '',

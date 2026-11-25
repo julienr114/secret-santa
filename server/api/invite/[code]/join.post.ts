@@ -17,9 +17,7 @@ import {
 import { requireInvite } from '#server/http/invite';
 import { accounts, persons, secretSantas } from '#server/database/schema';
 import { requireAccount } from '#server/http/auth';
-import { appUrl, dataKeyOf, newId, nowIso } from '#server/http/context';
-import { notifyOrganizers } from '#server/http/notify';
-import { buildJoinedEmail } from '#server/utils/notifications';
+import { dataKeyOf, newId, nowIso } from '#server/http/context';
 import { mergeRules } from '#server/utils/rules';
 import { unwrap } from '#server/http/errors';
 import { validatedBody } from '#server/http/validate';
@@ -106,6 +104,9 @@ export default defineEventHandler(async (event) => {
       .set({ invitePlaces: (santa.invitePlaces ?? 1) - 1 })
       .where(eq(secretSantas.id, santa.id));
   }
+  // In the app, and by email as each organiser chose (ticket 121), if
+  // the Secret Santa wants it.
+  const rules = mergeRules(santa.rules);
   await tellOrganisers(
     db,
     {
@@ -114,23 +115,10 @@ export default defineEventHandler(async (event) => {
       targetId: group.id,
       name: firstName,
       detail: santaName,
+      mailable: rules.ok && rules.value.notifyJoined,
     },
     now,
   );
-  const rules = mergeRules(santa.rules);
-  if (rules.ok && rules.value.notifyJoined) {
-    await notifyOrganizers({ db, event }, group.id, (locale) =>
-      buildJoinedEmail(
-        {
-          groupName: group.name,
-          santaName,
-          firstName,
-          link: appUrl(event, `/e/${group.slug}/membres`),
-        },
-        locale,
-      ),
-    );
-  }
   setResponseStatus(event, 201);
   return { ok: true, path };
 });

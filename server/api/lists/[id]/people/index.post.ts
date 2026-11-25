@@ -6,6 +6,8 @@ import {
   peopleOfLists,
 } from '#server/database/lists';
 import { countFamily, countPeople } from '#server/database/caps';
+import { tellPersonAdded } from '#server/database/newsEvents';
+import { nowIso } from '#server/http/context';
 import { requireRoom } from '#server/http/caps';
 import { notFound } from '#server/http/errors';
 import { requireHeldList } from '#server/http/lists';
@@ -36,11 +38,22 @@ export default defineEventHandler(async (event) => {
   const hidden = isSingleList(people) ? people[0] : undefined;
   if (hidden) {
     await givePartTo(db, hidden.id, memberId);
+    await tellPersonAdded(
+      db,
+      { listId: list.id, listPersonId: hidden.id, by: user.accountId },
+      nowIso(),
+    );
     setResponseStatus(event, 201);
     return { id: hidden.id, memberId };
   }
   try {
     const id = await addPersonToList(db, list, memberId);
+    // Those who follow the whole list are told (ticket 122).
+    await tellPersonAdded(
+      db,
+      { listId: list.id, listPersonId: id, by: user.accountId },
+      nowIso(),
+    );
     setResponseStatus(event, 201);
     return { id, memberId };
   } catch {

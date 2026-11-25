@@ -1,3 +1,4 @@
+import type { Gauge } from '#server/utils/spend';
 import type { GroupOverview } from '#server/utils/overview';
 import type { PublicGroup } from '#server/database/groups';
 import type { Avatar } from '#server/utils/avatars';
@@ -16,8 +17,23 @@ export type AppStats = {
   fullParties: number;
   load: 'ok' | 'near' | 'over';
 };
-/** The emergency switches, on or off. */
-export type AppSwitches = { newSecretSantas: boolean };
+/** The emergency switches, on or off (tickets 109 and 129). */
+export type AppSwitches = {
+  newSecretSantas: boolean;
+  emails: boolean;
+  signups: boolean;
+};
+/** What to watch today (ticket 129). */
+export type AppToday = {
+  rateLimited: number;
+  loginFailed: number;
+  emailsRejected: number;
+  serverErrors: number;
+  refused: number;
+  reportedSends: number;
+};
+/** The caps of the emails, with their gauges (ticket 129). */
+export type AppCaps = { emailsDay: Gauge; emailsMonth: Gauge };
 /** An account as the admin sees it; `me` marks the logged-in one. */
 /** A group of an account, with its members and its draw in progress. */
 export type AdminAccountGroup = AdminAccount['groups'][number] & GroupOverview;
@@ -34,6 +50,8 @@ export const useAdminAccountsQuery = () =>
     accounts: AdminAccountRow[];
     stats: AppStats;
     switches: AppSwitches;
+    today: AppToday;
+    caps: AppCaps;
   }>(
     () => keys.adminAccounts(),
     () => '/api/admin/accounts',
@@ -60,9 +78,9 @@ export const useUpdateAccountMutation = () =>
 
 /** Turns an emergency switch on or off. */
 export const useSwitchMutation = () =>
-  useApiMutation<{ ok: true }, AppSwitches>(
+  useApiMutation<{ ok: true }, Partial<AppSwitches>>(
     (body) => api('/api/admin/switches', { method: 'PATCH', body }),
-    () => [keys.adminAccounts(), keys.newSecretSanta()],
+    () => [keys.adminAccounts(), keys.newSecretSanta(), keys.emailsPaused()],
   );
 
 /** Every group of the app. */

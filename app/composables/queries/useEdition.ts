@@ -171,6 +171,13 @@ export const useRegenerateMutation = (slug: Ref) =>
 
 export type EmailAudience = 'unsent' | 'all';
 
+/** Whether the emails are suspended for everyone (ticket 129). */
+export const useEmailsPausedQuery = () =>
+  useApiQuery<{ paused: boolean }>(
+    () => keys.emailsPaused(),
+    () => '/api/emails/paused',
+  );
+
 /** Bulk sending by email, for groups where the super-admin allowed it. */
 export const useSendEmailsMutation = (slug: Ref, id: Ref) =>
   useApiMutation<

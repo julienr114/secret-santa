@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import { useUpdateEditionMutation } from '~/composables/queries/useGroup';
+import {
+  dateOf,
+  partyYears,
+  type BirthParts,
+} from '#shared/utils/memberFields';
 
 // An edition from before the party date was required: the screen asks
-// "Quand a lieu la fête ?" until it is given.
+// "Quand a lieu la fête ?" until it is given, in one field (ticket 160).
 const props = defineProps<{ slug: string; editionId: string }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const update = useUpdateEditionMutation(() => props.slug);
-const date = ref('');
-const suggestion = computed(() => `${new Date().getFullYear()}-12-25`);
+const years = partyYears(new Date().getFullYear());
+const date = ref<BirthParts>({ day: null, month: null, year: null });
 /**
  * Saves the day given for the party.
  * @returns Nothing: the mutation reports by itself.
  */
-const onValidate = () =>
-  update.mutate({ id: props.editionId, eventDate: date.value });
+const onValidate = () => {
+  const eventDate = dateOf(date.value);
+  if (eventDate) update.mutate({ id: props.editionId, eventDate });
+};
 </script>
 
 <template>
@@ -24,21 +31,20 @@ const onValidate = () =>
     data-testid="missing-date"
   >
     <p class="text-sm">{{ t('adminEdition.screen.missingDate.body') }}</p>
-    <UFormField :label="t('adminEdition.newEdition.dateLabel')">
-      <div class="flex gap-2">
-        <AdminDateField
-          v-model="date"
-          :suggestion="suggestion"
-          class="min-w-0 grow"
-        />
-        <UButton
-          :disabled="!date"
-          :loading="update.isPending.value"
-          :label="t('adminEdition.screen.missingDate.validate')"
-          @click="onValidate"
-        />
-      </div>
-    </UFormField>
+    <UiDateField
+      v-model="date"
+      :years="years"
+      weekday
+      :label="t('adminEdition.newEdition.dateLabel')"
+      testid="missing-date-field"
+    />
+    <UButton
+      class="self-start"
+      :disabled="!dateOf(date)"
+      :loading="update.isPending.value"
+      :label="t('adminEdition.screen.missingDate.validate')"
+      @click="onValidate"
+    />
     <UAlert
       v-if="update.isError.value"
       color="error"

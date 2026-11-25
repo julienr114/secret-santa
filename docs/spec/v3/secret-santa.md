@@ -61,7 +61,7 @@ Le premier cas vaut dès que je suis seul, qu'il y ait eu un Secret Santa avant 
 **Les deux mots disent où ils vont**, sur leur page (maquettes `EditionMot`, `GroupeMot`) :
 
 - « Petit mot pour les participants » : sous le titre, « Chaque participant le lit sous le résultat de son tirage, avec le titre « Le mot de l'organisateur ». » Pas d'aperçu : Julien l'a vu en maquette (une carte, puis un petit téléphone) et l'a écarté, la phrase suffit.
-- « Mot ajouté aux messages » : sous le titre, « Quand tu envoies son lien à quelqu'un, ou un rappel, ton mot part avec. Tu peux encore le changer au moment d'envoyer. » Pas d'aperçu ; « Où le placer » ne change pas. On ajuste les participants sur l'écran suivant, comme aujourd'hui.
+- « Mot ajouté aux messages » : sous le titre, « Ton mot part avec l'email du tirage et avec tes rappels. » (25 novembre 2026 : l'email du tirage part tout seul, on ne le change plus au moment d'envoyer ; un rappel, si.) Pas d'aperçu ; « Où le placer » ne change pas. On ajuste les participants sur l'écran suivant, comme aujourd'hui.
 
 Il n'y a pas de réglage « Pistes de cadeaux » : voir plus bas.
 
@@ -137,6 +137,24 @@ Celui qui m'a tiré ouvre la liste **filtrée sur moi** : la liste avec son titr
 - C'est **un filtre** : « la liste filtrée » dans la spec, `filter` dans le code. L'écran n'écrit pas le mot ; les deux choix suffisent.
 - Celui qui a le droit d'ouvrir la liste autrement (un membre de l'événement, par exemple) et qui y arrive depuis sa carte de résultat a le même filtre. Arrivé par un autre chemin, il voit la liste entière, sans les deux choix.
 - La page ne dit jamais « tu as tiré Inès » : le résultat reste sur la page du Secret Santa.
+
+## Au tirage, l'application prévient chacun
+
+Julien, 25 novembre 2026. L'organisateur n'envoie plus lui-même l'annonce du tirage : l'application le fait. Il sait avant que l'email partira, il voit après qu'il est parti, et il garde les rappels.
+
+- **Ce qui part** : au moment du tirage, un email à chaque participant qui a une adresse, qu'il ait un compte ou non. C'est le message « le tirage est fait » d'aujourd'hui : son prénom, son lien, le budget et la date s'ils existent, le mot de l'organisateur des réglages, dans sa langue. Il est signé « Le Secret Santa de {événement} », puisque c'est l'application qui l'envoie.
+- **Un seul email** : « Ton enveloppe t'attend » (ticket 121) ne part plus en plus. Dans l'application, la nouveauté reste.
+- **Qui ne le reçoit pas** : celui qui n'a pas d'adresse, celui dont l'adresse a refusé nos emails (ticket 130), celui qui a réglé « Aucun email ». L'organisateur leur partage leur lien par son téléphone.
+- **Un nouveau tirage** se dit de la même façon : l'application envoie « un nouveau tirage a eu lieu » à chacun.
+- **Avant** (`ConfirmerTirage`) : une ligne « Chacun reçoit son lien par email », et dessous « Dès que le tirage est fait ». S'il manque des adresses : « Sauf Rose, sans adresse : tu lui partageras son lien » ; à plusieurs, « Sauf 3 personnes sans adresse : tu leur partageras leur lien ». Si personne n'a d'adresse : « Personne n'a d'adresse email », « Tu partageras chaque lien après le tirage ».
+- **Après** (`Suivi`) :
+  - quelqu'un reste à prévenir à la main : « À faire maintenant », « Partage son lien à Rose » (à plusieurs : « Partage leur lien à 3 personnes »), les trois chiffres (« sans adresse email », « pas encore ouvert », « a découvert »), le bouton « Partager le lien de Rose » quand il n'y en a qu'un, et dessous « Les 4 autres ont reçu leur lien par email. » ;
+  - tout le monde a reçu son email : plus de « À faire maintenant » ; le bloc dit « Chacun a reçu son lien par email », avec les deux chiffres, sans bouton ;
+  - sous un prénom : « Pas d'adresse email » (ceux-là en premier), « Ne reçoit pas d'emails », « Envoyé, pas encore consulté », « Résultat consulté ». « Pas encore envoyé » ne se voit plus après un tirage, sauf si l'envoi a échoué.
+- **Le bouton d'une ligne** : pour quelqu'un sans adresse, il ouvre « Le lien de Rose » (`Envoi`) : le message, « Partager », « Copier », et « Ajouter son adresse email », qui fait partir son email aussitôt. Pour les autres, il ouvre le rappel (`Renvoi`), qui ne change pas.
+- **Les rappels restent à l'organisateur** : à une personne (`Renvoi`), ou à plusieurs. L'écran d'envoi à plusieurs ne propose plus que le rappel après un tirage : son titre devient « Envoyer un rappel », et sont cochés d'avance ceux qui ont une adresse et n'ont pas encore ouvert.
+- **Si l'envoi ne part pas** (les emails sont suspendus, le plafond est atteint, le service refuse) : le tirage est fait quand même. Le bloc dit « Les emails ne sont pas partis », avec « Renvoyer les emails » ; quand ils sont suspendus pour tous, c'est `EnvoiSuspendu`, et l'organisateur partage les liens par son téléphone.
+- **Ce qui ne change pas** : l'invitation d'avant le tirage, facultative, reste un geste de l'organisateur ; un tirage fait ailleurs garde ses trois messages ; le journal note chaque envoi, fait par l'application.
 
 ## Les objets des emails
 

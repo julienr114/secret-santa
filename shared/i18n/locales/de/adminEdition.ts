@@ -246,7 +246,6 @@ export default {
     more: 'Ein Platz mehr',
     until: 'Letzter Tag',
     untilHelp: 'Optional. Nach diesem Tag funktioniert der Link nicht mehr.',
-    dateLabel: 'Datum',
     noUntil: 'Kein letzter Tag',
     none: 'Keiner',
     messageRow: 'Dein Wort auf der Seite',
@@ -484,13 +483,18 @@ export default {
     },
     dateSheet: {
       title: 'Datum',
-      description: 'Der Tag, an dem ihr die Geschenke austauscht.',
       seen: 'Die Teilnehmenden sehen es auf ihrer Seite, mit dem Countdown.',
       journal: 'Die Änderung wird im Protokoll des Events vermerkt.',
       saved: 'Datum gespeichert',
     },
     emails: {
       title: 'Per E-Mail senden',
+      paused: 'Das Senden von E-Mails ist für alle pausiert.',
+      pausedWhy:
+        'Das liegt nicht an dir: Die App hat ihre Grenze erreicht. Das Senden geht von selbst weiter.',
+      pausedMeanwhile:
+        'Schick in der Zwischenzeit allen ihren Link von deinem Handy aus: Das klappt immer und hängt von nichts ab.',
+      shareLinks: 'Links teilen',
       selected: {
         one: '{count} von {total} ausgewählt',
         other: '{count} von {total} ausgewählt',

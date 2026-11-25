@@ -16,6 +16,8 @@ import type { MemberRemoval, ShareAsk } from '#server/utils/lists';
 import type { SharingAsk } from '#server/utils/listSharing';
 import type { HintAnswer, HintQuestion, HintText } from '#shared/utils/hints';
 import type { ListOrder } from '#shared/utils/reorder';
+import type { FollowChoice, FollowState } from '#server/utils/follows';
+import type { FollowedList } from '#server/database/follows';
 import { keys } from './keys';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import {
@@ -352,6 +354,7 @@ export const useCreateIdeaMutation = (via: Via) =>
         createdIds.set(
           tempId,
           sent.then((created) => {
+            firstIds.set(created.id, tempId);
             namedIds.set(tempId, created.id);
             return created.id;
           }),
@@ -641,6 +644,8 @@ export type LinkDocument = VisitorDocument & {
   mode: ListMode;
   /** My visit before this one, or null (ticket 120). */
   since: string | null;
+  /** What I follow on it (ticket 122); null for its holders, or logged out. */
+  follow: FollowState | null;
 };
 
 /**
@@ -669,6 +674,61 @@ export const useListModeMutation = (token: Token) =>
     () => [keys.link(toValue(token))],
   );
 
+/**
+ * « Suivre » (ticket 122): what I follow on a list by its link, in place
+ * of what I followed; shown at once.
+ */
+export const useFollowMutation = (token: Token) => {
+  const queryClient = useQueryClient();
+  const key = () => keys.link(toValue(token));
+  return useMutation<
+    FollowState,
+    Error,
+    FollowChoice,
+    { before?: LinkDocument }
+  >({
+    mutationFn: (body) =>
+      api(`/api/l/${toValue(token)}/follow`, { method: 'PUT', body }),
+    onMutate: async (choice) => {
+      await queryClient.cancelQueries({ queryKey: key() });
+      const before = queryClient.getQueryData<LinkDocument>(key());
+      if (before) {
+        queryClient.setQueryData<LinkDocument>(key(), {
+          ...before,
+          follow: choice.list
+            ? { kind: 'list' }
+            : choice.people.length > 0
+              ? { kind: 'people', listPersonIds: choice.people }
+              : { kind: 'none' },
+        });
+      }
+      return { before };
+    },
+    onError: (_error, _choice, context) => {
+      if (context?.before) queryClient.setQueryData(key(), context.before);
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: key() }),
+        queryClient.invalidateQueries({ queryKey: keys.follows() }),
+      ]),
+  });
+};
+
+/** The lists I follow, for « Me prévenir » (ticket 122). */
+export const useFollowsQuery = () =>
+  useApiQuery<{ lists: FollowedList[] }>(
+    () => keys.follows(),
+    () => '/api/follows',
+  );
+
+/** « Ne plus suivre » a list, from « Me prévenir ». */
+export const useUnfollowMutation = () =>
+  useApiMutation<{ ok: true }, string>(
+    (listId) => api(`/api/follows/${listId}`, { method: 'DELETE' }),
+    () => [keys.follows()],
+  );
+
 /** The page's own data of a list: what a line ticked changes at once. */
 const docKey = (via: ClaimRoute) =>
   'token' in via ? keys.link(via.token) : keys.list(via.listId);
@@ -677,6 +737,13 @@ const docKey = (via: ClaimRoute) =>
 const claimQueues = new Map<string, Promise<unknown>>();
 /** The ticks and unticks not answered yet, all lines together. */
 const claimsPending = ref(0);
+/**
+ * Whether changes of this page are on their way (ticks, lines, order):
+ * the list is read again once the last is answered, not before, or it
+ * would show a state between two of them (ticket 168).
+ * @returns True while some are.
+ */
+export const listChangesPending = () => claimsPending.value > 0;
 
 /**
  * Sends a request of a line after those of the same line still running:
@@ -758,6 +825,8 @@ const useOptimisticClaim = <TData, TVariables>(
 const createdIds = new Map<string, Promise<string>>();
 /** Those it gave already: the order shown reads them at once. */
 const namedIds = reactive(new Map<string, string>());
+/** And back: the id a line had on this screen, by the server's. */
+const firstIds = new Map<string, string>();
 /**
  * The id of a line on the server: a line just written waits for it.
  * @param id - Its id on this screen.
@@ -770,6 +839,14 @@ const serverIdOf = (id: string) => createdIds.get(id) ?? Promise.resolve(id);
  * @returns The id.
  */
 export const lineIdNow = (id: string) => namedIds.get(id) ?? id;
+/**
+ * The key a line is shown under: the id it had when written here, even
+ * once the server named it, so that a line being written is not made
+ * again under the fingers (ticket 166).
+ * @param id - Its id, on this screen or the server's.
+ * @returns The key.
+ */
+export const lineKey = (id: string) => firstIds.get(id) ?? id;
 
 /** The page's data of a list, as these changes touch it. */
 type EditedDoc = {

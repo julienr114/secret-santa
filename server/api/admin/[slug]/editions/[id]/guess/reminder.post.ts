@@ -1,3 +1,4 @@
+import { isSwitchOn } from '#server/database/switches';
 import { findAccountById } from '#server/database/accounts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
@@ -32,6 +33,10 @@ export default defineEventHandler(async (event) => {
   const { user, group, db, edition, rules } = await requireEdition(event);
   if (!guessesOpen(edition, nowIso())) {
     throw createError({ statusCode: 409, statusMessage: 'guesses_closed' });
+  }
+  // Suspended for everyone (ticket 129): said before anything else.
+  if (await isSwitchOn(db, 'emails')) {
+    throw createError({ statusCode: 503, statusMessage: 'emails_paused' });
   }
   if (!emailConfigured(event)) {
     throw createError({
@@ -87,10 +92,14 @@ export default defineEventHandler(async (event) => {
           ),
         ),
         to: person.email!,
+        locale: person.language,
+        by: sender,
+        // « Signaler cet envoi » (ticket 130).
+        sentBy: { partyId: group.id, accountId: user.accountId, name: sender },
       };
     }),
   );
-  unwrap(await sendEmails(event, emails));
+  unwrap(await sendEmails(event, emails, { db }));
   // The last reminder, for « Dernier rappel le… » and the automatic one.
   await db
     .update(secretSantas)

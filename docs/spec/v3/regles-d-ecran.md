@@ -43,14 +43,19 @@ Un écran sans aucune ligne garde ses champs sur place (« Pour quelle occasion 
 
 ## Les dates
 
-Toute date se choisit avec **trois listes du téléphone**, côte à côte : « Jour », « Mois », « Année ». Trois `<select>` natifs, comme la date de naissance d'un proche (`app/pages/famille/[id]/naissance.vue`).
+Toute date s'écrit dans **un seul champ**, à trois segments : le jour, le mois, l'année (`UInputDate` de Nuxt UI ; Julien, 24 novembre 2026, Q-038). Le même champ partout : la date d'un événement, d'un Secret Santa, d'une liste, une date de naissance.
 
-- Le mois en toutes lettres.
-- Les années : de l'année en cours à dans deux ans.
-- Les jours suivent le mois et l'année.
-- Les trois listes arrivent déjà remplies par la catégorie (Noël : le 25 décembre) ou par la date de l'événement.
+- Il est habillé comme les autres champs du formulaire (52 px, le même trait, le même arrondi). Dans un formulaire tout en lignes, c'est une ligne qui s'écrit sur place (« Un texte court s'écrit sur sa ligne »).
+- Les segments suivent **la langue de l'application** : jour/mois/année en français, mois/jour/année en anglais, jour.mois.année en allemand.
+- On tape la date d'une traite, « 14122026 » : le champ passe seul d'un segment au suivant. Sur un téléphone, c'est le pavé numérique.
+- **Sous le champ, la date en toutes lettres**, dès que les trois segments sont remplis : « lundi 14 décembre 2026 » pour un événement, « 14 mars 2020 » pour une naissance. C'est elle qui montre ce que le champ a compris (un mois tapé « 1 » qui attend un second chiffre, un 31 février ramené au 28).
+- Une date hors des bornes est **refusée par nous**, pas seulement marquée : de l'année en cours à dans deux ans pour un événement ; les années de naissance pour un proche.
+- Le champ arrive déjà rempli par la catégorie (Noël : le 25 décembre) ou par la date de l'événement.
+- Le groupe porte le nom du champ (« Sa date », « Date de naissance ») pour un lecteur d'écran ; les segments gardent « jour », « mois », « année ».
 
-Pas de calendrier dessiné : `AdminDateField` et son `UCalendar` en panneau du bas sont remplacés, pour la date d'un événement, d'un Secret Santa et d'une liste. Pas de `<input type="date">` : sur les téléphones, il ouvre un calendrier.
+Écarté : les trois listes côte à côte (20 novembre, remplacées) ; le calendrier dessiné ; `<input type="date">`, qui suit la langue du navigateur et ouvre un calendrier sur iPhone. Des roulettes maison sur téléphone restent possibles plus tard, par-dessus ce champ.
+
+Maquettes : `V3FeteNouvelle`, `ProcheNaissance`.
 
 ## L'en-tête d'une carte se touche
 

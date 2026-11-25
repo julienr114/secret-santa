@@ -171,14 +171,19 @@ test('guardian adds people, an exclusion, and runs an edition to the end', async
   await expect(
     page.getByText('5 participants, toutes les règles sont respectées.'),
   ).toBeVisible();
-  // The party date stays in the header, and changes in a sheet.
+  // The party date stays in the header, and changes on its page (ticket
+  // 160): a sheet never carries a field.
   await expect(page.getByTestId('party-date')).toContainText('25 décembre');
   await page.getByTestId('party-date').click();
-  await expect(page.getByTestId('date-sheet')).toContainText(
+  await expect(page).toHaveURL(/\/date$/);
+  await expect(page.getByTestId('date-note')).toContainText(
     'Le changement est inscrit au journal de l’événement.',
   );
-  await page.getByRole('button', { name: 'Annuler', exact: true }).click();
-  await expect(page.getByTestId('date-sheet')).toHaveCount(0);
+  await expect(page.getByTestId('edition-date-full')).toContainText(
+    '25 décembre',
+  );
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(page).toHaveURL(new RegExp(`${editionUrl}$`));
   // The exclusions of the group apply to the edition.
   await page.getByText('1 exclusion').click();
   await expect(page.getByText('Léa et Tom')).toBeVisible();

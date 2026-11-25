@@ -4,11 +4,13 @@ import {
   integer,
   uniqueIndex,
   index,
+  primaryKey,
 } from 'drizzle-orm/sqlite-core';
 import { DRAW_MODES } from '../utils/answers';
 import { GUESS_MODES } from '../utils/guesses';
 import { PARTY_CATEGORIES } from '../../shared/utils/categories';
-import { NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
+import { EMAIL_NEWS, NEWS_KINDS, NEWS_TARGETS } from '../../shared/utils/news';
+import { COUNTER_NAMES } from '../utils/spend';
 
 // Data model from README section 10, in the shape of the V3
 // (docs/spec/v3/modele.md): a party (the group of before), its years, the
@@ -44,6 +46,10 @@ export const parties = sqliteTable('parties', {
   // The account that created the party: it counts against its quota.
   createdBy: text('created_by'),
   createdAt: text('created_at').notNull(),
+  // The super-admin cut the emails its organisers send (ticket 130).
+  emailsOff: integer('emails_off', { mode: 'boolean' })
+    .notNull()
+    .default(false),
 });
 
 export const persons = sqliteTable(
@@ -440,16 +446,88 @@ export const accounts = sqliteTable('accounts', {
   firstLineNoteSeen: integer('first_line_note_seen', { mode: 'boolean' })
     .notNull()
     .default(false),
+  // « Me prévenir », « Par email » (ticket 121, README 22.22): a summary
+  // in the morning, at once, or no email but the login ones.
+  emailNews: text('email_news', { enum: EMAIL_NEWS })
+    .notNull()
+    .default('summary'),
+  // The day (« 2026-11-24 ») of the last morning summary.
+  summarySentOn: text('summary_sent_on'),
 });
 
 // The super-admin's emergency switches (docs/spec/v3/administration.md,
 // « En cas d'urgence »), one row per switch once it has been touched: off
-// without a row. Only « Suspendre les nouveaux Secret Santa » for now.
+// without a row. « Suspendre les nouveaux Secret Santa » (ticket 109),
+// « Suspendre les emails » and « Suspendre les inscriptions » (ticket 129).
 export const appSwitches = sqliteTable('app_switches', {
-  name: text('name', { enum: ['new_secret_santas'] }).primaryKey(),
+  name: text('name', {
+    enum: ['new_secret_santas', 'emails', 'signups'],
+  }).primaryKey(),
   on: integer('on', { mode: 'boolean' }).notNull().default(false),
   updatedAt: text('updated_at').notNull(),
 });
+
+// What the app counts by day, for the dashboard (ticket 129, V3Admin):
+// emails sent and rejected, requests refused for their rate, failed
+// logins, server errors, and the warnings already given. `day` is
+// « 2026-11-24 »; the month adds its days up.
+export const appCounters = sqliteTable(
+  'app_counters',
+  {
+    day: text('day').notNull(),
+    name: text('name', { enum: COUNTER_NAMES }).notNull(),
+    count: integer('count').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.name] })],
+);
+
+// « Ne plus recevoir d'emails » (ticket 130, README 22.25): the addresses
+// that receive nothing, by their print (with the pepper of the server),
+// never in clear; why (the person, an address that does not exist, a
+// complaint), and since when.
+export const emailBlocks = sqliteTable('email_blocks', {
+  emailPrint: text('email_print').primaryKey(),
+  cause: text('cause', { enum: ['person', 'bounce', 'complaint'] }).notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+// The addresses already written to, by their print: the first email to
+// an address says who gave it and what is known of it (ticket 130).
+export const emailSeen = sqliteTable('email_seen', {
+  emailPrint: text('email_print').primaryKey(),
+  firstAt: text('first_at').notNull(),
+});
+
+// « Signaler cet envoi » (ticket 130): an email an organiser sent, which
+// its reader found wrong; by event and by account, for the super-admin.
+export const emailReports = sqliteTable(
+  'email_reports',
+  {
+    id: text('id').primaryKey(),
+    partyId: text('party_id').notNull(),
+    accountId: text('account_id'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('email_reports_party_idx').on(t.partyId)],
+);
+
+// The phones that asked for notifications (ticket 124): one row per
+// device, its address at its push service and its keys; forgotten when
+// the push service no longer knows it.
+export const pushSubscriptions = sqliteTable(
+  'push_subscriptions',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    endpoint: text('endpoint').notNull().unique(),
+    p256dh: text('p256dh').notNull(),
+    auth: text('auth').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('push_subscriptions_account_idx').on(t.accountId)],
+);
 
 export const loginLinks = sqliteTable(
   'login_links',
@@ -469,6 +547,30 @@ export const loginLinks = sqliteTable(
   (t) => [
     index('login_links_account_idx').on(t.accountId, t.createdAt),
     index('login_links_ip_idx').on(t.ipHash, t.createdAt),
+  ],
+);
+
+// The login codes of the installed app (ticket 123): the print of the
+// code, bound to the device that asked, never the code; good for 15
+// minutes, once, five tries.
+export const loginCodes = sqliteTable(
+  'login_codes',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    codePrint: text('code_print').notNull(),
+    createdAt: text('created_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    usedAt: text('used_at'),
+    attempts: integer('attempts').notNull().default(0),
+    // Who asked, hashed, for throttling, as the links.
+    ipHash: text('ip_hash').notNull(),
+  },
+  (t) => [
+    index('login_codes_account_idx').on(t.accountId, t.createdAt),
+    index('login_codes_ip_idx').on(t.ipHash, t.createdAt),
   ],
 );
 
@@ -705,6 +807,27 @@ export const giftListPeople = sqliteTable(
   ],
 );
 
+// What an account follows on a list it may open without holding it
+// (ticket 122): the whole list (no person), or one person of it.
+export const giftListFollows = sqliteTable(
+  'gift_list_follows',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id')
+      .notNull()
+      .references(() => giftLists.id),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    listPersonId: text('list_person_id').references(() => giftListPeople.id),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    index('gift_list_follows_list_idx').on(t.listId),
+    index('gift_list_follows_account_idx').on(t.accountId),
+  ],
+);
+
 // One idea of a person on a list: a line of text and maybe a link.
 export const giftListIdeas = sqliteTable(
   'gift_list_ideas',
@@ -900,9 +1023,17 @@ export const news = sqliteTable(
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
     seenAt: text('seen_at'),
+    // Ticket 121: whether it may go by email (an email of its own goes
+    // for some kinds, none for others, the organiser may say no), and
+    // when it went; counted again, it may go again.
+    mailable: integer('mailable', { mode: 'boolean' }).notNull().default(true),
+    emailedAt: text('emailed_at'),
+    // Ticket 124: when it went to the phones of the account.
+    pushedAt: text('pushed_at'),
   },
   (t) => [
     index('news_account_idx').on(t.accountId, t.seenAt),
+    index('news_mail_idx').on(t.emailedAt, t.seenAt),
     index('news_target_idx').on(t.targetType, t.targetId),
   ],
 );
@@ -925,6 +1056,7 @@ export type FamilyMemberRow = typeof familyMembers.$inferSelect;
 export type GiftListRow = typeof giftLists.$inferSelect;
 export type GiftListIdeaRow = typeof giftListIdeas.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
+export type NewsRow = typeof news.$inferSelect;
 export type LoginLinkRow = typeof loginLinks.$inferSelect;
 export type SessionRow = typeof sessions.$inferSelect;
 export type PartyRow = typeof parties.$inferSelect;

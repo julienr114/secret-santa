@@ -1,19 +1,14 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { assignments, participations } from '#server/database/schema';
 import { listEditionPeople } from '#server/database/participations';
-import { santaNameForSubject } from '#server/database/editions';
 import { resultHelp } from '#server/http/hints';
 import { recordEvent } from '#server/database/audit';
 import { tellOrganisers } from '#server/database/newsEvents';
 import { markSeenByEmail } from '#server/database/news';
 import { requirePersonalLink } from '#server/http/personal';
-import { appUrl, dataKeyOf, nowIso } from '#server/http/context';
-import { notifyOrganizers } from '#server/http/notify';
+import { dataKeyOf, nowIso } from '#server/http/context';
 import { viewCounts } from '#server/database/notify';
-import {
-  buildAllViewedEmail,
-  isEveryoneViewed,
-} from '#server/utils/notifications';
+import { isEveryoneViewed } from '#server/utils/notifications';
 import { notFound, unwrap } from '#server/http/errors';
 import { avatarOf } from '#server/utils/avatars';
 import { decrypt } from '#server/utils/crypto';
@@ -81,27 +76,20 @@ export default defineEventHandler(async (event) => {
   // guess who gives to whom.
   if (viewCount === 1) {
     // The last one to look completes the edition: the organisers are told,
-    // in the app always (ticket 120), by email if they want it.
+    // in the app always (ticket 120), by email as each chose (ticket 121).
     const everyone = isEveryoneViewed(await viewCounts(db, edition.id));
     if (everyone) {
+      // By email as each organiser chose (ticket 121), if the Secret
+      // Santa wants it.
       await tellOrganisers(
         db,
-        { partyId: group.id, kind: 'all_viewed', targetId: edition.id },
+        {
+          partyId: group.id,
+          kind: 'all_viewed',
+          targetId: edition.id,
+          mailable: rules.notifyAllViewed,
+        },
         now,
-      );
-    }
-    if (rules.notifyAllViewed && everyone) {
-      const santaName = await santaNameForSubject(db, edition);
-      await notifyOrganizers({ db, event }, group.id, (locale) =>
-        buildAllViewedEmail(
-          {
-            groupName: group.name,
-            editionLabel: edition.label,
-            santaName,
-            link: appUrl(event, `/admin/${group.slug}/editions/${edition.id}`),
-          },
-          locale,
-        ),
       );
     }
     await recordEvent(db, {

@@ -21,6 +21,11 @@ export type Secrets = {
   /** The rate limiting bindings are on (off for the tests). */
   rateLimits: boolean;
   emailFrom: string;
+  /** The secret of the provider's webhook (ticket 130). */
+  resendWebhookSecret: string;
+  /** The VAPID keys of the app (ticket 124), empty when not set. */
+  vapidPublicKey: string;
+  vapidPrivateKey: string;
 };
 
 /**
@@ -41,6 +46,9 @@ export const secretsOf = (event?: H3Event): Secrets => {
       Number(config.linkRequestsPerEmail) || LINK_LIMITS.perEmail,
     rateLimits: String(config.rateLimits) !== 'off',
     emailFrom: String(config.emailFrom ?? ''),
+    resendWebhookSecret: String(config.resendWebhookSecret ?? ''),
+    vapidPublicKey: String(config.public.vapidPublicKey ?? ''),
+    vapidPrivateKey: String(config.vapidPrivateKey ?? ''),
   };
 };
 

@@ -25,7 +25,14 @@ const MOVED = {
 } as const;
 
 /** What under /admin is not a group. */
-const NOT_A_GROUP = ['comptes', 'demandes', 'groupes', 'guide-de-style'];
+const NOT_A_GROUP = [
+  'comptes',
+  'demandes',
+  'groupes',
+  'guide-de-style',
+  // Ticket 130.
+  'envois-signales',
+];
 
 /**
  * Where an old address leads now: the page of a group to its event

@@ -57,11 +57,17 @@ export const rateLimiterFor = (
   if (path.startsWith('/api/l/')) return writes ? 'write' : null;
   if (path.startsWith('/api/invite/')) return 'ask';
   if (path.startsWith('/api/invitations/')) return 'ask';
+  // The links at the foot of the emails, without a session (ticket 130).
+  if (path.startsWith('/api/stop/') || path.startsWith('/api/report-send/')) {
+    return 'ask';
+  }
   if (
     writes &&
     [
       '/api/auth/link',
       '/api/auth/confirm',
+      // Ticket 123: the six digits of the installed app.
+      '/api/auth/code',
       '/api/auth/group-requests',
     ].includes(path)
   ) {

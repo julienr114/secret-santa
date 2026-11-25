@@ -8,6 +8,8 @@ export default {
     emailHelp: 'Pas de mot de passe : tu reçois un lien valable 15 minutes.',
     emailInvalid: 'Cette adresse a l’air incomplète',
     submit: 'Recevoir un lien de connexion',
+    // The installed app (ticket 123).
+    submitCode: 'Recevoir un code',
     sentTitle: 'Regarde ta boîte mail',
     again: 'Utiliser une autre adresse',
     devLink: 'Mode développement : ouvrir le lien de connexion',
@@ -52,6 +54,35 @@ export default {
       draw_cancelled: 'Le tirage a été annulé le {date}.',
       several: '{count} alertes depuis ta dernière visite.',
     },
+  },
+  // « Ne plus recevoir d'emails » and « Signaler cet envoi » (ticket 130,
+  // StopDemande, StopConfirme).
+  stop: {
+    pageTitle: 'Ne plus recevoir d’emails',
+    title: 'Ne plus recevoir d’emails ?',
+    toBefore: 'Under the Tree n’écrira plus à',
+    toAfter:
+      ', quel que soit l’événement, la liste ou la personne qui t’ajoute.',
+    links:
+      'Tes liens personnels continuent de marcher : on peut te les envoyer autrement.',
+    seen: 'Ceux qui saisissent ton adresse verront que tu as demandé à ne plus recevoir d’emails. Ils ne sauront ni quand ni pourquoi.',
+    except:
+      'Une seule exception : l’email de connexion, quand tu le demandes toi-même.',
+    yes: 'Oui, ne plus m’écrire',
+    no: 'Non, je garde les emails',
+    doneTitle: 'C’est noté',
+    doneBefore: 'Under the Tree n’écrira plus à',
+    back: 'Tu changes d’avis ? Reviens sur cette page par le lien de n’importe quel ancien email.',
+    cancel: 'Annuler : je veux bien les emails',
+    unknown: 'Ce lien ne mène nulle part.',
+  },
+  report: {
+    pageTitle: 'Signaler cet envoi',
+    title: 'Signaler cet envoi ?',
+    body: 'Under the Tree regardera qui a envoyé cet email, et pourra couper ses envois. Rien ne dit que c’est toi qui l’as signalé.',
+    send: 'Signaler',
+    doneTitle: 'Merci',
+    done: 'C’est noté : l’envoi sera regardé.',
   },
   admin: {
     accountsTitle: 'Comptes',
@@ -118,6 +149,36 @@ export default {
     emergency: 'En cas d’urgence',
     pauseSecretSantas: 'Suspendre les nouveaux Secret Santa',
     pauseSecretSantasHelp: 'Ceux qui existent continuent',
+    // Ticket 129 (V3Admin).
+    pauseEmails: 'Suspendre les emails',
+    pauseEmailsHelp: 'Plus aucun email ne part, sauf les liens de connexion',
+    pauseSignups: 'Suspendre les inscriptions',
+    pauseSignupsHelp: 'Ni nouveau compte, ni nouvel événement',
+    emergencyHint:
+      'Les emails se suspendent tout seuls quand ceux du mois atteignent leur plafond.',
+    rateLimited: 'Requêtes refusées pour débit, aujourd’hui',
+    loginFailed: 'Connexions échouées, aujourd’hui',
+    emailsRejected: 'Emails rejetés, aujourd’hui',
+    serverErrors: 'Erreurs du serveur, aujourd’hui',
+    refused: 'Adresses qui ont refusé les emails',
+    reportedSends: 'Envois signalés',
+    reportedTitle: 'Envois signalés',
+    reportedNone: 'Aucun envoi signalé.',
+    reportedCount: {
+      one: '{count} signalement · le dernier le {date}',
+      other: '{count} signalements · le dernier le {date}',
+    },
+    reportedBy: 'Envoyé par {who}',
+    reportedUnknown: 'un compte supprimé',
+    cutEmails: 'Couper ses emails',
+    cutEmailsHelp: 'Ce que ses organisateurs envoient ne part plus',
+    caps: 'Les plafonds',
+    cloudflare: 'Requêtes et dépense',
+    cloudflareHelp: 'Sur le tableau de bord de Cloudflare',
+    emailsDay: 'Emails, aujourd’hui',
+    emailsMonth: 'Emails, ce mois',
+    capValue: '{used} sur {cap}',
+    capsHint: 'À 70 % d’un plafond, un email te prévient.',
     members: { one: '{count} membre', other: '{count} membres' },
     draw: {
       preparing: 'à préparer',
@@ -176,6 +237,28 @@ export default {
     connectedOn: 'Connecté le {date}',
     revokeShort: 'Déconnecter',
     logoutHere: 'Se déconnecter de cet appareil',
+  },
+  // The email of a login code (ticket 123, ConnexionCodeEmail).
+  codeEmail: {
+    subject: 'Ton code Under the Tree : {code}',
+    hello: 'Bonjour,',
+    intro: 'Voici ton code pour te connecter dans l’application :',
+    validity:
+      'Il est valable 15 minutes et ne sert qu’une fois, sur le téléphone qui l’a demandé.',
+    ignore: 'Si ce n’est pas toi, ignore ce message.',
+    why: 'Tu reçois cet email parce que tu viens de le demander.',
+  },
+  // The screen of the code (ticket 123, ConnexionCode).
+  code: {
+    title: 'Tape ton code',
+    sentBefore: 'Six chiffres envoyés à',
+    sentAfter: '. Le code est valable 15 minutes.',
+    digit: 'Chiffre {n} sur 6',
+    label: 'Le code reçu par email',
+    again: 'Renvoyer un code',
+    sentAgain: 'Un nouveau code est parti.',
+    other: 'Utiliser une autre adresse',
+    checking: 'Vérification…',
   },
   email: {
     subject: 'Ton lien de connexion à Under the Tree',

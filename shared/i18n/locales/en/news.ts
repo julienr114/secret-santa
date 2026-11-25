@@ -6,6 +6,29 @@ export default {
   today: 'Today, {time}',
   yesterday: 'Yesterday, {time}',
   close: 'Close',
+  settings: {
+    title: 'Notify me',
+    choose: 'Choose what notifies me',
+    byEmail: 'By email',
+    summary: 'A summary in the morning',
+    summaryHint: 'Just one email, with what you haven’t seen yet.',
+    instant: 'Right away',
+    instantHint: 'An email for each piece of news.',
+    none: 'No email',
+    noneHint: 'Except to log in.',
+    noneDiffers:
+      'An organiser can still write to you themselves. To receive nothing at all, even from them: “Stop receiving emails”, at the bottom of every email.',
+    blocked:
+      'You asked to stop receiving emails from Under the Tree: none reach you, except to log in.',
+    unblock: 'Receive emails again',
+    following: 'What I follow',
+    wholeList: 'The whole list',
+    unfollow: 'Stop following',
+    unfollowList: 'Stop following {title}',
+    urgent: 'What’s urgent',
+    urgentText:
+      'Your envelope is waiting, an invitation, someone asking you for gift ideas: with the summary, those emails still go right away, unless you’ve already seen the news.',
+  },
   kind: {
     envelope: 'The draw is done: your envelope is waiting',
     hint_request: 'Someone is asking you for gift ideas',
@@ -31,5 +54,14 @@ export default {
     santa_added: '{name} added you to the Secret Santa',
     game_open: 'Devine qui: your turn',
     list_shared: '{name} shared their list with you',
+    followed_ideas: {
+      one: '{count} new idea for {name}',
+      other: '{count} new ideas for {name}',
+    },
+    followed_ideasList: {
+      one: '{count} new idea on the list',
+      other: '{count} new ideas on the list',
+    },
+    followed_person: '{name} is on the list',
   },
 };

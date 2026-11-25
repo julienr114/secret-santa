@@ -4,6 +4,78 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
+### Q-041 — Les notifications du téléphone : chaque nouveauté, ou ce qui presse ? (ticket 124)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. C'est codé comme B, et changer est petit (une condition dans `server/database/push.ts`).
+- **Ce qu'on a trouvé** : le README 22.22 et la maquette `NotifReglage` disent de l'interrupteur « Notifications » : « Tout de suite, à chaque nouveauté ». Le ticket 124 dit « une notification du téléphone par nouveauté **qui presse** », et `NotifAutoriser` promet « Seulement ce qui te concerne : ton enveloppe, une invitation, une demande d'idées ».
+- **Les choix** :
+  - A. Chaque nouveauté (une coche, un cadeau rejoint, quelqu'un qui s'inscrit, de nouvelles idées sur une liste suivie…), comme le README.
+  - B. Ce qui presse seulement (l'enveloppe, une invitation à tenir une liste, une demande d'idées, le rappel du jour J pour l'organisateur), comme le ticket et `NotifAutoriser` ; le reste reste dans l'application et le résumé.
+- **Ce que je ferais** : B, codé ainsi : c'est ce que promet le panneau qui demande la permission, et le téléphone sonne moins. L'interrupteur dit « Tout de suite, quand quelque chose presse ».
+- **Réponse de Julien (25 novembre 2026)** : B, ce qui presse seulement, comme c'est codé. L'interrupteur dit « Tout de suite, quand quelque chose presse ». La conception met la maquette `NotifReglage` au même texte ; le README 22.22 est à corriger par celui qui ferme le ticket 124.
+
+
+### Q-040 — « Suspendre les inscriptions » dit qu'une adresse n'a pas de compte (ticket 129)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. C'est codé comme A.
+- **Ce qu'on a trouvé** : demander un lien de connexion ne dit jamais si l'adresse a un compte (README 22.5). Avec les inscriptions suspendues, une adresse inconnue reçoit « Les inscriptions sont en pause », et une adresse connue reçoit son lien : la réponse dit alors si l'adresse a un compte, le temps de la pause.
+- **Les choix** :
+  - A. Garder ainsi : c'est une pause d'urgence, courte, et la personne doit savoir pourquoi rien n'arrive.
+  - B. La même réponse pour tous (« lien envoyé »), mais aucun email pour une adresse inconnue : rien ne se dit, et la personne attend un email qui ne vient pas.
+- **Ce que je ferais** : A.
+- **Réponse de Julien (25 novembre 2026)** : A, garder ce qui est codé. La pause est rare et courte, et la personne doit savoir pourquoi rien n'arrive.
+
+
+### Q-039 — Les jauges « Requêtes, aujourd'hui » et « Dépense, ce mois » : d'où viennent les chiffres ? (ticket 129)
+
+- **Pour** : Julien
+- **Ce qui bloque** : deux jauges des plafonds de `V3Admin` ne sont pas là. Le reste du ticket est fait.
+- **Ce qu'on a trouvé** : l'application ne voit ni le nombre de requêtes du jour ni la dépense du mois : ce sont des chiffres de Cloudflare. Les compter nous-mêmes voudrait dire une écriture en base à chaque requête, donc une dépense de plus. Ceux de Cloudflare se lisent par son API d'analyse (GraphQL), avec un jeton en lecture seule gardé en secret.
+- **Les choix** :
+  - A. Un jeton Cloudflare en lecture seule (`NUXT_CLOUDFLARE_API_TOKEN`), que Julien crée. Le tableau de bord lit les deux chiffres, au plus une fois par heure. À faire avec le ticket 127, le reste du tableau de bord.
+  - B. Pas de jauge pour ces deux chiffres : la limite de dépense et l'alerte de budget de Cloudflare (la case de Julien) protègent déjà. Une ligne du tableau de bord mène au tableau de bord de Cloudflare.
+  - C. Compter les requêtes en base : non recommandé (une écriture par requête).
+- **Ce que je ferais** : B tout de suite, A avec le ticket 127.
+- **Réponse de Julien (25 novembre 2026)** : B tout de suite, A avec le ticket 127. Les deux jauges restent de côté et une ligne du tableau de bord mène à celui de Cloudflare : le 129 peut se fermer là-dessus. Le jeton en lecture seule (`NUXT_CLOUDFLARE_API_TOKEN`), que Julien créera, vient avec le ticket 127 ; jamais de compte en base à chaque requête.
+
+
+
+### Q-038 — Une date dans un seul champ : quelle piste ? (ticket 160)
+
+- **Pour** : Julien (le choix), puis la conception (maquette et spec)
+- **Ce qui bloque** : tout le ticket 160 après son premier temps. Les trois listes restent en place.
+- **Ce qu'on a trouvé** : essayé sur une page d'essai, jamais commitée, avec Chrome (ordinateur et téléphone Android simulé) et WebKit, le moteur de Safari (iPhone simulé), en français, anglais et allemand. **Pas sur un vrai téléphone** : je n'en ai pas. La simulation ne montre ni le clavier qui s'ouvre, ni le calendrier ou les roulettes d'iOS et d'Android. Ce point reste à faire à la main : ouvrir les deux champs sur ton iPhone et sur un Android.
+  - **`UInputDate`** (captures `captures/160-webkit-iphone-fr.jpg`, `160-chromium-android-en.jpg`, `160-chromium-ordi-de.jpg`) :
+    - **l'ordre de la langue** : jour/mois/année en français, mois/jour/année en anglais, jour.mois.année en allemand ;
+    - **le clavier** : chaque segment demande des chiffres (`inputmode="numeric"`), donc le pavé numérique sur un téléphone, en principe ;
+    - **taper d'une traite** : au clavier seul, « 20122026 » donne le 20 décembre 2026, en passant seul d'un segment au suivant. Ça marche aussi avec des barres, « 20/12/2026 ». Une naissance, « 15071958 », marche aussi. Tab va au champ suivant, et Retour arrière vide les segments un à un ;
+    - **un piège** : un mois qui commence par 1 attend un second chiffre (ce peut être 10, 11, 12). Pour janvier, « 5 1 2027 » donne donc le 5 décembre 127 ; il faut taper « 01 », une barre ou la flèche droite ;
+    - **une date impossible** : le 31 février devient le 28 février, sans rien dire ;
+    - **hors des bornes** : une date au-delà de `max-value` (2035 pour un événement) s'affiche, marquée invalide, et passe quand même dans la valeur. Il faudrait la refuser nous-mêmes ;
+    - **pour un lecteur d'écran** : trois champs numériques nommés « jour », « mois », « année », traduits dans les trois langues par Nuxt UI. L'ensemble n'a pas de nom : on lui donnerait le nôtre.
+  - **`<input type="date">`** : Chrome sur ordinateur se tape comme les segments (« 20122026 » suffit), avec une icône de calendrier au bout. Mais il suit la langue du navigateur, pas celle de l'application : en allemand, il dit 20/12/2026. Dans WebKit, ma frappe n'a rien rempli. Sur iPhone, d'après la décision du 20 novembre, il ouvre un calendrier.
+- **Les choix** :
+  - A. `UInputDate` partout, habillé comme nos champs : on tape sur un ordinateur, et au pavé numérique sur un téléphone. Pas de roulettes.
+  - B. A sur un ordinateur, plus, sur un téléphone, une ligne « 20 décembre 2026 » qui ouvre notre panneau à trois roulettes. C'est un composant à écrire et à rendre accessible (clavier, lecteur d'écran, `prefers-reduced-motion`), plus deux façons de faire selon l'écran, à tester toutes les deux.
+  - C. `<input type="date">` natif : rien à écrire, mais la langue du navigateur, un calendrier sur iPhone, et un comportement qui change d'un navigateur à l'autre.
+- **Ce que je ferais** : A. Un seul champ, le même partout, qui suit la langue de l'application. Sur un téléphone, le pavé numérique tape la date aussi vite que trois roulettes. Les deux défauts se règlent chez nous : les bornes, en refusant la date hors limites, et une ligne de date en toutes lettres sous le champ (« 20 décembre 2026 ») pour qu'on voie ce qu'on a tapé. B reste possible plus tard, par-dessus A. À vérifier d'abord sur ton iPhone : le pavé numérique s'ouvre-t-il bien ?
+- **Réponse de Julien (24 novembre 2026)** : A. `UInputDate` partout. La conception a mis à jour la spec (`docs/spec/v3/regles-d-ecran.md`, « Les dates »), la décision (`docs/decisions/2026-11-24-une-date-dans-un-seul-champ.md`) et les deux maquettes (`V3FeteNouvelle`, `ProcheNaissance`). À retenir pour coder :
+  - le champ est habillé comme les autres champs du formulaire ; dans un formulaire tout en lignes, c'est une ligne qui s'écrit sur place ;
+  - **la date en toutes lettres sous le champ**, dès que les trois segments sont remplis (« lundi 14 décembre 2026 » pour un événement, « 14 mars 2020 » pour une naissance) ;
+  - une date hors des bornes est refusée par nous ;
+  - le groupe porte le nom du champ pour un lecteur d'écran ;
+  - pas de roulettes dans ce ticket.
+  - **Reste à Julien** : l'essai sur son iPhone (le pavé numérique s'ouvre-t-il ?). Il a choisi A sans l'avoir fait ; si le pavé ne s'ouvre pas, le dire ici avant de fermer le ticket.
+  - **Julien, 25 novembre 2026** : « c'est bon ». La conception le lit comme : l'essai sur son iPhone est fait et le pavé numérique s'ouvre. Elle lui a demandé de le confirmer ; le ticket 160 peut se fermer s'il ne dit pas le contraire.
+
+
+
 ### Q-037 — Quand « Lier à un Secret Santa » est-il dans le menu ? (ticket 155)
 
 - **Pour** : Julien, ou la conception
@@ -13,8 +85,8 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. La spec : l'entrée est là dès qu'un de mes Secret Santa tirés de l'année n'est pas lié à cette liste, lié ailleurs ou non.
   - B. Le ticket : seulement quand l'un d'eux n'a aucune liste ; on ne déplace un lien que depuis la liste qui l'a déjà (par sa pastille) ou depuis la page du Secret Santa.
 - **Ce que je ferais** : A, codé ainsi.
+- **Réponse de la conception (24 novembre 2026)** : A. C'est la spec qui fait foi : le panneau sert à lier **et à déplacer**, donc l'entrée du menu est là dès qu'un de mes Secret Santa tirés de l'année n'est pas lié à cette liste, qu'il soit lié ailleurs ou non. Le ticket 155 disait « ne change pas » à tort : il reprenait la condition d'avant le panneau.
 
-## Réponses
 
 ### Q-036 — « Tu es invité » : une tournure neutre ? (ticket 145)
 

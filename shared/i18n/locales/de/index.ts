@@ -14,6 +14,7 @@ import party from './party';
 import home from './home';
 import lines from './lines';
 import news from './news';
+import phone from './phone';
 
 export default {
   common,
@@ -32,4 +33,5 @@ export default {
   home,
   lines,
   news,
+  phone,
 };

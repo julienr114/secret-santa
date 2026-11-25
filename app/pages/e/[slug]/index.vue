@@ -126,10 +126,7 @@ const onLeave = () =>
               :class="categoryTint(data.party.category)"
               data-testid="party-category"
             >
-              <UiEmoji
-                v-if="partyEmoji(data.party)"
-                :emoji="partyEmoji(data.party)!"
-              />
+              <UiEmoji :emoji="partyEmoji(data.party)" />
               {{ tk(`party.category.${data.party.category}`)
               }}<template v-if="data.party.recurring">
                 · {{ t('party.everyYear') }}</template

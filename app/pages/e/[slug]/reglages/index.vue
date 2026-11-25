@@ -54,7 +54,7 @@ const categoryOpen = ref(false);
 const categoryChoices = computed(() =>
   PARTY_CATEGORIES.map((category) => ({
     value: category,
-    label: `${CATEGORY_DEFAULTS[category].emoji ?? '✨'} ${tk(`party.category.${category}`)}`,
+    label: `${CATEGORY_DEFAULTS[category].emoji} ${tk(`party.category.${category}`)}`,
   })),
 );
 
@@ -132,7 +132,7 @@ const deleting = ref(false);
           v-if="data"
           :title="t('party.reglages.category')"
           :value="tk(`party.category.${data.party.category}`)"
-          :emoji="CATEGORY_DEFAULTS[data.party.category].emoji ?? '✨'"
+          :emoji="CATEGORY_DEFAULTS[data.party.category].emoji"
           :busy="update.isPending.value"
           :on-click="() => (categoryOpen = true)"
         />

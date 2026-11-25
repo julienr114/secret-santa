@@ -34,12 +34,13 @@ describe('categories', () => {
     expect(categoryOfEmoji('💍')).toBe('wedding');
     expect(categoryOfEmoji('🏡')).toBe('housewarming');
     expect(categoryOfEmoji('❄️')).toBe('other');
+    expect(categoryOfEmoji('✨')).toBe('other');
   });
 
   it('gives the party its own icon, else its category’s', () => {
     expect(partyEmoji({ category: 'christmas', iconEmoji: null })).toBe('🎄');
     expect(partyEmoji({ category: 'christmas', iconEmoji: '⭐' })).toBe('⭐');
-    expect(partyEmoji({ category: 'other', iconEmoji: null })).toBeNull();
+    expect(partyEmoji({ category: 'other', iconEmoji: null })).toBe('✨');
   });
 });
 

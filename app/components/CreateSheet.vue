@@ -170,10 +170,7 @@ const onContinue = () =>
             :class="categoryTint(event.category)"
             aria-hidden="true"
           >
-            <UiEmoji
-              v-if="partyEmoji(event)"
-              :emoji="partyEmoji(event) ?? ''"
-            />
+            <UiEmoji :emoji="partyEmoji(event)" />
           </span>
           <span class="flex min-w-0 grow flex-col gap-px">
             <span class="font-semibold">{{ event.name }}</span>
@@ -243,10 +240,7 @@ const onContinue = () =>
             :class="categoryTint(party.category)"
             aria-hidden="true"
           >
-            <UiEmoji
-              v-if="partyEmoji(party)"
-              :emoji="partyEmoji(party) ?? ''"
-            />
+            <UiEmoji :emoji="partyEmoji(party)" />
           </span>
           <span class="flex min-w-0 grow flex-col gap-px">
             <span class="font-semibold">{{ party.name }}</span>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContextPart } from '~/components/ui/PageContext.vue';
-import { CATEGORY_DEFAULTS } from '#shared/utils/categories';
+import { partyEmoji } from '#shared/utils/categories';
 import { peopleToTake } from '#shared/utils/take';
 import { usePartyCandidatesQuery } from '~/composables/queries/useParty';
 
@@ -95,11 +95,7 @@ const choose = (id: string, on: boolean) => {
         :data-testid="`take-from-${party.id}`"
         @click="toggleFrom(party.id)"
       >
-        <UiEmoji
-          :emoji="
-            party.iconEmoji ?? CATEGORY_DEFAULTS[party.category].emoji ?? '✨'
-          "
-        />
+        <UiEmoji :emoji="partyEmoji(party)" />
         {{ party.name }}
       </button>
     </div>

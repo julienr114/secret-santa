@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CATEGORY_DEFAULTS } from '#shared/utils/categories';
+import { partyEmoji } from '#shared/utils/categories';
 import { peopleToTake } from '#shared/utils/take';
 import { usePartyCandidatesQuery } from '~/composables/queries/useParty';
 import {
@@ -115,11 +115,7 @@ const onTake = () =>
           :data-testid="`take-from-${party.id}`"
           @click="choose(party.id)"
         >
-          <UiEmoji
-            :emoji="
-              party.iconEmoji ?? CATEGORY_DEFAULTS[party.category].emoji ?? '✨'
-            "
-          />
+          <UiEmoji :emoji="partyEmoji(party)" />
           {{ party.name }}
         </button>
       </div>

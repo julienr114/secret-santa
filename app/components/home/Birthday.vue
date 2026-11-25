@@ -8,7 +8,7 @@ import { formatDay } from '~/utils/labels';
 // occasion ? » already filled.
 const props = defineProps<{ birthday: ComingBirthday }>();
 const { t, locale } = useT();
-const emoji = CATEGORY_DEFAULTS.birthday.emoji!;
+const emoji = CATEGORY_DEFAULTS.birthday.emoji;
 const when = computed(() =>
   [
     formatDay(`${props.birthday.date}T12:00:00Z`, locale.value),

@@ -137,8 +137,7 @@ const submit = () => {
     },
   );
 };
-const emojiOf = (category: PartyCategory) =>
-  CATEGORY_DEFAULTS[category].emoji ?? '✨';
+const emojiOf = (category: PartyCategory) => CATEGORY_DEFAULTS[category].emoji;
 </script>
 
 <template>

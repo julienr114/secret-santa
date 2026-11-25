@@ -17,8 +17,8 @@ export type PartyCategory = (typeof PARTY_CATEGORIES)[number];
 export type PartyForm = 'everyone' | 'someone' | 'household' | 'none';
 
 export type CategoryDefaults = {
-  /** The icon of the party and of its lists; null: chosen by hand. */
-  emoji: string | null;
+  /** The icon of the party and of its lists (ticket 176: ✨ for « other »). */
+  emoji: string;
   form: PartyForm;
   /** The usual day as `MM-DD`; null: entered by hand, or a birth date. */
   usualDate: string | null;
@@ -49,7 +49,7 @@ export const CATEGORY_DEFAULTS: Readonly<
     usualDate: null,
     recurring: false,
   },
-  other: { emoji: null, form: 'none', usualDate: null, recurring: null },
+  other: { emoji: '✨', form: 'none', usualDate: null, recurring: null },
 };
 
 /**
@@ -63,14 +63,14 @@ export const categoryOfEmoji = (emoji: string): PartyCategory =>
   'other';
 
 /**
- * The icon of a party: its own, else its category's.
+ * The icon of a party: its own, else its category's (✨ for « other »).
  * @param party - The category and the emoji chosen, if any.
- * @returns The emoji, or null when neither gives one.
+ * @returns The emoji.
  */
 export const partyEmoji = (party: {
   category: PartyCategory;
   iconEmoji: string | null;
-}): string | null => party.iconEmoji ?? CATEGORY_DEFAULTS[party.category].emoji;
+}): string => party.iconEmoji ?? CATEGORY_DEFAULTS[party.category].emoji;
 
 /**
  * The next time a day of the year comes, today included.

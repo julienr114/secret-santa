@@ -67,10 +67,7 @@ const games = computed(
             :class="categoryTint(data.party.category)"
             data-testid="past-year-name"
           >
-            <UiEmoji
-              v-if="partyEmoji(data.party)"
-              :emoji="partyEmoji(data.party)!"
-            />
+            <UiEmoji :emoji="partyEmoji(data.party)" />
             {{ title }}
           </span>
           <UiPageTitle>{{ data.party.name }}</UiPageTitle>

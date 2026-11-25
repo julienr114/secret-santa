@@ -399,6 +399,11 @@ export type PastYearPage = {
   };
   year: number;
   date: string | null;
+  /**
+   * The settings of an event over for good, for its organiser: made to
+   * come back each year, it lives again (Julien, 25 November 2026).
+   */
+  settings: string | null;
   /** Its Secret Santa I took part in or organised. */
   secretSantas: {
     id: string;
@@ -446,7 +451,8 @@ export const loadPastYear = async (
 ): Promise<PastYearPage | null> => {
   const { party, account, role, year, dataKey } = input;
   const loaded: LoadedYear[] = await loadYears(db, [party.id]);
-  const over = timelineOf(party, loaded).past.find((row) => row.year === year);
+  const timeline = timelineOf(party, loaded);
+  const over = timeline.past.find((row) => row.year === year);
   if (!over) return null;
   const santas = loaded.find((row) => row.year === year)?.santas ?? [];
   const [people, mine, games] = await Promise.all([
@@ -535,6 +541,10 @@ export const loadPastYear = async (
     nowIso(),
   );
   return {
+    settings:
+      role === 'organiser' && timeline.current === null
+        ? `/e/${party.slug}/reglages`
+        : null,
     party: {
       slug: party.slug,
       name: party.name,

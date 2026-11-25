@@ -107,6 +107,7 @@ export default {
   // Ticket 129: the emergency switches.
   emails_paused:
     'L’envoi d’emails est en pause pour tout le monde. Envoie à chacun son lien depuis ton téléphone.',
+  date_past: 'Une date à partir d’aujourd’hui.',
   signups_paused:
     'Les inscriptions sont en pause : pas de nouveau compte ni de nouvel événement pour l’instant. Reviens dans quelques jours.',
   already_member:

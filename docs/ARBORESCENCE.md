@@ -169,7 +169,7 @@ Les anciennes adresses du groupe (`/admin/[groupe]`, `…/personnes`, `…/regla
 |---|---|---|---|
 | Pour quelle occasion ? (« Continuer » crée l'événement, puis mène au Secret Santa ou à la liste ; plus d'étape « membres », ticket 117) | `/e/nouvelle` | Accueil | |
 | La fête | `/e/[fête]` | Accueil ; « Quoi de neuf » quand on en vient | Quitter cette fête (puis l'accueil) |
-| Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes) | `/e/[fête]/annees/[année]` | D'où l'on vient : Les événements passés ou la fête ; sinon la fête si l'adresse le dit (`?depuis=evenement`, ses « Années passées »), sinon Les événements passés | |
+| Une année passée (lecture seule ; ses lignes ouvrent ma page du Secret Santa ou l'édition, le palmarès, les listes ; pour l'organisateur d'un événement archivé, « Réglages de l'événement » ouvre `/e/[fête]/reglages`) | `/e/[fête]/annees/[année]` | D'où l'on vient : Les événements passés ou la fête ; sinon la fête si l'adresse le dit (`?depuis=evenement`, ses « Années passées »), sinon Les événements passés | |
 | Membres (« Ajouter quelqu'un », tickets 117 et 158 : avec un seul endroit, il ouvre Choisir les participants du Secret Santa en préparation, ou Inviter quelqu'un de ma liste ; avec plusieurs, un panneau du bas demande où ; sans aucun, « Créer un Secret Santa » ouvre `/admin/[fête]/editions/nouvelle` et « Créer une liste de cadeaux » `/listes/nouvelle?pour=[fête]` ; complet, l'état prend sa place) | `/e/[fête]/membres` | La fête | |
 | Une personne | `/e/[fête]/membres/[id]` | Membres | Mon icône, exclusion |
 | (ancienne adresse) | `/e/[fête]/membres/nouvelle` | mène à Membres (`invitationPathOf`, ticket 117) | |

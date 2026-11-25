@@ -98,6 +98,7 @@ export default {
     'New Secret Santas are paused. Those that exist carry on.',
   emails_paused:
     'Sending emails is paused for everyone. Send each person their link from your phone.',
+  date_past: 'A date from today on.',
   signups_paused:
     'Sign-ups are paused: no new account or new event for now. Come back in a few days.',
   already_member:

@@ -107,6 +107,7 @@ export default {
     'Neue Wichteln sind pausiert. Die bestehenden laufen weiter.',
   emails_paused:
     'Das Senden von E-Mails ist für alle pausiert. Schick allen ihren Link von deinem Handy aus.',
+  date_past: 'Ein Datum ab heute.',
   signups_paused:
     'Anmeldungen sind pausiert: vorerst kein neues Konto und keine neue Veranstaltung. Komm in ein paar Tagen wieder.',
   already_member:

@@ -7,7 +7,8 @@ import { categoryTint } from '~/utils/categories';
 // passée », V3FeteAnneePassee): the name of the year, the event, its day
 // that year, without a countdown; its Secret Santa with whom I gave to,
 // « Devine qui » when it was played; its lists. Read only: nothing to
-// create, nothing to set, no « Quitter ». « Retour » leads to « Les
+// create, no « Quitter »; but for an event over for good, its organiser
+// reaches its settings, to make it come back each year. « Retour » leads to « Les
 // événements passés », or to the event when I came from it
 // (docs/spec/v3/navigation.md).
 definePageMeta({ middleware: 'admin', layout: 'admin' });
@@ -126,6 +127,19 @@ const games = computed(
             :title="words.part(list.title)"
             :subtitle="listText(list)"
             :to="list.to"
+          />
+        </UiList>
+
+        <!-- An event over for good: its organiser may make it come back
+             each year (Julien, 25 November 2026). -->
+        <UiList v-if="data.settings">
+          <UiListItem
+            icon="i-lucide-settings"
+            icon-tone="neutral"
+            bare-icon
+            :title="t('party.settings')"
+            :to="data.settings"
+            data-testid="past-year-settings"
           />
         </UiList>
       </template>

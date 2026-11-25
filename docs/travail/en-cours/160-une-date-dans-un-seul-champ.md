@@ -67,3 +67,9 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 - **Une année datée par erreur se corrige** (`reopensYear`) : seulement la dernière année de l'événement, seulement tant qu'aucun de ses Secret Santa n'est tiré, et seulement vers un jour à venir de la même année. Les réglages de l'événement, la création d'un Secret Santa et le changement de sa date la rouvrent.
 - **La date d'un Secret Santa, dans ses réglages**, se lit avec son année : « 11 décembre 2026 ».
 - Tests : `years.test.ts`, `dateField.test.ts`, et un parcours dans `dates.spec.ts`.
+
+**Suite, le même jour (Julien).**
+
+- **Un événement ne se crée pas dans le passé** : le champ le refuse, et le serveur aussi (`date_past`, avec un jour de marge pour les fuseaux).
+- **Un événement archivé** (passé pour de bon, sans retour chaque année) n'est plus proposé pour un nouveau Secret Santa. Depuis la page de son année, son organisateur rejoint ses réglages par la ligne « Réglages de l'événement » : il peut le faire revenir chaque année, ou corriger une date mise par erreur.
+- **La date d'un nouveau Secret Santa** reprenait déjà celle de l'événement. Une date passée la faisait passer à l'année suivante : c'était l'« année mal prise ». Les dates passées refusées, ce cas disparaît.

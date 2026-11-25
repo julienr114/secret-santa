@@ -1,4 +1,5 @@
 import { useDb } from '#server/database/client';
+import { isoAfter } from '#server/utils/accounts';
 import { refuseWhileSignupsPaused } from '#server/http/pauses';
 import { findAccountById } from '#server/database/accounts';
 import { isMyMember } from '#server/database/forWhom';
@@ -22,6 +23,11 @@ export default defineEventHandler(async (event) => {
   }
   // No new event while sign-ups are suspended (ticket 129).
   await refuseWhileSignupsPaused(db, account.isSuperAdmin);
+  // Never in the past (Julien, 25 November 2026): a day of margin for
+  // the time zones, the server counting in UTC.
+  if (body.date < isoAfter(nowIso(), -24 * 60 * 60 * 1000).slice(0, 10)) {
+    throw createError({ statusCode: 400, statusMessage: 'date_past' });
+  }
   if (
     body.forMemberId &&
     !(await isMyMember(db, account.id, body.forMemberId))

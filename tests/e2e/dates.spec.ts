@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { apiLogin, hydrated, typeDate } from './helpers';
+import { apiLogin, hydrated, seedSql, typeDate } from './helpers';
 
 // A date in one field (ticket 160, regles-d-ecran.md, « Les dates »):
 // typed in one go, the date in full under it, a date out of its years
@@ -84,23 +84,53 @@ test('the date of an event, from its settings, on its page', async ({
   await expect(page.getByTestId('party-date-row')).toContainText('21 juillet');
 });
 
-test('a Secret Santa is not in the past; a year dated by mistake is put right', async ({
+test('an event is not created in the past', async ({ page }) => {
+  await apiLogin(page.request, ME);
+  const year = new Date().getFullYear();
+  const refused = await page.request.post('/api/parties', {
+    data: {
+      category: 'other',
+      name: 'Trop tard',
+      date: `${year - 1}-06-20`,
+      recurring: false,
+    },
+  });
+  expect(refused.status()).toBe(400);
+  expect((await refused.json()).statusMessage).toBe('date_past');
+});
+
+test('an archived event: not offered for a Secret Santa, its settings reachable, its date put right', async ({
   page,
 }) => {
   await apiLogin(page.request, ME);
   const year = new Date().getFullYear();
   const today = new Date().toLocaleDateString('sv-SE');
-  // An event dated in the past by mistake (before this field refused it).
   const { slug } = await (
     await page.request.post('/api/parties', {
       data: {
         category: 'christmas',
-        name: 'Noël daté trop tôt',
-        date: `${year}-01-02`,
+        name: 'Noël archivé',
+        date: `${year}-12-31`,
         recurring: false,
       },
     })
   ).json();
+  // Dated in the past by mistake, before the field refused it: archived.
+  await seedSql(
+    `UPDATE party_years SET date = '${year}-01-02' WHERE party_id = (SELECT id FROM parties WHERE slug = '${slug}'); UPDATE parties SET usual_date = '01-02' WHERE slug = '${slug}';`,
+  );
+  // Not offered for a new Secret Santa.
+  const { parties } = await (
+    await page.request.get('/api/secret-santas/new')
+  ).json();
+  expect(parties.map((party: { slug: string }) => party.slug)).not.toContain(
+    slug,
+  );
+  // Its year page leads its organiser to its settings.
+  await page.goto(`/e/${slug}/annees/${year}`);
+  await hydrated(page);
+  await page.getByTestId('past-year-settings').click();
+  await expect(page).toHaveURL(new RegExp(`/e/${slug}/reglages$`));
   // The field refuses a date already past.
   await page.goto(`/e/${slug}/reglages/date`);
   await hydrated(page);
@@ -109,7 +139,7 @@ test('a Secret Santa is not in the past; a year dated by mistake is put right', 
     'Une date à partir d’aujourd’hui.',
   );
   await expect(page.getByTestId('party-date-validate')).toBeDisabled();
-  // A date to come puts it right: the year is open again.
+  // A date to come of its year puts it right: open again, offered again.
   const target = `${year}-12-31` >= today ? `${year}-12-31` : today;
   const fixed = await page.request.patch(`/api/parties/${slug}`, {
     data: { date: target },

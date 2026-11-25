@@ -8,10 +8,12 @@ import {
   secretSantas,
 } from './schema';
 import { isGroup } from './groups';
+import { loadYears, timelineOf } from './years';
 
 // « Pour quelle occasion ? » of a Secret Santa (docs/spec/v3/
 // accueil-et-creation.md): the parties I organise, never those where I am
-// only a member.
+// only a member, nor those over for good (Julien, 25 November 2026: an
+// event in « Les événements passés » is not offered).
 
 export type OrganisedParty = {
   slug: string;
@@ -41,13 +43,21 @@ export const listOrganisedParties = async (
       name: parties.name,
       category: parties.category,
       iconEmoji: parties.iconEmoji,
+      recurring: parties.recurring,
+      usualDate: parties.usualDate,
     })
     .from(partyOrganisers)
     .innerJoin(parties, eq(parties.id, partyOrganisers.partyId))
     .where(and(eq(partyOrganisers.accountId, accountId), isGroup))
     .orderBy(parties.name);
   if (rows.length === 0) return [];
-  const ids = rows.map((row) => row.id);
+  const loaded = await loadYears(
+    db,
+    rows.map((row) => row.id),
+  );
+  const open = rows.filter((row) => timelineOf(row, loaded).current !== null);
+  if (open.length === 0) return [];
+  const ids = open.map((row) => row.id);
   const [members, years, santas] = await Promise.all([
     db
       .select({ partyId: persons.partyId, n: count() })
@@ -70,7 +80,7 @@ export const listOrganisedParties = async (
     years.toReversed().map((year) => [year.partyId, year.id]),
   );
   const withSanta = new Set(santas.map((santa) => santa.yearId));
-  return rows.map(({ id, ...party }) => ({
+  return open.map(({ id, recurring: _r, usualDate: _u, ...party }) => ({
     ...party,
     members: membersOf.get(id) ?? 0,
     hasSecretSanta: withSanta.has(yearOf.get(id) ?? ''),

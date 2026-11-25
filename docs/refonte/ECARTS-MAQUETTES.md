@@ -402,3 +402,11 @@ Règle : une ligne s'ajoute ici dès qu'un écran codé s'écarte d'une maquette
 |---|---|---|
 | `V3FeteNouvelle`, `ProcheNaissance` | Le champ est `UInputDate` de Nuxt UI, habillé comme nos champs (52 px, l'arrondi de 14 px) ; ses segments se lisent « jour », « mois », « année » dans la langue de l'application. Une date hors de ses années (ou à venir, pour une naissance) remplace la date en toutes lettres par « Une date entre 2026 et 2028. » (ou « Une date déjà passée. »), en rouge, et « Valider » reste éteint. | Seul (la spec dit « refusée par nous », pas comment) |
 | — | La date d'un Secret Santa (depuis son suivi ou ses réglages), la date d'une liste, la date limite du lien d'invitation et la date de l'événement dans ses réglages ouvrent chacune **une page** (`AdminDatePage`), et non plus un calendrier dans un panneau : « le même champ partout », et un panneau ne porte jamais de champ (`regles-d-ecran.md`). Aucune maquette ne dessine ces pages : celle de `ProcheNaissance`, avec ce que disait le panneau sous le champ. | Seul (la spec) |
+
+## L'application installée (ticket 124)
+
+| Maquette | Ce que fait le code | Décidé par |
+|---|---|---|
+| `Installer` | Un panneau du bas, sur l'accueil ou depuis « Me prévenir », plutôt qu'une carte sur l'accueil ; « savoir tout de suite quand ton enveloppe t'attend » plutôt que « être prévenu » (tournure neutre). Sur Android, un seul bouton « Installer » à la place des trois gestes. | Seul |
+| `NotifAutoriser` | Titre « Des notifications sur ce téléphone ? » plutôt que « Être prévenu sur ce téléphone ? » (tournure neutre) ; « Tu pourras changer d'avis dans « Me prévenir » » plutôt que « dans « Mon compte » », là où est l'interrupteur. | Seul |
+| `NotifReglage` | « Sur ce téléphone » n'apparaît que sur un téléphone : « Installer l'application » dans un navigateur, l'interrupteur « Notifications » (« Tout de suite, quand quelque chose presse », Q-041) une fois installée ou là où le navigateur le permet. Pas de lien « Installer l'application sur un autre téléphone ». | Seul |

@@ -65,10 +65,14 @@ export default defineNuxtConfig({
     // The secret of the provider's webhook (« whsec_… »): its bounces and
     // complaints block the address (ticket 130). Without it, none is read.
     resendWebhookSecret: '',
+    // The notifications of the phone (ticket 124): the secret half of the
+    // app's VAPID key; its public half is in `public`. Without them, no
+    // phone can subscribe and nothing is sent.
+    vapidPrivateKey: '',
     emailFrom: 'Under the Tree <gardien@under-the-tree.party>',
     // 30 days; each session is also a row that can be revoked.
     session: { maxAge: 60 * 60 * 24 * 30, cookie: { sameSite: 'lax' } },
-    public: { baseUrl: '' },
+    public: { baseUrl: '', vapidPublicKey: '' },
   },
   css: ['~/assets/css/main.css'],
   // Outfit for the titles, DM Sans for the text (README 23.5), with the
@@ -172,6 +176,8 @@ export default defineNuxtConfig({
       // The tab icon: a tree under its star. SVG first, PNG for browsers
       // that do not take SVG icons, and a larger one for phone home screens.
       link: [
+        // Installable on the phone (ticket 124).
+        { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         {
           rel: 'icon',

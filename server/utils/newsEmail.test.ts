@@ -301,3 +301,45 @@ describe('the emails of a list I follow (ticket 122)', () => {
     ).not.toContain('Ne plus suivre');
   });
 });
+
+describe('the phone first (ticket 124)', () => {
+  const urgent = {
+    id: 'e',
+    accountId: 'hugo',
+    kind: 'envelope' as const,
+    level: 'urgent' as const,
+    mailable: true,
+    at: '2026-11-24T10:00:00.000Z',
+    mode: 'summary' as const,
+    summarySentOn: null,
+    phone: true,
+  };
+
+  it('emails what presses ten minutes after the phone was told', () => {
+    expect(
+      planNewsEmails(
+        [{ ...urgent, pushedAt: null }],
+        '2026-11-24T10:20:00.000Z',
+      ).single,
+    ).toEqual([]);
+    // A phone never told holds it thirty minutes at most.
+    expect(
+      planNewsEmails(
+        [{ ...urgent, pushedAt: null }],
+        '2026-11-24T10:30:00.000Z',
+      ).single.map((news) => news.id),
+    ).toEqual(['e']);
+    expect(
+      planNewsEmails(
+        [{ ...urgent, pushedAt: '2026-11-24T10:15:00.000Z' }],
+        '2026-11-24T10:20:00.000Z',
+      ).single,
+    ).toEqual([]);
+    expect(
+      planNewsEmails(
+        [{ ...urgent, pushedAt: '2026-11-24T10:15:00.000Z' }],
+        '2026-11-24T10:30:00.000Z',
+      ).single.map((news) => news.id),
+    ).toEqual(['e']);
+  });
+});

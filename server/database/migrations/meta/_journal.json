@@ -372,6 +372,13 @@
       "when": 1795550371688,
       "tag": "0052_v3_login_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "6",
+      "when": 1795596480637,
+      "tag": "0053_v3_push_subscriptions",
+      "breakpoints": true
     }
   ]
 }

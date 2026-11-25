@@ -4,7 +4,16 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
-Aucune.
+### Q-041 — Les notifications du téléphone : chaque nouveauté, ou ce qui presse ? (ticket 124)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien. C'est codé comme B, et changer est petit (une condition dans `server/database/push.ts`).
+- **Ce qu'on a trouvé** : le README 22.22 et la maquette `NotifReglage` disent de l'interrupteur « Notifications » : « Tout de suite, à chaque nouveauté ». Le ticket 124 dit « une notification du téléphone par nouveauté **qui presse** », et `NotifAutoriser` promet « Seulement ce qui te concerne : ton enveloppe, une invitation, une demande d'idées ».
+- **Les choix** :
+  - A. Chaque nouveauté (une coche, un cadeau rejoint, quelqu'un qui s'inscrit, de nouvelles idées sur une liste suivie…), comme le README.
+  - B. Ce qui presse seulement (l'enveloppe, une invitation à tenir une liste, une demande d'idées, le rappel du jour J pour l'organisateur), comme le ticket et `NotifAutoriser` ; le reste reste dans l'application et le résumé.
+- **Ce que je ferais** : B, codé ainsi : c'est ce que promet le panneau qui demande la permission, et le téléphone sonne moins. L'interrupteur dit « Tout de suite, quand quelque chose presse ».
+
 
 ## Réponses
 

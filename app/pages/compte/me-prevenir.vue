@@ -57,6 +57,40 @@ const onUnblock = async () => {
     unblocking.value = false;
   }
 };
+// « Sur ce téléphone » (ticket 124): install the app, or its
+// notifications, on this phone.
+const device = usePhone();
+const installOpen = ref(false);
+const notifyOpen = ref(false);
+const switching = ref(false);
+const refused = ref(false);
+/**
+ * Turns the notifications of this phone on (after our sheet and the
+ * phone's own question) or off.
+ * @param on - True to turn them on.
+ */
+const onNotifications = async (on: boolean) => {
+  if (on) {
+    notifyOpen.value = true;
+    return;
+  }
+  switching.value = true;
+  await device
+    .unsubscribe()
+    .catch((error) => toast.failed(errorMessage(error)));
+  switching.value = false;
+};
+const onEnable = async () => {
+  switching.value = true;
+  try {
+    refused.value = !(await device.subscribe());
+    notifyOpen.value = false;
+  } catch (error) {
+    toast.failed(errorMessage(error));
+  } finally {
+    switching.value = false;
+  }
+};
 const mode = computed({
   get: () => shown.value.emailNews ?? 'summary',
   set: (emailNews: EmailNews) => save({ emailNews }),
@@ -77,6 +111,44 @@ const mode = computed({
         />
         <UiPageTitle>{{ t('news.settings.title') }}</UiPageTitle>
       </div>
+      <!-- Ticket 124: on a phone only. -->
+      <UiList
+        v-if="
+          device.installWay.value ||
+          (device.pushReady.value && device.phone.value)
+        "
+        :title="t('phone.notify.section')"
+        :footer="refused ? t('phone.notify.refused') : undefined"
+        data-testid="this-phone"
+      >
+        <UiListItem
+          v-if="device.installWay.value"
+          icon="i-lucide-smartphone"
+          :title="t('phone.install.row')"
+          :on-click="() => (installOpen = true)"
+          data-testid="install-row"
+        />
+        <UiListItem
+          v-else
+          :checked="device.subscribed.value"
+          :title="t('phone.notify.switch')"
+          :subtitle="t('phone.notify.switchHint')"
+          :busy="switching"
+          data-testid="notify-switch"
+          @update:checked="(on) => onNotifications(Boolean(on))"
+        />
+      </UiList>
+      <PhoneInstallSheet
+        v-if="device.installWay.value"
+        v-model:open="installOpen"
+        :way="device.installWay.value"
+        @install="device.install().then(() => (installOpen = false))"
+      />
+      <PhoneNotifySheet
+        v-model:open="notifyOpen"
+        :busy="switching"
+        @enable="onEnable"
+      />
       <UiChoiceList
         v-model="mode"
         :choices="choices"

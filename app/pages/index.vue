@@ -11,6 +11,8 @@ const { loggedIn } = useUserSession();
     class="min-h-dvh pb-[calc(2rem+var(--tab-bar)+env(safe-area-inset-bottom))]"
   >
     <HomeDashboard />
+    <!-- Once: install the app, or its notifications (ticket 124). -->
+    <ClientOnly><PhoneOffers /></ClientOnly>
   </div>
   <HomeLanding v-else />
 </template>

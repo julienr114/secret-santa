@@ -15,6 +15,14 @@ const route = useRoute();
 const { user, loggedIn } = useUserSession();
 const newsCount = useNewsCountQuery(loggedIn);
 const unseen = computed(() => newsCount.data.value?.count ?? 0);
+// The same count on the icon of the installed app (ticket 124), where
+// the phone shows it.
+watch(unseen, (count) => {
+  if (import.meta.server || !('setAppBadge' in navigator)) return;
+  void (
+    count > 0 ? navigator.setAppBadge(count) : navigator.clearAppBadge()
+  ).catch(() => undefined);
+});
 watch(
   () => route.path,
   () => {

@@ -1,6 +1,6 @@
-import { and, asc, eq, inArray, isNull, ne, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 import type { Db } from './client';
-import { accounts, news } from './schema';
+import { accounts, news, pushSubscriptions } from './schema';
 import { newsSectionsOf, type NewsSection } from './newsPage';
 import {
   buildNewsEmail,
@@ -53,7 +53,12 @@ export const sendNewsEmails = async (
   const { now } = tools;
   const today = now.slice(0, 10);
   const waiting = await db
-    .select({ news, account: accounts })
+    .select({
+      news,
+      account: accounts,
+      // A phone of the account is told (ticket 124): what presses waits.
+      phone: sql<number>`exists (select 1 from ${pushSubscriptions} where ${pushSubscriptions.accountId} = ${accounts.id})`,
+    })
     .from(news)
     .innerJoin(accounts, eq(accounts.id, news.accountId))
     .where(
@@ -69,7 +74,7 @@ export const sendNewsEmails = async (
     .orderBy(asc(news.updatedAt))
     .limit(WAITING_READ);
   const plan = planNewsEmails(
-    waiting.map(({ news: row, account }) => ({
+    waiting.map(({ news: row, account, phone }) => ({
       id: row.id,
       accountId: row.accountId,
       kind: row.kind,
@@ -78,6 +83,8 @@ export const sendNewsEmails = async (
       at: row.updatedAt,
       mode: account.emailNews,
       summarySentOn: account.summarySentOn,
+      phone: Boolean(phone),
+      pushedAt: row.pushedAt,
     })),
     now,
   );

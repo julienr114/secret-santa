@@ -20,6 +20,21 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: 'retain-on-failure',
     locale: 'fr-FR',
+    // The offers of the home on a phone (ticket 124) are made once per
+    // phone: made already, so that they do not cover the screens tested.
+    // `phone.spec.ts` starts without them.
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: `http://localhost:${port}`,
+          localStorage: [
+            { name: 'utt-install-offered', value: '1' },
+            { name: 'utt-notify-offered', value: '1' },
+          ],
+        },
+      ],
+    },
   },
   projects: [
     {

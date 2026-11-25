@@ -314,6 +314,10 @@ export type WaitingNews = {
   at: string;
   mode: EmailNews;
   summarySentOn: string | null;
+  /** A phone of the account is told (ticket 124). */
+  phone?: boolean;
+  /** When it went to the phones, if it did: the wait counts from there. */
+  pushedAt?: string | null;
 };
 
 /**
@@ -334,11 +338,20 @@ export const planNewsEmails = (
     news,
     when: emailWhen(
       { ...news, seen: false, emailed: false },
-      { mode: news.mode, phone: false },
+      { mode: news.mode, phone: news.phone ?? false },
     ),
   }));
+  // What presses waits ten minutes after the phone was told; a phone
+  // never told (its keys gone, its service down) holds it thirty minutes
+  // at most.
   const single = timed
-    .filter(({ news, when }) => goesNow(when, news.at, now))
+    .filter(({ news, when }) =>
+      when === 'wait'
+        ? news.pushedAt
+          ? goesNow(when, news.pushedAt, now)
+          : Date.parse(now) - Date.parse(news.at) >= 3 * PHONE_WAIT_MS
+        : goesNow(when, news.at, now),
+    )
     .map(({ news }) => news)
     .slice(0, max);
   const summed = timed

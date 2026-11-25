@@ -511,6 +511,24 @@ export const emailReports = sqliteTable(
   (t) => [index('email_reports_party_idx').on(t.partyId)],
 );
 
+// The phones that asked for notifications (ticket 124): one row per
+// device, its address at its push service and its keys; forgotten when
+// the push service no longer knows it.
+export const pushSubscriptions = sqliteTable(
+  'push_subscriptions',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    endpoint: text('endpoint').notNull().unique(),
+    p256dh: text('p256dh').notNull(),
+    auth: text('auth').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('push_subscriptions_account_idx').on(t.accountId)],
+);
+
 export const loginLinks = sqliteTable(
   'login_links',
   {
@@ -1010,6 +1028,8 @@ export const news = sqliteTable(
     // when it went; counted again, it may go again.
     mailable: integer('mailable', { mode: 'boolean' }).notNull().default(true),
     emailedAt: text('emailed_at'),
+    // Ticket 124: when it went to the phones of the account.
+    pushedAt: text('pushed_at'),
   },
   (t) => [
     index('news_account_idx').on(t.accountId, t.seenAt),

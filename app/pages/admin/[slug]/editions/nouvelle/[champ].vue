@@ -70,6 +70,8 @@ watch(
   },
   { immediate: true },
 );
+// Not in the past (Julien, 25 November 2026).
+const today = new Date().toLocaleDateString('sv-SE');
 const years = partyYears(new Date().getFullYear());
 /** A full date is required (the name is written on its row, ticket 162). */
 const invalid = computed(() => field.value === 'date' && !dateOf(date.value));
@@ -136,6 +138,7 @@ const onValidate = () => {
       v-model="date"
       :years="years"
       weekday
+      :since="today"
       :label="title"
       testid="new-secret-santa-date"
     />

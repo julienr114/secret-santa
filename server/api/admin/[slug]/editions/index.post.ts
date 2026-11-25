@@ -46,8 +46,9 @@ export default defineEventHandler(async (event) => {
       await isSwitchOn(db, 'new_secret_santas'),
     ),
   );
-  // Nothing is made in a year over (ticket 108).
-  await requireOpenYearNumber(db, group, body.year);
+  // Nothing is made in a year over (ticket 108); its date to come opens
+  // again a year dated in the past by mistake.
+  await requireOpenYearNumber(db, group, body.year, body.eventDate);
   const existing = await listEditions(db, group.id);
   const previous = previousEdition(existing, body.year);
   const previousIds = previous

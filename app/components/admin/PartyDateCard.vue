@@ -12,6 +12,7 @@ const props = defineProps<{ slug: string; editionId: string }>();
 const { t } = useT();
 const errorMessage = useErrorMessage();
 const update = useUpdateEditionMutation(() => props.slug);
+const today = new Date().toLocaleDateString('sv-SE');
 const years = partyYears(new Date().getFullYear());
 const date = ref<BirthParts>({ day: null, month: null, year: null });
 /**
@@ -35,6 +36,7 @@ const onValidate = () => {
       v-model="date"
       :years="years"
       weekday
+      :since="today"
       :label="t('adminEdition.newEdition.dateLabel')"
       testid="missing-date-field"
     />

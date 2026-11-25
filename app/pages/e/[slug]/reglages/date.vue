@@ -31,6 +31,8 @@ const parts = computed(() => [
 ]);
 const party = usePartyQuery(slug);
 const update = useUpdatePartyMutation(slug);
+// Not in the past (Julien, 25 November 2026).
+const today = new Date().toLocaleDateString('sv-SE');
 const years = partyYears(Number(new Date().toISOString().slice(0, 4)));
 const date = ref<BirthParts>({ day: null, month: null, year: null });
 const filled = ref(false);
@@ -73,6 +75,7 @@ const onValidate = () => {
         v-model="date"
         :years="years"
         weekday
+        :since="today"
         :label="t('party.reglages.date')"
         testid="party-date"
       />

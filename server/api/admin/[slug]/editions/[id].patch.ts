@@ -16,14 +16,15 @@ export default defineEventHandler(async (event) => {
   const { user, group, db } = await requireGroupAccess(event);
   const edition = await findEdition(db, group.id, getRouterParam(event, 'id'));
   if (!edition) throw notFound('edition_not_found');
-  await requireOpenYear(db, group.id, edition.yearId);
-  if (edition.status === 'closed') {
-    throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
-  }
   const { eventDate, rulesOverride, ...body } = await validatedBody(
     event,
     editionPatchSchema,
   );
+  // A new date to come opens again a year dated in the past by mistake.
+  await requireOpenYear(db, group.id, edition.yearId, eventDate);
+  if (edition.status === 'closed') {
+    throw createError({ statusCode: 409, statusMessage: 'edition_closed' });
+  }
   // The screen sends the edition's rules with one changed, and the day of
   // the party on its own: both go into the Secret Santa's rules.
   const rulesChanged = rulesOverride !== undefined || eventDate !== undefined;

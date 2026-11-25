@@ -17,6 +17,8 @@ const { t, locale } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
+// Not in the past (Julien, 25 November 2026).
+const today = new Date().toLocaleDateString('sv-SE');
 const context = useScreenContext(slug, id);
 const title = computed(() => t('adminEdition.screen.dateSheet.title'));
 useHead({ title: () => context.titleOf(title.value) });
@@ -53,6 +55,7 @@ const onValidate = (eventDate: string | null) => {
   <AdminDatePage
     :parts="context.parts.value"
     :back="back"
+    :since="today"
     :title="title"
     :value="edition.data.value?.rules.eventDate"
     :ready="Boolean(edition.data.value)"

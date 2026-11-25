@@ -4,6 +4,7 @@ import { parties, partyYears, secretSantas, type PartyRow } from './schema';
 import { notFound } from '#server/http/errors';
 import {
   partyTimeline,
+  reopensYear,
   yearIsOver,
   type Timeline,
   type YearOfParty,
@@ -84,17 +85,45 @@ export const timelineOf = (
   );
 
 /**
+ * A year over that a new date opens again (Julien, 25 November 2026): a
+ * date set in the past by mistake, in the latest year, where no Secret
+ * Santa was drawn. Its date becomes the new one.
+ * @param db - The database.
+ * @param years - The years of the event.
+ * @param year - The year over.
+ * @param date - The new date, if one is given.
+ * @returns True when it is open again.
+ */
+const reopenWith = async (
+  db: Db,
+  years: readonly LoadedYear[],
+  year: LoadedYear,
+  date: string | undefined,
+): Promise<boolean> => {
+  if (!date) return false;
+  const latest = years.toSorted((a, b) => b.year - a.year)[0];
+  if (!reopensYear(year, latest?.id === year.id, date, todayOnServer())) {
+    return false;
+  }
+  await db.update(partyYears).set({ date }).where(eq(partyYears.id, year.id));
+  return true;
+};
+
+/**
  * Refuses to change a year over (ticket 108): nothing changes in it, by
- * any route.
+ * any route; but a new date to come may open it again, while nothing
+ * happened in it (`reopensYear`).
  * @param db - The database.
  * @param partyId - The event.
  * @param yearId - The year.
+ * @param date - The new date asked, if any.
  * @returns Once checked.
  */
 export const requireOpenYear = async (
   db: Db,
   partyId: string,
   yearId: string,
+  date?: string,
 ) => {
   const [party] = await db
     .select({
@@ -108,7 +137,11 @@ export const requireOpenYear = async (
   if (!party) throw notFound();
   const years = await loadYears(db, [partyId]);
   const year = years.find((row) => row.id === yearId);
-  if (year && yearIsOver(timelineOf(party, years), year.year)) {
+  if (
+    year &&
+    yearIsOver(timelineOf(party, years), year.year) &&
+    !(await reopenWith(db, years, year, date))
+  ) {
     throw createError({ statusCode: 409, statusMessage: 'year_over' });
   }
 };
@@ -118,15 +151,21 @@ export const requireOpenYear = async (
  * @param db - The database.
  * @param party - The event.
  * @param year - « 2025 ».
+ * @param date - The new date asked, if any.
  * @returns Once checked.
  */
 export const requireOpenYearNumber = async (
   db: Db,
   party: Pick<PartyRow, 'id' | 'recurring' | 'usualDate'>,
   year: number,
+  date?: string,
 ) => {
   const years = await loadYears(db, [party.id]);
-  if (yearIsOver(timelineOf(party, years), year)) {
+  const row = years.find((one) => one.year === year);
+  if (
+    yearIsOver(timelineOf(party, years), year) &&
+    !(row && (await reopenWith(db, years, row, date)))
+  ) {
     throw createError({ statusCode: 409, statusMessage: 'year_over' });
   }
 };

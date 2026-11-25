@@ -8,7 +8,8 @@ import { boundsOf, checkDate, fullDate } from '#shared/utils/dateField';
 // of the language, typed in one go (the number pad on a phone), dressed
 // as our fields. Under it, the date in full once the three are there:
 // what the field understood. A date out of its years, or still to come
-// for a birth, is refused by us, not only marked. The group bears the
+// for a birth, or past for what is to come, is refused by us, not only
+// marked. The group bears the
 // name of the field for a screen reader; the segments keep « jour »,
 // « mois », « année ». Same model as the three lists it replaces.
 const props = defineProps<{
@@ -22,10 +23,12 @@ const props = defineProps<{
   weekday?: boolean;
   /** The last day allowed (« 2026-11-25 »): a birth is not to come. */
   until?: string;
+  /** The first day allowed: a Secret Santa is not in the past. */
+  since?: string;
 }>();
 const parts = defineModel<BirthParts>({ required: true });
 const { t, locale } = useT();
-const bounds = computed(() => boundsOf(props.years, props.until));
+const bounds = computed(() => boundsOf(props.years, props.until, props.since));
 
 /** The day of some parts, for the field; nothing until all three are there. */
 const calendarOf = (value: BirthParts): CalendarDate | undefined => {
@@ -74,6 +77,7 @@ const refusal = computed(() => {
       to: bounds.value.to,
     });
   }
+  if (check.value === 'past') return t('common.date.past');
   return check.value === 'future' ? t('common.date.future') : '';
 });
 const id = useId();
@@ -92,8 +96,10 @@ const id = useId();
       :locale="locale"
       :min-value="new CalendarDate(bounds.from, 1, 1)"
       :max-value="new CalendarDate(bounds.to, 12, 31)"
-      :highlight="check === 'outside' || check === 'future'"
-      :color="check === 'outside' || check === 'future' ? 'error' : 'primary'"
+      :highlight="['outside', 'future', 'past'].includes(check)"
+      :color="
+        ['outside', 'future', 'past'].includes(check) ? 'error' : 'primary'
+      "
       size="xl"
       class="w-full"
       :ui="{

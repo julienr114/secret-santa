@@ -60,3 +60,10 @@ Julien demande de voir si Nuxt UI n'a pas déjà quelque chose. Le projet est en
 **Contrôle** : `pnpm controle --e2e`, tout est passé : 1 093 tests Vitest et 242 parcours.
 
 **Commit** : `feat(dates): a date in one field, everywhere, its date in full under it`.
+
+**Suite, le 25 novembre 2026 (Julien, à l'essai).** Le champ ne le refusant pas encore, un événement a été daté du 11 février au lieu du 11 décembre. Son année 2026 est alors devenue « finie », et plus rien ne s'y changeait, pas même la date (« Cette année est finie : on n'y change plus rien »).
+
+- **Plus de date passée** pour ce qui est à venir : la date d'un événement, d'un Secret Santa, de la fin d'un lien d'invitation. Le champ dit « Une date à partir d'aujourd'hui. » et « Valider » reste éteint. Une date de naissance et la date d'une liste restent libres.
+- **Une année datée par erreur se corrige** (`reopensYear`) : seulement la dernière année de l'événement, seulement tant qu'aucun de ses Secret Santa n'est tiré, et seulement vers un jour à venir de la même année. Les réglages de l'événement, la création d'un Secret Santa et le changement de sa date la rouvrent.
+- **La date d'un Secret Santa, dans ses réglages**, se lit avec son année : « 11 décembre 2026 ».
+- Tests : `years.test.ts`, `dateField.test.ts`, et un parcours dans `dates.spec.ts`.

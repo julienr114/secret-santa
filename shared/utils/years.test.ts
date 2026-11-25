@@ -5,6 +5,7 @@ import {
   listIsPast,
   listYear,
   partyTimeline,
+  reopensYear,
   pastByYear,
   pastBand,
   pastDeed,
@@ -331,5 +332,31 @@ describe('pastBand', () => {
         { year: 2026, createdAt: '2026-11-05T10:00:00Z', to: '/listes/b' },
       ])?.next,
     ).toEqual({ year: 2026, to: '/listes/b' });
+  });
+});
+
+describe('reopensYear (Julien, 25 November 2026)', () => {
+  const year = { year: 2026, santas: [{ status: 'preparing' }] };
+  const today = '2026-11-25';
+
+  it('lets a date set in the past by mistake be put right', () => {
+    expect(reopensYear(year, true, '2026-12-11', today)).toBe(true);
+  });
+
+  it('only to a day to come, of the same year, in the latest year', () => {
+    expect(reopensYear(year, true, '2026-11-24', today)).toBe(false);
+    expect(reopensYear(year, true, '2027-01-10', today)).toBe(false);
+    expect(reopensYear(year, false, '2026-12-11', today)).toBe(false);
+  });
+
+  it('never once a Secret Santa of that year was drawn', () => {
+    expect(
+      reopensYear(
+        { year: 2026, santas: [{ status: 'drawn' }] },
+        true,
+        '2026-12-11',
+        today,
+      ),
+    ).toBe(false);
   });
 });

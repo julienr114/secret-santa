@@ -41,3 +41,11 @@ describe('fullDate', () => {
     );
   });
 });
+
+describe('a date from today on (Julien, 25 November 2026)', () => {
+  it('refuses a Secret Santa in the past, takes today', () => {
+    const santa = boundsOf([2026, 2027, 2028], undefined, '2026-11-25');
+    expect(checkDate(parts(11, 2, 2026), santa)).toBe('past');
+    expect(checkDate(parts(25, 11, 2026), santa)).toBe('ok');
+  });
+});

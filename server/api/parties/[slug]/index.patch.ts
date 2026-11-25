@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { parties, partyYears } from '#server/database/schema';
-import { loadYears, timelineOf } from '#server/database/years';
+import { loadYears, timelineOf, todayOnServer } from '#server/database/years';
 import { newId, nowIso } from '#server/http/context';
 import { requireParty } from '#server/http/party';
 import { validatedBody } from '#server/http/validate';
@@ -11,7 +11,7 @@ import {
   partyPatchSchema,
   usualDateOf,
 } from '#server/utils/parties';
-import { yearIsOver } from '#shared/utils/years';
+import { reopensYear, yearIsOver } from '#shared/utils/years';
 
 // The settings of the party itself (V3FeteReglages, ticket 104): its
 // category, its date (the usual day, and the date of its year), whether
@@ -43,7 +43,15 @@ export default defineEventHandler(async (event) => {
   };
   const year = date === undefined ? 0 : Number(date.slice(0, 4));
   const made = years.find((row) => row.year === year);
-  if (date !== undefined && !open && made && yearIsOver(timeline, year)) {
+  // A date set in the past by mistake is put right while nothing happened
+  // in its year (Julien, 25 November 2026): the year is open again.
+  if (
+    date !== undefined &&
+    !open &&
+    made &&
+    yearIsOver(timeline, year) &&
+    !reopensYear(made, made.id === latest?.id, date, todayOnServer())
+  ) {
     throw createError({ statusCode: 409, statusMessage: 'year_over' });
   }
   await db.batch([

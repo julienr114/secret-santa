@@ -12,10 +12,12 @@ export type DateBounds = {
   to: number;
   /** The last day allowed (« 2026-11-25 »): a birth is not to come. */
   until?: string;
+  /** The first day allowed: a Secret Santa is not in the past. */
+  since?: string;
 };
 
 /** Where a date typed stands. */
-export type DateCheck = 'empty' | 'ok' | 'outside' | 'future';
+export type DateCheck = 'empty' | 'ok' | 'outside' | 'future' | 'past';
 
 /**
  * Where a date typed stands: not complete, in its bounds, out of its
@@ -29,6 +31,7 @@ export const checkDate = (parts: BirthParts, bounds: DateBounds): DateCheck => {
   if (!iso || parts.year === null) return 'empty';
   if (parts.year < bounds.from || parts.year > bounds.to) return 'outside';
   if (bounds.until && iso > bounds.until) return 'future';
+  if (bounds.since && iso < bounds.since) return 'past';
   return 'ok';
 };
 
@@ -36,15 +39,18 @@ export const checkDate = (parts: BirthParts, bounds: DateBounds): DateCheck => {
  * The bounds of a list of years.
  * @param years - The years offered, in any order.
  * @param until - The last day allowed, if any.
+ * @param since - The first day allowed, if any.
  * @returns From the first to the last.
  */
 export const boundsOf = (
   years: readonly number[],
   until?: string,
+  since?: string,
 ): DateBounds => ({
   from: Math.min(...years),
   to: Math.max(...years),
   ...(until ? { until } : {}),
+  ...(since ? { since } : {}),
 });
 
 /**

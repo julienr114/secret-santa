@@ -64,6 +64,7 @@ export default {
   date: {
     outside: 'A date between {from} and {to}.',
     future: 'A date already past.',
+    past: 'A date from today on.',
   },
   emailBlock: {
     refused:

@@ -22,6 +22,8 @@ const props = defineProps<{
   ready: boolean;
   /** « Pas de date »: the date may be left out. */
   clearLabel?: string;
+  /** The first day allowed: what is to come is not in the past. */
+  since?: string;
   busy?: boolean;
   error?: string | null;
   testid: string;
@@ -53,6 +55,7 @@ watch(
         v-model="date"
         :years="years"
         weekday
+        :since="since"
         :label="title"
         :testid="testid"
       />

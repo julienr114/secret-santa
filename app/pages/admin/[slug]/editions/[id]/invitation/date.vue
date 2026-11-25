@@ -15,6 +15,8 @@ const { t } = useT();
 const toast = useMessages();
 const errorMessage = useErrorMessage();
 const goBack = useGoBack();
+// Not in the past (Julien, 25 November 2026).
+const today = new Date().toLocaleDateString('sv-SE');
 const context = useScreenContext(slug, id);
 useHead({ title: () => context.titleOf(t('adminEdition.invite.until')) });
 const back = computed(
@@ -48,6 +50,7 @@ const onValidate = (until: string | null) => {
   <AdminDatePage
     :parts="context.parts.value"
     :back="back"
+    :since="today"
     :title="t('adminEdition.invite.until')"
     :value="invite?.until"
     :ready="Boolean(query.data.value)"

@@ -108,6 +108,29 @@ export const yearIsOver = (timeline: Timeline, year: number): boolean =>
   timeline.current === null || year < timeline.current.year;
 
 /**
+ * Whether a year over may take a new date, and so be open again (Julien,
+ * 25 November 2026): a date set in the past by mistake must not lock an
+ * event for good. Only the latest year of the event, only while nothing
+ * happened in it (none of its Secret Santa drawn), and only to a day to
+ * come, of that same year.
+ * @param year - The year, its Secret Santa.
+ * @param latest - Whether it is the latest year of the event.
+ * @param date - The new date (ISO).
+ * @param today - « 2026-11-25 ».
+ * @returns True when the new date reopens it.
+ */
+export const reopensYear = (
+  year: Pick<YearOfParty, 'year' | 'santas'>,
+  latest: boolean,
+  date: string,
+  today: string,
+): boolean =>
+  latest &&
+  date >= today &&
+  Number(date.slice(0, 4)) === year.year &&
+  year.santas.every((santa) => santa.status === 'preparing');
+
+/**
  * The year a list belongs to (Q-020): the year of its date, else of its
  * creation. A list made for an event takes the date of its year.
  * @param list - Its date and when it was made.

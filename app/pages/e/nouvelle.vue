@@ -211,6 +211,7 @@ const emojiOf = (category: PartyCategory) =>
           v-model="form.date"
           :years="years"
           weekday
+          :since="today"
           :label="t('party.create.date')"
           testid="party-date"
         />

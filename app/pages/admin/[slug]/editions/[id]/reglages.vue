@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { formatEventDate } from '#server/utils/rules';
+// The date in full, its year with it (Julien, 25 November 2026).
+import { fullDate } from '#shared/utils/dateField';
 import { usePartyQuery } from '~/composables/queries/useParty';
 import { useUpdateEditionMutation } from '~/composables/queries/useGroup';
 
@@ -133,7 +134,7 @@ const noteValue = computed(() =>
           :title="t('adminEdition.newEdition.dateLabel')"
           :value="
             eventDate
-              ? formatEventDate(eventDate, locale)
+              ? fullDate(eventDate, locale, false)
               : t('adminEdition.newEdition.dateToChoose')
           "
           :to="

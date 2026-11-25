@@ -1,3 +1,4 @@
+import type { Sender } from '#server/utils/senders';
 import type { Reach } from '#server/utils/drawEmails';
 import type { MembersExtras } from '#server/database/membersPage';
 import type { JournalPersonCard } from '#server/database/journal';
@@ -53,6 +54,8 @@ export type GuessSummary = {
   left: number;
   /** The organiser's last reminder (no limit, Correction 15). */
   reminderSentAt: string | null;
+  /** Who sent it, with more than one organiser (ticket 170). */
+  reminderBy?: Sender | null;
   /** The automatic reminder is on. */
   autoReminder: boolean;
   /** « Me tenir au courant », this organiser's; null when not a member. */

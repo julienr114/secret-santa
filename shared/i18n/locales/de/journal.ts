@@ -101,6 +101,12 @@ export default {
         'Alles, was deinen Link und deinen Umschlag betrifft. Kommt eine Zeile nicht von dir, sag es deinen Organisatoren.',
     },
   },
+  // Ticket 170: who sent, when the event has more than one organiser.
+  by: {
+    message_sent: '{sender} hat {what} an {name}{via} gesendet',
+    link_copied: '{sender} hat den Link von {name} kopiert',
+    link_shared: '{sender} hat den Link von {name} geteilt',
+  },
   grouped: {
     result_viewed: '{strong} haben ihren Umschlag geöffnet',
     message_sent: 'Der Organisator hat {what} an {strong}{via} gesendet',

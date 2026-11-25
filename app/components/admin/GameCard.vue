@@ -125,9 +125,23 @@ const canAct = computed(
           class="mt-1 text-sm text-toned"
         >
           {{
-            t('adminEdition.game.lastReminder', {
-              date: formatEventDate(guess.reminderSentAt.slice(0, 10), locale),
-            })
+            t(
+              guess.reminderBy
+                ? guess.reminderBy.me
+                  ? 'adminEdition.game.lastReminderByMe'
+                  : 'adminEdition.game.lastReminderBy'
+                : 'adminEdition.game.lastReminder',
+              {
+                date: formatEventDate(
+                  guess.reminderSentAt.slice(0, 10),
+                  locale,
+                ),
+                name:
+                  guess.reminderBy && !guess.reminderBy.me
+                    ? guess.reminderBy.name
+                    : '',
+              },
+            )
           }}
         </p>
         <span

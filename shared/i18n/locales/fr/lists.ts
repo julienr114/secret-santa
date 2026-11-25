@@ -20,6 +20,7 @@ export default {
     holdersWith: 'Tu tiens cette liste avec {names}.',
     holdersAlone: 'Tenir cette liste à plusieurs',
     personMenu: 'Options pour {name}',
+    myPage: 'Ma fiche et mes goûts',
     personPage: 'Sa fiche et ses goûts',
     removeFromList: 'Retirer de cette liste',
     deleteFromFamily: 'Supprimer de mes proches',

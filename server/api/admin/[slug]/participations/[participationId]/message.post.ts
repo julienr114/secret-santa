@@ -38,7 +38,8 @@ export default defineEventHandler(async (event) => {
     editionId: edition.id,
     personId: person.id,
     actor: user.role,
-    meta: { messageType: type, via },
+    // Who sent it (ticket 170).
+    meta: { messageType: type, via, by: user.accountId },
   });
   return { ok: true };
 });

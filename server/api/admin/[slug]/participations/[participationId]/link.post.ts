@@ -21,6 +21,8 @@ export default defineEventHandler(async (event) => {
     editionId: edition.id,
     personId: person.id,
     actor: user.role,
+    // Who copied it (ticket 170).
+    meta: { by: user.accountId },
   });
   return { link };
 });

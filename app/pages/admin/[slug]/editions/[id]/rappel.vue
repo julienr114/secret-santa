@@ -111,16 +111,23 @@ const preview = computed(() =>
 const customize = (who: 'rappel' | 'groupe') =>
   `${editionPath.value}/message?pour=${who}&type=guessReminder`;
 /** « Dernier rappel : aucun. », or its day. */
-const lastLine = computed(() =>
-  guess.value?.reminderSentAt
-    ? t('adminEdition.game.lastOn', {
-        date: formatEventDate(
-          guess.value.reminderSentAt.slice(0, 10),
-          locale.value,
-        ),
-      })
-    : t('adminEdition.game.lastNone'),
-);
+const lastLine = computed(() => {
+  const sentAt = guess.value?.reminderSentAt;
+  if (!sentAt) return t('adminEdition.game.lastNone');
+  // Who sent it, with more than one organiser (ticket 170).
+  const by = guess.value?.reminderBy ?? null;
+  return t(
+    by
+      ? by.me
+        ? 'adminEdition.game.lastOnByMe'
+        : 'adminEdition.game.lastOnBy'
+      : 'adminEdition.game.lastOn',
+    {
+      date: formatEventDate(sentAt.slice(0, 10), locale.value),
+      name: by && !by.me ? by.name : '',
+    },
+  );
+});
 
 const remind = useGuessReminderMutation(slug, id);
 const sending = useBusy(() => remind.isPending.value);

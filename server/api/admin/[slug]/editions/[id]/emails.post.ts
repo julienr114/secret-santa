@@ -150,7 +150,8 @@ export default defineEventHandler(async (event) => {
             editionId: edition.id,
             personId: person.id,
             actor: user.role,
-            meta: { messageType: type, via: 'email' },
+            // Who sent it (ticket 170).
+            meta: { messageType: type, via: 'email', by: user.accountId },
           },
           { id: newId, now: nowIso },
         ),

@@ -98,6 +98,12 @@ export default {
         'Tout ce qui touche ton lien et ton enveloppe. Si une ligne ne vient pas de toi, préviens tes organisateurs.',
     },
   },
+  // Ticket 170: who sent, when the event has more than one organiser.
+  by: {
+    message_sent: '{sender} a envoyé {what} à {name}{via}',
+    link_copied: '{sender} a copié le lien de {name}',
+    link_shared: '{sender} a partagé le lien de {name}',
+  },
   grouped: {
     result_viewed: '{strong} ont ouvert leur enveloppe',
     message_sent: 'L’organisateur a envoyé {what} à {strong}{via}',

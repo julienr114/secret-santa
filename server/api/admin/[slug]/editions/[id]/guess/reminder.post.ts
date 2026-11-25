@@ -110,7 +110,8 @@ export default defineEventHandler(async (event) => {
     groupId: group.id,
     editionId: edition.id,
     actor: user.role,
-    meta: { count: emails.length },
+    // Who sent it (ticket 170).
+    meta: { count: emails.length, by: user.accountId },
   });
   return { sent: emails.length };
 });

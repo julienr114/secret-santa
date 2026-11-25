@@ -97,6 +97,12 @@ export default {
         'Everything about your link and your envelope. If a line did not come from you, tell your organizers.',
     },
   },
+  // Ticket 170: who sent, when the event has more than one organiser.
+  by: {
+    message_sent: '{sender} sent {what} to {name}{via}',
+    link_copied: '{sender} copied {name}’s link',
+    link_shared: '{sender} shared {name}’s link',
+  },
   grouped: {
     result_viewed: '{strong} opened their envelope',
     message_sent: 'The organizer sent {what} to {strong}{via}',

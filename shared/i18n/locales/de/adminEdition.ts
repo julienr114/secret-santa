@@ -597,8 +597,12 @@ export default {
     },
     remindAgain: 'Noch einmal erinnern',
     lastReminder: 'Letzte Erinnerung am {date}',
+    lastReminderBy: 'Letzte Erinnerung am {date}, von {name}',
+    lastReminderByMe: 'Letzte Erinnerung am {date}, von dir',
     lastNone: 'Letzte Erinnerung: keine.',
     lastOn: 'Letzte Erinnerung: am {date}.',
+    lastOnBy: 'Letzte Erinnerung: am {date}, von {name}.',
+    lastOnByMe: 'Letzte Erinnerung: am {date}, von dir.',
     nudgeLeft: {
       one: '{count} Person hat noch nicht gespielt.',
       other: '{count} Personen haben noch nicht gespielt.',

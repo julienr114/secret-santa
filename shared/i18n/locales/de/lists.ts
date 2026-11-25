@@ -19,6 +19,7 @@ export default {
     holdersWith: 'Du führst diese Liste mit {names}.',
     holdersAlone: 'Diese Liste zu mehreren führen',
     personMenu: 'Optionen für {name}',
+    myPage: 'Meine Seite und mein Geschmack',
     personPage: 'Seite und Geschmack',
     removeFromList: 'Von dieser Liste nehmen',
     deleteFromFamily: 'Aus meinen Leuten löschen',

@@ -417,6 +417,16 @@ test('a person of my family keeps their details from list to list', async ({
   page,
 }) => {
   await openList(page, 'Noël 2026');
+  // My own part speaks of me (ticket 170).
+  await page
+    .getByTestId('list-person')
+    .filter({ hasText: 'Camille' })
+    .getByTestId('person-menu')
+    .click();
+  await expect(
+    page.getByRole('menuitem', { name: 'Ma fiche et mes goûts' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
   const leo = page.getByTestId('list-person').filter({ hasText: 'Léo' });
   await leo.getByTestId('person-menu').click();
   await page.getByRole('menuitem', { name: 'Sa fiche et ses goûts' }).click();

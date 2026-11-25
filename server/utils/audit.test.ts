@@ -140,6 +140,32 @@ describe('describeEvent', () => {
     ).toBe('Le Secret Santa Noël 2026 est clôturé');
   });
 
+  it('says who sent, with more than one organiser (ticket 170)', () => {
+    const sent = ev('message_sent', {
+      messageType: 'reminder',
+      via: 'email',
+      by: 'a2',
+    });
+    const plain = describeEvent(sent, { names });
+    expect(plain).toMatch(/^L'organisateur a envoyé/);
+    expect(describeEvent(sent, { names, senders: { a2: 'Hugo' } })).toBe(
+      plain.replace("L'organisateur", 'Hugo'),
+    );
+    expect(
+      describeEvent(ev('link_copied', { by: 'a2' }), {
+        names,
+        senders: { a2: 'Hugo' },
+      }),
+    ).toBe('Hugo a copié le lien de Léa');
+    // A setting changed does not say who.
+    expect(
+      describeEvent(ev('rules_changed', { by: 'a2' }, null), {
+        names,
+        senders: { a2: 'Hugo' },
+      }),
+    ).toBe("L'organisateur a modifié les règles du tirage");
+  });
+
   it('has a description for every type and copes with missing data', () => {
     AUDIT_TYPES.forEach((type) => {
       const text = describeEvent({ type, personId: 'unknown', meta: null });

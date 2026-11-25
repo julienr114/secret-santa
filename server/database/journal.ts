@@ -1,7 +1,7 @@
 import { desc, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import type { Locale } from '#shared/i18n';
-import { auditLog } from './schema';
+import { accounts, auditLog, partyOrganisers } from './schema';
 import { listPeople } from './people';
 import { listEditions } from './editions';
 import { displayName } from '#server/utils/people';
@@ -35,7 +35,7 @@ export const loadJournal = async (
   locale: Locale,
   me: string | null = null,
 ): Promise<Journal> => {
-  const [rows, people, editions] = await Promise.all([
+  const [rows, people, editions, organisers] = await Promise.all([
     db
       .select()
       .from(auditLog)
@@ -44,7 +44,22 @@ export const loadJournal = async (
       .limit(JOURNAL_LIMIT),
     listPeople(db, groupId),
     listEditions(db, groupId),
+    db
+      .select({ id: accounts.id, firstName: accounts.firstName })
+      .from(partyOrganisers)
+      .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
+      .where(eq(partyOrganisers.partyId, groupId)),
   ]);
+  // Who sent, said only when the event has more than one organiser
+  // (ticket 170).
+  const senders =
+    organisers.length > 1
+      ? Object.fromEntries(
+          organisers.flatMap((one) =>
+            one.firstName ? [[one.id, one.firstName]] : [],
+          ),
+        )
+      : {};
   const entries = journalEntries(
     rows.map(({ partyId, secretSantaId, ...row }) => ({
       ...row,
@@ -55,6 +70,7 @@ export const loadJournal = async (
     people,
     locale,
     me,
+    senders,
   );
   const named = new Set(entries.map((entry) => entry.personId));
   return {

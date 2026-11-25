@@ -21,11 +21,12 @@ import {
   type AnswerStatus,
 } from '#server/utils/answers';
 import type { H3Event } from 'h3';
-import { and, eq } from 'drizzle-orm';
-import { partyOrganisers } from '#server/database/schema';
+import { and, desc, eq } from 'drizzle-orm';
+import { accounts, auditLog, partyOrganisers } from '#server/database/schema';
 import { gameMembers } from '#server/database/guesses';
 import { gamePossible, guessesOpen } from '#server/utils/guesses';
 import { nudgeTime, playedCount, toRemind } from '#server/utils/nudges';
+import { reminderSender } from '#server/utils/senders';
 import { reachesOf } from '#server/http/drawEmails';
 import type { Reach } from '#server/utils/drawEmails';
 
@@ -104,6 +105,32 @@ export default defineEventHandler(async (event) => {
       ),
     )
     .limit(1);
+  // Who sent the last reminder, when the event has more than one
+  // organiser (ticket 170): « par Hugo », or « par toi ».
+  const organisers = await db
+    .select({ id: accounts.id, firstName: accounts.firstName })
+    .from(partyOrganisers)
+    .innerJoin(accounts, eq(accounts.id, partyOrganisers.accountId))
+    .where(eq(partyOrganisers.partyId, group.id));
+  const [lastReminder] =
+    organisers.length > 1 && edition.guessReminderSentAt
+      ? await db
+          .select({ meta: auditLog.meta })
+          .from(auditLog)
+          .where(
+            and(
+              eq(auditLog.secretSantaId, edition.id),
+              eq(auditLog.type, 'guess_reminder_sent'),
+            ),
+          )
+          .orderBy(desc(auditLog.createdAt))
+          .limit(1)
+      : [];
+  const reminderBy = reminderSender(
+    (lastReminder?.meta as { by?: unknown } | null)?.by,
+    organisers,
+    user.accountId,
+  );
   const guess = {
     mode: edition.guessMode,
     endsAt: edition.guessEndsAt,
@@ -116,6 +143,7 @@ export default defineEventHandler(async (event) => {
     left,
     // The organiser's last reminder; there is no limit (Correction 15).
     reminderSentAt: edition.guessReminderSentAt,
+    reminderBy,
     autoReminder: edition.guessAutoReminder,
     news: membership?.guessNews ?? null,
     // Five days before the end, someone left: the card asks to remind.

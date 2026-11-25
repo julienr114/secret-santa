@@ -141,16 +141,31 @@ export const describeEvent = (
     names = {},
     locale = DEFAULT_LOCALE,
     own = false,
-  }: { names?: Record<string, string>; locale?: Locale; own?: boolean } = {},
+    senders = {},
+  }: {
+    names?: Record<string, string>;
+    locale?: Locale;
+    own?: boolean;
+    /**
+     * The first names of the organisers by account, when the event has
+     * more than one (ticket 170): a sending says who made it.
+     */
+    senders?: Record<string, string>;
+  } = {},
 ): string => {
+  const meta = event.meta ?? {};
+  const sender = senders[text(meta, 'by', '')] ?? null;
   const key = keyOrFallback(
     own ? `journal.own.${event.type}` : '',
-    `journal.events.${event.type}`,
+    keyOrFallback(
+      sender ? `journal.by.${event.type}` : '',
+      `journal.events.${event.type}`,
+    ),
   );
   if (!hasMessage(key)) return translateKey(locale, 'journal.unknown');
-  const meta = event.meta ?? {};
   const t = (k: string) => translateKey(locale, k);
   return translateKey(locale, key, {
+    sender: sender ?? '',
     name: (event.personId && names[event.personId]) || t('journal.someone'),
     label: text(meta, 'label', ''),
     reason: text(meta, 'reason', t('journal.noReason')),
@@ -253,6 +268,7 @@ export const journalEntries = (
   people: JournalPerson[],
   locale: Locale = DEFAULT_LOCALE,
   me: string | null = null,
+  senders: Record<string, string> = {},
 ): JournalEntry[] => {
   const names = Object.fromEntries(
     people.map((person) => [person.id, displayName(person, people)]),
@@ -266,7 +282,7 @@ export const journalEntries = (
       editionId: row.editionId ?? null,
       actor: row.actor,
       createdAt: row.createdAt,
-      text: describeEvent(row, { names, locale }),
+      text: describeEvent(row, { names, locale, senders }),
       personId: row.personId ?? null,
       messageType: metaWord(row.meta, 'messageType'),
       via: metaWord(row.meta, 'via'),

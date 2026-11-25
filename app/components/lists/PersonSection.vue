@@ -276,7 +276,10 @@ const menu = computed(() =>
     : [
         [
           {
-            label: t('lists.doc.personPage'),
+            // Mine speaks of me (ticket 170).
+            label: member.value.isSelf
+              ? t('lists.doc.myPage')
+              : t('lists.doc.personPage'),
             icon: 'i-lucide-user',
             to: `/famille/${member.value.id}?liste=${props.listId}&place=${props.person.id}`,
           },

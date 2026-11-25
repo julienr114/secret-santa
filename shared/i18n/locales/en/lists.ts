@@ -18,6 +18,7 @@ export default {
     holdersWith: 'You hold this list with {names}.',
     holdersAlone: 'Hold this list with others',
     personMenu: 'Options for {name}',
+    myPage: 'My page and tastes',
     personPage: 'Their page and tastes',
     removeFromList: 'Remove from this list',
     deleteFromFamily: 'Delete from my people',

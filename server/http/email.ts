@@ -7,8 +7,8 @@ import {
   markWritten,
   seenOf,
 } from '#server/database/emailBlocks';
+import { emailPrint } from '#server/utils/emailPrint';
 import {
-  emailPrint,
   mayReceive,
   signReport,
   signStop,

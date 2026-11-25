@@ -3,7 +3,8 @@ import { eq } from 'drizzle-orm';
 import { useDb } from '#server/database/client';
 import { accounts } from '#server/database/schema';
 import { secretsOf } from './context';
-import { emailPrint, verifyStop } from '#server/utils/stopEmail';
+import { emailPrint } from '#server/utils/emailPrint';
+import { verifyStop } from '#server/utils/stopEmail';
 
 /**
  * The address of a link « Ne plus recevoir d'emails », signed by the

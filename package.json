@@ -29,6 +29,7 @@
     "v3:essai": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/v3-essai.ts",
     "v3:compare": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/v3-compare.ts",
     "emoji:copy": "node --experimental-strip-types scripts/copy-emoji-images.ts",
+    "cle:changer": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/rotate-key.ts",
     "seed:v3": "node --experimental-strip-types --no-warnings scripts/seed-v3.ts"
   },
   "dependencies": {

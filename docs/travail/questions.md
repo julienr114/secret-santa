@@ -4,6 +4,19 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+### Q-043 — Changer la clé du serveur : les refus d'adresses que la base ne connaît plus, et les liens « stop » des emails déjà partis (ticket 171)
+
+- **Pour** : Julien
+- **Ce qui bloque** : rien pour le reste du ticket. Le script s'arrête, sans rien écrire, s'il trouve un refus d'une adresse que la base ne connaît plus (sauf `--perdre-refus`).
+- **Ce qu'on a trouvé** :
+  - Une adresse qui a refusé nos emails n'est gardée que par son empreinte, calculée avec la clé. Le script recalcule l'empreinte de chaque adresse que la base connaît encore (personnes, comptes, proches, invitations et donneurs de listes) ; il ne peut pas le faire pour une adresse qui n'y est plus (une personne retirée, quelqu'un qui n'a jamais eu de compte). Après le changement, ce refus ne compterait plus : si quelqu'un ajoute de nouveau cette adresse, elle recevrait nos emails.
+  - Les liens « Ne plus recevoir d'emails » et « Signaler cet envoi » des emails déjà partis sont signés avec la clé : après le changement, ils mènent à une page d'erreur.
+- **Les choix** :
+  - A. L'empreinte prend son propre secret, `NUXT_PRINT_KEY`, qui vaut la clé tant qu'il n'est pas posé. Au changement, on le pose à l'ancienne clé : aucune empreinte ne change, rien n'est perdu. Revers : si la clé a fui, ce secret aussi, et qui l'a peut vérifier si une adresse qu'il devine a refusé nos emails.
+  - B. Une variable `NUXT_DATA_KEY_PREVIOUS`, lue seulement pour reconnaître une empreinte ou un lien signé avec l'ancienne clé, pendant quelques mois ; puis on la retire. Les refus inconnus seraient alors réécrits à la première visite… mais on ne connaît toujours pas l'adresse : ils restent sous l'ancienne clé tant que la variable existe.
+  - C. On les perd (`--perdre-refus`), et les liens des anciens emails ne marchent plus : la personne refuse de nouveau depuis le prochain email.
+- **Ce que je ferais** : A pour les empreintes (un refus ne se perd jamais, et la fuite de la clé ne dit que « cette adresse a refusé »), et B pour les liens signés, le temps que les anciens emails ne servent plus (trois mois). Rien de cela n'est codé : le script recalcule les empreintes connues et s'arrête devant les autres.
+
 ### Q-042 — Après le tirage, ceux qui ne reçoivent pas d'emails, et un envoi qui a échoué : que dit le bloc du suivi ? (ticket 169)
 
 - **Pour** : la conception

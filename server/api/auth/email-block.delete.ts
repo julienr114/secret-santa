@@ -3,7 +3,7 @@ import { findAccountById } from '#server/database/accounts';
 import { unblockAddress } from '#server/database/emailBlocks';
 import { requireAccount } from '#server/http/auth';
 import { secretsOf } from '#server/http/context';
-import { emailPrint } from '#server/utils/stopEmail';
+import { emailPrint } from '#server/utils/emailPrint';
 
 // « Recevoir à nouveau les emails », in « Me prévenir » (ticket 130):
 // the person lifts the block of their own address. « Par email » stays

@@ -6,7 +6,7 @@ import {
   verifyProviderEvent,
   type ProviderEvent,
 } from '#server/utils/providerEvents';
-import { emailPrint } from '#server/utils/stopEmail';
+import { emailPrint } from '#server/utils/emailPrint';
 
 // The webhook of the email provider (ticket 130): a bounce of an address
 // that does not exist, or a complaint, blocks the address at once. Only

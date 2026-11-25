@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   blockWarning,
-  emailPrint,
   mayReceive,
   signReport,
   signStop,
@@ -9,6 +8,7 @@ import {
   verifyStop,
   withFoot,
 } from './stopEmail';
+import { emailPrint } from './emailPrint';
 
 const SECRET = 'test-secret';
 

@@ -2,11 +2,8 @@ import type { H3Event } from 'h3';
 import type { Db } from '#server/database/client';
 import { blockedOf } from '#server/database/emailBlocks';
 import { secretsOf } from './context';
-import {
-  emailPrint,
-  plainAddress,
-  type BlockCause,
-} from '#server/utils/stopEmail';
+import { emailPrint, plainAddress } from '#server/utils/emailPrint';
+import type { BlockCause } from '#server/utils/stopEmail';
 
 /**
  * Which of some addresses receive nothing, and why (ticket 130): read by

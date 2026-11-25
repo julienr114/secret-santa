@@ -105,7 +105,7 @@ describe('the addresses that refused (ticket 130)', () => {
 
   it('sends nothing to an address that refused, but its login link', async () => {
     const { db } = testDb();
-    const { emailPrint } = await import('#server/utils/stopEmail');
+    const { emailPrint } = await import('#server/utils/emailPrint');
     const { blockAddress } = await import('#server/database/emailBlocks');
     await blockAddress(
       db,

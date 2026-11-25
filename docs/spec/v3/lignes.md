@@ -49,7 +49,7 @@ Sur l'accueil et sur la page d'un événement, chaque Secret Santa et chaque lis
 | Dévoilé | « Dévoilé » |
 | Clôturé | « Terminé » |
 
-« Tu l'organises » n'est pas un état : on ne l'écrit pas dans un texte. C'est le titre de la ligne de l'organisateur, sur l'accueil, quand je participe aussi.
+« Tu l'organises » n'est pas un état : on ne l'écrit pas dans un texte. C'est le titre de la ligne de l'organisateur, sur l'accueil et sur la page de l'événement, quand je participe aussi.
 
 ## L'en-tête d'une carte
 

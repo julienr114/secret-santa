@@ -1,6 +1,6 @@
 # 125 — La page de présentation
 
-- **État** : réécrit pour la V3 le 24 novembre 2026. Attend les réponses de Julien (rapport de conception du 25 novembre, questions sur le 125) avant de passer dans `a-faire/`.
+- **Décidé par Julien le 25 novembre 2026** : les textes de `Landing` sont validés (« c'est très bien la version mobile ») ; `LandingDesktop` porte les mêmes textes sur un écran large ; le bloc « Le tirage » s'appelle « Le Secret Santa » ; « Des listes de cadeaux, pour Noël ou pour autre chose » ; depuis le ticket 169, « Chacun reçoit son lien par email. Sans adresse, tu le partages par WhatsApp ou SMS. » ; la page sort **après le 131, le 132 et le 126**, sans attendre le 124, dont le bloc s'ajoutera.
 - **Vient de** : l'ancien plan, « Lot 32 » ; README 22.23
 - **Dépend de** : 126 (le lien « Qui a fait ça, et pourquoi ? ») ; chaque bloc dépend du ticket qui fait ce qu'il promet (voir « Ne montrer que ce qui existe »)
 - **Migration** : non
@@ -41,7 +41,6 @@ Quelqu'un qui arrive sur `/` sans être connecté comprend en un écran ce qu'es
 - [ ] Aucun bloc ne promet une chose qui n'est pas encore en ligne.
 - [ ] `/controle` passe.
 
-## Ce qui manque
+## Compte rendu
 
-- La relecture des textes par Julien, et ses réponses sur deux titres de blocs.
-- Les deux maquettes sont à reprendre une fois les textes arrêtés (les captures montrent encore des écrans d'avant la V3).
+À remplir par Claude Code à la fin : ce qui a été fait, ce qui a été décidé seul (et pourquoi), les écarts avec les maquettes, les questions posées, les commits.

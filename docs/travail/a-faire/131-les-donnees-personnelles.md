@@ -16,7 +16,14 @@ Chacun sait ce que l'application garde sur lui et qui le voit, peut le télécha
 
 ## À faire
 
-- [ ] **Julien** : décider les durées qui restent (le journal, les empreintes de blocage) ; relire la liste du README 22.26 et le texte de `Confidentialite` ; créer l'adresse de contact (jamais son adresse personnelle).
+- [x] **Décidé par Julien le 25 novembre 2026** :
+  - **la relecture** des textes est la sienne, pas celle d'un juriste : le dire dans le compte rendu, sans écrire nulle part que les textes sont « conformes » ;
+  - **le journal d'un événement** vit aussi longtemps que son événement : c'est une fonction (la triche se voit), pas un journal de sécurité ;
+  - **l'empreinte d'une adresse qui a refusé nos emails** se garde tant que le refus tient, sans autre usage. La CNIL recommande au moins trois ans pour une telle liste (https://www.cnil.fr/fr/comment-utiliser-une-liste-repoussoir-pour-respecter-lopposition-la-prospection) ;
+  - **les journaux de sécurité et de modération** (ticket 132) : un an, dans la fourchette de six mois à un an que recommande la CNIL (https://www.cnil.fr/fr/securite-tracer-les-operations) ;
+  - **un compte sans visite depuis trois ans** est supprimé après un email (décidé le 19 novembre) ;
+  - **l'adresse de contact** est dans la configuration : Julien prévoit `bonjour@under-the-tree.party` et la donnera quand elle existe. Sans adresse, les pages ne peuvent pas être publiées : le dire au lieu d'en inventer une.
+- [ ] **Julien** : relire le texte de `Confidentialite` et la liste du README 22.26 ; créer l'adresse de contact (jamais son adresse personnelle).
 - [ ] **« Tes données, en clair »** (`Confidentialite`) et « Mentions légales », publiques, en trois langues, liées en bas de la page de présentation et de chaque email. Pour une liste, elle dit les stades du partage : ceux que je choisis dans « Qui voit ta liste ? » (« Qui je veux »), et toute personne qui a le lien si elle est ouverte à « Tout le monde ».
 - [ ] **« Mes données »** dans « Mon compte » (`CompteDonnees`).
 - [ ] **L'accès de dernier recours de l'organisateur**, dit sous « À qui tu offres » : un résultat à la fois, lu par tous les membres dans le journal ; et le dévoilement du tirage à tous. Aucun écran ne dit plus « même l'organisateur ne voit pas » sans cette précision, page de présentation comprise.

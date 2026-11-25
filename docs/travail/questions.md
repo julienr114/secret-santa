@@ -4,6 +4,10 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
 
 ## Ouvertes
 
+Aucune.
+
+## Réponses
+
 ### Q-041 — Les notifications du téléphone : chaque nouveauté, ou ce qui presse ? (ticket 124)
 
 - **Pour** : Julien
@@ -13,9 +17,8 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - A. Chaque nouveauté (une coche, un cadeau rejoint, quelqu'un qui s'inscrit, de nouvelles idées sur une liste suivie…), comme le README.
   - B. Ce qui presse seulement (l'enveloppe, une invitation à tenir une liste, une demande d'idées, le rappel du jour J pour l'organisateur), comme le ticket et `NotifAutoriser` ; le reste reste dans l'application et le résumé.
 - **Ce que je ferais** : B, codé ainsi : c'est ce que promet le panneau qui demande la permission, et le téléphone sonne moins. L'interrupteur dit « Tout de suite, quand quelque chose presse ».
+- **Réponse de Julien (25 novembre 2026)** : B, ce qui presse seulement, comme c'est codé. L'interrupteur dit « Tout de suite, quand quelque chose presse ». La conception met la maquette `NotifReglage` au même texte ; le README 22.22 est à corriger par celui qui ferme le ticket 124.
 
-
-## Réponses
 
 ### Q-040 — « Suspendre les inscriptions » dit qu'une adresse n'a pas de compte (ticket 129)
 
@@ -69,6 +72,7 @@ Mode d'emploi : `docs/travail/README.md` et le skill `/question`.
   - le groupe porte le nom du champ pour un lecteur d'écran ;
   - pas de roulettes dans ce ticket.
   - **Reste à Julien** : l'essai sur son iPhone (le pavé numérique s'ouvre-t-il ?). Il a choisi A sans l'avoir fait ; si le pavé ne s'ouvre pas, le dire ici avant de fermer le ticket.
+  - **Julien, 25 novembre 2026** : « c'est bon ». La conception le lit comme : l'essai sur son iPhone est fait et le pavé numérique s'ouvre. Elle lui a demandé de le confirmer ; le ticket 160 peut se fermer s'il ne dit pas le contraire.
 
 
 

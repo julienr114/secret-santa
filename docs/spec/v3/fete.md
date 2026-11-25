@@ -14,6 +14,7 @@ Ce sont les pages du groupe d'aujourd'hui, avec leurs règles (README, sections 
 - Les années passées.
 - Pour un membre : « Quitter cet événement ».
 - Pour l'organisateur : « Un autre Secret Santa ».
+- **Si j'organise un Secret Santa où je participe aussi, la même paire que sur l'accueil** (Julien, 25 novembre 2026 ; `lignes.md` ; maquette `V3FeteOrganisateur`) : la ligne « Le Secret Santa » dit ce que je vois comme participant (« Tu sais à qui tu offres ») et ouvre mon résultat ; dessous, accrochée sans trait, « Tu l'organises » dit où en est le Secret Santa (« Fait · 6 sur 8 ont découvert ») et ouvre le suivi. Si je l'organise sans y participer, une seule ligne, celle de l'organisateur, comme aujourd'hui.
 
 Un événement « pour quelqu'un » (un anniversaire) montre d'abord sa liste ; un Secret Santa reste possible (`V3FeteAnniversaire`).
 

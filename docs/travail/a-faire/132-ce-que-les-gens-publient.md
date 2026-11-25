@@ -22,9 +22,9 @@ Une liste publique, un mot d'organisateur, un prénom sont du contenu écrit par
 - [ ] **Dire pourquoi** : un email (`ModerationEmail`) et la ligne dans l'application, avec le motif, la règle visée et comment contester (répondre à l'adresse de contact). Dire au signaleur ce qui a été décidé.
 - [ ] **« Les règles d'usage »** (`Regles`), une page publique courte, en trois langues, liée en bas de chaque page et acceptée à la création d'un compte (`CompteCreerRegles` : une phrase avec un lien, pas une case de plus) : à quoi sert l'application ; ce qu'on n'y met pas ; n'ajouter que des adresses de gens qu'on connaît ; ce qui arrive en cas d'abus ; le service est gratuit, fourni tel quel, et peut s'arrêter ; comment signaler.
 - [ ] **Un point de contact unique** (l'adresse du ticket 131), écrit dans les mentions légales, les règles d'usage et `security.txt`.
-- [ ] **Le journal de modération** : chaque signalement et chaque décision, avec sa date, gardés un an (durée à valider par Julien).
+- [ ] **Le journal de modération** : chaque signalement et chaque décision, avec sa date, gardés un an (validé par Julien le 25 novembre 2026).
 - [ ] **Pas de surveillance automatique des contenus** : on agit sur signalement. Seuls garde-fous automatiques : les plafonds et le refus d'une adresse web dans un nom.
-- [ ] **Les enfants** : dire dans les règles d'usage à partir de quel âge on peut créer un compte seul (à faire préciser par la relecture) ; une fiche d'enfant est écrite par un parent.
+- [ ] **Les enfants** : dire dans les règles d'usage on peut créer un compte seul à partir de **15 ans** (décidé par Julien le 25 novembre 2026 : l'âge où un mineur consent seul en France, d'après la CNIL) ; une fiche d'enfant est écrite par un parent.
 - [ ] Trois langues, `tests/e2e`.
 
 ## Hors périmètre
